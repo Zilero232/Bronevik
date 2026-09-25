@@ -1,0 +1,76 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-4));
+
+  padding: var(--space-4);
+  color: inherit;
+  text-decoration: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.title {
+  @include display(var(--text-lg));
+}
+
+.time {
+  @include hud-label;
+}
+
+.stats {
+  display: grid;
+  margin: 0;
+  gap: var(--space-2);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  @include below(xs) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.stat {
+  @include stack(2px);
+  @include tone;
+
+  dt {
+    @include hud-label;
+  }
+
+  dd {
+    @include numeric;
+
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 700;
+  }
+
+  &[data-tone] dd {
+    color: var(--tone);
+  }
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-end;
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  gap: var(--space-1);
+}
+
+.empty {
+  @include plate(var(--chamfer-md));
+
+  padding: var(--space-5) var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+}

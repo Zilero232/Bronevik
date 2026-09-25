@@ -1,0 +1,14 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-6));
+
+  padding-top: var(--space-8);
+}
+
+.slots {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}

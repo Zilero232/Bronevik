@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+}
+
+.list {
+  @include stack(var(--space-4));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

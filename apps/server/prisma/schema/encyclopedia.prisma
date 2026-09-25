@@ -1,0 +1,268 @@
+enum VehicleType {
+  lightTank  @map("lightTank")
+  mediumTank @map("mediumTank")
+  heavyTank  @map("heavyTank")
+  atSpg      @map("AT-SPG")
+  spg        @map("SPG")
+
+  @@map("vehicle_type")
+}
+
+enum ModuleType {
+  vehicleChassis @map("vehicleChassis")
+  vehicleTurret  @map("vehicleTurret")
+  vehicleGun     @map("vehicleGun")
+  vehicleEngine  @map("vehicleEngine")
+  vehicleRadio   @map("vehicleRadio")
+  fuelTank       @map("fuel_tank")
+
+  @@map("module_type")
+}
+
+enum ProvisionType {
+  equipment
+  consumable
+  optionalDevice    @map("optional_device")
+  directive
+  fieldModification @map("field_modification")
+
+  @@map("provision_type")
+}
+
+enum GameSource {
+  RU
+  PT_RU
+
+  @@map("game_source")
+}
+
+model GameVersion {
+  id Int @id @default(autoincrement())
+
+  source     GameSource @default(RU)
+  version    String
+  commitSha  String?    @map("commit_sha")
+  isTest     Boolean    @default(false) @map("is_test")
+  title      String?
+  releasedAt DateTime?  @map("released_at") @db.Timestamptz(3)
+  detectedAt DateTime   @default(now()) @map("detected_at") @db.Timestamptz(3)
+  isCurrent  Boolean    @default(false) @map("is_current")
+  notesUrl   String?    @map("notes_url")
+
+  vehicleSpecs     VehicleSpecHistory[] @relation("VehicleSpecBuild")
+  vehicleSpecBases VehicleSpecHistory[] @relation("VehicleSpecBaseBuild")
+  dataEntries      GameDataEntry[]
+  newsItems        NewsItem[]
+  builds           Build[]
+
+  @@unique([source, version])
+  @@index([releasedAt])
+  @@map("game_version")
+}
+
+model Vehicle {
+  tankId Int @id @map("tank_id")
+
+  name           String
+  shortName      String      @map("short_name")
+  slug           String      @unique
+  nation         String
+  type           VehicleType
+  tier           Int         @db.SmallInt
+  tag            String?
+  description    String?
+  nameKey        String?     @map("name_key")
+  descriptionKey String?     @map("description_key")
+
+  isPremium     Boolean @default(false) @map("is_premium")
+  isCollectible Boolean @default(false) @map("is_collectible")
+  isGift        Boolean @default(false) @map("is_gift")
+  isWheeled     Boolean @default(false) @map("is_wheeled")
+  isActive      Boolean @default(true) @map("is_active")
+
+  images      Json?
+  priceCredit Int?  @map("price_credit")
+  priceGold   Int?  @map("price_gold")
+  priceXp     Int?  @map("price_xp")
+  specs       Json?
+
+  prevTankIds Int[] @map("prev_tank_ids")
+  nextTanks   Json? @map("next_tanks")
+  modulesTree Json? @map("modules_tree")
+  crew        Json?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  profiles    VehicleProfile[]
+  specHistory VehicleSpecHistory[]
+  builds      Build[]
+
+  @@index([tier, type])
+  @@index([nation])
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "vehicle_name_trgm_idx")
+  @@map("vehicle")
+}
+
+model VehicleProfile {
+  tankId    Int    @map("tank_id")
+  profileId String @map("profile_id")
+
+  isDefault Boolean @default(false) @map("is_default")
+  moduleIds Int[]   @map("module_ids")
+  data      Json
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  vehicle Vehicle @relation(fields: [tankId], references: [tankId], onDelete: Cascade)
+
+  @@id([tankId, profileId])
+  @@map("vehicle_profile")
+}
+
+model VehicleSpecHistory {
+  tankId        Int @map("tank_id")
+  gameVersionId Int @map("game_version_id")
+
+  baseGameVersionId Int? @map("base_game_version_id")
+
+  specs Json
+  diff  Json?
+
+  capturedAt DateTime @default(now()) @map("captured_at") @db.Timestamptz(3)
+
+  vehicle         Vehicle      @relation(fields: [tankId], references: [tankId], onDelete: Cascade)
+  gameVersion     GameVersion  @relation("VehicleSpecBuild", fields: [gameVersionId], references: [id], onDelete: Cascade)
+  baseGameVersion GameVersion? @relation("VehicleSpecBaseBuild", fields: [baseGameVersionId], references: [id], onDelete: SetNull)
+
+  @@id([tankId, gameVersionId])
+  @@index([gameVersionId])
+  @@index([baseGameVersionId])
+  @@map("vehicle_spec_history")
+}
+
+model Module {
+  moduleId Int @id @map("module_id")
+
+  name           String
+  nameKey        String?    @map("name_key")
+  descriptionKey String?    @map("description_key")
+  type           ModuleType
+  nation         String
+  tier           Int        @db.SmallInt
+  priceCredit    Int?       @map("price_credit")
+  weight         Int?
+  image          String?
+  tankIds        Int[]      @map("tank_ids")
+  data           Json?
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([type])
+  @@map("module")
+}
+
+model Provision {
+  provisionId Int @id @map("provision_id")
+
+  name           String
+  nameKey        String?       @map("name_key")
+  descriptionKey String?       @map("description_key")
+  tag            String?
+  type           ProvisionType
+  description    String?
+  image          String?
+  priceCredit    Int?          @map("price_credit")
+  priceGold      Int?          @map("price_gold")
+  weight         Int?
+  tankIds        Int[]         @map("tank_ids")
+  data           Json?
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([type])
+  @@map("provision")
+}
+
+model CrewRole {
+  role String @id
+
+  name   String
+  skills String[]
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("crew_role")
+}
+
+model CrewSkill {
+  skill String @id
+
+  name           String
+  nameKey        String?  @map("name_key")
+  descriptionKey String?  @map("description_key")
+  type           String?
+  roles          String[]
+  isCommon       Boolean  @default(false) @map("is_common")
+  description    String?
+  image          String?
+  data           Json?
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("crew_skill")
+}
+
+model Arena {
+  arenaId String @id @map("arena_id")
+
+  numericId      Int?     @unique @map("numeric_id")
+  name           String
+  nameKey        String?  @map("name_key")
+  descriptionKey String?  @map("description_key")
+  slug           String   @unique
+  camouflageType String?  @map("camouflage_type")
+  description    String?
+  image          String?
+  sizeMeters     Int?     @map("size_meters")
+  modes          String[]
+  data           Json?
+  isActive       Boolean  @default(true) @map("is_active")
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("arena")
+}
+
+model Achievement {
+  name String @id
+
+  section     String?
+  type        String?
+  title       String
+  description String?
+  condition   String?
+  image       String?
+  options     Json?
+  order       Int?
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("achievement")
+}
+
+model GameDataEntry {
+  gameVersionId Int    @map("game_version_id")
+  kind          String
+  key           String
+
+  data Json
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  gameVersion GameVersion @relation(fields: [gameVersionId], references: [id], onDelete: Cascade)
+
+  @@id([gameVersionId, kind, key])
+  @@index([kind, key])
+  @@map("game_data_entry")
+}

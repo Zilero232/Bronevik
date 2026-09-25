@@ -1,0 +1,1 @@
+export { StatCompareRow } from './StatCompareRow';

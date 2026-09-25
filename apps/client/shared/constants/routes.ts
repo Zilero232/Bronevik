@@ -1,0 +1,41 @@
+import type { PlayerSessionRouteInput } from './routes.types';
+
+export const ROUTES = {
+  home: '/',
+  design: '/design',
+  players: '/players',
+  player: (nickname: string) => `/p/${encodeURIComponent(nickname)}`,
+  playerSession: ({ nickname, sessionId }: PlayerSessionRouteInput) => `/p/${encodeURIComponent(nickname)}/sessions/${sessionId}`,
+  comparePlayers: '/compare/players',
+  me: '/me',
+  login: '/login',
+  tanks: '/tanks',
+  tank: (slug: string) => `/t/${slug}`,
+  compareTanks: '/tanks/compare',
+  build: (slug: string) => `/builds/${slug}`,
+  tree: '/tree',
+  maps: '/maps',
+  map: (id: string) => `/maps/${encodeURIComponent(id)}`,
+  guessTank: '/play/guess-tank',
+  marks: '/marks',
+  top: '/top',
+  clans: '/clans',
+  clan: (tag: string) => `/c/${encodeURIComponent(tag)}`,
+  tools: '/tools',
+  streamers: '/streamers',
+  streamer: (slug: string) => `/s/${encodeURIComponent(slug)}`,
+  overlay: (publicId: string) => `/overlay/${encodeURIComponent(publicId)}`,
+  developers: '/developers',
+  plus: '/plus',
+  loginTelegram: '/login/telegram',
+  miniApp: '/tg',
+  account: {
+    developer: '/me/developer',
+    billing: '/me/billing',
+    notifications: '/me/notifications',
+    telegram: '/me/telegram',
+    streamer: '/me/streamer'
+  },
+  playerCard: (accountId: number) => `/api/og/player/${accountId}`,
+  serviceWorker: '/serwist/sw.js'
+} as const;

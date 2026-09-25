@@ -1,0 +1,56 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border: 1px solid var(--badge-border, transparent);
+  border-radius: var(--radius-xs);
+  background-color: var(--badge-bg);
+  color: var(--badge-fg);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  gap: 5px;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.neutral {
+  --badge-bg: var(--color-surface-hover);
+  --badge-fg: var(--color-text-muted);
+  --badge-border: var(--color-border);
+}
+
+.accent {
+  --badge-bg: var(--color-accent-soft);
+  --badge-fg: var(--color-accent);
+  --badge-border: color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+.steel {
+  --badge-bg: var(--color-steel-soft);
+  --badge-fg: var(--color-steel);
+  --badge-border: color-mix(in srgb, var(--color-steel) 30%, transparent);
+}
+
+.success {
+  --badge-bg: color-mix(in srgb, var(--color-success) 12%, transparent);
+  --badge-fg: var(--color-success);
+}
+
+.warning {
+  --badge-bg: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  --badge-fg: var(--color-warning);
+}
+
+.danger {
+  --badge-bg: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  --badge-fg: var(--color-danger);
+}
+
+.solid {
+  --badge-bg: var(--color-accent);
+  --badge-fg: var(--color-accent-contrast);
+  --badge-border: transparent;
+}

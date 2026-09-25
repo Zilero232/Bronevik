@@ -1,0 +1,28 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+
+  padding: var(--space-4);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
+.title {
+  @include hud-label;
+
+  color: var(--color-text);
+}
+
+.field {
+  @include stack(6px);
+}
+
+.label {
+  @include hud-label;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--text-xs);
+}

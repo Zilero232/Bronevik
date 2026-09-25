@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.big {
+  @include display(var(--text-lg));
+
+  color: var(--color-accent);
+}
+
+.inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}

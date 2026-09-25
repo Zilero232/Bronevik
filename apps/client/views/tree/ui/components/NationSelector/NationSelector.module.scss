@@ -1,0 +1,65 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include hide-scrollbar;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+
+  @include below(xl) {
+    flex-wrap: nowrap;
+    margin-inline: calc(var(--space-4) * -1);
+    overflow-x: auto;
+    padding-inline: var(--space-4);
+  }
+}
+
+.chip {
+  @include reset-button;
+  @include nav-label;
+
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  gap: var(--space-2);
+  isolation: isolate;
+  scroll-snap-align: start;
+  transition:
+    border-color var(--duration-base) ease,
+    color var(--duration-base) ease;
+
+  @include chamfer-path(8px);
+
+  &:hover {
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[data-active='true'] {
+    border-color: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+}
+
+.glow {
+  position: absolute;
+  z-index: -1;
+  background: linear-gradient(135deg, var(--color-accent-hot), var(--color-accent) 60%, var(--color-accent-deep));
+  inset: 0;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.label {
+  font-size: var(--text-xs);
+}

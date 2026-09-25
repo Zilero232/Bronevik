@@ -1,0 +1,56 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  list-style: none;
+}
+
+.tip {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--tip) 35%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tip) 10%, transparent), transparent 60%), var(--color-surface-sunken);
+  gap: var(--space-3);
+
+  --tip: var(--color-warning);
+
+  &[data-code='no_weak_spots'] {
+    --tip: var(--color-success);
+  }
+
+  &[data-code='not_enough_battles'] {
+    --tip: var(--color-steel);
+  }
+
+  &[data-code='low_damage_tank'] {
+    --tip: var(--color-danger);
+  }
+}
+
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  background-color: color-mix(in srgb, var(--tip) 16%, transparent);
+  color: var(--tip);
+}
+
+.text {
+  @include stack(var(--space-1));
+}
+
+.title {
+  font-size: var(--text-sm);
+}
+
+.body {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

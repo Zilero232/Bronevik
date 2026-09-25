@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xmlns:xmlref>http://bwt/xmlref</xmlns:xmlref>
+	<shared>
+		<IS-1>
+			<id>4</id>
+		</IS-1>
+		<IS-2M>
+			<id>5</id>
+		</IS-2M>
+	</shared>
+</root>

@@ -1,0 +1,1 @@
+export { computeInsights } from './insights';

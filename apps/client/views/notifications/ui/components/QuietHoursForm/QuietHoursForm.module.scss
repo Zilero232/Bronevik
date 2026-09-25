@@ -1,0 +1,29 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-4));
+
+  align-items: stretch;
+
+  > button {
+    align-self: flex-end;
+  }
+}
+
+.fields {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-xs);
+}

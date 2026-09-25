@@ -1,0 +1,1 @@
+export { ClanSearch } from './ClanSearch';

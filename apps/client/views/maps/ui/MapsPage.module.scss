@@ -1,0 +1,11 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  padding-bottom: var(--space-11);
+}
+
+.body {
+  @include shell;
+  @include stack(var(--space-7));
+}

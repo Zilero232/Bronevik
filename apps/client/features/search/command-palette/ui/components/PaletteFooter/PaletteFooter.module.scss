@@ -1,0 +1,28 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+  gap: var(--space-4);
+}
+
+.hint {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+  gap: 4px;
+}
+
+.brand {
+  @include hud-label;
+
+  margin-left: auto;
+
+  @include below(sm) {
+    display: none;
+  }
+}

@@ -1,0 +1,21 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric;
+
+  position: relative;
+  display: inline-block;
+  font-size: 1.9em;
+  font-stretch: var(--stretch-condensed);
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.flash {
+  position: absolute;
+  border-radius: var(--radius-sm);
+  background: radial-gradient(closest-side, var(--color-accent), transparent);
+  inset: -0.2em -0.4em;
+  pointer-events: none;
+}

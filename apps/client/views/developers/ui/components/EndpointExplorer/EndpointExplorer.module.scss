@@ -1,0 +1,9 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+}
+
+.skeleton {
+  @include stack(var(--space-2));
+}

@@ -1,0 +1,5 @@
+@use '@/shared/styles/mixins' as *;
+
+.content[class] {
+  max-width: 560px;
+}

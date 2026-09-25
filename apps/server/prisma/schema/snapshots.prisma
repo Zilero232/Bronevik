@@ -1,0 +1,160 @@
+enum StatsMode {
+  all
+  random
+  clan
+  company
+  team
+  regularTeam        @map("regular_team")
+  strongholdSkirmish @map("stronghold_skirmish")
+  strongholdDefense  @map("stronghold_defense")
+  globalmap
+  epic
+  ranked
+  fallout
+
+  @@map("stats_mode")
+}
+
+enum SkillCohort {
+  beginner
+  average
+  good
+  elite
+
+  @@map("skill_cohort")
+}
+
+model AccountSnapshot {
+  accountId  BigInt    @map("account_id")
+  mode       StatsMode
+  capturedAt DateTime  @map("captured_at") @db.Timestamptz(3)
+
+  battles Int
+  wins    Int
+  losses  Int
+  draws   Int
+
+  damageDealt    BigInt @map("damage_dealt")
+  damageReceived BigInt @map("damage_received")
+  frags          Int
+  spotted        Int
+  xp             BigInt
+  battleAvgXp    Int    @map("battle_avg_xp")
+  survived       Int    @map("survived_battles")
+
+  hits                       Int
+  shots                      Int
+  piercings                  Int
+  piercingsReceived          Int  @map("piercings_received")
+  explosionHits              Int  @map("explosion_hits")
+  directHitsReceived         Int  @map("direct_hits_received")
+  noDamageDirectHitsReceived Int  @map("no_damage_direct_hits_received")
+  explosionHitsReceived      Int? @map("explosion_hits_received")
+
+  capturePoints        Int @map("capture_points")
+  droppedCapturePoints Int @map("dropped_capture_points")
+
+  avgDamageBlocked       Float  @map("avg_damage_blocked")
+  avgDamageAssisted      Float? @map("avg_damage_assisted")
+  avgDamageAssistedRadio Float? @map("avg_damage_assisted_radio")
+  avgDamageAssistedTrack Float? @map("avg_damage_assisted_track")
+  tankingFactor          Float? @map("tanking_factor")
+
+  stunAssistedDamage BigInt @map("stun_assisted_damage")
+  stunNumber         Int    @map("stun_number")
+
+  maxDamage       Int? @map("max_damage")
+  maxDamageTankId Int? @map("max_damage_tank_id")
+  maxFrags        Int? @map("max_frags")
+  maxFragsTankId  Int? @map("max_frags_tank_id")
+  maxXp           Int? @map("max_xp")
+  maxXpTankId     Int? @map("max_xp_tank_id")
+
+  globalRating Int? @map("global_rating")
+
+  @@id([accountId, mode, capturedAt])
+  @@map("account_snapshot")
+}
+
+model TankSnapshot {
+  accountId  BigInt    @map("account_id")
+  tankId     Int       @map("tank_id")
+  mode       StatsMode
+  capturedAt DateTime  @map("captured_at") @db.Timestamptz(3)
+
+  battles Int
+  wins    Int
+  losses  Int
+  draws   Int
+
+  damageDealt    Int @map("damage_dealt")
+  damageReceived Int @map("damage_received")
+  frags          Int
+  spotted        Int
+  xp             Int
+  battleAvgXp    Int @map("battle_avg_xp")
+  survived       Int @map("survived_battles")
+
+  hits                       Int
+  shots                      Int
+  piercings                  Int
+  piercingsReceived          Int @map("piercings_received")
+  explosionHits              Int @map("explosion_hits")
+  directHitsReceived         Int @map("direct_hits_received")
+  noDamageDirectHitsReceived Int @map("no_damage_direct_hits_received")
+
+  capturePoints        Int @map("capture_points")
+  droppedCapturePoints Int @map("dropped_capture_points")
+
+  avgDamageBlocked Float  @map("avg_damage_blocked")
+  tankingFactor    Float? @map("tanking_factor")
+
+  stunAssistedDamage Int @map("stun_assisted_damage")
+  stunNumber         Int @map("stun_number")
+
+  markOfMastery Int  @map("mark_of_mastery") @db.SmallInt
+  marksOnGun    Int? @map("marks_on_gun") @db.SmallInt
+  maxFrags      Int? @map("max_frags")
+  maxXp         Int? @map("max_xp")
+
+  @@id([accountId, tankId, mode, capturedAt])
+  @@index([tankId, capturedAt(sort: Desc)])
+  @@map("tank_snapshot")
+}
+
+model TankBattleDelta {
+  accountId  BigInt      @map("account_id")
+  tankId     Int         @map("tank_id")
+  mode       StatsMode
+  capturedAt DateTime    @map("captured_at") @db.Timestamptz(3)
+  cohort     SkillCohort
+
+  accountWinRate Float @map("account_win_rate")
+  tier           Int?  @db.SmallInt
+
+  battles Int
+  wins    Int
+  losses  Int
+  draws   Int
+
+  damageDealt          Int @map("damage_dealt")
+  damageReceived       Int @map("damage_received")
+  damageBlocked        Int @map("damage_blocked")
+  stunAssistedDamage   Int @map("stun_assisted_damage")
+  frags                Int
+  spotted              Int
+  xp                   Int
+  survived             Int @map("survived_battles")
+  hits                 Int
+  shots                Int
+  piercings            Int
+  capturePoints        Int @map("capture_points")
+  droppedCapturePoints Int @map("dropped_capture_points")
+
+  previousCapturedAt DateTime? @map("previous_captured_at") @db.Timestamptz(3)
+
+  @@id([accountId, tankId, mode, capturedAt])
+  @@index([capturedAt(sort: Desc)])
+  @@index([tankId, capturedAt(sort: Desc)])
+  @@map("tank_battle_delta")
+}

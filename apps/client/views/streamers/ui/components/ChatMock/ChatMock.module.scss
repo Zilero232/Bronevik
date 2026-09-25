@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+
+  padding: var(--space-3);
+  margin: 0;
+  background: var(--color-surface-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  list-style: none;
+}
+
+.pair {
+  @include stack(2px);
+}
+
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  color: var(--color-text-muted);
+  gap: var(--space-2);
+
+  &[data-bot] {
+    padding-left: var(--space-3);
+    border-left: 2px solid var(--color-accent);
+    color: var(--color-text);
+  }
+}
+
+.viewer {
+  color: var(--color-steel);
+}
+
+.command {
+  color: var(--color-text);
+}
+
+.bot {
+  color: var(--color-accent);
+  font-weight: 600;
+}

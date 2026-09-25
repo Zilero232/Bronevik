@@ -1,0 +1,57 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-lg));
+
+  overflow: hidden;
+  box-shadow: var(--elevation-2);
+}
+
+.grid {
+  position: absolute;
+  z-index: 0;
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+  inset: 0;
+  mask-image: radial-gradient(ellipse 60% 90% at 85% 30%, #000 20%, transparent 75%);
+  pointer-events: none;
+}
+
+.body {
+  position: relative;
+  display: grid;
+  align-items: center;
+  padding: var(--space-8) var(--space-8) var(--space-6);
+  gap: var(--space-7);
+  grid-template-columns: minmax(0, 1fr) auto;
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @include below(md) {
+    padding: var(--space-5) var(--space-4) var(--space-4);
+  }
+}
+
+.left {
+  @include stack(var(--space-5));
+
+  min-width: 0;
+}
+
+.foot {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-8);
+  border-top: 1px solid var(--color-border);
+  background-color: color-mix(in srgb, var(--color-surface-sunken) 70%, transparent);
+  gap: var(--space-3);
+
+  @include below(md) {
+    padding: var(--space-3) var(--space-4);
+  }
+}

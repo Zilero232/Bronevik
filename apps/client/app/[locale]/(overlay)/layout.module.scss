@@ -1,0 +1,14 @@
+:global(html):has(.root),
+:global(body):has(.root) {
+  overflow: hidden;
+  background: transparent;
+}
+
+:global(body):has(.root):after {
+  display: none;
+}
+
+.root {
+  min-height: 100dvh;
+  background: transparent;
+}

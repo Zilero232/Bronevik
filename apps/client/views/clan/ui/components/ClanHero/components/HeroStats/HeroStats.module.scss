@@ -1,0 +1,49 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+
+  position: relative;
+  display: grid;
+  margin-top: var(--space-8);
+  margin-bottom: 0;
+  gap: var(--space-3);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+
+  @include below(3xl) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include below(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tile {
+  @include plate(var(--chamfer-sm));
+  @include stack(var(--space-3));
+
+  justify-content: space-between;
+  padding: var(--space-4);
+}
+
+.label {
+  @include hud-label;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.icon {
+  display: inline-flex;
+  color: var(--clan);
+}
+
+.value {
+  @include numeric;
+
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 700;
+}

@@ -1,0 +1,41 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: end;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--brushed), var(--color-surface);
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.field {
+  @include stack(6px);
+
+  min-width: 0;
+}
+
+.tank {
+  @include stack(6px);
+
+  min-width: 220px;
+  grid-column: span 2;
+
+  @include below(md) {
+    min-width: 0;
+    grid-column: auto;
+  }
+}
+
+.label {
+  @include hud-label;
+}
+
+.picked {
+  height: 40px;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  padding-inline: var(--space-3) var(--space-1);
+}

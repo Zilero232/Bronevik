@@ -1,0 +1,11 @@
+@use '@/shared/styles/mixins' as *;
+
+.roles {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

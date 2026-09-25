@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-10);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
+}
+
+.skeleton {
+  @include stack(var(--space-5));
+}

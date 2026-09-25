@@ -1,0 +1,38 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-4));
+}
+
+.icon {
+  color: var(--color-premium);
+}
+
+.lead {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.steps {
+  @include stack(var(--space-2));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: baseline;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  gap: var(--space-3);
+}
+
+.index {
+  @include stencil;
+
+  min-width: 1.5ch;
+  color: var(--color-premium);
+  font-size: var(--text-lg);
+}

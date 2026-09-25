@@ -1,0 +1,18 @@
+import { getTranslations } from 'next-intl/server';
+import * as rootParams from 'next/root-params';
+
+import { ROUTES } from '@/shared/constants';
+import { resolveLocale } from '@/shared/i18n';
+import { createPageMetadata } from '@/shared/seo';
+import { NotificationsPage } from '@/views/notifications';
+
+export const generateMetadata = async () => {
+  const locale = resolveLocale(await rootParams.locale());
+  const t = await getTranslations({ locale, namespace: 'notifications.meta' });
+
+  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.account.notifications, locale });
+};
+
+const Page = () => <NotificationsPage />;
+
+export default Page;

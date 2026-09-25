@@ -1,0 +1,61 @@
+enum ThresholdSource {
+  bronevik
+  poliroid
+  kttc
+  lesta
+  manual
+
+  @@map("threshold_source")
+}
+
+model MoeThreshold {
+  tankId Int             @map("tank_id")
+  date   DateTime        @db.Date
+  source ThresholdSource
+
+  p65  Int
+  p85  Int
+  p95  Int
+  p100 Int?
+
+  sampleSize Int?     @map("sample_size")
+  capturedAt DateTime @default(now()) @map("captured_at") @db.Timestamptz(3)
+
+  @@id([tankId, source, date])
+  @@index([date])
+  @@map("moe_threshold")
+}
+
+model MasteryThreshold {
+  tankId Int             @map("tank_id")
+  date   DateTime        @db.Date
+  source ThresholdSource
+
+  class3 Int @map("class_3")
+  class2 Int @map("class_2")
+  class1 Int @map("class_1")
+  master Int
+
+  sampleSize Int?     @map("sample_size")
+  capturedAt DateTime @default(now()) @map("captured_at") @db.Timestamptz(3)
+
+  @@id([tankId, source, date])
+  @@index([date])
+  @@map("mastery_threshold")
+}
+
+model MoeProgress {
+  accountId BigInt @map("account_id")
+  tankId    Int    @map("tank_id")
+
+  marks        Int    @db.SmallInt
+  percent      Float
+  movingDamage Float? @map("moving_damage")
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@id([accountId, tankId])
+  @@map("moe_progress")
+}

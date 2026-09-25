@@ -1,0 +1,1 @@
+export { ConditionSentenceText } from './ConditionSentenceText';

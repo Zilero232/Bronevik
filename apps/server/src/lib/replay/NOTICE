@@ -1,0 +1,61 @@
+apps/server/src/lib/replay
+=============================
+
+This library contains material derived from the following third-party work.
+
+--------------------------------------------------------------------------------
+wot-battle-results-parser (crate `wot_replay_parser`)
+https://github.com/rajesh-rahul/wot-battle-results-parser
+Commit 4905191fac7f5782b80bef00c5b462f64efa42af
+--------------------------------------------------------------------------------
+
+Ported to TypeScript (format knowledge, no verbatim code):
+- the replay container layout (magic, JSON block table, 8-byte stream header);
+- the Blowfish key and the ECB + 8-byte XOR chaining used on the packet stream;
+- packet framing (payload size, type, clock) and the packet type numbers for
+  entity create, entity method, position, game version and chat;
+- the Position packet layout (credited there to Monstrofil/replays_unpack);
+- the Vehicle method id table (showShooting / onHealthChanged /
+  showDamageFromShot) for WG clients 0.9.12 - 1.26.1.1 and the argument layouts
+  of those three methods.
+
+Test fixtures copied unchanged from that repository's
+`replay_parser/tests/parser_tests/test_input/`:
+- _tests/fixtures/wg-1.26.0.2-full.wotreplay
+  (was 1-1_26_0_2-14_siegfried_line-EU-full.wotreplay)
+- _tests/fixtures/wg-1.14.1.3-incomplete.wotreplay
+  (was 1-1_14_1_3-44_north_america-EU.wotreplay)
+
+MIT License
+
+Copyright (c) 2022 dacite
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------------------
+Consulted, nothing copied
+--------------------------------------------------------------------------------
+
+- evido/wotreplay-parser (BSD-3-Clause, Copyright (c) 2015 Jan Temmerman):
+  confirmed the 0xFFFFFFFF end-of-stream packet and the 0x07 property packet.
+- uwuny/mtreplay-analyzer (AGPL-3.0): read only, to confirm that Lesta
+  .mtreplay files use the same container, key and block order as WG replays.
+  No code, tables or constants from it are included in this package.
+
+Runtime dependency: egoroof-blowfish (MIT) for the Blowfish cipher.

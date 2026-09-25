@@ -1,0 +1,23 @@
+.hint,
+.error {
+  padding: var(--space-3) var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.error {
+  color: var(--color-danger);
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-5);
+  gap: var(--space-3);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}

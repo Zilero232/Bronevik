@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<Observer>
+		<id>255</id>
+		<userString>#ussr_vehicles:Observer</userString>
+		<description>#ussr_vehicles:Observer_descr</description>
+		<price>0</price>
+		<notInShop>true</notInShop>
+		<tags>observer private secret lightTank improvedVentilation_class1_user unrecoverable</tags>
+		<level>1</level>
+	</Observer>
+	<R01_IS>
+		<id>2</id>
+		<userString>#ussr_vehicles:IS</userString>
+		<description>#ussr_vehicles:IS_descr</description>
+		<price>1424000</price>
+		<tags>heavyTank role_HT_break HD sinai improvedVentilation_class2_user tankRammer_class2_user extraHealthReserve_class2_user antifragmentationLining_medium_user</tags>
+		<level>7</level>
+	</R01_IS>
+	<R54_KV-5>
+		<id>208</id>
+		<userString>#ussr_vehicles:KV-5</userString>
+		<description>#ussr_vehicles:KV-5_descr</description>
+		<shortDescriptionSpecial>#ussr_vehicles:KV-5_short_special</shortDescriptionSpecial>
+		<longDescriptionSpecial>#ussr_vehicles:KV-5_long_special</longDescriptionSpecial>
+		<notInShop>true</notInShop>
+		<price>
+			11000
+			<gold/>
+		</price>
+		<tags>heavyTank role_HT_assault HD heavyTank1 improvedVentilation_class1_user tankRammer_class1_user aimingStabilizer_class1_user extraHealthReserve_class1_user antifragmentationLining_superheavy_user preferential</tags>
+		<level>8</level>
+	</R54_KV-5>
+	<R04_T-34_MapsTraining_Player_MT_1>
+		<id>112</id>
+		<userString>#ussr_vehicles:T-34_MapsTraining_Player_MT_1</userString>
+		<description>#ussr_vehicles:T-34_descr_MapsTraining_Player_MT_1</description>
+		<price>356700</price>
+		<tags>mediumTank HD improvedVentilation_class2_user tankRammer_class2_user extraHealthReserve_class3_user antifragmentationLining_medium_user secret maps_training private t34_disclaimer</tags>
+		<level>5</level>
+		<clone_tags>cloned cloned_localization</clone_tags>
+		<notInShop>True</notInShop>
+	</R04_T-34_MapsTraining_Player_MT_1>
+	<R106_KV85>
+		<id>11</id>
+		<userString>#ussr_vehicles:R106_KV85</userString>
+		<description>#ussr_vehicles:R106_KV85_descr</description>
+		<price>900000</price>
+		<tags>heavyTank role_HT_universal HD collectorVehicle improvedVentilation_class2_user tankRammer_class2_user extraHealthReserve_class2_user antifragmentationLining_medium_user</tags>
+		<level>6</level>
+	</R106_KV85>
+	<R115_IS-3_auto_test>
+		<id>179</id>
+		<userString>#ussr_vehicles:R115_IS-3_auto_test</userString>
+		<description>#ussr_vehicles:R115_IS-3_auto_test_descr</description>
+		<shortUserString>#ussr_vehicles:R115_IS-3_auto_test_short</shortUserString>
+		<price>100</price>
+		<notInShop>true</notInShop>
+		<tags>heavyTank role_HT_break private HD secret sinai unrecoverable improvedVentilation_class1_user tankRammer_class1_user aimingStabilizer_class1_user extraHealthReserve_class1_user antifragmentationLining_heavy_user</tags>
+		<level>8</level>
+	</R115_IS-3_auto_test>
+</root>

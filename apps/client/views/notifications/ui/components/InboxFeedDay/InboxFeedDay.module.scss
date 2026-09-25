@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  gap: var(--space-3);
+  padding-inline: var(--space-2);
+
+  &:after {
+    @include camo-divider;
+
+    flex: 1;
+    order: 1;
+  }
+}
+
+.label {
+  @include display(var(--text-sm));
+
+  color: var(--color-text);
+}
+
+.count {
+  @include hud-label;
+
+  order: 2;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  gap: 2px;
+  list-style: none;
+}

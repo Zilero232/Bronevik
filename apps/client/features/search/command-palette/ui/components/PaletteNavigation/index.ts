@@ -1,0 +1,1 @@
+export { PaletteNavigation } from './PaletteNavigation';

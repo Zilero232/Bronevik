@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xmlns:xmlref>http://bwt/xmlref</xmlns:xmlref>
+	<shared>
+		<_10RK>
+			<id>8</id>
+			<userString>#ussr_vehicles:_10RK</userString>
+			<tags/>
+			<level>7</level>
+			<price>18600</price>
+			<weight>100</weight>
+			<distance>440</distance>
+			<maxHealth>150</maxHealth>
+			<maxRegenHealth>125</maxRegenHealth>
+			<repairCost>
+				1.5
+				<!--BW_String-->
+			</repairCost>
+		</_10RK>
+		<_12RT>
+			<id>9</id>
+			<userString>#ussr_vehicles:_12RT</userString>
+			<tags/>
+			<level>9</level>
+			<price>33600</price>
+			<weight>110</weight>
+			<distance>625</distance>
+			<maxHealth>200</maxHealth>
+			<maxRegenHealth>150</maxRegenHealth>
+			<repairCost>3</repairCost>
+		</_12RT>
+	</shared>
+</root>

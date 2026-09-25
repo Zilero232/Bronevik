@@ -1,0 +1,1 @@
+export { ResearchResults } from './ResearchResults';

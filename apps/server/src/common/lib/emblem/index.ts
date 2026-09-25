@@ -1,0 +1,1 @@
+export { clanEmblem } from './emblem';

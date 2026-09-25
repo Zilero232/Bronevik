@@ -1,0 +1,1 @@
+export { MarksCard } from './MarksCard';

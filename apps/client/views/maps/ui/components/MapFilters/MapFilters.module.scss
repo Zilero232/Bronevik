@@ -1,0 +1,45 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4) var(--space-6);
+}
+
+.search {
+  width: min(100%, 320px);
+
+  @include below(md) {
+    width: 100%;
+  }
+}
+
+.group {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+  max-width: 100%;
+}
+
+.label {
+  @include hud-label;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: var(--space-3);
+
+  @include below(md) {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+}
+
+.count {
+  @include hud-label;
+  @include numeric;
+}

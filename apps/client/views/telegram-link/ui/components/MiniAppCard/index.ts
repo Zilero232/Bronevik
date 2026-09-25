@@ -1,0 +1,1 @@
+export { MiniAppCard } from './MiniAppCard';

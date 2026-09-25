@@ -1,0 +1,110 @@
+@use '@/shared/styles/mixins' as *;
+
+.frame {
+  position: relative;
+  width: 100%;
+}
+
+.svg {
+  display: block;
+  overflow: visible;
+}
+
+.grid :global(line) {
+  stroke: var(--color-border);
+  stroke-dasharray: 2 4;
+}
+
+.axis :global(text) {
+  fill: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.series {
+  @include tone;
+}
+
+.gradient :global(stop) {
+  stop-color: var(--tone);
+}
+
+.line {
+  fill: none;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--tone) 55%, transparent));
+  stroke: var(--tone);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.bar {
+  fill: var(--tone);
+  transform-box: fill-box;
+  transform-origin: bottom;
+
+  &[data-active='true'] {
+    filter: drop-shadow(0 0 8px var(--tone));
+  }
+}
+
+.crosshair {
+  stroke: var(--color-text-muted);
+  stroke-dasharray: 3 3;
+}
+
+.dot {
+  fill: var(--color-bg);
+  stroke: var(--tone);
+  stroke-width: 2;
+}
+
+.hitbox {
+  cursor: crosshair;
+  fill: transparent;
+}
+
+.tooltip {
+  @include popup-surface;
+
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  min-width: 140px;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-3);
+  gap: 4px;
+  pointer-events: none;
+}
+
+.tooltipLabel {
+  @include hud-label;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  font-size: var(--text-xs);
+  gap: 6px;
+
+  @include tone;
+}
+
+.tooltipSwatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  background-color: var(--tone);
+}
+
+.tooltipName {
+  color: var(--color-text-muted);
+}
+
+.tooltipValue {
+  @include numeric;
+
+  margin-left: auto;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}

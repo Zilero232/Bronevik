@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+dist
+generated
+next-env.d.ts
+bun.lock
+apps/server/prisma/migrations
+
+.agents
+.claude
+docs
+CHANGELOG.md
+coverage
+e2e/.results
+playwright-report

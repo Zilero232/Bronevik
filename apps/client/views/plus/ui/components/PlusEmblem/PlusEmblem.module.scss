@@ -1,0 +1,67 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: block;
+  overflow: visible;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 28px var(--color-premium-glow));
+}
+
+.stopLight {
+  stop-color: var(--color-premium-glyph);
+}
+
+.stopMid {
+  stop-color: var(--color-premium);
+}
+
+.stopDeep {
+  stop-color: var(--color-elite);
+}
+
+.faceLight {
+  stop-color: var(--color-surface-hover);
+}
+
+.faceDeep {
+  stop-color: var(--color-bg-deep);
+}
+
+.stem {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+.ribbons path {
+  fill: var(--color-accent-deep);
+  stroke: var(--color-elite);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.medal {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.engrave {
+  fill: none;
+  stroke: var(--color-elite);
+  stroke-dasharray: 1.5 4.5;
+  stroke-linecap: round;
+  stroke-width: 1.5;
+}
+
+.cross {
+  stroke: var(--color-premium-glyph);
+  stroke-linejoin: round;
+  stroke-opacity: 0.6;
+  stroke-width: 1;
+}
+
+.star {
+  stroke: var(--color-bg-deep);
+  stroke-width: 1;
+}

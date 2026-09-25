@@ -1,0 +1,53 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include riveted-plate(var(--chamfer-md));
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-4);
+  gap: var(--space-3);
+
+  &:after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 6px;
+    background: var(--camo) left top / 48px 6px repeat-x;
+    content: '';
+    opacity: 0.8;
+  }
+}
+
+.identity {
+  @include stack(2px);
+
+  min-width: 0;
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.nickname {
+  @include display(var(--text-2xl));
+
+  overflow: hidden;
+  font-stretch: 75%;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.clan {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

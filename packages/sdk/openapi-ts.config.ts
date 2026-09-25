@@ -1,0 +1,12 @@
+import { defineConfig } from '@hey-api/openapi-ts';
+
+export default defineConfig({
+  input: process.env.BRONEVIK_OPENAPI_URL ?? './openapi/v1.json',
+  output: { path: './src/generated', clean: true },
+  parser: {
+    transforms: {
+      schemaName: (name) => name.replace(/^V1/, '').replace(/Dto(?:_(?:Output|Input))?$/, '')
+    }
+  },
+  plugins: ['@hey-api/client-fetch', '@hey-api/typescript', '@hey-api/sdk']
+});

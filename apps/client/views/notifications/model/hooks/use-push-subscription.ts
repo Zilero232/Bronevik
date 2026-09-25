@@ -1,0 +1,78 @@
+'use client';
+
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+
+import { getPushKey, subscribePush, unsubscribePush } from '@/shared/api/notifications';
+import { env } from '@/shared/config';
+import { QUERY_KEYS } from '@/shared/constants';
+
+import { currentPushSubscription, INITIAL_PUSH_BROWSER, inspectPushBrowser, subscribeBrowserPush } from '../../api/push-browser';
+import { resolvePushStatus } from '../../lib/push-status';
+
+export const usePushSubscription = () => {
+  const t = useTranslations('notifications.push');
+  const { data: pushKey } = useQuery({ queryKey: QUERY_KEYS.notifications.pushKey, queryFn: getPushKey, staleTime: Infinity });
+  const [browser, setBrowser] = useState(INITIAL_PUSH_BROWSER);
+
+  useEffect(() => {
+    void inspectPushBrowser().then(setBrowser);
+  }, []);
+
+  const publicKey = pushKey?.publicKey;
+  const isMock = env.NEXT_PUBLIC_USE_MOCKS;
+
+  const subscribe = useMutation({
+    mutationFn: async () => {
+      const permission = await Notification.requestPermission();
+
+      setBrowser((current) => ({ ...current, permission }));
+
+      if (permission !== 'granted' || !publicKey) {
+        return false;
+      }
+
+      if (!isMock) {
+        await subscribePush(await subscribeBrowserPush(publicKey));
+      }
+
+      return true;
+    },
+    onSuccess: (isSubscribed) => {
+      if (!isSubscribed) {
+        toast.info(t('dismissed'));
+
+        return;
+      }
+
+      setBrowser((current) => ({ ...current, isSubscribed }));
+      toast.success(t('subscribedToast'));
+    },
+    onError: () => toast.error(t('failed'))
+  });
+
+  const unsubscribe = useMutation({
+    mutationFn: async () => {
+      const subscription = isMock ? null : await currentPushSubscription();
+
+      if (subscription) {
+        await unsubscribePush({ endpoint: subscription.endpoint });
+        await subscription.unsubscribe();
+      }
+    },
+    onSuccess: () => {
+      setBrowser((current) => ({ ...current, isSubscribed: false }));
+      toast.success(t('unsubscribedToast'));
+    },
+    onError: () => toast.error(t('failed'))
+  });
+
+  return {
+    status: resolvePushStatus({ ...browser, publicKey }),
+    isMock,
+    subscribe,
+    unsubscribe
+  };
+};

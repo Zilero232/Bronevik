@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "rootDir": ".", "lib": ["ES2023", "DOM"] },
+  "include": ["src/**/*.ts", "openapi-ts.config.ts", "vitest.config.ts"]
+}

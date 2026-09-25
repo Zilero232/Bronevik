@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+  grid-column: 1 / -1;
+}
+
+.event {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.empty {
+  padding: var(--space-4);
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+}

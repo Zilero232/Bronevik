@@ -1,0 +1,49 @@
+import type { ReplaySummary as ReplayView } from '@bronevik/schemas';
+
+import { Injectable } from '@nestjs/common';
+
+import type { OwnReplayInput, UpdateVisibilityInput } from '../replays.types';
+
+import { AppNotFoundException } from '../../../common/exceptions';
+import { AppConfigService } from '../../../config';
+import { PrismaService } from '../../../core';
+import { toReplayView } from '../lib';
+import { ReplayStorage } from '../storage';
+
+@Injectable()
+export class ReplayOwnerService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly storage: ReplayStorage,
+    private readonly config: AppConfigService
+  ) {}
+
+  async updateVisibility({ id, userId, visibility }: UpdateVisibilityInput): Promise<ReplayView> {
+    await this.owned({ id, userId });
+
+    const replay = await this.prisma.replay.update({ where: { id }, data: { visibility } });
+
+    return toReplayView({ replay, apiUrl: this.config.get('API_URL') });
+  }
+
+  async remove({ id, userId }: OwnReplayInput): Promise<void> {
+    const replay = await this.owned({ id, userId });
+
+    await this.prisma.replay.delete({ where: { id } });
+    await this.storage.remove(replay.storageKey);
+
+    if (replay.timelineKey) {
+      await this.storage.remove(replay.timelineKey);
+    }
+  }
+
+  private async owned({ id, userId }: OwnReplayInput) {
+    const replay = await this.prisma.replay.findFirst({ where: { id, uploaderUserId: userId }, select: { storageKey: true, timelineKey: true } });
+
+    if (!replay) {
+      throw new AppNotFoundException('NOT_FOUND', `No replay ${id} of yours`);
+    }
+
+    return replay;
+  }
+}

@@ -1,0 +1,1 @@
+export { InboxFeedHeader } from './InboxFeedHeader';

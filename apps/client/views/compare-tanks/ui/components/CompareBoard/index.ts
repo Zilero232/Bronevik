@@ -1,0 +1,1 @@
+export { CompareBoard } from './CompareBoard';

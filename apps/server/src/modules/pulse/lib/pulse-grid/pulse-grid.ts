@@ -1,0 +1,39 @@
+import type { ActivityRow, BestHour, BestHoursInput, Sample } from './pulse-grid.types';
+
+import { PULSE } from '../../config';
+
+export const activityGrid = (rows: readonly ActivityRow[]): number[][] => {
+  const grid = Array.from({ length: PULSE.days }, () => Array.from<number>({ length: PULSE.hours }).fill(0));
+
+  for (const row of rows) {
+    const day = grid[row.dow - 1];
+
+    if (day && row.hour >= 0 && row.hour < PULSE.hours) {
+      day[row.hour] = (day[row.hour] ?? 0) + row.players;
+    }
+  }
+
+  return grid;
+};
+
+export const bestHours = ({ grid, count }: BestHoursInput): BestHour[] => {
+  const totals = Array.from({ length: PULSE.hours }, (_, hour) => grid.reduce((sum, day) => sum + (day[hour] ?? 0), 0));
+  const all = totals.reduce((sum, value) => sum + value, 0);
+
+  if (all === 0) {
+    return [];
+  }
+
+  return totals
+    .map((value, hour) => ({ hour, share: value / all }))
+    .sort((a, b) => b.share - a.share || a.hour - b.hour)
+    .slice(0, count);
+};
+
+export const encodeSample = (sample: Sample): string => `${sample.at.getTime()}:${sample.players}`;
+
+export const decodeSample = (value: string): Sample | null => {
+  const [time, players] = value.split(':').map(Number);
+
+  return Number.isFinite(time) && Number.isFinite(players) ? { at: new Date(time ?? 0), players: players ?? 0 } : null;
+};

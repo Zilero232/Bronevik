@@ -1,0 +1,43 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.title {
+  @include hud-label;
+}
+
+.head {
+  @include hud-label;
+
+  display: grid;
+  font-size: 10px;
+  gap: var(--space-2);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  padding-inline: var(--space-3);
+  text-align: center;
+
+  @include below(sm) {
+    gap: var(--space-1);
+    letter-spacing: 0;
+  }
+}
+
+.rows {
+  @include stack(var(--space-2));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.empty {
+  @include hud-label;
+
+  display: grid;
+  min-height: 56px;
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-dim);
+  place-items: center;
+}

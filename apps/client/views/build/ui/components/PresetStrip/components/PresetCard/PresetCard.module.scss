@@ -1,0 +1,105 @@
+@use '@/shared/styles/mixins' as *;
+@use '../../../../styles/build' as *;
+
+.item {
+  display: flex;
+  min-width: 0;
+}
+
+.root {
+  @include reset-button;
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-3));
+
+  width: 100%;
+  padding: var(--space-4);
+  text-align: left;
+  transition: background-color var(--duration-base) ease;
+
+  &:hover {
+    background-color: var(--color-border-strong);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[data-active='true'] {
+    background-color: var(--side);
+
+    .cta {
+      color: var(--side);
+    }
+  }
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.share {
+  @include numeric;
+
+  display: inline-flex;
+  align-items: baseline;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  gap: var(--space-2);
+}
+
+.label {
+  @include hud-label;
+}
+
+.gear {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.gearItem {
+  @include category;
+
+  padding: 2px var(--space-2);
+  border-left: 2px solid var(--category);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2) var(--space-4);
+}
+
+.stat {
+  @include stack(2px);
+}
+
+.value {
+  @include numeric;
+
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.battles {
+  margin-left: auto;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}
+
+.cta {
+  @include hud-label;
+
+  display: inline-flex;
+  align-items: center;
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--color-border);
+  gap: var(--space-2);
+}

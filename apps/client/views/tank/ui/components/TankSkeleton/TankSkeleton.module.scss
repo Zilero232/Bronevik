@@ -1,0 +1,39 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-9));
+
+  padding-top: var(--space-9);
+}
+
+.hero {
+  display: grid;
+  align-items: end;
+  gap: var(--space-8);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.copy {
+  @include stack(var(--space-4));
+
+  min-width: 0;
+
+  > * {
+    max-width: 100%;
+  }
+}
+
+.specs {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tiles {
+  @include tile-grid;
+}

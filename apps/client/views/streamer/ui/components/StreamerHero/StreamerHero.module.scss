@@ -1,0 +1,72 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+  @include corner-brackets(22px, var(--color-border-strong));
+
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-8) var(--space-7);
+
+  &[data-live='true'] {
+    @include corner-brackets(22px, var(--color-enemy));
+  }
+
+  @include below(md) {
+    padding: var(--space-6) var(--space-4);
+  }
+}
+
+.scanlines {
+  position: absolute;
+  background: repeating-linear-gradient(180deg, var(--grid-line) 0 1px, transparent 1px 4px);
+  inset: 0;
+  mask-image: radial-gradient(ellipse 80% 90% at 30% 40%, #000 30%, transparent 85%);
+  pointer-events: none;
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.names {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.title {
+  @include display(var(--text-4xl));
+
+  font-stretch: 75%;
+  font-weight: 800;
+  line-height: 0.92;
+  overflow-wrap: anywhere;
+}
+
+.slug {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.bio {
+  max-width: 62ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}

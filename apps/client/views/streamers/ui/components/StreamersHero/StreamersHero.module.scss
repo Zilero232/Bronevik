@@ -1,0 +1,87 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--space-10) var(--space-9);
+
+  @include below(xl) {
+    padding-top: var(--space-8);
+  }
+}
+
+.backdrop {
+  position: absolute;
+  background:
+    radial-gradient(circle at 78% 42%, color-mix(in srgb, var(--color-enemy) 14%, transparent), transparent 42%),
+    repeating-linear-gradient(180deg, var(--grid-line) 0 1px, transparent 1px 6px);
+  inset: 0;
+  mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  pointer-events: none;
+}
+
+.inner {
+  @include shell;
+
+  position: relative;
+  display: grid;
+  align-items: center;
+  gap: var(--space-8);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.copy {
+  @include stack(var(--space-5));
+}
+
+.signal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--text-4xl));
+
+  max-width: 13ch;
+  font-stretch: 75%;
+  font-weight: 800;
+  line-height: 0.95;
+}
+
+.hot {
+  background: linear-gradient(95deg, var(--color-accent-hot), var(--color-accent) 45%, var(--color-enemy));
+  background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  max-width: 54ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+
+  @include below(md) {
+    font-size: var(--text-md);
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.monitor {
+  min-width: 0;
+}

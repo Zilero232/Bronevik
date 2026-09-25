@@ -1,0 +1,79 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+}
+
+.layout {
+  display: grid;
+  align-items: start;
+  gap: var(--space-7);
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.steps {
+  @include stack(var(--space-5));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.number {
+  @include stencil;
+
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
+  color: var(--color-accent);
+  font-size: var(--text-lg);
+}
+
+.stepBody {
+  @include stack(var(--space-1));
+}
+
+.stepTitle {
+  @include display(var(--text-lg));
+}
+
+.stepText {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.inline {
+  padding: 1px 6px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+.base {
+  padding-top: var(--space-2);
+}
+
+.tabs {
+  min-width: 0;
+}

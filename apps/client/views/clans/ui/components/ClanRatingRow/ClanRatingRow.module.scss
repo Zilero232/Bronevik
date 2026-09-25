@@ -1,0 +1,133 @@
+@use '@/shared/styles/mixins' as *;
+
+.row {
+  @include plate(var(--chamfer-md));
+
+  display: grid;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  color: var(--color-text);
+  column-gap: var(--space-6);
+  grid-template-columns: 64px minmax(0, 1fr) 132px 96px 96px 20px;
+  text-decoration: none;
+  transition: background var(--duration-base) ease;
+
+  &:after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background: var(--clan);
+    box-shadow: 0 0 18px var(--clan);
+    content: '';
+    transition: width var(--duration-base) var(--ease-out);
+  }
+
+  &:hover {
+    background: var(--clan);
+  }
+
+  &:hover:after {
+    width: 8px;
+  }
+
+  &:hover .chevron {
+    color: var(--clan);
+    transform: translateX(3px);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include below(xl) {
+    grid-template-columns: 48px minmax(0, 1fr) auto 20px;
+
+    [data-optional] {
+      display: none;
+    }
+  }
+
+  @include below(sm) {
+    padding: var(--space-3) var(--space-4);
+    column-gap: var(--space-3);
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+
+    .chevron {
+      display: none;
+    }
+  }
+}
+
+.rank {
+  @include numeric;
+
+  color: var(--color-text-dim);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1;
+
+  [data-podium] > & {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--clan);
+  }
+
+  [data-podium='1'] > & {
+    color: var(--clan);
+    text-shadow: 0 0 22px var(--clan);
+    -webkit-text-stroke: 0;
+  }
+
+  @include below(sm) {
+    font-size: var(--text-xl);
+  }
+}
+
+.identity {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.tag {
+  @include display(var(--text-xl));
+
+  color: var(--clan);
+}
+
+.name {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric {
+  @include stack(var(--space-1));
+
+  align-items: flex-end;
+}
+
+.label {
+  @include hud-label;
+
+  color: var(--color-text-dim);
+}
+
+.number {
+  @include numeric;
+
+  font-size: var(--text-lg);
+}
+
+.dim {
+  color: var(--color-text-dim);
+}
+
+.chevron {
+  color: var(--color-text-dim);
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    color var(--duration-base) ease;
+}

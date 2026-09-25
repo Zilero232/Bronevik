@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins' as *;
+
+.grid {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  list-style: none;
+}
+
+.card {
+  @include plate(var(--chamfer-md), color-mix(in srgb, var(--color-premium) 45%, var(--color-border)), var(--color-surface));
+  @include stack(var(--space-3));
+
+  padding: var(--space-4) var(--space-5);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color var(--duration-base) ease;
+
+  &:hover {
+    background-color: var(--color-premium);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.crown {
+  color: var(--color-premium);
+}
+
+.render {
+  align-self: center;
+}
+
+.more {
+  @include hud-label;
+
+  color: var(--color-premium);
+}

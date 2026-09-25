@@ -1,0 +1,1 @@
+export { GoldBundles } from './GoldBundles';

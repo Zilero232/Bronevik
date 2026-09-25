@@ -1,0 +1,45 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-6));
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.greeting {
+  @include stack(var(--space-1));
+
+  flex: 1;
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--text-2xl));
+
+  font-stretch: 75%;
+}
+
+.grid {
+  display: grid;
+  align-items: start;
+  gap: var(--space-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.wide {
+  grid-column: 1 / -1;
+}

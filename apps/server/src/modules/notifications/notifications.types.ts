@@ -1,0 +1,130 @@
+import type { InboxItem as SharedInboxItem } from '@bronevik/schemas';
+
+import type { NotificationChannel, NotificationEvent } from '../../../generated';
+import type { AppNotification, DeliverPayload, Digest, ParsedNotification } from './contracts';
+import type { MarkBattle, NotificationLocale, RenderedNotification } from './lib';
+
+export type NotifyInput = {
+  userId: string;
+  notification: AppNotification;
+  dedupeKey: string;
+};
+
+export type NotifyManyInput = {
+  userIds: readonly string[];
+  notification: AppNotification;
+  dedupeKey: string;
+};
+
+export type NotifyAccountInput = {
+  accountId: bigint;
+  notification: AppNotification;
+  dedupeKey: string;
+};
+
+export type NotifyTankFollowersInput = {
+  tankId: number;
+  notification: AppNotification;
+  dedupeKey: string;
+};
+
+export type BroadcastInput = {
+  notification: AppNotification;
+  dedupeKey: string;
+};
+
+export type BonusCodeInput = {
+  code: string;
+  description: string | null;
+};
+
+export type TankDiscountInput = {
+  tankId: number;
+  tankName: string;
+  discountPercent: number | null;
+  offerId: string;
+};
+
+export type FollowersOfInput = {
+  kind: 'clan' | 'player' | 'tank';
+  targetId: bigint;
+  event: NotificationEvent;
+};
+
+export type DeliverJob = Omit<DeliverPayload, 'notification'> & {
+  notification: ParsedNotification;
+};
+
+export type DeliverToInput = {
+  userId: string;
+  channel: NotificationChannel;
+  dedupeKey: string;
+  notification: ParsedNotification;
+  rendered: RenderedNotification;
+  telegramId: bigint | null;
+  locale: NotificationLocale;
+};
+
+export type ChannelSendInput = Omit<DeliverToInput, 'dedupeKey' | 'notification'>;
+
+export type WebPushInput = {
+  userId: string;
+  title: string;
+  body: string;
+  url: string;
+};
+
+export type DigestEmailInput = {
+  to: string;
+  locale: NotificationLocale;
+  rendered: RenderedNotification;
+  digest: Digest;
+};
+
+export type DigestEmailProps = {
+  locale: NotificationLocale;
+  title: string;
+  body: string;
+  url: string;
+  cta: string;
+};
+
+export type InboxListInput = {
+  userId: string;
+  limit: number;
+  before?: string;
+};
+
+export type MarkReadInput = {
+  userId: string;
+  ids?: string[];
+};
+
+export type SubscribePushInput = {
+  userId: string;
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+  userAgent: string | null;
+};
+
+export type UnsubscribePushInput = {
+  userId: string;
+  endpoint: string;
+};
+
+type InboxItem = SharedInboxItem;
+
+export type PreviousMarksInput = {
+  battles: MarkBattle[];
+  since: Date;
+};
+
+export type DigestOfInput = {
+  userId: string;
+  since: Date;
+};
+
+export type InboxPage = {
+  items: InboxItem[];
+  unread: number;
+};

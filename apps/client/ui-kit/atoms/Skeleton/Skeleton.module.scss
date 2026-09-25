@@ -1,0 +1,37 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background-color: var(--color-surface-hover);
+
+  &:after {
+    position: absolute;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--color-steel) 10%, transparent) 40%,
+      color-mix(in srgb, var(--color-accent) 55%, transparent) 50%,
+      color-mix(in srgb, var(--color-steel) 10%, transparent) 60%,
+      transparent 100%
+    );
+    content: '';
+    inset: 0;
+
+    @include scanner(1.8s);
+  }
+}
+
+.line {
+  height: 0.9em;
+  border-radius: var(--radius-xs);
+}
+
+.block {
+  border-radius: var(--radius-sm);
+}
+
+.circle {
+  border-radius: var(--radius-full);
+}

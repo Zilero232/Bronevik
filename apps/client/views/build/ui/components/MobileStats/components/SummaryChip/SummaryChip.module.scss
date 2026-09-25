@@ -1,0 +1,30 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.label {
+  @include hud-label;
+
+  font-size: 0.625rem;
+  white-space: nowrap;
+}
+
+.value {
+  @include numeric;
+
+  display: inline-flex;
+  align-items: baseline;
+  font-size: var(--text-md);
+  font-weight: 700;
+  gap: var(--space-1);
+}
+
+.delta {
+  font-size: var(--text-2xs);
+}

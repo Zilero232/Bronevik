@@ -1,0 +1,242 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bronevik.app/contract/mod/ingest.schema.json",
+  "title": "Bronevik mod ingest batch",
+  "description": "Body of POST /mod/ingest. Headers: Content-Type: application/json; X-Bronevik-Device: <device_id>; X-Bronevik-Signature: sha256=<lowercase hex HMAC-SHA256 of the raw request body bytes, key = UTF-8 bytes of the device secret string exactly as returned by /mod/bind>. The mod serialises with sorted keys, no whitespace and ASCII-only escapes, but the server must verify the signature over the raw bytes it received, never over a re-serialisation. Responses: 200 with #/definitions/ingestResponse (partial duplicates are fine), 409 = whole batch already seen (treated as success), 401/403 = unknown device, bad signature or revoked device (the mod pauses until the user rebinds), 400/404/422 = invalid batch (the mod drops it), 413 = too large (the mod halves the batch size), 429/5xx = retry with backoff (Retry-After in seconds is honoured). Only the player's own data is ever sent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "batch_id", "device_id", "account_id", "realm", "mod_version", "client_version", "sent_at", "events"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "batch_id": {
+      "$ref": "#/definitions/id",
+      "description": "Random per HTTP attempt; a retried batch gets a new batch_id, deduplicate by event_id."
+    },
+    "device_id": { "type": "string", "minLength": 1, "maxLength": 64, "description": "Must equal the X-Bronevik-Device header." },
+    "account_id": { "$ref": "#/definitions/accountId", "description": "Must equal the account the device was bound to." },
+    "realm": { "const": "RU" },
+    "mod_version": { "type": "string", "maxLength": 32 },
+    "client_version": { "type": "string", "maxLength": 64 },
+    "sent_at": { "$ref": "#/definitions/unixTime" },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": { "$ref": "#/definitions/event" }
+    }
+  },
+  "definitions": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9:_-]+$" },
+    "accountId": { "type": "integer", "minimum": 1 },
+    "tankId": { "type": "integer", "minimum": 1, "description": "Vehicle compact descriptor (intCD), identical to tank_id in the Lesta API." },
+    "unixTime": { "type": "integer", "minimum": 0, "description": "Seconds since the Unix epoch, client clock." },
+    "count": { "type": "integer", "minimum": 0 },
+    "event": {
+      "oneOf": [
+        { "$ref": "#/definitions/battleResult" },
+        { "$ref": "#/definitions/moeSnapshot" },
+        { "$ref": "#/definitions/moeDistribution" },
+        { "$ref": "#/definitions/queue" }
+      ]
+    },
+    "battleResult": {
+      "type": "object",
+      "description": "The player's own post-battle results, taken only from the personal block of the client's battle results. Idempotent: event_id is battle:<arena_unique_id>.",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "event_id",
+        "occurred_at",
+        "arena_unique_id",
+        "arena_type_id",
+        "map_name",
+        "bonus_type",
+        "gui_type",
+        "arena_created_at",
+        "duration_s",
+        "finish_reason",
+        "winner_team",
+        "team",
+        "result",
+        "vehicle",
+        "stats",
+        "moe",
+        "queue_time_s",
+        "session_id"
+      ],
+      "properties": {
+        "type": { "const": "battle_result" },
+        "event_id": { "type": "string", "pattern": "^battle:[0-9]+$" },
+        "occurred_at": { "$ref": "#/definitions/unixTime" },
+        "arena_unique_id": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "64-bit arena id as a decimal string (exceeds JS safe integer range)."
+        },
+        "arena_type_id": { "$ref": "#/definitions/count", "description": "Low 16 bits = map geometry id, high bits = gameplay type." },
+        "map_name": { "type": ["string", "null"], "maxLength": 64, "description": "Client geometry name, e.g. 05_prohorovka." },
+        "bonus_type": { "$ref": "#/definitions/count", "description": "constants.ARENA_BONUS_TYPE: 1 = random (REGULAR), 22 = ranked, ..." },
+        "gui_type": { "$ref": "#/definitions/count" },
+        "arena_created_at": { "$ref": "#/definitions/unixTime" },
+        "duration_s": { "$ref": "#/definitions/count" },
+        "finish_reason": { "$ref": "#/definitions/count" },
+        "winner_team": { "type": "integer", "minimum": 0, "maximum": 2, "description": "0 = draw." },
+        "team": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "result": { "enum": ["win", "loss", "draw"] },
+        "vehicle": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tank_id", "name", "tier"],
+          "properties": {
+            "tank_id": { "$ref": "#/definitions/tankId" },
+            "name": { "type": ["string", "null"], "maxLength": 128, "description": "Client vehicle name, e.g. ussr:R04_T-34." },
+            "tier": { "type": ["integer", "null"], "minimum": 1, "maximum": 11 }
+          }
+        },
+        "stats": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "damage_dealt",
+            "damage_assisted_radio",
+            "damage_assisted_track",
+            "damage_assisted_stun",
+            "damage_blocked",
+            "spotted",
+            "frags",
+            "damaged",
+            "shots",
+            "direct_hits",
+            "direct_enemy_hits",
+            "piercings",
+            "piercing_enemy_hits",
+            "xp",
+            "original_xp",
+            "credits",
+            "original_credits",
+            "subtotal_credits",
+            "factual_credits",
+            "life_time_s",
+            "is_alive",
+            "death_reason",
+            "is_premium"
+          ],
+          "properties": {
+            "damage_dealt": { "$ref": "#/definitions/count" },
+            "damage_assisted_radio": { "$ref": "#/definitions/count" },
+            "damage_assisted_track": { "$ref": "#/definitions/count" },
+            "damage_assisted_stun": { "$ref": "#/definitions/count" },
+            "damage_blocked": { "$ref": "#/definitions/count" },
+            "spotted": { "$ref": "#/definitions/count" },
+            "frags": { "$ref": "#/definitions/count" },
+            "damaged": { "$ref": "#/definitions/count" },
+            "shots": { "$ref": "#/definitions/count" },
+            "direct_hits": { "$ref": "#/definitions/count" },
+            "direct_enemy_hits": { "$ref": "#/definitions/count" },
+            "piercings": { "$ref": "#/definitions/count" },
+            "piercing_enemy_hits": { "$ref": "#/definitions/count" },
+            "xp": { "$ref": "#/definitions/count" },
+            "original_xp": { "$ref": "#/definitions/count" },
+            "credits": { "type": "integer" },
+            "original_credits": { "type": "integer" },
+            "subtotal_credits": { "type": "integer" },
+            "factual_credits": { "type": "integer" },
+            "life_time_s": { "$ref": "#/definitions/count" },
+            "is_alive": { "type": "boolean" },
+            "death_reason": { "type": "integer", "minimum": -1, "description": "-1 = survived." },
+            "is_premium": { "type": "boolean" }
+          }
+        },
+        "moe": {
+          "description": "Post-battle marks-of-excellence state of this vehicle (tier 5+), null otherwise. damage_rating is percent * 100 (8512 = 85.12%). The (damage_rating, moving_avg_damage) pair is the raw data point for our own RU MoE thresholds.",
+          "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/moeValues" }]
+        },
+        "queue_time_s": { "type": ["number", "null"], "minimum": 0 },
+        "session_id": { "type": ["string", "null"], "maxLength": 64 }
+      }
+    },
+    "moeValues": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["marks_on_gun", "damage_rating", "moving_avg_damage"],
+      "properties": {
+        "marks_on_gun": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "damage_rating": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "moving_avg_damage": { "$ref": "#/definitions/count" }
+      }
+    },
+    "moeSnapshot": {
+      "type": "object",
+      "description": "MoE state read from the hangar dossier of the selected vehicle. Sent only when the values change.",
+      "additionalProperties": false,
+      "required": ["type", "event_id", "occurred_at", "tank_id", "damage_rating", "moving_avg_damage", "marks_on_gun", "battles"],
+      "properties": {
+        "type": { "const": "moe_snapshot" },
+        "event_id": { "$ref": "#/definitions/id" },
+        "occurred_at": { "$ref": "#/definitions/unixTime" },
+        "tank_id": { "$ref": "#/definitions/tankId" },
+        "damage_rating": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "moving_avg_damage": { "$ref": "#/definitions/count" },
+        "marks_on_gun": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "battles": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "moeDistribution": {
+      "type": "object",
+      "description": "Raw answer of the client account command CMD_GET_VEHICLE_DAMAGE_DISTRIBUTION for the selected own vehicle (ext.battleCount, ext.damageBetterThanNPercent). Semantics of the list are not documented by Lesta; store raw and analyse server-side. At most once per vehicle per 24h.",
+      "additionalProperties": false,
+      "required": ["type", "event_id", "occurred_at", "tank_id", "battle_count", "damage_better_than_n_percent"],
+      "properties": {
+        "type": { "const": "moe_distribution" },
+        "event_id": { "$ref": "#/definitions/id" },
+        "occurred_at": { "$ref": "#/definitions/unixTime" },
+        "tank_id": { "$ref": "#/definitions/tankId" },
+        "battle_count": { "$ref": "#/definitions/count" },
+        "damage_better_than_n_percent": { "type": "array", "maxItems": 200, "items": { "type": "integer" } }
+      }
+    },
+    "queue": {
+      "type": "object",
+      "description": "Time the player spent in the matchmaking queue. outcome = arena (battle found) or dequeued (left the queue).",
+      "additionalProperties": false,
+      "required": ["type", "event_id", "occurred_at", "queue_type", "wait_s", "outcome", "tank_id"],
+      "properties": {
+        "type": { "const": "queue" },
+        "event_id": { "$ref": "#/definitions/id" },
+        "occurred_at": { "$ref": "#/definitions/unixTime" },
+        "queue_type": { "$ref": "#/definitions/count", "description": "constants.QUEUE_TYPE." },
+        "wait_s": { "type": "number", "minimum": 0, "maximum": 1800 },
+        "outcome": { "enum": ["arena", "dequeued"] },
+        "tank_id": { "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/tankId" }] }
+      }
+    },
+    "ingestResponse": {
+      "type": "object",
+      "description": "200 response body of POST /mod/ingest. session is optional: when present and session_id matches the mod's current session, the hangar panel shows the server-computed WN8.",
+      "required": ["accepted"],
+      "properties": {
+        "accepted": { "$ref": "#/definitions/count" },
+        "duplicates": { "$ref": "#/definitions/count" },
+        "session": {
+          "type": "object",
+          "required": ["session_id", "wn8"],
+          "properties": {
+            "session_id": { "type": "string" },
+            "wn8": { "type": ["number", "null"] },
+            "battles": { "$ref": "#/definitions/count" }
+          }
+        }
+      }
+    },
+    "errorResponse": {
+      "type": "object",
+      "required": ["error"],
+      "properties": {
+        "error": {
+          "enum": ["bad_signature", "unknown_device", "device_revoked", "account_mismatch", "invalid_payload", "too_large", "rate_limited"]
+        },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

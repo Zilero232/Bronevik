@@ -1,0 +1,10 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
+  gap: var(--space-1);
+}

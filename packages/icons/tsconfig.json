@@ -1,0 +1,12 @@
+{
+  "extends": "@siberiacancode/tsconfig/tsconfig.react.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": false,
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vitest.config.ts"]
+}

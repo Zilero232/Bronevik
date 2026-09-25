@@ -1,0 +1,163 @@
+enum UserRole {
+  user
+  moderator
+  admin
+
+  @@map("user_role")
+}
+
+model User {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  name          String
+  email         String  @unique
+  emailVerified Boolean @default(false) @map("email_verified")
+  image         String?
+
+  role       UserRole  @default(user)
+  banned     Boolean   @default(false)
+  banReason  String?   @map("ban_reason")
+  banExpires DateTime? @map("ban_expires") @db.Timestamptz(3)
+
+  locale   String @default("ru")
+  timezone String @default("Europe/Moscow")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  sessions      Session[]
+  accounts      Account[]
+  lestaAccounts UserLestaAccount[]
+
+  favorites            Favorite[]
+  follows              Follow[]
+  goals                Goal[]
+  notificationSettings NotificationSettings?
+  notifications        Notification[]
+  pushSubscriptions    PushSubscription[]
+  telegramAccount      TelegramAccount?
+  telegramCodes        TelegramLinkCode[]
+  telegramLogins       TelegramWebLogin[]
+
+  modDevices   ModDevice[]
+  modBindCodes ModBindCode[]
+
+  apiKeys          ApiKey[]
+  webhookEndpoints WebhookEndpoint[]
+  developerApps    DeveloperApp[]
+
+  subscriptions    Subscription[]
+  payments         Payment[]
+  promoRedemptions PromoRedemption[]
+  referralsMade    Referral[]        @relation("referrer")
+  referredBy       Referral?         @relation("referred")
+
+  streamerProfile      StreamerProfile?
+  streamerIntegrations StreamerIntegration[]
+  overlays             Overlay[]
+  challenges           Challenge[]
+
+  replays Replay[]
+
+  builds          Build[]
+  buildLikes      BuildLike[]
+  guides          Guide[]
+  guideLikes      GuideLike[]
+  comments        Comment[]
+  platoonPosts    PlatoonPost[]
+  recruitingPosts RecruitingPost[]
+  tacticBoards    TacticBoard[]
+  coachProfile    CoachProfile?
+  coachingOrders  CoachingOrder[]
+  tournaments     Tournament[]
+
+  clanWorkspaces    ClanWorkspace[]
+  recruitCandidates RecruitCandidate[]
+
+  bonusCodeReports BonusCodeReport[]
+  eventProgress    UserEventProgress[]
+
+  auditLogs        AuditLog[]
+  contentReports   ContentReport[]
+  deletionRequests DataDeletionRequest[]
+
+  @@map("user")
+}
+
+model Session {
+  id     String @id @default(dbgenerated("gen_random_uuid()"))
+  userId String @map("user_id")
+  token  String @unique
+
+  expiresAt      DateTime @map("expires_at") @db.Timestamptz(3)
+  ipAddress      String?  @map("ip_address")
+  userAgent      String?  @map("user_agent")
+  impersonatedBy String?  @map("impersonated_by")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id         String @id @default(dbgenerated("gen_random_uuid()"))
+  userId     String @map("user_id")
+  accountId  String @map("account_id")
+  providerId String @map("provider_id")
+
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") @db.Timestamptz(3)
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") @db.Timestamptz(3)
+  scope                 String?
+  password              String?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(3)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model UserLestaAccount {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId    String @map("user_id")
+  accountId BigInt @unique @map("account_id")
+
+  accessToken    String?   @map("access_token")
+  tokenExpiresAt DateTime? @map("token_expires_at") @db.Timestamptz(3)
+  isPrimary      Boolean   @default(false) @map("is_primary")
+
+  linkedAt  DateTime @default(now()) @map("linked_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenExpiresAt])
+  @@map("user_lesta_account")
+}

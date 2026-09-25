@@ -1,0 +1,29 @@
+name: Setup toolchain
+description: Bun and the caches every job in this repo needs.
+
+runs:
+  using: composite
+
+  steps:
+    # packageManager in the root package.json is the single source of the Bun
+    # version, so CI and a local install never disagree.
+    - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      with:
+        bun-version-file: package.json
+
+    - name: Cache bun packages
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        path: ~/.bun/install/cache
+        key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+        restore-keys: bun-${{ runner.os }}-
+
+    # @bronevik/server runs `prisma generate` on postinstall, and prisma.config.ts
+    # reads DIRECT_URL. `generate` never connects, so a placeholder satisfies it
+    # — the same trick the Dockerfiles use.
+    - name: Install dependencies
+      shell: bash
+      env:
+        DATABASE_URL: postgresql://placeholder
+        DIRECT_URL: postgresql://placeholder
+      run: bun install --frozen-lockfile

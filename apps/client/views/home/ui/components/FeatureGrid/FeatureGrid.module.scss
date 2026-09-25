@@ -1,0 +1,75 @@
+@use '@/shared/styles/mixins' as *;
+
+.grid {
+  @include tile-grid;
+}
+
+.wide {
+  grid-column: span 2;
+
+  @include below(sm) {
+    grid-column: auto;
+  }
+}
+
+.card {
+  height: 100%;
+}
+
+.link {
+  display: flex;
+  height: 100%;
+  min-height: 200px;
+  flex-direction: column;
+  padding: var(--space-5);
+  gap: var(--space-2);
+  outline-offset: -4px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.index {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.arrow {
+  color: var(--color-text-dim);
+  transition:
+    color var(--duration-base) ease,
+    transform var(--duration-base) var(--ease-out);
+
+  .link:hover & {
+    color: var(--color-accent);
+    transform: translate(2px, -2px);
+  }
+}
+
+.icon {
+  display: inline-flex;
+  margin: var(--space-3) 0 var(--space-2);
+  color: var(--color-steel);
+  transition:
+    color var(--duration-base) ease,
+    filter var(--duration-base) ease;
+
+  .link:hover & {
+    color: var(--color-accent);
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-accent) 60%, transparent));
+  }
+}
+
+.title {
+  @include display(var(--text-xl));
+}
+
+.text {
+  max-width: 44ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

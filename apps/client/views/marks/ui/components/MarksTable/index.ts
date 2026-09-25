@@ -1,0 +1,1 @@
+export { MarksTable } from './MarksTable';

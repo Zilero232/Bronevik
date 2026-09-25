@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}

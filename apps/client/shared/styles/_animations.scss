@@ -1,0 +1,55 @@
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+@mixin spin($duration: 0.7s) {
+  animation: bronevik-spin $duration linear infinite;
+}
+
+@mixin scanner($duration: 1.6s) {
+  animation: bronevik-scan $duration var(--ease-in-out) infinite;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+@keyframes bronevik-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bronevik-scan {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes bronevik-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bronevik-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

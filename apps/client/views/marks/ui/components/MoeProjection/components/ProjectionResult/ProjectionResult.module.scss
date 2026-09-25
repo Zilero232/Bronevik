@@ -1,0 +1,51 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+
+  @include below(sm) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.mark {
+  flex-shrink: 0;
+  color: var(--color-text);
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-accent) 45%, transparent));
+}
+
+.ban {
+  flex-shrink: 0;
+  color: var(--color-danger);
+}
+
+.copy {
+  @include stack(var(--space-1));
+}
+
+.label {
+  @include hud-label;
+}
+
+.value {
+  @include display(clamp(3rem, 8vw, 5rem));
+
+  color: var(--color-accent);
+  line-height: 0.9;
+  text-shadow: 0 0 32px color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+.headline {
+  @include display(var(--text-xl));
+
+  color: var(--color-danger);
+}
+
+.hint {
+  max-width: 48ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

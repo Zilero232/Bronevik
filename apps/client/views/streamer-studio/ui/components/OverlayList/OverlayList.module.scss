@@ -1,0 +1,61 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.list {
+  @include stack(var(--space-2));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  @include reset-button;
+
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  gap: var(--space-3);
+  text-align: start;
+
+  &:hover {
+    border-color: var(--color-border-strong);
+  }
+
+  &[aria-current='true'] {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    box-shadow: inset 3px 0 0 var(--color-accent);
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+.text {
+  @include stack(2px);
+
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  @include hud-label;
+
+  font-size: var(--text-2xs);
+}

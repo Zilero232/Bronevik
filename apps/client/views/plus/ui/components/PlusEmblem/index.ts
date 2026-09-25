@@ -1,0 +1,1 @@
+export { PlusEmblem } from './PlusEmblem';

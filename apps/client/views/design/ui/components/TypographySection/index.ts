@@ -1,0 +1,1 @@
+export { TypographySection } from './TypographySection';

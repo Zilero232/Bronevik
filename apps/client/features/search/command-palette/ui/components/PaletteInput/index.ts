@@ -1,0 +1,1 @@
+export { PaletteInput } from './PaletteInput';

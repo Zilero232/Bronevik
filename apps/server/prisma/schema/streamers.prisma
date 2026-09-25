@@ -1,0 +1,135 @@
+enum OverlayKind {
+  session
+  wn8
+  moe
+  damage
+  winRate   @map("win_rate")
+  winStreak @map("win_streak")
+  challenge
+  custom
+
+  @@map("overlay_kind")
+}
+
+enum ChallengeStatus {
+  pending
+  active
+  succeeded
+  failed
+  cancelled
+  expired
+  refunded
+
+  @@map("challenge_status")
+}
+
+enum StreamerProvider {
+  donationAlerts @map("donation_alerts")
+  twitch
+  vkPlayLive     @map("vk_play_live")
+  youtube
+
+  @@map("streamer_provider")
+}
+
+model StreamerProfile {
+  userId String @id @map("user_id")
+
+  slug        String  @unique
+  displayName String  @map("display_name")
+  accountId   BigInt? @map("account_id")
+  bio         String?
+  avatar      String?
+  links       Json?
+  schedule    Json?
+
+  isLive        Boolean   @default(false) @map("is_live")
+  liveTankId    Int?      @map("live_tank_id")
+  liveCheckedAt DateTime? @map("live_checked_at") @db.Timestamptz(3)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isLive])
+  @@index([accountId])
+  @@map("streamer_profile")
+}
+
+model StreamerIntegration {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId     String           @map("user_id")
+  provider   StreamerProvider
+  externalId String           @map("external_id")
+
+  accessToken    String?   @map("access_token")
+  refreshToken   String?   @map("refresh_token")
+  tokenExpiresAt DateTime? @map("token_expires_at") @db.Timestamptz(3)
+  scope          String?
+  config         Json?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, externalId])
+  @@unique([userId, provider])
+  @@map("streamer_integration")
+}
+
+model Overlay {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId    String      @map("user_id")
+  accountId BigInt?     @map("account_id")
+  name      String
+  kind      OverlayKind
+  theme     String      @default("steel")
+  config    Json
+  publicKey String      @unique @default(dbgenerated("replace((gen_random_uuid())::text, '-'::text, ''::text)")) @map("public_key")
+  isPro     Boolean     @default(false) @map("is_pro")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("overlay")
+}
+
+model Challenge {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  streamerUserId String          @map("streamer_user_id")
+  accountId      BigInt          @map("account_id")
+  code           String
+  title          String
+  condition      Json
+  amount         Decimal         @db.Decimal(10, 2)
+  currency       String          @default("RUB")
+  status         ChallengeStatus @default(pending)
+
+  donorName          String?           @map("donor_name")
+  donorMessage       String?           @map("donor_message")
+  donationSource     StreamerProvider? @map("donation_source")
+  donationExternalId String?           @map("donation_external_id")
+
+  battleId   String?   @map("battle_id")
+  progress   Json?
+  acceptedAt DateTime? @map("accepted_at") @db.Timestamptz(3)
+  expiresAt  DateTime? @map("expires_at") @db.Timestamptz(3)
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  streamer User @relation(fields: [streamerUserId], references: [id], onDelete: Cascade)
+
+  @@unique([donationSource, donationExternalId])
+  @@unique([streamerUserId, code])
+  @@index([streamerUserId, status])
+  @@index([accountId, status])
+  @@map("challenge")
+}

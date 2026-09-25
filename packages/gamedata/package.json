@@ -1,0 +1,19 @@
+{
+  "name": "@bronevik/gamedata",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pure «Мир танков» loadout calculator: the game-data model (vehicles, modules, equipment, crew, field modifications), the modifier model and calculateLoadout for final vehicle stats.",
+  "license": "UNLICENSED",
+  "author": "Alexandr Artemev",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

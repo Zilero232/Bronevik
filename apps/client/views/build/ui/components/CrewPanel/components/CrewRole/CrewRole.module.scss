@@ -1,0 +1,89 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-stretch: 85%;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.srOnly {
+  @include sr-only;
+}
+
+.pip {
+  width: 10px;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--color-border-strong);
+
+  &[data-on='true'] {
+    background: var(--side);
+    box-shadow: 0 0 8px -1px var(--side);
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  @include reset-button;
+
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-1);
+
+  &:hover:not(:disabled) {
+    border-color: var(--side);
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  &[data-on='true'] {
+    border-color: var(--side);
+    background: var(--side-soft);
+    color: var(--color-text);
+  }
+}

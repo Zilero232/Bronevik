@@ -1,0 +1,52 @@
+@use '@/shared/styles/mixins' as *;
+
+.row {
+  display: grid;
+  align-items: baseline;
+  padding-bottom: var(--space-4);
+  border-bottom: 1px dashed var(--color-border);
+  gap: var(--space-4);
+  grid-template-columns: 160px minmax(0, 1fr);
+
+  @include below(xl) {
+    gap: var(--space-1);
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.meta {
+  @include hud-label;
+}
+
+.display {
+  @include display(var(--text-4xl));
+
+  font-stretch: 75%;
+  font-weight: 800;
+}
+
+.heading {
+  @include display(var(--text-2xl));
+}
+
+.body {
+  max-width: 64ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-md);
+}
+
+.mono {
+  @include hud-label;
+
+  color: var(--color-steel);
+  font-size: var(--text-sm);
+}
+
+.numbers {
+  @include numeric;
+
+  color: var(--color-accent);
+  font-size: var(--text-3xl);
+  font-stretch: 80%;
+  font-weight: 700;
+}

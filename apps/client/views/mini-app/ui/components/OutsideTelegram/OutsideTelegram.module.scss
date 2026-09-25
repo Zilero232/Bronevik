@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include riveted-plate(var(--chamfer-lg));
+  @include stack(var(--space-4));
+
+  align-items: center;
+  padding: var(--space-9) var(--space-5);
+  margin-top: var(--space-6);
+  text-align: center;
+}
+
+.logo {
+  display: inline-flex;
+  color: var(--color-accent);
+  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--color-accent) 40%, transparent));
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--text-2xl));
+
+  font-stretch: 72%;
+  font-weight: 800;
+}
+
+.description {
+  max-width: 36ch;
+  color: var(--color-text-muted);
+}
+
+.actions {
+  @include stack(var(--space-2));
+
+  width: 100%;
+  margin-top: var(--space-2);
+}

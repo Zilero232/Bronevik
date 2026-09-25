@@ -1,0 +1,135 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  overflow: auto hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--brushed), var(--color-surface);
+
+  &[data-virtual='true'] {
+    overflow: auto;
+    max-height: calc(100dvh - var(--header-height) - var(--space-7));
+    overscroll-behavior: contain;
+  }
+
+  &[data-virtual='false'] {
+    @include from(3xl) {
+      overflow: clip;
+    }
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-sm);
+}
+
+.caption {
+  @include hud-label;
+
+  padding: var(--space-3) var(--space-4);
+  caption-side: top;
+  text-align: left;
+}
+
+.head {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+
+  .root[data-virtual='false'] & {
+    @include from(3xl) {
+      top: var(--header-height);
+    }
+  }
+}
+
+.th {
+  @include hud-label;
+
+  height: 40px;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--color-border-strong);
+  background: var(--brushed), var(--color-surface-raised);
+  text-align: left;
+  white-space: nowrap;
+
+  &[data-align='end'] {
+    text-align: right;
+  }
+
+  &[data-align='center'] {
+    text-align: center;
+  }
+}
+
+.sort {
+  @include reset-button;
+
+  display: inline-flex;
+  align-items: center;
+  font: inherit;
+  gap: 4px;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  transition: color var(--duration-base) ease;
+
+  &:hover,
+  &[data-sorted='true'] {
+    color: var(--color-accent);
+  }
+
+  .th[data-align='end'] & {
+    flex-direction: row-reverse;
+  }
+}
+
+.sortIdle {
+  opacity: 0.4;
+}
+
+.row {
+  transition: background-color var(--duration-fast) ease;
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  &[data-clickable='true'] {
+    cursor: pointer;
+  }
+
+  &:hover .td:first-child {
+    box-shadow: inset 2px 0 0 var(--color-accent);
+  }
+}
+
+.td {
+  height: 48px;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+
+  &[data-align='end'] {
+    text-align: right;
+  }
+
+  &[data-align='center'] {
+    text-align: center;
+  }
+
+  &[data-numeric='true'] {
+    @include numeric;
+
+    font-size: var(--text-md);
+    font-stretch: 85%;
+    font-weight: 600;
+  }
+
+  tr:last-child & {
+    border-bottom: none;
+  }
+}

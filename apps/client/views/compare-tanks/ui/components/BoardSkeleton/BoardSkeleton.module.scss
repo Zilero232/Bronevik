@@ -1,0 +1,18 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  overflow: hidden;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  gap: var(--space-4);
+}
+
+.column {
+  @include stack(var(--space-5));
+
+  min-width: 150px;
+  flex: 1 0 150px;
+}

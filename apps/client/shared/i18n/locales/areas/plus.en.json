@@ -1,0 +1,234 @@
+{
+  "plus": {
+    "meta": {
+      "title": "Bronevik Plus — subscription",
+      "description": "Full battle history, advanced charts, Pro stream overlays, priority session polling, export and a clan panel. No ads, payments via YooKassa."
+    },
+    "hero": {
+      "eyebrow": "Subscription · premium for your stats",
+      "title": "Bronevik <gold>Plus</gold>",
+      "lead": "{count, plural, one {# upgrade} other {# upgrades}} for players who pick apart every battle: full history, advanced charts, Pro stream overlays and more. No ads — not now, not ever.",
+      "perks": {
+        "noAds": "No ads",
+        "cancel": "Cancel any time",
+        "yookassa": "Paid via YooKassa"
+      },
+      "jump": "See plans ↓"
+    },
+    "benefits": {
+      "eyebrow": "What's inside",
+      "title": "Premium loadout",
+      "description": "Everything Plus unlocks on top of free Bronevik.",
+      "items": {
+        "history": {
+          "title": "Full history",
+          "text": "Every battle and session since tracking began, not just the last few weeks. Scroll all the way back to your first random."
+        },
+        "charts": {
+          "title": "Advanced charts",
+          "text": "WN8, win rate and damage over any period, broken down by tank and map, with period-to-period comparison."
+        },
+        "overlays": {
+          "title": "Pro overlays",
+          "text": "More themes and stream widgets: marks, session and challenges, fine-tuned for your scene."
+        },
+        "polling": {
+          "title": "Priority session polling",
+          "text": "Your stats refresh more often — a fresh session shows up almost right after the battle."
+        },
+        "export": {
+          "title": "Export",
+          "text": "Battles, sessions and marks as CSV — for your own spreadsheets, reviews and reports."
+        },
+        "clan": {
+          "title": "Clan panel",
+          "text": "A roster overview: activity, ratings and member progress on a single screen."
+        }
+      }
+    },
+    "checkout": {
+      "eyebrow": "Plan",
+      "title": "Pick a term",
+      "description": "The yearly plan is noticeably cheaper — the saving is counted honestly against paying month by month.",
+      "planLabel": "Subscription term",
+      "plans": {
+        "monthly": "Month",
+        "yearly": "Year"
+      },
+      "savingShort": "−{percent}%",
+      "failed": "Couldn't open the payment page. Please try again.",
+      "price": {
+        "perMonth": "per month",
+        "total": "Due now",
+        "totalValue": "{price} for {months, plural, one {# month} other {# months}}",
+        "saving": "You save",
+        "savingValue": "{amount} · −{percent}%"
+      },
+      "promo": {
+        "label": "Promo code",
+        "placeholder": "If you have one",
+        "hint": "The discount is applied on the payment page.",
+        "rejected": "That promo code didn't work: check the spelling or its expiry date.",
+        "invalid": "Between {min} and {max} characters."
+      },
+      "action": {
+        "signIn": "Sign in to subscribe",
+        "manage": "Manage subscription",
+        "buy": "Get Plus",
+        "redirecting": "Opening payment…",
+        "note": "Paid via YooKassa. Turn auto-renew off in your account any time.",
+        "notePlus": "Plus is already active — manage the term, card and auto-renew in your account."
+      }
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "FAQ",
+      "items": {
+        "payment": {
+          "question": "How does payment work?",
+          "answer": "YooKassa takes the payment — by card or any other method it offers. Only YooKassa sees your card details: Bronevik doesn't store them and only receives a masked card number for auto-renew."
+        },
+        "cancel": {
+          "question": "Can I cancel?",
+          "answer": "Yes, any time: turn auto-renew off in your account with one click. Plus keeps working until the end of the paid period, then your account returns to the free tier."
+        },
+        "noAds": {
+          "question": "Will there be ads?",
+          "answer": "No — with or without a subscription. Lesta's terms forbid ads in apps with paid features, and we like it better that way too. The project runs on subscriptions and donations."
+        },
+        "data": {
+          "question": "Where does the data come from?",
+          "answer": "Stats come from Lesta's public API and from our mod if you have it installed. Bronevik is a fan project not affiliated with Lesta. We never ask for your game password: sign-in is via Lesta ID only."
+        },
+        "promo": {
+          "question": "How do I use a promo code?",
+          "answer": "Enter a discount code at checkout on this page. A free-days code is redeemed in your account under «Subscription» — the days are added to your current period."
+        }
+      }
+    }
+  },
+  "billing": {
+    "meta": {
+      "title": "Subscription",
+      "description": "Bronevik Plus status, auto-renew, promo codes, referral link and payment history."
+    },
+    "heading": {
+      "eyebrow": "Account · subscription",
+      "title": "Bronevik <gold>Plus</gold>",
+      "description": "Subscription status, auto-renew, promo codes and every payment — all in one place."
+    },
+    "status": {
+      "eyebrow": "Subscription status",
+      "titlePlus": "Plus is active",
+      "titleFree": "Free tier",
+      "states": {
+        "trialing": "Trial",
+        "active": "Active",
+        "pastDue": "Payment failed",
+        "canceled": "Canceled",
+        "expired": "Expired",
+        "none": "No subscription"
+      },
+      "plan": "Plan",
+      "plans": {
+        "monthly": "Month",
+        "halfYearly": "Six months",
+        "yearly": "Year"
+      },
+      "noPlan": "None",
+      "periodEnd": {
+        "renews": "Next charge",
+        "accessUntil": "Access until",
+        "ended": "Ended on"
+      },
+      "card": "Card",
+      "noCard": "Not linked",
+      "autoRenew": {
+        "label": "Auto-renew",
+        "on": "On",
+        "off": "Off",
+        "unavailable": "Unavailable"
+      },
+      "cta": {
+        "changePlan": "Change plan",
+        "renew": "Renew Plus",
+        "upgrade": "Get Plus"
+      },
+      "error": "Couldn't load your subscription",
+      "errorHint": "Refresh the page in a moment."
+    },
+    "autoRenew": {
+      "dismiss": "Not now",
+      "cancel": {
+        "trigger": "Turn off auto-renew",
+        "title": "Turn off auto-renew?",
+        "description": "No more charges. Plus stays on until the end of the paid period and then switches off.",
+        "confirm": "Turn off"
+      },
+      "resume": {
+        "trigger": "Turn on auto-renew",
+        "title": "Turn on auto-renew?",
+        "description": "At the end of the period the subscription renews on its own — from your linked card, on your current plan.",
+        "confirm": "Turn on"
+      }
+    },
+    "toast": {
+      "resumed": "Auto-renew is on",
+      "canceled": "Auto-renew is off",
+      "failed": "That didn't work. Please try again.",
+      "promoRedeemed": "Promo code redeemed — the days are added to your subscription",
+      "checkoutReturn": "Thanks for the support! Checking the payment — your status updates in a few seconds."
+    },
+    "promo": {
+      "eyebrow": "Promo code",
+      "title": "Free days",
+      "description": "Got a code for Plus days? Redeem it here — the days are added to your current period.",
+      "label": "Code",
+      "placeholder": "e.g. TANKER30",
+      "submit": "Redeem",
+      "hint": "Discount codes are entered at checkout on the Plus page.",
+      "rejected": "This code wasn't found, has been used already or has expired.",
+      "invalid": "Between {min} and {max} characters."
+    },
+    "referral": {
+      "eyebrow": "Referral programme",
+      "title": "Build your platoon",
+      "description": "Share your link: when a friend gets Plus for the first time, you get {days, plural, one {# day} other {# days}} of subscription.",
+      "linkLabel": "Your link",
+      "steps": {
+        "share": "Send the link to a friend or drop it in your clan chat.",
+        "subscribe": "Your friend signs in to Bronevik and gets Plus for the first time.",
+        "reward": "{days, plural, one {# day} other {# days}} of Plus are added to your account automatically."
+      }
+    },
+    "history": {
+      "eyebrow": "Payments",
+      "title": "Payment history",
+      "caption": "Subscription payment history",
+      "empty": "No payments yet",
+      "emptyHint": "Plus payments and renewals will show up here.",
+      "columns": {
+        "date": "Date",
+        "amount": "Amount",
+        "plan": "Plan",
+        "status": "Status",
+        "charge": "Charge",
+        "promo": "Promo code"
+      },
+      "plans": {
+        "monthly": "Month",
+        "halfYearly": "Six months",
+        "yearly": "Year"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "waitingForCapture": "Confirming",
+        "succeeded": "Paid",
+        "canceled": "Canceled",
+        "refunded": "Refunded"
+      },
+      "auto": "Automatic",
+      "manual": "Manual"
+    }
+  }
+}

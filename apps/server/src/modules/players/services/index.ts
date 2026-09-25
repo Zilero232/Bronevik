@@ -1,0 +1,9 @@
+export { PlayerHistoryService } from './player-history.service';
+export { PlayerInsightsService } from './player-insights.service';
+export { PlayerMarksService } from './player-marks.service';
+export { PlayerPlaytimeService } from './player-playtime.service';
+export { PlayerResolverService } from './player-resolver.service';
+export { PlayerSessionsService } from './player-sessions.service';
+export { PlayerSummaryService } from './player-summary.service';
+export { PlayerTanksService } from './player-tanks.service';
+export { PlayerViewsService } from './player-views.service';

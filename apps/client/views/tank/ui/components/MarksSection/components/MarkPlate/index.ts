@@ -1,0 +1,1 @@
+export { MarkPlate } from './MarkPlate';

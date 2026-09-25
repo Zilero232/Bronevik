@@ -1,0 +1,102 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-3));
+
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-6) var(--space-5);
+
+  &[data-tool='challenges'] {
+    @include riveted-plate(var(--chamfer-lg), color-mix(in srgb, var(--color-accent) 55%, var(--color-border)));
+
+    padding: var(--space-8) var(--space-7);
+    grid-row: span 2;
+
+    @include below(md) {
+      padding: var(--space-6) var(--space-5);
+    }
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.icon {
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--text-xl));
+
+  [data-tool='challenges'] > & {
+    font-size: var(--text-3xl);
+  }
+}
+
+.text {
+  color: var(--color-text-muted);
+}
+
+.stamp {
+  @include stencil;
+
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--color-ally);
+  margin-top: auto;
+  color: var(--color-ally);
+  font-size: var(--text-xl);
+  rotate: -6deg;
+  text-transform: uppercase;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.chip {
+  @include hud-label;
+
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+
+  &[data-theme-chip='tracer'] {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 12px -4px var(--color-accent);
+  }
+
+  &[data-theme-chip='minimal'] {
+    border-color: transparent;
+  }
+
+  &[data-theme-chip='transparent'] {
+    border-style: dashed;
+  }
+}
+
+.url {
+  overflow: hidden;
+  padding: var(--space-3);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slug {
+  color: var(--color-accent);
+}

@@ -1,0 +1,20 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: start;
+  gap: var(--space-6);
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.listSkeleton {
+  width: 100%;
+}
+
+.detail {
+  min-width: 0;
+}

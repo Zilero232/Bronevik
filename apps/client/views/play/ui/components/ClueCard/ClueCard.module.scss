@@ -1,0 +1,40 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  min-height: 48px;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+  gap: var(--space-3);
+  grid-template-columns: 7.5em minmax(0, 1fr);
+  transition: border-color var(--duration-base) ease;
+
+  &[data-revealed='true'] {
+    border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-border));
+    background-color: var(--color-surface);
+  }
+}
+
+.label {
+  @include hud-label;
+}
+
+.value {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+  font-weight: 600;
+  transform-origin: center top;
+}
+
+.locked {
+  @include hud-label;
+
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-dim);
+  gap: var(--space-2);
+  transform-origin: center top;
+}

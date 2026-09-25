@@ -1,0 +1,187 @@
+@use '@/shared/styles/mixins' as *;
+
+.shell {
+  @include plate(var(--chamfer-lg));
+  @include stack(var(--space-6));
+
+  padding: var(--space-7);
+  box-shadow: var(--elevation-2);
+
+  @include below(md) {
+    padding: var(--space-5) var(--space-4);
+  }
+}
+
+.head {
+  @include stack(var(--space-2));
+}
+
+.title {
+  @include display(var(--text-2xl));
+}
+
+.description {
+  max-width: 70ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.body {
+  display: grid;
+  align-items: start;
+  gap: var(--space-6);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.inputs {
+  @include stack(var(--space-5));
+}
+
+.readout {
+  @include stack(var(--space-5));
+
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 100% 24px,
+    radial-gradient(ellipse 80% 60% at 70% 0%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 70%),
+    var(--color-surface-sunken);
+
+  @include below(md) {
+    padding: var(--space-4);
+  }
+}
+
+.scan {
+  position: absolute;
+  height: 40%;
+  animation: tools-scan 6s linear infinite;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--color-accent) 6%, transparent), transparent);
+  inset-inline: 0;
+  pointer-events: none;
+
+  @include reduced-motion {
+    display: none;
+  }
+}
+
+@keyframes tools-scan {
+  from {
+    top: -40%;
+  }
+
+  to {
+    top: 100%;
+  }
+}
+
+.footer {
+  padding-top: var(--space-4);
+  border-top: 1px dashed var(--color-border);
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}
+
+.figure {
+  @include stack(var(--space-1));
+
+  position: relative;
+
+  --figure: var(--color-accent);
+
+  &[data-tone='good'] {
+    --figure: var(--color-success);
+  }
+
+  &[data-tone='bad'] {
+    --figure: var(--color-danger);
+  }
+
+  &[data-tone='muted'] {
+    --figure: var(--color-text);
+  }
+}
+
+.figureLabel {
+  @include hud-label;
+}
+
+.figureValue {
+  @include display(clamp(2.75rem, 7vw, 4.5rem));
+
+  color: var(--figure);
+  line-height: 0.95;
+  text-shadow: 0 0 28px color-mix(in srgb, var(--figure) 35%, transparent);
+
+  [data-size='md'] > & {
+    font-size: var(--text-2xl);
+  }
+}
+
+.fallback {
+  @include display(var(--text-xl));
+
+  color: var(--figure);
+}
+
+.figureHint {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-2) var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.listRow {
+  @include stack(2px);
+
+  padding: var(--space-2) var(--space-3);
+  border-left: 2px solid var(--color-border-strong);
+
+  &[data-tone='good'] {
+    border-color: var(--color-success);
+  }
+
+  &[data-tone='bad'] {
+    border-color: var(--color-danger);
+  }
+
+  &[data-tone='accent'] {
+    border-color: var(--color-accent);
+  }
+}
+
+.listLabel {
+  @include hud-label;
+}
+
+.listValue {
+  @include numeric;
+
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.fields {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

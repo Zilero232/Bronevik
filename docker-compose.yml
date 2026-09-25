@@ -1,0 +1,164 @@
+# Bronevik production-like stack, front to back:
+#   caddy → client → server → timescaledb + redis, with worker beside the server.
+#
+# Not deployed anywhere yet — there is no production. The file exists so the
+# stack can be brought up the moment there is one, and so the images are
+# exercised end to end locally:
+#
+#   docker compose build
+#   docker compose up -d
+#   docker compose logs -f
+#
+# `server` and `worker` run the same image (apps/server/Dockerfile): the API is
+# src/main.ts, the collector worker is src/worker.ts. The worker has no HTTP
+# port; its heartbeat and the Lesta circuit state show up in the server's
+# /health, and bull-board is served by the server on /admin/queues.
+#
+# Everything reads the root .env. The URLs in it point at localhost for dev;
+# inside compose the services reach each other by name, so the overrides below
+# win for DATABASE_URL, DIRECT_URL and REDIS_URL.
+
+x-healthcheck: &healthcheck
+  interval: 30s
+  timeout: 5s
+  retries: 3
+  start_period: 20s
+
+x-backend-env: &backend-env
+  NODE_ENV: production
+  DATABASE_URL: postgresql://${POSTGRES_USER:-bronevik}:${POSTGRES_PASSWORD:-bronevik}@postgres:5432/${POSTGRES_DB:-bronevik}
+  DIRECT_URL: postgresql://${POSTGRES_USER:-bronevik}:${POSTGRES_PASSWORD:-bronevik}@postgres:5432/${POSTGRES_DB:-bronevik}
+  REDIS_URL: redis://redis:6379
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: bronevik-caddy
+    restart: always
+    depends_on:
+      - client
+      - server
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:-localhost}
+      API_DOMAIN: ${API_DOMAIN:-api.localhost}
+    ports:
+      # 80 carries the Let's Encrypt challenge, 443 the site.
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - bronevik
+
+  client:
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
+        NEXT_PUBLIC_WEB_URL: ${NEXT_PUBLIC_WEB_URL:-https://localhost}
+        NEXT_PUBLIC_USE_MOCKS: ${NEXT_PUBLIC_USE_MOCKS:-false}
+    image: bronevik-client:latest
+    container_name: bronevik-client
+    restart: always
+    depends_on:
+      - server
+    expose:
+      - '3000'
+    networks:
+      - bronevik
+    healthcheck:
+      <<: *healthcheck
+      test: [CMD, node, -e, "fetch('http://localhost:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    image: bronevik-server:latest
+    container_name: bronevik-server
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    environment:
+      <<: *backend-env
+      PORT: '4000'
+    expose:
+      - '4000'
+    networks:
+      - bronevik
+    healthcheck:
+      <<: *healthcheck
+      test: [CMD, bun, -e, "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+
+  worker:
+    image: bronevik-server:latest
+    container_name: bronevik-worker
+    restart: always
+    command: [bun, src/worker.ts]
+    depends_on:
+      server:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    environment:
+      <<: *backend-env
+    networks:
+      - bronevik
+
+  postgres:
+    image: timescale/timescaledb-ha:pg17
+    container_name: bronevik-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bronevik}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bronevik}
+      POSTGRES_DB: ${POSTGRES_DB:-bronevik}
+    ports:
+      # Loopback only: Docker's rules sit ahead of UFW, so a published port
+      # would face the internet. Reach it over an ssh tunnel.
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - pgdata:/home/postgres/pgdata/data
+    networks:
+      - bronevik
+    healthcheck:
+      <<: *healthcheck
+      test: [CMD-SHELL, 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:8-alpine
+    container_name: bronevik-redis
+    restart: always
+    # BullMQ needs keys to survive eviction; AOF keeps queued jobs across restarts.
+    command: redis-server --appendonly yes --maxmemory-policy noeviction
+    volumes:
+      - redisdata:/data
+    networks:
+      - bronevik
+    healthcheck:
+      <<: *healthcheck
+      test: [CMD, redis-cli, ping]
+
+networks:
+  bronevik:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pgdata:
+  redisdata:

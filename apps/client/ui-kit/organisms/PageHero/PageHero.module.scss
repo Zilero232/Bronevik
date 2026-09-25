@@ -1,0 +1,109 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: grid;
+  align-items: end;
+  padding: var(--space-8) 0 var(--space-6);
+  gap: var(--space-7);
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  isolation: isolate;
+  overflow-x: clip;
+
+  @include below(2xl) {
+    padding-top: var(--space-6);
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.grid {
+  position: absolute;
+  z-index: -1;
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  inset: 0 -40px;
+  mask-image: radial-gradient(ellipse 70% 80% at 30% 40%, #000 20%, transparent 75%);
+  pointer-events: none;
+}
+
+.watermark {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  color: transparent;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 4rem + 10vw, 13rem);
+  font-stretch: 70%;
+  font-weight: 900;
+  line-height: 0.8;
+  opacity: 0.8;
+  pointer-events: none;
+  -webkit-text-stroke: 1px var(--color-border-strong);
+
+  @include below(md) {
+    font-size: 6rem;
+  }
+}
+
+.copy {
+  @include stack(var(--space-4));
+
+  min-width: 0;
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.index {
+  @include stencil;
+
+  display: inline-flex;
+  min-width: 2.6em;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 7px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
+  color: var(--color-accent);
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.eyebrow {
+  @include hud-label;
+
+  white-space: nowrap;
+}
+
+.line {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, var(--color-border-strong), transparent);
+}
+
+.title {
+  @include display(var(--text-3xl));
+
+  overflow-wrap: anywhere;
+}
+
+.description {
+  max-width: 62ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-md);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.aside {
+  min-width: 0;
+}

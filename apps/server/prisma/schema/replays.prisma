@@ -1,0 +1,90 @@
+enum ReplayStatus {
+  uploaded
+  parsing
+  parsed
+  failed
+
+  @@map("replay_status")
+}
+
+enum Visibility {
+  public
+  unlisted
+  private
+
+  @@map("visibility")
+}
+
+model Replay {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  uploaderUserId String? @map("uploader_user_id")
+  deviceId       String? @map("device_id")
+
+  storageKey  String  @unique @map("storage_key")
+  timelineKey String? @map("timeline_key")
+  fileName    String  @map("file_name")
+  fileSize    Int     @map("file_size")
+  sha256      String  @unique
+
+  status     ReplayStatus @default(uploaded)
+  parseError String?      @map("parse_error")
+  visibility Visibility   @default(public)
+
+  gameVersion    String?       @map("game_version")
+  arenaUniqueId  BigInt?       @map("arena_unique_id")
+  arenaId        String?       @map("arena_id")
+  battleType     String?       @map("battle_type")
+  gameplayMode   String?       @map("gameplay_mode")
+  mapName        String?       @map("map_name")
+  vehicleType    VehicleType?  @map("vehicle_type")
+  battleId       String?       @map("battle_id")
+  accountId      BigInt?       @map("account_id")
+  tankId         Int?          @map("tank_id")
+  result         BattleResult?
+  damageDealt    Int?          @map("damage_dealt")
+  damageAssisted Int?          @map("damage_assisted")
+  frags          Int?
+  xp             Int?
+  medals         String[]
+  summary        Json?
+
+  playerAccountIds BigInt[]  @map("player_account_ids")
+  hasTracks        Boolean   @default(false) @map("has_tracks")
+  heatmapAppliedAt DateTime? @map("heatmap_applied_at") @db.Timestamptz(3)
+
+  isFeatured Boolean   @default(false) @map("is_featured")
+  views      Int       @default(0)
+  playedAt   DateTime? @map("played_at") @db.Timestamptz(3)
+  parsedAt   DateTime? @map("parsed_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  uploader User?      @relation(fields: [uploaderUserId], references: [id], onDelete: SetNull)
+  device   ModDevice? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([tankId, damageDealt(sort: Desc)])
+  @@index([arenaId, playedAt(sort: Desc)])
+  @@index([accountId, playedAt(sort: Desc)])
+  @@index([uploaderUserId, createdAt(sort: Desc)])
+  @@index([status])
+  @@index([isFeatured, playedAt(sort: Desc)])
+  @@index([playerAccountIds], type: Gin)
+  @@index([battleId])
+  @@index([gameplayMode, playedAt(sort: Desc)])
+  @@map("replay")
+}
+
+model MapHeatmap {
+  arenaId String @map("arena_id")
+  mode    String
+  scope   String
+
+  gridSize Int  @map("grid_size") @db.SmallInt
+  samples  Int
+  data     Json
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@id([arenaId, mode, scope])
+  @@map("map_heatmap")
+}

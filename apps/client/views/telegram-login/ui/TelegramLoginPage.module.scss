@@ -1,0 +1,70 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+
+  display: grid;
+  min-height: 60vh;
+  padding: var(--space-10) 0;
+  place-items: center;
+
+  @include below(md) {
+    padding: var(--space-6) 0 var(--space-9);
+  }
+}
+
+.panel {
+  @include riveted-plate(var(--chamfer-lg));
+  @include stack(var(--space-4));
+  @include tone;
+
+  width: min(100%, 540px);
+  align-items: center;
+  padding: var(--space-9) var(--space-7);
+  text-align: center;
+
+  &:after {
+    position: absolute;
+    z-index: -1;
+    background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--tone) 22%, transparent), transparent 60%);
+    content: '';
+    inset: 0;
+    pointer-events: none;
+  }
+
+  @include below(md) {
+    padding: var(--space-7) var(--space-4);
+  }
+}
+
+.icon {
+  display: inline-flex;
+  width: 72px;
+  height: 72px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--tone) 60%, transparent);
+  color: var(--tone);
+
+  @include chamfer-path(var(--chamfer-sm));
+
+  &[data-spin='true'] svg {
+    @include spin(1.1s);
+  }
+}
+
+.eyebrow {
+  @include hud-label;
+}
+
+.title {
+  @include display(var(--text-2xl));
+
+  font-stretch: 75%;
+  font-weight: 800;
+}
+
+.description {
+  max-width: 44ch;
+  color: var(--color-text-muted);
+}

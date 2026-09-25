@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  padding-bottom: var(--space-11);
+}
+
+.sections {
+  @include stack(var(--space-10));
+
+  padding-top: var(--space-9);
+
+  @include below(md) {
+    padding-top: var(--space-7);
+    gap: var(--space-8);
+  }
+}

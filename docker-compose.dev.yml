@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: timescale/timescaledb-ha:pg17
+    container_name: bronevik-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bronevik
+      POSTGRES_PASSWORD: bronevik
+      POSTGRES_DB: bronevik
+    ports:
+      # 5434 on the host: 5432 is taken by a native service, 5433 by GnomeVPN.
+      - '5434:5432'
+    volumes:
+      - bronevik-postgres-data:/home/postgres/pgdata/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U bronevik -d bronevik]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    container_name: bronevik-redis-dev
+    restart: unless-stopped
+    ports:
+      - '6380:6379'
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  bronevik-postgres-data:

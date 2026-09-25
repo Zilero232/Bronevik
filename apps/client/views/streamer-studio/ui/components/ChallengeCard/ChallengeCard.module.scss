@@ -1,0 +1,72 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-3));
+
+  padding: var(--space-4) var(--space-5);
+
+  &[data-status='active'] {
+    @include plate(var(--chamfer-md), color-mix(in srgb, var(--color-accent) 55%, var(--color-border)));
+  }
+
+  &[data-status='cancelled'],
+  &[data-status='expired'],
+  &[data-status='refunded'] {
+    opacity: 0.7;
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.amount {
+  @include numeric;
+
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.title {
+  @include display(var(--text-lg));
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  gap: var(--space-4);
+}
+
+.metaItem {
+  @include stack(2px);
+
+  dt {
+    @include hud-label;
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+}

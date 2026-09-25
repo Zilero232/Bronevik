@@ -1,0 +1,90 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.heading {
+  @include hud-label;
+}
+
+.list {
+  @include stack(var(--space-1));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--edge);
+  background-color: var(--color-surface);
+  font-size: var(--text-sm);
+  gap: var(--space-3);
+  grid-template-columns: 72px 120px minmax(0, 1fr) 64px 72px 64px;
+
+  --edge: var(--color-danger);
+
+  &[data-result='win'] {
+    --edge: var(--color-success);
+  }
+
+  &[data-result='draw'] {
+    --edge: var(--color-warning);
+  }
+
+  @include below(xl) {
+    grid-template-columns: 56px minmax(0, 1fr) 64px 56px;
+
+    .map,
+    .muted {
+      display: none;
+    }
+  }
+}
+
+.result {
+  @include hud-label;
+
+  color: var(--edge);
+}
+
+.map {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tank {
+  min-width: 0;
+}
+
+.damage {
+  @include numeric;
+
+  font-weight: 600;
+  text-align: end;
+}
+
+.muted {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  text-align: end;
+}
+
+.moe {
+  @include numeric;
+
+  color: var(--color-danger);
+  font-size: var(--text-xs);
+  text-align: end;
+
+  &[data-up='true'] {
+    color: var(--color-success);
+  }
+}

@@ -1,0 +1,104 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: sticky;
+  z-index: var(--z-header);
+  top: 0;
+  padding-top: var(--safe-area-top);
+  border-bottom: 1px solid transparent;
+  backdrop-filter: blur(10px) saturate(1.2);
+  background-color: color-mix(in srgb, var(--color-bg) 62%, transparent);
+  overflow-x: clip;
+  transition:
+    background-color var(--duration-base) ease,
+    border-color var(--duration-base) ease;
+
+  &[data-scrolled='true'] {
+    border-bottom-color: var(--color-border);
+    background-color: color-mix(in srgb, var(--color-bg) 86%, transparent);
+  }
+}
+
+.inner {
+  @include shell;
+
+  display: flex;
+  height: var(--header-height);
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.nav {
+  @include below(3xl) {
+    display: none;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: var(--space-2);
+}
+
+.searchBar {
+  @include below(xl) {
+    display: none;
+  }
+}
+
+.searchIcon {
+  @include from(xl) {
+    display: none;
+  }
+}
+
+.wideOnly {
+  @include below(lg) {
+    display: none;
+  }
+}
+
+.burger {
+  @include from(3xl) {
+    display: none;
+  }
+}
+
+.tracer {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 22%;
+  height: 1px;
+  animation: header-tracer 9s var(--ease-in-out) infinite;
+  background: linear-gradient(90deg, transparent, var(--color-accent-hot), var(--color-accent), transparent);
+  opacity: 0;
+  pointer-events: none;
+
+  @include reduced-motion {
+    display: none;
+  }
+}
+
+@keyframes header-tracer {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  8% {
+    opacity: 1;
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateX(460%);
+  }
+
+  45%,
+  100% {
+    opacity: 0;
+    transform: translateX(460%);
+  }
+}

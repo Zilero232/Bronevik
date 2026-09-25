@@ -1,0 +1,60 @@
+@use '@/shared/styles/mixins' as *;
+
+.positioner {
+  z-index: var(--z-popover);
+}
+
+.popup {
+  max-width: 260px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--elevation-2);
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+
+  @include popup-motion(0.96);
+
+  &[data-instant] {
+    transition: none;
+  }
+}
+
+.arrow {
+  overflow: clip;
+  width: 10px;
+  height: 5px;
+
+  &:before {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border: 1px solid var(--color-border-strong);
+    background-color: var(--color-surface-raised);
+    content: '';
+    transform: translate(-50%, 50%) rotate(45deg);
+  }
+
+  &[data-side='top'] {
+    bottom: -5px;
+    rotate: 180deg;
+  }
+
+  &[data-side='bottom'] {
+    top: -5px;
+  }
+
+  &[data-side='left'] {
+    right: -7px;
+    rotate: 90deg;
+  }
+
+  &[data-side='right'] {
+    left: -7px;
+    rotate: -90deg;
+  }
+}

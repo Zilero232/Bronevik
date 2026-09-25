@@ -1,0 +1,57 @@
+import type { BonusCodeVerdict, BonusCode as BonusCodeView, PremiumOffer as PremiumOfferView } from '@bronevik/schemas';
+import type { z } from 'zod';
+
+import type { BonusCodeStatus } from '../../../generated';
+import type { ListingItem } from '../../lib/scrape';
+import type { newsPageSchema, newsQuerySchema, offerArchiveSchema, offerPageSchema, offersQuerySchema } from './dto/shop.schemas';
+import type { NamedVehicle, OfferDetail } from './lib';
+
+export type OffersQuery = z.output<typeof offersQuerySchema>;
+export type OfferPage = z.infer<typeof offerPageSchema>;
+export type OfferArchive = z.infer<typeof offerArchiveSchema>;
+export type NewsQuery = z.output<typeof newsQuerySchema>;
+export type NewsPage = z.infer<typeof newsPageSchema>;
+
+export type DiscoverBonusCodeInput = {
+  code: string;
+  title: string | null;
+  source: string;
+  sourceUrl: string | null;
+  expiresAt: Date | null;
+};
+
+export type ReportBonusCodeInput = {
+  userId: string;
+  code: string;
+  verdict: BonusCodeVerdict;
+  ip: string | null;
+};
+
+export type ListBonusCodesInput = {
+  status: BonusCodeStatus | undefined;
+};
+
+export type ScrapeSummary = {
+  seen: number;
+  created: number;
+  notified: number;
+};
+
+export type { BonusCodeView, PremiumOfferView };
+
+export type RecountInput = {
+  code: string;
+  now: Date;
+};
+
+export type StoreOfferInput = {
+  item: ListingItem;
+  detail: OfferDetail | null;
+  vehicles: readonly NamedVehicle[];
+  now: Date;
+};
+
+export type ArchiveEntry = {
+  appearances: Date[];
+  lastDiscountPercent: number | null;
+};

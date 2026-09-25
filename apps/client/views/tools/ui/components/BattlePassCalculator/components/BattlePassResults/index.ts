@@ -1,0 +1,1 @@
+export { BattlePassResults } from './BattlePassResults';

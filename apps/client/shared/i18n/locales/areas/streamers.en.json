@@ -1,0 +1,457 @@
+{
+  "streamers": {
+    "meta": {
+      "title": "For streamers — overlays, challenges and chat commands",
+      "description": "Live-stat OBS overlays, donation challenges verified from real battles, !stat and !session chat commands and your own streamer page."
+    },
+    "hero": {
+      "onAir": "On air",
+      "eyebrow": "Bronevik for streamers",
+      "title": "A stream where <hot>the numbers don't lie</hot>",
+      "lead": "Live stats in OBS, viewer challenges verified from the actual battle, and a bot that knows your WN8 better than chat does.",
+      "challenge": "3000 damage in a light tank",
+      "ctaHow": "How challenges work",
+      "rec": "REC",
+      "frame": "Overlay · updating live",
+      "channel": "Channel: stalevar"
+    },
+    "tools": {
+      "eyebrow": "Loadout",
+      "title": "Everything you need on air",
+      "description": "Four tools that work together: data from the mod and the API flows straight into your overlay, chat and page.",
+      "overlays": {
+        "title": "OBS overlays",
+        "text": "Session, WN8, gun mark, win streak — pick the metrics and a style, paste the link into OBS. Transparent background, live numbers."
+      },
+      "challenges": {
+        "tag": "Only here",
+        "title": "Verified challenges",
+        "text": "A viewer donates with a code and a condition — “3000 damage in a light tank”. The mod checks the real battle, not the streamer's word. The result goes to chat and the overlay by itself.",
+        "stamp": "Verified by the mod"
+      },
+      "commands": {
+        "title": "Chat commands",
+        "text": "Twitch and VK Video Live: the bot answers with stats while you're in battle.",
+        "chat": {
+          "stat": "Stalevar · 24,318 battles · 58.4% · WN8 3,420",
+          "session": "Session: 14 battles · 64% · avg damage 3,280",
+          "marks": "Obj. 140: 88.9% — 1.1% to the third mark"
+        }
+      },
+      "page": {
+        "title": "Streamer page",
+        "text": "A short address with channel links, live status and battle stats — handy for your channel description."
+      }
+    },
+    "flow": {
+      "eyebrow": "How a challenge works",
+      "title": "Donation → battle → verdict",
+      "description": "No arguing in chat: the condition is fixed up front and the mod checks the result from battle data.",
+      "steps": {
+        "donate": {
+          "title": "A viewer donates with a code",
+          "text": "You create a challenge in the studio; the viewer puts its code in the donation message.",
+          "sample": "#K7Q2M 3000 dmg in a light, let's go!"
+        },
+        "verify": {
+          "title": "The mod checks the battle",
+          "text": "Bronevik takes your battle results from the mod: damage, frags, spotting — no screenshots, no word of honour.",
+          "sample": "LT · 3,412 damage · 6 spotted · victory"
+        },
+        "result": {
+          "title": "The verdict hits chat and the overlay",
+          "text": "The bot posts the verdict in chat, the overlay shows progress and the result. Fully transparent for viewers.",
+          "sample": "Challenge #K7Q2M completed ✓"
+        }
+      }
+    },
+    "cta": {
+      "title": "Go live with Bronevik",
+      "text": "Link your account with Lesta ID and your first overlay is ready in a couple of minutes.",
+      "studio": "Open the studio",
+      "signIn": "Sign in to start"
+    }
+  },
+  "streamer": {
+    "meta": {
+      "title": "Streamer studio",
+      "description": "Streamer profile, OBS overlays, donation integrations and viewer challenges."
+    },
+    "publicMeta": {
+      "title": "{name} — Tanks streamer",
+      "description": "{name}: streams, channel links and in-game stats."
+    },
+    "confirm": {
+      "cancel": "Cancel"
+    },
+    "studio": {
+      "eyebrow": "Studio · on air with Bronevik",
+      "onAir": "On air",
+      "offAir": "Off air",
+      "title": "Streamer console",
+      "lead": "OBS overlays, donation challenges verified from real battles and a public page — all set up here.",
+      "openPublic": "My page",
+      "tabs": {
+        "profile": "Profile",
+        "integrations": "Integrations",
+        "overlays": "Overlays",
+        "challenges": "Challenges"
+      },
+      "toast": {
+        "saved": "Profile saved",
+        "failed": "That didn't work. Please try again.",
+        "connected": "Integration connected",
+        "connectFailed": "Couldn't connect the integration",
+        "disconnected": "Integration disconnected",
+        "overlaySaved": "Overlay saved",
+        "overlayRemoved": "Overlay deleted",
+        "challengeCreated": "Challenge created — waiting for a donation with the code",
+        "challengeActivated": "Challenge started",
+        "challengeCancelled": "Challenge cancelled"
+      }
+    },
+    "profile": {
+      "eyebrow": "Call sign",
+      "title": "Streamer profile",
+      "description": "A public page for your viewers: channel links, a short bio and stats from your linked account.",
+      "slug": "Page address",
+      "slugHint": "Latin letters, digits and hyphens, 3 to 32 characters.",
+      "slugPlaceholder": "your-name",
+      "displayName": "Display name",
+      "bio": "About",
+      "bioPlaceholder": "What you play, when you stream, what chat can expect",
+      "bioCount": "{count} of {max}",
+      "links": "Channels and links",
+      "link": {
+        "twitch": "Twitch",
+        "vk": "VK Video Live",
+        "youtube": "YouTube",
+        "telegram": "Telegram",
+        "boosty": "Boosty"
+      },
+      "linkPlaceholder": {
+        "twitch": "https://twitch.tv/…",
+        "vk": "https://live.vkvideo.ru/…",
+        "youtube": "https://youtube.com/@…",
+        "telegram": "https://t.me/…",
+        "boosty": "https://boosty.to/…"
+      },
+      "account": "Tanks account",
+      "accountNone": "Don't show stats",
+      "accountHint": "This account's stats appear on your page and in overlays. Link an account on the Overview tab.",
+      "save": "Save profile",
+      "publicLink": "Open page",
+      "errors": {
+        "slug": "Latin letters, digits and hyphens only, 3 to 32 characters",
+        "slugTaken": "That address is taken — pick another one",
+        "displayName": "2 to 64 characters",
+        "bio": "No longer than {max} characters",
+        "link": "Use a link like https://…"
+      }
+    },
+    "integrations": {
+      "eyebrow": "Comms",
+      "title": "Integrations",
+      "description": "Donations flow into Bronevik and the bot answers in chat. You connect through the service's own sign-in — we never see passwords.",
+      "provider": {
+        "donationAlerts": "DonationAlerts",
+        "twitch": "Twitch",
+        "vkPlayLive": "VK Video Live",
+        "youtube": "YouTube"
+      },
+      "about": {
+        "donationAlerts": "Picks up donations carrying a challenge code and starts the check automatically.",
+        "twitch": "The bot answers !stat, !session and !marks and posts challenge results to chat.",
+        "vkPlayLive": "Chat commands and challenge results for VK Video Live.",
+        "youtube": "Chat commands for YouTube streams."
+      },
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "soon": "Soon",
+      "connectedAs": "{login} · since {date}",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "disconnectTitle": "Disconnect {name}?",
+      "disconnectDescription": "Bronevik will stop receiving events from {name}. You can reconnect at any time."
+    },
+    "overlays": {
+      "eyebrow": "Broadcast",
+      "title": "OBS overlays",
+      "description": "Build a widget, check the preview on a transparent background and paste the link into OBS as a Browser source.",
+      "list": "Your overlays",
+      "new": "New overlay",
+      "defaultName": "New overlay",
+      "kind": {
+        "session": "Session",
+        "wn8": "WN8",
+        "moe": "Gun mark",
+        "damage": "Damage",
+        "win_rate": "Win rate",
+        "win_streak": "Win streak",
+        "challenge": "Challenge",
+        "custom": "Custom"
+      },
+      "theme": {
+        "steel": "Steel",
+        "tracer": "Tracer",
+        "minimal": "Minimal",
+        "transparent": "Transparent"
+      },
+      "layout": {
+        "row": "Row",
+        "column": "Column",
+        "grid": "Grid"
+      },
+      "reset": {
+        "session": "When a session starts",
+        "day": "Every day",
+        "manual": "Manually"
+      },
+      "fields": {
+        "name": "Name",
+        "kind": "Template",
+        "metrics": "Metrics",
+        "metricsHint": "Up to {max} metrics, shown in the order you pick them.",
+        "theme": "Style",
+        "layout": "Layout",
+        "accent": "Custom accent colour",
+        "accentHint": "Match your channel's colours",
+        "fontScale": "Scale",
+        "animate": "Animation",
+        "animateHint": "Numbers count up and flash when they change",
+        "showTank": "Show the tank",
+        "showTankHint": "Vehicle name next to the gun mark and the last battle",
+        "reset": "Session reset",
+        "locale": "Language"
+      },
+      "save": "Save",
+      "create": "Create overlay",
+      "remove": "Delete",
+      "removeTitle": "Delete this overlay?",
+      "removeDescription": "“{name}” will stop working in OBS. This can't be undone.",
+      "errors": {
+        "name": "Give the overlay a name",
+        "metrics": "Pick 1 to {max} metrics"
+      },
+      "preview": {
+        "title": "Preview · transparent background",
+        "frameTitle": "Overlay preview",
+        "emptyTitle": "The preview appears once you save",
+        "needsSave": "Save your first overlay and a live picture shows up here.",
+        "hint": "The checkerboard is transparency: in OBS your game shows through.",
+        "draftHint": "The draft is shown with data from your first overlay."
+      },
+      "obs": {
+        "url": "Link for OBS",
+        "title": "Adding it to OBS",
+        "steps": {
+          "source": "In OBS: Sources → + → Browser.",
+          "url": "Paste the link above into the URL field.",
+          "size": "Width {width}, height {height} — then fit it with the frame.",
+          "transparent": "The background is already transparent: no custom CSS or chroma key needed."
+        }
+      }
+    },
+    "challenges": {
+      "eyebrow": "Only on Bronevik",
+      "title": "Viewer challenges",
+      "description": "A viewer donates with a code, the mod checks the actual battle, and the result lands in chat and on the overlay by itself. No more “I think he did it”.",
+      "form": {
+        "heading": "New challenge",
+        "title": "Title",
+        "titlePlaceholder": "3000 damage in a light tank",
+        "amount": "Donation amount",
+        "amountSuffix": "₽",
+        "expires": "Valid for",
+        "expiresOption": "{minutes, plural, =30 {30 minutes} =60 {1 hour} =120 {2 hours} =240 {4 hours} =720 {12 hours} =1440 {a day} other {# min}}",
+        "submit": "Create challenge",
+        "errors": {
+          "title": "3 to 120 characters",
+          "amount": "The amount must be above zero"
+        }
+      },
+      "condition": {
+        "legend": "Condition",
+        "metricLabel": "Metric",
+        "metric": {
+          "damage": "Damage",
+          "assist": "Assisted damage",
+          "blocked": "Blocked damage",
+          "frags": "Frags",
+          "spotted": "Spotted",
+          "xp": "XP",
+          "win": "Victory",
+          "survive": "Survival",
+          "moePercent": "Gun mark percent"
+        },
+        "operatorLabel": "Comparison",
+        "operator": {
+          "gte": "≥",
+          "lte": "≤",
+          "eq": "="
+        },
+        "operatorName": {
+          "gte": "At least",
+          "lte": "At most",
+          "eq": "Exactly"
+        },
+        "value": "Threshold",
+        "battles": "Battles",
+        "aggregateLabel": "How to count",
+        "aggregateHint": "Doesn't matter for a single battle.",
+        "aggregate": {
+          "single": "Each battle",
+          "sum": "Total",
+          "avg": "Average"
+        },
+        "scopeLabel": "Vehicle",
+        "scope": {
+          "any": "Any",
+          "tank": "Tank",
+          "type": "Class",
+          "tier": "Tier"
+        },
+        "tierOption": "{tier} and above"
+      },
+      "sentence": {
+        "lead": {
+          "single": "In a single battle —",
+          "each": "In each of {battles} battles —",
+          "sum": "Across {battles} battles in total —",
+          "avg": "On average over {battles} battles —"
+        },
+        "goal": {
+          "win": "win",
+          "survive": "survive"
+        },
+        "op": {
+          "gte": "at least {value, number}",
+          "lte": "at most {value, number}",
+          "eq": "exactly {value, number}"
+        },
+        "metric": {
+          "damage": "damage",
+          "assist": "assisted damage",
+          "blocked": "blocked damage",
+          "frags": "frags",
+          "spotted": "enemies spotted",
+          "xp": "XP",
+          "win": "wins",
+          "survive": "survivals",
+          "moePercent": "% gun mark"
+        },
+        "filter": {
+          "tank": "in the {name}",
+          "tier": "on tier {tier}+ vehicles",
+          "type": {
+            "lightTank": "in a light tank",
+            "mediumTank": "in a medium tank",
+            "heavyTank": "in a heavy tank",
+            "AT-SPG": "in a tank destroyer",
+            "SPG": "in an SPG"
+          }
+        }
+      },
+      "status": {
+        "pending": "Awaiting donation",
+        "active": "In play",
+        "succeeded": "Completed",
+        "failed": "Failed",
+        "cancelled": "Cancelled",
+        "expired": "Expired",
+        "refunded": "Refunded"
+      },
+      "list": {
+        "title": "Challenges",
+        "empty": "No challenges yet",
+        "emptyDescription": "Create the first one — its code appears here and viewers put it in their donation message.",
+        "code": "Donation code",
+        "codeHint": "Viewers put it in the donation message",
+        "progress": "Progress",
+        "battles": "Battles: {done} of {total}",
+        "donor": "Donor",
+        "expires": "Expires"
+      },
+      "actions": {
+        "activate": "Start",
+        "activateTitle": "Start this challenge?",
+        "activateDescription": "Use this when the donation came in outside the integration. The mod starts counting battles from now.",
+        "donorName": "Who donated",
+        "donorPlaceholder": "Viewer's name — optional",
+        "donorError": "No longer than 64 characters",
+        "cancel": "Cancel",
+        "cancelTitle": "Cancel this challenge?",
+        "cancelDescription": "The check stops and chat gets a cancellation message."
+      }
+    },
+    "page": {
+      "eyebrow": "Tanks streamer",
+      "live": "Live",
+      "offline": "Offline",
+      "channels": "Where to watch",
+      "link": {
+        "twitch": "Twitch",
+        "vk": "VK Video Live",
+        "youtube": "YouTube",
+        "telegram": "Telegram",
+        "boosty": "Boosty",
+        "other": "Link"
+      },
+      "stats": {
+        "title": "Battle record",
+        "battles": "Battles",
+        "winRate": "Win rate",
+        "wn8": "WN8",
+        "avgDamage": "Avg damage",
+        "profile": "Full player profile",
+        "hidden": "Account stats are unavailable right now"
+      },
+      "errorTitle": "Streamer page unavailable",
+      "errorDescription": "Couldn't load the data. Please try again.",
+      "retry": "Retry"
+    }
+  },
+  "overlay": {
+    "meta": {
+      "title": "OBS overlay",
+      "description": "A stats widget for your stream: add this page to OBS as a Browser source."
+    },
+    "metric": {
+      "battles": "Battles",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "wn8": "WN8",
+      "broneIndex": "Bronya Index",
+      "moePercent": "Gun mark",
+      "winStreak": "Win streak",
+      "frags": "Frags",
+      "lastBattle": "Last battle"
+    },
+    "result": {
+      "win": "Victory",
+      "loss": "Defeat",
+      "draw": "Draw"
+    },
+    "moe": {
+      "label": "Marks · {count} of 3"
+    },
+    "challenge": {
+      "label": "Challenge",
+      "battles": "Battles: {done} of {total}",
+      "status": {
+        "pending": "Awaiting donation",
+        "active": "In play",
+        "succeeded": "Completed",
+        "failed": "Failed",
+        "cancelled": "Cancelled",
+        "expired": "Expired",
+        "refunded": "Refunded"
+      }
+    },
+    "error": {
+      "invalid": "Invalid overlay link",
+      "unavailable": "Overlay unavailable"
+    },
+    "attribution": "data: Lesta Games"
+  }
+}

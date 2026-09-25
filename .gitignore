@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+generated/
+*.wotmod
+__pycache__/
+*.pyc
+
+# Secrets and local config
+.env
+.env.local
+
+# Agent tooling — rules and agents are the repo's own, everything else is local
+.agents/
+.claude/*
+!.claude/rules/
+!.claude/agents/
+.codebase-memory/
+
+# Logs
+*.log
+
+# Test artifacts
+coverage/
+e2e/.results/
+playwright-report/
+.playwright/
+.cache/
+.visit-probe.mjs
+
+# Local replay storage (REPLAY_STORAGE=local)
+.data/

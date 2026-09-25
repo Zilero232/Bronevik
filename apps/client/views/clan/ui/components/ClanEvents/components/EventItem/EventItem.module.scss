@@ -1,0 +1,83 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --event: var(--color-steel);
+
+  position: relative;
+  display: grid;
+  align-items: center;
+  column-gap: var(--space-3);
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  padding-block: var(--space-2);
+
+  &[data-type='joined'] {
+    --event: var(--color-success);
+  }
+
+  &[data-type='left'] {
+    --event: var(--color-warning);
+  }
+
+  &[data-type='kicked'] {
+    --event: var(--color-danger);
+  }
+}
+
+.icon {
+  position: relative;
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--event) 55%, transparent);
+  background: color-mix(in srgb, var(--event) 14%, var(--color-surface));
+  color: var(--event);
+
+  @include chamfer-path(6px);
+}
+
+.body {
+  min-width: 0;
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.nickname {
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:is(a):hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.roles {
+  @include hud-label;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: var(--space-1) 0 0;
+  gap: var(--space-1);
+}
+
+.newRole {
+  color: var(--event);
+}
+
+.time {
+  @include numeric;
+
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

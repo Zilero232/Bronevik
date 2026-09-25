@@ -1,0 +1,132 @@
+enum SessionSource {
+  api
+  mod
+
+  @@map("session_source")
+}
+
+enum SessionKind {
+  day
+  live
+
+  @@map("session_kind")
+}
+
+enum SessionStatus {
+  open
+  closed
+
+  @@map("session_status")
+}
+
+enum BattleResult {
+  win
+  loss
+  draw
+
+  @@map("battle_result")
+}
+
+model PlaySession {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  accountId BigInt        @map("account_id")
+  source    SessionSource
+  kind      SessionKind
+  status    SessionStatus @default(open)
+  day       DateTime?     @db.Date
+
+  startedAt      DateTime  @map("started_at") @db.Timestamptz(3)
+  endedAt        DateTime? @map("ended_at") @db.Timestamptz(3)
+  lastActivityAt DateTime  @default(now()) @map("last_activity_at") @db.Timestamptz(3)
+
+  battles        Int    @default(0)
+  wins           Int    @default(0)
+  losses         Int    @default(0)
+  draws          Int    @default(0)
+  damageDealt    Int    @default(0) @map("damage_dealt")
+  damageAssisted Int    @default(0) @map("damage_assisted")
+  damageBlocked  Int    @default(0) @map("damage_blocked")
+  frags          Int    @default(0)
+  spotted        Int    @default(0)
+  xp             Int    @default(0)
+  survived       Int    @default(0) @map("survived_battles")
+  credits        Int?
+  wn8            Float?
+  broneIndex     Float? @map("brone_index")
+
+  tankDeltas Json? @map("tank_deltas")
+
+  startCapturedAt DateTime? @map("start_captured_at") @db.Timestamptz(3)
+  endCapturedAt   DateTime? @map("end_captured_at") @db.Timestamptz(3)
+  reportSentAt    DateTime? @map("report_sent_at") @db.Timestamptz(3)
+
+  player        Player   @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+  battleRecords Battle[]
+
+  @@unique([accountId, source, kind, day])
+  @@index([accountId, startedAt(sort: Desc)])
+  @@index([status, lastActivityAt])
+  @@map("play_session")
+}
+
+model Battle {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  accountId     BigInt  @map("account_id")
+  sessionId     String? @map("session_id")
+  deviceId      String? @map("device_id")
+  arenaUniqueId BigInt  @map("arena_unique_id")
+
+  tankId     Int          @map("tank_id")
+  arenaId    String       @map("arena_id")
+  battleType String       @map("battle_type")
+  gameMode   String?      @map("game_mode")
+  result     BattleResult
+  team       Int?         @db.SmallInt
+
+  damageDealt          Int     @map("damage_dealt")
+  damageAssistedRadio  Int     @map("damage_assisted_radio")
+  damageAssistedTrack  Int     @map("damage_assisted_track")
+  damageAssistedStun   Int     @map("damage_assisted_stun")
+  damageBlocked        Int     @map("damage_blocked")
+  damageReceived       Int     @map("damage_received")
+  spotted              Int
+  frags                Int
+  xp                   Int
+  freeXp               Int?    @map("free_xp")
+  credits              Int?
+  creditsGross         Int?    @map("credits_gross")
+  survived             Boolean
+  lifetimeSec          Int?    @map("lifetime_sec")
+  capturePoints        Int     @default(0) @map("capture_points")
+  droppedCapturePoints Int     @default(0) @map("dropped_capture_points")
+
+  shotsFired   Int?  @map("shots_fired")
+  shotsHit     Int?  @map("shots_hit")
+  shotsPierced Int?  @map("shots_pierced")
+  shots        Json?
+
+  moePercent      Float? @map("moe_percent")
+  moePercentDelta Float? @map("moe_percent_delta")
+  marksOnGun      Int?   @map("marks_on_gun") @db.SmallInt
+
+  queueTimeMs  Int?     @map("queue_time_ms")
+  durationSec  Int?     @map("duration_sec")
+  loadout      Json?
+  achievements String[]
+
+  startedAt  DateTime @map("started_at") @db.Timestamptz(3)
+  receivedAt DateTime @default(now()) @map("received_at") @db.Timestamptz(3)
+
+  player  Player       @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+  session PlaySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  device  ModDevice?   @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@unique([accountId, arenaUniqueId])
+  @@index([accountId, startedAt(sort: Desc)])
+  @@index([sessionId])
+  @@index([tankId, startedAt(sort: Desc)])
+  @@index([arenaId])
+  @@map("battle")
+}

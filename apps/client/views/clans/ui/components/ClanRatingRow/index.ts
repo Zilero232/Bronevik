@@ -1,0 +1,1 @@
+export { ClanRatingRow } from './ClanRatingRow';

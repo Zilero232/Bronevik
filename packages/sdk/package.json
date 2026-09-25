@@ -1,0 +1,27 @@
+{
+  "name": "@bronevik/sdk",
+  "version": "0.0.0",
+  "private": true,
+  "description": "TypeScript client for the Bronevik public API (/v1): generated from the OpenAPI spec with @hey-api/openapi-ts, plus an API-key, base-URL and retry wrapper and a webhook signature check.",
+  "license": "UNLICENSED",
+  "author": "Alexandr Artemev",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "src/index.ts",
+  "scripts": {
+    "postinstall": "openapi-ts",
+    "sdk:build": "openapi-ts",
+    "sdk:generate": "bun --filter @bronevik/server openapi:export && prettier --write openapi/v1.json && openapi-ts",
+    "sdk:generate:live": "openapi-ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "p-retry": "catalog:"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
+    "typescript": "catalog:"
+  }
+}

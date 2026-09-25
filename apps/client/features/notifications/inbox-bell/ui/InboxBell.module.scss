@@ -1,0 +1,14 @@
+@use '@/shared/styles/mixins' as *;
+
+.positioner {
+  z-index: var(--z-popover);
+}
+
+.popup {
+  @include popup-surface;
+  @include popup-motion;
+
+  overflow: hidden;
+  width: min(380px, calc(100vw - 32px));
+  padding: 0;
+}

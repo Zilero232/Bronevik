@@ -1,0 +1,1 @@
+export { collectIds } from './seed';

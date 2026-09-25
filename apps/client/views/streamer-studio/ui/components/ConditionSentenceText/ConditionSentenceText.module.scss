@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+.lead {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.goal {
+  color: var(--color-accent);
+  font-weight: 600;
+}

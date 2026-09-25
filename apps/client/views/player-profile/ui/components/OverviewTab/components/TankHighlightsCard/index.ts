@@ -1,0 +1,1 @@
+export { TankHighlightsCard } from './TankHighlightsCard';

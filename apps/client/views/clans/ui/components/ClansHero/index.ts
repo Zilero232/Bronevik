@@ -1,0 +1,1 @@
+export { ClansHero } from './ClansHero';

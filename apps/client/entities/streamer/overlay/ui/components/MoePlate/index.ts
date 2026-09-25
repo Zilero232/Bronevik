@@ -1,0 +1,1 @@
+export { MoePlate } from './MoePlate';

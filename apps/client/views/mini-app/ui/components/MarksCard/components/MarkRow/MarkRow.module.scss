@@ -1,0 +1,24 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.image {
+  flex-shrink: 0;
+}
+
+.body {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+  flex: 1;
+}
+
+.hint {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+}

@@ -1,0 +1,164 @@
+import type { Queue } from 'bullmq';
+
+import RedisMock from 'ioredis-mock';
+import { describe, expect, it } from 'vitest';
+import { mock, mockDeep } from 'vitest-mock-extended';
+
+import type { Notification, NotificationSettings, User } from '../../../../../generated';
+import type { AppConfigService } from '../../../../config';
+import type { PrismaService } from '../../../../core';
+import type { TelegramSenderService } from '../../../telegram';
+import type { DeliverPayload } from '../../contracts';
+import type { DeliverJob } from '../../notifications.types';
+import type { EmailService } from '../email.service';
+import type { WebPushService } from '../web-push.service';
+
+import { DeliveryService } from '../delivery.service';
+
+const job: DeliverJob = {
+  userId: 'u1',
+  dedupeKey: 'moe-b1',
+  notification: { event: 'moeGained', accountId: 7, nickname: 'Tanker', tankId: 1, tankName: 'T-34', marks: 2, isFollowed: false }
+};
+
+const settings = (overrides: Partial<NotificationSettings> = {}): NotificationSettings => ({
+  userId: 'u1',
+  channels: ['site', 'telegram'],
+  events: ['moeGained'],
+  quietHoursStart: null,
+  quietHoursEnd: null,
+  sessionReport: true,
+  weeklyDigest: true,
+  updatedAt: new Date(),
+  ...overrides
+});
+
+const recipient = ({
+  notificationSettings = settings(),
+  telegramId = 42n
+}: {
+  notificationSettings?: NotificationSettings | null;
+  telegramId?: bigint | null;
+}) => ({
+  ...mock<User>({ email: 'player@example.com', locale: 'ru', timezone: 'UTC' }),
+  notificationSettings,
+  telegramAccount: telegramId === null ? null : { telegramId },
+  _count: { pushSubscriptions: 0 }
+});
+
+const createService = () => {
+  const prisma = mockDeep<PrismaService>();
+  const config = mock<AppConfigService>();
+  const telegram = mock<TelegramSenderService>({ isEnabled: true });
+  const webPush = mock<WebPushService>({ isEnabled: false });
+  const email = mock<EmailService>();
+  const queue = mock<Queue<DeliverPayload>>();
+
+  config.get.mockReturnValue('https://bronevik.app');
+  prisma.notification.findUnique.mockResolvedValue(null);
+  prisma.notification.create.mockResolvedValue(mock<Notification>({ id: 'n1' }));
+
+  const service = new DeliveryService(prisma, config, telegram, webPush, email, new RedisMock(), queue);
+
+  return { service, prisma, telegram, email, queue };
+};
+
+describe('DeliveryService.deliver', () => {
+  it('stores a site notification and sends telegram when both are enabled', async () => {
+    const { service, prisma, telegram } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(recipient({}));
+
+    const delivered = await service.deliver(job);
+
+    expect(delivered).toBe(2);
+    expect(prisma.notification.create).toHaveBeenCalledTimes(2);
+    expect(telegram.sendNotification).toHaveBeenCalledWith(expect.objectContaining({ telegramId: 42n, locale: 'ru' }));
+  });
+
+  it('falls back to the default settings, which only use the site inbox', async () => {
+    const { service, prisma, telegram } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(recipient({ notificationSettings: null }));
+
+    expect(await service.deliver(job)).toBe(1);
+    expect(telegram.sendNotification).not.toHaveBeenCalled();
+  });
+
+  it('does not send a channel twice when a retry finds it already sent', async () => {
+    const { service, prisma, telegram } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(recipient({}));
+    prisma.notification.findUnique.mockResolvedValue(mock<Notification>({ id: 'n1', sentAt: new Date() }));
+
+    await service.deliver(job);
+
+    expect(telegram.sendNotification).not.toHaveBeenCalled();
+    expect(prisma.notification.create).not.toHaveBeenCalled();
+  });
+
+  it('marks a failed channel and throws so the job retries', async () => {
+    const { service, prisma, telegram } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(recipient({}));
+    telegram.sendNotification.mockRejectedValue(new Error('blocked'));
+
+    await expect(service.deliver(job)).rejects.toThrow(/1 of 2/u);
+    expect(prisma.notification.update).toHaveBeenCalledWith(expect.objectContaining({ data: { failedAt: expect.any(Date) } }));
+  });
+
+  it('defers telegram to the end of quiet hours but fills the inbox at once', async () => {
+    const { service, prisma, telegram, queue } = createService();
+    const hour = new Date().getUTCHours();
+
+    prisma.user.findUnique.mockResolvedValue(
+      recipient({ notificationSettings: settings({ quietHoursStart: hour, quietHoursEnd: (hour + 2) % 24 }) })
+    );
+
+    expect(await service.deliver(job)).toBe(1);
+    expect(telegram.sendNotification).not.toHaveBeenCalled();
+
+    expect(queue.add).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ onlyChannels: ['telegram'] }),
+      expect.objectContaining({ delay: expect.any(Number) })
+    );
+  });
+
+  it('delivers nothing to a deleted user', async () => {
+    const { service, prisma } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(null);
+
+    expect(await service.deliver(job)).toBe(0);
+  });
+});
+
+describe('DeliveryService.deliverDigest', () => {
+  const digest = { userId: 'digest-user', weekKey: '2026-W39', digest: { battles: 10, wins: 5, damageDealt: 20_000, sessions: 2, marksGained: 1 } };
+
+  it('sends a week only once', async () => {
+    const { service, prisma, email, telegram } = createService();
+
+    email.canReach.mockReturnValue(true);
+    prisma.user.findUnique.mockResolvedValue(recipient({}));
+
+    expect(await service.deliverDigest(digest)).toBe(2);
+    expect(await service.deliverDigest(digest)).toBe(0);
+    expect(email.sendDigest).toHaveBeenCalledTimes(1);
+    expect(telegram.sendNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases the week when sending fails so a retry can send it', async () => {
+    const { service, prisma, email } = createService();
+
+    email.canReach.mockReturnValue(true);
+    email.sendDigest.mockRejectedValueOnce(new Error('smtp down'));
+    prisma.user.findUnique.mockResolvedValue(recipient({ telegramId: null }));
+
+    const retried = { ...digest, weekKey: '2026-W40' };
+
+    await expect(service.deliverDigest(retried)).rejects.toThrow('smtp down');
+    expect(await service.deliverDigest(retried)).toBe(1);
+  });
+});

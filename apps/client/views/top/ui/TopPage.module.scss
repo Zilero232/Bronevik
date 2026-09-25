@@ -1,0 +1,36 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-6));
+
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-10);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
+}
+
+.scopes {
+  overflow-x: auto;
+
+  @include hide-scrollbar;
+}
+
+.board {
+  @include stack(var(--space-6));
+
+  transition: opacity var(--duration-base) ease;
+
+  &[data-refreshing='true'] {
+    opacity: 0.55;
+  }
+}
+
+.threshold {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}

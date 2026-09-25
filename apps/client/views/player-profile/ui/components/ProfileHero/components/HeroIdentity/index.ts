@@ -1,0 +1,1 @@
+export { HeroIdentity } from './HeroIdentity';

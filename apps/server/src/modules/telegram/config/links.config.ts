@@ -1,0 +1,10 @@
+export const SITE_LINKS = {
+  player: '/p/{nickname}',
+  tank: '/t/{slug}',
+  clan: '/c/{tag}',
+  top: '/top',
+  settings: '/me',
+  statCard: '/api/og/player/{accountId}'
+} as const;
+
+export const LOCAL_HOSTS: readonly string[] = ['localhost', '127.0.0.1', '0.0.0.0', '::1'];

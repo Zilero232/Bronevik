@@ -1,0 +1,1 @@
+export { PlusHero } from './PlusHero';

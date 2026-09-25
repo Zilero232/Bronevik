@@ -1,0 +1,124 @@
+import { RefreshingAuthProvider as DonationAlertsAuthProvider, getAccessToken } from '@donation-alerts/auth';
+import { Injectable, Logger } from '@nestjs/common';
+import { exchangeCode, getTokenInfo } from '@twurple/auth';
+import { match } from 'ts-pattern';
+
+import type { StreamerProvider } from '../../../../generated';
+import type { OAuthCodeInput, OAuthStateInput, ProviderCallbackInput } from '../streamers.types';
+
+import { AppBadRequestException } from '../../../common/exceptions';
+import { AppConfigService } from '../../../config';
+import { DONATION_ALERTS, INTEGRATIONS, NO_SCOPES, TWITCH } from '../config';
+import { IntegrationStoreService } from './integration-store.service';
+import { OAuthStateService } from './oauth-state.service';
+
+@Injectable()
+export class IntegrationsService {
+  private readonly logger = new Logger(IntegrationsService.name);
+
+  constructor(
+    private readonly config: AppConfigService,
+    private readonly states: OAuthStateService,
+    private readonly store: IntegrationStoreService
+  ) {}
+
+  async connectUrl({ userId, provider }: OAuthStateInput): Promise<string> {
+    const { clientId, authorizeUrl, scopes } = this.app(provider);
+
+    if (!clientId) {
+      throw new AppBadRequestException('VALIDATION_FAILED', `${provider} is not configured on this server`);
+    }
+
+    const state = await this.states.create({ provider, userId });
+    const url = new URL(authorizeUrl);
+
+    url.searchParams.set('client_id', clientId);
+    url.searchParams.set('redirect_uri', this.redirectUri(provider));
+    url.searchParams.set('response_type', 'code');
+    url.searchParams.set('scope', scopes.join(' '));
+    url.searchParams.set('state', state);
+
+    return url.href;
+  }
+
+  async callback({ provider, code, state }: ProviderCallbackInput): Promise<string> {
+    const webUrl = this.config.get('WEB_URL');
+    const owner = await this.states.consume(state);
+
+    if (owner?.provider !== provider) {
+      return new URL(INTEGRATIONS.failedRedirectPath, webUrl).href;
+    }
+
+    try {
+      await match(provider)
+        .with('donationAlerts', () => this.connectDonationAlerts({ userId: owner.userId, code }))
+        .with('twitch', () => this.connectTwitch({ userId: owner.userId, code }))
+        .otherwise(() => {
+          throw new AppBadRequestException('VALIDATION_FAILED', `${provider} cannot be connected`);
+        });
+
+      return new URL(INTEGRATIONS.doneRedirectPath, webUrl).href;
+    } catch (error) {
+      this.logger.warn(`${provider} connect failed for ${owner.userId}: ${error instanceof Error ? error.message : String(error)}`);
+
+      return new URL(INTEGRATIONS.failedRedirectPath, webUrl).href;
+    }
+  }
+
+  private async connectDonationAlerts({ userId, code }: OAuthCodeInput): Promise<void> {
+    const clientId = this.config.get('DONATIONALERTS_CLIENT_ID');
+    const clientSecret = this.config.get('DONATIONALERTS_CLIENT_SECRET');
+    const token = await getAccessToken(clientId, clientSecret, this.redirectUri('donationAlerts'), code);
+    const provider = new DonationAlertsAuthProvider({ clientId, clientSecret });
+    const { userId: externalId } = await provider.addUserForToken({ ...token, scopes: [...DONATION_ALERTS.scopes] });
+
+    await this.store.save({
+      userId,
+      provider: 'donationAlerts',
+      externalId: String(externalId),
+      accessToken: token.accessToken,
+      refreshToken: token.refreshToken,
+      expiresAt: new Date(token.obtainmentTimestamp + token.expiresIn * 1000),
+      scope: DONATION_ALERTS.scopes.join(' '),
+      config: null
+    });
+  }
+
+  private async connectTwitch({ userId, code }: OAuthCodeInput): Promise<void> {
+    const clientId = this.config.get('TWITCH_CLIENT_ID');
+    const token = await exchangeCode(clientId, this.config.get('TWITCH_CLIENT_SECRET'), code, this.redirectUri('twitch'));
+    const info = await getTokenInfo(token.accessToken, clientId);
+
+    if (!info.userId || !info.userName) {
+      throw new AppBadRequestException('VALIDATION_FAILED', 'Twitch returned a token without a user');
+    }
+
+    await this.store.save({
+      userId,
+      provider: 'twitch',
+      externalId: info.userId,
+      accessToken: token.accessToken,
+      refreshToken: token.refreshToken,
+      expiresAt: token.expiresIn === null ? null : new Date(token.obtainmentTimestamp + token.expiresIn * 1000),
+      scope: token.scope.join(' '),
+      config: { login: info.userName }
+    });
+  }
+
+  private app(provider: StreamerProvider) {
+    return match(provider)
+      .with('donationAlerts', () => ({
+        clientId: this.config.get('DONATIONALERTS_CLIENT_ID'),
+        authorizeUrl: DONATION_ALERTS.authorizeUrl,
+        scopes: DONATION_ALERTS.scopes
+      }))
+      .with('twitch', () => ({ clientId: this.config.get('TWITCH_CLIENT_ID'), authorizeUrl: TWITCH.authorizeUrl, scopes: TWITCH.scopes }))
+      .otherwise(() => ({ clientId: '', authorizeUrl: '', scopes: NO_SCOPES }));
+  }
+
+  private redirectUri(provider: StreamerProvider): string {
+    const path = provider === 'twitch' ? TWITCH.callbackPath : DONATION_ALERTS.callbackPath;
+
+    return new URL(path, this.config.get('API_URL')).href;
+  }
+}

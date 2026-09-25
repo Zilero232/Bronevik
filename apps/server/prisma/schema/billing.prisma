@@ -1,0 +1,146 @@
+enum SubscriptionProduct {
+  plus
+  clanPanel    @map("clan_panel")
+  developerPro @map("developer_pro")
+  overlaysPro  @map("overlays_pro")
+
+  @@map("subscription_product")
+}
+
+enum SubscriptionPlan {
+  monthly
+  halfYearly @map("half_yearly")
+  yearly
+
+  @@map("subscription_plan")
+}
+
+enum SubscriptionStatus {
+  trialing
+  active
+  pastDue  @map("past_due")
+  canceled
+  expired
+
+  @@map("subscription_status")
+}
+
+enum PaymentStatus {
+  pending
+  waitingForCapture @map("waiting_for_capture")
+  succeeded
+  canceled
+  refunded
+
+  @@map("payment_status")
+}
+
+enum PaymentKind {
+  subscription
+  donation
+  coaching
+
+  @@map("payment_kind")
+}
+
+model Subscription {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId  String              @map("user_id")
+  product SubscriptionProduct
+  plan    SubscriptionPlan    @default(monthly)
+  status  SubscriptionStatus  @default(active)
+  clanId  BigInt?             @map("clan_id")
+
+  currentPeriodEnd  DateTime? @map("current_period_end") @db.Timestamptz(3)
+  cancelAtPeriodEnd Boolean   @default(false) @map("cancel_at_period_end")
+  trialStartedAt    DateTime? @map("trial_started_at") @db.Timestamptz(3)
+
+  savedCardId    String? @map("saved_card_id")
+  savedCardTitle String? @map("saved_card_title")
+  pendingCardId  String? @unique @map("pending_card_id")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@unique([userId, product])
+  @@index([status, currentPeriodEnd])
+  @@index([cancelAtPeriodEnd, currentPeriodEnd])
+  @@map("subscription")
+}
+
+model Payment {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId            String  @map("user_id")
+  subscriptionId    String? @map("subscription_id")
+  yookassaPaymentId String  @unique @map("yookassa_payment_id")
+
+  amount       Decimal              @db.Decimal(10, 2)
+  currency     String               @default("RUB")
+  status       PaymentStatus        @default(pending)
+  kind         PaymentKind          @default(subscription)
+  product      SubscriptionProduct?
+  plan         SubscriptionPlan?
+  isAutoCharge Boolean              @default(false) @map("is_auto_charge")
+  promoCode    String?              @map("promo_code")
+  metadata     Json?
+
+  paidAt    DateTime? @map("paid_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isAutoCharge, status, createdAt])
+  @@index([subscriptionId])
+  @@map("payment")
+}
+
+model PromoCode {
+  code String @id
+
+  product         SubscriptionProduct?
+  discountPercent Int?                 @map("discount_percent") @db.SmallInt
+  freeDays        Int?                 @map("free_days") @db.SmallInt
+  maxUses         Int?                 @map("max_uses")
+  usedCount       Int                  @default(0) @map("used_count")
+
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  redemptions PromoRedemption[]
+
+  @@map("promo_code")
+}
+
+model PromoRedemption {
+  code   String
+  userId String @map("user_id")
+
+  redeemedAt DateTime @default(now()) @map("redeemed_at") @db.Timestamptz(3)
+
+  promo PromoCode @relation(fields: [code], references: [code], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([code, userId])
+  @@index([userId])
+  @@map("promo_redemption")
+}
+
+model Referral {
+  referredUserId String @id @map("referred_user_id")
+  referrerUserId String @map("referrer_user_id")
+
+  rewardedAt DateTime? @map("rewarded_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  referred User @relation("referred", fields: [referredUserId], references: [id], onDelete: Cascade)
+  referrer User @relation("referrer", fields: [referrerUserId], references: [id], onDelete: Cascade)
+
+  @@index([referrerUserId])
+  @@map("referral")
+}

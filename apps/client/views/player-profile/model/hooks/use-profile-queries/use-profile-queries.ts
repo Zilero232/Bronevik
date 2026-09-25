@@ -1,0 +1,44 @@
+'use client';
+
+import type { InsightsPeriod, TimeSeriesGranularity, TimeSeriesMetric } from '@bronevik/schemas';
+
+import type { PlayerTanksFilter } from '@/shared/api/players';
+
+import {
+  getNicknameHistory,
+  getPlayerActivity,
+  getPlayerHistory,
+  getPlayerInsights,
+  getPlayerMarks,
+  getPlayerPlaytime,
+  getPlayerSessions,
+  getPlayerTanks,
+  PLAYERS_REQUEST
+} from '@/shared/api/players';
+
+import { useProfileSection } from '../use-profile-section';
+
+export const usePlayerTanks = (filter: PlayerTanksFilter = {}) =>
+  useProfileSection({ section: 'tanks', params: filter, fetcher: (input) => getPlayerTanks({ ...input, filter }) });
+
+export const usePlayerHistory = ({ metric, granularity }: { metric: TimeSeriesMetric; granularity: TimeSeriesGranularity }) =>
+  useProfileSection({ section: 'history', params: { metric, granularity }, fetcher: (input) => getPlayerHistory({ ...input, metric, granularity }) });
+
+export const usePlayerActivity = () =>
+  useProfileSection({
+    section: 'activity',
+    params: { days: PLAYERS_REQUEST.activityDays },
+    fetcher: (input) => getPlayerActivity({ ...input, days: PLAYERS_REQUEST.activityDays })
+  });
+
+export const usePlayerSessions = (limit: number) =>
+  useProfileSection({ section: 'sessions', params: { limit }, fetcher: (input) => getPlayerSessions({ ...input, limit, offset: 0 }) });
+
+export const usePlayerMarks = () => useProfileSection({ section: 'marks', fetcher: getPlayerMarks });
+
+export const usePlayerInsights = (period: InsightsPeriod) =>
+  useProfileSection({ section: 'insights', params: { period }, fetcher: (input) => getPlayerInsights({ ...input, period }) });
+
+export const usePlayerPlaytime = () => useProfileSection({ section: 'playtime', fetcher: getPlayerPlaytime });
+
+export const useNicknameHistory = () => useProfileSection({ section: 'nicknames', fetcher: getNicknameHistory });

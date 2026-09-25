@@ -1,0 +1,38 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: start;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.controls {
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-5));
+
+  padding: var(--space-5);
+}
+
+.stage {
+  @include stack(var(--space-4));
+
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-4));
+
+  @include below(3xl) {
+    position: static;
+  }
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}

@@ -1,0 +1,88 @@
+@use '@/shared/styles/mixins' as *;
+
+.layout {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.progress {
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-7);
+
+  @include below(md) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.percent {
+  font-size: var(--text-2xl);
+  font-stretch: 80%;
+}
+
+.caption {
+  @include hud-label;
+
+  margin-top: 4px;
+  font-size: 0.625rem;
+}
+
+.details {
+  @include stack(var(--space-3));
+
+  align-items: flex-start;
+
+  @include below(md) {
+    align-items: center;
+  }
+}
+
+.tank {
+  @include display(var(--text-xl));
+}
+
+.need {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.marks {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.mark {
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding-block: var(--space-7);
+  text-align: center;
+}
+
+.markIcon {
+  color: var(--color-text);
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--color-accent) 35%, transparent));
+}
+
+.markTitle {
+  @include display(var(--text-md));
+}
+
+.markThreshold {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}

@@ -1,0 +1,103 @@
+enum TrackingTier {
+  active
+  population
+  dormant
+
+  @@map("tracking_tier")
+}
+
+model Player {
+  accountId BigInt @id @map("account_id")
+
+  nickname     String
+  clanId       BigInt? @map("clan_id")
+  globalRating Int?    @map("global_rating")
+
+  createdAt      DateTime? @map("created_at") @db.Timestamptz(3)
+  lastBattleAt   DateTime? @map("last_battle_at") @db.Timestamptz(3)
+  logoutAt       DateTime? @map("logout_at") @db.Timestamptz(3)
+  lestaUpdatedAt DateTime? @map("lesta_updated_at") @db.Timestamptz(3)
+
+  trackingTier TrackingTier @default(population) @map("tracking_tier")
+  lastPolledAt DateTime?    @map("last_polled_at") @db.Timestamptz(3)
+  nextPollAt   DateTime?    @map("next_poll_at") @db.Timestamptz(3)
+  lastViewedAt DateTime?    @map("last_viewed_at") @db.Timestamptz(3)
+
+  isHidden   Boolean   @default(false) @map("is_hidden")
+  purgeAfter DateTime? @map("purge_after") @db.Timestamptz(3)
+
+  firstSeenAt DateTime @default(now()) @map("first_seen_at") @db.Timestamptz(3)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  lestaLinks     UserLestaAccount[]
+  nicknames      PlayerNickname[]
+  clanHistory    PlayerClanHistory[]
+  tanks          PlayerTank[]
+  ratings        AccountRating[]
+  tankRatings    AccountTankRating[]
+  badges         AccountBadge[]
+  moeProgress    MoeProgress[]
+  clanMembership ClanMember?
+  playSessions   PlaySession[]
+  battles        Battle[]
+
+  @@index([nickname(ops: raw("gin_trgm_ops"))], type: Gin, map: "player_nickname_trgm_idx")
+  @@index([nickname])
+  @@index([clanId])
+  @@index([trackingTier, nextPollAt])
+  @@index([lastBattleAt])
+  @@map("player")
+}
+
+model PlayerNickname {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  accountId BigInt @map("account_id")
+  nickname  String
+
+  firstSeenAt DateTime @default(now()) @map("first_seen_at") @db.Timestamptz(3)
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@unique([accountId, nickname])
+  @@index([nickname(ops: raw("gin_trgm_ops"))], type: Gin, map: "player_nickname_history_trgm_idx")
+  @@map("player_nickname_history")
+}
+
+model PlayerClanHistory {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  accountId BigInt    @map("account_id")
+  clanId    BigInt    @map("clan_id")
+  role      ClanRole?
+
+  joinedAt DateTime? @map("joined_at") @db.Timestamptz(3)
+  leftAt   DateTime? @map("left_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@index([accountId, joinedAt(sort: Desc)])
+  @@index([clanId])
+  @@map("player_clan_history")
+}
+
+model PlayerTank {
+  accountId BigInt @map("account_id")
+  tankId    Int    @map("tank_id")
+
+  battles       Int      @default(0)
+  wins          Int      @default(0)
+  markOfMastery Int      @default(0) @map("mark_of_mastery") @db.SmallInt
+  marksOnGun    Int?     @map("marks_on_gun") @db.SmallInt
+  inGarage      Boolean? @map("in_garage")
+
+  lastBattleAt DateTime? @map("last_battle_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@id([accountId, tankId])
+  @@index([tankId])
+  @@map("player_tank")
+}

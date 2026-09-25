@@ -1,0 +1,105 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  overflow: hidden;
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-8);
+
+  @include below(xl) {
+    padding-top: var(--space-8);
+  }
+}
+
+.backdrop {
+  position: absolute;
+  background:
+    repeating-radial-gradient(circle at 85% 10%, transparent 0 46px, var(--grid-line) 46px 47px),
+    radial-gradient(circle at 85% 10%, color-mix(in srgb, var(--color-success) 10%, transparent), transparent 45%);
+  inset: 0;
+  mask-image: radial-gradient(ellipse 70% 90% at 85% 10%, #000 20%, transparent 70%);
+  pointer-events: none;
+}
+
+.inner {
+  @include shell;
+  @include stack(var(--space-5));
+
+  position: relative;
+}
+
+.eyebrow {
+  @include hud-label;
+
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-success);
+  gap: var(--space-2);
+}
+
+.blip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: live-pulse 1.6s ease-in-out infinite;
+  background-color: var(--color-success);
+}
+
+.title {
+  @include display(var(--text-4xl));
+
+  font-stretch: 75%;
+  font-weight: 800;
+  line-height: 0.95;
+}
+
+.hot {
+  background: linear-gradient(95deg, var(--color-accent-hot), var(--color-accent) 55%, var(--color-accent-deep));
+  background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  max-width: 60ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+
+  @include below(md) {
+    font-size: var(--text-md);
+  }
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-4);
+  list-style: none;
+}
+
+.legendItem {
+  @include hud-label;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  background-color: var(--color-surface-raised);
+
+  &[data-verdict='match'] {
+    background-color: var(--color-success);
+  }
+
+  &[data-verdict='close'] {
+    background-color: var(--color-warning);
+  }
+
+  &[data-verdict='miss'] {
+    background-color: var(--color-danger);
+  }
+}

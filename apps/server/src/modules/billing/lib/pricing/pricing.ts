@@ -1,0 +1,15 @@
+import type { DescribePlanInput, PlanPriceInput, PlusPlan } from './pricing.types';
+
+import { PAYMENT_DESCRIPTION, PLUS_PLANS, PRICING } from '../../config';
+
+export const planPrice = ({ plan, discountPercent }: PlanPriceInput): number => {
+  const base = PLUS_PLANS[plan].priceRub;
+  const discount = Math.min(Math.max(discountPercent ?? 0, 0), 100);
+
+  return Math.max(PRICING.minPriceRub, Math.round(base * (100 - discount)) / 100);
+};
+
+export const describePlan = ({ plan, isRenewal }: DescribePlanInput): string =>
+  (isRenewal ? PAYMENT_DESCRIPTION.renewal : PAYMENT_DESCRIPTION.purchase).replace('{months}', String(PLUS_PLANS[plan].months));
+
+export const isPlusPlan = (plan: string | null): plan is PlusPlan => plan !== null && Object.hasOwn(PLUS_PLANS, plan);

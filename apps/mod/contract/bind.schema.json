@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bronevik.app/contract/mod/bind.schema.json",
+  "title": "Bronevik mod account binding",
+  "description": "POST /mod/bind, unsigned JSON. The site shows a signed-in user a one-time code (6 chars from the alphabet below, TTL ~10 minutes, single use, rate-limited per IP and per account). The user types it into the mod; the mod posts it with the in-game account id. The server MUST reject the request unless account_id equals the Lesta account linked (via Lesta ID OpenID) to the site user who generated the code, otherwise anyone could bind someone else's account. On success the server creates a device (one per install; re-binding the same account revokes nothing else) and returns device_id and secret once. The secret is never sent again; the mod stores it locally in mods/configs/bronevik/credentials.json and uses the UTF-8 bytes of the secret string as the HMAC-SHA256 key for /mod/ingest. Users can list and revoke devices on the site.",
+  "definitions": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "account_id", "mod_version", "client_version", "realm"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$",
+          "description": "Uppercase, no 0/O/1/I. The mod strips spaces and hyphens and uppercases before sending."
+        },
+        "account_id": { "type": "integer", "minimum": 1, "description": "Lesta account id (BigWorld.player().databaseID)." },
+        "mod_version": { "type": "string", "maxLength": 32 },
+        "client_version": { "type": "string", "maxLength": 64 },
+        "realm": { "const": "RU" }
+      }
+    },
+    "response": {
+      "type": "object",
+      "description": "200 response.",
+      "required": ["device_id", "secret", "account_id"],
+      "properties": {
+        "device_id": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9_-]+$" },
+        "secret": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 128,
+          "description": "High-entropy random string, at least 32 bytes of entropy, e.g. base64url of 32 random bytes."
+        },
+        "account_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Echo of the bound account; the mod rejects the response if it differs from the request."
+        },
+        "nickname": { "type": "string" }
+      }
+    },
+    "error": {
+      "type": "object",
+      "description": "4xx response. 400 invalid_code (format), 404 code_not_found, 410 code_expired, 409 code_used, 403 account_mismatch, 429 rate_limited.",
+      "required": ["error"],
+      "properties": {
+        "error": { "enum": ["invalid_code", "code_not_found", "code_expired", "code_used", "account_mismatch", "rate_limited"] },
+        "message": { "type": "string" }
+      }
+    }
+  },
+  "oneOf": [{ "$ref": "#/definitions/request" }, { "$ref": "#/definitions/response" }, { "$ref": "#/definitions/error" }]
+}

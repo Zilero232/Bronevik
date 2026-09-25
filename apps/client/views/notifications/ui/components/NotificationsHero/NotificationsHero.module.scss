@@ -1,0 +1,88 @@
+@use '@/shared/styles/mixins' as *;
+
+.signal {
+  @include riveted-plate(var(--chamfer-lg));
+
+  display: grid;
+  align-items: end;
+  padding: var(--space-5) var(--space-6);
+  gap: var(--space-3) var(--space-5);
+  grid-template-areas:
+    'bars readout'
+    'hint hint';
+  grid-template-columns: auto 1fr;
+}
+
+.bars {
+  display: flex;
+  height: 44px;
+  align-items: flex-end;
+  gap: 4px;
+  grid-area: bars;
+}
+
+.bar {
+  width: 6px;
+  background-color: var(--color-border-strong);
+
+  @for $i from 1 through 5 {
+    &:nth-child(#{$i}) {
+      height: #{$i * 20%};
+    }
+  }
+
+  .signal[data-live='true'] & {
+    animation: signal-pulse 1.6s var(--ease-in-out) infinite;
+    background-color: var(--color-accent);
+    box-shadow: 0 0 10px var(--color-accent-soft);
+
+    @for $i from 2 through 5 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{($i - 1) * 0.12s};
+      }
+    }
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+.readout {
+  @include stack(var(--space-1));
+
+  grid-area: readout;
+}
+
+.value {
+  @include stencil;
+
+  color: var(--color-text);
+  font-size: var(--text-3xl);
+  line-height: 0.9;
+
+  .signal[data-live='true'] & {
+    color: var(--color-accent);
+  }
+}
+
+.label {
+  @include hud-label;
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  grid-area: hint;
+}
+
+@keyframes signal-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}

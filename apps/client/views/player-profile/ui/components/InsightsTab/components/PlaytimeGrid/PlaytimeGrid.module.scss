@@ -1,0 +1,43 @@
+@use '@/shared/styles/mixins' as *;
+
+.scroller {
+  overflow-x: auto;
+
+  @include hide-scrollbar;
+}
+
+.grid {
+  display: grid;
+  min-width: 560px;
+  gap: 3px;
+  grid-template-columns: 28px repeat(24, minmax(14px, 1fr));
+}
+
+.hour,
+.weekday {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+}
+
+.weekday {
+  display: flex;
+  align-items: center;
+  text-transform: capitalize;
+}
+
+.cell {
+  height: 18px;
+  border-radius: 3px;
+  background-color: color-mix(
+    in srgb,
+    var(--color-success) calc(max(var(--shift), 0) * 100%),
+    color-mix(in srgb, var(--color-danger) calc(max(var(--shift) * -1, 0) * 100%), var(--color-surface-hover))
+  );
+  opacity: calc(0.3 + var(--weight) * 0.7);
+
+  &[data-empty='true'] {
+    background-color: var(--color-surface-sunken);
+    opacity: 1;
+  }
+}

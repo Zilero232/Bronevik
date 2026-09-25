@@ -1,0 +1,114 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  gap: var(--space-5);
+}
+
+.dial {
+  overflow: visible;
+  width: 176px;
+  height: 176px;
+  flex-shrink: 0;
+}
+
+.face {
+  fill: var(--color-surface-sunken);
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+
+.track {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-dasharray: 2 4;
+  stroke-width: 1;
+}
+
+.arc {
+  fill: none;
+  filter: drop-shadow(0 0 6px var(--color-accent));
+  stroke: var(--color-accent);
+  stroke-linecap: round;
+  stroke-width: 12;
+}
+
+.tick {
+  stroke: var(--color-text-dim);
+  stroke-width: 1;
+
+  &[data-major='true'] {
+    stroke: var(--color-text-muted);
+    stroke-width: 2;
+  }
+
+  &[data-quiet='true'] {
+    stroke: var(--color-accent-hot);
+  }
+}
+
+.label {
+  dominant-baseline: central;
+  fill: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-anchor: middle;
+}
+
+.needle {
+  stroke: var(--color-text);
+  stroke-linecap: round;
+  stroke-width: 2;
+
+  .root[data-quiet-now='true'] & {
+    stroke: var(--color-accent);
+  }
+}
+
+.hub {
+  fill: var(--color-text);
+  stroke: var(--color-surface-sunken);
+  stroke-width: 2;
+}
+
+.caption {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+  flex: 1;
+}
+
+.span {
+  @include stencil;
+
+  color: var(--color-accent);
+  font-size: var(--text-2xl);
+  line-height: 1;
+}
+
+.range {
+  @include numeric;
+
+  color: var(--color-text);
+  font-size: var(--text-md);
+}
+
+.badge {
+  @include hud-label;
+
+  align-self: flex-start;
+  padding: 2px 6px;
+  background-color: var(--color-steel-soft);
+  color: var(--color-steel);
+
+  @include chamfer-path(4px);
+}
+
+.now {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}

@@ -1,0 +1,76 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-9);
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 48px 48px,
+    radial-gradient(ellipse at 80% 20%, var(--color-accent-soft), transparent 60%);
+  padding-block: var(--space-10) var(--space-9);
+
+  @include below(md) {
+    padding-block: var(--space-8) var(--space-7);
+  }
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.emblem {
+  position: absolute;
+  top: 50%;
+  right: -60px;
+  color: var(--color-accent);
+  opacity: 0.06;
+  transform: translateY(-50%) rotate(-8deg);
+
+  @include below(lg) {
+    right: -160px;
+  }
+}
+
+.sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  opacity: 0.6;
+
+  @include scanner(4.5s);
+}
+
+.inner {
+  @include shell;
+  @include stack(var(--space-4));
+
+  position: relative;
+  max-width: 760px;
+  margin-inline: calc((100% - var(--shell-width)) / 2) auto;
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--text-4xl));
+
+  margin: 0;
+}
+
+.description {
+  max-width: 56ch;
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}

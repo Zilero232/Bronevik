@@ -1,0 +1,30 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4) var(--space-6);
+}
+
+.group {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+  max-width: 100%;
+}
+
+.label {
+  @include hud-label;
+}
+
+.control {
+  max-width: 100%;
+  overflow-x: auto;
+
+  @include hide-scrollbar;
+}
+
+.reset {
+  margin-left: auto;
+}

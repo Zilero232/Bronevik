@@ -1,0 +1,31 @@
+@mixin category($var: --category) {
+  #{$var}: var(--color-text-muted);
+
+  &[data-category='firepower'] {
+    #{$var}: var(--color-danger);
+  }
+
+  &[data-category='mobility'] {
+    #{$var}: var(--color-success);
+  }
+
+  &[data-category='survivability'] {
+    #{$var}: var(--color-warning);
+  }
+
+  &[data-category='stealth'] {
+    #{$var}: var(--color-steel);
+  }
+}
+
+@mixin verdict($var: --verdict) {
+  #{$var}: var(--color-text-dim);
+
+  &[data-verdict='better'] {
+    #{$var}: var(--color-success);
+  }
+
+  &[data-verdict='worse'] {
+    #{$var}: var(--color-danger);
+  }
+}

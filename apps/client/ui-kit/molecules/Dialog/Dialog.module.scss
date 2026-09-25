@@ -1,0 +1,78 @@
+@use '@/shared/styles/mixins' as *;
+
+.overlay {
+  position: fixed;
+  z-index: var(--z-overlay);
+  backdrop-filter: blur(4px);
+  background-color: var(--color-overlay);
+  inset: 0;
+  transition: opacity var(--duration-base) ease;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+}
+
+.content {
+  @include plate(var(--chamfer-lg), var(--color-border-strong), var(--color-surface-raised));
+
+  position: fixed;
+  z-index: calc(var(--z-overlay) + 1);
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: calc(100% - 32px);
+  max-width: 480px;
+  max-height: calc(100dvh - 48px);
+  flex-direction: column;
+  padding: var(--space-7);
+  box-shadow: var(--elevation-3);
+  gap: var(--space-5);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translate(-50%, -50%);
+  transition:
+    opacity var(--duration-base) ease,
+    transform var(--duration-slow) var(--ease-out);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.97);
+  }
+
+  @include below(md) {
+    padding: var(--space-5);
+  }
+}
+
+.close {
+  @include icon-button(30px);
+
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-5);
+}
+
+.header {
+  @include stack(var(--space-2));
+
+  padding-right: var(--space-8);
+}
+
+.title {
+  @include display(var(--text-xl));
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}

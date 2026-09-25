@@ -1,0 +1,48 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.label {
+  @include hud-label;
+}
+
+.value {
+  @include numeric;
+
+  color: var(--color-accent);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.track {
+  position: relative;
+  overflow: hidden;
+  height: 22px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+}
+
+.fill {
+  position: absolute;
+  background: linear-gradient(90deg, var(--color-accent-deep), var(--color-accent), var(--color-accent-hot));
+  box-shadow: 0 0 16px color-mix(in srgb, var(--color-accent) 45%, transparent);
+  inset: 0;
+  transform-origin: left center;
+}
+
+.ticks {
+  position: absolute;
+  background-image: linear-gradient(90deg, transparent calc(100% - 2px), var(--color-bg) calc(100% - 2px));
+  background-repeat: repeat-x;
+  inset: 0;
+  pointer-events: none;
+}

@@ -1,0 +1,340 @@
+enum GuideKind {
+  tank
+  map
+  general
+
+  @@map("guide_kind")
+}
+
+enum CommentTarget {
+  build
+  guide
+  replay
+  tacticBoard @map("tactic_board")
+
+  @@map("comment_target")
+}
+
+enum PostStatus {
+  open
+  closed
+  expired
+  hidden
+
+  @@map("post_status")
+}
+
+enum RecruitingPostKind {
+  clanSeeksPlayer @map("clan_seeks_player")
+  playerSeeksClan @map("player_seeks_clan")
+
+  @@map("recruiting_post_kind")
+}
+
+enum CoachingOrderStatus {
+  requested
+  accepted
+  paid
+  completed
+  cancelled
+  disputed
+
+  @@map("coaching_order_status")
+}
+
+enum TournamentStatus {
+  draft
+  registration
+  running
+  finished
+  cancelled
+
+  @@map("tournament_status")
+}
+
+model Build {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  authorUserId  String           @map("author_user_id")
+  tankId        Int              @map("tank_id")
+  gameVersionId Int?             @map("game_version_id")
+  title         String
+  description   String?
+  loadout       Json
+  stats         Json?
+  visibility    Visibility       @default(public)
+  status        ModerationStatus @default(published)
+  likesCount    Int              @default(0) @map("likes_count")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  author      User         @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+  vehicle     Vehicle      @relation(fields: [tankId], references: [tankId], onDelete: Cascade)
+  gameVersion GameVersion? @relation(fields: [gameVersionId], references: [id], onDelete: SetNull)
+  likes       BuildLike[]
+
+  @@index([tankId, status, likesCount(sort: Desc)])
+  @@index([authorUserId])
+  @@map("build")
+}
+
+model BuildLike {
+  buildId String @map("build_id")
+  userId  String @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  build Build @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([buildId, userId])
+  @@index([userId])
+  @@map("build_like")
+}
+
+model Guide {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  authorUserId String           @map("author_user_id")
+  slug         String           @unique
+  kind         GuideKind
+  tankId       Int?             @map("tank_id")
+  arenaId      String?          @map("arena_id")
+  locale       String           @default("ru")
+  title        String
+  body         String
+  status       ModerationStatus @default(draft)
+  likesCount   Int              @default(0) @map("likes_count")
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  author User        @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+  likes  GuideLike[]
+
+  @@index([kind, status, publishedAt(sort: Desc)])
+  @@index([tankId])
+  @@index([arenaId])
+  @@index([authorUserId])
+  @@map("guide")
+}
+
+model GuideLike {
+  guideId String @map("guide_id")
+  userId  String @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  guide Guide @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([guideId, userId])
+  @@index([userId])
+  @@map("guide_like")
+}
+
+model Comment {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  authorUserId String           @map("author_user_id")
+  target       CommentTarget
+  targetId     String           @map("target_id")
+  parentId     String?          @map("parent_id")
+  body         String
+  status       ModerationStatus @default(published)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  author  User      @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("thread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("thread")
+
+  @@index([target, targetId, createdAt])
+  @@index([authorUserId])
+  @@map("comment")
+}
+
+model PlatoonPost {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId    String     @map("user_id")
+  accountId BigInt     @map("account_id")
+  tiers     Int[]
+  modes     String[]
+  tankIds   Int[]      @map("tank_ids")
+  hasVoice  Boolean    @default(false) @map("has_voice")
+  minWn8    Int?       @map("min_wn8")
+  message   String?
+  status    PostStatus @default(open)
+
+  availableFrom  DateTime? @map("available_from") @db.Timestamptz(3)
+  availableUntil DateTime? @map("available_until") @db.Timestamptz(3)
+  expiresAt      DateTime  @map("expires_at") @db.Timestamptz(3)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, expiresAt])
+  @@map("platoon_post")
+}
+
+model RecruitingPost {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  kind         RecruitingPostKind @default(clanSeeksPlayer)
+  clanId       BigInt?            @map("clan_id")
+  accountId    BigInt?            @map("account_id")
+  authorUserId String             @map("author_user_id")
+  title        String
+  body         String
+  requirements Json?
+  status       PostStatus         @default(open)
+
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  clan   Clan? @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+  author User  @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([kind, status, createdAt(sort: Desc)])
+  @@index([clanId])
+  @@index([accountId])
+  @@map("recruiting_post")
+}
+
+model TacticBoard {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  ownerUserId String     @map("owner_user_id")
+  arenaId     String?    @map("arena_id")
+  mode        String?
+  title       String
+  data        Json
+  document    Bytes?
+  shareToken  String     @unique @default(dbgenerated("replace((gen_random_uuid())::text, '-'::text, ''::text)")) @map("share_token")
+  editToken   String     @unique @default(dbgenerated("replace((gen_random_uuid())::text, '-'::text, ''::text)")) @map("edit_token")
+  visibility  Visibility @default(unlisted)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  owner User @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+
+  @@index([ownerUserId])
+  @@index([arenaId])
+  @@map("tactic_board")
+}
+
+model CoachProfile {
+  userId String @id @map("user_id")
+
+  accountId  BigInt  @map("account_id")
+  headline   String
+  bio        String?
+  priceRub   Decimal @map("price_rub") @db.Decimal(10, 2)
+  tankIds    Int[]   @map("tank_ids")
+  isActive   Boolean @default(true) @map("is_active")
+  rating     Float?
+  ordersDone Int     @default(0) @map("orders_done")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders CoachingOrder[]
+  offers CoachingOffer[]
+
+  @@index([isActive, rating(sort: Desc)])
+  @@map("coach_profile")
+}
+
+model CoachingOffer {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  coachUserId     String  @map("coach_user_id")
+  title           String
+  description     String?
+  priceRub        Decimal @map("price_rub") @db.Decimal(10, 2)
+  durationMinutes Int     @map("duration_minutes")
+  withReplay      Boolean @default(false) @map("with_replay")
+  isActive        Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  coach  CoachProfile    @relation(fields: [coachUserId], references: [userId], onDelete: Cascade)
+  orders CoachingOrder[]
+
+  @@index([coachUserId, isActive])
+  @@map("coaching_offer")
+}
+
+model CoachingOrder {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  coachUserId   String              @map("coach_user_id")
+  studentUserId String              @map("student_user_id")
+  offerId       String?             @map("offer_id")
+  replayId      String?             @map("replay_id")
+  paymentId     String?             @unique @map("payment_id")
+  status        CoachingOrderStatus @default(requested)
+  priceRub      Decimal             @map("price_rub") @db.Decimal(10, 2)
+  notes         String?
+  review        String?
+  score         Int?                @db.SmallInt
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(3)
+
+  coach   CoachProfile   @relation(fields: [coachUserId], references: [userId], onDelete: Cascade)
+  offer   CoachingOffer? @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  student User           @relation(fields: [studentUserId], references: [id], onDelete: Cascade)
+
+  @@index([coachUserId, status])
+  @@index([studentUserId])
+  @@index([status, createdAt])
+  @@map("coaching_order")
+}
+
+model Tournament {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  organizerUserId String           @map("organizer_user_id")
+  slug            String           @unique
+  title           String
+  description     String?
+  rules           Json?
+  requirements    Json?
+  bracket         Json?
+  status          TournamentStatus @default(draft)
+
+  registrationEndsAt DateTime? @map("registration_ends_at") @db.Timestamptz(3)
+  startsAt           DateTime  @map("starts_at") @db.Timestamptz(3)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  organizer    User                    @relation(fields: [organizerUserId], references: [id], onDelete: Cascade)
+  participants TournamentParticipant[]
+
+  @@index([status, startsAt])
+  @@map("tournament")
+}
+
+model TournamentParticipant {
+  tournamentId String @map("tournament_id")
+  accountId    BigInt @map("account_id")
+
+  teamName  String?  @map("team_name")
+  seed      Int?
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@id([tournamentId, accountId])
+  @@map("tournament_participant")
+}

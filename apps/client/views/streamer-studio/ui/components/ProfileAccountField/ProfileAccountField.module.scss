@@ -1,0 +1,10 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.hint {
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

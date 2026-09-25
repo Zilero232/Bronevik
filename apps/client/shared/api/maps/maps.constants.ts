@@ -1,0 +1,61 @@
+export const MAP_MOCK = {
+  minimapBase: 'https://raw.githubusercontent.com/unicum-gg/wot.maps/Lesta/maps',
+  extension: '.webp',
+  modeSuffix: new Map([
+    ['domination', '_domination3'],
+    ['assault2', '_assault2'],
+    ['comp7', '_comp7']
+  ]),
+  withoutImage: '503_kaliningrad',
+  withoutCamouflage: '502_kamchatka',
+  statsShare: 0.7,
+  maxPlayersInTeam: 15,
+  roundLengthSec: 900
+} as const;
+
+type MapSeed = [arenaId: string, name: string, sizeMeters: number, camouflage: string, modes: string[]];
+
+export const MAP_SEEDS: MapSeed[] = [
+  ['01_karelia', 'Карелия', 1_000, 'summer', ['ctf', 'comp7']],
+  ['02_malinovka', 'Малиновка', 1_000, 'summer', ['ctf', 'comp7']],
+  ['03_campania_big', 'Провинция', 1_000, 'summer', ['ctf']],
+  ['04_himmelsdorf', 'Химмельсдорф', 800, 'summer', ['ctf']],
+  ['05_prohorovka', 'Прохоровка', 1_000, 'summer', ['ctf']],
+  ['06_ensk', 'Энск', 600, 'summer', ['ctf', 'assault2', 'comp7']],
+  ['07_lakeville', 'Ласвилль', 800, 'summer', ['ctf']],
+  ['08_ruinberg', 'Руинберг', 800, 'summer', ['ctf']],
+  ['10_hills', 'Рудники', 800, 'summer', ['ctf', 'domination', 'comp7']],
+  ['11_murovanka', 'Мурованка', 800, 'summer', ['ctf']],
+  ['13_erlenberg', 'Эрленберг', 1_000, 'summer', ['ctf']],
+  ['14_siegfried_line', 'Линия Зигфрида', 1_000, 'summer', ['ctf', 'assault2']],
+  ['17_munchen', 'Уайдпарк', 800, 'summer', ['ctf', 'comp7']],
+  ['18_cliff', 'Утёс', 1_000, 'summer', ['ctf']],
+  ['19_monastery', 'Монастырь', 1_000, 'summer', ['ctf', 'domination']],
+  ['23_westfeld', 'Вестфилд', 1_000, 'summer', ['ctf']],
+  ['28_desert', 'Песчаная река', 1_000, 'desert', ['ctf', 'comp7']],
+  ['29_el_hallouf', 'Эль-Халлуф', 1_000, 'desert', ['ctf', 'comp7']],
+  ['31_airfield', 'Аэродром', 1_000, 'desert', ['ctf']],
+  ['33_fjord', 'Фьорды', 1_000, 'summer', ['ctf']],
+  ['34_redshire', 'Редшир', 1_000, 'summer', ['ctf']],
+  ['35_steppes', 'Степи', 1_000, 'summer', ['ctf']],
+  ['36_fishing_bay', 'Рыбацкая бухта', 1_000, 'summer', ['ctf', 'domination']],
+  ['37_caucasus', 'Перевал', 1_000, 'summer', ['ctf']],
+  ['38_mannerheim_line', 'Линия Маннергейма', 1_000, 'winter', ['ctf']],
+  ['44_north_america', 'Лайв Окс', 1_000, 'summer', ['ctf']],
+  ['45_north_america', 'Хайвей', 1_000, 'summer', ['ctf']],
+  ['47_canada_a', 'Тихий берег', 1_000, 'summer', ['ctf']],
+  ['59_asia_great_wall', 'Великая стена', 1_000, 'summer', ['ctf']],
+  ['60_asia_miao', 'Жемчужная река', 1_000, 'summer', ['ctf', 'assault2']],
+  ['63_tundra', 'Тундра', 800, 'winter', ['ctf']],
+  ['83_kharkiv', 'Харьков', 800, 'winter', ['ctf']],
+  ['90_minsk', 'Минск', 800, 'summer', ['ctf']],
+  ['95_lost_city_ctf', 'Затерянный город', 800, 'desert', ['ctf', 'domination', 'comp7']],
+  ['99_poland', 'Студзянки', 1_000, 'summer', ['ctf']],
+  ['101_dday', 'Оверлорд', 1_000, 'summer', ['ctf']],
+  ['105_germany', 'Берлин', 800, 'summer', ['ctf']],
+  ['114_czech', 'Промзона', 1_000, 'summer', ['ctf', 'assault2', 'domination', 'comp7']],
+  ['115_sweden', 'Штиль', 1_000, 'summer', ['ctf']],
+  ['500_stalingrad', 'Сталинград', 1_000, 'winter', ['ctf']],
+  ['502_kamchatka', 'Камчатка', 1_000, 'summer', ['ctf']],
+  ['503_kaliningrad', 'Калининград', 1_000, 'summer', ['ctf']]
+];

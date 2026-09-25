@@ -1,0 +1,21 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-height: 100dvh;
+  background: var(--dusk), var(--color-bg);
+  color: var(--color-text);
+}
+
+.column {
+  @include stack(var(--space-6));
+
+  width: min(100%, 560px);
+  min-height: 100dvh;
+  padding: calc(var(--space-4) + var(--safe-area-top)) calc(var(--space-4) + var(--safe-area-right)) calc(var(--space-4) + var(--safe-area-bottom))
+    calc(var(--space-4) + var(--safe-area-left));
+  margin-inline: auto;
+}
+
+.main {
+  flex: 1;
+}

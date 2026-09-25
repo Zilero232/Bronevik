@@ -1,0 +1,65 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &:before {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 4px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--color-steel-dim), var(--color-accent));
+    content: '';
+  }
+}
+
+.step {
+  position: relative;
+  display: grid;
+  align-items: center;
+  padding: var(--space-1) 0;
+  column-gap: var(--space-2);
+  font-size: var(--text-sm);
+  grid-template-columns: 9px 2.2em minmax(0, 1fr) auto;
+
+  &:last-child {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--color-accent);
+  background-color: var(--color-bg);
+  rotate: 45deg;
+
+  .step:last-child & {
+    background-color: var(--color-accent);
+  }
+}
+
+.tier {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.xp {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}

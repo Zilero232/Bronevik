@@ -1,0 +1,18 @@
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+
+import { getTankPatches } from '@/shared/api/tanks';
+import { QUERY_KEYS } from '@/shared/constants';
+
+import { useTank } from '../context';
+
+export const useTankPatches = () => {
+  const { tankId } = useTank();
+
+  return useQuery({
+    queryKey: QUERY_KEYS.tanks.patches(tankId),
+    queryFn: ({ signal }) => getTankPatches({ tankId, signal }),
+    select: ({ patches }) => patches
+  });
+};

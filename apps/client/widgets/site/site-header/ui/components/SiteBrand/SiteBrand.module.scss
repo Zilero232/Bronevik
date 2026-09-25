@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.mark {
+  display: inline-flex;
+  color: var(--color-text);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-accent) 40%, transparent));
+
+  .root:hover & {
+    color: var(--color-accent);
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.word {
+  @include display(1.25rem);
+
+  letter-spacing: 0.08em;
+}
+
+.tag {
+  @include hud-label;
+
+  margin-top: 3px;
+  font-size: 0.5625rem;
+  letter-spacing: 0.22em;
+
+  @include below(xs) {
+    display: none;
+  }
+}

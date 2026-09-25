@@ -1,0 +1,65 @@
+import { describe, expect, it } from 'vitest';
+import { mock, mockDeep } from 'vitest-mock-extended';
+
+import type { Replay } from '../../../../../generated';
+import type { AppConfigService } from '../../../../config';
+import type { PrismaService } from '../../../../core';
+import type { ReplayStorage } from '../../storage';
+
+import { AppNotFoundException } from '../../../../common/exceptions';
+import { ReplayOwnerService } from '../replay-owner.service';
+
+const createService = () => {
+  const prisma = mockDeep<PrismaService>();
+  const storage = mock<ReplayStorage>();
+  const config = mock<AppConfigService>();
+
+  config.get.mockReturnValue('http://localhost:4000');
+
+  return { service: new ReplayOwnerService(prisma, storage, config), prisma, storage };
+};
+
+describe('ReplayOwnerService.remove', () => {
+  it('deletes the row, the replay file and its timeline', async () => {
+    const { service, prisma, storage } = createService();
+
+    prisma.replay.findFirst.mockResolvedValue(mock<Replay>({ storageKey: 'replays/r1.mtreplay', timelineKey: 'replays/r1.tracks.json' }));
+
+    await service.remove({ id: 'r1', userId: 'owner' });
+
+    expect(prisma.replay.delete).toHaveBeenCalledWith({ where: { id: 'r1' } });
+    expect(storage.remove.mock.calls.map(([key]) => key)).toEqual(['replays/r1.mtreplay', 'replays/r1.tracks.json']);
+  });
+
+  it('removes only the replay file when there is no timeline', async () => {
+    const { service, prisma, storage } = createService();
+
+    prisma.replay.findFirst.mockResolvedValue(mock<Replay>({ storageKey: 'replays/r1.mtreplay', timelineKey: null }));
+
+    await service.remove({ id: 'r1', userId: 'owner' });
+
+    expect(storage.remove).toHaveBeenCalledTimes(1);
+  });
+
+  it('refuses a replay uploaded by someone else and touches nothing', async () => {
+    const { service, prisma, storage } = createService();
+
+    prisma.replay.findFirst.mockResolvedValue(null);
+
+    await expect(service.remove({ id: 'r1', userId: 'stranger' })).rejects.toBeInstanceOf(AppNotFoundException);
+    expect(prisma.replay.findFirst.mock.calls[0]?.[0]?.where).toEqual({ id: 'r1', uploaderUserId: 'stranger' });
+    expect(prisma.replay.delete).not.toHaveBeenCalled();
+    expect(storage.remove).not.toHaveBeenCalled();
+  });
+});
+
+describe('ReplayOwnerService.updateVisibility', () => {
+  it('refuses to change the visibility of a replay the user does not own', async () => {
+    const { service, prisma } = createService();
+
+    prisma.replay.findFirst.mockResolvedValue(null);
+
+    await expect(service.updateVisibility({ id: 'r1', userId: 'stranger', visibility: 'private' })).rejects.toBeInstanceOf(AppNotFoundException);
+    expect(prisma.replay.update).not.toHaveBeenCalled();
+  });
+});

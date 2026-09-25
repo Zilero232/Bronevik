@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-lg), var(--color-border-strong), var(--color-surface-sunken));
+
+  position: relative;
+  height: 620px;
+
+  @include below(md) {
+    height: 460px;
+  }
+}

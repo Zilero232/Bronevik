@@ -1,0 +1,118 @@
+name: ci
+
+# Every check this repository has, on every push and pull request. There is no
+# deploy workflow yet — production does not exist. When it does, the deploy
+# goes in its own workflow and `needs` these jobs, the way the sibling
+# projects do it.
+#
+# Actions are pinned to a SHA, not a tag: a moved tag would run unknown code.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  checks:
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    env:
+      DATABASE_URL: postgresql://placeholder
+      DIRECT_URL: postgresql://placeholder
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - run: bun run verify
+
+      - run: bun run test
+
+  # The game mod is Python 2.7 inside the client, but its pure logic is 2/3
+  # compatible and the suite runs on Python 3 (apps/mod/README.md).
+  mod:
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+
+      - run: python -m unittest discover apps/mod/tests
+
+  # Playwright over the public pages. The client runs on mocks by default
+  # (NEXT_PUBLIC_USE_MOCKS), so the job needs no database and no API. It runs
+  # beside `checks` rather than after it: a lint error and a broken page are
+  # worth learning about in the same run.
+  e2e:
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    env:
+      DATABASE_URL: postgresql://placeholder
+      DIRECT_URL: postgresql://placeholder
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Install the browser
+        run: bunx playwright install --with-deps chromium
+
+      # `output: 'standalone'` leaves `next start` without a server to run, so
+      # the build is served the way the image serves it.
+      - name: Build the client
+        run: bun --filter @bronevik/client build
+
+      - name: Serve the client
+        env:
+          PORT: '3000'
+          HOSTNAME: 127.0.0.1
+        run: |
+          cp -r apps/client/.next/static apps/client/.next/standalone/apps/client/.next/static
+          cp -r apps/client/public apps/client/.next/standalone/apps/client/public 2>/dev/null || true
+
+          node apps/client/.next/standalone/apps/client/server.js &
+          echo "$!" > /tmp/web.pid
+
+      - name: Run the smoke tests
+        env:
+          E2E_BASE_URL: http://127.0.0.1:3000
+        run: bun run test:e2e
+
+      - if: always()
+        run: kill "$(cat /tmp/web.pid)" || true
+
+      - if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: playwright-results
+          path: e2e/.results/
+          retention-days: 7

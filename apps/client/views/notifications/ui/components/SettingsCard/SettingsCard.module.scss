@@ -1,0 +1,49 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-4));
+
+  padding: var(--space-5);
+  box-shadow: var(--elevation-2);
+
+  @include below(md) {
+    padding: var(--space-4);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.icon {
+  display: inline-flex;
+  padding: 8px;
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+
+  @include chamfer-path(var(--chamfer-sm));
+}
+
+.text {
+  @include stack(2px);
+
+  min-width: 0;
+  flex: 1;
+}
+
+.eyebrow {
+  @include hud-label;
+}
+
+.title {
+  @include display(var(--text-lg));
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

@@ -1,0 +1,1 @@
+export { InboxFeedBody } from './InboxFeedBody';

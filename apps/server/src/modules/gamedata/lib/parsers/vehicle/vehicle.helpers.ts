@@ -1,0 +1,134 @@
+import type { Armor, ModuleBase, PitchLimits, PitchPoint, RateOfFire, Unlock } from '@bronevik/gamedata';
+
+import type { XmlNode, XmlValue } from '../../xml';
+import type { ModuleBaseInput, ResolveModuleInput, ResolvePrimaryArmorInput } from './vehicle.types';
+
+import { makeCompactDescr } from '../../ids';
+import { entries, isXmlNode, list, localizationFallback, localizationKey, mergeNodes, node, num, nums, price, text, words } from '../../xml';
+
+export const resolveModule = ({ name, value, shared }: ResolveModuleInput): XmlNode => mergeNodes(shared[name], node(value));
+
+const parseUnlocks = (value: XmlValue | undefined): Unlock[] =>
+  entries(value).flatMap(([type, items]) =>
+    list(items).flatMap((item) => {
+      const name = text(item);
+
+      if (!name) {
+        return [];
+      }
+
+      const cost = isXmlNode(item) ? num(item.cost) : undefined;
+
+      return [cost === undefined ? { type, name } : { type, name, cost }];
+    })
+  );
+
+export const parseArmor = (value: XmlValue | undefined): Armor => {
+  const armor: Armor = {};
+
+  for (const [plate, thickness] of entries(value)) {
+    const amount = num(thickness);
+
+    if (amount !== undefined) {
+      armor[plate] = amount;
+    }
+  }
+
+  return armor;
+};
+
+export const resolvePrimaryArmor = ({ armor, value }: ResolvePrimaryArmorInput): number[] => words(value).map((plate) => armor[plate] ?? 0);
+
+export const parseModuleBase = ({ name, source, itemType, nationId }: ModuleBaseInput): ModuleBase => {
+  const id = num(source.id) ?? -1;
+
+  return {
+    name,
+    id,
+    moduleId: id < 0 ? -1 : makeCompactDescr({ itemType, nationId, id }),
+    nameKey: localizationKey(source.userString),
+    displayName: localizationFallback(source.userString) ?? localizationFallback(name) ?? name,
+    tier: num(source.level),
+    price: price(source.price),
+    weight: num(source.weight) ?? 0,
+    maxHealth: num(source.maxHealth),
+    tags: words(source.tags),
+    unlocks: parseUnlocks(source.unlocks)
+  };
+};
+
+const toPitchPoints = (value: XmlValue | undefined): PitchPoint[] => {
+  const values = nums(value);
+
+  if (values.length === 1) {
+    return [
+      { angle: 0, pitch: values[0] },
+      { angle: 1, pitch: values[0] }
+    ];
+  }
+
+  const points: PitchPoint[] = [];
+
+  for (let index = 0; index + 1 < values.length; index += 2) {
+    points.push({ angle: values[index], pitch: values[index + 1] });
+  }
+
+  return points;
+};
+
+export const parsePitchLimits = (value: XmlValue | undefined): PitchLimits | undefined => {
+  const container = node(value);
+
+  if (!container) {
+    return undefined;
+  }
+
+  const minPitch = toPitchPoints(container.minPitch);
+  const maxPitch = toPitchPoints(container.maxPitch);
+
+  if (minPitch.length === 0 || maxPitch.length === 0) {
+    return undefined;
+  }
+
+  return {
+    elevation: -minPitch[0].pitch,
+    depression: maxPitch[0].pitch,
+    elevationMax: Math.max(...minPitch.map((point) => -point.pitch)),
+    depressionMax: Math.max(...maxPitch.map((point) => point.pitch)),
+    minPitch,
+    maxPitch
+  };
+};
+
+export const parseYawLimits = (value: XmlValue | undefined): [number, number] | undefined => {
+  const values = nums(value);
+
+  return values.length === 2 ? [values[0], values[1]] : undefined;
+};
+
+export const parseRate = (value: XmlValue | undefined): RateOfFire | undefined => {
+  const container = node(value);
+  const count = num(container?.count);
+
+  if (!container || count === undefined) {
+    return undefined;
+  }
+
+  const rate = num(container.rate) ?? 0;
+
+  return { count, rate, interval: count > 1 && rate > 0 ? 60 / rate : 0 };
+};
+
+export const sharedRecord = (root: XmlNode): Record<string, XmlNode> => {
+  const record: Record<string, XmlNode> = {};
+
+  for (const [name, value] of entries(root.shared)) {
+    const definition = node(value);
+
+    if (definition) {
+      record[name] = definition;
+    }
+  }
+
+  return record;
+};

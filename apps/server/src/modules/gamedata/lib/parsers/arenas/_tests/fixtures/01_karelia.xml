@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<name>#arenas:01_karelia/name</name>
+	<description>#arenas:01_karelia/description</description>
+	<geometry>spaces/01_karelia</geometry>
+	<boundingBox>
+		<bottomLeft>-500.000000 -500.000000</bottomLeft>
+		<upperRight>500.000000 500.000000</upperRight>
+	</boundingBox>
+	<roundLength>900</roundLength>
+	<minimap>spaces/01_karelia/mmap.dds</minimap>
+	<vehicleCamouflageKind>summer</vehicleCamouflageKind>
+	<maxPlayersInTeam>15</maxPlayersInTeam>
+	<gameplayTypes>
+		<ctf>
+			<teamBasePositions>
+				<team1>
+					<position1>397.524078 402.612030</position1>
+				</team1>
+				<team2>
+					<position1>-401.340332 -399.975006</position1>
+				</team2>
+			</teamBasePositions>
+		</ctf>
+		<domination>
+			<teamSpawnPoints>
+				<team1>
+					<position>316.212006 266.048004</position>
+				</team1>
+				<team2>
+					<position>-283.829010 -372.661011</position>
+				</team2>
+			</teamSpawnPoints>
+			<controlPoint>-284.113770 227.256287</controlPoint>
+		</domination>
+		<assault2>
+			<minimap>spaces/01_karelia/mmap_comp7.dds</minimap>
+			<teamBasePositions>
+				<team1>
+					<position1>44.324654 445.058258</position1>
+					<position2>-374.883331 157.304443</position2>
+				</team1>
+				<team2/>
+			</teamBasePositions>
+			<teamSpawnPoints>
+				<team1>
+					<position>-429.608002 420.933380</position>
+				</team1>
+				<team2>
+					<position>254.495026 -300.979034</position>
+				</team2>
+			</teamSpawnPoints>
+		</assault2>
+	</gameplayTypes>
+</root>

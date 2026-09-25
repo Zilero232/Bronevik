@@ -1,0 +1,1 @@
+export { PremiumStrip } from './PremiumStrip';

@@ -1,0 +1,15 @@
+{
+  "extends": "@siberiacancode/tsconfig/tsconfig.react.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "preserve",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "plugins": [{ "name": "next" }],
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": false,
+    "paths": { "@/*": ["./*"] },
+    "noEmit": true
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", "out", "app/sw.ts"]
+}

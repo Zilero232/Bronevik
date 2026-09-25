@@ -1,0 +1,45 @@
+# node_modules must never enter the build context: Bun installs them inside the
+# image, and copying host node_modules over that install brings symlinks that
+# point at a .bun store which does not exist in the image — every dependency
+# then resolves to a broken symlink.
+**/node_modules
+
+# Build outputs and local state that have no business in an image.
+**/.next
+**/out
+**/dist
+**/generated
+**/coverage
+**/.cache
+**/*.tsbuildinfo
+**/__pycache__
+**/*.pyc
+*.wotmod
+
+# The game mod is built on the host (apps/mod/build.py), never in an image.
+apps/mod
+
+# Secrets and local env — images get their config at runtime, never baked in.
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Compose files and the Caddyfile live on the host; compose bind-mounts the
+# Caddyfile, so no image needs infra/.
+docker-compose*.yml
+infra
+
+# Tests, docs, local tooling and VCS noise.
+e2e
+playwright-report
+docs
+*.md
+.git
+.github
+.husky
+.vscode
+.idea
+.claude
+.agents
+**/*.log

@@ -1,0 +1,76 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  > button {
+    align-self: flex-start;
+  }
+}
+
+.status {
+  --led: var(--color-text-dim);
+
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-sunken);
+  gap: var(--space-3);
+
+  @include chamfer-path(var(--chamfer-sm));
+
+  &[data-status='subscribed'] {
+    --led: var(--color-success);
+  }
+
+  &[data-status='idle'] {
+    --led: var(--color-accent);
+  }
+
+  &[data-status='denied'],
+  &[data-status='unsupported'] {
+    --led: var(--color-danger);
+  }
+
+  &[data-status='unconfigured'] {
+    --led: var(--color-warning);
+  }
+}
+
+.led {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--led);
+  box-shadow: 0 0 10px var(--led);
+
+  .status[data-status='loading'] & {
+    animation: led-blink 1s steps(2) infinite;
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+.label {
+  @include display(var(--text-sm));
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.mock {
+  @include hud-label;
+
+  margin: 0;
+  color: var(--color-text-dim);
+}
+
+@keyframes led-blink {
+  50% {
+    opacity: 0.2;
+  }
+}

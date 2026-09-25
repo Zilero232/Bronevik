@@ -1,0 +1,289 @@
+enum ClanRole {
+  commander
+  executiveOfficer    @map("executive_officer")
+  personnelOfficer    @map("personnel_officer")
+  combatOfficer       @map("combat_officer")
+  intelligenceOfficer @map("intelligence_officer")
+  quartermaster
+  recruitmentOfficer  @map("recruitment_officer")
+  juniorOfficer       @map("junior_officer")
+  private
+  recruit
+  reservist
+
+  @@map("clan_role")
+}
+
+enum ClanMemberEventType {
+  joined
+  left
+  kicked
+  roleChanged @map("role_changed")
+
+  @@map("clan_member_event_type")
+}
+
+enum ClanEventKind {
+  clanWars   @map("clan_wars")
+  stronghold
+  training
+  tournament
+  other
+
+  @@map("clan_event_kind")
+}
+
+enum AttendanceStatus {
+  invited
+  confirmed
+  declined
+  attended
+  absent
+
+  @@map("attendance_status")
+}
+
+enum AttendanceSource {
+  manual
+  api
+
+  @@map("attendance_source")
+}
+
+enum RecruitStatus {
+  sourced
+  contacted
+  trial
+  accepted
+  rejected
+
+  @@map("recruit_status")
+}
+
+enum ClanIntegrationKind {
+  discord
+  telegram
+
+  @@map("clan_integration_kind")
+}
+
+model Clan {
+  clanId BigInt @id @map("clan_id")
+
+  tag          String
+  name         String
+  color        String?
+  motto        String?
+  description  String?
+  emblems      Json?
+  leaderId     BigInt? @map("leader_id")
+  membersCount Int     @default(0) @map("members_count")
+  isDisbanded  Boolean @default(false) @map("is_disbanded")
+  isTracked    Boolean @default(false) @map("is_tracked")
+
+  createdAt    DateTime? @map("created_at") @db.Timestamptz(3)
+  lastPolledAt DateTime? @map("last_polled_at") @db.Timestamptz(3)
+  firstSeenAt  DateTime  @default(now()) @map("first_seen_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  members      ClanMember[]
+  memberEvents ClanMemberEvent[]
+  snapshots    ClanSnapshot[]
+  stronghold   ClanStronghold?
+  provinces    GlobalMapProvince[]
+  workspace    ClanWorkspace?
+  recruiting   RecruitingPost[]
+
+  @@index([tag])
+  @@index([isTracked])
+  @@index([tag(ops: raw("gin_trgm_ops"))], type: Gin, map: "clan_tag_trgm_idx")
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "clan_name_trgm_idx")
+  @@map("clan")
+}
+
+model ClanMember {
+  accountId BigInt @id @map("account_id")
+  clanId    BigInt @map("clan_id")
+
+  role     ClanRole
+  joinedAt DateTime? @map("joined_at") @db.Timestamptz(3)
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  clan   Clan   @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@index([clanId])
+  @@map("clan_member")
+}
+
+model ClanMemberEvent {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  clanId    BigInt              @map("clan_id")
+  accountId BigInt              @map("account_id")
+  type      ClanMemberEventType
+  oldRole   ClanRole?           @map("old_role")
+  newRole   ClanRole?           @map("new_role")
+
+  occurredAt DateTime @map("occurred_at") @db.Timestamptz(3)
+  recordedAt DateTime @default(now()) @map("recorded_at") @db.Timestamptz(3)
+
+  clan Clan @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+
+  @@index([clanId, occurredAt(sort: Desc)])
+  @@index([accountId, occurredAt(sort: Desc)])
+  @@map("clan_member_event")
+}
+
+model ClanSnapshot {
+  clanId     BigInt   @map("clan_id")
+  capturedAt DateTime @map("captured_at") @db.Timestamptz(3)
+
+  membersCount    Int    @map("members_count")
+  activeMembers7d Int?   @map("active_members_7d")
+  avgWinRate      Float? @map("avg_win_rate")
+  avgWn8          Float? @map("avg_wn8")
+  avgBattles      Float? @map("avg_battles")
+  battlesDelta    Int?   @map("battles_delta")
+
+  eloRating6  Int?  @map("elo_rating_6")
+  eloRating8  Int?  @map("elo_rating_8")
+  eloRating10 Int?  @map("elo_rating_10")
+  ratings     Json?
+
+  clan Clan @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+
+  @@id([clanId, capturedAt])
+  @@map("clan_snapshot")
+}
+
+model ClanStronghold {
+  clanId BigInt @id @map("clan_id")
+
+  level     Int?  @db.SmallInt
+  buildings Json?
+  reserves  Json?
+  stats     Json?
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  clan Clan @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+
+  @@map("clan_stronghold")
+}
+
+model GlobalMapProvince {
+  provinceId String @id @map("province_id")
+
+  frontId      String  @map("front_id")
+  name         String
+  arenaId      String? @map("arena_id")
+  ownerClanId  BigInt? @map("owner_clan_id")
+  primeTime    String? @map("prime_time")
+  dailyRevenue Int?    @map("daily_revenue")
+  data         Json?
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  owner Clan? @relation(fields: [ownerClanId], references: [clanId], onDelete: SetNull)
+
+  @@index([frontId])
+  @@index([ownerClanId])
+  @@map("globalmap_province")
+}
+
+model ClanWorkspace {
+  clanId BigInt @id @map("clan_id")
+
+  ownerUserId String @map("owner_user_id")
+  settings    Json?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  clan         Clan               @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+  owner        User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  events       ClanEvent[]
+  candidates   RecruitCandidate[]
+  integrations ClanIntegration[]
+
+  @@index([ownerUserId])
+  @@map("clan_workspace")
+}
+
+model ClanEvent {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  clanId     BigInt        @map("clan_id")
+  kind       ClanEventKind
+  title      String
+  startsAt   DateTime      @map("starts_at") @db.Timestamptz(3)
+  endsAt     DateTime?     @map("ends_at") @db.Timestamptz(3)
+  remindAt   DateTime?     @map("remind_at") @db.Timestamptz(3)
+  remindedAt DateTime?     @map("reminded_at") @db.Timestamptz(3)
+  data       Json?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  workspace  ClanWorkspace    @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+  attendance ClanAttendance[]
+
+  @@index([clanId, startsAt])
+  @@index([remindAt])
+  @@map("clan_event")
+}
+
+model ClanAttendance {
+  eventId   String           @map("event_id")
+  accountId BigInt           @map("account_id")
+  status    AttendanceStatus @default(invited)
+  source    AttendanceSource @default(manual)
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  event ClanEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, accountId])
+  @@index([accountId])
+  @@map("clan_attendance")
+}
+
+model RecruitCandidate {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  clanId          BigInt        @map("clan_id")
+  accountId       BigInt        @map("account_id")
+  status          RecruitStatus @default(sourced)
+  notes           String?
+  statsSnapshot   Json?         @map("stats_snapshot")
+  createdByUserId String?       @map("created_by_user_id")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace ClanWorkspace @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+  createdBy User?         @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([clanId, accountId])
+  @@index([clanId, status])
+  @@map("recruit_candidate")
+}
+
+model ClanIntegration {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  clanId     BigInt              @map("clan_id")
+  kind       ClanIntegrationKind
+  externalId String              @map("external_id")
+  config     Json?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace ClanWorkspace @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+
+  @@unique([kind, externalId])
+  @@index([clanId])
+  @@map("clan_integration")
+}

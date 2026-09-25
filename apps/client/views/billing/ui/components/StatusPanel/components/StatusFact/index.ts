@@ -1,0 +1,1 @@
+export { StatusFact } from './StatusFact';

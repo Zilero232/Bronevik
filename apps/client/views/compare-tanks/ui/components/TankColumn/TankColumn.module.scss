@@ -1,0 +1,9 @@
+@use '@/shared/styles/mixins' as *;
+
+.section {
+  height: var(--section-h);
+  flex-shrink: 0;
+  border-top: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-sunken);
+}

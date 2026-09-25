@@ -1,0 +1,40 @@
+import { I18n } from '@grammyjs/i18n';
+import { fmt, FormattedString } from '@grammyjs/parse-mode';
+import { Inject, Injectable } from '@nestjs/common';
+import { Bot, InlineKeyboard } from 'grammy';
+
+import type { BotContext, SendNotificationInput, SendTextInput } from '../telegram.types';
+
+import { TELEGRAM_BOT, TELEGRAM_I18N } from '../bot';
+import { isPublicUrl } from '../lib';
+
+@Injectable()
+export class TelegramSenderService {
+  constructor(
+    @Inject(TELEGRAM_BOT) private readonly bot: Bot<BotContext> | null,
+    @Inject(TELEGRAM_I18N) private readonly i18n: I18n<BotContext>
+  ) {}
+
+  get isEnabled(): boolean {
+    return this.bot !== null;
+  }
+
+  async sendNotification({ telegramId, locale, title, body, url }: SendNotificationInput): Promise<void> {
+    if (!this.bot) {
+      return;
+    }
+
+    const message = fmt`${FormattedString.bold(title)}\n${body}`;
+    const markup = url && isPublicUrl(url) ? new InlineKeyboard().url(this.i18n.t(locale, 'notification-open'), url) : undefined;
+
+    await this.bot.api.sendMessage(Number(telegramId), message.text, {
+      entities: message.entities,
+      reply_markup: markup,
+      link_preview_options: { is_disabled: true }
+    });
+  }
+
+  async sendText({ telegramId, text }: SendTextInput): Promise<void> {
+    await this.bot?.api.sendMessage(Number(telegramId), text, { link_preview_options: { is_disabled: true } });
+  }
+}

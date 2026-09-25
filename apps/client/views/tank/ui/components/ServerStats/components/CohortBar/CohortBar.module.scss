@@ -1,0 +1,38 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: center;
+  gap: var(--space-3);
+  grid-template-columns: 64px minmax(0, 1fr) 72px;
+
+  @include tone;
+}
+
+.label {
+  @include hud-label;
+}
+
+.track {
+  position: relative;
+  overflow: hidden;
+  height: 8px;
+  background: repeating-linear-gradient(90deg, var(--color-border) 0 2px, transparent 2px 6px), var(--color-surface-sunken);
+}
+
+.fill {
+  position: absolute;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 45%, transparent), var(--tone));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--tone) 50%, transparent);
+  inset: 0;
+  transform-origin: left center;
+}
+
+.value {
+  @include numeric;
+
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: right;
+}

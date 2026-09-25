@@ -1,0 +1,126 @@
+.root {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: var(--radius-xs);
+  background-color: color-mix(in srgb, var(--tier) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tier) 38%, transparent);
+  color: var(--tier);
+  font-family: var(--font-display);
+  font-feature-settings: 'tnum' 1;
+  font-stretch: 85%;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.swatch {
+  width: 5px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xs) 0 0 var(--radius-xs);
+  background-color: var(--tier);
+}
+
+:global(html[data-rating-patterns='on']) .swatch {
+  width: 12px;
+  background: var(--pattern), var(--tier);
+}
+
+:global(html[data-rating-patterns='on']) .root {
+  background: var(--pattern), color-mix(in srgb, var(--tier) 14%, transparent);
+}
+
+.body {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.value {
+  letter-spacing: 0.02em;
+}
+
+.label {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pips {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1.5px;
+}
+
+.pip {
+  width: 2.5px;
+  border-radius: 1px;
+  background-color: currentcolor;
+  opacity: 0.22;
+
+  &[data-on='true'] {
+    opacity: 1;
+  }
+}
+
+.sm {
+  font-size: var(--text-xs);
+
+  .body {
+    padding: 3px 6px;
+  }
+}
+
+.md {
+  font-size: var(--text-sm);
+
+  .body {
+    padding: 5px 8px;
+  }
+}
+
+.lg {
+  font-size: var(--text-xl);
+
+  .body {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .pip {
+    width: 3.5px;
+  }
+}
+
+.bad {
+  --tier: var(--rating-bad);
+  --pattern: var(--rating-pattern-bad);
+}
+
+.below {
+  --tier: var(--rating-below);
+  --pattern: var(--rating-pattern-below);
+}
+
+.average {
+  --tier: var(--rating-average);
+  --pattern: var(--rating-pattern-average);
+}
+
+.good {
+  --tier: var(--rating-good);
+  --pattern: var(--rating-pattern-good);
+}
+
+.great {
+  --tier: var(--rating-great);
+  --pattern: var(--rating-pattern-great);
+}
+
+.unicum {
+  --tier: var(--rating-unicum);
+  --pattern: var(--rating-pattern-unicum);
+}

@@ -1,0 +1,89 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-8);
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 10% 25%,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 10% 25%;
+  padding-block: var(--space-10) var(--space-8);
+
+  @include below(md) {
+    padding-block: var(--space-8) var(--space-7);
+  }
+}
+
+.radar {
+  position: absolute;
+  top: 50%;
+  right: max(-120px, calc((100% - var(--shell-width)) / 2 - 120px));
+  width: 420px;
+  height: 420px;
+  border: 1px solid var(--color-steel-soft);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 32%, var(--color-steel-soft) 32.5%, transparent 33%),
+    radial-gradient(circle, transparent 65%, var(--color-steel-soft) 65.5%, transparent 66%),
+    linear-gradient(var(--color-steel-soft), var(--color-steel-soft)) center / 1px 100% no-repeat,
+    linear-gradient(var(--color-steel-soft), var(--color-steel-soft)) center / 100% 1px no-repeat;
+  pointer-events: none;
+  transform: translateY(-50%);
+
+  @include below(lg) {
+    right: -220px;
+    opacity: 0.6;
+  }
+}
+
+.sweep {
+  position: absolute;
+  border-radius: 50%;
+  animation: maps-radar 6s linear infinite;
+  background: conic-gradient(from 0deg, transparent 0 300deg, color-mix(in srgb, var(--color-accent) 35%, transparent) 360deg);
+  inset: 0;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.inner {
+  @include shell;
+  @include stack(var(--space-4));
+
+  position: relative;
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--text-4xl));
+
+  margin: 0;
+}
+
+.description {
+  max-width: 56ch;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}
+
+.count {
+  @include hud-label;
+  @include numeric;
+
+  color: var(--color-steel);
+}
+
+@keyframes maps-radar {
+  to {
+    transform: rotate(360deg);
+  }
+}

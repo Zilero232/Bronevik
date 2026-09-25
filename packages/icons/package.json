@@ -1,0 +1,29 @@
+{
+  "name": "@bronevik/icons",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Bronevik custom SVG icon set as React components, stroke-matched to lucide.",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bronevik/schemas": "workspace:*",
+    "remeda": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "motion": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "motion": "catalog:",
+    "react": "catalog:"
+  }
+}

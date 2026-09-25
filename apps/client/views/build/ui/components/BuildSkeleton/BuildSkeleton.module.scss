@@ -1,0 +1,45 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-6));
+}
+
+.hero {
+  width: 100%;
+}
+
+.presets {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+
+    > :not(:first-child) {
+      display: none;
+    }
+  }
+}
+
+.layout {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.panels {
+  @include stack(var(--space-5));
+}
+
+.stats {
+  @include stack(var(--space-2));
+
+  @include below(3xl) {
+    display: none;
+  }
+}

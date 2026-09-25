@@ -1,0 +1,2274 @@
+{
+  "common": {
+    "copy": "Copy",
+    "copied": "Copied",
+    "show": "Show",
+    "hide": "Hide",
+    "close": "Close",
+    "language": "Language",
+    "themeDark": "Switch to dark theme",
+    "themeLight": "Switch to light theme"
+  },
+  "brand": {
+    "home": "Bronevik — home",
+    "name": "Bronevik",
+    "tag": "Мир танков · stats"
+  },
+  "nav": {
+    "label": "Sections",
+    "menu": "Open menu",
+    "design": "Design system",
+    "players": "Players",
+    "tanks": "Tanks",
+    "marks": "Marks",
+    "top": "Leaderboards",
+    "clans": "Clans",
+    "tools": "Tools",
+    "streamers": "Streamers",
+    "developers": "Developers"
+  },
+  "settings": {
+    "title": "Display",
+    "description": "Settings are stored in this browser.",
+    "patterns": "Rating patterns",
+    "patternsHint": "Hatching instead of colour alone — easier with colour blindness",
+    "xvm": "XVM colour scale",
+    "xvmHint": "The familiar rating colours from the XVM modpack",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "rating": {
+    "bad": "Bad",
+    "below": "Below average",
+    "average": "Average",
+    "good": "Good",
+    "great": "Great",
+    "unicum": "Unicum"
+  },
+  "search": {
+    "label": "Global search",
+    "placeholder": "Player nickname, tank or clan tag…",
+    "heroPlaceholder": "Find a player, tank or clan",
+    "trigger": "Search…",
+    "open": "Open",
+    "players": "Players",
+    "tanks": "Tanks",
+    "clans": "Clans",
+    "noClan": "No clan",
+    "members": "{count, plural, one {# member} other {# members}}",
+    "sections": "Sections",
+    "hint": "Type at least two characters — we search players, tanks and clans.",
+    "error": "Search is temporarily unavailable. Please try again.",
+    "loading": "Searching…",
+    "empty": "No target found. Check the spelling.",
+    "navigate": "select",
+    "source": "Data by Lesta Games"
+  },
+  "game": {
+    "classes": {
+      "lightTank": "Light tank",
+      "mediumTank": "Medium tank",
+      "heavyTank": "Heavy tank",
+      "AT-SPG": "Tank destroyer",
+      "SPG": "SPG"
+    },
+    "nations": {
+      "ussr": "USSR",
+      "germany": "Germany",
+      "usa": "USA",
+      "china": "China",
+      "france": "France",
+      "uk": "UK",
+      "japan": "Japan",
+      "czech": "Czechoslovakia",
+      "sweden": "Sweden",
+      "poland": "Poland",
+      "italy": "Italy",
+      "intunion": "International Union"
+    }
+  },
+  "stats": {
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
+    "marks3": "3 marks",
+    "broneIndex": "Bronya Index",
+    "moe3": "3-mark threshold",
+    "tank": "Tank",
+    "tier": "Tier"
+  },
+  "periods": {
+    "1000": "1000 battles",
+    "label": "Stats period",
+    "24h": "24h",
+    "7d": "7d",
+    "30d": "30d",
+    "60d": "60d"
+  },
+  "footer": {
+    "brand": "Bronevik",
+    "tagline": "Stats, marks of excellence, vehicle analytics and tools for «Мир танков» players — all in one place.",
+    "sections": "Sections",
+    "project": "Project",
+    "api": "Developer API",
+    "game": "Мир танков — tanki.su",
+    "support": "Lesta support center",
+    "lestaCopyright": "© Lesta Games. All rights reserved.",
+    "dataSource": "Data source — Lesta Games:",
+    "disclaimer": "Bronevik is an independent fan project and is not affiliated with Lesta Games.",
+    "copyright": "© {year} Bronevik"
+  },
+  "notFound": {
+    "code": "404 // Target out of sight",
+    "title": "Page not found",
+    "body": "This section may still be under construction or the link is outdated. Head home or use search — Ctrl + K.",
+    "home": "Go home"
+  },
+  "error": {
+    "code": "500 // Equipment failure",
+    "title": "Something went wrong",
+    "body": "We already know about it. Please try again in a couple of seconds.",
+    "retry": "Retry"
+  },
+  "home": {
+    "meta": {
+      "title": "Bronevik — «Мир танков» stats",
+      "description": "Players, tanks, marks of excellence, leaderboards and clans of «Мир танков» in one place: live stats, charts and tools."
+    },
+    "hero": {
+      "eyebrow": "Мир танков · RU · live data",
+      "title": "<line>Every tank</line><line>on the server,</line><line><hot>in one sight</hot></line>",
+      "lead": "Player profiles, server-wide vehicle analytics, mark thresholds, leaderboards and clans. Fast, beautiful and free of noise.",
+      "popular": "Popular:"
+    },
+    "scope": {
+      "range": "Range {value} m",
+      "bearing": "Bearing {value}°",
+      "zoom": "Zoom ×{value}",
+      "status": "Target locked"
+    },
+    "counters": {
+      "label": "Server stats",
+      "battles": "Battles tracked",
+      "battlesHint": "last 14 days",
+      "players": "Players",
+      "playersHint": "being tracked",
+      "today": "Played today",
+      "todayHint": "unique",
+      "marks": "Marks",
+      "marksHint": "counted"
+    },
+    "features": {
+      "eyebrow": "Sections",
+      "title": "Everything for the battle — and after it",
+      "description": "Eight sections, one system. Pick where to start.",
+      "items": {
+        "players": "Profile, WN8 and Bronya Index, sessions, progress by period and comparison with friends.",
+        "tanks": "Server stats for every vehicle: win rate, damage, popularity and a tier list.",
+        "marks": "Mark thresholds for every tank and a forecast of the damage you need for the next one.",
+        "top": "Player and vehicle rankings by period: 24 hours, a week, a month and 1000 battles.",
+        "clans": "Roster, activity, efficiency and clan history.",
+        "tools": "Damage, penetration and XP calculators, plus vehicle comparison.",
+        "streamers": "OBS overlays, challenges and session widgets for your stream.",
+        "developers": "An open API and SDK for bots, sites and mods."
+      }
+    },
+    "topPlayers": {
+      "eyebrow": "Top players",
+      "title": "Who holds the front right now",
+      "description": "Highest WN8 for the selected period among players with enough battles.",
+      "all": "All leaderboards"
+    },
+    "hotTanks": {
+      "eyebrow": "Vehicles",
+      "title": "The strongest tier X",
+      "description": "Win rate leaders at tier X and the server pulse over 60 days.",
+      "day": "Day {day}",
+      "serverWinRate": "Server win rate",
+      "window": "60 days",
+      "chartEyebrow": "Server",
+      "chartTitle": "Average win rate"
+    },
+    "marks": {
+      "eyebrow": "Marks",
+      "title": "Marks ignite",
+      "description": "We track your mark percentage and tell you how much damage is left until the next star.",
+      "progressLabel": "Third mark progress",
+      "toThird": "to 3 marks",
+      "need": "On average you are {damage} damage per battle short.",
+      "ignite": "Ignite the mark",
+      "toastTitle": "Third mark earned!",
+      "toastBody": "{tank}: a star on the barrel. Great job, tanker.",
+      "levels": {
+        "1": "First mark",
+        "2": "Second mark",
+        "3": "Third mark"
+      },
+      "threshold": "Top {percent}% of results"
+    }
+  },
+  "design": {
+    "meta": {
+      "title": "Design system",
+      "description": "Every Bronevik component, icon and token on a single page."
+    },
+    "eyebrow": "«Bronya» design system",
+    "title": "Steel at dusk",
+    "description": "Graphite armour, hot metal and cold steel. Every component, icon and animation on a single page.",
+    "colors": {
+      "title": "Colours and tokens",
+      "surfaces": "Surfaces",
+      "accents": "Accents",
+      "signals": "Signals and text",
+      "rating": "Rating scale",
+      "patterns": "Pattern mode",
+      "spacing": "Spacing"
+    },
+    "type": {
+      "title": "Typography",
+      "display": {
+        "meta": "Tektur · display",
+        "sample": "Armour-piercing"
+      },
+      "heading": {
+        "meta": "Tektur · heading",
+        "sample": "Server-wide vehicle stats"
+      },
+      "body": {
+        "meta": "Onest · body",
+        "sample": "Bronevik collects «Мир танков» stats and turns them into clear charts, mark thresholds and hints for every battle."
+      },
+      "mono": {
+        "meta": "IBM Plex Mono · HUD",
+        "sample": "Range 445 m · bearing 042° · target locked"
+      },
+      "numbers": {
+        "meta": "Tabular numerals",
+        "sample": "3,412 · 64.82% · 1,284,551,902"
+      }
+    },
+    "icons": {
+      "title": "Icons",
+      "size": "Size",
+      "stroke": "Stroke width",
+      "replay": "Replay",
+      "groups": {
+        "brand": "Mark",
+        "classes": "Vehicle classes",
+        "nations": "Nations",
+        "marks": "Marks of excellence",
+        "mastery": "Mastery",
+        "modes": "Battle modes",
+        "misc": "Combat",
+        "tiers": "Tiers",
+        "animated": "Animated",
+        "silhouettes": "Silhouettes (backdrops)",
+        "nationsColor": "Nations in colour",
+        "masteryTinted": "Mastery in metal",
+        "marksRings": "Marks as rings",
+        "tiersEngraved": "Engraved tiers",
+        "renders": "Vehicle renders",
+        "surfaces": "Surfaces"
+      },
+      "variants": {
+        "regular": "Classes — regular",
+        "premium": "Classes — premium",
+        "elite": "Classes — elite"
+      },
+      "riveted": "Riveted panel"
+    },
+    "controls": {
+      "title": "Controls",
+      "buttons": "Buttons",
+      "primary": "Battle!",
+      "secondary": "Compare",
+      "ghost": "Cancel",
+      "danger": "Delete",
+      "disabled": "Unavailable",
+      "iconButtons": "Icon buttons",
+      "search": "Search",
+      "notifications": "Notifications",
+      "favorite": "Add to favourites",
+      "aim": "Aim",
+      "badges": "Badges",
+      "inputs": "Inputs",
+      "placeholder": "Player nickname",
+      "nation": "Nation",
+      "segmented": "Period",
+      "switch": "Switch",
+      "switchLabel": "Notify me about new marks",
+      "switchHint": "We will message you on Telegram",
+      "tabs": "Tabs",
+      "tabOverview": "Overview",
+      "tabOverviewBody": "The player's key numbers for the selected period.",
+      "tabTanks": "Vehicles",
+      "tabTanksBody": "Stats for every vehicle in the garage.",
+      "tabMarks": "Marks",
+      "tabMarksBody": "Mark progress and a damage forecast.",
+      "avatars": "Avatars",
+      "small": "Small",
+      "large": "Large"
+    },
+    "overlays": {
+      "title": "Overlays and notifications",
+      "tooltip": "Tooltip",
+      "tooltipBody": "The Bronya Index weighs damage, spotting and survival.",
+      "wn8Hint": "WN8 above 2900 is unicum level",
+      "popover": "Popover",
+      "popoverTitle": "Mark threshold",
+      "popoverBody": "Calculated from the top 95% of results over the last 14 days.",
+      "openPopover": "Details",
+      "dialog": "Dialog",
+      "openDialog": "Open dialog",
+      "dialogTitle": "Reset the session?",
+      "dialogBody": "Current session counters will be cleared. Overall stats stay the same.",
+      "cancel": "Cancel",
+      "confirm": "Reset",
+      "toasts": "Toasts",
+      "toastSuccess": "Profile updated",
+      "toastSuccessBody": "37 new battles loaded.",
+      "toastError": "Could not load data",
+      "toastErrorBody": "The Lesta server did not respond. Retrying in a minute.",
+      "toastWarning": "Stats are hidden by privacy settings",
+      "toastInfo": "New patch: mark thresholds recalculated",
+      "burst": "Celebration",
+      "celebrate": "Celebrate",
+      "toastKinds": {
+        "success": "Success",
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Info"
+      }
+    },
+    "data": {
+      "title": "Data",
+      "battles": "Battles",
+      "winRate": "Win rate",
+      "damage": "Average damage",
+      "marks": "Marks",
+      "marksHint": "3 stars",
+      "number": "Counter",
+      "shuffle": "New value",
+      "progress": "Progress",
+      "moe": "Mark",
+      "master": "Mastery",
+      "index": "Bronya Index",
+      "rings": "Rings",
+      "sparklines": "Sparklines",
+      "skeleton": "Loading",
+      "emptyCode": "404 // No contact",
+      "emptyTitle": "No battles yet",
+      "emptyBody": "Play at least one battle and your stats will appear here."
+    },
+    "charts": {
+      "title": "Charts",
+      "line": "WN8 over 30 days",
+      "area": "Server win rate",
+      "bar": "Battles per day",
+      "day": "Day {day}",
+      "server": "Server",
+      "battles": "Battles"
+    },
+    "table": {
+      "title": "Table",
+      "mode": "Table mode",
+      "small": "Tanks",
+      "large": "1000 rows",
+      "loading": "Loading",
+      "empty": "Empty",
+      "caption": "{count, plural, one {# vehicle} other {# vehicles}}",
+      "emptyTitle": "No vehicles",
+      "emptyBody": "Change the filters — nothing matches them."
+    }
+  },
+  "tank": {
+    "meta": {
+      "title": "{name} — stats, marks, builds",
+      "description": "{name}: server stats, marks of excellence and mastery thresholds, popular builds and patch history."
+    },
+    "specs": {
+      "shellDamage": "Damage",
+      "shellPenetration": "Penetration",
+      "damagePerMinute": "Damage per minute",
+      "reloadTime": "Reload",
+      "rateOfFire": "Rate of fire",
+      "aimingTime": "Aiming time",
+      "dispersion": "Dispersion at 100 m",
+      "dispersionMovement": "Dispersion on move",
+      "depression": "Gun depression",
+      "maxHealth": "Hit points",
+      "weight": "Weight",
+      "enginePower": "Engine power",
+      "powerToWeight": "Power-to-weight",
+      "speedForward": "Top speed",
+      "speedBackward": "Reverse speed",
+      "hullTraverse": "Hull traverse",
+      "turretTraverse": "Turret traverse",
+      "viewRange": "View range",
+      "radioRange": "Signal range"
+    },
+    "units": {
+      "deg": "°",
+      "deg_s": "°/s",
+      "hp": "HP",
+      "hp_t": "hp/t",
+      "kmh": "km/h",
+      "m": "m",
+      "mm": "mm",
+      "per_min": "rds/min",
+      "s": "s",
+      "t": "t"
+    },
+    "specGroups": {
+      "firepower": "Firepower",
+      "survivability": "Survivability",
+      "mobility": "Mobility",
+      "scouting": "Scouting"
+    },
+    "hero": {
+      "eyebrow": "Vehicle dossier",
+      "metaLabel": "Class, nation and tier",
+      "tier": "Tier {tier}",
+      "premium": "Premium",
+      "actionsLabel": "Quick actions",
+      "build": "Build constructor",
+      "compare": "Compare",
+      "marks": "Marks",
+      "keySpecs": "Key specs",
+      "specsCode": "Specs // top"
+    },
+    "notice": {
+      "errorCode": "ERR",
+      "errorTitle": "Data failed to load",
+      "errorDescription": "The server did not respond. Try refreshing in a moment.",
+      "emptyTitle": "No data yet",
+      "loading": "Loading the vehicle dossier"
+    },
+    "missing": {
+      "back": "All tanks",
+      "notFound": {
+        "code": "404",
+        "title": "No such vehicle",
+        "description": "We could not find the tank “{slug}”. Check the link or pick a vehicle from the list."
+      },
+      "error": {
+        "code": "ERR",
+        "title": "Could not open the dossier",
+        "description": "Data for “{slug}” is unavailable right now. Try refreshing the page."
+      }
+    },
+    "stats": {
+      "eyebrow": "Server statistics",
+      "title": "How it performs",
+      "description": "Random battles, every player on this vehicle over the selected period.",
+      "periodLabel": "Statistics period",
+      "periods": {
+        "1d": "1 day",
+        "7d": "7 d",
+        "14d": "14 d",
+        "30d": "30 d",
+        "60d": "60 d"
+      },
+      "tiles": {
+        "winRate": "Win rate",
+        "winRateDiff": "Vs overall win rate",
+        "avgDamage": "Average damage",
+        "avgFrags": "Frags per battle",
+        "avgSpotted": "Spots per battle",
+        "survivalRate": "Survival",
+        "battles": "Battles",
+        "players": "Players"
+      },
+      "hints": {
+        "winRate": "on this vehicle",
+        "winRateDiff": "tank WR minus the player’s overall",
+        "avgDamage": "per battle",
+        "avgFrags": "destroyed",
+        "avgSpotted": "spotted",
+        "survivalRate": "survived the battle",
+        "battles": "in the period",
+        "players": "unique"
+      },
+      "pp": "pp",
+      "emptyTitle": "No statistics for this period",
+      "emptyDescription": "Too few battles on this vehicle. Try a longer period.",
+      "cohortsEyebrow": "By skill",
+      "cohortsTitle": "Who carries on it",
+      "cohorts": {
+        "beginner": "Beginners",
+        "average": "Average players",
+        "good": "Good players",
+        "elite": "Unicums"
+      },
+      "cohortWinRate": "Wins",
+      "cohortDamage": "Damage",
+      "trendWindow": "{days} d",
+      "trendEyebrow": "Dynamics",
+      "trendTitle": "Win rate and damage trend",
+      "trendWinRate": "Win rate",
+      "trendDamage": "Average damage"
+    },
+    "marks": {
+      "eyebrow": "Marks of excellence",
+      "title": "Mark and mastery thresholds",
+      "description": "Damage needed for each gun mark and experience for each mastery badge.",
+      "updated": "Updated {date}",
+      "noMoeTitle": "No thresholds yet",
+      "noMoeDescription": "Not enough mark data has been collected for this vehicle yet.",
+      "plates": {
+        "p65": "1 mark",
+        "p85": "2 marks",
+        "p95": "3 marks",
+        "p100": "Maximum"
+      },
+      "damageUnit": "damage",
+      "deltaDays": "{days} d",
+      "historyEyebrow": "60 days",
+      "historyTitle": "How thresholds moved",
+      "masteryEyebrow": "Mastery badges",
+      "masteryTitle": "Ace Tanker and classes",
+      "mastery": {
+        "class3": "3rd class",
+        "class2": "2nd class",
+        "class1": "1st class",
+        "master": "Ace Tanker"
+      },
+      "xpUnit": "XP"
+    },
+    "players": {
+      "eyebrow": "Best on this vehicle",
+      "title": "Top players",
+      "description": "Who squeezes the most out of this tank.",
+      "metricLabel": "Rating metric",
+      "metrics": {
+        "wn8": "WN8",
+        "avgDamage": "Avg damage",
+        "winRate": "Win rate"
+      },
+      "caption": "Top players on {name}",
+      "battles": "{count, plural, one {# battle} other {# battles}}",
+      "emptyTitle": "The leaderboard is empty"
+    },
+    "builds": {
+      "eyebrow": "Builds",
+      "title": "Popular builds",
+      "description": "What players run: equipment, consumables and directives.",
+      "source": {
+        "battles": "Mod",
+        "builds": "Builds",
+        "none": "No data"
+      },
+      "sourceHint": {
+        "battles": "From battles of players running the mod",
+        "builds": "From builds players published",
+        "none": "No statistics yet"
+      },
+      "share": "of players",
+      "winRate": "Wins",
+      "avgDamage": "Avg damage",
+      "battles": "Battles",
+      "equipment": "Equipment",
+      "consumables": "Consumables and directives",
+      "none": "None",
+      "open": "Open in the constructor",
+      "emptyTitle": "No builds yet",
+      "emptyDescription": "Put one together in the constructor; it shows up here once statistics come in."
+    },
+    "patches": {
+      "eyebrow": "Patch history",
+      "title": "Buffs and nerfs",
+      "description": "What the developers changed in the vehicle’s specs, update by update.",
+      "version": "Update {version}",
+      "verdicts": {
+        "buff": "Buff",
+        "nerf": "Nerf",
+        "mixed": "Mixed",
+        "new": "New",
+        "changed": "Changed"
+      },
+      "changes": "{count, plural, one {# change} other {# changes}}",
+      "emptyTitle": "Left untouched",
+      "emptyDescription": "This tank’s specs did not change in the tracked updates.",
+      "firstSeen": "The first tracked update with this vehicle.",
+      "noSpecChanges": "The changes did not touch the specs shown here."
+    }
+  },
+  "tanks": {
+    "meta": {
+      "title": "Tank statistics",
+      "description": "Win rate, damage, WR diff and popularity of every tank on the server."
+    },
+    "compare": {
+      "meta": {
+        "title": "Tank comparison",
+        "description": "Up to six tanks side by side with the best values highlighted."
+      },
+      "hero": {
+        "eyebrow": "Spec comparison",
+        "title": "Head to head",
+        "description": "Up to six vehicles side by side: fully upgraded specs plus live server statistics. The best value in every row is highlighted, and the comparison link can be shared with your platoon."
+      },
+      "dock": {
+        "slots": "Comparison slots",
+        "count": "{count} of {max}",
+        "add": "Add a tank",
+        "full": "All {max} slots are taken — remove a tank to add another one.",
+        "copy": "Copy link",
+        "copied": "Comparison link copied",
+        "copyFailed": "Could not copy the link",
+        "clear": "Clear"
+      },
+      "presets": {
+        "eyebrow": "Quick start",
+        "title": "Where to begin",
+        "description": "Pick tanks with the search above or take a ready-made set — the most played vehicles on the server this week.",
+        "apply": "Compare",
+        "loading": "Picking…",
+        "failed": "Could not load the set",
+        "items": {
+          "heavyX": {
+            "title": "Tier X heavies",
+            "hint": "The backbone of random battles — who holds a line best"
+          },
+          "mediumX": {
+            "title": "Tier X mediums",
+            "hint": "Speed, DPM and view range of the top mediums"
+          },
+          "tdX": {
+            "title": "Tier X tank destroyers",
+            "hint": "Alpha, penetration and camouflage of the hunters"
+          },
+          "premiumVIII": {
+            "title": "Tier VIII premiums",
+            "hint": "The most popular premium tanks for grinding credits"
+          }
+        }
+      },
+      "board": {
+        "label": "Tank comparison table",
+        "specs": "Specs",
+        "count": "{count, plural, one {# tank} other {# tanks}}",
+        "legend": "best value",
+        "best": "Best value",
+        "slot": "Slot {index}",
+        "remove": "Remove {name} from the comparison",
+        "addMore": "Add at least one more tank — there is nothing to compare yet",
+        "stats": "Server · 7 days",
+        "statsKeys": {
+          "winRate": "Win rate",
+          "winRateDiff": "WR diff",
+          "avgDamage": "Average damage",
+          "battles": "Battles"
+        },
+        "errorTitle": "Could not load the comparison",
+        "errorDescription": "The server did not respond. Try again in a few seconds.",
+        "retry": "Retry",
+        "notFoundTitle": "These tanks do not exist",
+        "notFoundDescription": "The link points to tanks that are not in our database. Clear the comparison and pick vehicles again.",
+        "clear": "Clear comparison"
+      }
+    },
+    "filters": {
+      "tier": "Tier",
+      "type": "Class",
+      "nation": "Nation",
+      "premium": "Vehicle type",
+      "premiumOptions": {
+        "all": "All",
+        "regular": "Tech tree",
+        "premium": "Premium"
+      },
+      "reset": "Reset"
+    },
+    "picker": {
+      "placeholder": "Find a tank…",
+      "open": "Open the tank list",
+      "empty": "Nothing found"
+    },
+    "hero": {
+      "eyebrow": "Server analytics",
+      "title": "Tank strength, by the numbers",
+      "description": "Win rate, damage, spotting and WR diff — how much a tank carries on its own, with player skill taken out. Built from millions of random battles.",
+      "tanks": "Tanks in sample",
+      "battles": "Battles in period",
+      "strongest": "Strongest by WR diff",
+      "compare": "Compare tanks",
+      "tree": "Tech tree",
+      "noLeader": "No data yet"
+    },
+    "controls": {
+      "view": "View",
+      "views": {
+        "table": "Table",
+        "tierlist": "Tier list"
+      },
+      "period": "Period",
+      "periods": {
+        "1d": "24 h",
+        "7d": "7 d",
+        "14d": "14 d",
+        "30d": "30 d",
+        "60d": "60 d"
+      },
+      "cohort": "Player skill",
+      "cohorts": {
+        "all": "All",
+        "beginner": "Beginners",
+        "average": "Average",
+        "good": "Good",
+        "elite": "Top 10%"
+      }
+    },
+    "table": {
+      "caption": "{count, plural, one {# tank} other {# tanks}} · click a row to open the tank",
+      "tank": "Tank",
+      "tier": "Tier",
+      "winRate": "Win rate",
+      "winRateDiff": "WR diff",
+      "avgDamage": "Damage",
+      "frags": "Frags",
+      "spotted": "Spotted",
+      "survival": "Survived",
+      "popularity": "Popularity",
+      "emptyTitle": "Nothing matches these filters",
+      "emptyDescription": "Try removing some tiers, classes or nations.",
+      "resetFilters": "Reset filters",
+      "errorTitle": "Stats failed to load",
+      "errorDescription": "The server did not respond. Try again in a minute.",
+      "retry": "Retry",
+      "noStatsTitle": "Server statistics are not collected yet",
+      "noStatsDescription": "Once the collector counts the battles for this period, tanks with win rate, damage and WR diff show up here."
+    },
+    "tierList": {
+      "title": "Tier list",
+      "tier": "Tier list tier",
+      "hint": "Rank comes from WR diff — the tank's win rate minus the overall win rate of its players. Numbers, not streamer opinions.",
+      "emptyTitle": "No tier list data",
+      "emptyDescription": "Not enough battles for this tier and class yet.",
+      "errorTitle": "Tier list failed to load",
+      "errorDescription": "Try reloading the page."
+    }
+  },
+  "builds": {
+    "meta": {
+      "title": "{name} — build constructor",
+      "description": "Equipment, crew, field modifications and final stats of the {name}."
+    },
+    "hero": {
+      "eyebrow": "Build constructor",
+      "lead": "Fit equipment, train the crew and walk the field modification tree — final stats recalculate as you go.",
+      "picker": "Switch tank",
+      "toTank": "Tank page",
+      "tier": "Tier {tier}"
+    },
+    "share": {
+      "action": "Share",
+      "done": "Build link copied",
+      "doneBody": "Send it to your platoon mate — the whole build opens as is.",
+      "failed": "Couldn't copy the link"
+    },
+    "loadout": {
+      "label": "Which build to edit",
+      "a": "Build A",
+      "b": "Build B",
+      "compare": "Compare with another build",
+      "compareHint": "A second build appears alongside, stats side by side",
+      "copy": "Copy A to B",
+      "reset": "Reset",
+      "resetHint": "Clear the current build",
+      "code": "Build code"
+    },
+    "presets": {
+      "eyebrow": "Popular",
+      "title": "Ready-made builds",
+      "description": "What players run on this tank. One click and it's yours.",
+      "source": {
+        "battles": "Mod data",
+        "builds": "Player builds",
+        "none": "No data"
+      },
+      "share": "Share",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "battles": "{count, plural, one {# battle} other {# battles}}",
+      "apply": "Apply to build {side}",
+      "active": "Applied",
+      "empty": "No data on popular builds yet",
+      "error": "Couldn't load popular builds"
+    },
+    "panels": {
+      "modules": {
+        "title": "Modules",
+        "description": "Stock or top for each slot",
+        "stock": "Stock",
+        "top": "Top",
+        "slots": {
+          "gun": "Gun",
+          "turret": "Turret",
+          "engine": "Engine",
+          "chassis": "Suspension",
+          "radio": "Radio"
+        }
+      },
+      "equipment": {
+        "title": "Equipment",
+        "description": "Equipment changes the specs — the server recalculates the effect",
+        "pick": "Choose equipment"
+      },
+      "consumables": {
+        "title": "Consumables",
+        "description": "Repair kits, first aid, rations and fuel",
+        "pick": "Choose a consumable"
+      },
+      "directives": {
+        "title": "Directives",
+        "description": "Up to three per battle",
+        "pick": "Choose a directive"
+      },
+      "crew": {
+        "title": "Crew",
+        "description": "Skills and perks per role — up to {max} each",
+        "counter": "{count} of {max}",
+        "full": "All skill slots are taken",
+        "roles": {
+          "commander": "Commander",
+          "gunner": "Gunner",
+          "driver": "Driver",
+          "radioman": "Radio operator",
+          "loader": "Loader",
+          "common": "Common skills"
+        }
+      },
+      "fieldMods": {
+        "title": "Field modification",
+        "description": "Pick one of two branches on every level",
+        "step": "Level {step}",
+        "still": "Stationary",
+        "stillHint": "Count bonuses that only work while the tank stands still — the binocular telescope, for one"
+      }
+    },
+    "slot": {
+      "index": "Slot {index}",
+      "empty": "Empty",
+      "emptyHint": "Tap to choose",
+      "clear": "Remove",
+      "taken": "Already in another slot",
+      "premium": "Premium",
+      "noItems": "Nothing is available for this vehicle."
+    },
+    "categories": {
+      "firepower": "Firepower",
+      "mobility": "Mobility",
+      "survivability": "Survivability",
+      "stealth": "Stealth"
+    },
+    "stats": {
+      "eyebrow": "Final stats",
+      "title": "Specifications",
+      "caption": "Final build stats against the base vehicle",
+      "captionCompare": "Stats of builds A and B and the difference between them",
+      "stat": "Stat",
+      "value": "Value",
+      "delta": "vs base",
+      "diff": "B − A",
+      "base": "Base: {value}",
+      "winner": "Build {side} is better",
+      "updating": "Recalculating…",
+      "error": "Couldn't recalculate the stats",
+      "showAll": "All stats",
+      "hide": "Collapse",
+      "summary": "Build summary",
+      "colA": "A",
+      "colB": "B"
+    },
+    "missing": {
+      "notFoundTitle": "Tank not found",
+      "notFoundDescription": "There's no vehicle “{slug}”. Check the link or pick a tank from the list.",
+      "errorTitle": "Couldn't load the build",
+      "errorDescription": "The server didn't respond. Try again in a few seconds.",
+      "back": "Back to tanks",
+      "retry": "Retry"
+    }
+  },
+  "tree": {
+    "meta": {
+      "title": "Tech tree",
+      "description": "Research lines of every nation with the XP and credits to each tank."
+    },
+    "hero": {
+      "eyebrow": "// Research lines",
+      "title": "Tech <hot>tree</hot>",
+      "lead": "Pick a nation and tap a tank — we trace the line from tier I, the XP you need to grind and the credits to set aside for purchases."
+    },
+    "nations": {
+      "label": "Nation"
+    },
+    "canvas": {
+      "label": "Tech tree: {nation}",
+      "tier": "Tier {tier}"
+    },
+    "controls": {
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fit": "Fit the whole tree"
+    },
+    "node": {
+      "select": "Trace the path to {name}",
+      "xp": "{value} XP",
+      "credits": "{value} cr.",
+      "root": "Starter tank"
+    },
+    "path": {
+      "eyebrow": "Path to tank",
+      "title": "Research route",
+      "emptyTitle": "Pick a tank",
+      "emptyDescription": "Tap any vehicle in the tree — we highlight the line from tier I and add up the XP and credits.",
+      "totalXp": "XP along the line",
+      "totalCredits": "Credits to buy",
+      "steps": "{count, plural, =0 {This is the starter tank — nothing to research} one {# tank on the way} other {# tanks on the way}}",
+      "route": "Research chain",
+      "start": "start",
+      "openTank": "Tank page",
+      "openBuild": "Open in build constructor",
+      "clear": "Clear selection"
+    },
+    "premiums": {
+      "eyebrow": "Premium vehicles",
+      "title": "Premium tanks of the nation",
+      "description": "No research needed — bought for gold, no XP required.",
+      "open": "Open specs →",
+      "emptyTitle": "No premiums yet",
+      "emptyDescription": "The catalog has no premium vehicles for this nation."
+    },
+    "states": {
+      "loading": "Loading the tech tree",
+      "emptyTitle": "No lines here yet",
+      "emptyDescription": "This nation's tree hasn't been assembled yet. Try the USSR, Germany or the USA.",
+      "errorTitle": "Couldn't load the tree",
+      "errorDescription": "The server didn't respond. Refresh the page or try again a bit later."
+    }
+  },
+  "marks": {
+    "meta": {
+      "title": "Marks of excellence",
+      "description": "The 65, 85, 95 and 100 % thresholds of every tank with history and projection."
+    },
+    "hero": {
+      "eyebrow": "// Marks of excellence",
+      "title": "How much damage <hot>three marks</hot> take",
+      "lead": "A mark shows the share of players on a tank you beat by average combined damage (damage + the higher of spotting and tracking assist) over roughly your last 100 battles. 65 % earns the first stripe, 85 % the second, 95 % the third. Thresholds move every day: we keep their whole history and show where a mark got easier.",
+      "tracked": "Tanks tracked",
+      "updated": "Updated",
+      "updatedUnknown": "no data",
+      "window": "Window",
+      "windowValue": "EMA · 100 battles",
+      "ruler": {
+        "label": "Mark scale: 65, 85 and 95 percent",
+        "mark": "{marks, plural, one {# mark} other {# marks}} — {percent}%",
+        "caption": "Each battle moves the percent by about 2 % of the gap between your damage and the current bar — one bad game barely hurts, a streak of good ones moves it fast."
+      }
+    },
+    "table": {
+      "eyebrow": "Thresholds",
+      "title": "Thresholds for every tank",
+      "description": "Average combined damage for 65, 85, 95 and 100 %. A threshold that fell over 30 days means the mark got easier.",
+      "caption": "Marks of excellence thresholds by tank",
+      "retry": "Retry",
+      "error": "Could not load the thresholds",
+      "errorHint": "The server did not respond. Try again in a few seconds.",
+      "empty": "Nothing found",
+      "emptyHint": "Change the filters or the name search.",
+      "dropHint": "Green change — the threshold fell and the mark is easier. Red — the bar went up.",
+      "sparkLabel": "95 % threshold over the last months",
+      "columns": {
+        "tank": "Tank",
+        "delta": "30 days",
+        "history": "95 % history",
+        "master": "Ace Tanker, XP",
+        "details": "Details",
+        "detailsLabel": "Threshold details: {tank}"
+      }
+    },
+    "toolbar": {
+      "search": "Search tank",
+      "searchPlaceholder": "Tank name…",
+      "sort": "Sort by",
+      "order": {
+        "asc": "Ascending",
+        "desc": "Descending"
+      },
+      "sortFields": {
+        "p65": "65 % threshold",
+        "p85": "85 % threshold",
+        "p95": "95 % threshold",
+        "p100": "100 % threshold",
+        "master": "Ace Tanker XP",
+        "tier": "Tier",
+        "p95Delta30d": "30-day change"
+      }
+    },
+    "drawer": {
+      "title": "Tank thresholds",
+      "openTank": "Tank page",
+      "thresholds": "Current thresholds",
+      "levels": {
+        "p65": "1 mark",
+        "p85": "2 marks",
+        "p95": "3 marks",
+        "p100": "100 %"
+      },
+      "delta7": "7 days",
+      "delta30": "30 days",
+      "history": "Threshold history",
+      "historyAria": "Chart of the 65, 85, 95 and 100 percent thresholds over time",
+      "noHistory": "No history yet",
+      "noHistoryHint": "We started collecting this tank's thresholds recently.",
+      "mastery": "Mastery badge",
+      "noMastery": "No mastery thresholds for this tank yet.",
+      "masteryLevels": {
+        "third": "3rd class",
+        "second": "2nd class",
+        "first": "1st class",
+        "master": "Ace Tanker"
+      },
+      "xp": "{xp} XP"
+    },
+    "closest": {
+      "eyebrow": "Personal",
+      "title": "Closest to a mark",
+      "description": "Enter a nickname — we list the tanks where the next mark is the least damage away.",
+      "lead": "Nickname or account ID. The data comes from public statistics.",
+      "label": "Player nickname or account ID",
+      "placeholder": "For example, Stalevar_1987",
+      "submit": "Find",
+      "suggestions": "Players found",
+      "battles": "{battles} battles",
+      "emptyTitle": "Enter a nickname",
+      "emptyDescription": "We find the player and sort their tanks by the damage missing to the next mark.",
+      "error": "Could not load the marks",
+      "errorHint": "Try again a little later.",
+      "notFound": "Player “{player}” not found",
+      "notFoundDescription": "Check the nickname or enter the account ID.",
+      "noMarks": "Every mark is already taken",
+      "noMarksHint": "Each tank has three marks or no percent data.",
+      "playerFor": "Player: {nickname}",
+      "toMark": "{percent}% → {mark}%",
+      "damageLeft": "damage to average"
+    },
+    "projection": {
+      "eyebrow": "Projection",
+      "title": "Battles to a mark",
+      "description": "Pick a tank, enter your current percent and average combined damage — we count the battles and draw how the percent will grow.",
+      "tank": "Tank",
+      "pickTank": "Pick a tank…",
+      "thresholdsHint": "Thresholds now: 65 % — {p65}, 85 % — {p85}, 95 % — {p95}",
+      "percent": "Current mark percent",
+      "damage": "Average combined damage",
+      "damageHint": "Damage + the higher of spotting and tracking assist per battle",
+      "target": "Target",
+      "marks": "{count, plural, one {# mark} other {# marks}}",
+      "pickTitle": "Pick a tank",
+      "pickDescription": "We take its current thresholds and run the projection.",
+      "damageMissing": "Enter your average damage",
+      "damageMissingHint": "The projection needs your average combined damage.",
+      "done": "The mark is already yours",
+      "doneHint": "Your percent is above the target — keep the pace to hold the stripe.",
+      "unreachable": "This damage will not get the mark",
+      "unreachableHint": "The percent levels off below the target. You need more than {damage} combined damage per battle, consistently.",
+      "battlesLabel": "Battles to the mark",
+      "battlesHint": "{count, plural, one {# battle} other {# battles}} at steady damage; the target bar is {damage}.",
+      "curveAria": "Projected mark percent by battle",
+      "battleLabel": "Battle {battle}",
+      "curveSeries": "Projected percent",
+      "targetSeries": "Target {percent}%"
+    }
+  },
+  "tools": {
+    "meta": {
+      "title": "Calculators",
+      "description": "XP and credits to a tank, battles to a goal, marks, crew, battle economy and the battle pass."
+    },
+    "nav": "Calculators",
+    "hero": {
+      "eyebrow": "// Calculators",
+      "title": "Count the battles <hot>to your goal</hot>",
+      "lead": "How long to the next tank, to a 50 % win rate, to the third mark or to the end of the battle pass. Change a number and the result updates at once.",
+      "count": "Calculators",
+      "rate": "Gold → credits",
+      "xpRate": "Gold → free XP"
+    },
+    "calcs": {
+      "research": {
+        "title": "XP and credits",
+        "blurb": "Battles to research and buy a tank"
+      },
+      "target": {
+        "title": "Battles to a goal",
+        "blurb": "Win rate, average damage or WN8"
+      },
+      "moe": {
+        "title": "Marks",
+        "blurb": "Battles to a mark at your average damage"
+      },
+      "crew": {
+        "title": "Crew",
+        "blurb": "Battles to the next skill"
+      },
+      "economy": {
+        "title": "Battle economy",
+        "blurb": "Income, repair, shells and net profit"
+      },
+      "gold": {
+        "title": "Gold",
+        "blurb": "Conversion to credits and free XP"
+      },
+      "pass": {
+        "title": "Battle pass",
+        "blurb": "Battles per day to finish in time"
+      }
+    },
+    "research": {
+      "title": "XP and credits to a tank",
+      "description": "Pick a tank — we take its research and purchase cost from the tech tree (or a tier estimate) and count the battles left.",
+      "footer": "Costs come from the nation's tech tree; without data a tier average is used. A premium account adds +50 % XP and credits.",
+      "tank": "Target tank",
+      "pickTank": "Pick a tank…",
+      "fields": {
+        "currentXp": "XP on the previous tank",
+        "freeXp": "Free XP",
+        "credits": "Credits",
+        "xpPerBattle": "XP per battle",
+        "creditsPerBattle": "Credits per battle"
+      },
+      "battlesPerDay": "Battles per day",
+      "premium": "Premium account",
+      "premiumHint": "+50 % XP and credits per battle",
+      "pickTitle": "Pick a tank",
+      "pickDescription": "We count the XP and credits still missing to research and buy it.",
+      "premiumTank": "Premium tanks are not researched",
+      "premiumTankHint": "Premium tanks are bought for gold or in the shop — no XP to grind.",
+      "noIncome": "Enter the income per battle",
+      "days": "≈ {count, plural, one {# day} other {# days}} at {perDay} battles a day",
+      "battles": "Battles to the tank",
+      "progress": "Research XP",
+      "cost": "Cost",
+      "costValue": "{xp} XP · {credits} credits",
+      "xpLeft": "XP missing",
+      "creditsLeft": "Credits missing",
+      "battlesForXp": "Battles for XP",
+      "battlesForCredits": "Battles for credits",
+      "source": "Price source",
+      "sources": {
+        "tree": "Tech tree",
+        "tier": "Tier estimate"
+      }
+    },
+    "target": {
+      "title": "Battles to a goal",
+      "description": "How many battles lift your overall win rate, average damage or WN8 to a target, given how you expect to play in each new battle.",
+      "footer": {
+        "winRate": "Win rate is a plain average over all battles, so the result is exact.",
+        "avgDamage": "Average damage is a plain average over all battles, so the result is exact.",
+        "wn8": "Account WN8 is approximated as a battle-weighted average of per-battle WN8. The real value depends on the tanks you play."
+      },
+      "metric": "Metric",
+      "metrics": {
+        "winRate": "Win rate",
+        "avgDamage": "Average damage",
+        "wn8": "WN8"
+      },
+      "fields": {
+        "battles": "Battles so far",
+        "current": "Current value",
+        "expected": "Expected in new battles",
+        "target": "Target"
+      },
+      "done": "Target already reached",
+      "doneHint": "The current value is at or above the target — raise the bar.",
+      "impossible": "Target out of reach",
+      "impossibleHint": "As long as new battles are no better than {target}, the overall value never gets there. Raise the expected result.",
+      "battles": "Battles to the target",
+      "battlesHint": "From {from} to {to} at the expected pace",
+      "curveAria": "How the metric grows with new battles",
+      "targetLine": "Target"
+    },
+    "moe": {
+      "title": "Battles to a mark",
+      "description": "A short version of the projection: current percent, average combined damage and target. The full chart lives on the marks page.",
+      "tank": "Tank",
+      "pickTank": "Pick a tank…",
+      "percent": "Current mark percent",
+      "damage": "Average combined damage",
+      "damageHint": "Damage + the higher of spotting and tracking assist",
+      "target": "Target",
+      "marks": "{count, plural, one {# mark} other {# marks}}",
+      "openMarks": "Full projection",
+      "pickTitle": "Pick a tank",
+      "pickDescription": "We take the current thresholds and count the battles to the mark.",
+      "unreachable": "This damage will not get the mark",
+      "hint": "The {percent}% bar is {damage} combined damage",
+      "battles": "Battles to the mark",
+      "noData": "No data",
+      "noDataHint": "This tank has no thresholds yet or the damage is empty."
+    },
+    "crew": {
+      "title": "Crew experience",
+      "description": "Battles to the next skill. Each new skill costs twice the previous one, and the last percents are the most expensive.",
+      "footer": "Formula: XP per percent = 50 · 100^(level/100) · 2^skill number. The first skill is about 220k XP, the second twice that. Bonuses multiply.",
+      "skill": "Skill in training",
+      "skillValue": "Skill {skill}",
+      "percent": "Skill progress",
+      "xpPerBattle": "Crew XP per battle",
+      "xpHint": "Without premium or bonuses",
+      "books": "XP from crew books",
+      "booksHint": "One-off amount",
+      "bonuses": {
+        "premium": {
+          "label": "Premium account",
+          "hint": "×1.5 XP"
+        },
+        "accelerated": {
+          "label": "Accelerated crew training",
+          "hint": "×2 on an elite tank"
+        },
+        "reserve": {
+          "label": "Crew XP reserve",
+          "hint": "+200 % crew XP"
+        }
+      },
+      "noXp": "Enter the XP per battle",
+      "battlesHint": "To 100 % of skill {skill}",
+      "battles": "Battles to the skill",
+      "xpLeft": "XP left",
+      "perBattle": "XP per battle with bonuses",
+      "upcomingAria": "Battles for the next skills",
+      "upcomingSeries": "Battles per skill"
+    },
+    "economy": {
+      "title": "Battle economy",
+      "description": "Estimate the income and costs of an average battle — repair, shells and consumables — and what is left with and without premium.",
+      "footer": "Income is estimated from tier, damage and spotting; shell prices default to the tier and can be edited. Premium adds +50 % income, costs stay the same.",
+      "tier": "Tank tier",
+      "tierValue": "Tier {tier}",
+      "premiumVehicle": "Premium tank",
+      "premiumVehicleHint": "Higher income, cheaper repair",
+      "fields": {
+        "damage": "Average damage",
+        "spotting": "Spotting damage",
+        "standard": "Standard consumables",
+        "premium": "Premium consumables"
+      },
+      "shells": "Shells per battle",
+      "shellKinds": {
+        "ap": "AP",
+        "heat": "Premium (HEAT)",
+        "he": "HE"
+      },
+      "shellCount": "Count",
+      "shellPrice": "Price",
+      "net": "Net without premium",
+      "netPremium": "Net with premium",
+      "chartAria": "Income and costs per battle with and without premium",
+      "rows": {
+        "gross": "Income",
+        "repair": "Repair",
+        "ammo": "Shells",
+        "consumables": "Consumables",
+        "net": "Net"
+      },
+      "series": {
+        "base": "No premium",
+        "premium": "Premium"
+      }
+    },
+    "gold": {
+      "title": "Gold",
+      "description": "How many credits and how much free XP gold buys — and how much gold a given amount needs.",
+      "footer": "Rates: 1 gold = {credits} credits, 1 gold = {xp} free XP (converting XP from elite tanks).",
+      "fields": {
+        "gold": "Gold",
+        "credits": "Credits needed",
+        "xp": "XP to convert"
+      },
+      "goldToCredits": "Credits for gold",
+      "goldToCreditsHint": "For {gold} gold",
+      "goldToXp": "Free XP for this gold",
+      "creditsToGold": "Gold for {credits} credits",
+      "xpToGold": "Gold to convert {xp} XP",
+      "bundles": {
+        "caption": "Gold bundles",
+        "gold": "Gold",
+        "credits": "Credits",
+        "xp": "Free XP"
+      }
+    },
+    "pass": {
+      "title": "Battle pass",
+      "description": "How many battles a day finish the pass before the season ends, and when you finish at your current pace.",
+      "footer": "Points per battle depend on the result and your place in the team — use your average over the last few days.",
+      "fields": {
+        "stage": "Current stage",
+        "stagePoints": "Points in the stage",
+        "pointsPerStage": "Points per stage",
+        "stages": "Total stages",
+        "daysLeft": "Days left",
+        "pointsPerBattle": "Points per battle"
+      },
+      "battlesPerDay": "Your pace, battles a day",
+      "noPace": "Enter points per battle",
+      "perDay": "Battles needed a day",
+      "perDayHint": "To finish within {days, plural, one {# day} other {# days}}",
+      "pointsLeft": "Points left",
+      "battlesNeeded": "Battles left",
+      "finish": "Finish at your pace",
+      "status": "Status",
+      "onTrack": "On track",
+      "behind": "Behind",
+      "trackLabel": "Pass progress"
+    }
+  },
+  "clans": {
+    "meta": {
+      "title": "Clans",
+      "description": "Rating and search of «Мир танков» clans."
+    },
+    "clanMeta": {
+      "title": "{name} — clan",
+      "description": "Roster, activity, history and stronghold of the {name} clan."
+    },
+    "hero": {
+      "eyebrow": "// HQ · Clans",
+      "title": "Clans",
+      "description": "Find a clan by tag or name, compare average WN8 and see who carries on the Global Map and in Stronghold."
+    },
+    "search": {
+      "label": "Search clans",
+      "placeholder": "Clan tag or name — e.g. KOPTE",
+      "hint": "At least 2 characters · matches tag and name",
+      "loading": "Scanning the airwaves…",
+      "error": "Search is unavailable right now. Try again in a moment.",
+      "empty": "No clans match «{query}».",
+      "members": "{count, plural, one {# member} other {# members}}"
+    },
+    "rating": {
+      "eyebrow": "Rating",
+      "title": "Top clans",
+      "description": "Clans by average WN8, win rate, activity and stronghold. Pick what to sort by.",
+      "loading": "Loading clan rating",
+      "retry": "Retry",
+      "errorTitle": "Rating failed to load",
+      "errorDescription": "The server did not respond. Check your connection and try again.",
+      "emptyTitle": "The rating is empty",
+      "emptyDescription": "No clans collected yet — check back later.",
+      "rank": "Rank {rank}",
+      "wn8": "Avg WN8",
+      "sortLabel": "Sort by",
+      "sorts": {
+        "wn8": "Avg WN8",
+        "winRate": "Win rate",
+        "members": "Members",
+        "activeMembers": "Active in 7 days",
+        "eloRating10": "Tier X Elo",
+        "strongholdLevel": "Stronghold level"
+      },
+      "winRate": "Win rate",
+      "members": "Members",
+      "active": "{active} / {total}",
+      "shown": "Showing {shown} of {total}",
+      "more": "Show more"
+    },
+    "missing": {
+      "retry": "Retry",
+      "toClans": "All clans",
+      "notFoundTitle": "Clan not found",
+      "notFoundDescription": "There is no clan tagged [{tag}] — it may have been disbanded, or the tag is misspelled.",
+      "errorTitle": "Could not load the clan",
+      "errorDescription": "Data for [{tag}] is unavailable right now. Try again."
+    },
+    "clan": {
+      "loading": "Loading clan",
+      "eyebrow": "// Clan · ID {id}",
+      "motto": "“{motto}”",
+      "founded": "Founded {date}",
+      "members": "{count, plural, one {# member} other {# members}} on the roster",
+      "activeLabel": "Members active in the last 7 days",
+      "activeShort": "{active} of {total} active in 7 d",
+      "stats": {
+        "winRate": "Avg win rate",
+        "wn8": "Avg WN8",
+        "battlesPerDay": "Battles per day",
+        "stronghold": "Stronghold",
+        "level": "Level {level}",
+        "provinces": "Global Map provinces",
+        "elo": "Elo X"
+      }
+    },
+    "roster": {
+      "eyebrow": "Roster",
+      "title": "Clan members",
+      "description": "Roles, time in the clan and who has not fought for a while. Click a nickname to open the profile.",
+      "shown": "{shown} of {total}",
+      "caption": "Clan roster",
+      "emptyTitle": "Nobody here",
+      "emptyDescription": "No member matches these filters. Reset the filters.",
+      "activityTitle": "Roster activity",
+      "unknown": "no data",
+      "daysAgo": "{days, plural, =0 {today} one {# day ago} other {# days ago}}",
+      "status": {
+        "active": "On duty",
+        "recent": "Played this week",
+        "idle": "Resting",
+        "gone": "Missing"
+      },
+      "columns": {
+        "nickname": "Member",
+        "role": "Role",
+        "daysInClan": "Days in clan",
+        "lastBattle": "Last battle",
+        "battles": "Battles",
+        "winRate": "Win rate",
+        "recentWn8": "WN8 30 d"
+      },
+      "roles": {
+        "commander": "Commander",
+        "executive_officer": "Executive officer",
+        "personnel_officer": "Personnel officer",
+        "combat_officer": "Combat officer",
+        "intelligence_officer": "Intelligence officer",
+        "quartermaster": "Quartermaster",
+        "recruitment_officer": "Recruitment officer",
+        "junior_officer": "Junior officer",
+        "private": "Private",
+        "recruit": "Recruit",
+        "reservist": "Reservist"
+      },
+      "filters": {
+        "role": "Role",
+        "idle": "Not played",
+        "idleAll": "All",
+        "idleDays": "{days}+ d",
+        "reset": "Reset",
+        "roles": {
+          "all": "All",
+          "command": "Command",
+          "officers": "Officers",
+          "soldiers": "Soldiers",
+          "reserve": "Reserve"
+        }
+      }
+    },
+    "events": {
+      "eyebrow": "History",
+      "title": "Roster moves",
+      "description": "Who joined, who left and who got promoted — day by day.",
+      "loading": "Loading history",
+      "retry": "Retry",
+      "error": "History failed to load",
+      "emptyTitle": "No events yet",
+      "emptyDescription": "As soon as the roster changes, it shows up here.",
+      "dayCount": "{count, plural, one {# event} other {# events}}",
+      "shown": "Showing {shown} of {total}",
+      "more": "Show more",
+      "unknownPlayer": "Unknown player",
+      "to": "became",
+      "types": {
+        "joined": "joined the clan",
+        "left": "left the clan",
+        "kicked": "was kicked from the clan",
+        "role_changed": "changed role"
+      },
+      "chart": {
+        "eyebrow": "12 weeks",
+        "title": "Joins and leaves",
+        "joined": "Joined",
+        "left": "Left",
+        "net": "Net",
+        "ariaLabel": "Members who joined and left the clan per week"
+      }
+    },
+    "bases": {
+      "eyebrow": "Stronghold & GM",
+      "title": "Stronghold and Global Map",
+      "description": "Building levels, reserve stock and the clan results in Stronghold and on the Global Map.",
+      "loading": "Loading stronghold",
+      "retry": "Retry",
+      "error": "Stronghold data is unavailable",
+      "stronghold": {
+        "eyebrow": "Stronghold",
+        "level": "Level {level}",
+        "levelOf": "Level {level} of {max}",
+        "buildingsTitle": "Buildings",
+        "reservesTitle": "Reserves",
+        "reserveLevel": "lvl {level}",
+        "count": "×{count}",
+        "levelUnknown": "Level unknown",
+        "battles": "Skirmish battles",
+        "winRate": "Skirmish win rate",
+        "resources": "Industrial resource",
+        "skirmishesTitle": "Skirmishes by tier",
+        "tier": "Tier {tier}",
+        "battlesCount": "{count, plural, one {# battle} other {# battles}}",
+        "noSkirmishes": "No skirmishes yet.",
+        "noBuildings": "Stronghold buildings have not been collected yet.",
+        "reservesHidden": "Reserves show up only once a clan officer shares access."
+      },
+      "globalMap": {
+        "eyebrow": "Global Map",
+        "provinces": "{count, plural, =0 {No provinces} one {# province} other {# provinces}}",
+        "eloTitle": "Elo rating",
+        "tier": "Tier {tier}",
+        "provincesLabel": "Provinces",
+        "dailyRevenue": "Daily income",
+        "provincesTitle": "Provinces",
+        "noProvinces": "The clan holds no provinces on the Global Map."
+      },
+      "errorDescription": "Lesta did not answer about the stronghold. The rest of the clan page still works — try again later."
+    }
+  },
+  "maps": {
+    "meta": {
+      "title": "Maps",
+      "description": "Every random battle map: minimaps, modes and team stats."
+    },
+    "mapMeta": {
+      "title": "{name} — map",
+      "description": "{name}: minimap, modes and team win rates."
+    },
+    "hero": {
+      "eyebrow": "// Recon · Maps",
+      "title": "Maps",
+      "description": "Every random battle map: minimaps with the square grid, game modes and which side wins more often.",
+      "count": "{count, plural, one {# map} other {# maps}} in rotation"
+    },
+    "filters": {
+      "search": "Search maps",
+      "searchPlaceholder": "Map name — e.g. Prokhorovka",
+      "modes": "Mode",
+      "camouflage": "Camouflage",
+      "shown": "{shown} of {total}",
+      "reset": "Reset"
+    },
+    "modes": {
+      "standard": "Standard battle",
+      "encounter": "Encounter",
+      "assault": "Assault",
+      "onslaught": "Onslaught"
+    },
+    "camouflage": {
+      "summer": "Summer",
+      "winter": "Winter",
+      "desert": "Desert"
+    },
+    "size": "{size}×{size} m",
+    "card": {
+      "minimapAlt": "Minimap of {name}"
+    },
+    "grid": {
+      "loading": "Loading maps",
+      "retry": "Retry",
+      "errorTitle": "Maps failed to load",
+      "errorDescription": "The server did not respond. Check your connection and try again.",
+      "reset": "Reset filters",
+      "noMatchTitle": "No such maps",
+      "noMatchDescription": "No map matches the selected filters.",
+      "emptyTitle": "The map list is empty",
+      "emptyDescription": "Map data has not been collected yet."
+    },
+    "missing": {
+      "retry": "Retry",
+      "toMaps": "All maps",
+      "notFoundTitle": "Map not found",
+      "notFoundDescription": "Map “{id}” is not in rotation — it may have been removed from random battles.",
+      "errorTitle": "Could not load the map",
+      "errorDescription": "Data for “{id}” is unavailable right now. Try again."
+    },
+    "map": {
+      "loading": "Loading map",
+      "back": "All maps",
+      "modeLabel": "Battle mode",
+      "minimapAlt": "Minimap of {name}, {mode} mode",
+      "imageMissing": "No minimap for this mode",
+      "gridHint": "Hover the map to highlight a square, just like the in-battle minimap",
+      "north": "North",
+      "scale": "{meters} m",
+      "square": "Square {square}",
+      "stats": {
+        "emptyTitle": "No stats yet",
+        "emptyDescription": "No battles on this map have been collected yet. Team stats appear once mod users play here or replays are uploaded.",
+        "battles": "Battles played",
+        "tugLabel": "Win rate by team",
+        "tugTitle": "Tug of war",
+        "draws": "Draws: {value}",
+        "team1": "Team one",
+        "team2": "Team two",
+        "verdict": "Team {side, select, 1 {one} other {two}} wins more often by {gap} pp.",
+        "source": {
+          "battles": "From mod battles",
+          "replays": "From uploaded replays"
+        }
+      },
+      "nav": {
+        "label": "Neighbouring maps",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "players": "{count} vs {count}",
+      "roundLength": "Up to {minutes} min"
+    }
+  },
+  "play": {
+    "meta": {
+      "title": "Guess the tank",
+      "description": "A daily puzzle: guess the tank by its silhouette and stats."
+    },
+    "hero": {
+      "eyebrow": "Daily puzzle · new target at 00:00 MSK",
+      "title": "Guess the <hot>tank</hot>",
+      "lead": "A spotted silhouette is on the radar. You have six shells to identify the target. Every miss unlocks a new clue, and the cells tell you where to aim: tier, class, nation, premium, average damage and win rate.",
+      "legendLabel": "Legend",
+      "legend": {
+        "match": "Direct hit",
+        "close": "Close",
+        "miss": "Miss"
+      }
+    },
+    "status": {
+      "puzzle": "Puzzle",
+      "shells": "Shells",
+      "shellsLeft": "{count, plural, =0 {No shells left} one {# shell left} other {# shells left}}",
+      "streak": "Streak"
+    },
+    "mystery": {
+      "classified": "Classified",
+      "status": {
+        "playing": "Target spotted, not identified",
+        "won": "Target identified and destroyed",
+        "lost": "Target slipped out of view"
+      }
+    },
+    "clues": {
+      "title": "Intel",
+      "locked": "After miss {miss}",
+      "labels": {
+        "tier": "Tier",
+        "nation": "Nation",
+        "shell": "Shell",
+        "health": "Hit points",
+        "letter": "Name"
+      },
+      "shellValue": "{damage} damage · {penetration} penetration",
+      "letterValue": "Starts with “{letter}”"
+    },
+    "form": {
+      "label": "Shot {attempt} of {total}",
+      "placeholder": "Start typing a tank name",
+      "submit": "Fire!"
+    },
+    "grid": {
+      "title": "Shot log",
+      "slot": "Shot {attempt}",
+      "premium": "Premium",
+      "regular": "Researchable",
+      "columns": {
+        "tier": "Tier",
+        "type": "Class",
+        "nation": "Nation",
+        "premium": "Prem",
+        "damage": "Avg dmg",
+        "winRate": "Win rate"
+      },
+      "verdict": {
+        "match": "match",
+        "close": "close",
+        "miss": "miss",
+        "unknown": "no data"
+      },
+      "direction": {
+        "up": "the target has more",
+        "down": "the target has less"
+      }
+    },
+    "result": {
+      "wonEyebrow": "Hit!",
+      "lostEyebrow": "Miss",
+      "wonTitle": "{count, plural, one {Identified with the first shot!} other {Target destroyed in # shots}}",
+      "lostTitle": "Out of shells",
+      "wonText": "It really is the {name}. Take three marks of excellence — well earned.",
+      "lostText": "Today's tank was the {name}. A new target arrives tomorrow — keep your streak alive.",
+      "share": "Share result",
+      "shareTitle": "Bronevik · Guess the tank",
+      "copied": "Result copied",
+      "copiedHint": "Paste it into your platoon or clan chat.",
+      "copyFailed": "Couldn't copy the result",
+      "openTank": "Tank specs",
+      "next": "Next puzzle in",
+      "stats": {
+        "streak": "Streak",
+        "best": "Best streak",
+        "played": "Played",
+        "wins": "Wins"
+      }
+    },
+    "states": {
+      "loading": "Preparing today's puzzle",
+      "errorTitle": "Couldn't load the vehicle catalog",
+      "errorDescription": "The puzzle needs the catalog. Refresh the page a bit later.",
+      "emptyTitle": "The catalog is empty",
+      "emptyDescription": "There are no vehicles in the catalog to pick a puzzle from."
+    }
+  },
+  "players": {
+    "meta": {
+      "title": "Players — search and stats",
+      "description": "Find any «Мир танков» player: WN8, Bronya Index, marks of excellence, sessions and history."
+    },
+    "picker": {
+      "empty": "Nobody found. Check the nickname.",
+      "error": "Search is temporarily unavailable."
+    },
+    "hero": {
+      "eyebrow": "// Player radar",
+      "title": "Find <hot>any</hot> tanker",
+      "lead": "Nickname, clan or ID — we show the full dossier: ratings, tanks, marks, sessions and where a player falls short.",
+      "placeholder": "Player nickname, e.g. Stalevar_1987",
+      "compare": "Compare players",
+      "top": "Server leaderboards"
+    },
+    "recent": {
+      "eyebrow": "History",
+      "title": "Recently viewed",
+      "clear": "Clear"
+    },
+    "popular": {
+      "eyebrow": "Trending now",
+      "title": "Popular players",
+      "description": "The most viewed profiles over the last {days, plural, one {# day} other {# days}}.",
+      "all": "All leaderboards",
+      "errorTitle": "The list did not load",
+      "errorDescription": "Try refreshing the page a bit later.",
+      "emptyTitle": "Nobody viewed yet",
+      "emptyDescription": "Once people start opening profiles, the most popular ones show up here.",
+      "views": "{count, plural, one {# view} other {# views}}"
+    }
+  },
+  "profile": {
+    "meta": {
+      "title": "{nickname} — player stats",
+      "description": "{nickname} in «Мир танков»: Bronya Index, WN8, win rate, tanks, marks of excellence and sessions."
+    },
+    "loading": "Loading the player dossier",
+    "overall": "All time",
+    "stats": {
+      "battles": "Battles",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "avgFrags": "Avg frags",
+      "survival": "Survival",
+      "accuracy": "Accuracy"
+    },
+    "awards": {
+      "marks": "{count, plural, one {# mark} other {# marks}} of excellence",
+      "mastery": {
+        "third": "Mastery badge, 3rd class",
+        "second": "Mastery badge, 2nd class",
+        "first": "Mastery badge, 1st class",
+        "master": "Ace Tanker"
+      }
+    },
+    "missing": {
+      "retry": "Try again",
+      "search": "Back to player search",
+      "notFoundTitle": "Player not found",
+      "notFoundDescription": "We could not find “{nickname}”. Check the spelling — the player may have renamed.",
+      "errorTitle": "The dossier did not load",
+      "errorDescription": "We could not fetch “{nickname}”. Please try again."
+    },
+    "hero": {
+      "eyebrow": "// Player dossier · ID {id}",
+      "noClan": "No clan",
+      "since": "Playing since {date}",
+      "lastBattle": "Last battle {ago}",
+      "compare": "Compare",
+      "share": "Share",
+      "copied": "Link copied",
+      "updated": "Updated {time}",
+      "broneIndex": "Bronya Index",
+      "broneIndexShort": "Bronya Index",
+      "winRate": "Win rate",
+      "battles": "battles",
+      "noPeriodData": "No battles in this period — showing all-time stats."
+    },
+    "tabs": {
+      "overview": "Overview",
+      "tanks": "Tanks",
+      "sessions": "Sessions",
+      "marks": "Marks",
+      "charts": "Charts",
+      "insights": "Insights",
+      "history": "History"
+    },
+    "state": {
+      "emptyTitle": "Nothing here yet",
+      "emptyDescription": "There is no data for this section yet. Play a few battles and we will crunch it.",
+      "errorTitle": "Could not load",
+      "errorDescription": "The server did not answer. Refresh the page or come back later."
+    },
+    "overview": {
+      "historyEyebrow": "Trend",
+      "historyTitle": "WN8 over the last 60 days",
+      "activityEyebrow": "Calendar",
+      "activityTitle": "Activity over the year",
+      "activitySummary": "{total, plural, one {# battle} other {# battles}} over {active, plural, one {# day} other {# days}}",
+      "activityAria": "Activity calendar: {total} battles over {active} active days",
+      "activityDay": "{date}: {battles, plural, =0 {no battles} one {# battle} other {# battles}}{battles, plural, =0 {} other {, {winRate}% wins}}",
+      "activityHint": "Hover a day to see its battles",
+      "less": "Less",
+      "more": "More",
+      "highlightsEyebrow": "Vehicles",
+      "highlightsTitle": "Best and worst tanks",
+      "highlightsEmpty": "More battles are needed to tell.",
+      "best": "Best by WN8",
+      "worst": "Falling behind",
+      "battlesShort": "{count} b."
+    },
+    "tanks": {
+      "caption": "Player vehicles",
+      "reset": "Reset filters",
+      "emptyTitle": "Nothing matches",
+      "emptyDescription": "No tanks fit these filters. Loosen them up.",
+      "search": "Search by tank name",
+      "allNations": "All nations",
+      "premiumLabel": "Vehicle kind",
+      "premium": {
+        "all": "All",
+        "regular": "Tech tree",
+        "premium": "Premium"
+      },
+      "tiersLabel": "Tiers",
+      "typesLabel": "Classes",
+      "total": "{count, plural, one {# tank} other {# tanks}}",
+      "columns": {
+        "tank": "Tank",
+        "tier": "Tier",
+        "battles": "Battles",
+        "winRate": "Win rate",
+        "avgDamage": "Avg dmg",
+        "awards": "Awards",
+        "moe": "MoE",
+        "recent": "30 days"
+      }
+    },
+    "sessions": {
+      "eyebrow": "Session",
+      "live": "In progress",
+      "source": {
+        "api": "From the API",
+        "mod": "From the mod"
+      },
+      "duration": "{minutes, plural, one {# minute} other {# minutes}} in battle",
+      "share": "Session card",
+      "copied": "Link copied",
+      "best": "Best tank of the day",
+      "worst": "Worst tank of the day",
+      "battlesCount": "{count, plural, one {# battle} other {# battles}}",
+      "avgDamageShort": "avg dmg {value}",
+      "tanks": "Session vehicles",
+      "battles": "Battles",
+      "result": {
+        "win": "Victory",
+        "loss": "Defeat",
+        "draw": "Draw"
+      },
+      "frags": "{count, plural, =0 {no frags} one {# frag} other {# frags}}",
+      "errorTitle": "The session did not load",
+      "errorDescription": "We could not fetch this session. It may have been removed.",
+      "listLabel": "Sessions",
+      "more": "Show more",
+      "back": "{nickname} dossier",
+      "meta": {
+        "title": "{nickname} session",
+        "description": "Session summary for {nickname}: battles, wins, damage and the best tanks of the day."
+      }
+    },
+    "marks": {
+      "progressTitle": "Marks progress",
+      "sortLabel": "Sort",
+      "sort": {
+        "closest": "Closest to a mark",
+        "percent": "By percent",
+        "battles": "By battles"
+      },
+      "summary": {
+        "moe3": "3 marks",
+        "moe2": "2 marks",
+        "moe1": "1 mark",
+        "mastery": "Ace Tanker"
+      },
+      "collection": "Three-mark collection",
+      "collectionValue": "{done} of {total}",
+      "battles": "{count, plural, one {# battle} other {# battles}}",
+      "toNext": "to {percent}%: +{damage} damage",
+      "projection": {
+        "projected": "≈ {count, plural, one {# battle} other {# battles}} to 3 marks at your average",
+        "done": "Three marks earned",
+        "unknown": "Not enough data for a forecast",
+        "unreachable": "Your current average is not enough for 3 marks"
+      }
+    },
+    "charts": {
+      "eyebrow": "History",
+      "title": "Metric charts",
+      "granularityLabel": "Chart step",
+      "granularity": {
+        "day": "Days",
+        "week": "Weeks",
+        "month": "Months"
+      },
+      "metricLabel": "Metric",
+      "metric": {
+        "wn8": "WN8",
+        "winRate": "Win rate",
+        "avgDamage": "Avg damage",
+        "battles": "Battles",
+        "eff": "EFF",
+        "broneIndex": "Bronya Index"
+      },
+      "summary": {
+        "last": "Now",
+        "average": "Average",
+        "max": "Maximum",
+        "min": "Minimum",
+        "change": "Change"
+      },
+      "markers": "Events on the chart",
+      "marker": {
+        "patch": "Update {label}",
+        "event": "Event “{label}”"
+      }
+    },
+    "insights": {
+      "eyebrow": "Breakdown",
+      "title": "Why am I losing",
+      "byClass": "By vehicle class",
+      "byTier": "By tier",
+      "tierLabel": "Tier {tier}",
+      "battles": "{count, plural, one {# battle} other {# battles}}",
+      "weakTanks": "Where you trail the server",
+      "strongTanks": "Where you beat the server",
+      "deltaPp": "{value} pp",
+      "damageRatio": "{value}% of server damage",
+      "tips": {
+        "weak_class": {
+          "title": "Weak class",
+          "body": "In {type} vehicles your win rate is {winRateDelta} pp below the server average."
+        },
+        "weak_tier": {
+          "title": "Weak tier",
+          "body": "At tier {tierRoman} you win {winRateDelta} pp less often than the server — worth revisiting those vehicles."
+        },
+        "low_damage_tank": {
+          "title": "Damage shortfall",
+          "body": "On the {tank} you deal {damageRatio}% of the server average damage."
+        },
+        "not_enough_battles": {
+          "title": "Too few battles",
+          "body": "A fair breakdown needs at least {required} battles — you have {battles}."
+        },
+        "no_weak_spots": {
+          "title": "No weak spots",
+          "body": "You match or beat the server in every class and tier."
+        }
+      },
+      "playtime": {
+        "eyebrow": "Time",
+        "title": "When you play best",
+        "beta": "Beta",
+        "approximate": "Times are approximate: without the mod we only see battles through API polls.",
+        "bestHour": "Best time: {from}:00–{to}:00 · {rate}% wins",
+        "worstHour": "Worst time: {from}:00–{to}:00 · {rate}% wins",
+        "bestWeekday": "Strong day: {day} · {rate}% wins",
+        "gridLabel": "Win rate by hour and weekday",
+        "cell": "{hour}:00 · {battles} battles · {rate}% wins"
+      }
+    },
+    "history": {
+      "eyebrow": "Timeline",
+      "nicknames": "Nicknames",
+      "clans": "Clans",
+      "empty": "No changes.",
+      "unknown": "unknown",
+      "now": "now"
+    },
+    "og": {
+      "eyebrow": "DOSSIER",
+      "broneIndex": "Bronya Index",
+      "winRate": "Win rate",
+      "battles": "Battles",
+      "noClan": "No clan",
+      "source": "Data: Lesta Games",
+      "session": "SESSION",
+      "avgDamage": "Avg damage",
+      "best": "Best tank"
+    }
+  },
+  "compare": {
+    "meta": {
+      "title": "Compare players",
+      "description": "Compare up to four «Мир танков» players by WN8, Bronya Index, win rate and marks."
+    },
+    "eyebrow": "Versus",
+    "title": "Compare players",
+    "description": "Add two to four players — we highlight who is stronger in every metric.",
+    "slot": "Slot {index} of {max}",
+    "add": "Add a player by nickname",
+    "overall": "All time",
+    "emptyTitle": "You need an opponent",
+    "emptyDescription": "Add at least two players to start comparing.",
+    "errorTitle": "The comparison did not load",
+    "errorDescription": "We could not fetch the players. Please try again.",
+    "missingTitle": "These players are not collected yet",
+    "missingDescription": "We have no stats for the selected players yet. Swap them or check back later.",
+    "remove": "Remove from comparison",
+    "slotError": "Player #{id} not found",
+    "noClan": "No clan",
+    "broneIndex": "Bronya Index",
+    "caption": "Player metrics",
+    "metric": "Metric",
+    "best": "Best result",
+    "metrics": {
+      "battles": "Battles",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "wn8": "WN8",
+      "eff": "EFF",
+      "broneIndex": "Bronya Index",
+      "avgFrags": "Avg frags",
+      "avgSpotted": "Avg spotted",
+      "avgXp": "Avg XP",
+      "survivalRate": "Survival",
+      "accuracy": "Accuracy",
+      "avgTier": "Avg battle tier",
+      "moe3": "3 marks",
+      "mastery": "Ace Tankers"
+    }
+  },
+  "top": {
+    "meta": {
+      "title": "Player and clan leaderboards",
+      "description": "«Мир танков» leaderboards: top players, clans, rising stars, marks of excellence and streamers."
+    },
+    "eyebrow": "Leaderboards",
+    "title": "Server leaderboards",
+    "description": "Who is strongest right now: by WN8, Bronya Index, win rate and damage — for any period, tier and tank.",
+    "scopeLabel": "Leaderboard",
+    "minBattles": "Players with at least {count, plural, one {# battle} other {# battles}} in the period",
+    "scopes": {
+      "players": "Players",
+      "clans": "Clans",
+      "risingStars": "Rising stars",
+      "marks": "Marks",
+      "streamers": "Streamers"
+    },
+    "errorTitle": "The leaderboard did not load",
+    "errorDescription": "The ratings server did not answer. Try again later.",
+    "emptyTitle": "Nothing here yet",
+    "emptyDescription": "Nobody fits these filters. Try another period or tier.",
+    "metrics": {
+      "wn8": "WN8",
+      "eff": "EFF",
+      "broneIndex": "Bronya Index",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage"
+    },
+    "overall": "All time",
+    "allTiers": "All tiers",
+    "allTypes": "All classes",
+    "metric": "Metric",
+    "period": "Period",
+    "tier": "Tier",
+    "type": "Class",
+    "tank": "Tank",
+    "clearTank": "Clear tank",
+    "tankPlaceholder": "Any tank",
+    "noClan": "No clan",
+    "battles": "{count, plural, one {# battle} other {# battles}}",
+    "marksLabel": "3 marks",
+    "columns": {
+      "clan": "Clan",
+      "player": "Player",
+      "value": "Value",
+      "battles": "Battles"
+    },
+    "tableCaption": "Places from 4th"
+  },
+  "me": {
+    "meta": {
+      "title": "Dashboard",
+      "description": "Favorites, goals, linked accounts, the mod and notifications."
+    },
+    "signIn": "Sign in",
+    "guestTitle": "Sign-in required",
+    "guestDescription": "Your dashboard is available after signing in with Lesta ID or Telegram.",
+    "eyebrow": "// Dashboard",
+    "title": "Commander {name}",
+    "signOut": "Sign out",
+    "tabs": {
+      "label": "Dashboard sections",
+      "overview": "Overview",
+      "notifications": "Notifications",
+      "billing": "Subscription",
+      "telegram": "Telegram",
+      "developer": "API",
+      "streamer": "Streaming"
+    },
+    "toast": {
+      "failed": "Something went wrong. Please try again.",
+      "deviceRevoked": "Device unlinked",
+      "favoriteRemoved": "Removed from favorites",
+      "goalAdded": "Goal set",
+      "goalRemoved": "Goal removed",
+      "settingsSaved": "Settings saved"
+    },
+    "favorites": {
+      "title": "Favorites",
+      "description": "Players you keep an eye on.",
+      "empty": "Nobody yet. Press “Add to favorites” on a player profile.",
+      "own": "Mine",
+      "remove": "Remove from favorites",
+      "add": "Add to favorites",
+      "inFavorites": "In favorites",
+      "added": "Added to favorites",
+      "removed": "Removed from favorites",
+      "failed": "Could not update favorites"
+    },
+    "accounts": {
+      "title": "Accounts",
+      "description": "Sign-in methods and linked game accounts.",
+      "lesta": "Lesta ID",
+      "primary": "Primary",
+      "tokenUntil": "token until {date}",
+      "telegram": "Telegram",
+      "notLinked": "not linked",
+      "linkLesta": "Link another Lesta ID account",
+      "note": "We never ask for your Lesta password — sign-in goes through the official Lesta ID."
+    },
+    "mod": {
+      "title": "Companion mod",
+      "description": "Link the mod so sessions, accuracy and marks progress arrive right after each battle.",
+      "issue": "Get a binding code",
+      "steps": {
+        "install": "Install the Bronevik mod into the game client mods folder.",
+        "open": "Start the game and open the mod window in the garage.",
+        "enter": "Enter the code — the device shows up in the list below."
+      },
+      "codeLabel": "Binding code",
+      "expired": "The code expired — get a new one",
+      "expires": "Valid for {time}",
+      "copy": "Copy",
+      "copied": "Copied",
+      "renew": "New code",
+      "devices": "Linked devices",
+      "noDevices": "The mod is not linked yet.",
+      "deviceMeta": "mod {version} · last seen {seen}",
+      "revoke": "Unlink"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Where and what to tell you about.",
+      "channels": "Channels",
+      "events": "Events",
+      "reports": "Reports",
+      "channel": {
+        "site": "On the site",
+        "telegram": "Telegram",
+        "email": "Email",
+        "web_push": "Browser push"
+      },
+      "event": {
+        "moe_gained": "New mark of excellence",
+        "moe_threshold_dropped": "A mark threshold dropped",
+        "mastery_gained": "Ace Tanker earned",
+        "session_finished": "Session finished",
+        "goal_reached": "Goal reached",
+        "bonus_code": "New bonus codes"
+      },
+      "sessionReport": "Post-session report",
+      "sessionReportHint": "Your day's summary in Telegram when you stop playing",
+      "weeklyDigest": "Weekly digest",
+      "weeklyDigestHint": "The week, marks and goal progress every Monday"
+    },
+    "goals": {
+      "title": "Goals",
+      "description": "Set a goal for a week or a month — progress tracks itself.",
+      "empty": "No goals yet. Time to set the first one.",
+      "remove": "Remove goal",
+      "goalTitle": "{metric}: {target}",
+      "progress": "Start {from} · now {current}",
+      "daysLeft": "{count, plural, =0 {last day} one {# day left} other {# days left}}",
+      "overdue": "Deadline passed",
+      "status": {
+        "active": "In progress",
+        "achieved": "Achieved",
+        "failed": "Missed",
+        "cancelled": "Cancelled"
+      },
+      "metric": {
+        "winRate": "Win rate",
+        "wn8": "WN8",
+        "avgDamage": "Average damage",
+        "battles": "Battles",
+        "moe": "Marks of excellence",
+        "broneIndex": "Bronya Index"
+      },
+      "newGoal": "New goal",
+      "metricLabel": "Metric",
+      "targetLabel": "Target",
+      "targetPlaceholder": "For example, 55",
+      "duration": "{count, plural, one {# day} other {# days}}",
+      "durationLabel": "Deadline",
+      "invalid": "Enter a positive number.",
+      "add": "Set goal"
+    }
+  },
+  "auth": {
+    "meta": {
+      "title": "Sign in",
+      "description": "Sign in to Bronevik with Lesta ID or Telegram."
+    },
+    "title": "Join <hot>the crew</hot>",
+    "lead": "Signing in unlocks favorites, goals, the companion mod and alerts about new marks.",
+    "perks": {
+      "favorites": "Favorite players and your alts",
+      "goals": "Weekly goals with progress",
+      "mod": "Companion mod and live sessions",
+      "alerts": "Alerts about marks and thresholds"
+    },
+    "safety": "We never ask for your «Мир танков» login or password. Sign-in goes only through the official Lesta ID.",
+    "eyebrow": "Authorization",
+    "heading": "Sign in to Bronevik",
+    "errors": {
+      "unknown": "Could not sign in. Please try again.",
+      "lesta_state": "The sign-in session expired. Start again.",
+      "lesta_denied": "Lesta ID sign-in was cancelled.",
+      "lesta_token": "Lesta ID did not confirm the sign-in. Please try again.",
+      "lesta_unavailable": "Lesta ID is unavailable right now. Try later.",
+      "lesta_account_taken": "This account is already linked to another Bronevik profile."
+    },
+    "signedInAs": "Signed in as {name} — open the dashboard",
+    "lesta": "Sign in with Lesta ID",
+    "lestaHint": "The official Lesta page opens. We only receive the nickname and account ID.",
+    "or": "or",
+    "telegram": "Sign in with Telegram",
+    "telegramDisabled": "Telegram sign-in is not configured yet.",
+    "magic": {
+      "title": "Sign in by email link",
+      "dev": "Development only",
+      "email": "Email",
+      "placeholder": "you@example.com",
+      "invalid": "Enter a valid email.",
+      "submit": "Send the link",
+      "sent": "Link sent. In dev mode it is in the API logs.",
+      "failed": "Could not send the link."
+    }
+  }
+}

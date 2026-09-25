@@ -1,0 +1,132 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: var(--space-8);
+  padding-block: var(--space-10);
+
+  @include below(xl) {
+    padding-top: var(--space-8);
+  }
+}
+
+.backdrop {
+  position: absolute;
+  background:
+    repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 4px),
+    radial-gradient(ellipse 55% 60% at 80% 40%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 70%), var(--dusk);
+  inset: 0;
+  mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  pointer-events: none;
+}
+
+.inner {
+  @include shell;
+
+  position: relative;
+  display: grid;
+  align-items: center;
+  gap: var(--space-8);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.copy {
+  @include stack(var(--space-5));
+}
+
+.eyebrow {
+  @include hud-label;
+
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-accent);
+  gap: var(--space-2);
+}
+
+.live {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  animation: developers-pulse 1.8s ease-in-out infinite;
+  background-color: var(--color-success);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.title {
+  @include display(var(--text-4xl));
+
+  max-width: 13ch;
+  font-stretch: 75%;
+  font-weight: 800;
+  line-height: 0.95;
+}
+
+.hot {
+  background: linear-gradient(95deg, var(--color-accent-hot), var(--color-accent) 50%, var(--color-accent-deep));
+  background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  max-width: 56ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+
+  @include below(md) {
+    font-size: var(--text-md);
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.readouts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.readout {
+  @include plate(var(--chamfer-sm));
+  @include stack(2px);
+
+  min-width: 130px;
+  padding: var(--space-3) var(--space-4);
+}
+
+.readoutLabel {
+  @include hud-label;
+}
+
+.readoutValue {
+  @include numeric;
+
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+
+.console {
+  min-width: 0;
+}
+
+@keyframes developers-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-success) 55%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}

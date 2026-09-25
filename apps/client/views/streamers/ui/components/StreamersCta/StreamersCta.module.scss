@@ -1,0 +1,31 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+}
+
+.plate {
+  @include riveted-plate(var(--chamfer-lg));
+  @include stack(var(--space-4));
+
+  align-items: flex-start;
+  padding: var(--space-9) var(--space-8);
+  background-image: radial-gradient(ellipse 60% 80% at 100% 0%, color-mix(in srgb, var(--color-enemy) 16%, transparent), transparent 70%);
+
+  @include below(md) {
+    padding: var(--space-7) var(--space-5);
+  }
+}
+
+.title {
+  @include display(var(--text-3xl));
+
+  max-width: 18ch;
+  font-stretch: 75%;
+  font-weight: 800;
+}
+
+.text {
+  max-width: 56ch;
+  color: var(--color-text-muted);
+}

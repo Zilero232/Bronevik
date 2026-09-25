@@ -1,0 +1,23 @@
+{
+  "threshold": 0,
+  "minTokens": 60,
+  "minLines": 8,
+  "reporters": ["console"],
+  "format": ["typescript", "tsx", "javascript", "scss", "python"],
+  "path": ["apps", "packages", "e2e"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/generated/**",
+    "**/coverage/**",
+    "**/prisma/migrations/**",
+    "**/_tests/**",
+    "**/tests/**",
+    "**/*.test.{ts,tsx}",
+    "**/shared/mocks/**",
+    "**/shared/i18n/locales/**"
+  ],
+  "gitignore": true,
+  "absolute": false
+}

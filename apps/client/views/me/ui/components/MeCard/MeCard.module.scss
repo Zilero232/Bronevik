@@ -1,0 +1,41 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-5));
+
+  padding: var(--space-6);
+
+  @include below(md) {
+    padding: var(--space-4);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.icon {
+  display: inline-flex;
+  padding: 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+}
+
+.text {
+  @include stack(2px);
+
+  flex: 1;
+}
+
+.title {
+  @include display(var(--text-lg));
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

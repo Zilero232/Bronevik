@@ -1,0 +1,141 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-9);
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 40px 40px,
+    radial-gradient(ellipse at 15% 0%, color-mix(in srgb, var(--clan) 22%, transparent), transparent 65%);
+  padding-block: var(--space-10) var(--space-8);
+
+  @include below(md) {
+    padding-block: var(--space-8) var(--space-7);
+  }
+}
+
+.watermark {
+  @include display(clamp(6rem, 3rem + 16vw, 16rem));
+
+  position: absolute;
+  right: -0.08em;
+  bottom: -0.2em;
+  color: transparent;
+  opacity: 0.35;
+  pointer-events: none;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--clan) 45%, transparent);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.scan {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 35%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--clan), transparent);
+
+  @include scanner(5s);
+}
+
+.inner {
+  @include shell;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-7);
+
+  @include below(lg) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.identity {
+  @include stack(var(--space-3));
+
+  min-width: 0;
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--clan);
+}
+
+.title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin: 0;
+  gap: var(--space-2) var(--space-4);
+}
+
+.tag {
+  @include display(var(--text-4xl));
+
+  color: var(--clan);
+  text-shadow: 0 0 40px color-mix(in srgb, var(--clan) 40%, transparent);
+}
+
+.name {
+  @include display(var(--text-2xl));
+
+  color: var(--color-text);
+}
+
+.motto {
+  max-width: 52ch;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+  font-style: italic;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2) var(--space-5);
+  list-style: none;
+
+  li {
+    @include hud-label;
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+}
+
+.ring {
+  flex: none;
+
+  @include below(lg) {
+    align-self: center;
+  }
+}
+
+.ringValue {
+  @include numeric;
+
+  display: block;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ringLabel {
+  @include hud-label;
+
+  display: block;
+  max-width: 12ch;
+  margin-top: var(--space-1);
+  text-align: center;
+}

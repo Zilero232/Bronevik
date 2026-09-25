@@ -1,0 +1,10 @@
+import { moeSortFieldSchema, sortOrderSchema } from '@bronevik/schemas';
+import { parseAsString, parseAsStringLiteral } from 'nuqs';
+
+export const MARKS_URL_PARSERS = {
+  sort: parseAsStringLiteral(moeSortFieldSchema.options).withDefault('p95'),
+  order: parseAsStringLiteral(sortOrderSchema.options).withDefault('desc'),
+  q: parseAsString.withDefault('')
+};
+
+export const PLAYER_URL_PARSER = parseAsString.withDefault('');

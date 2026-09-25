@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<map>
+		<id>1</id>
+		<name>01_karelia</name>
+	</map>
+	<map>
+		<id>2</id>
+		<name>02_malinovka</name>
+	</map>
+	<map>
+		<id>3</id>
+		<name>04_himmelsdorf</name>
+	</map>
+	<map>
+		<id>5015</id>
+		<name>qa_content_01</name>
+		<isDevelopment>True</isDevelopment>
+</root>

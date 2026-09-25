@@ -1,0 +1,57 @@
+import { Injectable } from '@nestjs/common';
+
+import type { AccountOfInput, PlayerStats } from '../community.types';
+
+import { AppForbiddenException } from '../../../common/exceptions';
+import { PrismaService } from '../../../core';
+import { toPlayerStats } from '../lib/community-views';
+
+@Injectable()
+export class CommunityAccountsService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async accountOf({ userId, accountId }: AccountOfInput): Promise<bigint> {
+    const links = await this.prisma.userLestaAccount.findMany({
+      where: { userId },
+      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
+      select: { accountId: true }
+    });
+
+    const link = accountId === undefined ? links[0] : links.find((candidate) => candidate.accountId === BigInt(accountId));
+
+    if (!link) {
+      throw new AppForbiddenException('FORBIDDEN', 'Link this game account with Lesta ID first');
+    }
+
+    return link.accountId;
+  }
+
+  async statsOf(accountIds: readonly bigint[]): Promise<Map<bigint, PlayerStats>> {
+    const unique = [...new Set(accountIds)];
+    const ratings =
+      unique.length === 0
+        ? []
+        : await this.prisma.accountRating.findMany({
+            where: { accountId: { in: unique }, period: 'overall' },
+            select: { accountId: true, battles: true, wn8: true, winRate: true }
+          });
+
+    return new Map(
+      ratings.flatMap((rating) => {
+        const stats = toPlayerStats(rating);
+
+        return stats ? [[rating.accountId, stats] as const] : [];
+      })
+    );
+  }
+
+  async nicknamesOf(accountIds: readonly bigint[]): Promise<Map<bigint, string>> {
+    const unique = [...new Set(accountIds)];
+    const players =
+      unique.length === 0
+        ? []
+        : await this.prisma.player.findMany({ where: { accountId: { in: unique } }, select: { accountId: true, nickname: true } });
+
+    return new Map(players.map((player) => [player.accountId, player.nickname]));
+  }
+}

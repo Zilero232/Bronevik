@@ -1,0 +1,263 @@
+enum TargetKind {
+  player
+  clan
+  tank
+
+  @@map("target_kind")
+}
+
+enum NotificationEvent {
+  moeGained           @map("moe_gained")
+  moeThresholdDropped @map("moe_threshold_dropped")
+  masteryGained       @map("mastery_gained")
+  sessionFinished     @map("session_finished")
+  clanRosterChanged   @map("clan_roster_changed")
+  clanEventReminder   @map("clan_event_reminder")
+  bonusCode           @map("bonus_code")
+  premiumOffer        @map("premium_offer")
+  tankChanged         @map("tank_changed")
+  goalReached         @map("goal_reached")
+  badgeAwarded        @map("badge_awarded")
+  challengeResolved   @map("challenge_resolved")
+
+  @@map("notification_event")
+}
+
+enum NotificationChannel {
+  telegram
+  email
+  webPush  @map("web_push")
+  site
+
+  @@map("notification_channel")
+}
+
+enum GoalMetric {
+  winRate    @map("win_rate")
+  wn8
+  avgDamage  @map("avg_damage")
+  battles
+  moe
+  broneIndex @map("brone_index")
+
+  @@map("goal_metric")
+}
+
+enum GoalStatus {
+  active
+  achieved
+  failed
+  cancelled
+
+  @@map("goal_status")
+}
+
+model Favorite {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId   String     @map("user_id")
+  kind     TargetKind
+  targetId BigInt     @map("target_id")
+  label    String?
+  isOwn    Boolean    @default(false) @map("is_own")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kind, targetId])
+  @@index([kind, targetId])
+  @@map("favorite")
+}
+
+model Follow {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId   String              @map("user_id")
+  kind     TargetKind
+  targetId BigInt              @map("target_id")
+  events   NotificationEvent[]
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kind, targetId])
+  @@index([kind, targetId])
+  @@map("follow")
+}
+
+model Goal {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId    String     @map("user_id")
+  accountId BigInt     @map("account_id")
+  metric    GoalMetric
+  tankId    Int?       @map("tank_id")
+  target    Float
+  baseline  Float
+  current   Float?
+  status    GoalStatus @default(active)
+
+  startsAt   DateTime  @map("starts_at") @db.Timestamptz(3)
+  endsAt     DateTime  @map("ends_at") @db.Timestamptz(3)
+  achievedAt DateTime? @map("achieved_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([status, endsAt])
+  @@map("goal")
+}
+
+model BadgeDefinition {
+  code String @id
+
+  category String
+  tier     Int     @default(1) @db.SmallInt
+  criteria Json
+  isActive Boolean @default(true) @map("is_active")
+  order    Int     @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  awards AccountBadge[]
+
+  @@map("badge_definition")
+}
+
+model AccountBadge {
+  accountId BigInt @map("account_id")
+  badgeCode String @map("badge_code")
+
+  context   Json?
+  awardedAt DateTime @default(now()) @map("awarded_at") @db.Timestamptz(3)
+
+  player Player          @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+  badge  BadgeDefinition @relation(fields: [badgeCode], references: [code], onDelete: Cascade)
+
+  @@id([accountId, badgeCode])
+  @@index([badgeCode])
+  @@map("account_badge")
+}
+
+model NotificationSettings {
+  userId String @id @map("user_id")
+
+  channels        NotificationChannel[]
+  events          NotificationEvent[]
+  quietHoursStart Int?                  @map("quiet_hours_start") @db.SmallInt
+  quietHoursEnd   Int?                  @map("quiet_hours_end") @db.SmallInt
+  sessionReport   Boolean               @default(true) @map("session_report")
+  weeklyDigest    Boolean               @default(false) @map("weekly_digest")
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_settings")
+}
+
+model Notification {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId    String              @map("user_id")
+  event     NotificationEvent
+  channel   NotificationChannel
+  payload   Json
+  dedupeKey String?             @map("dedupe_key")
+
+  sentAt    DateTime? @map("sent_at") @db.Timestamptz(3)
+  readAt    DateTime? @map("read_at") @db.Timestamptz(3)
+  failedAt  DateTime? @map("failed_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, channel, dedupeKey])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([sentAt])
+  @@map("notification")
+}
+
+model PushSubscription {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId   String @map("user_id")
+  endpoint String @unique
+  p256dh   String
+  auth     String
+
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscription")
+}
+
+model TelegramAccount {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId String @unique @map("user_id")
+
+  telegramId   BigInt  @unique @map("telegram_id")
+  username     String?
+  languageCode String? @map("language_code")
+  chatId       BigInt? @map("chat_id")
+
+  linkedAt   DateTime  @default(now()) @map("linked_at") @db.Timestamptz(3)
+  lastSeenAt DateTime? @map("last_seen_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("telegram_account")
+}
+
+model TelegramLinkCode {
+  code String @id
+
+  userId String @map("user_id")
+
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("telegram_link_code")
+}
+
+model TelegramWebLogin {
+  code String @id
+
+  userId String @map("user_id")
+
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("telegram_web_login")
+}
+
+model WeeklyChallengeProgress {
+  accountId BigInt   @map("account_id")
+  weekStart DateTime @map("week_start") @db.Date
+  code      String
+
+  progress    Float
+  target      Float
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@id([accountId, weekStart, code])
+  @@index([weekStart, code])
+  @@map("weekly_challenge_progress")
+}

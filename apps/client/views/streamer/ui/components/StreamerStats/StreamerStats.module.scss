@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+
+  align-items: flex-start;
+}
+
+.grid {
+  @include tile-grid;
+
+  width: 100%;
+}
+
+.hidden {
+  color: var(--color-text-muted);
+}

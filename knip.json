@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreDependencies": ["pino-pretty", "@prisma/client-runtime-utils", "stylelint-order", "lint-staged"],
+  "ignoreUnresolved": ["^.$"],
+  "rules": {
+    "exports": "warn",
+    "types": "warn"
+  },
+  "workspaces": {
+    "apps/client": {
+      "entry": ["shared/i18n/request.ts"],
+      "project": ["**/*.{ts,tsx,scss}"]
+    },
+    "apps/server": {
+      "entry": ["scripts/*.ts", "src/lib/lesta/index.ts", "src/lib/replay/index.ts"],
+      "project": ["src/**/*.ts", "scripts/**/*.ts", "prisma/**/*.prisma"]
+    },
+    "packages/*": {
+      "project": ["src/**/*.{ts,tsx}"]
+    }
+  }
+}

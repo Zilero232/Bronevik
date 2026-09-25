@@ -1,0 +1,54 @@
+import type { Transporter } from 'nodemailer';
+
+import { Injectable } from '@nestjs/common';
+import { createTransport } from 'nodemailer';
+import { render } from 'react-email';
+
+import type { DigestEmailInput } from '../notifications.types';
+
+import { AppConfigService } from '../../../config';
+import { isPlaceholderEmail } from '../../../lib/auth';
+import { NOTIFICATION_COPY, SMTP_TIMEOUTS } from '../config';
+import { DigestEmail } from '../emails/digest-email';
+
+@Injectable()
+export class EmailService {
+  private readonly transporter: Transporter | null;
+  private readonly from: string;
+
+  constructor(config: AppConfigService) {
+    const host = config.get('SMTP_HOST');
+
+    this.from = config.get('EMAIL_FROM');
+
+    this.transporter =
+      host && this.from
+        ? createTransport({
+            host,
+            port: config.get('SMTP_PORT'),
+            secure: config.get('SMTP_SECURE'),
+            auth: config.get('SMTP_USER') ? { user: config.get('SMTP_USER'), pass: config.get('SMTP_PASSWORD') } : undefined,
+            ...SMTP_TIMEOUTS
+          })
+        : null;
+  }
+
+  get isEnabled(): boolean {
+    return this.transporter !== null;
+  }
+
+  canReach(email: string | null | undefined): boolean {
+    return this.isEnabled && Boolean(email) && !isPlaceholderEmail(email ?? '');
+  }
+
+  async sendDigest({ to, locale, rendered }: DigestEmailInput): Promise<void> {
+    if (!this.transporter) {
+      return;
+    }
+
+    const email = DigestEmail({ locale, title: rendered.title, body: rendered.body, url: rendered.url, cta: NOTIFICATION_COPY[locale].open });
+    const [html, text] = await Promise.all([render(email), render(email, { plainText: true })]);
+
+    await this.transporter.sendMail({ from: this.from, to, subject: rendered.title, html, text });
+  }
+}

@@ -1,0 +1,64 @@
+import { expect, test } from '@playwright/test';
+
+import { ROUTES } from '../apps/client/shared/constants/routes';
+
+const LOCALES = [
+  {
+    name: 'ru',
+    browserLocale: 'ru-RU',
+    home: ROUTES.home,
+    title: /Броневик/,
+    searchPlaceholder: 'Ник игрока, танк или тег клана…',
+    lestaCopyright: '© Леста Игры. Все права защищены.'
+  },
+  {
+    name: 'en',
+    browserLocale: 'en-US',
+    home: '/en',
+    title: /Bronevik|Броневик/,
+    searchPlaceholder: /./,
+    lestaCopyright: '© Lesta Games. All rights reserved.'
+  }
+] as const;
+
+for (const locale of LOCALES) {
+  test.describe(`smoke — ${locale.name}`, () => {
+    test.use({ locale: locale.browserLocale });
+
+    test('the home page renders', async ({ page }) => {
+      const response = await page.goto(locale.home);
+
+      expect(response?.status()).toBe(200);
+      await expect(page).toHaveTitle(locale.title);
+      await expect(page.locator('main')).toBeVisible();
+    });
+
+    test('the command palette opens on Ctrl+K', async ({ page }) => {
+      await page.goto(locale.home);
+      await page.waitForLoadState('networkidle');
+
+      await expect(async () => {
+        await page.keyboard.press('Control+k');
+        await expect(page.getByRole('dialog')).toBeVisible({ timeout: 2_000 });
+      }).toPass();
+
+      await expect(page.getByRole('dialog').getByRole('combobox')).toHaveAttribute('placeholder', locale.searchPlaceholder);
+    });
+
+    test('the footer carries the Lesta attribution', async ({ page }) => {
+      await page.goto(locale.home);
+
+      const footer = page.locator('footer');
+
+      await expect(footer).toContainText(locale.lestaCopyright);
+      await expect(footer.getByRole('link', { name: 'tanki.su', exact: true })).toHaveAttribute('href', /tanki\.su/);
+    });
+  });
+}
+
+test('an unknown route renders the not-found page', async ({ page }) => {
+  const response = await page.goto('/en/definitely-not-a-real-route');
+
+  expect(response?.status()).toBe(404);
+  await expect(page.locator('footer')).toBeVisible();
+});

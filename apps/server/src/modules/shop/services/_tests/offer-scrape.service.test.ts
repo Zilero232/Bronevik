@@ -1,0 +1,122 @@
+import type { CheerioAPI } from 'cheerio';
+
+import { load } from 'cheerio';
+import { readFileSync } from 'node:fs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { mock, mockDeep } from 'vitest-mock-extended';
+
+import type { PremiumOffer, Vehicle } from '../../../../../generated';
+import type { PrismaService } from '../../../../core';
+import type { NotificationService } from '../../../notifications';
+import type { BonusCodeService } from '../bonus-code.service';
+
+import { SOURCES } from '../../../../config';
+import { crawlPages, parseTankiListing } from '../../../../lib/scrape';
+import { OFFER_SCRAPE } from '../../config';
+import { parseOfferDetail } from '../../lib';
+import { OfferScrapeService } from '../offer-scrape.service';
+
+vi.mock('../../../../lib/scrape', async () => ({
+  ...(await vi.importActual<typeof import('../../../../lib/scrape')>('../../../../lib/scrape')),
+  crawlPages: vi.fn()
+}));
+
+const fixture = (path: string): CheerioAPI => load(readFileSync(new URL(path, import.meta.url), 'utf8'));
+
+const listingPage = fixture('../../../../lib/scrape/tanki-listing/_tests/fixtures/tanki-special-offers.html');
+const detailPage = fixture('../../lib/offer-detail/_tests/fixtures/tanki-offer-detail.html');
+const listing = parseTankiListing({ $: listingPage, baseUrl: SOURCES.tankiSite });
+const [knownItem, detailItem] = listing;
+const now = new Date('2026-09-25T12:00:00Z');
+const defender = mock<Vehicle>({ tankId: 1, name: 'Объект 252У Защитник' });
+const unmentioned = mock<Vehicle>({ tankId: 2, name: 'Нет такого танка' });
+
+const pages = new Map<string, CheerioAPI>([
+  [SOURCES.tankiSpecialOffers, listingPage],
+  [detailItem?.url ?? '', detailPage]
+]);
+
+const createService = () => {
+  const prisma = mockDeep<PrismaService>();
+  const notifications = mock<NotificationService>();
+  const bonusCodes = mock<BonusCodeService>();
+
+  prisma.premiumOffer.findMany.mockResolvedValue([mock<PremiumOffer>({ url: knownItem?.url ?? null })]);
+  prisma.premiumOffer.create.mockResolvedValue(mock<PremiumOffer>({ id: 'offer-1' }));
+  prisma.vehicle.findMany.mockResolvedValue([defender, unmentioned]);
+  notifications.tankDiscounted.mockResolvedValue(1);
+
+  return { service: new OfferScrapeService(prisma, notifications, bonusCodes), prisma, notifications, bonusCodes };
+};
+
+beforeEach(() => {
+  vi.mocked(crawlPages).mockImplementation(async ({ urls }) =>
+    urls.flatMap((url) => {
+      const $ = pages.get(url);
+
+      return $ ? [{ url, $ }] : [];
+    })
+  );
+});
+
+describe('OfferScrapeService.run', () => {
+  it('creates an offer for every listing item not seen before and refreshes the known ones', async () => {
+    const { service, prisma } = createService();
+
+    const summary = await service.run(now);
+    const createdUrls = prisma.premiumOffer.create.mock.calls.map(([args]) => args.data.url);
+
+    expect(summary.seen).toBe(listing.length);
+    expect(summary.created).toBe(listing.length - 1);
+    expect(createdUrls).toEqual(listing.slice(1).map((item) => item.url));
+    expect(createdUrls).not.toContain(knownItem?.url);
+
+    expect(prisma.premiumOffer.updateMany).toHaveBeenCalledWith({
+      where: { source: OFFER_SCRAPE.source, url: { in: [knownItem?.url] } },
+      data: { lastSeenAt: now }
+    });
+  });
+
+  it('notifies about the tanks named on the offer page with its discount', async () => {
+    const { service, notifications } = createService();
+    const detail = parseOfferDetail({ $: detailPage, publishedAt: detailItem?.publishedAt ?? now });
+
+    const summary = await service.run(now);
+
+    expect(notifications.tankDiscounted).toHaveBeenCalledTimes(1);
+
+    expect(notifications.tankDiscounted).toHaveBeenCalledWith({
+      tankId: defender.tankId,
+      tankName: defender.name,
+      discountPercent: detail.tankDiscountPercent,
+      offerId: 'offer-1'
+    });
+
+    expect(summary.notified).toBe(1);
+  });
+
+  it('discovers the bonus codes printed on the offer page', async () => {
+    const { service, bonusCodes } = createService();
+    const detail = parseOfferDetail({ $: detailPage, publishedAt: detailItem?.publishedAt ?? now });
+
+    await service.run(now);
+
+    expect(detail.bonusCodes.length).toBeGreaterThan(0);
+    expect(bonusCodes.discover.mock.calls.map(([input]) => input.code)).toEqual(detail.bonusCodes);
+
+    expect(bonusCodes.discover).toHaveBeenCalledWith(
+      expect.objectContaining({ source: OFFER_SCRAPE.source, sourceUrl: detailItem?.url, expiresAt: detail.endsAt })
+    );
+  });
+
+  it('creates nothing and skips the vehicle lookup when the listing is unavailable', async () => {
+    const { service, prisma } = createService();
+
+    vi.mocked(crawlPages).mockResolvedValue([]);
+    prisma.premiumOffer.findMany.mockResolvedValue([]);
+
+    expect(await service.run(now)).toEqual({ seen: 0, created: 0, notified: 0 });
+    expect(prisma.vehicle.findMany).not.toHaveBeenCalled();
+    expect(prisma.premiumOffer.create).not.toHaveBeenCalled();
+  });
+});

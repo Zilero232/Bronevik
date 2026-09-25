@@ -1,0 +1,44 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+
+  @include tone;
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+}
+
+.tick {
+  stroke: var(--color-border-strong);
+  stroke-width: 1;
+}
+
+.track {
+  fill: none;
+  stroke: var(--color-surface-sunken);
+}
+
+.indicator {
+  fill: none;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--tone) 60%, transparent));
+  stroke: var(--tone);
+  stroke-linecap: butt;
+}
+
+.content {
+  position: relative;
+  display: grid;
+  font-family: var(--font-display);
+  font-feature-settings: 'tnum' 1;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+  place-items: center;
+  text-align: center;
+}

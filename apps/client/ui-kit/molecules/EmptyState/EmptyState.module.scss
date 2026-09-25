@@ -1,0 +1,55 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-9) var(--space-5);
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.scope {
+  position: relative;
+  display: grid;
+  width: 104px;
+  height: 104px;
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+  place-items: center;
+}
+
+.rings {
+  position: absolute;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 48%, var(--color-border) 48.5%, transparent 50%),
+    radial-gradient(circle, transparent 68%, var(--color-border) 68.5%, transparent 70%),
+    radial-gradient(circle, var(--color-accent-soft), transparent 70%);
+  inset: 0;
+}
+
+.icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.code {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--text-xl));
+}
+
+.description {
+  max-width: 44ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.action {
+  margin-top: var(--space-3);
+}

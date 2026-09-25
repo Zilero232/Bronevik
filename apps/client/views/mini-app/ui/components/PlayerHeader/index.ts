@@ -1,0 +1,1 @@
+export { PlayerHeader } from './PlayerHeader';

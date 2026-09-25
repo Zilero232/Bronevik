@@ -1,0 +1,9 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: var(--space-2);
+  gap: var(--space-3);
+}

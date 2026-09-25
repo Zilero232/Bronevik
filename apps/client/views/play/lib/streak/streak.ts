@@ -1,0 +1,25 @@
+import type { ActiveStreakInput, GuessStreak, RecordResultInput } from './streak.types';
+
+import { previousDay } from '../daily-puzzle';
+
+export const EMPTY_STREAK: GuessStreak = { current: 0, best: 0, played: 0, wins: 0, lastDay: null };
+
+export const recordResult = ({ streak, day, isWon }: RecordResultInput): GuessStreak => {
+  if (streak.lastDay === day) {
+    return streak;
+  }
+
+  const isConsecutive = streak.lastDay === previousDay(day);
+  const current = isWon ? (isConsecutive ? streak.current + 1 : 1) : 0;
+
+  return {
+    current,
+    best: Math.max(streak.best, current),
+    played: streak.played + 1,
+    wins: streak.wins + (isWon ? 1 : 0),
+    lastDay: day
+  };
+};
+
+export const activeStreak = ({ streak, today }: ActiveStreakInput) =>
+  streak.lastDay === today || streak.lastDay === previousDay(today) ? streak.current : 0;

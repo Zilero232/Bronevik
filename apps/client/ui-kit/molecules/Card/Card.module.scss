@@ -1,0 +1,123 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text);
+}
+
+.plate {
+  @include plate(var(--chamfer-md));
+
+  box-shadow: var(--elevation-2);
+}
+
+.riveted {
+  @include riveted-plate(var(--chamfer-md));
+
+  box-shadow: var(--elevation-2);
+}
+
+.flat {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.sunken {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+
+.interactive {
+  transition: background-color var(--duration-base) ease;
+
+  &:after {
+    position: absolute;
+    z-index: 2;
+    content: '';
+    inset: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.02);
+    transition:
+      opacity var(--duration-base) ease,
+      transform var(--duration-slow) var(--ease-out);
+
+    @include corner-brackets(12px);
+  }
+
+  &:hover,
+  &:focus-within {
+    &:after {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  &.plate:hover,
+  &.plate:focus-within,
+  &.riveted:hover,
+  &.riveted:focus-within {
+    background: linear-gradient(135deg, var(--color-accent), var(--color-border-strong) 60%);
+  }
+
+  &.flat:hover,
+  &.flat:focus-within,
+  &.sunken:hover,
+  &.sunken:focus-within {
+    border-color: var(--color-accent);
+  }
+}
+
+.pad-none {
+  padding: 0;
+}
+
+.pad-sm {
+  padding: var(--space-3);
+}
+
+.pad-md {
+  padding: var(--space-5);
+}
+
+.pad-lg {
+  padding: var(--space-7);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.eyebrow {
+  @include hud-label;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  &:before {
+    width: 14px;
+    height: 1px;
+    background-color: var(--color-accent);
+    content: '';
+  }
+}
+
+.title {
+  @include display(var(--text-lg));
+
+  margin-top: 4px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

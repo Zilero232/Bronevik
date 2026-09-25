@@ -1,0 +1,1 @@
+export { LinkHero } from './LinkHero';

@@ -1,0 +1,25 @@
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { Controller, Get, HttpStatus, Param, UseInterceptors } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import { ZodResponse } from 'nestjs-zod';
+
+import { CACHE_TTL } from '../../common/cache';
+import { ModMoeParamsDto, ModMoeThresholdsDto } from './dto';
+import { MoeTableService } from './services';
+
+@ApiTags('v1-mod')
+@AllowAnonymous()
+@UseInterceptors(CacheInterceptor)
+@Controller('v1/moe')
+export class MoePublicController {
+  constructor(private readonly table: MoeTableService) {}
+
+  @Get(':tankId')
+  @CacheTTL(CACHE_TTL.reference)
+  @ApiOperation({ operationId: 'getModMarkThresholds', summary: 'MoE thresholds in the shape the game mod reads; no API key needed' })
+  @ZodResponse({ type: ModMoeThresholdsDto, status: HttpStatus.OK })
+  thresholds(@Param() { tankId }: ModMoeParamsDto) {
+    return this.table.forMod(tankId);
+  }
+}

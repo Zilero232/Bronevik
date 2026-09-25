@@ -1,0 +1,6 @@
+@use '@/shared/styles/mixins' as *;
+
+.toggle {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px dashed var(--color-border);
+}

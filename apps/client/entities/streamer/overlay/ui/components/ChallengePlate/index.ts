@@ -1,0 +1,1 @@
+export { ChallengePlate } from './ChallengePlate';

@@ -1,0 +1,91 @@
+@use '@/shared/styles/mixins' as *;
+
+.grid {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-3);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  list-style: none;
+
+  @include below(4xl) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @include below(xl) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include below(sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.card {
+  @include reset-button;
+  @include plate(var(--chamfer-sm));
+  @include stack(var(--space-2));
+
+  width: 100%;
+  height: 100%;
+  padding: var(--space-4);
+  text-align: start;
+  transition: transform var(--duration-base) var(--ease-out);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[aria-pressed='true'] {
+    @include plate(var(--chamfer-sm), var(--color-accent));
+
+    .icon {
+      color: var(--color-accent);
+      filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-accent) 60%, transparent));
+    }
+  }
+
+  @include below(sm) {
+    padding: var(--space-3);
+  }
+}
+
+.index {
+  @include hud-label;
+
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-4);
+  color: var(--color-text-dim);
+}
+
+.icon {
+  color: var(--color-steel);
+}
+
+.title {
+  @include display(var(--text-md));
+}
+
+.blurb {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--leading-body);
+
+  @include below(sm) {
+    display: none;
+  }
+}
+
+.marker {
+  position: absolute;
+  height: 3px;
+  background: var(--color-accent);
+  box-shadow: 0 0 12px var(--color-accent);
+  inset-block-end: 0;
+  inset-inline: var(--space-4);
+}

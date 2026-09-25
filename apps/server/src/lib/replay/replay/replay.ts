@@ -1,0 +1,83 @@
+import type { ReplayContainer } from '../container';
+import type { ResultsBlock } from '../header';
+import type { ParsedReplay, ReplayInput } from './replay.types';
+
+import { readContainer } from '../container';
+import { ReplayFormatError } from '../errors';
+import { arenaBlockSchema, parseJsonBlock, resultsBlockSchema } from '../header';
+import { buildSummary } from '../summary';
+
+export const toBytes = (input: ReplayInput) => (input instanceof Uint8Array ? input : new Uint8Array(input));
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+
+export const parseContainerHeader = (container: ReplayContainer): ParsedReplay => {
+  const warnings: string[] = [];
+  const [arenaBytes, ...restBytes] = container.blocks;
+
+  if (!arenaBytes) {
+    throw new ReplayFormatError('Replay has no JSON blocks');
+  }
+
+  const arenaRaw = parseJsonBlock(arenaBytes);
+
+  if (!isRecord(arenaRaw)) {
+    throw new ReplayFormatError('The first JSON block is not an object');
+  }
+
+  const arenaParsed = arenaBlockSchema.safeParse(arenaRaw);
+
+  if (!arenaParsed.success) {
+    throw new ReplayFormatError(`The first JSON block has an unexpected shape: ${arenaParsed.error.message}`);
+  }
+
+  const extraBlocks: unknown[] = [];
+  let results: ResultsBlock | null = null;
+  let resultsRaw: unknown = null;
+
+  for (const [index, bytes] of restBytes.entries()) {
+    let value: unknown;
+
+    try {
+      value = parseJsonBlock(bytes);
+    } catch (error) {
+      warnings.push(`JSON block #${index + 1} skipped: ${String(error)}`);
+
+      continue;
+    }
+
+    if (results === null && Array.isArray(value)) {
+      const parsed = resultsBlockSchema.safeParse(value);
+
+      if (parsed.success) {
+        results = parsed.data;
+        resultsRaw = value;
+
+        continue;
+      }
+
+      warnings.push(`JSON block #${index + 1} looks like battle results but failed validation`);
+    }
+
+    extraBlocks.push(value);
+  }
+
+  const summary = buildSummary({ arena: arenaParsed.data, results });
+
+  return {
+    header: {
+      arena: arenaRaw,
+      blockCount: container.blocks.length,
+      extraBlocks,
+      results,
+      resultsRaw,
+      stream: container.stream ? { compressedSize: container.stream.compressedSize, decompressedSize: container.stream.decompressedSize } : null
+    },
+    summary,
+    warnings
+  };
+};
+
+export const parseReplay = (input: ReplayInput): ParsedReplay => parseContainerHeader(readContainer(toBytes(input)));
+
+export const parseReplaySummary = (input: ReplayInput) => parseReplay(input).summary;

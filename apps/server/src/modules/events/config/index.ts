@@ -1,0 +1,1 @@
+export { EVENT_CALENDAR, EVENT_KIND_RULES, EVENTS_QUEUE, EVENTS_SCHEDULES } from './events.config';

@@ -1,0 +1,18 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-height: 320px;
+  gap: var(--space-3);
+}
+
+.caption {
+  @include hud-label;
+}
+
+.list {
+  @include stack(var(--space-2));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

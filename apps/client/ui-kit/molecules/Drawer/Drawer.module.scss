@@ -1,0 +1,76 @@
+@use '@/shared/styles/mixins' as *;
+
+.backdrop {
+  position: fixed;
+  z-index: var(--z-overlay);
+  backdrop-filter: blur(3px);
+  background-color: var(--color-overlay);
+  inset: 0;
+  opacity: calc(1 - var(--drawer-swipe-progress, 0));
+  transition: opacity 0.4s var(--ease-out);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+
+  &[data-swiping] {
+    transition-duration: 0s;
+  }
+}
+
+.viewport {
+  position: fixed;
+  z-index: calc(var(--z-overlay) + 1);
+  display: flex;
+  justify-content: flex-end;
+  inset: 0;
+  pointer-events: none;
+}
+
+.popup {
+  display: flex;
+  width: min(360px, 88vw);
+  height: 100%;
+  flex-direction: column;
+  padding: calc(var(--space-5) + var(--safe-area-top)) var(--space-5) calc(var(--space-5) + var(--safe-area-bottom));
+  border-left: 1px solid var(--color-border-strong);
+  background: var(--brushed), var(--color-surface-raised);
+  box-shadow: var(--elevation-3);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+  transform: translateX(var(--drawer-swipe-movement-x, 0));
+  transition: transform 0.45s var(--ease-out);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    transform: translateX(100%);
+  }
+
+  &[data-swiping] {
+    transition-duration: 0s;
+    user-select: none;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  @include hud-label;
+}
+
+.close {
+  @include icon-button(34px);
+}
+
+.content {
+  @include stack(var(--space-5));
+}

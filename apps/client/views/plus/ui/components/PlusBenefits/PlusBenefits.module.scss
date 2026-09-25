@@ -1,0 +1,76 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-6));
+}
+
+.grid {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+
+  @include below(3xl) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include below(md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.item {
+  @include riveted-plate(var(--chamfer-md));
+  @include stack(var(--space-3));
+
+  overflow: hidden;
+  min-height: 190px;
+  padding: var(--space-6) var(--space-5) var(--space-5);
+
+  &:after {
+    position: absolute;
+    top: 0;
+    left: var(--space-5);
+    width: 44px;
+    height: 2px;
+    background: var(--color-premium);
+    content: '';
+  }
+}
+
+.numeral {
+  @include stencil;
+
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-4);
+  color: var(--color-premium);
+  font-size: var(--text-3xl);
+  line-height: 1;
+  opacity: 0.22;
+}
+
+.icon {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--color-premium) 45%, var(--color-border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-premium) 8%, transparent);
+  color: var(--color-premium);
+}
+
+.title {
+  @include display(var(--text-lg));
+}
+
+.text {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+}

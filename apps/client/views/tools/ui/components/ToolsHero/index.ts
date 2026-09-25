@@ -1,0 +1,1 @@
+export { ToolsHero } from './ToolsHero';

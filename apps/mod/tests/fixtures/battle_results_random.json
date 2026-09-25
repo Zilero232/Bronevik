@@ -1,0 +1,62 @@
+{
+  "arenaUniqueID": 1152921504606847123,
+  "common": {
+    "arenaTypeID": 5,
+    "arenaCreateTime": 1790000000,
+    "winnerTeam": 1,
+    "finishReason": 1,
+    "duration": 402,
+    "bonusType": 1,
+    "guiType": 1,
+    "teamHealth": { "1": 9000, "2": 8800 }
+  },
+  "personal": {
+    "avatar": {
+      "accountDBID": 12345678,
+      "team": 1,
+      "credits": 51000,
+      "xp": 1200
+    },
+    "1": {
+      "typeCompDescr": 1,
+      "team": 1,
+      "damageDealt": 2150,
+      "damageAssistedRadio": 640,
+      "damageAssistedTrack": 310,
+      "damageAssistedStun": 0,
+      "damageBlockedByArmor": 900,
+      "spotted": 3,
+      "kills": 2,
+      "damaged": 4,
+      "shots": 12,
+      "directHits": 10,
+      "directEnemyHits": 9,
+      "piercings": 8,
+      "piercingEnemyHits": 7,
+      "xp": 1150,
+      "originalXP": 1150,
+      "credits": 48000,
+      "originalCredits": 48000,
+      "subtotalCredits": 52000,
+      "factualCredits": 30000,
+      "lifeTime": 380,
+      "killerID": 0,
+      "deathReason": -1,
+      "isPremium": false,
+      "marksOnGun": 2,
+      "movingAvgDamage": 2610,
+      "damageRating": 8712
+    }
+  },
+  "vehicles": {
+    "101": [{ "accountDBID": 12345678, "typeCompDescr": 1, "team": 1, "damageDealt": 2150 }],
+    "202": [{ "accountDBID": 87654321, "typeCompDescr": 2849, "team": 2, "damageDealt": 98765, "spotted": 77, "shots": 4321 }]
+  },
+  "players": {
+    "12345678": { "name": "own_player", "team": 1, "prebattleID": 0 },
+    "87654321": { "name": "enemy_player_secret", "team": 2, "prebattleID": 0 }
+  },
+  "avatars": {
+    "87654321": { "damageDealt": 98765 }
+  }
+}

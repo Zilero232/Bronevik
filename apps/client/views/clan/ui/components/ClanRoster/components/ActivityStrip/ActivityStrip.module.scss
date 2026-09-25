@@ -1,0 +1,96 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-4));
+
+  padding: var(--space-5);
+  margin: 0;
+}
+
+.caption {
+  @include hud-label;
+}
+
+.bar {
+  display: flex;
+  overflow: hidden;
+  height: 14px;
+  gap: 2px;
+}
+
+.segment,
+.item {
+  --status: var(--color-text-dim);
+
+  &[data-status='active'] {
+    --status: var(--color-success);
+  }
+
+  &[data-status='recent'] {
+    --status: var(--color-steel);
+  }
+
+  &[data-status='idle'] {
+    --status: var(--color-warning);
+  }
+
+  &[data-status='gone'] {
+    --status: var(--color-danger);
+  }
+}
+
+.segment {
+  flex-basis: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 6px, rgb(0 0 0 / 25%) 6px 7px), var(--status);
+  transform-origin: left center;
+}
+
+.legend {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-3);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+
+  @include below(xl) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.item {
+  display: grid;
+  align-items: center;
+  column-gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--status);
+  box-shadow: 0 0 8px var(--status);
+}
+
+.label {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value {
+  @include numeric;
+
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.share {
+  @include hud-label;
+
+  grid-column: 2 / span 2;
+}

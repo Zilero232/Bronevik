@@ -1,0 +1,172 @@
+enum RatingPeriod {
+  overall
+  h24     @map("24h")
+  d7      @map("7d")
+  d30     @map("30d")
+  d60     @map("60d")
+  b1000   @map("1000b")
+
+  @@map("rating_period")
+}
+
+enum ServerStatsPeriod {
+  d1  @map("1d")
+  d7  @map("7d")
+  d14 @map("14d")
+  d30 @map("30d")
+  d60 @map("60d")
+
+  @@map("server_stats_period")
+}
+
+enum CohortFilter {
+  all
+  beginner
+  average
+  good
+  elite
+
+  @@map("cohort_filter")
+}
+
+enum PercentileDistribution {
+  damage
+  xp
+  bronya
+
+  @@map("percentile_distribution")
+}
+
+view TankDailyStats {
+  day    DateTime    @db.Timestamptz(3)
+  tankId Int         @map("tank_id")
+  mode   StatsMode
+  cohort SkillCohort
+
+  samples              BigInt
+  battles              BigInt
+  wins                 BigInt
+  losses               BigInt
+  draws                BigInt
+  damageDealt          BigInt @map("damage_dealt")
+  damageReceived       BigInt @map("damage_received")
+  damageBlocked        BigInt @map("damage_blocked")
+  stunAssistedDamage   BigInt @map("stun_assisted_damage")
+  frags                BigInt
+  spotted              BigInt
+  xp                   BigInt
+  survived             BigInt @map("survived_battles")
+  hits                 BigInt
+  shots                BigInt
+  piercings            BigInt
+  capturePoints        BigInt @map("capture_points")
+  droppedCapturePoints BigInt @map("dropped_capture_points")
+  playerWinsWeighted   Float  @map("player_wins_weighted")
+
+  @@map("tank_daily_stats")
+}
+
+model TankServerStats {
+  tankId Int               @map("tank_id")
+  mode   StatsMode
+  period ServerStatsPeriod
+  cohort CohortFilter
+
+  battles Int
+  players Int
+  samples Int @default(0)
+
+  winRate        Float   @map("win_rate")
+  playerWinRate  Float   @map("player_win_rate")
+  winRateDiff    Float   @map("win_rate_diff")
+  avgDamage      Float   @map("avg_damage")
+  avgFrags       Float   @map("avg_frags")
+  avgSpotted     Float   @map("avg_spotted")
+  avgXp          Float   @map("avg_xp")
+  avgBlocked     Float   @map("avg_blocked")
+  survivalRate   Float   @map("survival_rate")
+  accuracy       Float
+  popularityRank Int?    @map("popularity_rank")
+  tierListRank   String? @map("tier_list_rank")
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@id([tankId, mode, period, cohort])
+  @@index([mode, period, winRateDiff(sort: Desc)])
+  @@map("tank_server_stats")
+}
+
+model AccountRating {
+  accountId BigInt       @map("account_id")
+  period    RatingPeriod
+
+  battles    Int
+  winRate    Float  @map("win_rate")
+  avgDamage  Float  @map("avg_damage")
+  avgFrags   Float  @map("avg_frags")
+  avgTier    Float? @map("avg_tier")
+  wn8        Float?
+  eff        Float?
+  broneIndex Float? @map("brone_index")
+
+  fromCapturedAt DateTime? @map("from_captured_at") @db.Timestamptz(3)
+  toCapturedAt   DateTime? @map("to_captured_at") @db.Timestamptz(3)
+  computedAt     DateTime  @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@id([accountId, period])
+  @@index([period, wn8(sort: Desc)])
+  @@index([period, broneIndex(sort: Desc)])
+  @@map("account_rating")
+}
+
+model AccountTankRating {
+  accountId BigInt       @map("account_id")
+  tankId    Int          @map("tank_id")
+  period    RatingPeriod
+
+  battles          Int
+  winRate          Float  @map("win_rate")
+  avgDamage        Float  @map("avg_damage")
+  avgFrags         Float  @map("avg_frags")
+  avgXp            Float  @map("avg_xp")
+  wn8              Float?
+  damagePercentile Float? @map("damage_percentile")
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@id([accountId, tankId, period])
+  @@index([tankId, period, wn8(sort: Desc)])
+  @@index([tankId, period, avgDamage(sort: Desc)])
+  @@map("account_tank_rating")
+}
+
+model Wn8ExpectedValue {
+  tankId Int      @map("tank_id")
+  date   DateTime @db.Date
+  source String
+
+  expDamage  Float @map("exp_damage")
+  expFrags   Float @map("exp_frags")
+  expSpotted Float @map("exp_spotted")
+  expDefense Float @map("exp_defense")
+  expWinRate Float @map("exp_win_rate")
+
+  @@id([tankId, source, date])
+  @@index([date])
+  @@map("wn8_expected_value")
+}
+
+model TankPercentile {
+  tankId       Int                    @map("tank_id")
+  date         DateTime               @db.Date
+  distribution PercentileDistribution
+
+  percentiles Json
+
+  @@id([tankId, distribution, date])
+  @@map("tank_percentile")
+}

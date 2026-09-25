@@ -1,0 +1,1 @@
+export { PopularityCell } from './PopularityCell';

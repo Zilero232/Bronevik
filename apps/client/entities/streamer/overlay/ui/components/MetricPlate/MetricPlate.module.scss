@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.value {
+  --tone: var(--color-text);
+
+  color: var(--tone);
+
+  @each $tone in bad, below, average, good, great, unicum {
+    &[data-tone='#{$tone}'] {
+      --tone: var(--rating-#{$tone});
+    }
+  }
+}

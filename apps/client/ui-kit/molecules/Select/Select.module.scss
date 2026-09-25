@@ -1,0 +1,100 @@
+@use '@/shared/styles/mixins' as *;
+
+.label {
+  @include hud-label;
+
+  display: block;
+  margin-bottom: 6px;
+}
+
+.trigger {
+  @include reset-button;
+
+  display: inline-flex;
+  min-width: 180px;
+  height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  gap: var(--space-3);
+  transition: border-color var(--duration-base) ease;
+
+  &:hover,
+  &[data-popup-open] {
+    border-color: var(--color-steel-dim);
+  }
+}
+
+.value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &[data-placeholder] {
+    color: var(--color-text-dim);
+  }
+}
+
+.icon {
+  display: inline-flex;
+  color: var(--color-text-dim);
+}
+
+.positioner {
+  z-index: var(--z-popover);
+  outline: none;
+}
+
+.popup {
+  @include popup-surface;
+
+  min-width: var(--anchor-width);
+  padding: var(--space-1);
+
+  @include popup-motion(0.97);
+
+  &[data-side='none'] {
+    transition: none;
+  }
+}
+
+.list {
+  max-height: var(--available-height);
+  outline: none;
+  overflow-y: auto;
+}
+
+.item {
+  display: grid;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: var(--radius-xs);
+  cursor: default;
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+  grid-template-columns: 14px auto 1fr;
+  outline: none;
+  user-select: none;
+
+  &[data-highlighted] {
+    background-color: var(--color-accent-soft);
+    color: var(--color-text);
+  }
+}
+
+.indicator {
+  display: inline-flex;
+  color: var(--color-accent);
+  grid-column: 1;
+}
+
+.itemIcon {
+  display: inline-flex;
+  color: var(--color-text-muted);
+  grid-column: 2;
+}

@@ -1,0 +1,41 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  gap: var(--space-4);
+
+  &:after {
+    @include camo-divider;
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+}
+
+.heading {
+  @include stack(var(--space-1));
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--text-xl));
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}

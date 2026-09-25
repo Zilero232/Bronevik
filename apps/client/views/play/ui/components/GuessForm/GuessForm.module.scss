@@ -1,0 +1,22 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: end;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.picker {
+  min-width: 0;
+}
+
+.fire {
+  @include below(sm) {
+    width: 100%;
+  }
+}

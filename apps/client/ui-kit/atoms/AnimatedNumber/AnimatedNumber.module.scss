@@ -1,0 +1,10 @@
+@use '@/shared/styles/mixins' as *;
+
+.value {
+  font-feature-settings: 'tnum' 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.srOnly {
+  @include sr-only;
+}

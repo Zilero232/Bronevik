@@ -1,0 +1,14 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+}
+
+.sections {
+  @include shell;
+  @include stack(var(--space-11));
+
+  @include below(md) {
+    gap: var(--space-9);
+  }
+}

@@ -1,0 +1,31 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
+}
+
+.layout {
+  display: grid;
+  align-items: stretch;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.form {
+  gap: var(--space-5);
+}
+
+.output {
+  gap: var(--space-5);
+  transition: opacity var(--duration-base) ease;
+
+  &[data-refreshing='true'] {
+    opacity: 0.85;
+  }
+}

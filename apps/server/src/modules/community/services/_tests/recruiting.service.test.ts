@@ -1,0 +1,121 @@
+import { describe, expect, it } from 'vitest';
+import { mock, mockDeep } from 'vitest-mock-extended';
+
+import type { ClanMember, RecruitingPost } from '../../../../../generated';
+import type { PrismaService } from '../../../../core';
+import type { CommunityAccountsService } from '../community-accounts.service';
+
+import { AppBadRequestException, AppForbiddenException } from '../../../../common/exceptions';
+import { RECRUITING } from '../../config';
+import { RecruitingService } from '../recruiting.service';
+
+const clanId = 500;
+
+const row: RecruitingPost = {
+  id: '77777777-7777-4777-8777-777777777777',
+  kind: 'clanSeeksPlayer',
+  clanId: BigInt(clanId),
+  accountId: null,
+  authorUserId: 'u1',
+  title: 'Clan recruits',
+  body: 'Looking for active players',
+  requirements: {},
+  status: 'open',
+  expiresAt: new Date('2026-10-09T00:00:00Z'),
+  createdAt: new Date('2026-09-25T00:00:00Z'),
+  updatedAt: new Date('2026-09-25T00:00:00Z')
+};
+
+const request = {
+  userId: 'u1',
+  title: 'Clan recruits',
+  body: 'Looking for active players',
+  requirements: {},
+  expiresInDays: RECRUITING.defaultDays
+};
+
+const member = (role: ClanMember['role'], memberClanId = clanId) => mock<ClanMember>({ clanId: BigInt(memberClanId), role });
+
+const createService = () => {
+  const prisma = mockDeep<PrismaService>();
+  const accounts = mock<CommunityAccountsService>();
+
+  accounts.accountOf.mockResolvedValue(7n);
+  accounts.statsOf.mockResolvedValue(new Map());
+  accounts.nicknamesOf.mockResolvedValue(new Map());
+  prisma.clan.findMany.mockResolvedValue([]);
+  prisma.recruitingPost.create.mockResolvedValue(row);
+
+  return { service: new RecruitingService(prisma, accounts), prisma, accounts };
+};
+
+describe('RecruitingService.create', () => {
+  it.each(RECRUITING.officerRoles)('lets a %s post for the clan', async (role) => {
+    const { service, prisma } = createService();
+
+    prisma.clanMember.findUnique.mockResolvedValue(member(role));
+
+    await service.create({ ...request, kind: 'clanSeeksPlayer', clanId });
+
+    expect(prisma.recruitingPost.create).toHaveBeenCalledWith({ data: expect.objectContaining({ clanId: BigInt(clanId), accountId: null }) });
+  });
+
+  it('refuses a rank-and-file member', async () => {
+    const { service, prisma } = createService();
+
+    prisma.clanMember.findUnique.mockResolvedValue(member('private'));
+
+    await expect(service.create({ ...request, kind: 'clanSeeksPlayer', clanId })).rejects.toBeInstanceOf(AppForbiddenException);
+    expect(prisma.recruitingPost.create).not.toHaveBeenCalled();
+  });
+
+  it('refuses an officer of another clan', async () => {
+    const { service, prisma } = createService();
+
+    prisma.clanMember.findUnique.mockResolvedValue(member('commander', clanId + 1));
+
+    await expect(service.create({ ...request, kind: 'clanSeeksPlayer', clanId })).rejects.toBeInstanceOf(AppForbiddenException);
+  });
+
+  it('refuses a player outside any clan', async () => {
+    const { service, prisma } = createService();
+
+    prisma.clanMember.findUnique.mockResolvedValue(null);
+
+    await expect(service.create({ ...request, kind: 'clanSeeksPlayer', clanId })).rejects.toBeInstanceOf(AppForbiddenException);
+  });
+
+  it('needs a clan id for a clan post', async () => {
+    const { service } = createService();
+
+    await expect(service.create({ ...request, kind: 'clanSeeksPlayer' })).rejects.toBeInstanceOf(AppBadRequestException);
+  });
+
+  it('stores the author account on a player post without a clan', async () => {
+    const { service, prisma } = createService();
+
+    prisma.recruitingPost.create.mockResolvedValue({ ...row, kind: 'playerSeeksClan', clanId: null, accountId: 7n });
+
+    const view = await service.create({ ...request, kind: 'playerSeeksClan', clanId });
+
+    expect(prisma.recruitingPost.create).toHaveBeenCalledWith({ data: expect.objectContaining({ accountId: 7n, clanId: null }) });
+    expect(prisma.clanMember.findUnique).not.toHaveBeenCalled();
+    expect(view.accountId).toBe(7);
+  });
+});
+
+describe('RecruitingService.expire', () => {
+  it('expires open posts past their deadline', async () => {
+    const { service, prisma } = createService();
+    const now = new Date('2026-09-25T12:00:00Z');
+
+    prisma.recruitingPost.updateMany.mockResolvedValue({ count: 3 });
+
+    expect(await service.expire(now)).toBe(3);
+
+    expect(prisma.recruitingPost.updateMany).toHaveBeenCalledWith({
+      where: { status: 'open', expiresAt: { lte: now } },
+      data: { status: 'expired' }
+    });
+  });
+});

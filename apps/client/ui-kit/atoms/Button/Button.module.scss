@@ -1,0 +1,128 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  appearance: none;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-stretch: 85%;
+  font-weight: 600;
+  gap: var(--space-2);
+  isolation: isolate;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition:
+    transform var(--duration-fast) ease,
+    box-shadow var(--duration-base) ease,
+    color var(--duration-base) ease,
+    background-color var(--duration-base) ease;
+  user-select: none;
+  white-space: nowrap;
+
+  @include chamfer-path(var(--chamfer-sm));
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  &:focus-visible {
+    clip-path: none;
+  }
+}
+
+.sm {
+  height: 32px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.md {
+  height: 42px;
+  padding: 0 var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.lg {
+  height: 52px;
+  padding: 0 var(--space-7);
+  font-size: var(--text-md);
+}
+
+.block {
+  width: 100%;
+}
+
+.primary {
+  background: linear-gradient(180deg, var(--color-accent-hot) -40%, var(--color-accent) 55%, var(--color-accent-deep) 140%);
+  box-shadow: inset 0 1px 0 var(--shine-35);
+  color: var(--color-accent-contrast);
+
+  &:after {
+    position: absolute;
+    z-index: -1;
+    background: linear-gradient(100deg, transparent 30%, var(--shine-45) 50%, transparent 70%);
+    content: '';
+    inset: 0;
+    transform: translateX(-120%);
+    transition: transform 0.6s var(--ease-out);
+  }
+
+  &:hover:not(:disabled):after {
+    transform: translateX(120%);
+  }
+
+  &:hover:not(:disabled) {
+    box-shadow:
+      inset 0 1px 0 var(--shine-35),
+      0 0 32px -6px var(--color-accent);
+  }
+}
+
+.secondary {
+  background: var(--color-steel-dim);
+  color: var(--color-text);
+
+  &:before {
+    position: absolute;
+    z-index: -1;
+    background: var(--brushed), var(--color-surface-raised);
+    content: '';
+    inset: 1px;
+    transition: background-color var(--duration-base) ease;
+
+    @include chamfer-path(calc(var(--chamfer-sm) - 0.4px));
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--color-steel);
+    color: var(--color-steel);
+  }
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+}
+
+.danger {
+  background: var(--color-danger);
+  color: var(--color-on-solid);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 0 26px -6px var(--color-danger);
+  }
+}

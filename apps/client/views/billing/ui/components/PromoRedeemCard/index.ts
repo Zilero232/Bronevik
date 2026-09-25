@@ -1,0 +1,1 @@
+export { PromoRedeemCard } from './PromoRedeemCard';

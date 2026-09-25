@@ -1,0 +1,27 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.chip {
+  @include plate(var(--chamfer-sm));
+
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--color-steel);
+}

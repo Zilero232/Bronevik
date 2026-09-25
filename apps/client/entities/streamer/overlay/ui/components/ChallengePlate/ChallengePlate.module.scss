@@ -1,0 +1,47 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 14em;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6em;
+}
+
+.code {
+  @include numeric;
+
+  color: var(--color-accent);
+  font-size: 1.5em;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.status {
+  @include hud-label;
+
+  font-size: 0.62em;
+
+  &[data-status='succeeded'] {
+    color: var(--color-ally);
+  }
+
+  &[data-status='failed'] {
+    color: var(--color-enemy);
+  }
+}
+
+.title {
+  max-width: 18em;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.meta {
+  @include hud-label;
+
+  font-size: 0.6em;
+}

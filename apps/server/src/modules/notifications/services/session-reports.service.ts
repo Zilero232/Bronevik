@@ -1,0 +1,56 @@
+import { Injectable } from '@nestjs/common';
+import { subHours, subMinutes } from 'date-fns';
+
+import { PrismaService } from '../../../core';
+import { SESSION_REPORT } from '../config';
+import { NotificationService } from './notification.service';
+
+@Injectable()
+export class SessionReportsService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationService
+  ) {}
+
+  async run(now = new Date()): Promise<number> {
+    const sessions = await this.prisma.playSession.findMany({
+      where: {
+        reportSentAt: null,
+        battles: { gt: 0 },
+        lastActivityAt: { lt: subMinutes(now, SESSION_REPORT.idleMinutes), gt: subHours(now, SESSION_REPORT.maxAgeHours) }
+      },
+      orderBy: { lastActivityAt: 'asc' },
+      take: SESSION_REPORT.batchSize,
+      select: { id: true, accountId: true, battles: true, wins: true, damageDealt: true, wn8: true, player: { select: { nickname: true } } }
+    });
+
+    let reported = 0;
+
+    for (const session of sessions) {
+      const claimed = await this.prisma.playSession.updateMany({ where: { id: session.id, reportSentAt: null }, data: { reportSentAt: now } });
+
+      if (claimed.count === 0) {
+        continue;
+      }
+
+      const owners = await this.prisma.userLestaAccount.findMany({ where: { accountId: session.accountId }, select: { userId: true } });
+
+      reported += await this.notifications.notifyMany({
+        userIds: owners.map((owner) => owner.userId),
+        notification: {
+          event: 'sessionFinished',
+          accountId: Number(session.accountId),
+          nickname: session.player.nickname,
+          sessionId: session.id,
+          battles: session.battles,
+          winRate: session.wins / session.battles,
+          avgDamage: session.damageDealt / session.battles,
+          wn8: session.wn8
+        },
+        dedupeKey: `session-${session.id}`
+      });
+    }
+
+    return reported;
+  }
+}

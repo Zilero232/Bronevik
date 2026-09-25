@@ -1,0 +1,1 @@
+export { PlusFaq } from './PlusFaq';

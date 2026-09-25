@@ -1,0 +1,75 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: sticky;
+  z-index: calc(var(--z-header) - 1);
+  bottom: 0;
+  padding-bottom: var(--safe-area-bottom);
+  border-top: 1px solid var(--side);
+  background: var(--color-surface-raised);
+  box-shadow: 0 -18px 40px -20px var(--shade-35);
+  margin-inline: calc(var(--space-4) * -1);
+
+  @include from(3xl) {
+    display: none;
+  }
+}
+
+.sheet {
+  overflow: hidden;
+}
+
+.scroll {
+  max-height: 65dvh;
+  padding: var(--space-3) var(--space-4) 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.bar {
+  @include reset-button;
+
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  gap: var(--space-3);
+
+  &:focus-visible {
+    @include focus-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+.summary {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  gap: var(--space-4);
+  overflow-x: auto;
+
+  @include hide-scrollbar;
+}
+
+.toggle {
+  @include hud-label;
+
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  color: var(--side);
+  gap: var(--space-1);
+
+  @include below(xs) {
+    font-size: 0;
+  }
+}
+
+.chevron {
+  display: inline-flex;
+}
+
+.srOnly {
+  @include sr-only;
+}

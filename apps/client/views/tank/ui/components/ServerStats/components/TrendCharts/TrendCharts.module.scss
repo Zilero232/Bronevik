@@ -1,0 +1,19 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  gap: var(--space-5);
+}
+
+.charts {
+  @include stack(var(--space-5));
+}
+
+.chart {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+}
+
+.label {
+  @include hud-label;
+}

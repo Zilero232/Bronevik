@@ -1,0 +1,51 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.heading {
+  @include hud-label;
+}
+
+.empty {
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+}
+
+.list {
+  @include stack(var(--space-1));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  gap: var(--space-3);
+}
+
+.icon {
+  color: var(--color-text-muted);
+}
+
+.text {
+  @include stack(0);
+
+  flex: 1;
+}
+
+.name {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.meta {
+  color: var(--color-text-dim);
+  font-size: var(--text-2xs);
+}

@@ -1,0 +1,57 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: center;
+  padding: var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-4);
+  grid-template-columns: 3ch minmax(0, 1fr) auto;
+}
+
+.rank {
+  @include numeric;
+
+  color: var(--color-text-dim);
+  font-size: var(--text-xl);
+  font-stretch: 75%;
+  font-weight: 800;
+
+  .root[data-podium='true'] & {
+    color: var(--color-accent);
+    text-shadow: 0 0 18px color-mix(in srgb, var(--color-accent) 45%, transparent);
+  }
+}
+
+.who {
+  @include stack(2px);
+
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  color: var(--color-text);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.meta {
+  @include hud-label;
+
+  display: flex;
+  gap: var(--space-2);
+}
+
+.clan {
+  color: var(--color-steel);
+}

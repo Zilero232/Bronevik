@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xmlns:xmlref>http://bwt/xmlref</xmlns:xmlref>
+	<shared>
+		<V-2IS>
+			<id>3</id>
+			<userString>#ussr_vehicles:V-2IS</userString>
+			<tags>diesel</tags>
+			<level>7</level>
+			<price>36000</price>
+			<wwsoundPC>eng_v55_pc</wwsoundPC>
+			<wwsoundNPC>eng_v55_npc</wwsoundNPC>
+			<power>600</power>
+			<weight>750</weight>
+			<maxHealth>190</maxHealth>
+			<maxRegenHealth>95</maxRegenHealth>
+			<repairCost>7</repairCost>
+			<fireStartingChance>
+				0.15
+				<!--BW_String-->
+			</fireStartingChance>
+			<rpm_min>400</rpm_min>
+			<rpm_max>2000</rpm_max>
+		</V-2IS>
+		<V-2-54IS>
+			<id>40</id>
+			<userString>#ussr_vehicles:V-2-54IS</userString>
+			<tags>diesel</tags>
+			<level>9</level>
+			<price>79290</price>
+			<wwsoundPC>eng_v55_pc</wwsoundPC>
+			<wwsoundNPC>eng_v55_npc</wwsoundNPC>
+			<power>700</power>
+			<weight>700</weight>
+			<maxHealth>370</maxHealth>
+			<maxRegenHealth>185</maxRegenHealth>
+			<repairCost>9</repairCost>
+			<fireStartingChance>
+				0.12
+				<!--BW_String-->
+			</fireStartingChance>
+			<rpm_min>299</rpm_min>
+			<rpm_max>2301</rpm_max>
+		</V-2-54IS>
+	</shared>
+</root>

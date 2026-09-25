@@ -1,0 +1,53 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-lg));
+  @include stack(var(--space-3));
+
+  overflow: hidden;
+  padding: var(--space-6) var(--space-5);
+
+  &:after {
+    position: absolute;
+    z-index: -1;
+    background: repeating-linear-gradient(135deg, var(--grid-line) 0 1px, transparent 1px 14px);
+    content: '';
+    inset: 0;
+    mask-image: linear-gradient(200deg, #000, transparent 55%);
+    pointer-events: none;
+  }
+}
+
+.phone {
+  display: inline-flex;
+  width: 64px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-accent);
+
+  @include chamfer-path(var(--chamfer-sm));
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--text-xl));
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.actions {
+  @include stack(var(--space-2));
+
+  margin-top: var(--space-2);
+}

@@ -1,0 +1,1 @@
+export { GoldCalculator } from './GoldCalculator';

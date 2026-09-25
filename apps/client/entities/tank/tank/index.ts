@@ -1,0 +1,14 @@
+export { KEY_SPECS, TANK_SPEC_GROUPS, TANK_SPEC_KEYS, TANK_SPECS } from './config';
+export type { TankImageSize, TankSpecGroup, TankSpecKey, TankSpecMeta, TankSpecUnit } from './config';
+export { isLowerBetter, specBest, specDelta } from './lib/spec-rank';
+export type { SpecVerdict } from './lib/spec-rank';
+export { vehicleIdentity } from './lib/vehicle-identity';
+export { specKeyOfPath, specPath, specsOfFlat, specsOfStats } from './lib/vehicle-specs';
+export { useSpecFormat } from './model/hooks';
+export type { TankIdentityData, TankSpecs, TankStats } from './model/tank.types';
+export { TankCard } from './ui/TankCard';
+export type { TankCardProps } from './ui/TankCard.types';
+export { TankIdentity } from './ui/TankIdentity';
+export type { TankIdentityProps } from './ui/TankIdentity.types';
+export { TankImage } from './ui/TankImage';
+export type { TankImageProps } from './ui/TankImage.types';

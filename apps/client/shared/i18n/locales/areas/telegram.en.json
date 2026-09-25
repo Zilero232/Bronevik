@@ -1,0 +1,182 @@
+{
+  "telegram": {
+    "meta": {
+      "title": "Telegram",
+      "description": "Link Telegram to Bronevik: stats, sessions and marks in the bot, notifications and the mini app."
+    },
+    "toast": {
+      "codeFailed": "Could not get a code, try again",
+      "linked": "Link established — the bot is online",
+      "unlinked": "Telegram unlinked",
+      "unlinkFailed": "Could not unlink Telegram"
+    },
+    "hero": {
+      "eyebrow": "Radio link · Telegram",
+      "title": "HQ <hot>in your pocket</hot>",
+      "lead": "Link Telegram and the bot will ping you about a new mark, a session recap or a threshold drop. Stats on command, no site visit needed.",
+      "channel": "Channel",
+      "online": "Online",
+      "offline": "Offline",
+      "account": "Account",
+      "bot": "Bot"
+    },
+    "request": {
+      "title": "Get on the radio",
+      "description": "Get a one-time code and send it to the bot — your account links automatically. The bot never needs your Lesta password or data.",
+      "steps": {
+        "open": "Get a code and open {bot}",
+        "send": "Tap Start or send the command with the code",
+        "done": "This page notices the link by itself"
+      },
+      "issue": "Get a code",
+      "note": "The code is single-use and lives for a few minutes. Do not forward it to anyone."
+    },
+    "ticket": {
+      "label": "Cipher for the bot",
+      "expires": "Code burns out in",
+      "expired": "Code expired",
+      "openBot": "Open the bot",
+      "reissue": "Get a new code",
+      "fallback": "Button did not work? Send the bot this command",
+      "another": "Another code"
+    },
+    "linked": {
+      "eyebrow": "Link established",
+      "anonymous": "Telegram without a username",
+      "description": "The bot knows who you are: commands answer for your primary account and notifications land here.",
+      "openBot": "Open the bot"
+    },
+    "unlink": {
+      "trigger": "Unlink",
+      "title": "Unlink Telegram?",
+      "description": "The bot will stop sending notifications and recognising you. You can link it again at any time.",
+      "cancel": "Cancel",
+      "confirm": "Unlink"
+    },
+    "commands": {
+      "title": "Bot commands",
+      "list": {
+        "me": "your stats: WN8, win rate, damage",
+        "session": "the current session — how the evening is going",
+        "marks": "marks of excellence and the damage to the next one",
+        "clan": "clan roster and activity",
+        "tank": "a tank card by name"
+      },
+      "inline": "inline mode: mention the bot and a nickname in any chat",
+      "alertsTitle": "Notifications",
+      "alerts": {
+        "mark": "New mark",
+        "threshold": "Threshold drop",
+        "session": "Session recap",
+        "bonus": "Bonus codes",
+        "sale": "Sale on a tracked tank"
+      },
+      "settings": "Notification settings"
+    },
+    "miniApp": {
+      "eyebrow": "Mini app",
+      "title": "Bronevik inside Telegram",
+      "description": "Stats, session and marks in one tap — right from the bot chat, no browser needed.",
+      "open": "Open in Telegram",
+      "preview": "Preview in the browser"
+    },
+    "webLogin": {
+      "meta": {
+        "title": "Sign in with Telegram",
+        "description": "Sign in to Bronevik with a one-time link from the bot."
+      },
+      "eyebrow": "Sign-in link from Telegram",
+      "phases": {
+        "missing": {
+          "title": "No sign-in code",
+          "description": "This page opens from a link the bot sends. Send the bot {command} and it will send a fresh one."
+        },
+        "invalid": {
+          "title": "Broken link",
+          "description": "The code in the link does not look right — it may have been cut off when copied. Ask the bot for a new link with {command}."
+        },
+        "redeeming": {
+          "title": "Checking your pass",
+          "description": "Verifying the code with the bot, this takes a second."
+        },
+        "failed": {
+          "title": "This link no longer works",
+          "description": "The code has expired or was already used. Ask the bot for a new link with {command}."
+        },
+        "success": {
+          "title": "You are in",
+          "description": "Signed in, taking you to your account."
+        }
+      },
+      "actions": {
+        "account": "To my account",
+        "openBot": "Open {bot}",
+        "otherWays": "Other ways to sign in"
+      }
+    }
+  },
+  "tg": {
+    "meta": {
+      "title": "Mini app",
+      "description": "Bronevik in Telegram: stats, your last session and marks in one tap."
+    },
+    "outside": {
+      "eyebrow": "Mini app",
+      "title": "Open in Telegram",
+      "description": "This page is the Bronevik mini app. Open it from {bot} and it will recognise your account.",
+      "open": "Open in Telegram",
+      "site": "Go to the site"
+    },
+    "failed": {
+      "title": "Could not sign you in",
+      "description": "Telegram did not confirm the sign-in. Try again or link Telegram in your account on the site.",
+      "retry": "Try again"
+    },
+    "preview": {
+      "text": "Preview: this is how Bronevik looks inside Telegram",
+      "open": "In Telegram"
+    },
+    "noAccount": {
+      "title": "No Lesta account linked",
+      "description": "Link your game account with Lesta ID on the site and your stats will show up here.",
+      "action": "Link on the site"
+    },
+    "header": {
+      "eyebrow": "Commander",
+      "noClan": "No clan"
+    },
+    "stats": {
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "battles": "Battles"
+    },
+    "session": {
+      "last": "Last session",
+      "live": "Session in progress",
+      "liveBadge": "live",
+      "empty": "No sessions yet — play a couple of battles and the recap shows up here.",
+      "battles": "Battles",
+      "winRate": "Wins",
+      "avgDamage": "Damage",
+      "details": "Session recap"
+    },
+    "marks": {
+      "title": "Closest to a mark",
+      "counts": {
+        "moe3": "3 marks",
+        "moe2": "2 marks",
+        "moe1": "1 mark"
+      },
+      "progress": "{current}% → {target}%",
+      "damageLeft": "≈{damage} more average damage",
+      "empty": "No mark progress yet — install the companion mod to see percentages."
+    },
+    "links": {
+      "title": "Full site",
+      "profile": "Profile",
+      "marks": "Marks",
+      "account": "Account",
+      "tools": "Calculators"
+    }
+  }
+}

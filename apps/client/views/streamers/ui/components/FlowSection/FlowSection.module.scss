@@ -1,0 +1,80 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-7));
+
+  scroll-margin-top: calc(var(--header-height) + var(--space-6));
+}
+
+.steps {
+  position: relative;
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-5);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.tracer {
+  position: absolute;
+  top: 26px;
+  right: 8%;
+  left: 8%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-accent) 12%, var(--color-accent-hot) 50%, var(--color-accent) 88%, transparent);
+  box-shadow: 0 0 14px var(--color-accent);
+  transform-origin: left center;
+
+  @include below(2xl) {
+    display: none;
+  }
+}
+
+.step {
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-3));
+
+  position: relative;
+  padding: var(--space-6) var(--space-5);
+}
+
+.index {
+  @include display(var(--text-2xl));
+
+  display: inline-grid;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--color-accent);
+  margin-top: calc(var(--space-6) * -1 - 1px);
+  background: var(--color-bg);
+  color: var(--color-accent);
+  place-items: center;
+}
+
+.title {
+  @include display(var(--text-lg));
+}
+
+.text {
+  flex: 1;
+  color: var(--color-text-muted);
+}
+
+.sample {
+  padding: var(--space-2) var(--space-3);
+  border-left: 2px solid var(--color-accent);
+  background: var(--color-surface-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+
+  [data-step='result'] > & {
+    border-color: var(--color-ally);
+    color: var(--color-ally);
+  }
+}

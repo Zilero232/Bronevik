@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.grid {
+  display: grid;
+  align-items: stretch;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

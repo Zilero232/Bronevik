@@ -1,0 +1,54 @@
+import type { VehicleSummary } from '@bronevik/schemas';
+
+import { isObjectType, isString } from 'remeda';
+
+import type { ReadUrlInput, VehicleRow } from './vehicle-summary.types';
+
+import { VEHICLE_TYPE_FROM_DB } from '../../../../common/lib';
+import { IMAGE_KEYS } from './vehicle-summary.constants';
+
+const readUrl = ({ images, keys }: ReadUrlInput): string | null => {
+  if (!isObjectType(images)) {
+    return null;
+  }
+
+  for (const key of keys) {
+    const value: unknown = Reflect.get(images, key);
+
+    if (isString(value) && URL.canParse(value)) {
+      return value;
+    }
+  }
+
+  return null;
+};
+
+export const toVehicleSummary = (row: VehicleRow): VehicleSummary => ({
+  tankId: row.tankId,
+  name: row.name,
+  shortName: row.shortName,
+  slug: row.slug,
+  nation: row.nation,
+  type: VEHICLE_TYPE_FROM_DB[row.type],
+  tier: row.tier,
+  isPremium: row.isPremium,
+  isCollectible: row.isCollectible,
+  images: {
+    small: readUrl({ images: row.images, keys: IMAGE_KEYS.small }),
+    contour: readUrl({ images: row.images, keys: IMAGE_KEYS.contour }),
+    big: readUrl({ images: row.images, keys: IMAGE_KEYS.big })
+  }
+});
+
+export const unknownVehicle = (tankId: number): VehicleSummary => ({
+  tankId,
+  name: `#${tankId}`,
+  shortName: `#${tankId}`,
+  slug: String(tankId),
+  nation: 'unknown',
+  type: 'mediumTank',
+  tier: 1,
+  isPremium: false,
+  isCollectible: false,
+  images: { small: null, contour: null, big: null }
+});

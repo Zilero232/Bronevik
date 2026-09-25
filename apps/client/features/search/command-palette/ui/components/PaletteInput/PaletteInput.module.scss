@@ -1,0 +1,36 @@
+.root {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-3);
+}
+
+.icon {
+  display: inline-flex;
+  color: var(--color-text-muted);
+
+  &[data-busy='true'] {
+    color: var(--color-accent);
+  }
+}
+
+.input {
+  min-width: 0;
+  height: 36px;
+  flex: 1;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  outline: none;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--color-text-dim);
+  }
+}

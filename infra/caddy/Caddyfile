@@ -1,0 +1,49 @@
+# Bronevik — Caddy config for docker-compose.yml.
+#
+# The hosts come from the environment: SITE_DOMAIN for the site, API_DOMAIN for
+# the API (the developer API /v1 included). With the defaults, localhost and
+# api.localhost, Caddy issues itself a local certificate; with real domains it
+# fetches one from Let's Encrypt over HTTP-01, so port 80 must stay reachable.
+
+(security_headers) {
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+}
+
+(access_log) {
+	log {
+		output stdout
+		format console
+	}
+}
+
+{$API_DOMAIN} {
+	encode gzip zstd
+
+	# bull-board (/admin/queues) stays off the public internet: reach it over
+	# an ssh tunnel to the server container instead.
+	respond /admin/* 404
+
+	reverse_proxy server:4000
+
+	import security_headers
+	import access_log
+}
+
+{$SITE_DOMAIN} {
+	encode gzip zstd
+
+	reverse_proxy client:3000
+
+	# Hashed assets never change under the same name.
+	@immutable path /_next/static/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	import security_headers
+	import access_log
+}

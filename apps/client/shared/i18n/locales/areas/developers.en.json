@@ -1,0 +1,371 @@
+{
+  "developers": {
+    "meta": {
+      "title": "Developer API",
+      "description": "Bronevik public API: WN8 and recent periods, player history, server-wide tank statistics, marks of excellence thresholds, clans and sessions. Free key, TypeScript SDK and webhooks."
+    },
+    "hero": {
+      "eyebrow": "Public API · telemetry /v1",
+      "title": "«Мир танков» data <hot>straight into your code</hot>",
+      "lead": "WN8, recent periods, player history, server-wide tank stats, MoE thresholds and sessions — everything the Lesta API does not give you, in one REST call. Free key, TypeScript SDK, webhooks for new marks.",
+      "getKey": "Get a key",
+      "docs": "Documentation",
+      "readouts": {
+        "perDay": "requests a day on Free",
+        "perSecond": "requests per second",
+        "version": "API version"
+      },
+      "console": {
+        "label": "Sample request: a player profile with WN8 in one call",
+        "title": "telemetry · GET /v1/players",
+        "latency": "{ms} ms",
+        "phase": {
+          "typing": "typing",
+          "sending": "request",
+          "streaming": "receiving",
+          "done": "200 OK"
+        }
+      }
+    },
+    "plans": {
+      "eyebrow": "Plans",
+      "title": "Limits for any project",
+      "description": "Free is open right away — for a clan bot, a stream widget or your own tracker. Pro and Partner are for heavy traffic.",
+      "legal": "Lesta’s terms forbid commercial redistribution of their API data. So Pro and Partner will only cover our own derived data (WN8, history, thresholds, mod data), and only after written approval from Lesta. Until then they are available on request, free of charge.",
+      "yours": "Your plan",
+      "names": {
+        "free": "Free",
+        "pro": "Pro",
+        "partner": "Partner"
+      },
+      "availability": {
+        "free": "Available now",
+        "pro": "On request",
+        "partner": "On request"
+      },
+      "taglines": {
+        "free": "A clan bot, an OBS widget, a personal MoE tracker — plenty of headroom.",
+        "pro": "Public services and bots serving thousands of players.",
+        "partner": "Large platforms and mods with live traffic."
+      },
+      "limits": {
+        "requestsPerDay": "Requests a day",
+        "requestsPerSecond": "Requests per second",
+        "webhooks": "Webhooks"
+      },
+      "cta": {
+        "free": "Get a key",
+        "manage": "Manage keys",
+        "paid": "After Lesta approval"
+      }
+    },
+    "quickstart": {
+      "eyebrow": "Quick start",
+      "title": "First response in three minutes",
+      "description": "A key, the SDK and one call. Every response is JSON, every error carries a machine-readable code.",
+      "baseUrl": "API base URL",
+      "steps": {
+        "key": {
+          "title": "Grab a key",
+          "text": "Sign in and create a key in the <link>developer dashboard</link>. The secret is shown once — save it right away."
+        },
+        "install": {
+          "title": "Install the SDK",
+          "text": "<code>bun add @bronevik/sdk</code> — types, retries and webhook verification out of the box. Or send the <code>X-API-Key</code> header from any language."
+        },
+        "request": {
+          "title": "Make a request",
+          "text": "A nickname or an account id — and you get a summary with WN8, EFF, Броня-Индекс and every recent period."
+        }
+      },
+      "tabs": {
+        "ts": "TypeScript",
+        "curl": "curl",
+        "python": "Python"
+      },
+      "files": {
+        "ts": "player.ts",
+        "curl": "terminal",
+        "python": "player.py"
+      }
+    },
+    "explorer": {
+      "eyebrow": "Reference",
+      "title": "Every /v1 endpoint",
+      "description": "A live list built from the server’s OpenAPI spec. Expand a row for parameters, response codes and a ready-made curl.",
+      "docs": "Open /v1/docs",
+      "filter": "Filter: path, method, summary…",
+      "filterLabel": "Filter endpoints",
+      "count": "{count, plural, one {# endpoint} other {# endpoints}}",
+      "error": "The spec did not load",
+      "errorHint": "The API server did not answer. The full documentation is still available at /v1/docs.",
+      "empty": "Nothing found",
+      "emptyHint": "Try part of a path, like “marks” or “sessions”.",
+      "params": {
+        "title": "Parameters",
+        "none": "No parameters.",
+        "name": "Name",
+        "in": "In",
+        "type": "Type",
+        "required": "required"
+      },
+      "responses": "Responses",
+      "ok": "Successful response",
+      "curl": "curl"
+    },
+    "webhooks": {
+      "eyebrow": "Webhooks",
+      "title": "Events come to you",
+      "description": "Follow players or clans and the server sends you a POST when someone earns a mark, finishes a session or changes clan.",
+      "eventsTitle": "Events",
+      "events": {
+        "markGained": "A player earned a new mark of excellence. Fires for followed players and members of followed clans.",
+        "sessionEnded": "A player finished a play session: battles, wins, average damage and session WN8.",
+        "clanMemberChanged": "A clan roster changed: someone joined, left or got a new role."
+      },
+      "payload": "Request body",
+      "headersTitle": "Headers",
+      "headers": {
+        "signature": "sha256=… signature — HMAC-SHA256 with the webhook secret over “send time, a dot, the raw body”.",
+        "timestamp": "Send time in Unix seconds. Part of the signature.",
+        "event": "Event name, same as the event field.",
+        "delivery": "Delivery id — use it for idempotency."
+      },
+      "verifyTitle": "Verifying the signature",
+      "verify": {
+        "sdk": "SDK",
+        "node": "Node crypto",
+        "python": "Python hmac"
+      },
+      "verifyFiles": {
+        "sdk": "webhook.ts",
+        "node": "verify.mjs",
+        "python": "verify.py"
+      },
+      "notes": {
+        "tolerance": "Reject deliveries older than {minutes} minutes — it guards against replays.",
+        "retries": "A failed delivery is retried up to {count} times with growing backoff.",
+        "disable": "After {count} failures in a row the webhook is switched off — turn it back on in the dashboard."
+      }
+    },
+    "showcase": {
+      "eyebrow": "App showcase",
+      "title": "Your project goes here",
+      "badge": "Soon",
+      "text": "We are putting together a showcase of bots, widgets and trackers built on the Bronevik API. Made something useful for tankers? Tell us and it will be among the first here.",
+      "cta": "Submit a project",
+      "slots": {
+        "bot": "Clan bot",
+        "overlay": "Stream overlay",
+        "tracker": "MoE tracker"
+      }
+    }
+  },
+  "developer": {
+    "meta": {
+      "title": "Developer dashboard",
+      "description": "Bronevik API keys, request statistics, error log and webhooks."
+    },
+    "cancel": "Cancel",
+    "toast": {
+      "keyCreated": "Key created",
+      "keyRevoked": "Key revoked",
+      "webhookCreated": "Webhook created",
+      "webhookUpdated": "Webhook updated",
+      "webhookDeleted": "Webhook deleted",
+      "failed": "Something went wrong. Try again"
+    },
+    "header": {
+      "eyebrow": "Developer dashboard",
+      "title": "API and webhooks",
+      "lead": "Keys, quota usage, request errors and webhook deliveries — everything about your integrations in one place.",
+      "docs": "API documentation",
+      "plan": "Plan",
+      "planName": {
+        "free": "Free",
+        "pro": "Pro",
+        "partner": "Partner"
+      },
+      "readouts": {
+        "perDay": "Requests a day",
+        "perSecond": "Requests per second",
+        "keys": "Active keys",
+        "webhooks": "Webhooks"
+      }
+    },
+    "secret": {
+      "warningTitle": "Shown only once",
+      "warning": {
+        "key": "Copy the key and store it in a secret manager or an environment variable. Once this window closes you cannot see it again — only issue a new one.",
+        "webhook": "Every delivery is signed with this secret. Save it now: it will not be shown again after this window closes."
+      },
+      "label": {
+        "key": "API key",
+        "webhook": "Signing secret"
+      }
+    },
+    "keys": {
+      "eyebrow": "Keys",
+      "title": "API keys",
+      "description": "Send the key in the X-API-Key header. Up to {max} active keys per account.",
+      "create": "New key",
+      "limit": "You have reached {max} active keys — revoke one you no longer need to issue a new one.",
+      "empty": "No keys yet",
+      "emptyHint": "Create your first key and start calling /v1.",
+      "columns": {
+        "created": "Created",
+        "lastUsed": "Last request",
+        "expires": "Expires"
+      },
+      "notUsed": "not used yet",
+      "never": "never",
+      "revoke": "Revoke",
+      "revokeFor": "Revoke key “{name}”",
+      "revokeTitle": "Revoke this key?",
+      "revokeText": "Key “{name}” stops working immediately and every request with it gets a 401. This cannot be undone."
+    },
+    "createKey": {
+      "title": "New API key",
+      "description": "Name the key after the project so you always know where it is used.",
+      "secretTitle": "Key “{name}” is ready",
+      "secretDescription": "Copy it now — the dashboard keeps only its prefix.",
+      "done": "I saved the key",
+      "name": "Name",
+      "nameHint": "For example: “Clan bot” or “OBS widget”.",
+      "namePlaceholder": "Clan bot",
+      "expiry": "Expires",
+      "expiryOptions": {
+        "never": "Never",
+        "30": "30 days",
+        "90": "90 days",
+        "365": "1 year"
+      },
+      "cancel": "Cancel",
+      "submit": "Create key",
+      "errors": {
+        "name": "Name must be 1 to {max} characters",
+        "server": "The server did not create the key. Try again."
+      }
+    },
+    "usage": {
+      "eyebrow": "Usage",
+      "title": "Requests and errors",
+      "description": "How many requests each key sends, where it stumbles and how much of today’s quota is left.",
+      "key": "Key",
+      "period": "Period",
+      "days": "{count, plural, one {# day} other {# days}}",
+      "noKeys": "Nothing to show",
+      "noKeysHint": "Statistics appear once you have at least one key.",
+      "topEyebrow": "Top",
+      "top": "Busiest endpoints",
+      "topEmpty": "No requests yet.",
+      "today": {
+        "requests": "Requests today",
+        "errors": "Errors today",
+        "errorRate": "{rate} of requests",
+        "throttled": "Throttled",
+        "throttledHint": "429 responses",
+        "latency": "Average response",
+        "ms": " ms",
+        "quota": "Daily quota"
+      },
+      "charts": {
+        "requestsEyebrow": "Requests per day",
+        "requestsTotal": "{total} in the period",
+        "requests": "Requests",
+        "errorsEyebrow": "Errors per day",
+        "errorsTotal": "{rate} errors",
+        "errors": "Errors",
+        "throttled": "429"
+      },
+      "errorLog": {
+        "eyebrow": "Log",
+        "title": "Recent errors",
+        "time": "When",
+        "request": "Request",
+        "status": "Status",
+        "code": "Code",
+        "empty": "No errors — all clean."
+      }
+    },
+    "webhooks": {
+      "eyebrow": "Webhooks",
+      "title": "Webhooks",
+      "description": "The server POSTs to your URL when a followed player earns a mark, finishes a session, or a clan roster changes.",
+      "create": "New webhook",
+      "limit": "{count} of {max} webhooks used on your plan.",
+      "empty": "No webhooks yet",
+      "emptyHint": "Add a URL and events will start coming in.",
+      "delete": "Delete",
+      "deleteTitle": "Delete this webhook?",
+      "deleteText": "Deliveries to {url} stop, and the delivery log goes with the webhook.",
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "disabled": "Disabled after failures"
+      },
+      "filterSummary": "players: {players} · clans: {clans}",
+      "failures": "{count, plural, one {# failure in a row} other {# failures in a row}}",
+      "disabledAt": "Disabled",
+      "active": "Enabled",
+      "deliveries": "Deliveries",
+      "edit": "Edit webhook"
+    },
+    "webhookForm": {
+      "create": {
+        "title": "New webhook",
+        "description": "https only. Follow players, clans or both."
+      },
+      "edit": {
+        "title": "Edit webhook",
+        "description": "Editing does not change the signing secret."
+      },
+      "secret": {
+        "title": "Webhook created",
+        "description": "Verify every delivery’s signature with this secret."
+      },
+      "done": "I saved the secret",
+      "url": "URL",
+      "urlHint": "It must answer 2xx within a few seconds.",
+      "events": "Events",
+      "eventNames": {
+        "markGained": "New mark",
+        "sessionEnded": "Session ended",
+        "clanMemberChanged": "Clan roster"
+      },
+      "accountIds": "Players (account id)",
+      "accountIdsPlaceholder": "12345678, 87654321",
+      "idsHint": "Separated by commas or spaces, up to {max} ids.",
+      "clanIds": "Clans (clan id)",
+      "clanIdsPlaceholder": "500012345",
+      "clanIdsHint": "A clan also brings its members’ events.",
+      "cancel": "Cancel",
+      "submit": "Create webhook",
+      "save": "Save",
+      "errors": {
+        "url": "Enter a valid https:// URL",
+        "events": "Pick at least one event",
+        "ids": "Only positive numbers separated by commas or spaces",
+        "filterEmpty": "Add at least one player or clan",
+        "filterTooMany": "No more than {max} ids in a list",
+        "server": "The server did not save the webhook. Try again."
+      }
+    },
+    "deliveries": {
+      "caption": "Webhook delivery log",
+      "event": "Event",
+      "status": "Status",
+      "statuses": {
+        "pending": "Queued",
+        "succeeded": "Delivered",
+        "failed": "Failed"
+      },
+      "attempt": "Attempt",
+      "response": "Response",
+      "created": "Created",
+      "delivered": "Delivered",
+      "nextAttempt": "Retry",
+      "empty": "No deliveries yet."
+    }
+  }
+}

@@ -1,0 +1,99 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+
+  margin: 0;
+}
+
+.screen {
+  @include corner-brackets(22px, var(--color-enemy));
+
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  min-height: 360px;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  isolation: isolate;
+
+  @include below(md) {
+    min-height: 320px;
+    padding: var(--space-5) var(--space-3) var(--space-3);
+  }
+}
+
+.scene {
+  position: absolute;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 60% 45% at 70% 30%, var(--color-accent-soft), transparent 70%),
+    radial-gradient(ellipse 80% 60% at 20% 100%, var(--color-steel-soft), transparent 70%),
+    repeating-linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 48px), var(--color-bg-deep);
+  inset: 1px;
+}
+
+.scanlines {
+  position: absolute;
+  z-index: -1;
+  background: repeating-linear-gradient(180deg, var(--shade-20) 0 1px, transparent 1px 3px);
+  inset: 0;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.hud {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-5);
+  left: var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+
+  @include below(md) {
+    right: var(--space-3);
+    left: var(--space-3);
+  }
+}
+
+.rec {
+  @include hud-label;
+
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-enemy);
+  gap: var(--space-2);
+}
+
+.recDot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-enemy);
+  box-shadow: 0 0 12px var(--color-enemy);
+}
+
+.clock {
+  @include numeric;
+
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  letter-spacing: 0.06em;
+}
+
+.channel {
+  @include hud-label;
+
+  margin-left: auto;
+  font-size: var(--text-2xs);
+}
+
+.caption {
+  @include hud-label;
+
+  color: var(--color-text-dim);
+  text-align: right;
+}

@@ -1,0 +1,64 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+
+  align-items: center;
+  padding: var(--space-5);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+  border-radius: var(--radius-lg);
+  background: radial-gradient(ellipse at 50% 0%, var(--color-accent-soft), transparent 70%), var(--color-surface-sunken);
+  text-align: center;
+
+  &[data-expired='true'] {
+    border-color: var(--color-border);
+    filter: grayscale(1);
+    opacity: 0.6;
+  }
+}
+
+.label {
+  @include hud-label;
+}
+
+.code {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.char {
+  display: inline-flex;
+  width: 40px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-raised);
+  color: var(--color-accent-hot);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--color-accent) 60%, transparent);
+
+  @include below(sm) {
+    width: 30px;
+    height: 42px;
+    font-size: var(--text-xl);
+  }
+}
+
+.timer {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}

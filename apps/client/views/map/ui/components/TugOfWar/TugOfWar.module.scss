@@ -1,0 +1,86 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-md));
+  @include stack(var(--space-3));
+
+  padding: var(--space-5);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.eyebrow,
+.draws {
+  @include hud-label;
+}
+
+.teams {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.team {
+  @include stack(var(--space-1));
+
+  &[data-side='1'] {
+    color: var(--color-success);
+  }
+
+  &[data-side='2'] {
+    align-items: flex-end;
+    color: var(--color-danger);
+  }
+}
+
+.teamLabel {
+  @include hud-label;
+
+  color: inherit;
+}
+
+.rate {
+  @include numeric;
+
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rope {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  height: 12px;
+  background: var(--color-danger);
+
+  @include chamfer-path(4px);
+}
+
+.pull {
+  display: block;
+  height: 100%;
+  background: var(--color-success);
+  box-shadow: 4px 0 0 var(--color-surface);
+}
+
+.center {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 50%;
+  width: 2px;
+  background: var(--color-text);
+  transform: translateX(-50%);
+}
+
+.verdict {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

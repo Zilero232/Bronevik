@@ -1,0 +1,30 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  min-width: 7.5em;
+  align-items: center;
+  padding: 0.55em 0.9em 0.6em;
+  background: var(--plate-fill);
+  box-shadow: var(--plate-edge);
+  clip-path: var(--plate-clip);
+  gap: 0.7em;
+  text-shadow: var(--plate-ink-shadow);
+}
+
+.body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.15em;
+}
+
+.label {
+  @include hud-label;
+
+  color: var(--color-accent);
+  font-size: 0.68em;
+  white-space: nowrap;
+}

@@ -1,0 +1,9 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+
+  display: grid;
+  min-height: 60dvh;
+  place-items: center;
+}

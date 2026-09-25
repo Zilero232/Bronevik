@@ -1,0 +1,70 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-sm));
+
+  display: grid;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  gap: var(--space-4);
+  grid-template-columns: 28px minmax(0, 1.1fr) minmax(0, 1.2fr) auto;
+
+  @include below(xl) {
+    gap: var(--space-2) var(--space-3);
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+  }
+}
+
+.rank {
+  @include numeric;
+
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+}
+
+.tank {
+  display: inline-flex;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.progress {
+  @include below(xl) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+.damage {
+  display: grid;
+  column-gap: var(--space-2);
+  grid-template-columns: auto auto;
+  place-items: center end;
+}
+
+.markIcon {
+  color: var(--color-accent);
+  grid-row: span 2;
+}
+
+.damageValue {
+  @include numeric;
+
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.damageLabel {
+  @include hud-label;
+
+  font-size: 0.5625rem;
+}

@@ -1,0 +1,1 @@
+export { PaletteResults } from './PaletteResults';

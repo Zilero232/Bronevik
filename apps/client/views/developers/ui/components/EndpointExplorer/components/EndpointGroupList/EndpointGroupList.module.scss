@@ -1,0 +1,38 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-7));
+}
+
+.group {
+  @include stack(var(--space-3));
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  &:after {
+    height: 1px;
+    flex: 1;
+    background-color: var(--color-border);
+    content: '';
+  }
+}
+
+.label {
+  @include display(var(--text-lg));
+}
+
+.count {
+  @include hud-label;
+}
+
+.list {
+  @include plate(var(--chamfer-md));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

@@ -1,0 +1,81 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-4));
+}
+
+.icon {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 22%, transparent), transparent 70%);
+  color: var(--color-accent);
+}
+
+.lead {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.row {
+  display: flex;
+  gap: var(--space-2);
+
+  @include below(xs) {
+    flex-direction: column;
+  }
+}
+
+.input {
+  min-width: 0;
+  flex: 1;
+}
+
+.suggestions {
+  @include stack(var(--space-1));
+  @include popup-surface;
+
+  padding: var(--space-1);
+  margin: 0;
+  list-style: none;
+}
+
+.suggestion {
+  @include reset-button;
+
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  gap: var(--space-2);
+  text-align: start;
+
+  &:hover {
+    background: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.nickname {
+  font-weight: 600;
+}
+
+.clan {
+  color: var(--color-steel);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.battles {
+  margin-left: auto;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

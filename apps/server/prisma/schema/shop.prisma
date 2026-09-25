@@ -1,0 +1,167 @@
+enum BonusCodeStatus {
+  unknown
+  working
+  expired
+
+  @@map("bonus_code_status")
+}
+
+enum BonusCodeVerdict {
+  working
+  expired
+  alreadyUsed @map("already_used")
+
+  @@map("bonus_code_verdict")
+}
+
+enum GameEventKind {
+  event
+  sale
+  marathon
+  battlePass       @map("battle_pass")
+  frontLine        @map("front_line")
+  onslaught
+  ranked
+  personalMissions @map("personal_missions")
+  drops
+  other
+
+  @@map("game_event_kind")
+}
+
+enum NewsKind {
+  news
+  patchNotes @map("patch_notes")
+  devBlog    @map("dev_blog")
+
+  @@map("news_kind")
+}
+
+model PremiumOffer {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  externalId      String?  @map("external_id")
+  source          String
+  title           String
+  url             String?
+  image           String?
+  tankIds         Int[]    @map("tank_ids")
+  contents        Json?
+  priceRub        Decimal? @map("price_rub") @db.Decimal(10, 2)
+  priceGold       Int?     @map("price_gold")
+  oldPriceRub     Decimal? @map("old_price_rub") @db.Decimal(10, 2)
+  discountPercent Int?     @map("discount_percent") @db.SmallInt
+
+  startsAt    DateTime? @map("starts_at") @db.Timestamptz(3)
+  endsAt      DateTime? @map("ends_at") @db.Timestamptz(3)
+  firstSeenAt DateTime  @default(now()) @map("first_seen_at") @db.Timestamptz(3)
+  lastSeenAt  DateTime  @default(now()) @map("last_seen_at") @db.Timestamptz(3)
+
+  @@unique([source, externalId, startsAt])
+  @@index([tankIds], type: Gin)
+  @@index([startsAt(sort: Desc)])
+  @@map("premium_offer")
+}
+
+model BonusCode {
+  code String @id
+
+  title     String?
+  rewards   Json?
+  source    String
+  sourceUrl String?         @map("source_url")
+  status    BonusCodeStatus @default(unknown)
+
+  workingReports Int @default(0) @map("working_reports")
+  expiredReports Int @default(0) @map("expired_reports")
+
+  expiresAt    DateTime? @map("expires_at") @db.Timestamptz(3)
+  lastReportAt DateTime? @map("last_report_at") @db.Timestamptz(3)
+  discoveredAt DateTime  @default(now()) @map("discovered_at") @db.Timestamptz(3)
+
+  reports BonusCodeReport[]
+
+  @@index([status, discoveredAt(sort: Desc)])
+  @@map("bonus_code")
+}
+
+model BonusCodeReport {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  code    String
+  userId  String?          @map("user_id")
+  verdict BonusCodeVerdict
+  ipHash  String?          @map("ip_hash")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  bonusCode BonusCode @relation(fields: [code], references: [code], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([code, userId])
+  @@index([code, createdAt(sort: Desc)])
+  @@map("bonus_code_report")
+}
+
+model GameEvent {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  slug        String        @unique
+  kind        GameEventKind
+  title       String
+  description String?
+  url         String?
+  image       String?
+  data        Json?
+
+  startsAt  DateTime  @map("starts_at") @db.Timestamptz(3)
+  endsAt    DateTime? @map("ends_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  progress UserEventProgress[]
+
+  @@index([kind, startsAt])
+  @@index([startsAt, endsAt])
+  @@map("game_event")
+}
+
+model UserEventProgress {
+  userId  String @map("user_id")
+  eventId String @map("event_id")
+
+  data Json
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event GameEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([userId, eventId])
+  @@map("user_event_progress")
+}
+
+model NewsItem {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  source        String
+  externalId    String?  @map("external_id")
+  url           String   @unique
+  kind          NewsKind @default(news)
+  title         String
+  summary       String?
+  image         String?
+  tankIds       Int[]    @map("tank_ids")
+  gameVersionId Int?     @map("game_version_id")
+
+  publishedAt DateTime  @map("published_at") @db.Timestamptz(3)
+  enrichedAt  DateTime? @map("enriched_at") @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  gameVersion GameVersion? @relation(fields: [gameVersionId], references: [id], onDelete: SetNull)
+
+  @@index([publishedAt(sort: Desc)])
+  @@index([tankIds], type: Gin)
+  @@index([enrichedAt])
+  @@map("news_item")
+}

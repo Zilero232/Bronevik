@@ -1,0 +1,1 @@
+export { parseEquipments } from './equipment';

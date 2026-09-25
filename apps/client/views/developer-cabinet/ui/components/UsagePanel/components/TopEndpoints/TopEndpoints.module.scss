@@ -1,0 +1,58 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+
+  min-width: 0;
+}
+
+.empty {
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+}
+
+.list {
+  @include stack(var(--space-3));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.endpoint {
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  @include numeric;
+
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.bar {
+  position: relative;
+  height: 3px;
+  background-color: var(--color-surface-sunken);
+  grid-column: 1 / -1;
+
+  &:before {
+    position: absolute;
+    background-color: var(--color-steel);
+    content: '';
+    inset: 0;
+    transform: scaleX(var(--share));
+    transform-origin: left;
+  }
+}

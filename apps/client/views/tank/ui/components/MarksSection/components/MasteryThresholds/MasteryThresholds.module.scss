@@ -1,0 +1,58 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  gap: var(--space-5);
+}
+
+.list {
+  @include stack(0);
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-3);
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.icon {
+  color: var(--color-steel);
+
+  .row[data-level='master'] & {
+    color: var(--color-accent-hot);
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-accent) 50%, transparent));
+  }
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-stretch: 85%;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.value {
+  @include numeric;
+
+  display: flex;
+  align-items: baseline;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  gap: var(--space-1);
+}
+
+.unit {
+  @include hud-label;
+}

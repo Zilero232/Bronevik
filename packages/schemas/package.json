@@ -1,0 +1,23 @@
+{
+  "name": "@bronevik/schemas",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Zod contracts shared by the Bronevik web, api and collector.",
+  "license": "UNLICENSED",
+  "author": "Alexandr Artemev",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bronevik/ratings": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

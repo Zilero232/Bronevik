@@ -1,0 +1,1 @@
+export { MarksHero } from './MarksHero';

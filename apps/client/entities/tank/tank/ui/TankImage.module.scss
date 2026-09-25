@@ -1,0 +1,83 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: inline-grid;
+  flex-shrink: 0;
+  isolation: isolate;
+  place-items: center;
+}
+
+.flag {
+  position: absolute;
+  z-index: -1;
+  width: 118%;
+  height: 118%;
+  filter: blur(7px) saturate(0.85);
+  inset: -9%;
+  mask-image: var(--flag-backdrop);
+  opacity: var(--flag-opacity);
+  pointer-events: none;
+}
+
+.image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.big {
+  width: 160px;
+  max-width: 100%;
+  aspect-ratio: 160 / 100;
+
+  .image {
+    width: 100%;
+    filter: drop-shadow(0 10px 12px rgb(0 0 0 / 45%));
+  }
+}
+
+.small {
+  width: 124px;
+  height: 31px;
+}
+
+.contour {
+  width: 60px;
+  height: 24px;
+
+  .image {
+    width: auto;
+    height: 23px;
+    filter: var(--contour-filter);
+  }
+}
+
+.fallback {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-steel);
+  gap: 6px;
+
+  .root[data-premium='true'] & {
+    color: var(--color-premium);
+  }
+
+  .big & {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+.tier {
+  @include numeric;
+
+  font-size: var(--text-xs);
+  font-stretch: 80%;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+
+  .big & {
+    font-size: var(--text-md);
+  }
+}

@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.slots {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  &[data-field='consumables'],
+  &[data-field='directives'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @include below(lg) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

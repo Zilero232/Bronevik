@@ -1,0 +1,1 @@
+export { PaletteFooter } from './PaletteFooter';

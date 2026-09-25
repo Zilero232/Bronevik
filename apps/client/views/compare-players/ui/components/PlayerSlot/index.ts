@@ -1,0 +1,1 @@
+export { PlayerSlot } from './PlayerSlot';

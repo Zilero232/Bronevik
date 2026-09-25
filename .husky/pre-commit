@@ -1,0 +1,28 @@
+bunx lint-staged
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+
+staged_has() {
+  printf '%s\n' "$staged" | grep -qE "$1"
+}
+
+# bun --filter takes no git range (there is no pnpm --filter=[HEAD^1] equivalent),
+# so work out the touched workspaces here and filter by path.
+typecheck_targets=''
+
+# Root configs and the shared packages reach into every workspace at once.
+if staged_has '^(package\.json|bun\.lock|tsconfig.*\.json)$' || staged_has '^packages/'; then
+  bun run typecheck || exit 1
+else
+  for app in apps/server apps/client; do
+    staged_has "^$app/" && typecheck_targets="$typecheck_targets ./$app"
+  done
+
+  for target in $typecheck_targets; do
+    bun --filter "$target" typecheck || exit 1
+  done
+fi
+
+if staged_has '^apps/mod/.*\.py$'; then
+  python -m unittest discover apps/mod/tests || exit 1
+fi

@@ -1,0 +1,20 @@
+@use '@/shared/styles/mixins' as *;
+
+.grid {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  list-style: none;
+  perspective: 1200px;
+
+  @include below(sm) {
+    gap: var(--space-4);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.skeleton {
+  aspect-ratio: 3 / 4;
+}

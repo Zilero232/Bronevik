@@ -1,0 +1,1 @@
+export { MiniSkeleton } from './MiniSkeleton';

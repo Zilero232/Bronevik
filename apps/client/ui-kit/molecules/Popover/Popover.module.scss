@@ -1,0 +1,33 @@
+@use '@/shared/styles/mixins' as *;
+
+.positioner {
+  z-index: var(--z-popover);
+}
+
+.popup {
+  @include popup-surface;
+  @include stack(var(--space-3));
+
+  width: min(320px, calc(100vw - 32px));
+  padding: var(--space-4);
+  transform-origin: var(--transform-origin);
+  transition:
+    opacity var(--duration-base) ease,
+    transform var(--duration-base) var(--ease-out);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+}
+
+.title {
+  @include display(var(--text-md));
+}
+
+.description {
+  margin-top: calc(var(--space-2) * -1);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}

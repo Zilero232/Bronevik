@@ -1,0 +1,107 @@
+import type { Prisma, TrackingTier } from '../../../../../../generated';
+import type { AccountInfo, AccountTank, TankStats } from '../../../../../lib/lesta';
+import type { TankBaseline } from '../account-diff';
+import type { SnapshotMode, TankSnapshotRow } from '../snapshots';
+
+type TankStatsRequest = {
+  accountId: number;
+  tankIds: readonly number[];
+};
+
+export type PollLestaPort = {
+  accountInfo: (accountIds: readonly number[]) => Promise<Record<string, AccountInfo | null>>;
+  accountTanks: (accountIds: readonly number[]) => Promise<Record<string, AccountTank[] | null>>;
+  tankStats: (request: TankStatsRequest) => Promise<TankStats[]>;
+};
+
+export type StoredPlayer = {
+  accountId: number;
+  clanId: number | null;
+  lastBattleAt: Date | null;
+  lastPolledAt: Date | null;
+  trackingTier: TrackingTier;
+};
+
+export type UpsertPlayerInput = {
+  info: AccountInfo;
+  previous: StoredPlayer | undefined;
+  tier: TrackingTier;
+  promote: boolean;
+  now: Date;
+};
+
+export type MarkSyncedInput = {
+  accountId: number;
+  lastBattleAt: Date | null;
+  now: Date;
+};
+
+export type LatestTankSnapshotsInput = {
+  accountId: number;
+  tankIds: readonly number[];
+};
+
+export type AccountChanges = {
+  accountId: number;
+  accountSnapshots: Prisma.AccountSnapshotCreateManyInput[];
+  tankSnapshots: TankSnapshotRow[];
+  deltas: Prisma.TankBattleDeltaCreateManyInput[];
+  baseline: Prisma.PlayerTankCreateManyInput[];
+};
+
+export type PollStorePort = {
+  blockedAccounts: (accountIds: readonly number[]) => Promise<Set<number>>;
+  loadPlayers: (accountIds: readonly number[]) => Promise<StoredPlayer[]>;
+  upsertPlayer: (input: UpsertPlayerInput) => Promise<void>;
+  markSynced: (input: MarkSyncedInput) => Promise<void>;
+  markMissing: (accountIds: readonly number[]) => Promise<void>;
+  latestAccountBattles: (accountId: number) => Promise<Map<SnapshotMode, number>>;
+  loadBaselines: (accountIds: readonly number[]) => Promise<Map<number, TankBaseline[]>>;
+  latestTankSnapshots: (input: LatestTankSnapshotsInput) => Promise<TankSnapshotRow[]>;
+  overallWn8: (accountId: number) => Promise<number | null>;
+  tankTiers: (tankIds: readonly number[]) => Promise<Map<number, number>>;
+  writeAccountChanges: (changes: AccountChanges) => Promise<void>;
+};
+
+type PollErrorInput = {
+  accountId: number;
+  error: unknown;
+};
+
+type PollPorts = {
+  lesta: PollLestaPort;
+  store: PollStorePort;
+  onError?: (input: PollErrorInput) => void;
+};
+
+export type RunPollPipelineInput = {
+  ports: PollPorts;
+  accountIds: readonly number[];
+  tier: TrackingTier;
+  promote?: boolean;
+  now?: Date;
+};
+
+export type PollResult = {
+  requested: number;
+  blocked: number[];
+  missing: number[];
+  unchanged: number[];
+  updated: number[];
+  failed: number[];
+  snapshots: number;
+  deltas: number;
+};
+
+export type ProcessAccountInput = {
+  ports: PollPorts;
+  info: AccountInfo;
+  tanks: readonly AccountTank[];
+  baseline: readonly TankBaseline[];
+  now: Date;
+};
+
+export type ProcessAccountResult = {
+  snapshots: number;
+  deltas: number;
+};

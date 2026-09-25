@@ -1,0 +1,12 @@
+export { bonusCodeStatus } from './bonus-status';
+export { parseOfferDetail } from './offer-detail';
+export type { OfferDetail } from './offer-detail';
+export { returnEstimate } from './offer-return';
+export type { ReturnEstimate } from './offer-return';
+export { isPatchNotes, patchVersion, versionCandidates } from './patch-notes';
+export { NEWS_KIND_TO_DB, offerAppearance, toBonusCodeView, toNewsView, toOfferView, VERDICT_TO_DB } from './shop-views';
+export type { NewsWithVersion } from './shop-views';
+export { matchTankNames } from './tank-mentions';
+export type { NamedVehicle } from './tank-mentions';
+export { parseWotexpressCodes } from './wotexpress-codes';
+export type { ScrapedBonusCode } from './wotexpress-codes';

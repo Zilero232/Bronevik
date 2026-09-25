@@ -1,0 +1,14 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include tile-grid;
+
+  > * {
+    display: flex;
+    min-width: 0;
+
+    > * {
+      flex: 1;
+    }
+  }
+}

@@ -1,0 +1,20 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-1));
+
+  padding: var(--space-3) var(--space-4);
+  border-left: 2px solid var(--color-border-strong);
+}
+
+.label {
+  @include hud-label;
+}
+
+.value {
+  @include numeric;
+
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+}

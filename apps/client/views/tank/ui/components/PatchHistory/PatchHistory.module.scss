@@ -1,0 +1,33 @@
+@use '@/shared/styles/mixins' as *;
+
+.timeline {
+  @include stack(var(--space-5));
+
+  position: relative;
+  padding: 0 0 0 var(--space-7);
+  margin: 0;
+  list-style: none;
+
+  &:before {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: 7px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--color-accent), var(--color-border-strong) 30%, transparent);
+    content: '';
+  }
+
+  @include below(sm) {
+    padding-left: var(--space-5);
+
+    &:before {
+      left: 3px;
+    }
+  }
+}
+
+.skeleton {
+  display: grid;
+  gap: var(--space-3);
+}

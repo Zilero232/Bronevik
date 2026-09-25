@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --clan: var(--color-accent);
+
+  position: relative;
+  padding-bottom: var(--space-11);
+}
+
+.sections {
+  @include shell;
+  @include stack(var(--space-10));
+
+  @include below(md) {
+    gap: var(--space-9);
+  }
+}

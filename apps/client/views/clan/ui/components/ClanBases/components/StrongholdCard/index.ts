@@ -1,0 +1,1 @@
+export { StrongholdCard } from './StrongholdCard';

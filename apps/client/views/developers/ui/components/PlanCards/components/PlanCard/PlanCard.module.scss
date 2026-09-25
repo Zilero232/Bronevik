@@ -1,0 +1,94 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include riveted-plate(var(--chamfer-lg));
+  @include stack(var(--space-4));
+
+  padding: var(--space-6);
+
+  &[data-plan='partner'] {
+    @include riveted-plate(var(--chamfer-lg), var(--color-border), var(--color-surface-raised));
+  }
+
+  &[data-current='true'] {
+    @include riveted-plate(var(--chamfer-lg), var(--color-accent), var(--color-surface-raised));
+
+    box-shadow: var(--glow-accent);
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.name {
+  @include stencil;
+
+  font-size: var(--text-2xl);
+  line-height: 1;
+
+  [data-plan='partner'] & {
+    color: var(--color-premium);
+  }
+}
+
+.tagline {
+  min-height: 3em;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.limits {
+  @include stack(var(--space-3));
+
+  flex: 1;
+  margin: 0;
+}
+
+.limit {
+  display: grid;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  grid-template-columns: 1fr auto;
+}
+
+.limitLabel {
+  @include hud-label;
+}
+
+.limitValue {
+  @include numeric;
+
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.gauge {
+  position: relative;
+  overflow: hidden;
+  height: 4px;
+  background-color: var(--color-surface-sunken);
+  grid-column: 1 / -1;
+
+  &:before {
+    position: absolute;
+    background: linear-gradient(90deg, var(--color-accent-deep), var(--color-accent));
+    content: '';
+    inset: 0;
+    transform: scaleX(var(--share));
+    transform-origin: left;
+  }
+}
+
+.pending {
+  @include hud-label;
+
+  padding: var(--space-3);
+  border: 1px dashed var(--color-border-strong);
+  text-align: center;
+}

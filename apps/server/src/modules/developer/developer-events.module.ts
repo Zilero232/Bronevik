@@ -1,0 +1,11 @@
+import { Global, Module } from '@nestjs/common';
+
+import { WEBHOOK_EMITTER } from '../../core';
+import { WebhookEmitterService } from './services';
+
+@Global()
+@Module({
+  providers: [WebhookEmitterService, { provide: WEBHOOK_EMITTER, useExisting: WebhookEmitterService }],
+  exports: [WebhookEmitterService, WEBHOOK_EMITTER]
+})
+export class DeveloperEventsModule {}

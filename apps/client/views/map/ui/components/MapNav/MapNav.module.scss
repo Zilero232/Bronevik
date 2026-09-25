@@ -1,0 +1,56 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.link {
+  @include plate(var(--chamfer-sm));
+
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text);
+  gap: var(--space-3);
+  text-decoration: none;
+  transition: background var(--duration-base) ease;
+
+  &[data-side='next'] {
+    justify-content: flex-end;
+    grid-column: 2;
+    text-align: end;
+  }
+
+  &:hover {
+    background: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.arrow {
+  flex: none;
+  color: var(--color-accent);
+}
+
+.text {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.hint {
+  @include hud-label;
+}
+
+.name {
+  @include display(var(--text-md));
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

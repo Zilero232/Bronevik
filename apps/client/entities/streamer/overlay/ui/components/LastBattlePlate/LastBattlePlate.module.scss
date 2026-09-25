@@ -1,0 +1,32 @@
+@use '@/shared/styles/mixins' as *;
+
+.line {
+  --result: var(--color-text-muted);
+
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+
+  &[data-result='win'] {
+    --result: var(--color-ally);
+  }
+
+  &[data-result='loss'] {
+    --result: var(--color-enemy);
+  }
+}
+
+.result {
+  @include display(0.95em);
+
+  color: var(--result);
+}
+
+.tank {
+  overflow: hidden;
+  max-width: 12em;
+  color: var(--color-text-muted);
+  font-size: 0.72em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

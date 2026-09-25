@@ -1,0 +1,116 @@
+{
+  "name": "bronevik",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Броневик — the all-in-one companion platform for «Мир танков» (Lesta RU): stats, marks of excellence, tank analytics, builds, replays, clans, streamer tools and a developer API. Bun-workspaces monorepo.",
+  "license": "UNLICENSED",
+  "author": "Alexandr Artemev",
+  "type": "module",
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "@types/bun": "^1.4.2",
+      "@types/react": "^19.3.0",
+      "better-auth": "^1.7.5",
+      "date-fns": "^4.4.0",
+      "motion": "^13.4.3",
+      "p-retry": "^8.0.1",
+      "pino": "^10.3.1",
+      "pino-pretty": "^13.1.3",
+      "react": "^19.3.0",
+      "react-dom": "^19.3.0",
+      "remeda": "^2.50.0",
+      "ts-pattern": "^5.9.0",
+      "typescript": "~6.0.3",
+      "zod": "^4.6.5"
+    }
+  },
+  "scripts": {
+    "build": "bun --filter @bronevik/client build",
+    "db:deploy": "bun --filter @bronevik/server db:deploy",
+    "db:generate": "bun --filter @bronevik/server db:generate",
+    "db:migrate": "bun --filter @bronevik/server db:migrate",
+    "db:push": "bun --filter @bronevik/server db:push",
+    "db:studio": "bun --filter @bronevik/server db:studio",
+    "db:timescale": "bun --filter @bronevik/server db:timescale",
+    "dev": "concurrently -n server,worker,client -c blue,magenta,green \"bun run dev:server\" \"bun run dev:worker\" \"bun run dev:client\"",
+    "dev:client": "bun --filter @bronevik/client dev",
+    "dev:infra": "docker compose -f docker-compose.dev.yml up -d --wait",
+    "dev:infra:down": "docker compose -f docker-compose.dev.yml down",
+    "dev:server": "bun --filter @bronevik/server dev",
+    "dev:worker": "bun --filter @bronevik/server dev:worker",
+    "fix": "bun run lint:fix && bun run format && bun run lint:css:fix && bun run format:prisma",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format:prisma": "bun --filter @bronevik/server format:prisma",
+    "gamedata:import": "bun --filter @bronevik/server gamedata:import",
+    "lint": "eslint .",
+    "lint:css": "stylelint \"apps/client/**/*.scss\"",
+    "lint:css:fix": "stylelint \"apps/client/**/*.scss\" --fix",
+    "lint:dupes": "jscpd",
+    "lint:fix": "eslint . --fix",
+    "lint:unused": "knip",
+    "prepare": "husky",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:mod": "python -m unittest discover apps/mod/tests",
+    "test:watch": "vitest",
+    "typecheck": "bun --filter '*' typecheck",
+    "verify": "bun run typecheck && bun run lint && bun run format:check && bun run lint:css"
+  },
+  "lint-staged": {
+    "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/package.json": [
+      "sort-package-json"
+    ],
+    "*.{json,md,yml,yaml}": "prettier --write",
+    "apps/client/**/*.scss": [
+      "stylelint --fix",
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "@playwright/test": "^1.63.0",
+    "@siberiacancode/eslint": "^2.18.1",
+    "@siberiacancode/prettier": "^1.9.0",
+    "@siberiacancode/stylelint": "^1.2.0",
+    "@siberiacancode/tsconfig": "^1.2.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/bun": "catalog:",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^5.0.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "concurrently": "^10.0.5",
+    "eslint": "^10.11.0",
+    "fkill-cli": "^9.0.0",
+    "husky": "^9.1.7",
+    "jscpd": "^5.3.2",
+    "jsdom": "^30.1.1",
+    "knip": "^6.38.0",
+    "lint-staged": "^17.5.1",
+    "prettier": "^3.9.8",
+    "sort-package-json": "^4.0.0",
+    "stylelint": "17.15.0",
+    "stylelint-config-idiomatic-order": "^10.0.0",
+    "stylelint-config-standard-scss": "^17.0.0",
+    "stylelint-order": "^8.1.1",
+    "typescript": "catalog:",
+    "vitest": "^5.0.1"
+  },
+  "packageManager": "bun@1.3.1",
+  "engines": {
+    "bun": ">=1.3.0"
+  }
+}

@@ -1,0 +1,32 @@
+@use '@/shared/styles/mixins' as *;
+
+.tiles {
+  @include tile-grid;
+}
+
+.big {
+  @include numeric;
+
+  font-size: var(--text-3xl);
+  font-stretch: 80%;
+  font-weight: 700;
+}
+
+.bars {
+  max-width: 520px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-4);
+}
+
+.skeletons {
+  width: 100%;
+}
+
+.skeletonText {
+  display: flex;
+  min-width: 200px;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+}

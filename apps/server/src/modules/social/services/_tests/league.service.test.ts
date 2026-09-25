@@ -1,0 +1,142 @@
+import { describe, expect, it } from 'vitest';
+import { mock, mockDeep } from 'vitest-mock-extended';
+
+import type { Player, PlaySession } from '../../../../../generated';
+import type { PrismaService } from '../../../../core';
+import type { FollowService } from '../follow.service';
+import type { SnapshotEventsService } from '../snapshot-events.service';
+
+import { LEAGUE } from '../../config';
+import { LeagueService } from '../league.service';
+
+const week = '2026-09-14';
+const startedAt = new Date(`${week}T12:00:00Z`);
+
+const session = ({ accountId, battles, damageDealt, wn8 }: Pick<PlaySession, 'accountId' | 'battles' | 'damageDealt' | 'wn8'>): PlaySession => ({
+  id: `s-${accountId}-${damageDealt}`,
+  accountId,
+  source: 'api',
+  kind: 'day',
+  status: 'closed',
+  day: startedAt,
+  startedAt,
+  endedAt: startedAt,
+  lastActivityAt: startedAt,
+  battles,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  damageDealt,
+  damageAssisted: 0,
+  damageBlocked: 0,
+  frags: 0,
+  spotted: 0,
+  xp: 0,
+  survived: 0,
+  credits: null,
+  wn8,
+  broneIndex: null,
+  tankDeltas: null,
+  startCapturedAt: null,
+  endCapturedAt: null,
+  reportSentAt: null
+});
+
+const player = (accountId: bigint, nickname: string): Player => ({
+  accountId,
+  nickname,
+  clanId: null,
+  globalRating: null,
+  createdAt: null,
+  lastBattleAt: null,
+  logoutAt: null,
+  lestaUpdatedAt: null,
+  trackingTier: 'population',
+  lastPolledAt: null,
+  nextPollAt: null,
+  lastViewedAt: null,
+  isHidden: false,
+  purgeAfter: null,
+  firstSeenAt: startedAt,
+  updatedAt: startedAt
+});
+
+const battles = LEAGUE.minBattles;
+
+const createService = () => {
+  const prisma = mockDeep<PrismaService>();
+  const follows = mock<FollowService>();
+  const events = mock<SnapshotEventsService>();
+
+  follows.circle.mockResolvedValue({ accountIds: [1n, 2n, 3n], own: new Set([1n]) });
+  events.markCounts.mockResolvedValue(new Map());
+  prisma.player.findMany.mockResolvedValue([player(1n, 'Me'), player(2n, 'Friend')]);
+
+  prisma.playSession.findMany.mockResolvedValue([
+    session({ accountId: 1n, battles, damageDealt: battles * 1_000, wn8: 1_000 }),
+    session({ accountId: 1n, battles, damageDealt: battles * 3_000, wn8: 3_000 }),
+    session({ accountId: 2n, battles, damageDealt: battles * 2_500, wn8: null }),
+    session({ accountId: 9n, battles, damageDealt: battles * 9_000, wn8: 9_000 })
+  ]);
+
+  return { service: new LeagueService(prisma, follows, events), prisma, follows, events };
+};
+
+describe('LeagueService.league', () => {
+  it('ranks the circle by average damage over all their sessions of the week', async () => {
+    const { service } = createService();
+
+    const { entries } = await service.league({ userId: 'u1', metric: 'damage', week });
+
+    expect(entries.map((entry) => [entry.rank, entry.accountId, entry.battles, entry.value])).toEqual([
+      [1, 2, battles, 2_500],
+      [2, 1, battles * 2, 2_000],
+      [3, 3, 0, null]
+    ]);
+  });
+
+  it('marks only the caller’s own accounts as theirs', async () => {
+    const { service } = createService();
+
+    const { entries } = await service.league({ userId: 'u1', metric: 'battles', week });
+
+    expect(entries.filter((entry) => entry.isMe).map((entry) => entry.accountId)).toEqual([1]);
+  });
+
+  it('weights WN8 by battles and skips sessions without it', async () => {
+    const { service } = createService();
+
+    const { entries } = await service.league({ userId: 'u1', metric: 'wn8', week });
+
+    expect(entries.find((entry) => entry.accountId === 1)?.value).toBe(2_000);
+    expect(entries.find((entry) => entry.accountId === 2)?.value).toBeNull();
+  });
+
+  it('ignores sessions of accounts outside the circle', async () => {
+    const { service } = createService();
+
+    const { entries } = await service.league({ userId: 'u1', metric: 'battles', week });
+
+    expect(entries.map((entry) => entry.accountId).toSorted()).toEqual([1, 2, 3]);
+  });
+
+  it('counts marks only for the marks metric', async () => {
+    const { service, events } = createService();
+
+    events.markCounts.mockResolvedValue(new Map([[3n, 2]]));
+
+    await service.league({ userId: 'u1', metric: 'damage', week });
+
+    expect(events.markCounts).not.toHaveBeenCalled();
+
+    const { entries } = await service.league({ userId: 'u1', metric: 'marks', week });
+
+    expect(entries[0]).toEqual(expect.objectContaining({ accountId: 3, value: 2 }));
+  });
+
+  it('starts the week on the Monday of the requested date', async () => {
+    const { service } = createService();
+
+    expect((await service.league({ userId: 'u1', metric: 'battles', week: '2026-09-17' })).weekStart).toBe(week);
+  });
+});

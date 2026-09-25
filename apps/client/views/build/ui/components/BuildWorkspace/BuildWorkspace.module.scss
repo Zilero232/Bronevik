@@ -1,0 +1,54 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-6));
+
+  --side: var(--color-accent);
+  --side-soft: var(--color-accent-soft);
+
+  &[data-side='b'] {
+    --side: var(--color-steel);
+    --side-soft: var(--color-steel-soft);
+  }
+
+  @include below(md) {
+    gap: var(--space-5);
+  }
+}
+
+.layout {
+  display: grid;
+  align-items: start;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.panels {
+  @include stack(var(--space-5));
+
+  min-width: 0;
+}
+
+.pair {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.aside {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-4));
+  min-width: 0;
+
+  @include below(3xl) {
+    display: none;
+  }
+}

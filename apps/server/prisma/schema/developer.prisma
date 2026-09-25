@@ -1,0 +1,161 @@
+enum ApiPlan {
+  free
+  pro
+  partner
+
+  @@map("api_plan")
+}
+
+enum WebhookEvent {
+  moeGained           @map("moe_gained")
+  sessionFinished     @map("session_finished")
+  clanRosterChanged   @map("clan_roster_changed")
+  moeThresholdDropped @map("moe_threshold_dropped")
+
+  @@map("webhook_event")
+}
+
+enum DeliveryStatus {
+  pending
+  succeeded
+  failed
+
+  @@map("delivery_status")
+}
+
+enum ModerationStatus {
+  draft
+  pending
+  published
+  rejected
+  hidden
+
+  @@map("moderation_status")
+}
+
+model ApiKey {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId  String   @map("user_id")
+  name    String
+  prefix  String   @unique
+  keyHash String   @unique @map("key_hash")
+  plan    ApiPlan  @default(free)
+  scopes  String[]
+
+  lastUsedAt DateTime? @map("last_used_at") @db.Timestamptz(3)
+  expiresAt  DateTime? @map("expires_at") @db.Timestamptz(3)
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usage  ApiUsageDaily[]
+  errors ApiErrorLog[]
+  apps   DeveloperApp[]
+
+  @@index([userId])
+  @@map("api_key")
+}
+
+model ApiUsageDaily {
+  apiKeyId String   @map("api_key_id")
+  day      DateTime @db.Date
+  endpoint String
+
+  requests       Int    @default(0)
+  errors         Int    @default(0)
+  throttled      Int    @default(0)
+  latencyMsTotal BigInt @default(0) @map("latency_ms_total")
+
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@id([apiKeyId, day, endpoint])
+  @@index([day])
+  @@map("api_usage_daily")
+}
+
+model ApiErrorLog {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  apiKeyId String  @map("api_key_id")
+  method   String
+  path     String
+  status   Int     @db.SmallInt
+  code     String?
+  message  String?
+
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(3)
+
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@index([apiKeyId, occurredAt(sort: Desc)])
+  @@map("api_error_log")
+}
+
+model WebhookEndpoint {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId String         @map("user_id")
+  url    String
+  secret String
+  events WebhookEvent[]
+  filter Json?
+
+  isActive     Boolean   @default(true) @map("is_active")
+  failureCount Int       @default(0) @map("failure_count")
+  disabledAt   DateTime? @map("disabled_at") @db.Timestamptz(3)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries WebhookDelivery[]
+
+  @@index([userId])
+  @@index([isActive])
+  @@map("webhook_endpoint")
+}
+
+model WebhookDelivery {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  endpointId String         @map("endpoint_id")
+  event      WebhookEvent
+  payload    Json
+  status     DeliveryStatus @default(pending)
+  attempt    Int            @default(0)
+
+  responseStatus Int?      @map("response_status") @db.SmallInt
+  responseBody   String?   @map("response_body")
+  nextAttemptAt  DateTime? @map("next_attempt_at") @db.Timestamptz(3)
+  deliveredAt    DateTime? @map("delivered_at") @db.Timestamptz(3)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  endpoint WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@index([endpointId, createdAt(sort: Desc)])
+  @@index([status, nextAttemptAt])
+  @@map("webhook_delivery")
+}
+
+model DeveloperApp {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId      String           @map("user_id")
+  apiKeyId    String?          @map("api_key_id")
+  name        String
+  slug        String           @unique
+  url         String?
+  description String?
+  logo        String?
+  status      ModerationStatus @default(pending)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apiKey ApiKey? @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@map("developer_app")
+}

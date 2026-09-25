@@ -1,0 +1,70 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+}
+
+.link {
+  display: grid;
+  height: 44px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  transition:
+    border-color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+
+  &:hover {
+    border-color: var(--band);
+    box-shadow: 0 0 16px -8px var(--band);
+  }
+}
+
+.icon {
+  color: var(--color-steel);
+
+  .link[data-premium='true'] & {
+    color: var(--color-accent-hot);
+  }
+}
+
+.name {
+  overflow: hidden;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diff {
+  @include numeric;
+
+  font-size: var(--text-sm);
+  font-stretch: 85%;
+  font-weight: 700;
+
+  &[data-sign='plus'] {
+    color: var(--color-success);
+  }
+
+  &[data-sign='minus'] {
+    color: var(--color-danger);
+  }
+}
+
+.trend {
+  display: inline-flex;
+  color: var(--color-text-dim);
+
+  &[data-trend='up'] {
+    color: var(--color-success);
+  }
+
+  &[data-trend='down'] {
+    color: var(--color-danger);
+  }
+}

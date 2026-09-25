@@ -1,0 +1,46 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include plate(var(--chamfer-lg), var(--color-success), var(--color-surface));
+  @include stack(var(--space-5));
+
+  padding: var(--space-6);
+
+  &[data-status='lost'] {
+    background: var(--color-danger);
+  }
+
+  @include below(md) {
+    padding: var(--space-5) var(--space-4);
+  }
+}
+
+.head {
+  @include stack(var(--space-2));
+}
+
+.eyebrow {
+  @include hud-label;
+
+  color: var(--color-success);
+
+  .root[data-status='lost'] & {
+    color: var(--color-danger);
+  }
+}
+
+.title {
+  @include display(var(--text-3xl));
+
+  font-stretch: 75%;
+}
+
+.text {
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

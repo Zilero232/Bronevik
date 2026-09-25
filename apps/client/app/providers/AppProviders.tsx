@@ -1,0 +1,49 @@
+'use client';
+
+import { SerwistProvider } from '@serwist/turbopack/react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { MotionConfig } from 'motion/react';
+import { NextIntlClientProvider } from 'next-intl';
+import { ThemeProvider } from 'next-themes';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+
+import { RatingPaletteSync } from '@/features/app/rating-palette';
+import { RatingPatternsSync } from '@/features/app/rating-patterns';
+import { CommandPalette, CommandPaletteProvider } from '@/features/search/command-palette';
+import { queryClient } from '@/shared/api';
+import { ROUTES, STORAGE_KEYS } from '@/shared/constants';
+import { messages, TIME_ZONE } from '@/shared/i18n';
+import { AppToaster, TooltipProvider } from '@/ui-kit';
+
+import type { AppProvidersProps } from './AppProviders.types';
+
+export const AppProviders = ({ children, locale }: AppProvidersProps) => (
+  <NuqsAdapter>
+    <QueryClientProvider client={queryClient}>
+      <NextIntlClientProvider locale={locale} messages={messages[locale]} timeZone={TIME_ZONE}>
+        <ThemeProvider
+          disableTransitionOnChange
+          attribute='data-theme'
+          defaultTheme='dark'
+          enableSystem={false}
+          storageKey={STORAGE_KEYS.theme}
+          themes={['dark', 'light']}
+        >
+          <MotionConfig reducedMotion='user'>
+            <TooltipProvider>
+              <CommandPaletteProvider>
+                <SerwistProvider disable={process.env.NODE_ENV === 'development'} reloadOnOnline={false} swUrl={ROUTES.serviceWorker}>
+                  {children}
+                </SerwistProvider>
+                <CommandPalette />
+              </CommandPaletteProvider>
+            </TooltipProvider>
+            <RatingPatternsSync />
+            <RatingPaletteSync />
+            <AppToaster />
+          </MotionConfig>
+        </ThemeProvider>
+      </NextIntlClientProvider>
+    </QueryClientProvider>
+  </NuqsAdapter>
+);

@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.side,
+.main {
+  @include stack(var(--space-4));
+}

@@ -8,9 +8,9 @@ import { sortBy } from 'remeda';
 
 import type { SelectItem } from '@/ui-kit';
 
+import { listMaps } from '@/entities/map/map';
 import { useReplayModeLabel } from '@/features/community/replay-meta';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { listMaps } from '@/entities/map/map';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ReplayResult, ReplaySort } from '../../../lib/replay-query';

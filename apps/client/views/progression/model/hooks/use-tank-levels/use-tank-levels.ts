@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { getTankLevels } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { getTankLevels } from '../../../api';
 import { PROGRESS_PAGE } from '../../../config';
 import { levelProgress } from '../../../lib/level-progress';
 

@@ -1,8 +1,9 @@
 import type { UploadedReplay, UploadReplayInput } from '@/entities/replay/replay';
+
+import { REPLAY_UPLOAD_REQUEST } from '@/entities/replay/replay';
 import { zUploadedReplay } from '@/shared/api/generated/zod.gen';
 import { api, SESSION_REQUEST } from '@/shared/api/http';
 import { fromServer } from '@/shared/api/source';
-import { REPLAY_UPLOAD_REQUEST } from '@/entities/replay/replay';
 
 export const uploadReplay = ({ file, visibility, signal, onProgress }: UploadReplayInput): Promise<UploadedReplay> =>
   fromServer(async () => {

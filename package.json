@@ -13,6 +13,7 @@
     ],
     "catalog": {
       "@date-fns/tz": "^1.5.0",
+      "@hey-api/openapi-ts": "0.99.0",
       "@types/bun": "^1.4.2",
       "@types/react": "^19.3.0",
       "better-auth": "^1.7.5",
@@ -48,16 +49,16 @@
     "dev:server": "bun --filter @otmetki/server dev",
     "dev:worker": "bun --filter @otmetki/server dev:worker",
     "fix": "bun run lint:fix && bun run format && bun run lint:css:fix && bun run format:prisma",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --write . --cache",
+    "format:check": "prettier --check . --cache",
     "format:prisma": "bun --filter @otmetki/server format:prisma",
     "gamedata:import": "bun --filter @otmetki/server gamedata:import",
-    "lint": "eslint .",
-    "lint:css": "stylelint \"apps/client/**/*.scss\"",
-    "lint:css:fix": "stylelint \"apps/client/**/*.scss\" --fix",
+    "lint": "eslint . --cache --cache-location node_modules/.cache/eslint/",
+    "lint:css": "stylelint \"apps/client/**/*.scss\" --cache --cache-location node_modules/.cache/stylelint/",
+    "lint:css:fix": "stylelint \"apps/client/**/*.scss\" --fix --cache --cache-location node_modules/.cache/stylelint/",
     "lint:dupes": "jscpd",
     "lint:encoding": "node scripts/check-utf8.mjs",
-    "lint:fix": "eslint . --fix",
+    "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/eslint/",
     "lint:unused": "knip",
     "prepare": "husky",
     "test": "vitest run",
@@ -71,7 +72,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
-      "eslint --fix",
+      "eslint --fix --cache --cache-location node_modules/.cache/eslint/",
       "prettier --write"
     ],
     "**/package.json": [

@@ -5,9 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import { vehicleIndex } from '@/entities/tank/tank';
 import { usePlus } from '@/features/plus/plus-gate';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { getTankChallenges } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 import { useCelebrateGain } from '@/shared/lib';
+
+import { getTankChallenges } from '../../../api';
 
 export const useTankChallenges = () => {
   const { isPlus } = usePlus();

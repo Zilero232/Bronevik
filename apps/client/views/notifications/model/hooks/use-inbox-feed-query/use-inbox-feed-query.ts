@@ -2,8 +2,7 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { INBOX_QUERY } from '@/entities/notification/inbox';
-import { getInbox } from '@/entities/notification/inbox';
+import { getInbox, INBOX_QUERY } from '@/entities/notification/inbox';
 
 import { INBOX_FEED } from '../../../config';
 

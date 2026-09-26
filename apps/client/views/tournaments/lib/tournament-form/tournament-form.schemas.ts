@@ -1,8 +1,8 @@
 import { isFuture } from 'date-fns';
 import { z } from 'zod';
 
-import { requirementsFormSchema } from '@/features/community/stat-requirements';
 import { zCreateTournament } from '@/entities/tournament/tournament';
+import { requirementsFormSchema } from '@/features/community/stat-requirements';
 import { zonedInputToIso } from '@/shared/lib';
 
 const localDate = z.string().refine((value) => value === '' || zonedInputToIso({ value }) !== undefined);

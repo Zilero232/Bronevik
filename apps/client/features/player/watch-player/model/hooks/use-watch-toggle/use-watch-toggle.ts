@@ -7,8 +7,9 @@ import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { isPlusRequiredError } from '@/shared/api/source';
-import { addWatchlistPlayer, getWatchlist, removeWatchlistPlayer } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { addWatchlistPlayer, getWatchlist, removeWatchlistPlayer } from '../../../api';
 
 export const useWatchToggle = (accountId: number) => {
   const t = useTranslations('watchlist.button');

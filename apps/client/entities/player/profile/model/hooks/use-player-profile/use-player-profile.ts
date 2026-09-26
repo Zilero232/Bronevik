@@ -2,9 +2,10 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getPlayer } from '../../../api';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { getPlayer } from '../../../api';
 
 const RETRY_LIMIT = 1;
 

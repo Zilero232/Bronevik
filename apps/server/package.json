@@ -16,7 +16,6 @@
     "predev": "fkill :4000 --force --silent",
     "dev": "bun --hot --cwd ../.. --env-file .env apps/server/src/main.ts",
     "dev:seed": "bun --env-file=../../.env scripts/dev-seed.ts",
-    "streamers:seed": "bun --env-file=../../.env scripts/streamers-seed.ts",
     "dev:worker": "bun --hot --cwd ../.. --env-file .env apps/server/src/worker.ts",
     "format:prisma": "prisma format",
     "gamedata:import": "bun --env-file=../../.env scripts/gamedata-import.ts",
@@ -24,6 +23,7 @@
     "openapi:export": "bun --env-file=../../.env scripts/openapi-export.ts",
     "start": "bun src/main.ts",
     "start:worker": "bun src/worker.ts",
+    "streamers:seed": "bun --env-file=../../.env scripts/streamers-seed.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -84,7 +84,6 @@
     "grammy": "^1.46.0",
     "helmet": "^8.3.0",
     "ics": "^3.12.0",
-    "intl-messageformat": "^12.1.2",
     "ioredis": "^5.8.0",
     "ipaddr.js": "^2.5.0",
     "keyv": "^5.6.0",

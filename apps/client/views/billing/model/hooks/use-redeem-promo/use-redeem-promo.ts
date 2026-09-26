@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { redeemPromo } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { redeemPromo } from '../../../api';
 
 export const useRedeemPromo = () => {
   const t = useTranslations('billing.toast');

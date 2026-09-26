@@ -8,10 +8,10 @@ import { toast } from 'sonner';
 
 import { useCompetitionsCache } from '@/entities/competition/competition';
 import { communityErrorKind } from '@/features/community/api-error';
-import { deleteCompetition } from '../../../api';
 import { ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
+import { deleteCompetition } from '../../../api';
 import { inviteLink } from '../../../lib/competition-view';
 
 export const useOwnerActions = (competition: Competition) => {

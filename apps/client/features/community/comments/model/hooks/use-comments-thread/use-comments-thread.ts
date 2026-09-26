@@ -3,11 +3,11 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { listComments } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { CommentThreadTarget } from '../../../lib/comment-form';
 
+import { listComments } from '../../../api';
 import { buildCommentTree, countComments } from '../../../lib/comment-tree';
 
 export const useCommentsThread = ({ target, targetId }: CommentThreadTarget) => {

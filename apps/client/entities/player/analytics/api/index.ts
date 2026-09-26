@@ -1,1 +1,12 @@
-export { getAnalyticsMaps, getAnalyticsOverview, getAnalyticsPlatoons, getAnalyticsRng, getAnalyticsTank, getBattleAnalysis, getFirstWin, getMyBattle, getMyBattles, getPlaylist } from './analytics';
+export {
+  getAnalyticsMaps,
+  getAnalyticsOverview,
+  getAnalyticsPlatoons,
+  getAnalyticsRng,
+  getAnalyticsTank,
+  getBattleAnalysis,
+  getFirstWin,
+  getMyBattle,
+  getMyBattles,
+  getPlaylist
+} from './analytics';

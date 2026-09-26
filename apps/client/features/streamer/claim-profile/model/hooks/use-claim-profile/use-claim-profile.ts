@@ -26,6 +26,7 @@ export const useClaimProfile = (slug: string) => {
     enabled: Boolean(session),
     retry: false
   });
+
   const integrations = useQuery({ queryKey: QUERY_KEYS.me.streamer.integrations, queryFn: getIntegrations, enabled: Boolean(session) });
 
   const claim = status.data ?? null;

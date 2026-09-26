@@ -24,6 +24,9 @@ import {
   playlistSchema
 } from '@otmetki/schemas';
 
+import { api, SESSION_REQUEST } from '@/shared/api/http';
+import { fromServer } from '@/shared/api/source';
+
 import type {
   AnalyticsAccountInput,
   AnalyticsBattleInput,
@@ -32,9 +35,6 @@ import type {
   AnalyticsTankInput,
   PlaylistInput
 } from './analytics.types';
-
-import { api, SESSION_REQUEST } from '@/shared/api/http';
-import { fromServer } from '@/shared/api/source';
 
 export const getAnalyticsOverview = ({ signal, ...params }: AnalyticsPeriodInput): Promise<AnalyticsOverview> =>
   fromServer(async () => analyticsOverviewSchema.parse((await api.get('/me/analytics/overview', { ...SESSION_REQUEST, params, signal })).data));

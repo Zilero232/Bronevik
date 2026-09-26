@@ -4,7 +4,17 @@ import type { InsightsPeriod } from '@otmetki/schemas';
 
 import type { PlayerTanksFilter } from '@/entities/player/profile';
 
-import { getNicknameHistory, getPlayerActivity, getPlayerHistory, getPlayerInsights, getPlayerMarks, getPlayerPlaytime, getPlayerSessions, getPlayerTanks, PLAYERS_REQUEST } from '@/entities/player/profile';
+import {
+  getNicknameHistory,
+  getPlayerActivity,
+  getPlayerHistory,
+  getPlayerInsights,
+  getPlayerMarks,
+  getPlayerPlaytime,
+  getPlayerSessions,
+  getPlayerTanks,
+  PLAYERS_REQUEST
+} from '@/entities/player/profile';
 
 import type { UsePlayerHistoryInput } from './use-profile-queries.types';
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { getModDevices, issueBindCode, revokeModDevice } from '../../../api';
-
 import { MOD_BIND } from '../../../config';
 import { useMeMutation } from '../use-me-mutation';
 import { useMeSection } from '../use-me-section';

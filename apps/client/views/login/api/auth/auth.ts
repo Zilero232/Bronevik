@@ -1,9 +1,9 @@
 import type { TelegramWidgetConfig } from '@/shared/api/auth';
 
-import type { MagicLinkInput } from './auth.types';
-
 import { authClient } from '@/shared/api/auth';
 import { fromAuth } from '@/shared/api/source';
+
+import type { MagicLinkInput } from './auth.types';
 
 export const getTelegramWidget = async (): Promise<TelegramWidgetConfig> => {
   const widget = await fromAuth(authClient.telegram.widget());

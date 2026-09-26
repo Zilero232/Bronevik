@@ -1,5 +1,4 @@
 import type { CreateReport } from '../../api';
-
 import type { ToCreateReportInput } from './report-form.types';
 
 export const toCreateReport = ({ values, targetType, targetId }: ToCreateReportInput): CreateReport => ({

@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { zCreatePlatoon } from '../../api';
 import { zonedInputToIso } from '@/shared/lib';
 
+import { zCreatePlatoon } from '../../api';
 import { PLATOON_FORM, PLATOON_TIERS } from '../../config';
 
 const optionalWn8 = z

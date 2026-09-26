@@ -1,7 +1,6 @@
-import type { PlatoonListQuery } from '../../api';
-
 import { zonedInputToIso } from '@/shared/lib';
 
+import type { PlatoonListQuery } from '../../api';
 import type { NextSingleTierInput, PlatoonFilters, PlatoonMode } from './platoon-query.types';
 
 import { PLATOON_MODES } from '../../config';

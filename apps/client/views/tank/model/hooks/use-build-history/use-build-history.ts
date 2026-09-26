@@ -2,8 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { usePlus } from '@/features/plus/plus-gate';
 import { getBuildHistory } from '@/entities/tank/build';
+import { usePlus } from '@/features/plus/plus-gate';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseBuildHistoryInput } from './use-build-history.types';

@@ -17,6 +17,7 @@ export const useMyFollows = () => {
     mutationFn: unfollowStreamer,
     onSuccess: async (_, slug) => {
       toast.success(t('unfollowed'));
+
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.me.streamer.follows }),
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.streamers.profile(slug) })

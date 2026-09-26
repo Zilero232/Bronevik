@@ -6,10 +6,11 @@ import { toast } from 'sonner';
 
 import type { UpdateTacticBoard } from '@/entities/tactic/board';
 
-import { updateTacticBoard } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseUpdateBoardInput } from './use-update-board.types';
+
+import { updateTacticBoard } from '../../../api';
 
 export const useUpdateBoard = ({ board, token }: UseUpdateBoardInput) => {
   const t = useTranslations('tactics.toast');

@@ -1,4 +1,5 @@
 import type { CosmeticsInventory, EquipCosmeticsInput } from '@otmetki/schemas';
+
 import { cosmeticsControllerEquip, cosmeticsControllerPurchase } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';

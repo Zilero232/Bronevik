@@ -3,8 +3,8 @@
 import type { ReportMatchInput, Tournament } from '@/entities/tournament/tournament';
 
 import { useCommunityViewer } from '@/features/community/viewer';
-import { reportTournamentMatch } from '../../../api';
 
+import { reportTournamentMatch } from '../../../api';
 import { bracketColumns, championOf } from '../../../lib/bracket-columns';
 import { useTournamentMutation } from '../use-tournament-mutation';
 

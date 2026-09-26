@@ -7,6 +7,10 @@
   &[data-featured='true'] {
     grid-template-columns: minmax(0, 1fr) 232px;
   }
+
+  &[data-featured='true']:has(> .featured:empty) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .main {
@@ -40,4 +44,8 @@
   padding: var(--space-4);
   border-left: 1px solid var(--color-border);
   background-color: var(--color-surface-sunken);
+
+  &:empty {
+    display: none;
+  }
 }

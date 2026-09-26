@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 import type { BoardSettingsPayload } from '@/features/community/tactic-board-settings';
 
 import { toBoardSettingsValues } from '@/features/community/tactic-board-settings';
-import { createTacticBoard } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
+
+import { createTacticBoard } from '../../../api';
 
 export const useCreateBoardDialog = () => {
   const t = useTranslations('tactics.toast');

@@ -7,12 +7,12 @@ import { useTranslations } from 'next-intl';
 import { groupBy } from 'remeda';
 import { toast } from 'sonner';
 
-import { equipCosmetics, purchaseCosmetic } from '../../../api';
 import { getCosmetics } from '@/entities/player/cosmetics';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { EquipSlotInput } from './use-cosmetics-page.types';
 
+import { equipCosmetics, purchaseCosmetic } from '../../../api';
 import { COSMETICS_PAGE } from '../../../config';
 import { cosmeticAction } from '../../../lib/cosmetic-action';
 

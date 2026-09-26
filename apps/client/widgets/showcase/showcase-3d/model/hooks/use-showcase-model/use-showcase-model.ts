@@ -3,8 +3,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
-import { decodeArmorModel } from '@/entities/armor/armor-model';
-import { getArmorModel } from '@/entities/armor/armor-model';
+import { decodeArmorModel, getArmorModel } from '@/entities/armor/armor-model';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseShowcaseModelInput } from './use-showcase-model.types';

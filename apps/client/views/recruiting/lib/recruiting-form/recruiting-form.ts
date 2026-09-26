@@ -1,8 +1,7 @@
-import type { CreateRecruiting } from '../../api';
-
 import { toStatRequirements } from '@/features/community/stat-requirements';
 import { chosenAccountId } from '@/features/community/viewer';
 
+import type { CreateRecruiting } from '../../api';
 import type { ToCreateRecruitingInput } from './recruiting-form.types';
 
 export const toCreateRecruiting = ({ values, kind, clanId }: ToCreateRecruitingInput): CreateRecruiting => {

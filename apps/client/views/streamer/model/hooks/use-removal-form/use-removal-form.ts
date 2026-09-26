@@ -25,6 +25,7 @@ export const useRemovalForm = ({ slug, onSent }: UseRemovalFormInput) => {
     },
     onError: () => void toast.error(t('failed'))
   });
+
   const {
     register,
     handleSubmit,

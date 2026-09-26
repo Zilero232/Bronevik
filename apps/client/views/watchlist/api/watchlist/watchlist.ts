@@ -1,4 +1,5 @@
 import type { WatchlistDigest, WatchlistSettings } from '@otmetki/schemas';
+
 import { watchlistControllerUpdateSettings } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';

@@ -1,7 +1,6 @@
 'use client';
 
 import { getGoals, removeGoal } from '../../../api';
-
 import { useMeMutation } from '../use-me-mutation';
 import { useMeSection } from '../use-me-section';
 

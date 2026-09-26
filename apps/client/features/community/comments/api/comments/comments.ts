@@ -1,8 +1,8 @@
-import type { Comment, CommentList, CommentListInput, CreateComment } from './comments.types';
-
 import { commentsControllerCreate, commentsControllerList, commentsControllerRemove } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type { Comment, CommentList, CommentListInput, CreateComment } from './comments.types';
 
 export const listComments = ({ target, targetId, signal }: CommentListInput): Promise<CommentList> =>
   fromSdk(() => commentsControllerList({ query: { target, targetId }, signal }));

@@ -14,7 +14,7 @@ export const HOME_ACTIONS = [
 export const HOME_CTA = { href: ROUTES.tools, icon: TrainingIcon } as const;
 
 export const HOME_COMMUNITY = [
-  { key: 'streamers', href: ROUTES.streamers.list, icon: RadioIcon },
+  { key: 'streamers', href: ROUTES.streamers.forStreamers, icon: RadioIcon },
   { key: 'clans', href: ROUTES.clans.list, icon: StrongholdIcon }
 ] as const;
 

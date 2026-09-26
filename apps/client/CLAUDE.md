@@ -21,12 +21,14 @@ features/     # app/{rating-palette,rating-patterns,switch-locale,switch-theme},
               #   stats/select-period, tank/{filter-vehicles,pick-tank}
 entities/     # app/locale, armor/armor-model, auth/session, map/map, notification/inbox,
               #   player/{player,profile,recent-players,stats}, streamer/{broadcast,overlay}, tank/{build,tank}
-shared/       # project-agnostic: api/ (one folder per resource + http, source) config/ constants/ i18n/ lib/ seo/ styles/
+shared/       # project-agnostic: api/ (infrastructure only: http, generated, query-options, source, auth client) config/ constants/ i18n/ lib/ seo/ styles/
 ui-kit/       # the design system: atoms/ molecules/ organisms/ (ChartKit + charts, DataTable, PageHeader, toaster)
 config/       # build-time helpers for next.config.ts — not imported by the app
 ```
 
-Inside a slice: `index.ts`, `ui/`, `model/hooks/`, `model/context/`, `lib/<concern>/`, `config/`, rarely `api/`.
+Inside a slice: `index.ts`, `ui/`, `model/hooks/`, `model/context/`, `api/<resource>/` (+ `api/mappers/<name>/`), `lib/<concern>/`, `config/`.
+
+**Every thing is a folder.** A file with companions (`x.ts` + `x.types.ts` / `x.constants.ts` / `_tests/`) lives in its own `x/` with an `index.ts`; nothing lies flat next to another concern. `shared/lib` is flat, one folder per concern — helpers `shared/lib/<concern>/`, hooks `shared/lib/use-<x>/` — and `shared/constants` is `routes/`, `site-nav/`, `account-nav/`, `query-keys/`, `storage-keys/`. `ROUTES` is nested per page family (`ROUTES.tanks.detail(slug)`, `ROUTES.players.session({ nickname, sessionId })`, `ROUTES.account.overview`). Details: [fsd.md §4](../../docs/architecture/fsd.md).
 
 Imports go downward only: `app → views → widgets → features → entities → shared`. `ui-kit` sits beside `shared` and every layer may import it. Alias `@/*` → `apps/client/*`.
 
@@ -55,8 +57,8 @@ Imports go downward only: `app → views → widgets → features → entities �
 
 ## Data
 
-- `shared/api` holds the axios instance and the TanStack Query client; hooks live in the slice that owns them (`views/home/model/hooks`, `features/search/command-palette/model/hooks`).
-- **No mocks.** Every request in `shared/api` goes to the server through `fromServer` (`shared/api/source`), which turns a 404 into `NotFoundError` and a 401 into `UnauthorizedError`. With no data a screen shows its empty state; with the API down, its error state with a retry. Queries run in the browser, so `next build` and the e2e smoke need no running server.
+- **Requests live in their slice.** `shared/api` keeps only infrastructure (axios instance, bearer token, generated OpenAPI client + `query-options`, `fromServer`/`fromSdk`/`fromAuth` and the error classes, the better-auth client, `queryClient`). A read several slices need goes to `entities/<domain>/<slice>/api/<resource>/`, an action several slices trigger to `features/<domain>/<slice>/api/<resource>/`, anything one screen alone uses to `views/<view>/api/<resource>/`; the slice barrel re-exports it. Query keys stay in the shared `QUERY_KEYS` registry because invalidation crosses slices. Hooks live in the slice that owns them (`views/home/model/hooks`, `features/search/command-palette/model/hooks`).
+- **No mocks.** Every request goes to the server through `fromServer` (`shared/api/source`), which turns a 404 into `NotFoundError` and a 401 into `UnauthorizedError`. With no data a screen shows its empty state; with the API down, its error state with a retry. Queries run in the browser, so `next build` and the e2e smoke need no running server.
 - Env is read only through `@/shared/config` (`env`), which validates it with Zod. `next.config.ts` loads `NEXT_PUBLIC_*` from the root `.env` via `config/root-env.ts`.
 
 ## Lesta terms in the UI

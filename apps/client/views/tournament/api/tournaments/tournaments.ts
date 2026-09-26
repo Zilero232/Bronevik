@@ -1,5 +1,13 @@
 import type { RegisterTournamentInput, ReportMatchInput, Tournament, WithdrawTournamentInput } from '@/entities/tournament/tournament';
-import { tournamentsControllerCancel, tournamentsControllerOpen, tournamentsControllerRegister, tournamentsControllerReport, tournamentsControllerStart, tournamentsControllerWithdraw } from '@/shared/api/generated';
+
+import {
+  tournamentsControllerCancel,
+  tournamentsControllerOpen,
+  tournamentsControllerRegister,
+  tournamentsControllerReport,
+  tournamentsControllerStart,
+  tournamentsControllerWithdraw
+} from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
 

@@ -12,20 +12,6 @@ import type {
   VehicleCatalog
 } from '@otmetki/schemas';
 
-import type {
-  MyEconomyInput,
-  MyLearningInput,
-  TankDetailInput,
-  TankEconomyInput,
-  TankEconomyTableInput,
-  TankPatchesInput,
-  TankStatsInput,
-  TankTopPlayersInput,
-  TankTrendInput,
-  TierListInput,
-  VehicleCatalogInput
-} from './tanks.types';
-
 import {
   myTanksControllerEconomy,
   myTanksControllerLearning,
@@ -41,6 +27,21 @@ import {
 } from '@/shared/api/generated';
 import { listParam } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type {
+  MyEconomyInput,
+  MyLearningInput,
+  TankDetailInput,
+  TankEconomyInput,
+  TankEconomyTableInput,
+  TankPatchesInput,
+  TankStatsInput,
+  TankTopPlayersInput,
+  TankTrendInput,
+  TierListInput,
+  VehicleCatalogInput
+} from './tanks.types';
+
 import { TANK_REQUEST } from './tanks.constants';
 
 export const listTankStats = ({ signal, tiers, types, nations, statuses, roles, difficulties, ...query }: TankStatsInput): Promise<TankStatsPage> =>

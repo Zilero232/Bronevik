@@ -4,10 +4,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';
 import { useEffect, useRef } from 'react';
 
-import { redeemTelegramWebLogin } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
+import { redeemTelegramWebLogin } from '../../../api';
 import { WEB_LOGIN, WEB_LOGIN_PHASE_TONE } from '../../../config';
 import { webLoginCodeState, webLoginPhase } from '../../../lib/web-login';
 

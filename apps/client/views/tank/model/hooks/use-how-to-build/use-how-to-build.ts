@@ -6,9 +6,8 @@ import { BUILD_USAGE } from '@otmetki/schemas';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { recommendedBuildHref } from '@/entities/tank/build';
+import { getRecommendedBuild, recommendedBuildHref } from '@/entities/tank/build';
 import { usePlus } from '@/features/plus/plus-gate';
-import { getRecommendedBuild } from '@/entities/tank/build';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { HOW_TO_BUILD } from '../../../config';

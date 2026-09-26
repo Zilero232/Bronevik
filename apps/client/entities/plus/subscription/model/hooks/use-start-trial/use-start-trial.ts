@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { startPlusTrial } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { startPlusTrial } from '../../../api';
 
 export const useStartTrial = () => {
   const t = useTranslations('plus.teaser');

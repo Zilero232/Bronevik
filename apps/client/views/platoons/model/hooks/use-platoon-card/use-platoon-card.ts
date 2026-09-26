@@ -4,16 +4,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFormatter, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { PlatoonPost } from '../../../api';
-
 import { pickVehicles } from '@/entities/tank/tank';
 import { communityErrorKind } from '@/features/community/api-error';
 import { useCommunityViewer } from '@/features/community/viewer';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { closePlatoon } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useClientNow } from '@/shared/lib';
 
+import type { PlatoonPost } from '../../../api';
+
+import { closePlatoon } from '../../../api';
 import { PLATOON_BOARD, PLATOON_TIME_FORMAT } from '../../../config';
 import { availabilityWindow } from '../../../lib/availability';
 import { isPlatoonMode } from '../../../lib/platoon-query';

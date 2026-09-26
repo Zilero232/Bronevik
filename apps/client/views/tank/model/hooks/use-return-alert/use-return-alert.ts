@@ -6,10 +6,10 @@ import { isIncludedIn } from 'remeda';
 import { toast } from 'sonner';
 
 import { usePlus } from '@/features/plus/plus-gate';
-import { addFollow, getFollows, removeFollow } from '../../../api';
 import { isPlusRequiredError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { addFollow, getFollows, removeFollow } from '../../../api';
 import { RETURN_ALERT } from '../../../config';
 import { useTank } from '../../context';
 

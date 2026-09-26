@@ -12,18 +12,6 @@ import type {
   TimeSeries
 } from '@otmetki/schemas';
 
-import type {
-  AccountInput,
-  PlayerActivityInput,
-  PlayerHistoryInput,
-  PlayerInsightsInput,
-  PlayerLookupInput,
-  PlayerSessionInput,
-  PlayerSessionsInput,
-  PlayerTanksInput,
-  PopularPlayersInput
-} from './players.types';
-
 import {
   playersControllerActivity,
   playersControllerInsights,
@@ -39,6 +27,19 @@ import {
 } from '@/shared/api/generated';
 import { listParam, SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type {
+  AccountInput,
+  PlayerActivityInput,
+  PlayerHistoryInput,
+  PlayerInsightsInput,
+  PlayerLookupInput,
+  PlayerSessionInput,
+  PlayerSessionsInput,
+  PlayerTanksInput,
+  PopularPlayersInput
+} from './players.types';
+
 import { PLAYERS_REQUEST } from './players.constants';
 
 export const getPlayer = ({ idOrNick, signal }: PlayerLookupInput): Promise<PlayerProfile> =>

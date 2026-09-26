@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  border-color: var(--color-danger);
+}
+
+.grid {
+  display: grid;
+  margin: 0;
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  dt {
+    @include label;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  @include below(md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.cell {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+}
+
+.platform,
+.tank {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.value {
+  @include numeric(var(--text-xl));
+}

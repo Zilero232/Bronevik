@@ -2,9 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query';
 
+import { getCoach } from '@/entities/coaching/coach';
 import { pickVehicles } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { getCoach } from '@/entities/coaching/coach';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 

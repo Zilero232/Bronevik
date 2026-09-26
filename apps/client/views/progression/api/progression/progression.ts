@@ -1,5 +1,11 @@
 import type { SeasonTrack, Shells, TankChallenges, TankProgressList } from '@otmetki/schemas';
-import { progressionControllerChallenges, progressionControllerSeason, progressionControllerShellLedger, progressionControllerTankLevels } from '@/shared/api/generated';
+
+import {
+  progressionControllerChallenges,
+  progressionControllerSeason,
+  progressionControllerShellLedger,
+  progressionControllerTankLevels
+} from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
 

@@ -4,9 +4,9 @@ import { PROFILE_COSMETICS } from '@otmetki/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { indexBy, unique } from 'remeda';
 
-import { getProfilesCosmetics } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { getProfilesCosmetics } from '../../../api';
 import { PROFILE_COSMETICS_QUERY } from '../../../config';
 
 export const useProfilesCosmetics = (accountIds: readonly number[]) => {

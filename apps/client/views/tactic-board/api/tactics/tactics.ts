@@ -1,4 +1,5 @@
 import type { TacticBoard, UpdateTacticBoardInput } from '@/entities/tactic/board';
+
 import { tacticsControllerRotate, tacticsControllerUpdate } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';

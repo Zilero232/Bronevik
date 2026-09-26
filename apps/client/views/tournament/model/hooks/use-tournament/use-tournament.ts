@@ -2,8 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { isNotFoundError } from '@/shared/api/source';
 import { getTournament } from '@/entities/tournament/tournament';
+import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useTournament = (slug: string) => {

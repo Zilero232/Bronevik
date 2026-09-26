@@ -7,9 +7,10 @@ import { toast } from 'sonner';
 
 import type { Guide } from '@/entities/guide/guide';
 
-import { removeGuide } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
+
+import { removeGuide } from '../../../api';
 
 export const useGuideDelete = (guide: Guide) => {
   const t = useTranslations('guides.detail');

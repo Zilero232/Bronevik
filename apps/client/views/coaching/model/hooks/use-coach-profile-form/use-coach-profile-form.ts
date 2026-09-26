@@ -9,15 +9,15 @@ import { toast } from 'sonner';
 
 import type { UpsertCoach } from '@/entities/coaching/coach';
 
+import { getCoach } from '@/entities/coaching/coach';
 import { communityErrorKind } from '@/features/community/api-error';
 import { useCommunityViewer } from '@/features/community/viewer';
-import { getCoach } from '@/entities/coaching/coach';
-import { saveCoachProfile } from '../../../api';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { CoachFormOutput, CoachFormValues } from '../../../lib/coach-form';
 
+import { saveCoachProfile } from '../../../api';
 import { coachFormSchema, toCoachFormValues, toUpsertCoach } from '../../../lib/coach-form';
 
 export const useCoachProfileForm = () => {

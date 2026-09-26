@@ -7,14 +7,13 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import type { CreatePlatoon } from '../../../api';
-
 import { communityErrorKind } from '@/features/community/api-error';
-import { createPlatoon } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import type { CreatePlatoon } from '../../../api';
 import type { PlatoonFormOutput, PlatoonFormValues } from '../../../lib/platoon-form';
 
+import { createPlatoon } from '../../../api';
 import { PLATOON_FORM_DEFAULTS } from '../../../config';
 import { platoonFormSchema, toCreatePlatoon } from '../../../lib/platoon-form';
 

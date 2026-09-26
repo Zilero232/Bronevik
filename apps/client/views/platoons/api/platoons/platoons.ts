@@ -1,8 +1,8 @@
-import type { CreatePlatoon, ListPlatoonsInput, PlatoonPage, PlatoonPost } from './platoons.types';
-
 import { platoonsControllerClosePlatoon, platoonsControllerCreatePlatoon, platoonsControllerListPlatoons } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type { CreatePlatoon, ListPlatoonsInput, PlatoonPage, PlatoonPost } from './platoons.types';
 
 export const listPlatoons = ({ signal, ...query }: ListPlatoonsInput): Promise<PlatoonPage> =>
   fromSdk(() => platoonsControllerListPlatoons({ ...SESSION_REQUEST, query, signal }));

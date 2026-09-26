@@ -6,11 +6,11 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { usePlus } from '@/features/plus/plus-gate';
-import { getAnalyticsExport, getRawStatsExport } from '../../../api';
 import { downloadFile } from '@/shared/lib';
 
 import type { DataExportKind } from '../../../lib/data-export';
 
+import { getAnalyticsExport, getRawStatsExport } from '../../../api';
 import { exportFile, isRawExport } from '../../../lib/data-export';
 
 export const useDataExport = () => {

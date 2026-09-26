@@ -6,11 +6,11 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { sendMagicLink } from '../../../api';
 import { ROUTES } from '@/shared/constants';
 
 import type { MagicLinkFormValues } from '../../../lib/magic-link-form';
 
+import { sendMagicLink } from '../../../api';
 import { MAGIC_LINK_FORM_DEFAULT_VALUES } from '../../../config';
 import { magicLinkFormSchema } from '../../../lib/magic-link-form';
 

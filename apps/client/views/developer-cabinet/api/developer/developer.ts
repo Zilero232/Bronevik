@@ -1,6 +1,14 @@
 import type { CreateApiKeyInput, CreatedApiKey, CreatedWebhookEndpoint, CreateWebhookEndpointInput, WebhookEndpoint } from '@otmetki/schemas';
+
 import type { UpdateWebhookInput } from '@/entities/developer/developer';
-import { developerControllerCreateKey, developerControllerCreateWebhook, developerControllerRemoveWebhook, developerControllerRevokeKey, developerControllerUpdateWebhook } from '@/shared/api/generated';
+
+import {
+  developerControllerCreateKey,
+  developerControllerCreateWebhook,
+  developerControllerRemoveWebhook,
+  developerControllerRevokeKey,
+  developerControllerUpdateWebhook
+} from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
 

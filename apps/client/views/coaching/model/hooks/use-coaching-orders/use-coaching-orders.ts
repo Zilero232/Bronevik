@@ -5,8 +5,8 @@ import type { QueryFunctionContext } from '@tanstack/react-query';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { unique } from 'remeda';
 
-import { useCommunityViewer } from '@/features/community/viewer';
 import { getCoach, getCoachingOrders } from '@/entities/coaching/coach';
+import { useCommunityViewer } from '@/features/community/viewer';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 

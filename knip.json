@@ -8,11 +8,11 @@
   },
   "workspaces": {
     "apps/client": {
-      "entry": ["shared/i18n/request.ts", "app/sw.ts"],
+      "entry": ["shared/i18n/request/request.ts", "app/sw.ts"],
       "project": ["**/*.{ts,tsx,scss}"]
     },
     "apps/server": {
-      "entry": ["scripts/*.ts", "src/lib/lesta/index.ts", "src/lib/replay/index.ts"],
+      "entry": ["scripts/*.ts"],
       "project": ["src/**/*.ts", "scripts/**/*.ts", "prisma/**/*.prisma"]
     },
     "packages/*": {

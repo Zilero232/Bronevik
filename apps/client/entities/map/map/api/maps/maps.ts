@@ -1,9 +1,9 @@
 import type { MapDetail, MapList } from '@otmetki/schemas';
 
-import type { MapDetailInput, MapListInput } from './maps.types';
-
 import { mapsControllerDetail, mapsControllerList } from '@/shared/api/generated';
 import { fromSdk } from '@/shared/api/source';
+
+import type { MapDetailInput, MapListInput } from './maps.types';
 
 export const listMaps = ({ signal, ...query }: MapListInput): Promise<MapList> => fromSdk(() => mapsControllerList({ query, signal }));
 

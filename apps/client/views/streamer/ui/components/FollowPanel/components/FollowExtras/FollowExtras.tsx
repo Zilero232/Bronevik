@@ -22,13 +22,7 @@ export const FollowExtras = ({ state }: FollowExtrasProps) => {
   return (
     <div className={s.root}>
       <PlusGate feature='streamerAlerts'>
-        <TankPicker
-          className={s.picker}
-          label={t('tankTitle')}
-          placeholder={t('tankPlaceholder')}
-          value={vehicle}
-          onChange={onVehicleChange}
-        />
+        <TankPicker className={s.picker} label={t('tankTitle')} placeholder={t('tankPlaceholder')} value={vehicle} onChange={onVehicleChange} />
         <p className={s.hint}>{t('tankHint')}</p>
       </PlusGate>
     </div>

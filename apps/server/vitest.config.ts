@@ -8,7 +8,15 @@ export default defineConfig({
     name: 'server',
     isolate: false,
     environment: 'node',
+    // Bun's isolated linker gives vitest-mock-extended its own copy of vitest (a
+    // different peer set), whose chai plugin then replaces the runner's toThrow and
+    // every `rejects.toThrow` fails with "reading 'indexOf'". Inlining it lets Vite
+    // resolve its `vitest` import to the runner's instance.
     server: { deps: { inline: ['vitest-mock-extended'] } },
+    // Headroom for the first test of a file that pulls a large module graph while
+    // every project runs in parallel (the import-cycle test alone takes ~15s of CPU).
+    testTimeout: 15_000,
+    hookTimeout: 15_000,
     include: ['src/**/_tests/**/*.test.ts'],
     setupFiles: ['./vitest.setup.ts'],
     env: {

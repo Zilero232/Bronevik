@@ -37,7 +37,6 @@
     "@visx/axis": "^4.0.0",
     "@visx/curve": "^4.0.0",
     "@visx/event": "^4.0.0",
-    "@visx/gradient": "^4.0.0",
     "@visx/grid": "^4.0.0",
     "@visx/group": "^4.0.0",
     "@visx/responsive": "^4.0.0",
@@ -76,7 +75,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "0.99.0",
+    "@hey-api/openapi-ts": "catalog:",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^26.6.2",
     "@types/react": "catalog:",

@@ -32,9 +32,10 @@
     "recruiting": "Clans recruiting",
     "coaching": "Coaches",
     "tournaments": "Tournaments",
+    "streamers": "Streamers",
     "tools": "Tools",
     "plus": "Plus",
-    "streamers": "For streamers",
+    "forStreamers": "For streamers",
     "developers": "Developers",
     "pulse": "Server pulse",
     "design": "Design system"
@@ -63,9 +64,10 @@
     "recruiting": "Clans looking for players",
     "coaching": "Coaches and sessions",
     "tournaments": "Bracket and points tournaments",
+    "streamers": "Who is live, on which tank and with what settings",
     "tools": "Calculators and mini-games",
     "plus": "Deeper analytics and cosmetics",
-    "streamers": "Overlays and challenges for your stream",
+    "forStreamers": "Overlays and challenges for your stream",
     "developers": "The project's open API",
     "pulse": "Online and server load",
     "design": "Interface components and tokens"
@@ -74,7 +76,10 @@
     "topTank": "Top tank of the week",
     "winRate": "{value} wins",
     "currentEvent": "On now",
-    "endsAt": "until {date}"
+    "endsAt": "until {date}",
+    "liveNow": "Live",
+    "liveStreamers": "{count, plural, one {# streamer} other {# streamers}} live",
+    "liveStreamersHint": "See who is streaming now"
   },
   "utility": {
     "label": "Game status"

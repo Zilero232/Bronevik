@@ -7,9 +7,9 @@ import { toast } from 'sonner';
 import type { Guide } from '@/entities/guide/guide';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { likeGuide, unlikeGuide } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { likeGuide, unlikeGuide } from '../../../api';
 import { applyLike } from '../../../lib/guide-like';
 
 export const useGuideLike = (guide: Guide) => {

@@ -4,9 +4,8 @@ import type { TankEconomyRow } from '@otmetki/schemas';
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-import { ECONOMY_VIEW } from '@/entities/tank/tank';
+import { ECONOMY_VIEW, listTankEconomy } from '@/entities/tank/tank';
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
-import { listTankEconomy } from '@/entities/tank/tank';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 

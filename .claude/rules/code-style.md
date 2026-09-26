@@ -97,6 +97,14 @@ editing the catalog, not the packages.
 
 ## Folders are one concern, not one function
 
+**Every thing is a folder.** A file that has companions (`x.ts` + `x.types.ts`,
+`x.constants.ts`, `x.schemas.ts`, `_tests/`) lives in its own `x/` folder with an
+`index.ts`. Nothing lies flat next to another concern: a folder holds its own
+concern's files and subfolders, and a second concern gets a second folder. Only
+`config/` stays flat — one `<concern>.constants.ts` per concern until one grows a
+companion. Shared helper folders are flat, one per concern, hooks prefixed `use-`
+(`shared/lib/<concern>/`, `shared/lib/use-<x>/`) — no `hooks/` or `utils/` grouping.
+
 A `lib/<concern>/` or `model/hooks/use-<x>/` folder gets its own `index.ts`,
 `<name>.ts`, `<name>.types.ts` where needed and `_tests/`. Related helpers share
 one concern folder rather than one folder per function.

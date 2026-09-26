@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { zCreateRecruiting } from '../../../api';
-
 import { recruitingFormSchema, toCreateRecruiting } from '..';
+import { zCreateRecruiting } from '../../../api';
 import { RECRUITING_FORM_DEFAULTS } from '../../../config';
 
 const FILLED = recruitingFormSchema.parse({

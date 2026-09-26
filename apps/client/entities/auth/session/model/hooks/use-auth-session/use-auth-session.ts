@@ -2,12 +2,12 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { getAuthSession, signOut } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 import { useHydrated } from '@/shared/lib';
 
 import type { AuthSessionQuery } from './use-auth-session.types';
 
+import { getAuthSession, signOut } from '../../../api';
 import { AUTH_SESSION } from '../../../config';
 
 export const useAuthSession = (): AuthSessionQuery => {

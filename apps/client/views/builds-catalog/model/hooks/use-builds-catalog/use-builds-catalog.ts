@@ -2,8 +2,8 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-import { useVehicleFilters } from '@/features/tank/filter-vehicles';
 import { listBuildsCatalog } from '@/entities/tank/build';
+import { useVehicleFilters } from '@/features/tank/filter-vehicles';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { useCatalogState } from '../use-catalog-state';

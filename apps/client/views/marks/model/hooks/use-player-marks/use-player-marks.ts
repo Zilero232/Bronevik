@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { closestMarks } from '@/entities/player/marks';
-import { search } from '@/entities/search/search';
 import { getPlayerMarks } from '@/entities/player/profile';
+import { search } from '@/entities/search/search';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { PLAYER_LOOKUP } from '../../../config';

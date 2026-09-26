@@ -6,6 +6,7 @@ import { match } from 'ts-pattern';
 import type { NavPanelProps } from './NavPanel.types';
 
 import { FeaturedEvent } from '../FeaturedEvent';
+import { FeaturedStreamers } from '../FeaturedStreamers';
 import { FeaturedTank } from '../FeaturedTank';
 import { NavPanelLink } from '../NavPanelLink';
 
@@ -31,6 +32,7 @@ export const NavPanel = ({ group, activeHref }: NavPanelProps) => {
           {match(group.featured)
             .with('topTank', () => <FeaturedTank />)
             .with('currentEvent', () => <FeaturedEvent />)
+            .with('liveStreamers', () => <FeaturedStreamers />)
             .exhaustive()}
         </div>
       )}

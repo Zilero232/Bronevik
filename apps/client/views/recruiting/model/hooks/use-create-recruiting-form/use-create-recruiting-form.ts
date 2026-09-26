@@ -7,14 +7,13 @@ import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import type { CreateRecruiting, RecruitingKind } from '../../../api';
-
 import { communityErrorKind } from '@/features/community/api-error';
-import { createRecruiting } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import type { CreateRecruiting, RecruitingKind } from '../../../api';
 import type { RecruitingFormOutput, RecruitingFormValues } from '../../../lib/recruiting-form';
 
+import { createRecruiting } from '../../../api';
 import { RECRUITING_FORM_DEFAULTS } from '../../../config';
 import { recruitingFormSchema, toCreateRecruiting } from '../../../lib/recruiting-form';
 import { useViewerClans } from '../use-viewer-clans';

@@ -3,8 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { INBOX_QUERY } from '@/entities/notification/inbox';
-import { getInbox } from '@/entities/notification/inbox';
+import { getInbox, INBOX_QUERY } from '@/entities/notification/inbox';
 
 import { INBOX_BELL } from '../../../config';
 

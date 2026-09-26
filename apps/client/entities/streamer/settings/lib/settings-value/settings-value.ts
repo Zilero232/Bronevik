@@ -15,7 +15,9 @@ const OPTIONS: readonly SettingsOption[] = [
 
 export const settingsOption = (value: FlatValue): SettingsOption | null => OPTIONS.find((option) => option === String(value)) ?? null;
 
-export const isSettingsGroup = (key: string): key is SettingsGroupKey => STREAMER_SETTINGS.groups.includes(key);
+const GROUP_KEYS: ReadonlySet<string> = new Set(STREAMER_SETTINGS.groups);
+
+export const isSettingsGroup = (key: string): key is SettingsGroupKey => GROUP_KEYS.has(key);
 
 export const fieldMessage = (path: string): SettingsFieldMessage => fieldKey(path) as SettingsFieldMessage;
 

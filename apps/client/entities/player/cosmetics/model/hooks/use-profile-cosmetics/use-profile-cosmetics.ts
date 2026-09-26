@@ -2,9 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getProfileCosmetics } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { getProfileCosmetics } from '../../../api';
 import { PROFILE_COSMETICS_QUERY } from '../../../config';
 
 export const useProfileCosmetics = (accountId: number) =>

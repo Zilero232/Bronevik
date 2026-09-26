@@ -4,8 +4,7 @@ import { isPlusState, PLUS_TRIAL } from '@otmetki/schemas';
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { plusLimitsFor } from '@/entities/plus/subscription';
-import { getBillingStatus } from '@/entities/plus/subscription';
+import { getBillingStatus, plusLimitsFor } from '@/entities/plus/subscription';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const usePlus = () => {

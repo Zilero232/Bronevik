@@ -2,9 +2,10 @@ import type { SearchResponse } from '@otmetki/schemas';
 
 import { SEARCH } from '@otmetki/schemas';
 
+import { searchControllerSearch } from '@/shared/api/generated';
+
 import type { SearchInput } from './search.types';
 
-import { searchControllerSearch } from '@/shared/api/generated';
 import { SEARCH_REQUEST } from './search.constants';
 
 export const search = async ({ query, signal }: SearchInput): Promise<SearchResponse> => {

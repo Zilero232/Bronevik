@@ -2,10 +2,10 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getSeasonTrack } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 import { useCelebrateGain } from '@/shared/lib';
 
+import { getSeasonTrack } from '../../../api';
 import { levelProgress } from '../../../lib/level-progress';
 
 export const useSeasonTrack = () => {

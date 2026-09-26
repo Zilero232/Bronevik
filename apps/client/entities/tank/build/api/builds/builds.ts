@@ -1,14 +1,5 @@
 import type { BuildHistory, BuildOptions, BuildsCatalog, LoadoutResult, PopularBuilds, RecommendedBuild } from '@otmetki/schemas';
 
-import type {
-  BuildHistoryInput,
-  BuildOptionsInput,
-  BuildsCatalogInput,
-  CalculateLoadoutInput,
-  PopularBuildsInput,
-  RecommendedBuildInput
-} from './builds.types';
-
 import {
   buildsCatalogControllerList,
   buildsControllerHistory,
@@ -19,6 +10,16 @@ import {
 } from '@/shared/api/generated';
 import { listParam } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type {
+  BuildHistoryInput,
+  BuildOptionsInput,
+  BuildsCatalogInput,
+  CalculateLoadoutInput,
+  PopularBuildsInput,
+  RecommendedBuildInput
+} from './builds.types';
+
 import { BUILD_REQUEST } from './builds.constants';
 
 export const getBuildOptions = ({ signal, tankId }: BuildOptionsInput): Promise<BuildOptions> =>

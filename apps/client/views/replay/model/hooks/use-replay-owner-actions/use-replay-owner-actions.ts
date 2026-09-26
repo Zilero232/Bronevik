@@ -7,9 +7,10 @@ import { toast } from 'sonner';
 import type { Replay, ReplayVisibility } from '@/entities/replay/replay';
 
 import { communityErrorKind } from '@/features/community/api-error';
-import { deleteReplay, updateReplay } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
+
+import { deleteReplay, updateReplay } from '../../../api';
 
 export const useReplayOwnerActions = (replay: Replay) => {
   const t = useTranslations('replays.owner');

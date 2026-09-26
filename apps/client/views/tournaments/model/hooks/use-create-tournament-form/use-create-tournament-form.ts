@@ -10,12 +10,12 @@ import { toast } from 'sonner';
 import type { CreateTournament } from '@/entities/tournament/tournament';
 
 import { communityErrorKind } from '@/features/community/api-error';
-import { createTournament } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
 import type { TournamentFormOutput, TournamentFormValues } from '../../../lib/tournament-form';
 
+import { createTournament } from '../../../api';
 import { TOURNAMENT_FORM_DEFAULTS } from '../../../config';
 import { toCreateTournament, tournamentFormSchema } from '../../../lib/tournament-form';
 

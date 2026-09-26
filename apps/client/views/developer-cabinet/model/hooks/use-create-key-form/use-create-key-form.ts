@@ -3,12 +3,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { createApiKey } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { CreateKeyFormValues } from '../../../lib/key-form';
 import type { UseCreateKeyFormInput } from './use-create-key-form.types';
 
+import { createApiKey } from '../../../api';
 import { CREATE_KEY_FORM_DEFAULT_VALUES } from '../../../config';
 import { createKeyFormSchema, toCreateApiKeyInput } from '../../../lib/key-form';
 import { useDeveloperMutation } from '../use-developer-mutation';

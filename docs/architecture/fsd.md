@@ -109,11 +109,31 @@ Inside a slice:
 |---|---|
 | `ui/` | components — render only |
 | `model/` | `hooks/use-<x>/` (state, effects, queries, handlers, derived data; forms in `use-<x>-form/`), `context/`, model types |
-| `lib/` | pure functions, `lib/<concern>/<concern>.ts` + `index.ts` + `_tests/` |
+| `api/` | the slice's requests: `api/<resource>/<resource>.ts` + `.types.ts` / `.constants.ts` + `index.ts`, one `api/index.ts` barrel; API → UI model converters in `api/mappers/<name>/` |
+| `lib/` | pure domain logic, `lib/<concern>/<concern>.ts` + `index.ts` + `_tests/` |
 | `config/` | constants, `config/<concern>.constants.ts` + `index.ts` |
-| `api/` | requests — but most requests live in `shared/api` |
 
-A folder is one concern, not one function. A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts`); never `*.helpers.ts`, `*.utils.ts`, `*.constants.ts` or `hooks/`. One component per folder, and a `ui/` root holds at most one flat component. Full rules: [style.md §2](../guides/style.md).
+These are the segments the FSD reference defines ([Slices and segments](https://feature-sliced.design/docs/reference/slices-segments)): `api` is "backend interactions: request functions, data types, mappers", so a converter from a server DTO to what the UI draws lives in `api/mappers/`, not in `lib/`. Custom segment names describe purpose, never kind (`types/`, `helpers/`, `utils/` are not segments).
+
+### Where requests live
+
+`shared/api` is infrastructure only: the axios instance and bearer token (`http/`), the generated OpenAPI client and its query-option re-exports (`generated/`, `query-options/`), `fromServer` / `fromSdk` / `fromAuth` and the error classes (`source/`), the better-auth client base (`auth/`) and `queryClient`. Every domain request lives in the slice that owns it:
+
+- **A read that several slices need → `entities/<domain>/<slice>/api/`.** `getTank`, `listTankStats`, `getPlayer`, `listMaps`, `getGuide`… The entity's `index.ts` re-exports them; `entities/search/search`, `entities/pulse/pulse`, `entities/tank/tree`, `entities/player/leaderboard` exist for exactly this.
+- **An action several slices trigger → `features/<domain>/<slice>/api/`.** Favourites in `features/player/toggle-favorite`, the watchlist in `features/player/watch-player`, notification settings in `features/notifications/notification-settings`, comments, reports.
+- **Anything one screen alone uses → `views/<view>/api/`.** A mutation only the tournament page runs (`openTournament`, `reportTournamentMatch`) sits next to that page, importing the request types from its entity.
+
+Layer rules still hold: an entity never imports another entity, so two entities that need each other's data are composed one layer up. A split action module imports its types from the entity's public API (`@/entities/guide/guide`), never from a sibling slice. Query keys stay in the shared registry `QUERY_KEYS` (`shared/constants/query-keys`): invalidation crosses slices (`QUERY_KEYS.me.all` is cleared by a dozen features), and a registry below every layer is the one place all of them may import.
+
+### Every thing is a folder
+
+A file that has companions — `x.ts` with `x.types.ts`, `x.constants.ts`, `x.schemas.ts`, `_tests/` — lives in its own `x/` folder with an `index.ts`. Nothing lies flat next to another concern: a folder holds its own concern's files plus subfolders, and a second concern gets a second folder (`shared/api/http/` holds `http.ts` + `http.constants.ts` and the subfolders `bearer-token/`, `client-config/`, `list-param/`). The one flat exception is `config/`, which is one `<concern>.constants.ts` per concern until a concern grows a companion.
+
+`shared/lib/` is flat, one folder per concern, the same layout GnomeVPN and Chatovo use: pure helpers as `shared/lib/<concern>/`, hooks as `shared/lib/use-<x>/` (`use-hydrated`, `use-svg-id`, `use-client-now`). The `use-` prefix is what separates the two; there is no `hooks/` or `utils/` grouping folder. `shared/constants/` is the same — `routes/`, `site-nav/`, `account-nav/`, `query-keys/`, `storage-keys/`, each with its `index.ts`.
+
+`ROUTES` is nested by page family: `ROUTES.players.{list, profile(nick), session({ nickname, sessionId }), compare}`, `ROUTES.tanks.{list, detail, armor, compare}`, `ROUTES.guides.{list, detail, create, edit}`, `ROUTES.streamers.{list, profile, claim, overlay, forStreamers, settings.{table, compare, profile}}`, `ROUTES.auth.{login, telegram}`, `ROUTES.account.{overview, …}`, `ROUTES.api.playerCard`, `ROUTES.sw`. Single pages stay flat (`ROUTES.top`, `ROUTES.tree`).
+
+A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts`); never `*.helpers.ts`, `*.utils.ts`, `*.constants.ts` or `hooks/`. One component per folder, and a `ui/` root holds at most one flat component. Full rules: [style.md §2](../guides/style.md).
 
 ## 5. `ui-kit`
 
@@ -176,7 +196,11 @@ Route groups do not appear in the URL. `(site)` carries the layout that wraps it
 | a block two views share | `widgets/<domain>/<slice>` |
 | something the user does | `features/<domain>/<slice>` |
 | a domain concept with its own data | `entities/<domain>/<slice>` |
-| a request | `shared/api/<resource>` |
+| a read several slices need | `entities/<domain>/<slice>/api/<resource>/` |
+| an action several slices trigger | `features/<domain>/<slice>/api/<resource>/` |
+| a request one screen alone uses | `views/<view>/api/<resource>/` |
+| an API → UI model converter | `<slice>/api/mappers/<name>/` |
+| HTTP / generated client / error infrastructure | `shared/api/` |
 | a constant, helper or type with no domain | `shared/` |
 | a visual primitive | `ui-kit/<segment>/<Component>` |
 | a hook with state, effects, queries or handlers | `<slice>/model/hooks/use-<x>/` |

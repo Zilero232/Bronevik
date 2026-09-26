@@ -1,9 +1,10 @@
 import type { ClanEventsPage, ClanListPage, ClanPage, ClanStronghold } from '@otmetki/schemas';
 
-import type { ClanEventsInput, ClanListInput, ClanPageInput, ClanStrongholdInput } from './clans.types';
-
 import { clansControllerEvents, clansControllerList, clansControllerPage, clansControllerStronghold } from '@/shared/api/generated';
 import { fromSdk } from '@/shared/api/source';
+
+import type { ClanEventsInput, ClanListInput, ClanPageInput, ClanStrongholdInput } from './clans.types';
+
 import { CLAN_REQUEST } from './clans.constants';
 
 export const getClan = ({ signal, idOrTag }: ClanPageInput): Promise<ClanPage> => fromSdk(() => clansControllerPage({ path: { idOrTag }, signal }));

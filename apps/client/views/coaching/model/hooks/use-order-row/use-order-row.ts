@@ -3,9 +3,9 @@
 import type { CoachingOrder } from '@/entities/coaching/coach';
 
 import { useCommunityViewer } from '@/features/community/viewer';
-import { acceptCoachingOrder, cancelCoachingOrder, completeCoachingOrder } from '../../../api';
 import { ROUTES } from '@/shared/constants';
 
+import { acceptCoachingOrder, cancelCoachingOrder, completeCoachingOrder } from '../../../api';
 import { orderActions } from '../../../lib/order-actions';
 import { useOrderMutation } from '../use-order-mutation';
 

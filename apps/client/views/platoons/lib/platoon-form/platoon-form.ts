@@ -1,8 +1,7 @@
-import type { CreatePlatoon } from '../../api';
-
 import { chosenAccountId } from '@/features/community/viewer';
 import { zonedInputToIso } from '@/shared/lib';
 
+import type { CreatePlatoon } from '../../api';
 import type { PlatoonFormOutput } from './platoon-form.types';
 
 export const toCreatePlatoon = (values: PlatoonFormOutput): CreatePlatoon => {

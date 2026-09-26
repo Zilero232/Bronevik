@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';
 
-import { isNotFoundError } from '@/shared/api/source';
 import { getTacticBoard } from '@/entities/tactic/board';
+import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { BOARD_PAGE } from '../../../config';

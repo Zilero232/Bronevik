@@ -10,7 +10,7 @@ type SiteNavIconProps = {
 
 export type SiteNavIcon = ComponentType<SiteNavIconProps>;
 
-type SiteNavFeatured = 'currentEvent' | 'topTank';
+type SiteNavFeatured = 'currentEvent' | 'liveStreamers' | 'topTank';
 
 export type SiteNavLink = {
   key: string;

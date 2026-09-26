@@ -25,6 +25,7 @@ export const useManualClaimForm = (slug: string) => {
     },
     onError: () => void toast.error(t('failed'))
   });
+
   const {
     register,
     handleSubmit,

@@ -4,13 +4,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { RecruitingPost } from '../../../api';
-
 import { communityErrorKind } from '@/features/community/api-error';
 import { useCommunityViewer } from '@/features/community/viewer';
-import { closeRecruiting } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 
+import type { RecruitingPost } from '../../../api';
+
+import { closeRecruiting } from '../../../api';
 import { useViewerClans } from '../use-viewer-clans';
 
 export const useRecruitingCard = (post: RecruitingPost) => {

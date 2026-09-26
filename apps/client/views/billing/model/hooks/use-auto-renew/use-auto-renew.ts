@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { cancelAutoRenew, resumeAutoRenew } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { cancelAutoRenew, resumeAutoRenew } from '../../../api';
 
 export const useAutoRenew = () => {
   const t = useTranslations('billing.toast');

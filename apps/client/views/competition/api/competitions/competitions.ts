@@ -1,5 +1,7 @@
 import type { Competition } from '@otmetki/schemas';
+
 import type { JoinCompetitionRequest } from '@/entities/competition/competition';
+
 import { competitionsControllerJoin, competitionsControllerLeave, competitionsControllerRemove } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';

@@ -1,0 +1,37 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include well;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-color: var(--color-warning);
+  gap: var(--space-4);
+}
+
+.text {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+  flex: 1 1 24rem;
+}
+
+.title {
+  @include label;
+
+  color: var(--color-warning);
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

@@ -1,8 +1,12 @@
-import type { CreateRecruiting, ListRecruitingInput, RecruitingPage, RecruitingPost } from './recruiting.types';
-
-import { recruitingControllerCloseRecruiting, recruitingControllerCreateRecruiting, recruitingControllerListRecruiting } from '@/shared/api/generated';
+import {
+  recruitingControllerCloseRecruiting,
+  recruitingControllerCreateRecruiting,
+  recruitingControllerListRecruiting
+} from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type { CreateRecruiting, ListRecruitingInput, RecruitingPage, RecruitingPost } from './recruiting.types';
 
 export const listRecruiting = ({ signal, ...query }: ListRecruitingInput): Promise<RecruitingPage> =>
   fromSdk(() => recruitingControllerListRecruiting({ ...SESSION_REQUEST, query, signal }));

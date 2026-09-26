@@ -8,7 +8,6 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { markInboxRead } from '../../../api';
-
 import { INBOX_QUERY } from '../../../config';
 import { readInboxPage } from '../../../lib/read-inbox-page';
 

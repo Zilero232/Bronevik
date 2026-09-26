@@ -1,4 +1,5 @@
 import type { CosmeticsInventory, ProfileCosmetics } from '@otmetki/schemas';
+
 import { cosmeticsControllerInventory, cosmeticsControllerProfile, cosmeticsControllerProfiles } from '@/shared/api/generated';
 import { listParam, SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';

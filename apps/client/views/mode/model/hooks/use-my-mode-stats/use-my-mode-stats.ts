@@ -5,8 +5,8 @@ import type { PlayMode } from '@otmetki/schemas';
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { usePlus } from '@/features/plus/plus-gate';
 import { getMyModeStats } from '@/entities/mode/mode';
+import { usePlus } from '@/features/plus/plus-gate';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { MY_MODE } from '../../../config';

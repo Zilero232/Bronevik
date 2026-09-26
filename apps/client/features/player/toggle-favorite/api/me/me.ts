@@ -1,4 +1,5 @@
 import type { CreateFavoriteInput, Favorite } from '@otmetki/schemas';
+
 import { meControllerAddFavorite, meControllerListFavorites, meControllerRemoveFavorite } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';

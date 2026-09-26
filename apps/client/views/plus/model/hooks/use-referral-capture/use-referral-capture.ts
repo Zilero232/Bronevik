@@ -7,8 +7,8 @@ import { parseAsString, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { registerReferral } from '../../../api';
 
+import { registerReferral } from '../../../api';
 import { REFERRAL_STORAGE } from '../../../config';
 import { referralToRegister } from '../../../lib/referral-guard';
 

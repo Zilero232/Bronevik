@@ -9,10 +9,10 @@ import { toast } from 'sonner';
 
 import { usePlus } from '@/features/plus/plus-gate';
 import { isPlusRequiredError } from '@/shared/api/source';
-import { updateWatchlistSettings } from '../../../api';
 
 import type { UseWatchlistDigestInput } from './use-watchlist-digest.types';
 
+import { updateWatchlistSettings } from '../../../api';
 import { WATCHLIST_PAGE } from '../../../config';
 import { isDigestLocked } from '../../../lib/watchlist-summary';
 import { useWatchlistCache } from '../use-watchlist-cache';

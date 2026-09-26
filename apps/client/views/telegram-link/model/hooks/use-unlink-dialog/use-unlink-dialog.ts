@@ -5,8 +5,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { unlinkTelegram } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { unlinkTelegram } from '../../../api';
 
 export const useUnlinkDialog = () => {
   const t = useTranslations('telegram.toast');

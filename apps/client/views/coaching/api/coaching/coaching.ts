@@ -1,5 +1,12 @@
 import type { Coach, CoachingOrder, ReviewCoachingOrderInput, UpsertCoach } from '@/entities/coaching/coach';
-import { coachingControllerAccept, coachingControllerCancel, coachingControllerComplete, coachingControllerReview, coachingControllerUpsertProfile } from '@/shared/api/generated';
+
+import {
+  coachingControllerAccept,
+  coachingControllerCancel,
+  coachingControllerComplete,
+  coachingControllerReview,
+  coachingControllerUpsertProfile
+} from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
 

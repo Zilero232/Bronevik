@@ -3,11 +3,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
-import { getTelegramWidget, signInWithTelegram } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { TelegramAuthHandler } from './use-telegram-widget.types';
 
+import { getTelegramWidget, signInWithTelegram } from '../../../api';
 import { LOGIN } from '../../../config';
 import { useCompleteSignIn } from '../use-complete-sign-in';
 

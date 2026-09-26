@@ -36,6 +36,9 @@ barrel — `@/ui-kit`; primitives live in `atoms/`, `molecules/`, `organisms/`.
   model/hooks/use-<x>/  use-<x>.ts  use-<x>.types.ts  index.ts  _tests/
   model/hooks/use-<x>-form/               ← react-hook-form + zodResolver
   model/context/
+  api/<resource>/  <resource>.ts  <resource>.types.ts  index.ts   ← the slice's requests
+  api/mappers/<name>/                    ← API DTO → UI model converters
+  api/index.ts
   lib/<concern>/  <concern>.ts  <concern>.types.ts  index.ts  _tests/
   config/  index.ts  <concern>.constants.ts
 ```
@@ -54,6 +57,17 @@ barrel — `@/ui-kit`; primitives live in `atoms/`, `molecules/`, `organisms/`.
   its hooks to `shared/lib/use-<x>/`; only a primitive's own `<Name>.constants.ts` may stay.
 - Table columns: `model/hooks/use-<table>-columns/use-<table>-columns.tsx`; cells are
   components in `ui/components/<Table>/components/<X>Cell/`.
+
+## Requests live in their slice
+
+`shared/api` is infrastructure only: `http/`, `generated/`, `query-options/`, `source/`,
+`auth/` (client base), `query-client/`. A read several slices need →
+`entities/<d>/<s>/api/<resource>/`; an action several slices trigger →
+`features/<d>/<s>/api/<resource>/`; a request one screen alone uses →
+`views/<v>/api/<resource>/`. The slice barrel re-exports it; inside the slice import
+`../../../api`. Query keys stay in `QUERY_KEYS` (`@/shared/constants`), because
+invalidation crosses slices. `ROUTES` is nested per page family
+(`ROUTES.tanks.detail(slug)`, `ROUTES.account.overview`, `ROUTES.auth.login`).
 
 ## No mocks
 

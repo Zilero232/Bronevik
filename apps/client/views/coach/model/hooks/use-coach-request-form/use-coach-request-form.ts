@@ -10,11 +10,11 @@ import type { Coach, CreateOrder } from '@/entities/coaching/coach';
 
 import { communityErrorKind } from '@/features/community/api-error';
 import { useCommunityViewer } from '@/features/community/viewer';
-import { requestCoaching } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { RequestFormOutput, RequestFormValues } from '../../../lib/request-form';
 
+import { requestCoaching } from '../../../api';
 import { COACH_REQUEST, REQUEST_FORM_DEFAULTS } from '../../../config';
 import { requestFormSchema, toCreateOrder } from '../../../lib/request-form';
 

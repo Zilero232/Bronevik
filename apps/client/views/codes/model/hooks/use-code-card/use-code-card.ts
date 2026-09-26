@@ -8,11 +8,11 @@ import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { shopControllerListBonusCodesQueryKey } from '@/shared/api/query-options';
-import { reportBonusCode } from '../../../api';
 import { safeWebHref, useClientNow, useCopyFeedback } from '@/shared/lib';
 
 import type { CodeReportVerdict, UseCodeCardInput } from './use-code-card.types';
 
+import { reportBonusCode } from '../../../api';
 import { CODES } from '../../../config';
 import { codeRibbon } from '../../../lib/code-ribbon';
 

@@ -1,3 +1,31 @@
+export {
+  compareTanks,
+  getMyEconomy,
+  getMyTankLearning,
+  getTank,
+  getTankEconomy,
+  getTankPatches,
+  getTankTopPlayers,
+  getTankTrend,
+  getTierList,
+  listTankEconomy,
+  listTankStats,
+  listVehicles
+} from './api';
+export type {
+  CompareTanksInput,
+  MyEconomyInput,
+  MyLearningInput,
+  TankDetailInput,
+  TankEconomyInput,
+  TankEconomyTableInput,
+  TankPatchesInput,
+  TankStatsInput,
+  TankTopPlayersInput,
+  TankTrendInput,
+  TierListInput
+} from './api';
+export { tankRouteName, topTankSlugs } from './api';
 export { DIFFICULTY_TONE, ECONOMY_VIEW, KEY_SPECS, STATUS_TONE, SWEAT_TONE, TANK_SPEC_GROUPS, TANK_SPEC_KEYS, TANK_SPECS } from './config';
 export type { TankSpecGroup, TankSpecKey, TankSpecMeta, TankSpecUnit } from './config';
 export { economyView } from './lib/economy-view';
@@ -43,5 +71,3 @@ export { WrDiffCell } from './ui/WrDiffCell';
 export type { WrDiffCellProps } from './ui/WrDiffCell';
 export { TankImage } from '@/ui-kit';
 export type { TankImageProps, TankImageSize } from '@/ui-kit';
-export { compareTanks, getMyEconomy, getMyTankLearning, getTank, getTankEconomy, getTankPatches, getTankTopPlayers, getTankTrend, getTierList, listTankEconomy, listTankStats, listVehicles } from './api';
-export type { CompareTanksInput, MyEconomyInput, MyLearningInput, TankDetailInput, TankEconomyInput, TankEconomyTableInput, TankPatchesInput, TankStatsInput, TankTopPlayersInput, TankTrendInput, TierListInput } from './api';

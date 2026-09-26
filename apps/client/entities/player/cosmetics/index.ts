@@ -1,3 +1,4 @@
+export { getCosmetics, getProfileCosmetics, getProfilesCosmetics } from './api';
 export { COSMETIC_TONES } from './config';
 export { badgeIcon, cosmeticLabel, cosmeticTone } from './lib/cosmetic-look';
 export type { CosmeticLabel, CosmeticTone, StaticCosmeticCode } from './model/cosmetics.types';
@@ -8,4 +9,3 @@ export { CosmeticName } from './ui/CosmeticName';
 export type { CosmeticNameProps } from './ui/CosmeticName';
 export { CosmeticSurface } from './ui/CosmeticSurface';
 export type { CosmeticSurfaceProps } from './ui/CosmeticSurface';
-export { getCosmetics, getProfileCosmetics, getProfilesCosmetics } from './api';

@@ -4,10 +4,9 @@ import type { WebhookEndpoint } from '@otmetki/schemas';
 
 import { useState } from 'react';
 
-import { removeWebhook } from '../../../api';
-
 import type { WebhookEditorState } from './use-webhooks-panel.types';
 
+import { removeWebhook } from '../../../api';
 import { WEBHOOK_QUERIES } from '../../../config';
 import { useDeveloperMutation } from '../use-developer-mutation';
 import { useDeveloperOverview } from '../use-developer-overview';

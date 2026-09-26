@@ -1,10 +1,10 @@
 import type { ModeMeta, ModesHub, MyModeStats } from '@otmetki/schemas';
 
-import type { ModeMetaInput, MyModeStatsInput, SignalInput } from './modes.types';
-
 import { modesControllerHub, modesControllerModeMeta, modesControllerMyStats } from '@/shared/api/generated';
 import { listParam, SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type { ModeMetaInput, MyModeStatsInput, SignalInput } from './modes.types';
 
 export const getModesHub = ({ signal }: SignalInput): Promise<ModesHub> => fromSdk(() => modesControllerHub({ signal }));
 

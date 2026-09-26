@@ -5,9 +5,9 @@ import { useTranslations } from 'next-intl';
 
 import { useProfileCosmetics } from '@/entities/player/cosmetics';
 import { periodStats } from '@/entities/player/stats';
-import { getSeasonHistory } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { getSeasonHistory } from '../../../api';
 import { PROFILE_HEADER, PROFILE_PERIODS } from '../../../config';
 import { heroArt } from '../../../lib/hero-art';
 import { ratingRing } from '../../../lib/rating-ring';

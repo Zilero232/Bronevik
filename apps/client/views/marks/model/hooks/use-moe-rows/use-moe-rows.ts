@@ -2,8 +2,8 @@
 
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 
-import { useVehicleFilters } from '@/features/tank/filter-vehicles';
 import { listMoe } from '@/entities/player/marks';
+import { useVehicleFilters } from '@/features/tank/filter-vehicles';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { MOE_LIST } from '../../../config';

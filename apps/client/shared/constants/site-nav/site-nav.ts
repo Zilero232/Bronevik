@@ -3,6 +3,7 @@ import {
   Activity,
   BookOpen,
   CalendarDays,
+  Clapperboard,
   Code2,
   Crown,
   Film,
@@ -67,8 +68,9 @@ export const SITE_NAV = {
     },
     {
       key: 'community',
-      featured: null,
+      featured: 'liveStreamers',
       items: [
+        { key: 'streamers', href: ROUTES.streamers.list, icon: RadioIcon },
         { key: 'replays', href: ROUTES.replays.list, icon: Film },
         { key: 'guides', href: ROUTES.guides.list, icon: BookOpen },
         { key: 'tactics', href: ROUTES.tactics.list, icon: MapIcon },
@@ -90,7 +92,7 @@ export const SITE_FOOTER_GROUPS = [
     items: [
       { key: 'tools', href: ROUTES.tools, icon: TrainingIcon },
       { key: 'plus', href: ROUTES.plus, icon: Crown },
-      { key: 'streamers', href: ROUTES.streamers.list, icon: RadioIcon },
+      { key: 'forStreamers', href: ROUTES.streamers.forStreamers, icon: Clapperboard },
       { key: 'developers', href: ROUTES.developers, icon: Code2 },
       { key: 'pulse', href: ROUTES.pulse, icon: Activity },
       { key: 'design', href: ROUTES.design, icon: Palette }

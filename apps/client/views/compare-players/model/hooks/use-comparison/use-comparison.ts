@@ -2,9 +2,9 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-import { comparePlayers } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { comparePlayers } from '../../../api';
 import { COMPARE_LIMIT } from '../../../config';
 
 export const useComparison = (accountIds: number[]) =>

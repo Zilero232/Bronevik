@@ -31,6 +31,12 @@ describe('activeSiteNav', () => {
     expect(activeSiteNav(ROUTES.play.guessTank)).toEqual({ href: ROUTES.tools, groupKey: null });
   });
 
+  it('maps streamer pages to the streamer directory', () => {
+    expect(activeSiteNav(ROUTES.streamers.profile('nick'))).toEqual({ href: ROUTES.streamers.list, groupKey: 'community' });
+    expect(activeSiteNav(ROUTES.streamers.settings.table)).toEqual({ href: ROUTES.streamers.list, groupKey: 'community' });
+    expect(activeSiteNav(ROUTES.streamers.forStreamers)).toEqual({ href: null, groupKey: null });
+  });
+
   it('leaves account pages unmarked', () => {
     expect(activeSiteNav(ROUTES.account.billing)).toEqual({ href: null, groupKey: null });
   });
@@ -48,7 +54,7 @@ describe('SITE_NAV', () => {
   });
 
   it('keeps project pages out of the header menu', () => {
-    [ROUTES.developers, ROUTES.design, ROUTES.pulse, ROUTES.streamers.list, '/competitions', '/play'].forEach((href) =>
+    [ROUTES.developers, ROUTES.design, ROUTES.pulse, ROUTES.streamers.forStreamers, '/competitions', '/play'].forEach((href) =>
       expect(menuHrefs).not.toContain(href)
     );
   });

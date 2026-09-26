@@ -1,1 +1,188 @@
-{}
+{
+  "meta": {
+    "title": "Tanks streamers",
+    "description": "Which streamers are live now, on which tank, with what stats and settings."
+  },
+  "claimMeta": {
+    "title": "Claim the page {slug}",
+    "description": "Prove the channel is yours and manage the streamer page yourself."
+  },
+  "channel": {
+    "platforms": {
+      "twitch": "Twitch",
+      "vkVideoLive": "VK Video Live",
+      "youtube": "YouTube",
+      "trovo": "Trovo",
+      "telegram": "Telegram",
+      "boosty": "Boosty",
+      "vk": "VK"
+    },
+    "verified": "Verified channel"
+  },
+  "live": {
+    "on": "Live",
+    "onTank": "Live on {tank}",
+    "viewers": "{count, plural, one {# viewer} other {# viewers}}"
+  },
+  "head": {
+    "title": "Streamers",
+    "description": "Who is live now, what they play, their stats and settings.",
+    "forStreamers": "A streamer? Tools",
+    "settings": "Streamer settings"
+  },
+  "filters": {
+    "label": "Filters",
+    "live": "Live",
+    "settings": "Has settings",
+    "platform": "Platform",
+    "anyPlatform": "All platforms",
+    "reset": "Reset"
+  },
+  "card": {
+    "offline": "Offline",
+    "channels": "Channels",
+    "hasSettings": "Has settings",
+    "noStats": "Account stats are hidden",
+    "wn8": "WN8",
+    "winRate": "Wins",
+    "battles": "Battles",
+    "marks3": "3 marks",
+    "favourites": "Favourite tanks"
+  },
+  "empty": {
+    "title": "No streamers yet",
+    "description": "A page appears here once a streamer creates it in the studio and verifies a channel.",
+    "action": "Create a streamer page",
+    "filteredTitle": "Nobody found",
+    "filteredDescription": "Nobody matches these filters right now.",
+    "reset": "Reset filters"
+  },
+  "error": {
+    "title": "The list did not load",
+    "description": "The server did not respond. Try again."
+  },
+  "more": "Show more",
+  "follows": {
+    "title": "Following",
+    "unfollow": "Unfollow {name}",
+    "unfollowed": "Unfollowed",
+    "failed": "Could not unfollow"
+  },
+  "follow": {
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "signIn": "Sign in to follow",
+    "followed": "Following: we will tell you when the stream starts",
+    "unfollowed": "Unfollowed",
+    "tankSaved": "Tank filter saved",
+    "failed": "Could not update the follow",
+    "limit": "Without Plus you can follow up to {limit} streamers",
+    "plusRequired": "The tank filter needs Plus",
+    "tankTitle": "Only notify about streams on a tank",
+    "tankPlaceholder": "Any tank",
+    "tankHint": "You get a notification when the streamer goes live on the chosen tank."
+  },
+  "public": {
+    "followers": "{count, plural, one {# follower} other {# followers}}",
+    "settings": "Settings",
+    "channels": "Channels",
+    "live": {
+      "title": "Live now",
+      "watch": "Watch",
+      "platform": "Platform",
+      "viewers": "Viewers",
+      "tank": "Tank",
+      "tankUnknown": "Tank not detected"
+    },
+    "videos": {
+      "title": "Latest videos"
+    },
+    "claim": {
+      "title": "Page built from public data",
+      "description": "It was put together from public sources. Is this you? Claim the profile: verify a channel and run the page yourself.",
+      "action": "Claim the profile",
+      "remove": "Remove my page"
+    },
+    "removal": {
+      "title": "Remove the page",
+      "description": "Leave a contact: we will check the page is yours and remove it.",
+      "contact": "Contact",
+      "contactHint": "Email, Telegram or a channel link",
+      "contactError": "Enter a contact: 3 to 200 characters",
+      "reason": "Reason",
+      "reasonHint": "Optional",
+      "reasonError": "No more than 1000 characters",
+      "cancel": "Cancel",
+      "submit": "Send the request",
+      "sent": "Request sent",
+      "failed": "Could not send the request"
+    }
+  },
+  "claim": {
+    "title": "Claim the page",
+    "description": "Prove the channel is yours and the page “{slug}” moves to your streamer studio.",
+    "proofs": "Ways to verify",
+    "failed": "Could not send the claim",
+    "signIn": {
+      "title": "Sign in with Lesta ID",
+      "description": "Only the owner can claim the page: sign in to continue.",
+      "action": "Sign in"
+    },
+    "missing": {
+      "title": "Nothing to claim here",
+      "description": "The page is already verified or there is no invitation for this address.",
+      "action": "Back to streamers"
+    },
+    "error": {
+      "title": "Could not load the claim",
+      "description": "The server did not respond. Try again."
+    },
+    "resolved": {
+      "title": "The page is yours",
+      "description": "Set up the profile, channels and settings in the streamer studio.",
+      "action": "Open the studio",
+      "toast": "Page verified"
+    },
+    "status": {
+      "title": "Your claim",
+      "open": "Under review",
+      "resolved": "Verified",
+      "dismissed": "Declined",
+      "method": "Method",
+      "createdAt": "Sent",
+      "review": "A moderator will review the claim and reply in notifications.",
+      "dismissedHint": "The claim was declined. Try another way to verify.",
+      "methods": {
+        "oauth": "Via Twitch",
+        "bio_code": "Code in the channel description",
+        "manual": "Manually"
+      }
+    },
+    "oauth": {
+      "title": "Via Twitch",
+      "description": "The fastest way: connect Twitch in the streamer studio. If the channel matches the one on the page, it becomes yours at once.",
+      "connected": "Twitch connected: {login}",
+      "notConnected": "Twitch is not connected yet",
+      "connect": "Connect in the studio",
+      "action": "Verify via Twitch",
+      "failed": "The connected Twitch channel does not match the channel on the page"
+    },
+    "code": {
+      "title": "Code in the channel description",
+      "description": "Add the code to your Twitch, VK Video Live or YouTube channel description and press “Check”.",
+      "start": "Get a code",
+      "code": "Your code",
+      "verify": "Check",
+      "notFound": "The code is not in the description yet. Save the description and check again in a minute."
+    },
+    "manual": {
+      "title": "Manually",
+      "description": "Tell us how to make sure the channel is yours: a moderator will review the claim.",
+      "evidence": "Proof",
+      "evidenceHint": "A link to a post or video where you mention the page, and a contact",
+      "evidenceError": "Add more detail: {min} to {max} characters",
+      "submit": "Send for review",
+      "sent": "Claim sent to a moderator"
+    }
+  }
+}

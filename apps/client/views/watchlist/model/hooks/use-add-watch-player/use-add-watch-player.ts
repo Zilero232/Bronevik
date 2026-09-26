@@ -6,8 +6,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { isPlusRequiredError } from '@/shared/api/source';
 import { addWatchlistPlayer } from '@/features/player/watch-player';
+import { isPlusRequiredError } from '@/shared/api/source';
 
 import { useWatchlistCache } from '../use-watchlist-cache';
 

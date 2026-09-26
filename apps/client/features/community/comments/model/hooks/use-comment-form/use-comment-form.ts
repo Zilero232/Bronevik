@@ -6,12 +6,12 @@ import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { createComment } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { CommentFormOutput, CommentFormValues } from '../../../lib/comment-form';
 import type { UseCommentFormInput } from './use-comment-form.types';
 
+import { createComment } from '../../../api';
 import { COMMENT_FORM_DEFAULT_VALUES, COMMENT_MAX_LENGTH } from '../../../config';
 import { commentFormSchema, toCreateComment } from '../../../lib/comment-form';
 

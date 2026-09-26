@@ -11,6 +11,7 @@
 **/generated
 **/coverage
 **/.cache
+**/.data
 **/*.tsbuildinfo
 **/__pycache__
 **/*.pyc
@@ -33,6 +34,7 @@ infra
 # Tests, docs, local tooling and VCS noise.
 e2e
 playwright-report
+scripts
 docs
 *.md
 .git

@@ -14,7 +14,14 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/competit
   const slug = decodeURIComponent((await params).slug);
   const t = await getTranslations({ locale, namespace: 'competitions.detailMeta' });
 
-  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.competitions.detail(slug), locale, index: true, follow: true });
+  return createPageMetadata({
+    title: t('title'),
+    description: t('description'),
+    path: ROUTES.competitions.detail(slug),
+    locale,
+    index: true,
+    follow: true
+  });
 };
 
 const CompetitionRoute = async ({ params }: Pick<PageProps<'/[locale]/competitions/[slug]'>, 'params'>) => {

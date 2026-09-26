@@ -12,15 +12,15 @@ import { toast } from 'sonner';
 import type { CreateGuide, Guide } from '@/entities/guide/guide';
 
 import { useAuthSession } from '@/entities/auth/session';
+import { listMaps } from '@/entities/map/map';
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { createGuide, updateGuide } from '../../../api';
-import { listMaps } from '@/entities/map/map';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
 import type { GuideFormOutput, GuideFormValues } from '../../../lib/guide-form';
 
+import { createGuide, updateGuide } from '../../../api';
 import { GUIDE_FORM, GUIDE_FORM_KINDS, GUIDE_FORM_LOCALES } from '../../../config';
 import { guideFormSchema, toGuideFormValues, toGuideInput } from '../../../lib/guide-form';
 

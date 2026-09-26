@@ -1,7 +1,8 @@
-import type { Guide, GuideAuthors, GuideBySlugInput, GuideList, GuideListInput, GuidePage } from './guides.types';
 import { guidesControllerAuthors, guidesControllerGet, guidesControllerList, guidesControllerMine } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type { Guide, GuideAuthors, GuideBySlugInput, GuideList, GuideListInput, GuidePage } from './guides.types';
 
 export const listGuides = ({ signal, ...query }: GuideListInput): Promise<GuidePage> =>
   fromSdk(() => guidesControllerList({ ...SESSION_REQUEST, query, signal }));

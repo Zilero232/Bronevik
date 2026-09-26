@@ -5,23 +5,21 @@ export default eslint(
     typescript: true,
     react: true,
     jsxA11y: true,
-    ignores: ['**/node_modules', '**/.next', '**/out', '**/dist', '**/generated', '**/next-env.d.ts', 'docs/**', '**/*.md/**']
-  },
-
-  // The shared config applies these to every language it parses, and they throw
-  // on JSON/YAML ("rules do not support the language jsonc/x") — without this
-  // block eslint refuses to start at all.
-  {
-    name: 'otmetki/data-files',
-    files: ['**/*.json', '**/*.json5', '**/*.jsonc', '**/*.yaml', '**/*.yml', '**/*.toml'],
-    rules: {
-      'arrow-body-style': 'off',
-      'import/newline-after-import': 'off',
-      'no-console': 'off',
-      'prefer-template': 'off',
-      'unicorn/no-typeof-undefined': 'off',
-      'unicorn/no-useless-spread': 'off'
-    }
+    ignores: [
+      '**/node_modules',
+      '**/.next',
+      '**/out',
+      '**/dist',
+      '**/generated',
+      '**/coverage',
+      '**/.cache',
+      '**/next-env.d.ts',
+      '.data/**',
+      'e2e/.results/**',
+      'playwright-report/**',
+      'docs/**',
+      '**/*.md/**'
+    ]
   },
 
   {

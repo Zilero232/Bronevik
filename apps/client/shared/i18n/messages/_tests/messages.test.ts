@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { LOCALES } from '../../locale';
 import { messages } from '..';
+import { LOCALES } from '../../locale';
 
 const leaves = (value: unknown, prefix = ''): [string, unknown][] => {
   if (typeof value !== 'object' || value === null) {

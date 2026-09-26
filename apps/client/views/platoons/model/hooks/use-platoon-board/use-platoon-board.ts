@@ -1,9 +1,9 @@
 'use client';
 
-import { listPlatoons } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 import { useOffsetInfiniteList } from '@/shared/lib';
 
+import { listPlatoons } from '../../../api';
 import { PLATOON_BOARD } from '../../../config';
 import { toPlatoonQuery } from '../../../lib/platoon-query';
 import { usePlatoonFilters } from '../use-platoon-filters';

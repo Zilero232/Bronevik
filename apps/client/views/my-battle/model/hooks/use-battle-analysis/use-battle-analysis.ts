@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useFormatter, useTranslations } from 'next-intl';
 import { sumBy } from 'remeda';
 
-import { usePlus } from '@/features/plus/plus-gate';
 import { getBattleAnalysis } from '@/entities/player/analytics';
+import { usePlus } from '@/features/plus/plus-gate';
 import { isPlusRequiredError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 

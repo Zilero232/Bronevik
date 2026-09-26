@@ -22,7 +22,7 @@
     "standardwebhooks": "catalog:"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "0.99.0",
+    "@hey-api/openapi-ts": "catalog:",
     "typescript": "catalog:"
   }
 }

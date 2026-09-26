@@ -4,8 +4,8 @@ import { SITE } from '@/shared/config';
 import { DEFAULT_LOCALE, localePath, LOCALES } from '@/shared/i18n';
 
 import { createPageMetadata } from '../page-metadata';
-import { X_DEFAULT } from '../site-metadata.constants';
 import { absoluteUrl, languageAlternates } from '../site-metadata';
+import { X_DEFAULT } from '../site-metadata.constants';
 
 describe('languageAlternates', () => {
   it('lists every locale plus x-default pointing at the default locale', () => {

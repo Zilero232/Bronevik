@@ -8,12 +8,12 @@ import { useEffect, useState } from 'react';
 import { match, P } from 'ts-pattern';
 
 import { getReplay } from '@/entities/replay/replay';
-import { uploadReplay } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ReplayFileProblem } from '../../../lib/upload-validation';
 import type { UploadPhase, UploadVisibility } from './use-replay-upload.types';
 
+import { uploadReplay } from '../../../api';
 import { REPLAY_UPLOAD } from '../../../config';
 import { replayUploadErrorKind } from '../../../lib/upload-error';
 import { isSettledStatus, validateReplayFile } from '../../../lib/upload-validation';

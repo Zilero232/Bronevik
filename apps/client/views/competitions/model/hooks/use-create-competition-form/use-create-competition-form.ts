@@ -13,13 +13,13 @@ import { toast } from 'sonner';
 import { useCompetitionsCache } from '@/entities/competition/competition';
 import { communityErrorKind } from '@/features/community/api-error';
 import { usePlus } from '@/features/plus/plus-gate';
-import { createCompetition } from '../../../api';
 import { isPlusRequiredError } from '@/shared/api/source';
 import { ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
 import type { CompetitionFormOutput, CompetitionFormValues } from '../../../lib/competition-form';
 
+import { createCompetition } from '../../../api';
 import { COMPETITION_FORM_DEFAULTS } from '../../../config';
 import { competitionFormSchema } from '../../../lib/competition-form';
 

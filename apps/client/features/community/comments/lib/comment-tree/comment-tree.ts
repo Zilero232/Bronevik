@@ -1,5 +1,4 @@
 import type { Comment } from '../../api';
-
 import type { CommentNode, RootIdOfInput } from './comment-tree.types';
 
 export const isDeletedComment = (comment: Comment): boolean => comment.body === '';

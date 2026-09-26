@@ -8,9 +8,9 @@ import { toast } from 'sonner';
 import type { TacticBoard } from '@/entities/tactic/board';
 
 import { useTacticMaps } from '@/features/community/tactic-board-settings';
-import { removeTacticBoard } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { removeTacticBoard } from '../../../api';
 import { boardSummary } from '../../../lib/board-summary';
 
 export const useBoardRow = (board: TacticBoard) => {

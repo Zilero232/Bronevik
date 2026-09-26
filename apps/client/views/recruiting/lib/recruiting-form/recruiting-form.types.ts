@@ -1,7 +1,6 @@
 import type { z } from 'zod';
 
 import type { RecruitingKind } from '../../api';
-
 import type { recruitingFormSchema } from './recruiting-form.schemas';
 
 export type RecruitingFormValues = z.input<typeof recruitingFormSchema>;

@@ -6,11 +6,11 @@ import { useForm } from 'react-hook-form';
 import type { RegisterTournamentInput, Tournament, WithdrawTournamentInput } from '@/entities/tournament/tournament';
 
 import { chosenAccountId, useCommunityViewer } from '@/features/community/viewer';
-import { registerTournament, withdrawTournament } from '../../../api';
 import { useClientNow } from '@/shared/lib';
 
 import type { RegistrationFormOutput, RegistrationFormValues } from '../../../lib/registration-form';
 
+import { registerTournament, withdrawTournament } from '../../../api';
 import { REGISTRATION_FORM_DEFAULTS, TOURNAMENT_PAGE } from '../../../config';
 import { registrationState } from '../../../lib/registration';
 import { registrationFormSchema } from '../../../lib/registration-form';

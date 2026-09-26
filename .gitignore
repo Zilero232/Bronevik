@@ -6,13 +6,15 @@ node_modules/
 out/
 dist/
 generated/
+*.tsbuildinfo
 *.wotmod
 __pycache__/
 *.pyc
 
-# Secrets and local config
+# Secrets and local config — every .env variant except the committed template
 .env
-.env.local
+.env.*
+!.env.example
 
 # Agent tooling — rules and agents are the repo's own, everything else is local
 .agents/
@@ -24,12 +26,14 @@ __pycache__/
 # Logs
 *.log
 
-# Test artifacts
+# Test artifacts and tool caches
 coverage/
 e2e/.results/
 playwright-report/
 .playwright/
 .cache/
+.eslintcache
+.stylelintcache
 .visit-probe.mjs
 
 # Local replay storage (REPLAY_STORAGE=local)

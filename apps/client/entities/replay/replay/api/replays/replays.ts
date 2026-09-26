@@ -1,7 +1,8 @@
-import type { Heatmap, HeatmapInput, MyReplaysInput, Replay, ReplayDetailInput, ReplayPage, ReplaySearchInput } from './replays.types';
 import { replaysControllerGet, replaysControllerHeatmap, replaysControllerMine, replaysControllerSearch } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type { Heatmap, HeatmapInput, MyReplaysInput, Replay, ReplayDetailInput, ReplayPage, ReplaySearchInput } from './replays.types';
 
 export const listReplays = ({ signal, ...query }: ReplaySearchInput): Promise<ReplayPage> =>
   fromSdk(() => replaysControllerSearch({ query, signal }));

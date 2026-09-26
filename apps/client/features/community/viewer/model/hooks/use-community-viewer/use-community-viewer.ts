@@ -2,8 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { useAuthSession } from '@/entities/auth/session';
-import { getLinkedAccounts } from '@/entities/auth/session';
+import { getLinkedAccounts, useAuthSession } from '@/entities/auth/session';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useCommunityViewer = () => {

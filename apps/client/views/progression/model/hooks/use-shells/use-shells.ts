@@ -2,9 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getShells } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { getShells } from '../../../api';
 import { PROGRESS_PAGE } from '../../../config';
 
 export const useShells = () => {

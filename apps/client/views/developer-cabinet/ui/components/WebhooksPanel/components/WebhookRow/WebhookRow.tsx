@@ -4,12 +4,12 @@ import { useBoolean } from '@siberiacancode/reactuse';
 import { History, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { updateWebhook } from '../../../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 import { Badge, Button, IconButton, Switch } from '@/ui-kit';
 
 import type { WebhookRowProps } from './WebhookRow.types';
 
+import { updateWebhook } from '../../../../../api';
 import { WEBHOOK_STATUS_TONE } from '../../../../../config';
 import { webhookStatus } from '../../../../../lib/webhook-status';
 import { useDeveloperMutation } from '../../../../../model/hooks';

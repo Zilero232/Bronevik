@@ -13,7 +13,12 @@ export const PodiumCard = ({ entry, metricLabel }: PodiumCardProps) => {
   const format = useFormatter();
 
   return (
-    <Link className={s.root} data-rank={entry.rank} data-tone={entry.tier ? toneOfTier(entry.tier) : undefined} href={ROUTES.players.profile(entry.name)}>
+    <Link
+      className={s.root}
+      data-rank={entry.rank}
+      data-tone={entry.tier ? toneOfTier(entry.tier) : undefined}
+      href={ROUTES.players.profile(entry.name)}
+    >
       <span className={s.rank}>
         <span className={s.srOnly}>{t('rank')}</span>
         {entry.rank}

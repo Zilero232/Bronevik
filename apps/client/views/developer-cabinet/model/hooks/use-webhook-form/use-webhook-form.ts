@@ -5,11 +5,10 @@ import { WEBHOOK } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
-import { createWebhook, updateWebhook } from '../../../api';
-
 import type { WebhookFormValues } from '../../../lib/webhook-form';
 import type { UseWebhookFormInput } from './use-webhook-form.types';
 
+import { createWebhook, updateWebhook } from '../../../api';
 import { WEBHOOK_QUERIES } from '../../../config';
 import { isWebhookFormError, toWebhookFormValues, toWebhookInput, webhookFormSchema } from '../../../lib/webhook-form';
 import { useDeveloperMutation } from '../use-developer-mutation';

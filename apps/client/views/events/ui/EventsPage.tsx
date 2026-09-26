@@ -3,7 +3,6 @@
 import { CalendarDays, CalendarPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { EVENTS_FEED } from '../api';
 import { ROUTES } from '@/shared/constants';
 import {
   Band,
@@ -19,6 +18,7 @@ import {
   ToggleChips
 } from '@/ui-kit';
 
+import { EVENTS_FEED } from '../api';
 import { EVENTS } from '../config';
 import { useEventCalendar } from '../model/hooks';
 import { DropsPanel, EventGroup, EventTimeline, NowCard } from './components';

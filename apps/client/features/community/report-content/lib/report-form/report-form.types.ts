@@ -1,7 +1,6 @@
 import type { z } from 'zod';
 
 import type { ReportTargetType } from '../../api';
-
 import type { reportFormSchema } from './report-form.schemas';
 
 export type ReportFormValues = z.input<typeof reportFormSchema>;

@@ -4,9 +4,9 @@ import type { VehicleSummary } from '@otmetki/schemas';
 
 import { parseAsInteger, useQueryState } from 'nuqs';
 
+import { listCoaches } from '@/entities/coaching/coach';
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { listCoaches } from '@/entities/coaching/coach';
 import { QUERY_KEYS } from '@/shared/constants';
 import { useOffsetInfiniteList } from '@/shared/lib';
 

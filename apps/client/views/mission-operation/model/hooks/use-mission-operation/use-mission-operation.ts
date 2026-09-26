@@ -10,9 +10,9 @@ import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { getMissionOperation, getMissionProgress } from '@/entities/mission/mission';
-import { updateMissionProgress } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { updateMissionProgress } from '../../../api';
 import { useBranchLabel } from '../use-branch-label';
 
 export const useMissionOperation = () => {

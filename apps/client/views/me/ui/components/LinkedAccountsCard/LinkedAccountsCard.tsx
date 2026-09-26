@@ -4,8 +4,8 @@ import { KeyRound, Send } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
-import { LestaIdButton } from '@/features/auth/lesta-link';
 import { getLinkedAccounts } from '@/entities/auth/session';
+import { LestaIdButton } from '@/features/auth/lesta-link';
 import { ROUTES } from '@/shared/constants';
 import { Badge, Skeleton } from '@/ui-kit';
 

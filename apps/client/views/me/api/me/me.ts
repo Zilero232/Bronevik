@@ -1,5 +1,13 @@
 import type { BindCode, CreateGoalInput, Goal, ModDevice } from '@otmetki/schemas';
-import { meControllerAddGoal, meControllerListGoals, meControllerRemoveGoal, modControllerIssueCode, modControllerList, modControllerRevoke } from '@/shared/api/generated';
+
+import {
+  meControllerAddGoal,
+  meControllerListGoals,
+  meControllerRemoveGoal,
+  modControllerIssueCode,
+  modControllerList,
+  modControllerRevoke
+} from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
 

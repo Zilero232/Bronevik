@@ -9,10 +9,10 @@ import { useForm, useWatch } from 'react-hook-form';
 import type { JoinCompetitionRequest } from '@/entities/competition/competition';
 
 import { useCommunityViewer } from '@/features/community/viewer';
-import { joinCompetition, leaveCompetition } from '../../../api';
 
 import type { JoinFormOutput, JoinFormValues } from '../../../lib/join-form';
 
+import { joinCompetition, leaveCompetition } from '../../../api';
 import { JOIN_FORM, JOIN_FORM_DEFAULTS } from '../../../config';
 import { chosenAccount, joinFormSchema, joinState, openTeams, toJoinInput } from '../../../lib/join-form';
 import { useCompetitionMutation } from '../use-competition-mutation';

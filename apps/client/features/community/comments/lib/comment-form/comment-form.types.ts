@@ -1,7 +1,6 @@
 import type { z } from 'zod';
 
 import type { CommentTarget } from '../../api';
-
 import type { commentFormSchema } from './comment-form.schemas';
 
 export type CommentFormValues = z.input<typeof commentFormSchema>;

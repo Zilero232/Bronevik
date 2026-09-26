@@ -1,7 +1,8 @@
-import type { Coach, CoachingOrderList, CoachPage, GetCoachInput, ListCoachesInput } from './coaching.types';
 import { coachingControllerCoach, coachingControllerList, coachingControllerOrders } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
+
+import type { Coach, CoachingOrderList, CoachPage, GetCoachInput, ListCoachesInput } from './coaching.types';
 
 export const listCoaches = ({ signal, ...query }: ListCoachesInput): Promise<CoachPage> =>
   fromSdk(() => coachingControllerList({ ...SESSION_REQUEST, query, signal }));

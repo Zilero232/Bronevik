@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 
-import { isNotFoundError } from '@/shared/api/source';
 import { getTank } from '@/entities/tank/tank';
+import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { isSameTank } from '../../../lib';

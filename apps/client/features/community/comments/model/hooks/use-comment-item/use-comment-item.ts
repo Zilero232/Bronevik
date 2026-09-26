@@ -5,11 +5,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { removeComment } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseCommentItemInput } from './use-comment-item.types';
 
+import { removeComment } from '../../../api';
 import { isDeletedComment } from '../../../lib/comment-tree';
 
 export const useCommentItem = ({ comment, thread, viewerId }: UseCommentItemInput) => {

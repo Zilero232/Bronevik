@@ -1,11 +1,11 @@
 'use client';
 
-import type { RecruitingKind } from '../../../api';
-
-import { listRecruiting } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 import { useOffsetInfiniteList } from '@/shared/lib';
 
+import type { RecruitingKind } from '../../../api';
+
+import { listRecruiting } from '../../../api';
 import { RECRUITING_BOARD } from '../../../config';
 
 export const useRecruitingBoard = (kind: RecruitingKind) =>

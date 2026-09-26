@@ -24,7 +24,18 @@ const CARD: StreamerCard = {
   hasSettings: true
 };
 
-const VEHICLE = { tankId: 1, name: 'Объект 279 (р)' } as VehicleSummary;
+const VEHICLE: VehicleSummary = {
+  tankId: 1,
+  tier: 10,
+  isPremium: false,
+  name: 'Объект 279 (р)',
+  shortName: 'Об. 279 (р)',
+  slug: 'object-279-r',
+  nation: 'ussr',
+  type: 'heavyTank',
+  isCollectible: false,
+  images: { small: null, contour: null, big: null }
+};
 
 describe('directoryEntry', () => {
   it('keeps the top three favourites and prefers catalog names', () => {

@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { removeComment } from '@/shared/api/comments';
+import { removeComment } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseCommentItemInput } from './use-comment-item.types';

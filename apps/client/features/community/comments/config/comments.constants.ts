@@ -1,4 +1,4 @@
-import { zCreateComment } from '@/shared/api/comments';
+import { zCreateComment } from '../api';
 
 import type { CommentFormValues } from '../lib/comment-form';
 

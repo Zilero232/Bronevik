@@ -2,6 +2,7 @@
 
 import { Flag } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
 import { ROUTES } from '@/shared/constants';
@@ -30,6 +31,7 @@ import s from './ReportButton.module.scss';
 
 export const ReportButton = ({ targetType, targetId, className }: ReportButtonProps) => {
   const t = useTranslations('community.report');
+  const detailsId = useId();
   const { form, isSignedIn, isOpen, isPending, reasons, detailsLength, detailsMaxLength, onOpenChange, onSubmit } = useReportForm({
     targetType,
     targetId
@@ -37,7 +39,7 @@ export const ReportButton = ({ targetType, targetId, className }: ReportButtonPr
 
   if (!isSignedIn) {
     return (
-      <Link className={buttonVariants({ variant: 'ghost', size: 'sm', className })} href={ROUTES.login} title={t('signIn')}>
+      <Link className={buttonVariants({ variant: 'ghost', size: 'sm', className })} href={ROUTES.auth.login} title={t('signIn')}>
         <Flag size={14} />
         {t('trigger')}
       </Link>
@@ -64,11 +66,11 @@ export const ReportButton = ({ targetType, targetId, className }: ReportButtonPr
           <FormField
             error={form.formState.errors.details && t('detailsError')}
             hint={t('detailsHint', { length: detailsLength, max: detailsMaxLength ?? detailsLength })}
-            htmlFor={`report-details-${targetId}`}
+            htmlFor={detailsId}
             label={t('details')}
           >
             <Textarea
-              id={`report-details-${targetId}`}
+              id={detailsId}
               isInvalid={Boolean(form.formState.errors.details)}
               maxLength={detailsMaxLength}
               placeholder={t('detailsPlaceholder')}

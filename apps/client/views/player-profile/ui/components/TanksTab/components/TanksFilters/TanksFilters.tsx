@@ -59,6 +59,7 @@ export const TanksFilters = ({ filters, total }: TanksFiltersProps) => {
             return { value: nation, label: tGame(`nations.${nation}`), icon: <Icon palette='color' size={16} /> };
           })
         ]}
+        aria-label={t('nationLabel')}
         className={s.nation}
         value={filter.nation}
         onValueChange={(nation) => update({ nation })}

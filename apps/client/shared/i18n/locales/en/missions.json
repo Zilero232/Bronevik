@@ -20,7 +20,10 @@
     "emptyTitle": "Missions are not loaded yet",
     "emptyDescription": "Personal missions appear after the next game data import.",
     "errorTitle": "Could not load personal missions",
-    "errorDescription": "The server did not respond. Try again."
+    "errorDescription": "The server did not respond. Try again.",
+    "home": "Home",
+    "operationsFigure": "Operations",
+    "plateProgress": "{done}/{total} missions{honors, plural, =0 {} other { · with honors: #}}"
   },
   "operation": {
     "missions": "Missions",

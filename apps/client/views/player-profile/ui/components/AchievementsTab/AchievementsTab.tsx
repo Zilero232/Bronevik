@@ -29,7 +29,7 @@ export const AchievementsTab = () => {
   return (
     <div className={s.root}>
       {sections.map((section) => (
-        <AchievementSection key={section.section} section={section} />
+        <AchievementSection key={section.section} isFeatured={section.isFeatured} section={section} />
       ))}
     </div>
   );

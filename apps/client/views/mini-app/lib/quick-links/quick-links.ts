@@ -6,9 +6,9 @@ import { QUICK_LINKS } from '../../config/quick-links.constants';
 
 export const quickLinkTargets = (nickname: string): QuickLinkTarget[] => {
   const hrefs = {
-    profile: ROUTES.player(nickname),
+    profile: ROUTES.players.profile(nickname),
     marks: ROUTES.marks,
-    account: ROUTES.me,
+    account: ROUTES.account.overview,
     tools: ROUTES.tools
   } as const;
 

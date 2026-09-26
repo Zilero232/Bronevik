@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { zCreateComment } from '@/shared/api/comments';
+import { zCreateComment } from '../../api';
 
 export const commentFormSchema = z.object({
   body: z.string().trim().pipe(zCreateComment.shape.body)

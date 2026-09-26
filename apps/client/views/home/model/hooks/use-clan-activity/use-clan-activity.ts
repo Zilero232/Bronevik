@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { listClans } from '@/shared/api/clans';
+import { listClans } from '@/entities/clan/clan';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { HOME } from '../../../config';

@@ -1,19 +1,12 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
+import { ReferenceCoreModule } from './reference-core.module';
 import { ReferenceController } from './reference.controller';
-import {
-  BronyaReferencesService,
-  ExpectedValuesService,
-  GameVersionService,
-  ServersOnlineService,
-  ThresholdsService,
-  VehicleCatalogService
-} from './services';
+import { GameVersionService, ServersOnlineService } from './services';
 
-@Global()
 @Module({
+  imports: [ReferenceCoreModule],
   controllers: [ReferenceController],
-  providers: [VehicleCatalogService, ExpectedValuesService, ThresholdsService, BronyaReferencesService, GameVersionService, ServersOnlineService],
-  exports: [VehicleCatalogService, ExpectedValuesService, ThresholdsService, BronyaReferencesService]
+  providers: [GameVersionService, ServersOnlineService]
 })
 export class ReferenceModule {}

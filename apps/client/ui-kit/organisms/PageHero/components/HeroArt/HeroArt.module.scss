@@ -1,0 +1,82 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: absolute;
+  overflow: hidden;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tanks {
+  position: absolute;
+  top: 50%;
+  right: 4%;
+  display: flex;
+  width: 55%;
+  align-items: center;
+  justify-content: flex-end;
+  transform: translateY(-50%);
+
+  @include below(lg) {
+    width: 90%;
+    opacity: 0.5;
+  }
+}
+
+.tank {
+  @include nation-tint;
+
+  position: relative;
+  display: grid;
+  margin-left: -32px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--nation) 35%, transparent), transparent);
+  place-items: center;
+
+  &:nth-child(odd) .render {
+    width: 240px;
+  }
+}
+
+.render {
+  width: 160px;
+}
+
+.flag {
+  left: 40%;
+}
+
+.emblem {
+  position: absolute;
+  top: 50%;
+  right: 6%;
+  display: grid;
+  width: 480px;
+  height: 480px;
+  color: var(--color-text);
+  opacity: 0.07;
+  place-items: center;
+  transform: translateY(-50%) rotate(-8deg);
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.root[data-kind='emblem'] {
+  background:
+    radial-gradient(600px 300px at 80% 20%, rgb(255 122 26 / 10%), transparent 70%),
+    radial-gradient(500px 300px at 95% 90%, rgb(60 95 138 / 12%), transparent 70%);
+}
+
+.clan {
+  position: absolute;
+  top: 50%;
+  right: 8%;
+  display: grid;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--clan, var(--color-steel)) 40%, transparent), transparent);
+  place-items: center;
+  transform: translateY(-50%);
+}

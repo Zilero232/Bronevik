@@ -3,10 +3,10 @@
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { ErrorState, Skeleton } from '@/ui-kit';
+import { ErrorState, PageHeader, Skeleton } from '@/ui-kit';
 
 import { useTelegramLinkPage } from '../model/hooks';
-import { CodeRequest, LinkedPanel, MiniAppCard, TelegramLinkHeader } from './components';
+import { CodeRequest, LinkedPanel, MiniAppCard } from './components';
 
 import s from './TelegramLinkPage.module.scss';
 
@@ -16,7 +16,7 @@ export const TelegramLinkPage = () => {
 
   return (
     <div className={s.root}>
-      <TelegramLinkHeader description={t('description')} title={t('title')} />
+      <PageHeader description={t('description')} title={t('title')} />
       <div className={s.grid}>
         {match({ isPending, isFailed, status })
           .with({ isPending: true }, () => <Skeleton height={320} shape='block' />)

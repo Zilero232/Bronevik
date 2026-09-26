@@ -4,10 +4,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { Guide } from '@/shared/api/guides';
+import type { Guide } from '@/entities/guide/guide';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { likeGuide, unlikeGuide } from '@/shared/api/guides';
+import { likeGuide, unlikeGuide } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { applyLike } from '../../../lib/guide-like';
@@ -17,7 +17,7 @@ export const useGuideLike = (guide: Guide) => {
   const queryClient = useQueryClient();
   const { data: session } = useAuthSession();
 
-  const queryKey = QUERY_KEYS.guides.detail(guide.slug);
+  const queryKey = QUERY_KEYS.guides.detail({ viewerId: session?.user.id ?? null, slug: guide.slug });
 
   const mutation = useMutation({
     mutationFn: (liked: boolean) => (liked ? likeGuide(guide.id) : unlikeGuide(guide.id)),

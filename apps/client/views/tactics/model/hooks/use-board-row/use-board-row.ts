@@ -5,10 +5,10 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import type { TacticBoard } from '@/shared/api/tactics';
+import type { TacticBoard } from '@/entities/tactic/board';
 
 import { useTacticMaps } from '@/features/community/tactic-board-settings';
-import { removeTacticBoard } from '@/shared/api/tactics';
+import { removeTacticBoard } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { boardSummary } from '../../../lib/board-summary';

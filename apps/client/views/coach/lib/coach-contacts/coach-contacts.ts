@@ -1,4 +1,4 @@
-import type { CoachContacts } from '@/shared/api/coaching';
+import type { CoachContacts } from '@/entities/coaching/coach';
 
 import { safeWebHref } from '@/shared/lib';
 

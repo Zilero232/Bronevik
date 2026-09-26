@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { CommunityGate } from '@/features/community/viewer';
 import { Card, CardBody, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
@@ -12,11 +13,12 @@ import s from './CoachingOrders.module.scss';
 
 export const CoachingOrders = () => {
   const t = useTranslations('coaching.orders');
+  const titleId = useId();
   const { isSignedIn, orders, isPending, isError, isRetrying, coachName, retry } = useCoachingOrders();
 
   return (
-    <Card aria-labelledby='coaching-orders' id='orders' padding='none'>
-      <CardHeader title={<span id='coaching-orders'>{t('title')}</span>} />
+    <Card aria-labelledby={titleId} id='orders' padding='none'>
+      <CardHeader title={<span id={titleId}>{t('title')}</span>} />
       {!isSignedIn && (
         <CardBody>
           <CommunityGate requiresLesta={false}>{null}</CommunityGate>

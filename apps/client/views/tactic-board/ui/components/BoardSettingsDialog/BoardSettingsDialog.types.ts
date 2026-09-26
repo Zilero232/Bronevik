@@ -1,4 +1,4 @@
-import type { TacticBoard } from '@/shared/api/tactics';
+import type { TacticBoard } from '@/entities/tactic/board';
 
 export type BoardSettingsDialogProps = {
   board: TacticBoard;

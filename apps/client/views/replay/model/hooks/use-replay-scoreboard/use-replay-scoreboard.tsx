@@ -5,7 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { Replay, ReplayPlayer } from '@/shared/api/replays';
+import type { Replay, ReplayPlayer } from '@/entities/replay/replay';
 
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';

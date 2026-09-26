@@ -3,27 +3,39 @@
 import { API_KEY } from '@otmetki/schemas';
 import { KeyRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
-import { Button, buttonVariants, DialogClose, DialogFooter, Input, Select } from '@/ui-kit';
+import { Button, buttonVariants, DialogClose, DialogFooter, FormField, Input, Select } from '@/ui-kit';
 
 import type { KeyExpiry } from '../../../../../lib/key-form';
 import type { CreateKeyFormProps } from './CreateKeyForm.types';
 
 import { KEY_EXPIRY } from '../../../../../config';
 import { useCreateKeyForm } from '../../../../../model/hooks';
-import { FormField } from '../../../FormField';
 
 import s from './CreateKeyForm.module.scss';
 
 export const CreateKeyForm = ({ onCreated }: CreateKeyFormProps) => {
   const t = useTranslations('developer.createKey');
+  const id = useId();
   const { control, errors, isSubmitting, register, onSubmit } = useCreateKeyForm({ onCreated });
 
   return (
     <form noValidate className={s.root} onSubmit={onSubmit}>
-      <FormField error={errors.name && t('errors.name', { max: API_KEY.maxNameLength })} hint={t('nameHint')} label={t('name')}>
-        <Input isInvalid={Boolean(errors.name)} maxLength={API_KEY.maxNameLength} placeholder={t('namePlaceholder')} {...register('name')} />
+      <FormField
+        error={errors.name && t('errors.name', { max: API_KEY.maxNameLength })}
+        hint={t('nameHint')}
+        htmlFor={`${id}-name`}
+        label={t('name')}
+      >
+        <Input
+          id={`${id}-name`}
+          isInvalid={Boolean(errors.name)}
+          maxLength={API_KEY.maxNameLength}
+          placeholder={t('namePlaceholder')}
+          {...register('name')}
+        />
       </FormField>
       <Controller
         render={({ field }) => (

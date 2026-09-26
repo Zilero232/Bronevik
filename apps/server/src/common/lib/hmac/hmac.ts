@@ -17,16 +17,20 @@ export const timingSafeEqual = ({ left, right }: TimingSafeEqualInput): boolean 
 
 export const hmacSha256Hex = ({ key, data }: HmacInput): string => createHmac(HMAC.algorithm, key).update(data).digest('hex');
 
-export const verifySignatureHeader = ({ header, key, body }: VerifySignatureInput): boolean => {
+const signatureOf = (header: string | undefined): string | null => {
   if (!header?.startsWith(HMAC.headerPrefix)) {
-    return false;
+    return null;
   }
 
   const received = header.slice(HMAC.headerPrefix.length).trim().toLowerCase();
 
-  if (!HMAC.hexPattern.test(received)) {
-    return false;
-  }
+  return HMAC.hexPattern.test(received) ? received : null;
+};
 
-  return timingSafeEqual({ left: received, right: hmacSha256Hex({ key, data: body }) });
+export const isSignatureHeader = (header: string | undefined): boolean => signatureOf(header) !== null;
+
+export const verifySignatureHeader = ({ header, key, body }: VerifySignatureInput): boolean => {
+  const received = signatureOf(header);
+
+  return received !== null && timingSafeEqual({ left: received, right: hmacSha256Hex({ key, data: body }) });
 };

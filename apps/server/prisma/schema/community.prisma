@@ -116,6 +116,8 @@ model Guide {
   @@index([tankId])
   @@index([arenaId])
   @@index([authorUserId])
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([status, likesCount(sort: Desc)])
   @@map("guide")
 }
 

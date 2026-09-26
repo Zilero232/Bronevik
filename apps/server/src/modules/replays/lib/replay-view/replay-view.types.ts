@@ -17,6 +17,7 @@ export type ReplayRow = Pick<
   | 'result'
   | 'status'
   | 'summary'
+  | 'uploaderUserId'
   | 'views'
   | 'visibility'
   | 'xp'
@@ -25,4 +26,5 @@ export type ReplayRow = Pick<
 export type ToReplayViewInput = {
   replay: ReplayRow;
   apiUrl: string;
+  viewerUserId?: string | null;
 };

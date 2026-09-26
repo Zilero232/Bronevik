@@ -26,7 +26,7 @@ export const MapPage = () => {
         .with({ isPending: true }, () => <MapSkeleton />)
         .with({ error: P.when(isNotFoundError) }, () => (
           <ResourceMissing
-            back={{ href: ROUTES.maps, label: t('toMaps') }}
+            back={{ href: ROUTES.maps.list, label: t('toMaps') }}
             description={t('notFoundDescription', { id: mapId })}
             reason='notFound'
             title={t('notFoundTitle')}
@@ -34,7 +34,7 @@ export const MapPage = () => {
         ))
         .otherwise(() => (
           <ResourceMissing
-            back={{ href: ROUTES.maps, label: t('toMaps') }}
+            back={{ href: ROUTES.maps.list, label: t('toMaps') }}
             description={t('errorDescription', { id: mapId })}
             isRetrying={isFetching}
             reason='error'

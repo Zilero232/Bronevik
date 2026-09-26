@@ -5,6 +5,7 @@ cmd-clan = My clan
 cmd-tank = Tank: /tank name
 cmd-top = Top players by WN8
 cmd-lbz = Next personal missions
+cmd-next = What to play tonight
 cmd-settings = Notifications
 cmd-login = Sign in on the site
 cmd-help = Help
@@ -28,6 +29,7 @@ help =
     /tank name — tank mark thresholds
     /top — top players by WN8
     /lbz — next personal missions
+    /next — tonight's playlist: what to play
     /settings — notifications
     /login — sign-in link for the site
 
@@ -96,6 +98,7 @@ settings-event-sessionFinished = Session summary
 settings-event-bonusCode = Bonus codes
 settings-event-premiumOffer = Tank discounts
 settings-event-challengeResolved = Challenges
+settings-event-firstWinAvailable = First win of the day
 settings-weekly-digest = Weekly digest
 settings-on = ✅ { $label }
 settings-off = ▫️ { $label }
@@ -105,3 +108,15 @@ inline-card-description = WN8 { $wn8 } · { $winRate } wins · { $battles } batt
 notification-open = Open
 error-generic = Something went wrong. Please try again later.
 missing = —
+
+next-not-linked = Link Telegram and your Lesta account on the site to get tonight's playlist.
+next-no-garage = Your garage is unknown yet: sign in on the site with Lesta ID so we can see your tanks.
+next-empty = No suggestions today — play your favourites!
+next-header = Tonight's playlist:
+next-line = { $tank }: { $reasons }
+next-reason-closeToMark = close to a mark ({ $percent }%)
+next-reason-firstWin = first win not taken
+next-reason-longUnplayed = not played for { $days } days
+next-reason-lowWinRate = room to improve
+next-reason-mission = fits your personal missions
+next-plus-hint = With Plus: { $size } tanks and more reasons.

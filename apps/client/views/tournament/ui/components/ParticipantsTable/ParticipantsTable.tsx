@@ -32,7 +32,7 @@ export const ParticipantsTable = ({ tournament }: ParticipantsTableProps) => {
               <tr key={participant.accountId}>
                 <td className={s.seed}>{participant.seed ?? '—'}</td>
                 <td>
-                  <Link className={s.link} href={ROUTES.player(participant.nickname ?? String(participant.accountId))}>
+                  <Link className={s.link} href={ROUTES.players.profile(participant.nickname ?? String(participant.accountId))}>
                     {participant.nickname ?? `#${participant.accountId}`}
                   </Link>
                 </td>

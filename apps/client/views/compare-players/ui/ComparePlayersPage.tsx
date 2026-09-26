@@ -3,6 +3,7 @@
 import type { RatingPeriod } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 import { match } from 'ts-pattern';
 
 import { Card, CardHeader, DataSourceNote, EmptyState, ErrorState, PageHeader, SegmentedControl } from '@/ui-kit';
@@ -14,6 +15,7 @@ import s from './ComparePlayersPage.module.scss';
 
 export const ComparePlayersPage = () => {
   const t = useTranslations('compare');
+  const titleId = useId();
   const tPeriods = useTranslations('periods');
   const { ids, period, setPeriod, periodOptions, canAdd, add, remove, comparison, status, isRetrying, retry } = useComparePage();
 
@@ -27,12 +29,12 @@ export const ComparePlayersPage = () => {
           {canAdd && <AddSlot excludeIds={ids} index={ids.length} onAdd={add} />}
         </div>
       </PageHeader>
-      <Card aria-labelledby='compare-table-title' padding='none'>
+      <Card aria-labelledby={titleId} padding='none'>
         <CardHeader
           action={
             <SegmentedControl<RatingPeriod> aria-label={tPeriods('label')} options={periodOptions} size='sm' value={period} onChange={setPeriod} />
           }
-          title={<span id='compare-table-title'>{t('caption')}</span>}
+          title={<span id={titleId}>{t('caption')}</span>}
         />
         {match(status)
           .with('idle', () => <EmptyState isCompact title={t('emptyTitle')} />)

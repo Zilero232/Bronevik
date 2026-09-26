@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { AppConfigService } from '../../config';
 import { PlusGuard } from './guards';
 import { YooKassaClient } from './lib';
-import { EntitlementsService, PromoService, ReferralService, SubscriptionService, WebhookService } from './services';
+import { EntitlementsBusService, EntitlementsService, PromoService, ReferralService, SubscriptionService, WebhookService } from './services';
 
 const yooKassaProvider = {
   provide: YooKassaClient,
@@ -13,7 +13,25 @@ const yooKassaProvider = {
 };
 
 @Module({
-  providers: [yooKassaProvider, SubscriptionService, EntitlementsService, PromoService, ReferralService, WebhookService, PlusGuard],
-  exports: [yooKassaProvider, SubscriptionService, EntitlementsService, PromoService, ReferralService, WebhookService, PlusGuard]
+  providers: [
+    yooKassaProvider,
+    EntitlementsBusService,
+    SubscriptionService,
+    EntitlementsService,
+    PromoService,
+    ReferralService,
+    WebhookService,
+    PlusGuard
+  ],
+  exports: [
+    yooKassaProvider,
+    EntitlementsBusService,
+    SubscriptionService,
+    EntitlementsService,
+    PromoService,
+    ReferralService,
+    WebhookService,
+    PlusGuard
+  ]
 })
 export class BillingCoreModule {}

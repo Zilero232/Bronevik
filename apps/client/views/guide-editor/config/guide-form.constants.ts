@@ -1,4 +1,4 @@
-import { zCreateGuide } from '@/shared/api/guides';
+import { zCreateGuide } from '@/entities/guide/guide';
 
 import type { GuideFormValues } from '../lib/guide-form';
 

@@ -7,11 +7,11 @@ const stateOf = ({ from, until, now }: AvailabilityBounds): AvailabilityState =>
     return 'anytime';
   }
 
-  if (until && isBefore(until, now)) {
+  if (until && now && isBefore(until, now)) {
     return 'ended';
   }
 
-  return from && isAfter(from, now) ? 'later' : 'now';
+  return from && now && isAfter(from, now) ? 'later' : 'now';
 };
 
 export const availabilityWindow = ({ from, until, now }: AvailabilityInput): AvailabilityWindow => {

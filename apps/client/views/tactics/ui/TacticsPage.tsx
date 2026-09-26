@@ -25,7 +25,7 @@ export const TacticsPage = () => {
         .with({ isSignedIn: false }, () => (
           <EmptyState
             action={
-              <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.login}>
+              <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.auth.login}>
                 <LogIn size={15} />
                 {t('signIn')}
               </Link>

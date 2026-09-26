@@ -1,6 +1,6 @@
 import type { ClanRole } from '@otmetki/schemas';
 
-import { differenceInCalendarDays, parseISO } from 'date-fns';
+import { daysBetween } from '@/shared/lib';
 
 import type { FilterRosterInput, RoleGroup, RosterRow, ToRosterRowsInput } from './roster.types';
 
@@ -12,7 +12,7 @@ export const roleGroup = (role: ClanRole): RoleGroup => ROLE_GROUP_KEYS.find((gr
 export const toRosterRows = ({ members, now }: ToRosterRowsInput): RosterRow[] =>
   members.map((member) => ({
     ...member,
-    daysInClan: member.joinedAt ? Math.max(0, differenceInCalendarDays(parseISO(now), parseISO(member.joinedAt))) : null,
+    daysInClan: member.joinedAt ? Math.max(0, daysBetween({ from: member.joinedAt, to: now })) : null,
     status: activityStatus(member.inactiveDays)
   }));
 

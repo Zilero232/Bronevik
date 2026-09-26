@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric;
+
+  color: var(--color-text-muted);
+
+  &[data-gained='true'] {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+}

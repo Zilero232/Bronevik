@@ -21,7 +21,7 @@ export const BoardRow = ({ board }: BoardRowProps) => {
   return (
     <li className={s.root}>
       <div className={s.main}>
-        <Link className={s.title} href={ROUTES.tacticBoard(board.id)}>
+        <Link className={s.title} href={ROUTES.tactics.board(board.id)}>
           {board.title}
         </Link>
         <div className={s.meta}>

@@ -32,7 +32,7 @@ export const AppProviders = ({ children, locale }: AppProvidersProps) => (
           <MotionConfig reducedMotion='user'>
             <TooltipProvider>
               <CommandPaletteProvider>
-                <SerwistProvider disable={process.env.NODE_ENV === 'development'} reloadOnOnline={false} swUrl={ROUTES.serviceWorker}>
+                <SerwistProvider disable={process.env.NODE_ENV === 'development'} reloadOnOnline={false} swUrl={ROUTES.sw}>
                   {children}
                 </SerwistProvider>
                 <CommandPalette />

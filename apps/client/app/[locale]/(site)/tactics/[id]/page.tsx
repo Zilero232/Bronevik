@@ -17,7 +17,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/tactics/
   return createPageMetadata({
     title: t('title'),
     description: t('description'),
-    path: ROUTES.tacticBoard(decodeURIComponent(id)),
+    path: ROUTES.tactics.board(decodeURIComponent(id)),
     locale,
     index: false,
     follow: false

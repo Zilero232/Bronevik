@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { Replay } from '@/shared/api/replays';
+import type { Replay } from '@/entities/replay/replay';
 import type { ChartSeries } from '@/ui-kit';
 
 import { BATTLE_TIMELINE } from '../../../config';

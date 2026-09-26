@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { countSchema, isoDateTimeSchema, tankIdSchema, uuidSchema } from '../common/primitives/primitives.schemas';
+import { countSchema, httpUrlSchema, isoDateTimeSchema, tankIdSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { paginatedSchema, paginationQuerySchema } from '../common/query/query.schemas';
 
 export const bonusCodeStatusSchema = z.enum(['unknown', 'working', 'expired']);
@@ -19,7 +19,7 @@ export const bonusCodeSchema = z.object({
   title: z.string().nullable(),
   rewards: z.array(z.string()),
   source: z.string(),
-  sourceUrl: z.url().nullable(),
+  sourceUrl: httpUrlSchema.nullable(),
   status: bonusCodeStatusSchema,
   workingReports: countSchema,
   expiredReports: countSchema,
@@ -36,7 +36,7 @@ export const bonusCodeReportSchema = z.object({
 export const premiumOfferSchema = z.object({
   id: uuidSchema,
   title: z.string(),
-  url: z.url().nullable(),
+  url: httpUrlSchema.nullable(),
   image: z.url().nullable(),
   tankIds: z.array(tankIdSchema),
   priceRub: z.number().nonnegative().nullable(),
@@ -68,7 +68,7 @@ export const gameEventSchema = z.object({
   kind: gameEventKindSchema,
   title: z.string(),
   description: z.string().nullable(),
-  url: z.url().nullable(),
+  url: httpUrlSchema.nullable(),
   image: z.url().nullable(),
   startsAt: isoDateTimeSchema,
   endsAt: isoDateTimeSchema.nullable()
@@ -90,7 +90,7 @@ export const newsQuerySchema = paginationQuerySchema.extend({
 export const newsItemSchema = z.object({
   id: uuidSchema,
   source: z.string(),
-  url: z.url(),
+  url: httpUrlSchema,
   kind: newsKindSchema,
   title: z.string(),
   summary: z.string().nullable(),

@@ -50,7 +50,7 @@ export const MissionOperationPage = () => {
         .with({ isPending: true }, () => <Skeleton height={480} shape='block' />)
         .with({ error: P.when(isNotFoundError) }, () => (
           <ResourceMissing
-            back={{ href: ROUTES.missions, label: t('operation.back') }}
+            back={{ href: ROUTES.missions.hub, label: t('operation.back') }}
             description={t('operation.notFoundDescription')}
             reason='notFound'
             title={t('operation.notFoundTitle')}
@@ -58,7 +58,7 @@ export const MissionOperationPage = () => {
         ))
         .otherwise(() => (
           <ResourceMissing
-            back={{ href: ROUTES.missions, label: t('operation.back') }}
+            back={{ href: ROUTES.missions.hub, label: t('operation.back') }}
             description={t('operation.errorDescription')}
             isRetrying={detail.isFetching}
             reason='error'

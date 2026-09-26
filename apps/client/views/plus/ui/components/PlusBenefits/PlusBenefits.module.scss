@@ -1,7 +1,86 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-3));
+  @include stack(var(--space-5));
+}
+
+.cards {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  list-style: none;
+}
+
+.card {
+  @include media-card;
+  @include lift-hover;
+  @include stack(0);
+}
+
+.media {
+  position: relative;
+  display: grid;
+  aspect-ratio: 16 / 10;
+  background:
+    radial-gradient(circle at 70% 40%, color-mix(in srgb, var(--color-accent) 18%, transparent), transparent 60%),
+    radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--color-steel) 14%, transparent), transparent 55%), var(--color-surface-sunken);
+  color: var(--color-accent);
+  place-items: center;
+}
+
+.glyph {
+  opacity: 0.4;
+  transform: rotate(-8deg);
+}
+
+.plate {
+  @include stack(var(--space-1));
+
+  position: absolute;
+  bottom: var(--space-4);
+  left: 0;
+  max-width: calc(100% - var(--space-5));
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin: 0;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  transition: transform var(--duration-lift) var(--ease-out);
+
+  .card:hover & {
+    transform: translateX(4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    .card:hover & {
+      transform: none;
+    }
+  }
+}
+
+.plateTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+}
+
+.plateSub {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.cardText {
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
 }
 
 .list {

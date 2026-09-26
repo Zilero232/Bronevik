@@ -6,7 +6,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useFormatter } from 'next-intl';
 import { useQueryState } from 'nuqs';
 
-import { getTankTopPlayers } from '@/shared/api/tanks';
+import { getTankTopPlayers } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { TopPlayerRow } from './use-tank-top-players.types';
@@ -39,9 +39,12 @@ export const useTankTopPlayers = () => {
     };
   });
 
+  const podium = rows.filter((row) => row.isPodium);
+  const rest = rows.filter((row) => !row.isPodium);
+
   const onMetricChange = (value: TopPlayersMetric) => {
     void setMetric(value);
   };
 
-  return { metric, onMetricChange, rows, isPending, isError, isStale: isPlaceholderData, refetch };
+  return { metric, onMetricChange, rows, podium, rest, isPending, isError, isStale: isPlaceholderData, refetch };
 };

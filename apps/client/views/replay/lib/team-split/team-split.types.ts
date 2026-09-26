@@ -1,4 +1,4 @@
-import type { Replay, ReplayPlayer } from '@/shared/api/replays';
+import type { Replay, ReplayPlayer } from '@/entities/replay/replay';
 
 export type TeamSplit = {
   recorderTeam: number;

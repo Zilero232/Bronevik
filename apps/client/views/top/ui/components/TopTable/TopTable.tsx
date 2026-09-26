@@ -10,7 +10,7 @@ import { useTopColumns } from '../../../model/hooks';
 
 export const TopTable = ({ entries, filter, tank, isLoading, summary }: TopTableProps) => {
   const t = useTranslations('top');
-  const columns = useTopColumns({ filter, tank });
+  const columns = useTopColumns({ filter, tank, entries });
 
   return (
     <DataTable

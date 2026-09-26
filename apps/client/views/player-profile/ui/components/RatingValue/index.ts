@@ -1,1 +1,0 @@
-export { RatingValue } from './RatingValue';

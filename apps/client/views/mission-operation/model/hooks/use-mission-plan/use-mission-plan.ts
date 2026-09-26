@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { usePlus } from '@/features/plus/plus-gate';
-import { getMissionPlan } from '@/shared/api/missions';
+import { getMissionPlan } from '@/entities/mission/mission';
 import { isPlusRequiredError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 

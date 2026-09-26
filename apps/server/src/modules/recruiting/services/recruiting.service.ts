@@ -3,7 +3,7 @@ import { addDays } from 'date-fns';
 
 import type { Prisma, RecruitingPost } from '../../../../generated';
 import type { OwnedById } from '../../community-core';
-import type { CreateRecruitingRequest, RecruitingPage, RecruitingQuery } from '../recruiting.types';
+import type { CanCloseInput, CreateRecruitingRequest, RecruitingPage, RecruitingQuery } from '../recruiting.types';
 
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { toJsonValue } from '../../../common/lib';
@@ -76,14 +76,16 @@ export class RecruitingService {
   }
 
   async close({ id, userId }: OwnedById): Promise<void> {
-    const { count } = await this.prisma.recruitingPost.updateMany({
-      where: { id, authorUserId: userId, status: 'open' },
-      data: { status: 'closed' }
+    const post = await this.prisma.recruitingPost.findFirst({
+      where: { id, status: 'open' },
+      select: { authorUserId: true, clanId: true, accountId: true }
     });
 
-    if (count === 0) {
-      throw new AppNotFoundException('NOT_FOUND', `No open recruiting post ${id} of yours`);
+    if (!post || !(await this.canClose({ post, userId }))) {
+      throw new AppNotFoundException('NOT_FOUND', `No open recruiting post ${id} you can close`);
     }
+
+    await this.prisma.recruitingPost.updateMany({ where: { id, status: 'open' }, data: { status: 'closed' } });
   }
 
   async expire(now: Date): Promise<number> {
@@ -93,6 +95,27 @@ export class RecruitingService {
     });
 
     return count;
+  }
+
+  private async canClose({ post, userId }: CanCloseInput): Promise<boolean> {
+    if (post.authorUserId === userId) {
+      return true;
+    }
+
+    const links = await this.prisma.userLestaAccount.findMany({ where: { userId }, select: { accountId: true } });
+    const accountIds = links.map((link) => link.accountId);
+
+    if (post.accountId !== null) {
+      return accountIds.includes(post.accountId);
+    }
+
+    if (post.clanId === null || accountIds.length === 0) {
+      return false;
+    }
+
+    const members = await this.prisma.clanMember.findMany({ where: { accountId: { in: accountIds }, clanId: post.clanId }, select: { role: true } });
+
+    return members.some((member) => isRecruitingOfficer(member.role));
   }
 
   private async views(rows: RecruitingPost[]) {

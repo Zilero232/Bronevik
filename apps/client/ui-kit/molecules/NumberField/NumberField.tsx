@@ -3,6 +3,7 @@
 import { NumberField as BaseNumberField } from '@base-ui/react/number-field';
 import { clsx } from 'clsx';
 import { Minus, Plus } from 'lucide-react';
+import { useLocale } from 'next-intl';
 import { useId } from 'react';
 
 import type { NumberFieldProps } from './NumberField.types';
@@ -11,12 +12,14 @@ import s from './NumberField.module.scss';
 
 export const NumberField = ({ value, label, min, max, step = 1, suffix, hint, format, className, onValueChange }: NumberFieldProps) => {
   const id = useId();
+  const locale = useLocale();
 
   return (
     <BaseNumberField.Root
       className={clsx(s.root, className)}
       format={format}
       id={id}
+      locale={locale}
       max={max}
       min={min}
       step={step}

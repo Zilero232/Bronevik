@@ -1,1 +1,1 @@
-export { readNumber, readRecord, toJsonValue } from './json';
+export { parseJsonText, readNumber, readRecord, toJsonValue } from './json';

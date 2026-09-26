@@ -1,6 +1,6 @@
 'use client';
 
-import { getFavorites, removeFavorite } from '@/shared/api/me';
+import { getFavorites, removeFavorite } from '@/features/player/toggle-favorite';
 
 import { useMeMutation } from '../use-me-mutation';
 import { useMeSection } from '../use-me-section';

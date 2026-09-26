@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { clanRouteName, createPageMetadata, ROUTE_STATIC_PARAMS, topClanTags } from '@/shared/seo';
+import { RequestTime } from '@/shared/seo/request-time';
 import { ClanPage } from '@/views/clan';
 
 export const generateStaticParams = async () => (await topClanTags({ fallback: ROUTE_STATIC_PARAMS.fallback.clan })).map((tag) => ({ tag }));
@@ -20,7 +21,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/c/[tag]'
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
-    path: ROUTES.clan(tag),
+    path: ROUTES.clans.detail(tag),
     locale,
     index: true,
     follow: true
@@ -28,9 +29,14 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/c/[tag]'
 };
 
 const Page = () => (
-  <Suspense>
-    <ClanPage />
-  </Suspense>
+  <>
+    <Suspense>
+      <ClanPage />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
 );
 
 export default Page;

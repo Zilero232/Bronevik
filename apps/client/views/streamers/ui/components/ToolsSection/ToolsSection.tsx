@@ -15,9 +15,9 @@ export const ToolsSection = () => {
   return (
     <section className={s.root}>
       <SectionHeader description={t('description')} title={t('title')} />
-      <div className={s.grid}>
-        {TOOL_CARDS.map(({ key, icon }) => (
-          <ToolCard key={key} icon={icon} tool={key} />
+      <div className={s.rows}>
+        {TOOL_CARDS.map(({ key, icon }, index) => (
+          <ToolCard key={key} icon={icon} isFlipped={index % 2 === 1} tool={key} />
         ))}
       </div>
     </section>

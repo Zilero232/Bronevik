@@ -4,21 +4,34 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Badge, Button, buttonVariants } from '@/ui-kit';
+import { Badge, Button, buttonVariants, ConfirmDialog } from '@/ui-kit';
 
 import type { StatusCardProps } from './StatusCard.types';
 
 import { subscriptionTone } from '../../../../../lib/status-tone';
 import { useStatusCard } from '../../../../../model/hooks';
-import { AutoRenewDialog } from '../AutoRenewDialog';
 import { StatusFact } from '../StatusFact';
 
 import s from './StatusCard.module.scss';
 
 export const StatusCard = ({ status }: StatusCardProps) => {
   const t = useTranslations('billing.status');
+  const tAutoRenew = useTranslations('billing.autoRenew');
   const format = useFormatter();
-  const { endKind, renewal, cta, notice, isStartingTrial, onStartTrial } = useStatusCard({ status });
+  const {
+    endKind,
+    renewal,
+    cta,
+    notice,
+    isStartingTrial,
+    onStartTrial,
+    autoRenewMode,
+    isAutoRenewEnabled,
+    isAutoRenewOpen,
+    isAutoRenewPending,
+    onAutoRenewOpenChange,
+    onAutoRenewConfirm
+  } = useStatusCard({ status });
 
   const { isPlus, plan, status: state, currentPeriodEnd, card, plus } = status;
 
@@ -43,7 +56,20 @@ export const StatusCard = ({ status }: StatusCardProps) => {
         <StatusFact label={t('autoRenew.label')} value={t(`autoRenew.${renewal}`)} />
       </dl>
       <footer className={s.actions}>
-        {renewal !== 'unavailable' && <AutoRenewDialog isEnabled={renewal === 'on'} />}
+        {renewal !== 'unavailable' && (
+          <ConfirmDialog
+            cancelLabel={tAutoRenew('dismiss')}
+            confirmLabel={tAutoRenew(`${autoRenewMode}.confirm`)}
+            description={tAutoRenew(`${autoRenewMode}.description`)}
+            isPending={isAutoRenewPending}
+            open={isAutoRenewOpen}
+            title={tAutoRenew(`${autoRenewMode}.title`)}
+            tone={isAutoRenewEnabled ? 'danger' : 'default'}
+            trigger={<Button variant={isAutoRenewEnabled ? 'ghost' : 'secondary'}>{tAutoRenew(`${autoRenewMode}.trigger`)}</Button>}
+            onConfirm={onAutoRenewConfirm}
+            onOpenChange={onAutoRenewOpenChange}
+          />
+        )}
         {plus.trialAvailable && (
           <Button disabled={isStartingTrial} onClick={onStartTrial}>
             {t('trialCta', { days: plus.trialDays })}

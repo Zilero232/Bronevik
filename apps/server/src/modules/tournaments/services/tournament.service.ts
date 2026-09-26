@@ -14,7 +14,9 @@ import type {
   TournamentPage,
   TournamentsQuery,
   TournamentView,
-  TournamentViewWith
+  TournamentViewWith,
+  ViewTournamentInput,
+  WithdrawTournamentRequest
 } from '../tournaments.types';
 
 import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
@@ -43,11 +45,20 @@ export class TournamentService {
     return { items: rows.map((tournament) => this.viewWith({ tournament, nicknames })), total, limit, offset };
   }
 
-  async get(slug: string): Promise<TournamentView> {
-    return this.view(await this.bySlug(slug));
+  async get({ slug, viewerUserId }: ViewTournamentInput): Promise<TournamentView> {
+    return this.view(await this.bySlug({ slug, viewerUserId }));
   }
 
-  async create({ userId, title, description, requirements, maxParticipants, registrationEndsAt, startsAt }: CreateTournamentRequest) {
+  async create({
+    userId,
+    title,
+    description,
+    requirements,
+    maxParticipants,
+    registrationEndsAt,
+    startsAt,
+    openRegistration
+  }: CreateTournamentRequest) {
     const starts = new Date(startsAt);
     const registrationEnds = registrationEndsAt ? new Date(registrationEndsAt) : null;
 
@@ -64,7 +75,8 @@ export class TournamentService {
         requirements,
         rules: { maxParticipants },
         registrationEndsAt: registrationEnds,
-        startsAt: starts
+        startsAt: starts,
+        status: openRegistration ? 'registration' : 'draft'
       },
       include: { participants: true }
     });
@@ -126,6 +138,32 @@ export class TournamentService {
     }
 
     return this.view(await this.prisma.tournament.findUniqueOrThrow({ where: { id }, include: { participants: true } }));
+  }
+
+  async withdraw({ id, userId, accountId }: WithdrawTournamentRequest): Promise<TournamentView> {
+    const account = await this.accounts.accountOf({ userId, accountId });
+
+    const withdrawn = await this.serializable(async (tx) => {
+      const tournament = await tx.tournament.findUnique({ where: { id }, select: { status: true } });
+
+      if (!tournament) {
+        throw new AppNotFoundException('NOT_FOUND', `No tournament ${id}`);
+      }
+
+      if (tournament.status !== 'registration') {
+        throw new AppConflictException('CONFLICT', 'You can withdraw only while registration is open');
+      }
+
+      const { count } = await tx.tournamentParticipant.deleteMany({ where: { tournamentId: id, accountId: account } });
+
+      if (count === 0) {
+        throw new AppNotFoundException('NOT_FOUND', 'You are not registered for this tournament');
+      }
+
+      return tx.tournament.findUniqueOrThrow({ where: { id }, include: { participants: true } });
+    });
+
+    return this.view(withdrawn);
   }
 
   async start({ id, userId }: OwnedById): Promise<TournamentView> {
@@ -223,10 +261,10 @@ export class TournamentService {
     return tournament;
   }
 
-  private async bySlug(slug: string): Promise<TournamentWithParticipants> {
+  private async bySlug({ slug, viewerUserId }: ViewTournamentInput): Promise<TournamentWithParticipants> {
     const tournament = await this.prisma.tournament.findUnique({ where: { slug }, include: { participants: true } });
 
-    if (!tournament || tournament.status === 'draft') {
+    if (!tournament || (tournament.status === 'draft' && tournament.organizerUserId !== viewerUserId)) {
       throw new AppNotFoundException('NOT_FOUND', `No tournament ${slug}`);
     }
 

@@ -2,7 +2,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 
 import { NotificationsProducerModule } from '../notifications';
-import { ReferenceModule } from '../reference';
+import { ReferenceCoreModule } from '../reference';
 import { STREAMERS_QUEUE } from './config';
 import { StreamersProcessor, StreamersSchedulesService } from './processors';
 import {
@@ -11,21 +11,27 @@ import {
   ChatAnnouncerService,
   DonationListenerService,
   IntegrationStoreService,
+  LivePlatformsService,
+  LiveStatusService,
   OverlayPublisherService,
+  SettingsAggregateService,
   StreamerStatsService,
   TwitchChatService,
   VkLiveChatService
 } from './services';
 
 @Module({
-  imports: [NotificationsProducerModule, ReferenceModule, BullModule.registerQueue({ name: STREAMERS_QUEUE.name })],
+  imports: [NotificationsProducerModule, ReferenceCoreModule, BullModule.registerQueue({ name: STREAMERS_QUEUE.name })],
   providers: [
     ChallengeService,
     ChallengeFeedService,
     ChatAnnouncerService,
     DonationListenerService,
     IntegrationStoreService,
+    LivePlatformsService,
+    LiveStatusService,
     OverlayPublisherService,
+    SettingsAggregateService,
     StreamerStatsService,
     TwitchChatService,
     VkLiveChatService,

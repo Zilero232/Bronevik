@@ -2,11 +2,9 @@
 
 import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Suspense } from 'react';
 
 import { RatingPaletteToggle } from '@/features/app/rating-palette';
 import { RatingPatternsToggle } from '@/features/app/rating-patterns';
-import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { RATING_TONES } from '@/shared/lib';
 import { IconButton, Popover, RatingBadge } from '@/ui-kit';
 
@@ -29,12 +27,6 @@ export const DisplaySettings = ({ className }: DisplaySettingsProps) => {
       description={t('description')}
       title={t('title')}
     >
-      <div className={s.row}>
-        <span>{t('language')}</span>
-        <Suspense>
-          <LocaleSwitcher />
-        </Suspense>
-      </div>
       <RatingPatternsToggle />
       <RatingPaletteToggle />
       <div className={s.preview}>

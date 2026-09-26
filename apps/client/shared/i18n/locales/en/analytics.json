@@ -1,0 +1,288 @@
+{
+  "meta": {
+    "title": "Analytics",
+    "description": "Personal analytics of your battles: first win of the day, tonight's playlist, tilt, maps, platoons and honest RNG."
+  },
+  "battleMeta": {
+    "title": "Battle review",
+    "description": "Battle card with damage, mark of excellence and a review of mistakes."
+  },
+  "battlesMeta": {
+    "title": "My battles",
+    "description": "Every battle recorded by the mod, with damage, mark progress and result."
+  },
+  "header": {
+    "title": "Analytics",
+    "description": "Your battles, from the «Three Marks» mod and the Lesta API."
+  },
+  "periods": {
+    "label": "Period",
+    "d30": "30 d",
+    "d90": "90 d",
+    "y1": "Year",
+    "all": "All time"
+  },
+  "account": {
+    "label": "Account"
+  },
+  "tabs": {
+    "today": "Today",
+    "overview": "Overview",
+    "maps": "Maps",
+    "platoon": "Platoon",
+    "rng": "Honest RNG"
+  },
+  "state": {
+    "noAccountTitle": "No Lesta account linked",
+    "noAccountText": "Link your account with Lesta ID in your dashboard to see analytics.",
+    "linkAction": "Link account",
+    "modTitle": "No battles from the mod yet",
+    "modText": "This data comes from the «Three Marks» mod: install it, bind it in your dashboard and play a couple of battles.",
+    "modAction": "Set up the mod",
+    "noGarageTitle": "Garage not loaded yet",
+    "noGarageText": "The vehicle list comes from the Lesta API once your account is linked. Check back a bit later."
+  },
+  "firstWin": {
+    "title": "First win of the day",
+    "available": "Available",
+    "taken": "Already taken",
+    "resetIn": "Resets in",
+    "isTaken": "Taken",
+    "isAvailable": "×2 XP",
+    "tanksLabel": "Vehicles in the garage",
+    "empty": "No eligible vehicles in the garage"
+  },
+  "playlist": {
+    "title": "Tonight's playlist",
+    "description": "What to play today",
+    "shuffle": "Another pick",
+    "empty": "Could not pick any vehicles",
+    "plusHint": "With Plus — {size} tanks and more reasons: low win rate, personal missions.",
+    "plusLink": "Learn more",
+    "moe": "Mark",
+    "toNextMark": "To next mark",
+    "daysSince": "Days idle",
+    "reasons": {
+      "closeToMark": "Close to a mark",
+      "firstWin": "First win",
+      "longUnplayed": "Not played lately",
+      "lowWinRate": "Low win rate",
+      "mission": "Personal mission"
+    }
+  },
+  "overview": {
+    "source": "Mod battles in the period: {count}",
+    "totals": {
+      "battles": "Battles",
+      "winRate": "Wins",
+      "avgDamage": "Avg damage",
+      "wn8": "WN8",
+      "survivalRate": "Survival"
+    },
+    "breakdown": {
+      "title": "Breakdown",
+      "empty": "No battles to break down",
+      "dimensions": {
+        "byTier": "Tiers",
+        "byClass": "Classes",
+        "byNation": "Nations"
+      }
+    },
+    "charts": {
+      "winRate": "Win rate",
+      "avgDamage": "Average damage",
+      "wn8": "WN8",
+      "winRateMeta": "Win rate",
+      "hoursTitle": "By hour",
+      "weekdaysTitle": "By weekday",
+      "trendTitle": "Trend",
+      "trendEmpty": "Not enough data for a trend yet"
+    },
+    "tilt": {
+      "title": "Tilt detector",
+      "longest": "Worst losing streak",
+      "current": "Current streak",
+      "afterLosses": "{count, plural, =0 {After a win or at session start} one {After # loss in a row} other {After # losses in a row}}",
+      "afterLossesPlus": "{count, plural, one {After # or more losses} other {After # or more losses}}",
+      "battles": "{count, plural, one {# battle} other {# battles}}",
+      "advice": "After {losses, plural, one {# loss} other {# losses}} in a row your win rate drops to {winRate} — take a break.",
+      "noAdvice": "No clear tilt: losing streaks barely affect your win rate."
+    },
+    "sessions": {
+      "title": "Sessions",
+      "description": "Compared with your average for the period",
+      "empty": "No sessions in this period"
+    }
+  },
+  "maps": {
+    "title": "Maps",
+    "description": "Delta is the difference from your average win rate",
+    "empty": "No map data",
+    "weakTitle": "Where you struggle",
+    "strongTitle": "Where you shine",
+    "none": "No standout maps yet",
+    "rowsTitle": "Map × class × spawn",
+    "rowsDescription": "Results by vehicle class and spawn side",
+    "spawn": "Spawn {team}",
+    "spawnUnknown": "—"
+  },
+  "platoon": {
+    "soloBattles": "Solo battles",
+    "soloWinRate": "Solo wins",
+    "platoonBattles": "Platoon battles",
+    "platoonWinRate": "Platoon wins",
+    "platoonDamage": "Platoon damage",
+    "tracked": "Battles with platoon data: {count}",
+    "matesTitle": "Platoon chemistry",
+    "matesDescription": "Who you win with more often than solo",
+    "matesEmpty": "You have not played in a platoon yet",
+    "untrackedTitle": "No platoon data",
+    "untrackedText": "Only a recent version of the «Three Marks» mod records platoon members. Update the mod and play in a platoon."
+  },
+  "rng": {
+    "shots": "Shots",
+    "meanRoll": "Average roll",
+    "withinSpread": "Within ±25%",
+    "hitRate": "Hits",
+    "penRate": "Penetrations",
+    "chartTitle": "Damage spread",
+    "chartDescription": "Share of shots by deviation from nominal damage",
+    "chartSeries": "Share of shots",
+    "distanceTitle": "Penetration by distance",
+    "distanceEmpty": "No distance data",
+    "distanceEmptyText": "The «Three Marks» mod records the distance of each shot — update it to a recent version.",
+    "emptyTitle": "No recorded shots",
+    "emptyText": "Honest RNG is built from the shots the «Three Marks» mod records. Install or update the mod and play a few battles."
+  },
+  "battles": {
+    "title": "My battles",
+    "count": "{count, plural, one {# battle} other {# battles}}",
+    "empty": "No battles from the mod yet",
+    "loadMore": "Show more",
+    "survived": "Survived",
+    "destroyed": "Destroyed",
+    "results": {
+      "win": "Victory",
+      "loss": "Defeat",
+      "draw": "Draw"
+    }
+  },
+  "columns": {
+    "byTier": "Tier",
+    "byClass": "Class",
+    "byNation": "Nation",
+    "battles": "Battles",
+    "winRate": "Wins",
+    "avgDamage": "Avg dmg",
+    "wn8": "WN8",
+    "survivalRate": "Survival",
+    "startedAt": "Date",
+    "winRateDelta": "Δ wins",
+    "avgDamageDelta": "Δ damage",
+    "pointsSuffix": " pp",
+    "map": "Map",
+    "winRateVsAverage": "Vs average",
+    "spawn": "Spawn",
+    "mate": "Player",
+    "winRateVsSolo": "Vs solo",
+    "distance": "Distance",
+    "distanceRange": "{from}–{to} m",
+    "distanceFrom": "from {from} m",
+    "shots": "Shots",
+    "pierced": "Penetrated",
+    "penRate": "Pen rate",
+    "tank": "Tank",
+    "result": "Result",
+    "damage": "Damage",
+    "assisted": "Assist",
+    "frags": "Frags",
+    "moe": "Mark"
+  },
+  "battle": {
+    "back": "Back to analytics",
+    "brand": "Three Marks",
+    "notFoundTitle": "Battle not found",
+    "notFoundText": "There is no such battle among your mod records.",
+    "errorTitle": "Could not load the battle",
+    "errorText": "The server did not respond. Try again.",
+    "survived": "Survived",
+    "destroyed": "Destroyed",
+    "results": {
+      "win": "Victory",
+      "loss": "Defeat",
+      "draw": "Draw"
+    },
+    "facts": {
+      "damageDealt": "Damage",
+      "damageAssisted": "Assist",
+      "damageBlocked": "Blocked",
+      "frags": "Destroyed",
+      "spotted": "Spotted",
+      "xp": "XP",
+      "credits": "Credits",
+      "moe": "Mark",
+      "duration": "Duration",
+      "lifetime": "Lifetime"
+    },
+    "share": {
+      "action": "Share",
+      "title": "Battle in the {tank}",
+      "text": "{result} in the {tank} on {map}: {damage} damage and {assisted} assist",
+      "copied": "Battle link copied",
+      "failed": "Could not share"
+    },
+    "reference": {
+      "title": "Against your average",
+      "meta": "{count, plural, one {over # battle} other {over # battles}} in this tank",
+      "none": "Too few battles in this tank to compare"
+    },
+    "efficiency": {
+      "damage": "Damage",
+      "assisted": "Assist",
+      "spotted": "Spotting",
+      "frags": "Frags"
+    },
+    "breakdown": {
+      "title": "Where the damage came from",
+      "dealt": "Dealt",
+      "assistedRadio": "Spotting assist",
+      "assistedTrack": "Tracking assist",
+      "assistedStun": "Stun",
+      "blocked": "Blocked"
+    },
+    "moe": {
+      "title": "What it did to your mark",
+      "combined": "Combined damage",
+      "movingAverage": "Moving average",
+      "shortfall": "Shortfall",
+      "percent": "Mark after battle",
+      "note": "The mark grows when damage plus assist beats the tank's moving average."
+    },
+    "accuracy": {
+      "title": "Shooting",
+      "shots": "Shots",
+      "hitRate": "Hits",
+      "penRate": "Penetrations"
+    },
+    "rolls": {
+      "nominal": "nominal {nominal}",
+      "empty": "The mod recorded no damaging shots"
+    },
+    "mistakesTitle": "What could have gone better",
+    "noMistakes": "No obvious mistakes — a good battle",
+    "mistakes": {
+      "noDamage": "A battle without damage — look for a position you can shoot from.",
+      "lowDamage": "Damage {value} against your average of {reference} in this tank.",
+      "lowSpotting": "Spotted {value} against an average of {reference} — spotting matters for this class.",
+      "lowAssist": "Assist {value} against an average of {reference}.",
+      "diedEarly": "Destroyed early: alive for {value} s of a {reference} s battle.",
+      "lowAccuracy": "Hit rate {value}% against a norm of {reference}%.",
+      "lowPenetration": "Pen rate {value}% against a norm of {reference}% — check your shells and targets.",
+      "moeLoss": "The battle pulled your mark down: {value} against a moving average of {reference}."
+    }
+  },
+  "battlesPage": {
+    "title": "Battles",
+    "description": "Battles from the «Three Marks» mod. Click a row to open the review."
+  }
+}

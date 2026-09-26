@@ -22,7 +22,7 @@ export const MiniDashboard = () => {
     .with({ account: null }, () => (
       <EmptyState
         action={
-          <Link className={buttonVariants()} href={ROUTES.me} onClick={openExternally}>
+          <Link className={buttonVariants()} href={ROUTES.account.overview} onClick={openExternally}>
             {t('action')}
           </Link>
         }

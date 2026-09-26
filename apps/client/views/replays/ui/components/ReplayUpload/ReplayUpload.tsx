@@ -2,6 +2,7 @@
 
 import { FileUp } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { CommunityGate } from '@/features/community/viewer';
 import { Button, Card, CardBody, CardHeader, ProgressBar, SegmentedControl } from '@/ui-kit';
@@ -16,6 +17,7 @@ import s from './ReplayUpload.module.scss';
 
 export const ReplayUpload = () => {
   const t = useTranslations('replays.upload');
+  const titleId = useId();
   const format = useFormatter();
   const {
     dropRef,
@@ -36,8 +38,8 @@ export const ReplayUpload = () => {
   } = useReplayUpload();
 
   return (
-    <Card aria-labelledby='replay-upload-title' padding='none'>
-      <CardHeader title={<span id='replay-upload-title'>{t('title')}</span>} />
+    <Card aria-labelledby={titleId} padding='none'>
+      <CardHeader title={<span id={titleId}>{t('title')}</span>} />
       <CardBody className={s.body}>
         <CommunityGate requiresLesta={false}>
           <label ref={dropRef} className={s.drop} data-over={isDragOver}>

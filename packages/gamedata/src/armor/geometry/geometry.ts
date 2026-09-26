@@ -1,4 +1,4 @@
-import type { ArmorGeometry, ArmorPieceGeometry, Vec3 } from '../model/armor-model.types';
+import type { ArmorGeometry, ArmorPieceGeometry, Vec3 } from '../armor-model/armor-model.types';
 import type { DequantizeInput, PackedHeader, PackedPieceHeader, QuantizeInput } from './geometry.types';
 
 import { ARMOR_GEOMETRY_FORMAT as FORMAT } from './geometry.constants';

@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getMap } from '@/shared/api/maps';
+import { getMap } from '@/entities/map/map';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useMapDetail = (idOrSlug: string) =>

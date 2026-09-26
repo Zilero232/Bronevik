@@ -7,7 +7,7 @@ import { ModuleRef } from '@nestjs/core';
 
 import type { IsScheduleActiveInput } from './schedules.types';
 
-import { AppConfigService, TIME } from '../../../config';
+import { AppConfigService, isLestaMock, TIME } from '../../../config';
 import { SCHEDULES } from './config';
 
 @Injectable()
@@ -27,12 +27,13 @@ export class SchedulesService implements OnApplicationBootstrap {
     }
 
     const hasLesta = this.config.get('LESTA_APPLICATION_ID') !== '';
+    const lestaMock = isLestaMock({ LESTA_MOCK: this.config.get('LESTA_MOCK') });
     let registered = 0;
 
     for (const schedule of SCHEDULES) {
       const queue = this.moduleRef.get<Queue>(getQueueToken(schedule.queue), { strict: false });
 
-      if (!this.isActive({ schedule, hasLesta })) {
+      if (!this.isActive({ schedule, hasLesta, lestaMock })) {
         await queue.removeJobScheduler(schedule.id);
 
         continue;
@@ -47,7 +48,7 @@ export class SchedulesService implements OnApplicationBootstrap {
     this.logger.log(`registered ${registered} of ${SCHEDULES.length} job schedulers`);
   }
 
-  private isActive({ schedule, hasLesta }: IsScheduleActiveInput): boolean {
-    return (schedule.enabled ?? true) && (hasLesta || !schedule.needsLesta);
+  private isActive({ schedule, hasLesta, lestaMock }: IsScheduleActiveInput): boolean {
+    return (schedule.enabled ?? true) && (hasLesta || !schedule.needsLesta) && !(lestaMock && schedule.realLestaOnly);
   }
 }

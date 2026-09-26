@@ -1,6 +1,6 @@
 'use client';
 
-import { lestaStartUrl } from '@/shared/api/auth';
+import { lestaStartUrl } from '../../../api';
 import { useHydrated } from '@/shared/lib';
 
 export const useLestaStartUrl = (callbackPath: string) => {

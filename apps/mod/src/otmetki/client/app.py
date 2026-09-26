@@ -24,10 +24,12 @@ from ..signing import DEVICE_HEADER
 from ..storage import JsonFile
 from ..version import MOD_ID, VERSION
 from .battle import BattleMoeTracker
+from .shots import ShotTracker
 from .dossier import current_vehicle_id, current_vehicle_moe
 from .loadout import read_current_loadout
 from .fetch import create_transport
 from .log import log, log_exception, safe
+from .settings_core import SettingsShare
 from .settings_ui import SettingsUi
 from .ui import BATTLE_PANEL, HANGAR_PANEL, Ui
 
@@ -124,7 +126,11 @@ class OtmetkiApp(object):
         self.battle_curve = None
         self.ui = Ui()
         self.battle_tracker = BattleMoeTracker(self._on_battle_totals)
+        self.shot_tracker = ShotTracker()
+        self.shots_by_arena = {}
+        self.shot_arena = None
         self.settings_ui = SettingsUi(self)
+        self.settings_share = SettingsShare(self, CONFIG_DIR)
 
     def start(self):
         events = g_playerEvents
@@ -207,6 +213,7 @@ class OtmetkiApp(object):
                     self.flush_requested = False
                     self.last_flush = now
                     self.sender.tick(now)
+                self.settings_share.tick(now)
         except Exception:
             log_exception('tick')
         BigWorld.callback(TICK_S, self._tick)
@@ -220,6 +227,7 @@ class OtmetkiApp(object):
         self._on_vehicle_changed()
         self._show_session_panel(False)
         self.settings_ui.refresh()
+        self.settings_share.on_hangar()
 
     def _bind_from_config(self):
         code = self.config.get('bind_code')
@@ -383,6 +391,9 @@ class OtmetkiApp(object):
                 self.queue_wait_by_arena[arena_id] = wait
             if arena_id not in [entry[0] for entry in self.pending_arenas]:
                 self.pending_arenas.append([arena_id, 0])
+            if self.config.is_enabled('send_shots'):
+                self.shot_arena = arena_id
+                self.shot_tracker.start()
         if not self.config.is_enabled('battle_moe_panel'):
             return
         tank_id = _player_tank_id(player)
@@ -406,6 +417,10 @@ class OtmetkiApp(object):
     def _on_avatar_leave(self, *args):
         self.in_battle = False
         self.battle_tracker.stop()
+        shots = self.shot_tracker.take()
+        if self.shot_arena is not None and shots:
+            self.shots_by_arena[self.shot_arena] = shots
+        self.shot_arena = None
         self.battle_snapshot = None
         self.battle_curve = None
         self.ui.hide(BATTLE_PANEL)
@@ -459,6 +474,7 @@ class OtmetkiApp(object):
             'map_name': _map_name(common.get('arenaTypeID')),
             'queue_time_s': self.queue_wait_by_arena.pop(arena_id, None),
             'loadout': self.loadouts.take(arena_id, tank_id) if self.config.is_enabled('send_loadouts') else None,
+            'shots': self.shots_by_arena.pop(arena_id, None) if self.config.is_enabled('send_shots') else None,
         })
         event['session_id'] = self.session.add(event, now)
         self.seen_arenas.append(arena_id)

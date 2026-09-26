@@ -2,8 +2,6 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Card, CardHeader } from '@/ui-kit';
-
 import { useClosestMarks } from '../../../model/hooks';
 import { ClosestList, PlayerLookup } from './components';
 
@@ -14,12 +12,16 @@ export const ClosestMarks = () => {
   const { player, onPick } = useClosestMarks();
 
   return (
-    <Card aria-label={t('title')} className={s.root} id='closest' padding='none' role='region'>
-      <CardHeader className={s.header} title={t('title')} />
-      <div className={s.body}>
-        <PlayerLookup player={player} onPick={onPick} />
-        <ClosestList player={player} />
+    <section aria-labelledby='closest-title' className={s.root} id='closest'>
+      <div className={s.head}>
+        <h2 className={s.title} id='closest-title'>
+          {t('title')}
+        </h2>
+        <div className={s.lookup}>
+          <PlayerLookup player={player} onPick={onPick} />
+        </div>
       </div>
-    </Card>
+      <ClosestList player={player} />
+    </section>
   );
 };

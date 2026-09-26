@@ -6,8 +6,9 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
+import { NumberCell } from '@/ui-kit';
+
 import { ClanCell } from '../../../ui/components/ClanActivity/components';
-import { NumberCell } from '../../../ui/components/NumberCell';
 
 const column = createColumnHelper<ClanListItem>();
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { zRegisterTournament } from '@/shared/api/tournaments';
+import { zRegisterTournament } from '@/entities/tournament/tournament';
 
 export const registrationFormSchema = z.object({
   accountId: z.string(),

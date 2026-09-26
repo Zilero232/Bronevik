@@ -1,4 +1,4 @@
-import type { ModuleOption } from '@otmetki/schemas';
+import type { ModuleOption, ProvisionKind } from '@otmetki/schemas';
 
 import type { BUILD_CATALOG, BUILD_CATEGORIES, CREW_ROLE_ORDER } from './build-catalog.constants';
 
@@ -21,6 +21,7 @@ export type BuildItem = {
   id: number;
   tag: string;
   name: string;
+  kind: ProvisionKind;
   image: string | null;
   category: BuildCategory | null;
   isPremium: boolean;

@@ -1,8 +1,11 @@
+import { PLUS_GRACE, PLUS_LIMITS } from '@otmetki/schemas';
+
 import { FEATURES } from '../../../config';
 
 export const REPLAY_UPLOAD = {
   field: 'file',
   maxBytes: 50 * 1024 * 1024,
+  multipartOverheadBytes: 64 * 1024,
   extensions: ['.mtreplay', '.wotreplay'],
   contentType: 'application/octet-stream',
   keyPrefix: 'replays',
@@ -13,7 +16,7 @@ export const REPLAY_UPLOAD = {
 
 export const REPLAYS_QUEUE = {
   name: 'replays',
-  jobs: { parse: 'parse', bestOfWeek: 'best-of-week' },
+  jobs: { parse: 'parse', bestOfWeek: 'best-of-week', overflowCleanup: 'overflow-cleanup' },
   concurrency: 1,
   parseAttempts: 3,
   parseBackoffMs: 10_000
@@ -26,8 +29,22 @@ export const REPLAYS_SCHEDULES = [
     name: REPLAYS_QUEUE.jobs.bestOfWeek,
     repeat: { pattern: '10 0 * * 1' },
     enabled: FEATURES.replaysBestOfWeek
+  },
+  {
+    id: 'replays-overflow-cleanup',
+    queue: REPLAYS_QUEUE.name,
+    name: REPLAYS_QUEUE.jobs.overflowCleanup,
+    repeat: { pattern: '30 4 * * *' },
+    enabled: FEATURES.replayOverflowCleanup
   }
 ] as const;
+
+export const REPLAY_OVERFLOW = {
+  keep: PLUS_LIMITS.storedReplays.free,
+  readOnlyDays: PLUS_GRACE.overflowReadOnlyDays,
+  noticeDays: [1, 14],
+  dedupePrefix: 'replay-overflow'
+} as const;
 
 export const REPLAY_PARSE = {
   trackStepSeconds: 1,

@@ -1,43 +1,45 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  display: grid;
-  align-items: start;
-  gap: var(--gap-panel) var(--space-7);
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  @include stack(var(--gap-panel));
 
-  @include below(3xl) {
+  scroll-margin-top: var(--header-height);
+}
+
+.hero {
+  @include class-tint;
+
+  position: relative;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(180deg, transparent calc(100% - 48px), var(--color-bg)), var(--page-glow, none), var(--color-band);
+  color: var(--color-text);
+}
+
+.inner {
+  @include shell;
+
+  display: grid;
+  align-items: center;
+  gap: var(--space-5) var(--space-7);
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  padding-block: var(--space-7);
+
+  @include below(xl) {
     grid-template-columns: minmax(0, 1fr);
+    padding-block: var(--space-5);
   }
 }
 
-.garage {
+.info {
   @include stack(var(--space-3));
 
   min-width: 0;
-}
-
-.line {
-  @include label;
-
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  margin: 0;
-  gap: var(--space-2) var(--space-3);
-}
-
-.tier {
-  color: var(--color-text);
-  font-weight: 700;
-}
-
-.kind[data-premium='true'] {
-  color: var(--color-premium);
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--class, var(--color-border-strong));
 }
 
 .name {
-  @include heading(var(--text-3xl));
+  @include display(var(--display-xl));
 
   margin: 0;
   overflow-wrap: anywhere;
@@ -47,43 +49,22 @@
   }
 
   @include below(md) {
-    font-size: var(--text-2xl);
+    font-size: 2.25rem;
   }
 }
 
-.stage {
-  @include nation-tint;
+.line {
+  @include label;
 
-  position: relative;
-  overflow: hidden;
-  width: 320px;
-  max-width: 100%;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  aspect-ratio: 16 / 10;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--nation) 22%, transparent), transparent 70%);
-  isolation: isolate;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  gap: var(--space-2);
 }
 
-.flag {
-  position: absolute;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  inset: 0;
-  opacity: var(--flag-opacity);
-  pointer-events: none;
-}
-
-.stage > .render {
-  width: 100%;
-  height: 100%;
-
-  img {
-    width: 100%;
-    height: auto;
-    image-rendering: auto;
-  }
+.kind[data-premium='true'] {
+  color: var(--color-premium);
 }
 
 .description {
@@ -91,4 +72,8 @@
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+}
+
+.params {
+  @include shell;
 }

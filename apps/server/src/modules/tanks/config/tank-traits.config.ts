@@ -14,5 +14,7 @@ export const TANK_OBTAIN = {
 
 export const TANK_LEARNING = {
   minBucketBattles: 100,
-  difficultyGain: { easy: 2, moderate: 4, hard: 6 }
+  difficultyGain: { easy: 2, moderate: 4, hard: 6 },
+  difficultyCacheTtlMs: 30 * 60_000,
+  difficultyCacheKey: 'difficulty'
 } as const;

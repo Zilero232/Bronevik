@@ -2,7 +2,7 @@
 
 import { useMutation } from '@tanstack/react-query';
 
-import { createCheckout } from '@/shared/api/billing';
+import { createCheckout } from '../../../api';
 
 export const usePlusCheckout = () =>
   useMutation({

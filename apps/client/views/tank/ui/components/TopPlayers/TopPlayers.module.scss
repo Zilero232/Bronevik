@@ -1,21 +1,50 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  overflow-x: auto;
+  @include band;
+
   scroll-margin-top: calc(var(--header-height) + var(--space-4));
 }
 
+.inner {
+  @include shell;
+  @include stack(var(--space-5));
+}
+
 .header {
-  padding: 0 var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.title {
+  @include display(var(--display-md, 2rem));
+
+  margin: 0;
+  text-transform: uppercase;
+
+  @include below(md) {
+    font-size: var(--text-2xl);
+  }
+}
+
+.body {
+  @include stack(var(--gap-panel));
+
+  &[data-stale='true'] {
+    opacity: 0.6;
+  }
+}
+
+.card {
+  overflow-x: auto;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-
-  &[data-stale='true'] {
-    opacity: 0.6;
-  }
 
   th {
     @include label;
@@ -23,7 +52,7 @@
     height: 32px;
     padding: 0 var(--space-4);
     border-bottom: 1px solid var(--color-border-strong);
-    background-color: var(--color-surface-raised);
+    background-color: var(--color-surface-sunken);
     text-align: right;
 
     &:nth-child(2) {

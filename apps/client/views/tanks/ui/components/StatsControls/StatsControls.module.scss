@@ -1,7 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-3));
+  @include stack(var(--space-4));
 }
 
 .row {
@@ -9,8 +9,4 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-}
-
-.view {
-  margin-left: auto;
 }

@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 
 import type { PremiumOffer, Prisma } from '../../../../generated';
-import type { ScrapeSummary, StoreOfferInput } from '../shop.types';
+import type { AnnounceReturnInput, ScrapeSummary, StoreOfferInput } from '../shop.types';
 
 import { toJsonValue } from '../../../common/lib';
 import { SOURCES } from '../../../config';
 import { isUniqueViolation, PrismaService } from '../../../core';
 import { crawlPages, parseTankiListing } from '../../../lib/scrape';
+import { EntitlementsService } from '../../billing';
 import { NotificationService } from '../../notifications';
-import { NEWS_ENRICH, OFFER_SCRAPE } from '../config';
-import { matchTankNames, parseOfferDetail } from '../lib';
+import { NEWS_ENRICH, OFFER_RETURN, OFFER_SCRAPE } from '../config';
+import { absenceBeforeReturn, matchTankNames, parseOfferDetail } from '../lib';
 import { BonusCodeService } from './bonus-code.service';
 
 @Injectable()
@@ -17,7 +18,8 @@ export class OfferScrapeService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationService,
-    private readonly bonusCodes: BonusCodeService
+    private readonly bonusCodes: BonusCodeService,
+    private readonly entitlements: EntitlementsService
   ) {}
 
   async run(now: Date): Promise<ScrapeSummary> {
@@ -87,9 +89,36 @@ export class OfferScrapeService {
       const tankName = vehicles.find((vehicle) => vehicle.tankId === tankId)?.name ?? String(tankId);
 
       notified += await this.notifications.tankDiscounted({ tankId, tankName, discountPercent: discountPercent || null, offerId: offer.id });
+      notified += await this.announceReturn({ tankId, tankName, discountPercent: discountPercent || null, offerId: offer.id, now });
     }
 
     return notified;
+  }
+
+  private async announceReturn({ tankId, tankName, discountPercent, offerId, now }: AnnounceReturnInput): Promise<number> {
+    const previous = await this.prisma.premiumOffer.findMany({
+      where: { tankIds: { has: tankId }, id: { not: offerId } },
+      select: { endsAt: true, lastSeenAt: true }
+    });
+
+    const absentDays = absenceBeforeReturn({ previous, now, minDays: OFFER_RETURN.minAbsentDays });
+
+    if (absentDays === null) {
+      return 0;
+    }
+
+    const follows = await this.prisma.follow.findMany({
+      where: { kind: 'tank', targetId: BigInt(tankId), OR: [{ events: { has: 'tankReturned' } }, { events: { isEmpty: true } }] },
+      select: { userId: true }
+    });
+
+    const plusUsers = (await Promise.all(follows.map(async ({ userId }) => ((await this.entitlements.isPlus(userId)) ? [userId] : [])))).flat();
+
+    return this.notifications.notifyMany({
+      userIds: plusUsers,
+      notification: { event: 'tankReturned', tankId, tankName, absentDays, discountPercent },
+      dedupeKey: `returned-${tankId}-${offerId}`
+    });
   }
 
   private async createOffer(data: Prisma.PremiumOfferUncheckedCreateInput): Promise<PremiumOffer | null> {

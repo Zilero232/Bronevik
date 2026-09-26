@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata, ROUTE_STATIC_PARAMS, tankRouteName, topTankSlugs } from '@/shared/seo';
+import { RequestTime } from '@/shared/seo/request-time';
 import { TankPage } from '@/views/tank';
 
 export const generateStaticParams = async () => (await topTankSlugs({ fallback: ROUTE_STATIC_PARAMS.fallback.tank })).map((slug) => ({ slug }));
@@ -20,7 +21,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/t/[slug]
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
-    path: ROUTES.tank(slug),
+    path: ROUTES.tanks.detail(slug),
     locale,
     index: true,
     follow: true
@@ -28,9 +29,14 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/t/[slug]
 };
 
 const Page = () => (
-  <Suspense>
-    <TankPage />
-  </Suspense>
+  <>
+    <Suspense>
+      <TankPage />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
 );
 
 export default Page;

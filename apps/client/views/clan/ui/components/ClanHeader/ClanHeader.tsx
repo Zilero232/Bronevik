@@ -18,9 +18,7 @@ export const ClanHeader = ({ page: { clan, stats } }: ClanHeaderProps) => {
 
   return (
     <div className={s.root}>
-      <span className={s.emblem}>
-        <ClanEmblem className={s.emblemImage} color={clan.color} size='lg' src={clan.emblem} tag={clan.tag} />
-      </span>
+      <ClanEmblem className={s.emblem} color={clan.color} size='lg' src={clan.emblem} tag={clan.tag} />
       <PageHeader
         meta={
           <span className={s.meta}>
@@ -36,7 +34,7 @@ export const ClanHeader = ({ page: { clan, stats } }: ClanHeaderProps) => {
             <span className={s.tag}>[{clan.tag}]</span> {clan.name}
           </>
         }
-        breadcrumbs={[{ label: tNav('title'), href: ROUTES.clans }, { label: `[${clan.tag}]` }]}
+        breadcrumbs={[{ label: tNav('title'), href: ROUTES.clans.list }, { label: `[${clan.tag}]` }]}
         description={clan.motto ?? undefined}
       >
         <KeyFigures>

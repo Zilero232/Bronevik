@@ -6,11 +6,11 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import type { Coach, CreateOrder } from '@/shared/api/coaching';
+import type { Coach, CreateOrder } from '@/entities/coaching/coach';
 
 import { communityErrorKind } from '@/features/community/api-error';
 import { useCommunityViewer } from '@/features/community/viewer';
-import { requestCoaching } from '@/shared/api/coaching';
+import { requestCoaching } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { RequestFormOutput, RequestFormValues } from '../../../lib/request-form';

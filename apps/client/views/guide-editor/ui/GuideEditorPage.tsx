@@ -24,7 +24,7 @@ export const GuideEditorPage = ({ slug }: GuideEditorPageProps) => {
   return (
     <div className={s.root}>
       <PageHeader
-        breadcrumbs={[{ label: t('breadcrumb'), href: ROUTES.guides }, ...(guide ? [{ label: guide.title, href: ROUTES.guide(guide.slug) }] : [])]}
+        breadcrumbs={[{ label: t('breadcrumb'), href: ROUTES.guides.list }, ...(guide ? [{ label: guide.title, href: ROUTES.guides.detail(guide.slug) }] : [])]}
         description={t('description')}
         title={isEdit ? t('editTitle') : t('newTitle')}
       />
@@ -39,7 +39,7 @@ export const GuideEditorPage = ({ slug }: GuideEditorPageProps) => {
         .with({ isSignedIn: false }, () => (
           <EmptyState
             action={
-              <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.login}>
+              <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.auth.login}>
                 <LogIn size={14} />
                 {t('signIn')}
               </Link>

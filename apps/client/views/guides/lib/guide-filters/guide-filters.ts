@@ -1,4 +1,4 @@
-import type { GuideListQuery } from '@/shared/api/guides';
+import type { GuideListQuery } from '@/entities/guide/guide';
 
 import type { GuideFilters, PageCountInput, ToGuideListQueryInput } from './guide-filters.types';
 

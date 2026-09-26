@@ -1,0 +1,47 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+}
+
+.title {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.body {
+  @include stack(var(--space-3));
+
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.blurb {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.leaders {
+  @include stack(var(--space-1));
+}
+
+.leadersTitle {
+  @include label;
+
+  margin: 0;
+  color: var(--color-text-dim);
+}
+
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

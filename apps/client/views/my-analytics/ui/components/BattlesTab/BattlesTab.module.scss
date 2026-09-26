@@ -1,0 +1,7 @@
+@use '@/shared/styles/mixins' as *;
+
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3);
+}

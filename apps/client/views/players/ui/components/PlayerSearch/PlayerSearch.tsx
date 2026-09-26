@@ -14,7 +14,7 @@ export const PlayerSearch = () => {
 
   return (
     <div className={s.root}>
-      <EntityPicker kind='player' placeholder={t('placeholder')} onPick={({ nickname }) => router.push(ROUTES.player(nickname))} />
+      <EntityPicker kind='player' placeholder={t('placeholder')} onPick={({ nickname }) => router.push(ROUTES.players.profile(nickname))} />
     </div>
   );
 };

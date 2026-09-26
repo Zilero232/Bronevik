@@ -26,7 +26,7 @@ export const MoeDrawer = ({ row, isOpen, onOpenChange }: MoeDrawerProps) => {
         <div className={s.body}>
           <div className={s.identity}>
             <TankIdentity withNation size='lg' tank={vehicleIdentity(row.vehicle)} />
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.tank(row.vehicle.slug)}>
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.tanks.detail(row.vehicle.slug)}>
               {t('openTank')}
             </Link>
           </div>

@@ -1,0 +1,1 @@
+export { ObtainEditorial } from './ObtainEditorial';

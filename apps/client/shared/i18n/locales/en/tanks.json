@@ -5,12 +5,16 @@
   },
   "source": "Data: Lesta Games API",
   "head": {
-    "title": "Tank statistics",
+    "title": "Tanks",
     "description": "Win rate, damage and popularity of Mir Tankov vehicles in random battles.",
     "tanks": "Tanks in the sample",
     "battles": "Battles in the period",
     "strongest": "Top by WR diff",
     "noLeader": "No data"
+  },
+  "hero": {
+    "home": "Home",
+    "filters": "Vehicle filters"
   },
   "compare": {
     "meta": {
@@ -146,6 +150,7 @@
       "standard": "Without premium account"
     },
     "reserve": "Credit reserve +50%",
+    "clanPayout": "Clan payouts +{percent}%",
     "caption": "Tank economy: {count}",
     "errorTitle": "Could not load the economy",
     "errorDescription": "The server did not answer. Try again.",
@@ -153,7 +158,7 @@
     "emptyDescription": "Medians appear once mod users play enough random battles.",
     "emptyFilteredTitle": "Nothing matches the filters",
     "resetFilters": "Reset filters",
-    "note": "Per-battle medians from random battles sent by the mod and from replays over 30 days. The reserve is applied on the site from the base income.",
+    "note": "Per-battle medians from random battles sent by the mod and from replays over 30 days. The reserve and clan payouts are applied on the site from the base income.",
     "columns": {
       "tank": "Tank",
       "tier": "Tier",

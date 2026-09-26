@@ -1,0 +1,117 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --result: var(--color-text-muted);
+
+  overflow: hidden;
+  border-top: 2px solid var(--result);
+
+  &[data-result='win'] {
+    --result: var(--color-success);
+  }
+
+  &[data-result='loss'] {
+    --result: var(--color-danger);
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-3);
+}
+
+.tank {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.identity {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.name {
+  @include heading(var(--text-xl));
+
+  margin: 0;
+}
+
+.map {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.outcome {
+  @include stack(0);
+
+  align-items: flex-end;
+}
+
+.result {
+  @include heading(var(--text-2xl));
+
+  color: var(--result);
+}
+
+.fate {
+  @include label;
+}
+
+.facts {
+  display: grid;
+  margin: 0;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+}
+
+.fact {
+  @include stack(var(--space-1));
+
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-sunken);
+
+  dt {
+    @include label;
+  }
+
+  dd {
+    @include numeric(var(--text-lg));
+
+    display: inline-flex;
+    align-items: baseline;
+    margin: 0;
+    color: var(--color-text);
+    gap: var(--space-2);
+  }
+}
+
+.delta {
+  font-size: var(--text-xs);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  gap: var(--space-3);
+}
+
+.brand {
+  @include label;
+}

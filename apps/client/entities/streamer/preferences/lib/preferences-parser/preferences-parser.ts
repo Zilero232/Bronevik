@@ -1,0 +1,110 @@
+import { settingsValuesSchema } from '@otmetki/schemas';
+import { isIncludedIn, mergeDeep } from 'remeda';
+
+import type { AddValueInput, PreferencesField, PreferencesImport, ReadTagInput } from './preferences-parser.types';
+
+import { PREFERENCES_TAGS, PREFERENCES_VALUES } from '../../config';
+
+const BLOCKED = new Set<string>(PREFERENCES_TAGS.blocked.map((tag) => tag.toLowerCase()));
+
+const isBlocked = (element: Element): boolean => {
+  for (let node: Element | null = element; node; node = node.parentElement) {
+    if (BLOCKED.has(node.tagName.toLowerCase())) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const readTag = ({ document, selectors }: ReadTagInput): string | null => {
+  for (const selector of selectors) {
+    for (const element of document.querySelectorAll(selector)) {
+      const text = element.textContent.trim();
+
+      if (element.children.length === 0 && !isBlocked(element) && text.length > 0 && text.length <= PREFERENCES_VALUES.maxTextLength) {
+        return text;
+      }
+    }
+  }
+
+  return null;
+};
+
+const toNumber = (text: string): number | null => (PREFERENCES_VALUES.number.test(text) ? Number(text) : null);
+
+const toValue = (field: PreferencesField, text: string): unknown => {
+  const lower = text.toLowerCase();
+  const number = toNumber(text);
+
+  switch (field.kind) {
+    case 'boolean': {
+      return isIncludedIn(lower, PREFERENCES_VALUES.truthy) ? true : isIncludedIn(lower, PREFERENCES_VALUES.falsy) ? false : null;
+    }
+
+    case 'integer': {
+      return number === null ? null : Math.round(number);
+    }
+
+    case 'decimal': {
+      return number === null ? null : Math.round(number * 100) / 100;
+    }
+
+    case 'index': {
+      return number !== null && Number.isInteger(number) ? (field.options[number] ?? null) : null;
+    }
+  }
+};
+
+const nested = (path: string, value: unknown): Record<string, unknown> => {
+  const [head = '', ...rest] = path.split('.');
+
+  return { [head]: rest.length === 0 ? value : nested(rest.join('.'), value) };
+};
+
+const addValue = ({ target, path, value }: AddValueInput): void => {
+  if (value === null || value === undefined) {
+    return;
+  }
+
+  const parsed = settingsValuesSchema.safeParse(nested(path, value));
+
+  if (!parsed.success) {
+    return;
+  }
+
+  target.values = mergeDeep(target.values, parsed.data);
+  target.found.push(path);
+};
+
+const readResolution = (document: Document): string | null => {
+  for (const { width, height } of PREFERENCES_TAGS.resolution) {
+    const w = toNumber(readTag({ document, selectors: [width] }) ?? '');
+    const h = toNumber(readTag({ document, selectors: [height] }) ?? '');
+
+    if (w !== null && h !== null && Number.isInteger(w) && Number.isInteger(h)) {
+      return `${w}x${h}`;
+    }
+  }
+
+  return null;
+};
+
+export const parsePreferences = (xml: string): PreferencesImport => {
+  const result: PreferencesImport = { values: {}, found: [] };
+  const document = new DOMParser().parseFromString(xml, 'application/xml');
+
+  if (document.getElementsByTagName('parsererror').length > 0) {
+    return result;
+  }
+
+  addValue({ target: result, path: 'display.resolution', value: readResolution(document) });
+
+  for (const field of PREFERENCES_TAGS.fields) {
+    const text = readTag({ document, selectors: field.selectors });
+
+    addValue({ target: result, path: field.path, value: text === null ? null : toValue(field, text) });
+  }
+
+  return result;
+};

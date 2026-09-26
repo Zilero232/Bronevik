@@ -1,6 +1,6 @@
 import { sortBy, sumBy } from 'remeda';
 
-import type { ReplayPlayer } from '@/shared/api/replays';
+import type { ReplayPlayer } from '@/entities/replay/replay';
 
 import type { SplitTeamsInput, TeamSplit, TeamTotals } from './team-split.types';
 

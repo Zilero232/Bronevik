@@ -1,1 +1,0 @@
-export { OgFrame } from './OgFrame';

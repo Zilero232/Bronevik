@@ -13,5 +13,6 @@ export const LESTA_ID_ERROR = {
   denied: 'lesta_denied',
   token: 'lesta_token',
   unavailable: 'lesta_unavailable',
-  taken: 'lesta_account_taken'
+  taken: 'lesta_account_taken',
+  limit: 'lesta_link_limit'
 } as const;

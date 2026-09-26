@@ -31,12 +31,12 @@ export const LoginOptions = ({ error }: LoginOptionsProps) => {
           </p>
         )}
         {session && (
-          <Link className={s.signedIn} href={ROUTES.me}>
+          <Link className={s.signedIn} href={ROUTES.account.overview}>
             {t('signedInAs', { name: session.user.name })}
             <ArrowRight size={14} />
           </Link>
         )}
-        <LestaIdButton block callbackPath={ROUTES.me} label={t('lesta')} size='lg' />
+        <LestaIdButton block callbackPath={ROUTES.account.overview} label={t('lesta')} size='lg' />
         <p className={s.hint}>{t('lestaHint')}</p>
         <div className={s.divider}>
           <span>{t('or')}</span>

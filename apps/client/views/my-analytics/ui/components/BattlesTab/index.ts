@@ -1,0 +1,1 @@
+export { BattlesTab } from './BattlesTab';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ReplayPlayer } from '@/shared/api/replays';
+import type { ReplayPlayer } from '@/entities/replay/replay';
 
 import { aliveSeries, battleLength, formatClock, killEvents } from '../battle-timeline';
 

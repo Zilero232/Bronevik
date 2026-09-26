@@ -1,0 +1,24 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.label {
+  @include label;
+}
+
+.invite {
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.hint {
+  @include source-line;
+
+  flex-basis: 100%;
+  margin: 0;
+}

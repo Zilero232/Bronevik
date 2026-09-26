@@ -6,11 +6,13 @@ import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { MePage } from '@/views/me';
 
+export const instant = false;
+
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
   const t = await getTranslations({ locale, namespace: 'me.meta' });
 
-  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.me, locale });
+  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.account.overview, locale });
 };
 
 const Page = () => <MePage />;

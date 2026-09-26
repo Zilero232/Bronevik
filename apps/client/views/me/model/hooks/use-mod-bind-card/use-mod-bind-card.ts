@@ -1,6 +1,6 @@
 'use client';
 
-import { getModDevices, issueBindCode, revokeModDevice } from '@/shared/api/me';
+import { getModDevices, issueBindCode, revokeModDevice } from '../../../api';
 
 import { MOD_BIND } from '../../../config';
 import { useMeMutation } from '../use-me-mutation';

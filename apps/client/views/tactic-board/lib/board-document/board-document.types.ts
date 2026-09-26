@@ -1,6 +1,6 @@
 import type * as Y from 'yjs';
 
-import type { TacticLayer } from '@/shared/api/tactics';
+import type { TacticLayer } from '@/entities/tactic/board';
 
 export type WriteLayerInput = {
   doc: Y.Doc;

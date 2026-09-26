@@ -1,6 +1,6 @@
-import type { Tournament } from '@/shared/api/tournaments';
+import type { Tournament } from '@/entities/tournament/tournament';
 
-export type TournamentToastKey = 'cancelled' | 'opened' | 'registered' | 'reported' | 'started';
+export type TournamentToastKey = 'cancelled' | 'opened' | 'registered' | 'reported' | 'started' | 'withdrawn';
 
 export type UseTournamentMutationInput<TInput> = {
   mutationFn: (input: TInput) => Promise<Tournament>;

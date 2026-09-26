@@ -11,6 +11,7 @@ import { CACHE_STORE, THROTTLE } from './common/cache';
 import { AllExceptionsFilter } from './common/filters';
 import { AppConfigModule, AppConfigService } from './config';
 import { AppLoggerModule, LestaModule, LOGGER, PrismaModule, QueuesModule, REDIS, RedisModule } from './core';
+import { AnalyticsModule } from './modules/analytics';
 import { AuthModule } from './modules/auth';
 import { BillingModule } from './modules/billing';
 import { BuildsModule } from './modules/builds';
@@ -20,6 +21,7 @@ import { CoachingModule } from './modules/coaching';
 import { BoardModule, CollectorProducerModule, CollectorQueuesModule } from './modules/collector';
 import { CommunityBuildsModule } from './modules/community-builds';
 import { CompareModule } from './modules/compare';
+import { CompetitionsModule } from './modules/competitions';
 import { DeveloperEventsModule, DeveloperModule } from './modules/developer';
 import { EventsModule } from './modules/events';
 import { GuidesModule } from './modules/guides';
@@ -31,9 +33,11 @@ import { MeModule } from './modules/me';
 import { MissionsModule } from './modules/missions';
 import { ModModule } from './modules/mod';
 import { ModerationModule } from './modules/moderation';
+import { ModesModule } from './modules/modes';
 import { NotificationsModule } from './modules/notifications';
 import { PlatoonsModule } from './modules/platoons';
 import { PlayersModule } from './modules/players';
+import { ProgressionModule } from './modules/progression';
 import { PublicApiModule } from './modules/public-api';
 import { PulseModule } from './modules/pulse';
 import { RecruitingModule } from './modules/recruiting';
@@ -48,6 +52,7 @@ import { TanksModule } from './modules/tanks';
 import { TelegramModule } from './modules/telegram';
 import { TournamentsModule } from './modules/tournaments';
 import { TreeModule } from './modules/tree';
+import { WatchlistModule } from './modules/watchlist';
 
 @Module({
   imports: [
@@ -87,6 +92,7 @@ import { TreeModule } from './modules/tree';
     LeaderboardsModule,
     ClansModule,
     CompareModule,
+    AnalyticsModule,
     MeModule,
     ModModule,
     DeveloperModule,
@@ -107,8 +113,12 @@ import { TreeModule } from './modules/tree';
     ShopModule,
     EventsModule,
     MissionsModule,
+    ModesModule,
+    WatchlistModule,
+    CompetitionsModule,
     ClanWorkspaceModule,
     SocialModule,
+    ProgressionModule,
     PulseModule,
     BoardModule
   ],

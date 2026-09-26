@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 import { recommendedBuildHref } from '@/entities/tank/build';
 import { usePlus } from '@/features/plus/plus-gate';
-import { getRecommendedBuild } from '@/shared/api/builds';
+import { getRecommendedBuild } from '@/entities/tank/build';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { HOW_TO_BUILD } from '../../../config';

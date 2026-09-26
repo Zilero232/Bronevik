@@ -24,7 +24,7 @@ export const CrewUsage = ({ crew }: CrewUsageProps) => {
           <ol className={s.list}>
             {skills.map(({ skill, name, image, share }) => (
               <li key={skill} className={s.row}>
-                <GameIcon size={HOW_TO_BUILD.iconSize} src={image} />
+                <GameIcon kind='skill' size={HOW_TO_BUILD.iconSize} src={image} />
                 <ProgressBar
                   className={s.bar}
                   label={gameLabel(name)}

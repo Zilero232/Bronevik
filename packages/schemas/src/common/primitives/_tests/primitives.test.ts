@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { accountIdSchema, clanTagSchema, countSchema, nicknameSchema, percentSchema, ratioSchema } from '../primitives.schemas';
+import {
+  accountIdSchema,
+  clanTagSchema,
+  countSchema,
+  httpsUrlSchema,
+  httpUrlSchema,
+  nicknameSchema,
+  percentSchema,
+  ratioSchema
+} from '../primitives.schemas';
 
 describe('primitives', () => {
   it('coerces numeric ids from query strings and rejects non-positive ones', () => {
@@ -26,5 +35,13 @@ describe('primitives', () => {
     expect(percentSchema.safeParse(100).success).toBe(true);
     expect(percentSchema.safeParse(-1).success).toBe(false);
     expect(countSchema.safeParse(2.5).success).toBe(false);
+  });
+
+  it('accepts only web links with a host name, never a script or data URL', () => {
+    expect(httpUrlSchema.safeParse('https://t.me/coach').success).toBe(true);
+    expect(httpUrlSchema.safeParse('http://example.com/x').success).toBe(true);
+    expect(httpUrlSchema.safeParse('javascript:alert(1)').success).toBe(false);
+    expect(httpUrlSchema.safeParse('data:text/html,hi').success).toBe(false);
+    expect(httpsUrlSchema.safeParse('http://example.com/x').success).toBe(false);
   });
 });

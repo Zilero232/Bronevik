@@ -1,1 +1,0 @@
-export { TelegramLinkHeader } from './TelegramLinkHeader';

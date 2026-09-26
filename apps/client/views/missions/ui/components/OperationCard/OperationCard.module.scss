@@ -1,48 +1,56 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  @include panel;
+.stage {
+  @include nation-tint;
 
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  color: var(--color-text);
-  text-decoration: none;
-
-  &:hover {
-    border-color: var(--color-text-dim);
-  }
-
-  &:focus-visible {
-    @include focus-ring;
-
-    outline-offset: -2px;
-  }
+  position: absolute;
+  display: grid;
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--nation) 35%, transparent), transparent 62%);
+  inset: 0;
+  place-items: center;
 }
 
 .render {
-  width: 100%;
-  border-bottom: 1px solid var(--color-border);
+  width: 78%;
+  margin-bottom: 18%;
+  transition: transform var(--duration-lift) var(--ease-out);
+
+  a:hover & {
+    transform: scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    a:hover & {
+      transform: none;
+    }
+  }
 }
 
-.body {
-  @include stack(var(--space-2));
-
-  padding: var(--space-3) var(--space-4) var(--space-4);
+.reward {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
-.label {
+.rewardLabel {
   @include label;
 }
 
-.name {
-  @include heading(var(--text-lg));
-
-  margin: 0;
+.ring {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
 }
 
-.meta {
-  margin: 0;
-  color: var(--color-text-dim);
-  font-size: var(--text-sm);
+.ringValue {
+  @include numeric(var(--text-sm));
+
+  font-weight: 700;
 }

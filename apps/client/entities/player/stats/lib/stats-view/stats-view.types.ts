@@ -1,3 +1,4 @@
+import type { RatingScale } from '@otmetki/ratings';
 import type { RatingPeriod, RecentPeriods, StatsBlock } from '@otmetki/schemas';
 
 export type PeriodStatsInput = {
@@ -14,4 +15,9 @@ export type StatsDeltaInput = {
 export type SignedInput = {
   value: number | undefined;
   digits?: number;
+};
+
+export type ScaledRatingInput = {
+  scale: RatingScale;
+  value: number | null;
 };

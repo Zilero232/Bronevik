@@ -3,6 +3,8 @@ export {
   clanIdSchema,
   clanTagSchema,
   countSchema,
+  httpsUrlSchema,
+  httpUrlSchema,
   isoDateSchema,
   isoDateTimeSchema,
   nicknameSchema,

@@ -11,8 +11,8 @@ import type { OtmetkiAuth } from '../../../../lib/auth';
 import { API_KEY_PLUGIN } from '../../../../lib/auth';
 import { API_TIERS } from '../../config';
 import { ApiKeysService } from '../api-keys.service';
+import { ApiTierSyncService } from '../api-tier-sync.service';
 import { ApiTierService } from '../api-tier.service';
-import { WebhookEndpointsService } from '../webhook-endpoints.service';
 
 const keyRow = (overrides: Partial<ApiKey> = {}): ApiKey => ({
   id: '00000000-0000-4000-8000-000000000001',
@@ -44,11 +44,14 @@ const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const tiers = mock<ApiTierService>();
   const auth = mockDeep<AuthService<OtmetkiAuth>>();
+  const tierSync = mock<ApiTierSyncService>();
+
+  prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
   tiers.tierFor.mockResolvedValue('free');
   tiers.cachedTierFor.mockResolvedValue('free');
 
-  return { service: new ApiKeysService(prisma, tiers, mock<WebhookEndpointsService>(), auth), prisma, tiers, auth };
+  return { service: new ApiKeysService(prisma, tiers, tierSync, auth), prisma, tiers, auth, tierSync };
 };
 
 const verified = (overrides: Partial<ApiKey> = {}) => {
@@ -151,18 +154,12 @@ describe('ApiKeysService.verify', () => {
   });
 
   it('moves the owner keys to a changed tier in the background', async () => {
-    const { service, prisma, tiers, auth } = createService();
+    const { service, tiers, auth, tierSync } = createService();
 
     tiers.cachedTierFor.mockResolvedValue('plus');
-    prisma.apiKey.findMany.mockResolvedValue([keyRow()]);
     auth.api.verifyApiKey.mockResolvedValue(verified());
 
     await service.verify('otm_key');
-    await vi.waitFor(() => expect(prisma.apiKey.update).toHaveBeenCalled());
-
-    expect(prisma.apiKey.update.mock.calls[0]?.[0].data).toMatchObject({
-      refillAmount: API_TIERS.plus.requestsPerDay,
-      metadata: JSON.stringify({ tier: 'plus' })
-    });
+    await vi.waitFor(() => expect(tierSync.apply).toHaveBeenCalledWith({ userId: 'user', tier: 'plus' }));
   });
 });

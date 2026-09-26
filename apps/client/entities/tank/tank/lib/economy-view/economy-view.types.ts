@@ -4,6 +4,7 @@ export type EconomyViewInput = {
   economy: TankEconomy;
   account: EconomyAccount;
   withReserve: boolean;
+  withClanPayout?: boolean;
 };
 
 export type EconomyView = {
@@ -17,4 +18,10 @@ export type EconomyView = {
   consumables: number | null;
   xp: number | null;
   freeXp: number | null;
+};
+
+export type BonusOfInput = {
+  creditsBase: number | null;
+  withReserve: boolean;
+  withClanPayout: boolean;
 };

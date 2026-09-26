@@ -2,12 +2,12 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { RatingValue } from '@/entities/player/stats';
 import { WinRateCell } from '@/entities/tank/tank';
 import { EmptyState } from '@/ui-kit';
 
 import { usePeriodRatings } from '../../../../../model/hooks';
 import { ProfilePanel } from '../../../ProfilePanel';
-import { RatingValue } from '../../../RatingValue';
 
 import s from './PeriodRatingsPanel.module.scss';
 

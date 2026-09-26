@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { rotateTacticBoardTokens } from '@/shared/api/tactics';
+import { rotateTacticBoardTokens } from '../../../api';
 import { SITE } from '@/shared/config';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { localePath, resolveLocale } from '@/shared/i18n';
@@ -29,7 +29,7 @@ export const useSharePanel = ({ board, token }: UseUpdateBoardInput) => {
 
   const links = boardShareLinks({
     origin: isBrowser() ? window.location.origin : SITE.url,
-    path: localePath({ path: ROUTES.tacticBoard(board.id), locale }),
+    path: localePath({ path: ROUTES.tactics.board(board.id), locale }),
     shareToken: board.shareToken,
     editToken: board.editToken
   });

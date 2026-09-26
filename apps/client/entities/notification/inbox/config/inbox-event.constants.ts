@@ -1,13 +1,19 @@
 import type { NotificationEvent } from '@otmetki/schemas';
 
 import {
+  Archive,
   Award,
   BadgePercent,
   CalendarClock,
   ClipboardList,
+  Eye,
   Flag,
   Medal,
+  Radio,
   Star,
+  Store,
+  Sun,
+  Swords,
   Target,
   Ticket,
   TrendingDown,
@@ -31,5 +37,11 @@ export const INBOX_EVENT = {
   tank_changed: { icon: Wrench, tone: 'steel' },
   goal_reached: { icon: Target, tone: 'success' },
   badge_awarded: { icon: Medal, tone: 'elite' },
-  challenge_resolved: { icon: Trophy, tone: 'success' }
+  challenge_resolved: { icon: Trophy, tone: 'success' },
+  first_win_available: { icon: Sun, tone: 'accent' },
+  replay_overflow: { icon: Archive, tone: 'warning' },
+  watchlist_digest: { icon: Eye, tone: 'ally' },
+  tank_returned: { icon: Store, tone: 'premium' },
+  competition_finished: { icon: Swords, tone: 'success' },
+  streamer_live: { icon: Radio, tone: 'accent' }
 } as const satisfies Record<NotificationEvent, InboxEventLook>;

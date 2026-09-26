@@ -46,7 +46,7 @@ export const ClanPage = () => {
         .with({ isPending: true }, () => <ClanSkeleton />)
         .with({ error: P.when(isNotFoundError) }, () => (
           <ResourceMissing
-            back={{ href: ROUTES.clans, label: t('missing.toClans') }}
+            back={{ href: ROUTES.clans.list, label: t('missing.toClans') }}
             description={t('missing.notFoundDescription', { tag: clanTag })}
             reason='notFound'
             title={t('missing.notFoundTitle')}
@@ -54,7 +54,7 @@ export const ClanPage = () => {
         ))
         .otherwise(() => (
           <ResourceMissing
-            back={{ href: ROUTES.clans, label: t('missing.toClans') }}
+            back={{ href: ROUTES.clans.list, label: t('missing.toClans') }}
             description={t('missing.errorDescription', { tag: clanTag })}
             isRetrying={isFetching}
             reason='error'

@@ -1,4 +1,5 @@
 export { CheckoutService } from './checkout.service';
+export { EntitlementsBusService } from './entitlements-bus.service';
 export { EntitlementsService } from './entitlements.service';
 export { PromoService } from './promo.service';
 export { ReferralService } from './referral.service';

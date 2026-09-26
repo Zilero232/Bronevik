@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getPopularPlayers, PLAYERS_REQUEST } from '@/shared/api/players';
+import { getPopularPlayers, PLAYERS_REQUEST } from '@/entities/player/profile';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const usePopularPlayers = () => {

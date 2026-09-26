@@ -20,7 +20,7 @@ export const GuideLikeButton = ({ guide }: GuideLikeButtonProps) => {
 
   if (!isSignedIn) {
     return (
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.login} title={t('likeSignIn')}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.auth.login} title={t('likeSignIn')}>
         <Heart size={14} />
         {format.number(likesCount)}
       </Link>

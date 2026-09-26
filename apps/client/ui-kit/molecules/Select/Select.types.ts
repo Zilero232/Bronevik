@@ -12,5 +12,6 @@ export type SelectProps<T extends string = string> = {
   label?: ReactNode;
   placeholder?: string;
   className?: string;
+  'aria-label'?: string;
   onValueChange: (value: T) => void;
 };

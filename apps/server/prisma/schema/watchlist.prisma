@@ -1,0 +1,22 @@
+enum WatchlistDigest {
+  off
+  hourly
+  daily
+  weekly
+
+  @@map("watchlist_digest")
+}
+
+model WatchlistSettings {
+  userId String @id @map("user_id")
+
+  digest       WatchlistDigest @default(daily)
+  lastDigestAt DateTime?       @map("last_digest_at") @db.Timestamptz(3)
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([digest, lastDigestAt])
+  @@map("watchlist_settings")
+}

@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-import { getPlayer } from '@/shared/api/players';
+import { getPlayer } from '@/entities/player/profile';
 import { SITE } from '@/shared/config/site';
 import { resolveLocale } from '@/shared/i18n';
 import { loadOgFonts, OG_SIZE } from '@/shared/seo/og';

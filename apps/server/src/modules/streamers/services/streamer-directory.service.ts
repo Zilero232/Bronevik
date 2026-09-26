@@ -1,0 +1,68 @@
+import type { StreamerCard, StreamerDirectory } from '@otmetki/schemas';
+
+import { Inject, Injectable } from '@nestjs/common';
+import { Redis } from 'ioredis';
+
+import type { Prisma } from '../../../../generated';
+import type { StreamerDirectoryQueryView } from '../streamers.types';
+
+import { PrismaService, REDIS } from '../../../core';
+import { PROFILE_CARD_INCLUDE, STREAMERS } from '../config';
+import { StreamerCardsService } from './streamer-cards.service';
+
+@Injectable()
+export class StreamerDirectoryService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cards: StreamerCardsService,
+    @Inject(REDIS) private readonly redis: Redis
+  ) {}
+
+  async list({ live, platform, tankId, hasSettings, kind, cursor, limit }: StreamerDirectoryQueryView): Promise<StreamerDirectory> {
+    const where: Prisma.StreamerProfileWhereInput = {
+      hiddenAt: null,
+      kind: STREAMERS.editorialEnabled ? kind : 'claimed',
+      ...(live ? { isLive: true } : {}),
+      ...(platform ? { channels: { some: { platform } } } : {}),
+      ...(tankId ? { liveTankId: tankId } : {}),
+      ...(hasSettings === undefined ? {} : { settings: hasSettings ? { isNot: null } : { is: null } })
+    };
+
+    const profiles = await this.prisma.streamerProfile.findMany({
+      where,
+      include: PROFILE_CARD_INCLUDE,
+      orderBy: [{ isLive: 'desc' }, { liveViewers: { sort: 'desc', nulls: 'last' } }, { createdAt: 'asc' }],
+      skip: cursor,
+      take: limit + 1
+    });
+
+    const page = profiles.slice(0, limit);
+
+    return {
+      items: await this.cards.cards(page),
+      nextCursor: profiles.length > limit ? cursor + limit : null,
+      editorialEnabled: STREAMERS.editorialEnabled
+    };
+  }
+
+  async live(): Promise<StreamerCard[]> {
+    const key = `${STREAMERS.cachePrefix}live`;
+    const cached = await this.redis.get(key);
+
+    if (cached) {
+      return JSON.parse(cached) as StreamerCard[];
+    }
+
+    const profiles = await this.prisma.streamerProfile.findMany({
+      where: { hiddenAt: null, isLive: true, ...(STREAMERS.editorialEnabled ? {} : { kind: 'claimed' }) },
+      include: PROFILE_CARD_INCLUDE,
+      orderBy: { liveViewers: { sort: 'desc', nulls: 'last' } }
+    });
+
+    const cards = await this.cards.cards(profiles);
+
+    await this.redis.set(key, JSON.stringify(cards), 'EX', STREAMERS.liveCacheSeconds);
+
+    return cards;
+  }
+}

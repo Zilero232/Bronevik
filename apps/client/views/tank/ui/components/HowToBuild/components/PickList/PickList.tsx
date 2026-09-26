@@ -22,7 +22,7 @@ export const PickList = ({ picks, title }: PickListProps) => {
       <ol className={s.list}>
         {picks.map(({ option, share, winRate }) => (
           <li key={option.id} className={s.row}>
-            <GameIcon size={HOW_TO_BUILD.iconSize} src={option.image} />
+            <GameIcon kind={option.kind} size={HOW_TO_BUILD.iconSize} src={option.image} />
             <ProgressBar
               valueLabel={
                 <span className={s.value}>

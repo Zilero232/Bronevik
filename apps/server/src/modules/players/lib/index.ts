@@ -1,4 +1,6 @@
 export { playerAchievements } from './achievements';
+export { historyWindow } from './history-window';
+export type { HistoryWindowPolicy } from './history-window';
 export { computeInsights } from './insights';
 export { combinedSource, nextMark } from './next-mark';
 export { PLAYTIME, playtimeCells } from './playtime';

@@ -1,0 +1,7 @@
+.hint {
+  color: var(--color-text-dim);
+
+  &[data-invalid] {
+    color: var(--color-danger);
+  }
+}

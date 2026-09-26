@@ -106,10 +106,14 @@ model Battle {
   capturePoints        Int      @default(0) @map("capture_points")
   droppedCapturePoints Int      @default(0) @map("dropped_capture_points")
 
-  shotsFired   Int?  @map("shots_fired")
-  shotsHit     Int?  @map("shots_hit")
-  shotsPierced Int?  @map("shots_pierced")
+  shotsFired   Int?   @map("shots_fired")
+  shotsHit     Int?   @map("shots_hit")
+  shotsPierced Int?   @map("shots_pierced")
   shots        Json?
+  moeMovingAvg Float? @map("moe_moving_avg")
+
+  platoonSize  Int?     @map("platoon_size") @db.SmallInt
+  platoonMates BigInt[] @default([]) @map("platoon_mates")
 
   moePercent      Float? @map("moe_percent")
   moePercentDelta Float? @map("moe_percent_delta")
@@ -132,5 +136,6 @@ model Battle {
   @@index([sessionId])
   @@index([tankId, startedAt(sort: Desc)])
   @@index([arenaId])
+  @@index([battleType, startedAt(sort: Desc)])
   @@map("battle")
 }

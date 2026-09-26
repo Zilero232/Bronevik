@@ -2,12 +2,11 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { RatingValue } from '@/entities/player/stats';
 import { WinRateCell } from '@/entities/tank/tank';
 import { Button } from '@/ui-kit';
 
 import type { SessionListProps } from './SessionList.types';
-
-import { RatingValue } from '../../../RatingValue';
 
 import s from './SessionList.module.scss';
 

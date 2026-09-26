@@ -5,7 +5,7 @@ import { useDebounceValue } from '@siberiacancode/reactuse';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';
 
-import { listClans } from '@/shared/api/clans';
+import { listClans } from '@/entities/clan/clan';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { CLAN_RATING } from '../../../config';

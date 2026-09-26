@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { BillingCoreModule } from '../billing';
 import { NotificationsProducerModule } from '../notifications';
 import {
   FeedService,
@@ -13,7 +14,7 @@ import {
 import { SocialController } from './social.controller';
 
 @Module({
-  imports: [NotificationsProducerModule],
+  imports: [BillingCoreModule, NotificationsProducerModule],
   controllers: [SocialController],
   providers: [SnapshotEventsService, FollowService, FeedService, LeagueService, WeeklyChallengeService, SignatureService, WrappedService]
 })

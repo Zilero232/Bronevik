@@ -54,6 +54,10 @@ model User {
 
   streamerProfile      StreamerProfile?
   streamerIntegrations StreamerIntegration[]
+  streamerClaims       StreamerClaim[]
+  streamerFollows      StreamerFollow[]
+  settingsShare        PlayerSettingsShare?
+  settingsApplies      SettingsApplyRequest[]
   overlays             Overlay[]
   challenges           Challenge[]
 
@@ -78,9 +82,18 @@ model User {
   eventProgress    UserEventProgress[]
   missionProgress  UserMissionProgress[]
 
+  shellLedger      ShellLedgerEntry[]
+  seasonProgress   SeasonProgress[]
+  cosmetics        CosmeticOwnership[]
+  profileCosmetics ProfileCosmetics?
+
   auditLogs        AuditLog[]
   contentReports   ContentReport[]
   deletionRequests DataDeletionRequest[]
+
+  watchlistSettings  WatchlistSettings?
+  competitions       Competition[]
+  competitionEntries CompetitionEntry[]
 
   @@map("user")
 }

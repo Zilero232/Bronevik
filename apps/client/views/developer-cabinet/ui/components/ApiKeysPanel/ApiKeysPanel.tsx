@@ -5,16 +5,16 @@ import { KeyRound, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { Button, EmptyState, ErrorState, SectionHeader, Skeleton } from '@/ui-kit';
+import { Button, ConfirmDialog, EmptyState, ErrorState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { useApiKeysPanel } from '../../../model/hooks';
-import { ConfirmDialog } from '../ConfirmDialog';
 import { ApiKeyRow, CreateKeyDialog } from './components';
 
 import s from './ApiKeysPanel.module.scss';
 
 export const ApiKeysPanel = () => {
   const t = useTranslations('developer.keys');
+  const tDeveloper = useTranslations('developer');
   const {
     keys,
     count,
@@ -58,11 +58,13 @@ export const ApiKeysPanel = () => {
         ))}
       <CreateKeyDialog open={isCreating} onOpenChange={toggleCreating} />
       <ConfirmDialog
+        cancelLabel={tDeveloper('cancel')}
         confirmLabel={t('revoke')}
         description={t('revokeText', { name: revoking?.name ?? '' })}
         isPending={isRevoking}
         open={revoking !== null}
         title={t('revokeTitle')}
+        tone='danger'
         onConfirm={onRevoke}
         onOpenChange={onRevokeOpenChange}
       />

@@ -2,8 +2,8 @@
 
 import { skipToken, useQuery } from '@tanstack/react-query';
 
-import { getBuildOptions } from '@/shared/api/builds';
-import { getTank } from '@/shared/api/tanks';
+import { getBuildOptions } from '@/entities/tank/build';
+import { getTank } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { BUILD_VIEW } from '../../../config';

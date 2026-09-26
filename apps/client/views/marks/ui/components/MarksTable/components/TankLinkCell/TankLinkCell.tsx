@@ -7,7 +7,7 @@ import type { TankLinkCellProps } from './TankLinkCell.types';
 import s from './TankLinkCell.module.scss';
 
 export const TankLinkCell = ({ vehicle }: TankLinkCellProps) => (
-  <Link className={s.root} href={ROUTES.tank(vehicle.slug)} onClick={(event) => event.stopPropagation()}>
+  <Link className={s.root} href={ROUTES.tanks.detail(vehicle.slug)} onClick={(event) => event.stopPropagation()}>
     <TankCell vehicle={vehicle} />
   </Link>
 );

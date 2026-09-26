@@ -1,10 +1,11 @@
-import { isFuture, isValid } from 'date-fns';
+import { isFuture } from 'date-fns';
 import { z } from 'zod';
 
 import { requirementsFormSchema } from '@/features/community/stat-requirements';
-import { zCreateTournament } from '@/shared/api/tournaments';
+import { zCreateTournament } from '@/entities/tournament/tournament';
+import { zonedInputToIso } from '@/shared/lib';
 
-const localDate = z.string().refine((value) => value === '' || isValid(new Date(value)));
+const localDate = z.string().refine((value) => value === '' || zonedInputToIso({ value }) !== undefined);
 
 export const tournamentFormSchema = z
   .object({
@@ -16,8 +17,12 @@ export const tournamentFormSchema = z
       .trim()
       .refine((value) => zCreateTournament.shape.maxParticipants.safeParse(Number(value)).success && value !== ''),
     registrationEndsAt: localDate,
-    startsAt: localDate.refine((value) => value !== '' && isFuture(new Date(value)))
+    startsAt: localDate.refine((value) => isFuture(zonedInputToIso({ value }) ?? 0))
   })
-  .refine(({ registrationEndsAt, startsAt }) => registrationEndsAt === '' || new Date(registrationEndsAt) <= new Date(startsAt), {
-    path: ['registrationEndsAt']
-  });
+  .refine(
+    ({ registrationEndsAt, startsAt }) =>
+      registrationEndsAt === '' || (zonedInputToIso({ value: registrationEndsAt }) ?? '') <= (zonedInputToIso({ value: startsAt }) ?? ''),
+    {
+      path: ['registrationEndsAt']
+    }
+  );

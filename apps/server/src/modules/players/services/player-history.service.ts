@@ -1,17 +1,18 @@
-import type { PlayerActivity, PlayerHistoryEntry, TimeSeries, TimeSeriesQuery } from '@otmetki/schemas';
+import type { PlayerActivity, PlayerHistoryEntry, TimeSeries } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 import { sortBy } from 'remeda';
 
-import type { BucketTankRow } from '../lib';
-import type { ActivityInput, ActivityRow, HistoryInput } from '../players.types';
+import type { BucketTankRow, HistoryWindowPolicy } from '../lib';
+import type { ActivityInput, ActivityRow, HistoryInput, HistoryPolicyInput } from '../players.types';
 
 import { percentOf, toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
+import { EntitlementsService } from '../../billing';
 import { BronyaReferencesService, ExpectedValuesService, VehicleCatalogService } from '../../reference';
-import { HISTORY } from '../config';
-import { moscowDay, moscowDayStart, seriesPoints } from '../lib';
+import { HISTORY_WINDOW } from '../config';
+import { historyWindow, moscowDay, moscowDayStart, seriesPoints } from '../lib';
 
 @Injectable()
 export class PlayerHistoryService {
@@ -19,11 +20,26 @@ export class PlayerHistoryService {
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
     private readonly expected: ExpectedValuesService,
-    private readonly bronya: BronyaReferencesService
+    private readonly bronya: BronyaReferencesService,
+    private readonly entitlements: EntitlementsService
   ) {}
 
-  async series({ accountId, query }: HistoryInput): Promise<TimeSeries> {
-    const { from, to } = this.window(query);
+  async policyFor({ accountId, viewerUserId }: HistoryPolicyInput): Promise<HistoryWindowPolicy> {
+    if (!viewerUserId) {
+      return HISTORY_WINDOW.free;
+    }
+
+    const link = await this.prisma.userLestaAccount.findUnique({ where: { accountId }, select: { userId: true } });
+
+    if (link?.userId !== viewerUserId || !(await this.entitlements.isPlus(viewerUserId))) {
+      return HISTORY_WINDOW.free;
+    }
+
+    return HISTORY_WINDOW.full;
+  }
+
+  async series({ accountId, query, policy }: HistoryInput): Promise<TimeSeries> {
+    const { from, to } = historyWindow({ from: query.from, to: query.to, now: new Date(), policy });
 
     const [rows, expected, tiers, patches, references] = await Promise.all([
       this.prisma.$queryRaw<BucketTankRow[]>`
@@ -106,13 +122,5 @@ export class PlayerHistoryService {
     ];
 
     return sortBy(entries, [(entry) => entry.from ?? '', 'desc']);
-  }
-
-  private window(query: TimeSeriesQuery) {
-    const to = query.to ? new Date(query.to) : new Date();
-    const earliest = subDays(to, HISTORY.maxDays);
-    const requested = query.from ? new Date(query.from) : subDays(to, HISTORY.defaultDays);
-
-    return { from: requested < earliest ? earliest : requested, to };
   }
 }

@@ -1,3 +1,3 @@
-export { periodStats, ratingValueTone, signed, statsDelta, winRateTone } from './stats-view';
+export { periodStats, ratingValueTone, scaledRating, signed, statsDelta, winRateTone } from './stats-view';
 
-export type { PeriodStatsInput, SignedInput, StatsDeltaInput } from './stats-view.types';
+export type { PeriodStatsInput, ScaledRatingInput, SignedInput, StatsDeltaInput } from './stats-view.types';

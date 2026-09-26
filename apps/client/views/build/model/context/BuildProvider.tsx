@@ -41,6 +41,7 @@ export const BuildProvider = ({ vehicle, options, children }: BuildProviderProps
     <BuildContext
       value={{
         vehicle,
+        options,
         catalog: buildCatalog(options),
         a,
         b,

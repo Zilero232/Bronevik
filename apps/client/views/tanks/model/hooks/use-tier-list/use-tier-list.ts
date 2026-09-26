@@ -3,7 +3,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
-import { getTierList } from '@/shared/api/tanks';
+import { getTierList } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { groupByRank } from '../../../lib/tier-groups';

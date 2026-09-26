@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { Comment } from '@/shared/api/comments';
+import type { Comment } from '../../../api';
 
 import { buildCommentTree, countComments } from '../comment-tree';
 

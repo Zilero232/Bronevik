@@ -30,7 +30,7 @@ export const CrewRole = ({ role }: CrewRoleProps) => {
       <div className={s.chips}>
         {skills.map(({ id, name, image, isOn }) => (
           <button key={id} aria-pressed={isOn} className={s.chip} disabled={!isOn && isFull} title={name} type='button' onClick={onToggle(id)}>
-            <GameIcon size={BUILD_VIEW.iconSize.skill} src={image} />
+            <GameIcon kind='skill' size={BUILD_VIEW.iconSize.skill} src={image} />
             {name}
           </button>
         ))}

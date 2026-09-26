@@ -2,7 +2,7 @@
 
 import { useQueryStates } from 'nuqs';
 
-import type { GuideSort } from '@/shared/api/guides';
+import type { GuideSort } from '@/entities/guide/guide';
 
 import type { GuideKindFilter } from './use-guide-filters.types';
 

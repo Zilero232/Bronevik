@@ -1,0 +1,1 @@
+export { signInWithMiniApp } from './auth';

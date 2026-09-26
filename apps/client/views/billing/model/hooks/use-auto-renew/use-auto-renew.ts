@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { cancelAutoRenew, resumeAutoRenew } from '@/shared/api/billing';
+import { cancelAutoRenew, resumeAutoRenew } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useAutoRenew = () => {

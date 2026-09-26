@@ -12,16 +12,7 @@
 }
 
 .emblem {
-  display: block;
-  overflow: hidden;
-  width: 96px;
-  height: 96px;
   margin-top: var(--space-5);
-}
-
-.emblemImage {
-  transform: scale(calc(96 / 195));
-  transform-origin: 0 0;
 }
 
 .tag {

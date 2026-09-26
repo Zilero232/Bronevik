@@ -10,10 +10,16 @@ import { WEBHOOK_DELIVERY } from '../../config';
 import { generateWebhookSecret } from '../../lib';
 import { WebhookDeliveryService } from '../webhook-delivery.service';
 
-const post = vi.hoisted(() => vi.fn<(url: string, options: { headers: Record<string, string> }) => Promise<Response>>());
+const post = vi.hoisted(() =>
+  vi.fn<(input: { url: string; address: string; headers: Record<string, string> }) => Promise<{ status: number; body: string }>>()
+);
+
 const lookup = vi.hoisted(() => vi.fn<(host: string) => Promise<{ address: string; family: number }[]>>());
 
-vi.mock('../../../../lib/http', () => ({ http: { post } }));
+vi.mock('../../lib/webhook-post/webhook-post', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../lib/webhook-post/webhook-post')>()),
+  postWebhook: post
+}));
 
 const PUBLIC_ADDRESS = [{ address: '93.184.216.34', family: 4 }];
 
@@ -64,12 +70,13 @@ describe('WebhookDeliveryService.deliver', () => {
   it('signs the body and records the success', async () => {
     const { service, prisma } = createService();
 
-    post.mockResolvedValue(new Response('ok', { status: 200 }));
+    post.mockResolvedValue({ status: 200, body: 'ok' });
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).resolves.toBe('delivered');
 
-    const [, options] = post.mock.calls[0] ?? [];
+    const [options] = post.mock.calls[0] ?? [];
 
+    expect(options?.address).toBe(PUBLIC_ADDRESS[0]?.address);
     expect(options?.headers).toMatchObject({ [WEBHOOK.eventHeader]: 'mark.gained' });
     expect(new Webhook(endpoint.secret).verify(JSON.stringify(delivery.payload), options?.headers ?? {})).toEqual(delivery.payload);
     expect(prisma.webhookDelivery.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ status: 'succeeded' }) }));

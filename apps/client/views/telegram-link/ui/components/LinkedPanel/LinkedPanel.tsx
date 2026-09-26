@@ -3,18 +3,20 @@
 import { ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { buttonVariants, Card, CardBody } from '@/ui-kit';
+import { Button, buttonVariants, Card, CardBody, ConfirmDialog } from '@/ui-kit';
 
 import type { LinkedPanelProps } from './LinkedPanel.types';
 
 import { botLink } from '../../../lib/bot-link';
+import { useUnlinkDialog } from '../../../model/hooks';
 import { BotCommands } from '../BotCommands';
-import { UnlinkDialog } from '../UnlinkDialog';
 
 import s from './LinkedPanel.module.scss';
 
 export const LinkedPanel = ({ username, botUsername }: LinkedPanelProps) => {
   const t = useTranslations('telegram.linked');
+  const tUnlink = useTranslations('telegram.unlink');
+  const { isOpen, onOpenChange, onConfirm, isPending } = useUnlinkDialog();
 
   return (
     <section className={s.root}>
@@ -30,7 +32,18 @@ export const LinkedPanel = ({ username, botUsername }: LinkedPanelProps) => {
               {t('openBot')}
               <ExternalLink size={14} />
             </a>
-            <UnlinkDialog />
+            <ConfirmDialog
+              cancelLabel={tUnlink('cancel')}
+              confirmLabel={tUnlink('confirm')}
+              description={tUnlink('description')}
+              isPending={isPending}
+              open={isOpen}
+              title={tUnlink('title')}
+              tone='danger'
+              trigger={<Button variant='ghost'>{tUnlink('trigger')}</Button>}
+              onConfirm={onConfirm}
+              onOpenChange={onOpenChange}
+            />
           </div>
         </CardBody>
       </Card>

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { HostLookup } from '../webhook-url.types';
 
-import { isPublicAddress, isPublicWebhookUrl, resolvesPublicly } from '../webhook-url';
+import { isPublicAddress, isPublicWebhookUrl, publicAddressOf, resolvesPublicly } from '../webhook-url';
 
 const resolvingTo =
   (...addresses: string[]): HostLookup =>
@@ -98,5 +98,12 @@ describe('resolvesPublicly', () => {
 
     expect(await resolvesPublicly({ url: 'https://93.184.216.34/x', lookup: unexpected })).toBe(true);
     expect(await resolvesPublicly({ url: 'https://127.0.0.1/x', lookup: unexpected })).toBe(false);
+  });
+});
+
+describe('publicAddressOf', () => {
+  it('returns the validated address the delivery connects to, so a second lookup cannot rebind it', async () => {
+    expect(await publicAddressOf({ url: 'https://hooks.example.com/x', lookup: resolvingTo('93.184.216.34') })).toBe('93.184.216.34');
+    expect(await publicAddressOf({ url: 'https://rebind.example.com/x', lookup: resolvingTo('10.0.0.5') })).toBeNull();
   });
 });

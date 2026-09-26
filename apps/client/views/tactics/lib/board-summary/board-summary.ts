@@ -1,4 +1,4 @@
-import type { TacticBoardData } from '@/shared/api/tactics';
+import type { TacticBoardData } from '@/entities/tactic/board';
 
 import type { BoardSummary } from './board-summary.types';
 

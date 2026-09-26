@@ -1,0 +1,22 @@
+.root {
+  position: relative;
+  display: inline-grid;
+  flex-shrink: 0;
+}
+
+.notches {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  line {
+    stroke: var(--color-bg);
+    stroke-linecap: butt;
+    stroke-width: 2;
+    transition: stroke var(--duration-base) ease;
+  }
+
+  line[data-passed='true'] {
+    stroke: var(--color-text);
+  }
+}

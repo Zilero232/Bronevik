@@ -1,0 +1,1 @@
+export { TeamCell } from './TeamCell';

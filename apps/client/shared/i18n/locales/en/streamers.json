@@ -10,7 +10,10 @@
     "lead": "Live stats in OBS, viewer challenges verified from the actual battle, and a bot that knows your WN8 better than chat does.",
     "ctaHow": "How challenges work",
     "rec": "REC",
-    "frame": "Overlay layout · filled from your own battles"
+    "frame": "Overlay layout · filled from your own battles",
+    "home": "Home",
+    "crumb": "For streamers",
+    "pageTitle": "For streamers"
   },
   "tools": {
     "eyebrow": "Loadout",
@@ -40,7 +43,8 @@
       "title": "Streamer page",
       "text": "A short address with channel links, live status and battle stats — handy for your channel description.",
       "slug": "your-nickname"
-    }
+    },
+    "sample": "Example"
   },
   "flow": {
     "eyebrow": "How a challenge works",
@@ -69,5 +73,23 @@
     "text": "Link your account with Lesta ID and your first overlay is ready in a couple of minutes.",
     "studio": "Open the studio",
     "signIn": "Sign in to start"
+  },
+  "connect": {
+    "title": "How to connect",
+    "description": "Three steps from sign-in to your first overlay on air.",
+    "steps": {
+      "signIn": {
+        "title": "Sign in with Lesta ID",
+        "text": "Link your game account and your stats come in automatically."
+      },
+      "create": {
+        "title": "Set up an overlay",
+        "text": "Pick metrics and a theme in the studio, connect the bot to your chat."
+      },
+      "obs": {
+        "title": "Add it to OBS",
+        "text": "Paste the overlay link as a Browser source — the numbers update on their own."
+      }
+    }
   }
 }

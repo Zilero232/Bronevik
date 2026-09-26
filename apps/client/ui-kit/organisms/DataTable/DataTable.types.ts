@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 
 export type DataTableDensity = 'compact' | 'default' | 'media';
 
+export type DataTableRowTint = 'bad' | 'good' | 'loss' | 'self' | 'win';
+
 export type DataTableProps<T> = {
   data: T[];
   columns: ColumnDef<T, never>[];
@@ -19,4 +21,5 @@ export type DataTableProps<T> = {
   className?: string;
   getRowId?: (row: T) => string;
   onRowClick?: (row: T) => void;
+  rowTint?: (row: T) => DataTableRowTint | null;
 };

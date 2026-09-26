@@ -1,6 +1,6 @@
 import { parseAsStringLiteral } from 'nuqs';
 
-export const STUDIO_TABS = ['profile', 'integrations', 'overlays', 'challenges'] as const;
+export const STUDIO_TABS = ['profile', 'settings', 'integrations', 'overlays', 'challenges'] as const;
 
 export type StudioTab = (typeof STUDIO_TABS)[number];
 

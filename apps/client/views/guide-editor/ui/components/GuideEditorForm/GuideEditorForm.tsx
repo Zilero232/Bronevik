@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 import { Controller, FormProvider } from 'react-hook-form';
 
 import { TankPicker } from '@/features/tank/pick-tank';
@@ -16,6 +17,7 @@ import s from './GuideEditorForm.module.scss';
 
 export const GuideEditorForm = ({ guide }: GuideEditorFormProps) => {
   const t = useTranslations('guides.editor');
+  const titleId = useId();
   const {
     form,
     isEdit,
@@ -66,17 +68,17 @@ export const GuideEditorForm = ({ guide }: GuideEditorFormProps) => {
           )}
           {kind === 'map' && (
             <FormField error={errors.arenaId && t('errors.map')} label={t('map')}>
-              <Select className={s.subject} items={mapItems} value={map} onValueChange={onMapChange} />
+              <Select aria-label={t('map')} className={s.subject} items={mapItems} value={map} onValueChange={onMapChange} />
             </FormField>
           )}
           <FormField
             error={errors.title && t('errors.title', { min: GUIDE_FORM.titleMin, max: titleMax ?? titleLength })}
             hint={t('counter', { length: titleLength, max: titleMax ?? titleLength })}
-            htmlFor='guide-title'
+            htmlFor={titleId}
             label={t('title')}
           >
             <Input
-              id='guide-title'
+              id={titleId}
               isInvalid={Boolean(errors.title)}
               maxLength={titleMax}
               placeholder={t('titlePlaceholder')}

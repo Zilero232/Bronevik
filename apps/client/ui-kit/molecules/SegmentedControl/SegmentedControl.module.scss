@@ -65,3 +65,34 @@
 .label {
   display: inline-flex;
 }
+
+.icons .option {
+  @include class-tint(--segment-tint);
+
+  min-width: 36px;
+  height: 36px;
+  color: var(--color-text-muted);
+
+  &[data-active='true'] {
+    background-color: var(--color-surface-overlay);
+    box-shadow: none;
+  }
+
+  &[data-class][data-active='true'] .icon {
+    color: var(--segment-tint);
+  }
+
+  :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.indicator {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background-color: var(--color-accent);
+}

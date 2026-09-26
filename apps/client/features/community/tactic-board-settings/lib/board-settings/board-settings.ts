@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { zCreateTacticBoard } from '@/shared/api/tactics';
+import { zCreateTacticBoard } from '@/entities/tactic/board';
 
 import type { BoardMapLookupInput, BoardSettingsPayload, BoardSettingsSource, BoardSettingsValues } from './board-settings.types';
 

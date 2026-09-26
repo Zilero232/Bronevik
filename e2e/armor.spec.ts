@@ -4,7 +4,7 @@ import { ROUTES } from '../apps/client/shared/constants/routes';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
-const ARMOR_PAGE = `/en${ROUTES.tankArmor('r45-is-7')}`;
+const ARMOR_PAGE = `/en${ROUTES.tanks.armor('r45-is-7')}`;
 
 test.describe('armor viewer', () => {
   test('renders the canvas, or its empty or error state, with the attribution', async ({ page }) => {

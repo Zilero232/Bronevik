@@ -9,7 +9,7 @@ import { sortBy } from 'remeda';
 import { useMapLabels } from '@/entities/map/map';
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { listMaps } from '@/shared/api/maps';
+import { listMaps } from '@/entities/map/map';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { GuideKindFilter } from '../use-guide-filters';

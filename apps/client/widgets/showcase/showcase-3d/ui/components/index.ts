@@ -1,0 +1,1 @@
+export { NamePlate } from './NamePlate';

@@ -46,7 +46,7 @@ export const BuildHistory = ({ mode, cohort }: BuildHistoryProps) => {
                     <span className={s.icons}>
                       {equipment.map(({ option }) => (
                         <span key={option.id} title={gameLabel(option.name)}>
-                          <GameIcon size={HOW_TO_BUILD.iconSize} src={option.image} />
+                          <GameIcon kind={option.kind} size={HOW_TO_BUILD.iconSize} src={option.image} />
                         </span>
                       ))}
                     </span>
@@ -55,7 +55,7 @@ export const BuildHistory = ({ mode, cohort }: BuildHistoryProps) => {
                     <span className={s.icons}>
                       {consumables.map(({ option }) => (
                         <span key={option.id} title={gameLabel(option.name)}>
-                          <GameIcon size={HOW_TO_BUILD.iconSize} src={option.image} />
+                          <GameIcon kind={option.kind} size={HOW_TO_BUILD.iconSize} src={option.image} />
                         </span>
                       ))}
                     </span>

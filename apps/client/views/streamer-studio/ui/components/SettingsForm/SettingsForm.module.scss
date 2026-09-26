@@ -1,0 +1,61 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.note {
+  max-width: 72ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.updated {
+  @include label;
+}
+
+.apply {
+  @include well;
+
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+}
+
+.imports {
+  display: grid;
+  align-items: start;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.imported {
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+}
+
+.groups {
+  @include stack(var(--space-3));
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}

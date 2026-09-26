@@ -13,6 +13,7 @@ import type { EventView, EventViewTimeline } from './use-event-calendar.types';
 
 import { EVENTS } from '../../../config';
 import { eventTimeline } from '../../../lib/event-timeline';
+import { weekGroups } from '../../../lib/week-groups';
 
 export const useEventCalendar = () => {
   const [kinds, setKinds] = useQueryState(
@@ -38,6 +39,8 @@ export const useEventCalendar = () => {
   return {
     kinds,
     timeline,
+    featured: timeline.current.slice(0, EVENTS.featured),
+    upcomingWeeks: weekGroups({ entries: timeline.upcoming, dateOf: (entry) => new Date(entry.event.startsAt) }),
     total: all.length,
     isFiltered: kinds.length > 0,
     isPending,

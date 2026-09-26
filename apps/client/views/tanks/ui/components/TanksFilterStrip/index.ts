@@ -1,0 +1,1 @@
+export { TanksFilterStrip } from './TanksFilterStrip';

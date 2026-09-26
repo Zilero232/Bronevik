@@ -1,4 +1,5 @@
 export {
+  AnalyticsExportDto,
   CreateFavoriteDto,
   CreateGoalDto,
   FavoriteDto,
@@ -10,6 +11,7 @@ export {
   LinkedAccountsDto,
   MyMarksDto,
   NotificationSettingsDto,
+  RawStatsExportDto,
   UpdateGoalDto,
   UpdateNotificationSettingsDto
 } from './me.dto';

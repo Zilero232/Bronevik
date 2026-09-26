@@ -2,9 +2,11 @@ import type { ReactNode } from 'react';
 
 import type { ProgressTone } from '../../atoms';
 
+export type KeyFigureVariant = 'compact' | 'highlight' | 'plain';
+
 export type KeyFigureProps = {
   label: ReactNode;
-  value: number | null;
+  value: ReactNode;
   format?: Intl.NumberFormatOptions;
   prefix?: string;
   suffix?: string;
@@ -16,6 +18,7 @@ export type KeyFigureProps = {
   tone?: ProgressTone;
   size?: 'lg' | 'md' | 'xl';
   isFramed?: boolean;
+  variant?: KeyFigureVariant;
   icon?: ReactNode;
   className?: string;
 };

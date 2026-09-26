@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { ReportTargetType } from '@/shared/api/moderation';
+import type { ReportTargetType } from '../../api';
 
 import type { reportFormSchema } from './report-form.schemas';
 

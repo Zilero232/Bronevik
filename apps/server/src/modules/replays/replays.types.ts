@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { Visibility } from '../../../generated';
+import type { Replay, Visibility } from '../../../generated';
 import type { ReplaySummary } from '../../lib/replay';
 import type {
   bestOfWeekSchema,
@@ -98,4 +98,19 @@ export type TracksOfInput = {
 
 export type ParseJobData = {
   replayId: string;
+};
+
+export type OverflowOwner = {
+  userId: string;
+  stored: number;
+};
+
+export type SettleOverflowInput = OverflowOwner & {
+  accessEndedAt: Date;
+  now: Date;
+};
+
+export type ReplayViewInput = {
+  replay: Replay;
+  viewerUserId?: string | null;
 };

@@ -2,7 +2,7 @@ import { addMilliseconds } from 'date-fns';
 import { millisecondsInDay } from 'date-fns/constants';
 import { identity, sortBy, unique } from 'remeda';
 
-import type { ReturnEstimate } from './offer-return.types';
+import type { AbsenceBeforeReturnInput, ReturnEstimate } from './offer-return.types';
 
 import { OFFER_RETURN } from '../../config';
 
@@ -34,4 +34,20 @@ export const returnEstimate = (appearances: readonly Date[]): ReturnEstimate => 
     medianIntervalDays: Math.round((interval / millisecondsInDay) * 10) / 10,
     nextExpectedAt: addMilliseconds(last, interval)
   };
+};
+
+export const absenceBeforeReturn = ({ previous, now, minDays }: AbsenceBeforeReturnInput): number | null => {
+  const lastAvailable = previous.reduce<number | null>((latest, offer) => {
+    const until = Math.min((offer.endsAt ?? offer.lastSeenAt).getTime(), now.getTime());
+
+    return latest === null || until > latest ? until : latest;
+  }, null);
+
+  if (lastAvailable === null) {
+    return null;
+  }
+
+  const days = Math.floor((now.getTime() - lastAvailable) / millisecondsInDay);
+
+  return days >= minDays ? days : null;
 };

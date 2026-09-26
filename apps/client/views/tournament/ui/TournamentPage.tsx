@@ -23,7 +23,7 @@ export const TournamentPage = ({ slug }: TournamentPageProps) => {
       <div className={s.root}>
         <EmptyState
           action={
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.tournaments}>
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.tournaments.list}>
               {t('page.back')}
             </Link>
           }
@@ -54,7 +54,7 @@ export const TournamentPage = ({ slug }: TournamentPageProps) => {
   return (
     <div className={s.root}>
       <PageHeader
-        breadcrumbs={[{ label: t('head.title'), href: ROUTES.tournaments }, { label: tournament.title }]}
+        breadcrumbs={[{ label: t('head.title'), href: ROUTES.tournaments.list }, { label: tournament.title }]}
         meta={<TournamentStatusBadge status={tournament.status} />}
         title={tournament.title}
       />

@@ -1,6 +1,6 @@
 import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs';
 
-import type { GuideKind, GuideSort } from '@/shared/api/guides';
+import type { GuideKind, GuideSort } from '@/entities/guide/guide';
 
 export const GUIDE_KINDS = ['tank', 'map', 'general'] as const satisfies readonly GuideKind[];
 

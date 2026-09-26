@@ -1,6 +1,6 @@
 import type { KonvaEventObject } from 'konva/lib/Node';
 
-import type { TacticIcon, TacticStroke } from '@/shared/api/tactics';
+import type { TacticIcon, TacticStroke } from '@/entities/tactic/board';
 
 import type { IconAppearance, StrokeGeometry } from '../../../lib/shape-geometry';
 

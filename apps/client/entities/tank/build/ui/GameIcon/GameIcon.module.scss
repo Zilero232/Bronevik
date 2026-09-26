@@ -2,3 +2,20 @@
   flex: none;
   object-fit: contain;
 }
+
+.fallback {
+  display: inline-grid;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  place-items: center;
+
+  &[data-kind='directive'] {
+    color: var(--color-premium);
+  }
+
+  &[data-kind='skill'] {
+    color: var(--color-steel);
+  }
+}

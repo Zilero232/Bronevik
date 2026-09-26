@@ -1,4 +1,4 @@
-import type { TankInsight } from '@/shared/api/players';
+import type { TankInsight } from '@/entities/player/profile';
 
 export type TankInsightListProps = {
   kind: 'strong' | 'weak';

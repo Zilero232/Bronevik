@@ -3,9 +3,10 @@
 import { Star } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { TankStrip } from '@/entities/tank/tank';
 import { PlayerStatsLine } from '@/features/community/player-stats';
 import { Link } from '@/shared/i18n/navigation';
-import { Avatar, Card, TankImage } from '@/ui-kit';
+import { Avatar, Card } from '@/ui-kit';
 
 import type { CoachCardProps } from './CoachCard.types';
 
@@ -39,16 +40,7 @@ export const CoachCard = ({ coach }: CoachCardProps) => {
         </div>
       </header>
       <PlayerStatsLine stats={coach.stats} />
-      {vehicles.length > 0 && (
-        <ul aria-label={t('tanks')} className={s.tanks}>
-          {vehicles.map((vehicle) => (
-            <li key={vehicle.tankId} className={s.tank} title={vehicle.name}>
-              <TankImage size='small' tank={vehicle} />
-            </li>
-          ))}
-          {moreTanks > 0 && <li className={s.more}>+{moreTanks}</li>}
-        </ul>
-      )}
+      {vehicles.length > 0 && <TankStrip label={t('tanks')} more={moreTanks} vehicles={vehicles} />}
       <footer className={s.foot}>
         <span className={s.offers}>{t('offers', { count: activeOffers })}</span>
         <Link className={s.open} href={href}>

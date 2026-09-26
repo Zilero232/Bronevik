@@ -13,7 +13,7 @@ import type {
   TraceRunInput
 } from './penetration.types';
 
-import { ARMOR_FLAGS } from '../model/armor-model.constants';
+import { ARMOR_FLAGS } from '../armor-model/armor-model.constants';
 import { PENETRATION, SHELL_KIND_ALIASES, SHELL_KINDS, SHELL_RULES } from './penetration.constants';
 
 const RADIANS = Math.PI / 180;

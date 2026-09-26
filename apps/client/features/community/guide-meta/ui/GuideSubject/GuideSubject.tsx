@@ -20,7 +20,7 @@ export const GuideSubject = ({ tankId, arenaId, className }: GuideSubjectProps) 
   return match({ vehicle, map, tankId, arenaId })
     .with({ vehicle: P.nonNullable }, ({ vehicle: tank }) => <TankLink className={className} vehicle={tank} />)
     .with({ map: P.nonNullable }, ({ map: arena }) => (
-      <Link className={clsx(s.map, className)} href={ROUTES.map(arena.slug)}>
+      <Link className={clsx(s.map, className)} href={ROUTES.maps.detail(arena.slug)}>
         <MapIcon aria-hidden size={14} />
         {arena.name}
       </Link>

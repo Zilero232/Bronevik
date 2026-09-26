@@ -39,7 +39,7 @@ export const PaletteResults = ({ results, onSelect }: PaletteResultsProps) => {
               meta={clanTag ? clanLabel({ tag: clanTag }) : t('noClan')}
               title={nickname}
               value={`player-${accountId}`}
-              onSelect={() => onSelect(ROUTES.player(nickname))}
+              onSelect={() => onSelect(ROUTES.players.profile(nickname))}
             />
           ))}
         </Command.Group>
@@ -53,7 +53,7 @@ export const PaletteResults = ({ results, onSelect }: PaletteResultsProps) => {
               meta={`${toRoman(vehicle.tier)} · ${tGame(`classes.${vehicle.type}`)} · ${isNation(vehicle.nation) ? tGame(`nations.${vehicle.nation}`) : vehicle.nation}`}
               title={vehicle.name}
               value={`tank-${vehicle.tankId}`}
-              onSelect={() => onSelect(ROUTES.tank(vehicle.slug))}
+              onSelect={() => onSelect(ROUTES.tanks.detail(vehicle.slug))}
             />
           ))}
         </Command.Group>
@@ -67,7 +67,7 @@ export const PaletteResults = ({ results, onSelect }: PaletteResultsProps) => {
               meta={t('members', { count: membersCount })}
               title={clanLabel({ tag, name })}
               value={`clan-${clanId}`}
-              onSelect={() => onSelect(ROUTES.clan(tag))}
+              onSelect={() => onSelect(ROUTES.clans.detail(tag))}
             />
           ))}
         </Command.Group>

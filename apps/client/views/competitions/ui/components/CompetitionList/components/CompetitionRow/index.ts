@@ -1,0 +1,1 @@
+export { CompetitionRow } from './CompetitionRow';

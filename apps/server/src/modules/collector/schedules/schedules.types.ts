@@ -10,9 +10,11 @@ export type ScheduleDefinition = {
   data?: Record<string, unknown>;
   enabled?: boolean;
   needsLesta?: boolean;
+  realLestaOnly?: boolean;
 };
 
 export type IsScheduleActiveInput = {
   schedule: ScheduleDefinition;
   hasLesta: boolean;
+  lestaMock: boolean;
 };

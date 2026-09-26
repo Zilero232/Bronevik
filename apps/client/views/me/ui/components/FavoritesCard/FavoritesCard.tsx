@@ -27,7 +27,7 @@ export const FavoritesCard = () => {
           <li key={id} className={s.row}>
             <User className={s.kind} size={14} />
             {kind === 'player' && title ? (
-              <Link className={s.name} href={ROUTES.player(title)}>
+              <Link className={s.name} href={ROUTES.players.profile(title)}>
                 {title}
               </Link>
             ) : (

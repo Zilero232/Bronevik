@@ -2,9 +2,9 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-import type { ApiKeyUsageInput } from '@/shared/api/developer';
+import type { ApiKeyUsageInput } from '@/entities/developer/developer';
 
-import { getApiKeyUsage } from '@/shared/api/developer';
+import { getApiKeyUsage } from '@/entities/developer/developer';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useApiKeyUsage = ({ id, days }: ApiKeyUsageInput) =>

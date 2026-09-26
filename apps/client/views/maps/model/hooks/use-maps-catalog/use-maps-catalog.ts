@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { parseAsArrayOf, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 
 import { MAP_CAMOUFLAGES, MAP_MODE_KINDS } from '@/entities/map/map';
-import { listMaps } from '@/shared/api/maps';
+import { listMaps } from '@/entities/map/map';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { filterMaps } from '../../../lib/map-filter';

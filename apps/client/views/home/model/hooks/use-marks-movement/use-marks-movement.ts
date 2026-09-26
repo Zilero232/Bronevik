@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { listMoe } from '@/shared/api/marks';
+import { listMoe } from '@/entities/player/marks';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { HOME } from '../../../config';
@@ -17,5 +17,12 @@ export const useMarksMovement = () => {
 
   const rows = (data?.items ?? []).filter((row) => row.moe !== null);
 
-  return { rows, updatedAt: rows[0]?.updatedAt ?? null, isPending, isError, retry: () => void refetch() };
+  return {
+    rows,
+    leaders: rows.slice(0, HOME.marks.highlights),
+    updatedAt: rows[0]?.updatedAt ?? null,
+    isPending,
+    isError,
+    retry: () => void refetch()
+  };
 };

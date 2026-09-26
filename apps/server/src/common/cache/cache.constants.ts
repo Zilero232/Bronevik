@@ -14,3 +14,5 @@ export const THROTTLE = {
   ttl: 60_000,
   limit: 120
 } as const;
+
+export const CACHE_BY_VIEWER = 'otmetki:cache-by-viewer';

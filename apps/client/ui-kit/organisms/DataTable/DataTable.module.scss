@@ -138,6 +138,28 @@
   &:hover .td:first-child {
     box-shadow: inset 2px 0 0 var(--color-accent);
   }
+
+  &[data-tint] {
+    background-color: color-mix(in srgb, var(--row-tint) 10%, transparent);
+  }
+
+  &[data-tint] .td:first-child {
+    box-shadow: inset 2px 0 0 var(--row-tint);
+  }
+
+  &[data-tint='win'],
+  &[data-tint='good'] {
+    --row-tint: var(--color-success);
+  }
+
+  &[data-tint='loss'],
+  &[data-tint='bad'] {
+    --row-tint: var(--color-danger);
+  }
+
+  &[data-tint='self'] {
+    --row-tint: var(--color-accent);
+  }
 }
 
 .td {

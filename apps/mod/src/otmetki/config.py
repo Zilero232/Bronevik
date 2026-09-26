@@ -8,8 +8,10 @@ FEATURES = (
     'send_moe_distribution',
     'send_queue_times',
     'send_loadouts',
+    'send_shots',
     'battle_moe_panel',
     'hangar_session_panel',
+    'share_settings',
 )
 
 DEFAULTS = {
@@ -24,8 +26,20 @@ DEFAULTS = {
     'send_moe_distribution': True,
     'send_queue_times': True,
     'send_loadouts': True,
+    'send_shots': True,
     'battle_moe_panel': True,
     'hangar_session_panel': True,
+    'share_settings': True,
+    'settings_action': '',
+    'settings_target': 'private',
+    'settings_anonymous_stats': False,
+    'settings_include_resolution': False,
+    'settings_include_sensitivity': False,
+}
+
+CHOICES = {
+    'settings_action': ('', 'export', 'restore'),
+    'settings_target': ('profile', 'private'),
 }
 
 LIMITS = {
@@ -67,6 +81,8 @@ def _coerce(key, default, value):
             if not is_valid_server_url(value):
                 return None
             value = value.rstrip('/')
+        if key in CHOICES and value not in CHOICES[key]:
+            return None
         return value
     return None
 

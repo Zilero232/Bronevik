@@ -3,8 +3,10 @@ export const PUBLIC_API = {
 } as const;
 
 export const API_RATE_LIMIT = {
-  secondPrefix: 'otmetki:api:rps',
+  secondPrefix: 'otmetki:api:user-rps',
   secondWindow: 1,
+  dayPrefix: 'otmetki:api:user-day',
+  dayWindow: 86_400,
   headers: {
     limit: 'X-RateLimit-Limit',
     remaining: 'X-RateLimit-Remaining',

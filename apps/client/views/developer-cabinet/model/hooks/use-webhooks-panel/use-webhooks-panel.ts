@@ -4,7 +4,7 @@ import type { WebhookEndpoint } from '@otmetki/schemas';
 
 import { useState } from 'react';
 
-import { removeWebhook } from '@/shared/api/developer';
+import { removeWebhook } from '../../../api';
 
 import type { WebhookEditorState } from './use-webhooks-panel.types';
 

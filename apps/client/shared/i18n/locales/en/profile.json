@@ -59,7 +59,17 @@
     "activityHint": "Hover a day to see its battles",
     "activityAria": "Activity calendar: {total} battles over {active} active days",
     "less": "Less",
-    "more": "More"
+    "more": "More",
+    "highlights": {
+      "title": "Last 30 days",
+      "empty": "No battles in the last 30 days",
+      "wn8": "WN8",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "battlesPerDay": "Battles per day"
+    },
+    "marksRing": "Three marks: {count} of {total} tanks",
+    "marksOf": "three marks of {total}"
   },
   "tanks": {
     "caption": "Player vehicles",
@@ -75,6 +85,7 @@
     },
     "tiersLabel": "Tiers",
     "typesLabel": "Classes",
+    "nationLabel": "Nation",
     "total": "{count, plural, one {# tank} other {# tanks}}",
     "columns": {
       "tank": "Tank",
@@ -252,7 +263,10 @@
     "winRate": "Win rate",
     "battles": "Battles",
     "avgDamage": "Avg damage",
-    "avgXp": "Avg XP"
+    "avgXp": "Avg XP",
+    "seasons": "Seasons",
+    "seasonLevel": "{season} · lv. {level}",
+    "wn8Ring": "WN8 rating level"
   },
   "achievements": {
     "empty": "The player has no achievements",
@@ -266,5 +280,15 @@
       "action": "Events",
       "other": "Other"
     }
+  },
+  "hero": {
+    "home": "Home",
+    "players": "Players"
+  },
+  "actions": {
+    "label": "Profile actions",
+    "compare": "Compare",
+    "share": "Share",
+    "copied": "Profile link copied"
   }
 }

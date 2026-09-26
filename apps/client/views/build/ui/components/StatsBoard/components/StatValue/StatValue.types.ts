@@ -6,4 +6,5 @@ export type StatValueProps = {
   fill: number;
   verdict: SpecVerdict;
   isWinner?: boolean;
+  isCompare?: boolean;
 };

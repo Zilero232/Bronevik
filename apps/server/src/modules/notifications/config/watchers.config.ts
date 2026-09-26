@@ -19,3 +19,8 @@ export const WEEKLY_DIGEST = {
   dedupePrefix: 'otmetki:notifications:digest:',
   dedupeTtlSeconds: 14 * 24 * 60 * 60
 } as const;
+
+export const FIRST_WIN_REMINDER = {
+  batchSize: 500,
+  activeWithinDays: 7
+} as const;

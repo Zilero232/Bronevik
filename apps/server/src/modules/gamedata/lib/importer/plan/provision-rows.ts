@@ -12,7 +12,6 @@ const deviceRow = ({ device, vehicles }: DeviceRowInput): ProvisionRow => ({
   tag: device.name,
   type: PROVISION_TYPE.optionalDevice,
   description: device.descriptionKey,
-  image: device.icon,
   ...prices(device.price),
   tankIds: compatibleTanks({ filter: device.vehicleFilter, vehicles }),
   data: { ...device }
@@ -24,7 +23,6 @@ const equipmentRow = ({ item, vehicles }: EquipmentRowInput): ProvisionRow => ({
   tag: item.name,
   type: item.kind === 'directive' ? PROVISION_TYPE.directive : PROVISION_TYPE.consumable,
   description: item.descriptionKey,
-  image: item.icon,
   ...prices(item.price),
   tankIds: compatibleTanks({ filter: item.vehicleFilter, vehicles }),
   data: { ...item }
@@ -56,7 +54,6 @@ export const buildProvisionRows = ({ data }: CreateImportPlanInput): ProvisionRo
       name: modification.locName ?? modification.name,
       tag: modification.name,
       type: PROVISION_TYPE.fieldModification,
-      image: modification.imgName,
       tankIds: unique(tanksByModification.get(modification.name) ?? []),
       data: { ...modification }
     }))

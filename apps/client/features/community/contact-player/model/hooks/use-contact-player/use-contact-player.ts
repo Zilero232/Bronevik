@@ -15,7 +15,7 @@ export const useContactPlayer = ({ nickname, accountId }: UseContactPlayerInput)
   return {
     canCopy: nickname !== null,
     copied,
-    profileHref: ROUTES.player(nickname ?? String(accountId)),
+    profileHref: ROUTES.players.profile(nickname ?? String(accountId)),
     onCopy: () => void onCopyClick()
   };
 };

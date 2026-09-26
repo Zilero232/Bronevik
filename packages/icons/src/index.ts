@@ -1,6 +1,7 @@
-export type { AnimatedLogoProps, AnimatedMarkOfExcellenceProps, AnimatedMasteryProps } from './animated/animated.types';
+export type { AnimatedLogoMarkProps, AnimatedLogoProps, AnimatedMarkOfExcellenceProps, AnimatedMasteryProps } from './animated/animated.types';
 export { AnimatedCrosshair } from './animated/AnimatedCrosshair';
 export { AnimatedLogo } from './animated/AnimatedLogo';
+export { AnimatedLogoMark } from './animated/AnimatedLogoMark';
 export { AnimatedMarkOfExcellence } from './animated/AnimatedMarkOfExcellence';
 export { AnimatedMastery } from './animated/AnimatedMastery';
 
@@ -12,6 +13,15 @@ export {
   TankDestroyerSilhouetteIcon
 } from './icons/class-silhouettes';
 export { AssaultSpgIcon, HeavyTankIcon, LightTankIcon, MediumTankIcon, SpgIcon, TankClassIcon, TankDestroyerIcon } from './icons/classes';
+export { CrewCommanderIcon, CrewDriverIcon, CrewGunnerIcon, CrewLoaderIcon, CrewRadiomanIcon } from './icons/crew-roles';
+export {
+  EquipBondsIcon,
+  EquipConsumableIcon,
+  EquipDirectiveIcon,
+  EquipExperimentalIcon,
+  EquipStandardIcon,
+  EquipTrophyIcon
+} from './icons/equip-category';
 export type {
   MarkCount,
   MarkOfExcellenceIconProps,
@@ -56,10 +66,13 @@ export { createIcon, ICON_DEFAULTS, IconBase, starPath, tierGlyphs, TIERS, toRom
 export type { IconBaseProps, IconComponent, IconProps, Tier } from './lib';
 
 export {
+  CREW_ROLE_ICONS,
+  EQUIP_CATEGORY_ICONS,
   GAME_MODE_ICONS,
   GAME_MODES,
   ICON_GROUPS,
   ICONS,
+  isCrewRole,
   isNation,
   NATION_ICONS,
   NATIONS,
@@ -69,4 +82,4 @@ export {
   TANK_CLASS_SILHOUETTES,
   TANK_CLASSES
 } from './registry';
-export type { GameMode, IconGroup, IconName, Nation, TankClass } from './registry';
+export type { CrewRole, EquipCategory, GameMode, IconGroup, IconName, Nation, TankClass } from './registry';

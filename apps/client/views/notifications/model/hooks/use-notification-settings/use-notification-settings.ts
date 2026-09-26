@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { getNotificationSettings, updateNotificationSettings } from '@/shared/api/me';
+import { getNotificationSettings, updateNotificationSettings } from '@/features/notifications/notification-settings';
 import { QUERY_KEYS } from '@/shared/constants';
 
 const SETTINGS_KEY = QUERY_KEYS.me.section('notifications');

@@ -24,7 +24,7 @@ export const SessionCard = ({ nickname, session }: SessionCardProps) => {
     .with(undefined, () => <Skeleton height={140} shape='block' />)
     .with(null, () => <p className={s.empty}>{t('empty')}</p>)
     .with(P.nonNullable, ({ id, isLive, startedAt, stats }) => (
-      <Link className={s.root} href={ROUTES.playerSession({ nickname, sessionId: id })} onClick={openExternally}>
+      <Link className={s.root} href={ROUTES.players.session({ nickname, sessionId: id })} onClick={openExternally}>
         <header className={s.header}>
           <span className={s.title}>{isLive ? t('live') : t('last')}</span>
           {isLive ? (

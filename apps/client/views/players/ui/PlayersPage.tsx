@@ -18,7 +18,7 @@ export const PlayersPage = () => {
       <PageHeader
         actions={
           <>
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.comparePlayers}>
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.players.compare}>
               {t('compare')}
             </Link>
             <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.top}>

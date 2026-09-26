@@ -8,6 +8,7 @@ import {
   CLIENT_ROOT,
   FRAMEABLE_HEADER_RULES,
   IMAGES,
+  LEGACY_REDIRECTS,
   loadRootEnv,
   OPTIMIZED_PACKAGES,
   REPO_ROOT,
@@ -17,7 +18,7 @@ import {
 
 loadRootEnv();
 
-const withNextIntl = createNextIntlPlugin('./shared/i18n/request.ts');
+const withNextIntl = createNextIntlPlugin('./shared/i18n/request/request.ts');
 
 const nextConfig: NextConfig = {
   env: { NEXT_PUBLIC_APP_VERSION: rootPackage.version },
@@ -34,7 +35,8 @@ const nextConfig: NextConfig = {
   experimental: { optimizePackageImports: OPTIMIZED_PACKAGES },
   sassOptions: { implementation: 'sass-embedded', loadPaths: [CLIENT_ROOT] },
   turbopack: { resolveAlias: { '@': CLIENT_ROOT } },
-  headers: () => Promise.resolve([{ source: '/:path*', headers: SECURITY_HEADERS }, ...FRAMEABLE_HEADER_RULES])
+  headers: () => Promise.resolve([{ source: '/:path*', headers: SECURITY_HEADERS }, ...FRAMEABLE_HEADER_RULES]),
+  redirects: () => Promise.resolve(LEGACY_REDIRECTS)
 };
 
 export default withSerwist(withNextIntl(nextConfig));

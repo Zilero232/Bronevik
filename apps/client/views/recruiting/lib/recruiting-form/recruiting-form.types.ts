@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { RecruitingKind } from '@/shared/api/recruiting';
+import type { RecruitingKind } from '../../api';
 
 import type { recruitingFormSchema } from './recruiting-form.schemas';
 

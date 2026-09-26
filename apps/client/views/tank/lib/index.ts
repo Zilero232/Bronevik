@@ -5,6 +5,8 @@ export type { CohortBar } from './cohort-breakdown';
 export { bucketLabel } from './learning-labels';
 export { moeDelta, moeSeries, thresholdVerdict } from './moe-deltas';
 export type { MoeKey } from './moe-deltas';
+export { obtainEditorial, obtainMission } from './obtain-sources';
+export type { ObtainEditorial, ObtainEditorialEvent, ObtainMission } from './obtain-sources';
 export { paramShares } from './param-share';
 export { patchEntries } from './patch-verdict';
 export type { PatchChangeRow, PatchEntry } from './patch-verdict';

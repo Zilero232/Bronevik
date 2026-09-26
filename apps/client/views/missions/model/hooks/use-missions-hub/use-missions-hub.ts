@@ -1,9 +1,10 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { sumBy } from 'remeda';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { getMissionCampaigns, getMissionProgress } from '@/shared/api/missions';
+import { getMissionCampaigns, getMissionProgress } from '@/entities/mission/mission';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { operationProgress } from '../../../lib/operation-progress';
@@ -23,6 +24,7 @@ export const useMissionsHub = () => {
 
   return {
     data: campaigns.data,
+    operationsCount: campaigns.data ? sumBy(campaigns.data.campaigns, (campaign) => campaign.operations.length) : null,
     isPending: campaigns.isPending,
     isError: campaigns.isError,
     isRetrying: campaigns.isFetching,

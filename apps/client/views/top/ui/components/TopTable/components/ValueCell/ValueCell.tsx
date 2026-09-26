@@ -9,11 +9,11 @@ import type { ValueCellProps } from './ValueCell.types';
 
 import s from './ValueCell.module.scss';
 
-export const ValueCell = ({ entry: { value, tier, delta }, filter }: ValueCellProps) => {
+export const ValueCell = ({ entry: { value, tier, delta }, filter, isHero = false }: ValueCellProps) => {
   const format = useFormatter();
 
   return (
-    <span className={s.root}>
+    <span className={s.root} data-hero={isHero}>
       {delta !== null && <span className={s.delta}>{signed({ value: delta })}</span>}
       <span className={s.value} data-tone={tier ? toneOfTier(tier) : undefined}>
         {filter.metric === 'winRate' && filter.scope !== 'marks'

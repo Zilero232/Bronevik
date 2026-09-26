@@ -1,36 +1,96 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
+.band {
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+}
+
+.inner {
+  display: grid;
+  align-items: start;
+  gap: var(--space-6) var(--space-8);
+  grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
+
+  @include below(xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.summary {
+  @include stack(var(--space-5));
+
+  align-items: flex-start;
+}
+
+.title {
+  @include heading(var(--display-md, 2rem));
+}
+
+.total {
+  @include numeric(var(--num-hero, 3rem));
+
+  display: block;
+  color: var(--color-text);
+  font-weight: 700;
+  text-align: center;
+}
+
+.totalLabel {
+  @include label;
+
+  display: block;
+  max-width: 11ch;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.closest {
   @include stack(var(--space-4));
+
+  min-width: 0;
 }
 
 .heading {
   @include label;
+
+  font-size: var(--text-xs);
 }
 
-.list {
+.grid {
+  display: grid;
   padding: 0;
   margin: 0;
+  gap: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   list-style: none;
+
+  @include below(md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-.row {
-  @include data-list-row;
+.card {
+  @include media-card;
+
+  display: flex;
+  align-items: center;
+  padding: var(--space-4);
+  gap: var(--space-4);
 }
 
-.tank {
+.body {
+  @include stack(var(--space-1));
+
   min-width: 0;
   flex: 1;
 }
 
-.percent {
-  @include numeric;
-
-  font-weight: 600;
+.tank {
+  min-width: 0;
 }
 
-.glyph {
-  color: var(--color-text-muted);
+.percent {
+  @include numeric(var(--num-md));
 }
 
 .next {
@@ -38,5 +98,4 @@
 
   color: var(--color-text-muted);
   font-size: var(--text-xs);
-  white-space: nowrap;
 }

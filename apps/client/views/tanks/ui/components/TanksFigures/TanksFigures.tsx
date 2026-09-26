@@ -26,7 +26,7 @@ export const TanksFigures = () => {
       <div className={s.leader}>
         <span className={s.label}>{t('strongest')}</span>
         {strongest ? (
-          <Link className={s.link} href={ROUTES.tank(strongest.vehicle.slug)}>
+          <Link className={s.link} href={ROUTES.tanks.detail(strongest.vehicle.slug)}>
             <TankImage isDecorative size='small' tank={vehicleIdentity(strongest.vehicle)} />
             <span className={s.name} data-premium={strongest.vehicle.isPremium}>
               {strongest.vehicle.shortName}

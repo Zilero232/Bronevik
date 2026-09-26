@@ -12,6 +12,8 @@ export type StatRow = {
   verdictB: SpecVerdict;
   diff: number | null;
   diffVerdict: SpecVerdict;
+  sideVerdictA: SpecVerdict | null;
+  sideVerdictB: SpecVerdict | null;
   winner: BuildSide | null;
   fill: number;
   fillB: number | null;

@@ -60,6 +60,8 @@ const statRow = ({ key, specs }: StatRowInput): StatRow => {
     verdictB: specDelta({ key, before: base, after: b }),
     diff: minus({ after: b, before: a }),
     diffVerdict: specDelta({ key, before: a, after: b }),
+    sideVerdictA: bSpecs ? specDelta({ key, before: b, after: a }) : null,
+    sideVerdictB: bSpecs ? specDelta({ key, before: a, after: b }) : null,
     winner: bSpecs ? winnerOf({ key, a, b }) : null,
     fill: barFill({ key, value: a, base }),
     fillB: bSpecs ? barFill({ key, value: b, base }) : null

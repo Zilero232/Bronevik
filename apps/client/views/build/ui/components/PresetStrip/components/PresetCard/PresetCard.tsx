@@ -31,9 +31,9 @@ export const PresetCard = ({ preset, source }: PresetCardProps) => {
           </span>
         </span>
         <span className={s.gear}>
-          {equipment.map(({ id, name, image, category }) => (
+          {equipment.map(({ id, name, kind, image, category }) => (
             <span key={id} className={s.gearItem} data-category={category ?? undefined} title={name}>
-              <GameIcon size={BUILD_VIEW.iconSize.gear} src={image} />
+              <GameIcon kind={kind} size={BUILD_VIEW.iconSize.gear} src={image} />
               <span className={s.gearName}>{name}</span>
             </span>
           ))}

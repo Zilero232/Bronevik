@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { zCreateOrder } from '@/shared/api/coaching';
+import { zCreateOrder } from '@/entities/coaching/coach';
 
 export const requestFormSchema = z.object({
   offerId: z.string(),

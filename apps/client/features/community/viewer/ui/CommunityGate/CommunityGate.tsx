@@ -25,7 +25,7 @@ export const CommunityGate = ({ children, requiresLesta = true, className }: Com
     return (
       <div className={clsx(s.root, className)}>
         <span className={s.hint}>{t('signInHint')}</span>
-        <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.login}>
+        <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.auth.login}>
           {t('signIn')}
         </Link>
       </div>
@@ -36,7 +36,7 @@ export const CommunityGate = ({ children, requiresLesta = true, className }: Com
     return (
       <div className={clsx(s.root, className)}>
         <span className={s.hint}>{t('linkLestaHint')}</span>
-        <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.me}>
+        <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.account.overview}>
           {t('linkLesta')}
         </Link>
       </div>

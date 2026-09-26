@@ -1,0 +1,1 @@
+export { MarkGainCard } from './MarkGainCard';

@@ -17,7 +17,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/replays/
   return createPageMetadata({
     title: t('title'),
     description: t('description'),
-    path: ROUTES.replay(decodeURIComponent(id)),
+    path: ROUTES.replays.detail(decodeURIComponent(id)),
     locale,
     index: false,
     follow: true

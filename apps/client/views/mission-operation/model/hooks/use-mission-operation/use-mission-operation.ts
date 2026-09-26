@@ -9,7 +9,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { getMissionOperation, getMissionProgress, updateMissionProgress } from '@/shared/api/missions';
+import { getMissionOperation, getMissionProgress } from '@/entities/mission/mission';
+import { updateMissionProgress } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { useBranchLabel } from '../use-branch-label';

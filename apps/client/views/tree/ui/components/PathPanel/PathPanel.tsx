@@ -33,10 +33,10 @@ export const PathPanel = ({ selected, steps, cost, onClear }: PathPanelProps) =>
       <p className={s.caption}>{t('steps', { count: cost.steps })}</p>
       <PathSteps steps={steps} />
       <div className={s.actions}>
-        <Link className={buttonVariants({ variant: 'primary', size: 'sm', block: true })} href={ROUTES.tank(selected.vehicle.slug)}>
+        <Link className={buttonVariants({ variant: 'primary', size: 'sm', block: true })} href={ROUTES.tanks.detail(selected.vehicle.slug)}>
           {t('openTank')}
         </Link>
-        <Link className={buttonVariants({ variant: 'secondary', size: 'sm', block: true })} href={ROUTES.build(selected.vehicle.slug)}>
+        <Link className={buttonVariants({ variant: 'secondary', size: 'sm', block: true })} href={ROUTES.builds.detail(selected.vehicle.slug)}>
           {t('openBuild')}
         </Link>
         <Button block size='sm' variant='ghost' onClick={onClear}>

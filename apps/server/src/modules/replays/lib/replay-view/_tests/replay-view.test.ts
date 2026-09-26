@@ -12,6 +12,7 @@ const apiUrl = 'https://api.example.test';
 
 const row = (fields: Partial<ReplayRow> = {}): ReplayRow => ({
   id: '00000000-0000-4000-8000-000000000001',
+  uploaderUserId: 'uploader',
   status: 'parsed',
   visibility: 'public',
   gameVersion: null,
@@ -62,6 +63,14 @@ describe('toReplayView', () => {
     const view = toReplayView({ replay: row(), apiUrl });
 
     expect(view.downloadUrl).toBe(new URL(REPLAY_LINKS.file.replace('{id}', row().id), apiUrl).href);
+  });
+});
+
+describe('toReplayView owner flag', () => {
+  it('marks the replay as owned only for its uploader', () => {
+    expect(toReplayView({ replay: row(), apiUrl, viewerUserId: 'uploader' }).isOwner).toBe(true);
+    expect(toReplayView({ replay: row(), apiUrl, viewerUserId: 'someone' }).isOwner).toBe(false);
+    expect(toReplayView({ replay: row(), apiUrl }).isOwner).toBe(false);
   });
 });
 

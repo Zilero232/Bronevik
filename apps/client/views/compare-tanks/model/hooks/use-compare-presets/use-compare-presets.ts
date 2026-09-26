@@ -5,9 +5,9 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import type { TankStatsInput } from '@/shared/api/tanks';
+import type { TankStatsInput } from '@/entities/tank/tank';
 
-import { listTankStats } from '@/shared/api/tanks';
+import { listTankStats } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ComparePreset } from '../../../config';

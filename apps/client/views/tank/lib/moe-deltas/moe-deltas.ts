@@ -1,8 +1,8 @@
 import type { MoeThreshold } from '@otmetki/schemas';
 
-import { differenceInCalendarDays, parseISO } from 'date-fns';
-
 import type { SpecVerdict } from '@/entities/tank/tank';
+
+import { daysBetween } from '@/shared/lib';
 
 import type { MoeDeltaInput, MoeSeries } from './moe-deltas.types';
 
@@ -15,7 +15,7 @@ export const moeDelta = ({ history, key, days }: MoeDeltaInput): number | null =
     return null;
   }
 
-  const baseline = [...history].reverse().find((point) => differenceInCalendarDays(parseISO(latest.date), parseISO(point.date)) >= days);
+  const baseline = [...history].reverse().find((point) => daysBetween({ from: point.date, to: latest.date }) >= days);
   const current = latest[key];
   const previous = baseline?.[key];
 

@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { env, EXTERNAL_LINKS, SITE } from '@/shared/config';
-import { ROUTES } from '@/shared/constants';
+import { SITE_FOOTER_GROUPS, SITE_NAV } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
 import s from './SiteFooter.module.scss';
@@ -17,6 +17,22 @@ export const SiteFooter = () => {
   return (
     <footer className={s.root}>
       <div className={s.inner}>
+        <nav aria-label={t('label')} className={s.columns}>
+          {[...SITE_NAV.groups, ...SITE_FOOTER_GROUPS].map((group) => (
+            <section key={group.key} className={s.column}>
+              <h2 className={s.heading}>{tNav(`groups.${group.key}`)}</h2>
+              <ul className={s.list}>
+                {group.items.map((item) => (
+                  <li key={item.key}>
+                    <Link className={s.columnLink} href={item.href}>
+                      {tNav(`items.${item.key}`)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </nav>
         <p className={s.brand}>
           <OtmetkiLogoIcon className={s.mark} size={16} strokeWidth={2} />
           <span className={s.word}>{tBrand('name')}</span>
@@ -39,17 +55,6 @@ export const SiteFooter = () => {
           <span className={s.copyright}>
             {t('copyright', { year: SITE.copyrightYear })} · v{env.NEXT_PUBLIC_APP_VERSION}
           </span>
-          <nav aria-label={t('project')} className={s.links}>
-            <Link className={s.link} href={ROUTES.developers}>
-              {t('api')}
-            </Link>
-            <Link className={s.link} href={ROUTES.streamers}>
-              {t('streamers')}
-            </Link>
-            <Link className={s.link} href={ROUTES.design}>
-              {tNav('design')}
-            </Link>
-          </nav>
           <Suspense>
             <LocaleSwitcher className={s.locale} />
           </Suspense>

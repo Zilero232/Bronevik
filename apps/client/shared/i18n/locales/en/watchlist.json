@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "title": "Player watchlist",
+    "description": "Players you watch: last battles, win rate, average damage, 7-day WN8 and new marks — plus a digest in your notifications."
+  },
+  "title": "Player watchlist",
+  "description": "Friends, clanmates, rivals — their battles over a day or a week from the Lesta API, and a digest on your schedule.",
+  "error": "The watchlist did not load. Try again.",
+  "period": {
+    "label": "Stats period",
+    "24h": "24 hours",
+    "7d": "7 days"
+  },
+  "summary": {
+    "watched": "Watched",
+    "active": {
+      "24h": "Played in 24 h",
+      "7d": "Played in 7 days"
+    },
+    "battles": "Battles in period",
+    "marks": "New marks"
+  },
+  "table": {
+    "title": "Players",
+    "caption": "Watched players and their stats for the period",
+    "limit": "{used} / {limit}",
+    "never": "no battles",
+    "remove": "Stop watching {nickname}",
+    "columns": {
+      "player": "Player",
+      "lastBattle": "Last battle",
+      "battles": "Battles",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "wn8": "WN8 7d",
+      "marks": "Marks"
+    }
+  },
+  "empty": {
+    "title": "Nobody yet",
+    "description": "Find a player by nickname above — their battles will show up here and in the digest."
+  },
+  "add": {
+    "placeholder": "Add a player by nickname",
+    "full": "The list is full"
+  },
+  "toast": {
+    "added": "Now watching {nickname}",
+    "removed": "Player removed from the list",
+    "failed": "That did not work. Try again.",
+    "limit": "The list is full — Plus lets you watch more players.",
+    "digestSaved": "Digest schedule saved",
+    "digestPlus": "The hourly digest comes with Plus"
+  },
+  "digest": {
+    "title": "Digest",
+    "label": "How often to send the digest",
+    "never": "no digest yet",
+    "description": "A short report on who from the list played, how it went and which marks they earned.",
+    "options": {
+      "off": "Off",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "hourly": "Hourly"
+    },
+    "hourlyPlus": "The hourly digest is part of Plus.",
+    "plusLink": "About Plus",
+    "channels": "Where the digest goes — the site, Telegram, push or e-mail — is set up in <link>Notifications</link>."
+  },
+  "button": {
+    "watch": "Watch",
+    "unwatch": "Unwatch",
+    "added": "Player added to your watchlist",
+    "removed": "Player removed from your watchlist",
+    "limit": "Your watchlist is full — Plus lets you watch more players.",
+    "failed": "That did not work. Try again."
+  }
+}

@@ -1,6 +1,6 @@
 import { hoursToMilliseconds } from 'date-fns';
 
-import type { GuideStatus } from '@/shared/api/guides';
+import type { GuideStatus } from '@/entities/guide/guide';
 import type { BadgeTone } from '@/ui-kit';
 
 export const GUIDE_STATUS_TONE = {

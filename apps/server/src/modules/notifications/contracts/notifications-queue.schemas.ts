@@ -77,6 +77,57 @@ export const notificationSchema = z.discriminatedUnion('event', [
     accountId,
     badgeCode: z.string().min(1),
     title: z.string()
+  }),
+  z.object({
+    event: z.literal('replayOverflow'),
+    stored: z.number().int().positive(),
+    keep: z.number().int().positive(),
+    daysLeft: z.number().int().positive(),
+    deleteAt: z.string()
+  }),
+  z.object({
+    event: z.literal('firstWinAvailable'),
+    accountId,
+    nickname: z.string(),
+    available: z.number().int().positive()
+  }),
+  z.object({
+    event: z.literal('watchlistDigest'),
+    activePlayers: z.number().int().positive(),
+    battles: z.number().int().nonnegative(),
+    marksGained: z.number().int().nonnegative(),
+    top: z
+      .array(
+        z.object({
+          nickname: z.string(),
+          battles: z.number().int().nonnegative(),
+          winRate: z.number().min(0).max(100),
+          marksGained: z.number().int().nonnegative()
+        })
+      )
+      .max(10)
+  }),
+  z.object({
+    event: z.literal('tankReturned'),
+    tankId,
+    tankName: z.string(),
+    absentDays: z.number().int().positive().nullable(),
+    discountPercent: z.number().int().min(1).max(100).nullable()
+  }),
+  z.object({
+    event: z.literal('streamerLive'),
+    slug: z.string(),
+    displayName: z.string(),
+    platform: z.string(),
+    tankName: z.string().nullable()
+  }),
+  z.object({
+    event: z.literal('competitionFinished'),
+    competitionSlug: z.string(),
+    title: z.string(),
+    teamName: z.string(),
+    rank: z.number().int().positive(),
+    teams: z.number().int().positive()
   })
 ]);
 

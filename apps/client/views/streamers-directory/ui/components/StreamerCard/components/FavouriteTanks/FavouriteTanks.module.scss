@@ -1,0 +1,48 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.label {
+  @include label;
+}
+
+.list {
+  @include stack(var(--space-1));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  min-width: 0;
+  min-height: 2rem;
+  align-items: center;
+}
+
+.tank {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  color: var(--color-text);
+  gap: var(--space-2);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.name {
+  overflow: hidden;
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

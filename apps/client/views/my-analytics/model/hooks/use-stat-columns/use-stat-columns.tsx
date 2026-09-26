@@ -1,0 +1,51 @@
+'use client';
+
+import type { ColumnDef } from '@tanstack/react-table';
+
+import { createColumnHelper } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
+
+import { WinRateCell } from '@/entities/tank/tank';
+import { DeltaCell, NumberCell } from '@/ui-kit';
+
+import type { StatColumnsRow, WinRateDeltaHeader, WinRateDeltaRow } from './use-stat-columns.types';
+
+const NUMERIC = { align: 'end', isNumeric: true } as const;
+
+export const useStatColumns = <T extends StatColumnsRow>(): ColumnDef<T, never>[] => {
+  const t = useTranslations('analytics.columns');
+  const column = createColumnHelper<T>();
+
+  return [
+    column.accessor((row) => row.battles, {
+      id: 'battles',
+      header: t('battles'),
+      cell: ({ row }) => <NumberCell value={row.original.battles} />,
+      meta: NUMERIC
+    }),
+    column.accessor((row) => row.winRate ?? -1, {
+      id: 'winRate',
+      header: t('winRate'),
+      cell: ({ row }) => <WinRateCell value={row.original.winRate} />,
+      meta: NUMERIC
+    }),
+    column.accessor((row) => row.avgDamage ?? -1, {
+      id: 'avgDamage',
+      header: t('avgDamage'),
+      cell: ({ row }) => <NumberCell value={row.original.avgDamage} />,
+      meta: NUMERIC
+    })
+  ];
+};
+
+export const useWinRateDeltaColumn = <T extends WinRateDeltaRow>(header: WinRateDeltaHeader): ColumnDef<T, never> => {
+  const t = useTranslations('analytics.columns');
+  const column = createColumnHelper<T>();
+
+  return column.accessor((row) => row.winRateDelta ?? 0, {
+    id: 'winRateDelta',
+    header: t(header),
+    cell: ({ row }) => <DeltaCell suffix={t('pointsSuffix')} value={row.original.winRateDelta} />,
+    meta: NUMERIC
+  });
+};

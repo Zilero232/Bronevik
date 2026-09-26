@@ -1,1 +1,1 @@
-export { boardIdOf, boardSnapshot, encodeBoard, readBoardData, restoreBoard, seedBoardDocument } from './board-document';
+export { boardIdOf, boardSnapshot, encodeBoard, readBoardData, replaceBoardLayers, restoreBoard, seedBoardDocument } from './board-document';

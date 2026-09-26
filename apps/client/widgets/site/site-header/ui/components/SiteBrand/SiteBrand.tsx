@@ -1,4 +1,4 @@
-import { OtmetkiLogoIcon } from '@otmetki/icons';
+import { AnimatedLogoMark } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
@@ -11,7 +11,7 @@ export const SiteBrand = () => {
 
   return (
     <Link aria-label={t('home')} className={s.root} href={ROUTES.home}>
-      <OtmetkiLogoIcon className={s.mark} size={22} strokeWidth={2} />
+      <AnimatedLogoMark className={s.mark} size={30} strokeWidth={2} />
       <span className={s.text}>
         <span className={s.word}>{t('name')}</span>
         <span className={s.tagline}>{t('tagline')}</span>

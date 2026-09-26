@@ -1,0 +1,28 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.facts {
+  display: grid;
+  margin: 0;
+  gap: var(--space-3) var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+
+  dd {
+    margin: 0;
+  }
+}
+
+.fact {
+  @include stack(var(--space-1));
+}
+
+.label {
+  @include label;
+}
+
+.value {
+  @include numeric;
+}

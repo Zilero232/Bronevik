@@ -1,7 +1,7 @@
 import { AxiosError, AxiosHeaders } from 'axios';
 import { describe, expect, it } from 'vitest';
 
-import { NotFoundError, UnauthorizedError } from '@/shared/api/source/source.errors';
+import { NotFoundError, UnauthorizedError } from '@/shared/api/source';
 
 import { apiErrorCode, communityErrorKind } from '../api-error';
 

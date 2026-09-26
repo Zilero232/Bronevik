@@ -1,8 +1,6 @@
-import { OG_FONTS } from '@/shared/seo/og';
+import { OG_FONTS, OgFrame } from '@/shared/seo/og';
 
 import type { FallbackOgCardProps } from './FallbackOgCard.types';
-
-import { OgFrame } from '../OgFrame';
 
 export const FallbackOgCard = ({ labels, host }: FallbackOgCardProps) => (
   <OgFrame

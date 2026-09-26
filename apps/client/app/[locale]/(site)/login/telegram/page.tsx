@@ -11,7 +11,7 @@ export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
   const t = await getTranslations({ locale, namespace: 'telegram.webLogin.meta' });
 
-  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.loginTelegram, locale });
+  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.auth.telegram, locale });
 };
 
 const Page = () => (

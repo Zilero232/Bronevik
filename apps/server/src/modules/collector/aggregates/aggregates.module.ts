@@ -5,6 +5,7 @@ import {
   AccountRatingsService,
   BuildUsageService,
   LearningCurveService,
+  ModeMetaService,
   ReferenceTablesService,
   ServerStatsService,
   TankEconomyService,
@@ -21,6 +22,7 @@ import {
     TierMaintenanceService,
     TankEconomyService,
     LearningCurveService,
+    ModeMetaService,
     BuildUsageService,
     AggregateProcessor
   ]

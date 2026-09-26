@@ -88,7 +88,7 @@ class Py27CompatTest(unittest.TestCase):
     def test_pure_modules_import_without_client(self):
         import importlib
         for name in ('binding', 'compat', 'config', 'i18n', 'jsonutil', 'moe', 'outbox', 'loadout', 'panels', 'payload',
-                     'queue_timer', 'sender', 'session', 'settings_template', 'signing', 'storage', 'transport', 'version'):
+                     'queue_timer', 'sender', 'session', 'settings_share', 'settings_template', 'signing', 'storage', 'transport', 'version'):
             importlib.import_module('otmetki.' + name)
         self.assertNotIn('BigWorld', sys.modules)
 

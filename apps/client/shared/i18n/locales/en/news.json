@@ -12,7 +12,9 @@
     "all": "All",
     "news": "News",
     "patch_notes": "Patch notes",
-    "dev_blog": "Dev blog"
+    "dev_blog": "Dev blog",
+    "tank": "Filter by tank",
+    "clearTank": "All tanks"
   },
   "error": {
     "title": "Could not load the news",
@@ -21,6 +23,10 @@
   "empty": {
     "title": "No publications yet",
     "description": "News appears after the next tanki.su crawl."
+  },
+  "emptyTank": {
+    "title": "No posts about this tank",
+    "description": "We found no news or patch notes mentioning it. Pick another tank or clear the filter."
   },
   "version": "Update {version}",
   "mentions": "Mentioned vehicles",

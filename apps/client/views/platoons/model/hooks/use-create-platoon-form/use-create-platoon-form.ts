@@ -7,10 +7,10 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import type { CreatePlatoon } from '@/shared/api/platoons';
+import type { CreatePlatoon } from '../../../api';
 
 import { communityErrorKind } from '@/features/community/api-error';
-import { createPlatoon } from '@/shared/api/platoons';
+import { createPlatoon } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { PlatoonFormOutput, PlatoonFormValues } from '../../../lib/platoon-form';

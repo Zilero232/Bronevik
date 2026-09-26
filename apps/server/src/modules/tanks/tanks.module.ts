@@ -10,6 +10,7 @@ import {
   MyTankInsightsService,
   TankArmorService,
   TankDetailService,
+  TankDifficultyService,
   TankEconomyReportService,
   TankLearningService,
   TankObtainService,
@@ -19,9 +20,11 @@ import {
   TankTrendService,
   TierListService,
   TopPlayersService,
-  VehicleListService
+  VehicleListService,
+  VehicleSourcesService
 } from './services';
 import { TanksController } from './tanks.controller';
+import { VehicleSourcesController } from './vehicle-sources.controller';
 import { VehiclesController } from './vehicles.controller';
 
 const armorStorageProvider = {
@@ -41,13 +44,14 @@ const armorStorageProvider = {
 
 @Module({
   imports: [MarksModule, BillingCoreModule],
-  controllers: [TanksController, MyTanksController, VehiclesController],
+  controllers: [TanksController, MyTanksController, VehiclesController, VehicleSourcesController],
   providers: [
     armorStorageProvider,
     TankArmorService,
     TankStatsService,
     TierListService,
     TankDetailService,
+    TankDifficultyService,
     TopPlayersService,
     TankTrendService,
     TankPatchesService,
@@ -56,8 +60,9 @@ const armorStorageProvider = {
     TankObtainService,
     TankEconomyReportService,
     TankLearningService,
-    MyTankInsightsService
+    MyTankInsightsService,
+    VehicleSourcesService
   ],
-  exports: [TankDetailService, TankStatsService, TierListService]
+  exports: [TankDetailService, TankDifficultyService, TankStatsService, TierListService]
 })
 export class TanksModule {}

@@ -1,4 +1,4 @@
-import { zCreateReport } from '@/shared/api/moderation';
+import { zCreateReport } from '../api';
 
 import type { ReportFormValues } from '../lib/report-form';
 

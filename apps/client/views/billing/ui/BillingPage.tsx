@@ -1,16 +1,23 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
+import { PageHeader } from '@/ui-kit';
+
 import { useCheckoutReturn } from '../model/hooks';
-import { BillingHeader, PaymentHistory, PromoRedeemCard, ReferralCard, StatusPanel } from './components';
+import { PaymentHistory, PromoRedeemCard, ReferralCard, StatusPanel } from './components';
 
 import s from './BillingPage.module.scss';
 
 export const BillingPage = () => {
+  const t = useTranslations('billing.header');
+  const tBrand = useTranslations('brand');
+
   useCheckoutReturn();
 
   return (
     <div className={s.root}>
-      <BillingHeader />
+      <PageHeader description={t('description', { plus: tBrand('plus') })} title={t('title')} />
       <StatusPanel />
       <div className={s.grid}>
         <PromoRedeemCard />

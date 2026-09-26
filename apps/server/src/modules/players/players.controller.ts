@@ -1,10 +1,11 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTL } from '@nestjs/cache-manager';
 import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { CACHE_TTL } from '../../common/cache';
+import { CACHE_TTL, ViewerCacheInterceptor } from '../../common/cache';
+import { CacheByViewer, OptionalUserId } from '../../common/decorators';
 import {
   ActivityDto,
   ActivityQueryDto,
@@ -43,7 +44,7 @@ import {
 
 @ApiTags('players')
 @AllowAnonymous()
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(ViewerCacheInterceptor)
 @Controller('players')
 export class PlayersController {
   constructor(
@@ -88,11 +89,13 @@ export class PlayersController {
 
   @Get(':id/history')
   @CacheTTL(CACHE_TTL.player)
+  @CacheByViewer()
   @ZodResponse({ type: TimeSeriesDto })
-  async series(@Param() { id }: PlayerParamsDto, @Query() query: TimeSeriesQueryDto) {
+  async series(@Param() { id }: PlayerParamsDto, @Query() query: TimeSeriesQueryDto, @OptionalUserId() viewerUserId: string | null) {
     const accountId = await this.resolver.ensure(BigInt(id));
+    const policy = await this.history.policyFor({ accountId, viewerUserId });
 
-    return this.history.series({ accountId, query });
+    return this.history.series({ accountId, query, policy });
   }
 
   @Get(':id/activity')

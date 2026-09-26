@@ -5,6 +5,7 @@ export const SITE_LINKS = {
   top: '/top',
   missions: '/missions/{campaign}/{operation}',
   settings: '/me',
+  analytics: '/me/analytics',
   statCard: '/api/og/player/{accountId}'
 } as const;
 

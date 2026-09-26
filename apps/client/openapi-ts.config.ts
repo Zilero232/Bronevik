@@ -12,7 +12,7 @@ export default defineConfig({
     }
   },
   plugins: [
-    { name: '@hey-api/client-axios', runtimeConfigPath: './shared/api/http/client-config', throwOnError: true },
+    { name: '@hey-api/client-axios', runtimeConfigPath: './shared/api/http/client-config/client-config', throwOnError: true },
     '@hey-api/typescript',
     'zod',
     { name: '@hey-api/sdk', validator: { response: 'zod' } },

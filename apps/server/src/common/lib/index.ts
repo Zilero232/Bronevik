@@ -1,3 +1,4 @@
+export { bonusTypesOfMode, GAME_MODE_BONUS_TYPES, gameModeOfBonusType } from './bonus-type';
 export { clanInfoFields } from './clan-info';
 export { clanEmblem } from './emblem';
 export { accessEndsAt, entitledSubscriptionWhere, isEntitled, PLUS_SUBSCRIPTION } from './entitlement';
@@ -21,10 +22,10 @@ export {
   VEHICLE_TYPE_TO_DB
 } from './enums';
 export { errorMessage } from './errors';
-export { timingSafeEqual, verifySignatureHeader } from './hmac';
+export { isSignatureHeader, timingSafeEqual, verifySignatureHeader } from './hmac';
 export { JOB_SCHEDULES, registerJobSchedules } from './job-schedules';
 export type { JobSchedule } from './job-schedules';
-export { readNumber, readRecord, toJsonValue } from './json';
+export { parseJsonText, readNumber, readRecord, toJsonValue } from './json';
 export { formatNumber, formatNumberOr, formatPercent, formatPercentOr } from './number-format';
 export type { FormatNumberInput, FormatPercentInput } from './number-format';
 export { randomCode } from './random-code';

@@ -52,6 +52,12 @@ clan-weekly-report-body = Событий: { $events }, явка { $attendance ->
 badge-awarded-title = Новый бейдж!
 badge-awarded-body = «{ $title }» получен
 
+replay-overflow-title = { $daysLeft ->
+    [1] Завтра удалим лишние реплеи
+   *[other] Лишние реплеи удалим через { $daysLeft } дн.
+}
+replay-overflow-body = У вас { $stored } реплеев, бесплатно хранится { $keep }. { $deleteAt } оставим { $keep } самых новых, остальные удалим. Оформите Плюс, чтобы сохранить все.
+
 digest-title = Ваша неделя в «Трёх отметках»
 digest-body = { $battles } { $battles ->
         [one] бой
@@ -62,3 +68,44 @@ digest-body = { $battles } { $battles ->
        *[other] сессиях
     }, { NUMBER($winRate, minimumFractionDigits: 1, maximumFractionDigits: 1) }% побед, { NUMBER($avgDamage, maximumFractionDigits: 0) } среднего урона, новых отметок: { $marksGained }
 digest-empty = На этой неделе боёв не было. Ждём вас в игре!
+
+first-win-available-title = Первая победа дня
+first-win-available-body = { $nickname }: бонус за первую победу ещё доступен на { $available } { $available ->
+        [one] танке
+       *[other] танках
+    }
+
+watchlist-digest-title = Сводка по избранным игрокам
+watchlist-digest-body = Играли { $players } { $players ->
+        [one] игрок
+        [few] игрока
+       *[many] игроков
+    }: { $battles } { $battles ->
+        [one] бой
+        [few] боя
+       *[many] боёв
+    }, новых отметок: { $marks }. { $leader ->
+        [none] {""}
+       *[other] Активнее всех — { $leader }: { $leaderBattles } { $leaderBattles ->
+            [one] бой
+            [few] боя
+           *[many] боёв
+        }, { NUMBER($leaderWinRate, maximumFractionDigits: 1) }% побед
+    }
+
+tank-returned-title = Танк вернулся в магазин
+tank-returned-body = { $tankName } снова продаётся{ $absentDays ->
+        [none] {""}
+       *[other] {" "}после { $absentDays } дн. перерыва
+    }{ $discount ->
+        [none] {""}
+       *[other] , скидка { NUMBER($discount, maximumFractionDigits: 0) }%
+    }
+
+competition-finished-title = Состязание завершено
+competition-finished-body = «{ $title }»: команда «{ $teamName }» заняла { $rank }-е место из { $teams }
+
+streamer-live-title = { $name } в эфире
+streamer-live-body = Трансляция началась: { $platform }
+streamer-live-tank-title = { $name } в эфире на { $tankName }
+streamer-live-tank-body = Трансляция на { $tankName }: { $platform }

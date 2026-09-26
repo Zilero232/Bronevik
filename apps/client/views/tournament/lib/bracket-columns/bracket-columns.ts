@@ -1,4 +1,4 @@
-import type { TournamentParticipant } from '@/shared/api/tournaments';
+import type { TournamentParticipant } from '@/entities/tournament/tournament';
 
 import type { BracketColumn, BracketColumnsInput, BracketRoundName, BracketSlot, RoundNameInput, SlotOfInput } from './bracket-columns.types';
 

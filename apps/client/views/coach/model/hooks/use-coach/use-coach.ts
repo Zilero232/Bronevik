@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { pickVehicles } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { getCoach } from '@/shared/api/coaching';
+import { getCoach } from '@/entities/coaching/coach';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 
@@ -24,7 +24,7 @@ export const useCoach = (userId: string) => {
     vehicles: data ? pickVehicles({ tankIds: data.tankIds, catalog }) : [],
     contacts: data ? coachContactLinks(data.contacts) : [],
     offers: data?.offers.filter(({ isActive }) => isActive) ?? [],
-    profileHref: data ? ROUTES.player(String(data.accountId)) : null,
+    profileHref: data ? ROUTES.players.profile(String(data.accountId)) : null,
     isPending,
     isError,
     isNotFound: isNotFoundError(error),

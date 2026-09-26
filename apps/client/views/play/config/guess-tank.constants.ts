@@ -6,8 +6,6 @@ export const GUESS_TANK = {
   storageKey: 'otmetki-guess-tank',
   streakKey: 'otmetki-guess-tank:streak',
   epoch: '2026-01-01',
-  timeZone: 'Europe/Moscow',
-  utcOffset: '+03:00',
   detailStaleMs: hoursToMilliseconds(1)
 } as const;
 
@@ -23,7 +21,11 @@ export const GUESS_CELLS = ['tier', 'type', 'nation', 'premium', 'damage', 'winR
 
 export const GUESS_CLUES = ['tier', 'nation', 'shell', 'health', 'letter'] as const;
 
-export const GUESS_LEGEND = ['match', 'close', 'miss'] as const;
+export const GUESS_LEGEND = [
+  { verdict: 'match', tone: 'success' },
+  { verdict: 'close', tone: 'warning' },
+  { verdict: 'miss', tone: 'danger' }
+] as const;
 
 export const GUESS_SHARE_MARKS = {
   match: '+',

@@ -57,27 +57,6 @@
   @include source-line;
 }
 
-.tanks {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 0;
-  margin: 0;
-  gap: var(--space-1);
-  list-style: none;
-}
-
-.tank {
-  @include well;
-
-  display: flex;
-  padding: var(--space-1);
-}
-
-.more {
-  @include source-line;
-}
-
 .foot {
   display: flex;
   align-items: center;

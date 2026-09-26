@@ -1,32 +1,22 @@
 'use client';
 
-import { differenceInCalendarDays } from 'date-fns';
 import { Trash2 } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
-import { percentText } from '@/shared/lib';
 import { Badge, IconButton, ProgressBar } from '@/ui-kit';
 
 import type { GoalItemProps } from './GoalItem.types';
 
 import { GOAL_STATUS_TONE } from '../../../config';
-import { isPercentMetric } from '../../../lib/goal-form';
-import { goalProgress } from '../../../lib/goal-progress';
+import { useGoalItem } from '../../../model/hooks';
 
 import s from './GoalItem.module.scss';
 
 export const GoalItem = ({ goal, onRemove }: GoalItemProps) => {
   const t = useTranslations('me.goals');
-  const format = useFormatter();
+  const { progress, daysLeft, formatValue: value } = useGoalItem(goal);
 
-  const [now] = useState(Date.now);
-
-  const { metric, target, baseline, current, status, endsAt } = goal;
-  const progress = goalProgress({ baseline, target, current });
-  const daysLeft = differenceInCalendarDays(new Date(endsAt), now);
-  const value = (number: number) =>
-    isPercentMetric(metric) ? percentText({ format, value: number, digits: 2 }) : format.number(number, { maximumFractionDigits: 2 });
+  const { metric, target, baseline, current, status } = goal;
 
   return (
     <article className={s.root} data-status={status}>
@@ -43,7 +33,7 @@ export const GoalItem = ({ goal, onRemove }: GoalItemProps) => {
         value={progress * 100}
         valueLabel={`${Math.round(progress * 100)}%`}
       />
-      <span className={s.deadline}>{daysLeft >= 0 ? t('daysLeft', { count: daysLeft }) : t('overdue')}</span>
+      {daysLeft !== null && <span className={s.deadline}>{daysLeft >= 0 ? t('daysLeft', { count: daysLeft }) : t('overdue')}</span>}
     </article>
   );
 };

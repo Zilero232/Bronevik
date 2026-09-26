@@ -22,7 +22,7 @@ export const MapHeader = ({ map }: MapHeaderProps) => {
       description={mapModes(map)
         .map(({ mode }) => labels.mode(mode))
         .join(' · ')}
-      breadcrumbs={[{ label: t('head.title'), href: ROUTES.maps }, { label: name }]}
+      breadcrumbs={[{ label: t('head.title'), href: ROUTES.maps.list }, { label: name }]}
       meta={camouflage && <Badge tone={isMapCamouflage(camouflage) ? CAMOUFLAGE_TONE[camouflage] : 'neutral'}>{labels.camouflage(camouflage)}</Badge>}
       title={name}
     >

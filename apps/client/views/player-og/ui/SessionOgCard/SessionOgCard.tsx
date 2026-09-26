@@ -1,10 +1,8 @@
-import { OG_COLORS, OG_FONTS } from '@/shared/seo/og';
+import { OG_COLORS, OG_FONTS, OgFrame, OgMetrics } from '@/shared/seo/og';
 
 import type { SessionOgCardProps } from './SessionOgCard.types';
 
 import { sessionOgDate, sessionOgMetrics } from '../../lib';
-import { OgFrame } from '../OgFrame';
-import { OgMetrics } from '../OgMetrics';
 
 export const SessionOgCard = ({ nickname, session, labels, locale }: SessionOgCardProps) => (
   <OgFrame

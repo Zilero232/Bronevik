@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import type { SelectItem } from '@/ui-kit';
 
 import { useMapLabels } from '@/entities/map/map';
-import { listMaps } from '@/shared/api/maps';
+import { listMaps } from '@/entities/map/map';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { BOARD_SETTINGS } from '../../../config';

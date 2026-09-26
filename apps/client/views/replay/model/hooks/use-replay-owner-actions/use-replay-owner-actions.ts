@@ -4,11 +4,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { Replay, ReplayVisibility } from '@/shared/api/replays';
+import type { Replay, ReplayVisibility } from '@/entities/replay/replay';
 
 import { communityErrorKind } from '@/features/community/api-error';
-import { useCommunityViewer } from '@/features/community/viewer';
-import { deleteReplay, updateReplay } from '@/shared/api/replays';
+import { deleteReplay, updateReplay } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
@@ -16,7 +15,6 @@ export const useReplayOwnerActions = (replay: Replay) => {
   const t = useTranslations('replays.owner');
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { isSignedIn, ownsAccount } = useCommunityViewer();
 
   const onError = (error: unknown) => {
     toast.error(t(`errors.${communityErrorKind(error)}`));
@@ -38,13 +36,13 @@ export const useReplayOwnerActions = (replay: Replay) => {
       queryClient.removeQueries({ queryKey: QUERY_KEYS.replays.detail(replay.id) });
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.replays.all });
       toast.success(t('deleted'));
-      router.replace(ROUTES.replays);
+      router.replace(ROUTES.replays.list);
     },
     onError
   });
 
   return {
-    canManage: isSignedIn && (replay.visibility === 'private' || ownsAccount(replay.owner?.accountId ?? null)),
+    canManage: replay.isOwner,
     visibility: visibility.isPending && visibility.variables ? visibility.variables : replay.visibility,
     isSaving: visibility.isPending,
     isDeleting: removal.isPending,

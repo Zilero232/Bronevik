@@ -1,4 +1,4 @@
-import type { GroupInsight } from '@/shared/api/players';
+import type { GroupInsight } from '@/entities/player/profile';
 
 export type GroupBreakdownProps = {
   kind: 'class' | 'tier';

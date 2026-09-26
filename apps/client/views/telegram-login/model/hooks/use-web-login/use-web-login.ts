@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';
 import { useEffect, useRef } from 'react';
 
-import { redeemTelegramWebLogin } from '@/shared/api/telegram';
+import { redeemTelegramWebLogin } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
@@ -19,7 +19,7 @@ export const useWebLogin = () => {
     mutationFn: redeemTelegramWebLogin,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.auth.session });
-      router.replace(ROUTES.me);
+      router.replace(ROUTES.account.overview);
     }
   });
 

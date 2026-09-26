@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { vehicleIndex } from '@/entities/tank/tank';
-import { listMaps } from '@/shared/api/maps';
-import { listVehicles } from '@/shared/api/tanks';
+import { listMaps } from '@/entities/map/map';
+import { listVehicles } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseGuideSubjectInput } from './use-guide-subject.types';

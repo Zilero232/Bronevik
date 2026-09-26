@@ -1,11 +1,11 @@
 'use client';
 
-import { ExternalLink, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { Check, Copy, ExternalLink, Gift, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Badge, Button, buttonVariants, CopyField, RelativeTime } from '@/ui-kit';
+import { Badge, Button, buttonVariants, RelativeTime } from '@/ui-kit';
 
 import type { CodeCardProps } from './CodeCard.types';
 
@@ -17,24 +17,43 @@ import s from './CodeCard.module.scss';
 export const CodeCard = ({ code }: CodeCardProps) => {
   const t = useTranslations('codes');
   const format = useFormatter();
-  const { sourceHref, isSignedIn, isReporting, report } = useCodeCard({ code });
+  const { sourceHref, ribbon, copied, onCopy, isSignedIn, isReporting, report } = useCodeCard({ code });
 
   return (
     <li className={s.root} data-status={code.status}>
-      <div className={s.head}>
-        <CopyField className={s.code} tone={code.status === 'expired' ? 'neutral' : 'accent'} value={code.code} />
-        <Badge tone={CODES.statusTone[code.status]}>{t(`status.${code.status}`)}</Badge>
-      </div>
-      <p className={s.title}>{code.title ?? t('card.noTitle')}</p>
-      {code.rewards.length > 0 && (
-        <ul aria-label={t('card.rewards')} className={s.rewards}>
-          {code.rewards.map((reward) => (
-            <li key={reward}>
-              <Badge tone='steel'>{reward}</Badge>
-            </li>
-          ))}
-        </ul>
+      {ribbon && (
+        <span className={s.ribbon} data-kind={ribbon.kind}>
+          {ribbon.kind === 'expiring' ? t('ribbon.expiring', { days: ribbon.days }) : t('ribbon.new')}
+        </span>
       )}
+      <div className={s.ticket}>
+        <div aria-hidden className={s.stub}>
+          <Gift size={22} />
+        </div>
+        <div className={s.main}>
+          <div className={s.head}>
+            <p className={s.title}>{code.title ?? t('card.noTitle')}</p>
+            <Badge tone={CODES.statusTone[code.status]}>{t(`status.${code.status}`)}</Badge>
+          </div>
+          <div className={s.codeRow}>
+            <code className={s.code}>{code.code}</code>
+            <Button className={s.copy} size='sm' variant='primary' onClick={onCopy}>
+              {copied ? <Check aria-hidden size={14} /> : <Copy aria-hidden size={14} />}
+              {copied ? t('card.copied') : t('card.copy')}
+            </Button>
+          </div>
+          {code.rewards.length > 0 && (
+            <ul aria-label={t('card.rewards')} className={s.rewards}>
+              {code.rewards.map((reward) => (
+                <li key={reward} className={s.reward}>
+                  <Gift aria-hidden className={s.rewardIcon} size={14} />
+                  {reward}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
       <dl className={s.meta}>
         <div className={s.row}>
           <dt>{t('card.source')}</dt>
@@ -75,7 +94,7 @@ export const CodeCard = ({ code }: CodeCardProps) => {
               </Button>
             </div>
           ) : (
-            <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={ROUTES.login}>
+            <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={ROUTES.auth.login}>
               {t('report.signIn')}
             </Link>
           ))}

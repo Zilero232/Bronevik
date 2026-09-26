@@ -13,7 +13,10 @@
     "signals": "Signals and text",
     "rating": "Rating scale",
     "patterns": "Pattern mode",
-    "spacing": "Spacing"
+    "spacing": "Spacing",
+    "classes": "Vehicle classes",
+    "tiers": "Tiers",
+    "equipment": "Equipment categories"
   },
   "type": {
     "title": "Typography",
@@ -51,6 +54,8 @@
       "mastery": "Mastery",
       "modes": "Battle modes",
       "misc": "Combat",
+      "crew": "Crew",
+      "equipment": "Equipment",
       "tiers": "Tiers",
       "animated": "Animated",
       "silhouettes": "Silhouettes (backdrops)",

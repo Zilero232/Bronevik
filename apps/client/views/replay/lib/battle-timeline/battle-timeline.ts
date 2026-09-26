@@ -1,6 +1,6 @@
 import { sortBy } from 'remeda';
 
-import type { ReplayPlayer } from '@/shared/api/replays';
+import type { ReplayPlayer } from '@/entities/replay/replay';
 
 import type { AliveAtInput, AliveSeries, AliveSeriesInput, KillEvent, KillEventsInput } from './battle-timeline.types';
 

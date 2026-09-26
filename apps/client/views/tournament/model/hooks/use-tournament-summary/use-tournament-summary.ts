@@ -2,7 +2,7 @@
 
 import { useFormatter } from 'next-intl';
 
-import type { Tournament } from '@/shared/api/tournaments';
+import type { Tournament } from '@/entities/tournament/tournament';
 
 import { TOURNAMENT_PAGE } from '../../../config';
 import { championOf } from '../../../lib/bracket-columns';

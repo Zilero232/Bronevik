@@ -1,4 +1,13 @@
-import { accountIdSchema, countSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySchema, tankIdSchema, uuidSchema } from '@otmetki/schemas';
+import {
+  accountIdSchema,
+  countSchema,
+  httpsUrlSchema,
+  isoDateTimeSchema,
+  paginatedSchema,
+  paginationQuerySchema,
+  tankIdSchema,
+  uuidSchema
+} from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { playerStatsSchema } from '../../community-core';
@@ -6,13 +15,11 @@ import { COACHING } from '../config';
 
 const priceSchema = z.number().min(COACHING.minPriceRub).max(COACHING.maxPriceRub);
 
-const httpsLinkSchema = z.url({ protocol: /^https$/ });
-
 export const coachContactsSchema = z.object({
-  telegram: httpsLinkSchema.optional(),
+  telegram: httpsUrlSchema.optional(),
   discord: z.string().trim().min(2).max(COACHING.contactMaxLength).optional(),
-  vk: httpsLinkSchema.optional(),
-  booking: httpsLinkSchema.optional()
+  vk: httpsUrlSchema.optional(),
+  booking: httpsUrlSchema.optional()
 });
 
 export const coachOfferSchema = z.object({

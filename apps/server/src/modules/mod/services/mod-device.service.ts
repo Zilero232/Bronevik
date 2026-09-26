@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 
-import type { AuthenticatedDevice, AuthenticateInput, ModDeviceView, RevokeDeviceInput } from '../mod.types';
+import type { AuthenticatedDevice, AuthenticateInput, IdentifyDeviceInput, ModDeviceView, RevokeDeviceInput } from '../mod.types';
 
 import { AppNotFoundException, ModException } from '../../../common/exceptions';
-import { toIso, verifySignatureHeader } from '../../../common/lib';
+import { isSignatureHeader, toIso, verifySignatureHeader } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { deviceSecret, matchesSecretHash } from '../lib';
@@ -15,7 +15,7 @@ export class ModDeviceService {
     private readonly config: AppConfigService
   ) {}
 
-  async authenticate({ deviceId, signature, rawBody }: AuthenticateInput): Promise<AuthenticatedDevice> {
+  async identify({ deviceId, signature }: IdentifyDeviceInput): Promise<AuthenticatedDevice> {
     const device = deviceId ? await this.prisma.modDevice.findUnique({ where: { id: deviceId } }) : null;
 
     if (!device || device.accountId === null) {
@@ -26,17 +26,21 @@ export class ModDeviceService {
       throw new ModException({ status: HttpStatus.FORBIDDEN, error: 'device_revoked' });
     }
 
-    const secret = deviceSecret({ deviceId: device.id, serverSecret: this.config.get('MOD_INGEST_SECRET') });
-
-    if (
-      !rawBody ||
-      !matchesSecretHash({ secret, hash: device.secretHash }) ||
-      !verifySignatureHeader({ header: signature, key: secret, body: rawBody })
-    ) {
+    if (!isSignatureHeader(signature) || !matchesSecretHash({ secret: this.secretOf(device.id), hash: device.secretHash })) {
       throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });
     }
 
     return { ...device, accountId: device.accountId };
+  }
+
+  async authenticate({ deviceId, signature, rawBody }: AuthenticateInput): Promise<AuthenticatedDevice> {
+    const device = await this.identify({ deviceId, signature });
+
+    if (!rawBody || !verifySignatureHeader({ header: signature, key: this.secretOf(device.id), body: rawBody })) {
+      throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });
+    }
+
+    return device;
   }
 
   async list(userId: string): Promise<ModDeviceView[]> {
@@ -60,5 +64,9 @@ export class ModDeviceService {
     if (revoked.count === 0) {
       throw new AppNotFoundException('MOD_DEVICE_INVALID', 'No such active device');
     }
+  }
+
+  private secretOf(deviceId: string): string {
+    return deviceSecret({ deviceId, serverSecret: this.config.get('MOD_INGEST_SECRET') });
   }
 }

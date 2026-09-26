@@ -333,7 +333,8 @@ describe('TournamentService.create', () => {
         requirements: {},
         maxParticipants: TOURNAMENT.maxParticipants,
         startsAt: startsAt.toISOString(),
-        registrationEndsAt: addDays(startsAt, 1).toISOString()
+        registrationEndsAt: addDays(startsAt, 1).toISOString(),
+        openRegistration: false
       })
     ).rejects.toBeInstanceOf(AppBadRequestException);
 
@@ -372,5 +373,59 @@ describe('TournamentService.reportMatch under concurrency', () => {
     await service.reportMatch({ id, userId: 'organizer', round: 0, index: 0, winner: 1 });
 
     expect(prisma.$transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: 'Serializable' });
+  });
+});
+
+describe('TournamentService.create and open', () => {
+  it('opens registration in the same write when asked', async () => {
+    const { service, prisma } = createService();
+
+    prisma.tournament.create.mockResolvedValue(tournament);
+
+    await service.create({
+      userId: 'organizer',
+      title: 'Autumn cup',
+      requirements: {},
+      maxParticipants: TOURNAMENT.maxParticipants,
+      startsAt: addDays(new Date(), 7).toISOString(),
+      openRegistration: true
+    });
+
+    expect(prisma.tournament.create.mock.calls[0]?.[0].data).toMatchObject({ status: 'registration' });
+  });
+});
+
+describe('TournamentService.get', () => {
+  it('shows a draft to its organizer only', async () => {
+    const { service, prisma } = createService();
+
+    prisma.tournament.findUnique.mockResolvedValue(entrants({ status: 'draft' }));
+
+    await expect(service.get({ slug: tournament.slug, viewerUserId: 'organizer' })).resolves.toMatchObject({ status: 'draft' });
+    await expect(service.get({ slug: tournament.slug, viewerUserId: 'stranger' })).rejects.toMatchObject({ response: { code: 'NOT_FOUND' } });
+    await expect(service.get({ slug: tournament.slug, viewerUserId: null })).rejects.toMatchObject({ response: { code: 'NOT_FOUND' } });
+  });
+});
+
+describe('TournamentService.withdraw', () => {
+  it('removes the entry while registration is open', async () => {
+    const { service, prisma } = createService();
+
+    prisma.tournament.findUnique.mockResolvedValue(entrants({}));
+    prisma.tournamentParticipant.deleteMany.mockResolvedValue({ count: 1 });
+    prisma.tournament.findUniqueOrThrow.mockResolvedValue(entrants({}));
+
+    await service.withdraw({ id, userId: 'player' });
+
+    expect(prisma.tournamentParticipant.deleteMany).toHaveBeenCalledWith({ where: { tournamentId: id, accountId: 7n } });
+  });
+
+  it('refuses once the tournament is running', async () => {
+    const { service, prisma } = createService();
+
+    prisma.tournament.findUnique.mockResolvedValue(entrants({ status: 'running' }));
+
+    await expect(service.withdraw({ id, userId: 'player' })).rejects.toBeInstanceOf(AppConflictException);
+    expect(prisma.tournamentParticipant.deleteMany).not.toHaveBeenCalled();
   });
 });

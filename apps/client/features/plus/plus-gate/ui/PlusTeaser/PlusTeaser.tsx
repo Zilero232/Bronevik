@@ -2,6 +2,7 @@
 
 import { clsx } from 'clsx';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 import { match } from 'ts-pattern';
 
 import { ROUTES } from '@/shared/constants';
@@ -18,18 +19,19 @@ import s from './PlusTeaser.module.scss';
 
 export const PlusTeaser = ({ feature, className }: PlusTeaserProps) => {
   const t = useTranslations('plus');
+  const titleId = useId();
   const { action, trialDays, isPending, isStarting, onStartTrial } = usePlusTeaser();
 
   const Icon = PLUS_FEATURE_ICONS[feature];
 
   return (
-    <section aria-labelledby={`plus-teaser-${feature}`} className={clsx(s.root, className)}>
+    <section aria-labelledby={titleId} className={clsx(s.root, className)}>
       <span aria-hidden className={s.icon}>
         <Icon size={PLUS_GATE.iconSize} />
       </span>
       <div className={s.body}>
         <header className={s.head}>
-          <h3 className={s.title} id={`plus-teaser-${feature}`}>
+          <h3 className={s.title} id={titleId}>
             {t(`gate.${feature}.title`)}
           </h3>
           <PlusBadge />
@@ -40,7 +42,7 @@ export const PlusTeaser = ({ feature, className }: PlusTeaserProps) => {
         {match({ isPending, action })
           .with({ isPending: true }, () => <Skeleton height={36} shape='block' width={180} />)
           .with({ action: 'signIn' }, () => (
-            <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.login}>
+            <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.auth.login}>
               {t('teaser.signIn')}
             </Link>
           ))

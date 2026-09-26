@@ -14,7 +14,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/guides/[
   const slug = decodeURIComponent((await params).slug);
   const t = await getTranslations({ locale, namespace: 'guides.detailMeta' });
 
-  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.guide(slug), locale, index: true, follow: true });
+  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.guides.detail(slug), locale, index: true, follow: true });
 };
 
 const GuideRoute = async ({ params }: Pick<PageProps<'/[locale]/guides/[slug]'>, 'params'>) => {

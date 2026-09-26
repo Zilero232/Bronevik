@@ -6,22 +6,27 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 import { unique } from 'remeda';
 
 import { useCommunityViewer } from '@/features/community/viewer';
-import { getCoach, getCoachingOrders } from '@/shared/api/coaching';
+import { getCoach, getCoachingOrders } from '@/entities/coaching/coach';
+import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { COACHING_ORDERS } from '../../../config';
 
 export const useCoachingOrders = () => {
   const { userId, isSignedIn } = useCommunityViewer();
   const { data, isPending, isError, isFetching, refetch } = useQuery({
     queryKey: QUERY_KEYS.coaching.orders,
     queryFn: getCoachingOrders,
-    enabled: isSignedIn
+    enabled: isSignedIn,
+    retry: (failures, failure) => !isNotFoundError(failure) && failures < COACHING_ORDERS.retries
   });
 
   const coachIds = unique((data ?? []).map(({ coachUserId }) => coachUserId).filter((id) => id !== userId));
   const coaches = useQueries({
     queries: coachIds.map((coachUserId) => ({
       queryKey: QUERY_KEYS.coaching.coach(coachUserId),
-      queryFn: ({ signal }: QueryFunctionContext) => getCoach({ userId: coachUserId, signal })
+      queryFn: ({ signal }: QueryFunctionContext) => getCoach({ userId: coachUserId, signal }),
+      retry: (failures: number, failure: Error) => !isNotFoundError(failure) && failures < COACHING_ORDERS.retries
     }))
   });
 

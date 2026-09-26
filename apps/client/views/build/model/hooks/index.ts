@@ -1,6 +1,10 @@
 export { useBuildData } from './use-build-data';
 export { useBuildHead } from './use-build-head';
+export { useBuildShowcase } from './use-build-showcase';
+export type { BuildShowcaseSource } from './use-build-showcase';
 export { useBuildStatGroups } from './use-build-stat-groups';
+export { useBuildView } from './use-build-view';
+export type { BuildView } from './use-build-view';
 export { useCrewRole } from './use-crew-role';
 export { useFieldModStep } from './use-field-mod-step';
 export { useMobileStats } from './use-mobile-stats';

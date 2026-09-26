@@ -7,7 +7,7 @@ import { Card, CardHeader } from '@/ui-kit';
 
 import { TANK_PAGE, TANK_SECTIONS } from '../../../config';
 import { useObtainSection } from '../../../model/hooks';
-import { ObtainLinks } from './components';
+import { ObtainEditorial, ObtainLinks, ObtainMissions, ReturnAlert } from './components';
 
 import s from './ObtainSection.module.scss';
 
@@ -15,7 +15,7 @@ export const ObtainSection = () => {
   const t = useTranslations('tank.obtain');
   const tSource = useTranslations('tankTraits.source');
   const format = useFormatter();
-  const { obtain, offers, news } = useObtainSection();
+  const { obtain, offers, news, missions, editorial } = useObtainSection();
 
   return (
     <Card className={s.root} id={TANK_SECTIONS.obtain} padding='none'>
@@ -28,7 +28,7 @@ export const ObtainSection = () => {
             ))}
           </ul>
         ) : (
-          <p className={s.muted}>{t('unavailable')}</p>
+          missions.length + editorial.length === 0 && <p className={s.muted}>{t('unavailable')}</p>
         )}
         {(obtain.priceCredits !== null || obtain.priceGold !== null) && (
           <p className={s.price}>
@@ -50,6 +50,9 @@ export const ObtainSection = () => {
             </ul>
           </div>
         )}
+        {missions.length > 0 && <ObtainMissions items={missions} />}
+        {editorial.length > 0 && <ObtainEditorial items={editorial} />}
+        <ReturnAlert />
         {obtain.offers.total > 0 && <ObtainLinks items={offers} title={t('offers', { count: obtain.offers.total })} />}
         {news.length > 0 && <ObtainLinks items={news} title={t('news')} />}
       </div>

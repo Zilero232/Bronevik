@@ -12,7 +12,7 @@ import type { StudioTab } from '../config';
 
 import { STUDIO_TABS } from '../config';
 import { useStreamerStudio } from '../model/hooks';
-import { ChallengesPanel, IntegrationsPanel, OverlaysPanel, ProfilePanel, StudioHeader } from './components';
+import { ChallengesPanel, IntegrationsPanel, OverlaysPanel, ProfilePanel, SettingsPanel, StudioHeader } from './components';
 
 import s from './StreamerStudioPage.module.scss';
 
@@ -22,6 +22,7 @@ export const StreamerStudioPage = () => {
 
   const panels: Record<StudioTab, ReactNode> = {
     profile: <ProfilePanel />,
+    settings: <SettingsPanel />,
     integrations: <IntegrationsPanel />,
     overlays: <OverlaysPanel />,
     challenges: <ChallengesPanel />

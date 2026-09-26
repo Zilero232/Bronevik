@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { match } from 'ts-pattern';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { getMissionGarage, getMissionTanks } from '@/shared/api/missions';
+import { getMissionGarage, getMissionTanks } from '@/entities/mission/mission';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseMissionTanksInput } from './use-mission-tanks.types';

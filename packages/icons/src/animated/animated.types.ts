@@ -13,3 +13,7 @@ export type AnimatedMasteryProps = IconProps & {
   level: MasteryLevel;
   tinted?: boolean;
 };
+
+export type AnimatedLogoMarkProps = IconProps & {
+  delay?: number;
+};

@@ -1,0 +1,37 @@
+enum VehicleSourceKind {
+  personalMissions @map("personal_missions")
+  event
+  battlePass       @map("battle_pass")
+  bonds
+  workshop
+  shop
+  lootboxes
+  clanWars         @map("clan_wars")
+  other
+
+  @@map("vehicle_source_kind")
+}
+
+model VehicleSource {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  tankId             Int               @map("tank_id")
+  kind               VehicleSourceKind
+  title              String?
+  url                String?
+  note               String?
+  eventId            String?           @map("event_id")
+  missionCampaignId  Int?              @map("mission_campaign_id")
+  missionOperationId Int?              @map("mission_operation_id")
+
+  startsAt        DateTime? @map("starts_at") @db.Timestamptz(3)
+  endsAt          DateTime? @map("ends_at") @db.Timestamptz(3)
+  createdByUserId String?   @map("created_by_user_id")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  event GameEvent? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([tankId])
+  @@index([eventId])
+  @@map("vehicle_source")
+}

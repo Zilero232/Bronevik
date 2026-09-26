@@ -1,17 +1,18 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useFormatter, useNow, useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { PlatoonPost } from '@/shared/api/platoons';
+import type { PlatoonPost } from '../../../api';
 
 import { pickVehicles } from '@/entities/tank/tank';
 import { communityErrorKind } from '@/features/community/api-error';
 import { useCommunityViewer } from '@/features/community/viewer';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { closePlatoon } from '@/shared/api/platoons';
+import { closePlatoon } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
+import { useClientNow } from '@/shared/lib';
 
 import { PLATOON_BOARD, PLATOON_TIME_FORMAT } from '../../../config';
 import { availabilityWindow } from '../../../lib/availability';
@@ -21,7 +22,7 @@ export const usePlatoonCard = (post: PlatoonPost) => {
   const t = useTranslations('platoons');
   const format = useFormatter();
   const queryClient = useQueryClient();
-  const now = useNow({ updateInterval: PLATOON_BOARD.nowTickMs });
+  const now = useClientNow({ updateInterval: PLATOON_BOARD.nowTickMs });
   const { ownsAccount } = useCommunityViewer();
   const { data: catalog } = useVehicleCatalog();
   const close = useMutation({
@@ -44,7 +45,7 @@ export const usePlatoonCard = (post: PlatoonPost) => {
     }),
     availabilityState: availability.state,
     modesText: post.modes.map((mode) => (isPlatoonMode(mode) ? t(`modes.${mode}`) : mode)).join(', '),
-    profileHref: ROUTES.player(post.nickname ?? String(post.accountId)),
+    profileHref: ROUTES.players.profile(post.nickname ?? String(post.accountId)),
     isOwn: ownsAccount(post.accountId),
     isClosing: close.isPending,
     onClose: () => close.mutate()

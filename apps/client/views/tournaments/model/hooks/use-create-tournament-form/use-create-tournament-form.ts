@@ -7,10 +7,10 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import type { CreateTournament } from '@/shared/api/tournaments';
+import type { CreateTournament } from '@/entities/tournament/tournament';
 
 import { communityErrorKind } from '@/features/community/api-error';
-import { createTournament, openTournament } from '@/shared/api/tournaments';
+import { createTournament } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
@@ -31,12 +31,12 @@ export const useCreateTournamentForm = () => {
   });
 
   const create = useMutation({
-    mutationFn: async (body: CreateTournament) => openTournament((await createTournament(body)).id),
+    mutationFn: (body: CreateTournament) => createTournament({ ...body, openRegistration: true }),
     onSuccess: async (tournament) => {
       toast.success(t('toast.created'));
       queryClient.setQueryData(QUERY_KEYS.tournaments.detail(tournament.slug), tournament);
-      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tournaments.all });
-      router.push(ROUTES.tournament(tournament.slug));
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tournaments.lists });
+      router.push(ROUTES.tournaments.detail(tournament.slug));
     },
     onError: (error) => toast.error(t(`errors.${communityErrorKind(error)}`))
   });

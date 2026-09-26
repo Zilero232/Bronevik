@@ -1,9 +1,9 @@
 'use client';
 
-import type { Tournament } from '@/shared/api/tournaments';
+import type { Tournament } from '@/entities/tournament/tournament';
 
 import { useCommunityViewer } from '@/features/community/viewer';
-import { cancelTournament, openTournament, startTournament } from '@/shared/api/tournaments';
+import { cancelTournament, openTournament, startTournament } from '../../../api';
 
 import { TOURNAMENT_PAGE } from '../../../config';
 import { useTournamentMutation } from '../use-tournament-mutation';

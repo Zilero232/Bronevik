@@ -1,15 +1,16 @@
 'use client';
 
-import { useTimer } from '@siberiacancode/reactuse';
-import { useState } from 'react';
+import { useClientNow, useCountdown } from '@/shared/lib';
 
 import type { UseCodeCountdownInput } from './use-code-countdown.types';
 
 import { codeLifetime, formatCountdown } from '../../../lib/code-countdown';
 
 export const useCodeCountdown = ({ expiresAt, issuedAt }: UseCodeCountdownInput) => {
-  const [lifetime] = useState(() => codeLifetime({ expiresAt, issuedAt, now: Date.now() }));
-  const { count } = useTimer(lifetime.left);
+  const now = useClientNow();
+  const { left, isExpired } = useCountdown({ seconds: (at) => codeLifetime({ expiresAt, issuedAt, now: at.getTime() }).left });
 
-  return { label: formatCountdown(count), ratio: count / lifetime.total, isExpired: count === 0 };
+  const lifetime = now ? codeLifetime({ expiresAt, issuedAt, now: now.getTime() }) : null;
+
+  return { label: formatCountdown(left), ratio: lifetime ? left / lifetime.total : 0, isExpired };
 };

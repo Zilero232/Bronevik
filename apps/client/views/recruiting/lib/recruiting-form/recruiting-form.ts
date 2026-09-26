@@ -1,4 +1,4 @@
-import type { CreateRecruiting } from '@/shared/api/recruiting';
+import type { CreateRecruiting } from '../../api';
 
 import { toStatRequirements } from '@/features/community/stat-requirements';
 import { chosenAccountId } from '@/features/community/viewer';

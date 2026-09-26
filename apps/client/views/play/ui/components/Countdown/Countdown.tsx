@@ -2,13 +2,13 @@
 
 import { useTranslations } from 'next-intl';
 
-import { useCountdown } from '../../../model/hooks';
+import { useNextPuzzleClock } from '../../../model/hooks';
 
 import s from './Countdown.module.scss';
 
 export const Countdown = () => {
   const t = useTranslations('play.result');
-  const clock = useCountdown();
+  const clock = useNextPuzzleClock();
 
   return (
     <p className={s.root}>

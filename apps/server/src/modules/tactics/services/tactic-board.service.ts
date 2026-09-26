@@ -17,10 +17,14 @@ import { toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { TACTICS } from '../config';
 import { boardRole, canEdit, readBoardData } from '../lib';
+import { BoardLiveService } from './board-live.service';
 
 @Injectable()
 export class TacticBoardService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly live: BoardLiveService
+  ) {}
 
   async mine(userId: string): Promise<TacticBoardView[]> {
     const boards = await this.prisma.tacticBoard.findMany({ where: { ownerUserId: userId }, orderBy: { updatedAt: 'desc' } });
@@ -49,19 +53,22 @@ export class TacticBoardService {
   }
 
   async update({ id, userId, token, title, arenaId, mode, visibility, data }: UpdateTacticBoardRequest): Promise<TacticBoardView> {
-    const { role } = await this.access({ id, userId, token });
+    const { board: current, role } = await this.access({ id, userId, token });
 
     if (!canEdit(role)) {
       throw new AppForbiddenException('FORBIDDEN', 'This link is view-only');
     }
 
     const ownerChanges = role === 'owner' ? { title, arenaId, mode, visibility } : {};
-    const board = await this.prisma.tacticBoard.update({
-      where: { id },
-      data: { ...ownerChanges, ...(data === undefined ? {} : { data: toJsonValue(data), document: null }) }
-    });
+    const isLive = data !== undefined && this.live.replaceData({ id, data });
+    const dataChanges = data === undefined ? {} : isLive ? { data: toJsonValue(data) } : { data: toJsonValue(data), document: null };
+    const board = await this.prisma.tacticBoard.update({ where: { id }, data: { ...ownerChanges, ...dataChanges } });
 
-    return this.view({ board, role: role ?? 'view' });
+    if (visibility !== undefined && role === 'owner' && visibility !== current.visibility) {
+      this.live.close(id);
+    }
+
+    return this.view({ board, role });
   }
 
   async remove({ id, userId }: OwnedById): Promise<void> {
@@ -70,6 +77,8 @@ export class TacticBoardService {
     if (count === 0) {
       throw new AppNotFoundException('NOT_FOUND', `No board ${id} of yours`);
     }
+
+    this.live.close(id);
   }
 
   async rotateTokens({ id, userId }: OwnedById): Promise<TacticBoardView> {
@@ -81,6 +90,8 @@ export class TacticBoardService {
     if (count === 0) {
       throw new AppNotFoundException('NOT_FOUND', `No board ${id} of yours`);
     }
+
+    this.live.close(id);
 
     return this.open({ id, userId, token: null });
   }

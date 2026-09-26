@@ -25,3 +25,11 @@ export const planPricing = (offers: Plans): PlanPricing[] => {
     };
   });
 };
+
+export const recommendedPlan = (pricing: readonly PlanPricing[]): PlanPricing['plan'] | null => {
+  const best = firstBy(pricing, [(item) => item.savingPercent, 'desc']);
+
+  return best && best.savingPercent > 0 ? best.plan : null;
+};
+
+export const cheapestMonthly = (pricing: readonly PlanPricing[]): number | null => firstBy(pricing, (item) => item.perMonthRub)?.perMonthRub ?? null;

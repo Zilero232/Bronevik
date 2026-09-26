@@ -11,6 +11,8 @@ export const CHAT_COMMANDS = ['stat', 'session', 'marks'] as const;
 
 export const FLOW_STEPS = ['donate', 'verify', 'result'] as const;
 
+export const CONNECT_STEPS = ['signIn', 'create', 'obs'] as const;
+
 export const TOOL_CARDS = [
   { key: 'challenges', icon: Swords },
   { key: 'overlays', icon: MonitorPlay },

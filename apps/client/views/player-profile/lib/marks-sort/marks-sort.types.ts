@@ -1,4 +1,4 @@
-import type { PlayerMarkRow } from '@/shared/api/players';
+import type { PlayerMarkRow } from '@/entities/player/profile';
 
 export type MarksSort = 'battles' | 'closest' | 'percent';
 

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { getPushKey, subscribePush, unsubscribePush } from '@/shared/api/notifications';
+import { getPushKey, subscribePush, unsubscribePush } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { currentPushSubscription, inspectPushBrowser, subscribeBrowserPush } from '../../../api/push-browser';

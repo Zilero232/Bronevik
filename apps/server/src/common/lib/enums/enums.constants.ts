@@ -105,7 +105,13 @@ export const NOTIFICATION_EVENT_FROM_DB = {
   tankChanged: 'tank_changed',
   goalReached: 'goal_reached',
   badgeAwarded: 'badge_awarded',
-  challengeResolved: 'challenge_resolved'
+  challengeResolved: 'challenge_resolved',
+  watchlistDigest: 'watchlist_digest',
+  tankReturned: 'tank_returned',
+  competitionFinished: 'competition_finished',
+  firstWinAvailable: 'first_win_available',
+  replayOverflow: 'replay_overflow',
+  streamerLive: 'streamer_live'
 } as const satisfies Record<DbNotificationEvent, string>;
 
 export const NOTIFICATION_CHANNEL_FROM_DB = {

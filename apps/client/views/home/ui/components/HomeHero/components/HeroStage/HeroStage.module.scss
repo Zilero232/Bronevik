@@ -1,0 +1,21 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include nation-tint;
+
+  position: relative;
+  min-width: 0;
+  min-height: 280px;
+}
+
+.backdrop {
+  position: absolute;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--nation) 35%, transparent), transparent);
+  inset: -10% 0;
+  pointer-events: none;
+}
+
+.showcase {
+  position: relative;
+  width: 100%;
+}

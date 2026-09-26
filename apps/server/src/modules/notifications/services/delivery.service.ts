@@ -45,7 +45,7 @@ export class DeliveryService {
     const available: ChannelAvailability = {
       telegram: this.telegram.isEnabled && user.telegramAccount !== null,
       webPush: this.webPush.isEnabled && user._count.pushSubscriptions > 0,
-      email: false
+      email: this.email.canReach(user.email)
     };
 
     const routed = routeEvent({ event: notification.event, settings, available });
@@ -71,7 +71,7 @@ export class DeliveryService {
     const telegramId = user.telegramAccount?.telegramId ?? null;
 
     const results = await Promise.allSettled(
-      channels.map((channel) => this.deliverTo({ userId, channel, dedupeKey, notification, rendered, telegramId, locale }))
+      channels.map((channel) => this.deliverTo({ userId, channel, dedupeKey, notification, rendered, telegramId, locale, email: user.email }))
     );
 
     const failures = results.filter((result) => result.status === 'rejected');
@@ -166,12 +166,12 @@ export class DeliveryService {
     }
   }
 
-  private async send({ userId, channel, rendered, telegramId, locale }: ChannelSendInput): Promise<void> {
+  private async send({ userId, channel, rendered, telegramId, locale, email }: ChannelSendInput): Promise<void> {
     await match(channel)
       .with('site', () => undefined)
       .with('telegram', () => (telegramId === null ? undefined : this.telegram.sendNotification({ telegramId, locale, ...rendered })))
       .with('webPush', () => this.webPush.sendToUser({ userId, ...rendered }))
-      .with('email', () => undefined)
+      .with('email', () => this.email.sendNotification({ to: email, locale, rendered }))
       .exhaustive();
   }
 

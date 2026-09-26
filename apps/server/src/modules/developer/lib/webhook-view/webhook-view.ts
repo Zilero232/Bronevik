@@ -42,11 +42,3 @@ export const toWebhookDelivery = (row: DeliveryRow): WebhookDelivery[] => {
       ]
     : [];
 };
-
-export const errorBody = (data: unknown): string | null => {
-  if (data === undefined || data === null) {
-    return null;
-  }
-
-  return typeof data === 'string' ? data : JSON.stringify(data);
-};

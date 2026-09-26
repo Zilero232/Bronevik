@@ -20,8 +20,21 @@ describe('routeEvent', () => {
     expect(routeEvent({ event: 'premiumOffer', settings: everything, available: allAvailable })).toEqual([]);
   });
 
+  it('keeps a storage notice in the site inbox even when the user turned it off', () => {
+    expect(routeEvent({ event: 'replayOverflow', settings: everything, available: allAvailable })).toEqual(['site']);
+  });
+
   it('never routes a single event to email', () => {
     expect(routeEvent({ event: 'moeGained', settings: everything, available: allAvailable })).not.toContain('email');
+  });
+
+  it('delivers a watchlist digest the user opted into on the watchlist, e-mail included', () => {
+    expect(routeEvent({ event: 'watchlistDigest', settings: everything, available: allAvailable })).toContain('email');
+  });
+
+  it('keeps the watchlist digest out of e-mail when the channel is off or unreachable', () => {
+    expect(routeEvent({ event: 'watchlistDigest', settings: { ...everything, channels: ['site'] }, available: allAvailable })).toEqual(['site']);
+    expect(routeEvent({ event: 'watchlistDigest', settings: everything, available: { ...allAvailable, email: false } })).not.toContain('email');
   });
 
   it('keeps only the channels the user enabled and can receive', () => {

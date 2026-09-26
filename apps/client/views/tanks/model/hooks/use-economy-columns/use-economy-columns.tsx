@@ -15,11 +15,11 @@ import { TierCell } from '../../../ui/components/StatsTable/components';
 
 const column = createColumnHelper<TankEconomyRow>();
 
-export const useEconomyColumns = ({ account, withReserve }: UseEconomyColumnsInput): ColumnDef<TankEconomyRow, never>[] => {
+export const useEconomyColumns = ({ account, withReserve, withClanPayout }: UseEconomyColumnsInput): ColumnDef<TankEconomyRow, never>[] => {
   const t = useTranslations('tanks.economy.columns');
   const format = useFormatter();
 
-  const view = (row: TankEconomyRow) => economyView({ economy: row.economy, account, withReserve });
+  const view = (row: TankEconomyRow) => economyView({ economy: row.economy, account, withReserve, withClanPayout });
   const amount = (value: number | null | undefined) => (value === null || value === undefined ? '—' : format.number(value));
 
   return [

@@ -1,8 +1,12 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  --clan: var(--color-border-strong);
+
   display: inline-flex;
   align-items: center;
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--clan);
   color: var(--color-text);
   gap: var(--space-3);
 

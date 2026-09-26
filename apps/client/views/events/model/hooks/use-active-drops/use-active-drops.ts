@@ -1,0 +1,29 @@
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+
+import { eventsControllerDropsOptions } from '@/shared/api/query-options';
+import { safeWebHref } from '@/shared/lib';
+
+import type { EventView } from '../use-event-calendar';
+
+import { EVENTS } from '../../../config';
+import { eventTimeline } from '../../../lib/event-timeline';
+
+export const useActiveDrops = () => {
+  const { data, dataUpdatedAt, isPending, isError, isFetching, refetch } = useQuery({
+    ...eventsControllerDropsOptions(),
+    staleTime: EVENTS.staleMs
+  });
+
+  const grouped = eventTimeline({ events: data ?? [], now: new Date(dataUpdatedAt), openEndedDays: EVENTS.openEndedDays });
+  const entries: EventView[] = [...grouped.current, ...grouped.upcoming].map((entry) => ({ ...entry, href: safeWebHref(entry.event.url) }));
+
+  return {
+    entries,
+    isPending,
+    isError,
+    isRetrying: isFetching,
+    retry: () => void refetch()
+  };
+};

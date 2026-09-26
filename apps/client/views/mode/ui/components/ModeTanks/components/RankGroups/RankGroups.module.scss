@@ -1,0 +1,60 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+}
+
+.band {
+  display: grid;
+  border-bottom: 1px solid var(--color-border);
+  grid-template-columns: 72px minmax(0, 1fr);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @include below(md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.rank {
+  @include label;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  border-right: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-dim);
+
+  @include below(md) {
+    justify-content: flex-start;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.tanks {
+  display: grid;
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+  gap: 0 var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  list-style: none;
+}
+
+.tank {
+  @include data-list-row;
+
+  justify-content: space-between;
+}
+
+.link {
+  min-width: 0;
+}
+
+.value {
+  @include numeric;
+}

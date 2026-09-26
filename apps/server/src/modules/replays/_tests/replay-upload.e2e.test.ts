@@ -26,6 +26,7 @@ import { HeatmapService, ReplayOwnerService, ReplayParseService, ReplayQueryServ
 const prisma = mockDeep<PrismaService>();
 const queue = mock<Queue>();
 const entitlements = mock<EntitlementsService>();
+const devices = mock<ModDeviceService>();
 const replayId = '0b0f9a6e-9a36-4f59-8a61-1d1a4b6a0c11';
 const replayRow = (overrides: Partial<Replay>): Replay => ({
   id: replayId,
@@ -72,6 +73,7 @@ let root: string;
 let storage: LocalDiskStorage;
 
 beforeAll(async () => {
+  prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
   root = await mkdtemp(join(tmpdir(), 'otmetki-replays-'));
   storage = new LocalDiskStorage(root);
 
@@ -81,7 +83,7 @@ beforeAll(async () => {
       ReplayUploadService,
       { provide: PrismaService, useValue: prisma },
       { provide: ObjectStorage, useValue: storage },
-      { provide: ModDeviceService, useValue: mock<ModDeviceService>() },
+      { provide: ModDeviceService, useValue: devices },
       { provide: EntitlementsService, useValue: entitlements },
       { provide: getQueueToken(REPLAYS_QUEUE.name), useValue: queue },
       { provide: ReplayQueryService, useValue: mock<ReplayQueryService>() },
@@ -169,7 +171,7 @@ describe('POST /replays', () => {
     expect(prisma.replay.create).not.toHaveBeenCalled();
   });
 
-  it('answers 409 for a replay uploaded before', async () => {
+  it('answers 409 for a replay uploaded before without naming the other upload', async () => {
     prisma.replay.findUnique.mockResolvedValueOnce(replayRow({ id: replayId }));
 
     const response = await request(app.getHttpServer())
@@ -177,5 +179,21 @@ describe('POST /replays', () => {
       .attach('file', Buffer.from(readFixture(FIXTURE.wgFull)), 'battle.wotreplay');
 
     expect(response.status).toBe(409);
+    expect(JSON.stringify(response.body)).not.toContain(replayId);
+  });
+});
+
+describe('POST /replays/mod', () => {
+  it('turns away an unknown device before reading the file', async () => {
+    devices.identify.mockRejectedValueOnce(new AppForbiddenException('FORBIDDEN', 'unknown device'));
+    devices.authenticate.mockClear();
+
+    const response = await request(app.getHttpServer())
+      .post('/replays/mod')
+      .set('X-Device-Id', 'nobody')
+      .attach('file', Buffer.from(readFixture(FIXTURE.wgFull)), 'battle.wotreplay');
+
+    expect(response.status).toBe(403);
+    expect(devices.authenticate).not.toHaveBeenCalled();
   });
 });

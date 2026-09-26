@@ -1,3 +1,4 @@
+import type { ApiTier } from '@otmetki/schemas';
 import type { Request } from 'express';
 
 import type { AuthenticatedApiKey } from '../developer';
@@ -33,6 +34,18 @@ export type SecondBudget = {
   remaining: number;
 };
 
+export type UserBudget = {
+  second: SecondBudget;
+  day: SecondBudget;
+};
+
+export type LimiterWindow = 'day' | 'second';
+
+export type LimiterInput = {
+  tier: ApiTier;
+  window: LimiterWindow;
+};
+
 export type AddUsageInput = {
   keyId: string;
   endpoint: string;
@@ -41,4 +54,16 @@ export type AddUsageInput = {
 
 export type UsageBufferEntry = AddUsageInput & {
   day: string;
+};
+
+export type BudgetOwner = {
+  userId: string;
+  tier: ApiTier;
+};
+
+export type TakeBudgetInput = {
+  owner: BudgetOwner;
+  window: LimiterWindow;
+  limit: number;
+  reject: (retryAfterSec: number) => Error;
 };

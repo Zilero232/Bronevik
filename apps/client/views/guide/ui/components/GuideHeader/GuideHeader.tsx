@@ -26,7 +26,7 @@ export const GuideHeader = ({ guide }: GuideHeaderProps) => {
           {isAuthor ? <GuideOwnerActions guide={guide} /> : <ReportButton targetId={guide.id} targetType='guide' />}
         </div>
       }
-      breadcrumbs={[{ label: t('breadcrumb'), href: ROUTES.guides }, { label: guide.title }]}
+      breadcrumbs={[{ label: t('breadcrumb'), href: ROUTES.guides.list }, { label: guide.title }]}
       meta={guide.status === 'published' ? undefined : <GuideStatusBadge status={guide.status} />}
       title={guide.title}
     >

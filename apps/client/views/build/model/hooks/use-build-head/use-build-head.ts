@@ -15,7 +15,7 @@ export const useBuildHead = () => {
 
   const onPick = (next: VehicleSummary | null) => {
     if (next && next.slug !== vehicle.slug) {
-      router.push(ROUTES.build(next.slug));
+      router.push(ROUTES.builds.detail(next.slug));
     }
   };
 

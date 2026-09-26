@@ -6,7 +6,7 @@ import type { MapNameCellProps } from './MapNameCell.types';
 import s from './MapNameCell.module.scss';
 
 export const MapNameCell = ({ name, slug }: MapNameCellProps) => (
-  <Link className={s.root} href={ROUTES.map(slug)}>
+  <Link className={s.root} href={ROUTES.maps.detail(slug)}>
     {name}
   </Link>
 );

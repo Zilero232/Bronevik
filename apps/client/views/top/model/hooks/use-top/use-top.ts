@@ -3,7 +3,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { getLeaderboard } from '@/shared/api/leaderboards';
+import { getLeaderboard } from '@/entities/player/leaderboard';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { TopFilterState } from '../../../lib/top-filter';
@@ -31,6 +31,7 @@ export const useTop = () => {
 
   return {
     state,
+    podium: isPending ? [] : (board?.entries.slice(0, TOP_BOARD.podiumSize) ?? []),
     filter,
     board,
     isPending,

@@ -1,13 +1,11 @@
 'use client';
 
 import { startOfDay } from 'date-fns';
-import { useState } from 'react';
 
-import { useHydrated } from '@/shared/lib';
+import { useClientNow } from '@/shared/lib';
 
 export const useToday = () => {
-  const isHydrated = useHydrated();
-  const [today] = useState(() => startOfDay(new Date()));
+  const now = useClientNow();
 
-  return isHydrated ? today : null;
+  return now ? startOfDay(now) : null;
 };

@@ -11,7 +11,12 @@
     "crew": "Crew",
     "economy": "Battle economy",
     "gold": "Gold",
-    "pass": "Battle pass"
+    "pass": "Battle pass",
+    "frontline": "Front Line"
+  },
+  "games": {
+    "label": "Mini-games",
+    "guessTank": "Guess the tank"
   },
   "research": {
     "title": "XP and credits to a tank",
@@ -226,5 +231,50 @@
   "shell": {
     "inputs": "Inputs",
     "results": "Result"
+  },
+  "frontline": {
+    "title": "Front Line",
+    "description": "How many battles are left to the next level, to level 30 and to the prestige level you want, and which combat reserves unlock on the way.",
+    "footer": "The XP-per-level table and the reserve unlock levels are approximate: they follow past seasons, and Lesta may change them in a new season. Use your average battle XP from recent battles.",
+    "fields": {
+      "level": "Current level",
+      "levelXp": "XP in level",
+      "battleXp": "XP per battle",
+      "prestige": "Current prestige",
+      "targetPrestige": "Target prestige"
+    },
+    "hints": {
+      "level": "From 1 to 30",
+      "levelXp": "XP already earned in the current level",
+      "battleXp": "Average combat XP per battle in the mode",
+      "prestige": "How many times you have already gone through 30 levels",
+      "targetPrestige": "The prestige level you want to reach"
+    },
+    "battlesPerDay": "Your pace, battles per day",
+    "noPace": "Enter XP per battle",
+    "toMax": "Battles to level 30",
+    "toMaxHint": "A rough estimate at your average XP up to level {level}",
+    "levelLabel": "Level {level} of {max}",
+    "toNext": "To the next level",
+    "maxReached": "Maximum level",
+    "xpToMax": "XP to level 30",
+    "toTarget": "To prestige {prestige}",
+    "daysToTarget": "Days at your pace",
+    "battlesValue": "≈ {count, plural, one {# battle} other {# battles}}",
+    "daysValue": "≈ {count, plural, one {# day} other {# days}}",
+    "nextReserve": "Next reserve",
+    "nextReserveValue": "{reserve} at level {level}",
+    "allReserves": "All reserves unlocked",
+    "reservesTitle": "Combat reserves",
+    "reserveLevel": "from level {level}",
+    "reserves": {
+      "artilleryStrike": "Artillery strike",
+      "airStrike": "Air strike",
+      "reconFlight": "Recon flight",
+      "inspire": "Inspire",
+      "smokeScreen": "Smoke screen",
+      "engineering": "Engineering",
+      "minefield": "Minefield"
+    }
   }
 }

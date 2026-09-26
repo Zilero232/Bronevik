@@ -1,7 +1,7 @@
 import type { HocuspocusProvider } from '@hocuspocus/provider';
 import type * as Y from 'yjs';
 
-import type { TacticBoard } from '@/shared/api/tactics';
+import type { TacticBoard } from '@/entities/tactic/board';
 
 export type UseBoardDocumentInput = {
   board: TacticBoard;

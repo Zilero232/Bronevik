@@ -11,7 +11,7 @@ export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
   const t = await getTranslations({ locale, namespace: 'auth.meta' });
 
-  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.login, locale });
+  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.auth.login, locale });
 };
 
 const Page = () => (

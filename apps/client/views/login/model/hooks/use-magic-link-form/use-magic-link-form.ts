@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { sendMagicLink } from '@/shared/api/auth';
+import { sendMagicLink } from '../../../api';
 import { ROUTES } from '@/shared/constants';
 
 import type { MagicLinkFormValues } from '../../../lib/magic-link-form';
@@ -30,7 +30,7 @@ export const useMagicLinkForm = () => {
   });
 
   const onSubmit = handleSubmit(({ email }) => {
-    send.mutate({ email, callbackURL: new URL(ROUTES.me, window.location.origin).toString() });
+    send.mutate({ email, callbackURL: new URL(ROUTES.account.overview, window.location.origin).toString() });
   });
 
   return {

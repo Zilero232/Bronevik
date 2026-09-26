@@ -7,11 +7,12 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import type { UpsertCoach } from '@/shared/api/coaching';
+import type { UpsertCoach } from '@/entities/coaching/coach';
 
 import { communityErrorKind } from '@/features/community/api-error';
 import { useCommunityViewer } from '@/features/community/viewer';
-import { getCoach, saveCoachProfile } from '@/shared/api/coaching';
+import { getCoach } from '@/entities/coaching/coach';
+import { saveCoachProfile } from '../../../api';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 

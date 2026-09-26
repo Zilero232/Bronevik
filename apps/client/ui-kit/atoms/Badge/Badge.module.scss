@@ -52,3 +52,33 @@
   --badge-bg: color-mix(in srgb, var(--color-danger) 12%, transparent);
   --badge-fg: var(--color-danger);
 }
+
+.neutral.plate,
+.neutral.ribbon {
+  --badge-fg: var(--color-text-muted);
+}
+
+.plate,
+.ribbon {
+  border: none;
+  background-color: var(--badge-fg);
+  color: var(--color-accent-contrast);
+  font-weight: 700;
+}
+
+.plate {
+  height: 22px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.ribbon {
+  position: absolute;
+  z-index: 2;
+  top: var(--space-3);
+  right: 0;
+  height: 20px;
+  padding: 0 var(--space-3) 0 var(--space-4);
+  border-radius: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 6px 50%);
+}

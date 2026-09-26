@@ -4,3 +4,14 @@ export type ReturnEstimate = {
   medianIntervalDays: number | null;
   nextExpectedAt: Date | null;
 };
+
+export type PastOffer = {
+  endsAt: Date | null;
+  lastSeenAt: Date;
+};
+
+export type AbsenceBeforeReturnInput = {
+  previous: readonly PastOffer[];
+  now: Date;
+  minDays: number;
+};

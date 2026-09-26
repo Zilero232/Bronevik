@@ -1,0 +1,41 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  max-width: 640px;
+  align-items: start;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  gap: var(--space-4) var(--space-6);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @include below(md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.figure {
+  min-width: 0;
+}
+
+.more {
+  @include nav-label;
+
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+  grid-column: 1 / -1;
+  justify-self: start;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.error {
+  grid-column: 1 / -1;
+}

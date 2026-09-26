@@ -1,4 +1,4 @@
-import type { TacticLayer } from '@/shared/api/tactics';
+import type { TacticLayer } from '@/entities/tactic/board';
 
 export type LayerRowProps = {
   layer: TacticLayer;

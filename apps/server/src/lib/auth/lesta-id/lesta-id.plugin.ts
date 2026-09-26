@@ -108,6 +108,10 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
               { method: AUTH_PROVIDER.lesta }
             ));
 
+          if (!(await store.link({ ...identity, userId: user.id }))) {
+            throw ctx.redirect(withError({ url: callbackURL, code: LESTA_ID_ERROR.limit }));
+          }
+
           const accounts = await ctx.context.internalAdapter.findAccounts(user.id);
           const hasAccount = accounts.some(
             (account) => account.providerId === AUTH_PROVIDER.lesta && account.accountId === String(identity.accountId)
@@ -120,8 +124,6 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
               accountId: String(identity.accountId)
             });
           }
-
-          await store.link({ ...identity, userId: user.id });
 
           const session = await ctx.context.internalAdapter.createSession(user.id);
 

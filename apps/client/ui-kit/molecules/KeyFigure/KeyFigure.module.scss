@@ -66,3 +66,31 @@
 .spark {
   margin-left: auto;
 }
+
+.highlight {
+  position: relative;
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sheen), var(--color-surface);
+  box-shadow: var(--elev-1);
+  gap: var(--space-3);
+
+  .value {
+    font-size: var(--num-lg);
+  }
+
+  &:is([data-tone='bad'], [data-tone='below'], [data-tone='average'], [data-tone='good'], [data-tone='great'], [data-tone='unicum']) {
+    box-shadow:
+      inset 3px 0 0 var(--tone),
+      var(--elev-1);
+  }
+}
+
+.compact {
+  padding: 0;
+  gap: var(--space-1);
+
+  .value {
+    font-size: var(--num-md);
+  }
+}

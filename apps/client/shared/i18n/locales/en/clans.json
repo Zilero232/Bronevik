@@ -9,7 +9,8 @@
   },
   "head": {
     "title": "Clans",
-    "description": "Rating and search of «Мир танков» clans: average WN8, win rate, Stronghold and Global Map."
+    "description": "Rating and search of «Мир танков» clans: average WN8, win rate, Stronghold and Global Map.",
+    "home": "Home"
   },
   "search": {
     "label": "Search clans",
@@ -179,5 +180,12 @@
       "noProvinces": "The clan holds no provinces on the Global Map.",
       "elo": "Elo tier {tier}"
     }
+  },
+  "leaders": {
+    "title": "Rating leaders",
+    "rank": "#{rank}",
+    "members": "{count, plural, one {# member} other {# members}}",
+    "plate": "WN8 {wn8} · {count, plural, one {# member} other {# members}}",
+    "name": "[{tag}] {name}"
   }
 }

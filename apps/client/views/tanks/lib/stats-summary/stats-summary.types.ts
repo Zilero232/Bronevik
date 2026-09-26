@@ -5,4 +5,5 @@ export type StatsSummary = {
   battles: number;
   strongest: TankServerStatsRow | undefined;
   mostPlayed: TankServerStatsRow | undefined;
+  leaders: TankServerStatsRow[];
 };

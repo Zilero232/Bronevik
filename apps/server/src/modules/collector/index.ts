@@ -1,4 +1,4 @@
-export { bonusTypesOf, BRONYA_REFERENCE, parseBronyaReference, storedBuildUsageSchema } from './aggregates';
+export { bonusTypesOf, storedBuildUsageSchema } from './aggregates';
 export type { StoredBuildUsage } from './aggregates';
 export { BoardModule } from './board';
 export { CollectorModule } from './collector.module';

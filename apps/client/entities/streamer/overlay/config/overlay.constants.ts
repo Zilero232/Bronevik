@@ -1,9 +1,10 @@
-import { overlayConfigSchema } from '@otmetki/schemas';
+import { OVERLAY_THEMES, overlayConfigSchema } from '@otmetki/schemas';
 
-const { theme, layout, resetAt, locale } = overlayConfigSchema.shape;
+const { layout, resetAt, locale } = overlayConfigSchema.shape;
 
 export const OVERLAY_OPTIONS = {
-  themes: theme.unwrap().options,
+  themes: OVERLAY_THEMES.standard,
+  premiumThemes: OVERLAY_THEMES.premium,
   layouts: layout.unwrap().options,
   resets: resetAt.unwrap().options,
   locales: locale.unwrap().options

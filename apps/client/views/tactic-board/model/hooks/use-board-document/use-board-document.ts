@@ -4,7 +4,7 @@ import { HocuspocusProvider } from '@hocuspocus/provider';
 import { useEffect, useRef, useState } from 'react';
 import * as Y from 'yjs';
 
-import type { TacticLayer } from '@/shared/api/tactics';
+import type { TacticLayer } from '@/entities/tactic/board';
 
 import { env } from '@/shared/config';
 

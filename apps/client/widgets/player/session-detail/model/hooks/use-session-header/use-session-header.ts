@@ -15,6 +15,6 @@ export const useSessionHeader = ({ session, nickname }: UseSessionHeaderInput) =
   return {
     isCopied: copied,
     minutes: endedAt ? differenceInMinutes(new Date(endedAt), new Date(startedAt)) : null,
-    onShare: () => copy(new URL(ROUTES.playerSession({ nickname, sessionId: id }), window.location.origin).toString())
+    onShare: () => copy(new URL(ROUTES.players.session({ nickname, sessionId: id }), window.location.origin).toString())
   };
 };

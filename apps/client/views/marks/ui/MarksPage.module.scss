@@ -1,16 +1,15 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include shell;
-  @include stack(var(--space-4));
+  @include stack(0);
 
   padding-bottom: var(--space-8);
 }
 
-.layout {
+.bandInner {
   display: grid;
   align-items: start;
-  gap: var(--space-4);
+  gap: var(--space-6);
   grid-template-columns: minmax(0, 1fr) 320px;
 
   @include below(3xl) {
@@ -18,16 +17,18 @@
   }
 }
 
-.main {
-  @include stack(var(--space-3));
-
-  min-width: 0;
-}
-
 .rail {
   @include stack(var(--gap-panel));
 
   min-width: 0;
+}
+
+.main {
+  @include shell;
+  @include stack(var(--space-3));
+
+  min-width: 0;
+  padding-top: var(--space-7);
 }
 
 .source {

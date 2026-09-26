@@ -1,4 +1,4 @@
-import { ECONOMY_ACCOUNTS, serverPeriodSchema, skillCohortSchema, TANK_ROLES, TANK_STATUSES } from '@otmetki/schemas';
+import { ECONOMY_ACCOUNTS, LEARNING_DIFFICULTIES, serverPeriodSchema, skillCohortSchema, TANK_ROLES, TANK_STATUSES } from '@otmetki/schemas';
 import { parseAsArrayOf, parseAsBoolean, parseAsInteger, parseAsStringLiteral } from 'nuqs';
 
 export const TANKS_VIEWS = ['table', 'tierlist', 'economy'] as const;
@@ -12,6 +12,7 @@ export const TANKS_VIEW = {
   defaultTier: 10,
   rowHeight: 44,
   tierListSkeleton: 320,
+  heroTanks: 5,
   compactNumber: { notation: 'compact', maximumFractionDigits: 1 }
 } as const;
 
@@ -22,8 +23,10 @@ export const TANKS_QUERY_PARSERS = {
   tier: parseAsInteger.withDefault(TANKS_VIEW.defaultTier),
   statuses: parseAsArrayOf(parseAsStringLiteral(TANK_STATUSES)).withDefault([]),
   roles: parseAsArrayOf(parseAsStringLiteral(TANK_ROLES)).withDefault([]),
+  difficulties: parseAsArrayOf(parseAsStringLiteral(LEARNING_DIFFICULTIES)).withDefault([]),
   account: parseAsStringLiteral(ECONOMY_ACCOUNTS).withDefault('premium'),
-  reserve: parseAsBoolean.withDefault(false)
+  reserve: parseAsBoolean.withDefault(false),
+  clanPayout: parseAsBoolean.withDefault(false)
 } as const;
 
 export const TANKS_ECONOMY = {

@@ -1,22 +1,40 @@
 import type { DonationAlertsDonationEvent, EventsListener } from '@donation-alerts/events';
+import type { RawBodyRequest } from '@nestjs/common';
 import type {
+  CreateApplyRequestInput,
   CreateChallengeInput,
   createOverlaySchema,
+  ModSettingsExport,
   OverlayConfig,
   overlayDataSchema,
   OverlayKind,
   previewOverlaySchema,
+  SettingsGroupKey,
+  SettingsSource,
+  SettingsValues,
   streamerChallengeSchema,
+  streamerDirectoryQuerySchema,
   streamerIntegrationSchema,
   streamerProfileSchema,
   updateOverlaySchema,
   upsertStreamerProfileSchema
 } from '@otmetki/schemas';
 import type { ChatClient } from '@twurple/chat';
-import type { z } from 'zod';
+import type { Request } from 'express';
+import type { z, ZodType } from 'zod';
 
-import type { Challenge, Overlay, StreamerProvider } from '../../../generated';
-import type { ChallengeVerdict, ChatCommand, ChatMessage, ChatValues } from './lib';
+import type {
+  Challenge,
+  Overlay,
+  StreamerChannel,
+  StreamerClaim as StreamerClaimRow,
+  StreamerInvitation,
+  StreamerPlatform,
+  StreamerProfile,
+  StreamerProvider
+} from '../../../generated';
+import type { AuthenticatedDevice } from '../mod';
+import type { ChallengeVerdict, ChatCommand, ChatMessage, ChatValues, LiveStream } from './lib';
 
 export type StreamerProfileView = z.infer<typeof streamerProfileSchema>;
 export type UpsertProfileInput = z.infer<typeof upsertStreamerProfileSchema> & { userId: string };
@@ -175,4 +193,135 @@ export type EvaluateInput = {
 export type OverlayViewInput = {
   overlay: Overlay;
   isPaused: boolean;
+};
+
+export type CachedToken = {
+  value: string;
+  expiresAt: number;
+};
+
+export type PlatformVideo = {
+  id: string;
+  title: string;
+  url: string;
+  publishedAt: string;
+};
+
+export type ProfileWithChannels = StreamerProfile & {
+  channels: StreamerChannel[];
+  settings: { profileId: string } | null;
+};
+
+export type ChannelInput = {
+  platform: StreamerPlatform;
+  url: string;
+  sourceUrl?: string;
+};
+
+export type ReplaceChannelsInput = {
+  profileId: string;
+  channels: readonly ChannelInput[];
+};
+
+export type StartClaimRequest = {
+  userId: string;
+  slug: string;
+  method: 'bio_code' | 'manual' | 'oauth';
+  platform?: StreamerPlatform;
+  evidence?: string;
+};
+
+export type ClaimRef = SlugOwnerInput;
+
+export type ResolveClaimRequest = {
+  id: string;
+  approve: boolean;
+  moderatorId: string;
+};
+
+export type RemovalRequestInput = {
+  slug: string;
+  contact: string;
+  reason?: string;
+};
+
+export type SaveSettingsRequest = {
+  profileId: string;
+  userId: string | null;
+  source: SettingsSource;
+  values: SettingsValues;
+  sourceUrls?: Partial<Record<SettingsGroupKey, string>>;
+};
+
+export type ApplyRequestInput = CreateApplyRequestInput & { userId: string };
+
+export type ModExportInput = {
+  device: AuthenticatedDevice;
+  body: ModSettingsExport;
+};
+
+export type ModApplyResultInput = {
+  device: AuthenticatedDevice;
+  id: string;
+  status: 'applied' | 'rejected';
+};
+
+export type FollowInput = {
+  userId: string;
+  slug: string;
+  tankId?: number | null;
+};
+
+export type SafePollInput = {
+  platform: string;
+  run: () => Promise<LiveStream[]>;
+};
+
+export type SlugOwnerInput = {
+  userId: string;
+  slug: string;
+};
+
+export type CompleteClaimInput = {
+  claim: StreamerClaimRow;
+  verifiedPlatform: StreamerPlatform | null;
+  moderatorId: string | null;
+};
+
+export type EditorialInput = {
+  slug: string;
+  displayName: string;
+  channels: readonly ChannelInput[];
+};
+
+export type StreamerDirectoryQueryView = z.infer<typeof streamerDirectoryQuerySchema>;
+
+export type SaveMySettingsInput = Omit<SaveSettingsRequest, 'profileId' | 'userId'> & { userId: string };
+
+export type SetAnonymousInput = {
+  userId: string;
+  anonymousStats: boolean;
+};
+
+export type ApplyViewInput = {
+  id: string;
+  slug: string;
+  groups: string[];
+  status: string;
+  createdAt: Date;
+  appliedAt: Date | null;
+};
+
+export type ClaimTarget = { profile: null; invitation: StreamerInvitation } | { profile: StreamerProfile; invitation: null };
+
+export type SignedModInput<T> = {
+  request: RawBodyRequest<Request>;
+  deviceId: string | undefined;
+  signature: string | undefined;
+  schema: ZodType<T>;
+};
+
+export type SignedModResult<T> = {
+  device: AuthenticatedDevice;
+  body: T;
 };

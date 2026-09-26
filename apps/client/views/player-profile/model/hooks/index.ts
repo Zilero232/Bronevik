@@ -1,6 +1,7 @@
 export { useActivity } from './use-activity';
 export { useChartsTab } from './use-charts-tab';
 export { useFavoriteTanks } from './use-favorite-tanks';
+export { useHighlightStats } from './use-highlight-stats';
 export { useHistoryChart } from './use-history-chart';
 export { useHistoryTab } from './use-history-tab';
 export { useInsightsTab } from './use-insights-tab';
@@ -11,6 +12,7 @@ export { usePlayerAchievements } from './use-player-achievements';
 export { usePlaytimeCard } from './use-playtime-card';
 export { useProfileHeader } from './use-profile-header';
 export { useProfilePage } from './use-profile-page';
+export { useProfileShare } from './use-profile-share';
 export { useSessionsTab } from './use-sessions-tab';
 export type { TanksFilterControls } from './use-tanks-filter';
 export { useTanksTab } from './use-tanks-tab';

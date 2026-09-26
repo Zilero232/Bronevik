@@ -1,0 +1,90 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.body {
+  display: grid;
+  gap: var(--space-7);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.group {
+  @include stack(var(--space-3));
+}
+
+.label {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.bar {
+  display: flex;
+  overflow: hidden;
+  height: 10px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-border);
+  gap: 2px;
+}
+
+.segment,
+.swatch {
+  background-color: var(--color-steel);
+
+  &[data-premium='true'] {
+    background-color: var(--color-premium);
+  }
+
+  .legendItem[data-premium='true'] & {
+    background-color: var(--color-premium);
+  }
+}
+
+.segment {
+  flex-basis: 0;
+
+  &:first-child {
+    background-color: var(--color-accent);
+  }
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2) var(--space-5);
+  list-style: none;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+
+  &:first-child .swatch {
+    background-color: var(--color-accent);
+  }
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.share {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-weight: 600;
+}

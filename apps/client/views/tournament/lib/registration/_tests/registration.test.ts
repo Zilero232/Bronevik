@@ -25,6 +25,10 @@ describe('registrationState', () => {
     ).toBe('full');
   });
 
+  it('leaves the deadline to the server status until the clock is known', () => {
+    expect(registrationState({ tournament: { ...OPEN, registrationEndsAt: NOW.toISOString() }, now: null, isRegistered: false })).toBe('open');
+  });
+
   it('closes at the registration deadline itself', () => {
     expect(registrationState({ tournament: { ...OPEN, registrationEndsAt: NOW.toISOString() }, now: NOW, isRegistered: false })).toBe('closed');
   });

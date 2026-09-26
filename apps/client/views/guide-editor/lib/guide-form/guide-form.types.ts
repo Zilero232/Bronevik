@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { Guide } from '@/shared/api/guides';
+import type { Guide } from '@/entities/guide/guide';
 
 import type { guideFormSchema } from './guide-form.schemas';
 

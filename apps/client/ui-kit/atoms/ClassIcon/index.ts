@@ -1,2 +1,2 @@
 export { ClassIcon } from './ClassIcon';
-export type { ClassIconProps } from './ClassIcon.types';
+export type { ClassIconDisplay, ClassIconProps } from './ClassIcon.types';

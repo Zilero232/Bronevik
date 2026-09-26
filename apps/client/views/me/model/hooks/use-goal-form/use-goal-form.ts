@@ -3,7 +3,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { addGoal, getLinkedAccounts } from '@/shared/api/me';
+import { addGoal } from '../../../api';
+import { getLinkedAccounts } from '@/entities/auth/session';
 
 import type { GoalFormOutput, GoalFormValues } from '../../../lib/goal-form';
 

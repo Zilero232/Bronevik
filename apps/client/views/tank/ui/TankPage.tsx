@@ -18,6 +18,7 @@ import {
   MasteryPanel,
   ObtainSection,
   PatchHistory,
+  SectionNav,
   ServerStats,
   TankGarage,
   TankSkeleton,
@@ -38,39 +39,52 @@ export const TankPage = () => {
         .with({ detail: P.nonNullable }, ({ detail: loaded }) => (
           <TankProvider detail={loaded}>
             <TankGarage />
-            <ServerStats />
-            <div className={s.pair}>
-              <MarksSection />
-              <MasteryPanel />
+            <SectionNav />
+            <div className={s.shell}>
+              <ServerStats />
+              <div className={s.pair}>
+                <MarksSection />
+                <MasteryPanel />
+              </div>
+              <div className={s.pair}>
+                <EconomySection />
+                <ObtainSection />
+              </div>
+              <LearningSection />
+              <HowToBuild />
             </div>
-            <div className={s.pair}>
-              <EconomySection />
-              <ObtainSection />
-            </div>
-            <LearningSection />
             <TopPlayers />
-            <HowToBuild />
-            <PatchHistory />
-            <p className={s.source}>{ts('source')}</p>
+            <div className={s.shell}>
+              <PatchHistory />
+              <p className={s.source}>{ts('source')}</p>
+            </div>
           </TankProvider>
         ))
-        .with({ isPending: true }, () => <TankSkeleton />)
+        .with({ isPending: true }, () => (
+          <div className={s.shell}>
+            <TankSkeleton />
+          </div>
+        ))
         .with({ error: P.when(isNotFoundError) }, () => (
-          <ResourceMissing
-            back={{ href: ROUTES.tanks, label: t('back') }}
-            description={t('notFound.description', { slug: decodeURIComponent(slug) })}
-            reason='notFound'
-            title={t('notFound.title')}
-          />
+          <div className={s.shell}>
+            <ResourceMissing
+              back={{ href: ROUTES.tanks.list, label: t('back') }}
+              description={t('notFound.description', { slug: decodeURIComponent(slug) })}
+              reason='notFound'
+              title={t('notFound.title')}
+            />
+          </div>
         ))
         .otherwise(() => (
-          <ResourceMissing
-            back={{ href: ROUTES.tanks, label: t('back') }}
-            description={t('error.description', { slug: decodeURIComponent(slug) })}
-            reason='error'
-            title={t('error.title')}
-            onRetry={() => void refetch()}
-          />
+          <div className={s.shell}>
+            <ResourceMissing
+              back={{ href: ROUTES.tanks.list, label: t('back') }}
+              description={t('error.description', { slug: decodeURIComponent(slug) })}
+              reason='error'
+              title={t('error.title')}
+              onRetry={() => void refetch()}
+            />
+          </div>
         ))}
     </div>
   );

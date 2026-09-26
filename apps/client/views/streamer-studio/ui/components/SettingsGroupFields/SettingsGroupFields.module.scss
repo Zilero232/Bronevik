@@ -1,0 +1,29 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+  @include stack(var(--space-4));
+
+  min-width: 0;
+  padding: var(--space-5);
+  margin: 0;
+}
+
+.legend {
+  @include label;
+
+  width: 100%;
+  padding: 0;
+  float: left;
+}
+
+.meta {
+  @include source-line;
+}
+
+.grid {
+  display: grid;
+  align-items: start;
+  gap: var(--space-4) var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}

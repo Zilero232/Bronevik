@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { Replay } from '@/shared/api/replays';
+import type { Replay } from '@/entities/replay/replay';
 
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useReplayModeLabel } from '@/features/community/replay-meta';

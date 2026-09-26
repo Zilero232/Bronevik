@@ -47,7 +47,7 @@ export const ReplayOverview = ({ replay }: ReplayOverviewProps) => {
             {replay.visibility !== 'public' && <Badge tone='steel'>{t(`visibility.${replay.visibility}`)}</Badge>}
           </span>
         }
-        breadcrumbs={[{ label: t('breadcrumb'), href: ROUTES.replays }, { label: title }]}
+        breadcrumbs={[{ label: t('breadcrumb'), href: ROUTES.replays.list }, { label: title }]}
         title={title}
       />
       <Card className={s.card} padding='md'>
@@ -56,7 +56,7 @@ export const ReplayOverview = ({ replay }: ReplayOverviewProps) => {
           {owner && (
             <span className={s.player}>
               <span className={s.label}>{t('recorder')}</span>
-              <Link className={s.nickname} href={ROUTES.player(owner.nickname)}>
+              <Link className={s.nickname} href={ROUTES.players.profile(owner.nickname)}>
                 {owner.nickname}
                 {owner.clanTag && <span className={s.clan}>[{owner.clanTag}]</span>}
               </Link>

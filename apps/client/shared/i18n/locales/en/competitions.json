@@ -1,0 +1,171 @@
+{
+  "detailMeta": {
+    "title": "Competition",
+    "description": "Team standings, participants and scoring rules of a competition on Three Marks."
+  },
+  "head": {
+    "title": "Competitions"
+  },
+  "status": {
+    "upcoming": "Upcoming",
+    "running": "Running",
+    "finished": "Finished"
+  },
+  "visibility": {
+    "public": "Public",
+    "private": "Private"
+  },
+  "modes": {
+    "random": "Random battles",
+    "onslaught": "Onslaught",
+    "frontline": "Frontline",
+    "ranked": "Ranked battles",
+    "steelHunter": "Steel Hunter"
+  },
+  "metrics": {
+    "damage": "Damage",
+    "assist": "Assisted damage",
+    "blocked": "Blocked by armor",
+    "frags": "Destroyed",
+    "spotted": "Spotted",
+    "xp": "Experience",
+    "win": "Victory",
+    "survive": "Survived"
+  },
+  "list": {
+    "title": "All competitions",
+    "filter": "Competition status",
+    "all": "All",
+    "mine": "Mine",
+    "rules": "{mode} · {battles, plural, one {# battle} other {# battles}} per player · {tier, plural, =0 {any tier} other {tier # and up}}",
+    "leader": "{team} leads",
+    "participants": "{teams, plural, one {# team} other {# teams}} · {players, plural, one {# player} other {# players}}",
+    "emptyTitle": "No competitions",
+    "emptyDescription": "Create the first one — invite friends or open it to everyone.",
+    "emptyMineDescription": "You have not joined or organized any competition yet.",
+    "errorTitle": "The list did not load",
+    "errorDescription": "The server did not respond. Try again."
+  },
+  "create": {
+    "open": "Create",
+    "title": "New competition",
+    "description": "Pick the mode, the number of battles and the point weights. Players form their own teams.",
+    "cancel": "Cancel",
+    "submit": "Create competition",
+    "name": "Title",
+    "titleError": "3 to 80 characters",
+    "about": "Description",
+    "aboutPlaceholder": "Prizes, chat link, house rules — optional",
+    "descriptionError": "Up to 1000 characters",
+    "mode": "Mode",
+    "visibility": "Access",
+    "minTier": "Vehicle tier",
+    "anyTier": "Any tier",
+    "tier": "Tier {tier} and up",
+    "battles": "Battles per player",
+    "battlesHint": "Each player’s first battles after the start count",
+    "battlesError": "{min} to {max} battles",
+    "startsAt": "Start",
+    "startsAtError": "Set the start date and time",
+    "endsAt": "Finish",
+    "endsAtError": "The finish must be after the start and within {days} days",
+    "scoring": "Points",
+    "scoringHint": "Points per unit of each metric in one battle: per damage point, per frag, per win and so on.",
+    "resetScoring": "Restore default weights",
+    "note": "Up to five active competitions per organizer. A private one is visible to its members only and opens with an invite link."
+  },
+  "toast": {
+    "created": "Competition created",
+    "joined": "You are in the team",
+    "left": "You left the competition",
+    "deleted": "Competition deleted"
+  },
+  "errors": {
+    "plus": "Private competitions come with Plus",
+    "validation": "Check the form fields",
+    "unauthorized": "Sign in to continue",
+    "forbidden": "You cannot do that",
+    "notFound": "Competition not found",
+    "conflict": "Not possible: the active competition limit, a full team, or you are already in",
+    "rateLimited": "Too fast. Wait a moment",
+    "unknown": "That did not work. Try again"
+  },
+  "page": {
+    "back": "All competitions",
+    "notFoundTitle": "Competition not found",
+    "notFoundDescription": "It was deleted or it is private — open the invite link from the organizer.",
+    "errorTitle": "The competition did not load",
+    "errorDescription": "The server did not respond. Try again.",
+    "about": "Description"
+  },
+  "summary": {
+    "period": "Period",
+    "mode": "Mode",
+    "battles": "Battles per player",
+    "minTier": "Vehicles",
+    "teams": "Participants",
+    "teamsValue": "{teams, plural, one {# team} other {# teams}}, {players, plural, one {# player} other {# players}} · up to {size} per team",
+    "organizer": "Organizer"
+  },
+  "standings": {
+    "title": "Standings",
+    "caption": "Teams by the sum of their members’ points",
+    "notScored": "not scored yet",
+    "emptyTitle": "No teams yet",
+    "emptyDescription": "Be the first — name a team in the join panel.",
+    "mine": "Yours",
+    "columns": {
+      "team": "Team",
+      "members": "Members",
+      "battles": "Battles",
+      "score": "Points"
+    },
+    "source": {
+      "mod": "Mod",
+      "snapshots": "API",
+      "none": "No data"
+    },
+    "sourceHint": {
+      "mod": "Per-battle results from the mod",
+      "snapshots": "Daily Lesta API data scaled to the competition’s battle count",
+      "none": "No battles since the start yet"
+    },
+    "memberStats": "{battles}/{total} · {score}"
+  },
+  "join": {
+    "title": "Take part",
+    "account": "Lesta account",
+    "team": "Team",
+    "newTeam": "New team",
+    "teamOption": "{name} — {size}/{max}",
+    "teamName": "Team name",
+    "teamNameError": "2 to 32 characters",
+    "submit": "Join",
+    "hint": "Up to {size} players per team. Only your own battles count.",
+    "state": {
+      "joined": "You are in team “{team}”",
+      "closed": "The competition is over — joining is closed.",
+      "full": "No seats left: every team is full.",
+      "open": "Joining is open"
+    },
+    "leave": "Leave the competition"
+  },
+  "owner": {
+    "title": "Organizer",
+    "invite": "Invite link",
+    "inviteHint": "A private competition is visible to its members only — send the link to the people you invite.",
+    "hint": "A public competition is listed for everyone.",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete competition",
+    "deleteTitle": "Delete the competition?",
+    "deleteDescription": "The standings and teams will be gone and members will no longer see it. This cannot be undone."
+  },
+  "rules": {
+    "title": "How points work",
+    "points": "A player’s points are the sum of weight × metric over their first {battles, plural, one {# battle} other {# battles}} after the start, or after joining if they joined later. A team’s points are the sum of its members’ points.",
+    "sources": "With the mod, each battle comes from the mod, respecting the mode and the vehicle tier. Without the mod, and for random battles with no tier limit, the result comes from daily Lesta API data scaled to the competition’s battle count.",
+    "fairPlay": "Fair play: only each participant’s own results count. Nothing about opponents is ever used.",
+    "refresh": "Standings refresh every 15 minutes; the final result lands 6 hours after the finish. Participants get a notification with the result."
+  }
+}

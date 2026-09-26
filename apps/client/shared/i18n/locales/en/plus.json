@@ -5,7 +5,10 @@
   },
   "header": {
     "description": "One subscription on top of free Three Marks: our analytics, more room and conveniences. Core stats stay free for everyone.",
-    "trialOffer": "Try it for {days, plural, one {# day} other {# days}} free — no card needed."
+    "trialOffer": "Try it for {days, plural, one {# day} other {# days}} free — no card needed.",
+    "home": "Home",
+    "priceFigure": "Price",
+    "priceValue": "from {price}/mo"
   },
   "benefits": {
     "title": "What is included",
@@ -68,6 +71,10 @@
       "earlyAccess": {
         "title": "Early access",
         "text": "Beta features before anyone else."
+      },
+      "privateCompetitions": {
+        "title": "Private competitions",
+        "text": "Competitions just for your crew — by invite code, off the public list."
       }
     }
   },
@@ -107,7 +114,8 @@
       "trialPending": "Starting…",
       "closed": "Payments soon",
       "closedNote": "Payments open soon. For now you can start the trial or redeem a promo code."
-    }
+    },
+    "recommended": "Best value"
   },
   "faq": {
     "title": "FAQ",
@@ -163,7 +171,9 @@
       "goals": "Goals",
       "watchedTanks": "Watched tanks",
       "overlays": "Overlays",
-      "storedReplays": "Replays"
+      "storedReplays": "Replays",
+      "watchedPlayers": "Watched players",
+      "streamerFollows": "Followed streamers"
     }
   },
   "state": {
@@ -227,6 +237,14 @@
     "hangarExtras": {
       "title": "Hangar extras in the mod",
       "text": "A map briefing and the evening playlist right in the hangar — outside battle only and from your own data."
+    },
+    "privateCompetitions": {
+      "title": "Private competitions",
+      "text": "A private competition is visible to its members only and opens with an invite code. Public competitions are free for everyone."
+    },
+    "streamerAlerts": {
+      "title": "Stream alerts for a tank",
+      "text": "Get notified when a streamer goes live on the tank you picked, and follow more streamers."
     }
   }
 }

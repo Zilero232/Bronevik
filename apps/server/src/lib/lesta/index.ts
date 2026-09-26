@@ -91,3 +91,6 @@ export type {
   Vehicle,
   VehicleProfile
 } from './schemas';
+
+export { LESTA_STATIC, vehicleImages } from './static';
+export type { VehicleImageInput, VehicleImages } from './static';

@@ -1,13 +1,10 @@
-import type { ApiTier } from '@otmetki/schemas';
-
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { API_TIER_LIMITS } from '@otmetki/schemas';
 import { millisecondsInSecond } from 'date-fns/constants';
 import { Redis } from 'ioredis';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
 
-import type { AuthenticatedApiKey } from '../../developer';
-import type { SecondBudget } from '../public-api.types';
+import type { BudgetOwner, LimiterInput, SecondBudget, TakeBudgetInput, UserBudget } from '../public-api.types';
 
 import { AppTooManyRequestsException } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
@@ -17,24 +14,44 @@ import { API_RATE_LIMIT } from '../config';
 @Injectable()
 export class ApiRateLimitService {
   private readonly logger = new Logger(ApiRateLimitService.name);
-  private readonly limiters = new Map<ApiTier, RateLimiterRedis>();
+  private readonly limiters = new Map<string, RateLimiterRedis>();
 
   constructor(@Inject(REDIS) private readonly redis: Redis) {}
 
-  async consume(key: Pick<AuthenticatedApiKey, 'id' | 'tier'>): Promise<SecondBudget> {
-    const limit = API_TIER_LIMITS[key.tier].requestsPerSecond;
+  async consume(owner: BudgetOwner): Promise<UserBudget> {
+    const { requestsPerSecond, requestsPerDay } = API_TIER_LIMITS[owner.tier];
 
+    const second = await this.take({
+      owner,
+      window: 'second',
+      limit: requestsPerSecond,
+      reject: (retryAfterSec) =>
+        new AppTooManyRequestsException('RATE_LIMITED', `Up to ${requestsPerSecond} requests per second on the ${owner.tier} tier`, retryAfterSec)
+    });
+
+    const day = await this.take({
+      owner,
+      window: 'day',
+      limit: requestsPerDay,
+      reject: (retryAfterSec) =>
+        new AppTooManyRequestsException(
+          'PLAN_LIMIT_REACHED',
+          `Up to ${requestsPerDay} requests a day across all keys on the ${owner.tier} tier`,
+          retryAfterSec
+        )
+    });
+
+    return { second, day };
+  }
+
+  private async take({ owner, window, limit, reject }: TakeBudgetInput): Promise<SecondBudget> {
     try {
-      const { remainingPoints } = await this.limiter(key.tier).consume(key.id);
+      const { remainingPoints } = await this.limiter({ tier: owner.tier, window }).consume(owner.userId);
 
       return { limit, remaining: remainingPoints };
     } catch (error) {
       if (error instanceof RateLimiterRes) {
-        throw new AppTooManyRequestsException(
-          'RATE_LIMITED',
-          `Up to ${limit} requests per second on the ${key.tier} tier`,
-          Math.max(1, Math.ceil(error.msBeforeNext / millisecondsInSecond))
-        );
+        throw reject(Math.max(1, Math.ceil(error.msBeforeNext / millisecondsInSecond)));
       }
 
       this.logger.warn(`rate limit store unavailable, letting the request through: ${errorMessage(error)}`);
@@ -43,8 +60,9 @@ export class ApiRateLimitService {
     }
   }
 
-  private limiter(tier: ApiTier): RateLimiterRedis {
-    const existing = this.limiters.get(tier);
+  private limiter({ tier, window }: LimiterInput): RateLimiterRedis {
+    const id = `${window}:${tier}`;
+    const existing = this.limiters.get(id);
 
     if (existing) {
       return existing;
@@ -52,12 +70,12 @@ export class ApiRateLimitService {
 
     const limiter = new RateLimiterRedis({
       storeClient: this.redis,
-      keyPrefix: `${API_RATE_LIMIT.secondPrefix}:${tier}`,
-      points: API_TIER_LIMITS[tier].requestsPerSecond,
-      duration: API_RATE_LIMIT.secondWindow
+      keyPrefix: window === 'second' ? API_RATE_LIMIT.secondPrefix : API_RATE_LIMIT.dayPrefix,
+      points: window === 'second' ? API_TIER_LIMITS[tier].requestsPerSecond : API_TIER_LIMITS[tier].requestsPerDay,
+      duration: window === 'second' ? API_RATE_LIMIT.secondWindow : API_RATE_LIMIT.dayWindow
     });
 
-    this.limiters.set(tier, limiter);
+    this.limiters.set(id, limiter);
 
     return limiter;
   }

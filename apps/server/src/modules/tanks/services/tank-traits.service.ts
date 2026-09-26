@@ -10,6 +10,7 @@ import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { TANK_TRAITS } from '../config';
 import { matchesTraits, readSpecTraits, toTankTraits } from '../lib';
+import { TankDifficultyService } from './tank-difficulty.service';
 
 @Injectable()
 export class TankTraitsService {
@@ -21,7 +22,8 @@ export class TankTraitsService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly catalog: VehicleCatalogService
+    private readonly catalog: VehicleCatalogService,
+    private readonly difficulty: TankDifficultyService
   ) {}
 
   async all(): Promise<Map<number, TraitsEntry>> {
@@ -41,13 +43,16 @@ export class TankTraitsService {
   }
 
   async filter({ entries, filter }: FilterByTraitsInput): Promise<CatalogEntry[]> {
+    const byDifficulty = filter.difficulties?.length ? await this.difficulty.matching(filter.difficulties) : null;
+    const withDifficulty = byDifficulty ? entries.filter((entry) => byDifficulty.has(entry.summary.tankId)) : [...entries];
+
     if (!filter.statuses?.length && !filter.roles?.length) {
-      return [...entries];
+      return withDifficulty;
     }
 
     const traits = await this.all();
 
-    return entries.filter((entry) => {
+    return withDifficulty.filter((entry) => {
       const found = traits.get(entry.summary.tankId);
 
       return found !== undefined && matchesTraits({ traits: found.traits, filter });

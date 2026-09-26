@@ -1,0 +1,45 @@
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import { ZodResponse } from 'nestjs-zod';
+
+import { CACHE_TTL } from '../../common/cache';
+import { CurrentUserId } from '../../common/decorators';
+import { RequiresPlus } from '../billing';
+import { ModeMetaDto, ModeMetaQueryDto, ModeParamsDto, ModesHubDto, MyModeStatsDto, MyModeStatsQueryDto } from './dto';
+import { ModeMetaQueryService, MyModeStatsService } from './services';
+
+@ApiTags('modes')
+@Controller('modes')
+export class ModesController {
+  constructor(
+    private readonly meta: ModeMetaQueryService,
+    private readonly mine: MyModeStatsService
+  ) {}
+
+  @AllowAnonymous()
+  @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(CACHE_TTL.server)
+  @ZodResponse({ type: ModesHubDto })
+  hub() {
+    return this.meta.hub();
+  }
+
+  @Get('me')
+  @RequiresPlus('analytics')
+  @ZodResponse({ type: MyModeStatsDto })
+  myStats(@CurrentUserId() userId: string, @Query() query: MyModeStatsQueryDto) {
+    return this.mine.stats({ userId, query });
+  }
+
+  @AllowAnonymous()
+  @Get(':mode')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(CACHE_TTL.server)
+  @ZodResponse({ type: ModeMetaDto })
+  modeMeta(@Param() { mode }: ModeParamsDto, @Query() query: ModeMetaQueryDto) {
+    return this.meta.meta({ mode, query });
+  }
+}

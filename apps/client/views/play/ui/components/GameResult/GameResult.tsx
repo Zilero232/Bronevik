@@ -29,7 +29,7 @@ export const GameResult = () => {
           <Share2 size={16} />
           {t('share')}
         </Button>
-        <Link className={buttonVariants({ variant: 'secondary', size: 'md' })} href={ROUTES.tank(target.slug)}>
+        <Link className={buttonVariants({ variant: 'secondary', size: 'md' })} href={ROUTES.tanks.detail(target.slug)}>
           <Info size={16} />
           {t('openTank')}
         </Link>

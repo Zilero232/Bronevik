@@ -21,7 +21,12 @@ export class OfferQueryService {
     };
 
     const [rows, total] = await Promise.all([
-      this.prisma.premiumOffer.findMany({ where, orderBy: [{ startsAt: 'desc' }, { firstSeenAt: 'desc' }], take: limit, skip: offset }),
+      this.prisma.premiumOffer.findMany({
+        where,
+        orderBy: [{ startsAt: 'desc' }, { firstSeenAt: 'desc' }, { id: 'desc' }],
+        take: limit,
+        skip: offset
+      }),
       this.prisma.premiumOffer.count({ where })
     ]);
 

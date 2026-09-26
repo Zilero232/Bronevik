@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import { renderHook } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FORMATS } from '@/shared/i18n';
 
@@ -11,10 +11,19 @@ import { useRelativeTime } from '../use-relative-time';
 const NOW = new Date('2026-09-25T12:00:00Z');
 
 const wrapper = ({ children }: { children: ReactNode }) => (
-  <NextIntlClientProvider formats={FORMATS} locale='en' messages={{}} now={NOW} timeZone='UTC'>
+  <NextIntlClientProvider formats={FORMATS} locale='en' messages={{}} timeZone='UTC'>
     {children}
   </NextIntlClientProvider>
 );
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(NOW);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('useRelativeTime', () => {
   it('describes a past moment relative to now', () => {

@@ -1,11 +1,26 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include stack(var(--gap-section));
+
+  padding-bottom: var(--space-8);
+
+  [id] {
+    scroll-margin-top: calc(var(--header-height) + 64px);
+  }
+
+  @include below(md) {
+    gap: var(--space-7);
+  }
+}
+
+.shell {
   @include shell;
   @include stack(var(--gap-section));
 
-  padding-top: var(--space-6);
-  padding-bottom: var(--space-8);
+  &:only-child {
+    padding-top: var(--space-6);
+  }
 
   @include below(md) {
     gap: var(--space-7);

@@ -47,7 +47,8 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
     name: JOB.reference.encyclopedia,
     repeat: { pattern: '0 2 * * *' },
     data: { force: true },
-    needsLesta: true
+    needsLesta: true,
+    realLestaOnly: true
   },
   { id: 'wn8-expected-daily', queue: QUEUE.reference, name: JOB.reference.wn8Expected, repeat: { pattern: '0 6 * * *' }, enabled: FEATURES.wn8Xvm },
   {
@@ -73,6 +74,13 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
     name: JOB.aggregate.buildUsage,
     repeat: { pattern: '40 4 * * *' },
     enabled: FEATURES.buildUsage
+  },
+  {
+    id: 'mode-meta-nightly',
+    queue: QUEUE.aggregate,
+    name: JOB.aggregate.modeMeta,
+    repeat: { pattern: '55 4 * * *' },
+    enabled: FEATURES.modeMeta
   },
   {
     id: 'tank-economy-daily',

@@ -1,0 +1,76 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.count {
+  @include source-line;
+}
+
+.median {
+  @include numeric(var(--text-xl));
+}
+
+.medianLabel {
+  @include label;
+}
+
+.bars {
+  @include stack(var(--space-2));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.bar {
+  display: grid;
+  align-items: center;
+  font-size: var(--text-xs);
+  gap: var(--space-3);
+  grid-template-columns: minmax(64px, 30%) 1fr 44px;
+}
+
+.bucket {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-sunken);
+}
+
+.fill {
+  width: var(--share);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-steel);
+
+  &[data-top='true'] {
+    background: var(--color-accent);
+  }
+}
+
+.share {
+  @include numeric;
+
+  text-align: end;
+}

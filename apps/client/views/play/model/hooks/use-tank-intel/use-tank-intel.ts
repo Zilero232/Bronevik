@@ -5,7 +5,7 @@ import type { QueryFunctionContext } from '@tanstack/react-query';
 
 import { useQueries } from '@tanstack/react-query';
 
-import { getTank } from '@/shared/api/tanks';
+import { getTank } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { GUESS_TANK } from '../../../config';

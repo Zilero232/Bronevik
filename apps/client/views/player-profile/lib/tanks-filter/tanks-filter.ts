@@ -2,7 +2,7 @@ import type { Tier } from '@otmetki/icons';
 
 import { TIERS } from '@otmetki/icons';
 
-import type { PlayerTanksFilter } from '@/shared/api/players';
+import type { PlayerTanksFilter } from '@/entities/player/profile';
 
 import type { MatchesTankQueryInput, TanksFilterState } from './tanks-filter.types';
 

@@ -9,6 +9,7 @@ import {
   AccountRatingsService,
   BuildUsageService,
   LearningCurveService,
+  ModeMetaService,
   ServerStatsService,
   TankEconomyService,
   TankPercentilesService,
@@ -25,6 +26,7 @@ export class AggregateProcessor extends WorkerHost {
     private readonly economy: TankEconomyService,
     private readonly learning: LearningCurveService,
     private readonly buildUsage: BuildUsageService,
+    private readonly modeMeta: ModeMetaService,
     private readonly metrics: MetricsService
   ) {
     super();
@@ -42,6 +44,7 @@ export class AggregateProcessor extends WorkerHost {
           .with(JOB.aggregate.tankEconomy, () => this.economy.compute())
           .with(JOB.aggregate.learningCurve, () => this.learning.compute())
           .with(JOB.aggregate.buildUsage, () => this.buildUsage.compute())
+          .with(JOB.aggregate.modeMeta, () => this.modeMeta.compute())
           .otherwise(async () => ({ ignored: job.name }))
     });
   }

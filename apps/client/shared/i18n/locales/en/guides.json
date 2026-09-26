@@ -51,6 +51,8 @@
       "kind": "Guide type",
       "tank": "Any tank",
       "anyMap": "Any map",
+      "map": "Map",
+      "sort": "Sort",
       "reset": "Reset"
     },
     "columns": {

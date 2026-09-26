@@ -13,8 +13,10 @@ export const plusLimitKeySchema = z.enum([
   'linkedAccounts',
   'goals',
   'watchedTanks',
+  'watchedPlayers',
   'overlays',
   'storedReplays',
+  'streamerFollows',
   'historyDays',
   'aiReviews'
 ] satisfies (keyof typeof PLUS_LIMITS)[]);

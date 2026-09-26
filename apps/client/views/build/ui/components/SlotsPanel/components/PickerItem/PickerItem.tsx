@@ -14,7 +14,7 @@ import s from './PickerItem.module.scss';
 export const PickerItem = ({ item, isSelected, isTaken, onPick }: PickerItemProps) => {
   const t = useTranslations('builds');
 
-  const { id, name, image, category, isPremium } = item;
+  const { id, name, kind, image, category, isPremium } = item;
 
   return (
     <li className={s.item}>
@@ -26,7 +26,7 @@ export const PickerItem = ({ item, isSelected, isTaken, onPick }: PickerItemProp
         type='button'
         onClick={() => onPick(id)}
       >
-        <GameIcon size={BUILD_VIEW.iconSize.picker} src={image} />
+        <GameIcon kind={kind} size={BUILD_VIEW.iconSize.picker} src={image} />
         <span className={s.text}>
           <span className={s.name}>{name}</span>
           <span className={s.tags}>

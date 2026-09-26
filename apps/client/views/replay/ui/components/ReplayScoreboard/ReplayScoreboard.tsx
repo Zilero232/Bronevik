@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { Card, CardHeader, DataTable, EmptyState } from '@/ui-kit';
 
@@ -13,12 +14,13 @@ import s from './ReplayScoreboard.module.scss';
 export const ReplayScoreboard = ({ replay }: ReplayScoreboardProps) => {
   const t = useTranslations('replays.scoreboard');
   const format = useFormatter();
+  const titleId = useId();
   const { columns, teams } = useReplayScoreboard(replay);
 
   return (
     <div className={s.root}>
       {teams.map((team) => (
-        <Card key={team.id} aria-labelledby={`scoreboard-${team.id}`} data-team={team.id} padding='none'>
+        <Card key={team.id} aria-labelledby={`${titleId}-${team.id}`} data-team={team.id} padding='none'>
           <CardHeader
             meta={t('totals', {
               alive: team.totals.alive,
@@ -26,7 +28,7 @@ export const ReplayScoreboard = ({ replay }: ReplayScoreboardProps) => {
               damage: format.number(team.totals.damageDealt),
               frags: team.totals.frags
             })}
-            title={<span id={`scoreboard-${team.id}`}>{t(`teams.${team.id}`)}</span>}
+            title={<span id={`${titleId}-${team.id}`}>{t(`teams.${team.id}`)}</span>}
           />
           <DataTable
             columns={columns}

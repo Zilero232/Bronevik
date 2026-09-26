@@ -1,0 +1,1 @@
+export { PlatoonTab } from './PlatoonTab';

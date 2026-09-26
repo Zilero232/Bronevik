@@ -2,6 +2,7 @@
 
 import { safeWebHref } from '@/shared/lib';
 
+import { obtainEditorial, obtainMission } from '../../../lib';
 import { useTank } from '../../context';
 
 export const useObtainSection = () => {
@@ -17,6 +18,8 @@ export const useObtainSection = () => {
       href: safeWebHref(offer.url),
       date: offer.startsAt ?? offer.lastSeenAt
     })),
-    news: obtain.news.map((item) => ({ key: item.url, title: item.title, href: safeWebHref(item.url), date: item.publishedAt }))
+    news: obtain.news.map((item) => ({ key: item.url, title: item.title, href: safeWebHref(item.url), date: item.publishedAt })),
+    missions: obtain.missions.map(obtainMission),
+    editorial: obtain.editorial.map(obtainEditorial)
   };
 };

@@ -3,7 +3,7 @@
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 
-import { listClans } from '@/shared/api/clans';
+import { listClans } from '@/entities/clan/clan';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { CLAN_RATING, CLAN_SORTS } from '../../../config';

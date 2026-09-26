@@ -44,7 +44,19 @@ const samples: ParsedNotification[] = [
     from: '2026-09-18T00:00:00.000Z',
     report: { events: 3, attendanceRate: null, newCandidates: 1, inactiveMembers: 2 }
   },
-  { event: 'badgeAwarded', accountId: 1, badgeCode: 'b', title: 'Veteran' }
+  { event: 'badgeAwarded', accountId: 1, badgeCode: 'b', title: 'Veteran' },
+  { event: 'replayOverflow', stored: 120, keep: 50, daysLeft: 14, deleteAt: '2027-03-01' },
+  {
+    event: 'watchlistDigest',
+    activePlayers: 2,
+    battles: 31,
+    marksGained: 1,
+    top: [{ nickname: 'Tanker', battles: 20, winRate: 55.5, marksGained: 1 }]
+  },
+  { event: 'watchlistDigest', activePlayers: 1, battles: 0, marksGained: 1, top: [] },
+  { event: 'tankReturned', tankId: 1, tankName: 'Об. 140', absentDays: 120, discountPercent: null },
+  { event: 'tankReturned', tankId: 1, tankName: 'Об. 140', absentDays: null, discountPercent: 20 },
+  { event: 'competitionFinished', competitionSlug: 'cup-1', title: 'Cup', teamName: 'Alpha', rank: 2, teams: 8 }
 ];
 
 const messageIds = (locale: (typeof NOTIFICATION_COPY.locales)[number]) =>
@@ -121,6 +133,17 @@ describe('renderNotification', () => {
     expect(report && renderNotification({ notification: report, locale: 'en', webUrl }).title).toBe(
       notificationText({ locale: 'en', key: 'clan-weekly-report-title', values: { clanTag: 'BRNV' } })
     );
+  });
+});
+
+describe('renderNotification replayOverflow', () => {
+  it.each(NOTIFICATION_COPY.locales)('words the last-day notice apart from the 14-day one in %s', (locale) => {
+    const notice = { event: 'replayOverflow', stored: 120, keep: 50, daysLeft: 14, deleteAt: '2027-03-01' } as const;
+    const early = renderNotification({ notification: notice, locale, webUrl });
+    const last = renderNotification({ notification: { ...notice, daysLeft: 1 }, locale, webUrl });
+
+    expect(early.title).toContain(digit(14, locale));
+    expect(last.title).not.toContain('1');
   });
 });
 

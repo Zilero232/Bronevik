@@ -6,6 +6,7 @@ import { createEvents } from 'ics';
 import type { EventsIcsInput } from './event-ics.types';
 
 import { EVENT_ICS } from '../../config';
+import { foldIcsOctets } from '../ics-fold';
 
 const toIcsEvent = (event: GameEvent): EventAttributes => {
   const start = new Date(event.startsAt).getTime();
@@ -33,5 +34,5 @@ export const eventsIcs = ({ events, calName }: EventsIcsInput): string => {
     throw error ?? new Error('The iCal feed could not be built');
   }
 
-  return value;
+  return foldIcsOctets(value);
 };

@@ -4,3 +4,5 @@ export type { BattleResultEvent, BindResponse, IngestBatch, IngestEvent, IngestR
 export { deviceSecret, hashSecret, matchesSecretHash, newDeviceId, normalizeBindCode } from './device-secret';
 export { readStoredLoadout, storedLoadoutSchema, toStoredLoadout } from './loadout';
 export type { StoredLoadout } from './loadout';
+export { toStoredShot } from './shots';
+export type { StoredShotRecord } from './shots';

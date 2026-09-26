@@ -1,0 +1,234 @@
+import type { MockClan } from '../../lesta-mock.types';
+import type { MockContext, MockRoute } from './responses.types';
+
+import { clanElo, skirmishStats } from '../clan-activity';
+import { selectFields } from '../fields';
+import { clanMembersAt, stintAt } from '../world';
+import { playerAt } from './account';
+import { fail, idList, intParam, ok } from './envelope';
+import { CLAN_ROLE_TITLES, RESPONSES, STRONGHOLD_BUILDINGS, STRONGHOLD_DIRECTIONS } from './responses.constants';
+
+const ROLE_TITLES: ReadonlyMap<string, string> = new Map(Object.entries(CLAN_ROLE_TITLES));
+
+const roleTitle = (role: string): string => ROLE_TITLES.get(role) ?? role;
+
+const clanExists = (clan: MockClan, at: number): boolean => clan.createdAt <= at;
+
+const nameAt = (clan: MockClan, at: number) =>
+  clan.renamedAt !== null && at < clan.renamedAt
+    ? { name: clan.oldName ?? clan.name, tag: clan.oldTag ?? clan.tag }
+    : { name: clan.name, tag: clan.tag };
+
+const listItem = (clan: MockClan, at: number) => ({
+  clan_id: clan.clanId,
+  ...nameAt(clan, at),
+  color: clan.color,
+  created_at: clan.createdAt,
+  members_count: clanMembersAt(clan, at).length,
+  emblems: null
+});
+
+const clanInfo = (context: MockContext, clan: MockClan) => {
+  const members = clanMembersAt(clan, context.now);
+  const leader = members.find(({ stint }) => stint.role === 'commander') ?? members[0];
+  const renamed = clan.renamedAt !== null && context.now >= clan.renamedAt;
+
+  return {
+    clan_id: clan.clanId,
+    ...nameAt(clan, context.now),
+    color: clan.color,
+    motto: clan.motto,
+    description: clan.description,
+    description_html: `<p>${clan.description.replaceAll('\n', '<br/>')}</p>`,
+    created_at: clan.createdAt,
+    updated_at: Math.max(clan.createdAt, ...members.map(({ stint }) => (stint.joinedAt <= context.now ? stint.joinedAt : 0))),
+    creator_id: leader?.player.accountId ?? null,
+    creator_name: leader?.player.nickname ?? null,
+    leader_id: leader?.player.accountId ?? null,
+    leader_name: leader?.player.nickname ?? null,
+    members_count: members.length,
+    is_clan_disbanded: members.length === 0,
+    old_name: renamed ? clan.oldName : null,
+    old_tag: renamed ? clan.oldTag : null,
+    renamed_at: renamed ? clan.renamedAt : null,
+    accepts_join_requests: clan.acceptsJoinRequests,
+    game: 'wot',
+    emblems: null,
+    members_ids: members.map(({ player }) => player.accountId),
+    members: members.map(({ player, stint }) => ({
+      account_id: player.accountId,
+      account_name: player.nickname,
+      joined_at: stint.joinedAt,
+      role: stint.role,
+      role_i18n: roleTitle(stint.role)
+    })),
+    private: null
+  };
+};
+
+const clansByIds = (context: MockContext, render: (clan: MockClan) => unknown) => {
+  const parsed = idList({ params: context.params, field: 'clan_id' });
+
+  if ('error' in parsed) {
+    return parsed.error;
+  }
+
+  const data = Object.fromEntries(
+    parsed.ids.map((clanId) => {
+      const clan = context.world.clanById.get(clanId);
+
+      return [String(clanId), clan && clanExists(clan, context.now) ? selectFields(render(clan), context.fields) : null];
+    })
+  );
+
+  return ok(data, { count: parsed.ids.length });
+};
+
+export const clansList: MockRoute = (context) => {
+  const search = context.params.search?.trim().toLowerCase() ?? '';
+  const limit = Math.min(RESPONSES.maxListLimit, Math.max(1, intParam(context.params, 'limit', RESPONSES.maxListLimit)));
+  const page = Math.max(1, intParam(context.params, 'page_no', 1));
+
+  if (search.length > 0 && search.length < RESPONSES.minClanSearchLength) {
+    return fail({ code: 407, message: 'NOT_ENOUGH_SEARCH_LENGTH', field: 'search', value: search });
+  }
+
+  const matching = context.world.clans
+    .filter((clan) => clanExists(clan, context.now))
+    .map((clan) => listItem(clan, context.now))
+    .filter((item) => item.members_count > 0)
+    .filter((item) => search.length === 0 || item.tag.toLowerCase().startsWith(search) || item.name.toLowerCase().includes(search))
+    .sort((left, right) => right.members_count - left.members_count || left.clan_id - right.clan_id);
+
+  const data = matching.slice((page - 1) * limit, page * limit).map((item) => selectFields(item, context.fields));
+
+  return ok(data, { count: data.length, total: matching.length, page_total: Math.ceil(matching.length / limit), limit, page });
+};
+
+export const clansInfo: MockRoute = (context) => clansByIds(context, (clan) => clanInfo(context, clan));
+
+export const clansAccountInfo: MockRoute = (context) => {
+  const parsed = idList({ params: context.params, field: 'account_id' });
+
+  if ('error' in parsed) {
+    return parsed.error;
+  }
+
+  const data = Object.fromEntries(
+    parsed.ids.map((accountId) => {
+      const player = playerAt(context, accountId);
+      const stint = player ? stintAt(player, context.now) : null;
+      const clan = stint ? context.world.clanById.get(stint.clanId) : undefined;
+
+      if (!player || !stint || !clan) {
+        return [String(accountId), null];
+      }
+
+      return [
+        String(accountId),
+        selectFields(
+          {
+            account_id: player.accountId,
+            account_name: player.nickname,
+            joined_at: stint.joinedAt,
+            role: stint.role,
+            role_i18n: roleTitle(stint.role),
+            clan_id: clan.clanId,
+            clan: listItem(clan, context.now)
+          },
+          context.fields
+        )
+      ];
+    })
+  );
+
+  return ok(data, { count: parsed.ids.length });
+};
+
+export const clansMemberHistory: MockRoute = (context) => {
+  const parsed = idList({ params: context.params, field: 'account_id' });
+
+  if ('error' in parsed) {
+    return parsed.error;
+  }
+
+  const data = Object.fromEntries(
+    parsed.ids.map((accountId) => {
+      const player = playerAt(context, accountId);
+
+      if (!player) {
+        return [String(accountId), null];
+      }
+
+      const past = player.stints
+        .filter((stint) => stint.leftAt !== null && stint.leftAt <= context.now)
+        .map((stint) => selectFields({ clan_id: stint.clanId, joined_at: stint.joinedAt, left_at: stint.leftAt, role: stint.role }, context.fields));
+
+      return [String(accountId), past];
+    })
+  );
+
+  return ok(data, { count: parsed.ids.length });
+};
+
+export const clansGlossary: MockRoute = () =>
+  ok({ clans_roles: CLAN_ROLE_TITLES, settings: { max_members_count: 100 }, languages: { ru: 'Русский', en: 'English' } });
+
+export const globalmapClanInfo: MockRoute = (context) =>
+  clansByIds(context, (clan) => {
+    const elo = clanElo(context.world.seed, clan, context.now);
+    const skirmish = skirmishStats(context.world.seed, clan, context.now);
+
+    return {
+      clan_id: clan.clanId,
+      ...nameAt(clan, context.now),
+      ratings: {
+        elo_6: elo?.[6] ?? null,
+        elo_8: elo?.[8] ?? null,
+        elo_10: elo?.[10] ?? null,
+        updated_at: elo ? context.now - (context.now % 86_400) : null
+      },
+      statistics: {
+        battles: elo ? Math.round((skirmish.total_10 ?? 0) * 0.3) : 0,
+        wins: elo ? Math.round((skirmish.win_10 ?? 0) * 0.3) : 0,
+        provinces_count: elo && clan.tier === 'top' ? 1 + (clan.index % 4) : 0,
+        captures: elo ? Math.round((skirmish.win_10 ?? 0) * 0.05) : 0
+      }
+    };
+  });
+
+export const globalmapClanProvinces: MockRoute = (context) => clansByIds(context, () => []);
+
+export const strongholdClanInfo: MockRoute = (context) =>
+  clansByIds(context, (clan) => {
+    const arenas = context.world.catalog.arenas.filter((arena) => arena.modes.includes('ctf'));
+    const commandCenter = arenas[clan.index % Math.max(1, arenas.length)];
+    const buildings = STRONGHOLD_BUILDINGS.slice(0, Math.min(STRONGHOLD_BUILDINGS.length, 2 + Math.floor(clan.strongholdLevel / 2)));
+
+    return {
+      clan_id: clan.clanId,
+      clan_tag: nameAt(clan, context.now).tag,
+      clan_name: nameAt(clan, context.now).name,
+      level: clan.strongholdLevel,
+      command_center_arena_id: commandCenter?.arenaId ?? null,
+      total_resource_amount: clan.strongholdLevel * 18_000 + (clan.clanId % 9000),
+      building_slots: 2 + clan.strongholdLevel,
+      buildings: Object.fromEntries(
+        buildings.map((building, index) => [
+          String(index + 1),
+          {
+            building_type: building.type,
+            building_title: building.title,
+            level: Math.max(1, clan.strongholdLevel - (index % 3)),
+            position: index + 1,
+            direction_name: STRONGHOLD_DIRECTIONS[index % STRONGHOLD_DIRECTIONS.length],
+            arena_id: arenas[(clan.index + index + 1) % Math.max(1, arenas.length)]?.arenaId ?? null
+          }
+        ])
+      ),
+      skirmish_statistics: skirmishStats(context.world.seed, clan, context.now)
+    };
+  });
+
+export const strongholdClanReserves: MockRoute = (context) =>
+  context.tokenAccountId === null ? fail({ code: 402, message: 'ACCESS_TOKEN_NOT_SPECIFIED', field: 'access_token' }) : ok([], { count: 0 });

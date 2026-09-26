@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { TacticBoardVisibility } from '@/shared/api/tactics';
+import type { TacticBoardVisibility } from '@/entities/tactic/board';
 import type { SelectItem } from '@/ui-kit';
 
 import { TACTIC_VISIBILITIES, useTacticMaps } from '@/features/community/tactic-board-settings';

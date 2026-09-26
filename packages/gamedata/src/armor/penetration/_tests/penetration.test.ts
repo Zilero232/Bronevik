@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ARMOR_FLAGS } from '../../model/armor-model.constants';
+import { ARMOR_FLAGS } from '../../armor-model/armor-model.constants';
 import { calculateArmorHit, penetrationAtDistance, penetrationVerdict, toShellKind, traceArmorRay } from '../penetration';
 import { PENETRATION, SHELL_KINDS, SHELL_RULES } from '../penetration.constants';
 

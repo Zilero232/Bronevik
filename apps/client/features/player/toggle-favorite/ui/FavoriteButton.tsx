@@ -19,7 +19,7 @@ export const FavoriteButton = ({ kind, targetId, className }: FavoriteButtonProp
 
   if (!isSignedIn) {
     return (
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={ROUTES.login}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={ROUTES.auth.login}>
         <Star size={15} />
         {t('add')}
       </Link>

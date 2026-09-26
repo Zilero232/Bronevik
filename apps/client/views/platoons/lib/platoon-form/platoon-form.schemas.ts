@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { zCreatePlatoon } from '@/shared/api/platoons';
+import { zCreatePlatoon } from '../../api';
+import { zonedInputToIso } from '@/shared/lib';
 
 import { PLATOON_FORM, PLATOON_TIERS } from '../../config';
-import { localToIso } from '../platoon-query';
 
 const optionalWn8 = z
   .string()
@@ -25,8 +25,8 @@ export const platoonFormSchema = z
   })
   .refine(
     ({ availableFrom, availableUntil }) => {
-      const from = localToIso(availableFrom);
-      const until = localToIso(availableUntil);
+      const from = zonedInputToIso({ value: availableFrom });
+      const until = zonedInputToIso({ value: availableUntil });
 
       return !from || !until || from < until;
     },

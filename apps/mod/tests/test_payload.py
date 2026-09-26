@@ -72,6 +72,24 @@ class BattleEventTest(unittest.TestCase):
         for foreign in ('98765', '87654321', 'enemy_player_secret', '4321', '2849'):
             self.assertNotIn(foreign, serialized)
 
+    def test_solo_battle_has_no_platoon(self):
+        self.assertIsNone(self.event['platoon'])
+        self.assertIsNone(self.event['shots'])
+
+    def test_platoon_lists_only_own_team_mates(self):
+        results = _support.battle_results()
+        results['players']['12345678']['prebattleID'] = 77
+        results['players']['23456789'] = {'name': 'platoon_friend_nick', 'team': 1, 'prebattleID': 77}
+        results['players']['87654321']['prebattleID'] = 77
+        event = build_battle_event(results)
+        self.assertEqual(event['platoon'], {'size': 2, 'mates': [23456789]})
+        self.assertNotIn('platoon_friend_nick', dumps(event))
+
+    def test_shots_pass_through_from_extras(self):
+        shot = {'damage': 402, 'nominal': 390, 'shell': 'armor_piercing', 'outcome': 'damage', 'distance_m': None, 'fatal': False}
+        event = build_battle_event(_support.battle_results(), {'shots': [shot, 'junk']})
+        self.assertEqual(event['shots'], [shot])
+
     def test_economy_costs(self):
         results = _support.battle_results()
         vehicle = results['personal'][1]

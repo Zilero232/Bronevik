@@ -11,7 +11,7 @@ export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
   const t = await getTranslations({ locale, namespace: 'guides.editorMeta' });
 
-  return createPageMetadata({ title: t('newTitle'), description: t('description'), path: ROUTES.guideNew, locale });
+  return createPageMetadata({ title: t('newTitle'), description: t('description'), path: ROUTES.guides.create, locale });
 };
 
 const Page = () => (

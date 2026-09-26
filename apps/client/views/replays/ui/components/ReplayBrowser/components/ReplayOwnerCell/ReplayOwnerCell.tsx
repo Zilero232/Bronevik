@@ -7,7 +7,7 @@ import s from './ReplayOwnerCell.module.scss';
 
 export const ReplayOwnerCell = ({ nickname, clanTag }: ReplayOwnerCellProps) =>
   nickname ? (
-    <Link className={s.root} href={ROUTES.player(nickname)}>
+    <Link className={s.root} href={ROUTES.players.profile(nickname)}>
       {nickname}
       {clanTag && <span className={s.clan}>[{clanTag}]</span>}
     </Link>

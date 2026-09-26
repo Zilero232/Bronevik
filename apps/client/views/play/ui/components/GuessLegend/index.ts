@@ -1,1 +1,0 @@
-export { GuessLegend } from './GuessLegend';

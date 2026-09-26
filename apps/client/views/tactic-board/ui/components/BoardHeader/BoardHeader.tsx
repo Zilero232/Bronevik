@@ -3,7 +3,7 @@
 import { Map as MapIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { TacticBoardVisibility } from '@/shared/api/tactics';
+import type { TacticBoardVisibility } from '@/entities/tactic/board';
 
 import { ROUTES } from '@/shared/constants';
 import { Badge, PageHeader, Select } from '@/ui-kit';
@@ -25,6 +25,7 @@ export const BoardHeader = ({ board, token }: BoardHeaderProps) => {
         isOwner && (
           <div className={s.actions}>
             <Select<TacticBoardVisibility>
+              aria-label={t('settings.visibility')}
               className={s.visibility}
               items={visibilityItems}
               value={board.visibility}
@@ -46,7 +47,7 @@ export const BoardHeader = ({ board, token }: BoardHeaderProps) => {
           {!isOwner && <span className={s.item}>{t(`visibility.${board.visibility}`)}</span>}
         </div>
       }
-      breadcrumbs={[{ label: t('list.title'), href: ROUTES.tactics }, { label: board.title }]}
+      breadcrumbs={[{ label: t('list.title'), href: ROUTES.tactics.list }, { label: board.title }]}
       title={board.title}
     />
   );

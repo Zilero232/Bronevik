@@ -1,6 +1,6 @@
 import { clamp } from 'remeda';
 
-import type { TacticStroke } from '@/shared/api/tactics';
+import type { TacticStroke } from '@/entities/tactic/board';
 
 import type { BoardBox, BoardCircle, BoardPoint, FitScaleInput, PointsWithPoint, TranslatePointsInput } from './board-geometry.types';
 

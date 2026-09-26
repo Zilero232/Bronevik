@@ -1,6 +1,6 @@
 import { isEmpty, pickBy } from 'remeda';
 
-import type { Coach, UpsertCoach } from '@/shared/api/coaching';
+import type { Coach, UpsertCoach } from '@/entities/coaching/coach';
 
 import type { CoachFormOutput, CoachFormValues, ToCoachFormValuesInput } from './coach-form.types';
 

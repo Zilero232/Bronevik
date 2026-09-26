@@ -8,15 +8,20 @@ import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { shopControllerListBonusCodesQueryKey } from '@/shared/api/query-options';
-import { reportBonusCode } from '@/shared/api/shop';
-import { safeWebHref } from '@/shared/lib';
+import { reportBonusCode } from '../../../api';
+import { safeWebHref, useClientNow, useCopyFeedback } from '@/shared/lib';
 
 import type { CodeReportVerdict, UseCodeCardInput } from './use-code-card.types';
+
+import { CODES } from '../../../config';
+import { codeRibbon } from '../../../lib/code-ribbon';
 
 export const useCodeCard = ({ code }: UseCodeCardInput) => {
   const t = useTranslations('codes.report');
   const queryClient = useQueryClient();
   const { data: session } = useAuthSession();
+  const now = useClientNow({ updateInterval: CODES.clockMs });
+  const { copied, onCopyClick } = useCopyFeedback({ value: code.code });
 
   const mutation = useMutation({
     mutationFn: (verdict: CodeReportVerdict) => reportBonusCode({ code: code.code, verdict }),
@@ -32,6 +37,9 @@ export const useCodeCard = ({ code }: UseCodeCardInput) => {
 
   return {
     sourceHref: safeWebHref(code.sourceUrl),
+    ribbon: codeRibbon({ code, now, expiringDays: CODES.expiringDays, freshDays: CODES.freshDays }),
+    copied,
+    onCopy: () => void onCopyClick(),
     isSignedIn: Boolean(session),
     isReporting: mutation.isPending,
     report: (verdict: CodeReportVerdict) => mutation.mutate(verdict)

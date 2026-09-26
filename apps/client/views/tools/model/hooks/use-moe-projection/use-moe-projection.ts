@@ -3,7 +3,7 @@
 import { MOE, projectMoeBattles, toMoeThresholds } from '@otmetki/ratings';
 import { useQuery } from '@tanstack/react-query';
 
-import { getMoeHistory } from '@/shared/api/marks';
+import { getMoeHistory } from '@/entities/player/marks';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseMoeProjectionInput } from './use-moe-projection.types';

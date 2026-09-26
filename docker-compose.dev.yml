@@ -4,16 +4,16 @@ services:
     container_name: otmetki-postgres-dev
     restart: unless-stopped
     environment:
-      POSTGRES_USER: bronevik
-      POSTGRES_PASSWORD: bronevik
-      POSTGRES_DB: bronevik
+      POSTGRES_USER: otmetki
+      POSTGRES_PASSWORD: otmetki
+      POSTGRES_DB: otmetki
     ports:
       # 5434 on the host: 5432 is taken by a native service, 5433 by GnomeVPN.
       - '5434:5432'
     volumes:
-      - bronevik-postgres-data:/home/postgres/pgdata/data
+      - otmetki-postgres-data:/home/postgres/pgdata/data
     healthcheck:
-      test: [CMD-SHELL, pg_isready -U bronevik -d bronevik]
+      test: [CMD-SHELL, pg_isready -U otmetki -d otmetki]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -43,5 +43,5 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
 volumes:
-  bronevik-postgres-data:
-    name: bronevik_bronevik-postgres-data
+  otmetki-postgres-data:
+    name: otmetki-postgres-data

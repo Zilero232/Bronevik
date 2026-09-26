@@ -1,0 +1,65 @@
+@use '@/shared/styles/mixins' as *;
+
+.inner {
+  @include stack(var(--space-7));
+}
+
+.steps {
+  position: relative;
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-7);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+
+  &:before {
+    position: absolute;
+    top: 21px;
+    right: 16%;
+    left: 22px;
+    height: 2px;
+    background: var(--color-border-strong);
+    content: '';
+  }
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+
+    &:before {
+      display: none;
+    }
+  }
+}
+
+.step {
+  @include stack(var(--space-3));
+
+  position: relative;
+}
+
+.index {
+  @include numeric(var(--text-xl));
+
+  display: grid;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: 700;
+  place-items: center;
+}
+
+.title {
+  @include display(var(--text-xl));
+
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.text {
+  max-width: 40ch;
+  margin: 0;
+  color: var(--color-text-muted);
+}

@@ -61,3 +61,11 @@ export type ArchiveEntry = {
   appearances: Date[];
   lastDiscountPercent: number | null;
 };
+
+export type AnnounceReturnInput = {
+  tankId: number;
+  tankName: string;
+  discountPercent: number | null;
+  offerId: string;
+  now: Date;
+};

@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { sumBy } from 'remeda';
 
-import { listClanEvents } from '@/shared/api/clans';
+import { listClanEvents } from '@/entities/clan/clan';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseClanMovesInput } from './use-clan-moves.types';

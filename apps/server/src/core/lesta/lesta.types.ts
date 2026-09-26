@@ -27,6 +27,7 @@ export type BudgetInput = {
 
 export type CreateLestaClientsInput = {
   applicationId: string;
+  baseUrl?: string;
   redis: Redis;
   budget: BudgetInput;
   fetch?: LestaFetch;

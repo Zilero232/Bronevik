@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getPlayer, getPlayerMarks, getPlayerSessions } from '@/shared/api/players';
+import { getPlayer, getPlayerMarks, getPlayerSessions } from '@/entities/player/profile';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { MINI_APP } from '../../../config';

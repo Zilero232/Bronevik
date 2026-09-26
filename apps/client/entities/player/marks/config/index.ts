@@ -1,1 +1,1 @@
-export { MARK_COUNTS } from './marks.constants';
+export { MARK_COUNTS, MARK_LEVELS } from './marks.constants';

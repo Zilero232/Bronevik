@@ -20,7 +20,7 @@ export const LoginActions = ({ phase }: LoginActionsProps) => {
     .with('redeeming', () => null)
     .with('success', () => (
       <div className={s.root}>
-        <Link className={buttonVariants()} href={ROUTES.me}>
+        <Link className={buttonVariants()} href={ROUTES.account.overview}>
           {t('account')}
         </Link>
       </div>
@@ -31,7 +31,7 @@ export const LoginActions = ({ phase }: LoginActionsProps) => {
           {t('openBot', { bot: `@${TELEGRAM_BOT.username}` })}
           <ExternalLink size={14} />
         </a>
-        <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.login}>
+        <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.auth.login}>
           {t('otherWays')}
         </Link>
       </div>

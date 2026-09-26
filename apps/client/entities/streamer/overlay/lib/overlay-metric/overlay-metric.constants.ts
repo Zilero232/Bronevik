@@ -11,5 +11,5 @@ export const OVERLAY_VALUE = {
     rating: '',
     percent: '%'
   } satisfies Record<OverlayValueKind, string>,
-  placeholder: '—'
+  placeholder: 'â€”'
 } as const;

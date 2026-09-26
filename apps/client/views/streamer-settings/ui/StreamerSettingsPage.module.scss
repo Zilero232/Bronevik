@@ -1,0 +1,27 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-7));
+
+  padding-block: var(--space-9);
+
+  @include below(xl) {
+    padding-top: var(--space-7);
+  }
+}
+
+.meta {
+  @include source-line;
+}
+
+.groups {
+  display: grid;
+  align-items: start;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+}
+
+.skeleton {
+  @include stack(var(--space-5));
+}

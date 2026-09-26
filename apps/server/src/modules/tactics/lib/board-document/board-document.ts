@@ -20,6 +20,15 @@ export const seedBoardDocument = ({ document, data }: SeedBoardInput): void => {
   }
 };
 
+export const replaceBoardLayers = ({ document, data }: SeedBoardInput): void => {
+  const layers = document.getArray<unknown>(BOARD_DOCUMENT.layersKey);
+
+  document.transact(() => {
+    layers.delete(0, layers.length);
+    layers.push(data.layers);
+  });
+};
+
 export const boardSnapshot = (document: Y.Doc): TacticBoardData | null => {
   const parsed = tacticBoardDataSchema.safeParse({ layers: document.getArray<unknown>(BOARD_DOCUMENT.layersKey).toJSON() });
 

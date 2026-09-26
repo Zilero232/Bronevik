@@ -1,9 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  padding-bottom: var(--space-8);
+  overflow-x: clip;
+}
+
+.body {
   @include shell;
   @include stack(var(--gap-panel));
 
   padding-top: var(--space-6);
-  padding-bottom: var(--space-8);
 }

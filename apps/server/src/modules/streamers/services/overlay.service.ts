@@ -17,8 +17,9 @@ import type {
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { toNumber } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { PrismaService } from '../../../core';
+import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
+import { CosmeticsService } from '../../progression';
 import { OVERLAY, OVERLAY_KIND_FROM_DB, OVERLAY_KIND_TO_DB } from '../config';
 import { pausedOverlayIds } from '../lib';
 import { OverlayDataService } from './overlay-data.service';
@@ -29,7 +30,8 @@ export class OverlayService {
     private readonly prisma: PrismaService,
     private readonly config: AppConfigService,
     private readonly entitlements: EntitlementsService,
-    private readonly data: OverlayDataService
+    private readonly data: OverlayDataService,
+    private readonly cosmetics: CosmeticsService
   ) {}
 
   async list(userId: string): Promise<OverlayView[]> {
@@ -51,19 +53,28 @@ export class OverlayService {
   }
 
   async create({ userId, name, kind, accountId, config }: CreateOverlayInput): Promise<OverlayView> {
-    const count = await this.prisma.overlay.count({ where: { userId } });
-
-    await this.entitlements.assertWithinLimit({ userId, key: 'overlays', count, feature: 'overlays' });
     await this.assertAccount({ userId, accountId });
+    await this.cosmetics.assertOverlayTheme({ userId, theme: config.theme });
 
-    const overlay = await this.prisma.overlay.create({
-      data: {
-        userId,
-        name,
-        kind: OVERLAY_KIND_TO_DB[kind],
-        accountId: accountId === undefined ? null : BigInt(accountId),
-        theme: config.theme,
-        config
+    const overlay = await lockedTransaction({
+      prisma: this.prisma,
+      scope: LIMIT_LOCK_SCOPE.overlays,
+      key: userId,
+      run: async (tx) => {
+        const count = await tx.overlay.count({ where: { userId } });
+
+        await this.entitlements.assertWithinLimit({ userId, key: 'overlays', count, feature: 'overlays' });
+
+        return tx.overlay.create({
+          data: {
+            userId,
+            name,
+            kind: OVERLAY_KIND_TO_DB[kind],
+            accountId: accountId === undefined ? null : BigInt(accountId),
+            theme: config.theme,
+            config
+          }
+        });
       }
     });
 
@@ -73,6 +84,10 @@ export class OverlayService {
   async update({ userId, id, name, kind, accountId, config }: UpdateOverlayInput): Promise<OverlayView> {
     await this.owned({ userId, id });
     await this.assertAccount({ userId, accountId });
+
+    if (config !== undefined) {
+      await this.cosmetics.assertOverlayTheme({ userId, theme: config.theme });
+    }
 
     const overlay = await this.prisma.overlay.update({
       where: { id },

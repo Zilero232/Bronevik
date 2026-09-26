@@ -51,7 +51,7 @@ const readStoredSummary = (value: unknown) => {
   return parsed.success ? parsed.data : null;
 };
 
-export const toReplayView = ({ replay, apiUrl }: ToReplayViewInput): ReplayView => {
+export const toReplayView = ({ replay, apiUrl, viewerUserId = null }: ToReplayViewInput): ReplayView => {
   const summary = readStoredSummary(replay.summary);
   const players = (summary?.players ?? []).flatMap((player) => {
     const view = toPlayerView(player);
@@ -78,6 +78,7 @@ export const toReplayView = ({ replay, apiUrl }: ToReplayViewInput): ReplayView 
     players: players.map((player) => player.view),
     durationSec: summary?.durationSeconds === null || summary?.durationSeconds === undefined ? null : Math.round(summary.durationSeconds),
     views: replay.views,
+    isOwner: viewerUserId !== null && replay.uploaderUserId === viewerUserId,
     downloadUrl: new URL(REPLAY_LINKS.file.replace('{id}', replay.id), apiUrl).href,
     createdAt: replay.createdAt.toISOString()
   };

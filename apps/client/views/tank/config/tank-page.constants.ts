@@ -7,10 +7,12 @@ export const TANK_PAGE = {
   chartHeight: 200,
   rowHeight: 36,
   podium: 3,
+  navSpyMargin: '-30% 0px -60% 0px',
   researchImage: 'contour'
 } as const;
 
 export const TANK_SECTIONS = {
+  overview: 'overview',
   stats: 'stats',
   marks: 'marks',
   mastery: 'mastery',
@@ -21,6 +23,10 @@ export const TANK_SECTIONS = {
   learning: 'learning',
   obtain: 'obtain'
 } as const;
+
+export const SECTION_NAV = ['overview', 'stats', 'marks', 'builds', 'players', 'patches'] as const;
+
+export const HERO_FIGURES = ['winRate', 'avgDamage', 'mark3'] as const;
 
 export const TOP_METRICS = ['wn8', 'avgDamage', 'winRate'] as const;
 

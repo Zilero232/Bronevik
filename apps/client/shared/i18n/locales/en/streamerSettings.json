@@ -1,0 +1,271 @@
+{
+  "groups": {
+    "display": "Display and graphics",
+    "camera": "Camera",
+    "controls": "Controls",
+    "zoom": "Zoom",
+    "sight": "Sight",
+    "markers": "Markers",
+    "minimap": "Minimap",
+    "sound": "Sound",
+    "battleUi": "Battle interface",
+    "hardware": "Hardware",
+    "mods": "Mods"
+  },
+  "fields": {
+    "display_resolution": "Resolution",
+    "display_refreshRate": "Refresh rate",
+    "display_windowMode": "Window mode",
+    "display_client": "Client",
+    "display_preset": "Graphics preset",
+    "display_fpsCap": "FPS cap",
+    "display_vsync": "V-sync",
+    "display_tripleBuffering": "Triple buffering",
+    "camera_fov": "Field of view",
+    "camera_postMortem": "Post-mortem effect",
+    "camera_sniperDynamicCamera": "Sniper dynamic camera",
+    "camera_horizontalStabilisation": "Horizontal stabilisation",
+    "controls_sensitivity_arcade": "Sensitivity: arcade",
+    "controls_sensitivity_sniper": "Sensitivity: sniper",
+    "controls_sensitivity_artillery": "Sensitivity: artillery",
+    "controls_invert": "Invert vertical",
+    "zoom_steps": "Zoom steps",
+    "sight_arcade_reticle": "Arcade sight: reticle",
+    "sight_arcade_gunMarker": "Arcade sight: gun marker",
+    "sight_arcade_colour": "Arcade sight: colour",
+    "sight_sniper_reticle": "Sniper sight: reticle",
+    "sight_sniper_gunMarker": "Sniper sight: gun marker",
+    "sight_sniper_colour": "Sniper sight: colour",
+    "markers_enemy_base": "Enemies",
+    "markers_enemy_alt": "Enemies (Alt)",
+    "markers_ally_base": "Allies",
+    "markers_ally_alt": "Allies (Alt)",
+    "markers_destroyed_base": "Destroyed",
+    "minimap_size": "Size",
+    "minimap_transparency": "Transparency",
+    "minimap_viewRangeCircles": "View range circles",
+    "minimap_drawRangeCircle": "Draw range circle",
+    "minimap_spgFireSector": "Own SPG fire sector",
+    "sound_master": "Master volume",
+    "sound_music": "Music",
+    "sound_effects": "Effects",
+    "sound_voice": "Voice messages",
+    "sound_sixthSenseSound": "Sixth sense sound",
+    "sound_voicePack": "Voice pack",
+    "battleUi_damagePanel": "Damage panel",
+    "battleUi_damageLog": "Damage log",
+    "battleUi_efficiencyRibbons": "Efficiency ribbons",
+    "battleUi_sixthSenseIcon": "Sixth sense icon",
+    "hardware_cpu": "CPU",
+    "hardware_gpu": "GPU",
+    "hardware_ramGb": "RAM",
+    "hardware_monitor": "Monitor",
+    "hardware_mouse": "Mouse",
+    "hardware_mouseDpi": "Mouse DPI",
+    "hardware_pollingHz": "Polling rate",
+    "hardware_pad": "Mouse pad",
+    "hardware_keyboard": "Keyboard",
+    "hardware_headset": "Headset",
+    "mods_kind": "Client setup",
+    "mods_preset": "Modpack and preset",
+    "zoom_max": "Max zoom"
+  },
+  "options": {
+    "fullscreen": "Fullscreen",
+    "borderless": "Borderless",
+    "windowed": "Windowed",
+    "sd": "SD",
+    "hd": "HD",
+    "minimum": "Minimum",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "maximum": "Maximum",
+    "ultra": "Ultra",
+    "custom": "Custom",
+    "server": "Server",
+    "client": "Client",
+    "icon": "Icon",
+    "tier": "Tier",
+    "vehicleName": "Vehicle name",
+    "playerName": "Player name",
+    "hpBar": "HP bar",
+    "hpValue": "HP value",
+    "damage": "Damage",
+    "clean": "Clean client",
+    "modpack": "Modpack",
+    "true": "On",
+    "false": "Off",
+    "x2": "×2",
+    "x4": "×4",
+    "x8": "×8",
+    "x16": "×16",
+    "x25": "×25"
+  },
+  "units": {
+    "hz": "{value} Hz",
+    "fps": "{value} FPS",
+    "deg": "{value}°",
+    "percent": "{value}%",
+    "gb": "{value} GB"
+  },
+  "sources": {
+    "creator": "from the creator",
+    "editorial": "added by the editors",
+    "mod": "from the game via the mod",
+    "preferences": "from preferences.xml"
+  },
+  "common": {
+    "checkedAt": "checked {date}",
+    "source": "Source",
+    "fairPlay": "The modpack author decides what is inside. Mods from forbidden categories lead to a ban."
+  },
+  "meta": {
+    "streamer": {
+      "title": "{name} settings — graphics, sensitivity, zoom",
+      "description": "Mir Tankov settings of {name}: graphics, camera, sensitivity, zoom, sight, markers and hardware — with source and check date."
+    },
+    "list": {
+      "title": "Mir Tankov streamer settings",
+      "description": "Creators' settings table: sensitivity, FOV, graphics preset, zoom, modpack and GPU. What top players use."
+    },
+    "compare": {
+      "title": "Compare streamer settings",
+      "description": "Compare the settings of two to four Mir Tankov creators and your own, with differences highlighted."
+    }
+  },
+  "page": {
+    "title": "{name} settings",
+    "description": "Game settings by group. Every group shows its source and check date.",
+    "updated": "updated {date}",
+    "crumbs": {
+      "settings": "Streamer settings"
+    },
+    "emptyTitle": "No settings yet",
+    "emptyDescription": "The creator has not published their settings yet.",
+    "errorTitle": "Could not load the settings",
+    "errorDescription": "The server did not respond. Try again.",
+    "copy": "Copy as text",
+    "copied": "Settings copied",
+    "copyFailed": "Could not copy",
+    "download": "Download JSON",
+    "compare": "Compare",
+    "modKinds": {
+      "modpack": "Modpack",
+      "sight": "Sight",
+      "zoom": "Zoom",
+      "other": "Mod"
+    },
+    "onMost": "MOST",
+    "onMostHint": "The mod is checked and published on MOST, the official mod hub",
+    "history": {
+      "title": "Change history",
+      "empty": "No changes yet",
+      "noChanges": "no changes"
+    }
+  },
+  "apply": {
+    "trigger": "Apply via the mod",
+    "signIn": "Sign in to apply settings via the mod",
+    "title": "Apply via the mod",
+    "description": "Pick the groups. The mod shows the changes in the hangar and applies them only after you confirm.",
+    "groups": "Setting groups",
+    "groupsError": "Pick at least one group",
+    "includeResolution": "Screen resolution and refresh rate",
+    "resolutionHint": "Depend on the monitor, so they are not copied by default.",
+    "includeSensitivity": "Mouse sensitivity",
+    "sensitivityHint": "Depends on the mouse and DPI, so it is not copied by default.",
+    "notes": {
+      "hangar": "Applied only in the hangar, never in battle.",
+      "backup": "The mod backs up your current settings first.",
+      "restore": "“Restore mine” in the mod brings your previous settings back."
+    },
+    "cancel": "Cancel",
+    "submit": "Send to the mod",
+    "sent": "Request sent. Open the hangar — the mod will list the changes.",
+    "done": "Done",
+    "failed": "Could not send the request. Check that the mod is installed and linked to your account.",
+    "status": {
+      "pending": "Waiting for the mod",
+      "applied": "Applied",
+      "rejected": "Rejected",
+      "expired": "Expired"
+    }
+  },
+  "list": {
+    "title": "Streamer settings",
+    "description": "Sensitivity, FOV, graphics, zoom and modpacks of Mir Tankov creators. Facts with a source link, no rehosted files.",
+    "crumb": "Streamers",
+    "compare": "Compare settings"
+  },
+  "table": {
+    "caption": "Streamer settings",
+    "columns": {
+      "creator": "Creator",
+      "sniper": "Sniper sens.",
+      "fov": "FOV",
+      "preset": "Preset",
+      "zoomMax": "Max zoom",
+      "mods": "Modpack",
+      "gpu": "GPU",
+      "updated": "Updated"
+    },
+    "live": "live",
+    "allPresets": "All presets",
+    "search": "Creator, GPU, modpack",
+    "preset": "Graphics preset",
+    "reset": "Reset filters",
+    "emptyTitle": "No settings yet",
+    "emptyDescription": "Settings appear here as soon as creators publish them.",
+    "noMatchTitle": "Nothing found",
+    "noMatchDescription": "Change the search or the preset."
+  },
+  "aggregates": {
+    "title": "What top players use",
+    "computedAt": "computed {date}",
+    "cohorts": {
+      "creators": "Streamers",
+      "top": "Top players",
+      "all": "Everyone who shared"
+    },
+    "emptyTitle": "Not enough data yet",
+    "emptyDescription": "A group shows once at least {min} people have shared their settings.",
+    "privacy": "Settings of players who are not creators count only anonymously and are never shown individually.",
+    "contributors": "{count, plural, one {# player} other {# players}}",
+    "median": "median"
+  },
+  "share": {
+    "title": "My settings from the mod",
+    "emptyDescription": "You have not shared your settings yet. Here is how:",
+    "steps": {
+      "install": "Install our mod and link it to your account.",
+      "hangar": "In the hangar, press “Share settings”.",
+      "target": "Choose “compare only” and, if you like, tick “count anonymously in statistics”."
+    },
+    "updated": "Received {date}",
+    "anonymous": "Count anonymously in statistics",
+    "anonymousHint": "Your values go only into the shared distributions, without your nickname or account.",
+    "compare": "Compare with streamers",
+    "remove": "Delete",
+    "removeTitle": "Delete my settings?",
+    "removeDescription": "Your settings from the mod will be removed from the site and from the statistics.",
+    "cancel": "Cancel",
+    "saved": "Saved",
+    "removed": "Settings deleted",
+    "failed": "Could not save the change"
+  },
+  "compare": {
+    "title": "Compare settings",
+    "description": "Two to four creators and, optionally, your own settings from the mod. Differences are highlighted.",
+    "crumb": "Streamer settings",
+    "mine": "My settings",
+    "mineToggle": "My settings",
+    "add": "Add a creator…",
+    "remove": "Remove {name}",
+    "noShareTitle": "No settings of yours yet",
+    "noShareDescription": "Share them from the mod in the hangar with “Share settings”.",
+    "emptyTitle": "Pick who to compare",
+    "emptyDescription": "You need {min} to {max} columns: creators or your own settings.",
+    "noValues": "The selected creators have no settings in common"
+  }
+}

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { addFavorite, getFavorites, removeFavorite } from '@/shared/api/me';
+import { addFavorite, getFavorites, removeFavorite } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseFavoriteToggleInput } from './use-favorite-toggle.types';

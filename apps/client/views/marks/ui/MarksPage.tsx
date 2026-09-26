@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { ErrorState } from '@/ui-kit';
+import { Band, ErrorState } from '@/ui-kit';
 
 import { useMarksPage } from '../model/hooks';
 import { ClosestMarks, ForecastLink, MarksHead, MarksTable, MarksToolbar, MoeDrawer } from './components';
@@ -18,21 +18,21 @@ export const MarksPage = () => {
   return (
     <div className={s.root}>
       <MarksHead isLoading={isPending} total={total} updatedAt={updatedAt} />
-      <div className={s.layout}>
-        <section aria-label={t('title')} className={s.main}>
-          <MarksToolbar />
-          {isError ? (
-            <ErrorState isRetrying={isRetrying} title={t('error')} onRetry={() => void refetch()} />
-          ) : (
-            <MarksTable isLoading={isPending} isStale={isStale} rows={rows} onSelect={onSelect} />
-          )}
-          <p className={s.source}>{tCommon('dataSource')}</p>
-        </section>
+      <Band as='div' innerClassName={s.bandInner}>
+        <ClosestMarks />
         <aside className={s.rail}>
-          <ClosestMarks />
           <ForecastLink />
         </aside>
-      </div>
+      </Band>
+      <section aria-label={t('title')} className={s.main}>
+        <MarksToolbar />
+        {isError ? (
+          <ErrorState isRetrying={isRetrying} title={t('error')} onRetry={() => void refetch()} />
+        ) : (
+          <MarksTable isLoading={isPending} isStale={isStale} rows={rows} onSelect={onSelect} />
+        )}
+        <p className={s.source}>{tCommon('dataSource')}</p>
+      </section>
       <MoeDrawer isOpen={isDrawerOpen} row={selected} onOpenChange={onDrawerChange} />
     </div>
   );

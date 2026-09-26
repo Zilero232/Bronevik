@@ -1,7 +1,9 @@
 export { ClanActivity } from './ClanActivity';
+export { CommunityBand } from './CommunityBand';
 export { GameNews } from './GameNews';
 export { GarageStrip } from './GarageStrip';
-export { HomeHead } from './HomeHead';
+export { HomeActions } from './HomeActions';
+export { HomeHero } from './HomeHero';
 export { MarksMovement } from './MarksMovement';
 export { StrongTanks } from './StrongTanks';
 export { TopPlayers } from './TopPlayers';

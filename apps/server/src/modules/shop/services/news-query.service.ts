@@ -19,7 +19,7 @@ export class NewsQueryService {
     const [rows, total] = await Promise.all([
       this.prisma.newsItem.findMany({
         where,
-        orderBy: { publishedAt: 'desc' },
+        orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
         take: limit,
         skip: offset,
         include: { gameVersion: { select: { version: true } } }

@@ -1,4 +1,4 @@
-import type { ReplayPlayer } from '@/shared/api/replays';
+import type { ReplayPlayer } from '@/entities/replay/replay';
 
 export type AliveSeriesInput = {
   players: readonly ReplayPlayer[];

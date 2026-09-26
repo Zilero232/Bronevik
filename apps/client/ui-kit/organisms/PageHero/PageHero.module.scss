@@ -1,0 +1,79 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+  background-color: var(--color-band);
+  color: var(--color-text);
+
+  @include below(lg) {
+    min-height: 160px;
+  }
+}
+
+.scrim {
+  position: absolute;
+  background:
+    linear-gradient(180deg, transparent calc(100% - 48px), var(--color-bg) 100%),
+    linear-gradient(90deg, rgb(14 14 16 / 92%) 0%, rgb(14 14 16 / 70%) 45%, rgb(14 14 16 / 20%) 100%);
+  inset: 0;
+  pointer-events: none;
+}
+
+.backdrop {
+  opacity: 0.85;
+}
+
+.inner {
+  @include shell;
+
+  position: relative;
+  display: flex;
+  min-height: inherit;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-block: var(--space-8) var(--space-9);
+}
+
+.main {
+  @include stack(var(--space-3));
+
+  min-width: 0;
+  max-width: 720px;
+}
+
+.eyebrow {
+  @include label;
+
+  color: var(--color-text-muted);
+}
+
+.title {
+  @include display(var(--display-lg));
+
+  @include below(lg) {
+    font-size: 2rem;
+  }
+}
+
+.lead {
+  max-width: 60ch;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+  gap: var(--space-3);
+}
+
+.figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5) var(--space-8);
+}

@@ -1,9 +1,9 @@
 'use client';
 
-import type { CoachingOrder } from '@/shared/api/coaching';
+import type { CoachingOrder } from '@/entities/coaching/coach';
 
 import { useCommunityViewer } from '@/features/community/viewer';
-import { acceptCoachingOrder, cancelCoachingOrder, completeCoachingOrder } from '@/shared/api/coaching';
+import { acceptCoachingOrder, cancelCoachingOrder, completeCoachingOrder } from '../../../api';
 import { ROUTES } from '@/shared/constants';
 
 import { orderActions } from '../../../lib/order-actions';
@@ -17,7 +17,7 @@ export const useOrderRow = (order: CoachingOrder) => {
 
   return {
     ...actions,
-    coachHref: ROUTES.coach(order.coachUserId),
+    coachHref: ROUTES.coaching.coach(order.coachUserId),
     isDecline: actions.role === 'coach' && order.status === 'requested',
     isBusy: mutation.isPending,
     onAccept: () => mutation.mutate(() => acceptCoachingOrder(order.id)),

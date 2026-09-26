@@ -16,7 +16,7 @@ import s from './RegistrationPanel.module.scss';
 export const RegistrationPanel = ({ tournament }: RegistrationPanelProps) => {
   const t = useTranslations('tournaments.registration');
   const id = useId();
-  const { form, state, isPending, onSubmit } = useRegistrationForm(tournament);
+  const { form, state, isPending, canWithdraw, onSubmit, onWithdraw } = useRegistrationForm(tournament);
 
   return (
     <Card padding='none'>
@@ -45,9 +45,16 @@ export const RegistrationPanel = ({ tournament }: RegistrationPanelProps) => {
             </form>
           </CommunityGate>
         ) : (
-          <p className={s.state} data-state={state}>
-            {t(`state.${state}`)}
-          </p>
+          <>
+            <p className={s.state} data-state={state}>
+              {t(`state.${state}`)}
+            </p>
+            {canWithdraw && (
+              <Button disabled={isPending} size='sm' variant='secondary' onClick={onWithdraw}>
+                {t('withdraw')}
+              </Button>
+            )}
+          </>
         )}
       </CardBody>
     </Card>

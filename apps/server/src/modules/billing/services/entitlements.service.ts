@@ -1,4 +1,6 @@
+import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import type { PlusState } from '@otmetki/schemas';
+import type { Subscription } from 'rxjs';
 
 import { Injectable } from '@nestjs/common';
 import { isPlusState, plusLimit } from '@otmetki/schemas';
@@ -10,12 +12,29 @@ import { AppForbiddenException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { ENTITLEMENTS, PLUS_SUBSCRIPTION } from '../config';
 import { isTrialEligible, plusStateOf, trialDaysFor } from '../lib';
+import { EntitlementsBusService } from './entitlements-bus.service';
 
 @Injectable()
-export class EntitlementsService {
+export class EntitlementsService implements OnModuleInit, OnModuleDestroy {
   private readonly cache = new LRUCache<string, PlusState>({ max: ENTITLEMENTS.cacheMaxEntries, ttl: ENTITLEMENTS.cacheTtlMs });
+  private subscription: Subscription | null = null;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly bus: EntitlementsBusService
+  ) {}
+
+  onModuleInit(): void {
+    this.subscription = this.bus.changes$.subscribe(({ userId, isLocal }) => {
+      if (!isLocal) {
+        this.cache.delete(userId);
+      }
+    });
+  }
+
+  onModuleDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
 
   async plusState(userId: string): Promise<PlusState> {
     return this.cache.get(userId) ?? this.refresh(userId);
@@ -49,6 +68,7 @@ export class EntitlementsService {
 
   invalidate(userId: string): void {
     this.cache.delete(userId);
+    this.bus.publish(userId);
   }
 
   async isPlus(userId: string): Promise<boolean> {

@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { createTransport } from 'nodemailer';
 import { render } from 'react-email';
 
-import type { DigestEmailInput } from '../notifications.types';
+import type { DigestEmailInput, NotificationEmailInput } from '../notifications.types';
 
 import { AppConfigService } from '../../../config';
 import { isPlaceholderEmail } from '../../../lib/auth';
@@ -42,7 +42,11 @@ export class EmailService {
     return this.isEnabled && Boolean(email) && !isPlaceholderEmail(email ?? '');
   }
 
-  async sendDigest({ to, locale, rendered }: DigestEmailInput): Promise<void> {
+  sendDigest({ to, locale, rendered }: DigestEmailInput): Promise<void> {
+    return this.sendNotification({ to, locale, rendered });
+  }
+
+  async sendNotification({ to, locale, rendered }: NotificationEmailInput): Promise<void> {
     if (!this.transporter) {
       return;
     }

@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+}
+
+.header {
+  padding: 0 var(--space-4);
+}
+
+.body {
+  padding: 0 var(--space-4) var(--space-4);
+}

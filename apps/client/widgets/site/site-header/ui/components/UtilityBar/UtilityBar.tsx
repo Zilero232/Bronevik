@@ -1,0 +1,33 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Suspense } from 'react';
+
+import { LocaleSwitcher } from '@/features/app/switch-locale';
+import { ThemeToggle } from '@/features/app/switch-theme';
+
+import { DisplaySettings } from '../DisplaySettings';
+import { GameStatusSlot } from '../GameStatusSlot';
+
+import s from './UtilityBar.module.scss';
+
+export const UtilityBar = () => {
+  const t = useTranslations('nav.utility');
+
+  return (
+    <div className={s.root} data-theme='dark'>
+      <div className={s.inner}>
+        <section aria-label={t('label')} className={s.status}>
+          <GameStatusSlot />
+        </section>
+        <div className={s.settings}>
+          <Suspense>
+            <LocaleSwitcher />
+          </Suspense>
+          <ThemeToggle />
+          <DisplaySettings />
+        </div>
+      </div>
+    </div>
+  );
+};

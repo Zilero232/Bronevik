@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "title": "Profile cosmetics",
+    "description": "Badge, frame and profile banner on the site — for shells and season rewards."
+  },
+  "title": "Cosmetics",
+  "description": "A badge, a frame and a profile banner colour — shown on the site only, nothing changes in the game. Bought with shells; seasonal ones come from the season track.",
+  "balance": "Shells",
+  "balanceHint": "Shells can't be bought or cashed out — only earned through challenges and the season.",
+  "slots": {
+    "badge": "Badges",
+    "frame": "Frames",
+    "banner": "Profile banner",
+    "overlayTheme": "Overlay themes"
+  },
+  "slotHints": {
+    "badge": "Shown next to your nickname on the profile and in leaderboards.",
+    "frame": "Outline around the nickname block on the profile.",
+    "banner": "Colour of the profile header.",
+    "overlayTheme": "Picked in the streamer studio. Work while Plus is active."
+  },
+  "equipped": "Equipped",
+  "equip": "Equip",
+  "unequip": "Remove",
+  "buy": "Buy · {price}",
+  "owned": "Owned",
+  "plusOnly": "With Plus",
+  "seasonReward": "Season reward",
+  "free": "Free",
+  "notEnough": "Not enough shells",
+  "empty": "Nothing to show yet.",
+  "error": "Couldn't load cosmetics.",
+  "toast": {
+    "bought": "Bought",
+    "equipped": "Cosmetics updated",
+    "failed": "Something went wrong. Try again."
+  },
+  "seasonItem": "Season {season} {slot, select, badge {badge} frame {frame} other {banner}} · {grade, select, bronze {bronze} silver {silver} other {gold}}",
+  "items": {
+    "banner-steel": "Steel",
+    "banner-olive": "Olive",
+    "banner-plus": "Plus",
+    "banner-ember": "Ember",
+    "banner-arctic": "Arctic",
+    "banner-night": "Night",
+    "frame-plus": "Plus frame",
+    "frame-bronze": "Bronze frame",
+    "frame-silver": "Silver frame",
+    "frame-gold": "Gold frame",
+    "badge-plus": "Plus",
+    "badge-tanker": "Tanker",
+    "badge-sniper": "Sniper",
+    "badge-ace": "Ace",
+    "overlay-armor": "Armor",
+    "overlay-hud": "HUD",
+    "overlay-brass": "Brass",
+    "overlay-night": "Night"
+  }
+}

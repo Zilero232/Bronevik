@@ -6,6 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { useProfilesCosmetics } from '@/entities/player/cosmetics';
 import { TankCell } from '@/entities/tank/tank';
 
 import type { UseTopColumnsInput } from './use-top-columns.types';
@@ -14,9 +15,10 @@ import { EntrantCell, RankCell, ValueCell } from '../../../ui/components/TopTabl
 
 const column = createColumnHelper<LeaderboardEntry>();
 
-export const useTopColumns = ({ filter, tank }: UseTopColumnsInput): ColumnDef<LeaderboardEntry, never>[] => {
+export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): ColumnDef<LeaderboardEntry, never>[] => {
   const t = useTranslations('top');
   const format = useFormatter();
+  const cosmetics = useProfilesCosmetics(entries.flatMap((entry) => (entry.accountId === null ? [] : [entry.accountId])));
 
   const rank = column.accessor('rank', {
     header: '#',
@@ -26,7 +28,9 @@ export const useTopColumns = ({ filter, tank }: UseTopColumnsInput): ColumnDef<L
 
   const entrant = column.accessor('name', {
     header: filter.scope === 'clans' ? t('columns.clan') : t('columns.player'),
-    cell: ({ row: { original } }) => <EntrantCell entry={original} />
+    cell: ({ row: { original } }) => (
+      <EntrantCell badge={original.accountId === null ? null : (cosmetics[original.accountId]?.badge ?? null)} entry={original} />
+    )
   });
 
   const vehicle = tank

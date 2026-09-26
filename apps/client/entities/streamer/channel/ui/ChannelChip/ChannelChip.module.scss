@@ -1,0 +1,38 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include accent-outline-hover;
+
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+  text-decoration: none;
+
+  &[data-compact='true'] {
+    min-width: 2rem;
+    justify-content: center;
+    padding-inline: var(--space-2);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.label {
+  color: var(--color-text);
+}
+
+.hidden {
+  @include sr-only;
+}
+
+.verified {
+  color: var(--color-success);
+}

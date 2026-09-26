@@ -1,26 +1,21 @@
 'use client';
 
-import { isToday, isYesterday } from 'date-fns';
 import { AnimatePresence, motion } from 'motion/react';
-import { useFormatter, useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
+import { useTranslations } from 'next-intl';
 
 import { InboxEntry } from '@/entities/notification/inbox';
 
 import type { InboxFeedDayProps } from './InboxFeedDay.types';
 
+import { useFeedDayLabel } from '../../../model/hooks';
+
 import s from './InboxFeedDay.module.scss';
 
 export const InboxFeedDay = ({ day, onSelect }: InboxFeedDayProps) => {
   const t = useTranslations('notifications.feed');
-  const format = useFormatter();
+  const label = useFeedDayLabel(day.date);
 
-  const { date, items, unread } = day;
-
-  const label = match(date)
-    .when(isToday, () => t('today'))
-    .when(isYesterday, () => t('yesterday'))
-    .otherwise(() => format.dateTime(date, { weekday: 'short', day: 'numeric', month: 'long' }));
+  const { items, unread } = day;
 
   return (
     <section className={s.root}>

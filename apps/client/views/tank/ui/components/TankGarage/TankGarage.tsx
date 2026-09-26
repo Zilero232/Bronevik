@@ -1,45 +1,49 @@
 'use client';
 
-import { NationFlag, TANK_CLASS_ICONS, toRoman } from '@otmetki/icons';
+import { TANK_CLASS_ICONS } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
-import { TankImage } from '@/entities/tank/tank';
-
+import { TANK_SECTIONS } from '../../../config';
 import { useTank } from '../../../model/context';
-import { GarageActions, ParamsPanel, TraitBadges } from './components';
+import { GarageActions, HeroCrumbs, HeroFigures, HeroStage, ParamsPanel, TraitBadges } from './components';
 
 import s from './TankGarage.module.scss';
 
 export const TankGarage = () => {
   const t = useTranslations('tank.garage');
+  const titleId = useId();
   const tGame = useTranslations('game');
   const { detail, identity } = useTank();
 
   const ClassIcon = TANK_CLASS_ICONS[identity.type];
 
   return (
-    <section aria-labelledby='tank-name' className={s.root}>
-      <div className={s.garage}>
-        <p className={s.line}>
-          <ClassIcon aria-label={tGame(`classes.${identity.type}`)} size={16} variant={identity.isPremium ? 'premium' : 'regular'} />
-          <span className={s.tier}>{toRoman(identity.tier)}</span>
-          <span>{tGame(`nations.${identity.nation}`)}</span>
-          <span className={s.kind} data-premium={identity.isPremium}>
-            {identity.isPremium ? t('premium') : t('regular')}
-          </span>
-        </p>
-        <h1 className={s.name} data-premium={identity.isPremium} id='tank-name'>
-          {detail.vehicle.name}
-        </h1>
-        <TraitBadges />
-        <div className={s.stage} data-nation={identity.nation}>
-          <NationFlag aria-hidden className={s.flag} nation={identity.nation} />
-          <TankImage isPriority className={s.render} size='big' tank={identity} withTint={false} />
+    <section aria-labelledby={titleId} className={s.root} id={TANK_SECTIONS.overview}>
+      <div className={s.hero} data-class={identity.type} data-theme='dark'>
+        <div className={s.inner}>
+          <HeroStage />
+          <div className={s.info}>
+            <HeroCrumbs />
+            <h1 className={s.name} data-premium={identity.isPremium} id={titleId}>
+              {detail.vehicle.name}
+            </h1>
+            <p className={s.line}>
+              <ClassIcon aria-label={tGame(`classes.${identity.type}`)} size={16} variant={identity.isPremium ? 'premium' : 'regular'} />
+              <span className={s.kind} data-premium={identity.isPremium}>
+                {identity.isPremium ? t('premium') : t('regular')}
+              </span>
+            </p>
+            <TraitBadges />
+            <HeroFigures />
+            {detail.description && <p className={s.description}>{detail.description}</p>}
+            <GarageActions />
+          </div>
         </div>
-        {detail.description && <p className={s.description}>{detail.description}</p>}
-        <GarageActions />
       </div>
-      <ParamsPanel />
+      <div className={s.params}>
+        <ParamsPanel />
+      </div>
     </section>
   );
 };

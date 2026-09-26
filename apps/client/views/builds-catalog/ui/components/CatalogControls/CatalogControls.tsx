@@ -1,29 +1,32 @@
 'use client';
 
-import { BUILD_USAGE } from '@otmetki/schemas';
+import type { BuildMode, LearningDifficulty } from '@otmetki/schemas';
+
 import { useTranslations } from 'next-intl';
 
 import { VehicleFilters } from '@/features/tank/filter-vehicles';
-import { SegmentedControl } from '@/ui-kit';
+import { SegmentedControl, ToggleChips } from '@/ui-kit';
 
-import { useCatalogState } from '../../../model/hooks';
+import { useCatalogControls } from '../../../model/hooks';
 
 import s from './CatalogControls.module.scss';
 
 export const CatalogControls = () => {
   const t = useTranslations('buildsCatalog');
-  const [{ mode }, setState] = useCatalogState();
+  const tTraits = useTranslations('tankTraits');
+  const { mode, modeOptions, difficulties, difficultyOptions, onModeChange, onDifficultiesChange } = useCatalogControls();
 
   return (
     <div className={s.root}>
-      <SegmentedControl
-        aria-label={t('modeLabel')}
-        options={BUILD_USAGE.modes.map((value) => ({ value, label: t(`modes.${value}`) }))}
-        size='sm'
-        value={mode}
-        onChange={(next) => void setState({ mode: next })}
-      />
+      <SegmentedControl<BuildMode> aria-label={t('modeLabel')} options={modeOptions} size='sm' value={mode} onChange={onModeChange} />
       <VehicleFilters withPremium={false} />
+      <ToggleChips<LearningDifficulty>
+        aria-label={tTraits('difficulty.label')}
+        options={difficultyOptions}
+        size='sm'
+        value={difficulties}
+        onChange={onDifficultiesChange}
+      />
     </div>
   );
 };

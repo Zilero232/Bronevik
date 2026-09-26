@@ -1,4 +1,4 @@
-import type { CoachingOrder } from '@/shared/api/coaching';
+import type { CoachingOrder } from '@/entities/coaching/coach';
 
 export type OrderReviewProps = {
   order: CoachingOrder;

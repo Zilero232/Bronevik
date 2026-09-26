@@ -4,8 +4,4 @@
   @include stack(var(--space-9));
 
   padding-bottom: var(--space-9);
-
-  @include below(md) {
-    gap: var(--space-9);
-  }
 }

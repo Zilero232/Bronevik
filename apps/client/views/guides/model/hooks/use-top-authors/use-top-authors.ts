@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getGuideAuthors } from '@/shared/api/guides';
+import { getGuideAuthors } from '@/entities/guide/guide';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { GUIDE_LIST } from '../../../config';

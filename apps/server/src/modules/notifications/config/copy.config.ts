@@ -17,5 +17,10 @@ export const NOTIFICATION_LINKS = {
   digest: '/me',
   clans: '/clans',
   clanWorkspace: 'workspace',
-  badges: '/me'
+  badges: '/me',
+  replays: '/replays',
+  analytics: '/me/analytics',
+  watchlist: '/me/watchlist',
+  competitions: '/competitions',
+  streamer: '/s'
 } as const;

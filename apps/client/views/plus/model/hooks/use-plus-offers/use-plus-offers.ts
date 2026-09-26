@@ -2,11 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getPlusPlans } from '@/shared/api/billing';
+import { getPlusPlans } from '@/entities/plus/subscription';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { PLUS_CHECKOUT } from '../../../config';
-import { planPricing } from '../../../lib/plan-pricing';
+import { cheapestMonthly, planPricing, recommendedPlan } from '../../../lib/plan-pricing';
 
 export const usePlusOffers = () => {
   const {
@@ -17,5 +17,15 @@ export const usePlusOffers = () => {
     refetch
   } = useQuery({ queryKey: QUERY_KEYS.billing.plans, queryFn: getPlusPlans, staleTime: PLUS_CHECKOUT.plansStaleMs });
 
-  return { pricing: planPricing(offers ?? []), isPending, isError, isRetrying: isFetching, retry: () => void refetch() };
+  const pricing = planPricing(offers ?? []);
+
+  return {
+    pricing,
+    recommended: recommendedPlan(pricing),
+    fromMonthlyRub: cheapestMonthly(pricing),
+    isPending,
+    isError,
+    isRetrying: isFetching,
+    retry: () => void refetch()
+  };
 };

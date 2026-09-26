@@ -59,7 +59,17 @@
     "activityHint": "Наведите на день, чтобы увидеть бои",
     "activityAria": "Календарь активности: {total} боёв за {active} активных дней",
     "less": "Меньше",
-    "more": "Больше"
+    "more": "Больше",
+    "highlights": {
+      "title": "За 30 дней",
+      "empty": "За 30 дней боёв нет",
+      "wn8": "WN8",
+      "winRate": "Победы",
+      "avgDamage": "Средний урон",
+      "battlesPerDay": "Боёв в день"
+    },
+    "marksRing": "Три отметки: {count} из {total} танков",
+    "marksOf": "три отметки из {total}"
   },
   "tanks": {
     "caption": "Танки игрока",
@@ -75,6 +85,7 @@
     },
     "tiersLabel": "Уровни",
     "typesLabel": "Классы",
+    "nationLabel": "Нация",
     "total": "{count, plural, one {# танк} few {# танка} many {# танков} other {# танка}}",
     "columns": {
       "tank": "Танк",
@@ -252,7 +263,10 @@
     "winRate": "Победы",
     "battles": "Бои",
     "avgDamage": "Средний урон",
-    "avgXp": "Средний опыт"
+    "avgXp": "Средний опыт",
+    "seasons": "Сезоны",
+    "seasonLevel": "{season} · ур. {level}",
+    "wn8Ring": "Уровень рейтинга WN8"
   },
   "achievements": {
     "empty": "У игрока нет достижений",
@@ -266,5 +280,15 @@
       "action": "Акции",
       "other": "Прочие"
     }
+  },
+  "hero": {
+    "home": "Главная",
+    "players": "Игроки"
+  },
+  "actions": {
+    "label": "Действия с профилем",
+    "compare": "Сравнить",
+    "share": "Поделиться",
+    "copied": "Ссылка на профиль скопирована"
   }
 }

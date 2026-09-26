@@ -7,9 +7,9 @@ import { useTranslations } from 'next-intl';
 
 import type { RecentPlayer } from '@/entities/player/recent-players';
 
+import { PlayerNameCell } from '@/entities/player/player';
+import { RatingValue, scaledRating } from '@/entities/player/stats';
 import { RelativeTime } from '@/ui-kit';
-
-import { PlayerCell, Wn8Cell } from '../../../ui/components/PopularPlayers/components';
 
 const column = createColumnHelper<RecentPlayer>();
 
@@ -20,13 +20,13 @@ export const useRecentColumns = (): ColumnDef<RecentPlayer, never>[] => {
     column.accessor('nickname', {
       header: t('player'),
       enableSorting: false,
-      cell: ({ row: { original } }) => <PlayerCell clanTag={original.clanTag} nickname={original.nickname} />,
+      cell: ({ row: { original } }) => <PlayerNameCell clanTag={original.clanTag} nickname={original.nickname} />,
       meta: { isSticky: true }
     }),
     column.accessor('wn8', {
       header: 'WN8',
       enableSorting: false,
-      cell: (info) => <Wn8Cell value={info.getValue()} />,
+      cell: (info) => <RatingValue rating={scaledRating({ scale: 'wn8', value: info.getValue() })} />,
       meta: { align: 'end', isNumeric: true }
     }),
     column.accessor('viewedAt', {

@@ -23,6 +23,7 @@ export const PlusCheckout = () => {
           isPending={offers.isPending}
           isRetrying={offers.isRetrying}
           pricing={offers.pricing}
+          recommended={offers.recommended}
           registration={planRegistration}
           onRetry={offers.retry}
         />

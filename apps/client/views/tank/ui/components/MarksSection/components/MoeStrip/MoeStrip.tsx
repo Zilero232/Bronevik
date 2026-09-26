@@ -26,7 +26,7 @@ export const MoeStrip = () => {
           const Icon = MARK_ICONS[marks];
 
           return (
-            <li key={key} className={s.plate}>
+            <li key={key} className={s.plate} data-marks={marks}>
               <span className={s.head}>
                 <Icon aria-hidden size={20} />
                 <span className={s.percent}>{`${percent}\u00A0%`}</span>

@@ -8,13 +8,13 @@ import { STAT_BAR } from '../../../../../lib/stat-diff';
 
 import s from './StatValue.module.scss';
 
-export const StatValue = ({ statKey, value, fill, verdict, isWinner = false }: StatValueProps) => {
+export const StatValue = ({ statKey, value, fill, verdict, isWinner = false, isCompare = false }: StatValueProps) => {
   const format = useSpecFormat();
 
   const unit = format.unit(statKey);
 
   return (
-    <span className={s.root} data-verdict={verdict} data-winner={isWinner}>
+    <span className={s.root} data-compare={isCompare} data-verdict={verdict} data-winner={isWinner}>
       <span className={s.number}>
         {format.value({ key: statKey, value })}
         {unit && <span className={s.unit}>{unit}</span>}

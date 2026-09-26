@@ -1,5 +1,6 @@
 export { DeliveryService } from './delivery.service';
 export { EmailService } from './email.service';
+export { FirstWinRemindersService } from './first-win-reminders.service';
 export { InboxService } from './inbox.service';
 export { MarksWatchService } from './marks-watch.service';
 export { PushSubscriptionsService } from './push-subscriptions.service';

@@ -9,8 +9,10 @@ import {
   FlaskConical,
   Gauge,
   History,
+  LockKeyhole,
   Map,
   MonitorPlay,
+  Radio,
   Sparkles,
   Target,
   Timer,
@@ -32,7 +34,9 @@ export const PLUS_FEATURE_ICONS = {
   analyticsExport: FileDown,
   apiLimits: Gauge,
   earlyAccess: FlaskConical,
-  hangarExtras: Warehouse
+  hangarExtras: Warehouse,
+  privateCompetitions: LockKeyhole,
+  streamerAlerts: Radio
 } as const satisfies Record<PlusFeature, LucideIcon>;
 
 export const PLUS_GATE = {

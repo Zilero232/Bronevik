@@ -1,17 +1,23 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Redirect } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Redirect } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
-import { PROVIDER_FROM_PATH } from './config';
+import { PROVIDER_FROM_PATH, STREAMERS } from './config';
 import {
   ActivateChallengeDto,
+  ApplyListDto,
+  ApplyRequestDto,
   ChallengeListDto,
+  ClaimStatusDto,
   ConnectProviderDto,
   ConnectUrlDto,
+  CreateApplyRequestDto,
   CreateChallengeDto,
   CreateOverlayDto,
+  FollowStreamerDto,
   IdParamsDto,
   IntegrationListDto,
   OAuthCallbackDto,
@@ -19,13 +25,43 @@ import {
   OverlayDto,
   OverlayListDto,
   PreviewOverlayDto,
+  RemovalRequestDto,
+  SaveStreamerSettingsDto,
+  SettingsAggregatesDto,
+  SettingsAggregatesQueryDto,
+  SettingsCompareDto,
+  SettingsCompareQueryDto,
+  SettingsHistoryDto,
+  SettingsShareDto,
+  SettingsShareResponseDto,
+  SettingsTableDto,
   SlugParamsDto,
+  StartClaimDto,
   StreamerChallengeDto,
+  StreamerClaimDto,
+  StreamerDirectoryDto,
+  StreamerDirectoryQueryDto,
+  StreamerFollowListDto,
+  StreamerLiveListDto,
   StreamerProfileDto,
+  StreamerSettingsViewDto,
   UpdateOverlayDto,
+  UpdateSettingsShareDto,
   UpsertProfileDto
 } from './dto';
-import { ChallengeService, IntegrationsService, IntegrationStoreService, OverlayService, StreamerProfileService } from './services';
+import {
+  ChallengeService,
+  IntegrationsService,
+  IntegrationStoreService,
+  OverlayService,
+  SettingsAggregateService,
+  SettingsShareService,
+  StreamerClaimService,
+  StreamerDirectoryService,
+  StreamerFollowService,
+  StreamerProfileService,
+  StreamerSettingsService
+} from './services';
 
 @ApiTags('streamers')
 @Controller('streamers')
@@ -35,8 +71,97 @@ export class StreamersController {
     private readonly overlays: OverlayService,
     private readonly challenges: ChallengeService,
     private readonly integrations: IntegrationsService,
-    private readonly store: IntegrationStoreService
+    private readonly store: IntegrationStoreService,
+    private readonly directory: StreamerDirectoryService,
+    private readonly claims: StreamerClaimService,
+    private readonly settings: StreamerSettingsService,
+    private readonly aggregates: SettingsAggregateService,
+    private readonly shares: SettingsShareService,
+    private readonly follows: StreamerFollowService
   ) {}
+
+  @AllowAnonymous()
+  @Get()
+  @ZodResponse({ type: StreamerDirectoryDto })
+  list(@Query() query: StreamerDirectoryQueryDto) {
+    return this.directory.list(query);
+  }
+
+  @AllowAnonymous()
+  @Get('live')
+  @ZodResponse({ type: StreamerLiveListDto })
+  live() {
+    return this.directory.live();
+  }
+
+  @AllowAnonymous()
+  @Get('settings')
+  @ZodResponse({ type: SettingsTableDto })
+  settingsTable() {
+    return this.settings.table();
+  }
+
+  @AllowAnonymous()
+  @Get('settings/compare')
+  @ZodResponse({ type: SettingsCompareDto })
+  compareSettings(@Query() { slugs }: SettingsCompareQueryDto) {
+    return this.settings.compare(slugs);
+  }
+
+  @AllowAnonymous()
+  @Get('settings/aggregates')
+  @ZodResponse({ type: SettingsAggregatesDto })
+  settingsAggregates(@Query() { cohort }: SettingsAggregatesQueryDto) {
+    return this.aggregates.read(cohort);
+  }
+
+  @Get('me/settings')
+  @ZodResponse({ type: StreamerSettingsViewDto })
+  mySettings(@CurrentUserId() userId: string) {
+    return this.settings.mine(userId);
+  }
+
+  @Put('me/settings')
+  @ZodResponse({ type: StreamerSettingsViewDto })
+  saveSettings(@CurrentUserId() userId: string, @Body() body: SaveStreamerSettingsDto) {
+    return this.settings.saveMine({ userId, source: body.source, values: body.values, sourceUrls: body.sourceUrls });
+  }
+
+  @Get('me/settings/apply')
+  @ZodResponse({ type: ApplyListDto })
+  applyRequests(@CurrentUserId() userId: string) {
+    return this.shares.myRequests(userId);
+  }
+
+  @Post('me/settings/apply')
+  @ZodResponse({ type: ApplyRequestDto, status: HttpStatus.CREATED })
+  requestApply(@CurrentUserId() userId: string, @Body() body: CreateApplyRequestDto) {
+    return this.shares.requestApply({ ...body, userId });
+  }
+
+  @Get('me/settings/share')
+  @ZodResponse({ type: SettingsShareResponseDto })
+  async settingsShare(@CurrentUserId() userId: string) {
+    return { share: await this.shares.share(userId) };
+  }
+
+  @Put('me/settings/share')
+  @ZodResponse({ type: SettingsShareDto })
+  updateSettingsShare(@CurrentUserId() userId: string, @Body() { anonymousStats }: UpdateSettingsShareDto) {
+    return this.shares.setAnonymous({ userId, anonymousStats });
+  }
+
+  @Delete('me/settings/share')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeSettingsShare(@CurrentUserId() userId: string) {
+    await this.shares.removeShare(userId);
+  }
+
+  @Get('me/follows')
+  @ZodResponse({ type: StreamerFollowListDto })
+  myFollows(@CurrentUserId() userId: string) {
+    return this.follows.list(userId);
+  }
 
   @Get('me')
   @ZodResponse({ type: StreamerProfileDto })
@@ -138,5 +263,68 @@ export class StreamersController {
   @ZodResponse({ type: StreamerProfileDto })
   bySlug(@Param() { slug }: SlugParamsDto) {
     return this.profiles.bySlug(slug);
+  }
+
+  @AllowAnonymous()
+  @Get(':slug/settings')
+  @ZodResponse({ type: StreamerSettingsViewDto })
+  settingsBySlug(@Param() { slug }: SlugParamsDto) {
+    return this.settings.bySlug(slug);
+  }
+
+  @AllowAnonymous()
+  @Get(':slug/settings.json')
+  @Header('content-disposition', 'attachment')
+  @ZodResponse({ type: StreamerSettingsViewDto })
+  settingsJson(@Param() { slug }: SlugParamsDto) {
+    return this.settings.bySlug(slug);
+  }
+
+  @AllowAnonymous()
+  @Get(':slug/settings/history')
+  @ZodResponse({ type: SettingsHistoryDto })
+  settingsHistory(@Param() { slug }: SlugParamsDto) {
+    return this.settings.history(slug);
+  }
+
+  @Get(':slug/claim')
+  @ZodResponse({ type: ClaimStatusDto })
+  async claimStatus(@CurrentUserId() userId: string, @Param() { slug }: SlugParamsDto) {
+    return { claim: await this.claims.mine({ userId, slug }) };
+  }
+
+  @Throttle({ default: STREAMERS.claimThrottle })
+  @Post(':slug/claim')
+  @ZodResponse({ type: StreamerClaimDto, status: HttpStatus.CREATED })
+  claim(@CurrentUserId() userId: string, @Param() { slug }: SlugParamsDto, @Body() body: StartClaimDto) {
+    return this.claims.start({ ...body, userId, slug });
+  }
+
+  @Throttle({ default: STREAMERS.claimThrottle })
+  @Post(':slug/claim/verify')
+  @HttpCode(HttpStatus.OK)
+  @ZodResponse({ type: StreamerClaimDto })
+  verifyClaim(@CurrentUserId() userId: string, @Param() { slug }: SlugParamsDto) {
+    return this.claims.verify({ userId, slug });
+  }
+
+  @AllowAnonymous()
+  @Throttle({ default: STREAMERS.removalThrottle })
+  @Post(':slug/removal-request')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removalRequest(@Param() { slug }: SlugParamsDto, @Body() body: RemovalRequestDto) {
+    await this.claims.requestRemoval({ ...body, slug });
+  }
+
+  @Put(':slug/follow')
+  @ZodResponse({ type: StreamerFollowListDto })
+  follow(@CurrentUserId() userId: string, @Param() { slug }: SlugParamsDto, @Body() { tankId }: FollowStreamerDto) {
+    return this.follows.follow({ userId, slug, tankId });
+  }
+
+  @Delete(':slug/follow')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async unfollow(@CurrentUserId() userId: string, @Param() { slug }: SlugParamsDto) {
+    await this.follows.unfollow({ userId, slug });
   }
 }

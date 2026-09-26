@@ -1,4 +1,4 @@
-import type { Comment } from '@/shared/api/comments';
+import type { Comment } from '../../api';
 
 export type CommentNode = {
   comment: Comment;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TacticIcon } from '@/shared/api/tactics';
+import type { TacticIcon } from '@/entities/tactic/board';
 
 import { CANVAS_FALLBACK } from '../../../config';
 import { iconAppearance, strokeGeometry } from '../shape-geometry';

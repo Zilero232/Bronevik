@@ -11,6 +11,15 @@ import {
   TankDestroyerSilhouetteIcon
 } from './icons/class-silhouettes';
 import { AssaultSpgIcon, HeavyTankIcon, LightTankIcon, MediumTankIcon, SpgIcon, TankDestroyerIcon } from './icons/classes';
+import { CrewCommanderIcon, CrewDriverIcon, CrewGunnerIcon, CrewLoaderIcon, CrewRadiomanIcon } from './icons/crew-roles';
+import {
+  EquipBondsIcon,
+  EquipConsumableIcon,
+  EquipDirectiveIcon,
+  EquipExperimentalIcon,
+  EquipStandardIcon,
+  EquipTrophyIcon
+} from './icons/equip-category';
 import { OtmetkiLogoIcon } from './icons/logo';
 import { Mark1Icon, Mark2Icon, Mark3Icon } from './icons/marks';
 import { MasteryFirstIcon, MasteryMasterIcon, MasterySecondIcon, MasteryThirdIcon } from './icons/mastery';
@@ -142,7 +151,18 @@ export const ICONS = {
   armor: ArmorIcon,
   spotting: SpottingIcon,
   radio: RadioIcon,
-  crosshair: CrosshairIcon
+  crosshair: CrosshairIcon,
+  'crew-commander': CrewCommanderIcon,
+  'crew-driver': CrewDriverIcon,
+  'crew-gunner': CrewGunnerIcon,
+  'crew-loader': CrewLoaderIcon,
+  'crew-radioman': CrewRadiomanIcon,
+  'equip-standard': EquipStandardIcon,
+  'equip-trophy': EquipTrophyIcon,
+  'equip-bonds': EquipBondsIcon,
+  'equip-experimental': EquipExperimentalIcon,
+  'equip-directive': EquipDirectiveIcon,
+  'equip-consumable': EquipConsumableIcon
 } as const satisfies Record<string, IconComponent>;
 
 export type IconName = keyof typeof ICONS;
@@ -168,7 +188,32 @@ export const ICON_GROUPS = {
   marks: ['mark-1', 'mark-2', 'mark-3'],
   mastery: ['mastery-third', 'mastery-second', 'mastery-first', 'mastery-master'],
   modes: ['mode-random', 'mode-ranked', 'mode-onslaught', 'mode-frontline', 'mode-stronghold', 'mode-globalmap', 'mode-training'],
-  misc: ['tracer', 'shell-ap', 'shell-he', 'shell-heat', 'shell-apcr', 'armor', 'spotting', 'radio', 'crosshair']
+  misc: ['tracer', 'shell-ap', 'shell-he', 'shell-heat', 'shell-apcr', 'armor', 'spotting', 'radio', 'crosshair'],
+  crew: ['crew-commander', 'crew-driver', 'crew-gunner', 'crew-loader', 'crew-radioman'],
+  equipment: ['equip-standard', 'equip-trophy', 'equip-bonds', 'equip-experimental', 'equip-directive', 'equip-consumable']
 } as const satisfies Record<string, readonly IconName[]>;
 
 export type IconGroup = keyof typeof ICON_GROUPS;
+
+export const CREW_ROLE_ICONS = {
+  commander: CrewCommanderIcon,
+  driver: CrewDriverIcon,
+  gunner: CrewGunnerIcon,
+  loader: CrewLoaderIcon,
+  radioman: CrewRadiomanIcon
+} as const satisfies Record<string, IconComponent>;
+
+export type CrewRole = keyof typeof CREW_ROLE_ICONS;
+
+export const isCrewRole = (value: string): value is CrewRole => Object.hasOwn(CREW_ROLE_ICONS, value);
+
+export const EQUIP_CATEGORY_ICONS = {
+  standard: EquipStandardIcon,
+  trophy: EquipTrophyIcon,
+  deluxe: EquipBondsIcon,
+  modernized: EquipExperimentalIcon,
+  directive: EquipDirectiveIcon,
+  consumable: EquipConsumableIcon
+} as const satisfies Record<string, IconComponent>;
+
+export type EquipCategory = keyof typeof EQUIP_CATEGORY_ICONS;

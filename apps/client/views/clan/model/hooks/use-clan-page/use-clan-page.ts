@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getClan } from '@/shared/api/clans';
+import { getClan } from '@/entities/clan/clan';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useClanPage = (tag: string) =>

@@ -1,15 +1,14 @@
-import type { CreatePlatoon } from '@/shared/api/platoons';
+import type { CreatePlatoon } from '../../api';
 
 import { chosenAccountId } from '@/features/community/viewer';
+import { zonedInputToIso } from '@/shared/lib';
 
 import type { PlatoonFormOutput } from './platoon-form.types';
 
-import { localToIso } from '../platoon-query';
-
 export const toCreatePlatoon = (values: PlatoonFormOutput): CreatePlatoon => {
   const message = values.message.trim();
-  const availableFrom = localToIso(values.availableFrom);
-  const availableUntil = localToIso(values.availableUntil);
+  const availableFrom = zonedInputToIso({ value: values.availableFrom });
+  const availableUntil = zonedInputToIso({ value: values.availableUntil });
   const accountId = chosenAccountId(values.accountId);
 
   return {

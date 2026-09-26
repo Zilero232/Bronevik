@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getTankPatches } from '@/shared/api/tanks';
+import { getTankPatches } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { patchEntries } from '../../../lib';

@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { TankPicker } from '@/features/tank/pick-tank';
-import { Button, Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { Button, Card, CardHeader, EmptyState, PagedList } from '@/ui-kit';
 
 import { useCoachList } from '../../../model/hooks';
 import { CoachCard } from './components';
@@ -23,44 +23,36 @@ export const CoachList = () => {
           title={t('title')}
         />
       </Card>
-      {isError && items.length === 0 && (
-        <ErrorState description={t('errorDescription')} isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />
-      )}
-      {!isError && isPending && (
-        <div className={s.list}>
-          <Skeleton height={140} />
-          <Skeleton height={140} />
-        </div>
-      )}
-      {!isPending && !isError && items.length === 0 && (
-        <Card padding='none'>
-          <EmptyState
-            action={
-              isFiltered && (
-                <Button size='sm' variant='secondary' onClick={onReset}>
-                  {t('reset')}
-                </Button>
-              )
-            }
-            description={isFiltered ? t('emptyFilteredDescription') : t('emptyDescription')}
-            title={t('emptyTitle')}
-          />
-        </Card>
-      )}
-      {items.length > 0 && (
-        <ul className={s.list}>
-          {items.map((coach) => (
-            <li key={coach.userId}>
-              <CoachCard coach={coach} />
-            </li>
-          ))}
-        </ul>
-      )}
-      {hasNextPage && (
-        <Button className={s.more} disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={loadMore}>
-          {t('more')}
-        </Button>
-      )}
+      <PagedList
+        empty={
+          <Card padding='none'>
+            <EmptyState
+              action={
+                isFiltered && (
+                  <Button size='sm' variant='secondary' onClick={onReset}>
+                    {t('reset')}
+                  </Button>
+                )
+              }
+              description={isFiltered ? t('emptyFilteredDescription') : t('emptyDescription')}
+              title={t('emptyTitle')}
+            />
+          </Card>
+        }
+        errorDescription={t('errorDescription')}
+        errorTitle={t('errorTitle')}
+        getKey={(coach) => coach.userId}
+        hasNextPage={hasNextPage}
+        isError={isError}
+        isFetchingNextPage={isFetchingNextPage}
+        isPending={isPending}
+        isRetrying={isRetrying}
+        items={items}
+        renderItem={(coach) => <CoachCard coach={coach} />}
+        skeletonHeight={140}
+        onLoadMore={loadMore}
+        onRetry={retry}
+      />
     </section>
   );
 };

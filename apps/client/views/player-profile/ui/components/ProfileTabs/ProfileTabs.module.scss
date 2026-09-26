@@ -1,0 +1,98 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--gap-panel));
+
+  min-width: 0;
+}
+
+.bar {
+  position: sticky;
+  z-index: 5;
+  top: var(--header-height);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+}
+
+.list {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  overflow-x: auto;
+
+  @include hide-scrollbar;
+}
+
+.tab {
+  @include reset-button;
+
+  display: inline-flex;
+  height: 44px;
+  align-items: center;
+  padding: 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  transition: color var(--duration-fast) ease;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &[data-active] {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+.indicator {
+  position: absolute;
+  bottom: 0;
+  left: var(--active-tab-left);
+  width: var(--active-tab-width);
+  height: 2px;
+  background-color: var(--color-accent);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      left 220ms var(--ease-out),
+      width 220ms var(--ease-out);
+  }
+}
+
+.panel {
+  outline: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    &[data-activation-direction='left'] {
+      animation: profile-tab-left 160ms var(--ease-out);
+    }
+
+    &[data-activation-direction='right'] {
+      animation: profile-tab-right 160ms var(--ease-out);
+    }
+  }
+}
+
+@keyframes profile-tab-left {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+@keyframes profile-tab-right {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}

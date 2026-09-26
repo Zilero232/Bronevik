@@ -4,7 +4,7 @@ import type { VehicleSummary } from '@otmetki/schemas';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getTechTree } from '@/shared/api/tree';
+import { getTechTree } from '@/entities/tank/tree';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { researchCost } from '../../../lib/research-plan';

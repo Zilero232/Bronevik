@@ -18,7 +18,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
-    path: ROUTES.streamer(slug),
+    path: ROUTES.streamers.profile(slug),
     locale,
     index: true,
     follow: true

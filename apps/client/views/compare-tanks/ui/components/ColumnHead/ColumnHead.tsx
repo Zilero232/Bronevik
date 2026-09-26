@@ -21,7 +21,7 @@ export const ColumnHead = ({ vehicle, onRemove }: ColumnHeadProps) => {
         <X size={14} />
       </IconButton>
       <TankImage isDecorative size='big' tank={vehicleIdentity(vehicle)} />
-      <Link className={s.link} href={ROUTES.tank(vehicle.slug)}>
+      <Link className={s.link} href={ROUTES.tanks.detail(vehicle.slug)}>
         <TankIdentity tank={vehicleIdentity(vehicle)} />
       </Link>
     </div>

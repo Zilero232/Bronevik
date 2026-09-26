@@ -13,6 +13,7 @@ import type { CollabContext } from '../tactics.types';
 import { allowedOrigins, AppConfigService } from '../../../config';
 import { TACTICS } from '../config';
 import { boardIdOf, boardSnapshot, canEdit, encodeBoard, restoreBoard, seedBoardDocument } from '../lib';
+import { BoardLiveService } from './board-live.service';
 import { TacticBoardService } from './tactic-board.service';
 
 @Injectable()
@@ -69,8 +70,11 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
     private readonly adapterHost: HttpAdapterHost,
     private readonly boards: TacticBoardService,
     private readonly config: AppConfigService,
-    private readonly auth: AuthService
-  ) {}
+    private readonly auth: AuthService,
+    private readonly live: BoardLiveService
+  ) {
+    this.live.attach(this.hocuspocus);
+  }
 
   onApplicationBootstrap(): void {
     const server = this.adapterHost.httpAdapter?.getHttpServer();

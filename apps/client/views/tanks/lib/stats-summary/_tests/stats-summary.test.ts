@@ -24,7 +24,12 @@ describe('summarizeStats', () => {
     expect(summarizeStats(rows).mostPlayed).toBe(rows[1]);
   });
 
+  it('lists the hero leaders by WR diff, strongest first', () => {
+    expect(summarizeStats(rows).leaders).toEqual([rows[2], rows[0], rows[1]]);
+  });
+
   it('returns no leaders for an empty page', () => {
     expect(summarizeStats([]).strongest).toBeUndefined();
+    expect(summarizeStats([]).leaders).toEqual([]);
   });
 });

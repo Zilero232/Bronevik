@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getMoeHistory } from '@/shared/api/marks';
+import { getMoeHistory } from '@/entities/player/marks';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseMoeHistoryInput } from './use-moe-history.types';

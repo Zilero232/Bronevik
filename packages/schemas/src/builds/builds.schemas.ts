@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { countSchema, isoDateTimeSchema, percentSchema, ratioSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
 import { listParam } from '../common/query/query.schemas';
 import { loadoutSchema } from '../community/community.schemas';
+import { learningDifficultySchema } from '../tanks/tank-insights.schemas';
 import { nationSchema, tierSchema, vehicleSummarySchema, vehicleTypeSchema } from '../vehicles/vehicles.schemas';
 import { BUILD_OPTIONS, BUILD_USAGE, POPULAR_BUILDS } from './builds.constants';
 
@@ -272,7 +273,8 @@ export const buildsCatalogQuerySchema = z.object({
   tiers: listParam(tierSchema).optional(),
   types: listParam(vehicleTypeSchema).optional(),
   nations: listParam(nationSchema).optional(),
-  mode: buildModeSchema.default(BUILD_USAGE.defaultMode)
+  mode: buildModeSchema.default(BUILD_USAGE.defaultMode),
+  difficulties: listParam(learningDifficultySchema).optional().describe('Only tanks whose learning curve puts them in one of these difficulties')
 });
 
 export const buildsCatalogEntrySchema = z.object({

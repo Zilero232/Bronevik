@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TacticIcon, TacticLayer, TacticStroke } from '@/shared/api/tactics';
+import type { TacticIcon, TacticLayer, TacticStroke } from '@/entities/tactic/board';
 
 import { BOARD, BOARD_LIMITS } from '../../../config';
 import {

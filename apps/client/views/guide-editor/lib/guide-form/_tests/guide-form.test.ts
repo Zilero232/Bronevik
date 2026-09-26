@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { Guide } from '@/shared/api/guides';
+import type { Guide } from '@/entities/guide/guide';
 
 import { toGuideFormValues, toGuideInput } from '../guide-form';
 import { guideFormSchema } from '../guide-form.schemas';

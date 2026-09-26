@@ -1,27 +1,48 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { ratingValueTone, winRateTone } from '@/entities/player/stats';
-import { KeyFigure, KeyFigures } from '@/ui-kit';
+import { KeyFigure, ProgressRing } from '@/ui-kit';
 
 import type { HeaderFiguresProps } from './HeaderFigures.types';
 
-import { FIGURE_FORMAT } from '../../../../../config';
+import { FIGURE_FORMAT, PROFILE_HEADER } from '../../../../../config';
 
 import s from './HeaderFigures.module.scss';
 
-export const HeaderFigures = ({ stats }: HeaderFiguresProps) => {
+export const HeaderFigures = ({ stats, ring }: HeaderFiguresProps) => {
   const t = useTranslations('profile.header');
+  const format = useFormatter();
+  const tone = ratingValueTone(stats.wn8);
 
   return (
-    <KeyFigures className={s.root} isFramed={false}>
-      <KeyFigure format={FIGURE_FORMAT.integer} label='WN8' size='lg' tone={ratingValueTone(stats.wn8)} value={stats.wn8.value} />
-      <KeyFigure format={FIGURE_FORMAT.integer} label={t('broneIndex')} size='lg' value={stats.broneIndex.value} />
-      <KeyFigure format={FIGURE_FORMAT.percent} label={t('winRate')} size='lg' suffix='%' tone={winRateTone(stats.winRate)} value={stats.winRate} />
-      <KeyFigure format={FIGURE_FORMAT.integer} label={t('battles')} size='lg' value={stats.battles} />
-      <KeyFigure format={FIGURE_FORMAT.integer} label={t('avgDamage')} size='lg' value={stats.avgDamage} />
-      <KeyFigure format={FIGURE_FORMAT.integer} label={t('avgXp')} size='lg' value={stats.avgXp} />
-    </KeyFigures>
+    <div className={s.root}>
+      <div className={s.ring} data-tone={tone}>
+        <ProgressRing
+          label={t('wn8Ring')}
+          max={ring.max}
+          size={PROFILE_HEADER.wn8Ring.size}
+          thickness={PROFILE_HEADER.wn8Ring.thickness}
+          tone={tone}
+          value={ring.value}
+        >
+          <span className={s.ringValue}>{stats.wn8.value === null ? '—' : format.number(stats.wn8.value, FIGURE_FORMAT.integer)}</span>
+          <span className={s.ringLabel}>WN8</span>
+        </ProgressRing>
+      </div>
+      <div className={s.figures}>
+        <KeyFigure
+          format={FIGURE_FORMAT.percent}
+          isFramed={false}
+          label={t('winRate')}
+          suffix='%'
+          tone={winRateTone(stats.winRate)}
+          value={stats.winRate}
+        />
+        <KeyFigure format={FIGURE_FORMAT.integer} isFramed={false} label={t('battles')} value={stats.battles} />
+        <KeyFigure format={FIGURE_FORMAT.integer} isFramed={false} label={t('avgDamage')} value={stats.avgDamage} />
+      </div>
+    </div>
   );
 };

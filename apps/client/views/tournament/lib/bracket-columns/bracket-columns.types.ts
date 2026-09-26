@@ -35,3 +35,8 @@ export type RoundNameInput = {
   round: number;
   total: number;
 };
+
+export type SlotOfInput = {
+  accountId: number | null;
+  winner: number | null;
+};

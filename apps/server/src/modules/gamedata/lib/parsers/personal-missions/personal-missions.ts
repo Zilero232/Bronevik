@@ -1,8 +1,10 @@
 import type { PyValue } from '../../python-literal';
 import type { XmlNode, XmlValue } from '../../xml';
 import type {
-  Localize,
+  CampaignBranchInput,
+  ParseCampaignsInput,
   ParseMissionsInput,
+  ParseOperationsInput,
   PersonalBranch,
   PersonalCampaign,
   PersonalMission,
@@ -66,7 +68,7 @@ const readConfig = (source: string | undefined): Record<string, PyValue> => {
   );
 };
 
-const parseOperations = (root: XmlNode, localize: Localize): PersonalOperation[] => {
+const parseOperations = ({ root, localize }: ParseOperationsInput): PersonalOperation[] => {
   const rewards = tokenQuestRewards(root);
 
   return entries(root).flatMap(([key, value]) => {
@@ -96,7 +98,7 @@ const parseOperations = (root: XmlNode, localize: Localize): PersonalOperation[]
   });
 };
 
-const parseCampaigns = (seasonsRoot: XmlNode, tilesRoot: XmlNode, localize: Localize): PersonalCampaign[] => {
+const parseCampaigns = ({ seasonsRoot, tilesRoot, localize }: ParseCampaignsInput): PersonalCampaign[] => {
   const rewards = tokenQuestRewards(tilesRoot);
 
   return entries(seasonsRoot).flatMap(([, value]) => {
@@ -193,19 +195,19 @@ const groupBranches = (missions: PersonalMission[]): PersonalBranch[] => {
   }));
 };
 
-const campaignBranch = (missions: PersonalMission[], campaignId: number): PersonalMissionBranchName | null =>
+const campaignBranch = ({ missions, campaignId }: CampaignBranchInput): PersonalMissionBranchName | null =>
   missions.find((mission) => mission.campaignId === campaignId)?.branch ?? null;
 
 export const parsePersonalMissions = ({ seasonsXml, tilesXml, listXml, configPy, messages = {} }: PersonalMissionSources): PersonalMissionsData => {
   const localize = createLocalize(messages);
   const tilesRoot = parseXml(tilesXml);
-  const operations = parseOperations(tilesRoot, localize);
+  const operations = parseOperations({ root: tilesRoot, localize });
   const seasonOf = new Map(operations.map((operation) => [operation.operationId, operation.campaignId]));
   const config = readConfig(configPy);
   const missions = parseMissions({ root: parseXml(listXml), config, localize, seasonOf }).sort((a, b) => a.questId - b.questId);
-  const campaigns = parseCampaigns(parseXml(seasonsXml), tilesRoot, localize).map((campaign) => ({
+  const campaigns = parseCampaigns({ seasonsRoot: parseXml(seasonsXml), tilesRoot, localize }).map((campaign) => ({
     ...campaign,
-    branch: campaignBranch(missions, campaign.campaignId)
+    branch: campaignBranch({ missions, campaignId: campaign.campaignId })
   }));
 
   const warnings = [

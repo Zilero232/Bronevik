@@ -1,0 +1,32 @@
+@use '@/shared/styles/mixins' as *;
+
+.swatches {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.swatch {
+  @include reset-button;
+
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+  cursor: pointer;
+
+  &[aria-checked='true'] {
+    border-color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.width {
+  display: block;
+  width: 18px;
+  border-radius: var(--radius-full);
+  background: currentcolor;
+}

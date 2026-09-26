@@ -54,7 +54,3 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
-
-.review {
-  @include stack(var(--space-2));
-}

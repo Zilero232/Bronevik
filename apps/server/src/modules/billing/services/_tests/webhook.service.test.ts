@@ -1,7 +1,8 @@
+import { addDays, addMonths } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Payment } from '../../../../../generated';
+import type { Payment, Subscription } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { YooKassaClient, YooKassaPayment } from '../../lib';
 import type { EntitlementsService } from '../entitlements.service';
@@ -126,12 +127,66 @@ describe('WebhookService.settle', () => {
 });
 
 describe('WebhookService.handle', () => {
-  it('marks a refunded payment without settling anything', async () => {
+  it('refunds through the payment row without settling anything', async () => {
     const { service, prisma, yookassa } = createService();
+
+    prisma.payment.findUnique.mockResolvedValue(null);
 
     await service.handle({ type: 'notification', event: 'refund.succeeded', object: { id: 'r1', payment_id: 'p1' } });
 
-    expect(prisma.payment.updateMany).toHaveBeenCalledWith({ where: { yookassaPaymentId: 'p1' }, data: { status: 'refunded' } });
+    expect(prisma.payment.findUnique).toHaveBeenCalledWith({ where: { yookassaPaymentId: 'p1' } });
     expect(yookassa.getPayment).not.toHaveBeenCalled();
+  });
+});
+
+describe('WebhookService.refund', () => {
+  const now = new Date('2026-09-25T12:00:00Z');
+  const succeeded = mock<Payment>({ id: 'row', userId: 'u1', status: 'succeeded', plan: 'monthly', subscriptionId: 'sub-1' });
+
+  it('ignores a payment that never succeeded', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    prisma.payment.findUnique.mockResolvedValue(pendingPayment);
+
+    expect(await service.refund({ paymentId: 'p1', now })).toBe(false);
+    expect(prisma.payment.updateMany).not.toHaveBeenCalled();
+    expect(entitlements.syncTracking).not.toHaveBeenCalled();
+  });
+
+  it('takes the paid months back and drops the cached entitlement', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    prisma.payment.findUnique.mockResolvedValue(succeeded);
+    prisma.payment.updateMany.mockResolvedValue({ count: 1 });
+    prisma.subscription.findUnique.mockResolvedValue(mock<Subscription>({ id: 'sub-1', currentPeriodEnd: addMonths(now, 3) }));
+
+    expect(await service.refund({ paymentId: 'p1', now })).toBe(true);
+    expect(prisma.subscription.update).toHaveBeenCalledWith({ where: { id: 'sub-1' }, data: { currentPeriodEnd: addMonths(now, 2) } });
+    expect(entitlements.syncTracking).toHaveBeenCalledWith('u1');
+  });
+
+  it('expires the subscription when the refund covers what is left', async () => {
+    const { service, prisma } = createService();
+
+    prisma.payment.findUnique.mockResolvedValue(succeeded);
+    prisma.payment.updateMany.mockResolvedValue({ count: 1 });
+    prisma.subscription.findUnique.mockResolvedValue(mock<Subscription>({ id: 'sub-1', currentPeriodEnd: addDays(now, 10) }));
+
+    await service.refund({ paymentId: 'p1', now });
+
+    expect(prisma.subscription.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ status: 'expired', cancelAtPeriodEnd: true }) })
+    );
+  });
+
+  it('revokes once when the refund webhook is delivered twice', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    prisma.payment.findUnique.mockResolvedValue(succeeded);
+    prisma.payment.updateMany.mockResolvedValue({ count: 0 });
+
+    expect(await service.refund({ paymentId: 'p1', now })).toBe(false);
+    expect(prisma.subscription.update).not.toHaveBeenCalled();
+    expect(entitlements.syncTracking).not.toHaveBeenCalled();
   });
 });

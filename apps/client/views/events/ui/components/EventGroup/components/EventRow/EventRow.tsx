@@ -9,7 +9,7 @@ import { EVENTS } from '../../../../../config';
 
 import s from './EventRow.module.scss';
 
-export const EventRow = ({ entry: { event, phase, progress, days } }: EventRowProps) => {
+export const EventRow = ({ entry: { event, href, phase, progress, days } }: EventRowProps) => {
   const t = useTranslations('events');
   const format = useFormatter();
 
@@ -18,8 +18,8 @@ export const EventRow = ({ entry: { event, phase, progress, days } }: EventRowPr
       <div className={s.main}>
         <div className={s.head}>
           <Badge tone={EVENTS.kindTone[event.kind]}>{t(`kinds.${event.kind}`)}</Badge>
-          {event.url ? (
-            <a className={s.title} href={event.url} rel='noreferrer' target='_blank'>
+          {href ? (
+            <a className={s.title} href={href} rel='noopener noreferrer' target='_blank'>
               {event.title}
               <ExternalLink aria-hidden className={s.icon} size={12} />
             </a>

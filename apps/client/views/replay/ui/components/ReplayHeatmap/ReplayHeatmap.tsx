@@ -2,13 +2,12 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { Card, CardBody, CardHeader, ClassIcon, EmptyState, ErrorState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { Card, CardBody, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
-import type { HeatmapModeChoice, HeatmapScope } from '../../../model/hooks';
 import type { ReplayHeatmapProps } from './ReplayHeatmap.types';
 
-import { HEATMAP_SCOPE_CLASS, HEATMAP_SCOPES } from '../../../config';
 import { useReplayHeatmap } from '../../../model/hooks';
+import { HeatmapControls } from './components';
 
 import s from './ReplayHeatmap.module.scss';
 
@@ -40,31 +39,13 @@ export const ReplayHeatmap = ({ replay }: ReplayHeatmapProps) => {
         {!hasArena && <EmptyState isCompact description={t('noArenaDescription')} title={t('noArenaTitle')} />}
         {hasArena && (
           <>
-            <div className={s.controls}>
-              {hasReplayMode && (
-                <SegmentedControl<HeatmapModeChoice>
-                  options={[
-                    { value: 'replay', label: t('modes.replay') },
-                    { value: 'all', label: t('modes.all') }
-                  ]}
-                  aria-label={t('modeLabel')}
-                  size='sm'
-                  value={modeChoice}
-                  onChange={setModeChoice}
-                />
-              )}
-              <SegmentedControl<HeatmapScope>
-                options={HEATMAP_SCOPES.map((value) =>
-                  value === 'all'
-                    ? { value, label: t('scopes.all') }
-                    : { value, label: <ClassIcon size={14} tankClass={HEATMAP_SCOPE_CLASS[value]} />, 'aria-label': t(`scopes.${value}`) }
-                )}
-                aria-label={t('scopeLabel')}
-                size='sm'
-                value={scope}
-                onChange={setScope}
-              />
-            </div>
+            <HeatmapControls
+              hasReplayMode={hasReplayMode}
+              modeChoice={modeChoice}
+              scope={scope}
+              onModeChoiceChange={setModeChoice}
+              onScopeChange={setScope}
+            />
             {isPending && <Skeleton className={s.map} shape='block' />}
             {isError && !isPending && (
               <ErrorState isCompact description={t('errorDescription')} isRetrying={isFetching} title={t('errorTitle')} onRetry={retry} />

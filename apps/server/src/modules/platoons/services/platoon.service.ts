@@ -8,6 +8,7 @@ import type { CreatePlatoonRequest, PlatoonPage, PlatoonQuery } from '../platoon
 import { AppBadRequestException, AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { CommunityAccountsService } from '../../community-core';
+import { PLATOON } from '../config';
 import { toPlatoonView } from '../lib';
 
 @Injectable()
@@ -36,7 +37,21 @@ export class PlatoonService {
         : {})
     };
 
-    const rows = await this.prisma.platoonPost.findMany({ where, orderBy: { createdAt: 'desc' } });
+    if (minWn8 === undefined && maxWn8 === undefined) {
+      const [page, total] = await Promise.all([
+        this.prisma.platoonPost.findMany({ where, orderBy: { createdAt: 'desc' }, take: limit, skip: offset }),
+        this.prisma.platoonPost.count({ where })
+      ]);
+
+      const [stats, nicknames] = await Promise.all([
+        this.accounts.statsOf(page.map((row) => row.accountId)),
+        this.accounts.nicknamesOf(page.map((row) => row.accountId))
+      ]);
+
+      return { items: page.map((post) => toPlatoonView({ post, stats, nicknames })), total, limit, offset };
+    }
+
+    const rows = await this.prisma.platoonPost.findMany({ where, orderBy: { createdAt: 'desc' }, take: PLATOON.filterScanLimit });
     const [stats, nicknames] = await Promise.all([
       this.accounts.statsOf(rows.map((row) => row.accountId)),
       this.accounts.nicknamesOf(rows.map((row) => row.accountId))
@@ -64,19 +79,21 @@ export class PlatoonService {
       throw new AppBadRequestException('VALIDATION_FAILED', 'availableFrom must be before availableUntil');
     }
 
-    await this.prisma.platoonPost.updateMany({ where: { userId, status: 'open' }, data: { status: 'closed' } });
+    const post = await this.prisma.$transaction(async (tx) => {
+      await tx.platoonPost.updateMany({ where: { userId, status: 'open' }, data: { status: 'closed' } });
 
-    const post = await this.prisma.platoonPost.create({
-      data: {
-        ...rest,
-        userId,
-        accountId: account,
-        minWn8: minWn8 ?? null,
-        message: message ?? null,
-        availableFrom: availableFrom ? new Date(availableFrom) : null,
-        availableUntil: availableUntil ? new Date(availableUntil) : null,
-        expiresAt: addHours(now, expiresInHours)
-      }
+      return tx.platoonPost.create({
+        data: {
+          ...rest,
+          userId,
+          accountId: account,
+          minWn8: minWn8 ?? null,
+          message: message ?? null,
+          availableFrom: availableFrom ? new Date(availableFrom) : null,
+          availableUntil: availableUntil ? new Date(availableUntil) : null,
+          expiresAt: addHours(now, expiresInHours)
+        }
+      });
     });
 
     const [stats, nicknames] = await Promise.all([this.accounts.statsOf([account]), this.accounts.nicknamesOf([account])]);

@@ -39,7 +39,7 @@
     "aboutPlaceholder": "Battle format, maps, vehicle limits, prizes",
     "descriptionError": "At most 8000 characters",
     "startsAt": "Starts",
-    "startsAtError": "Set a date and time",
+    "startsAtError": "Set a future date and time",
     "registrationEndsAt": "Registration until",
     "registrationEndsAtError": "No later than the start",
     "maxParticipants": "Max participants",

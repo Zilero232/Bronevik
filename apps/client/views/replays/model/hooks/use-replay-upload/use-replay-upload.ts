@@ -7,7 +7,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { match, P } from 'ts-pattern';
 
-import { communityErrorKind } from '@/features/community/api-error';
 import { getReplay, uploadReplay } from '@/shared/api/replays';
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -15,6 +14,7 @@ import type { ReplayFileProblem } from '../../../lib/upload-validation';
 import type { UploadPhase, UploadVisibility } from './use-replay-upload.types';
 
 import { REPLAY_UPLOAD } from '../../../config';
+import { replayUploadErrorKind } from '../../../lib/upload-error';
 import { isSettledStatus, validateReplayFile } from '../../../lib/upload-validation';
 
 export const useReplayUpload = () => {
@@ -82,7 +82,7 @@ export const useReplayUpload = () => {
     progress,
     visibility,
     uploadedId,
-    uploadError: upload.isError ? communityErrorKind(upload.error) : null,
+    uploadError: upload.isError ? replayUploadErrorKind(upload.error) : null,
     parseError: status.data?.status === 'failed',
     maxMegabytes: REPLAY_UPLOAD.maxBytes / REPLAY_UPLOAD.bytesPerMegabyte,
     setVisibility,

@@ -7,12 +7,14 @@ import type { OwnedById } from '../../community-core';
 import type { Bracket, TournamentWithParticipants } from '../lib';
 import type {
   CreateTournamentRequest,
+  OrganizedInput,
   RegisterTournamentRequest,
   ReportMatchRequest,
   TournamentMove,
   TournamentPage,
   TournamentsQuery,
-  TournamentView
+  TournamentView,
+  TournamentViewWith
 } from '../tournaments.types';
 
 import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
@@ -30,13 +32,15 @@ export class TournamentService {
   ) {}
 
   async list({ status, limit, offset }: TournamentsQuery): Promise<TournamentPage> {
-    const where: Prisma.TournamentWhereInput = status ? { status } : { status: { not: 'draft' } };
+    const where: Prisma.TournamentWhereInput = { AND: [{ status: { not: 'draft' } }, ...(status ? [{ status }] : [])] };
     const [rows, total] = await Promise.all([
       this.prisma.tournament.findMany({ where, orderBy: { startsAt: 'desc' }, take: limit, skip: offset, include: { participants: true } }),
       this.prisma.tournament.count({ where })
     ]);
 
-    return { items: await Promise.all(rows.map((row) => this.view(row))), total, limit, offset };
+    const nicknames = await this.accounts.nicknamesOf(rows.flatMap((row) => row.participants.map((participant) => participant.accountId)));
+
+    return { items: rows.map((tournament) => this.viewWith({ tournament, nicknames })), total, limit, offset };
   }
 
   async get(slug: string): Promise<TournamentView> {
@@ -44,6 +48,13 @@ export class TournamentService {
   }
 
   async create({ userId, title, description, requirements, maxParticipants, registrationEndsAt, startsAt }: CreateTournamentRequest) {
+    const starts = new Date(startsAt);
+    const registrationEnds = registrationEndsAt ? new Date(registrationEndsAt) : null;
+
+    if (starts <= new Date() || (registrationEnds && registrationEnds > starts)) {
+      throw new AppBadRequestException('VALIDATION_FAILED', 'A tournament starts in the future and closes registration no later than its start');
+    }
+
     const tournament = await this.prisma.tournament.create({
       data: {
         organizerUserId: userId,
@@ -52,8 +63,8 @@ export class TournamentService {
         description: description ?? null,
         requirements,
         rules: { maxParticipants },
-        registrationEndsAt: registrationEndsAt ? new Date(registrationEndsAt) : null,
-        startsAt: new Date(startsAt)
+        registrationEndsAt: registrationEnds,
+        startsAt: starts
       },
       include: { participants: true }
     });
@@ -118,62 +129,66 @@ export class TournamentService {
   }
 
   async start({ id, userId }: OwnedById): Promise<TournamentView> {
-    const tournament = await this.organized({ id, userId });
+    const started = await this.serializable(async (tx) => {
+      const tournament = await this.organized({ db: tx, id, userId });
 
-    if (tournament.status !== 'registration') {
-      throw new AppConflictException('CONFLICT', 'Only a tournament in registration can start');
-    }
+      if (tournament.status !== 'registration') {
+        throw new AppConflictException('CONFLICT', 'Only a tournament in registration can start');
+      }
 
-    if (tournament.participants.length < TOURNAMENT.minParticipants) {
-      throw new AppBadRequestException('VALIDATION_FAILED', 'Not enough participants');
-    }
+      if (tournament.participants.length < TOURNAMENT.minParticipants) {
+        throw new AppBadRequestException('VALIDATION_FAILED', 'Not enough participants');
+      }
 
-    const stats = await this.accounts.statsOf(tournament.participants.map((participant) => participant.accountId));
-    const seeded = sortBy(tournament.participants, [(participant) => stats.get(participant.accountId)?.wn8 ?? 0, 'desc']);
+      const stats = await this.accounts.statsOf(tournament.participants.map((participant) => participant.accountId));
+      const seeded = sortBy(tournament.participants, [(participant) => stats.get(participant.accountId)?.wn8 ?? 0, 'desc']);
 
-    await this.prisma.$transaction(
-      seeded.map((participant, index) =>
-        this.prisma.tournamentParticipant.update({
+      for (const [index, participant] of seeded.entries()) {
+        await tx.tournamentParticipant.update({
           where: { tournamentId_accountId: { tournamentId: id, accountId: participant.accountId } },
           data: { seed: index + 1 }
-        })
-      )
-    );
+        });
+      }
 
-    const bracket = seedBracket(seeded.map((participant) => Number(participant.accountId)));
+      const bracket = seedBracket(seeded.map((participant) => Number(participant.accountId)));
 
-    return this.view(await this.prisma.tournament.update({ where: { id }, data: { status: 'running', bracket }, include: { participants: true } }));
+      return tx.tournament.update({ where: { id }, data: { status: 'running', bracket }, include: { participants: true } });
+    });
+
+    return this.view(started);
   }
 
   async reportMatch({ id, userId, round, index, winner }: ReportMatchRequest): Promise<TournamentView> {
-    const tournament = await this.organized({ id, userId });
-    const current = this.bracketOf(tournament);
+    const reported = await this.serializable(async (tx) => {
+      const tournament = await this.organized({ db: tx, id, userId });
+      const current = this.bracketOf(tournament);
 
-    if (tournament.status !== 'running' || !current) {
-      throw new AppConflictException('CONFLICT', 'The tournament is not running');
-    }
-
-    let bracket: Bracket;
-
-    try {
-      bracket = reportWinner({ bracket: current, round, index, winner });
-    } catch (error) {
-      if (error instanceof BracketError) {
-        throw new AppBadRequestException('VALIDATION_FAILED', error.message);
+      if (tournament.status !== 'running' || !current) {
+        throw new AppConflictException('CONFLICT', 'The tournament is not running');
       }
 
-      throw error;
-    }
+      let bracket: Bracket;
 
-    const finished = champion(bracket) !== null;
+      try {
+        bracket = reportWinner({ bracket: current, round, index, winner });
+      } catch (error) {
+        if (error instanceof BracketError) {
+          throw new AppBadRequestException('VALIDATION_FAILED', error.message);
+        }
 
-    return this.view(
-      await this.prisma.tournament.update({
+        throw error;
+      }
+
+      const finished = champion(bracket) !== null;
+
+      return tx.tournament.update({
         where: { id },
         data: { bracket, ...(finished ? { status: 'finished' } : {}) },
         include: { participants: true }
-      })
-    );
+      });
+    });
+
+    return this.view(reported);
   }
 
   private async move({ id, userId, from, to }: TournamentMove): Promise<TournamentView> {
@@ -186,8 +201,20 @@ export class TournamentService {
     return this.view(await this.prisma.tournament.update({ where: { id }, data: { status: to }, include: { participants: true } }));
   }
 
-  private async organized({ id, userId }: OwnedById): Promise<TournamentWithParticipants> {
-    const tournament = await this.prisma.tournament.findFirst({ where: { id, organizerUserId: userId }, include: { participants: true } });
+  private async serializable<T>(run: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+    try {
+      return await this.prisma.$transaction(run, { isolationLevel: 'Serializable' });
+    } catch (error) {
+      if (isTransactionConflict(error)) {
+        throw new AppConflictException('CONFLICT', 'The tournament changed concurrently, try again');
+      }
+
+      throw error;
+    }
+  }
+
+  private async organized({ db = this.prisma, id, userId }: OrganizedInput): Promise<TournamentWithParticipants> {
+    const tournament = await db.tournament.findFirst({ where: { id, organizerUserId: userId }, include: { participants: true } });
 
     if (!tournament) {
       throw new AppNotFoundException('NOT_FOUND', `No tournament ${id} of yours`);
@@ -207,7 +234,7 @@ export class TournamentService {
   }
 
   private assertOpen(tournament: TournamentWithParticipants): void {
-    if (tournament.status !== 'registration' || (tournament.registrationEndsAt && tournament.registrationEndsAt <= new Date())) {
+    if (tournament.status !== 'registration' || (tournament.registrationEndsAt ?? tournament.startsAt) <= new Date()) {
       throw new AppConflictException('CONFLICT', 'Registration is closed');
     }
 
@@ -232,6 +259,10 @@ export class TournamentService {
   private async view(tournament: TournamentWithParticipants): Promise<TournamentView> {
     const nicknames = await this.accounts.nicknamesOf(tournament.participants.map((participant) => participant.accountId));
 
+    return this.viewWith({ tournament, nicknames });
+  }
+
+  private viewWith({ tournament, nicknames }: TournamentViewWith): TournamentView {
     return toTournamentView({ tournament, nicknames, bracket: this.bracketOf(tournament), maxParticipants: this.capacity(tournament) });
   }
 }

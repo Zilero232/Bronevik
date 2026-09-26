@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { zCreateTournament } from '@/shared/api/tournaments';
 
@@ -6,6 +6,14 @@ import { toCreateTournament, tournamentFormSchema } from '..';
 import { TOURNAMENT_FORM_DEFAULTS } from '../../../config';
 
 const VALID = { ...TOURNAMENT_FORM_DEFAULTS, title: 'Кубок взводов', startsAt: '2026-10-10T18:00' };
+
+beforeEach(() => {
+  vi.useFakeTimers({ now: new Date('2026-10-01T12:00') });
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('toCreateTournament', () => {
   it('builds a body the server schema accepts', () => {
@@ -31,6 +39,10 @@ describe('toCreateTournament', () => {
 describe('tournamentFormSchema', () => {
   it('requires a start time', () => {
     expect(tournamentFormSchema.safeParse({ ...VALID, startsAt: '' }).success).toBe(false);
+  });
+
+  it('rejects a start in the past', () => {
+    expect(tournamentFormSchema.safeParse({ ...VALID, startsAt: '2026-09-30T18:00' }).success).toBe(false);
   });
 
   it('rejects a registration deadline after the start', () => {

@@ -10,3 +10,8 @@ export const REPLAY_UPLOAD = {
 } as const;
 
 export const SETTLED_REPLAY_STATUSES = ['parsed', 'failed'] as const;
+
+export const REPLAY_UPLOAD_ERROR_KIND = {
+  REPLAY_INVALID: 'invalid',
+  REPLAY_DUPLICATE: 'conflict'
+} as const;

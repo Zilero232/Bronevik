@@ -16,7 +16,7 @@ export const OfferList = ({ isActiveOnly }: OfferListProps) => {
   const t = useTranslations('shop.offers');
   const list = useShopOffers({ isActiveOnly });
 
-  if (list.isError) {
+  if (list.isError && list.offers.length === 0) {
     return <ErrorState isCompact description={t('errorDescription')} isRetrying={list.isRetrying} title={t('errorTitle')} onRetry={list.retry} />;
   }
 

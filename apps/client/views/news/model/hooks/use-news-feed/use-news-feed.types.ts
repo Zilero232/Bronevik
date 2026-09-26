@@ -6,5 +6,6 @@ export type NewsFilter = (typeof NEWS.filters)[number];
 
 export type NewsEntry = {
   item: NewsItem;
+  href: string | undefined;
   vehicles: VehicleSummary[];
 };

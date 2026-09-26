@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { PrismaClient } from '../../../../../../../generated';
+import type { PrismaClient, VehicleArmorModel } from '../../../../../../../generated';
 import type { CollectedArmorModels } from '../../collect';
 import type { ArmorStorage } from '../../storage';
 
@@ -30,9 +30,9 @@ describe('writeArmorModels', () => {
     const storage = createStorage();
 
     prisma.vehicleArmorModel.findMany.mockResolvedValue([
-      { tankId: 1, hash: 'same', storageKey: 'armor/1/same.bin' },
-      { tankId: 2, hash: 'old', storageKey: 'armor/2/old.bin' }
-    ] as never);
+      mock<VehicleArmorModel>({ tankId: 1, hash: 'same', storageKey: 'armor/1/same.bin' }),
+      mock<VehicleArmorModel>({ tankId: 2, hash: 'old', storageKey: 'armor/2/old.bin' })
+    ]);
 
     const counts = await writeArmorModels({ prisma, storage, collected });
 
@@ -53,7 +53,11 @@ describe('purgeArmorModels', () => {
     const prisma = mockDeep<PrismaClient>();
     const storage = createStorage();
 
-    prisma.vehicleArmorModel.findMany.mockResolvedValue([{ storageKey: 'armor/1/a.bin' }, { storageKey: 'armor/2/b.bin' }] as never);
+    prisma.vehicleArmorModel.findMany.mockResolvedValue([
+      mock<VehicleArmorModel>({ storageKey: 'armor/1/a.bin' }),
+      mock<VehicleArmorModel>({ storageKey: 'armor/2/b.bin' })
+    ]);
+
     prisma.vehicleArmorModel.deleteMany.mockResolvedValue({ count: 2 });
 
     expect(await purgeArmorModels({ prisma, storage })).toBe(2);

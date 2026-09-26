@@ -8,15 +8,15 @@ import type { OfferCardProps } from './OfferCard.types';
 
 import s from './OfferCard.module.scss';
 
-export const OfferCard = ({ entry: { offer, vehicles, isRunning } }: OfferCardProps) => {
+export const OfferCard = ({ entry: { offer, href, vehicles, isRunning } }: OfferCardProps) => {
   const t = useTranslations('shop.offers');
   const format = useFormatter();
 
   return (
     <li className={s.root} data-running={isRunning}>
       <div className={s.head}>
-        {offer.url ? (
-          <a className={s.title} href={offer.url} rel='noreferrer' target='_blank'>
+        {href ? (
+          <a className={s.title} href={href} rel='noopener noreferrer' target='_blank'>
             {offer.title}
             <ExternalLink aria-hidden className={s.icon} size={14} />
           </a>

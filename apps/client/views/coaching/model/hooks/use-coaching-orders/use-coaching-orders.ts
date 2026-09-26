@@ -1,5 +1,7 @@
 'use client';
 
+import type { QueryFunctionContext } from '@tanstack/react-query';
+
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { unique } from 'remeda';
 
@@ -19,7 +21,7 @@ export const useCoachingOrders = () => {
   const coaches = useQueries({
     queries: coachIds.map((coachUserId) => ({
       queryKey: QUERY_KEYS.coaching.coach(coachUserId),
-      queryFn: ({ signal }: { signal: AbortSignal }) => getCoach({ userId: coachUserId, signal })
+      queryFn: ({ signal }: QueryFunctionContext) => getCoach({ userId: coachUserId, signal })
     }))
   });
 

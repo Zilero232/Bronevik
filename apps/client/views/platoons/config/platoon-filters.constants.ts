@@ -9,4 +9,4 @@ export const PLATOON_FILTER_PARSERS = {
   minWn8: parseAsInteger,
   maxWn8: parseAsInteger,
   at: parseAsString
-};
+} as const;

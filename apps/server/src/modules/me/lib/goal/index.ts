@@ -1,1 +1,2 @@
-export { toGoal } from './goal';
+export { isGoalEndAllowed, toGoal } from './goal';
+export type { GoalEndInput } from './goal.types';

@@ -39,7 +39,12 @@ export const CoachRequestForm = ({ coach }: CoachRequestFormProps) => {
                 />
               )}
               <FormField error={errors.studentContact && t('contactError')} hint={t('contactHint')} htmlFor={`${id}-contact`} label={t('contact')}>
-                <Input id={`${id}-contact`} isInvalid={Boolean(errors.studentContact)} placeholder='@nickname' {...form.register('studentContact')} />
+                <Input
+                  id={`${id}-contact`}
+                  isInvalid={Boolean(errors.studentContact)}
+                  placeholder={t('contactPlaceholder')}
+                  {...form.register('studentContact')}
+                />
               </FormField>
               <FormField error={errors.notes && t('notesError')} htmlFor={`${id}-notes`} label={t('notes')}>
                 <Textarea

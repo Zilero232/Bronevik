@@ -6,8 +6,8 @@ import { BUILD_USAGE } from '@otmetki/schemas';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { usePlus } from '@/entities/plus/subscription';
 import { recommendedBuildHref } from '@/entities/tank/build';
+import { usePlus } from '@/features/plus/plus-gate';
 import { getRecommendedBuild } from '@/shared/api/builds';
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -19,17 +19,18 @@ const PLUS_COHORTS: ReadonlySet<BuildCohort> = new Set(BUILD_USAGE.plusCohorts);
 
 export const useHowToBuild = () => {
   const { tankId, slug } = useTank();
-  const { isPlus } = usePlus();
+  const { isPlus, isPending: isPlusPending } = usePlus();
   const [mode, setMode] = useState<BuildMode>(BUILD_USAGE.defaultMode);
   const [cohort, setCohort] = useState<BuildCohort>(BUILD_USAGE.defaultCohort);
 
-  const isLocked = PLUS_COHORTS.has(cohort) && !isPlus;
+  const isPlusCohort = PLUS_COHORTS.has(cohort);
+  const isLocked = isPlusCohort && !isPlus && !isPlusPending;
   const params = { tankId, mode, cohort };
 
   const query = useQuery({
     queryKey: QUERY_KEYS.builds.recommended(params),
     queryFn: ({ signal }) => getRecommendedBuild({ ...params, signal }),
-    enabled: !isLocked,
+    enabled: !isPlusCohort || isPlus,
     placeholderData: keepPreviousData
   });
 

@@ -6,7 +6,7 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { pickVehicles } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { shopControllerListNewsInfiniteOptions } from '@/shared/api/query-options';
-import { nextPageOffset } from '@/shared/lib';
+import { nextPageOffset, safeWebHref } from '@/shared/lib';
 
 import type { NewsEntry, NewsFilter } from './use-news-feed.types';
 
@@ -24,6 +24,7 @@ export const useNewsFeed = () => {
 
   const entries: NewsEntry[] = (data?.pages.flatMap(({ items }) => items) ?? []).map((item) => ({
     item,
+    href: safeWebHref(item.url),
     vehicles: pickVehicles({ tankIds: item.tankIds, catalog })
   }));
 

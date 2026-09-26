@@ -26,7 +26,7 @@ const comment: Comment & { author: { id: string; name: string; image: string | n
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
 
-  prisma.build.findUnique.mockResolvedValue(mock<Build>({ id: targetId }));
+  prisma.build.findFirst.mockResolvedValue(mock<Build>({ id: targetId }));
   prisma.comment.create.mockResolvedValue(comment);
 
   return { service: new CommentService(prisma), prisma };
@@ -37,13 +37,13 @@ describe('CommentService.create', () => {
     const { service, prisma } = createService();
 
     await expect(service.create({ userId: 'u1', target: 'build', targetId: 'not-a-uuid', body: 'Hi' })).rejects.toBeInstanceOf(AppNotFoundException);
-    expect(prisma.build.findUnique).not.toHaveBeenCalled();
+    expect(prisma.build.findFirst).not.toHaveBeenCalled();
   });
 
   it('refuses a target that does not exist', async () => {
     const { service, prisma } = createService();
 
-    prisma.guide.findUnique.mockResolvedValue(null);
+    prisma.guide.findFirst.mockResolvedValue(null);
 
     await expect(service.create({ userId: 'u1', target: 'guide', targetId, body: 'Hi' })).rejects.toBeInstanceOf(AppNotFoundException);
     expect(prisma.comment.create).not.toHaveBeenCalled();
@@ -52,13 +52,17 @@ describe('CommentService.create', () => {
   it('looks the target up in the table of its kind', async () => {
     const { service, prisma } = createService();
 
-    prisma.guide.findUnique.mockResolvedValue(mock<Guide>({ id: targetId }));
+    prisma.guide.findFirst.mockResolvedValue(mock<Guide>({ id: targetId }));
     prisma.comment.create.mockResolvedValue({ ...comment, target: 'guide' });
 
     await service.create({ userId: 'u1', target: 'guide', targetId, body: 'Hi' });
 
-    expect(prisma.guide.findUnique).toHaveBeenCalledWith({ where: { id: targetId }, select: { id: true } });
-    expect(prisma.build.findUnique).not.toHaveBeenCalled();
+    expect(prisma.guide.findFirst).toHaveBeenCalledWith({
+      where: { id: targetId, OR: [{ status: 'published' }, { authorUserId: 'u1' }] },
+      select: { id: true }
+    });
+
+    expect(prisma.build.findFirst).not.toHaveBeenCalled();
   });
 
   it('refuses a parent from another thread', async () => {
@@ -93,6 +97,42 @@ describe('CommentService.create', () => {
     prisma.comment.create.mockResolvedValue({ ...comment, parentId });
 
     expect((await service.create({ userId: 'u1', target: 'build', targetId, parentId, body: 'Hi' })).parentId).toBe(parentId);
+  });
+});
+
+describe('CommentService.list', () => {
+  it('refuses the thread of a target the viewer cannot see', async () => {
+    const { service, prisma } = createService();
+
+    prisma.replay.findFirst.mockResolvedValue(null);
+
+    await expect(service.list({ target: 'replay', targetId, viewerUserId: null })).rejects.toBeInstanceOf(AppNotFoundException);
+    expect(prisma.comment.findMany).not.toHaveBeenCalled();
+  });
+
+  it('gives an anonymous viewer no owner shortcut to a private target', async () => {
+    const { service, prisma } = createService();
+
+    prisma.tacticBoard.findFirst.mockResolvedValue(null);
+
+    await expect(service.list({ target: 'tacticBoard', targetId, viewerUserId: null })).rejects.toBeInstanceOf(AppNotFoundException);
+
+    expect(prisma.tacticBoard.findFirst).toHaveBeenCalledWith({
+      where: { id: targetId, OR: [{ visibility: { not: 'private' } }] },
+      select: { id: true }
+    });
+  });
+
+  it('returns the newest page of the thread in chronological order', async () => {
+    const { service, prisma } = createService();
+    const older = { ...comment, id: '77777777-7777-4777-8777-777777777777', createdAt: new Date('2025-12-31T00:00:00Z') };
+
+    prisma.comment.findMany.mockResolvedValue([comment, older]);
+
+    const items = await service.list({ target: 'build', targetId, viewerUserId: null });
+
+    expect(prisma.comment.findMany).toHaveBeenCalledWith(expect.objectContaining({ orderBy: { createdAt: 'desc' } }));
+    expect(items.map((item) => item.id)).toEqual([older.id, comment.id]);
   });
 });
 

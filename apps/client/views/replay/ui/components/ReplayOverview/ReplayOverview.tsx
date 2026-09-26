@@ -19,14 +19,14 @@ import s from './ReplayOverview.module.scss';
 
 export const ReplayOverview = ({ replay }: ReplayOverviewProps) => {
   const t = useTranslations('replays.detail');
-  const { title, vehicle, owner, mode, modeLabel, duration, playedAt, figures } = useReplayOverview(replay);
+  const { title, vehicle, owner, mode, modeLabel, downloadHref, duration, playedAt, figures } = useReplayOverview(replay);
 
   return (
     <>
       <PageHeader
         actions={
-          replay.downloadUrl && (
-            <a download className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={replay.downloadUrl}>
+          downloadHref && (
+            <a download className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={downloadHref}>
               <Download size={15} />
               {t('download')}
             </a>

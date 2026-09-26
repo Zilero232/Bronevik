@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { EmptyState, KeyFigure, KeyFigures, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, KeyFigure, KeyFigures, Skeleton } from '@/ui-kit';
 
 import { TANK_PAGE } from '../../../../../config';
 import { useMyLearning } from '../../../../../model/hooks';
@@ -12,13 +12,17 @@ import s from './MyPlace.module.scss';
 export const MyPlace = () => {
   const t = useTranslations('tank.learning.mine');
   const format = useFormatter();
-  const { data, isPending, isError, bucketLabel } = useMyLearning();
+  const { data, isPending, isError, isRetrying, onRetry, bucketLabel } = useMyLearning();
 
   if (isPending) {
     return <Skeleton height={TANK_PAGE.chartHeight / 2} shape='block' />;
   }
 
-  if (isError || !data) {
+  if (isError) {
+    return <ErrorState isCompact isRetrying={isRetrying} onRetry={onRetry} />;
+  }
+
+  if (!data) {
     return <EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />;
   }
 

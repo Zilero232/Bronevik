@@ -42,6 +42,7 @@ const createService = () => {
   accounts.accountOf.mockResolvedValue(7n);
   accounts.statsOf.mockResolvedValue(new Map());
   accounts.nicknamesOf.mockResolvedValue(new Map());
+  prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
   return { service: new PlatoonService(prisma, accounts), prisma, accounts };
 };
@@ -137,17 +138,33 @@ describe('PlatoonService.list', () => {
     const { service, prisma } = createService();
 
     prisma.platoonPost.findMany.mockResolvedValue([post('unknown', 4n)]);
+    prisma.platoonPost.count.mockResolvedValue(1);
 
     expect((await service.list(page)).total).toBe(1);
   });
 
-  it('pages after filtering', async () => {
+  it('pages in the database when no WN8 filter is set', async () => {
     const { service, prisma } = createService();
 
-    prisma.platoonPost.findMany.mockResolvedValue([post('a', 1n), post('b', 2n), post('c', 3n)]);
+    prisma.platoonPost.findMany.mockResolvedValue([post('b', 2n)]);
+    prisma.platoonPost.count.mockResolvedValue(3);
 
     const result = await service.list({ limit: 1, offset: 1 });
 
+    expect(prisma.platoonPost.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 1, skip: 1 }));
+    expect(result.items.map((item) => item.id)).toEqual(['b']);
+    expect(result.total).toBe(3);
+  });
+
+  it('pages after filtering by WN8 over a bounded scan', async () => {
+    const { service, prisma, accounts } = createService();
+
+    prisma.platoonPost.findMany.mockResolvedValue([post('a', 1n), post('b', 2n), post('c', 3n)]);
+    accounts.statsOf.mockResolvedValue(new Map([1n, 2n, 3n].map((accountId) => [accountId, { battles: 1000, wn8: 2000, winRate: 0.5 }])));
+
+    const result = await service.list({ limit: 1, offset: 1, minWn8: 1000 });
+
+    expect(prisma.platoonPost.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: PLATOON.filterScanLimit }));
     expect(result.items.map((item) => item.id)).toEqual(['b']);
     expect(result.total).toBe(3);
   });

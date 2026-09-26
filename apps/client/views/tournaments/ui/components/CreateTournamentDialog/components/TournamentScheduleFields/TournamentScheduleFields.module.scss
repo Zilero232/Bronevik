@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: end;
+  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @include below(sm) {
+    grid-template-columns: 1fr;
+  }
+}

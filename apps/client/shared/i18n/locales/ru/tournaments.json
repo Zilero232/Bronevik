@@ -39,7 +39,7 @@
     "aboutPlaceholder": "Формат боёв, карты, ограничения по технике, призы",
     "descriptionError": "Не длиннее 8000 символов",
     "startsAt": "Начало",
-    "startsAtError": "Укажите дату и время",
+    "startsAtError": "Укажите дату и время в будущем",
     "registrationEndsAt": "Регистрация до",
     "registrationEndsAtError": "Не позже начала турнира",
     "maxParticipants": "Участников максимум",

@@ -6,6 +6,7 @@ export type UseShopOffersInput = {
 
 export type OfferEntry = {
   offer: PremiumOffer;
+  href: string | undefined;
   vehicles: VehicleSummary[];
   isRunning: boolean;
 };

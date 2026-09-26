@@ -23,6 +23,7 @@ export const useBoardRow = (board: TacticBoard) => {
     onSuccess: () => {
       toast.success(t('deleted'));
       setIsConfirming(false);
+      queryClient.removeQueries({ queryKey: QUERY_KEYS.tactics.board({ id: board.id }) });
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tactics.mine });
     },
     onError: () => toast.error(t('failed'))

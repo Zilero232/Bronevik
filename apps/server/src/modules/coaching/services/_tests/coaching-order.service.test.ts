@@ -39,6 +39,7 @@ const coach: CoachProfile = {
   isActive: true,
   rating: null,
   ordersDone: 0,
+  hiddenAt: null,
   createdAt: now,
   updatedAt: now
 };
@@ -79,6 +80,34 @@ describe('CoachingOrderService.order', () => {
     await expect(service.order({ userId: 'student', coachUserId: 'coach', offerId: 'offer', studentContact: '@student' })).rejects.toBeInstanceOf(
       AppNotFoundException
     );
+  });
+});
+
+describe('CoachingOrderService.order with a replay', () => {
+  it('refuses a private replay of someone else', async () => {
+    const { service, prisma } = createService();
+
+    prisma.coachProfile.findFirst.mockResolvedValue(coach);
+    prisma.replay.findFirst.mockResolvedValue(null);
+
+    await expect(service.order({ userId: 'student', coachUserId: 'coach', replayId: 'r1', studentContact: '@student' })).rejects.toBeInstanceOf(
+      AppNotFoundException
+    );
+
+    expect(prisma.replay.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'r1', OR: [{ uploaderUserId: 'student' }, { visibility: { not: 'private' } }] } })
+    );
+
+    expect(prisma.coachingOrder.create).not.toHaveBeenCalled();
+  });
+
+  it('never books a coach hidden by moderation', async () => {
+    const { service, prisma } = createService();
+
+    prisma.coachProfile.findFirst.mockResolvedValue(null);
+
+    await expect(service.order({ userId: 'student', coachUserId: 'coach', studentContact: '@student' })).rejects.toBeInstanceOf(AppNotFoundException);
+    expect(prisma.coachProfile.findFirst).toHaveBeenCalledWith({ where: { userId: 'coach', isActive: true, hiddenAt: null } });
   });
 });
 

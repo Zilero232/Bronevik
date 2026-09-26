@@ -15,5 +15,13 @@ export const useMyEconomy = () => {
 
   const tanks = query.data?.tanks.slice(0, TANKS_ECONOMY.myTanks) ?? [];
 
-  return { ...query, tanks, days: TANKS_ECONOMY.myDays };
+  return {
+    data: query.data,
+    isPending: query.isPending,
+    isError: query.isError,
+    isRetrying: query.isFetching,
+    onRetry: () => void query.refetch(),
+    tanks,
+    days: TANKS_ECONOMY.myDays
+  };
 };

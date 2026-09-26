@@ -3,5 +3,6 @@ export const COACHING = {
   maxPriceRub: 100_000,
   priceNoteMaxLength: 140,
   contactMaxLength: 128,
-  contactVisibleStatuses: ['accepted', 'completed']
+  contactVisibleStatuses: ['accepted', 'completed'],
+  ordersLimit: 200
 } as const;

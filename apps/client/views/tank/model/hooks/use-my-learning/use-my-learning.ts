@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
+import { isNotFoundError } from '@/shared/api/source';
 import { getMyTankLearning } from '@/shared/api/tanks';
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -17,5 +18,12 @@ export const useMyLearning = () => {
 
   const bucket = query.data ? detail.learning.buckets[query.data.bucket] : undefined;
 
-  return { ...query, bucketLabel: bucket ? bucketLabel(bucket) : null };
+  return {
+    data: query.data,
+    isPending: query.isPending,
+    isError: query.isError && !isNotFoundError(query.error),
+    isRetrying: query.isFetching,
+    onRetry: () => void query.refetch(),
+    bucketLabel: bucket ? bucketLabel(bucket) : null
+  };
 };

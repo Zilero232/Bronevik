@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { CurrentUserId } from '../../common/decorators';
+import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { IdParamsDto } from '../community-core';
 import {
   CoachDto,
@@ -38,8 +38,8 @@ export class CoachingController {
   @AllowAnonymous()
   @Get('coaches/:id')
   @ZodResponse({ type: CoachDto })
-  coach(@Param() { id }: IdParamsDto) {
-    return this.profiles.get(id);
+  coach(@Param() { id }: IdParamsDto, @OptionalUserId() viewerUserId: string | null) {
+    return this.profiles.get({ userId: id, viewerUserId });
   }
 
   @Put('profile')

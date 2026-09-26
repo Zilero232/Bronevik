@@ -1,4 +1,4 @@
-import type { ParsedLiteral, ParseLiteralAtInput, PyDict, PyValue, ReadAssignmentInput } from './python-literal.types';
+import type { ParsedLiteral, ParseLiteralAtInput, PyDict, PyValue, ReadAssignmentInput, ReadSequenceInput } from './python-literal.types';
 
 import { PY_CLOSERS, PY_ESCAPES, PY_KEYWORDS } from './python-literal.constants';
 
@@ -81,7 +81,7 @@ export const parseLiteralAt = ({ source, start }: ParseLiteralAtInput): ParsedLi
     return source.slice(from, pos);
   };
 
-  const readSequence = <T>(closer: string, readItem: () => T): T[] => {
+  const readSequence = <T>({ closer, readItem }: ReadSequenceInput<T>): T[] => {
     const items: T[] = [];
 
     skip();
@@ -111,12 +111,15 @@ export const parseLiteralAt = ({ source, start }: ParseLiteralAtInput): ParsedLi
     if (char === '{') {
       pos += 1;
 
-      const pairs = readSequence(PY_CLOSERS['{'], () => {
-        const key = readValue();
+      const pairs = readSequence({
+        closer: PY_CLOSERS['{'],
+        readItem: () => {
+          const key = readValue();
 
-        expect(':');
+          expect(':');
 
-        return [String(key), readValue()] as const;
+          return [String(key), readValue()] as const;
+        }
       });
 
       return { kind: 'dict', entries: Object.fromEntries(pairs) };
@@ -125,7 +128,7 @@ export const parseLiteralAt = ({ source, start }: ParseLiteralAtInput): ParsedLi
     if (char === '[' || char === '(') {
       pos += 1;
 
-      return readSequence(PY_CLOSERS[char], readValue);
+      return readSequence({ closer: PY_CLOSERS[char], readItem: readValue });
     }
 
     if (char === "'" || char === '"') {
@@ -161,20 +164,23 @@ export const parseLiteralAt = ({ source, start }: ParseLiteralAtInput): ParsedLi
     const args: PyValue[] = [];
     const kwargs: Record<string, PyValue> = {};
 
-    readSequence(PY_CLOSERS['('], () => {
-      skip();
+    readSequence({
+      closer: PY_CLOSERS['('],
+      readItem: () => {
+        skip();
 
-      const mark = pos;
-      const key = IDENTIFIER_START.test(source[pos] ?? '') ? readWord() : '';
+        const mark = pos;
+        const key = IDENTIFIER_START.test(source[pos] ?? '') ? readWord() : '';
 
-      skip();
+        skip();
 
-      if (key && source[pos] === '=' && source[pos + 1] !== '=') {
-        pos += 1;
-        kwargs[key] = readValue();
-      } else {
-        pos = mark;
-        args.push(readValue());
+        if (key && source[pos] === '=' && source[pos + 1] !== '=') {
+          pos += 1;
+          kwargs[key] = readValue();
+        } else {
+          pos = mark;
+          args.push(readValue());
+        }
       }
     });
 

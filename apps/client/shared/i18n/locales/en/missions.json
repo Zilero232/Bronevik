@@ -31,7 +31,8 @@
     "notFoundDescription": "The current game version has no such operation.",
     "errorTitle": "Could not load the operation",
     "errorDescription": "The server did not respond. Try again.",
-    "back": "All personal missions"
+    "back": "All personal missions",
+    "saveFailed": "Could not save progress"
   },
   "branch": {
     "lightTank": "LT",

@@ -131,14 +131,26 @@ describe('GuideService.like', () => {
     const { service, prisma } = createService();
 
     prisma.guide.findFirst.mockResolvedValue(guide);
-    prisma.guideLike.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({ guideId: guide.id, userId: 'viewer', createdAt: new Date() });
+    prisma.guideLike.createMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
     prisma.guide.findUniqueOrThrow.mockResolvedValue({ ...guide, likesCount: 1 });
 
     await service.like({ id: guide.id, userId: 'viewer', liked: true });
     await service.like({ id: guide.id, userId: 'viewer', liked: true });
 
-    expect(prisma.guideLike.create).toHaveBeenCalledTimes(1);
+    expect(prisma.guideLike.createMany).toHaveBeenCalledWith({ data: [{ guideId: guide.id, userId: 'viewer' }], skipDuplicates: true });
     expect(prisma.guide.update).toHaveBeenCalledTimes(1);
+  });
+
+  it('decrements the counter only when a like was actually removed', async () => {
+    const { service, prisma } = createService();
+
+    prisma.guide.findFirst.mockResolvedValue(guide);
+    prisma.guideLike.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.guide.findUniqueOrThrow.mockResolvedValue({ ...guide, likesCount: 0 });
+
+    await service.like({ id: guide.id, userId: 'viewer', liked: false });
+
+    expect(prisma.guide.update).not.toHaveBeenCalled();
   });
 });
 

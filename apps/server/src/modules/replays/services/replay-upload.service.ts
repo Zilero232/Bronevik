@@ -8,6 +8,7 @@ import { AppBadRequestException, AppConflictException } from '../../../common/ex
 import { errorMessage } from '../../../common/lib';
 import { isUniqueViolation, ObjectStorage, PrismaService } from '../../../core';
 import { parseReplay } from '../../../lib/replay';
+import { EntitlementsService } from '../../billing';
 import { ModDeviceService } from '../../mod';
 import { REPLAY_UPLOAD, REPLAYS_QUEUE } from '../config';
 import { replayExtension, replayStorageKey, sha256Hex } from '../lib';
@@ -18,6 +19,7 @@ export class ReplayUploadService {
     private readonly prisma: PrismaService,
     private readonly storage: ObjectStorage,
     private readonly devices: ModDeviceService,
+    private readonly entitlements: EntitlementsService,
     @InjectQueue(REPLAYS_QUEUE.name) private readonly queue: Queue
   ) {}
 
@@ -49,6 +51,12 @@ export class ReplayUploadService {
 
     if (existing) {
       throw new AppConflictException('REPLAY_DUPLICATE', `This replay is already uploaded as ${existing.id}`);
+    }
+
+    if (uploaderUserId) {
+      const stored = await this.prisma.replay.count({ where: { uploaderUserId } });
+
+      await this.entitlements.assertWithinLimit({ userId: uploaderUserId, key: 'storedReplays', count: stored });
     }
 
     const storageKey = replayStorageKey({ sha256, extension });

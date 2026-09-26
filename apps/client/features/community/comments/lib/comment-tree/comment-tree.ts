@@ -1,10 +1,10 @@
 import type { Comment } from '@/shared/api/comments';
 
-import type { CommentNode } from './comment-tree.types';
+import type { CommentNode, RootIdOfInput } from './comment-tree.types';
 
 export const isDeletedComment = (comment: Comment): boolean => comment.body === '';
 
-const rootIdOf = (comment: Comment, byId: ReadonlyMap<string, Comment>): string => {
+const rootIdOf = ({ comment, byId }: RootIdOfInput): string => {
   const visited = new Set<string>();
   let current = comment;
 
@@ -28,7 +28,7 @@ export const buildCommentTree = (comments: readonly Comment[]): CommentNode[] =>
   const nodes = new Map<string, CommentNode>();
 
   for (const comment of comments) {
-    const rootId = rootIdOf(comment, byId);
+    const rootId = rootIdOf({ comment, byId });
 
     if (rootId === comment.id) {
       nodes.set(comment.id, { comment, replies: nodes.get(comment.id)?.replies ?? [] });

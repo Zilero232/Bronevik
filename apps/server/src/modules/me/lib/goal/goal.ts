@@ -1,7 +1,13 @@
+import { addDays } from 'date-fns';
+
 import type { Goal as GoalRow } from '../../../../../generated';
 import type { Goal } from '../../me.types';
+import type { GoalEndInput } from './goal.types';
 
 import { toIso, toNumber } from '../../../../common/lib';
+import { GOALS } from '../../config';
+
+export const isGoalEndAllowed = ({ endsAt, now }: GoalEndInput): boolean => endsAt > now && endsAt <= addDays(now, GOALS.maxDurationDays);
 
 export const toGoal = (row: GoalRow): Goal => ({
   id: row.id,

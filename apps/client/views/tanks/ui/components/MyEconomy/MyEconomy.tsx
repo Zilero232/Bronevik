@@ -3,7 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { TankLink } from '@/entities/tank/tank';
-import { Card, CardHeader, EmptyState, KeyFigure, KeyFigures, Skeleton } from '@/ui-kit';
+import { Card, CardHeader, EmptyState, ErrorState, KeyFigure, KeyFigures, Skeleton } from '@/ui-kit';
 
 import { TANKS_ECONOMY } from '../../../config';
 import { useMyEconomy } from '../../../model/hooks';
@@ -13,14 +13,17 @@ import s from './MyEconomy.module.scss';
 export const MyEconomy = () => {
   const t = useTranslations('tanks.economy.mine');
   const format = useFormatter();
-  const { data, isPending, isError, tanks, days } = useMyEconomy();
+  const { data, isPending, isError, isRetrying, onRetry, tanks, days } = useMyEconomy();
 
   return (
     <Card className={s.root} padding='none'>
       <CardHeader className={s.header} title={t('title', { days })} />
       {isPending && <Skeleton height={TANKS_ECONOMY.mySkeletonHeight} shape='block' />}
-      {!isPending && (isError || !data || data.battles === 0) && <EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
-      {data && data.battles > 0 && (
+      {isError && <ErrorState isCompact isRetrying={isRetrying} onRetry={onRetry} />}
+      {!isPending && !isError && (!data || data.battles === 0) && (
+        <EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />
+      )}
+      {!isError && data && data.battles > 0 && (
         <>
           <KeyFigures isFramed={false}>
             <KeyFigure label={t('battles')} value={data.battles} />

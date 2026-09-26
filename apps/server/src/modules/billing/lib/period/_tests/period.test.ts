@@ -1,7 +1,7 @@
 import { addDays, addMonths } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import { cancelsAtPeriodEnd, extendPeriod, isPeriodActive, renewalIdempotenceKey } from '../period';
+import { cancelsAtPeriodEnd, extendPeriod, isPeriodActive, renewalIdempotenceKey, revokePeriod } from '../period';
 
 const now = new Date('2026-09-25T12:00:00Z');
 
@@ -43,5 +43,17 @@ describe('renewalIdempotenceKey', () => {
 
     expect(renewalIdempotenceKey({ subscriptionId: 's', currentPeriodEnd: new Date(now) })).toBe(key);
     expect(renewalIdempotenceKey({ subscriptionId: 's', currentPeriodEnd: addMonths(now, 1) })).not.toBe(key);
+  });
+});
+
+describe('revokePeriod', () => {
+  it('takes the refunded months back off a longer period', () => {
+    const currentPeriodEnd = addMonths(now, 3);
+
+    expect(revokePeriod({ currentPeriodEnd, now, months: 1 })).toEqual({ currentPeriodEnd: addMonths(currentPeriodEnd, -1), isExpired: false });
+  });
+
+  it('expires a period that the refund consumes entirely', () => {
+    expect(revokePeriod({ currentPeriodEnd: addDays(now, 20), now, months: 1 }).isExpired).toBe(true);
   });
 });

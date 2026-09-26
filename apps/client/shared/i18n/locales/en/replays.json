@@ -123,6 +123,8 @@
       "forbidden": "You are not allowed to do this.",
       "notFound": "Replay not found or not yours.",
       "conflict": "This replay is already uploaded.",
+      "invalid": "This file does not look like a Mir Tankov replay.",
+      "plus": "You have reached the stored replays limit. Delete old ones or get Plus.",
       "rateLimited": "Too many uploads, try again in a minute.",
       "unknown": "Something went wrong. Try again."
     }

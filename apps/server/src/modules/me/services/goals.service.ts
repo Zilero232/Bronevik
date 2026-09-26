@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { addDays } from 'date-fns';
 import { match } from 'ts-pattern';
 
 import type { BaselineInput, CreateGoalInput, Goal, OwnedInput, UpdateGoalInput } from '../me.types';
@@ -8,7 +7,7 @@ import { AppBadRequestException, AppForbiddenException, AppNotFoundException } f
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { GOALS } from '../config';
-import { toGoal } from '../lib';
+import { isGoalEndAllowed, toGoal } from '../lib';
 
 @Injectable()
 export class GoalsService {
@@ -28,7 +27,7 @@ export class GoalsService {
     const ends = new Date(endsAt);
     const now = new Date();
 
-    if (ends <= now || ends > addDays(now, GOALS.maxDurationDays)) {
+    if (!isGoalEndAllowed({ endsAt: ends, now })) {
       throw new AppBadRequestException('VALIDATION_FAILED', `A goal must end within ${GOALS.maxDurationDays} days from now`);
     }
 
@@ -63,6 +62,10 @@ export class GoalsService {
   }
 
   async update({ userId, id, target, endsAt, status }: UpdateGoalInput): Promise<Goal> {
+    if (endsAt !== undefined && !isGoalEndAllowed({ endsAt: new Date(endsAt), now: new Date() })) {
+      throw new AppBadRequestException('VALIDATION_FAILED', `A goal must end within ${GOALS.maxDurationDays} days from now`);
+    }
+
     const existing = await this.prisma.goal.findFirst({ where: { id, userId } });
 
     if (!existing) {

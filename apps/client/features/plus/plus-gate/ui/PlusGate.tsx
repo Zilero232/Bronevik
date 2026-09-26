@@ -1,11 +1,11 @@
 'use client';
 
-import { usePlus } from '@/entities/plus/subscription';
 import { Skeleton } from '@/ui-kit';
 
 import type { PlusGateProps } from './PlusGate.types';
 
 import { PLUS_GATE } from '../config';
+import { usePlus } from '../model/hooks';
 import { PlusTeaser } from './PlusTeaser';
 
 export const PlusGate = ({ feature, children, fallback }: PlusGateProps) => {

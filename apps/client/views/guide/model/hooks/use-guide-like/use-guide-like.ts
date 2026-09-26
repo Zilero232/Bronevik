@@ -43,8 +43,8 @@ export const useGuideLike = (guide: Guide) => {
       toast.error(t('likeFailed'));
     },
     onSuccess: ({ liked, likesCount }) => {
-      queryClient.setQueryData<Guide>(queryKey, (current) => current && { ...current, likedByMe: liked, likesCount });
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guides.all, refetchType: 'none' });
+      queryClient.setQueryData<Guide>(queryKey, (current) => current && { ...current, likedByMe: liked, likesCount });
     }
   });
 

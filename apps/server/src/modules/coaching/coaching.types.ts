@@ -28,6 +28,11 @@ export type CreateOrderRequest = z.output<typeof createOrderSchema> & Owned;
 export type ReviewOrderRequest = z.output<typeof reviewOrderSchema> & OwnedById;
 export type CoachContacts = z.infer<typeof coachContactsSchema>;
 
+export type CoachLookup = {
+  userId: string;
+  viewerUserId: string | null;
+};
+
 export type OrderViewInput = {
   order: CoachingOrder;
   viewerId: string;

@@ -1,0 +1,43 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  gap: var(--space-5);
+
+  dd {
+    margin: 0;
+  }
+}
+
+.fact {
+  @include stack(var(--space-1));
+}
+
+.label {
+  @include label;
+}
+
+.value {
+  @include numeric(var(--text-xl));
+}
+
+.rating {
+  @include numeric(var(--text-xl));
+
+  display: flex;
+  align-items: center;
+  color: var(--color-premium);
+  gap: var(--space-1);
+}
+
+.profile {
+  align-self: flex-start;
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+}

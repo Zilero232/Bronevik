@@ -1,23 +1,20 @@
 'use client';
 
-import { Star } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
-import { PlayerStatsLine } from '@/features/community/player-stats';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Avatar, Badge, buttonVariants, Card, CardBody, CardHeader, EmptyState, ErrorState, PageHeader, Skeleton, TankImage } from '@/ui-kit';
+import { Avatar, Badge, buttonVariants, Card, CardBody, CardHeader, EmptyState, ErrorState, PageHeader, Skeleton } from '@/ui-kit';
 
 import type { CoachPageProps } from './CoachPage.types';
 
 import { useCoach } from '../model/hooks';
-import { CoachContacts, CoachOffers, CoachRequestForm } from './components';
+import { CoachContacts, CoachOffers, CoachRequestForm, CoachSummary, CoachTanks } from './components';
 
 import s from './CoachPage.module.scss';
 
 export const CoachPage = ({ userId }: CoachPageProps) => {
   const t = useTranslations('coaching');
-  const format = useFormatter();
   const { coach, vehicles, contacts, offers, profileHref, isPending, isError, isNotFound, isRetrying, retry } = useCoach(userId);
 
   if (isNotFound) {
@@ -68,33 +65,7 @@ export const CoachPage = ({ userId }: CoachPageProps) => {
       />
       <div className={s.grid}>
         <div className={s.main}>
-          <Card className={s.summary} padding='sm'>
-            <dl className={s.facts}>
-              <div className={s.fact}>
-                <dt className={s.label}>{t('coach.rating')}</dt>
-                <dd className={s.rating}>
-                  {coach.rating === null ? (
-                    t('coach.noRating')
-                  ) : (
-                    <>
-                      <Star size={14} />
-                      {format.number(coach.rating, { maximumFractionDigits: 1 })}
-                    </>
-                  )}
-                </dd>
-              </div>
-              <div className={s.fact}>
-                <dt className={s.label}>{t('coach.sessions')}</dt>
-                <dd className={s.value}>{format.number(coach.ordersDone)}</dd>
-              </div>
-            </dl>
-            <PlayerStatsLine stats={coach.stats} />
-            {profileHref && (
-              <Link className={s.profile} href={profileHref}>
-                {t('coach.playerProfile')}
-              </Link>
-            )}
-          </Card>
+          <CoachSummary coach={coach} profileHref={profileHref} />
           {coach.bio && (
             <Card padding='none'>
               <CardHeader title={t('coach.about')} />
@@ -103,21 +74,7 @@ export const CoachPage = ({ userId }: CoachPageProps) => {
               </CardBody>
             </Card>
           )}
-          {vehicles.length > 0 && (
-            <Card padding='none'>
-              <CardHeader title={t('coach.tanks')} />
-              <CardBody>
-                <ul className={s.tanks}>
-                  {vehicles.map((vehicle) => (
-                    <li key={vehicle.tankId} className={s.tank}>
-                      <TankImage size='small' tank={vehicle} />
-                      <span>{vehicle.shortName}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardBody>
-            </Card>
-          )}
+          {vehicles.length > 0 && <CoachTanks vehicles={vehicles} />}
           <CoachOffers offers={offers} />
         </div>
         <aside className={s.side}>

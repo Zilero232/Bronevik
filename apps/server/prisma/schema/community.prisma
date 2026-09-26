@@ -231,16 +231,17 @@ model TacticBoard {
 model CoachProfile {
   userId String @id @map("user_id")
 
-  accountId  BigInt   @map("account_id")
+  accountId  BigInt    @map("account_id")
   headline   String
   bio        String?
-  priceRub   Decimal? @map("price_rub") @db.Decimal(10, 2)
-  priceNote  String?  @map("price_note")
+  priceRub   Decimal?  @map("price_rub") @db.Decimal(10, 2)
+  priceNote  String?   @map("price_note")
   contacts   Json?
-  tankIds    Int[]    @map("tank_ids")
-  isActive   Boolean  @default(true) @map("is_active")
+  tankIds    Int[]     @map("tank_ids")
+  isActive   Boolean   @default(true) @map("is_active")
   rating     Float?
-  ordersDone Int      @default(0) @map("orders_done")
+  ordersDone Int       @default(0) @map("orders_done")
+  hiddenAt   DateTime? @map("hidden_at") @db.Timestamptz(3)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)

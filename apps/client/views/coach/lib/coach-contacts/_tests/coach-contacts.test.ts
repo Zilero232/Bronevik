@@ -13,6 +13,10 @@ describe('coachContactLinks', () => {
     expect(coachContactLinks({ discord: 'coach#0001' })).toEqual([{ kind: 'discord', value: 'coach#0001', href: null }]);
   });
 
+  it('never turns a non-web contact into a link', () => {
+    expect(coachContactLinks({ telegram: 'javascript:alert(1)', vk: '@coach' }).map(({ href }) => href)).toEqual([null, null]);
+  });
+
   it('is empty without contacts', () => {
     expect(coachContactLinks({})).toEqual([]);
   });

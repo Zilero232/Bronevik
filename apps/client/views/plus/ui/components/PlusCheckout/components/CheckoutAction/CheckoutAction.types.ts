@@ -1,4 +1,4 @@
-import type { PlusStateKind } from '@otmetki/schemas';
+import type { CheckoutNote } from '../../../../../lib/checkout-note';
 
 export type CheckoutActionProps = {
   isSignedIn: boolean;
@@ -9,7 +9,6 @@ export type CheckoutActionProps = {
   trialAvailable: boolean;
   trialDays: number;
   isStartingTrial: boolean;
-  state: PlusStateKind;
-  periodEnd: string | null;
+  note: CheckoutNote;
   onStartTrial: () => void;
 };

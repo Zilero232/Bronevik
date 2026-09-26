@@ -21,6 +21,11 @@ export type BuildSweatIndexInput = {
   baselines: ReadonlyMap<number, SweatBaseline>;
 };
 
+export type QuantileInput = {
+  sorted: readonly number[];
+  level: number;
+};
+
 export type SweatLevelInput = {
   value: number | null;
   cutoffs: SweatCutoffs | null;

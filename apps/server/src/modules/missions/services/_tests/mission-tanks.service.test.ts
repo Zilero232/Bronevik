@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Mission, MissionBranch, TankServerStats } from '../../../../../generated';
+import type { Mission, MissionBranch, PlayerTank, TankServerStats, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { CatalogEntry } from '../../../reference';
 
@@ -43,24 +43,23 @@ const branch: MissionBranch = {
   maxTier: 10
 };
 
-const entry = (tankId: number): CatalogEntry =>
-  ({
-    summary: {
-      tankId,
-      name: `T${tankId}`,
-      shortName: `T${tankId}`,
-      slug: `t${tankId}`,
-      nation: 'ussr',
-      type: 'lightTank',
-      tier: 8,
-      isPremium: false,
-      isCollectible: false,
-      images: { small: null, contour: null, big: null }
-    },
-    dbType: 'lightTank',
-    specs: null,
-    description: null
-  }) as CatalogEntry;
+const entry = (tankId: number): CatalogEntry => ({
+  summary: {
+    tankId,
+    name: `T${tankId}`,
+    shortName: `T${tankId}`,
+    slug: `t${tankId}`,
+    nation: 'ussr',
+    type: 'lightTank',
+    tier: 8,
+    isPremium: false,
+    isCollectible: false,
+    images: { small: null, contour: null, big: null }
+  },
+  dbType: 'lightTank',
+  specs: null,
+  description: null
+});
 
 const stats = (tankId: number, avgFrags: number): TankServerStats => ({
   tankId,
@@ -134,7 +133,7 @@ describe('MissionTanksService.garage', () => {
   it('reports missing private data when the hangar flag was never collected', async () => {
     const { prisma, service } = setup();
 
-    prisma.userLestaAccount.findFirst.mockResolvedValue({ accountId: 10n } as never);
+    prisma.userLestaAccount.findFirst.mockResolvedValue(mock<UserLestaAccount>({ accountId: 10n }));
     prisma.playerTank.findMany.mockResolvedValue([]);
 
     expect((await service.garage({ userId: 'u', questId: 3 })).state).toBe('noPrivateData');
@@ -143,13 +142,13 @@ describe('MissionTanksService.garage', () => {
   it('ranks the owned eligible tanks and adds own results', async () => {
     const { prisma, service } = setup();
 
-    prisma.userLestaAccount.findFirst.mockResolvedValue({ accountId: 10n } as never);
+    prisma.userLestaAccount.findFirst.mockResolvedValue(mock<UserLestaAccount>({ accountId: 10n }));
 
     prisma.playerTank.findMany.mockResolvedValue([
-      { tankId: 1, battles: 40, wins: 20, inGarage: true },
-      { tankId: 99, battles: 5, wins: 5, inGarage: true },
-      { tankId: 2, battles: 10, wins: 6, inGarage: false }
-    ] as never);
+      mock<PlayerTank>({ tankId: 1, battles: 40, wins: 20, inGarage: true }),
+      mock<PlayerTank>({ tankId: 99, battles: 5, wins: 5, inGarage: true }),
+      mock<PlayerTank>({ tankId: 2, battles: 10, wins: 6, inGarage: false })
+    ]);
 
     prisma.tankServerStats.findMany.mockResolvedValue([stats(1, 1.1)]);
 

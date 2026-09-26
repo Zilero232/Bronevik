@@ -1,0 +1,1 @@
+export { ToolbarStroke } from './ToolbarStroke';

@@ -110,6 +110,22 @@ export type ParseConditionsInput = {
   localize: Localize;
 };
 
+export type ParseOperationsInput = {
+  root: XmlNode;
+  localize: Localize;
+};
+
+export type ParseCampaignsInput = {
+  seasonsRoot: XmlNode;
+  tilesRoot: XmlNode;
+  localize: Localize;
+};
+
+export type CampaignBranchInput = {
+  missions: PersonalMission[];
+  campaignId: number;
+};
+
 export type ParseMissionsInput = {
   root: XmlNode;
   config: Record<string, PyValue>;

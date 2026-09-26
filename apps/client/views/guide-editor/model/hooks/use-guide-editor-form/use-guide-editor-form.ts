@@ -46,8 +46,8 @@ export const useGuideEditorForm = (guide: Guide | null) => {
     mutationFn: (input: CreateGuide) => (guide ? updateGuide({ id: guide.id, body: input }) : createGuide(input)),
     onSuccess: (saved) => {
       toast.success(guide ? t('editor.updated') : t('editor.created'));
-      queryClient.setQueryData(QUERY_KEYS.guides.detail(saved.slug), saved);
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guides.all, refetchType: 'none' });
+      queryClient.setQueryData(QUERY_KEYS.guides.detail(saved.slug), saved);
       router.push(ROUTES.guide(saved.slug));
     },
     onError: () => toast.error(t('editor.failed'))

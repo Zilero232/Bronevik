@@ -5,6 +5,7 @@ import type { CoachingOrderView, CreateOrderRequest, OrderTransition, ReviewOrde
 
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
+import { COACHING } from '../config';
 import { toOrderView } from '../lib';
 
 @Injectable()
@@ -14,7 +15,8 @@ export class CoachingOrderService {
   async orders(userId: string): Promise<CoachingOrderView[]> {
     const rows = await this.prisma.coachingOrder.findMany({
       where: { OR: [{ coachUserId: userId }, { studentUserId: userId }] },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      take: COACHING.ordersLimit
     });
 
     return rows.map((order) => toOrderView({ order, viewerId: userId }));
@@ -25,7 +27,7 @@ export class CoachingOrderService {
       throw new AppBadRequestException('VALIDATION_FAILED', 'You cannot hire yourself');
     }
 
-    const coach = await this.prisma.coachProfile.findFirst({ where: { userId: coachUserId, isActive: true } });
+    const coach = await this.prisma.coachProfile.findFirst({ where: { userId: coachUserId, isActive: true, hiddenAt: null } });
 
     if (!coach) {
       throw new AppNotFoundException('NOT_FOUND', `No active coach ${coachUserId}`);
@@ -35,6 +37,17 @@ export class CoachingOrderService {
 
     if (offerId && !offer) {
       throw new AppNotFoundException('NOT_FOUND', `No active offer ${offerId}`);
+    }
+
+    if (replayId) {
+      const replay = await this.prisma.replay.findFirst({
+        where: { id: replayId, OR: [{ uploaderUserId: userId }, { visibility: { not: 'private' } }] },
+        select: { id: true }
+      });
+
+      if (!replay) {
+        throw new AppNotFoundException('NOT_FOUND', `No replay ${replayId} you can attach`);
+      }
     }
 
     const order = await this.prisma.coachingOrder.create({

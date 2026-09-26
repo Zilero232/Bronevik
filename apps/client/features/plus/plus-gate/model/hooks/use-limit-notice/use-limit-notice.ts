@@ -2,9 +2,9 @@
 
 import { plusLimit } from '@otmetki/schemas';
 
-import { usePlus } from '@/entities/plus/subscription';
-
 import type { UseLimitNoticeInput } from './use-limit-notice.types';
+
+import { usePlus } from '../use-plus';
 
 export const useLimitNotice = ({ limitKey, used }: UseLimitNoticeInput) => {
   const { isPlus, isSignedIn, limits } = usePlus();

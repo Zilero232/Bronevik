@@ -57,7 +57,7 @@ export const upsertCoachSchema = z.object({
   priceNote: z.string().trim().max(COACHING.priceNoteMaxLength).optional(),
   contacts: coachContactsSchema.default({}),
   tankIds: z.array(tankIdSchema).max(30).default([]),
-  isActive: z.boolean().default(true)
+  isActive: z.boolean().optional()
 });
 
 const offerFieldsSchema = z.object({

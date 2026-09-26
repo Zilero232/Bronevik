@@ -1,40 +1,20 @@
 'use client';
 
-import { Crosshair, Flag, Redo2, Trash2, Undo2, XCircle } from 'lucide-react';
+import { Redo2, Trash2, Undo2, XCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ClassIcon, IconButton, SegmentedControl } from '@/ui-kit';
+import { IconButton } from '@/ui-kit';
 
-import type { BoardTeam } from '../../../config';
-
-import { BOARD_COLORS, BOARD_TANK_KINDS, BOARD_TEAMS, BOARD_TOOL_ICONS, BOARD_TOOLBAR_TOOLS, BOARD_WIDTHS } from '../../../config';
+import { BOARD_TOOL_ICONS, BOARD_TOOLBAR_TOOLS } from '../../../config';
 import { useBoardToolbar } from '../../../model/hooks';
+import { ToolbarIcons, ToolbarStroke } from './components';
 
 import s from './BoardToolbar.module.scss';
 
 export const BoardToolbar = () => {
   const t = useTranslations('tactics.toolbar');
-  const {
-    isEditable,
-    tool,
-    iconKind,
-    team,
-    color,
-    width,
-    canUndo,
-    canRedo,
-    hasSelection,
-    hasActiveLayer,
-    onToolChange,
-    onIconKindChange,
-    onTeamChange,
-    onColorChange,
-    onWidthChange,
-    onUndo,
-    onRedo,
-    onDeleteSelected,
-    onClearLayer
-  } = useBoardToolbar();
+  const { isEditable, tool, canUndo, canRedo, hasSelection, hasActiveLayer, onToolChange, onUndo, onRedo, onDeleteSelected, onClearLayer } =
+    useBoardToolbar();
 
   if (!isEditable) {
     return null;
@@ -61,70 +41,10 @@ export const BoardToolbar = () => {
         })}
       </div>
       <div className={s.group}>
-        {BOARD_TANK_KINDS.map((kind) => (
-          <IconButton
-            key={kind}
-            aria-label={t(`icons.${kind}`)}
-            isActive={tool === 'icon' && iconKind === kind}
-            size='sm'
-            title={t(`icons.${kind}`)}
-            onClick={() => onIconKindChange(kind)}
-          >
-            <ClassIcon size={16} tankClass={kind} />
-          </IconButton>
-        ))}
-        <IconButton
-          aria-label={t('icons.flag')}
-          isActive={tool === 'icon' && iconKind === 'flag'}
-          size='sm'
-          title={t('icons.flag')}
-          onClick={() => onIconKindChange('flag')}
-        >
-          <Flag size={16} />
-        </IconButton>
-        <IconButton
-          aria-label={t('icons.marker')}
-          isActive={tool === 'icon' && iconKind === 'marker'}
-          size='sm'
-          title={t('icons.marker')}
-          onClick={() => onIconKindChange('marker')}
-        >
-          <Crosshair size={16} />
-        </IconButton>
-        <SegmentedControl<BoardTeam>
-          aria-label={t('team')}
-          options={BOARD_TEAMS.map((value) => ({ value, label: t(`teams.${value}`) }))}
-          size='sm'
-          value={team}
-          onChange={onTeamChange}
-        />
+        <ToolbarIcons />
       </div>
       <div className={s.group}>
-        <div aria-label={t('color')} className={s.swatches} role='radiogroup'>
-          {BOARD_COLORS.map((value) => (
-            <button
-              key={value}
-              aria-checked={color === value}
-              aria-label={value}
-              className={s.swatch}
-              role='radio'
-              style={{ backgroundColor: value }}
-              type='button'
-              onClick={() => onColorChange(value)}
-            />
-          ))}
-        </div>
-        <SegmentedControl
-          options={BOARD_WIDTHS.map((value) => ({
-            value: String(value),
-            label: <span className={s.width} style={{ height: value }} />,
-            'aria-label': String(value)
-          }))}
-          aria-label={t('width')}
-          size='sm'
-          value={width}
-          onChange={onWidthChange}
-        />
+        <ToolbarStroke />
       </div>
       <div className={s.group}>
         <IconButton aria-label={t('undo')} disabled={!canUndo} size='sm' title={t('undo')} onClick={onUndo}>

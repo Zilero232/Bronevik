@@ -8,9 +8,11 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { usePlus, useStartTrial } from '@/entities/plus/subscription';
+import { isPromoRejection, useStartTrial } from '@/entities/plus/subscription';
+import { usePlus } from '@/features/plus/plus-gate';
 
 import { PLUS_CHECKOUT_FORM_DEFAULT_VALUES } from '../../../config';
+import { checkoutNote } from '../../../lib/checkout-note';
 import { usePlusCheckout } from '../use-plus-checkout';
 import { usePlusOffers } from '../use-plus-offers';
 
@@ -30,8 +32,8 @@ export const usePlusCheckoutForm = () => {
   const onSubmit = handleSubmit(async (values) => {
     try {
       await checkout.mutateAsync(values);
-    } catch {
-      if (values.promoCode) {
+    } catch (error) {
+      if (values.promoCode && isPromoRejection(error)) {
         setError('promoCode', { type: 'server' });
 
         return;
@@ -41,15 +43,12 @@ export const usePlusCheckoutForm = () => {
     }
   });
 
-  const onStartTrial = () =>
-    trial.mutate(undefined, {
-      onSuccess: () => toast.success(t('teaser.trialStarted', { days: access.trialDays })),
-      onError: () => toast.error(t('teaser.trialFailed'))
-    });
+  const onStartTrial = () => trial.mutate();
 
   return {
     offers,
     access,
+    note: checkoutNote(access),
     planRegistration: register('plan'),
     promoRegistration: register('promoCode', { setValueAs: (value: string) => value.trim() || undefined }),
     promoError: errors.promoCode,

@@ -1,7 +1,7 @@
-import type { EventEntry } from '../../../lib/event-timeline';
+import type { EventView } from '../../../model/hooks';
 
 export type EventGroupProps = {
   title: string;
   emptyTitle: string;
-  entries: EventEntry[];
+  entries: EventView[];
 };

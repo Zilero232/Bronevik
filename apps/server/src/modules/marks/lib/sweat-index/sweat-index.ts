@@ -1,6 +1,6 @@
 import type { SweatIndex, SweatLevel } from '@otmetki/schemas';
 
-import type { BuildSweatIndexInput, SweatCutoffs, SweatLevelInput, SweatRatioInput } from './sweat-index.types';
+import type { BuildSweatIndexInput, QuantileInput, SweatCutoffs, SweatLevelInput, SweatRatioInput } from './sweat-index.types';
 
 import { SWEAT_INDEX } from '../../config';
 
@@ -9,7 +9,7 @@ const RATIO_PRECISION = 100;
 export const sweatRatio = ({ threshold, baseline }: SweatRatioInput): number | null =>
   threshold && baseline && threshold > 0 && baseline > 0 ? Math.round((threshold / baseline) * RATIO_PRECISION) / RATIO_PRECISION : null;
 
-const quantile = (sorted: readonly number[], level: number): number => sorted[Math.floor(level * (sorted.length - 1))] ?? 0;
+const quantile = ({ sorted, level }: QuantileInput): number => sorted[Math.floor(level * (sorted.length - 1))] ?? 0;
 
 export const sweatCutoffs = (values: readonly number[]): SweatCutoffs | null => {
   if (values.length < SWEAT_INDEX.minTanks) {
@@ -19,9 +19,9 @@ export const sweatCutoffs = (values: readonly number[]): SweatCutoffs | null => 
   const sorted = [...values].sort((a, b) => a - b);
 
   return {
-    moderate: quantile(sorted, SWEAT_INDEX.quantiles.moderate),
-    hard: quantile(sorted, SWEAT_INDEX.quantiles.hard),
-    extreme: quantile(sorted, SWEAT_INDEX.quantiles.extreme)
+    moderate: quantile({ sorted, level: SWEAT_INDEX.quantiles.moderate }),
+    hard: quantile({ sorted, level: SWEAT_INDEX.quantiles.hard }),
+    extreme: quantile({ sorted, level: SWEAT_INDEX.quantiles.extreme })
   };
 };
 

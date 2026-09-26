@@ -10,7 +10,7 @@ import { NEWS } from '../../../config';
 
 import s from './NewsCard.module.scss';
 
-export const NewsCard = ({ entry: { item, vehicles } }: NewsCardProps) => {
+export const NewsCard = ({ entry: { item, href, vehicles } }: NewsCardProps) => {
   const t = useTranslations('news');
   const format = useFormatter();
 
@@ -23,10 +23,14 @@ export const NewsCard = ({ entry: { item, vehicles } }: NewsCardProps) => {
         <Badge tone={NEWS.kindTone[item.kind]}>{t(`filters.${item.kind}`)}</Badge>
         {item.gameVersion && <Badge tone='neutral'>{t('version', { version: item.gameVersion })}</Badge>}
       </div>
-      <a className={s.title} href={item.url} rel='noreferrer' target='_blank'>
-        {item.title}
-        <ExternalLink aria-hidden className={s.icon} size={14} />
-      </a>
+      {href ? (
+        <a className={s.title} href={href} rel='noopener noreferrer' target='_blank'>
+          {item.title}
+          <ExternalLink aria-hidden className={s.icon} size={14} />
+        </a>
+      ) : (
+        <span className={s.title}>{item.title}</span>
+      )}
       {item.summary && <p className={s.summary}>{item.summary}</p>}
       {vehicles.length > 0 && (
         <ul aria-label={t('mentions')} className={s.tanks}>

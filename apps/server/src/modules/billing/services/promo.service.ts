@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import type { PromoCode } from '../../../../generated';
-import type { PromoCodeInput, RecordRedemptionInput } from '../billing.types';
+import type { ClaimRedemptionInput, PromoCodeInput, RecordRedemptionInput } from '../billing.types';
 
 import { AppBadRequestException } from '../../../common/exceptions';
-import { isUniqueViolation, PrismaService } from '../../../core';
+import { PrismaService } from '../../../core';
 import { PROMO_REJECTION_CODE } from '../config';
 import { promoRejection } from '../lib';
 import { EntitlementsService } from './entitlements.service';
@@ -48,26 +48,44 @@ export class PromoService {
     }
 
     const days = promo.freeDays;
+    const now = new Date();
 
     await this.prisma.$transaction(async (tx) => {
-      await this.recordRedemption({ db: tx, userId, code: promo.code });
-      await this.subscriptions.grantDays({ db: tx, userId, days, now: new Date() });
+      await this.claimRedemption({ db: tx, userId, code: promo.code, now });
+      await this.subscriptions.grantDays({ db: tx, userId, days, now });
     });
 
     await this.entitlements.syncTracking(userId);
   }
 
-  async recordRedemption({ db, userId, code }: RecordRedemptionInput): Promise<void> {
-    try {
-      await db.promoRedemption.create({ data: { code, userId } });
-    } catch (error) {
-      if (isUniqueViolation(error)) {
-        throw new AppBadRequestException(PROMO_REJECTION_CODE.alreadyRedeemed, 'Promo code rejected: alreadyRedeemed');
-      }
+  async claimRedemption({ db, userId, code, now }: ClaimRedemptionInput): Promise<void> {
+    const claimed = await db.promoCode.updateMany({
+      where: {
+        code,
+        AND: [
+          { OR: [{ maxUses: null }, { usedCount: { lt: db.promoCode.fields.maxUses } }] },
+          { OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] }
+        ]
+      },
+      data: { usedCount: { increment: 1 } }
+    });
 
-      throw error;
+    if (claimed.count === 0) {
+      throw new AppBadRequestException(PROMO_REJECTION_CODE.exhausted, 'Promo code rejected: exhausted');
     }
 
-    await db.promoCode.update({ where: { code }, data: { usedCount: { increment: 1 } } });
+    const inserted = await db.promoRedemption.createMany({ data: [{ code, userId }], skipDuplicates: true });
+
+    if (inserted.count === 0) {
+      throw new AppBadRequestException(PROMO_REJECTION_CODE.alreadyRedeemed, 'Promo code rejected: alreadyRedeemed');
+    }
+  }
+
+  async recordRedemption({ db, userId, code }: RecordRedemptionInput): Promise<void> {
+    const inserted = await db.promoRedemption.createMany({ data: [{ code, userId }], skipDuplicates: true });
+
+    if (inserted.count > 0) {
+      await db.promoCode.update({ where: { code }, data: { usedCount: { increment: 1 } } });
+    }
   }
 }

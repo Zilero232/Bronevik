@@ -3,34 +3,18 @@
 import { useTranslations } from 'next-intl';
 
 import { Link } from '@/shared/i18n/navigation';
-import { Badge, Button, RelativeTime, Select, Textarea } from '@/ui-kit';
+import { Badge, Button, RelativeTime } from '@/ui-kit';
 
 import type { OrderRowProps } from './OrderRow.types';
 
-import { COACHING_ORDERS } from '../../../../../config';
 import { useOrderRow } from '../../../../../model/hooks';
+import { OrderReview } from './components';
 
 import s from './OrderRow.module.scss';
 
 export const OrderRow = ({ order, coachName }: OrderRowProps) => {
   const t = useTranslations('coaching.orders');
-  const {
-    role,
-    canAccept,
-    canComplete,
-    canCancel,
-    canReview,
-    score,
-    review,
-    coachHref,
-    isBusy,
-    onScoreChange,
-    onReviewChange,
-    onAccept,
-    onComplete,
-    onCancel,
-    onReview
-  } = useOrderRow(order);
+  const { role, canAccept, canComplete, canCancel, canReview, coachHref, isDecline, isBusy, onAccept, onComplete, onCancel } = useOrderRow(order);
 
   return (
     <article className={s.root}>
@@ -71,25 +55,12 @@ export const OrderRow = ({ order, coachName }: OrderRowProps) => {
           )}
           {canCancel && (
             <Button disabled={isBusy} size='sm' variant='ghost' onClick={onCancel}>
-              {role === 'coach' && order.status === 'requested' ? t('decline') : t('cancel')}
+              {isDecline ? t('decline') : t('cancel')}
             </Button>
           )}
         </div>
       )}
-      {canReview && (
-        <div className={s.review}>
-          <Select
-            items={COACHING_ORDERS.scores.map((value) => ({ value, label: t('score', { score: value }) }))}
-            label={t('reviewScore')}
-            value={score}
-            onValueChange={onScoreChange}
-          />
-          <Textarea placeholder={t('reviewPlaceholder')} rows={2} value={review} onChange={(event) => onReviewChange(event.target.value)} />
-          <Button disabled={isBusy} size='sm' onClick={onReview}>
-            {t('sendReview')}
-          </Button>
-        </div>
-      )}
+      {canReview && <OrderReview order={order} />}
     </article>
   );
 };

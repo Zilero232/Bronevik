@@ -6,7 +6,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { VehicleArmorModel } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { ArmorStorage } from '../../../gamedata';
-import type { VehicleCatalogService } from '../../../reference';
+import type { CatalogEntry, VehicleCatalogService } from '../../../reference';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { TankArmorService } from '../tank-armor.service';
@@ -52,7 +52,7 @@ const createService = ({ row, stored }: { row: VehicleArmorModel | null; stored?
   };
 
   prisma.vehicleArmorModel.findUnique.mockResolvedValue(row);
-  catalog.find.mockResolvedValue({ summary: SUMMARY } as never);
+  catalog.find.mockResolvedValue(mock<CatalogEntry>({ summary: SUMMARY }));
 
   return new TankArmorService(prisma, catalog, storage);
 };

@@ -1,5 +1,7 @@
 import type { CoachContacts } from '@/shared/api/coaching';
 
+import { safeWebHref } from '@/shared/lib';
+
 import type { CoachContactLink } from './coach-contacts.types';
 
 import { COACH_CONTACT_KINDS } from '../../config';
@@ -12,5 +14,5 @@ export const coachContactLinks = (contacts: CoachContacts): CoachContactLink[] =
       return [];
     }
 
-    return [{ kind, value, href: kind === 'discord' ? null : value }];
+    return [{ kind, value, href: kind === 'discord' ? null : (safeWebHref(value) ?? null) }];
   });

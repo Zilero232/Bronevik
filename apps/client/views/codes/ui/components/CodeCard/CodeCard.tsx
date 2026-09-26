@@ -10,14 +10,14 @@ import { Badge, Button, buttonVariants, CopyField, RelativeTime } from '@/ui-kit
 import type { CodeCardProps } from './CodeCard.types';
 
 import { CODES } from '../../../config';
-import { useCodeReport } from '../../../model/hooks';
+import { useCodeCard } from '../../../model/hooks';
 
 import s from './CodeCard.module.scss';
 
 export const CodeCard = ({ code }: CodeCardProps) => {
   const t = useTranslations('codes');
   const format = useFormatter();
-  const { isSignedIn, isReporting, report } = useCodeReport({ code: code.code });
+  const { sourceHref, isSignedIn, isReporting, report } = useCodeCard({ code });
 
   return (
     <li className={s.root} data-status={code.status}>
@@ -39,8 +39,8 @@ export const CodeCard = ({ code }: CodeCardProps) => {
         <div className={s.row}>
           <dt>{t('card.source')}</dt>
           <dd>
-            {code.sourceUrl ? (
-              <a className={s.source} href={code.sourceUrl} rel='noreferrer' target='_blank'>
+            {sourceHref ? (
+              <a className={s.source} href={sourceHref} rel='noopener noreferrer' target='_blank'>
                 {code.source}
                 <ExternalLink aria-hidden size={12} />
               </a>

@@ -7,10 +7,10 @@ import { match } from 'ts-pattern';
 import { GuideStatusBadge } from '@/features/community/guide-meta';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, Card, CardHeader, EmptyState, ErrorState, RelativeTime, Skeleton } from '@/ui-kit';
+import { buttonVariants, Card, CardHeader, EmptyState, ErrorState, RelativeTime } from '@/ui-kit';
 
-import { GUIDE_LIST } from '../../../config';
 import { useMyGuides } from '../../../model/hooks';
+import { SideListSkeleton } from '../SideListSkeleton';
 
 import s from './MyGuides.module.scss';
 
@@ -26,13 +26,7 @@ export const MyGuides = () => {
     <Card aria-labelledby='my-guides-title' padding='none'>
       <CardHeader meta={guides.length > 0 ? guides.length : undefined} title={<span id='my-guides-title'>{t('title')}</span>} />
       {match({ isPending, isError, isEmpty: guides.length === 0 })
-        .with({ isPending: true }, () => (
-          <div aria-busy className={s.list}>
-            {GUIDE_LIST.skeletonRows.map((row) => (
-              <Skeleton key={row} height={GUIDE_LIST.skeletonHeight} shape='block' />
-            ))}
-          </div>
-        ))
+        .with({ isPending: true }, () => <SideListSkeleton />)
         .with({ isError: true }, () => <ErrorState isCompact isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />)
         .with({ isEmpty: true }, () => (
           <EmptyState

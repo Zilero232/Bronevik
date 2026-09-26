@@ -69,6 +69,10 @@ export const useBoardDocument = ({ board, urlToken, userName }: UseBoardDocument
       undo.destroy();
       provider.destroy();
       doc.destroy();
+      setStatus('connecting');
+      setIsSynced(false);
+      setIsWritable(false);
+      setPeers([]);
     };
   }, [board.id, token]);
 

@@ -87,6 +87,7 @@
   },
   "picker": {
     "placeholder": "Find a tank…",
+    "remove": "Remove {name}",
     "open": "Open the tank list",
     "empty": "Nothing found"
   },

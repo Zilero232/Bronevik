@@ -12,6 +12,19 @@ import { PromoService } from '../promo.service';
 
 const promo = mock<PromoCode>({ code: 'FREE7', discountPercent: null, freeDays: 7, maxUses: null, usedCount: 0, expiresAt: null });
 
+describe('PromoService.recordRedemption', () => {
+  it('counts a paid redemption once even when the webhook repeats', async () => {
+    const prisma = mockDeep<PrismaService>();
+    const service = new PromoService(prisma, mock<SubscriptionService>(), mock<EntitlementsService>());
+
+    prisma.promoRedemption.createMany.mockResolvedValue({ count: 0 });
+
+    await service.recordRedemption({ db: prisma, userId: 'u1', code: 'SPRING' });
+
+    expect(prisma.promoCode.update).not.toHaveBeenCalled();
+  });
+});
+
 describe('PromoService', () => {
   const createService = () => {
     const prisma = mockDeep<PrismaService>();
@@ -39,10 +52,42 @@ describe('PromoService', () => {
     prisma.promoCode.findUnique.mockResolvedValue(promo);
     prisma.promoRedemption.findUnique.mockResolvedValue(null);
 
+    prisma.promoCode.updateMany.mockResolvedValue({ count: 1 });
+    prisma.promoRedemption.createMany.mockResolvedValue({ count: 1 });
+
     await service.redeemFreeDays({ userId: 'u1', code: 'FREE7' });
 
     expect(subscriptions.grantDays).toHaveBeenCalledWith(expect.objectContaining({ userId: 'u1', days: 7 }));
-    expect(prisma.promoCode.update).toHaveBeenCalledWith({ where: { code: 'FREE7' }, data: { usedCount: { increment: 1 } } });
+    expect(prisma.promoCode.updateMany).toHaveBeenCalledWith(expect.objectContaining({ data: { usedCount: { increment: 1 } } }));
+  });
+
+  it('refuses when a concurrent redemption took the last use', async () => {
+    const { service, prisma, subscriptions } = createService();
+
+    prisma.promoCode.findUnique.mockResolvedValue({ ...promo, maxUses: 1 });
+    prisma.promoRedemption.findUnique.mockResolvedValue(null);
+    prisma.promoCode.updateMany.mockResolvedValue({ count: 0 });
+
+    await expect(service.redeemFreeDays({ userId: 'u1', code: 'FREE7' })).rejects.toMatchObject({
+      response: { code: PROMO_REJECTION_CODE.exhausted }
+    });
+
+    expect(subscriptions.grantDays).not.toHaveBeenCalled();
+  });
+
+  it('refuses when a concurrent request of the same user redeemed first', async () => {
+    const { service, prisma, subscriptions } = createService();
+
+    prisma.promoCode.findUnique.mockResolvedValue(promo);
+    prisma.promoRedemption.findUnique.mockResolvedValue(null);
+    prisma.promoCode.updateMany.mockResolvedValue({ count: 1 });
+    prisma.promoRedemption.createMany.mockResolvedValue({ count: 0 });
+
+    await expect(service.redeemFreeDays({ userId: 'u1', code: 'FREE7' })).rejects.toMatchObject({
+      response: { code: PROMO_REJECTION_CODE.alreadyRedeemed }
+    });
+
+    expect(subscriptions.grantDays).not.toHaveBeenCalled();
   });
 
   it('refuses a code the user already redeemed', async () => {

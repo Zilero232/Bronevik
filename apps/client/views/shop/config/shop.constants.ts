@@ -6,3 +6,9 @@ export const SHOP = {
   soonDays: 14,
   outlookTone: { unknown: 'neutral', overdue: 'warning', soon: 'success', later: 'steel' }
 } as const;
+
+export const SHOP_CALENDAR = {
+  isoLocale: 'en-CA',
+  midnightSuffix: 'T00:00:00Z',
+  msPerDay: 86_400_000
+} as const;

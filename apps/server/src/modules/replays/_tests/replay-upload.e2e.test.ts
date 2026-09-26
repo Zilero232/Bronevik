@@ -14,8 +14,10 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Replay } from '../../../../generated';
 
+import { AppForbiddenException } from '../../../common/exceptions';
 import { LocalDiskStorage, ObjectStorage, PrismaService } from '../../../core';
 import { FIXTURE, readFixture } from '../../../lib/replay/_tests/fixtures';
+import { EntitlementsService } from '../../billing';
 import { ModDeviceService } from '../../mod';
 import { REPLAYS_QUEUE } from '../config';
 import { ReplaysController } from '../replays.controller';
@@ -23,6 +25,7 @@ import { HeatmapService, ReplayOwnerService, ReplayParseService, ReplayQueryServ
 
 const prisma = mockDeep<PrismaService>();
 const queue = mock<Queue>();
+const entitlements = mock<EntitlementsService>();
 const replayId = '0b0f9a6e-9a36-4f59-8a61-1d1a4b6a0c11';
 const replayRow = (overrides: Partial<Replay>): Replay => ({
   id: replayId,
@@ -79,6 +82,7 @@ beforeAll(async () => {
       { provide: PrismaService, useValue: prisma },
       { provide: ObjectStorage, useValue: storage },
       { provide: ModDeviceService, useValue: mock<ModDeviceService>() },
+      { provide: EntitlementsService, useValue: entitlements },
       { provide: getQueueToken(REPLAYS_QUEUE.name), useValue: queue },
       { provide: ReplayQueryService, useValue: mock<ReplayQueryService>() },
       { provide: ReplayOwnerService, useValue: mock<ReplayOwnerService>() },
@@ -148,6 +152,21 @@ describe('POST /replays', () => {
       .attach('file', Buffer.from(readFixture(FIXTURE.wgFull)), 'battle.zip');
 
     expect(response.status).toBe(400);
+  });
+
+  it('refuses an upload over the stored replays limit of the plan', async () => {
+    prisma.replay.findUnique.mockResolvedValueOnce(null);
+    prisma.replay.count.mockResolvedValueOnce(50);
+    entitlements.assertWithinLimit.mockRejectedValueOnce(new AppForbiddenException('SUBSCRIPTION_REQUIRED', 'The storedReplays limit is reached'));
+    prisma.replay.create.mockClear();
+
+    const response = await request(app.getHttpServer())
+      .post('/replays')
+      .attach('file', Buffer.from(readFixture(FIXTURE.wgFull)), 'battle.wotreplay');
+
+    expect(response.status).toBe(403);
+    expect(entitlements.assertWithinLimit).toHaveBeenCalledWith({ userId: 'user-1', key: 'storedReplays', count: 50 });
+    expect(prisma.replay.create).not.toHaveBeenCalled();
   });
 
   it('answers 409 for a replay uploaded before', async () => {

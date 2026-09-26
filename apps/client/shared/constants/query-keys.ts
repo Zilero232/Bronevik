@@ -53,6 +53,7 @@ export const QUERY_KEYS = {
     tanks: (params: object) => ['missions', 'tanks', params] as const,
     garage: (questId: number) => ['me', 'missions', 'garage', questId] as const,
     progress: ['me', 'missions', 'progress'] as const,
+    plans: ['me', 'missions', 'plan'] as const,
     plan: (operation: number) => ['me', 'missions', 'plan', operation] as const
   },
   maps: {

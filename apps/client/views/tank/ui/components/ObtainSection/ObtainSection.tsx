@@ -6,7 +6,8 @@ import { TankLink, TankStatusBadge } from '@/entities/tank/tank';
 import { Card, CardHeader } from '@/ui-kit';
 
 import { TANK_PAGE, TANK_SECTIONS } from '../../../config';
-import { useTank } from '../../../model/context';
+import { useObtainSection } from '../../../model/hooks';
+import { ObtainLinks } from './components';
 
 import s from './ObtainSection.module.scss';
 
@@ -14,9 +15,7 @@ export const ObtainSection = () => {
   const t = useTranslations('tank.obtain');
   const tSource = useTranslations('tankTraits.source');
   const format = useFormatter();
-  const { detail } = useTank();
-
-  const { obtain } = detail;
+  const { obtain, offers, news } = useObtainSection();
 
   return (
     <Card className={s.root} id={TANK_SECTIONS.obtain} padding='none'>
@@ -51,40 +50,8 @@ export const ObtainSection = () => {
             </ul>
           </div>
         )}
-        {obtain.offers.total > 0 && (
-          <div className={s.block}>
-            <h3 className={s.title}>{t('offers', { count: obtain.offers.total })}</h3>
-            <ul className={s.list}>
-              {obtain.offers.items.map((offer) => (
-                <li key={`${offer.title}-${offer.lastSeenAt}`} className={s.row}>
-                  {offer.url ? (
-                    <a className={s.link} href={offer.url} rel='noreferrer' target='_blank'>
-                      {offer.title}
-                    </a>
-                  ) : (
-                    <span>{offer.title}</span>
-                  )}
-                  <span className={s.value}>{format.dateTime(new Date(offer.startsAt ?? offer.lastSeenAt), { dateStyle: 'medium' })}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {obtain.news.length > 0 && (
-          <div className={s.block}>
-            <h3 className={s.title}>{t('news')}</h3>
-            <ul className={s.list}>
-              {obtain.news.map((item) => (
-                <li key={item.url} className={s.row}>
-                  <a className={s.link} href={item.url} rel='noreferrer' target='_blank'>
-                    {item.title}
-                  </a>
-                  <span className={s.value}>{format.dateTime(new Date(item.publishedAt), { dateStyle: 'medium' })}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {obtain.offers.total > 0 && <ObtainLinks items={offers} title={t('offers', { count: obtain.offers.total })} />}
+        {news.length > 0 && <ObtainLinks items={news} title={t('news')} />}
       </div>
       <p className={s.note}>{t('note')}</p>
     </Card>

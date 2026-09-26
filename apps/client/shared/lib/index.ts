@@ -15,6 +15,7 @@ export { PERCENT_TEXT, percentText } from './percent';
 export type { PercentFormatter, PercentTextInput } from './percent';
 export { RATING_TONES, ratingTone, toneOfTier, toneThresholds } from './rating-tone';
 export type { RatingTone } from './rating-tone';
+export { isExternalHref, safeHref, safeWebHref } from './safe-href';
 export { seededRandom } from './seeded-random';
 export { useSvgId } from './svg-id';
 export { useChartFormat } from './use-chart-format';

@@ -1,5 +1,7 @@
 'use client';
 
+import type { QueryFunctionContext } from '@tanstack/react-query';
+
 import { useQueries } from '@tanstack/react-query';
 
 import { useCommunityViewer } from '@/features/community/viewer';
@@ -15,7 +17,7 @@ export const useViewerClans = () => {
   const profiles = useQueries({
     queries: accounts.map(({ accountId }) => ({
       queryKey: QUERY_KEYS.player.profile(String(accountId)),
-      queryFn: ({ signal }: { signal: AbortSignal }) => getPlayer({ idOrNick: String(accountId), signal })
+      queryFn: ({ signal }: QueryFunctionContext) => getPlayer({ idOrNick: String(accountId), signal })
     }))
   });
 

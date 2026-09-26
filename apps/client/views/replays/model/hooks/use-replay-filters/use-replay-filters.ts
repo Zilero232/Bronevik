@@ -4,10 +4,9 @@ import { useDebounceValue } from '@siberiacancode/reactuse';
 import { useQueryStates } from 'nuqs';
 
 import type { ReplayFilters } from '../../../lib/replay-query';
+import type { ReplayFiltersPatch } from './use-replay-filters.types';
 
 import { REPLAY_LIST, REPLAYS_URL_PARSERS } from '../../../config';
-
-type ReplayFiltersPatch = Partial<Omit<ReplayFilters, 'offset'>>;
 
 export const useReplayFilters = () => {
   const [state, setState] = useQueryStates(REPLAYS_URL_PARSERS, { history: 'replace' });

@@ -4,10 +4,10 @@ import { Heart } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { Avatar, Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { Avatar, Card, CardHeader, EmptyState, ErrorState } from '@/ui-kit';
 
-import { GUIDE_LIST } from '../../../config';
 import { useTopAuthors } from '../../../model/hooks';
+import { SideListSkeleton } from '../SideListSkeleton';
 
 import s from './TopAuthors.module.scss';
 
@@ -20,13 +20,7 @@ export const TopAuthors = () => {
     <Card aria-labelledby='guide-authors-title' padding='none'>
       <CardHeader title={<span id='guide-authors-title'>{t('title')}</span>} />
       {match({ isPending, isError, isEmpty: authors.length === 0 })
-        .with({ isPending: true }, () => (
-          <div aria-busy className={s.list}>
-            {GUIDE_LIST.skeletonRows.map((row) => (
-              <Skeleton key={row} height={GUIDE_LIST.skeletonHeight} shape='block' />
-            ))}
-          </div>
-        ))
+        .with({ isPending: true }, () => <SideListSkeleton />)
         .with({ isError: true }, () => <ErrorState isCompact isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />)
         .with({ isEmpty: true }, () => <EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />)
         .otherwise(() => (

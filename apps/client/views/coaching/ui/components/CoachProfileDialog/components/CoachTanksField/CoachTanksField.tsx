@@ -1,35 +1,31 @@
 'use client';
 
-import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Controller, useFormContext } from 'react-hook-form';
 
-import { TankPicker } from '@/features/tank/pick-tank';
-import { IconButton, TankImage } from '@/ui-kit';
+import { TankIdsField } from '@/features/tank/pick-tank';
 
-import { useCoachTanksField } from '../../../../../model/hooks';
+import type { CoachFormOutput, CoachFormValues } from '../../../../../lib/coach-form';
 
-import s from './CoachTanksField.module.scss';
+import { COACH_FORM } from '../../../../../config';
 
 export const CoachTanksField = () => {
   const t = useTranslations('coaching.profile');
-  const { tankIds, vehicles, isFull, onPick, onRemove } = useCoachTanksField();
+  const { control } = useFormContext<CoachFormValues, unknown, CoachFormOutput>();
 
   return (
-    <div className={s.root}>
-      {!isFull && <TankPicker excludeIds={tankIds} label={t('tanks')} placeholder={t('tanksPlaceholder')} value={null} onChange={onPick} />}
-      {vehicles.length > 0 && (
-        <ul className={s.list}>
-          {vehicles.map((vehicle) => (
-            <li key={vehicle.tankId} className={s.item}>
-              <TankImage size='small' tank={vehicle} />
-              <span className={s.name}>{vehicle.shortName}</span>
-              <IconButton aria-label={t('removeTank', { name: vehicle.name })} size='sm' onClick={() => onRemove(vehicle.tankId)}>
-                <X size={12} />
-              </IconButton>
-            </li>
-          ))}
-        </ul>
+    <Controller
+      render={({ field }) => (
+        <TankIdsField
+          label={t('tanks')}
+          max={COACH_FORM.maxTanks}
+          placeholder={t('tanksPlaceholder')}
+          value={field.value}
+          onChange={field.onChange}
+        />
       )}
-    </div>
+      control={control}
+      name='tankIds'
+    />
   );
 };

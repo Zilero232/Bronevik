@@ -57,12 +57,6 @@
   gap: var(--space-3);
 }
 
-.link {
-  min-width: 0;
-  color: var(--color-text);
-  overflow-wrap: anywhere;
-}
-
 .value {
   @include numeric;
 

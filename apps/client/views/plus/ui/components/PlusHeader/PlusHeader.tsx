@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { usePlus } from '@/entities/plus/subscription';
+import { usePlus } from '@/features/plus/plus-gate';
 
 import s from './PlusHeader.module.scss';
 

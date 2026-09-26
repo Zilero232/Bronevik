@@ -9,8 +9,6 @@ import { Button, buttonVariants, Skeleton } from '@/ui-kit';
 
 import type { CheckoutActionProps } from './CheckoutAction.types';
 
-import { checkoutNote } from '../../../../../lib/checkout-note';
-
 import s from './CheckoutAction.module.scss';
 
 export const CheckoutAction = ({
@@ -22,14 +20,11 @@ export const CheckoutAction = ({
   trialAvailable,
   trialDays,
   isStartingTrial,
-  state,
-  periodEnd,
+  note,
   onStartTrial
 }: CheckoutActionProps) => {
   const t = useTranslations('plus');
   const format = useFormatter();
-
-  const note = checkoutNote({ isPlus, state, periodEnd, isCheckoutAvailable });
 
   return (
     <div className={s.root}>

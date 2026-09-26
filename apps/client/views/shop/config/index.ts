@@ -1,1 +1,1 @@
-export { SHOP } from './shop.constants';
+export { SHOP, SHOP_CALENDAR } from './shop.constants';

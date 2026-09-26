@@ -11,7 +11,7 @@ import s from './PlusCheckout.module.scss';
 
 export const PlusCheckout = () => {
   const t = useTranslations('plus.checkout');
-  const { offers, access, planRegistration, promoRegistration, promoError, isSubmitting, isStartingTrial, onSubmit, onStartTrial } =
+  const { offers, access, note, planRegistration, promoRegistration, promoError, isSubmitting, isStartingTrial, onSubmit, onStartTrial } =
     usePlusCheckoutForm();
 
   return (
@@ -34,8 +34,7 @@ export const PlusCheckout = () => {
           isSignedIn={access.isSignedIn}
           isStartingTrial={isStartingTrial}
           isSubmitting={isSubmitting}
-          periodEnd={access.periodEnd}
-          state={access.state}
+          note={note}
           trialAvailable={access.trialAvailable}
           trialDays={access.trialDays}
           onStartTrial={onStartTrial}

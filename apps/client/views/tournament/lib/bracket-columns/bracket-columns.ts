@@ -1,6 +1,6 @@
 import type { TournamentParticipant } from '@/shared/api/tournaments';
 
-import type { BracketColumn, BracketColumnsInput, BracketRoundName, BracketSlot, RoundNameInput } from './bracket-columns.types';
+import type { BracketColumn, BracketColumnsInput, BracketRoundName, BracketSlot, RoundNameInput, SlotOfInput } from './bracket-columns.types';
 
 export const participantLabel = (participant: Pick<TournamentParticipant, 'accountId' | 'nickname' | 'teamName'>): string =>
   participant.teamName ?? participant.nickname ?? `#${participant.accountId}`;
@@ -23,7 +23,7 @@ export const bracketColumns = ({ bracket, participants }: BracketColumnsInput): 
   const byAccount = new Map(participants.map((participant) => [participant.accountId, participant]));
   const total = bracket.rounds.length;
 
-  const slotOf = (accountId: number | null, winner: number | null): BracketSlot | null => {
+  const slotOf = ({ accountId, winner }: SlotOfInput): BracketSlot | null => {
     if (accountId === null) {
       return null;
     }
@@ -49,8 +49,8 @@ export const bracketColumns = ({ bracket, participants }: BracketColumnsInput): 
       return {
         round: match.round,
         index: match.index,
-        a: slotOf(match.a, match.winner),
-        b: slotOf(match.b, match.winner),
+        a: slotOf({ accountId: match.a, winner: match.winner }),
+        b: slotOf({ accountId: match.b, winner: match.winner }),
         isDecided: match.winner !== null,
         isBye,
         canReport: match.a !== null && match.b !== null && match.winner === null && (next === undefined || next.winner === null)

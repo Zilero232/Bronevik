@@ -4,14 +4,13 @@ import { FileUp } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { CommunityGate } from '@/features/community/viewer';
-import { ROUTES } from '@/shared/constants';
-import { Link } from '@/shared/i18n/navigation';
-import { Button, buttonVariants, Card, CardBody, CardHeader, ProgressBar, SegmentedControl } from '@/ui-kit';
+import { Button, Card, CardBody, CardHeader, ProgressBar, SegmentedControl } from '@/ui-kit';
 
 import type { UploadVisibility } from '../../../model/hooks';
 
 import { REPLAY_UPLOAD, REPLAY_VISIBILITIES } from '../../../config';
 import { useReplayUpload } from '../../../model/hooks';
+import { UploadOutcome } from './components';
 
 import s from './ReplayUpload.module.scss';
 
@@ -86,31 +85,7 @@ export const ReplayUpload = () => {
               {t('processing')}
             </p>
           )}
-          {phase === 'parsed' && uploadedId && (
-            <div className={s.actions}>
-              <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.replay(uploadedId)}>
-                {t('open')}
-              </Link>
-              <Button size='sm' variant='ghost' onClick={reset}>
-                {t('another')}
-              </Button>
-            </div>
-          )}
-          {phase === 'failed' && (
-            <div className={s.actions}>
-              <p className={s.error} role='alert'>
-                {parseError ? t('parseFailed') : t(`errors.${uploadError ?? 'unknown'}`)}
-              </p>
-              {parseError && uploadedId && (
-                <Link className={buttonVariants({ size: 'sm', variant: 'secondary' })} href={ROUTES.replay(uploadedId)}>
-                  {t('open')}
-                </Link>
-              )}
-              <Button size='sm' variant='ghost' onClick={reset}>
-                {t('another')}
-              </Button>
-            </div>
-          )}
+          <UploadOutcome parseError={parseError} phase={phase} uploadedId={uploadedId} uploadError={uploadError} onReset={reset} />
         </CommunityGate>
       </CardBody>
     </Card>

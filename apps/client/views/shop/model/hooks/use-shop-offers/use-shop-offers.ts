@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { pickVehicles } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { shopControllerListOffersInfiniteOptions } from '@/shared/api/query-options';
-import { nextPageOffset } from '@/shared/lib';
+import { nextPageOffset, safeWebHref } from '@/shared/lib';
 
 import type { OfferEntry, UseShopOffersInput } from './use-shop-offers.types';
 
@@ -22,6 +22,7 @@ export const useShopOffers = ({ isActiveOnly }: UseShopOffersInput) => {
 
   const offers: OfferEntry[] = (data?.pages.flatMap(({ items }) => items) ?? []).map((offer) => ({
     offer,
+    href: safeWebHref(offer.url),
     vehicles: pickVehicles({ tankIds: offer.tankIds, catalog }),
     isRunning: offer.endsAt === null || new Date(offer.endsAt).getTime() > dataUpdatedAt
   }));

@@ -1,4 +1,4 @@
-export { cancelsAtPeriodEnd, extendPeriod, renewalIdempotenceKey } from './period';
+export { cancelsAtPeriodEnd, extendPeriod, renewalIdempotenceKey, revokePeriod } from './period';
 export { plusStateOf } from './plus-state';
 export { describePlan, isPlusPlan, planPrice } from './pricing';
 export type { PlusPlan } from './pricing';

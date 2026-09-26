@@ -1,3 +1,4 @@
+export { usePlus } from './model/hooks';
 export { LimitNotice } from './ui/LimitNotice';
 export { PlusBadge } from './ui/PlusBadge';
 export { PlusGate } from './ui/PlusGate';

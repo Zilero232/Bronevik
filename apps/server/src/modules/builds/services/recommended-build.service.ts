@@ -12,8 +12,6 @@ import { recommendLoadout } from '../lib';
 import { BuildUsageService } from './build-usage.service';
 import { LoadoutService } from './loadout.service';
 
-const PLUS_COHORTS: ReadonlySet<string> = new Set(BUILD_USAGE.plusCohorts);
-
 @Injectable()
 export class RecommendedBuildService {
   constructor(
@@ -33,7 +31,9 @@ export class RecommendedBuildService {
   }
 
   async ensureCohort({ cohort, viewerUserId }: EnsureCohortInput): Promise<void> {
-    if (!PLUS_COHORTS.has(cohort)) {
+    const plusCohorts: readonly string[] = BUILD_USAGE.plusCohorts;
+
+    if (!plusCohorts.includes(cohort)) {
       return;
     }
 

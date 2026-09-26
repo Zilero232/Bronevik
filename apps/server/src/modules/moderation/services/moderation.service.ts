@@ -95,7 +95,7 @@ export class ModerationService {
       .with('replay', () => db.replay.updateMany({ where: { id: targetId }, data: { visibility: 'private' } }))
       .with('platoon_post', () => db.platoonPost.updateMany({ where: { id: targetId }, data: { status: 'hidden' } }))
       .with('recruiting_post', () => db.recruitingPost.updateMany({ where: { id: targetId }, data: { status: 'hidden' } }))
-      .with('coach', () => db.coachProfile.updateMany({ where: { userId: targetId }, data: { isActive: false } }))
+      .with('coach', () => db.coachProfile.updateMany({ where: { userId: targetId }, data: { isActive: false, hiddenAt: new Date() } }))
       .with('tournament', () => db.tournament.updateMany({ where: { id: targetId }, data: { status: 'cancelled' } }))
       .with('tactic_board', () => db.tacticBoard.updateMany({ where: { id: targetId }, data: { visibility: 'private' } }))
       .otherwise(() => ({ count: 0 }));

@@ -1,4 +1,4 @@
-import { addDays, differenceInCalendarDays } from 'date-fns';
+import { addDays, differenceInCalendarDays, differenceInMilliseconds, isAfter, isBefore } from 'date-fns';
 import { sortBy } from 'remeda';
 
 import type { EventEntry, EventEntryInput, EventTimeline, EventTimelineInput } from './event-timeline.types';
@@ -7,22 +7,22 @@ export const eventEntry = ({ event, now, openEndedDays }: EventEntryInput): Even
   const start = new Date(event.startsAt);
   const end = event.endsAt ? new Date(event.endsAt) : null;
 
-  if (start.getTime() > now.getTime()) {
+  if (isAfter(start, now)) {
     return { event, phase: 'upcoming', progress: null, days: differenceInCalendarDays(start, now) };
   }
 
   if (end === null) {
-    const isFresh = addDays(start, openEndedDays).getTime() >= now.getTime();
+    const isFresh = !isBefore(addDays(start, openEndedDays), now);
 
     return { event, phase: isFresh ? 'current' : 'past', progress: null, days: null };
   }
 
-  if (end.getTime() < now.getTime()) {
+  if (isBefore(end, now)) {
     return { event, phase: 'past', progress: null, days: null };
   }
 
-  const span = end.getTime() - start.getTime();
-  const progress = span > 0 ? (now.getTime() - start.getTime()) / span : 1;
+  const span = differenceInMilliseconds(end, start);
+  const progress = span > 0 ? differenceInMilliseconds(now, start) / span : 1;
 
   return { event, phase: 'current', progress, days: differenceInCalendarDays(end, now) };
 };

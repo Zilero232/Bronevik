@@ -1,3 +1,4 @@
+import { addDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -34,7 +35,7 @@ const tournament: TournamentWithParticipants = {
   bracket: null,
   status: 'registration',
   registrationEndsAt: null,
-  startsAt: new Date('2026-10-01T12:00:00Z'),
+  startsAt: addDays(new Date(), 30),
   createdAt: now,
   participants: []
 };
@@ -290,5 +291,86 @@ describe('TournamentService.reportMatch', () => {
     prisma.tournament.findFirst.mockResolvedValue({ ...tournament, status: 'finished', bracket: finalOf(1, 2) });
 
     await expect(service.reportMatch({ id, userId: 'organizer', round: 0, index: 0, winner: 1 })).rejects.toBeInstanceOf(AppConflictException);
+  });
+});
+
+describe('TournamentService.list', () => {
+  it('never lists drafts, even when asked for them', async () => {
+    const { service, prisma } = createService();
+
+    prisma.tournament.findMany.mockResolvedValue([]);
+    prisma.tournament.count.mockResolvedValue(0);
+
+    await service.list({ status: 'draft', limit: 20, offset: 0 });
+
+    expect(prisma.tournament.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { AND: [{ status: { not: 'draft' } }, { status: 'draft' }] } })
+    );
+  });
+
+  it('looks the nicknames of a whole page up in one query', async () => {
+    const { service, prisma, accounts } = createService();
+
+    prisma.tournament.findMany.mockResolvedValue([entrants({ participants: [participant(1n)] }), entrants({ participants: [participant(2n)] })]);
+    prisma.tournament.count.mockResolvedValue(2);
+
+    await service.list({ limit: 20, offset: 0 });
+
+    expect(accounts.nicknamesOf).toHaveBeenCalledTimes(1);
+    expect(accounts.nicknamesOf).toHaveBeenCalledWith([1n, 2n]);
+  });
+});
+
+describe('TournamentService.create', () => {
+  it('refuses a registration deadline after the start', async () => {
+    const { service, prisma } = createService();
+    const startsAt = addDays(new Date(), 7);
+
+    await expect(
+      service.create({
+        userId: 'organizer',
+        title: 'Autumn cup',
+        requirements: {},
+        maxParticipants: TOURNAMENT.maxParticipants,
+        startsAt: startsAt.toISOString(),
+        registrationEndsAt: addDays(startsAt, 1).toISOString()
+      })
+    ).rejects.toBeInstanceOf(AppBadRequestException);
+
+    expect(prisma.tournament.create).not.toHaveBeenCalled();
+  });
+});
+
+describe('TournamentService.register without a deadline', () => {
+  it('closes registration once the tournament has started', async () => {
+    const { service, prisma } = createService();
+
+    prisma.tournament.findUnique.mockResolvedValue({ ...tournament, startsAt: new Date(Date.now() - 1000) });
+
+    await expect(service.register({ id, userId: 'u1' })).rejects.toBeInstanceOf(AppConflictException);
+  });
+});
+
+describe('TournamentService.start under concurrency', () => {
+  it('claims the start inside a serializable transaction and maps a conflict', async () => {
+    const { service, prisma } = createService();
+
+    prisma.$transaction.mockRejectedValue(new Prisma.PrismaClientKnownRequestError('conflict', { code: 'P2034', clientVersion: 'test' }));
+
+    await expect(service.start({ id, userId: 'organizer' })).rejects.toBeInstanceOf(AppConflictException);
+    expect(prisma.$transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: 'Serializable' });
+  });
+});
+
+describe('TournamentService.reportMatch under concurrency', () => {
+  it('reports inside a serializable transaction so parallel results cannot overwrite each other', async () => {
+    const { service, prisma } = createService();
+
+    prisma.tournament.findFirst.mockResolvedValue({ ...tournament, status: 'running', bracket: semifinals });
+    prisma.tournament.update.mockResolvedValue({ ...tournament, status: 'running' });
+
+    await service.reportMatch({ id, userId: 'organizer', round: 0, index: 0, winner: 1 });
+
+    expect(prisma.$transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: 'Serializable' });
   });
 });

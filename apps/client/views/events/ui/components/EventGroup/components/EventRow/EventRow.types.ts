@@ -1,5 +1,5 @@
-import type { EventEntry } from '../../../../../lib/event-timeline';
+import type { EventView } from '../../../../../model/hooks';
 
 export type EventRowProps = {
-  entry: EventEntry;
+  entry: EventView;
 };

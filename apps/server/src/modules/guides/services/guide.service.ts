@@ -60,7 +60,12 @@ export class GuideService {
   }
 
   async mine(userId: string): Promise<GuideView[]> {
-    const rows = await this.prisma.guide.findMany({ where: { authorUserId: userId }, orderBy: { updatedAt: 'desc' }, include: GUIDE_INCLUDE });
+    const rows = await this.prisma.guide.findMany({
+      where: { authorUserId: userId },
+      orderBy: { updatedAt: 'desc' },
+      take: GUIDES.mineLimit,
+      include: GUIDE_INCLUDE
+    });
 
     return this.views({ rows, viewerUserId: userId });
   }
@@ -111,16 +116,12 @@ export class GuideService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      const existing = await tx.guideLike.findUnique({ where: { guideId_userId: { guideId: id, userId } } });
+      const changed = liked
+        ? await tx.guideLike.createMany({ data: [{ guideId: id, userId }], skipDuplicates: true })
+        : await tx.guideLike.deleteMany({ where: { guideId: id, userId } });
 
-      if (liked && !existing) {
-        await tx.guideLike.create({ data: { guideId: id, userId } });
-        await tx.guide.update({ where: { id }, data: { likesCount: { increment: 1 } } });
-      }
-
-      if (!liked && existing) {
-        await tx.guideLike.delete({ where: { guideId_userId: { guideId: id, userId } } });
-        await tx.guide.update({ where: { id }, data: { likesCount: { decrement: 1 } } });
+      if (changed.count > 0) {
+        await tx.guide.update({ where: { id }, data: { likesCount: liked ? { increment: 1 } : { decrement: 1 } } });
       }
 
       const current = await tx.guide.findUniqueOrThrow({ where: { id }, select: { likesCount: true } });

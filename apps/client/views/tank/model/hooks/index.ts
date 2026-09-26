@@ -9,6 +9,7 @@ export { useMoeChart } from './use-moe-chart';
 export { useMoePlates } from './use-moe-plates';
 export type { MoePlate } from './use-moe-plates';
 export { useMyLearning } from './use-my-learning';
+export { useObtainSection } from './use-obtain-section';
 export { usePatchChange } from './use-patch-change';
 export { useServerFigures } from './use-server-figures';
 export type { ServerFigure } from './use-server-figures';

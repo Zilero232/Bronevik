@@ -18,7 +18,7 @@ import { TacticBoardService } from './tactic-board.service';
 @Injectable()
 export class TacticsCollabService implements OnApplicationBootstrap, OnApplicationShutdown {
   private readonly logger = new Logger(TacticsCollabService.name);
-  private readonly sockets = new WebSocketServer({ noServer: true });
+  private readonly sockets = new WebSocketServer({ noServer: true, maxPayload: TACTICS.maxPayloadBytes });
   private readonly hocuspocus = new Hocuspocus<CollabContext>({
     quiet: true,
     debounce: TACTICS.debounceMs,
@@ -51,8 +51,16 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
     onStoreDocument: async ({ document, documentName }) => {
       const boardId = boardIdOf({ prefix: TACTICS.documentPrefix, name: documentName });
 
+      const state = encodeBoard(document);
+
+      if (state.byteLength > TACTICS.maxDocumentBytes) {
+        this.logger.warn(`board ${documentName} is ${state.byteLength} bytes, over the limit, not stored`);
+
+        return;
+      }
+
       if (boardId) {
-        await this.boards.storeState({ id: boardId, state: encodeBoard(document), snapshot: boardSnapshot(document) });
+        await this.boards.storeState({ id: boardId, state, snapshot: boardSnapshot(document) });
       }
     }
   });
@@ -86,6 +94,8 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
         return;
       }
 
+      socket.on('error', () => socket.destroy());
+
       this.sockets.handleUpgrade(request, socket, head, (websocket) => {
         const headers = new Headers();
 
@@ -99,6 +109,11 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
 
         websocket.on('message', (data: Buffer) => connection.handleMessage(new Uint8Array(data)));
         websocket.on('close', () => connection.handleClose());
+
+        websocket.on('error', (error) => {
+          this.logger.warn(`tactics socket dropped: ${error.message}`);
+          websocket.terminate();
+        });
       });
     });
 

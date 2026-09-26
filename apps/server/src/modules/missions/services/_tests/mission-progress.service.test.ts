@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { mock, mockDeep } from 'vitest-mock-extended';
 
+import type { Mission, UserMissionProgress } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { MissionCatalogService } from '../mission-catalog.service';
@@ -19,7 +20,7 @@ describe('MissionProgressService.update', () => {
   it('marks a mission done when it is completed with honors', async () => {
     const { prisma, service } = setup();
 
-    prisma.mission.findFirst.mockResolvedValue({ questId: 5 } as never);
+    prisma.mission.findFirst.mockResolvedValue(mock<Mission>({ questId: 5 }));
     prisma.userMissionProgress.upsert.mockResolvedValue({ userId: 'u', questId: 5, done: true, honors: true, source: 'manual', updatedAt });
 
     const item = await service.update({ userId: 'u', questId: 5, done: false, honors: true });
@@ -80,8 +81,8 @@ describe('MissionProgressService.next', () => {
     const missions = [mission(1, 1, 1), mission(2, 1, 2), mission(16, 2, 1)];
 
     catalog.currentVersion.mockResolvedValue({ id: 1, version: '1.45' });
-    prisma.userMissionProgress.findFirst.mockResolvedValue({ questId: 1 } as never);
-    prisma.userMissionProgress.findMany.mockResolvedValue([{ questId: 1, done: true, honors: true }] as never);
+    prisma.userMissionProgress.findFirst.mockResolvedValue(mock<UserMissionProgress>({ questId: 1 }));
+    prisma.userMissionProgress.findMany.mockResolvedValue([mock<UserMissionProgress>({ questId: 1, done: true, honors: true })]);
     prisma.mission.findUnique.mockResolvedValue(missions[0]);
 
     catalog.operationById.mockResolvedValue({

@@ -1,6 +1,7 @@
 'use client';
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { clamp } from 'remeda';
 
 import { listGuides } from '@/shared/api/guides';
 import { QUERY_KEYS } from '@/shared/constants';
@@ -20,7 +21,7 @@ export const useGuideCatalog = () => {
 
   const total = data?.total ?? 0;
   const pages = pageCount({ total, pageSize: GUIDE_LIST.pageSize });
-  const page = Math.min(Math.max(filters.page, GUIDE_LIST.firstPage), pages);
+  const page = clamp(filters.page, { min: GUIDE_LIST.firstPage, max: pages });
 
   return {
     items: data?.items ?? [],

@@ -46,6 +46,15 @@ export type RecordRedemptionInput = PromoCodeInput & {
   db: PrismaExecutor;
 };
 
+export type ClaimRedemptionInput = RecordRedemptionInput & {
+  now: Date;
+};
+
+export type RevokeRefundInput = {
+  paymentId: string;
+  now: Date;
+};
+
 export type RegisterReferralInput = {
   userId: string;
   referrerId: string;

@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { PrismaClient } from '../../../../../../generated';
+import type { PrismaClient, Vehicle } from '../../../../../../generated';
 
 import { PERSONAL_MISSION_FILES } from '../../parsers/personal-missions';
 import { createMemoryReader, GAME_PATHS } from '../../source';
@@ -41,7 +41,7 @@ describe('writePersonalMissions', () => {
     const prisma = mockDeep<PrismaClient>();
     const data = await buildPersonalMissions({ reader: createMemoryReader({ sourceId: 'RU', files }), localeReader });
 
-    prisma.vehicle.findMany.mockResolvedValue([{ tankId: 13_345, nation: 'germany', tag: 'G104_Stug_IV' }] as never);
+    prisma.vehicle.findMany.mockResolvedValue([mock<Vehicle>({ tankId: 13_345, nation: 'germany', tag: 'G104_Stug_IV' })]);
 
     const counts = await writePersonalMissions({ prisma, gameVersionId: 7, data: data! });
 

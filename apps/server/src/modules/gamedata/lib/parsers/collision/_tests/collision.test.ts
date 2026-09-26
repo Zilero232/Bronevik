@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { z } from 'zod';
 
 import { COLLISION_FIXTURES, readFixture } from '../../../_tests/fixtures';
 import { parseCollision, parseModelIndex } from '../collision';
 
-const RAW = JSON.parse(readFixture(COLLISION_FIXTURES.collision)) as Record<string, unknown>;
+const RAW = z.record(z.string(), z.unknown()).parse(JSON.parse(readFixture(COLLISION_FIXTURES.collision)));
 
 const withHull = (hull: unknown) => JSON.stringify({ ...RAW, parts: { Hull: hull } });
 

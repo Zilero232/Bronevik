@@ -22,6 +22,11 @@ export type ParsedLiteral = {
   end: number;
 };
 
+export type ReadSequenceInput<T> = {
+  closer: string;
+  readItem: () => T;
+};
+
 export type ParseLiteralAtInput = {
   source: string;
   start: number;

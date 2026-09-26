@@ -64,14 +64,14 @@ export class TankEconomyService {
         count(*)::int AS battles,
         count(DISTINCT account_id)::int AS players,
         count(*) FILTER (WHERE repair_cost IS NOT NULL AND ammo_cost IS NOT NULL AND consumables_cost IS NOT NULL)::int AS cost_battles,
-        percentile_cont(${median}) WITHIN GROUP (ORDER BY credits) AS credits,
-        percentile_cont(${median}) WITHIN GROUP (ORDER BY credits_gross) AS credits_base,
-        percentile_cont(${median}) WITHIN GROUP (ORDER BY repair_cost) AS repair,
-        percentile_cont(${median}) WITHIN GROUP (ORDER BY ammo_cost) AS ammo,
-        percentile_cont(${median}) WITHIN GROUP (ORDER BY consumables_cost) AS consumables,
-        percentile_cont(${median}) WITHIN GROUP (ORDER BY credits - repair_cost - ammo_cost - consumables_cost) AS net,
-        percentile_cont(${median}) WITHIN GROUP (ORDER BY xp) AS xp,
-        percentile_cont(${median}) WITHIN GROUP (ORDER BY free_xp) AS free_xp
+        percentile_cont(${median}::float8) WITHIN GROUP (ORDER BY credits) AS credits,
+        percentile_cont(${median}::float8) WITHIN GROUP (ORDER BY credits_gross) AS credits_base,
+        percentile_cont(${median}::float8) WITHIN GROUP (ORDER BY repair_cost) AS repair,
+        percentile_cont(${median}::float8) WITHIN GROUP (ORDER BY ammo_cost) AS ammo,
+        percentile_cont(${median}::float8) WITHIN GROUP (ORDER BY consumables_cost) AS consumables,
+        percentile_cont(${median}::float8) WITHIN GROUP (ORDER BY credits - repair_cost - ammo_cost - consumables_cost) AS net,
+        percentile_cont(${median}::float8) WITHIN GROUP (ORDER BY xp) AS xp,
+        percentile_cont(${median}::float8) WITHIN GROUP (ORDER BY free_xp) AS free_xp
       FROM tagged
       GROUP BY tank_id, account
       HAVING count(*) >= ${minBattles}

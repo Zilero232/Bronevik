@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import type {
   CoachesQuery,
+  CoachLookup,
   CoachOfferView,
   CoachPage,
   CoachView,
@@ -23,7 +24,7 @@ export class CoachProfileService {
   ) {}
 
   async list({ tankId, limit, offset }: CoachesQuery): Promise<CoachPage> {
-    const where = { isActive: true, ...(tankId === undefined ? {} : { tankIds: { has: tankId } }) };
+    const where = { isActive: true, hiddenAt: null, ...(tankId === undefined ? {} : { tankIds: { has: tankId } }) };
     const [rows, total] = await Promise.all([
       this.prisma.coachProfile.findMany({
         where,
@@ -40,13 +41,14 @@ export class CoachProfileService {
     return { items: rows.map((coach) => toCoachView({ coach, stats })), total, limit, offset };
   }
 
-  async get(userId: string): Promise<CoachView> {
+  async get({ userId, viewerUserId }: CoachLookup): Promise<CoachView> {
+    const isOwner = viewerUserId === userId;
     const coach = await this.prisma.coachProfile.findUnique({
       where: { userId },
-      include: { user: { select: AUTHOR_SELECT }, offers: { orderBy: { createdAt: 'asc' } } }
+      include: { user: { select: AUTHOR_SELECT }, offers: { where: isOwner ? {} : { isActive: true }, orderBy: { createdAt: 'asc' } } }
     });
 
-    if (!coach) {
+    if (!coach || (!isOwner && (!coach.isActive || coach.hiddenAt !== null))) {
       throw new AppNotFoundException('NOT_FOUND', `No coach ${userId}`);
     }
 
@@ -73,16 +75,16 @@ export class CoachProfileService {
       priceNote: priceNote ?? null,
       contacts,
       tankIds,
-      isActive
+      ...(isActive === undefined ? {} : { isActive })
     };
 
     await this.prisma.coachProfile.upsert({ where: { userId }, create: { userId, ...data }, update: data });
 
-    return this.get(userId);
+    return this.get({ userId, viewerUserId: userId });
   }
 
   async createOffer({ userId, title, description, priceRub, durationMinutes, withReplay }: CreateOfferRequest): Promise<CoachOfferView> {
-    await this.get(userId);
+    await this.get({ userId, viewerUserId: userId });
 
     const offer = await this.prisma.coachingOffer.create({
       data: { coachUserId: userId, title, description: description ?? null, priceRub: priceRub ?? null, durationMinutes, withReplay }

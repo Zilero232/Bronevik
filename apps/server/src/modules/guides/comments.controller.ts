@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { CurrentUserId } from '../../common/decorators';
+import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { IdParamsDto } from '../community-core';
 import { COMMENT_TARGET_TO_DB } from './config';
 import { CommentDto, CommentListDto, CommentsQueryDto, CreateCommentDto } from './dto';
@@ -17,8 +17,8 @@ export class CommentsController {
   @AllowAnonymous()
   @Get()
   @ZodResponse({ type: CommentListDto })
-  list(@Query() { target, targetId }: CommentsQueryDto) {
-    return this.comments.list({ target: COMMENT_TARGET_TO_DB[target], targetId });
+  list(@Query() { target, targetId }: CommentsQueryDto, @OptionalUserId() viewerUserId: string | null) {
+    return this.comments.list({ target: COMMENT_TARGET_TO_DB[target], targetId, viewerUserId });
   }
 
   @Post()

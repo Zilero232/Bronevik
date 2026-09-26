@@ -20,3 +20,14 @@ export type RenewalKeyInput = {
   subscriptionId: string;
   currentPeriodEnd: Date;
 };
+
+export type RevokePeriodInput = {
+  currentPeriodEnd: Date;
+  now: Date;
+  months: number;
+};
+
+export type RevokedPeriod = {
+  currentPeriodEnd: Date;
+  isExpired: boolean;
+};

@@ -1,26 +1,13 @@
+import { isExternalHref, safeHref } from '@/shared/lib';
+
 import type { MarkdownLinkAttributes } from './markdown-link.types';
 
 import { MARKDOWN } from '../../config';
 
-const PROTOCOL = /^[a-z][\d+.a-z-]*:/i;
+export const markdownLinkAttributes = (href: string | undefined): MarkdownLinkAttributes => {
+  const safe = safeHref(href);
 
-const EXTERNAL_PROTOCOLS: readonly string[] = MARKDOWN.externalProtocols;
-
-export const isExternalHref = (href: string | undefined): boolean => {
-  if (!href) {
-    return false;
-  }
-
-  if (href.startsWith('//')) {
-    return true;
-  }
-
-  const protocol = PROTOCOL.exec(href)?.[0]?.toLowerCase();
-
-  return protocol !== undefined && EXTERNAL_PROTOCOLS.includes(protocol);
+  return isExternalHref(safe) ? { href: safe, target: MARKDOWN.externalTarget, rel: MARKDOWN.externalRel } : { href: safe };
 };
 
-export const markdownLinkAttributes = (href: string | undefined): MarkdownLinkAttributes =>
-  isExternalHref(href) ? { href, target: MARKDOWN.externalTarget, rel: MARKDOWN.externalRel } : { href };
-
-export const imageSource = (src: unknown): string | undefined => (typeof src === 'string' && src !== '' ? src : undefined);
+export const imageSource = (src: unknown): string | undefined => (typeof src === 'string' ? safeHref(src) : undefined);

@@ -12,10 +12,21 @@ import s from './MissionTanks.module.scss';
 
 export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
   const t = useTranslations('missions');
-  const { columns, garageColumns, tanks, isPending, isError, isRetrying, retry, garageNotice, isGarageLoading, garageTanks } = useMissionTanks({
-    questId,
-    metric
-  });
+  const {
+    columns,
+    garageColumns,
+    tanks,
+    isPending,
+    isError,
+    isRetrying,
+    retry,
+    garageNotice,
+    isGarageLoading,
+    isGarageError,
+    isGarageRetrying,
+    retryGarage,
+    garageTanks
+  } = useMissionTanks({ questId, metric });
 
   return (
     <div className={s.root}>
@@ -46,9 +57,9 @@ export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
       </Card>
       <Card padding='none'>
         <CardHeader title={t('tanks.garageTitle')} />
-        {garageNotice ? (
-          <p className={s.note}>{t(`tanks.${garageNotice}`)}</p>
-        ) : (
+        {garageNotice && <p className={s.note}>{t(`tanks.${garageNotice}`)}</p>}
+        {!garageNotice && isGarageError && <ErrorState isCompact isRetrying={isGarageRetrying} onRetry={retryGarage} />}
+        {!garageNotice && !isGarageError && (
           <DataTable
             columns={garageColumns}
             data={garageTanks}

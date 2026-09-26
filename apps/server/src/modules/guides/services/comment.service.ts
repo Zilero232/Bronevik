@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { match } from 'ts-pattern';
 
 import type { OwnedById } from '../../community-core';
 import type { CommentView, CreateCommentRequest, ListCommentsInput } from '../guides.types';
@@ -13,19 +14,23 @@ import { toCommentView } from '../lib';
 export class CommentService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async list({ target, targetId }: ListCommentsInput): Promise<CommentView[]> {
+  async list({ target, targetId, viewerUserId }: ListCommentsInput): Promise<CommentView[]> {
+    if (!(await this.isTargetVisible({ target, targetId, viewerUserId }))) {
+      throw new AppNotFoundException('NOT_FOUND', `No ${target} ${targetId}`);
+    }
+
     const rows = await this.prisma.comment.findMany({
       where: { target, targetId, status: { in: ['published', 'hidden'] } },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
       take: COMMENTS.pageLimit,
       include: { author: { select: AUTHOR_SELECT } }
     });
 
-    return rows.map(toCommentView);
+    return rows.map(toCommentView).reverse();
   }
 
   async create({ userId, target, targetId, parentId, body }: CreateCommentRequest): Promise<CommentView> {
-    if (!(await this.targetExists({ target, targetId }))) {
+    if (!(await this.isTargetVisible({ target, targetId, viewerUserId: userId }))) {
       throw new AppNotFoundException('NOT_FOUND', `Nothing to comment at ${target} ${targetId}`);
     }
 
@@ -53,22 +58,41 @@ export class CommentService {
     }
   }
 
-  private async targetExists({ target, targetId }: ListCommentsInput): Promise<boolean> {
+  private async isTargetVisible({ target, targetId, viewerUserId }: ListCommentsInput): Promise<boolean> {
     const isUuid = /^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}$/i.test(targetId);
 
     if (!isUuid) {
       return false;
     }
 
-    const where = { where: { id: targetId }, select: { id: true } };
-    const found =
-      target === 'build'
-        ? await this.prisma.build.findUnique(where)
-        : target === 'guide'
-          ? await this.prisma.guide.findUnique(where)
-          : target === 'replay'
-            ? await this.prisma.replay.findUnique(where)
-            : await this.prisma.tacticBoard.findUnique(where);
+    const select = { id: true } as const;
+    const owned = <T>(where: T): T[] => (viewerUserId ? [where] : []);
+    const found = await match(target)
+      .with('build', () =>
+        this.prisma.build.findFirst({
+          where: { id: targetId, OR: [{ status: 'published', visibility: { not: 'private' } }, ...owned({ authorUserId: viewerUserId ?? '' })] },
+          select
+        })
+      )
+      .with('guide', () =>
+        this.prisma.guide.findFirst({
+          where: { id: targetId, OR: [{ status: 'published' }, ...owned({ authorUserId: viewerUserId ?? '' })] },
+          select
+        })
+      )
+      .with('replay', () =>
+        this.prisma.replay.findFirst({
+          where: { id: targetId, OR: [{ visibility: { not: 'private' } }, ...owned({ uploaderUserId: viewerUserId ?? '' })] },
+          select
+        })
+      )
+      .with('tacticBoard', () =>
+        this.prisma.tacticBoard.findFirst({
+          where: { id: targetId, OR: [{ visibility: { not: 'private' } }, ...owned({ ownerUserId: viewerUserId ?? '' })] },
+          select
+        })
+      )
+      .exhaustive();
 
     return found !== null;
   }

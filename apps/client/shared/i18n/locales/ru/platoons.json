@@ -74,7 +74,6 @@
     "modes": "Режимы",
     "tanks": "Танки",
     "tanksPlaceholder": "Добавить танк",
-    "removeTank": "Убрать {name}",
     "minWn8": "WN8 напарника от",
     "minWn8Error": "Целое число от 0 до 10 000",
     "expiresIn": "Показывать",

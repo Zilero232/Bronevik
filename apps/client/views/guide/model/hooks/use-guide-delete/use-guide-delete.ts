@@ -22,8 +22,7 @@ export const useGuideDelete = (guide: Guide) => {
     onSuccess: () => {
       toast.success(t('deleted'));
       setOpen(false);
-      queryClient.removeQueries({ queryKey: QUERY_KEYS.guides.detail(guide.slug) });
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guides.all });
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guides.all, refetchType: 'none' });
       router.replace(ROUTES.guides);
     },
     onError: () => toast.error(t('deleteFailed'))

@@ -3,8 +3,10 @@
 import type { MissionProgress, UpdateMissionProgressInput } from '@otmetki/schemas';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { getMissionOperation, getMissionProgress, updateMissionProgress } from '@/shared/api/missions';
@@ -14,6 +16,7 @@ import { useBranchLabel } from '../use-branch-label';
 
 export const useMissionOperation = () => {
   const params = useParams<{ campaign: string; operation: string }>();
+  const t = useTranslations('missions.operation');
   const queryClient = useQueryClient();
   const { data: session } = useAuthSession();
   const branchLabel = useBranchLabel();
@@ -39,10 +42,14 @@ export const useMissionOperation = () => {
 
   const save = useMutation({
     mutationFn: (input: UpdateMissionProgressInput) => updateMissionProgress(input),
-    onSuccess: (item) =>
+    onSuccess: (item) => {
       queryClient.setQueryData<MissionProgress>(QUERY_KEYS.missions.progress, (current) => ({
         items: [...(current?.items ?? []).filter((entry) => entry.questId !== item.questId), item]
-      }))
+      }));
+
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.missions.plans });
+    },
+    onError: () => toast.error(t('saveFailed'))
   });
 
   const items = new Map((progress.data?.items ?? []).map((item) => [item.questId, item]));

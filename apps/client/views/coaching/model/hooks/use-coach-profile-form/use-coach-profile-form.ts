@@ -26,17 +26,8 @@ export const useCoachProfileForm = () => {
   const { userId, accounts } = useCommunityViewer();
   const own = useQuery({
     queryKey: QUERY_KEYS.coaching.coach(userId ?? ''),
-    queryFn: async ({ signal }) => {
-      try {
-        return await getCoach({ userId: userId ?? '', signal });
-      } catch (error) {
-        if (isNotFoundError(error)) {
-          return null;
-        }
-
-        throw error;
-      }
-    },
+    queryFn: ({ signal }) => getCoach({ userId: userId ?? '', signal }),
+    retry: (count, failure) => !isNotFoundError(failure) && count < 2,
     enabled: userId !== null
   });
 
@@ -72,7 +63,7 @@ export const useCoachProfileForm = () => {
     accounts,
     hasProfile,
     isOpen,
-    isLoading: own.isPending && userId !== null,
+    isLoading: userId !== null && (own.isPending || (own.isError && !isNotFoundError(own.error))),
     isPending: save.isPending,
     onOpenChange,
     onSubmit

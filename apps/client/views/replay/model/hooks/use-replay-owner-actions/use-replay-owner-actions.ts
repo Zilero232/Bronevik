@@ -38,7 +38,7 @@ export const useReplayOwnerActions = (replay: Replay) => {
       queryClient.removeQueries({ queryKey: QUERY_KEYS.replays.detail(replay.id) });
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.replays.all });
       toast.success(t('deleted'));
-      router.push(ROUTES.replays);
+      router.replace(ROUTES.replays);
     },
     onError
   });

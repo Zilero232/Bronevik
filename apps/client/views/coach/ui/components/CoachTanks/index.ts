@@ -1,0 +1,1 @@
+export { CoachTanks } from './CoachTanks';

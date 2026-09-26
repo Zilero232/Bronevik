@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 
+import type { RevokeRefundInput } from '../billing.types';
 import type { YooKassaWebhook } from '../lib';
 
 import { PrismaService } from '../../../core';
-import { describeCard, isPlusPlan, YooKassaClient } from '../lib';
+import { PLUS_PLANS } from '../config';
+import { describeCard, isPlusPlan, revokePeriod, YooKassaClient } from '../lib';
 import { EntitlementsService } from './entitlements.service';
 import { PromoService } from './promo.service';
 import { ReferralService } from './referral.service';
@@ -25,13 +27,53 @@ export class WebhookService {
   async handle(event: YooKassaWebhook): Promise<void> {
     if (event.event.startsWith('refund.')) {
       if (event.object.payment_id) {
-        await this.prisma.payment.updateMany({ where: { yookassaPaymentId: event.object.payment_id }, data: { status: 'refunded' } });
+        await this.refund({ paymentId: event.object.payment_id, now: new Date() });
       }
 
       return;
     }
 
     await this.settle(event.object.id);
+  }
+
+  async refund({ paymentId, now }: RevokeRefundInput): Promise<boolean> {
+    const row = await this.prisma.payment.findUnique({ where: { yookassaPaymentId: paymentId } });
+
+    if (!row || row.status !== 'succeeded') {
+      return false;
+    }
+
+    const plan = isPlusPlan(row.plan) ? row.plan : PLUS_PLANS.monthly.plan;
+
+    const isRefunded = await this.prisma.$transaction(async (tx) => {
+      const claimed = await tx.payment.updateMany({ where: { id: row.id, status: 'succeeded' }, data: { status: 'refunded' } });
+
+      if (claimed.count === 0) {
+        return false;
+      }
+
+      const subscription = row.subscriptionId ? await tx.subscription.findUnique({ where: { id: row.subscriptionId } }) : null;
+
+      if (subscription?.currentPeriodEnd) {
+        const revoked = revokePeriod({ currentPeriodEnd: subscription.currentPeriodEnd, now, months: PLUS_PLANS[plan].months });
+
+        await tx.subscription.update({
+          where: { id: subscription.id },
+          data: revoked.isExpired
+            ? { currentPeriodEnd: revoked.currentPeriodEnd, status: 'expired', cancelAtPeriodEnd: true }
+            : { currentPeriodEnd: revoked.currentPeriodEnd }
+        });
+      }
+
+      return true;
+    });
+
+    if (isRefunded) {
+      await this.entitlements.syncTracking(row.userId);
+      this.logger.log(`payment ${paymentId} refunded for ${row.userId}`);
+    }
+
+    return isRefunded;
   }
 
   async settle(paymentId: string): Promise<boolean> {

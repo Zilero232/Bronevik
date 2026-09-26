@@ -1,4 +1,4 @@
-import type { ArmorPieceGeometry } from '@bronevik/gamedata';
+import type { ArmorPieceGeometry } from '@otmetki/gamedata';
 import type { Intersection } from 'three';
 
 import { BufferAttribute, BufferGeometry, Group, Mesh, Vector3 } from 'three';

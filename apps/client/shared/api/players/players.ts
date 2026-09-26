@@ -10,7 +10,7 @@ import type {
   Session,
   SessionsPage,
   TimeSeries
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 
 import type {
   AccountInput,

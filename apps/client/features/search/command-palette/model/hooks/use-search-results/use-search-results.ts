@@ -1,6 +1,6 @@
 'use client';
 
-import { SEARCH } from '@bronevik/schemas';
+import { SEARCH } from '@otmetki/schemas';
 import { useDebounceValue } from '@siberiacancode/reactuse';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 

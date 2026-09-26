@@ -1,8 +1,8 @@
 'use client';
 
-import type { PreviewOverlayInput } from '@bronevik/schemas';
+import type { PreviewOverlayInput } from '@otmetki/schemas';
 
-import { previewOverlaySchema } from '@bronevik/schemas';
+import { previewOverlaySchema } from '@otmetki/schemas';
 import { useDebounceValue } from '@siberiacancode/reactuse';
 import { keepPreviousData, skipToken, useQuery } from '@tanstack/react-query';
 import { useFormContext, useWatch } from 'react-hook-form';

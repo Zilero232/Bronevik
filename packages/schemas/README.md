@@ -1,10 +1,10 @@
-# @bronevik/schemas
+# @otmetki/schemas
 
 Zod contracts shared by `apps/client` and `apps/server` (API and worker). The API validates against these schemas and the client reads its types from them, so a contract is defined only once.
 
 ```ts
-import { playerTanksQuerySchema } from '@bronevik/schemas';
-import type { PlayerSummary } from '@bronevik/schemas';
+import { playerTanksQuerySchema } from '@otmetki/schemas';
+import type { PlayerSummary } from '@otmetki/schemas';
 ```
 
 Import from the package root only; there are no subpath exports.
@@ -32,7 +32,7 @@ Every rate in a response is a percent from 0 to 100: `winRate`, `playerWinRate`,
 
 ## Owned elsewhere
 
-Some values belong to `@bronevik/ratings`, and the schemas are built from them so the two cannot drift apart:
+Some values belong to `@otmetki/ratings`, and the schemas are built from them so the two cannot drift apart:
 
 - `ratingTierSchema` is built from `RATING_TIERS`.
 - `recentPeriodSchema` is built from `RECENT_PERIODS`, the keys of `PERIOD_WINDOWS`.

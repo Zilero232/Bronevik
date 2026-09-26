@@ -1,4 +1,4 @@
-import type { PlayerAchievement } from '@bronevik/schemas';
+import type { PlayerAchievement } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

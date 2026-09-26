@@ -1,7 +1,7 @@
-import type { Paginated, Session, SessionBattle, SessionListItem, SessionTankDelta } from '@bronevik/schemas';
+import type { Paginated, Session, SessionBattle, SessionListItem, SessionTankDelta } from '@otmetki/schemas';
 
-import { shotSchema } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
+import { shotSchema } from '@otmetki/schemas';
 import { firstBy, groupBy, sumBy } from 'remeda';
 import { z } from 'zod';
 

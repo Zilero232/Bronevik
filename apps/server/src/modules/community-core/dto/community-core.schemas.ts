@@ -1,4 +1,4 @@
-import { countSchema, uuidSchema } from '@bronevik/schemas';
+import { countSchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 export const arenaIdSchema = z

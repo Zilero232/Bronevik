@@ -1,4 +1,4 @@
-import type { LeaderboardQuery } from '@bronevik/schemas';
+import type { LeaderboardQuery } from '@otmetki/schemas';
 
 import type { Prisma } from '../../../generated';
 

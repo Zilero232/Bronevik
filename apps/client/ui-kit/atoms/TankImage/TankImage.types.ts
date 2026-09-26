@@ -1,5 +1,5 @@
-import type { TankClassKind } from '@bronevik/icons';
-import type { VehicleImages } from '@bronevik/schemas';
+import type { TankClassKind } from '@otmetki/icons';
+import type { VehicleImages } from '@otmetki/schemas';
 
 import type { TANK_IMAGE } from './TankImage.constants';
 

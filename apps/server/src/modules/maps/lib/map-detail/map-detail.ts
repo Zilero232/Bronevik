@@ -1,4 +1,4 @@
-import type { MapDetail, MapSummary } from '@bronevik/schemas';
+import type { MapDetail, MapSummary } from '@otmetki/schemas';
 
 import type { ArenaRow, MinimapUrlInput, ToMapDetailInput } from './map-detail.types';
 

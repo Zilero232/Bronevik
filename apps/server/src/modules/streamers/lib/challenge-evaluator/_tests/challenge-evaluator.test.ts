@@ -1,6 +1,6 @@
-import type { ChallengeCondition } from '@bronevik/schemas';
+import type { ChallengeCondition } from '@otmetki/schemas';
 
-import { challengeConditionSchema } from '@bronevik/schemas';
+import { challengeConditionSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import type { EvaluatedBattle } from '../challenge-evaluator.types';

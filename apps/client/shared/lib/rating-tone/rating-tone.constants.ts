@@ -1,4 +1,4 @@
-import type { RatingTier } from '@bronevik/ratings';
+import type { RatingTier } from '@otmetki/ratings';
 
 export const RATING_TONES = ['bad', 'below', 'average', 'good', 'great', 'unicum'] as const;
 

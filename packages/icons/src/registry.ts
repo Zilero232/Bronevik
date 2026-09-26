@@ -1,4 +1,4 @@
-import type { VehicleType } from '@bronevik/schemas';
+import type { VehicleType } from '@otmetki/schemas';
 
 import type { NationIconComponent, TankClassIconComponent, TankClassKind } from './icons/icons.types';
 import type { IconComponent } from './lib';
@@ -11,7 +11,7 @@ import {
   TankDestroyerSilhouetteIcon
 } from './icons/class-silhouettes';
 import { AssaultSpgIcon, HeavyTankIcon, LightTankIcon, MediumTankIcon, SpgIcon, TankDestroyerIcon } from './icons/classes';
-import { BronevikLogoIcon } from './icons/logo';
+import { OtmetkiLogoIcon } from './icons/logo';
 import { Mark1Icon, Mark2Icon, Mark3Icon } from './icons/marks';
 import { MasteryFirstIcon, MasteryMasterIcon, MasterySecondIcon, MasteryThirdIcon } from './icons/mastery';
 import { ArmorIcon, CrosshairIcon, RadioIcon, ShellApcrIcon, ShellApIcon, ShellHeatIcon, ShellHeIcon, SpottingIcon, TracerIcon } from './icons/misc';
@@ -96,7 +96,7 @@ export const GAME_MODE_ICONS = {
 } as const satisfies Record<GameMode, IconComponent>;
 
 export const ICONS = {
-  'bronevik-logo': BronevikLogoIcon,
+  'otmetki-logo': OtmetkiLogoIcon,
   'class-light': LightTankIcon,
   'class-medium': MediumTankIcon,
   'class-heavy': HeavyTankIcon,
@@ -148,7 +148,7 @@ export const ICONS = {
 export type IconName = keyof typeof ICONS;
 
 export const ICON_GROUPS = {
-  brand: ['bronevik-logo'],
+  brand: ['otmetki-logo'],
   classes: ['class-light', 'class-medium', 'class-heavy', 'class-td', 'class-spg', 'class-spg-assault'],
   silhouettes: ['silhouette-light', 'silhouette-medium', 'silhouette-heavy', 'silhouette-td', 'silhouette-spg'],
   nations: [

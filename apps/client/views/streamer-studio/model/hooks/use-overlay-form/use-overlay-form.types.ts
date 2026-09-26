@@ -1,4 +1,4 @@
-import type { Overlay } from '@bronevik/schemas';
+import type { Overlay } from '@otmetki/schemas';
 
 export type UseOverlayFormInput = {
   overlay: Overlay | null;

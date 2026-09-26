@@ -1,4 +1,4 @@
-import { NATIONS } from '@bronevik/gamedata';
+import { NATIONS } from '@otmetki/gamedata';
 
 import type { SharedComponents } from '../parsers/vehicle';
 import type { SourceReader } from '../source';

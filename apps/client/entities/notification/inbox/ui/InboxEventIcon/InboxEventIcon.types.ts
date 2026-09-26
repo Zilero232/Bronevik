@@ -1,4 +1,4 @@
-import type { NotificationEvent } from '@bronevik/schemas';
+import type { NotificationEvent } from '@otmetki/schemas';
 
 export type InboxEventIconProps = {
   event: NotificationEvent;

@@ -1,4 +1,4 @@
-import type { CreateWebhookEndpointInput, WebhookEndpoint, WebhookFilter } from '@bronevik/schemas';
+import type { CreateWebhookEndpointInput, WebhookEndpoint, WebhookFilter } from '@otmetki/schemas';
 
 import { unique } from 'remeda';
 

@@ -73,7 +73,7 @@ class Py27CompatTest(unittest.TestCase):
         problems = []
         for path in source_files():
             relative = os.path.relpath(path, _support.SRC_DIR)
-            if os.sep + 'client' + os.sep in os.sep + relative or relative == 'mod_bronevik.py':
+            if os.sep + 'client' + os.sep in os.sep + relative or relative == 'mod_otmetki.py':
                 continue
             with io.open(path, 'r', encoding='utf-8') as handle:
                 tree = ast.parse(handle.read(), path)
@@ -89,7 +89,7 @@ class Py27CompatTest(unittest.TestCase):
         import importlib
         for name in ('binding', 'compat', 'config', 'i18n', 'jsonutil', 'moe', 'outbox', 'panels', 'payload',
                      'queue_timer', 'sender', 'session', 'settings_template', 'signing', 'storage', 'transport', 'version'):
-            importlib.import_module('bronevik.' + name)
+            importlib.import_module('otmetki.' + name)
         self.assertNotIn('BigWorld', sys.modules)
 
 

@@ -1,4 +1,4 @@
-import { accountIdSchema, countSchema, isoDateSchema, isoDateTimeSchema, nicknameSchema, tankIdSchema, uuidSchema } from '@bronevik/schemas';
+import { accountIdSchema, countSchema, isoDateSchema, isoDateTimeSchema, nicknameSchema, tankIdSchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { LEAGUE, WRAPPED } from '../config';

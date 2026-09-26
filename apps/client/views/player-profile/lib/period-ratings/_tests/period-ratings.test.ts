@@ -1,4 +1,4 @@
-import type { PlayerProfile, StatsBlock } from '@bronevik/schemas';
+import type { PlayerProfile, StatsBlock } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

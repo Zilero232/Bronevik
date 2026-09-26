@@ -1,4 +1,4 @@
-import type { ClanStronghold } from '@bronevik/schemas';
+import type { ClanStronghold } from '@otmetki/schemas';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
 

@@ -1,4 +1,4 @@
-import type { TankPatch, TankPatchChange } from '@bronevik/schemas';
+import type { TankPatch, TankPatchChange } from '@otmetki/schemas';
 
 import { isNumber } from 'remeda';
 

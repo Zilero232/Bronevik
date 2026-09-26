@@ -1,4 +1,4 @@
-import { createApiKeySchema } from '@bronevik/schemas';
+import { createApiKeySchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { KEY_EXPIRY } from '../../config';

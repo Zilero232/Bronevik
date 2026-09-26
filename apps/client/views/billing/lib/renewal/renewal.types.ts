@@ -1,4 +1,4 @@
-import type { BillingStatus } from '@bronevik/schemas';
+import type { BillingStatus } from '@otmetki/schemas';
 
 export type RenewalInput = Pick<BillingStatus, 'cancelAtPeriodEnd' | 'currentPeriodEnd' | 'isRecurringAvailable' | 'status'>;
 

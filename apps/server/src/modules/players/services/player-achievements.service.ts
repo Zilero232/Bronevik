@@ -1,4 +1,4 @@
-import type { PlayerAchievements } from '@bronevik/schemas';
+import type { PlayerAchievements } from '@otmetki/schemas';
 
 import { Inject, Injectable } from '@nestjs/common';
 

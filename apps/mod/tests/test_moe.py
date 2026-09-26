@@ -1,7 +1,7 @@
 import unittest
 
 import _support  # noqa: F401
-from bronevik.moe import (
+from otmetki.moe import (
     EMA_K,
     BattleTotals,
     ThresholdCurve,

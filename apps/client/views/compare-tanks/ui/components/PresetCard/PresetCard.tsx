@@ -1,6 +1,6 @@
 'use client';
 
-import { TANK_CLASS_ICONS, toRoman } from '@bronevik/icons';
+import { TANK_CLASS_ICONS, toRoman } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import type { PresetCardProps } from './PresetCard.types';

@@ -1,4 +1,4 @@
-import type { LeaderboardEntry, TopPlayers } from '@bronevik/schemas';
+import type { LeaderboardEntry, TopPlayers } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { match } from 'ts-pattern';

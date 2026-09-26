@@ -1,4 +1,4 @@
-import { RECENT_PERIODS } from '@bronevik/ratings';
+import { RECENT_PERIODS } from '@otmetki/ratings';
 import { z } from 'zod';
 
 export const recentPeriodSchema = z.enum(RECENT_PERIODS);

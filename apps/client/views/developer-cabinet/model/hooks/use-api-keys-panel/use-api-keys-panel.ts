@@ -1,8 +1,8 @@
 'use client';
 
-import type { ApiKey } from '@bronevik/schemas';
+import type { ApiKey } from '@otmetki/schemas';
 
-import { API_KEY } from '@bronevik/schemas';
+import { API_KEY } from '@otmetki/schemas';
 import { useBoolean } from '@siberiacancode/reactuse';
 import { useState } from 'react';
 

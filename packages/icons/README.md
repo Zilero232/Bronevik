@@ -1,9 +1,9 @@
-# @bronevik/icons
+# @otmetki/icons
 
-Bronevik's own SVG icon set as React components — vehicle classes, nations, tiers, marks of excellence, mastery badges, game modes, shells and the logo. Stroke-matched to `lucide-react`, so the two sets sit side by side in one UI.
+Three Marks' own SVG icon set as React components — vehicle classes, nations, tiers, marks of excellence, mastery badges, game modes, shells and the logo. Stroke-matched to `lucide-react`, so the two sets sit side by side in one UI.
 
 ```tsx
-import { MarkOfExcellenceIcon, TierIcon } from '@bronevik/icons';
+import { MarkOfExcellenceIcon, TierIcon } from '@otmetki/icons';
 
 <TierIcon tier={10} size={16} />
 <MarkOfExcellenceIcon marks={3} />
@@ -23,7 +23,7 @@ import { MarkOfExcellenceIcon, TierIcon } from '@bronevik/icons';
 - Vehicle classes follow the community shapes: light = solid rhombus, medium = rhombus split by one `\` gap, heavy = rhombus split into three bars, TD = downward triangle, SPG = square. `variant` is `regular` (current colour), `premium` (gold fill with an orange glow) or `elite` (our own laurel wreath). The old side-view drawings live on as `*SilhouetteIcon` for decorative backdrops.
 - Nations are our own flag-inspired drawings, not the in-game flags: `palette='color'` for full colour, `mono` (default) for `currentColor`. `NationFlag` is the frameless 10:7 field used as a blurred backdrop behind tank renders.
 - `MasteryIcon tinted` paints bronze / silver / gold; `MarkOfExcellenceIcon markStyle='rings'` swaps the stars for barrel rings; `TierIcon engraved` sets the numeral on a riveted plate.
-- Colours come from CSS variables with fallbacks (`--bronevik-class-premium`, `--bronevik-class-elite`, `--bronevik-mastery-*`), so the client themes them through its tokens.
+- Colours come from CSS variables with fallbacks (`--otmetki-class-premium`, `--otmetki-class-elite`, `--otmetki-mastery-*`), so the client themes them through its tokens.
 
 ## Rules
 

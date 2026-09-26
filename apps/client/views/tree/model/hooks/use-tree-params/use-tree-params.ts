@@ -1,6 +1,6 @@
 'use client';
 
-import type { Nation } from '@bronevik/icons';
+import type { Nation } from '@otmetki/icons';
 
 import { useQueryStates } from 'nuqs';
 

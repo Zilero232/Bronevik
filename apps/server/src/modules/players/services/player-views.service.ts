@@ -1,4 +1,4 @@
-import type { PopularPlayers } from '@bronevik/schemas';
+import type { PopularPlayers } from '@otmetki/schemas';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { format, subDays } from 'date-fns';

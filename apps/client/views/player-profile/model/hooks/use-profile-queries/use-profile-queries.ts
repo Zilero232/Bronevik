@@ -1,6 +1,6 @@
 'use client';
 
-import type { InsightsPeriod } from '@bronevik/schemas';
+import type { InsightsPeriod } from '@otmetki/schemas';
 
 import type { PlayerTanksFilter } from '@/shared/api/players';
 

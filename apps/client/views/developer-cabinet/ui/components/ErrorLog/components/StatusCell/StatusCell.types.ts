@@ -1,3 +1,3 @@
-import type { ApiErrorLogEntry } from '@bronevik/schemas';
+import type { ApiErrorLogEntry } from '@otmetki/schemas';
 
 export type StatusCellProps = Pick<ApiErrorLogEntry, 'status'>;

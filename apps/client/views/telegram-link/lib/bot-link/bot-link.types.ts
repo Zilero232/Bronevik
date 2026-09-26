@@ -1,4 +1,4 @@
-import type { TelegramLinkCode } from '@bronevik/schemas';
+import type { TelegramLinkCode } from '@otmetki/schemas';
 
 export type BotLinkInput = {
   username: string | null | undefined;

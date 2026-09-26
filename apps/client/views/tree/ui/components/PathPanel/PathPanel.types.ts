@@ -1,4 +1,4 @@
-import type { TechTreeNode } from '@bronevik/schemas';
+import type { TechTreeNode } from '@otmetki/schemas';
 
 import type { PathCost } from '../../../lib/tree-path';
 

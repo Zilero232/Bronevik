@@ -1,4 +1,4 @@
-import type { BuildOptions, ProvisionOption } from '@bronevik/schemas';
+import type { BuildOptions, ProvisionOption } from '@otmetki/schemas';
 
 import { gameLabel } from '@/entities/tank/build';
 

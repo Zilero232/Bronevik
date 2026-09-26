@@ -1,5 +1,5 @@
-import type { MarkCount } from '@bronevik/icons';
-import type { PlayerMarkRow, VehicleSummary } from '@bronevik/schemas';
+import type { MarkCount } from '@otmetki/icons';
+import type { PlayerMarkRow, VehicleSummary } from '@otmetki/schemas';
 
 export type ClosestMarksInput = {
   items: readonly PlayerMarkRow[];

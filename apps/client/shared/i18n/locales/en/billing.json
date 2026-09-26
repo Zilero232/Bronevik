@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Subscription",
-    "description": "Bronevik Plus status, auto-renew, promo codes, referral link and payment history."
+    "description": "Three Marks Plus status, auto-renew, promo codes, referral link and payment history."
   },
   "header": {
     "title": "Subscription",
-    "description": "Bronevik Plus status, auto-renew, promo codes and payments."
+    "description": "Three Marks Plus status, auto-renew, promo codes and payments."
   },
   "status": {
     "titlePlus": "Plus is active",
@@ -84,7 +84,7 @@
     "linkLabel": "Your link",
     "steps": {
       "share": "Send the link to a friend or drop it in your clan chat.",
-      "subscribe": "Your friend signs in to Bronevik and gets Plus for the first time.",
+      "subscribe": "Your friend signs in to Three Marks and gets Plus for the first time.",
       "reward": "{days, plural, one {# day} other {# days}} of Plus are added to your account automatically."
     }
   },

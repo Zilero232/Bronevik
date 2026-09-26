@@ -1,5 +1,5 @@
-import { challengeConditionSchema } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
+import { challengeConditionSchema } from '@otmetki/schemas';
 import { addMinutes } from 'date-fns';
 import pRetry from 'p-retry';
 

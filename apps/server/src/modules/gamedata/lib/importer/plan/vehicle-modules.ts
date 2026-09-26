@@ -1,4 +1,4 @@
-import type { Price, VehicleSpec } from '@bronevik/gamedata';
+import type { Price, VehicleSpec } from '@otmetki/gamedata';
 
 import type { CompatibleTanksInput, PriceColumns, VehicleModule } from '../importer.types';
 

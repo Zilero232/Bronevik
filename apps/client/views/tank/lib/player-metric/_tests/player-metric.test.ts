@@ -1,6 +1,6 @@
-import type { LeaderboardEntry } from '@bronevik/schemas';
+import type { LeaderboardEntry } from '@otmetki/schemas';
 
-import { RATING_SCALES } from '@bronevik/ratings';
+import { RATING_SCALES } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
 import { RATING_TONES, ratingTone, toneOfTier } from '@/shared/lib';

@@ -69,7 +69,7 @@ let root: string;
 let storage: LocalDiskStorage;
 
 beforeAll(async () => {
-  root = await mkdtemp(join(tmpdir(), 'bronevik-replays-'));
+  root = await mkdtemp(join(tmpdir(), 'otmetki-replays-'));
   storage = new LocalDiskStorage(root);
 
   const moduleRef = await Test.createTestingModule({

@@ -3,8 +3,8 @@ import { hoursToMilliseconds } from 'date-fns';
 export const GUESS_TANK = {
   maxGuesses: 6,
   minTier: 5,
-  storageKey: 'bronevik-guess-tank',
-  streakKey: 'bronevik-guess-tank:streak',
+  storageKey: 'otmetki-guess-tank',
+  streakKey: 'otmetki-guess-tank:streak',
   epoch: '2026-01-01',
   timeZone: 'Europe/Moscow',
   utcOffset: '+03:00',

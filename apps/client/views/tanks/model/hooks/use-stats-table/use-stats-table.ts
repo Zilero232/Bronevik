@@ -1,6 +1,6 @@
 'use client';
 
-import type { TankServerStatsRow } from '@bronevik/schemas';
+import type { TankServerStatsRow } from '@otmetki/schemas';
 
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
 import { ROUTES } from '@/shared/constants';

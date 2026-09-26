@@ -1,5 +1,5 @@
 enum ThresholdSource {
-  bronevik
+  otmetki
   poliroid
   kttc
   lesta

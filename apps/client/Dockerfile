@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
 #
-# Bronevik web client — Next.js server.
+# Three Marks web client — Next.js server.
 #
 # The build context MUST be the monorepo root: the client depends on workspace
-# packages (@bronevik/icons) and the root lockfile. Build from the repo root:
-#   docker build -f apps/client/Dockerfile -t bronevik-client .
+# packages (@otmetki/icons) and the root lockfile. Build from the repo root:
+#   docker build -f apps/client/Dockerfile -t otmetki-client .
 #
 # The image runs the Next.js server itself (`output: 'standalone'`) rather than
 # a static export: pages render per request, so metadata and public stats pages
@@ -37,7 +37,7 @@ COPY packages/logger/package.json ./packages/logger/package.json
 COPY packages/ratings/package.json ./packages/ratings/package.json
 COPY packages/schemas/package.json ./packages/schemas/package.json
 
-# Lifecycle scripts are off: @bronevik/db's postinstall runs `prisma generate`
+# Lifecycle scripts are off: @otmetki/db's postinstall runs `prisma generate`
 # before its schema is copied in, and the client never touches the database.
 # The retry loop wipes the download cache between attempts, which survives a
 # registry hiccup that corrupts a tarball mid-download (IntegrityCheckFailed).
@@ -52,7 +52,7 @@ COPY apps/client ./apps/client
 
 # public/ is not traced into standalone and the client has none yet; creating
 # it keeps the runner's COPY valid either way.
-RUN bun --filter @bronevik/client build \
+RUN bun --filter @otmetki/client build \
     && test -f apps/client/.next/standalone/apps/client/server.js \
     && mkdir -p apps/client/public
 

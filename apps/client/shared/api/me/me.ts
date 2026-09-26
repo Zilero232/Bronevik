@@ -7,7 +7,7 @@ import type {
   LinkedAccounts,
   ModDevice,
   NotificationSettings
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 
 import {
   meControllerAddFavorite,

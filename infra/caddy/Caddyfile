@@ -1,4 +1,4 @@
-# Bronevik — Caddy config for docker-compose.yml.
+# Three Marks — Caddy config for docker-compose.yml.
 #
 # The hosts come from the environment: SITE_DOMAIN for the site, API_DOMAIN for
 # the API (the developer API /v1 included). With the defaults, localhost and

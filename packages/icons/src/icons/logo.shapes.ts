@@ -1,4 +1,4 @@
 export const LOGO_SHAPES = {
-  plate: 'M7.5 2h9L22 7.5v9L16.5 22h-9L2 16.5v-9z',
-  letter: 'M16 7H9v10h4a2.5 2.5 0 0 0 0-5H9'
+  marks: ['M4 19 9 5', 'M10 19l5-14', 'M16 19l5-14'],
+  tracer: 'M4 19 9 5m1 14 5-14m1 14 5-14'
 } as const;

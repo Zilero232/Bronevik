@@ -1,4 +1,4 @@
-import type { PlaytimeCell } from '@bronevik/schemas';
+import type { PlaytimeCell } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

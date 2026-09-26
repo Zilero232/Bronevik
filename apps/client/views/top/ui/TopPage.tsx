@@ -1,6 +1,6 @@
 'use client';
 
-import type { LeaderboardScope } from '@bronevik/schemas';
+import type { LeaderboardScope } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 

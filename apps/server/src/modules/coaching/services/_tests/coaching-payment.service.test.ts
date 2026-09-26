@@ -13,7 +13,7 @@ import { COACHING } from '../../config';
 import { CoachingPaymentService } from '../coaching-payment.service';
 
 const now = new Date('2026-09-25T12:00:00Z');
-const webUrl = 'https://bronevik.app';
+const webUrl = 'https://otmetki.app';
 
 const order: CoachingOrder = {
   id: '88888888-8888-4888-8888-888888888888',

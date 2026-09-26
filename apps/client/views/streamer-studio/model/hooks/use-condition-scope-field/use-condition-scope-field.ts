@@ -1,6 +1,6 @@
 'use client';
 
-import type { VehicleSummary, VehicleType } from '@bronevik/schemas';
+import type { VehicleSummary, VehicleType } from '@otmetki/schemas';
 
 import { useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';

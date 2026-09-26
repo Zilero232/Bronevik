@@ -1,4 +1,4 @@
-import type { ExpectedValuesTable } from '@bronevik/ratings';
+import type { ExpectedValuesTable } from '@otmetki/ratings';
 
 import { Injectable } from '@nestjs/common';
 import { LRUCache } from 'lru-cache';

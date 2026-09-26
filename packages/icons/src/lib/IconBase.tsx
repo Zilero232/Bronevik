@@ -16,7 +16,7 @@ export const IconBase = ({
 }: IconBaseProps) => (
   <svg
     aria-hidden={title ? undefined : true}
-    className={['bronevik-icon', `bronevik-icon-${name}`, className].filter(Boolean).join(' ')}
+    className={['otmetki-icon', `otmetki-icon-${name}`, className].filter(Boolean).join(' ')}
     fill='none'
     height={size}
     role={title ? 'img' : undefined}

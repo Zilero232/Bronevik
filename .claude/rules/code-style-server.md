@@ -37,13 +37,13 @@ Import from a module's barrel across boundaries, never reach into its files.
 Inside a module, relative paths are fine.
 
 Nest resolves providers from decorator metadata, so **no `import type` for
-injected classes** — the `bronevik/server` ESLint block turns
+injected classes** — the `otmetki/server` ESLint block turns
 `ts/consistent-type-imports` off for the server app.
 
 ## Errors
 
 Throw the app exceptions from `common/exceptions` with a code from
-`@bronevik/schemas`. The client matches on the code, so the message is free text
+`@otmetki/schemas`. The client matches on the code, so the message is free text
 but the code is a contract.
 
 ```ts

@@ -1,4 +1,4 @@
-import type { ApiErrorCode } from '@bronevik/schemas';
+import type { ApiErrorCode } from '@otmetki/schemas';
 
 import { HttpStatus } from '@nestjs/common';
 

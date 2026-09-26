@@ -1,4 +1,4 @@
-import type { PlayerProfile, PlayerSummary, RecentPeriods, StatsBlock } from '@bronevik/schemas';
+import type { PlayerProfile, PlayerSummary, RecentPeriods, StatsBlock } from '@otmetki/schemas';
 
 import { Injectable, Logger } from '@nestjs/common';
 

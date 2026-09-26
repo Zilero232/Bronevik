@@ -1,4 +1,4 @@
-import type { TankTrendPoint } from '@bronevik/schemas';
+import type { TankTrendPoint } from '@otmetki/schemas';
 
 import type { TrendRow } from '../../tanks.types';
 

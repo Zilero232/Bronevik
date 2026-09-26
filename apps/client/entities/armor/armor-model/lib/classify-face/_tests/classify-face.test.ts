@@ -1,4 +1,4 @@
-import { ARMOR_FLAGS, calculateArmorHit, PENETRATION, SHELL_RULES } from '@bronevik/gamedata';
+import { ARMOR_FLAGS, calculateArmorHit, PENETRATION, SHELL_RULES } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { classifyFace } from '../classify-face';

@@ -1,4 +1,4 @@
-import type { VehicleSpec } from '@bronevik/gamedata';
+import type { VehicleSpec } from '@otmetki/gamedata';
 
 import { Injectable } from '@nestjs/common';
 

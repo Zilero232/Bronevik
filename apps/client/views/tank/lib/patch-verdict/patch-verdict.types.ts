@@ -1,4 +1,4 @@
-import type { TankPatchChange, TankPatchVerdict } from '@bronevik/schemas';
+import type { TankPatchChange, TankPatchVerdict } from '@otmetki/schemas';
 
 import type { SpecVerdict, TankSpecKey } from '@/entities/tank/tank';
 

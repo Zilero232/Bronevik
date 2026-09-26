@@ -75,9 +75,9 @@ Before writing a helper, check whether an installed library covers it:
 (typed branching), `date-fns`, `zod`, `motion` (animation), `p-retry`,
 `@base-ui/react` (unstyled primitives), `class-variance-authority` (variant maps),
 `cmdk`, visx (charts), `@tanstack/react-table` + `@tanstack/react-virtual`,
-`lucide-react` + `@bronevik/icons`, `sonner`, `@bronevik/logger` (pino). Within the
-monorepo: `@bronevik/ratings` for any rating math, the server's `lib/lesta` for any
-Lesta call, `@bronevik/schemas` for any contract.
+`lucide-react` + `@otmetki/icons`, `sonner`, `@otmetki/logger` (pino). Within the
+monorepo: `@otmetki/ratings` for any rating math, the server's `lib/lesta` for any
+Lesta call, `@otmetki/schemas` for any contract.
 
 Only libraries **already declared** in the workspace's `package.json` count. A
 transitive dependency used directly is a phantom dependency — it passes locally
@@ -146,7 +146,7 @@ needing a database, Redis or the live Lesta API is verified by running it.
 WN8 threshold or a piece of copy breaks every time somebody retunes it, and
 catches nothing when the logic breaks. Import the constant and compute against
 it, or assert the property: `rating-tone.test.ts` walks `RATING_SCALES` and
-`RATING_TIERS` from `@bronevik/ratings` and checks that every tier gets a tone,
+`RATING_TIERS` from `@otmetki/ratings` and checks that every tier gets a tone,
 every tone is used, and a better tier never lands in a lower tone — none of it
 changes when a threshold moves.
 
@@ -166,6 +166,6 @@ state between files fails under `--sequence.shuffle` before it fails in CI.
 separate; bare `bun test` is Bun's own runner and fails the suite. CI
 (`.github/workflows/ci.yml`) runs both on every push and pull request.
 
-Neither catches SSR breakage. `bun --filter @bronevik/client build` is the only
+Neither catches SSR breakage. `bun --filter @otmetki/client build` is the only
 check that does — it is where a page that typechecks but throws during prerender
 fails, and where a missing translation key surfaces as `MISSING_MESSAGE`.

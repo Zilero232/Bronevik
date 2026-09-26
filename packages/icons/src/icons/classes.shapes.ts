@@ -23,9 +23,9 @@ export const CLASS_SLUGS = {
 } as const satisfies Record<TankClassKind, string>;
 
 export const CLASS_VARIANT = {
-  premiumFill: 'var(--bronevik-class-premium, #ffeecc)',
-  premiumGlow: 'drop-shadow(0 0 1.6px var(--bronevik-class-glow, #ff5500))',
-  eliteColor: 'var(--bronevik-class-elite, #d9b25c)',
+  premiumFill: 'var(--otmetki-class-premium, #ffeecc)',
+  premiumGlow: 'drop-shadow(0 0 1.6px var(--otmetki-class-glow, #ff5500))',
+  eliteColor: 'var(--otmetki-class-elite, #d9b25c)',
   eliteTransform: 'translate(12 11.2) scale(0.58) translate(-12 -12)',
   laurel: laurelBranches({ cx: 12, cy: 12, radius: 8.4, leaves: 7 })
 } as const;

@@ -1,4 +1,4 @@
-import type { Overlay } from '@bronevik/schemas';
+import type { Overlay } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { overlayFormSchema } from './overlay-form.schemas';

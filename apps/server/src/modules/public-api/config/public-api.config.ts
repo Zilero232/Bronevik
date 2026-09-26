@@ -3,7 +3,7 @@ export const PUBLIC_API = {
 } as const;
 
 export const API_RATE_LIMIT = {
-  secondPrefix: 'bronevik:api:rps',
+  secondPrefix: 'otmetki:api:rps',
   secondWindow: 1,
   headers: {
     limit: 'X-RateLimit-Limit',

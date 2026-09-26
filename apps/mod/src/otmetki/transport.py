@@ -35,7 +35,7 @@ class ThreadTransport(object):
         with self._lock:
             if self._thread is not None and self._thread.is_alive():
                 return
-            self._thread = threading.Thread(target=self._worker, name='bronevik-http')
+            self._thread = threading.Thread(target=self._worker, name='otmetki-http')
             self._thread.daemon = True
             self._thread.start()
 

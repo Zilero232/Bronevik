@@ -1,4 +1,4 @@
-import type { vehicleFilterSchema, VehicleSummary } from '@bronevik/schemas';
+import type { vehicleFilterSchema, VehicleSummary } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { MasteryThreshold, MoeThreshold, Prisma, ThresholdSource, VehicleType } from '../../../generated';

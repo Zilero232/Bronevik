@@ -1,6 +1,6 @@
 'use client';
 
-import { API_KEY } from '@bronevik/schemas';
+import { API_KEY } from '@otmetki/schemas';
 import { KeyRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Controller } from 'react-hook-form';

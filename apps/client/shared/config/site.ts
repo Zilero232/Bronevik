@@ -1,7 +1,7 @@
 export const SITE = {
-  url: 'https://bronevik.su',
-  name: 'Броневик',
-  title: 'Броневик',
+  url: 'https://otmetki.su',
+  name: 'Три отметки',
+  title: 'Три отметки',
   description: 'Статистика «Мира танков»: игроки, танки, отметки, топы, кланы и инструменты в одном месте.',
   locale: 'ru_RU',
   lang: 'ru-RU',
@@ -11,7 +11,7 @@ export const SITE = {
     dark: '#121410'
   },
   en: {
-    title: 'Bronevik',
+    title: 'Three Marks',
     description: '«Мир танков» stats: players, tanks, marks of excellence, leaderboards, clans and tools in one place.',
     locale: 'en_US',
     lang: 'en-US'
@@ -24,6 +24,6 @@ export const EXTERNAL_LINKS = {
 } as const;
 
 export const TELEGRAM_BOT = {
-  username: 'BronevikBot',
-  url: 'https://t.me/BronevikBot'
+  username: 'OtmetkiBot',
+  url: 'https://t.me/OtmetkiBot'
 } as const;

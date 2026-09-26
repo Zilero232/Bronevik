@@ -1,4 +1,4 @@
-import type { Paginated, TankServerStatsRow } from '@bronevik/schemas';
+import type { Paginated, TankServerStatsRow } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { match } from 'ts-pattern';

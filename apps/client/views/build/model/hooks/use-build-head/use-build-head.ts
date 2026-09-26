@@ -1,6 +1,6 @@
 'use client';
 
-import type { VehicleSummary } from '@bronevik/schemas';
+import type { VehicleSummary } from '@otmetki/schemas';
 
 import { ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';

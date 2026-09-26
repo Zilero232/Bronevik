@@ -1,4 +1,4 @@
-import type { VehicleSummary } from '@bronevik/schemas';
+import type { VehicleSummary } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
@@ -29,7 +29,7 @@ const entry = (summary: VehicleSummary): CatalogEntry => ({ summary, dbType: 'he
 const threshold = (overrides: Partial<MoeThreshold>): MoeThreshold => ({
   tankId: 1,
   date: new Date('2026-09-20'),
-  source: 'bronevik',
+  source: 'otmetki',
   p65: 2_000,
   p85: 2_600,
   p95: 3_100,

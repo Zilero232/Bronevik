@@ -1,4 +1,4 @@
-import { createGoalSchema, goalMetricSchema } from '@bronevik/schemas';
+import { createGoalSchema, goalMetricSchema } from '@otmetki/schemas';
 import { differenceInCalendarDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 

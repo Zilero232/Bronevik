@@ -1,6 +1,6 @@
 'use client';
 
-import type { ApiErrorLogEntry } from '@bronevik/schemas';
+import type { ApiErrorLogEntry } from '@otmetki/schemas';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';

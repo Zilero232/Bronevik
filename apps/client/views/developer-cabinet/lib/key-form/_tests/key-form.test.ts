@@ -1,4 +1,4 @@
-import { createApiKeySchema } from '@bronevik/schemas';
+import { createApiKeySchema } from '@otmetki/schemas';
 import { differenceInCalendarDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 

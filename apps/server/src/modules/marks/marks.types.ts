@@ -1,4 +1,4 @@
-import type { MoeHistoryBatchQuery, MoeHistoryQuery, MoeProjection } from '@bronevik/schemas';
+import type { MoeHistoryBatchQuery, MoeHistoryQuery, MoeProjection } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { modMoeThresholdsSchema } from './dto/marks.schemas';

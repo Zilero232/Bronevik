@@ -1,4 +1,4 @@
-import type { PlayerMarks } from '@bronevik/schemas';
+import type { PlayerMarks } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

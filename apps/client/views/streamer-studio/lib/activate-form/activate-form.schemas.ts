@@ -1,4 +1,4 @@
-import { activateChallengeSchema } from '@bronevik/schemas';
+import { activateChallengeSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 export const activateFormSchema = z.object({

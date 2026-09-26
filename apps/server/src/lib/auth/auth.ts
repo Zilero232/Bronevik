@@ -1,5 +1,5 @@
 import { apiKey } from '@better-auth/api-key';
-import { API_KEY } from '@bronevik/schemas';
+import { API_KEY } from '@otmetki/schemas';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin, bearer, magicLink } from 'better-auth/plugins';
@@ -15,7 +15,7 @@ export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, logg
   const magicLinkEnabled = !isProduction(env);
 
   return betterAuth({
-    appName: 'Bronevik',
+    appName: 'Three Marks',
     basePath: '/auth',
     baseURL: env.API_URL,
     secret: env.BETTER_AUTH_SECRET,

@@ -1,4 +1,4 @@
-import type { CrewData, Equipment, Nation, OptionalDevice, PostProgression, Shell, VehicleListEntry, VehicleSpec } from '@bronevik/gamedata';
+import type { CrewData, Equipment, Nation, OptionalDevice, PostProgression, Shell, VehicleListEntry, VehicleSpec } from '@otmetki/gamedata';
 
 import type { Arena } from '../parsers/arenas';
 import type { SourceReader, SourceRevision } from '../source';

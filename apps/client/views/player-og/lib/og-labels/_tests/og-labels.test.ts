@@ -4,7 +4,7 @@ import { ogLabels } from '../og-labels';
 
 describe('ogLabels', () => {
   it('reads the brand from the locale messages', () => {
-    expect(ogLabels('ru').brand).toBe('Броневик');
+    expect(ogLabels('ru').brand).toBe('Три отметки');
   });
 
   it('returns filled labels for every locale', () => {

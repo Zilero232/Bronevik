@@ -1,4 +1,4 @@
-import type { RatingPeriod, RecentPeriods, StatsBlock } from '@bronevik/schemas';
+import type { RatingPeriod, RecentPeriods, StatsBlock } from '@otmetki/schemas';
 
 export type PeriodStatsInput = {
   overall: StatsBlock;

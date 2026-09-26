@@ -1,4 +1,4 @@
-import type { BuildOptions, LoadoutResult, PopularBuilds } from '@bronevik/schemas';
+import type { BuildOptions, LoadoutResult, PopularBuilds } from '@otmetki/schemas';
 
 import type { BuildOptionsInput, CalculateLoadoutInput, PopularBuildsInput } from './builds.types';
 

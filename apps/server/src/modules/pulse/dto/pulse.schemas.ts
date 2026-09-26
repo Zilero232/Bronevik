@@ -1,4 +1,4 @@
-import { countSchema, isoDateTimeSchema } from '@bronevik/schemas';
+import { countSchema, isoDateTimeSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 export const pulseSchema = z.object({

@@ -1,4 +1,4 @@
-import type { ApiUsage, ApiUsagePoint } from '@bronevik/schemas';
+import type { ApiUsage, ApiUsagePoint } from '@otmetki/schemas';
 
 import { clamp, sumBy } from 'remeda';
 

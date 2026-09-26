@@ -1,11 +1,11 @@
-import { REFERRAL } from '@bronevik/schemas';
+import { REFERRAL } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { ROUTES } from '@/shared/constants';
 
 import { referralLink } from '../referral-link';
 
-const ORIGIN = 'https://bronevik.example';
+const ORIGIN = 'https://otmetki.example';
 
 describe('referralLink', () => {
   it('points at the Plus page on the same origin', () => {

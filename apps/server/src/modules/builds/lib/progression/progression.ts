@@ -1,4 +1,4 @@
-import type { FieldModificationStep } from '@bronevik/schemas';
+import type { FieldModificationStep } from '@otmetki/schemas';
 
 import type { FieldModificationStepsInput } from './progression.types';
 

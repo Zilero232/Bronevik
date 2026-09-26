@@ -1,6 +1,6 @@
 'use client';
 
-import type { PlayerTankRow } from '@bronevik/schemas';
+import type { PlayerTankRow } from '@otmetki/schemas';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';

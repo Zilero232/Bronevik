@@ -1,4 +1,4 @@
-import type { PlayerMarkRow } from '@bronevik/schemas';
+import type { PlayerMarkRow } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

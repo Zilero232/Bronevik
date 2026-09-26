@@ -1,6 +1,6 @@
-import type { PushSubscriptionInput } from '@bronevik/schemas';
+import type { PushSubscriptionInput } from '@otmetki/schemas';
 
-import { pushSubscriptionSchema } from '@bronevik/schemas';
+import { pushSubscriptionSchema } from '@otmetki/schemas';
 
 import { isBrowser } from '@/shared/lib';
 

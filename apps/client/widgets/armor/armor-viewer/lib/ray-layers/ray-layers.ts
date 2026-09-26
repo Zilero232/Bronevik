@@ -1,4 +1,4 @@
-import { hasArmorFlag } from '@bronevik/gamedata';
+import { hasArmorFlag } from '@otmetki/gamedata';
 import { sortBy } from 'remeda';
 
 import type { HitLayer } from '@/features/armor/armor-inspect';

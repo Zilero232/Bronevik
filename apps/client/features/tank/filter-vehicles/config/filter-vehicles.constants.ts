@@ -1,4 +1,4 @@
-import { NATIONS, TANK_CLASSES } from '@bronevik/icons';
+import { NATIONS, TANK_CLASSES } from '@otmetki/icons';
 import { parseAsArrayOf, parseAsInteger, parseAsStringLiteral } from 'nuqs';
 
 export const VEHICLE_TIERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] as const;

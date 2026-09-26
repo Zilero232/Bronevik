@@ -1,6 +1,6 @@
 'use client';
 
-import { COMPARE } from '@bronevik/schemas';
+import { COMPARE } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 

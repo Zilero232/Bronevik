@@ -1,6 +1,6 @@
-import type { PlayerMarkRow } from '@bronevik/schemas';
+import type { PlayerMarkRow } from '@otmetki/schemas';
 
-import { MOE } from '@bronevik/ratings';
+import { MOE } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
 import { closestMarks } from '../closest-marks';

@@ -1,4 +1,4 @@
-import { overlayPublicIdSchema, streamerSlugSchema, uuidSchema } from '@bronevik/schemas';
+import { overlayPublicIdSchema, streamerSlugSchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { StreamerProvider } from '../../../../generated';

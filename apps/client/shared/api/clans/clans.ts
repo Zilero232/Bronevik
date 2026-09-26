@@ -1,4 +1,4 @@
-import type { ClanEventsPage, ClanListPage, ClanPage, ClanStronghold } from '@bronevik/schemas';
+import type { ClanEventsPage, ClanListPage, ClanPage, ClanStronghold } from '@otmetki/schemas';
 
 import type { ClanEventsInput, ClanListInput, ClanPageInput, ClanStrongholdInput } from './clans.types';
 

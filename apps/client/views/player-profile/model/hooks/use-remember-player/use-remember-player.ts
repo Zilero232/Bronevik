@@ -1,6 +1,6 @@
 'use client';
 
-import type { PlayerProfile } from '@bronevik/schemas';
+import type { PlayerProfile } from '@otmetki/schemas';
 
 import { useEffect } from 'react';
 

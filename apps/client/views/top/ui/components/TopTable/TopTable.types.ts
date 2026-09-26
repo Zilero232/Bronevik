@@ -1,4 +1,4 @@
-import type { LeaderboardEntry } from '@bronevik/schemas';
+import type { LeaderboardEntry } from '@otmetki/schemas';
 import type { ReactNode } from 'react';
 
 import type { LeaderboardFilter } from '@/shared/api/leaderboards';

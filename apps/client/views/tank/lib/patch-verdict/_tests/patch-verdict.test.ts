@@ -1,4 +1,4 @@
-import type { TankPatch } from '@bronevik/schemas';
+import type { TankPatch } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

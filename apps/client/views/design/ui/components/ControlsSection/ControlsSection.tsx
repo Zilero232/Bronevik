@@ -1,6 +1,6 @@
 'use client';
 
-import { CrosshairIcon, HeavyTankIcon, NATION_ICONS, NATIONS } from '@bronevik/icons';
+import { CrosshairIcon, HeavyTankIcon, NATION_ICONS, NATIONS } from '@otmetki/icons';
 import { Bell, Crosshair, Search, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

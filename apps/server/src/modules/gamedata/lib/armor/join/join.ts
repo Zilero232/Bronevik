@@ -6,9 +6,9 @@ import type {
   ArmorPlate,
   ArmorShellOption,
   ArmorTurretModule
-} from '@bronevik/gamedata';
+} from '@otmetki/gamedata';
 
-import { armorFlags, armorPieceKind } from '@bronevik/gamedata';
+import { armorFlags, armorPieceKind } from '@otmetki/gamedata';
 import { unique } from 'remeda';
 
 import type {

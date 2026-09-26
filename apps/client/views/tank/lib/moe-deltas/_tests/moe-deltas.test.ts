@@ -1,4 +1,4 @@
-import type { MoeThreshold } from '@bronevik/schemas';
+import type { MoeThreshold } from '@otmetki/schemas';
 
 import { addDays, formatISO, parseISO } from 'date-fns';
 import { describe, expect, it } from 'vitest';

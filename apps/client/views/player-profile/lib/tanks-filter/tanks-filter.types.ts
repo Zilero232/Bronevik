@@ -1,4 +1,4 @@
-import type { Nation, TankClass, Tier } from '@bronevik/icons';
+import type { Nation, TankClass, Tier } from '@otmetki/icons';
 
 export type PremiumFilter = 'all' | 'premium' | 'regular';
 

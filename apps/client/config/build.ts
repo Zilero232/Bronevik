@@ -8,6 +8,6 @@ export const IMAGES: NextConfig['images'] = {
   remotePatterns: [{ protocol: 'https', hostname: 'api.tanki.su', pathname: '/static/**' }]
 };
 
-export const OPTIMIZED_PACKAGES = ['lucide-react', 'remeda', 'date-fns', '@bronevik/icons'];
+export const OPTIMIZED_PACKAGES = ['lucide-react', 'remeda', 'date-fns', '@otmetki/icons'];
 
-export const TRANSPILED_PACKAGES = ['@bronevik/icons', '@bronevik/ratings', '@bronevik/schemas'];
+export const TRANSPILED_PACKAGES = ['@otmetki/icons', '@otmetki/ratings', '@otmetki/schemas'];

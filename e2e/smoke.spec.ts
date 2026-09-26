@@ -11,7 +11,7 @@ const LOCALES = [
     name: 'ru',
     browserLocale: 'ru-RU',
     home: ROUTES.home,
-    title: /Броневик/,
+    title: /Три отметки/,
     searchPlaceholder: 'Ник игрока, танк или тег клана…',
     lestaCopyright: '© Леста Игры. Все права защищены.'
   },
@@ -19,7 +19,7 @@ const LOCALES = [
     name: 'en',
     browserLocale: 'en-US',
     home: '/en',
-    title: /Bronevik|Броневик/,
+    title: /Three Marks|Три отметки/,
     searchPlaceholder: /./,
     lestaCopyright: '© Lesta Games. All rights reserved.'
   }

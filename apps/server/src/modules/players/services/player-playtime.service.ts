@@ -1,4 +1,4 @@
-import type { Playtime } from '@bronevik/schemas';
+import type { Playtime } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';

@@ -1,4 +1,4 @@
-import { gameEventSchema, gameEventsQuerySchema } from '@bronevik/schemas';
+import { gameEventSchema, gameEventsQuerySchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { NATION_ICONS, NATIONS } from '@bronevik/icons';
+import { NATION_ICONS, NATIONS } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { useTreeParams } from '../../../model/hooks';

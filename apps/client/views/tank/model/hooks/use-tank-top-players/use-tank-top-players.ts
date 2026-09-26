@@ -1,6 +1,6 @@
 'use client';
 
-import type { TopPlayersMetric } from '@bronevik/schemas';
+import type { TopPlayersMetric } from '@otmetki/schemas';
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useFormatter } from 'next-intl';

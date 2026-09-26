@@ -1,4 +1,4 @@
-import type { TechTree } from '@bronevik/schemas';
+import type { TechTree } from '@otmetki/schemas';
 
 import type { TechTreeInput } from './tree.types';
 

@@ -1,4 +1,4 @@
-import type { TelegramLinkCode, TelegramStatus, TelegramWebLoginInput } from '@bronevik/schemas';
+import type { TelegramLinkCode, TelegramStatus, TelegramWebLoginInput } from '@otmetki/schemas';
 
 import {
   telegramLinkControllerIssueCode,

@@ -1,9 +1,9 @@
 'use client';
 
-import type { CheckoutInput } from '@bronevik/schemas';
+import type { CheckoutInput } from '@otmetki/schemas';
 
-import { checkoutSchema } from '@bronevik/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { checkoutSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';

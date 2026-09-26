@@ -1,4 +1,4 @@
-import { buildSchema, createBuildSchema } from '@bronevik/schemas';
+import { buildSchema, createBuildSchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { buildListSchema, buildPageSchema, buildsQuerySchema, tankParamsSchema, updateBuildSchema } from './community-builds.schemas';

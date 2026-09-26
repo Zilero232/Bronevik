@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Design system",
-    "description": "Every Bronevik component, icon and token on a single page."
+    "description": "Every Three Marks component, icon and token on a single page."
   },
   "eyebrow": "«Bronya» design system",
   "title": "Steel at dusk",
@@ -27,7 +27,7 @@
     },
     "body": {
       "meta": "Onest · body",
-      "sample": "Bronevik collects «Мир танков» stats and turns them into clear charts, mark thresholds and hints for every battle."
+      "sample": "Three Marks collects «Мир танков» stats and turns them into clear charts, mark thresholds and hints for every battle."
     },
     "mono": {
       "meta": "IBM Plex Mono · HUD",

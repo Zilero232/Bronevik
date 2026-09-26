@@ -1,6 +1,6 @@
 'use client';
 
-import { TANK_CLASS_ICONS, toRoman } from '@bronevik/icons';
+import { TANK_CLASS_ICONS, toRoman } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 

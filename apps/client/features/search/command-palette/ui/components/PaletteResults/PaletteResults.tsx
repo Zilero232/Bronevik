@@ -1,4 +1,4 @@
-import { isNation, toRoman } from '@bronevik/icons';
+import { isNation, toRoman } from '@otmetki/icons';
 import { Command } from 'cmdk';
 import { useFormatter, useTranslations } from 'next-intl';
 

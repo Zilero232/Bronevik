@@ -1,4 +1,4 @@
-import type { ApiPlan } from '@bronevik/schemas';
+import type { ApiPlan } from '@otmetki/schemas';
 
 export type ApiKeyRow = {
   id: string;

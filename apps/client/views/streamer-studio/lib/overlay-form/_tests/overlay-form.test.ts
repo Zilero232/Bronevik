@@ -1,6 +1,6 @@
-import type { Overlay } from '@bronevik/schemas';
+import type { Overlay } from '@otmetki/schemas';
 
-import { overlayConfigSchema, overlayKindSchema } from '@bronevik/schemas';
+import { overlayConfigSchema, overlayKindSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { KIND_PRESETS } from '../../../config';
@@ -15,7 +15,7 @@ const OVERLAY: Overlay = {
   kind: 'moe',
   accountId: 1,
   config: overlayConfigSchema.parse({ metrics: ['moePercent'], theme: 'tracer', accentColor: '#00ff88' }),
-  publicUrl: `https://bronevik.example/overlay/${PUBLIC_ID}`,
+  publicUrl: `https://otmetki.example/overlay/${PUBLIC_ID}`,
   isPro: false,
   updatedAt: '2026-09-25T10:00:00.000Z'
 };

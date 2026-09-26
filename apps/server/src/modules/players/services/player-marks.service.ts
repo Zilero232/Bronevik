@@ -1,7 +1,7 @@
-import type { PlayerMarks } from '@bronevik/schemas';
+import type { PlayerMarks } from '@otmetki/schemas';
 
-import { MOE } from '@bronevik/ratings';
 import { Injectable } from '@nestjs/common';
+import { MOE } from '@otmetki/ratings';
 import { sortBy } from 'remeda';
 
 import type { CombinedDamageRow } from '../players.types';

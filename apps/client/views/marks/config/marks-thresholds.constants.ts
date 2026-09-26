@@ -1,4 +1,4 @@
-import type { MarkCount, MasteryLevel } from '@bronevik/icons';
+import type { MarkCount, MasteryLevel } from '@otmetki/icons';
 
 export const MOE_THRESHOLD_KEYS = ['p65', 'p85', 'p95', 'p100'] as const;
 

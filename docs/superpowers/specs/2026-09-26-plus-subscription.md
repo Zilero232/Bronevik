@@ -2,7 +2,7 @@
 
 Date: 2026-09-26. Status: draft, awaiting approval.
 
-Related: [2026-09-24-bronevik-design.md](2026-09-24-bronevik-design.md), [../../features.md](../../features.md) (§15, §18, §19 are superseded by this spec), [../../research/lesta-api.md](../../research/lesta-api.md), [../../research/market.md](../../research/market.md).
+Related: [2026-09-24-otmetki-design.md](2026-09-24-otmetki-design.md), [../../features.md](../../features.md) (§15, §18, §19 are superseded by this spec), [../../research/lesta-api.md](../../research/lesta-api.md), [../../research/market.md](../../research/market.md).
 
 ## 0. Decision
 
@@ -44,7 +44,7 @@ The product will be renamed to «Три отметки». Every user-facing and 
 
 - Server and shared code: a new `BRAND` constant in `packages/schemas/src/common/brand/brand.constants.ts`:
   ```ts
-  export const BRAND = { name: 'Броневик', plusName: 'Броневик Плюс' } as const;
+  export const BRAND = { name: 'Три отметки', plusName: 'Три отметки Плюс' } as const;
   ```
   `PAYMENT_DESCRIPTION` in `apps/server/src/modules/billing/config/plans.config.ts` and the email digest template build their strings from it.
 - Client: `shared/i18n/locales/{ru,en}/brand.json` gets a `plus` key; all UI text uses `brand.name` / `brand.plus`, never a literal.

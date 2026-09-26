@@ -1,4 +1,4 @@
-import type { FinalStats } from '@bronevik/gamedata';
+import type { FinalStats } from '@otmetki/gamedata';
 
 import type { ProfileStats, SummarizeVehicleInput, VehicleSummary } from './importer.types';
 

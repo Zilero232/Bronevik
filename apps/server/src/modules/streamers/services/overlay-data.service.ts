@@ -1,8 +1,8 @@
 import type { Cache } from 'cache-manager';
 
-import { challengeConditionSchema, overlayConfigSchema } from '@bronevik/schemas';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
+import { challengeConditionSchema, overlayConfigSchema } from '@otmetki/schemas';
 
 import type { Overlay } from '../../../../generated';
 import type { BuildOverlayDataInput, OverlayData, OverlayMoeInput, PreviewOverlayRequest } from '../streamers.types';

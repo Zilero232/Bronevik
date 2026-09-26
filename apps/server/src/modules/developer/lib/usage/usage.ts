@@ -1,4 +1,4 @@
-import type { ApiUsagePoint } from '@bronevik/schemas';
+import type { ApiUsagePoint } from '@otmetki/schemas';
 
 import { groupBy, sortBy, sumBy } from 'remeda';
 

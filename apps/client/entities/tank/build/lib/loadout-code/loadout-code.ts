@@ -1,6 +1,6 @@
-import type { Loadout } from '@bronevik/schemas';
+import type { Loadout } from '@otmetki/schemas';
 
-import { LOADOUT, loadoutSchema } from '@bronevik/schemas';
+import { LOADOUT, loadoutSchema } from '@otmetki/schemas';
 
 import type { BuildHrefInput, ToSlotsInput } from './loadout-code.types';
 

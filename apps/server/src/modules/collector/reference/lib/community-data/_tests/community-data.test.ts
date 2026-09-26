@@ -1,4 +1,4 @@
-import { MASTERY_PERCENTILES } from '@bronevik/ratings';
+import { MASTERY_PERCENTILES } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
 import { expectedValuesDate, masteryThresholdRows, parsePoliroidMoe } from '../community-data';

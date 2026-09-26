@@ -1547,7 +1547,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             }
           },
           {
@@ -1611,7 +1611,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             }
           }
         ],
@@ -1670,7 +1670,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             }
           }
         ],
@@ -2628,7 +2628,7 @@
         "operationId": "ModController_ingest",
         "parameters": [
           {
-            "name": "x-bronevik-device",
+            "name": "x-otmetki-device",
             "required": true,
             "in": "header",
             "schema": {
@@ -2636,7 +2636,7 @@
             }
           },
           {
-            "name": "x-bronevik-signature",
+            "name": "x-otmetki-signature",
             "required": true,
             "in": "header",
             "schema": {
@@ -4261,7 +4261,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             }
           },
           {
@@ -4371,7 +4371,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             }
           }
         ],
@@ -4476,7 +4476,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             }
           }
         ],
@@ -6164,7 +6164,7 @@
         "operationId": "ReplaysController_uploadFromMod",
         "parameters": [
           {
-            "name": "x-bronevik-device",
+            "name": "x-otmetki-device",
             "required": true,
             "in": "header",
             "schema": {
@@ -6172,7 +6172,7 @@
             }
           },
           {
-            "name": "x-bronevik-signature",
+            "name": "x-otmetki-signature",
             "required": true,
             "in": "header",
             "schema": {
@@ -9491,8 +9491,8 @@
     }
   },
   "info": {
-    "title": "Bronevik API",
-    "description": "Site API, public /v1 and the mod ingest for Броневик. Data source: Леста Игры.",
+    "title": "Three Marks API",
+    "description": "Site API, public /v1 and the mod ingest for Три отметки. Data source: Леста Игры.",
     "version": "0.1.0",
     "contact": {}
   },
@@ -15704,7 +15704,7 @@
                   },
                   "source": {
                     "type": "string",
-                    "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                    "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                   },
                   "p65": {
                     "type": "integer",
@@ -15759,7 +15759,7 @@
                   },
                   "source": {
                     "type": "string",
-                    "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                    "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                   },
                   "class3": {
                     "type": "integer",
@@ -18049,7 +18049,7 @@
                         },
                         "source": {
                           "type": "string",
-                          "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                          "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                         },
                         "p65": {
                           "type": "integer",
@@ -18104,7 +18104,7 @@
                         },
                         "source": {
                           "type": "string",
-                          "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                          "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                         },
                         "class3": {
                           "type": "integer",
@@ -18288,7 +18288,7 @@
             },
             "source": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             },
             "p65": {
               "type": "integer",
@@ -27202,7 +27202,7 @@
                   },
                   "source": {
                     "type": "string",
-                    "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                    "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                   },
                   "p65": {
                     "type": "integer",
@@ -27257,7 +27257,7 @@
                   },
                   "source": {
                     "type": "string",
-                    "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                    "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                   },
                   "class3": {
                     "type": "integer",
@@ -27470,7 +27470,7 @@
                         },
                         "source": {
                           "type": "string",
-                          "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                          "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                         },
                         "p65": {
                           "type": "integer",
@@ -27525,7 +27525,7 @@
                         },
                         "source": {
                           "type": "string",
-                          "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                          "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                         },
                         "class3": {
                           "type": "integer",
@@ -27709,7 +27709,7 @@
             },
             "source": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             },
             "p65": {
               "type": "integer",

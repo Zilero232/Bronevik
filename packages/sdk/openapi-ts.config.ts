@@ -1,7 +1,7 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 export default defineConfig({
-  input: process.env.BRONEVIK_OPENAPI_URL ?? './openapi/v1.json',
+  input: process.env.OTMETKI_OPENAPI_URL ?? './openapi/v1.json',
   output: { path: './src/generated', clean: true },
   parser: {
     transforms: {

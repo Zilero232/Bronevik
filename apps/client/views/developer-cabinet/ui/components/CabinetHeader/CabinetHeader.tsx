@@ -1,6 +1,6 @@
 'use client';
 
-import { API_KEY } from '@bronevik/schemas';
+import { API_KEY } from '@otmetki/schemas';
 import { BookOpen } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 

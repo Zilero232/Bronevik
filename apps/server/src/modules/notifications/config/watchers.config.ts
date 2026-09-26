@@ -1,5 +1,5 @@
 export const MARKS_WATCH = {
-  cursorKey: 'bronevik:notifications:marks-cursor',
+  cursorKey: 'otmetki:notifications:marks-cursor',
   batchSize: 500
 } as const;
 
@@ -16,6 +16,6 @@ export const THRESHOLD_DROP = {
 export const WEEKLY_DIGEST = {
   lookbackDays: 7,
   batchSize: 500,
-  dedupePrefix: 'bronevik:notifications:digest:',
+  dedupePrefix: 'otmetki:notifications:digest:',
   dedupeTtlSeconds: 14 * 24 * 60 * 60
 } as const;

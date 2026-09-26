@@ -1,7 +1,7 @@
-import type { ArmorShell } from '@bronevik/gamedata';
-import type { ArmorShellOptionData } from '@bronevik/schemas';
+import type { ArmorShell } from '@otmetki/gamedata';
+import type { ArmorShellOptionData } from '@otmetki/schemas';
 
-import { penetrationAtDistance, toShellKind } from '@bronevik/gamedata';
+import { penetrationAtDistance, toShellKind } from '@otmetki/gamedata';
 
 import type { PickShellInput, ResolveShellInput } from './shell-options.types';
 

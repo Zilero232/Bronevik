@@ -1,4 +1,4 @@
-import { overlayDataSchema } from '@bronevik/schemas';
+import { overlayDataSchema } from '@otmetki/schemas';
 import { match } from 'ts-pattern';
 
 import type { OverlayData } from '@/shared/api/streamers';

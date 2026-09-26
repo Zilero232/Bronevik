@@ -4,7 +4,7 @@ import type {
   newsPageSchema,
   newsQuerySchema,
   PremiumOffer as PremiumOfferView
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { BonusCodeStatus } from '../../../generated';

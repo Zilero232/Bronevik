@@ -1,9 +1,9 @@
-# @bronevik/gamedata
+# @otmetki/gamedata
 
 The pure «Мир танков» loadout calculator and the game-data model it reads. No I/O and no dependencies, so the client's build constructor and the server's importer run the same maths. The importer that produces this data (XML parsers, GitHub reader, database writer) lives in the server app: [apps/server/src/modules/gamedata](../../apps/server/src/modules/gamedata/README.md).
 
 ```ts
-import { calculateLoadout } from '@bronevik/gamedata';
+import { calculateLoadout } from '@otmetki/gamedata';
 
 const stats = calculateLoadout({
   vehicle: is,

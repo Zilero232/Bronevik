@@ -1,4 +1,4 @@
-import type { MapDetail, MapList } from '@bronevik/schemas';
+import type { MapDetail, MapList } from '@otmetki/schemas';
 
 import type { MapDetailInput, MapListInput } from './maps.types';
 

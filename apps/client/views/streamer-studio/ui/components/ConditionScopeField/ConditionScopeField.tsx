@@ -1,9 +1,9 @@
 'use client';
 
-import type { VehicleType } from '@bronevik/schemas';
+import type { VehicleType } from '@otmetki/schemas';
 
-import { toRoman } from '@bronevik/icons';
-import { vehicleTypeSchema } from '@bronevik/schemas';
+import { toRoman } from '@otmetki/icons';
+import { vehicleTypeSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 

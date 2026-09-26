@@ -1,4 +1,4 @@
-import type { ArmorPieceKind } from '@bronevik/gamedata';
+import type { ArmorPieceKind } from '@otmetki/gamedata';
 
 import type { HitReport } from '../../lib/hit-report';
 

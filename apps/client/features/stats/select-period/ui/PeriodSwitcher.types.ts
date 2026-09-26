@@ -1,4 +1,4 @@
-import type { RecentPeriod } from '@bronevik/schemas';
+import type { RecentPeriod } from '@otmetki/schemas';
 
 export type PeriodSwitcherProps = {
   value: RecentPeriod;

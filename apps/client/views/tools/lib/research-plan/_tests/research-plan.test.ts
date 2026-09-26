@@ -1,4 +1,4 @@
-import type { TechTreeNode, VehicleSummary } from '@bronevik/schemas';
+import type { TechTreeNode, VehicleSummary } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

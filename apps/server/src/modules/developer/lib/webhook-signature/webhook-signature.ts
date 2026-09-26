@@ -1,4 +1,4 @@
-import { WEBHOOK } from '@bronevik/schemas';
+import { WEBHOOK } from '@otmetki/schemas';
 import { getUnixTime } from 'date-fns';
 import { randomBytes } from 'node:crypto';
 import { Webhook } from 'standardwebhooks';

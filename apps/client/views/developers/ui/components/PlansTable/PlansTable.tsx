@@ -1,6 +1,6 @@
 'use client';
 
-import { API_PLAN_LIMITS } from '@bronevik/schemas';
+import { API_PLAN_LIMITS } from '@otmetki/schemas';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { Badge, Card, CardBody, CardHeader } from '@/ui-kit';

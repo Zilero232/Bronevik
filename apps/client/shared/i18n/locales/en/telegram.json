@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Telegram",
-    "description": "Link Telegram to Bronevik: bot commands, alerts about marks and sessions, the mini app."
+    "description": "Link Telegram to Three Marks: bot commands, alerts about marks and sessions, the mini app."
   },
   "toast": {
     "codeFailed": "Could not get a code. Please try again.",
@@ -75,7 +75,7 @@
   "webLogin": {
     "meta": {
       "title": "Sign in with Telegram",
-      "description": "Sign in to Bronevik with a one-time link from the bot."
+      "description": "Sign in to Three Marks with a one-time link from the bot."
     },
     "label": "Telegram sign-in",
     "phases": {

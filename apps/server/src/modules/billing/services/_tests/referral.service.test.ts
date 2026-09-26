@@ -1,4 +1,4 @@
-import { REFERRAL } from '@bronevik/schemas';
+import { REFERRAL } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 

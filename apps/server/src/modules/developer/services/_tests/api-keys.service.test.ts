@@ -1,12 +1,12 @@
 import type { AuthService } from '@thallesp/nestjs-better-auth';
 
-import { API_KEY } from '@bronevik/schemas';
+import { API_KEY } from '@otmetki/schemas';
 import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { ApiKey } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { BronevikAuth } from '../../../../lib/auth';
+import type { OtmetkiAuth } from '../../../../lib/auth';
 
 import { API_KEY_PLUGIN } from '../../../../lib/auth';
 import { API_PLANS } from '../../config';
@@ -42,7 +42,7 @@ const keyRow = (overrides: Partial<ApiKey> = {}): ApiKey => ({
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const plans = mock<DeveloperPlanService>();
-  const auth = mockDeep<AuthService<BronevikAuth>>();
+  const auth = mockDeep<AuthService<OtmetkiAuth>>();
 
   plans.planFor.mockResolvedValue('free');
   plans.cachedPlanFor.mockResolvedValue('free');
@@ -62,13 +62,13 @@ describe('ApiKeysService.create', () => {
 
     prisma.apiKey.count.mockResolvedValue(0);
     plans.planFor.mockResolvedValue('pro');
-    auth.api.createApiKey.mockResolvedValue({ ...keyRow({ metadata: null }), key: 'brv_secret', metadata: { plan: 'pro' }, permissions: null });
+    auth.api.createApiKey.mockResolvedValue({ ...keyRow({ metadata: null }), key: 'otm_secret', metadata: { plan: 'pro' }, permissions: null });
 
     const created = await service.create({ userId: 'user', name: 'bot' });
     const body = auth.api.createApiKey.mock.calls[0]?.[0]?.body;
 
     expect(body).toMatchObject({ userId: 'user', name: 'bot', refillAmount: API_PLANS.pro.requestsPerDay, metadata: { plan: 'pro' } });
-    expect(created.secret).toBe('brv_secret');
+    expect(created.secret).toBe('otm_secret');
     expect(created.key.plan).toBe('pro');
   });
 
@@ -116,7 +116,7 @@ describe('ApiKeysService.verify', () => {
 
     auth.api.verifyApiKey.mockResolvedValue(verified({ remaining: 42 }));
 
-    await expect(service.verify('brv_key')).resolves.toEqual({
+    await expect(service.verify('otm_key')).resolves.toEqual({
       id: keyRow().id,
       userId: 'user',
       plan: 'free',
@@ -130,11 +130,11 @@ describe('ApiKeysService.verify', () => {
 
     auth.api.verifyApiKey.mockResolvedValueOnce({ valid: false, error: { code: 'KEY_DISABLED', message: 'disabled' }, key: null });
 
-    await expect(service.verify('brv_key')).rejects.toMatchObject({ response: { code: 'API_KEY_REVOKED' } });
+    await expect(service.verify('otm_key')).rejects.toMatchObject({ response: { code: 'API_KEY_REVOKED' } });
 
     auth.api.verifyApiKey.mockResolvedValueOnce({ valid: false, error: { code: 'INVALID_API_KEY', message: 'invalid' }, key: null });
 
-    await expect(service.verify('brv_key')).rejects.toMatchObject({ response: { code: 'API_KEY_INVALID' } });
+    await expect(service.verify('otm_key')).rejects.toMatchObject({ response: { code: 'API_KEY_INVALID' } });
   });
 
   it('answers 429 with a Retry-After until the refill once the daily quota is used up', async () => {
@@ -143,7 +143,7 @@ describe('ApiKeysService.verify', () => {
     auth.api.verifyApiKey.mockResolvedValue({ valid: false, error: { code: 'USAGE_EXCEEDED', message: 'used up' }, key: null });
     prisma.apiKey.findUnique.mockResolvedValue(keyRow());
 
-    const error = await service.verify('brv_key').catch((caught: unknown) => caught);
+    const error = await service.verify('otm_key').catch((caught: unknown) => caught);
 
     expect(error).toMatchObject({ response: { code: 'PLAN_LIMIT_REACHED' } });
     expect(error).toMatchObject({ retryAfterSec: expect.any(Number) });
@@ -156,7 +156,7 @@ describe('ApiKeysService.verify', () => {
     prisma.apiKey.findMany.mockResolvedValue([keyRow()]);
     auth.api.verifyApiKey.mockResolvedValue(verified());
 
-    await service.verify('brv_key');
+    await service.verify('otm_key');
     await vi.waitFor(() => expect(prisma.apiKey.update).toHaveBeenCalled());
 
     expect(prisma.apiKey.update.mock.calls[0]?.[0].data).toMatchObject({

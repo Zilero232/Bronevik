@@ -1,4 +1,4 @@
-import type { GameEventsQuery, GameEvent as GameEventView } from '@bronevik/schemas';
+import type { GameEventsQuery, GameEvent as GameEventView } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { addDays, subDays } from 'date-fns';

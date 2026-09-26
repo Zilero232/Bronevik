@@ -1,6 +1,6 @@
-import type { MarkCount } from '@bronevik/icons';
+import type { MarkCount } from '@otmetki/icons';
 
-import { Mark1Icon, Mark2Icon, Mark3Icon } from '@bronevik/icons';
+import { Mark1Icon, Mark2Icon, Mark3Icon } from '@otmetki/icons';
 
 import type { ProgressTone } from '@/ui-kit';
 

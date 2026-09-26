@@ -1,4 +1,4 @@
-import type { BonusCodeVerdict as BonusCodeVerdictView } from '@bronevik/schemas';
+import type { BonusCodeVerdict as BonusCodeVerdictView } from '@otmetki/schemas';
 
 import type { BonusCodeVerdict, NewsKind } from '../../../../../generated';
 

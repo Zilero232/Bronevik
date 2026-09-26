@@ -1,4 +1,4 @@
-import type { VehicleStats } from '@bronevik/schemas';
+import type { VehicleStats } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

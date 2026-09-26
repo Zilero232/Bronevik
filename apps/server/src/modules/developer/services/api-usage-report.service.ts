@@ -1,4 +1,4 @@
-import type { ApiErrorLogEntry, ApiUsage } from '@bronevik/schemas';
+import type { ApiErrorLogEntry, ApiUsage } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';

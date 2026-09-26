@@ -1,4 +1,4 @@
-import type { RatingPeriod } from '@bronevik/schemas';
+import type { RatingPeriod } from '@otmetki/schemas';
 
 export const PROFILE_TABS = ['overview', 'tanks', 'sessions', 'marks', 'achievements', 'charts', 'insights', 'history'] as const;
 

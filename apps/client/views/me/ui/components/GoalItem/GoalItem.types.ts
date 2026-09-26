@@ -1,4 +1,4 @@
-import type { Goal } from '@bronevik/schemas';
+import type { Goal } from '@otmetki/schemas';
 
 export type GoalItemProps = {
   goal: Goal;

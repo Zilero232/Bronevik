@@ -1,6 +1,6 @@
 'use client';
 
-import type { PopularPlayer } from '@bronevik/schemas';
+import type { PopularPlayer } from '@otmetki/schemas';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';

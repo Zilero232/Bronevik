@@ -1,4 +1,4 @@
-import type { PlayerComparison } from '@bronevik/schemas';
+import type { PlayerComparison } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

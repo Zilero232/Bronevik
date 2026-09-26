@@ -3,7 +3,7 @@ from __future__ import absolute_import, print_function
 import functools
 import traceback
 
-PREFIX = '[BRONEVIK]'
+PREFIX = '[OTMETKI]'
 
 
 def log(message):

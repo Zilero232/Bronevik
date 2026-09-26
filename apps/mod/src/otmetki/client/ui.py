@@ -9,8 +9,8 @@ except ImportError:
     g_guiFlash = None
     COMPONENT_TYPE = None
 
-BATTLE_PANEL = 'bronevik.moe'
-HANGAR_PANEL = 'bronevik.session'
+BATTLE_PANEL = 'otmetki.moe'
+HANGAR_PANEL = 'otmetki.session'
 
 LAYOUT = {
     BATTLE_PANEL: {'x': 0, 'y': 120, 'alignX': 'center', 'alignY': 'top'},

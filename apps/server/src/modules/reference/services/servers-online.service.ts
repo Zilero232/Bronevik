@@ -1,4 +1,4 @@
-import type { ServersOnline } from '@bronevik/schemas';
+import type { ServersOnline } from '@otmetki/schemas';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { sumBy } from 'remeda';

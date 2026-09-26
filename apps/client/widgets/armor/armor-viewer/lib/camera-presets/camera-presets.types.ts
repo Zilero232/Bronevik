@@ -1,4 +1,4 @@
-import type { Vec3 } from '@bronevik/gamedata';
+import type { Vec3 } from '@otmetki/gamedata';
 
 import type { PRESET_DIRECTIONS } from '../../config';
 import type { ModelBounds } from '../scene-parts';

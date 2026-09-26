@@ -1,4 +1,4 @@
-import type { PlayerProfile, RatingPeriod, StatsBlock } from '@bronevik/schemas';
+import type { PlayerProfile, RatingPeriod, StatsBlock } from '@otmetki/schemas';
 
 export type PeriodRatingsInput = {
   profile: PlayerProfile;

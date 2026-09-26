@@ -1,4 +1,4 @@
-import type { CrewSkill, Equipment, FieldModification, OptionalDevice, VehicleSpec } from '@bronevik/gamedata';
+import type { CrewSkill, Equipment, FieldModification, OptionalDevice, VehicleSpec } from '@otmetki/gamedata';
 
 import { isPlainObject, isString } from 'remeda';
 

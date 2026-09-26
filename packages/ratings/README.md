@@ -1,4 +1,4 @@
-# @bronevik/ratings
+# @otmetki/ratings
 
 Pure rating math for «Мир танков». No IO: callers pass totals, expected values and reference tables.
 Totals are cumulative `BattleTotals` / `TankTotals` in camelCase; map Lesta's snake_case blocks before calling.
@@ -38,7 +38,7 @@ Snapshots are cumulative, so a period is `to − from` (`diffTotals`, `diffTankT
 `pickSnapshotPair` takes the newest snapshot as `to` and, as `from`, the newest snapshot at or before the
 window start (`now − days`, or `to.battles − N` for last-N-battles). If no snapshot is old enough, the
 earliest one is used and `isPartial` is set. Because snapshots are written only on change, a last-N window
-can cover slightly more than N battles. `PERIOD_WINDOWS` maps each public period id in `RECENT_PERIODS` (`24h`, `7d`, `30d`, `60d`, `1000`) to its window; `@bronevik/schemas` builds `recentPeriodSchema` from the same list.
+can cover slightly more than N battles. `PERIOD_WINDOWS` maps each public period id in `RECENT_PERIODS` (`24h`, `7d`, `30d`, `60d`, `1000`) to its window; `@otmetki/schemas` builds `recentPeriodSchema` from the same list.
 
 ## Броня-Индекс (0–10 000)
 

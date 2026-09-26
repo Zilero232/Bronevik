@@ -5,11 +5,11 @@ import tempfile
 import unittest
 
 import _support  # noqa: F401
-from bronevik.config import DEFAULT_SERVER_URL, FEATURES, Config, is_valid_server_url
-from bronevik.i18n import STRINGS, Translator, resolve_language
-from bronevik.panels import format_moe_panel, format_number, format_session_panel, format_session_plain
-from bronevik.settings_template import BIND_CODE_VAR, build_template, settings_to_config
-from bronevik.storage import JsonFile
+from otmetki.config import DEFAULT_SERVER_URL, FEATURES, Config, is_valid_server_url
+from otmetki.i18n import STRINGS, Translator, resolve_language
+from otmetki.panels import format_moe_panel, format_number, format_session_panel, format_session_plain
+from otmetki.settings_template import BIND_CODE_VAR, build_template, settings_to_config
+from otmetki.storage import JsonFile
 
 
 class ConfigTest(unittest.TestCase):
@@ -55,9 +55,9 @@ class ConfigTest(unittest.TestCase):
             path = os.path.join(directory, 'nested', 'config.json')
             storage = JsonFile(path, pretty=True)
             self.assertEqual(storage.read({}), {})
-            storage.write({'a': u'Броневик'})
-            storage.write({'a': u'Броневик', 'b': 2})
-            self.assertEqual(JsonFile(path).read(), {'a': u'Броневик', 'b': 2})
+            storage.write({'a': u'Три отметки'})
+            storage.write({'a': u'Три отметки', 'b': 2})
+            self.assertEqual(JsonFile(path).read(), {'a': u'Три отметки', 'b': 2})
             with open(path, 'w') as handle:
                 handle.write('{broken')
             self.assertEqual(JsonFile(path).read('fallback'), 'fallback')
@@ -70,7 +70,7 @@ class SettingsTemplateTest(unittest.TestCase):
     def test_template_shape(self):
         config = Config({'send_moe_distribution': False})
         template = build_template(config, Translator('en'), 'status')
-        self.assertEqual(template['modDisplayName'], 'Bronevik')
+        self.assertEqual(template['modDisplayName'], 'Three Marks')
         self.assertEqual([c['varName'] for c in template['column1']], list(FEATURES))
         self.assertFalse([c for c in template['column1'] if c['varName'] == 'send_moe_distribution'][0]['value'])
         self.assertEqual(template['column2'][1]['type'], 'TextInput')

@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatedCrosshair, AnimatedLogo, AnimatedMarkOfExcellence, AnimatedMastery } from '@bronevik/icons';
+import { AnimatedCrosshair, AnimatedLogo, AnimatedMarkOfExcellence, AnimatedMastery } from '@otmetki/icons';
 import { useCounter } from '@siberiacancode/reactuse';
 import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';

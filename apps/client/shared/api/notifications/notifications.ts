@@ -1,4 +1,4 @@
-import type { InboxPage, MarkReadInput, MarkReadResult, PushKey, PushSubscriptionInput, PushUnsubscribeInput } from '@bronevik/schemas';
+import type { InboxPage, MarkReadInput, MarkReadResult, PushKey, PushSubscriptionInput, PushUnsubscribeInput } from '@otmetki/schemas';
 
 import type { InboxPageInput } from './notifications.types';
 

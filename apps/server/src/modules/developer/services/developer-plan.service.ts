@@ -1,7 +1,7 @@
-import type { ApiPlan, ApiPlans } from '@bronevik/schemas';
+import type { ApiPlan, ApiPlans } from '@otmetki/schemas';
 
-import { apiPlanSchema } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
+import { apiPlanSchema } from '@otmetki/schemas';
 import { LRUCache } from 'lru-cache';
 
 import { PrismaService } from '../../../core';

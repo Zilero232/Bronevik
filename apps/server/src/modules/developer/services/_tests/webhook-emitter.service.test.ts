@@ -13,7 +13,7 @@ import { WebhookEmitterService } from '../webhook-emitter.service';
 const endpoint = ({ id, filter }: Pick<WebhookEndpoint, 'filter' | 'id'>): WebhookEndpoint => ({
   id,
   userId: 'user',
-  url: 'https://hooks.example.com/bronevik',
+  url: 'https://hooks.example.com/otmetki',
   secret: 'whsec',
   events: ['moeGained', 'sessionFinished'],
   filter,

@@ -1,6 +1,6 @@
-import type { GoalMetric } from '@bronevik/schemas';
+import type { GoalMetric } from '@otmetki/schemas';
 
-import { createGoalSchema } from '@bronevik/schemas';
+import { createGoalSchema } from '@otmetki/schemas';
 import { addDays } from 'date-fns';
 import { z } from 'zod';
 

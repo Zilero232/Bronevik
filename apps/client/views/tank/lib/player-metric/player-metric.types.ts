@@ -1,4 +1,4 @@
-import type { LeaderboardEntry, TopPlayersMetric } from '@bronevik/schemas';
+import type { LeaderboardEntry, TopPlayersMetric } from '@otmetki/schemas';
 
 import type { RatingTone } from '@/shared/lib';
 

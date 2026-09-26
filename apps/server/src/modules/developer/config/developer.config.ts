@@ -1,6 +1,6 @@
-import type { ApiPlan, ApiPlanLimits, WebhookEvent } from '@bronevik/schemas';
+import type { ApiPlan, ApiPlanLimits, WebhookEvent } from '@otmetki/schemas';
 
-import { API_PLAN_LIMITS } from '@bronevik/schemas';
+import { API_PLAN_LIMITS } from '@otmetki/schemas';
 import { millisecondsInDay } from 'date-fns/constants';
 
 import type { WebhookEvent as DbWebhookEvent } from '../../../../generated';
@@ -46,7 +46,7 @@ export const WEBHOOK_DELIVERY = {
   responseBodyMaxLength: 1_000,
   secretBytes: 32,
   blockedResponse: 'refused: the webhook host resolves to a non-public address',
-  userAgent: 'Bronevik-Webhooks/1.0 (+https://bronevik.app)',
+  userAgent: 'Otmetki-Webhooks/1.0 (+https://otmetki.app)',
   deliveriesShown: 50
 } as const;
 

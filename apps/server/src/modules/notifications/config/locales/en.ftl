@@ -51,7 +51,7 @@ clan-weekly-report-body = Events: { $events }, attendance { $attendance ->
 badge-awarded-title = New badge!
 badge-awarded-body = "{ $title }" earned
 
-digest-title = Your week on Bronevik
+digest-title = Your week on Three Marks
 digest-body = { $battles } { $battles ->
         [one] battle
        *[other] battles

@@ -1,4 +1,4 @@
-import { loadoutSchema } from '@bronevik/schemas';
+import { loadoutSchema } from '@otmetki/schemas';
 
 import type { BuildView } from '../../community-builds.types';
 import type { ToBuildViewInput } from './build-view.types';

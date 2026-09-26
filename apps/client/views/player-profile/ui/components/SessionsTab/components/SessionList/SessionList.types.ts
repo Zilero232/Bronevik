@@ -1,4 +1,4 @@
-import type { SessionListItem } from '@bronevik/schemas';
+import type { SessionListItem } from '@otmetki/schemas';
 
 export type SessionListProps = {
   items: SessionListItem[];

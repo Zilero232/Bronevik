@@ -1,4 +1,4 @@
-import { projectMoeBattles, toMoeThresholds } from '@bronevik/ratings';
+import { projectMoeBattles, toMoeThresholds } from '@otmetki/ratings';
 
 import type { MarksProjection, MarksProjectionInput } from './marks-projection.types';
 

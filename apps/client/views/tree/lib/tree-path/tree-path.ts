@@ -1,4 +1,4 @@
-import type { TechTreeEdge } from '@bronevik/schemas';
+import type { TechTreeEdge } from '@otmetki/schemas';
 
 import { firstBy, sumBy } from 'remeda';
 

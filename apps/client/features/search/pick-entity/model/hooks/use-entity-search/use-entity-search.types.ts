@@ -1,4 +1,4 @@
-import type { PlayerSearchResult, TankSearchResult } from '@bronevik/schemas';
+import type { PlayerSearchResult, TankSearchResult } from '@otmetki/schemas';
 
 export type PickableKind = 'player' | 'tank';
 

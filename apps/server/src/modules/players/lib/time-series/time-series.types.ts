@@ -1,5 +1,5 @@
-import type { ExpectedValuesTable, TankReference } from '@bronevik/ratings';
-import type { TimeSeriesMetric } from '@bronevik/schemas';
+import type { ExpectedValuesTable, TankReference } from '@otmetki/ratings';
+import type { TimeSeriesMetric } from '@otmetki/schemas';
 
 export type BucketTankRow = {
   bucket: Date;

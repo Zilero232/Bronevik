@@ -1,4 +1,4 @@
-import { mapDetailSchema, mapListSchema, mapParamsSchema, mapsQuerySchema } from '@bronevik/schemas';
+import { mapDetailSchema, mapListSchema, mapParamsSchema, mapsQuerySchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 export class MapsQueryDto extends createZodDto(mapsQuerySchema) {}

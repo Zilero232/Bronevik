@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build bronevik.<version>.wotmod.
+"""Build otmetki.<version>.wotmod.
 
 Usage:
     python apps/mod/build.py [--require-pyc] [--python27 PATH] [--out DIR] [--install-dir DIR]
@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ROOT, 'src')
 PACKAGE_ROOT = 'res/scripts/client/gui/mods'
 ZIP_DATE = (2020, 1, 1, 0, 0, 0)
-DESCRIPTION = 'Bronevik companion: own battle results, marks of excellence and session stats for bronevik.app'
+DESCRIPTION = 'Three Marks companion: own battle results, marks of excellence and session stats for otmetki.app'
 
 PY27_CANDIDATES = (
     ['py', '-2.7'],
@@ -43,7 +43,7 @@ print('compiled %d files' % len(jobs))
 
 
 def read_version():
-    with open(os.path.join(SRC, 'bronevik', 'version.py'), encoding='utf-8') as handle:
+    with open(os.path.join(SRC, 'otmetki', 'version.py'), encoding='utf-8') as handle:
         text = handle.read()
     values = dict(re.findall(r"^(MOD_ID|MOD_NAME|VERSION) = '([^']+)'", text, re.M))
     return values['MOD_ID'], values['MOD_NAME'], values['VERSION']
@@ -62,7 +62,7 @@ def find_python27(explicit):
     candidates = []
     if explicit:
         candidates.append([explicit])
-    for env in ('BRONEVIK_PY27', 'PYTHON27'):
+    for env in ('OTMETKI_PY27', 'PYTHON27'):
         if os.environ.get(env):
             candidates.append([os.environ[env]])
     candidates.extend(PY27_CANDIDATES)
@@ -73,8 +73,8 @@ def find_python27(explicit):
 
 
 def source_files():
-    yield os.path.join(SRC, 'mod_bronevik.py'), PACKAGE_ROOT + '/mod_bronevik.py'
-    package = os.path.join(SRC, 'bronevik')
+    yield os.path.join(SRC, 'mod_otmetki.py'), PACKAGE_ROOT + '/mod_otmetki.py'
+    package = os.path.join(SRC, 'otmetki')
     for directory, dirs, files in os.walk(package):
         dirs[:] = sorted(d for d in dirs if d != '__pycache__')
         for name in sorted(files):
@@ -134,7 +134,7 @@ def write_package(path, entries, meta):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Build the Bronevik .wotmod package')
+    parser = argparse.ArgumentParser(description='Build the Three Marks .wotmod package')
     parser.add_argument('--python27', help='path to a Python 2.7 interpreter')
     parser.add_argument('--require-pyc', action='store_true', help='fail when Python 2.7 is not available')
     parser.add_argument('--out', default=os.path.join(ROOT, 'dist'), help='output directory')
@@ -143,7 +143,7 @@ def main():
 
     mod_id, name, version = read_version()
     python27 = find_python27(args.python27)
-    staging = tempfile.mkdtemp(prefix='bronevik-build-')
+    staging = tempfile.mkdtemp(prefix='otmetki-build-')
     try:
         if python27 is not None:
             print('Python 2.7: %s' % ' '.join(python27))
@@ -154,7 +154,7 @@ def main():
             print('WARNING: Python 2.7 not found, packaging .py sources (development build only)')
             entries = list(source_files())
         os.makedirs(args.out, exist_ok=True)
-        output = os.path.join(args.out, 'bronevik.%s.wotmod' % version)
+        output = os.path.join(args.out, 'otmetki.%s.wotmod' % version)
         write_package(output, entries, meta_xml(mod_id, name, version))
         print('Built %s (%d files)' % (output, len(entries)))
         if args.install_dir:

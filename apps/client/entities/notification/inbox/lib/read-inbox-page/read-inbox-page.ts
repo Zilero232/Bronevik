@@ -1,4 +1,4 @@
-import type { InboxPage } from '@bronevik/schemas';
+import type { InboxPage } from '@otmetki/schemas';
 
 import type { ReadInboxPageInput } from './read-inbox-page.types';
 

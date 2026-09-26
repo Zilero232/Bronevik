@@ -1,6 +1,6 @@
-import type { TierListRank } from '@bronevik/schemas';
+import type { TierListRank } from '@otmetki/schemas';
 
-import { tierListRankSchema } from '@bronevik/schemas';
+import { tierListRankSchema } from '@otmetki/schemas';
 import { sortBy } from 'remeda';
 
 import type { RankedCandidate, TierListCandidate } from './tier-list.types';

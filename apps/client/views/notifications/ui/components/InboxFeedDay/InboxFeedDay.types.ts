@@ -1,4 +1,4 @@
-import type { InboxItem } from '@bronevik/schemas';
+import type { InboxItem } from '@otmetki/schemas';
 
 import type { InboxDay } from '../../../lib/group-by-day';
 

@@ -21,4 +21,4 @@ export type CreateAuthInput = {
   logger: Pick<LoggerService, 'log'>;
 };
 
-export type BronevikAuth = ReturnType<typeof createAuth>;
+export type OtmetkiAuth = ReturnType<typeof createAuth>;

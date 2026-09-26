@@ -1,6 +1,6 @@
 'use client';
 
-import { NATION_ICONS, NATIONS, TANK_CLASS_ICONS, TANK_CLASSES, toRoman } from '@bronevik/icons';
+import { NATION_ICONS, NATIONS, TANK_CLASS_ICONS, TANK_CLASSES, toRoman } from '@otmetki/icons';
 import { clsx } from 'clsx';
 import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';

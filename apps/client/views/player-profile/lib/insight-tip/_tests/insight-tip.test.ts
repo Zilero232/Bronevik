@@ -1,4 +1,4 @@
-import type { PlayerInsights } from '@bronevik/schemas';
+import type { PlayerInsights } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

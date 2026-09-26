@@ -1,4 +1,4 @@
-import type { ClanListSortField, SortOrder } from '@bronevik/schemas';
+import type { ClanListSortField, SortOrder } from '@otmetki/schemas';
 
 export type ClanPageInput = {
   idOrTag: string;

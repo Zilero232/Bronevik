@@ -1,4 +1,4 @@
-import type { Armor, ArmorGeometry, ArmorModules, ArmorPieceKind, Gun, Shot, VehicleSpec } from '@bronevik/gamedata';
+import type { Armor, ArmorGeometry, ArmorModules, ArmorPieceKind, Gun, Shot, VehicleSpec } from '@otmetki/gamedata';
 
 import type { CollisionFile } from '../../parsers/collision';
 

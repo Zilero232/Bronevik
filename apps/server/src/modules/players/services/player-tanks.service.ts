@@ -1,4 +1,4 @@
-import type { Paginated, PlayerTankRow } from '@bronevik/schemas';
+import type { Paginated, PlayerTankRow } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { match } from 'ts-pattern';

@@ -1,8 +1,8 @@
 'use client';
 
-import type { ServerPeriod } from '@bronevik/schemas';
+import type { ServerPeriod } from '@otmetki/schemas';
 
-import { serverPeriodSchema } from '@bronevik/schemas';
+import { serverPeriodSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { SegmentedControl } from '@/ui-kit';

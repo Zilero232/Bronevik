@@ -1,4 +1,4 @@
-import { BronevikLogoIcon } from '@bronevik/icons';
+import { OtmetkiLogoIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
@@ -11,8 +11,11 @@ export const SiteBrand = () => {
 
   return (
     <Link aria-label={t('home')} className={s.root} href={ROUTES.home}>
-      <BronevikLogoIcon className={s.mark} size={22} strokeWidth={1.75} />
-      <span className={s.word}>{t('name')}</span>
+      <OtmetkiLogoIcon className={s.mark} size={22} strokeWidth={2} />
+      <span className={s.text}>
+        <span className={s.word}>{t('name')}</span>
+        <span className={s.tagline}>{t('tagline')}</span>
+      </span>
     </Link>
   );
 };

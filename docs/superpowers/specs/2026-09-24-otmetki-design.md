@@ -1,4 +1,4 @@
-# Броневик — design spec
+# Три отметки — design spec
 
 Date: 2026-09-24. Status: draft, awaiting approval.
 
@@ -30,7 +30,7 @@ Everything is delivered in phases (§9). Each phase is a shippable product, not 
 Bun workspaces monorepo, copied from GnomeVPN conventions (catalog versions, `@siberiacancode/*` lint configs, husky + commitlint, vitest + playwright, FSD on the client).
 
 ```
-bronevik/
+otmetki/
 ├─ apps/
 │  ├─ client/     Next.js 16, React 19, SCSS modules, motion, next-intl (ru/en), TanStack Query
 │  ├─ server/     NestJS 11 on Bun, one image, two processes:
@@ -45,7 +45,7 @@ bronevik/
 │  ├─ schemas/       zod schemas shared by client and server (+ OpenAPI generation)
 │  ├─ gamedata/      pure loadout calculator + game-data model (server imports, client build constructor)
 │  ├─ icons/         custom SVG icon set (tank classes, nations, tiers I–XI, marks, mastery, modes) as React components
-│  ├─ sdk/           (P2) @bronevik/sdk, the public API client
+│  ├─ sdk/           (P2) @otmetki/sdk, the public API client
 │  └─ logger/        pino wrapper
 ├─ infra/  caddy, docker-compose{,.dev}.yml
 └─ docs/
@@ -187,7 +187,7 @@ Each phase ends deployed to production.
   - mod companion (sessions, MoE live, own thresholds);
   - streamer overlays + overlay constructor;
   - verifiable challenges (DonationAlerts);
-  - Броневик Плюс subscription (YooKassa);
+  - Три отметки Плюс subscription (YooKassa);
   - developer API paid tiers (after Lesta confirmation);
   - webhooks.
 - **P4 — Community & content:**
@@ -224,7 +224,7 @@ Each phase ends deployed to production.
 
 ## 12. Open decisions (defaults chosen, change if needed)
 
-- **Name:** «Броневик» / bronevik. Domain to be checked.
+- **Name:** «Три отметки» / otmetki. Domain to be checked.
 - **Charts:** visx.
 - **Time series:** TimescaleDB rather than plain Postgres partitioning.
 - **Queue:** BullMQ + Redis.

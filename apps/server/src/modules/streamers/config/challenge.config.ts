@@ -5,7 +5,7 @@ export const CHALLENGE = {
   codeAttempts: 3,
   listLimit: 100,
   maxOpen: 10,
-  feedCursorKey: 'bronevik:streamers:battle-cursor',
+  feedCursorKey: 'otmetki:streamers:battle-cursor',
   feedBatch: 500,
   defaultCurrency: 'RUB'
 } as const;

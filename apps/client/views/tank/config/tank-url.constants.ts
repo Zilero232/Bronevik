@@ -1,4 +1,4 @@
-import { serverPeriodSchema } from '@bronevik/schemas';
+import { serverPeriodSchema } from '@otmetki/schemas';
 import { parseAsStringLiteral } from 'nuqs';
 
 import { TOP_METRICS } from './tank-page.constants';

@@ -1,6 +1,6 @@
 'use client';
 
-import type { MoeRow } from '@bronevik/schemas';
+import type { MoeRow } from '@otmetki/schemas';
 
 import { useBoolean } from '@siberiacancode/reactuse';
 import { useState } from 'react';

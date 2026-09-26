@@ -1,6 +1,6 @@
 'use client';
 
-import type { ChallengeCondition, ChallengeMetric } from '@bronevik/schemas';
+import type { ChallengeCondition, ChallengeMetric } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 import { Controller, useFormContext } from 'react-hook-form';

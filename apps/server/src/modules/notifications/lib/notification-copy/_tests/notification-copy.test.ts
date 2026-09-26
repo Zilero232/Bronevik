@@ -6,7 +6,7 @@ import type { ParsedNotification } from '../../../contracts';
 import { NOTIFICATION_COPY } from '../../../config';
 import { notificationText, renderDigest, renderNotification, resolveNotificationLocale } from '../notification-copy';
 
-const webUrl = 'https://bronevik.app';
+const webUrl = 'https://otmetki.app';
 
 const moeGained: ParsedNotification = {
   event: 'moeGained',

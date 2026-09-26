@@ -1,4 +1,4 @@
-import type { BillingStatus, CheckoutInput, CheckoutResult, PaymentHistory, Plans, PromoRedeemInput, ReferralInput } from '@bronevik/schemas';
+import type { BillingStatus, CheckoutInput, CheckoutResult, PaymentHistory, Plans, PromoRedeemInput, ReferralInput } from '@otmetki/schemas';
 
 import {
   billingControllerCancelAutoRenew,

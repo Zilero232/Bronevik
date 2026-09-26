@@ -1,4 +1,4 @@
-import type { PlayerSearchResult } from '@bronevik/schemas';
+import type { PlayerSearchResult } from '@otmetki/schemas';
 
 import type { PickedPlayer, PickPlayerInput } from './player-pick.types';
 

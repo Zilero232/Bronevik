@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
 #
-# Bronevik server — NestJS on the Bun runtime. One image, two processes:
+# Three Marks server — NestJS on the Bun runtime. One image, two processes:
 #   bun src/main.ts     the API (default CMD)
 #   bun src/worker.ts   the collector worker (docker-compose `worker` service)
 #
 # The build context MUST be the monorepo root, because the server depends on the
-# @bronevik/* workspace packages. Build from the repo root with:
-#   docker build -f apps/server/Dockerfile -t bronevik-server .
+# @otmetki/* workspace packages. Build from the repo root with:
+#   docker build -f apps/server/Dockerfile -t otmetki-server .
 #
 # Bun runs the TypeScript source directly, so there is no compile step: the
 # image installs dependencies and generates the Prisma client.

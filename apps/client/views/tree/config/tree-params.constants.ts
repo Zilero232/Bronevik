@@ -1,4 +1,4 @@
-import { NATIONS } from '@bronevik/icons';
+import { NATIONS } from '@otmetki/icons';
 import { parseAsInteger, parseAsStringLiteral } from 'nuqs';
 
 export const TREE_DEFAULTS = {

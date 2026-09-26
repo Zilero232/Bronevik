@@ -1,4 +1,4 @@
-import { SEARCH } from '@bronevik/schemas';
+import { SEARCH } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { search } from '../search';

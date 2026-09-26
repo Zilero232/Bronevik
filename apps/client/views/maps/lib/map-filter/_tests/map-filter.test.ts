@@ -1,4 +1,4 @@
-import type { MapSummary } from '@bronevik/schemas';
+import type { MapSummary } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

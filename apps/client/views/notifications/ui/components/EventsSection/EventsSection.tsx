@@ -1,8 +1,8 @@
 'use client';
 
-import type { NotificationEvent } from '@bronevik/schemas';
+import type { NotificationEvent } from '@otmetki/schemas';
 
-import { notificationEventSchema } from '@bronevik/schemas';
+import { notificationEventSchema } from '@otmetki/schemas';
 import { ListChecks } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { entries } from 'remeda';

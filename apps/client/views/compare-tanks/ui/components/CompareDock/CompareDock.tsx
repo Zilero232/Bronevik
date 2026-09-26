@@ -1,6 +1,6 @@
 'use client';
 
-import { COMPARE } from '@bronevik/schemas';
+import { COMPARE } from '@otmetki/schemas';
 import { Link2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

@@ -1,4 +1,4 @@
-import { MOE } from '@bronevik/ratings';
+import { MOE } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
 import { markCountAt, markProgress } from '../mark-progress';

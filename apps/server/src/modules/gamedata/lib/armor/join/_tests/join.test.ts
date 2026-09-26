@@ -1,4 +1,4 @@
-import { ARMOR_FLAGS, hasArmorFlag } from '@bronevik/gamedata';
+import { ARMOR_FLAGS, hasArmorFlag } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { COLLISION_FIXTURES, loadIs, readFixture } from '../../../_tests/fixtures';

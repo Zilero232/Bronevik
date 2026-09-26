@@ -1,6 +1,6 @@
 'use client';
 
-import { Mark3Icon, RandomBattleIcon } from '@bronevik/icons';
+import { Mark3Icon, RandomBattleIcon } from '@otmetki/icons';
 import { Dices } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';

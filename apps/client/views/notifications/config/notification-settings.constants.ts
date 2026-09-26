@@ -1,4 +1,4 @@
-import type { NotificationChannel, NotificationEvent } from '@bronevik/schemas';
+import type { NotificationChannel, NotificationEvent } from '@otmetki/schemas';
 import type { LucideIcon } from 'lucide-react';
 
 import { Globe, Mail, Send, Smartphone } from 'lucide-react';

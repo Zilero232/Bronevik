@@ -1,4 +1,4 @@
-import type { TankDetail } from '@bronevik/schemas';
+import type { TankDetail } from '@otmetki/schemas';
 import type { ReactNode } from 'react';
 
 export type TankProviderProps = {

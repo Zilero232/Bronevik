@@ -12,7 +12,7 @@ export const TWITCH = {
 } as const;
 
 export const OAUTH_STATE = {
-  prefix: 'bronevik:streamers:oauth:',
+  prefix: 'otmetki:streamers:oauth:',
   ttlSeconds: 600,
   bytes: 24
 } as const;

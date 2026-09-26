@@ -1,4 +1,4 @@
-import type { Shell } from '@bronevik/gamedata';
+import type { Shell } from '@otmetki/gamedata';
 
 import type { ParseShellsInput } from './vehicle.types';
 

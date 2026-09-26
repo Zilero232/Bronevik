@@ -1,4 +1,4 @@
-import type { ArmorGunModuleData, ArmorShellOptionData } from '@bronevik/schemas';
+import type { ArmorGunModuleData, ArmorShellOptionData } from '@otmetki/schemas';
 
 export type PickShellInput = {
   gun: ArmorGunModuleData | undefined;

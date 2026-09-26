@@ -1,6 +1,6 @@
 import { Webhook, WebhookVerificationError } from 'standardwebhooks';
 
-import type { BronevikWebhook, VerifyWebhookInput, WebhookHeaders } from './webhooks.types';
+import type { OtmetkiWebhook, VerifyWebhookInput, WebhookHeaders } from './webhooks.types';
 
 const flatHeaders = (headers: WebhookHeaders): Record<string, string> =>
   Object.fromEntries(
@@ -9,14 +9,14 @@ const flatHeaders = (headers: WebhookHeaders): Record<string, string> =>
     )
   );
 
-const isBronevikWebhook = (value: unknown): value is BronevikWebhook =>
+const isOtmetkiWebhook = (value: unknown): value is OtmetkiWebhook =>
   typeof value === 'object' && value !== null && 'id' in value && 'event' in value && 'data' in value;
 
-export const verifyWebhook = ({ secret, body, headers }: VerifyWebhookInput): BronevikWebhook => {
+export const verifyWebhook = ({ secret, body, headers }: VerifyWebhookInput): OtmetkiWebhook => {
   const payload = new Webhook(secret).verify(body, flatHeaders(headers));
 
-  if (!isBronevikWebhook(payload)) {
-    throw new WebhookVerificationError('The payload is not a Bronevik webhook');
+  if (!isOtmetkiWebhook(payload)) {
+    throw new WebhookVerificationError('The payload is not a Three Marks webhook');
   }
 
   return payload;

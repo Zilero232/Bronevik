@@ -1,4 +1,4 @@
-import type { ApiUsage } from '@bronevik/schemas';
+import type { ApiUsage } from '@otmetki/schemas';
 
 export type TopEndpointsProps = {
   endpoints: ApiUsage['topEndpoints'];

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { corsOptionsFor, isPublicCorsPath } from '../cors';
 
-const origins = ['https://bronevik.app'];
+const origins = ['https://otmetki.app'];
 
 describe('isPublicCorsPath', () => {
   it.each(['/v1', '/v1/players/1', '/v1/tanks?tier=10', '/overlays/0123abcd', '/overlays/0123abcd/stream'])('opens %s to any origin', (url) => {

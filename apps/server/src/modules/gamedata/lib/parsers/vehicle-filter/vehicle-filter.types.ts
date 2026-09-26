@@ -1,4 +1,4 @@
-import type { VehicleFilter, VehicleFilterRule } from '@bronevik/gamedata';
+import type { VehicleFilter, VehicleFilterRule } from '@otmetki/gamedata';
 
 type FilterableVehicle = {
   nation: string;

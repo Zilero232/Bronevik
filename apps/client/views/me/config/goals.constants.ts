@@ -1,4 +1,4 @@
-import type { GoalMetric } from '@bronevik/schemas';
+import type { GoalMetric } from '@otmetki/schemas';
 
 export const GOAL_METRICS = {
   percent: new Set<GoalMetric>(['winRate', 'moe']),

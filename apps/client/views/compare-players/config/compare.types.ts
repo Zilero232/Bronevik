@@ -1,4 +1,4 @@
-import type { PlayerSummary, StatsBlock } from '@bronevik/schemas';
+import type { PlayerSummary, StatsBlock } from '@otmetki/schemas';
 
 export type CompareDirection = 'higher' | 'lower' | 'none';
 

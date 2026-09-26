@@ -1,4 +1,4 @@
-import { safeDivide, winRateDiffFromAggregate } from '@bronevik/ratings';
+import { safeDivide, winRateDiffFromAggregate } from '@otmetki/ratings';
 import { groupBy, sortBy } from 'remeda';
 
 import type { BuildServerStatsInput, DailyStatsRow, ServerStatsRow } from './server-stats.types';

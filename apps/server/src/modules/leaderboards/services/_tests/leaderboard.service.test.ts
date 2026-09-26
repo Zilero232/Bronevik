@@ -1,6 +1,6 @@
-import type { LeaderboardQuery } from '@bronevik/schemas';
+import type { LeaderboardQuery } from '@otmetki/schemas';
 
-import { leaderboardQuerySchema } from '@bronevik/schemas';
+import { leaderboardQuerySchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
 
@@ -43,7 +43,7 @@ describe('LeaderboardService.leaderboard', () => {
 
   it('passes the clan colour through', async () => {
     const board = await createService([
-      { accountId: null, clanId: 10n, name: 'Броневик', clanTag: 'BRNVK', color: '#ff0000', value: 1_800, battles: 10, delta: null, total: 1n }
+      { accountId: null, clanId: 10n, name: 'Три отметки', clanTag: 'BRNVK', color: '#ff0000', value: 1_800, battles: 10, delta: null, total: 1n }
     ]).leaderboard(query({ scope: 'clans' }));
 
     expect(board.entries[0]?.color).toBe('#ff0000');

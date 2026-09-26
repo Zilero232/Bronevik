@@ -1,4 +1,4 @@
-import type { TankReference } from '@bronevik/ratings';
+import type { TankReference } from '@otmetki/ratings';
 
 import { Injectable } from '@nestjs/common';
 import { LRUCache } from 'lru-cache';

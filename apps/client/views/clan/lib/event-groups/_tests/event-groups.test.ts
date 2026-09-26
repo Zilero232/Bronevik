@@ -1,4 +1,4 @@
-import type { ClanMemberEvent } from '@bronevik/schemas';
+import type { ClanMemberEvent } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

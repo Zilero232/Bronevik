@@ -1,4 +1,4 @@
-import type { MoeHistoryBatch } from '@bronevik/schemas';
+import type { MoeHistoryBatch } from '@otmetki/schemas';
 
 import { groupBy, sortBy } from 'remeda';
 

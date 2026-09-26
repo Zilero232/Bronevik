@@ -30,7 +30,7 @@ A `*-worker.module.ts` next to a module is its half loaded by `WorkerModule` (pr
 | Module                  | What it owns                                                                                                                            |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `auth`                  | better-auth wiring, Lesta ID OpenID and Telegram sign-in, linked Lesta and Telegram accounts                                            |
-| `billing`               | Броневик Плюс: plans, YooKassa checkout and webhooks, promo codes, referrals, renewals (worker), entitlements                           |
+| `billing`               | Три отметки Плюс: plans, YooKassa checkout and webhooks, promo codes, referrals, renewals (worker), entitlements                        |
 | `builds`                | Loadout constructor under `/tanks/:id`: build options, loadout calculation, popular builds                                              |
 | `clan-workspace`        | Clan officers' workspace: events and reminders, API attendance sync, recruit funnel, weekly officer report                              |
 | `clans`                 | Clan pages, list and search, stronghold                                                                                                 |

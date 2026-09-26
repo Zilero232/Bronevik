@@ -1,4 +1,4 @@
-import type { IconGroup, MarkCount, MasteryLevel, TankClassVariant } from '@bronevik/icons';
+import type { IconGroup, MarkCount, MasteryLevel, TankClassVariant } from '@otmetki/icons';
 
 import type { TankImageSize } from '@/entities/tank/tank';
 

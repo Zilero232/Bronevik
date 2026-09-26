@@ -22,7 +22,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(import.meta.dirname),
-      '@bronevik/icons': resolve(import.meta.dirname, '../../packages/icons/src')
+      '@otmetki/icons': resolve(import.meta.dirname, '../../packages/icons/src')
     }
   }
 });

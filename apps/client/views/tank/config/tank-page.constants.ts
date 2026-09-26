@@ -1,4 +1,4 @@
-import type { MasteryLevel } from '@bronevik/icons';
+import type { MasteryLevel } from '@otmetki/icons';
 
 export const TANK_PAGE = {
   trendDays: 60,

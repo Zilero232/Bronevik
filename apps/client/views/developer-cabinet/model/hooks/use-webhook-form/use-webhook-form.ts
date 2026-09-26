@@ -1,7 +1,7 @@
 'use client';
 
-import { WEBHOOK } from '@bronevik/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { WEBHOOK } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 

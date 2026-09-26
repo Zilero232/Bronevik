@@ -1,4 +1,4 @@
-import type { Loadout } from '@bronevik/schemas';
+import type { Loadout } from '@otmetki/schemas';
 
 import type { BuildFieldStep, BuildModule, BuildModuleSlot } from '../build-catalog';
 

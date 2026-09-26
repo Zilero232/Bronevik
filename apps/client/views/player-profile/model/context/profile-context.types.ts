@@ -1,4 +1,4 @@
-import type { PlayerProfile, RatingPeriod } from '@bronevik/schemas';
+import type { PlayerProfile, RatingPeriod } from '@otmetki/schemas';
 import type { ReactNode } from 'react';
 
 export type ProfileContextValue = {

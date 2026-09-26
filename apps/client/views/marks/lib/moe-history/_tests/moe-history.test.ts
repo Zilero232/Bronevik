@@ -1,4 +1,4 @@
-import type { MoeThreshold } from '@bronevik/schemas';
+import type { MoeThreshold } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 
@@ -7,7 +7,7 @@ import { historySeries } from '../moe-history';
 const point = (index: number, p100: number | null = 4_000): MoeThreshold => ({
   tankId: 1,
   date: `2026-09-${String(index + 1).padStart(2, '0')}`,
-  source: 'bronevik',
+  source: 'otmetki',
   p65: 2_000 + index,
   p85: 2_600 + index,
   p95: 3_000 + index,

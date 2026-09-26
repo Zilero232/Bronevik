@@ -1,4 +1,4 @@
-import { TIERS, toRoman } from '@bronevik/icons';
+import { TIERS, toRoman } from '@otmetki/icons';
 
 import type { TipValues, TipValuesInput } from './insight-tip.types';
 

@@ -1,5 +1,5 @@
-import type { LoadoutInput, VehicleSpec } from '@bronevik/gamedata';
-import type { ParsedLoadoutRequest } from '@bronevik/schemas';
+import type { LoadoutInput, VehicleSpec } from '@otmetki/gamedata';
+import type { ParsedLoadoutRequest } from '@otmetki/schemas';
 
 import type { CrewSkill, Provision, ProvisionType } from '../../../../../generated';
 

@@ -1,4 +1,4 @@
-import type { SkillCohort, TankServerStatsRow, VehicleSummary } from '@bronevik/schemas';
+import type { SkillCohort, TankServerStatsRow, VehicleSummary } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

@@ -1,4 +1,4 @@
-import type { ClanRole } from '@bronevik/schemas';
+import type { ClanRole } from '@otmetki/schemas';
 
 export const ROLE_GROUP_KEYS = ['command', 'officers', 'soldiers', 'reserve'] as const;
 

@@ -1,8 +1,8 @@
 'use client';
 
-import type { GoalMetric } from '@bronevik/schemas';
+import type { GoalMetric } from '@otmetki/schemas';
 
-import { goalMetricSchema } from '@bronevik/schemas';
+import { goalMetricSchema } from '@otmetki/schemas';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Controller } from 'react-hook-form';

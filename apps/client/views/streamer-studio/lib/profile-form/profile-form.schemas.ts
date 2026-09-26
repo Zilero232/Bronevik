@@ -1,4 +1,4 @@
-import { STREAMER_PROFILE, upsertStreamerProfileSchema } from '@bronevik/schemas';
+import { STREAMER_PROFILE, upsertStreamerProfileSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { PROFILE_FORM } from '../../config';

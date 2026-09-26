@@ -1,6 +1,6 @@
 'use client';
 
-import { API_PLAN_LIMITS } from '@bronevik/schemas';
+import { API_PLAN_LIMITS } from '@otmetki/schemas';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { API_REFERENCE, PLANS } from '../../../config';

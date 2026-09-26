@@ -1,6 +1,6 @@
-import type { WebhookEvent } from '@bronevik/schemas';
+import type { WebhookEvent } from '@otmetki/schemas';
 
-import { WEBHOOK } from '@bronevik/schemas';
+import { WEBHOOK } from '@otmetki/schemas';
 
 export const WEBHOOK_EVENT_KEYS = {
   'mark.gained': 'markGained',

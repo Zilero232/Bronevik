@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { getPlayer, getTierList } from '../../generated/sdk.gen';
-import { createBronevikClient } from '../client';
-import { BRONEVIK_API } from '../client.constants';
+import { createOtmetkiClient } from '../client';
+import { OTMETKI_API } from '../client.constants';
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
@@ -16,23 +16,23 @@ const requestOf = (fetch: ReturnType<typeof vi.fn<typeof globalThis.fetch>>): Re
   return input;
 };
 
-describe('createBronevikClient', () => {
+describe('createOtmetkiClient', () => {
   it('sends the API key and resolves the path against the base URL', async () => {
     const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(json({ mode: 'random', period: '7d', generatedAt: '', entries: [] }));
-    const client = createBronevikClient({ apiKey: 'brv_key', baseUrl: 'https://api.test', fetch });
+    const client = createOtmetkiClient({ apiKey: 'otm_key', baseUrl: 'https://api.test', fetch });
 
     await getTierList({ client, query: { period: '7d' } });
 
     const request = requestOf(fetch);
 
-    expect(request.headers.get(BRONEVIK_API.apiKeyHeader)).toBe('brv_key');
+    expect(request.headers.get(OTMETKI_API.apiKeyHeader)).toBe('otm_key');
     expect(request.url).toBe('https://api.test/v1/tanks/tier-list?period=7d');
   });
 
   it('returns the parsed body as data', async () => {
     const profile = { summary: { nickname: 'Tanker' }, recent: [] };
     const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(json(profile));
-    const client = createBronevikClient({ apiKey: 'brv_key', baseUrl: 'https://api.test', fetch });
+    const client = createOtmetkiClient({ apiKey: 'otm_key', baseUrl: 'https://api.test', fetch });
 
     const { data } = await getPlayer({ client, path: { idOrNick: 'Tanker' } });
 
@@ -42,7 +42,7 @@ describe('createBronevikClient', () => {
   it('surfaces the API error body when the key is rejected', async () => {
     const error = { error: 'The API key is not valid', code: 'API_KEY_INVALID' };
     const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(json(error, 401));
-    const client = createBronevikClient({ apiKey: 'brv_bad', baseUrl: 'https://api.test', fetch });
+    const client = createOtmetkiClient({ apiKey: 'otm_bad', baseUrl: 'https://api.test', fetch });
 
     await expect(getPlayer({ client, path: { idOrNick: 'Tanker' }, throwOnError: true })).rejects.toEqual(error);
   });
@@ -53,7 +53,7 @@ describe('createBronevikClient', () => {
       .mockResolvedValueOnce(json({ error: 'slow down', code: 'RATE_LIMITED' }, 429))
       .mockResolvedValueOnce(json({ mode: 'random', period: '7d', generatedAt: '', entries: [] }));
 
-    const client = createBronevikClient({ apiKey: 'brv_key', baseUrl: 'https://api.test', fetch, retry: { delay: () => 0 } });
+    const client = createOtmetkiClient({ apiKey: 'otm_key', baseUrl: 'https://api.test', fetch, retry: { delay: () => 0 } });
 
     const { response } = await getTierList({ client });
 
@@ -70,7 +70,7 @@ describe('createBronevikClient', () => {
       return response;
     });
 
-    const client = createBronevikClient({ apiKey: 'brv_key', baseUrl: 'https://api.test', fetch, retry: { limit: 2, delay: () => 0 } });
+    const client = createOtmetkiClient({ apiKey: 'otm_key', baseUrl: 'https://api.test', fetch, retry: { limit: 2, delay: () => 0 } });
 
     const { response, error } = await getTierList({ client });
 
@@ -81,7 +81,7 @@ describe('createBronevikClient', () => {
 
   it('makes one attempt when retries are off', async () => {
     const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(json({ error: 'slow down', code: 'RATE_LIMITED' }, 429));
-    const client = createBronevikClient({ apiKey: 'brv_key', baseUrl: 'https://api.test', fetch, retry: false });
+    const client = createOtmetkiClient({ apiKey: 'otm_key', baseUrl: 'https://api.test', fetch, retry: false });
 
     await getTierList({ client });
 

@@ -1,4 +1,4 @@
-import type { Plans } from '@bronevik/schemas';
+import type { Plans } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

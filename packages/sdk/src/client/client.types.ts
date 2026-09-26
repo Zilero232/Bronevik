@@ -1,6 +1,6 @@
 import type { RetryOptions } from 'ky';
 
-export type BronevikClientOptions = {
+export type OtmetkiClientOptions = {
   apiKey: string;
   baseUrl?: string;
   retry?: false | RetryOptions;

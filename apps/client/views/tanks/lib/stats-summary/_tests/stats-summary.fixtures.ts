@@ -1,4 +1,4 @@
-import type { TankServerStatsRow } from '@bronevik/schemas';
+import type { TankServerStatsRow } from '@otmetki/schemas';
 
 export const statsRowsFixture = (seeds: Pick<TankServerStatsRow, 'battles' | 'winRateDiff'>[]): TankServerStatsRow[] =>
   seeds.map(({ battles, winRateDiff }, index) => ({

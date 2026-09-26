@@ -1,4 +1,4 @@
-import type { StatsBlock } from '@bronevik/schemas';
+import type { StatsBlock } from '@otmetki/schemas';
 
 import type { BattleStatsBlock } from '../../../../lib/lesta';
 import type { RatingFieldsInput, RatingStatsInput, TotalsStatsInput } from './stats-block.types';

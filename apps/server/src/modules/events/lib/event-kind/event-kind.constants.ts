@@ -1,4 +1,4 @@
-import type { GameEventKind as GameEventKindView } from '@bronevik/schemas';
+import type { GameEventKind as GameEventKindView } from '@otmetki/schemas';
 
 import type { GameEventKind } from '../../../../../generated';
 

@@ -1,4 +1,4 @@
-import { ARMOR_FLAGS, SHELL_RULES } from '@bronevik/gamedata';
+import { ARMOR_FLAGS, SHELL_RULES } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { describeHit } from '../hit-report';

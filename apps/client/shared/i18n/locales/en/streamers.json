@@ -5,7 +5,7 @@
   },
   "hero": {
     "onAir": "On air",
-    "eyebrow": "Bronevik for streamers",
+    "eyebrow": "Three Marks for streamers",
     "title": "A stream where <hot>the numbers don't lie</hot>",
     "lead": "Live stats in OBS, viewer challenges verified from the actual battle, and a bot that knows your WN8 better than chat does.",
     "ctaHow": "How challenges work",
@@ -54,7 +54,7 @@
       },
       "verify": {
         "title": "The mod checks the battle",
-        "text": "Bronevik takes your battle results from the mod: damage, frags, spotting — no screenshots, no word of honour.",
+        "text": "Three Marks takes your battle results from the mod: damage, frags, spotting — no screenshots, no word of honour.",
         "sample": "LT · 3,412 damage · 6 spotted · victory"
       },
       "result": {
@@ -65,7 +65,7 @@
     }
   },
   "cta": {
-    "title": "Go live with Bronevik",
+    "title": "Go live with Three Marks",
     "text": "Link your account with Lesta ID and your first overlay is ready in a couple of minutes.",
     "studio": "Open the studio",
     "signIn": "Sign in to start"

@@ -1,6 +1,6 @@
 'use client';
 
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 import { useBoolean } from '@siberiacancode/reactuse';
 import { clsx } from 'clsx';
 import Image from 'next/image';

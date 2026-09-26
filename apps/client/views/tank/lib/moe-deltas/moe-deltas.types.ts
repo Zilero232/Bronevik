@@ -1,4 +1,4 @@
-import type { MoeThreshold } from '@bronevik/schemas';
+import type { MoeThreshold } from '@otmetki/schemas';
 
 import type { MOE_KEYS } from '../../config';
 

@@ -1,4 +1,4 @@
-import type { Modifier, ModifierCondition } from '@bronevik/gamedata';
+import type { Modifier, ModifierCondition } from '@otmetki/gamedata';
 
 import type { XmlNode } from '../../xml';
 

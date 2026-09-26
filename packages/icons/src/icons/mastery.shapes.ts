@@ -6,7 +6,7 @@ const chevron = (y: number) => `M8 ${y}l4 3 4-3`;
 
 export const MASTERY = {
   shield: 'M12 2.5 20 5.5v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z',
-  glow: 'drop-shadow(0 0 2px var(--bronevik-icon-accent, #ff6b1a))',
+  glow: 'drop-shadow(0 0 2px var(--otmetki-icon-accent, #ff6b1a))',
   fillOpacity: 0.16
 } as const;
 
@@ -18,8 +18,8 @@ export const MASTERY_EMBLEM = {
 } as const satisfies Record<MasteryLevel, string[]>;
 
 export const MASTERY_TINTS = {
-  third: 'var(--bronevik-mastery-third, #b0714a)',
-  second: 'var(--bronevik-mastery-second, #aeb6bf)',
-  first: 'var(--bronevik-mastery-first, #e0b24c)',
-  master: 'var(--bronevik-mastery-master, #e0b24c)'
+  third: 'var(--otmetki-mastery-third, #b0714a)',
+  second: 'var(--otmetki-mastery-second, #aeb6bf)',
+  first: 'var(--otmetki-mastery-first, #e0b24c)',
+  master: 'var(--otmetki-mastery-master, #e0b24c)'
 } as const satisfies Record<MasteryLevel, string>;

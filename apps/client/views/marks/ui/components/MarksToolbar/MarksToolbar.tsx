@@ -1,8 +1,8 @@
 'use client';
 
-import type { MoeSortField } from '@bronevik/schemas';
+import type { MoeSortField } from '@otmetki/schemas';
 
-import { moeSortFieldSchema } from '@bronevik/schemas';
+import { moeSortFieldSchema } from '@otmetki/schemas';
 import { ArrowDownWideNarrow, ArrowUpNarrowWide, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

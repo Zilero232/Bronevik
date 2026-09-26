@@ -1,4 +1,4 @@
-import type { ModuleBase, VehicleSpec } from '@bronevik/gamedata';
+import type { ModuleBase, VehicleSpec } from '@otmetki/gamedata';
 
 import { unique } from 'remeda';
 

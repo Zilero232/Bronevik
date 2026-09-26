@@ -7,7 +7,7 @@ import {
   paginationQuerySchema,
   premiumOfferSchema,
   tankIdSchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { z } from 'zod';
 
 export const offersQuerySchema = paginationQuerySchema.extend({

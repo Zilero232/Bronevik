@@ -1,4 +1,4 @@
-import type { MoeSortField, SortOrder, ThresholdSource, VehicleType } from '@bronevik/schemas';
+import type { MoeSortField, SortOrder, ThresholdSource, VehicleType } from '@otmetki/schemas';
 
 export type MoeListInput = {
   tiers?: number[];

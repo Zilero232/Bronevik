@@ -1,4 +1,4 @@
-import type { MoeHistory } from '@bronevik/schemas';
+import type { MoeHistory } from '@otmetki/schemas';
 
 import type { MoeHistorySeries } from './moe-history.types';
 

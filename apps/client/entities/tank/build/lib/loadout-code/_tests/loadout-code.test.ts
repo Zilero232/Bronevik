@@ -1,6 +1,6 @@
-import type { Loadout } from '@bronevik/schemas';
+import type { Loadout } from '@otmetki/schemas';
 
-import { LOADOUT } from '@bronevik/schemas';
+import { LOADOUT } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { emptyLoadout, parseLoadout, serializeLoadout } from '../loadout-code';

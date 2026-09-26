@@ -1,4 +1,4 @@
-import type { TankComparison } from '@bronevik/schemas';
+import type { TankComparison } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

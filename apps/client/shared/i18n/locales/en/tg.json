@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Mini app",
-    "description": "Bronevik in Telegram: stats, your last session and marks."
+    "description": "Three Marks in Telegram: stats, your last session and marks."
   },
   "outside": {
     "title": "Open in Telegram",
-    "description": "This is the Bronevik mini app. Open it from {bot} and it will recognise your account.",
+    "description": "This is the Three Marks mini app. Open it from {bot} and it will recognise your account.",
     "open": "Open in Telegram",
     "site": "Go to the site"
   },

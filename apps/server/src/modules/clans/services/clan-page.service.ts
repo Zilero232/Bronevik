@@ -1,4 +1,4 @@
-import type { ClanMember, ClanMemberEvent, ClanPage, Paginated } from '@bronevik/schemas';
+import type { ClanMember, ClanMemberEvent, ClanPage, Paginated } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { differenceInDays } from 'date-fns';

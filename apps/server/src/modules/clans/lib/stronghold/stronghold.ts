@@ -1,4 +1,4 @@
-import type { ClanStronghold, StrongholdBattles, StrongholdBuilding, StrongholdReserve } from '@bronevik/schemas';
+import type { ClanStronghold, StrongholdBattles, StrongholdBuilding, StrongholdReserve } from '@otmetki/schemas';
 
 import { sumBy } from 'remeda';
 

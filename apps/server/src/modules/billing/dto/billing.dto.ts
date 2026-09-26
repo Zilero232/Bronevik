@@ -6,7 +6,7 @@ import {
   plansSchema,
   promoRedeemSchema,
   referralSchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { webhookAckSchema, webhookEventSchema } from './billing.schemas';

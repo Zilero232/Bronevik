@@ -1,4 +1,4 @@
-import type { MasteryThreshold as MasteryThresholdDto, MoeThreshold as MoeThresholdDto } from '@bronevik/schemas';
+import type { MasteryThreshold as MasteryThresholdDto, MoeThreshold as MoeThresholdDto } from '@otmetki/schemas';
 
 import type { MasteryThreshold, MoeThreshold } from '../../../../../generated';
 

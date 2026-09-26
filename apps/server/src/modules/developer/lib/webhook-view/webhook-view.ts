@@ -1,4 +1,4 @@
-import type { WebhookDelivery, WebhookEndpoint, WebhookEvent } from '@bronevik/schemas';
+import type { WebhookDelivery, WebhookEndpoint, WebhookEvent } from '@otmetki/schemas';
 
 import type { WebhookEvent as DbWebhookEvent } from '../../../../../generated';
 import type { DeliveryRow, EndpointRow } from './webhook-view.types';

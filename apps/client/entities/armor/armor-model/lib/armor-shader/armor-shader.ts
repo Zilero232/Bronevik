@@ -1,4 +1,4 @@
-import { PENETRATION, SHELL_RULES } from '@bronevik/gamedata';
+import { PENETRATION, SHELL_RULES } from '@otmetki/gamedata';
 
 import type { ArmorShaderInput, ArmorShaderValues } from './armor-shader.types';
 

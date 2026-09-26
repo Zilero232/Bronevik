@@ -1,6 +1,6 @@
-import type { DeviceTagFilter, Modifier } from '@bronevik/gamedata';
+import type { DeviceTagFilter, Modifier } from '@otmetki/gamedata';
 
-import { MODIFIER_OPS } from '@bronevik/gamedata';
+import { MODIFIER_OPS } from '@otmetki/gamedata';
 
 import type { XmlValue } from '../xml';
 

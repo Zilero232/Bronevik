@@ -91,7 +91,7 @@
     "connect": "Connect",
     "disconnect": "Disconnect",
     "disconnectTitle": "Disconnect {name}?",
-    "disconnectDescription": "Bronevik will stop receiving events from {name}. You can reconnect at any time."
+    "disconnectDescription": "Three Marks will stop receiving events from {name}. You can reconnect at any time."
   },
   "overlays": {
     "description": "Add the overlay link to OBS as a Browser source.",

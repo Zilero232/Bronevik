@@ -1,4 +1,4 @@
-import type { BindCode, BindCodeInput as BindCodeBody, ModDevice as ModDeviceView } from '@bronevik/schemas';
+import type { BindCode, BindCodeInput as BindCodeBody, ModDevice as ModDeviceView } from '@otmetki/schemas';
 
 import type { ModDevice } from '../../../generated';
 import type { BattleResultEvent, IngestBatch, IngestEvent } from './lib';

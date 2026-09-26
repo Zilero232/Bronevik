@@ -1,4 +1,4 @@
-import type { ReplayPlayer as ReplayPlayerView, ReplaySummary as ReplayView } from '@bronevik/schemas';
+import type { ReplayPlayer as ReplayPlayerView, ReplaySummary as ReplayView } from '@otmetki/schemas';
 
 import type { ReplayPlayer } from '../../../../lib/replay';
 import type { ToReplayViewInput } from './replay-view.types';

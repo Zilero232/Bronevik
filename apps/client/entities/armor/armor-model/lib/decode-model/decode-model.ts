@@ -1,6 +1,6 @@
-import type { ArmorModelResponse } from '@bronevik/schemas';
+import type { ArmorModelResponse } from '@otmetki/schemas';
 
-import { base64ToBytes, decodeArmorGeometry } from '@bronevik/gamedata';
+import { base64ToBytes, decodeArmorGeometry } from '@otmetki/gamedata';
 
 import type { ArmorModelData } from '../../model/armor-model.types';
 

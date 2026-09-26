@@ -1,4 +1,4 @@
-import type { VehicleFilter, VehicleFilterRule } from '@bronevik/gamedata';
+import type { VehicleFilter, VehicleFilterRule } from '@otmetki/gamedata';
 
 import type { XmlValue } from '../../xml';
 import type { MatchesRuleInput, MatchesVehicleFilterInput } from './vehicle-filter.types';

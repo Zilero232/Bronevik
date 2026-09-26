@@ -1,6 +1,6 @@
 'use client';
 
-import { serverPeriodSchema, skillCohortSchema } from '@bronevik/schemas';
+import { serverPeriodSchema, skillCohortSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { VehicleFilters } from '@/features/tank/filter-vehicles';

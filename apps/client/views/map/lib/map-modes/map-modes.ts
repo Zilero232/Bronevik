@@ -1,4 +1,4 @@
-import type { MapDetail } from '@bronevik/schemas';
+import type { MapDetail } from '@otmetki/schemas';
 
 import { MAP_MODE_KINDS, mapModeKind } from '@/entities/map/map';
 

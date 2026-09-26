@@ -1,4 +1,4 @@
-import type { Equipment, FinalStats, ModuleBase, ModulePreset, OptionalDevice, VehicleFilter, VehicleSpec } from '@bronevik/gamedata';
+import type { Equipment, FinalStats, ModuleBase, ModulePreset, OptionalDevice, VehicleFilter, VehicleSpec } from '@otmetki/gamedata';
 
 import type { ModuleType, PrismaClient, ProvisionType, VehicleType } from '../../../../../generated';
 import type { GameData } from '../game-data';

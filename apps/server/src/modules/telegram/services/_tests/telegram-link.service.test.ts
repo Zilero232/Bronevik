@@ -20,7 +20,7 @@ const createService = () => {
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
   prisma.telegramLinkCode.findUniqueOrThrow.mockResolvedValue(mock<TelegramLinkCode>({ userId: 'site-user' }));
   prisma.notificationSettings.findUnique.mockResolvedValue(null);
-  config.get.mockReturnValue('bronevik_bot');
+  config.get.mockReturnValue('otmetki_bot');
 
   return { service: new TelegramLinkService(prisma, config, identities), prisma, identities };
 };

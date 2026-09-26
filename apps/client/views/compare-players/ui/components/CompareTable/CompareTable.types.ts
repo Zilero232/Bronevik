@@ -1,4 +1,4 @@
-import type { PlayerComparison, RatingPeriod } from '@bronevik/schemas';
+import type { PlayerComparison, RatingPeriod } from '@otmetki/schemas';
 
 export type CompareTableProps = {
   comparison: PlayerComparison | undefined;

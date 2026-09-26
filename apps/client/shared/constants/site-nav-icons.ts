@@ -1,4 +1,4 @@
-import { GlobalMapIcon, HeavyTankIcon, Mark3Icon, RadioIcon, StrongholdIcon, TrainingIcon } from '@bronevik/icons';
+import { GlobalMapIcon, HeavyTankIcon, Mark3Icon, RadioIcon, StrongholdIcon, TrainingIcon } from '@otmetki/icons';
 import { Code2, Trophy, Users } from 'lucide-react';
 
 import type { SiteNavKey } from './site-nav';

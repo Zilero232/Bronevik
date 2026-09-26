@@ -1,4 +1,4 @@
-import { TANK_CLASS_ICONS, toRoman } from '@bronevik/icons';
+import { TANK_CLASS_ICONS, toRoman } from '@otmetki/icons';
 
 import { TankImage, vehicleIdentity, WinRateCell } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';

@@ -1,4 +1,4 @@
-import type { WebhookEvent } from '@bronevik/schemas';
+import type { WebhookEvent } from '@otmetki/schemas';
 
 export type WebhookSubject = {
   accountIds: number[];

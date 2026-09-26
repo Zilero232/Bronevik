@@ -1,4 +1,4 @@
-import { API_KEY, WEBHOOK } from '@bronevik/schemas';
+import { API_KEY, WEBHOOK } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { CODE_SAMPLES } from '../../../config/code-samples.constants';

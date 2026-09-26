@@ -1,6 +1,6 @@
 'use client';
 
-import { MOE } from '@bronevik/ratings';
+import { MOE } from '@otmetki/ratings';
 import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 

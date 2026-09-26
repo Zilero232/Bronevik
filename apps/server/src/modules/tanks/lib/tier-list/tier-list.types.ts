@@ -1,4 +1,4 @@
-import type { TierListRank } from '@bronevik/schemas';
+import type { TierListRank } from '@otmetki/schemas';
 
 export type TierListCandidate = {
   tankId: number;

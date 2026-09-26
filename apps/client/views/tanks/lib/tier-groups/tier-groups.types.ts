@@ -1,4 +1,4 @@
-import type { TierListEntry, TierListRank } from '@bronevik/schemas';
+import type { TierListEntry, TierListRank } from '@otmetki/schemas';
 
 export type TierGroup = {
   rank: TierListRank;

@@ -1,5 +1,5 @@
-import { challengeConditionSchema } from '@bronevik/schemas';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { challengeConditionSchema } from '@otmetki/schemas';
 import { Redis } from 'ioredis';
 import { unique } from 'remeda';
 

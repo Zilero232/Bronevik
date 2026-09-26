@@ -1,6 +1,6 @@
 'use client';
 
-import type { MapSummary } from '@bronevik/schemas';
+import type { MapSummary } from '@otmetki/schemas';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';

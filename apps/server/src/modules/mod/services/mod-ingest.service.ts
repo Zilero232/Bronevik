@@ -1,5 +1,5 @@
-import { accountWn8 } from '@bronevik/ratings';
 import { Inject, Injectable } from '@nestjs/common';
+import { accountWn8 } from '@otmetki/ratings';
 import { fromUnixTime } from 'date-fns';
 import { groupBy, sortBy, sumBy } from 'remeda';
 

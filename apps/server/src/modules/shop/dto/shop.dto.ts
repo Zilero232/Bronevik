@@ -1,4 +1,4 @@
-import { bonusCodeReportSchema, bonusCodeSchema, newsPageSchema, newsQuerySchema } from '@bronevik/schemas';
+import { bonusCodeReportSchema, bonusCodeSchema, newsPageSchema, newsQuerySchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import {

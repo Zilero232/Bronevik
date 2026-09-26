@@ -6,12 +6,12 @@ A **Python 2.7** `.wotmod` package the «Мир танков» client loads from
 
 ## Two kinds of code
 
-| Path                   | What                                                                | Tested                  |
-| ---------------------- | ------------------------------------------------------------------- | ----------------------- |
-| `src/bronevik/*.py`    | Pure logic, **Python 2/3 compatible**, no client imports            | `tests/`, on Python 3   |
-| `src/bronevik/client/` | Glue that imports `BigWorld` / `gui` — hooks, dossier, UI, settings | only in the game client |
-| `src/mod_bronevik.py`  | Entry point the client auto-loads (`gui/mods/mod_*.pyc`)            | —                       |
-| `contract/`            | JSON Schemas the API implements (ingest, bind, MoE thresholds)      | —                       |
+| Path                  | What                                                                | Tested                  |
+| --------------------- | ------------------------------------------------------------------- | ----------------------- |
+| `src/otmetki/*.py`    | Pure logic, **Python 2/3 compatible**, no client imports            | `tests/`, on Python 3   |
+| `src/otmetki/client/` | Glue that imports `BigWorld` / `gui` — hooks, dossier, UI, settings | only in the game client |
+| `src/mod_otmetki.py`  | Entry point the client auto-loads (`gui/mods/mod_*.pyc`)            | —                       |
+| `contract/`           | JSON Schemas the API implements (ingest, bind, MoE thresholds)      | —                       |
 
 Keep as much as possible in the pure half — it is the only half CI can run.
 
@@ -26,7 +26,7 @@ Keep as much as possible in the pure half — it is the only half CI can run.
 
 ```bash
 bun run test:mod                                 # python -m unittest discover apps/mod/tests
-python apps/mod/build.py                         # dev build -> dist/bronevik.<version>.wotmod
+python apps/mod/build.py                         # dev build -> dist/otmetki.<version>.wotmod
 python apps/mod/build.py --require-pyc           # release build; needs Python 2.7
 ```
 

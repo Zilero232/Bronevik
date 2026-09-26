@@ -16,7 +16,7 @@ chat-session = { $nickname } session: { $battles } { $battles ->
     }, { NUMBER($winRate, minimumFractionDigits: 1, maximumFractionDigits: 1) }% wins, { NUMBER($avgDamage, maximumFractionDigits: 0) } avg damage
 chat-session-none = { $nickname } has no session yet
 chat-marks = { $nickname }: 3 marks — { $moe3 }, 2 marks — { $moe2 }, 1 mark — { $moe1 }
-chat-challenge-active = Challenge "{ $title }" accepted from { $donor }! The Bronevik mod will verify it.
+chat-challenge-active = Challenge "{ $title }" accepted from { $donor }! The Three Marks mod will verify it.
 chat-challenge-succeeded = Challenge "{ $title }" completed! 🎉
 chat-challenge-failed = Challenge "{ $title }" failed.
 chat-challenge-expired = Time is up for challenge "{ $title }".

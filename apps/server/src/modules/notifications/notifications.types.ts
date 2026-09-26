@@ -1,4 +1,4 @@
-import type { InboxItem as SharedInboxItem } from '@bronevik/schemas';
+import type { InboxItem as SharedInboxItem } from '@otmetki/schemas';
 
 import type { NotificationChannel, NotificationEvent } from '../../../generated';
 import type { AppNotification, DeliverPayload, Digest, ParsedNotification } from './contracts';

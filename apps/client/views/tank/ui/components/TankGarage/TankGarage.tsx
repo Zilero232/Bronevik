@@ -1,6 +1,6 @@
 'use client';
 
-import { NationFlag, TANK_CLASS_ICONS, toRoman } from '@bronevik/icons';
+import { NationFlag, TANK_CLASS_ICONS, toRoman } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { TankImage } from '@/entities/tank/tank';

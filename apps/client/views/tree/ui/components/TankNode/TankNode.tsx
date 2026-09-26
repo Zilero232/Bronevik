@@ -2,7 +2,7 @@
 
 import type { NodeProps } from '@xyflow/react';
 
-import { TANK_CLASS_ICONS, toRoman } from '@bronevik/icons';
+import { TANK_CLASS_ICONS, toRoman } from '@otmetki/icons';
 import { Handle, Position } from '@xyflow/react';
 import { useFormatter, useTranslations } from 'next-intl';
 

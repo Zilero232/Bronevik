@@ -1,6 +1,6 @@
 'use client';
 
-import { STREAMER_PROFILE } from '@bronevik/schemas';
+import { STREAMER_PROFILE } from '@otmetki/schemas';
 import { AtSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';

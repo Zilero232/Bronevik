@@ -6,7 +6,7 @@ import {
   clanPageSchema,
   clanStrongholdSchema,
   paginationQuerySchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { clanLookupParamsSchema, clanParamsSchema } from './clans.schemas';

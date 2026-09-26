@@ -1,5 +1,5 @@
-import type { ArmorGeometry, ArmorShell } from '@bronevik/gamedata';
-import type { ArmorModelResponse } from '@bronevik/schemas';
+import type { ArmorGeometry, ArmorShell } from '@otmetki/gamedata';
+import type { ArmorModelResponse } from '@otmetki/schemas';
 
 import type { ARMOR_FACE_CLASSES } from '../config';
 

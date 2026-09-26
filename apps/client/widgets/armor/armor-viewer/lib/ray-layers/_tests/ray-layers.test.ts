@@ -1,4 +1,4 @@
-import { ARMOR_FLAGS } from '@bronevik/gamedata';
+import { ARMOR_FLAGS } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import type { RayHit } from '../ray-layers.types';

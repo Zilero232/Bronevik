@@ -1,4 +1,4 @@
-import { accountIdSchema } from '@bronevik/schemas';
+import { accountIdSchema } from '@otmetki/schemas';
 
 import { resolveLocale } from '@/shared/i18n';
 

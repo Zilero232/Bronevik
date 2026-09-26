@@ -1,4 +1,4 @@
-import type { RatingPeriod, ServerPeriod, SkillCohort, StatsMode } from '@bronevik/schemas';
+import type { RatingPeriod, ServerPeriod, SkillCohort, StatsMode } from '@otmetki/schemas';
 
 import type {
   ClanRole as DbClanRole,

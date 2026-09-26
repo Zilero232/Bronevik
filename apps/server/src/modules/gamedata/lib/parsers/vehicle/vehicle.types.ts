@@ -1,4 +1,4 @@
-import type { Armor, Nation, Shell, VehicleListEntry } from '@bronevik/gamedata';
+import type { Armor, Nation, Shell, VehicleListEntry } from '@otmetki/gamedata';
 
 import type { XmlNode, XmlValue } from '../../xml';
 

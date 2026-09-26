@@ -1,6 +1,6 @@
-import type { ParsedLoadoutRequest } from '@bronevik/schemas';
+import type { ParsedLoadoutRequest } from '@otmetki/schemas';
 
-import { loadoutRequestSchema } from '@bronevik/schemas';
+import { loadoutRequestSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 

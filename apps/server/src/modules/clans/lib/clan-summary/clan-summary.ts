@@ -1,4 +1,4 @@
-import type { ClanSummary } from '@bronevik/schemas';
+import type { ClanSummary } from '@otmetki/schemas';
 
 import type { ClanSummaryRow } from './clan-summary.types';
 

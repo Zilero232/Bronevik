@@ -1,4 +1,4 @@
-import type { PaymentStatus, SubscriptionStatus } from '@bronevik/schemas';
+import type { PaymentStatus, SubscriptionStatus } from '@otmetki/schemas';
 
 import type { BadgeTone } from '@/ui-kit';
 

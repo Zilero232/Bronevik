@@ -1,4 +1,4 @@
-import type { OverlayMetric } from '@bronevik/schemas';
+import type { OverlayMetric } from '@otmetki/schemas';
 
 import type { OverlayData } from '@/shared/api/streamers';
 import type { RatingTone } from '@/shared/lib';

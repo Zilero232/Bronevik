@@ -1,4 +1,4 @@
-import type { WebhookFilter } from '@bronevik/schemas';
+import type { WebhookFilter } from '@otmetki/schemas';
 
 import type { MatchesSubjectInput } from './webhook-match.types';
 

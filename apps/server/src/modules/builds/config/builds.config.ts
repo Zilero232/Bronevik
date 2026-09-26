@@ -1,4 +1,4 @@
-import type { ProvisionKind } from '@bronevik/schemas';
+import type { ProvisionKind } from '@otmetki/schemas';
 
 import type { ProvisionType } from '../../../../generated';
 

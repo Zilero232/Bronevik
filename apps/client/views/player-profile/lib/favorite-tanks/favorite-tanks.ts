@@ -1,4 +1,4 @@
-import type { PlayerTankRow } from '@bronevik/schemas';
+import type { PlayerTankRow } from '@otmetki/schemas';
 
 import { sortBy, take } from 'remeda';
 

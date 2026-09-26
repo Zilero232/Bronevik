@@ -1,7 +1,7 @@
 import unittest
 
 import _support  # noqa: F401
-from bronevik.session import SessionAggregator
+from otmetki.session import SessionAggregator
 
 
 def battle(result='win', damage=1000, bonus_type=1, tank_id=1, alive=True):

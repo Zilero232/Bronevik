@@ -1,6 +1,6 @@
 'use client';
 
-import { toShellKind } from '@bronevik/gamedata';
+import { toShellKind } from '@otmetki/gamedata';
 import { useTranslations } from 'next-intl';
 
 import { RangeSlider, SegmentedControl } from '@/ui-kit';

@@ -1,4 +1,4 @@
-import { WEBHOOK } from '@bronevik/schemas';
+import { WEBHOOK } from '@otmetki/schemas';
 import { Webhook, WebhookVerificationError } from 'standardwebhooks';
 import { describe, expect, it } from 'vitest';
 

@@ -1,4 +1,4 @@
-import type { MapDetail } from '@bronevik/schemas';
+import type { MapDetail } from '@otmetki/schemas';
 
 export type MapViewProps = {
   map: MapDetail;

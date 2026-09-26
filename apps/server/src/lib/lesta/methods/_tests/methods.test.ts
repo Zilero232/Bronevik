@@ -130,11 +130,11 @@ describe('encyclopedia methods', () => {
 describe('auth', () => {
   it('builds a login url that carries the application id and redirect', () => {
     const client = createLestaClient({ applicationId: APPLICATION_ID });
-    const url = new URL(client.auth.loginUrl({ redirectUri: 'https://bronevik.app/auth/callback', expiresAt: 1_800_000_000 }));
+    const url = new URL(client.auth.loginUrl({ redirectUri: 'https://otmetki.app/auth/callback', expiresAt: 1_800_000_000 }));
 
     expect(url.origin + url.pathname).toBe('https://api.tanki.su/wot/auth/login/');
     expect(url.searchParams.get('application_id')).toBe(APPLICATION_ID);
-    expect(url.searchParams.get('redirect_uri')).toBe('https://bronevik.app/auth/callback');
+    expect(url.searchParams.get('redirect_uri')).toBe('https://otmetki.app/auth/callback');
     expect(url.searchParams.get('nofollow')).toBeNull();
   });
 

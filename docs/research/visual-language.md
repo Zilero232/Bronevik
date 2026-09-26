@@ -1,6 +1,6 @@
 # Visual language: making the site feel like the game (verified 2026-09-25)
 
-Goal: Броневик should feel like «Мир танков» without looking like a Lesta service.
+Goal: Три отметки should feel like «Мир танков» without looking like a Lesta service.
 Legal limits (developers.lesta.ru agreement):
 - **Policy 1.6** bans "иконок, кнопок и других элементов интерфейса, схожих с интерфейсом сервисов Леста Игры, которые могут ввести пользователя в заблуждение или вызвать ассоциацию с Леста Игры".
 - **1.7** bans hiding copyright notices or watermarks in Lesta content.
@@ -110,7 +110,7 @@ https://api.tanki.su/static/<apiVersion>/wot/encyclopedia/vehicle/<size>/<nation
   - rating colours
   - dark metal surfaces
 
-## 6. Recommendations for Броневик
+## 6. Recommendations for Три отметки
 
 **Palette (`apps/client/shared/styles/_tokens.scss`)**
 - The current tokens (bg `#0B0D0F`, accent `#FF6B1A`, Tektur/Onest) are already clearly different from tanki.su. Keep the orange accent, and don't move to amber `#FAB81B` + cream `#F9F5E1`.

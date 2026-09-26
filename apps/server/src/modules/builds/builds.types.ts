@@ -1,4 +1,4 @@
-import type { ParsedLoadoutRequest, PopularBuildsQuery } from '@bronevik/schemas';
+import type { ParsedLoadoutRequest, PopularBuildsQuery } from '@otmetki/schemas';
 
 export type ProgressionData = {
   tree: unknown;

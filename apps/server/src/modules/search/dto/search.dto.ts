@@ -1,4 +1,4 @@
-import { searchQuerySchema, searchResponseSchema } from '@bronevik/schemas';
+import { searchQuerySchema, searchResponseSchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 export class SearchQueryDto extends createZodDto(searchQuerySchema) {}

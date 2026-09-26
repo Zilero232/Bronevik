@@ -7,7 +7,7 @@ import type {
   TankServerStatsSortField,
   TopPlayersMetric,
   VehicleType
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 
 export type TankStatsInput = {
   period?: ServerPeriod;

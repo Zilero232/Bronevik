@@ -1,6 +1,6 @@
 'use client';
 
-import { PROMO_CODE } from '@bronevik/schemas';
+import { PROMO_CODE } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 

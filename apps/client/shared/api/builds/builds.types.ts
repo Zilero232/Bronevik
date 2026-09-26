@@ -1,4 +1,4 @@
-import type { LoadoutRequest } from '@bronevik/schemas';
+import type { LoadoutRequest } from '@otmetki/schemas';
 
 export type BuildOptionsInput = {
   tankId: number;

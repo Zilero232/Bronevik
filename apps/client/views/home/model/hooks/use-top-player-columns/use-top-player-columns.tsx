@@ -1,6 +1,6 @@
 'use client';
 
-import type { LeaderboardEntry } from '@bronevik/schemas';
+import type { LeaderboardEntry } from '@otmetki/schemas';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';

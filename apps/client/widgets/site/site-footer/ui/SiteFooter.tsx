@@ -1,3 +1,4 @@
+import { OtmetkiLogoIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
@@ -11,10 +12,16 @@ import s from './SiteFooter.module.scss';
 export const SiteFooter = () => {
   const t = useTranslations('footer');
   const tNav = useTranslations('nav');
+  const tBrand = useTranslations('brand');
 
   return (
     <footer className={s.root}>
       <div className={s.inner}>
+        <p className={s.brand}>
+          <OtmetkiLogoIcon className={s.mark} size={16} strokeWidth={2} />
+          <span className={s.word}>{tBrand('name')}</span>
+          <span>{tBrand('tagline')}</span>
+        </p>
         <p className={s.legal}>
           <span>{t('lestaCopyright')}</span>
           <span>

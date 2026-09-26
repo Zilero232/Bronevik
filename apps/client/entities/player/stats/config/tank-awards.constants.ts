@@ -1,4 +1,4 @@
-import type { MarkCount, MasteryLevel } from '@bronevik/icons';
+import type { MarkCount, MasteryLevel } from '@otmetki/icons';
 
 const MASTERY_LEVELS: Readonly<Partial<Record<number, MasteryLevel>>> = { 1: 'third', 2: 'second', 3: 'first', 4: 'master' };
 

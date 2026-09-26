@@ -1,4 +1,4 @@
-import type { SearchResult } from '@bronevik/schemas';
+import type { SearchResult } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

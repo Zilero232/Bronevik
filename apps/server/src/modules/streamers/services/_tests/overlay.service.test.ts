@@ -1,4 +1,4 @@
-import { overlayConfigSchema } from '@bronevik/schemas';
+import { overlayConfigSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 

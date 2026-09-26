@@ -1,8 +1,8 @@
 'use client';
 
-import type { RecentPeriod } from '@bronevik/schemas';
+import type { RecentPeriod } from '@otmetki/schemas';
 
-import { recentPeriodSchema } from '@bronevik/schemas';
+import { recentPeriodSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { SegmentedControl } from '@/ui-kit';

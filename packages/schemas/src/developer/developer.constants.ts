@@ -16,7 +16,7 @@ export const WEBHOOK = {
   signatureHeader: 'webhook-signature',
   timestampHeader: 'webhook-timestamp',
   deliveryHeader: 'webhook-id',
-  eventHeader: 'X-Bronevik-Event',
+  eventHeader: 'X-Otmetki-Event',
   signatureScheme: 'v1',
   secretPrefix: 'whsec_',
   maxFilterIds: 100

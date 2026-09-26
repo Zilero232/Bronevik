@@ -5,9 +5,9 @@ import type {
   PopularPlayersQuery,
   TimeSeriesGranularity,
   TimeSeriesMetric
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 
-export type { PlayerMarkRow, PlayerMarks } from '@bronevik/schemas';
+export type { PlayerMarkRow, PlayerMarks } from '@otmetki/schemas';
 
 export type GroupInsight = PlayerInsights['byClass'][number];
 export type TankInsight = PlayerInsights['weakTanks'][number];

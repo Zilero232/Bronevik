@@ -1,4 +1,4 @@
-import type { InboxItem } from '@bronevik/schemas';
+import type { InboxItem } from '@otmetki/schemas';
 
 import { format, parseISO } from 'date-fns';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { REFERRAL } from '@bronevik/schemas';
+import { REFERRAL } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { Card, CardHeader, CopyField, Skeleton } from '@/ui-kit';

@@ -1,4 +1,4 @@
-import type { NotificationSettings } from '@bronevik/schemas';
+import type { NotificationSettings } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

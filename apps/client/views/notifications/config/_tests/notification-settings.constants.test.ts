@@ -1,4 +1,4 @@
-import { notificationChannelSchema, notificationEventSchema } from '@bronevik/schemas';
+import { notificationChannelSchema, notificationEventSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { EVENT_GROUPS, NOTIFICATION_CHANNELS } from '../notification-settings.constants';

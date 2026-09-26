@@ -1,6 +1,6 @@
 'use client';
 
-import type { TankDetail, VehicleSummary } from '@bronevik/schemas';
+import type { TankDetail, VehicleSummary } from '@otmetki/schemas';
 import type { QueryFunctionContext } from '@tanstack/react-query';
 
 import { useQueries } from '@tanstack/react-query';

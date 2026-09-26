@@ -1,4 +1,4 @@
-import type { TechTree } from '@bronevik/schemas';
+import type { TechTree } from '@otmetki/schemas';
 
 import type { TreeLayout } from '../../../lib/tree-layout';
 

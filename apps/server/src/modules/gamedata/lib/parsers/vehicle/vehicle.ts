@@ -1,4 +1,4 @@
-import type { Chassis, CrewMember, Engine, FuelTank, Gun, Radio, Shot, Turret, VehicleSpec } from '@bronevik/gamedata';
+import type { Chassis, CrewMember, Engine, FuelTank, Gun, Radio, Shot, Turret, VehicleSpec } from '@otmetki/gamedata';
 
 import type { XmlNode, XmlValue } from '../../xml';
 import type { ModuleContext, ModuleParseInput, ParseModulesInput, ParseShotsInput, ParseVehicleInput, SharedComponents } from './vehicle.types';

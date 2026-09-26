@@ -13,7 +13,7 @@ import {
   streamerProfileSchema,
   updateOverlaySchema,
   upsertStreamerProfileSchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { connectProviderSchema, idParamsSchema, oauthCallbackSchema, overlayParamsSchema, slugParamsSchema } from './streamers.schemas';

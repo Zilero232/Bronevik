@@ -37,7 +37,7 @@ Check, in this order:
 
 **Structure and layering** — FSD import direction (`app → views → widgets → features → entities → shared`, `ui-kit` beside `shared`), public-API/barrel rules, where types live. Cross-layer imports and reaching past a barrel compound, so they cost the most.
 
-**Reuse over reinvention** — the root CLAUDE.md lists what to reach for before hand-rolling: `@siberiacancode/reactuse`, `remeda`, `ts-pattern`, `date-fns`, `zod`, `motion`, `p-retry`, `@base-ui/react`, `class-variance-authority`, `cmdk`, visx, TanStack Query / Table / Virtual, and the workspace packages `@bronevik/ratings`, `@bronevik/schemas`, `@bronevik/gamedata` and the server's `lib/lesta`. Hand-written code duplicating one of them is a finding — name the replacement. **Only libraries already declared in the workspace's `package.json` count**: recommending a transitive dependency creates a phantom dependency that passes locally through hoisting and fails on a clean CI install.
+**Reuse over reinvention** — the root CLAUDE.md lists what to reach for before hand-rolling: `@siberiacancode/reactuse`, `remeda`, `ts-pattern`, `date-fns`, `zod`, `motion`, `p-retry`, `@base-ui/react`, `class-variance-authority`, `cmdk`, visx, TanStack Query / Table / Virtual, and the workspace packages `@otmetki/ratings`, `@otmetki/schemas`, `@otmetki/gamedata` and the server's `lib/lesta`. Hand-written code duplicating one of them is a finding — name the replacement. **Only libraries already declared in the workspace's `package.json` count**: recommending a transitive dependency creates a phantom dependency that passes locally through hoisting and fails on a clean CI install.
 
 **Signature conventions** — **2+ parameters → one object**, with the shape in a sibling `*.types.ts` as `<Fn>Input`. NestJS constructors injecting collaborators positionally are the framework's convention and are not a finding.
 
@@ -91,7 +91,7 @@ Also not findings:
 
 Run `bun run verify` before reporting: typecheck across every workspace, ESLint, Prettier, Stylelint. Expect **0 errors**; note the warning count. If it fails, say what failed and paste the relevant lines. Never report clean without having run it.
 
-`verify` does not catch SSR breakage: for a client change that can affect prerendering, also run `bun --filter @bronevik/client build`. For a change under `apps/mod`, run `bun run test:mod`. If a check cannot run, say so rather than implying it passed.
+`verify` does not catch SSR breakage: for a client change that can affect prerendering, also run `bun --filter @otmetki/client build`. For a change under `apps/mod`, run `bun run test:mod`. If a check cannot run, say so rather than implying it passed.
 
 ## Output
 

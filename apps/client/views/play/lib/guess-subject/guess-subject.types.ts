@@ -1,4 +1,4 @@
-import type { TankServerStatsRow, VehicleSummary } from '@bronevik/schemas';
+import type { TankServerStatsRow, VehicleSummary } from '@otmetki/schemas';
 
 export type GuessSubjectInput = {
   vehicle: VehicleSummary;

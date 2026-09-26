@@ -1,6 +1,6 @@
 'use client';
 
-import { REFERRAL } from '@bronevik/schemas';
+import { REFERRAL } from '@otmetki/schemas';
 import { useSessionStorage } from '@siberiacancode/reactuse';
 import { useMutation } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';

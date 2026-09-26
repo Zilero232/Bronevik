@@ -1,6 +1,6 @@
 'use client';
 
-import { MarkOfExcellenceIcon } from '@bronevik/icons';
+import { MarkOfExcellenceIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { TankCell } from '@/entities/tank/tank';

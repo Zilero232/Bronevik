@@ -1,4 +1,4 @@
-import type { VehicleType } from '@bronevik/schemas';
+import type { VehicleType } from '@otmetki/schemas';
 import type { ComponentType } from 'react';
 
 import type { IconProps, Tier } from '../lib';

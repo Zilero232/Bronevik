@@ -1,4 +1,4 @@
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import type { PathStepsProps } from './PathSteps.types';

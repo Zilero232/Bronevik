@@ -1,4 +1,4 @@
-import type { Build as BuildView, CreateBuildInput } from '@bronevik/schemas';
+import type { Build as BuildView, CreateBuildInput } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { Prisma } from '../../../generated';

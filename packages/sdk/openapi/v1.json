@@ -1253,7 +1253,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             }
           },
           {
@@ -1364,7 +1364,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             }
           }
         ],
@@ -1470,7 +1470,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             }
           }
         ],
@@ -2106,7 +2106,7 @@
     }
   },
   "info": {
-    "title": "Bronevik Public API",
+    "title": "Three Marks Public API",
     "description": "Derived «Мир танков» (Lesta RU) data: WN8 and recent periods, player history, server tank statistics, tier list, marks of excellence thresholds and their history, clans, leaderboards, sessions. Pass your key in the X-API-Key header; create one at /me/developer. Data source: Леста Игры.",
     "version": "0.1.0",
     "contact": {}
@@ -5683,7 +5683,7 @@
               },
               "source": {
                 "type": "string",
-                "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
               },
               "p65": {
                 "type": "integer",
@@ -5727,7 +5727,7 @@
               },
               "source": {
                 "type": "string",
-                "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
               },
               "class3": {
                 "type": "integer",
@@ -5901,7 +5901,7 @@
                     },
                     "source": {
                       "type": "string",
-                      "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                      "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                     },
                     "p65": {
                       "type": "integer",
@@ -5945,7 +5945,7 @@
                     },
                     "source": {
                       "type": "string",
-                      "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+                      "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
                     },
                     "class3": {
                       "type": "integer",
@@ -6104,7 +6104,7 @@
             },
             "source": {
               "type": "string",
-              "enum": ["bronevik", "poliroid", "kttc", "lesta", "manual"]
+              "enum": ["otmetki", "poliroid", "kttc", "lesta", "manual"]
             },
             "p65": {
               "type": "integer",

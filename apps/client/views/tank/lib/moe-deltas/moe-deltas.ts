@@ -1,4 +1,4 @@
-import type { MoeThreshold } from '@bronevik/schemas';
+import type { MoeThreshold } from '@otmetki/schemas';
 
 import { differenceInCalendarDays, parseISO } from 'date-fns';
 

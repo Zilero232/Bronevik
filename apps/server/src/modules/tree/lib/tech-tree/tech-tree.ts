@@ -1,4 +1,4 @@
-import type { TechTree, TechTreeEdge } from '@bronevik/schemas';
+import type { TechTree, TechTreeEdge } from '@otmetki/schemas';
 
 import { sortBy } from 'remeda';
 

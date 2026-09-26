@@ -4,7 +4,7 @@ export const PLAYER_LOOKUP = {
 } as const;
 
 export const PLAYER_VIEWS = {
-  keyPrefix: 'bronevik:players:views:',
+  keyPrefix: 'otmetki:players:views:',
   retentionSeconds: 31 * 86_400,
   perDayCandidates: 500,
   overfetch: 2

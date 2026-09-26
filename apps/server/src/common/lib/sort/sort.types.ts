@@ -1,4 +1,4 @@
-import type { SortOrder } from '@bronevik/schemas';
+import type { SortOrder } from '@otmetki/schemas';
 
 type SortValue = number | string | null;
 

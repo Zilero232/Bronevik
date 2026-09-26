@@ -6,7 +6,7 @@ export const SESSION = {
 } as const;
 
 export const PLACEHOLDER_EMAIL = {
-  domain: 'users.bronevik.invalid'
+  domain: 'users.otmetki.invalid'
 } as const;
 
 export const AUTH_PROVIDER = {
@@ -16,7 +16,7 @@ export const AUTH_PROVIDER = {
 
 export const API_KEY_PLUGIN = {
   modelName: 'apiKey',
-  prefix: 'brv_',
+  prefix: 'otm_',
   keyLength: 64,
   minExpiresInDays: 0,
   maxExpiresInDays: 3_650

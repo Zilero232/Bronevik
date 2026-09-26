@@ -1,6 +1,6 @@
 'use client';
 
-import { TANK_CLASS_ICONS, TANK_CLASSES } from '@bronevik/icons';
+import { TANK_CLASS_ICONS, TANK_CLASSES } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import type { ClassVariantRowsProps } from './ClassVariantRows.types';

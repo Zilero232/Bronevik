@@ -1,10 +1,10 @@
-# Bronevik companion mod
+# Three Marks companion mod
 
 Game-client companion for «Мир танков» (Lesta, RU realm). It ships as a `.wotmod` package: Python 2.7 scripts that the client loads from `mods/<client version>/`.
 
 It does four things:
 
-- after each battle, it sends the player's own battle results to Bronevik in signed batches;
+- after each battle, it sends the player's own battle results to Three Marks in signed batches;
 - it records marks-of-excellence (MoE) percentages for the player's own vehicles;
 - in battle, it shows a MoE panel with the projected percentage and the damage needed for the next mark;
 - in the hangar, it shows a session panel with battles, win rate, average damage and WN8.
@@ -29,10 +29,10 @@ The mod follows the Lesta Fair Play Policy (see [market research](../../docs/res
 
 ```
 apps/mod/
-  build.py                  Python 3 host build script -> dist/bronevik.<version>.wotmod
+  build.py                  Python 3 host build script -> dist/otmetki.<version>.wotmod
   contract/                 JSON Schemas the API implements (ingest, bind, MoE thresholds) + example
-  src/mod_bronevik.py       client entry point (auto-loaded by the client: gui/mods/mod_*.pyc)
-  src/bronevik/             pure logic, py2/py3 compatible, no client imports (unit-tested)
+  src/mod_otmetki.py       client entry point (auto-loaded by the client: gui/mods/mod_*.pyc)
+  src/otmetki/             pure logic, py2/py3 compatible, no client imports (unit-tested)
     binding.py              code normalisation, /mod/bind request/response, per-account credential store
     config.py               defaults, typed merge, feature switches, server URL validation
     i18n.py                 ru/en strings
@@ -47,11 +47,11 @@ apps/mod/
     signing.py              HMAC-SHA256 signature headers
     storage.py              atomic JSON files
     transport.py            urllib2/urllib worker-thread transport with main-thread callback polling
-  src/bronevik/client/      client glue (imports BigWorld and gui): hooks, dossier, battle tracker, UI, settings
+  src/otmetki/client/      client glue (imports BigWorld and gui): hooks, dossier, battle tracker, UI, settings
   tests/                    unittest suite, run with Python 3 (the pure code is 2/3 compatible)
 ```
 
-The client loads `res/scripts/client/gui/mods/mod_bronevik.pyc`, which imports `gui.mods.bronevik.client.app` and calls `start()`. The `bronevik` subpackage is not named `mod_*`, so the client does not load it on its own.
+The client loads `res/scripts/client/gui/mods/mod_otmetki.pyc`, which imports `gui.mods.otmetki.client.app` and calls `start()`. The `otmetki` subpackage is not named `mod_*`, so the client does not load it on its own.
 
 ## Client hooks
 
@@ -84,18 +84,18 @@ We chose to write our own code rather than vendor any of these. A mod that has t
 
 ## Data flow
 
-1. **Binding.** On the site, a signed-in user gets a 6-character code: alphabet `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`, one-time, short TTL. In the hangar, the user enters it in the ModsSettingsAPI window and presses «Привязать». Without ModsSettingsAPI, the user sets `"bind_code"` in `mods/configs/bronevik/config.json` and logs in.
+1. **Binding.** On the site, a signed-in user gets a 6-character code: alphabet `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`, one-time, short TTL. In the hangar, the user enters it in the ModsSettingsAPI window and presses «Привязать». Without ModsSettingsAPI, the user sets `"bind_code"` in `mods/configs/otmetki/config.json` and logs in.
    - The mod sends `POST /mod/bind` `{code, account_id, mod_version, client_version, realm}`.
    - The server answers `{device_id, secret, account_id}`.
-   - The credentials are stored per account in `mods/configs/bronevik/credentials.json`.
+   - The credentials are stored per account in `mods/configs/otmetki/credentials.json`.
 2. **Capture.** Events go into a per-account persistent outbox (`outbox_<account_id>.json`, at most 2000 events):
    - hangar MoE snapshots, sent only when the values change;
    - MoE distribution, once per vehicle per day;
    - queue times;
    - own battle results. These are deduplicated by `arenaUniqueID`, and the last 200 are kept in `state.json`.
 3. **Send.** In the hangar only, every `flush_interval_seconds` (15 s by default) and right after a battle result, the mod sends one batch of up to 50 events with `POST /mod/ingest`. Headers:
-   - `X-Bronevik-Device: <device_id>`
-   - `X-Bronevik-Signature: sha256=<hex HMAC-SHA256(secret, raw body)>`
+   - `X-Otmetki-Device: <device_id>`
+   - `X-Otmetki-Signature: sha256=<hex HMAC-SHA256(secret, raw body)>`
 
    Only one batch is in flight at a time. Events leave the outbox only after a 2xx or 409 response, so a crash or restart never loses them. Retries use exponential backoff (5 s up to 10 min, ±20% jitter) and honour `Retry-After`. Other responses:
 
@@ -150,9 +150,9 @@ python apps/mod/build.py --require-pyc   # release build; fails without Python 2
 python apps/mod/build.py --python27 C:\Python27\python.exe --install-dir "D:\Games\Tanki\mods\1.45.0.8259"
 ```
 
-The output is `apps/mod/dist/bronevik.<version>.wotmod`. The version comes from `src/bronevik/version.py`. The package is a stored (uncompressed) zip, which `.wotmod` requires, with explicit directory entries, `meta.xml` (`id=bronevik.companion`) and `res/scripts/client/gui/mods/...`.
+The output is `apps/mod/dist/otmetki.<version>.wotmod`. The version comes from `src/otmetki/version.py`. The package is a stored (uncompressed) zip, which `.wotmod` requires, with explicit directory entries, `meta.xml` (`id=otmetki.companion`) and `res/scripts/client/gui/mods/...`.
 
-The build looks for Python 2.7 in this order: `--python27`, `$BRONEVIK_PY27`, `$PYTHON27`, `py -2.7`, `python2.7`, `python2`, `C:\Python27\python.exe`. It compiles with `py_compile` and sets `dfile` to the in-package path, so tracebacks point to `scripts/client/gui/mods/...`.
+The build looks for Python 2.7 in this order: `--python27`, `$OTMETKI_PY27`, `$PYTHON27`, `py -2.7`, `python2.7`, `python2`, `C:\Python27\python.exe`. It compiles with `py_compile` and sets `dfile` to the in-package path, so tracebacks point to `scripts/client/gui/mods/...`.
 
 Without Python 2.7, the package contains `.py` sources. This is for development only: it is **unverified** whether the client imports `.py` from inside a `.wotmod`. The client does import `.py` from `res_mods` during development. Every published mod ships `.pyc`, so always use `--require-pyc` for МОСТ and site releases. CI should install Python 2.7, for example the `actions/setup-python` 2.7 build on Windows or a `python:2.7` container.
 
@@ -184,23 +184,23 @@ Optional checks:
 
 ## Install (players)
 
-1. Copy `bronevik.<version>.wotmod` into `<game>/mods/<client version>/`.
-2. Optional: install ModsSettingsAPI (izeberg) with ModsList (poliroid) and OpenWG Gameface to get the settings window and binding UI. Without them, edit `mods/configs/bronevik/config.json`.
+1. Copy `otmetki.<version>.wotmod` into `<game>/mods/<client version>/`.
+2. Optional: install ModsSettingsAPI (izeberg) with ModsList (poliroid) and OpenWG Gameface to get the settings window and binding UI. Without them, edit `mods/configs/otmetki/config.json`.
 3. Optional: install GUIFlash (gambiter) for the on-screen panels. Without it, the session summary comes as a system notification after each battle, and the in-battle panel is off.
 4. Bind: on the site, open Profile → Mod, copy the code, then paste it into the mod settings and press «Привязать».
 
-`mods/configs/bronevik/config.json` (created on first start):
+`mods/configs/otmetki/config.json` (created on first start):
 
-| Key                                                                                      | Default                    | Meaning                                                                                                                                                |
-| ---------------------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `enabled`                                                                                | `true`                     | Master switch                                                                                                                                          |
-| `server_url`                                                                             | `https://api.bronevik.app` | API base. Must be https, or http://localhost / http://127.0.0.1 for development. **The domain is a placeholder until the domain decision (spec §12).** |
-| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times` | `true`                     | Per-feature data switches                                                                                                                              |
-| `battle_moe_panel`, `hangar_session_panel`                                               | `true`                     | UI switches                                                                                                                                            |
-| `session_idle_minutes`                                                                   | `60`                       | New session after this idle gap (10–1440)                                                                                                              |
-| `flush_interval_seconds`                                                                 | `15`                       | Send interval (5–600)                                                                                                                                  |
-| `bind_code`                                                                              | `""`                       | Fallback binding without ModsSettingsAPI; cleared after use                                                                                            |
-| `language`                                                                               | `auto`                     | `ru`, `en` or `auto` (client language)                                                                                                                 |
+| Key                                                                                      | Default                   | Meaning                                                                                                                                                |
+| ---------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `enabled`                                                                                | `true`                    | Master switch                                                                                                                                          |
+| `server_url`                                                                             | `https://api.otmetki.app` | API base. Must be https, or http://localhost / http://127.0.0.1 for development. **The domain is a placeholder until the domain decision (spec §12).** |
+| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times` | `true`                    | Per-feature data switches                                                                                                                              |
+| `battle_moe_panel`, `hangar_session_panel`                                               | `true`                    | UI switches                                                                                                                                            |
+| `session_idle_minutes`                                                                   | `60`                      | New session after this idle gap (10–1440)                                                                                                              |
+| `flush_interval_seconds`                                                                 | `15`                      | Send interval (5–600)                                                                                                                                  |
+| `bind_code`                                                                              | `""`                      | Fallback binding without ModsSettingsAPI; cleared after use                                                                                            |
+| `language`                                                                               | `auto`                    | `ru`, `en` or `auto` (client language)                                                                                                                 |
 
 The device secret is stored in plain text in `credentials.json`, as other mods store tokens. It is scoped to one device and one account, and the user can revoke it on the site.
 
@@ -215,7 +215,7 @@ The device secret is stored in plain text in `credentials.json`, as other mods s
    - the fair-play statement above;
    - the optional dependencies (ModsSettingsAPI, ModsList, GUIFlash);
    - screenshots of both panels.
-3. Upload `bronevik.<version>.wotmod`. The `meta.xml` id stays `bronevik.companion` forever, so updates replace older versions. Bump `VERSION` on every release.
+3. Upload `otmetki.<version>.wotmod`. The `meta.xml` id stays `otmetki.companion` forever, so updates replace older versions. Bump `VERSION` on every release.
 4. Tell the moderators that the mod makes HTTPS requests to our API, and that the only other-vehicle value it reads is the team of a vehicle the player damaged (to exclude team damage).
 5. After each client patch:
    - rebuild;
@@ -255,7 +255,7 @@ Check МОСТ's current submission rules before the first upload. This README d
 
 ### Live-client smoke checklist
 
-1. The Python log (`python.log`) shows `[BRONEVIK] started <version>`.
+1. The Python log (`python.log`) shows `[OTMETKI] started <version>`.
 2. The mod appears in the ModsSettingsAPI window, and binding with a code from the site succeeds.
 3. After a random battle, `outbox_<id>.json` empties within about 15 s and the API shows the battle.
 4. Selecting a tier 5+ vehicle sends a `moe_snapshot`. The in-battle panel appears when GUIFlash is installed.

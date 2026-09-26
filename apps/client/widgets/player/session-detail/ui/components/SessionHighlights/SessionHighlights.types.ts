@@ -1,4 +1,4 @@
-import type { SessionTankDelta } from '@bronevik/schemas';
+import type { SessionTankDelta } from '@otmetki/schemas';
 
 export type SessionHighlightsProps = {
   best: SessionTankDelta | null;

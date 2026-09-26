@@ -1,4 +1,4 @@
-import type { PlayerSearchResult, SearchResponse, SearchResult } from '@bronevik/schemas';
+import type { PlayerSearchResult, SearchResponse, SearchResult } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { uniqueBy } from 'remeda';

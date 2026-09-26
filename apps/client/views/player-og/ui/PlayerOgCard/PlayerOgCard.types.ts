@@ -1,4 +1,4 @@
-import type { PlayerProfile } from '@bronevik/schemas';
+import type { PlayerProfile } from '@otmetki/schemas';
 
 import type { Locale } from '@/shared/i18n';
 

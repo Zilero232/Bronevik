@@ -1,4 +1,4 @@
-import { gameVersionSchema, serversOnlineSchema } from '@bronevik/schemas';
+import { gameVersionSchema, serversOnlineSchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 export class GameVersionDto extends createZodDto(gameVersionSchema) {}

@@ -52,7 +52,7 @@ clan-weekly-report-body = Событий: { $events }, явка { $attendance ->
 badge-awarded-title = Новый бейдж!
 badge-awarded-body = «{ $title }» получен
 
-digest-title = Ваша неделя в Броневике
+digest-title = Ваша неделя в «Трёх отметках»
 digest-body = { $battles } { $battles ->
         [one] бой
         [few] боя

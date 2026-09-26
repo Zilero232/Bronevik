@@ -1,11 +1,11 @@
 import type { RetryOptions } from 'ky';
 
-export const BRONEVIK_API = {
-  baseUrl: 'https://api.bronevik.app',
+export const OTMETKI_API = {
+  baseUrl: 'https://api.otmetki.app',
   apiKeyHeader: 'X-API-Key'
 } as const;
 
-export const BRONEVIK_RETRY = {
+export const OTMETKI_RETRY = {
   limit: 3,
   statusCodes: [408, 425, 429, 500, 502, 503, 504],
   afterStatusCodes: [413, 429, 503],

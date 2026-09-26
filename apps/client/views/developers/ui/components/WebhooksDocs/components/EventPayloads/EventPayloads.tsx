@@ -1,6 +1,6 @@
 'use client';
 
-import { WEBHOOK } from '@bronevik/schemas';
+import { WEBHOOK } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { CodeBlock, Tabs } from '@/ui-kit';

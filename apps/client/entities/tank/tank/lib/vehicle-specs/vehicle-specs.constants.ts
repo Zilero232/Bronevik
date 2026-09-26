@@ -1,4 +1,4 @@
-import type { VehicleStats } from '@bronevik/schemas';
+import type { VehicleStats } from '@otmetki/schemas';
 
 import type { TankSpecKey } from '../../config';
 

@@ -1,6 +1,6 @@
-import type { OverlayConfig } from '@bronevik/schemas';
+import type { OverlayConfig } from '@otmetki/schemas';
 
-import { overlayConfigSchema } from '@bronevik/schemas';
+import { overlayConfigSchema } from '@otmetki/schemas';
 import { isPlainObject, pickBy } from 'remeda';
 
 import type { MergePreviewConfigInput, OverlayConfigPatch } from './preview-config.types';

@@ -18,7 +18,7 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: 'bun --filter @bronevik/client dev',
+        command: 'bun --filter @otmetki/client dev',
         url: BASE_URL,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000

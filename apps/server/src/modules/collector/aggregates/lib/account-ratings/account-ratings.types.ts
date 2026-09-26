@@ -1,4 +1,4 @@
-import type { ExpectedValuesTable, PeriodWindow, TankReferenceTable, TankTiers } from '@bronevik/ratings';
+import type { ExpectedValuesTable, PeriodWindow, TankReferenceTable, TankTiers } from '@otmetki/ratings';
 
 import type { Prisma, RatingPeriod } from '../../../../../../generated';
 

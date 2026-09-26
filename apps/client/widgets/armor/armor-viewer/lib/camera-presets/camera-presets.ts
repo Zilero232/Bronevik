@@ -1,4 +1,4 @@
-import type { Vec3 } from '@bronevik/gamedata';
+import type { Vec3 } from '@otmetki/gamedata';
 
 import type { OrbitStepInput, PresetPositionInput } from './camera-presets.types';
 

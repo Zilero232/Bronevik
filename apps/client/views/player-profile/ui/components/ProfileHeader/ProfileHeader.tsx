@@ -1,6 +1,6 @@
 'use client';
 
-import type { RatingPeriod } from '@bronevik/schemas';
+import type { RatingPeriod } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 

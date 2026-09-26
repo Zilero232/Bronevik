@@ -1,6 +1,6 @@
 'use client';
 
-import type { Loadout } from '@bronevik/schemas';
+import type { Loadout } from '@otmetki/schemas';
 
 import { useQueryStates } from 'nuqs';
 

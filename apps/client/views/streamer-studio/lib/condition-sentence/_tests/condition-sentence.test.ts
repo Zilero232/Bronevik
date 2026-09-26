@@ -1,7 +1,7 @@
-import type { ChallengeCondition } from '@bronevik/schemas';
+import type { ChallengeCondition } from '@otmetki/schemas';
 
-import { toRoman } from '@bronevik/icons';
-import { challengeConditionSchema, challengeMetricSchema } from '@bronevik/schemas';
+import { toRoman } from '@otmetki/icons';
+import { challengeConditionSchema, challengeMetricSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { buildConditionSentence, renderConditionSentence } from '../condition-sentence';

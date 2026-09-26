@@ -1,4 +1,4 @@
-import { accountIdSchema, clanIdSchema, countSchema, isoDateTimeSchema, uuidSchema } from '@bronevik/schemas';
+import { accountIdSchema, clanIdSchema, countSchema, isoDateTimeSchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 export const clanParamsSchema = z.object({ clanId: clanIdSchema });

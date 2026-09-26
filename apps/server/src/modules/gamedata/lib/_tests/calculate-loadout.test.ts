@@ -1,6 +1,6 @@
-import type { OptionalDevice } from '@bronevik/gamedata';
+import type { OptionalDevice } from '@otmetki/gamedata';
 
-import { calculateLoadout, CREW, resolveModules, roleFactor, VISION } from '@bronevik/gamedata';
+import { calculateLoadout, CREW, resolveModules, roleFactor, VISION } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { loadCatalog, loadIs } from './fixtures';

@@ -1,4 +1,4 @@
-import type { TankPatchVerdict } from '@bronevik/schemas';
+import type { TankPatchVerdict } from '@otmetki/schemas';
 
 import type { BadgeTone } from '@/ui-kit';
 

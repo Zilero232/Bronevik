@@ -1,4 +1,4 @@
-import type { PostProgression } from '@bronevik/gamedata';
+import type { PostProgression } from '@otmetki/gamedata';
 
 export type ParsePostProgressionInput = {
   treesXml: string;

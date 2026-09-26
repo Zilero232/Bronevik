@@ -25,7 +25,7 @@ export const GITHUB = {
   api: 'https://api.github.com',
   raw: 'https://raw.githubusercontent.com',
   apiVersion: '2022-11-28',
-  userAgent: 'bronevik-gamedata'
+  userAgent: 'otmetki-gamedata'
 } as const;
 
 export const FETCH = {

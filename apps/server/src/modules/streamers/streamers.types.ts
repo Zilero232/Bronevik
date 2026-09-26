@@ -1,3 +1,4 @@
+import type { DonationAlertsDonationEvent, EventsListener } from '@donation-alerts/events';
 import type {
   CreateChallengeInput,
   createOverlaySchema,
@@ -10,8 +11,7 @@ import type {
   streamerProfileSchema,
   updateOverlaySchema,
   upsertStreamerProfileSchema
-} from '@bronevik/schemas';
-import type { DonationAlertsDonationEvent, EventsListener } from '@donation-alerts/events';
+} from '@otmetki/schemas';
 import type { ChatClient } from '@twurple/chat';
 import type { z } from 'zod';
 

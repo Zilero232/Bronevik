@@ -1,4 +1,4 @@
-import type { VehicleCatalog, VehicleFilter } from '@bronevik/schemas';
+import type { VehicleCatalog, VehicleFilter } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { sortBy } from 'remeda';

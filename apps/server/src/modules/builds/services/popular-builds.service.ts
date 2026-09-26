@@ -1,7 +1,7 @@
-import type { PopularBuilds, ProvisionOption } from '@bronevik/schemas';
+import type { PopularBuilds, ProvisionOption } from '@otmetki/schemas';
 
-import { loadoutSchema } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
+import { loadoutSchema } from '@otmetki/schemas';
 import { subDays } from 'date-fns';
 import { unique } from 'remeda';
 

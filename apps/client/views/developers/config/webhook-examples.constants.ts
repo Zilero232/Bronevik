@@ -1,4 +1,4 @@
-import type { WebhookEvent, WebhookPayload } from '@bronevik/schemas';
+import type { WebhookEvent, WebhookPayload } from '@otmetki/schemas';
 
 export const WEBHOOK_EXAMPLES = {
   'mark.gained': {

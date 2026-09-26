@@ -1,4 +1,4 @@
-import type { RatingValue } from '@bronevik/schemas';
+import type { RatingValue } from '@otmetki/schemas';
 
 export type RatingValueProps = {
   rating: RatingValue;

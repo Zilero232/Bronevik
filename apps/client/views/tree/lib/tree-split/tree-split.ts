@@ -1,4 +1,4 @@
-import type { TechTree, TechTreeNode } from '@bronevik/schemas';
+import type { TechTree, TechTreeNode } from '@otmetki/schemas';
 
 import type { TreeSplit } from './tree-split.types';
 

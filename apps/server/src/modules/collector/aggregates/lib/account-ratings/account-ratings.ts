@@ -1,6 +1,6 @@
-import type { TankTotals } from '@bronevik/ratings';
+import type { TankTotals } from '@otmetki/ratings';
 
-import { bronyaIndex, computeAverages, percentileOf, periodRatings, pickSnapshotPair, tankWn8 } from '@bronevik/ratings';
+import { bronyaIndex, computeAverages, percentileOf, periodRatings, pickSnapshotPair, tankWn8 } from '@otmetki/ratings';
 import { findLast, groupBy, sortBy } from 'remeda';
 
 import type {

@@ -1,4 +1,4 @@
-import type { Leaderboard } from '@bronevik/schemas';
+import type { Leaderboard } from '@otmetki/schemas';
 
 import type { LeaderboardInput } from './leaderboards.types';
 

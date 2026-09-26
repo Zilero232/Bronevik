@@ -10,7 +10,7 @@ import type {
   WebhookDeliveries,
   WebhookEndpoint,
   WebhookEndpoints
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 
 import type { ApiKeyUsageInput, OpenApiDocument, UpdateWebhookInput } from './developer.types';
 

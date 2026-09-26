@@ -1,4 +1,4 @@
-import { TELEGRAM_WEB_LOGIN } from '@bronevik/schemas';
+import { TELEGRAM_WEB_LOGIN } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { webLoginCodeState, webLoginPhase } from '../web-login';

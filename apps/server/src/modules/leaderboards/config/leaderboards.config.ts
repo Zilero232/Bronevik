@@ -1,4 +1,4 @@
-import type { RatingKind, RatingPeriod } from '@bronevik/schemas';
+import type { RatingKind, RatingPeriod } from '@otmetki/schemas';
 
 export const LEADERBOARD_MIN_BATTLES = {
   overall: 1_000,

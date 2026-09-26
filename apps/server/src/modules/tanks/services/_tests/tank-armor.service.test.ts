@@ -1,5 +1,5 @@
-import { base64ToBytes } from '@bronevik/gamedata';
-import { armorModelSchema } from '@bronevik/schemas';
+import { base64ToBytes } from '@otmetki/gamedata';
+import { armorModelSchema } from '@otmetki/schemas';
 import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 

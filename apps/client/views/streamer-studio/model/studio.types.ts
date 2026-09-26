@@ -1,4 +1,4 @@
-import type { createChallengeSchema } from '@bronevik/schemas';
+import type { createChallengeSchema } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { CreateOverlayInput } from '@/shared/api/streamers';

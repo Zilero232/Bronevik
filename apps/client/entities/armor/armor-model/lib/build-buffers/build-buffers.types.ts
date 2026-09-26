@@ -1,4 +1,4 @@
-import type { ArmorPieceGeometry, ArmorPlate } from '@bronevik/gamedata';
+import type { ArmorPieceGeometry, ArmorPlate } from '@otmetki/gamedata';
 
 export type BuildPieceBuffersInput = {
   piece: ArmorPieceGeometry;

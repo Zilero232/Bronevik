@@ -1,4 +1,4 @@
-import { accountIdSchema, clanIdSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySchema, uuidSchema } from '@bronevik/schemas';
+import { accountIdSchema, clanIdSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { playerStatsSchema, postStatusSchema, statRequirementsSchema } from '../../community-core';

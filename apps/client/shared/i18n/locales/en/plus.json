@@ -1,15 +1,15 @@
 {
   "meta": {
-    "title": "Bronevik Plus — subscription",
+    "title": "Three Marks Plus — subscription",
     "description": "Full battle history, advanced charts, Pro stream overlays, priority session polling, export and a clan panel. No ads, payments via YooKassa."
   },
   "header": {
-    "title": "Bronevik Plus",
+    "title": "Three Marks Plus",
     "description": "A subscription for extended Mir Tankov stats: battle history, charts, overlays and export."
   },
   "benefits": {
     "title": "What is included",
-    "description": "Features on top of free Bronevik.",
+    "description": "Features on top of free Three Marks.",
     "items": {
       "history": {
         "title": "Full history",
@@ -75,7 +75,7 @@
     "items": {
       "payment": {
         "question": "How does payment work?",
-        "answer": "YooKassa takes the payment — by card or any other method it offers. Only YooKassa sees your card details: Bronevik doesn't store them and only receives a masked card number for auto-renew."
+        "answer": "YooKassa takes the payment — by card or any other method it offers. Only YooKassa sees your card details: Three Marks doesn't store them and only receives a masked card number for auto-renew."
       },
       "cancel": {
         "question": "Can I cancel?",
@@ -87,7 +87,7 @@
       },
       "data": {
         "question": "Where does the data come from?",
-        "answer": "Stats come from Lesta's public API and from our mod if you have it installed. Bronevik is a fan project not affiliated with Lesta. We never ask for your game password: sign-in is via Lesta ID only."
+        "answer": "Stats come from Lesta's public API and from our mod if you have it installed. Three Marks is a fan project not affiliated with Lesta. We never ask for your game password: sign-in is via Lesta ID only."
       },
       "promo": {
         "question": "How do I use a promo code?",

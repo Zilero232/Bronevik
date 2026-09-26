@@ -1,4 +1,4 @@
-import type { VehicleSummary } from '@bronevik/schemas';
+import type { VehicleSummary } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { LRUCache } from 'lru-cache';

@@ -1,4 +1,4 @@
-import type { ReplaySummary as ReplayView } from '@bronevik/schemas';
+import type { ReplaySummary as ReplayView } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

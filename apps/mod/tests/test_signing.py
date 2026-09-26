@@ -1,7 +1,7 @@
 import unittest
 
 import _support  # noqa: F401
-from bronevik.signing import DEVICE_HEADER, SIGNATURE_HEADER, sign, signed_headers, verify
+from otmetki.signing import DEVICE_HEADER, SIGNATURE_HEADER, sign, signed_headers, verify
 
 
 class SigningTest(unittest.TestCase):
@@ -23,7 +23,7 @@ class SigningTest(unittest.TestCase):
         self.assertFalse(verify('x' * 32, body, signature))
 
     def test_signed_headers(self):
-        headers = signed_headers('dev-1', 's' * 40, b'{}', 'bronevik.companion/0.1.0')
+        headers = signed_headers('dev-1', 's' * 40, b'{}', 'otmetki.companion/0.1.0')
         self.assertEqual(headers[DEVICE_HEADER], 'dev-1')
         self.assertEqual(headers[SIGNATURE_HEADER], sign('s' * 40, b'{}'))
         self.assertEqual(headers['Content-Type'], 'application/json')

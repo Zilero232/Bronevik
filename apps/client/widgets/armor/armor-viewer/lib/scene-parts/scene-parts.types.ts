@@ -1,5 +1,5 @@
-import type { ArmorGeometry, ArmorPieceGeometry, Vec3 } from '@bronevik/gamedata';
-import type { ArmorGunModuleData, ArmorModulesData, ArmorPlateData, ArmorTurretModuleData } from '@bronevik/schemas';
+import type { ArmorGeometry, ArmorPieceGeometry, Vec3 } from '@otmetki/gamedata';
+import type { ArmorGunModuleData, ArmorModulesData, ArmorPlateData, ArmorTurretModuleData } from '@otmetki/schemas';
 
 import type { ArmorLayerKey } from '@/features/armor/armor-inspect';
 

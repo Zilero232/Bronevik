@@ -1,8 +1,8 @@
 'use client';
 
-import type { OverlayKind } from '@bronevik/schemas';
+import type { OverlayKind } from '@otmetki/schemas';
 
-import { overlayKindSchema } from '@bronevik/schemas';
+import { overlayKindSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { Controller } from 'react-hook-form';

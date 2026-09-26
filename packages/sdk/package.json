@@ -1,8 +1,8 @@
 {
-  "name": "@bronevik/sdk",
+  "name": "@otmetki/sdk",
   "version": "0.0.0",
   "private": true,
-  "description": "TypeScript client for the Bronevik public API (/v1): generated from the OpenAPI spec with @hey-api/openapi-ts, on the ky client with an API-key, base-URL and retry wrapper, plus a Standard Webhooks verifier.",
+  "description": "TypeScript client for the Three Marks public API (/v1): generated from the OpenAPI spec with @hey-api/openapi-ts, on the ky client with an API-key, base-URL and retry wrapper, plus a Standard Webhooks verifier.",
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
   "type": "module",
@@ -13,7 +13,7 @@
   "scripts": {
     "postinstall": "openapi-ts",
     "sdk:build": "openapi-ts",
-    "sdk:generate": "bun --filter @bronevik/server openapi:export && prettier --write openapi/v1.json && openapi-ts",
+    "sdk:generate": "bun --filter @otmetki/server openapi:export && prettier --write openapi/v1.json && openapi-ts",
     "sdk:generate:live": "openapi-ts",
     "typecheck": "tsc --noEmit"
   },

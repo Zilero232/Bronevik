@@ -1,4 +1,4 @@
-import type { RatingValue, StatsBlock } from '@bronevik/schemas';
+import type { RatingValue, StatsBlock } from '@otmetki/schemas';
 
 import type { RatingTone } from '@/shared/lib';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import type { TechTree } from '@bronevik/schemas';
+import type { TechTree } from '@otmetki/schemas';
 
 import { pathCost, pathTo } from '../../../lib/tree-path';
 import { useTreeParams } from '../use-tree-params';

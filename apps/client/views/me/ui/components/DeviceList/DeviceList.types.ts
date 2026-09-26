@@ -1,4 +1,4 @@
-import type { ModDevice } from '@bronevik/schemas';
+import type { ModDevice } from '@otmetki/schemas';
 
 export type DeviceListProps = {
   devices: ModDevice[];

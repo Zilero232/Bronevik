@@ -1,4 +1,4 @@
-import type { TankPatchChange } from '@bronevik/schemas';
+import type { TankPatchChange } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { specChangesSchema } from './spec-patches.schemas';

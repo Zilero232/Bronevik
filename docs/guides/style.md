@@ -1,4 +1,4 @@
-# Bronevik Style Guide
+# Three Marks Style Guide
 
 Project code-style conventions for `apps/client/`, plus the parts of the server app and the shared packages that the client touches. Architectural rules live in [`docs/architecture/fsd.md`](../architecture/fsd.md).
 
@@ -255,9 +255,9 @@ export type CommandPaletteTriggerProps = {
 ```tsx
 'use client';
 
-import type { RecentPeriod } from '@bronevik/schemas';
+import type { RecentPeriod } from '@otmetki/schemas';
 
-import { recentPeriodSchema } from '@bronevik/schemas';
+import { recentPeriodSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { SegmentedControl } from '@/ui-kit';
@@ -393,7 +393,7 @@ is how `features/search/command-palette` is built — the context in
 | Props type               | `<Name>Props`        | `PlayerCardProps`                            |
 | DTO type                 | `<Name>Input/Output` | `SearchInput`, `LocalePathInput`             |
 
-> Canonical FSD: kebab-case for every file. Bronevik deviates: PascalCase for component folders and files, kebab-case for hooks and utilities.
+> Canonical FSD: kebab-case for every file. Three Marks deviates: PascalCase for component folders and files, kebab-case for hooks and utilities.
 
 ---
 
@@ -407,8 +407,8 @@ is how `features/search/command-palette` is built — the context in
 
 `perfectionist/sort-imports` (`bun lint:fix`) sorts imports into groups in this order, **with a blank line between groups**:
 
-1. **External types** — `import type` from packages, `@bronevik/*` included.
-2. **External values** — packages, `node:` builtins, `@bronevik/*`.
+1. **External types** — `import type` from packages, `@otmetki/*` included.
+2. **External values** — packages, `node:` builtins, `@otmetki/*`.
 3. **Internal types** — `import type` from `@/` aliases.
 4. **Internal values** — `@/` aliases.
 5. **Relative types** — `import type` from `./` and `../`.
@@ -418,10 +418,10 @@ is how `features/search/command-palette` is built — the context in
 
 ```ts
 // 1. external types
-import type { RecentPeriod } from '@bronevik/schemas';
+import type { RecentPeriod } from '@otmetki/schemas';
 
 // 2. external values
-import { recentPeriodSchema } from '@bronevik/schemas';
+import { recentPeriodSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 // 3. internal types
@@ -854,7 +854,7 @@ export const search = async ({ query, signal }: SearchInput): Promise<SearchResp
 };
 ```
 
-Request and response types come from `@bronevik/schemas` — the same contract
+Request and response types come from `@otmetki/schemas` — the same contract
 NestJS validates against. The function returns data; errors are thrown, and
 React Query catches them.
 
@@ -882,7 +882,7 @@ stay in tests.
 - **Fonts** are self-hosted through `next/font/local` in `shared/config/fonts`: **Tektur**
   for display and numbers (`--font-display`), **Onest** for body text (`--font-sans`),
   **IBM Plex Mono** for HUD labels (`--font-mono`).
-- **Rating colours** come from one mapping. `@bronevik/ratings` defines nine canonical tiers
+- **Rating colours** come from one mapping. `@otmetki/ratings` defines nine canonical tiers
   (`very_bad` … `super_unicum`); `shared/lib/rating-tone` folds them into six colour tones —
   `bad`, `below`, `average`, `good`, `great`, `unicum` — through `ratingTone({ scale, value })`
   or `toneOfTier(tier)`. A component sets `data-tone={tone}` and its SCSS uses
@@ -1022,7 +1022,7 @@ Where inlining would genuinely hurt readability — a multi-line filter, a
 The rule orders declarations; it does not ask you to bury a dependency to
 satisfy a layout.
 
-## 14. Shared schemas — `@bronevik/schemas`
+## 14. Shared schemas — `@otmetki/schemas`
 
 Zod schemas and the types shared between the client and the server app
 live in `packages/schemas`.
@@ -1053,14 +1053,14 @@ The suffix says what the file holds, so a reader never opens one to find out:
 `<name>.ts` for functions. A domain barrel re-exports its concerns; the root
 barrel re-exports the domains.
 
-The package exposes a single root entry point — import from `@bronevik/schemas`,
+The package exposes a single root entry point — import from `@otmetki/schemas`,
 not from a subpath:
 
 ```ts
 // ✓ OK
-import type { SearchResponse } from '@bronevik/schemas';
+import type { SearchResponse } from '@otmetki/schemas';
 
-import { searchResponseSchema } from '@bronevik/schemas';
+import { searchResponseSchema } from '@otmetki/schemas';
 
 // ✗ NOT OK — a type redeclared on the client
 type SearchResponse = { query: string; results: ... };
@@ -1103,7 +1103,7 @@ views/me/config/goal-form.constants.ts   ← GOAL_FORM_DEFAULT_VALUES
 The component calls `useGoalForm()` and renders fields — no `useForm`, `useState` fields
 or submit handler in the `.tsx`.
 
-- The schema comes from `@bronevik/schemas`, never inline in the form.
+- The schema comes from `@otmetki/schemas`, never inline in the form.
 - Default values are a constant in `config/`, not an object literal rebuilt on
   every render.
 - Server-side errors go through `setError('field', { message })`.
@@ -1254,10 +1254,10 @@ src/modules/search/
 ```
 
 - DTOs wrap a shared schema: `export class SearchQueryDto extends createZodDto(searchQuerySchema) {}`
-  (`nestjs-zod`). The schema itself lives in `@bronevik/schemas`, so client and server
+  (`nestjs-zod`). The schema itself lives in `@otmetki/schemas`, so client and server
   validate against one definition.
 - Domain errors are thrown as the app exceptions from `common/exceptions` with a
-  code from `@bronevik/schemas` — `` throw new AppNotFoundException('CLAN_NOT_FOUND', `No clan with id ${clanId}`) ``.
+  code from `@otmetki/schemas` — `` throw new AppNotFoundException('CLAN_NOT_FOUND', `No clan with id ${clanId}`) ``.
   The client matches on the code, so the message is free text but the code is a
   contract.
 - Import from a module's barrel across module boundaries, never into its files.
@@ -1272,7 +1272,7 @@ src/modules/search/
 - Deep imports past a barrel.
 - Cross-imports between slices of the same layer.
 - CSS-in-JS. SCSS modules only (`cva` maps module classes, it does not style).
-- Duplicating a schema between client and server. Only `@bronevik/schemas`.
+- Duplicating a schema between client and server. Only `@otmetki/schemas`.
 - `useState` for form fields. Only `react-hook-form`, inside a `use-<x>-form` hook.
 - Logic in a component: queries, effects, memoised or derived data, handlers with more
   than one statement. They go to `model/hooks/use-<x>/`.
@@ -1309,7 +1309,7 @@ Tests live in a `_tests/` folder beside what they test
 (`shared/lib/rating-tone/_tests/rating-tone.test.ts`); the Playwright specs are in
 `e2e/`, and the game mod's Python suite is in `apps/mod/tests/` (`bun run test:mod`).
 
-A change that can break prerendering also needs `bun --filter @bronevik/client build` —
+A change that can break prerendering also needs `bun --filter @otmetki/client build` —
 typecheck passes on code that throws during SSR.
 
 `bun run fix` does not fix: hook order (section 10.1) or FSD import boundaries

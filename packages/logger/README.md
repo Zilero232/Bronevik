@@ -1,9 +1,9 @@
-# @bronevik/logger
+# @otmetki/logger
 
-One pino configuration shared by every Bronevik app, so log lines from the server, the worker and the scripts have the same shape.
+One pino configuration shared by every Three Marks app, so log lines from the server, the worker and the scripts have the same shape.
 
 ```ts
-import { createLogger } from '@bronevik/logger';
+import { createLogger } from '@otmetki/logger';
 
 const logger = createLogger({ service: 'worker' });
 ```

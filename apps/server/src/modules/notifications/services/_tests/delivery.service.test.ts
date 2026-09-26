@@ -54,7 +54,7 @@ const createService = () => {
   const email = mock<EmailService>();
   const queue = mock<Queue<DeliverPayload>>();
 
-  config.get.mockReturnValue('https://bronevik.app');
+  config.get.mockReturnValue('https://otmetki.app');
   prisma.notification.findUnique.mockResolvedValue(null);
   prisma.notification.create.mockResolvedValue(mock<Notification>({ id: 'n1' }));
 

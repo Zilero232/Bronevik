@@ -1,8 +1,8 @@
 {
-  "name": "@bronevik/logger",
+  "name": "@otmetki/logger",
   "version": "0.0.0",
   "private": true,
-  "description": "One pino configuration shared by every Bronevik app.",
+  "description": "One pino configuration shared by every Three Marks app.",
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
   "type": "module",

@@ -1,4 +1,4 @@
-import type { MarkCount } from '@bronevik/icons';
+import type { MarkCount } from '@otmetki/icons';
 
 import type { SpecVerdict } from '@/entities/tank/tank';
 

@@ -1,4 +1,4 @@
-import type { VehicleCatalog } from '@bronevik/schemas';
+import type { VehicleCatalog } from '@otmetki/schemas';
 
 import type { TankIdentityData } from '@/entities/tank/tank';
 

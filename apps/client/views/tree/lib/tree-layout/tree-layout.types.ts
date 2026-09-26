@@ -1,4 +1,4 @@
-import type { TechTreeEdge, TechTreeNode } from '@bronevik/schemas';
+import type { TechTreeEdge, TechTreeNode } from '@otmetki/schemas';
 
 export type LayoutTreeInput = {
   nodes: TechTreeNode[];

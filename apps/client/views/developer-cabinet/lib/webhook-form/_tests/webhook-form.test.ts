@@ -1,12 +1,12 @@
-import type { WebhookEndpoint } from '@bronevik/schemas';
+import type { WebhookEndpoint } from '@otmetki/schemas';
 
-import { createWebhookEndpointSchema, WEBHOOK } from '@bronevik/schemas';
+import { createWebhookEndpointSchema, WEBHOOK } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { isWebhookFormError, parseIdList, toWebhookFilter, toWebhookFormValues, toWebhookInput } from '../webhook-form';
 import { webhookFormSchema } from '../webhook-form.schemas';
 
-const VALID = { url: 'https://hooks.example.test/bronevik', events: [WEBHOOK.events[0]], accountIds: '101, 102', clanIds: '' };
+const VALID = { url: 'https://hooks.example.test/otmetki', events: [WEBHOOK.events[0]], accountIds: '101, 102', clanIds: '' };
 
 const issuesOf = (values: typeof VALID) => {
   const result = webhookFormSchema.safeParse(values);

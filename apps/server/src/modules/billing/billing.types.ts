@@ -1,4 +1,4 @@
-import type { BillingStatus, PaymentHistoryItem } from '@bronevik/schemas';
+import type { BillingStatus, PaymentHistoryItem } from '@otmetki/schemas';
 
 import type { Prisma } from '../../../generated';
 import type { PrismaService } from '../../core';

@@ -1,6 +1,6 @@
 'use client';
 
-import type { WebhookEndpoint } from '@bronevik/schemas';
+import type { WebhookEndpoint } from '@otmetki/schemas';
 
 import { useState } from 'react';
 

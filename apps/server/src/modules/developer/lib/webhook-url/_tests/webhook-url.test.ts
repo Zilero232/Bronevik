@@ -43,11 +43,11 @@ describe('isPublicAddress', () => {
 
 describe('isPublicWebhookUrl', () => {
   it('accepts a public https address', () => {
-    expect(isPublicWebhookUrl('https://hooks.example.com/bronevik')).toBe(true);
+    expect(isPublicWebhookUrl('https://hooks.example.com/otmetki')).toBe(true);
   });
 
   it('refuses plain http', () => {
-    expect(isPublicWebhookUrl('http://hooks.example.com/bronevik')).toBe(false);
+    expect(isPublicWebhookUrl('http://hooks.example.com/otmetki')).toBe(false);
   });
 
   it('refuses loopback, link-local and private literals and internal names', () => {

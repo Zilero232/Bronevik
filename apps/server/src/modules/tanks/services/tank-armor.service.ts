@@ -1,8 +1,8 @@
-import type { ArmorModelResponse } from '@bronevik/schemas';
+import type { ArmorModelResponse } from '@otmetki/schemas';
 
-import { bytesToBase64 } from '@bronevik/gamedata';
-import { armorModulesSchema } from '@bronevik/schemas';
 import { Inject, Injectable } from '@nestjs/common';
+import { bytesToBase64 } from '@otmetki/gamedata';
+import { armorModulesSchema } from '@otmetki/schemas';
 
 import type { ArmorStorage } from '../../gamedata';
 

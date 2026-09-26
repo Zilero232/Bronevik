@@ -1,4 +1,4 @@
-import type { StatsBlock } from '@bronevik/schemas';
+import type { StatsBlock } from '@otmetki/schemas';
 
 export type StatGridProps = {
   stats: StatsBlock | undefined;

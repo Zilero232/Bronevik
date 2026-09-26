@@ -12,7 +12,7 @@ import {
   tankIdSchema,
   uuidSchema,
   visibilitySchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { HEATMAP } from '../config';

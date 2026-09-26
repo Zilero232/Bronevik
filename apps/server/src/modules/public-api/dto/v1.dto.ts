@@ -31,7 +31,7 @@ import {
   tierListSchema,
   timeSeriesQuerySchema,
   timeSeriesSchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 

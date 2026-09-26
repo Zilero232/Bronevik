@@ -1,9 +1,9 @@
 'use client';
 
-import type { PromoRedeemInput } from '@bronevik/schemas';
+import type { PromoRedeemInput } from '@otmetki/schemas';
 
-import { promoRedeemSchema } from '@bronevik/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { promoRedeemSchema } from '@otmetki/schemas';
 import { useForm } from 'react-hook-form';
 
 import { PROMO_REDEEM_FORM_DEFAULT_VALUES } from '../../../config';

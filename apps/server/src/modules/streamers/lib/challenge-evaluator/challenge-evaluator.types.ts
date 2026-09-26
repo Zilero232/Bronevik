@@ -1,4 +1,4 @@
-import type { ChallengeCondition } from '@bronevik/schemas';
+import type { ChallengeCondition } from '@otmetki/schemas';
 
 export type EvaluatedBattle = {
   id: string;

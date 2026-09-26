@@ -1,4 +1,4 @@
-import type { RecentPeriod } from '@bronevik/schemas';
+import type { RecentPeriod } from '@otmetki/schemas';
 
 export const PLAYER_STATS = {
   snapshotMode: 'random',

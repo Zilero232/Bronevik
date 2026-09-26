@@ -1,4 +1,4 @@
-import type { TechTreeEdge, TechTreeNode, VehicleSummary } from '@bronevik/schemas';
+import type { TechTreeEdge, TechTreeNode, VehicleSummary } from '@otmetki/schemas';
 
 import { sumBy } from 'remeda';
 import { describe, expect, it } from 'vitest';

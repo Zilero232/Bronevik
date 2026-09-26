@@ -1,4 +1,4 @@
 export const HTTP = {
-  userAgent: 'Bronevik collector (+https://bronevik.app)',
+  userAgent: 'Three Marks collector (+https://otmetki.app)',
   timeoutMs: 30_000
 } as const;

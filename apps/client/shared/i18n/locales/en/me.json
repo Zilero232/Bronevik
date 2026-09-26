@@ -54,7 +54,7 @@
     "description": "Link the mod so sessions, accuracy and marks progress arrive right after each battle.",
     "issue": "Get a binding code",
     "steps": {
-      "install": "Install the Bronevik mod into the game client mods folder.",
+      "install": "Install the Three Marks mod into the game client mods folder.",
       "open": "Start the game and open the mod window in the garage.",
       "enter": "Enter the code — the device shows up in the list below."
     },

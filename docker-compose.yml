@@ -1,4 +1,4 @@
-# Bronevik production-like stack, front to back:
+# Three Marks production-like stack, front to back:
 #   caddy → client → server → timescaledb + redis, with worker beside the server.
 #
 # Not deployed anywhere yet — there is no production. The file exists so the
@@ -33,7 +33,7 @@ x-backend-env: &backend-env
 services:
   caddy:
     image: caddy:2-alpine
-    container_name: bronevik-caddy
+    container_name: otmetki-caddy
     restart: always
     depends_on:
       - client
@@ -50,7 +50,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     networks:
-      - bronevik
+      - otmetki
 
   client:
     build:
@@ -59,15 +59,15 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
         NEXT_PUBLIC_WEB_URL: ${NEXT_PUBLIC_WEB_URL:-https://localhost}
-    image: bronevik-client:latest
-    container_name: bronevik-client
+    image: otmetki-client:latest
+    container_name: otmetki-client
     restart: always
     depends_on:
       - server
     expose:
       - '3000'
     networks:
-      - bronevik
+      - otmetki
     healthcheck:
       <<: *healthcheck
       test: [CMD, node, -e, "fetch('http://localhost:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
@@ -76,8 +76,8 @@ services:
     build:
       context: .
       dockerfile: apps/server/Dockerfile
-    image: bronevik-server:latest
-    container_name: bronevik-server
+    image: otmetki-server:latest
+    container_name: otmetki-server
     restart: always
     depends_on:
       postgres:
@@ -92,14 +92,14 @@ services:
     expose:
       - '4000'
     networks:
-      - bronevik
+      - otmetki
     healthcheck:
       <<: *healthcheck
       test: [CMD, bun, -e, "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
 
   worker:
-    image: bronevik-server:latest
-    container_name: bronevik-worker
+    image: otmetki-server:latest
+    container_name: otmetki-worker
     restart: always
     command: [bun, src/worker.ts]
     depends_on:
@@ -114,11 +114,11 @@ services:
     environment:
       <<: *backend-env
     networks:
-      - bronevik
+      - otmetki
 
   postgres:
     image: timescale/timescaledb-ha:pg17
-    container_name: bronevik-postgres
+    container_name: otmetki-postgres
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-bronevik}
@@ -131,7 +131,7 @@ services:
     volumes:
       - pgdata:/home/postgres/pgdata/data
     networks:
-      - bronevik
+      - otmetki
     healthcheck:
       <<: *healthcheck
       test: [CMD-SHELL, 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
@@ -140,20 +140,20 @@ services:
 
   redis:
     image: redis:8-alpine
-    container_name: bronevik-redis
+    container_name: otmetki-redis
     restart: always
     # BullMQ needs keys to survive eviction; AOF keeps queued jobs across restarts.
     command: redis-server --appendonly yes --maxmemory-policy noeviction
     volumes:
       - redisdata:/data
     networks:
-      - bronevik
+      - otmetki
     healthcheck:
       <<: *healthcheck
       test: [CMD, redis-cli, ping]
 
 networks:
-  bronevik:
+  otmetki:
     driver: bridge
 
 volumes:

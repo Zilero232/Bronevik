@@ -1,4 +1,4 @@
-import type { VehicleType } from '@bronevik/schemas';
+import type { VehicleType } from '@otmetki/schemas';
 
 export type ComparePreset = {
   key: 'heavyX' | 'mediumX' | 'premiumVIII' | 'tdX';

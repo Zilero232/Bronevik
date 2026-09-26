@@ -1,6 +1,6 @@
-import type { Tier } from '@bronevik/icons';
+import type { Tier } from '@otmetki/icons';
 
-import { TIERS } from '@bronevik/icons';
+import { TIERS } from '@otmetki/icons';
 
 import type { PlayerTanksFilter } from '@/shared/api/players';
 

@@ -1,6 +1,6 @@
-import { MASTERY_PERCENTILES } from '@bronevik/ratings';
 import { utc } from '@date-fns/utc';
 import { Inject, Injectable } from '@nestjs/common';
+import { MASTERY_PERCENTILES } from '@otmetki/ratings';
 import { startOfDay } from 'date-fns';
 
 import type { LestaClients } from '../../../../core';

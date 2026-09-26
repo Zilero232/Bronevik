@@ -1,4 +1,4 @@
-import { WEBHOOK } from '@bronevik/schemas';
+import { WEBHOOK } from '@otmetki/schemas';
 import { Webhook } from 'standardwebhooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
@@ -21,7 +21,7 @@ const PUBLIC_ADDRESS = [{ address: '93.184.216.34', family: 4 }];
 const endpoint: WebhookEndpoint = {
   id: 'endpoint',
   userId: 'user',
-  url: 'https://hooks.example.com/bronevik',
+  url: 'https://hooks.example.com/otmetki',
   secret: generateWebhookSecret(),
   events: ['moeGained'],
   filter: { accountIds: [1] },

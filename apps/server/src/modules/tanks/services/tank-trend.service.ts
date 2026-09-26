@@ -1,4 +1,4 @@
-import type { TankTrend } from '@bronevik/schemas';
+import type { TankTrend } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { startOfDay, subDays } from 'date-fns';

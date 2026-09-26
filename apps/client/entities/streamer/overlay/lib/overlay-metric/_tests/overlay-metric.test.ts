@@ -1,4 +1,4 @@
-import { overlayConfigSchema, overlayMetricSchema } from '@bronevik/schemas';
+import { overlayConfigSchema, overlayMetricSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import type { OverlayData } from '@/shared/api/streamers';

@@ -1,4 +1,4 @@
-import type { TimeSeriesGranularity, TimeSeriesMetric } from '@bronevik/schemas';
+import type { TimeSeriesGranularity, TimeSeriesMetric } from '@otmetki/schemas';
 
 export const CHART_METRICS = ['wn8', 'winRate', 'avgDamage', 'battles', 'eff', 'broneIndex'] as const satisfies readonly TimeSeriesMetric[];
 

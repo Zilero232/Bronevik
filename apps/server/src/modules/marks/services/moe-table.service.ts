@@ -1,4 +1,4 @@
-import type { MoeHistoryBatch, MoeQuery, MoeRow, MoeThreshold, Paginated } from '@bronevik/schemas';
+import type { MoeHistoryBatch, MoeQuery, MoeRow, MoeThreshold, Paginated } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';

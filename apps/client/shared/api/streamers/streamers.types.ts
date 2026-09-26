@@ -1,4 +1,4 @@
-import type { ActivateChallengeInput as ActivateChallengeBody, UpdateOverlayInput as UpdateOverlayBody } from '@bronevik/schemas';
+import type { ActivateChallengeInput as ActivateChallengeBody, UpdateOverlayInput as UpdateOverlayBody } from '@otmetki/schemas';
 
 export type {
   ConnectableProvider,
@@ -10,7 +10,7 @@ export type {
   StreamerProfile,
   StreamerProvider,
   UpsertStreamerProfileInput
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 
 export type ActivateChallengeInput = ActivateChallengeBody & { id: string };
 

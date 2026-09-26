@@ -1,4 +1,4 @@
-import { buildSchema, createBuildSchema, paginatedSchema, paginationQuerySchema, tankIdSchema, visibilitySchema } from '@bronevik/schemas';
+import { buildSchema, createBuildSchema, paginatedSchema, paginationQuerySchema, tankIdSchema, visibilitySchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 export const tankParamsSchema = z.object({ id: tankIdSchema });

@@ -1,4 +1,4 @@
-import type { ApiErrorCode, ApiErrorIssue } from '@bronevik/schemas';
+import type { ApiErrorCode, ApiErrorIssue } from '@otmetki/schemas';
 
 import { isNumber, isObjectType, isPlainObject, isString } from 'remeda';
 

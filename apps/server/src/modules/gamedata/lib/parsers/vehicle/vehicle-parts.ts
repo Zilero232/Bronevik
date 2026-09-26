@@ -1,4 +1,4 @@
-import type { Armor, ModuleBase, PitchLimits, PitchPoint, RateOfFire, Unlock } from '@bronevik/gamedata';
+import type { Armor, ModuleBase, PitchLimits, PitchPoint, RateOfFire, Unlock } from '@otmetki/gamedata';
 
 import type { XmlNode, XmlValue } from '../../xml';
 import type { ArmorExtras, ArmorExtrasInput, ModuleBaseInput, ResolveModuleInput, ResolvePrimaryArmorInput } from './vehicle.types';

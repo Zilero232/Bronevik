@@ -1,4 +1,4 @@
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 import { describe, expect, it } from 'vitest';
 
 import type { BuildModule } from '../../build-catalog';

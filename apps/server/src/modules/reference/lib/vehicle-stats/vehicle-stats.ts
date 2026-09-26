@@ -1,4 +1,4 @@
-import type { ShellStats, VehicleStats } from '@bronevik/schemas';
+import type { ShellStats, VehicleStats } from '@otmetki/schemas';
 
 import { isNonNullish, pickBy } from 'remeda';
 

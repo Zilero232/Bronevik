@@ -2,7 +2,7 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 
-import { clanRoleSchema } from '@bronevik/schemas';
+import { clanRoleSchema } from '@otmetki/schemas';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 

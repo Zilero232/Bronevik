@@ -1,4 +1,4 @@
-import type { TankDetail, TankPatches, TankStatsPage, TankTrend, TierList, TopPlayers, VehicleCatalog } from '@bronevik/schemas';
+import type { TankDetail, TankPatches, TankStatsPage, TankTrend, TierList, TopPlayers, VehicleCatalog } from '@otmetki/schemas';
 
 import type {
   TankDetailInput,

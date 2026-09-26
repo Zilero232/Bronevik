@@ -1,4 +1,4 @@
-import { CREW_ROLES } from '@bronevik/gamedata';
+import { CREW_ROLES } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { COMMON_FIXTURES, readFixture } from '../../../_tests/fixtures';

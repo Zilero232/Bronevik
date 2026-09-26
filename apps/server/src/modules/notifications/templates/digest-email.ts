@@ -26,7 +26,7 @@ export const DigestEmail = ({ locale, title, body, url, cta }: DigestEmailProps)
       h(
         Container,
         { style: styles.card },
-        h(Text, { style: styles.brand }, 'Броневик'),
+        h(Text, { style: styles.brand }, 'Три отметки'),
         h(Heading, { style: styles.heading }, title),
         h(Text, { style: styles.text }, body),
         h(Section, { style: { paddingTop: '12px' } }, h(Button, { href: url, style: styles.button }, cta))

@@ -1,4 +1,4 @@
-import type { ClanListSortField } from '@bronevik/schemas';
+import type { ClanListSortField } from '@otmetki/schemas';
 
 export const CLAN_SORTS = [
   'wn8',

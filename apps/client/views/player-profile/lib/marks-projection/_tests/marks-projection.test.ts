@@ -1,4 +1,4 @@
-import { moeDamageForPercent } from '@bronevik/ratings';
+import { moeDamageForPercent } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
 import type { PlayerMarkRow } from '@/shared/api/players';

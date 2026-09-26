@@ -1,4 +1,4 @@
-import { apiPlanSchema } from '@bronevik/schemas';
+import { apiPlanSchema } from '@otmetki/schemas';
 
 export const PLANS = {
   list: apiPlanSchema.options,

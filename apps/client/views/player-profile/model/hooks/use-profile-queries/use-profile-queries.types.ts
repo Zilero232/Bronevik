@@ -1,4 +1,4 @@
-import type { TimeSeriesGranularity, TimeSeriesMetric } from '@bronevik/schemas';
+import type { TimeSeriesGranularity, TimeSeriesMetric } from '@otmetki/schemas';
 
 export type UsePlayerHistoryInput = {
   metric: TimeSeriesMetric;

@@ -1,4 +1,4 @@
-import type { Tier } from '@bronevik/icons';
+import type { Tier } from '@otmetki/icons';
 
 export type TierCellProps = {
   tier: Tier;

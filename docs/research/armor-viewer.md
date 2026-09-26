@@ -188,7 +188,7 @@ Implement this as pure TS in `packages/gamedata` (`calculateArmorHit({ thickness
   - `model` (decode binary → `BufferGeometry` with `aThickness`/`aFlags`/`aPlate`)
   - `ui/ArmorMesh` (one piece, shader material)
 - **`features/armor-inspect`:**
-  - `lib/penetration.ts` re-exports `calculateArmorHit` from `@bronevik/gamedata`
+  - `lib/penetration.ts` re-exports `calculateArmorHit` from `@otmetki/gamedata`
   - `ui/ShellPicker` (own and enemy gun, shell, distance slider 0–565 m)
   - `ui/HoverTooltip` (nominal, angle, effective, spaced/track, "total along ray")
   - `ui/ModulePicker` (turret/gun/chassis → pieces via `modules`)

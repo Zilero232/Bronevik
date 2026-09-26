@@ -1,4 +1,4 @@
-import { winRate } from '@bronevik/ratings';
+import { winRate } from '@otmetki/ratings';
 import { fromUnixTime } from 'date-fns';
 import { chunk, unique } from 'remeda';
 

@@ -1,4 +1,4 @@
-import type { ApiPlan, ApiUsageQuery, CreateApiKeyInput, CreateWebhookEndpointInput, UpdateWebhookEndpointInput } from '@bronevik/schemas';
+import type { ApiPlan, ApiUsageQuery, CreateApiKeyInput, CreateWebhookEndpointInput, UpdateWebhookEndpointInput } from '@otmetki/schemas';
 
 export type AuthenticatedApiKey = {
   id: string;

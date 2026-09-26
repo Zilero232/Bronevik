@@ -18,7 +18,7 @@ runs:
         key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
         restore-keys: bun-${{ runner.os }}-
 
-    # @bronevik/server runs `prisma generate` on postinstall, and prisma.config.ts
+    # @otmetki/server runs `prisma generate` on postinstall, and prisma.config.ts
     # reads DIRECT_URL. `generate` never connects, so a placeholder satisfies it
     # — the same trick the Dockerfiles use.
     - name: Install dependencies

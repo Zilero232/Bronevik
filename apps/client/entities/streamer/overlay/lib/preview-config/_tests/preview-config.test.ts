@@ -1,6 +1,6 @@
-import type { OverlayConfig } from '@bronevik/schemas';
+import type { OverlayConfig } from '@otmetki/schemas';
 
-import { overlayConfigSchema, overlayMetricSchema } from '@bronevik/schemas';
+import { overlayConfigSchema, overlayMetricSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { decodePreviewConfig, encodePreviewConfig, mergePreviewConfig } from '../preview-config';

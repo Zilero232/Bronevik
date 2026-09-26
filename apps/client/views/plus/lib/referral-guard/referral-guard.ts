@@ -1,4 +1,4 @@
-import { referralSchema } from '@bronevik/schemas';
+import { referralSchema } from '@otmetki/schemas';
 
 import type { ReferralToRegisterInput } from './referral-guard.types';
 

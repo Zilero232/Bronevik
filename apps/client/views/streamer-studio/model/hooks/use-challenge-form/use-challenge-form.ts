@@ -1,7 +1,7 @@
 'use client';
 
-import { challengeConditionSchema, createChallengeSchema } from '@bronevik/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { challengeConditionSchema, createChallengeSchema } from '@otmetki/schemas';
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 

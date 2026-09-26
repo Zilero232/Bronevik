@@ -1,5 +1,5 @@
-import { masteryThresholds } from '@bronevik/ratings';
 import { utc } from '@date-fns/utc';
+import { masteryThresholds } from '@otmetki/ratings';
 import { startOfDay } from 'date-fns';
 import { z } from 'zod';
 

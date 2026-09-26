@@ -1,4 +1,4 @@
-import type { PlayerActivity, PlayerHistoryEntry, TimeSeries, TimeSeriesQuery } from '@bronevik/schemas';
+import type { PlayerActivity, PlayerHistoryEntry, TimeSeries, TimeSeriesQuery } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';

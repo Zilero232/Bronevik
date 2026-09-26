@@ -1,9 +1,9 @@
 import type { INestApplication } from '@nestjs/common';
 
-import { API_KEY, API_PLAN_LIMITS } from '@bronevik/schemas';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
+import { API_KEY, API_PLAN_LIMITS } from '@otmetki/schemas';
 import RedisMock from 'ioredis-mock';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
@@ -21,8 +21,8 @@ import { ApiUsageInterceptor } from '../interceptors/api-usage.interceptor';
 import { ApiRateLimitService, ApiUsageService } from '../services';
 import { V1LeaderboardsController } from '../v1-leaderboards.controller';
 
-const VALID_KEY = 'brv_valid';
-const EXHAUSTED_KEY = 'brv_exhausted';
+const VALID_KEY = 'otm_valid';
+const EXHAUSTED_KEY = 'otm_exhausted';
 const QUOTA_RETRY_SEC = 3_600;
 const leaderboard = { scope: 'players', metric: 'wn8', period: '30d', total: 0, minBattles: 50, entries: [] };
 
@@ -82,7 +82,7 @@ describe('/v1 behind the API key guard', () => {
   });
 
   it('answers 401 for an unknown key', async () => {
-    const response = await request(app.getHttpServer()).get('/v1/leaderboards').set(API_KEY.header, 'brv_other');
+    const response = await request(app.getHttpServer()).get('/v1/leaderboards').set(API_KEY.header, 'otm_other');
 
     expect(response.status).toBe(401);
   });

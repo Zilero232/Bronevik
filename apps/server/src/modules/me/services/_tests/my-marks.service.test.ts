@@ -1,4 +1,4 @@
-import type { PlayerMarks } from '@bronevik/schemas';
+import type { PlayerMarks } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';

@@ -1,7 +1,7 @@
 export const LOGGER = {
   service: {
-    server: 'bronevik-server',
-    worker: 'bronevik-worker'
+    server: 'otmetki-server',
+    worker: 'otmetki-worker'
   },
   pretty: {
     ignore: 'context',

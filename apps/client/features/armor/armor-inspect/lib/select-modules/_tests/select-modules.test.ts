@@ -1,4 +1,4 @@
-import type { ArmorGunModuleData, ArmorModulesData } from '@bronevik/schemas';
+import type { ArmorGunModuleData, ArmorModulesData } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

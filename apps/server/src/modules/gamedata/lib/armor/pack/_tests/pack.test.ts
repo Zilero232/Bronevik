@@ -1,4 +1,4 @@
-import { decodeArmorGeometry } from '@bronevik/gamedata';
+import { decodeArmorGeometry } from '@otmetki/gamedata';
 import { gzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 

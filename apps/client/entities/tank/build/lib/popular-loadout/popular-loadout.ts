@@ -1,4 +1,4 @@
-import type { Loadout, PopularBuild } from '@bronevik/schemas';
+import type { Loadout, PopularBuild } from '@otmetki/schemas';
 
 import type { IdsIntoInput } from './popular-loadout.types';
 

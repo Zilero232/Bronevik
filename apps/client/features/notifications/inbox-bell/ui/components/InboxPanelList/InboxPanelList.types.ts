@@ -1,4 +1,4 @@
-import type { InboxItem } from '@bronevik/schemas';
+import type { InboxItem } from '@otmetki/schemas';
 
 export type InboxPanelListProps = {
   items: InboxItem[];

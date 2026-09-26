@@ -1,4 +1,4 @@
-import { TOP_PLAYERS_QUERY } from '@bronevik/schemas';
+import { TOP_PLAYERS_QUERY } from '@otmetki/schemas';
 
 export const TIER_LIST = {
   bands: [

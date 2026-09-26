@@ -1,4 +1,4 @@
-import { API_KEY, WEBHOOK } from '@bronevik/schemas';
+import { API_KEY, WEBHOOK } from '@otmetki/schemas';
 
 import type { CodeSample, QuickstartLanguage, WebhookSampleKind } from './code-samples.types';
 
@@ -16,9 +16,9 @@ export const quickstartSamples = (baseUrl: string): CodeSample<QuickstartLanguag
       id: 'ts',
       language: 'typescript',
       code: [
-        "import { createBronevikClient, getPlayer } from '@bronevik/sdk';",
+        "import { createOtmetkiClient, getPlayer } from '@otmetki/sdk';",
         '',
-        'const client = createBronevikClient({',
+        'const client = createOtmetkiClient({',
         `  apiKey: process.env.${keyVariable},`,
         `  baseUrl: '${base}'`,
         '});',
@@ -58,9 +58,9 @@ export const webhookSamples = (): CodeSample<WebhookSampleKind>[] => [
     id: 'sdk',
     language: 'typescript',
     code: [
-      "import { verifyWebhook } from '@bronevik/sdk';",
+      "import { verifyWebhook } from '@otmetki/sdk';",
       '',
-      "app.post('/bronevik', async (request, reply) => {",
+      "app.post('/otmetki', async (request, reply) => {",
       '  try {',
       '    const { event, data } = verifyWebhook({',
       `      secret: process.env.${secretVariable},`,

@@ -13,7 +13,7 @@ import {
   topPlayersSchema,
   vehicleCatalogSchema,
   vehicleFilterSchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { tankLookupParamsSchema, tankParamsSchema } from './tanks.schemas';

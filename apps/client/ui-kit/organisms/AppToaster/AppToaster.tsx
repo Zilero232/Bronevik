@@ -7,6 +7,6 @@ export const AppToaster = () => {
   const { resolvedTheme } = useTheme();
 
   return (
-    <Toaster className='bronevik-toaster' closeButton={false} gap={10} position='bottom-right' theme={resolvedTheme === 'light' ? 'light' : 'dark'} />
+    <Toaster className='otmetki-toaster' closeButton={false} gap={10} position='bottom-right' theme={resolvedTheme === 'light' ? 'light' : 'dark'} />
   );
 };

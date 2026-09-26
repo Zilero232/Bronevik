@@ -1,4 +1,4 @@
-import type { Price } from '@bronevik/gamedata';
+import type { Price } from '@otmetki/gamedata';
 
 import { XMLParser } from 'fast-xml-parser';
 

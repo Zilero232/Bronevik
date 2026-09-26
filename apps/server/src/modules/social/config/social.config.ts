@@ -1,4 +1,4 @@
-import type { RatingTier } from '@bronevik/schemas';
+import type { RatingTier } from '@otmetki/schemas';
 
 import type { VehicleType } from '../../../../generated';
 
@@ -64,7 +64,7 @@ export const SIGNATURE = {
   foreground: '#f3f1ea',
   muted: '#9aa0a6',
   accent: '#ff7a1a',
-  brand: 'bronevik.app',
+  brand: 'otmetki.app',
   locale: 'ru',
   missing: '—'
 } as const;

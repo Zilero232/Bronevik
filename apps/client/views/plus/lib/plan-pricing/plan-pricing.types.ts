@@ -1,4 +1,4 @@
-import type { PlanOffer } from '@bronevik/schemas';
+import type { PlanOffer } from '@otmetki/schemas';
 
 export type PlanPricing = PlanOffer & {
   perMonthRub: number;

@@ -1,4 +1,4 @@
-import type { PlayerAchievement } from '@bronevik/schemas';
+import type { PlayerAchievement } from '@otmetki/schemas';
 
 import { sortBy } from 'remeda';
 

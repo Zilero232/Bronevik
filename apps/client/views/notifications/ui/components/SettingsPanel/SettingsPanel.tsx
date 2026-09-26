@@ -1,6 +1,6 @@
 'use client';
 
-import type { NotificationSettings } from '@bronevik/schemas';
+import type { NotificationSettings } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 import { match, P } from 'ts-pattern';

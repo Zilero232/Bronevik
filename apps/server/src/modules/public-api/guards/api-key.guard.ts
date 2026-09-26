@@ -1,8 +1,8 @@
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import type { Response } from 'express';
 
-import { API_KEY } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
+import { API_KEY } from '@otmetki/schemas';
 
 import type { ApiRequest } from '../public-api.types';
 

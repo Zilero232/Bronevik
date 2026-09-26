@@ -1,6 +1,6 @@
 'use client';
 
-import type { InboxItem } from '@bronevik/schemas';
+import type { InboxItem } from '@otmetki/schemas';
 
 import { useState } from 'react';
 

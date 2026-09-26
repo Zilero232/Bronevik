@@ -1,4 +1,4 @@
-import type { TechTreeNode } from '@bronevik/schemas';
+import type { TechTreeNode } from '@otmetki/schemas';
 
 export type ResearchCostInput = {
   tier: number;

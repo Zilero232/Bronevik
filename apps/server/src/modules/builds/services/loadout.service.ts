@@ -1,8 +1,8 @@
-import type { FinalStats } from '@bronevik/gamedata';
-import type { LoadoutResult } from '@bronevik/schemas';
+import type { FinalStats } from '@otmetki/gamedata';
+import type { LoadoutResult } from '@otmetki/schemas';
 
-import { calculateLoadout } from '@bronevik/gamedata';
 import { Injectable } from '@nestjs/common';
+import { calculateLoadout } from '@otmetki/gamedata';
 import { isNonNullish } from 'remeda';
 
 import type { CalculateLoadoutInput } from '../builds.types';

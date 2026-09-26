@@ -1,4 +1,4 @@
-import { moeSortFieldSchema, sortOrderSchema } from '@bronevik/schemas';
+import { moeSortFieldSchema, sortOrderSchema } from '@otmetki/schemas';
 import { parseAsString, parseAsStringLiteral } from 'nuqs';
 
 export const MARKS_URL_PARSERS = {

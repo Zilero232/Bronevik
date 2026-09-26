@@ -1,4 +1,4 @@
-import type { CreateApiKeyInput } from '@bronevik/schemas';
+import type { CreateApiKeyInput } from '@otmetki/schemas';
 
 import { addDays } from 'date-fns';
 

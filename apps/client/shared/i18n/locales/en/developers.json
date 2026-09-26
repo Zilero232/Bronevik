@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Developer API",
-    "description": "Bronevik public API: WN8 and recent periods, player history, server-wide tank statistics, marks of excellence thresholds, clans and sessions. Free key, TypeScript SDK and webhooks."
+    "description": "Three Marks public API: WN8 and recent periods, player history, server-wide tank statistics, marks of excellence thresholds, clans and sessions. Free key, TypeScript SDK and webhooks."
   },
   "header": {
     "title": "Developer API",
@@ -24,7 +24,7 @@
       },
       "install": {
         "title": "Install the SDK",
-        "text": "<code>bun add @bronevik/sdk</code> — types, retries and webhook verification. From any other language, send the <code>X-API-Key</code> header."
+        "text": "<code>bun add @otmetki/sdk</code> — types, retries and webhook verification. From any other language, send the <code>X-API-Key</code> header."
       },
       "request": {
         "title": "Send a request",

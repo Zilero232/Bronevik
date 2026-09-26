@@ -3,8 +3,8 @@ import time
 import unittest
 
 import _support  # noqa: F401
-from bronevik.queue_timer import QueueTimer
-from bronevik.transport import NETWORK_ERROR, ThreadTransport
+from otmetki.queue_timer import QueueTimer
+from otmetki.transport import NETWORK_ERROR, ThreadTransport
 
 try:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer

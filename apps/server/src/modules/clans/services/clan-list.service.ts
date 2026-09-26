@@ -1,4 +1,4 @@
-import type { ClanListPage, ClanListQuery } from '@bronevik/schemas';
+import type { ClanListPage, ClanListQuery } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

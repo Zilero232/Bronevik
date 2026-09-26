@@ -1,4 +1,4 @@
-import type { InsightsPeriod, PlayerTanksQuery, Playtime, PopularPlayersQuery, TimeSeriesQuery } from '@bronevik/schemas';
+import type { InsightsPeriod, PlayerTanksQuery, Playtime, PopularPlayersQuery, TimeSeriesQuery } from '@otmetki/schemas';
 
 import type { AccountRating, AccountSnapshot, Battle } from '../../../generated';
 import type { AccountInfo } from '../../lib/lesta';

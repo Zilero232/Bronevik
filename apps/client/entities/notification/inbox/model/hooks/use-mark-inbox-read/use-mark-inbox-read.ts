@@ -1,6 +1,6 @@
 'use client';
 
-import type { InboxPage, MarkReadInput } from '@bronevik/schemas';
+import type { InboxPage, MarkReadInput } from '@otmetki/schemas';
 import type { InfiniteData } from '@tanstack/react-query';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';

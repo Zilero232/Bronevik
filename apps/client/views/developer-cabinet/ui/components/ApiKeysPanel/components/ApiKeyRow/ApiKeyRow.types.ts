@@ -1,4 +1,4 @@
-import type { ApiKey } from '@bronevik/schemas';
+import type { ApiKey } from '@otmetki/schemas';
 
 export type ApiKeyRowProps = {
   apiKey: ApiKey;

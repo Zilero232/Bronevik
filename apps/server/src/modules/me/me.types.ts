@@ -6,7 +6,7 @@ import type {
   LinkedAccounts,
   NotificationSettings,
   UpdateGoalInput as UpdateGoalBody
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 
 export type { Favorite, Goal, LinkedAccounts };
 

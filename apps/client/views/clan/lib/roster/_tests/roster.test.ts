@@ -1,6 +1,6 @@
-import type { ClanMember } from '@bronevik/schemas';
+import type { ClanMember } from '@otmetki/schemas';
 
-import { clanRoleSchema } from '@bronevik/schemas';
+import { clanRoleSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { ROLE_GROUP_KEYS, ROLE_GROUPS } from '../../../config';

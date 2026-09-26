@@ -1,6 +1,6 @@
-import type { SearchResponse } from '@bronevik/schemas';
+import type { SearchResponse } from '@otmetki/schemas';
 
-import { SEARCH } from '@bronevik/schemas';
+import { SEARCH } from '@otmetki/schemas';
 
 import type { SearchInput } from './search.types';
 

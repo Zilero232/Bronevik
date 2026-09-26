@@ -1,7 +1,7 @@
 import type { DefaultJobOptions } from 'bullmq';
 
 export const QUEUE_DEFAULTS = {
-  prefix: 'bronevik',
+  prefix: 'otmetki',
   jobOptions: {
     attempts: 3,
     backoff: { type: 'exponential', delay: 5_000 },

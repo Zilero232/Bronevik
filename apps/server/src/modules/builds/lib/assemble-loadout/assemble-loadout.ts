@@ -1,4 +1,4 @@
-import type { CrewSkill as CrewSkillData, Equipment, FieldModification, InstalledDevice } from '@bronevik/gamedata';
+import type { CrewSkill as CrewSkillData, Equipment, FieldModification, InstalledDevice } from '@otmetki/gamedata';
 
 import { isNonNullish, unique } from 'remeda';
 

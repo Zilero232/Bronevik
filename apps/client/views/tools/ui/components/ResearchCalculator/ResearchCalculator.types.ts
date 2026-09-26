@@ -1,4 +1,4 @@
-import type { VehicleSummary } from '@bronevik/schemas';
+import type { VehicleSummary } from '@otmetki/schemas';
 
 import type { ResearchCost } from '../../../lib/research-plan';
 import type { ResearchValues } from '../../../model/hooks';

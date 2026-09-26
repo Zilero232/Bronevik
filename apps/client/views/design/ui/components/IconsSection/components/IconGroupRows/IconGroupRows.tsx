@@ -1,6 +1,6 @@
 'use client';
 
-import { ICON_GROUPS, ICONS } from '@bronevik/icons';
+import { ICON_GROUPS, ICONS } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import type { IconGroupRowsProps } from './IconGroupRows.types';

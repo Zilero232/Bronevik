@@ -1,7 +1,7 @@
 'use client';
 
-import { quietHoursSchema } from '@bronevik/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { quietHoursSchema } from '@otmetki/schemas';
 import { useForm, useWatch } from 'react-hook-form';
 
 import type { QuietHours } from '../../../lib/quiet-hours';

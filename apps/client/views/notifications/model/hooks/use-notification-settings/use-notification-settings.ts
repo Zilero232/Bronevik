@@ -1,6 +1,6 @@
 'use client';
 
-import type { NotificationSettings } from '@bronevik/schemas';
+import type { NotificationSettings } from '@otmetki/schemas';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';

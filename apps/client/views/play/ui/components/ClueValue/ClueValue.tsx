@@ -1,6 +1,6 @@
 'use client';
 
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 import { match } from 'ts-pattern';
 
 import { NationLabel } from '@/ui-kit';

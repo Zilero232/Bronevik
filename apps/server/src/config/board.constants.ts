@@ -1,5 +1,5 @@
 export const BULL_BOARD = {
   route: '/admin/queues',
   user: 'admin',
-  realm: 'bronevik-queues'
+  realm: 'otmetki-queues'
 } as const;

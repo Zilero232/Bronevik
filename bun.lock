@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "bronevik",
+      "name": "otmetki",
       "devDependencies": {
         "@commitlint/cli": "^21.2.3",
         "@commitlint/config-conventional": "^21.2.3",
@@ -37,17 +37,17 @@
       },
     },
     "apps/client": {
-      "name": "@bronevik/client",
+      "name": "@otmetki/client",
       "version": "0.0.0",
       "dependencies": {
         "@base-ui/react": "^1.8.0",
-        "@bronevik/gamedata": "workspace:*",
-        "@bronevik/icons": "workspace:*",
-        "@bronevik/ratings": "workspace:*",
-        "@bronevik/schemas": "workspace:*",
         "@dagrejs/dagre": "^3.1.1",
         "@hookform/resolvers": "^5.9.1",
         "@number-flow/react": "^0.6.2",
+        "@otmetki/gamedata": "workspace:*",
+        "@otmetki/icons": "workspace:*",
+        "@otmetki/ratings": "workspace:*",
+        "@otmetki/schemas": "workspace:*",
         "@react-three/drei": "^10.7.8",
         "@react-three/fiber": "^9.8.1",
         "@serwist/turbopack": "^9.5.12",
@@ -103,15 +103,11 @@
       },
     },
     "apps/server": {
-      "name": "@bronevik/server",
+      "name": "@otmetki/server",
       "version": "0.0.0",
       "dependencies": {
         "@aws-sdk/client-s3": "3.1140.0",
         "@better-auth/api-key": "1.7.5",
-        "@bronevik/gamedata": "workspace:*",
-        "@bronevik/logger": "workspace:*",
-        "@bronevik/ratings": "workspace:*",
-        "@bronevik/schemas": "workspace:*",
         "@bull-board/api": "9.10.1",
         "@bull-board/express": "9.10.1",
         "@date-fns/tz": "^1.5.0",
@@ -136,6 +132,10 @@
         "@nestjs/swagger": "^11.4.7",
         "@nestjs/terminus": "^12.1.0",
         "@nestjs/throttler": "^6.7.1",
+        "@otmetki/gamedata": "workspace:*",
+        "@otmetki/logger": "workspace:*",
+        "@otmetki/ratings": "workspace:*",
+        "@otmetki/schemas": "workspace:*",
         "@prisma/adapter-pg": "^7.10.0",
         "@prisma/client": "^7.10.0",
         "@prisma/client-runtime-utils": "^7.10.0",
@@ -213,17 +213,17 @@
       },
     },
     "packages/gamedata": {
-      "name": "@bronevik/gamedata",
+      "name": "@otmetki/gamedata",
       "version": "0.0.0",
       "devDependencies": {
         "typescript": "catalog:",
       },
     },
     "packages/icons": {
-      "name": "@bronevik/icons",
+      "name": "@otmetki/icons",
       "version": "0.0.0",
       "dependencies": {
-        "@bronevik/schemas": "workspace:*",
+        "@otmetki/schemas": "workspace:*",
         "remeda": "catalog:",
       },
       "devDependencies": {
@@ -238,7 +238,7 @@
       },
     },
     "packages/logger": {
-      "name": "@bronevik/logger",
+      "name": "@otmetki/logger",
       "version": "0.0.0",
       "dependencies": {
         "pino": "catalog:",
@@ -249,7 +249,7 @@
       },
     },
     "packages/ratings": {
-      "name": "@bronevik/ratings",
+      "name": "@otmetki/ratings",
       "version": "0.0.0",
       "dependencies": {
         "date-fns": "catalog:",
@@ -261,10 +261,10 @@
       },
     },
     "packages/schemas": {
-      "name": "@bronevik/schemas",
+      "name": "@otmetki/schemas",
       "version": "0.0.0",
       "dependencies": {
-        "@bronevik/ratings": "workspace:*",
+        "@otmetki/ratings": "workspace:*",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -272,7 +272,7 @@
       },
     },
     "packages/sdk": {
-      "name": "@bronevik/sdk",
+      "name": "@otmetki/sdk",
       "version": "0.0.0",
       "dependencies": {
         "ky": "catalog:",
@@ -412,22 +412,6 @@
     "@borewit/text-codec": ["@borewit/text-codec@0.2.2", "", {}, "sha512-DDaRehssg1aNrH4+2hnj1B7vnUGEjU6OIlyRdkMd0aUdIUvKXrJfXsy8LVtXAy7DRvYVluWbMspsRhz2lcW0mQ=="],
 
     "@bramus/specificity": ["@bramus/specificity@2.4.2", "", { "dependencies": { "css-tree": "^3.0.0" }, "bin": { "specificity": "bin/cli.js" } }, "sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw=="],
-
-    "@bronevik/client": ["@bronevik/client@workspace:apps/client"],
-
-    "@bronevik/gamedata": ["@bronevik/gamedata@workspace:packages/gamedata"],
-
-    "@bronevik/icons": ["@bronevik/icons@workspace:packages/icons"],
-
-    "@bronevik/logger": ["@bronevik/logger@workspace:packages/logger"],
-
-    "@bronevik/ratings": ["@bronevik/ratings@workspace:packages/ratings"],
-
-    "@bronevik/schemas": ["@bronevik/schemas@workspace:packages/schemas"],
-
-    "@bronevik/sdk": ["@bronevik/sdk@workspace:packages/sdk"],
-
-    "@bronevik/server": ["@bronevik/server@workspace:apps/server"],
 
     "@bufbuild/protobuf": ["@bufbuild/protobuf@2.15.0", "", {}, "sha512-DAheWUkVr/SJTWCc+lg9dhY0eN4SaWlf4+bG1KzHeXbnqt0AfB/NX0Z+VunGlM1ki1B4zVvye27MpKh/svySUA=="],
 
@@ -920,6 +904,22 @@
     "@opentelemetry/semantic-conventions": ["@opentelemetry/semantic-conventions@1.43.0", "", {}, "sha512-eSYWTm620tTk45EKSedaUL8MFYI8hW164hIXsgIHyxu3VobUB3fFCu5t0hQby6OoWRPsG1KkKUG2M5UadiLiVg=="],
 
     "@ota-meshi/ast-token-store": ["@ota-meshi/ast-token-store@0.3.0", "", {}, "sha512-XRO0zi2NIUKq2lUk3T1ecFSld1fMWRKE6naRFGkgkdeosx7IslyUKNv5Dcb5PJTja9tHJoFu0v/7yEpAkrkrTg=="],
+
+    "@otmetki/client": ["@otmetki/client@workspace:apps/client"],
+
+    "@otmetki/gamedata": ["@otmetki/gamedata@workspace:packages/gamedata"],
+
+    "@otmetki/icons": ["@otmetki/icons@workspace:packages/icons"],
+
+    "@otmetki/logger": ["@otmetki/logger@workspace:packages/logger"],
+
+    "@otmetki/ratings": ["@otmetki/ratings@workspace:packages/ratings"],
+
+    "@otmetki/schemas": ["@otmetki/schemas@workspace:packages/schemas"],
+
+    "@otmetki/sdk": ["@otmetki/sdk@workspace:packages/sdk"],
+
+    "@otmetki/server": ["@otmetki/server@workspace:apps/server"],
 
     "@oxc-parser/binding-android-arm-eabi": ["@oxc-parser/binding-android-arm-eabi@0.150.0", "", { "os": "android", "cpu": "arm" }, "sha512-oQef2Zu4Prz1KLKznz3HqZzU9uVoA5PMoDZuuLmqms7hKmKSAPzlaMnLllJq3t+rgKmfJJ2siPrpZfFrW06btw=="],
 

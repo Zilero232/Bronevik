@@ -29,7 +29,7 @@ from .log import log, log_exception, safe
 from .settings_ui import SettingsUi
 from .ui import BATTLE_PANEL, HANGAR_PANEL, Ui
 
-CONFIG_DIR = os.path.join('mods', 'configs', 'bronevik')
+CONFIG_DIR = os.path.join('mods', 'configs', 'otmetki')
 MOE_PATH = '/v1/moe/%d'
 TICK_S = 1.0
 THRESHOLD_TTL_S = 6 * 3600
@@ -87,7 +87,7 @@ def _map_name(arena_type_id):
         return None
 
 
-class BronevikApp(object):
+class OtmetkiApp(object):
 
     def __init__(self):
         self.config_file = JsonFile(_path('config.json'), pretty=True)
@@ -487,6 +487,6 @@ g_app = None
 def start():
     global g_app
     if g_app is None:
-        g_app = BronevikApp()
+        g_app = OtmetkiApp()
         g_app.start()
     return g_app

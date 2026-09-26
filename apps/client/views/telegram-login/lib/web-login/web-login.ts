@@ -1,4 +1,4 @@
-import { telegramWebLoginSchema } from '@bronevik/schemas';
+import { telegramWebLoginSchema } from '@otmetki/schemas';
 import { match } from 'ts-pattern';
 
 import type { WebLoginCodeState, WebLoginPhase, WebLoginPhaseInput } from './web-login.types';

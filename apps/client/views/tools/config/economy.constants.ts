@@ -1,4 +1,4 @@
-import { ShellApIcon, ShellHeatIcon, ShellHeIcon } from '@bronevik/icons';
+import { ShellApIcon, ShellHeatIcon, ShellHeIcon } from '@otmetki/icons';
 
 import type { EconomyTier } from './economy.types';
 

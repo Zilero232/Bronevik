@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import { loadoutRequestSchema } from '@bronevik/schemas';
+import { loadoutRequestSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import type { CrewSkill, Provision } from '../../../../../../generated';

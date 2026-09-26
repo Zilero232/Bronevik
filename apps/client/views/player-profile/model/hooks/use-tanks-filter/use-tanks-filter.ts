@@ -1,6 +1,6 @@
 'use client';
 
-import type { TankClass } from '@bronevik/icons';
+import type { TankClass } from '@otmetki/icons';
 
 import { useDebounceValue } from '@siberiacancode/reactuse';
 import { useState } from 'react';

@@ -1,4 +1,4 @@
-import type { FavoriteKind } from '@bronevik/schemas';
+import type { FavoriteKind } from '@otmetki/schemas';
 
 export type FavoriteButtonProps = {
   kind: FavoriteKind;

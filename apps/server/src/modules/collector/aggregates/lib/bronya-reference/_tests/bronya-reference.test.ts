@@ -1,4 +1,4 @@
-import { BRONYA_INDEX } from '@bronevik/ratings';
+import { BRONYA_INDEX } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
 import { bronyaReferencePayload, parseBronyaReference } from '../bronya-reference';

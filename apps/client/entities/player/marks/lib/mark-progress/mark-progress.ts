@@ -1,6 +1,6 @@
-import type { MarkCount } from '@bronevik/icons';
+import type { MarkCount } from '@otmetki/icons';
 
-import { MOE, moeMarks } from '@bronevik/ratings';
+import { MOE, moeMarks } from '@otmetki/ratings';
 import { clamp } from 'remeda';
 
 import type { MarkProgressInput } from './mark-progress.types';

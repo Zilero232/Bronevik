@@ -1,6 +1,6 @@
 'use client';
 
-import { MarkOfExcellenceIcon, MasteryIcon } from '@bronevik/icons';
+import { MarkOfExcellenceIcon, MasteryIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import type { MarksSummaryProps } from './MarksSummary.types';

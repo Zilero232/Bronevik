@@ -1,4 +1,4 @@
-import type { ChallengeStatus } from '@bronevik/schemas';
+import type { ChallengeStatus } from '@otmetki/schemas';
 
 export type ChallengeActionsProps = {
   id: string;

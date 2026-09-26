@@ -1,4 +1,4 @@
-import { isNation, NATION_ICONS } from '@bronevik/icons';
+import { isNation, NATION_ICONS } from '@otmetki/icons';
 import { clsx } from 'clsx';
 import { useTranslations } from 'next-intl';
 

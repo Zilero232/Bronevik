@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { masteryThresholdSchema, moeThresholdSchema } from '../marks.schemas';
 
-const moe = { tankId: 1, date: '2026-09-24', source: 'bronevik', p65: 2000, p85: 2600, p95: 3100, p100: 4000 } as const;
+const moe = { tankId: 1, date: '2026-09-24', source: 'otmetki', p65: 2000, p85: 2600, p95: 3100, p100: 4000 } as const;
 
 describe('moeThresholdSchema', () => {
   it('accepts non-decreasing thresholds', () => {

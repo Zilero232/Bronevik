@@ -1,8 +1,8 @@
 'use client';
 
-import type { Nation, TankClass } from '@bronevik/icons';
+import type { Nation, TankClass } from '@otmetki/icons';
 
-import { NATION_ICONS, NATIONS, TANK_CLASS_ICONS, TANK_CLASSES, TIERS, toRoman } from '@bronevik/icons';
+import { NATION_ICONS, NATIONS, TANK_CLASS_ICONS, TANK_CLASSES, TIERS, toRoman } from '@otmetki/icons';
 import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

@@ -10,7 +10,7 @@ import {
   playerMarksSchema,
   updateGoalSchema,
   updateNotificationSettingsSchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { idParamsSchema, lestaAccountParamsSchema } from './me.schemas';

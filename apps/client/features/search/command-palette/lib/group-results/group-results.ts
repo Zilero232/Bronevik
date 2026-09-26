@@ -1,4 +1,4 @@
-import type { SearchResult } from '@bronevik/schemas';
+import type { SearchResult } from '@otmetki/schemas';
 
 import type { SearchGroups } from './group-results.types';
 

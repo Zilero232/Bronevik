@@ -1,4 +1,4 @@
-import type { TankDetail, VehicleSummary } from '@bronevik/schemas';
+import type { TankDetail, VehicleSummary } from '@otmetki/schemas';
 
 import type { GuessFeedback, GuessSubject } from '../../lib/compare-guess';
 import type { GameStatus } from '../../lib/game-status';

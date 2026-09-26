@@ -1,4 +1,4 @@
-import { accountIdSchema, uuidSchema } from '@bronevik/schemas';
+import { accountIdSchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 export const idParamsSchema = z.object({

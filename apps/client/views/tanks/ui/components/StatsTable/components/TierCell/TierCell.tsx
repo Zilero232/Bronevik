@@ -1,4 +1,4 @@
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 
 import type { TierCellProps } from './TierCell.types';
 

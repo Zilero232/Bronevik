@@ -1,6 +1,6 @@
 'use client';
 
-import type { VehicleSummary } from '@bronevik/schemas';
+import type { VehicleSummary } from '@otmetki/schemas';
 
 import { Combobox } from '@base-ui/react/combobox';
 import { clsx } from 'clsx';

@@ -1,4 +1,4 @@
-import type { PlayerSummary } from '@bronevik/schemas';
+import type { PlayerSummary } from '@otmetki/schemas';
 
 export type PlayerHeaderProps = {
   nickname: string;

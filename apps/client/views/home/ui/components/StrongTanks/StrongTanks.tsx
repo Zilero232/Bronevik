@@ -1,6 +1,6 @@
 'use client';
 
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';

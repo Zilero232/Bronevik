@@ -1,6 +1,6 @@
-import type { ArmorGeometry } from '@bronevik/gamedata';
+import type { ArmorGeometry } from '@otmetki/gamedata';
 
-import { encodeArmorGeometry } from '@bronevik/gamedata';
+import { encodeArmorGeometry } from '@otmetki/gamedata';
 import { createHash } from 'node:crypto';
 
 import type { ArmorStorageKeyInput, PackedArmorModel } from './pack.types';

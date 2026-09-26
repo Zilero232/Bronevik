@@ -1,4 +1,4 @@
-import type { RatingKind } from '@bronevik/schemas';
+import type { RatingKind } from '@otmetki/schemas';
 
 import type { LeaderboardFilter } from '@/shared/api/leaderboards';
 

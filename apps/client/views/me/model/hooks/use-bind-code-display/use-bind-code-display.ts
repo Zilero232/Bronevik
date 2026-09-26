@@ -1,6 +1,6 @@
 'use client';
 
-import type { BindCode } from '@bronevik/schemas';
+import type { BindCode } from '@otmetki/schemas';
 
 import { useCopy, useInterval } from '@siberiacancode/reactuse';
 import { differenceInSeconds } from 'date-fns';

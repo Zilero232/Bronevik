@@ -1,4 +1,4 @@
-import { overlayConfigSchema } from '@bronevik/schemas';
+import { overlayConfigSchema } from '@otmetki/schemas';
 
 import type { OverlayFormValues, ToOverlayFormValuesInput } from './overlay-form.types';
 

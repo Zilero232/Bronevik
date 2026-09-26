@@ -1,7 +1,7 @@
-import type { TankTotals } from '@bronevik/ratings';
-import type { TimeSeriesPoint } from '@bronevik/schemas';
+import type { TankTotals } from '@otmetki/ratings';
+import type { TimeSeriesPoint } from '@otmetki/schemas';
 
-import { accountWn8, averageTier, bronyaIndex, eff, sumTotals } from '@bronevik/ratings';
+import { accountWn8, averageTier, bronyaIndex, eff, sumTotals } from '@otmetki/ratings';
 import { groupBy, sortBy } from 'remeda';
 import { match } from 'ts-pattern';
 

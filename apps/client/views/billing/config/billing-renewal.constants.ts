@@ -1,4 +1,4 @@
-import type { SubscriptionStatus } from '@bronevik/schemas';
+import type { SubscriptionStatus } from '@otmetki/schemas';
 
 const renewableStatuses: readonly SubscriptionStatus[] = ['trialing', 'active', 'pastDue'];
 

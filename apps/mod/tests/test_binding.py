@@ -1,8 +1,8 @@
 import unittest
 
 import _support
-from bronevik.binding import BindError, Credentials, CredentialStore, build_bind_request, normalize_code, parse_bind_response
-from bronevik.storage import MemoryFile
+from otmetki.binding import BindError, Credentials, CredentialStore, build_bind_request, normalize_code, parse_bind_response
+from otmetki.storage import MemoryFile
 
 SECRET = 'q' * 43
 

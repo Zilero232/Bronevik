@@ -1,4 +1,4 @@
-import { TANK_CLASSES, TIERS } from '@bronevik/icons';
+import { TANK_CLASSES, TIERS } from '@otmetki/icons';
 
 import type { GroupKey } from './group-key.types';
 

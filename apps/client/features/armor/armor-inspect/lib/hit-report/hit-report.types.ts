@@ -1,4 +1,4 @@
-import type { ArmorShell, ArmorVerdict } from '@bronevik/gamedata';
+import type { ArmorShell, ArmorVerdict } from '@otmetki/gamedata';
 
 export type HitLayer = {
   piece: string;

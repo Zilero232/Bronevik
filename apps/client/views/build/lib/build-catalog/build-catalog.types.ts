@@ -1,4 +1,4 @@
-import type { ModuleOption } from '@bronevik/schemas';
+import type { ModuleOption } from '@otmetki/schemas';
 
 import type { BUILD_CATALOG, BUILD_CATEGORIES, CREW_ROLE_ORDER } from './build-catalog.constants';
 

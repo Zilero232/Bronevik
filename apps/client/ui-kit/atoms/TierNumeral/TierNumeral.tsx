@@ -1,4 +1,4 @@
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 import { clsx } from 'clsx';
 import { useTranslations } from 'next-intl';
 

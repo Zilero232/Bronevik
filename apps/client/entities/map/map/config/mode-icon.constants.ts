@@ -1,4 +1,4 @@
-import { OnslaughtIcon, RandomBattleIcon } from '@bronevik/icons';
+import { OnslaughtIcon, RandomBattleIcon } from '@otmetki/icons';
 import { Flag, Gamepad2, Swords } from 'lucide-react';
 
 export const MODE_ICON = {

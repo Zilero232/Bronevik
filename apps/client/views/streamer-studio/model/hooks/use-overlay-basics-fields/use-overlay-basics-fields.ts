@@ -1,6 +1,6 @@
 'use client';
 
-import type { OverlayKind } from '@bronevik/schemas';
+import type { OverlayKind } from '@otmetki/schemas';
 
 import { useFormContext } from 'react-hook-form';
 

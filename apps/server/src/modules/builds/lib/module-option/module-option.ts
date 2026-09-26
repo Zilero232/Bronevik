@@ -1,5 +1,5 @@
-import type { ModuleBase } from '@bronevik/gamedata';
-import type { ModuleOption } from '@bronevik/schemas';
+import type { ModuleBase } from '@otmetki/gamedata';
+import type { ModuleOption } from '@otmetki/schemas';
 
 export const toModuleOption = (module: ModuleBase): ModuleOption => ({
   moduleId: module.moduleId,

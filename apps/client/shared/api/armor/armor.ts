@@ -1,6 +1,6 @@
-import type { ArmorModelResponse } from '@bronevik/schemas';
+import type { ArmorModelResponse } from '@otmetki/schemas';
 
-import { armorModelSchema } from '@bronevik/schemas';
+import { armorModelSchema } from '@otmetki/schemas';
 
 import type { ArmorModelInput } from './armor.types';
 

@@ -1,4 +1,4 @@
-import type { MoeRow } from '@bronevik/schemas';
+import type { MoeRow } from '@otmetki/schemas';
 
 export type MarksTableProps = {
   rows: MoeRow[];

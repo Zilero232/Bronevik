@@ -1,4 +1,4 @@
-import type { Plans } from '@bronevik/schemas';
+import type { Plans } from '@otmetki/schemas';
 
 import { firstBy, round } from 'remeda';
 

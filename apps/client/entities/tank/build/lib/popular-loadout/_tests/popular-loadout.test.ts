@@ -1,6 +1,6 @@
-import type { PopularBuild, ProvisionOption } from '@bronevik/schemas';
+import type { PopularBuild, ProvisionOption } from '@otmetki/schemas';
 
-import { LOADOUT } from '@bronevik/schemas';
+import { LOADOUT } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { popularLoadout } from '../popular-loadout';

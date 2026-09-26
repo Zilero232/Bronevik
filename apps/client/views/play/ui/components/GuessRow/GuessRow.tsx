@@ -1,6 +1,6 @@
 'use client';
 
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { TankIdentity, vehicleIdentity } from '@/entities/tank/tank';

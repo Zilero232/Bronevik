@@ -5,7 +5,7 @@ import { listParam, paginatedSchema, paginationQuerySchema, sortQuery } from '..
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
 import { MOE_HISTORY } from './marks.constants';
 
-export const thresholdSourceSchema = z.enum(['bronevik', 'poliroid', 'kttc', 'lesta', 'manual']);
+export const thresholdSourceSchema = z.enum(['otmetki', 'poliroid', 'kttc', 'lesta', 'manual']);
 
 const damage = countSchema;
 

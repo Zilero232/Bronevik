@@ -20,7 +20,7 @@ beforeEach(() => {
 const endpoint = (overrides: Partial<WebhookEndpoint> = {}): WebhookEndpoint => ({
   id: '00000000-0000-4000-8000-000000000001',
   userId: 'user',
-  url: 'https://hooks.example.com/bronevik',
+  url: 'https://hooks.example.com/otmetki',
   secret: 'whsec_c2VjcmV0',
   events: ['moeGained'],
   filter: { accountIds: [1] },
@@ -41,7 +41,7 @@ const createService = () => {
   return { service: new WebhookEndpointsService(prisma, plans), prisma };
 };
 
-const input = { userId: 'user', url: 'https://hooks.example.com/bronevik', events: ['mark.gained' as const], filter: { accountIds: [1] } };
+const input = { userId: 'user', url: 'https://hooks.example.com/otmetki', events: ['mark.gained' as const], filter: { accountIds: [1] } };
 
 describe('WebhookEndpointsService.create', () => {
   it('stores the events under their database names and returns the secret once', async () => {

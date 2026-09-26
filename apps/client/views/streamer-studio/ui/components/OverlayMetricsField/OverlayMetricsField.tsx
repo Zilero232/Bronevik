@@ -1,8 +1,8 @@
 'use client';
 
-import type { OverlayMetric } from '@bronevik/schemas';
+import type { OverlayMetric } from '@otmetki/schemas';
 
-import { overlayMetricSchema } from '@bronevik/schemas';
+import { overlayMetricSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { Controller, useFormContext } from 'react-hook-form';
 

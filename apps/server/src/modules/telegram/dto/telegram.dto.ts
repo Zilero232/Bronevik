@@ -1,4 +1,4 @@
-import { telegramLinkCodeSchema, telegramSessionTokenSchema, telegramStatusSchema, telegramWebLoginSchema } from '@bronevik/schemas';
+import { telegramLinkCodeSchema, telegramSessionTokenSchema, telegramStatusSchema, telegramWebLoginSchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 export class TelegramStatusDto extends createZodDto(telegramStatusSchema) {}

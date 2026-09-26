@@ -1,4 +1,4 @@
-import type { LeaderboardEntry } from '@bronevik/schemas';
+import type { LeaderboardEntry } from '@otmetki/schemas';
 
 export type MetricCellProps = {
   entry: LeaderboardEntry;

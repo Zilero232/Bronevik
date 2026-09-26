@@ -1,4 +1,4 @@
-import { MOE } from '@bronevik/ratings';
+import { MOE } from '@otmetki/ratings';
 
 import type { CombinedSourceInput, NextMark, NextMarkInput, ThresholdForInput } from './next-mark.types';
 

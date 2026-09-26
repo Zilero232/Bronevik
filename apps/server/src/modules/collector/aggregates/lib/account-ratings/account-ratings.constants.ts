@@ -1,4 +1,4 @@
-import { PERIOD_WINDOWS } from '@bronevik/ratings';
+import { PERIOD_WINDOWS } from '@otmetki/ratings';
 
 export const RATING_PERIOD_WINDOWS = [
   { period: 'h24', window: PERIOD_WINDOWS['24h'] },

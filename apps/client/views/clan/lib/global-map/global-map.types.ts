@@ -1,4 +1,4 @@
-import type { ClanStronghold } from '@bronevik/schemas';
+import type { ClanStronghold } from '@otmetki/schemas';
 
 import type { STRONGHOLD } from '../../config';
 

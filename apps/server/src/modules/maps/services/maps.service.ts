@@ -1,4 +1,4 @@
-import type { MapDetail, MapList, MapsQuery, MapStats } from '@bronevik/schemas';
+import type { MapDetail, MapList, MapsQuery, MapStats } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

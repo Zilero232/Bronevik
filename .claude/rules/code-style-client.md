@@ -137,7 +137,7 @@ that reason. Generic hooks come from `@siberiacancode/reactuse` (`useBoolean`,
 
 Everything user-visible goes through next-intl, in **both** languages: `shared/i18n/locales/{ru,en}/<namespace>.json`
 (one file per top-level namespace; a new namespace needs a file in both folders and a line in both `index.ts`), always in sync. Shared Zod schemas come from
-`@bronevik/schemas`, not inline.
+`@otmetki/schemas`, not inline.
 
 ## Theming and tokens
 
@@ -148,7 +148,7 @@ system detection). A colour token goes into both theme blocks in the same change
 components read tokens and carry no theme-specific code.
 
 Rating colours: `ratingTone({ scale, value })` / `toneOfTier(tier)` from
-`@/shared/lib` fold the nine `@bronevik/ratings` tiers into six tones (`bad`,
+`@/shared/lib` fold the nine `@otmetki/ratings` tiers into six tones (`bad`,
 `below`, `average`, `good`, `great`, `unicum`). The component sets
 `data-tone={tone}`; its SCSS uses `@include tone`, which resolves to
 `--rating-<tone>`. Reuse that mapping rather than re-deriving one.
@@ -197,7 +197,7 @@ text. Nothing in the client needs it today.
 
 ## Verification
 
-`bun --filter @bronevik/client build` is the only check that catches SSR
+`bun --filter @otmetki/client build` is the only check that catches SSR
 breakage — typecheck passes on code that throws during prerender.
 
 ## Route prop types

@@ -1,4 +1,4 @@
-import { notificationEventSchema } from '@bronevik/schemas';
+import { notificationEventSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { INBOX_EVENT } from '../inbox-event.constants';

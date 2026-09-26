@@ -6,7 +6,7 @@ import {
   pushKeySchema,
   pushSubscriptionSchema,
   pushUnsubscribeSchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 export class InboxQueryDto extends createZodDto(inboxQuerySchema) {}

@@ -1,6 +1,6 @@
-import type { RatingScale } from '@bronevik/ratings';
+import type { RatingScale } from '@otmetki/ratings';
 
-import { RATING_SCALES, RATING_TIERS, ratingTier } from '@bronevik/ratings';
+import { RATING_SCALES, RATING_TIERS, ratingTier } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
 import { ratingTone, toneOfTier, toneThresholds } from '../rating-tone';

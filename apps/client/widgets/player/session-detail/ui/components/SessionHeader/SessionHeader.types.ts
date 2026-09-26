@@ -1,4 +1,4 @@
-import type { Session } from '@bronevik/schemas';
+import type { Session } from '@otmetki/schemas';
 
 export type SessionHeaderProps = {
   session: Session;

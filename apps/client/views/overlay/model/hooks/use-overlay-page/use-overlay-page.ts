@@ -1,6 +1,6 @@
 'use client';
 
-import { overlayPublicIdSchema } from '@bronevik/schemas';
+import { overlayPublicIdSchema } from '@otmetki/schemas';
 
 import type { UseOverlayPageInput } from './use-overlay-page.types';
 

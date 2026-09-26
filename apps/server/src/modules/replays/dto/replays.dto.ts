@@ -1,4 +1,4 @@
-import { paginationQuerySchema, replaySummarySchema } from '@bronevik/schemas';
+import { paginationQuerySchema, replaySummarySchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import {

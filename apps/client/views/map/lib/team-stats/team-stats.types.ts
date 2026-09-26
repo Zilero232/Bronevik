@@ -1,4 +1,4 @@
-import type { MapDetail } from '@bronevik/schemas';
+import type { MapDetail } from '@otmetki/schemas';
 
 export type MapTeams = NonNullable<MapDetail['stats']>['teams'];
 

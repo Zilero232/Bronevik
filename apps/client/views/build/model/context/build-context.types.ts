@@ -1,4 +1,4 @@
-import type { BuildOptions, Loadout, VehicleSummary } from '@bronevik/schemas';
+import type { BuildOptions, Loadout, VehicleSummary } from '@otmetki/schemas';
 import type { ReactNode } from 'react';
 
 import type { BuildCatalog } from '../../lib/build-catalog';

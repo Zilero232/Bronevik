@@ -1,4 +1,4 @@
-import type { ApiErrorCode } from '@bronevik/schemas';
+import type { ApiErrorCode } from '@otmetki/schemas';
 
 import type { SubscriptionStatus } from '../../../../generated';
 import type { PromoRejection } from '../lib/promo-check';
@@ -14,8 +14,8 @@ export const PLUS_SUBSCRIPTION = {
 } as const;
 
 export const PAYMENT_DESCRIPTION = {
-  purchase: 'Броневик Плюс: {months} мес.',
-  renewal: 'Продление Броневик Плюс: {months} мес.'
+  purchase: 'Три отметки Плюс: {months} мес.',
+  renewal: 'Продление «Три отметки Плюс»: {months} мес.'
 } as const;
 
 export const BILLING_LINKS = {

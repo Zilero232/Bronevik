@@ -1,7 +1,7 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 export default defineConfig({
-  input: process.env.BRONEVIK_OPENAPI_URL ?? './shared/api/openapi/internal.json',
+  input: process.env.OTMETKI_OPENAPI_URL ?? './shared/api/openapi/internal.json',
   output: { path: './shared/api/generated', clean: true },
   parser: {
     filters: {

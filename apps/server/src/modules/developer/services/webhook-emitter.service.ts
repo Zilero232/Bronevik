@@ -1,4 +1,4 @@
-import type { WebhookPayload } from '@bronevik/schemas';
+import type { WebhookPayload } from '@otmetki/schemas';
 
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';

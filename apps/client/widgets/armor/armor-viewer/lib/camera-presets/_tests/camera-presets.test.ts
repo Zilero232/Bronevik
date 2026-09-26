@@ -1,4 +1,4 @@
-import type { Vec3 } from '@bronevik/gamedata';
+import type { Vec3 } from '@otmetki/gamedata';
 
 import { describe, expect, it } from 'vitest';
 

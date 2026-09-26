@@ -1,5 +1,5 @@
-import { parseXvmExpectedValues } from '@bronevik/ratings';
 import { Injectable } from '@nestjs/common';
+import { parseXvmExpectedValues } from '@otmetki/ratings';
 
 import { isoDay } from '../../../../common/lib';
 import { SOURCES } from '../../../../config';

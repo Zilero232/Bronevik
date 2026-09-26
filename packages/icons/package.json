@@ -1,8 +1,8 @@
 {
-  "name": "@bronevik/icons",
+  "name": "@otmetki/icons",
   "version": "0.0.0",
   "private": true,
-  "description": "Bronevik custom SVG icon set as React components, stroke-matched to lucide.",
+  "description": "Three Marks custom SVG icon set as React components, stroke-matched to lucide.",
   "sideEffects": false,
   "type": "module",
   "exports": {
@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@bronevik/schemas": "workspace:*",
+    "@otmetki/schemas": "workspace:*",
     "remeda": "catalog:"
   },
   "devDependencies": {

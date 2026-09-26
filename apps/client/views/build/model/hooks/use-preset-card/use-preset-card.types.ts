@@ -1,4 +1,4 @@
-import type { PopularBuild } from '@bronevik/schemas';
+import type { PopularBuild } from '@otmetki/schemas';
 
 export type UsePresetCardInput = {
   preset: PopularBuild;

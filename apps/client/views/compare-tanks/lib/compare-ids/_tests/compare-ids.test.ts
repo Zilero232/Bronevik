@@ -1,4 +1,4 @@
-import { COMPARE } from '@bronevik/schemas';
+import { COMPARE } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { addCompareId, normalizeCompareIds, orderByIds, removeCompareId } from '../compare-ids';

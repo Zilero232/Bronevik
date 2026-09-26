@@ -7,4 +7,4 @@ export const DRAW = {
 
 export const STAR_STYLE = { transformBox: 'fill-box', transformOrigin: 'center' } as const;
 
-export const ACCENT = 'var(--bronevik-icon-accent, currentColor)';
+export const ACCENT = 'var(--otmetki-icon-accent, currentColor)';

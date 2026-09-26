@@ -1,7 +1,7 @@
 import type { DynamicModule } from '@nestjs/common';
 
-import { createLogger } from '@bronevik/logger';
 import { Module } from '@nestjs/common';
+import { createLogger } from '@otmetki/logger';
 import { LoggerModule } from 'nestjs-pino';
 
 import { LOGGER } from './logger.constants';

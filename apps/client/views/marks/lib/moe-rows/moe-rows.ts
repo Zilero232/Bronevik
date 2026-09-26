@@ -1,4 +1,4 @@
-import type { MoeRow } from '@bronevik/schemas';
+import type { MoeRow } from '@otmetki/schemas';
 
 import type { FilterByNameInput } from './moe-rows.types';
 

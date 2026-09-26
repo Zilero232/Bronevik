@@ -1,4 +1,4 @@
-import type { TierList, TierListQuery } from '@bronevik/schemas';
+import type { TierList, TierListQuery } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

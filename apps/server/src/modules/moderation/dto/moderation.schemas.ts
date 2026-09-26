@@ -1,4 +1,4 @@
-import { isoDateTimeSchema, uuidSchema } from '@bronevik/schemas';
+import { isoDateTimeSchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { moderationStatusSchema } from '../../community-core';

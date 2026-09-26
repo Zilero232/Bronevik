@@ -1,4 +1,4 @@
-import { REFERRAL } from '@bronevik/schemas';
+import { REFERRAL } from '@otmetki/schemas';
 
 import { ROUTES } from '@/shared/constants';
 

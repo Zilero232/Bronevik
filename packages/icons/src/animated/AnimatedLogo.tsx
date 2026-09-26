@@ -12,25 +12,21 @@ export const AnimatedLogo = ({ withTracer = true, ...props }: AnimatedLogoProps)
   const isReduced = useReducedMotion();
 
   return (
-    <IconBase name='bronevik-logo-animated' {...props}>
-      <motion.path
-        animate='visible'
-        d={LOGO_SHAPES.plate}
-        initial={isReduced ? false : 'hidden'}
-        transition={{ duration: 1.1, ease: ICON_EASE }}
-        variants={DRAW}
-      />
-      <motion.path
-        animate='visible'
-        d={LOGO_SHAPES.letter}
-        initial={isReduced ? false : 'hidden'}
-        transition={{ duration: 0.8, delay: 0.55, ease: ICON_EASE }}
-        variants={DRAW}
-      />
+    <IconBase name='otmetki-logo-animated' {...props}>
+      {LOGO_SHAPES.marks.map((d, index) => (
+        <motion.path
+          key={d}
+          animate='visible'
+          d={d}
+          initial={isReduced ? false : 'hidden'}
+          transition={{ duration: 0.45, delay: index * 0.3, ease: ICON_EASE }}
+          variants={DRAW}
+        />
+      ))}
       {withTracer && !isReduced && (
         <motion.path
           animate={{ pathOffset: [0, 1], opacity: [0, 1, 1, 0] }}
-          d={LOGO_SHAPES.plate}
+          d={LOGO_SHAPES.tracer}
           initial={{ pathLength: 0.14, pathOffset: 0, opacity: 0 }}
           stroke={ACCENT}
           transition={{ duration: 1.6, delay: 1.2, ease: 'easeInOut', repeat: Infinity, repeatDelay: 4.5 }}

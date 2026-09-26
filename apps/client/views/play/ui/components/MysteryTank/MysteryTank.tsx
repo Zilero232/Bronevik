@@ -1,6 +1,6 @@
 'use client';
 
-import { TANK_CLASS_SILHOUETTES } from '@bronevik/icons';
+import { TANK_CLASS_SILHOUETTES } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { TankIdentity, TankImage, vehicleIdentity } from '@/entities/tank/tank';

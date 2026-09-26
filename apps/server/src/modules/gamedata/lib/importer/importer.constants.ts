@@ -1,4 +1,4 @@
-import type { VehicleClass } from '@bronevik/gamedata';
+import type { VehicleClass } from '@otmetki/gamedata';
 
 import type { ModuleType, ProvisionType, VehicleType } from '../../../../../generated';
 

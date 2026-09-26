@@ -6,7 +6,7 @@ export type VerifyWebhookInput = {
   headers: WebhookHeaders;
 };
 
-export type BronevikWebhook = {
+export type OtmetkiWebhook = {
   id: string;
   event: string;
   createdAt: string;

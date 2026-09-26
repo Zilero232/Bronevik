@@ -1,7 +1,7 @@
-import type { Overlay as OverlayView } from '@bronevik/schemas';
+import type { Overlay as OverlayView } from '@otmetki/schemas';
 
-import { overlayConfigSchema } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
+import { overlayConfigSchema } from '@otmetki/schemas';
 
 import type { Overlay } from '../../../../generated';
 import type { AssertAccountInput, CreateOverlayInput, OverlayData, OwnedInput, PreviewOverlayRequest, UpdateOverlayInput } from '../streamers.types';

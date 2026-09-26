@@ -17,7 +17,7 @@ import {
   sessionsPageSchema,
   timeSeriesQuerySchema,
   timeSeriesSchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { playerLookupParamsSchema, playerParamsSchema, sessionParamsSchema } from './players.schemas';

@@ -1,4 +1,4 @@
-import { RATING_TIERS } from '@bronevik/ratings';
+import { RATING_TIERS } from '@otmetki/ratings';
 import { z } from 'zod';
 
 import { countSchema, percentSchema } from '../primitives/primitives.schemas';

@@ -1,4 +1,4 @@
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import type { TierRulerProps } from './TierRuler.types';

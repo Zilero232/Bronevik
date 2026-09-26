@@ -1,5 +1,5 @@
-import type { ArmorPieceKind } from '@bronevik/gamedata';
-import type { ArmorPlateData } from '@bronevik/schemas';
+import type { ArmorPieceKind } from '@otmetki/gamedata';
+import type { ArmorPlateData } from '@otmetki/schemas';
 
 export type RayHit = {
   distance: number;

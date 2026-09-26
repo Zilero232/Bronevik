@@ -1,4 +1,4 @@
-import type { ExpectedValuesTable, TankReferenceTable, TankTiers } from '@bronevik/ratings';
+import type { ExpectedValuesTable, TankReferenceTable, TankTiers } from '@otmetki/ratings';
 
 export type ReferenceTables = {
   expected: ExpectedValuesTable;

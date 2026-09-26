@@ -1,6 +1,6 @@
 'use client';
 
-import { isNation } from '@bronevik/icons';
+import { isNation } from '@otmetki/icons';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useTranslations } from 'next-intl';
 

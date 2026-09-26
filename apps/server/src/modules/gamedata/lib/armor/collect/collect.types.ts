@@ -1,4 +1,4 @@
-import type { ArmorModules } from '@bronevik/gamedata';
+import type { ArmorModules } from '@otmetki/gamedata';
 
 import type { GameData } from '../../game-data';
 import type { RepoReader } from '../../source';

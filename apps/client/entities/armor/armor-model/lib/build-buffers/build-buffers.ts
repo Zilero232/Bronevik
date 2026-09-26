@@ -1,4 +1,4 @@
-import { ARMOR_FLAGS } from '@bronevik/gamedata';
+import { ARMOR_FLAGS } from '@otmetki/gamedata';
 
 import type { BuildPieceBuffersInput, PieceBuffers } from './build-buffers.types';
 

@@ -21,7 +21,7 @@ class SettingsUi(object):
     @safe
     def register(self):
         if g_modsSettingsApi is None:
-            log('ModsSettingsAPI not installed: edit mods/configs/bronevik/config.json instead')
+            log('ModsSettingsAPI not installed: edit mods/configs/otmetki/config.json instead')
             return False
         template = self._template()
         saved = g_modsSettingsApi.getModSettings(LINKAGE, template)

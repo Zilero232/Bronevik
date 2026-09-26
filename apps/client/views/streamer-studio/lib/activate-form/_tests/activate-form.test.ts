@@ -1,4 +1,4 @@
-import { activateChallengeSchema } from '@bronevik/schemas';
+import { activateChallengeSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { activateFormSchema } from '../activate-form.schemas';

@@ -3,8 +3,8 @@ import hmac
 
 from .compat import to_bytes
 
-DEVICE_HEADER = 'X-Bronevik-Device'
-SIGNATURE_HEADER = 'X-Bronevik-Signature'
+DEVICE_HEADER = 'X-Otmetki-Device'
+SIGNATURE_HEADER = 'X-Otmetki-Signature'
 SIGNATURE_PREFIX = 'sha256='
 
 

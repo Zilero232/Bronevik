@@ -1,6 +1,6 @@
-import type { ArmorPieceGeometry } from '@bronevik/gamedata';
+import type { ArmorPieceGeometry } from '@otmetki/gamedata';
 
-import { ARMOR_FLAGS, decodeArmorGeometry, encodeArmorGeometry } from '@bronevik/gamedata';
+import { ARMOR_FLAGS, decodeArmorGeometry, encodeArmorGeometry } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { buildPieceBuffers } from '../build-buffers';

@@ -1,4 +1,4 @@
-import { bindCodeInputSchema, bindCodeSchema, modDevicesSchema } from '@bronevik/schemas';
+import { bindCodeInputSchema, bindCodeSchema, modDevicesSchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { bindRequestSchema, bindResponseSchema, ingestResponseSchema } from '../lib';

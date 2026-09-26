@@ -1,4 +1,4 @@
-import type { LinkedAccounts, PlayerMarkRow, PlayerMarks } from '@bronevik/schemas';
+import type { LinkedAccounts, PlayerMarkRow, PlayerMarks } from '@otmetki/schemas';
 
 export type LestaAccount = LinkedAccounts['lesta'][number];
 

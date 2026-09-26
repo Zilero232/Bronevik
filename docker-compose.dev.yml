@@ -1,7 +1,7 @@
 services:
   postgres:
     image: timescale/timescaledb-ha:pg17
-    container_name: bronevik-postgres-dev
+    container_name: otmetki-postgres-dev
     restart: unless-stopped
     environment:
       POSTGRES_USER: bronevik
@@ -20,7 +20,7 @@ services:
 
   redis:
     image: redis:8-alpine
-    container_name: bronevik-redis-dev
+    container_name: otmetki-redis-dev
     restart: unless-stopped
     ports:
       - '6380:6379'
@@ -32,3 +32,4 @@ services:
 
 volumes:
   bronevik-postgres-data:
+    name: bronevik_bronevik-postgres-data

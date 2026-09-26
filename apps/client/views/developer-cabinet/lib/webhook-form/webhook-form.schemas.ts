@@ -1,4 +1,4 @@
-import { createWebhookEndpointSchema, WEBHOOK, webhookFilterSchema } from '@bronevik/schemas';
+import { createWebhookEndpointSchema, WEBHOOK, webhookFilterSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import type { ReportIssueInput } from './webhook-form.types';

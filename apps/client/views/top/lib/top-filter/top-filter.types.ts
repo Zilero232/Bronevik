@@ -1,4 +1,4 @@
-import type { LeaderboardScope, RatingKind, RatingPeriod, VehicleSummary, VehicleType } from '@bronevik/schemas';
+import type { LeaderboardScope, RatingKind, RatingPeriod, VehicleSummary, VehicleType } from '@otmetki/schemas';
 
 export type TopTank = VehicleSummary;
 

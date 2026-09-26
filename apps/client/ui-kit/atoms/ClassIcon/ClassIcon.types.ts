@@ -1,4 +1,4 @@
-import type { TankClassKind, TankClassVariant } from '@bronevik/icons';
+import type { TankClassKind, TankClassVariant } from '@otmetki/icons';
 
 export type ClassIconProps = {
   tankClass: TankClassKind;

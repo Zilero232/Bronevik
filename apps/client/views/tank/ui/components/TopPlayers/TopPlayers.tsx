@@ -1,6 +1,6 @@
 'use client';
 
-import type { TopPlayersMetric } from '@bronevik/schemas';
+import type { TopPlayersMetric } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';

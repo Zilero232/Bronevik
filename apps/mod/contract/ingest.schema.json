@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://bronevik.app/contract/mod/ingest.schema.json",
-  "title": "Bronevik mod ingest batch",
-  "description": "Body of POST /mod/ingest. Headers: Content-Type: application/json; X-Bronevik-Device: <device_id>; X-Bronevik-Signature: sha256=<lowercase hex HMAC-SHA256 of the raw request body bytes, key = UTF-8 bytes of the device secret string exactly as returned by /mod/bind>. The mod serialises with sorted keys, no whitespace and ASCII-only escapes, but the server must verify the signature over the raw bytes it received, never over a re-serialisation. Responses: 200 with #/definitions/ingestResponse (partial duplicates are fine), 409 = whole batch already seen (treated as success), 401/403 = unknown device, bad signature or revoked device (the mod pauses until the user rebinds), 400/404/422 = invalid batch (the mod drops it), 413 = too large (the mod halves the batch size), 429/5xx = retry with backoff (Retry-After in seconds is honoured). Only the player's own data is ever sent.",
+  "$id": "https://otmetki.app/contract/mod/ingest.schema.json",
+  "title": "Three Marks mod ingest batch",
+  "description": "Body of POST /mod/ingest. Headers: Content-Type: application/json; X-Otmetki-Device: <device_id>; X-Otmetki-Signature: sha256=<lowercase hex HMAC-SHA256 of the raw request body bytes, key = UTF-8 bytes of the device secret string exactly as returned by /mod/bind>. The mod serialises with sorted keys, no whitespace and ASCII-only escapes, but the server must verify the signature over the raw bytes it received, never over a re-serialisation. Responses: 200 with #/definitions/ingestResponse (partial duplicates are fine), 409 = whole batch already seen (treated as success), 401/403 = unknown device, bad signature or revoked device (the mod pauses until the user rebinds), 400/404/422 = invalid batch (the mod drops it), 413 = too large (the mod halves the batch size), 429/5xx = retry with backoff (Retry-After in seconds is honoured). Only the player's own data is ever sent.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "batch_id", "device_id", "account_id", "realm", "mod_version", "client_version", "sent_at", "events"],
@@ -12,7 +12,7 @@
       "$ref": "#/definitions/id",
       "description": "Random per HTTP attempt; a retried batch gets a new batch_id, deduplicate by event_id."
     },
-    "device_id": { "type": "string", "minLength": 1, "maxLength": 64, "description": "Must equal the X-Bronevik-Device header." },
+    "device_id": { "type": "string", "minLength": 1, "maxLength": 64, "description": "Must equal the X-Otmetki-Device header." },
     "account_id": { "$ref": "#/definitions/accountId", "description": "Must equal the account the device was bound to." },
     "realm": { "const": "RU" },
     "mod_version": { "type": "string", "maxLength": 32 },

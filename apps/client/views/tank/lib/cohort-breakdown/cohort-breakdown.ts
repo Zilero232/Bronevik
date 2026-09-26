@@ -1,4 +1,4 @@
-import type { TankServerStatsRow } from '@bronevik/schemas';
+import type { TankServerStatsRow } from '@otmetki/schemas';
 
 import type { CohortBar, CohortRowInput, ShareInput } from './cohort-breakdown.types';
 

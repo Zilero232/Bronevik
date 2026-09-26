@@ -1,4 +1,4 @@
-import type { PopularBuild, PopularBuilds } from '@bronevik/schemas';
+import type { PopularBuild, PopularBuilds } from '@otmetki/schemas';
 
 export type PresetCardProps = {
   preset: PopularBuild;

@@ -1,4 +1,4 @@
-import type { ChallengeCondition, ChallengeMetric, VehicleType } from '@bronevik/schemas';
+import type { ChallengeCondition, ChallengeMetric, VehicleType } from '@otmetki/schemas';
 
 export type SentenceLead = 'avg' | 'each' | 'single' | 'sum';
 

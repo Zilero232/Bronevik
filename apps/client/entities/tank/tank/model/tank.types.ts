@@ -1,5 +1,5 @@
-import type { Nation, TankClass, Tier } from '@bronevik/icons';
-import type { VehicleImages } from '@bronevik/schemas';
+import type { Nation, TankClass, Tier } from '@otmetki/icons';
+import type { VehicleImages } from '@otmetki/schemas';
 
 export type TankIdentityData = {
   name: string;

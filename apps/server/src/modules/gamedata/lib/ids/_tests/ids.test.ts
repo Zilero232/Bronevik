@@ -1,4 +1,4 @@
-import { NATIONS } from '@bronevik/gamedata';
+import { NATIONS } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import type { ItemType } from '../ids.types';

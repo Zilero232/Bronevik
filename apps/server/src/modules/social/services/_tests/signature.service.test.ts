@@ -51,7 +51,7 @@ const rating: AccountRating = {
 const clan: Clan = {
   clanId: 100n,
   tag: 'BRNV',
-  name: 'Bronevik',
+  name: 'Three Marks',
   color: null,
   motto: null,
   description: null,

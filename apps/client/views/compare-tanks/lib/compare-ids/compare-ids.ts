@@ -1,4 +1,4 @@
-import { COMPARE } from '@bronevik/schemas';
+import { COMPARE } from '@otmetki/schemas';
 import { unique } from 'remeda';
 
 import type { CompareIdInput, OrderByIdsInput } from './compare-ids.types';

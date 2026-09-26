@@ -1,6 +1,6 @@
 # modules/gamedata
 
-Importer of «Мир танков» (Lesta RU) client game data into the database: vehicles, modules, shells, equipment, consumables, directives, crew skills, field modifications and maps. The pure calculator it uses for profile stats is [`@bronevik/gamedata`](../../../../../packages/gamedata/README.md); the shapes the parsers return (`VehicleSpec`, `OptionalDevice`, …) are defined there too.
+Importer of «Мир танков» (Lesta RU) client game data into the database: vehicles, modules, shells, equipment, consumables, directives, crew skills, field modifications and maps. The pure calculator it uses for profile stats is [`@otmetki/gamedata`](../../../../../packages/gamedata/README.md); the shapes the parsers return (`VehicleSpec`, `OptionalDevice`, …) are defined there too.
 
 ## Import
 
@@ -60,7 +60,7 @@ Ids follow the client compact descriptor, `id << 8 | nation << 4 | itemType`, so
 
 `--armor` fetches `vehicles.json` and `vehicles/<folder>/collision.json` from [`unicum-gg/wot.models`](https://github.com/unicum-gg/wot.models) (branch `Lesta`, pinned to a commit, cached under `--cache` like `wot.src`). It refuses a mirror whose `.version_name` differs from the imported `wot.src` version and never runs for a test-server source; the previous models stay. Only collision geometry is used — no visual models or textures.
 
-Geometry comes from the mirror; thickness, spaced flags (`vehicleDamageFactor 0`) and the module → piece map (`hitTester/collisionModelClient`) come from our own `VehicleSpec`. The mirror's `armor`/`spaced` blocks are only a cross-check, and every disagreement is printed. Vertices are welded and packed by `encodeArmorGeometry` from `@bronevik/gamedata` (int16-quantised positions, 16/32-bit indices, plate groups, mounts). The object is stored through the replay storage abstraction (`REPLAY_STORAGE` local disk or S3) under `armor/<tankId>/<hash>.bin`, so an unchanged model is never re-uploaded, and one `VehicleArmorModel` row per tank holds the key, hash, game version, mirror commit and the per-module plate tables with shells. `GET /tanks/:idOrSlug/armor` serves it (`armorModelSchema`), switched off by `ARMOR_VIEWER.enabled` in `src/config/armor.constants.ts`.
+Geometry comes from the mirror; thickness, spaced flags (`vehicleDamageFactor 0`) and the module → piece map (`hitTester/collisionModelClient`) come from our own `VehicleSpec`. The mirror's `armor`/`spaced` blocks are only a cross-check, and every disagreement is printed. Vertices are welded and packed by `encodeArmorGeometry` from `@otmetki/gamedata` (int16-quantised positions, 16/32-bit indices, plate groups, mounts). The object is stored through the replay storage abstraction (`REPLAY_STORAGE` local disk or S3) under `armor/<tankId>/<hash>.bin`, so an unchanged model is never re-uploaded, and one `VehicleArmorModel` row per tank holds the key, hash, game version, mirror commit and the per-module plate tables with shells. `GET /tanks/:idOrSlug/armor` serves it (`armorModelSchema`), switched off by `ARMOR_VIEWER.enabled` in `src/config/armor.constants.ts`.
 
 The target is 20 KB gzipped per tank: IS-7 is about 10 KB, but modern high-poly collision meshes reach 50 KB and are reported as over budget. `bun run armor:purge -- --yes` deletes every stored object and row — the kill switch if Lesta asks.
 

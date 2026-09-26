@@ -1,6 +1,6 @@
-import type { CreateChallengeInput, Overlay } from '@bronevik/schemas';
+import type { CreateChallengeInput, Overlay } from '@otmetki/schemas';
 
-import { createOverlaySchema, previewOverlaySchema, updateOverlaySchema } from '@bronevik/schemas';
+import { createOverlaySchema, previewOverlaySchema, updateOverlaySchema } from '@otmetki/schemas';
 
 import type {
   ActivateChallengeInput,

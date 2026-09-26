@@ -1,8 +1,8 @@
 'use client';
 
-import type { RatingKind, RatingPeriod, VehicleType } from '@bronevik/schemas';
+import type { RatingKind, RatingPeriod, VehicleType } from '@otmetki/schemas';
 
-import { TANK_CLASS_ICONS, TANK_CLASSES, TIERS, toRoman } from '@bronevik/icons';
+import { TANK_CLASS_ICONS, TANK_CLASSES, TIERS, toRoman } from '@otmetki/icons';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

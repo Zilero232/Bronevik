@@ -1,6 +1,6 @@
 'use client';
 
-import { COMPARE } from '@bronevik/schemas';
+import { COMPARE } from '@otmetki/schemas';
 import { useQueryStates } from 'nuqs';
 
 import { COMPARE_PARAMS } from '../../../config';

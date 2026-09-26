@@ -1,4 +1,4 @@
-import { tankIdSchema } from '@bronevik/schemas';
+import { tankIdSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 export const moeHistoryParamsSchema = z.object({

@@ -89,7 +89,7 @@ jobs:
       # `output: 'standalone'` leaves `next start` without a server to run, so
       # the build is served the way the image serves it.
       - name: Build the client
-        run: bun --filter @bronevik/client build
+        run: bun --filter @otmetki/client build
 
       - name: Serve the client
         env:

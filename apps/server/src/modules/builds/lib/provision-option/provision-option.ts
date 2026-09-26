@@ -1,4 +1,4 @@
-import type { ModifierEffect, ProvisionOption } from '@bronevik/schemas';
+import type { ModifierEffect, ProvisionOption } from '@otmetki/schemas';
 
 import { isNumber, isPlainObject, isString } from 'remeda';
 

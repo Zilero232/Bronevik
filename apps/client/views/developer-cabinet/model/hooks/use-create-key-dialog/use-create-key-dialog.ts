@@ -1,6 +1,6 @@
 'use client';
 
-import type { CreatedApiKey } from '@bronevik/schemas';
+import type { CreatedApiKey } from '@otmetki/schemas';
 
 import { useState } from 'react';
 

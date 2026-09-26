@@ -6,7 +6,7 @@ export const CACHE_TTL = {
 } as const;
 
 export const CACHE_STORE = {
-  namespace: 'bronevik:api:cache'
+  namespace: 'otmetki:api:cache'
 } as const;
 
 export const THROTTLE = {

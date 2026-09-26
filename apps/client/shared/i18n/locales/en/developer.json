@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Developer dashboard",
-    "description": "Bronevik API keys, request statistics, error log and webhooks."
+    "description": "Three Marks API keys, request statistics, error log and webhooks."
   },
   "cancel": "Cancel",
   "toast": {

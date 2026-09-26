@@ -1,6 +1,6 @@
-import type { FinalStats } from '@bronevik/gamedata';
+import type { FinalStats } from '@otmetki/gamedata';
 
-import { calculateLoadout } from '@bronevik/gamedata';
+import { calculateLoadout } from '@otmetki/gamedata';
 
 import type {
   ArenaRow,

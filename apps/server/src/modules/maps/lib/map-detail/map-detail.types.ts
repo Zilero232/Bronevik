@@ -1,4 +1,4 @@
-import type { MapStats } from '@bronevik/schemas';
+import type { MapStats } from '@otmetki/schemas';
 
 import type { Arena } from '../../../../../generated';
 

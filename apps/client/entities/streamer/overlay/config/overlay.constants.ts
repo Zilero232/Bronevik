@@ -1,4 +1,4 @@
-import { overlayConfigSchema } from '@bronevik/schemas';
+import { overlayConfigSchema } from '@otmetki/schemas';
 
 const { theme, layout, resetAt, locale } = overlayConfigSchema.shape;
 

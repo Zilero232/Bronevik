@@ -1,7 +1,7 @@
 export const BOT = {
   locales: ['ru', 'en'],
   fallbackLocale: 'ru',
-  fallbackUsername: 'bronevik_bot'
+  fallbackUsername: 'otmetki_bot'
 } as const;
 
 export const TELEGRAM_TOKENS = {

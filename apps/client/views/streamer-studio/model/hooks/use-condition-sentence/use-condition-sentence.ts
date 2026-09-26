@@ -1,6 +1,6 @@
 'use client';
 
-import type { ChallengeCondition } from '@bronevik/schemas';
+import type { ChallengeCondition } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 

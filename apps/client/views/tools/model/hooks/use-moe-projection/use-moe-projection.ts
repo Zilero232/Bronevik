@@ -1,6 +1,6 @@
 'use client';
 
-import { MOE, projectMoeBattles, toMoeThresholds } from '@bronevik/ratings';
+import { MOE, projectMoeBattles, toMoeThresholds } from '@otmetki/ratings';
 import { useQuery } from '@tanstack/react-query';
 
 import { getMoeHistory } from '@/shared/api/marks';

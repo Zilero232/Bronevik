@@ -28,7 +28,8 @@ export type {
   TankClassVariant,
   TierIconProps
 } from './icons/icons.types';
-export { BronevikLogoIcon } from './icons/logo';
+export { OtmetkiLogoIcon } from './icons/logo';
+export { LOGO_SHAPES } from './icons/logo.shapes';
 export { Mark1Icon, Mark2Icon, Mark3Icon, MarkOfExcellenceIcon } from './icons/marks';
 export { MasteryFirstIcon, MasteryIcon, MasteryMasterIcon, MasterySecondIcon, MasteryThirdIcon } from './icons/mastery';
 export { ArmorIcon, CrosshairIcon, RadioIcon, ShellApcrIcon, ShellApIcon, ShellHeatIcon, ShellHeIcon, SpottingIcon, TracerIcon } from './icons/misc';

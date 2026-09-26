@@ -1,6 +1,6 @@
 'use client';
 
-import { TANK_CLASSES } from '@bronevik/icons';
+import { TANK_CLASSES } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import type { InsightTipsProps } from './InsightTips.types';

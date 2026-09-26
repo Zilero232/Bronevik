@@ -1,8 +1,8 @@
 'use client';
 
-import type { WebhookEvent } from '@bronevik/schemas';
+import type { WebhookEvent } from '@otmetki/schemas';
 
-import { WEBHOOK } from '@bronevik/schemas';
+import { WEBHOOK } from '@otmetki/schemas';
 import { Save } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Controller } from 'react-hook-form';

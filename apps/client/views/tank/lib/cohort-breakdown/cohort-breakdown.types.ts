@@ -1,4 +1,4 @@
-import type { SkillCohort, TankServerStatsRow } from '@bronevik/schemas';
+import type { SkillCohort, TankServerStatsRow } from '@otmetki/schemas';
 
 export type CohortBar = {
   cohort: Exclude<SkillCohort, 'all'>;

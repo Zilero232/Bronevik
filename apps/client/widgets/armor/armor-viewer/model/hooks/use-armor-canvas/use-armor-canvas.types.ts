@@ -1,4 +1,4 @@
-import type { ArmorGeometry } from '@bronevik/gamedata';
+import type { ArmorGeometry } from '@otmetki/gamedata';
 
 import type { CameraPresetKey } from '../../../lib/camera-presets';
 import type { ViewerHandlesRef } from '../../viewer.types';

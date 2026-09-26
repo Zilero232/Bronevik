@@ -1,4 +1,4 @@
-import type { BillingStatus } from '@bronevik/schemas';
+import type { BillingStatus } from '@otmetki/schemas';
 
 export type StatusCardProps = {
   status: BillingStatus;

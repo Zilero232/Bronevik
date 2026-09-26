@@ -1,6 +1,6 @@
-import type { Nation } from '@bronevik/gamedata';
+import type { Nation } from '@otmetki/gamedata';
 
-import { NATIONS } from '@bronevik/gamedata';
+import { NATIONS } from '@otmetki/gamedata';
 
 import type { CompactDescr, ItemType, MakeCompactDescrInput, ProvisionIdInput, TankIdInput } from './ids.types';
 

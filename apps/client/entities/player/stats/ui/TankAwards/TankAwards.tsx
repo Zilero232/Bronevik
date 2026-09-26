@@ -1,6 +1,6 @@
 'use client';
 
-import { MarkOfExcellenceIcon, MasteryIcon } from '@bronevik/icons';
+import { MarkOfExcellenceIcon, MasteryIcon } from '@otmetki/icons';
 import { clsx } from 'clsx';
 import { useTranslations } from 'next-intl';
 

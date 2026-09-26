@@ -1,12 +1,13 @@
 import { createIcon } from '../lib';
 import { LOGO_SHAPES } from './logo.shapes';
 
-export const BronevikLogoIcon = createIcon({
-  name: 'bronevik-logo',
+export const OtmetkiLogoIcon = createIcon({
+  name: 'otmetki-logo',
   children: (
     <>
-      <path d={LOGO_SHAPES.plate} />
-      <path d={LOGO_SHAPES.letter} />
+      {LOGO_SHAPES.marks.map((d) => (
+        <path key={d} d={d} />
+      ))}
     </>
   )
 });

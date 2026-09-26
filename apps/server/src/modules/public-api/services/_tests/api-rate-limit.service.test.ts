@@ -1,4 +1,4 @@
-import { API_PLAN_LIMITS } from '@bronevik/schemas';
+import { API_PLAN_LIMITS } from '@otmetki/schemas';
 import RedisMock from 'ioredis-mock';
 import { describe, expect, it } from 'vitest';
 

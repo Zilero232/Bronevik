@@ -1,4 +1,4 @@
-import type { NewsItem as NewsItemView } from '@bronevik/schemas';
+import type { NewsItem as NewsItemView } from '@otmetki/schemas';
 
 import type { NewsItem, PremiumOffer } from '../../../../../generated';
 

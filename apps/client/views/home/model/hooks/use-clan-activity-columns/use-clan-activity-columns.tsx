@@ -1,6 +1,6 @@
 'use client';
 
-import type { ClanListItem } from '@bronevik/schemas';
+import type { ClanListItem } from '@otmetki/schemas';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';

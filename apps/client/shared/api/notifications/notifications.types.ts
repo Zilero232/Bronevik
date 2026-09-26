@@ -1,4 +1,4 @@
-import type { InboxQuery } from '@bronevik/schemas';
+import type { InboxQuery } from '@otmetki/schemas';
 
 export type InboxPageInput = Partial<InboxQuery> & {
   signal?: AbortSignal;

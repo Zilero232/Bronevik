@@ -1,12 +1,12 @@
-import type { ApiKey, CreatedApiKey, DeveloperOverview } from '@bronevik/schemas';
+import type { ApiKey, CreatedApiKey, DeveloperOverview } from '@otmetki/schemas';
 
 import { defaultKeyHasher } from '@better-auth/api-key';
-import { API_KEY } from '@bronevik/schemas';
 import { Injectable, Logger } from '@nestjs/common';
+import { API_KEY } from '@otmetki/schemas';
 import { AuthService } from '@thallesp/nestjs-better-auth';
 import { differenceInSeconds } from 'date-fns';
 
-import type { BronevikAuth } from '../../../lib/auth';
+import type { OtmetkiAuth } from '../../../lib/auth';
 import type { ApplyPlanInput, AuthenticatedApiKey, CreateKeyInput, OwnedKeyInput, RejectKeyInput } from '../developer.types';
 
 import {
@@ -29,7 +29,7 @@ export class ApiKeysService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly plans: DeveloperPlanService,
-    private readonly auth: AuthService<BronevikAuth>
+    private readonly auth: AuthService<OtmetkiAuth>
   ) {}
 
   async overview(userId: string): Promise<DeveloperOverview> {

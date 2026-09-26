@@ -1,4 +1,4 @@
-import { countSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySchema, tankIdSchema, uuidSchema } from '@bronevik/schemas';
+import { countSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySchema, tankIdSchema, uuidSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { arenaIdSchema, authorSchema, moderationStatusSchema } from '../../community-core';

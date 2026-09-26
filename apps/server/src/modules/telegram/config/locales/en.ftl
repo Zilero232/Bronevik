@@ -9,16 +9,16 @@ cmd-login = Sign in on the site
 cmd-help = Help
 
 start-welcome =
-    Hi! I am the Bronevik bot — Tanks stats right in Telegram.
+    Hi! I am the Three Marks bot — Tanks stats right in Telegram.
 
     Link your account: open the site → Profile → Telegram and send me the code, or just sign in with the button below.
-start-linked = Done! Telegram is linked to your Bronevik account. Commands: /me /session /marks /clan /tank /top /settings
+start-linked = Done! Telegram is linked to your Three Marks account. Commands: /me /session /marks /clan /tank /top /settings
 start-code-invalid = The code is unknown, already used or expired. Get a new one on the site.
-start-code-taken = This Telegram account is linked to another Bronevik account.
+start-code-taken = This Telegram account is linked to another Three Marks account.
 login-link = Your sign-in link (valid for { $minutes } min):
 login-button = Sign in
 open-site = Open on the site
-open-app = Open Bronevik
+open-app = Open Three Marks
 help =
     /me [nickname] — player stats
     /session — current session
@@ -38,7 +38,7 @@ player-card =
     Wins: { $winRate }
     Average damage: { $avgDamage }
     WN8: { $wn8 }
-session-none = No sessions yet. Play a few battles — with the Bronevik mod the session shows up at once.
+session-none = No sessions yet. Play a few battles — with the Three Marks mod the session shows up at once.
 session-card =
     Session since { $startedAt } { $state }
     Battles: { $battles }, wins: { $winRate }

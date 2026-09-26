@@ -1,4 +1,4 @@
-import type { Nation } from '@bronevik/gamedata';
+import type { Nation } from '@otmetki/gamedata';
 
 export type ParseVehicleListInput = {
   xml: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import type { PlayerSearchResult } from '@bronevik/schemas';
+import type { PlayerSearchResult } from '@otmetki/schemas';
 
 import { useDebounceValue } from '@siberiacancode/reactuse';
 import { useQuery } from '@tanstack/react-query';

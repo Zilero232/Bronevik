@@ -1,4 +1,4 @@
-import { calculateArmorHit, hasArmorFlag, isHollowPlate } from '@bronevik/gamedata';
+import { calculateArmorHit, hasArmorFlag, isHollowPlate } from '@otmetki/gamedata';
 
 import type { ArmorFaceClass } from '../../model/armor-model.types';
 import type { ClassifyFaceInput } from './classify-face.types';

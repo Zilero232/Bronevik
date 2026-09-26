@@ -1,4 +1,4 @@
-import type { ArmorPieceKind } from '@bronevik/gamedata';
+import type { ArmorPieceKind } from '@otmetki/gamedata';
 
 import type { ArmorShellState } from '@/entities/armor/armor-model';
 import type { HitReport } from '@/features/armor/armor-inspect';

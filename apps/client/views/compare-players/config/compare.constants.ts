@@ -1,4 +1,4 @@
-import type { RatingPeriod } from '@bronevik/schemas';
+import type { RatingPeriod } from '@otmetki/schemas';
 
 import type { CompareMetric } from './compare.types';
 

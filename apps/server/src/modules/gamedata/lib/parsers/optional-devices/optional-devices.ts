@@ -1,4 +1,4 @@
-import type { Modifier, OptionalDevice, OptionalDeviceKind } from '@bronevik/gamedata';
+import type { Modifier, OptionalDevice, OptionalDeviceKind } from '@otmetki/gamedata';
 
 import type { XmlNode } from '../../xml';
 import type { DeviceKindInput, ScriptModifiersInput, SpecialModifierInput } from './optional-devices.types';

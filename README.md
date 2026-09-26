@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="apps/client/app/icon.svg" width="88" height="88" alt="Броневик" />
+  <img src="apps/client/app/icon.svg" width="88" height="88" alt="Три отметки" />
 </p>
 
-<h1 align="center">Броневик</h1>
+<h1 align="center">Три отметки</h1>
 
 <p align="center">
   <strong>The all-in-one companion platform for «Мир танков».</strong><br/>
@@ -19,11 +19,11 @@
 
 <br/>
 
-## What is Броневик?
+## What is Три отметки?
 
 A single site for everything a «Мир танков» (Lesta, RU realm) player looks up between battles: their own and anyone's statistics with WN8, EFF and our own Броня-Индекс, mark-of-excellence progress and projections, tank analytics and tier lists, clans, replays, streamer tools, and a public developer API. A companion game mod feeds the player's own battle results and MoE percentages straight from the client.
 
-Броневик is an independent fan project and is not affiliated with Lesta Games. Game data comes from the [Lesta API](https://developers.lesta.ru), under its terms: every page carries the attribution, sign-in is only through Lesta ID, there are no ads, and the mod never reads anything beyond the player's own data.
+Три отметки is an independent fan project and is not affiliated with Lesta Games. Game data comes from the [Lesta API](https://developers.lesta.ru), under its terms: every page carries the attribution, sign-in is only through Lesta ID, there are no ads, and the mod never reads anything beyond the player's own data.
 
 Product scope: [docs/features.md](docs/features.md).
 
@@ -96,4 +96,4 @@ The client has no mocks: it always talks to the API at `NEXT_PUBLIC_API_URL`. Wi
 
 Conventional commits (enforced by commitlint). The pre-commit hook runs lint-staged and typechecks only the workspaces a commit touches. Code style: [docs/guides/style.md](docs/guides/style.md); architecture of the client: [docs/architecture/fsd.md](docs/architecture/fsd.md); agent guidance: [CLAUDE.md](CLAUDE.md).
 
-© Броневик. «Мир танков» and all related game content are the property of Lesta Games.
+© Три отметки. «Мир танков» and all related game content are the property of Lesta Games.

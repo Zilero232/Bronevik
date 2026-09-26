@@ -1,4 +1,4 @@
-import type { CreatedWebhookEndpoint, WebhookDelivery, WebhookEndpoint } from '@bronevik/schemas';
+import type { CreatedWebhookEndpoint, WebhookDelivery, WebhookEndpoint } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

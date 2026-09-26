@@ -1,4 +1,4 @@
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 
 import type { ModuleOption, ModuleOptionsInput } from './module-options.types';
 

@@ -1,4 +1,4 @@
-import type { PlayerSearchResult, SearchKind } from '@bronevik/schemas';
+import type { PlayerSearchResult, SearchKind } from '@otmetki/schemas';
 
 export type PlayerMatchRow = {
   accountId: bigint;

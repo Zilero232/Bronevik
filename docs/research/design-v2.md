@@ -324,7 +324,7 @@ Motion:
 ### 4.6 `app/globals.scss`
 
 - `body { background: var(--color-bg); }`. Delete `var(--dusk), var(--brushed)`, `background-attachment: fixed` and the whole `body:after` noise overlay.
-- Delete `.bronevik-toaster [data-sonner-toast]:before` (the 3 px glowing bar). Tone the toast with a 2 px left border instead. Radius 2 px.
+- Delete `.otmetki-toaster [data-sonner-toast]:before` (the 3 px glowing bar). Tone the toast with a 2 px left border instead. Radius 2 px.
 
 ### 4.7 `shared/styles/_mixins.scss`
 
@@ -344,7 +344,7 @@ Replace with:
 
 `hud-label` becomes an alias of `label` (so it's no longer mono). `display()` becomes `heading()`. `popup-motion` is reduced to opacity only, 100 ms.
 
-`_animations.scss`: delete `scanner` and `bronevik-scan`. Keep `spin` (only for button loading).
+`_animations.scss`: delete `scanner` and `otmetki-scan`. Keep `spin` (only for button loading).
 
 ---
 
@@ -439,7 +439,7 @@ Filters are the core of every data page. They should look like one row of compac
 ### 5.12 Header / nav (`widgets/site/site-header`)
 
 - 48 px, solid `--color-bg-deep` with a bottom 1 px `--color-border`. No `backdrop-filter`, no transparency change on scroll.
-- Left: logo glyph (static; delete the drop-shadow glow and `AnimatedLogo` use in `SiteBrand.tsx`) + wordmark «Броневик» in condensed 700, 16 px. The sub-line «Мир танков · статистика» at 9 px/0.22em goes away; the positioning goes into the home page instead.
+- Left: logo glyph (static; delete the drop-shadow glow and `AnimatedLogo` use in `SiteBrand.tsx`) + wordmark «Три отметки» in condensed 700, 16 px. The sub-line «Мир танков · статистика» at 9 px/0.22em goes away; the positioning goes into the home page instead.
 - Nav: condensed 600, 13 px, uppercase. Active = text + 2 px accent underline flush with the header bottom.
 - **Reorder the nav around the game**: `Игроки · Танки · Отметки · Топы · Кланы · Карты · Инструменты`. Move `Стримерам` and `Разработчикам` into the footer and a "Ещё" menu. They are secondary audiences and dilute the "game stats" reading.
 - Right: search input (240 px), then **game version badge** `Обновление 1.45` (from `GameVersion`), then a status dot for "API Лесты: работает/задержка" (from the server health endpoint), then theme and settings. Remove the RU/EN toggle from the header (move it to settings or the footer).
@@ -472,7 +472,7 @@ Filters are the core of every data page. They should look like one row of compac
 
 ## 6. Iconography
 
-- **Game glyphs from `@bronevik/icons` are primary**:
+- **Game glyphs from `@otmetki/icons` are primary**:
   - `TANK_CLASS_ICONS` (rhombus convention, done)
   - `toRoman`
   - `NATION_ICONS`
@@ -490,7 +490,7 @@ Filters are the core of every data page. They should look like one row of compac
   - tab icons in `/top` (`Игроки / Кланы / Восходящие звёзды / Отметки / Стримеры`)
 - **Nation identity**: 16 px emblem in filters. In rows, a 2 px left border in the nation tint (`--nation-ussr: #9c2f25`, `--nation-germany: #6d6f63`, `--nation-usa: #4b6a8a`, `--nation-uk: #7c6a44`, `--nation-france: #3f5f8f`, `--nation-china: #b0402c`, `--nation-japan: #c9c2b0`, `--nation-czech: #4f7aa8`, `--nation-sweden: #d0a52a`, `--nation-poland: #b83a3a`, `--nation-italy: #4f8a4b`, `--nation-intunion: #6f7a86`). Behind `big_icon` renders, a 135° gradient from the nation tint at 22 % to transparent. That's our own colour language replacing the flag textures. Keep `NationFlag` backdrops only on the tank page hero at `--flag-opacity`.
 - **Tier**: Roman numeral in condensed 700. In tables it's muted. Top-tier (X/XI) in `--color-text`.
-- **Premium**: name in `--color-premium`, glyph variant `premium` (no glow filter: set `--bronevik-class-glow: transparent`). Elite: laurel variant.
+- **Premium**: name in `--color-premium`, glyph variant `premium` (no glow filter: set `--otmetki-class-glow: transparent`). Elite: laurel variant.
 - **Emoji**: none anywhere, including i18n strings.
 - Icon sizes: 14 (inline), 16 (rows/filters), 20 (panel headers). Nothing between 24 and 72 except tank images and medals.
 
@@ -703,7 +703,7 @@ Tokens and global:
 - [ ] `apps/client/shared/styles/_tokens.scss`: apply §4, delete `--noise`, `--camo`, `--dusk`, `--brushed`, `--grid-line`, `--glow-accent`, `--elevation-*`, `--chamfer-*`, `--rivet-*`, `--shine-*`, `--text-4xl`, `--radius-lg/xl`, `--stretch-condensed`, `--duration-slow`
 - [ ] `apps/client/app/globals.scss`: body bg, the `body:after` noise, the toast `:before` bar
 - [ ] `apps/client/shared/styles/_mixins.scss`: delete `plate`, `riveted-plate`, `rivets`, `chamfer-path`, `stencil`, `camo-divider`, `corner-brackets`, `tile-grid`, `accent-outline-hover`; add `panel`, `label`, `heading`, `numeric(size)`
-- [ ] `apps/client/shared/styles/_animations.scss`: delete `scanner`, `bronevik-scan`, `bronevik-pop-in`
+- [ ] `apps/client/shared/styles/_animations.scss`: delete `scanner`, `otmetki-scan`, `otmetki-pop-in`
 - [ ] `apps/client/shared/config/fonts/*`: Tektur/Onest/Plex → Fira Sans Condensed / Fira Sans / JetBrains Mono (Google, cyrillic); delete `files/*.woff2`
 - [ ] `apps/client/shared/lib/motion/motion.ts`: remove `HEAD_REVEAL`, `STAGGER*`, `SCALE_IN`, `SLIDE_UP`, `ROW_ITEM` after the views are migrated
 

@@ -1,4 +1,4 @@
-import { PENETRATION } from '@bronevik/gamedata';
+import { PENETRATION } from '@otmetki/gamedata';
 
 export const ARMOR_INSPECT = {
   distance: { min: 0, max: 565, step: 5, initial: 100 },

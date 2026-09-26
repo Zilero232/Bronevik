@@ -1,4 +1,4 @@
-import type { ClanRole } from '@bronevik/schemas';
+import type { ClanRole } from '@otmetki/schemas';
 
 import { differenceInCalendarDays, parseISO } from 'date-fns';
 

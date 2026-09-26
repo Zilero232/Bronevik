@@ -1,4 +1,4 @@
-import type { OverlayConfig, OverlayKind, OverlayMetric } from '@bronevik/schemas';
+import type { OverlayConfig, OverlayKind, OverlayMetric } from '@otmetki/schemas';
 
 export const OVERLAY_EDITOR = {
   maxMetrics: 8,

@@ -1,4 +1,4 @@
-import type { MapSummary } from '@bronevik/schemas';
+import type { MapSummary } from '@otmetki/schemas';
 
 import type { MapCamouflage, MapModeKind } from '@/entities/map/map';
 

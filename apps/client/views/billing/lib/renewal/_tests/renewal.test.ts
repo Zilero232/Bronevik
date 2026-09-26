@@ -1,4 +1,4 @@
-import { subscriptionStatusSchema } from '@bronevik/schemas';
+import { subscriptionStatusSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import type { RenewalInput } from '../renewal.types';

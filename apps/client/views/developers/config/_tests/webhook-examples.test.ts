@@ -1,4 +1,4 @@
-import { WEBHOOK, webhookPayloadSchema } from '@bronevik/schemas';
+import { WEBHOOK, webhookPayloadSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { WEBHOOK_EXAMPLES } from '../webhook-examples.constants';

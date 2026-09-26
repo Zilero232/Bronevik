@@ -1,7 +1,7 @@
-import type { ApiPlan } from '@bronevik/schemas';
+import type { ApiPlan } from '@otmetki/schemas';
 
-import { API_PLAN_LIMITS } from '@bronevik/schemas';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { API_PLAN_LIMITS } from '@otmetki/schemas';
 import { millisecondsInSecond } from 'date-fns/constants';
 import { Redis } from 'ioredis';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';

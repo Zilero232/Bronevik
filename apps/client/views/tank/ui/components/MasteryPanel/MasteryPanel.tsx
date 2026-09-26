@@ -1,6 +1,6 @@
 'use client';
 
-import { MasteryIcon } from '@bronevik/icons';
+import { MasteryIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { Card, CardHeader, EmptyState } from '@/ui-kit';

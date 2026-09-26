@@ -1,4 +1,4 @@
-import { playerComparisonQuerySchema, tankComparisonQuerySchema } from '@bronevik/schemas';
+import { playerComparisonQuerySchema, tankComparisonQuerySchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 const playerIds = playerComparisonQuerySchema.shape.accountIds;

@@ -1,4 +1,4 @@
-import { SHELL_KINDS, SHELL_RULES } from '@bronevik/gamedata';
+import { SHELL_KINDS, SHELL_RULES } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { armorShaderValues } from '../armor-shader';

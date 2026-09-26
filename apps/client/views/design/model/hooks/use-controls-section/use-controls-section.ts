@@ -1,7 +1,7 @@
 'use client';
 
-import type { NATIONS } from '@bronevik/icons';
-import type { RecentPeriod } from '@bronevik/schemas';
+import type { NATIONS } from '@otmetki/icons';
+import type { RecentPeriod } from '@otmetki/schemas';
 
 import { useBoolean } from '@siberiacancode/reactuse';
 import { useState } from 'react';

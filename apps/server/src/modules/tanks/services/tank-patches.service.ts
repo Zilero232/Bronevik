@@ -1,4 +1,4 @@
-import type { TankPatches } from '@bronevik/schemas';
+import type { TankPatches } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { sortBy } from 'remeda';

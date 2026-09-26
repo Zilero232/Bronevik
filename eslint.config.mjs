@@ -12,7 +12,7 @@ export default eslint(
   // on JSON/YAML ("rules do not support the language jsonc/x") — without this
   // block eslint refuses to start at all.
   {
-    name: 'bronevik/data-files',
+    name: 'otmetki/data-files',
     files: ['**/*.json', '**/*.json5', '**/*.jsonc', '**/*.yaml', '**/*.yml', '**/*.toml'],
     rules: {
       'arrow-body-style': 'off',
@@ -25,7 +25,7 @@ export default eslint(
   },
 
   {
-    name: 'bronevik/typescript',
+    name: 'otmetki/typescript',
     files: ['**/*.?([cm])[jt]s?(x)'],
     rules: {
       curly: ['error', 'all'],
@@ -76,7 +76,7 @@ export default eslint(
 
   // Sorting manifest keys is pure churn and fights the conventional field order.
   {
-    name: 'bronevik/manifests',
+    name: 'otmetki/manifests',
     files: ['**/package.json', '**/tsconfig*.json'],
     rules: {
       'jsonc/sort-keys': 'off'
@@ -84,7 +84,7 @@ export default eslint(
   },
 
   {
-    name: 'bronevik/server',
+    name: 'otmetki/server',
     files: ['apps/server/**'],
     rules: {
       // Nest resolves dependencies from decorator metadata, which `import type`
@@ -99,7 +99,7 @@ export default eslint(
 
   // Console is the output channel of a CLI script, not a leftover debug line.
   {
-    name: 'bronevik/scripts',
+    name: 'otmetki/scripts',
     files: ['**/scripts/**'],
     rules: {
       'no-console': 'off'
@@ -110,7 +110,7 @@ export default eslint(
   // apps/client/CLAUDE.md, so the file has two H1s and is regenerated on every
   // run — editing it back would only lose the change.
   {
-    name: 'bronevik/agent-docs',
+    name: 'otmetki/agent-docs',
     files: ['**/CLAUDE.md'],
     rules: {
       'markdown/no-multiple-h1': 'off'

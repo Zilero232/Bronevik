@@ -1,3 +1,3 @@
 export const REFERRAL_STORAGE = {
-  key: 'bronevik-referral-registered'
+  key: 'otmetki-referral-registered'
 } as const;

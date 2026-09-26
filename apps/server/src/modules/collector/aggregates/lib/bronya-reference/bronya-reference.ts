@@ -1,6 +1,6 @@
-import type { TankReference } from '@bronevik/ratings';
+import type { TankReference } from '@otmetki/ratings';
 
-import { BRONYA_COMPONENTS, BRONYA_INDEX } from '@bronevik/ratings';
+import { BRONYA_COMPONENTS, BRONYA_INDEX } from '@otmetki/ratings';
 import { z } from 'zod';
 
 import type { BronyaReferencePayload, ParseBronyaReferenceInput } from './bronya-reference.types';

@@ -1,8 +1,8 @@
 {
-  "name": "@bronevik/schemas",
+  "name": "@otmetki/schemas",
   "version": "0.0.0",
   "private": true,
-  "description": "Zod contracts shared by the Bronevik web, api and collector.",
+  "description": "Zod contracts shared by the Three Marks web, api and collector.",
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
   "type": "module",
@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@bronevik/ratings": "workspace:*",
+    "@otmetki/ratings": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import type { GameVersion } from '@bronevik/schemas';
+import type { GameVersion } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

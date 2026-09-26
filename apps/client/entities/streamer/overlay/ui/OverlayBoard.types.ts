@@ -1,4 +1,4 @@
-import type { OverlayConfig } from '@bronevik/schemas';
+import type { OverlayConfig } from '@otmetki/schemas';
 
 import type { OverlayData } from '@/shared/api/streamers';
 

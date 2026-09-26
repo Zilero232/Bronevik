@@ -1,6 +1,6 @@
 from .config import FEATURES
 
-LINKAGE = 'bronevik_companion'
+LINKAGE = 'otmetki_companion'
 BIND_CODE_VAR = 'bind_code'
 
 

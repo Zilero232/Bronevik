@@ -1,6 +1,6 @@
-import type { CrewData, CrewRole, CrewSkill, SkillParam } from '@bronevik/gamedata';
+import type { CrewData, CrewRole, CrewSkill, SkillParam } from '@otmetki/gamedata';
 
-import { CREW_ROLES } from '@bronevik/gamedata';
+import { CREW_ROLES } from '@otmetki/gamedata';
 
 import type { CollectParamsInput, ParseCrewInput } from './crew.types';
 

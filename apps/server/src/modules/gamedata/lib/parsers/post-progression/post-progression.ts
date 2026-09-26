@@ -6,7 +6,7 @@ import type {
   ProgressionFeature,
   ProgressionTree,
   VehicleProgressionStep
-} from '@bronevik/gamedata';
+} from '@otmetki/gamedata';
 
 import type { ParsePostProgressionInput, ResolveVehicleProgressionInput } from './post-progression.types';
 

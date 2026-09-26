@@ -1,6 +1,6 @@
 'use client';
 
-import { CLAN_LIST } from '@bronevik/schemas';
+import { CLAN_LIST } from '@otmetki/schemas';
 import { useDebounceValue } from '@siberiacancode/reactuse';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';

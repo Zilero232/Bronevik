@@ -8,9 +8,9 @@ export const BIND_CODE = {
 export const MOD_DEVICE = {
   idPrefix: 'dev_',
   idBytes: 12,
-  secretContext: 'bronevik-mod-device:',
-  header: 'x-bronevik-device',
-  signatureHeader: 'x-bronevik-signature'
+  secretContext: 'otmetki-mod-device:',
+  header: 'x-otmetki-device',
+  signatureHeader: 'x-otmetki-signature'
 } as const;
 
 export const MOD_INGEST = {

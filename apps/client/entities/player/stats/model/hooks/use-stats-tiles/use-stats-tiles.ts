@@ -1,6 +1,6 @@
 'use client';
 
-import type { StatsBlock } from '@bronevik/schemas';
+import type { StatsBlock } from '@otmetki/schemas';
 
 import { useFormatter, useTranslations } from 'next-intl';
 

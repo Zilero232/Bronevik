@@ -1,6 +1,6 @@
 'use client';
 
-import type { OverlayConfig } from '@bronevik/schemas';
+import type { OverlayConfig } from '@otmetki/schemas';
 
 import { useFormatter, useTranslations } from 'next-intl';
 import { Controller, useFormContext } from 'react-hook-form';

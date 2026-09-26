@@ -1,4 +1,4 @@
-import type { WebhookEndpoint } from '@bronevik/schemas';
+import type { WebhookEndpoint } from '@otmetki/schemas';
 
 export type WebhookRowProps = {
   endpoint: WebhookEndpoint;

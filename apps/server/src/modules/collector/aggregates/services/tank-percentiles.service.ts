@@ -1,6 +1,6 @@
-import { BRONYA_INDEX } from '@bronevik/ratings';
 import { utc } from '@date-fns/utc';
 import { Injectable } from '@nestjs/common';
+import { BRONYA_INDEX } from '@otmetki/ratings';
 import { startOfDay, subDays } from 'date-fns';
 
 import type { PercentileRow } from '../aggregates.types';

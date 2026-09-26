@@ -1,4 +1,4 @@
-import type { BuildOptions, ProvisionKind } from '@bronevik/schemas';
+import type { BuildOptions, ProvisionKind } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 

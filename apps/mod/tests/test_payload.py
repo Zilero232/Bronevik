@@ -1,8 +1,8 @@
 import unittest
 
 import _support
-from bronevik.jsonutil import dumps, dumps_bytes, loads
-from bronevik.payload import (
+from otmetki.jsonutil import dumps, dumps_bytes, loads
+from otmetki.payload import (
     PayloadError,
     battle_outcome,
     build_battle_event,

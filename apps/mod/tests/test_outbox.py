@@ -1,12 +1,12 @@
 import unittest
 
 import _support
-from bronevik.binding import Credentials
-from bronevik.jsonutil import loads
-from bronevik.outbox import MAX_BACKOFF_S, OUTCOME_AUTH, OUTCOME_DROP, OUTCOME_RETRY, OUTCOME_SENT, OUTCOME_SHRINK, Outbox, classify_status
-from bronevik.sender import IngestSender, parse_retry_after
-from bronevik.signing import DEVICE_HEADER, SIGNATURE_HEADER, verify
-from bronevik.storage import MemoryFile
+from otmetki.binding import Credentials
+from otmetki.jsonutil import loads
+from otmetki.outbox import MAX_BACKOFF_S, OUTCOME_AUTH, OUTCOME_DROP, OUTCOME_RETRY, OUTCOME_SENT, OUTCOME_SHRINK, Outbox, classify_status
+from otmetki.sender import IngestSender, parse_retry_after
+from otmetki.signing import DEVICE_HEADER, SIGNATURE_HEADER, verify
+from otmetki.storage import MemoryFile
 
 
 def event(index):

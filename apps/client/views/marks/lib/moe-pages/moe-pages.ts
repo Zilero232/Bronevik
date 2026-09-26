@@ -1,4 +1,4 @@
-import type { Paginated } from '@bronevik/schemas';
+import type { Paginated } from '@otmetki/schemas';
 
 export const nextOffset = <T>({ items, total, offset }: Paginated<T>): number | undefined => {
   const next = offset + items.length;

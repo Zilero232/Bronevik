@@ -1,6 +1,6 @@
-import type { ApiKey, ApiPlan } from '@bronevik/schemas';
+import type { ApiKey, ApiPlan } from '@otmetki/schemas';
 
-import { apiPlanSchema } from '@bronevik/schemas';
+import { apiPlanSchema } from '@otmetki/schemas';
 import { addMilliseconds, differenceInSeconds } from 'date-fns';
 import { z } from 'zod';
 

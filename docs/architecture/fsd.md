@@ -1,4 +1,4 @@
-# Feature-Sliced Design — Bronevik
+# Feature-Sliced Design — Three Marks
 
 The FSD methodology for `apps/client/`. This document is the working reference for the frontend architecture: the layer hierarchy, import rules, public APIs, segments.
 
@@ -6,7 +6,7 @@ Full specification: [feature-sliced.design](https://feature-sliced.design). Lint
 
 > **Where this project departs from canonical FSD** (deliberately — reasons below):
 >
-> | Canonical FSD | Bronevik | Why |
+> | Canonical FSD | Three Marks | Why |
 > |---|---|---|
 > | `src/` root | `apps/client/` root (no `src/`) | Monorepo: `apps/client` already isolates the frontend. `@/` → `apps/client/`. |
 > | `pages/` layer | `views/` layer | `pages/` at the Next.js root turns on the Pages Router. `views/` sidesteps it. |

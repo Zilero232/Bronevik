@@ -1,5 +1,5 @@
-import { REFERRAL } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
+import { REFERRAL } from '@otmetki/schemas';
 
 import type { RegisterReferralInput, RewardReferralInput } from '../billing.types';
 

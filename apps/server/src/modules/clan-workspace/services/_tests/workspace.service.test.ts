@@ -20,7 +20,7 @@ const officerOnly = WORKSPACE_ROLES.officers.find((role) => !owners.has(role));
 const clan: Clan = {
   clanId: BigInt(clanId),
   tag: 'BRNV',
-  name: 'Bronevik',
+  name: 'Three Marks',
   color: null,
   motto: null,
   description: null,

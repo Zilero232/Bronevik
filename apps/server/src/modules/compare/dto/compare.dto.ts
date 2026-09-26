@@ -1,4 +1,4 @@
-import { playerComparisonSchema, tankComparisonSchema } from '@bronevik/schemas';
+import { playerComparisonSchema, tankComparisonSchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { comparePlayersQuerySchema, compareTanksQuerySchema } from './compare.schemas';

@@ -1,6 +1,6 @@
 from .compat import is_int, is_number, string_types, to_text
 
-DEFAULT_SERVER_URL = 'https://api.bronevik.app'
+DEFAULT_SERVER_URL = 'https://api.otmetki.app'
 
 FEATURES = (
     'send_battle_results',

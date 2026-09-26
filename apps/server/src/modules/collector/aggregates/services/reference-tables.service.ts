@@ -1,4 +1,4 @@
-import type { ExpectedValues, TankReference } from '@bronevik/ratings';
+import type { ExpectedValues, TankReference } from '@otmetki/ratings';
 
 import { Injectable } from '@nestjs/common';
 

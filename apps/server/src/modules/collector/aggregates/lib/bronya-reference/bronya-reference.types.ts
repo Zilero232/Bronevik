@@ -1,4 +1,4 @@
-import type { BronyaComponent } from '@bronevik/ratings';
+import type { BronyaComponent } from '@otmetki/ratings';
 
 export type BronyaReferencePayload = {
   kind: 'bronya';

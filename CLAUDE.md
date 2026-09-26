@@ -1,9 +1,9 @@
-# Броневик
+# Три отметки
 
 All-in-one companion platform for «Мир танков» (Lesta, RU realm). Bun-workspaces monorepo.
 
 - Product scope: [docs/features.md](docs/features.md)
-- Architecture: [docs/superpowers/specs/2026-09-24-bronevik-design.md](docs/superpowers/specs/2026-09-24-bronevik-design.md)
+- Architecture: [docs/superpowers/specs/2026-09-24-otmetki-design.md](docs/superpowers/specs/2026-09-24-otmetki-design.md)
 - Lesta API reference and terms: [docs/research/lesta-api.md](docs/research/lesta-api.md)
 - External library docs (context7 ids): [docs/references.md](docs/references.md)
 
@@ -48,7 +48,7 @@ CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs `verify` + `test`
 The full style guide is [docs/guides/style.md](docs/guides/style.md). Digests in `.claude/rules/` load automatically by path (tests: [.claude/rules/testing.md](.claude/rules/testing.md)). The key rules:
 
 - **Packages before custom code.** Before building any non-trivial piece (replay parser, rate limiter, charts, drag-n-drop, canvas board, OG images, 3D, OpenAPI, SDK generation, bot framework…), search npm/PyPI/GitHub for a maintained package and use it. Write it yourself only when nothing fits, and say why in the commit.
-- **Reuse over reinvention.** Before writing a helper, check what is already installed: remeda, ts-pattern, date-fns, zod, @siberiacancode/reactuse, TanStack Query / Table / Virtual, @base-ui/react, class-variance-authority, cmdk, visx, lucide-react + `@bronevik/icons`, sonner, motion, p-retry — and the workspace packages: `@bronevik/ratings` for rating math, `@bronevik/lesta-client` for every Lesta call, `@bronevik/schemas` for every contract. Forms use react-hook-form + `@hookform/resolvers/zod`, inside a `model/hooks/use-<x>-form/` hook.
+- **Reuse over reinvention.** Before writing a helper, check what is already installed: remeda, ts-pattern, date-fns, zod, @siberiacancode/reactuse, TanStack Query / Table / Virtual, @base-ui/react, class-variance-authority, cmdk, visx, lucide-react + `@otmetki/icons`, sonner, motion, p-retry — and the workspace packages: `@otmetki/ratings` for rating math, `@otmetki/lesta-client` for every Lesta call, `@otmetki/schemas` for every contract. Forms use react-hook-form + `@hookform/resolvers/zod`, inside a `model/hooks/use-<x>-form/` hook.
 - **Types and parameters.** Use `type`, never `interface`. A function with two or more parameters takes one object, whose shape goes in a sibling `*.types.ts`.
 - **Constants.** Constants that belong together live in one `as const` object.
 - **No comments in app code.** An `eslint-disable-next-line` carries its reason after `--`.

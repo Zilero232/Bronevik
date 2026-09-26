@@ -1,4 +1,4 @@
-import type { PlayerTankRow } from '@bronevik/schemas';
+import type { PlayerTankRow } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

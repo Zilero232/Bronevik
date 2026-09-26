@@ -1,4 +1,4 @@
-import type { VehicleListEntry } from '@bronevik/gamedata';
+import type { VehicleListEntry } from '@otmetki/gamedata';
 
 import type { ParseVehicleListInput } from './vehicle-list.types';
 

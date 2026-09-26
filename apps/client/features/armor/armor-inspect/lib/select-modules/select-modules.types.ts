@@ -1,4 +1,4 @@
-import type { ArmorGunModuleData, ArmorModulesData, ArmorTurretModuleData } from '@bronevik/schemas';
+import type { ArmorGunModuleData, ArmorModulesData, ArmorTurretModuleData } from '@otmetki/schemas';
 
 export type ResolveSelectionInput = {
   modules: ArmorModulesData;

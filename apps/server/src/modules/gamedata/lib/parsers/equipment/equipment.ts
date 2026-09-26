@@ -1,4 +1,4 @@
-import type { Equipment, EquipmentKind, Modifier, SkillBoost } from '@bronevik/gamedata';
+import type { Equipment, EquipmentKind, Modifier, SkillBoost } from '@otmetki/gamedata';
 
 import type { XmlNode } from '../../xml';
 import type { BoosterModifiersInput, EquipmentKindInput, EquipmentModifiersInput, OptionalModifierInput, SkillBoostInput } from './equipment.types';

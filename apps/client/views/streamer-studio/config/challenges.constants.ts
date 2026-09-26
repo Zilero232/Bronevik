@@ -1,6 +1,6 @@
-import type { ChallengeStatus } from '@bronevik/schemas';
+import type { ChallengeStatus } from '@otmetki/schemas';
 
-import { challengeConditionSchema, challengeMetricSchema } from '@bronevik/schemas';
+import { challengeConditionSchema, challengeMetricSchema } from '@otmetki/schemas';
 
 import type { BadgeTone } from '@/ui-kit';
 

@@ -1,4 +1,4 @@
-import type { MoeHistory, MoeHistoryBatch, MoePage, MoeProjection } from '@bronevik/schemas';
+import type { MoeHistory, MoeHistoryBatch, MoePage, MoeProjection } from '@otmetki/schemas';
 
 import type { MoeHistoryBatchInput, MoeHistoryInput, MoeListInput, MoeProjectionInput } from './marks.types';
 

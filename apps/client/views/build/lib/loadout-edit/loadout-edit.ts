@@ -1,4 +1,4 @@
-import type { Loadout, LoadoutRequest } from '@bronevik/schemas';
+import type { Loadout, LoadoutRequest } from '@otmetki/schemas';
 
 import { sortBy } from 'remeda';
 

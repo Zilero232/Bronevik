@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://bronevik.app/contract/mod/bind.schema.json",
-  "title": "Bronevik mod account binding",
-  "description": "POST /mod/bind, unsigned JSON. The site shows a signed-in user a one-time code (6 chars from the alphabet below, TTL ~10 minutes, single use, rate-limited per IP and per account). The user types it into the mod; the mod posts it with the in-game account id. The server MUST reject the request unless account_id equals the Lesta account linked (via Lesta ID OpenID) to the site user who generated the code, otherwise anyone could bind someone else's account. On success the server creates a device (one per install; re-binding the same account revokes nothing else) and returns device_id and secret once. The secret is never sent again; the mod stores it locally in mods/configs/bronevik/credentials.json and uses the UTF-8 bytes of the secret string as the HMAC-SHA256 key for /mod/ingest. Users can list and revoke devices on the site.",
+  "$id": "https://otmetki.app/contract/mod/bind.schema.json",
+  "title": "Three Marks mod account binding",
+  "description": "POST /mod/bind, unsigned JSON. The site shows a signed-in user a one-time code (6 chars from the alphabet below, TTL ~10 minutes, single use, rate-limited per IP and per account). The user types it into the mod; the mod posts it with the in-game account id. The server MUST reject the request unless account_id equals the Lesta account linked (via Lesta ID OpenID) to the site user who generated the code, otherwise anyone could bind someone else's account. On success the server creates a device (one per install; re-binding the same account revokes nothing else) and returns device_id and secret once. The secret is never sent again; the mod stores it locally in mods/configs/otmetki/credentials.json and uses the UTF-8 bytes of the secret string as the HMAC-SHA256 key for /mod/ingest. Users can list and revoke devices on the site.",
   "definitions": {
     "request": {
       "type": "object",

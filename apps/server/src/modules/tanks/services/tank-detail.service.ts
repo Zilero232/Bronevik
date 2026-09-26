@@ -1,4 +1,4 @@
-import type { TankDetail } from '@bronevik/schemas';
+import type { TankDetail } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { isObjectType } from 'remeda';

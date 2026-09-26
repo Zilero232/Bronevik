@@ -1,4 +1,4 @@
-import type { PlaytimeCell } from '@bronevik/schemas';
+import type { PlaytimeCell } from '@otmetki/schemas';
 
 export type PlaytimeGridProps = {
   cells: PlaytimeCell[];

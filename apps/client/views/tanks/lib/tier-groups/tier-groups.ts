@@ -1,6 +1,6 @@
-import type { TierListEntry } from '@bronevik/schemas';
+import type { TierListEntry } from '@otmetki/schemas';
 
-import { tierListRankSchema } from '@bronevik/schemas';
+import { tierListRankSchema } from '@otmetki/schemas';
 
 import type { TierGroup } from './tier-groups.types';
 

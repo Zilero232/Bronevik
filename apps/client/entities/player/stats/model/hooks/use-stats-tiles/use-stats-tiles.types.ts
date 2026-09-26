@@ -1,4 +1,4 @@
-import type { StatsBlock } from '@bronevik/schemas';
+import type { StatsBlock } from '@otmetki/schemas';
 
 import type { KeyFigureProps } from '@/ui-kit';
 

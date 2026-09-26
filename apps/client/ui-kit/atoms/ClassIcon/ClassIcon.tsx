@@ -1,4 +1,4 @@
-import { TANK_CLASS_KIND_ICONS } from '@bronevik/icons';
+import { TANK_CLASS_KIND_ICONS } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import type { ClassIconProps } from './ClassIcon.types';

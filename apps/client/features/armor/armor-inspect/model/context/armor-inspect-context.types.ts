@@ -1,4 +1,4 @@
-import type { ArmorGunModuleData, ArmorModulesData, ArmorShellOptionData, ArmorTurretModuleData } from '@bronevik/schemas';
+import type { ArmorGunModuleData, ArmorModulesData, ArmorShellOptionData, ArmorTurretModuleData } from '@otmetki/schemas';
 import type { ReactNode } from 'react';
 
 import type { ArmorShellState } from '@/entities/armor/armor-model';

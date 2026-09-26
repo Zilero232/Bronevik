@@ -1,4 +1,4 @@
-import type { ServerPeriod, SkillCohort, StatsMode, VehicleSummary } from '@bronevik/schemas';
+import type { ServerPeriod, SkillCohort, StatsMode, VehicleSummary } from '@otmetki/schemas';
 
 import type { TankServerStats } from '../../../../../generated';
 

@@ -1,4 +1,4 @@
-import type { OverlayKind } from '@bronevik/schemas';
+import type { OverlayKind } from '@otmetki/schemas';
 import type { LucideIcon } from 'lucide-react';
 
 import { MessageSquareText, MonitorPlay, Swords, UserRound } from 'lucide-react';

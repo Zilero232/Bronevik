@@ -1,4 +1,4 @@
-import type { ClanSearchResult, PlayerSearchResult, TankSearchResult } from '@bronevik/schemas';
+import type { ClanSearchResult, PlayerSearchResult, TankSearchResult } from '@otmetki/schemas';
 
 export type SearchGroups = {
   players: PlayerSearchResult[];

@@ -1,12 +1,12 @@
 {
   "meta": {
     "title": "Notifications",
-    "description": "Your Bronevik notification log: marks of excellence, sessions, clan and bonus codes. Delivery channels, quiet hours and browser push."
+    "description": "Your Three Marks notification log: marks of excellence, sessions, clan and bonus codes. Delivery channels, quiet hours and browser push."
   },
   "hero": {
     "eyebrow": "Radio link",
     "title": "Notifications",
-    "description": "Everything Bronevik spotted for you: new marks, session results, clan moves and bonus codes. Choose where and when to send the signal.",
+    "description": "Everything Three Marks spotted for you: new marks, session results, clan moves and bonus codes. Choose where and when to send the signal.",
     "unread": "Unread",
     "unreadHint": "Fresh reports on the air",
     "quietHint": "All clear — everything is read"
@@ -88,7 +88,7 @@
   "quiet": {
     "eyebrow": "Silent mode",
     "title": "Quiet hours",
-    "description": "During these hours Bronevik stays silent: reports pile up in the log instead of waking you with push and bot messages.",
+    "description": "During these hours Three Marks stays silent: reports pile up in the log instead of waking you with push and bot messages.",
     "enable": "Enable quiet hours",
     "enableHint": "23:00 to 08:00 your time by default",
     "start": "Start",
@@ -115,7 +115,7 @@
     },
     "hint": {
       "loading": "Checking whether this browser can receive push.",
-      "unsupported": "Open the site in a recent Chrome, Firefox, Edge or Safari — or install Bronevik as an app.",
+      "unsupported": "Open the site in a recent Chrome, Firefox, Edge or Safari — or install Three Marks as an app.",
       "denied": "Allow notifications for this site in the browser settings (the lock icon by the address bar) and reload the page.",
       "unconfigured": "The server has not issued a push key yet. Other channels work as usual.",
       "idle": "The browser will ask for permission — press «Allow».",

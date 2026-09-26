@@ -1,6 +1,6 @@
-import type { RatingValue } from '@bronevik/schemas';
+import type { RatingValue } from '@otmetki/schemas';
 
-import { ratingTier } from '@bronevik/ratings';
+import { ratingTier } from '@otmetki/ratings';
 
 import type { RatingValueInput } from './rating.types';
 

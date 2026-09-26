@@ -1,4 +1,4 @@
-import { paymentStatusSchema, subscriptionStatusSchema } from '@bronevik/schemas';
+import { paymentStatusSchema, subscriptionStatusSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { paymentTone, subscriptionTone } from '../status-tone';

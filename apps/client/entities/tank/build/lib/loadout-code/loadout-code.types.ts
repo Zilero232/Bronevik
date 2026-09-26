@@ -1,4 +1,4 @@
-import type { Loadout } from '@bronevik/schemas';
+import type { Loadout } from '@otmetki/schemas';
 
 export type BuildHrefInput = {
   slug: string;

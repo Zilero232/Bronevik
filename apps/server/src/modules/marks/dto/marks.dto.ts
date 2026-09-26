@@ -6,7 +6,7 @@ import {
   moePageSchema,
   moeProjectionSchema,
   moeQuerySchema
-} from '@bronevik/schemas';
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { modMoeParamsSchema, modMoeThresholdsSchema, moeHistoryParamsSchema } from './marks.schemas';

@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://bronevik.app/contract/mod/moe-thresholds.schema.json",
+  "$id": "https://otmetki.app/contract/mod/moe-thresholds.schema.json",
   "title": "MoE thresholds consumed by the mod",
-  "description": "200 response of GET /v1/moe/{tank_id} as the mod reads it (extra fields are ignored). Damage values are the combined MoE metric: damage dealt + max(radio assist, track assist, stun assist), as a 100-battle EMA. The mod needs at least thresholds; an optional dense curve improves the in-battle percent projection. 404 = no data for this vehicle (the panel shows 'no thresholds'). The mod sends X-Bronevik-Device when bound, no signature, and caches the answer for 6 hours.",
+  "description": "200 response of GET /v1/moe/{tank_id} as the mod reads it (extra fields are ignored). Damage values are the combined MoE metric: damage dealt + max(radio assist, track assist, stun assist), as a 100-battle EMA. The mod needs at least thresholds; an optional dense curve improves the in-battle percent projection. 404 = no data for this vehicle (the panel shows 'no thresholds'). The mod sends X-Otmetki-Device when bound, no signature, and caches the answer for 6 hours.",
   "type": "object",
   "required": ["tank_id", "thresholds"],
   "properties": {

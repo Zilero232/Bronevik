@@ -17,7 +17,7 @@ chat-session = Сессия { $nickname }: { $battles } { $battles ->
     }, побед { NUMBER($winRate, minimumFractionDigits: 1, maximumFractionDigits: 1) }%, средний урон { NUMBER($avgDamage, maximumFractionDigits: 0) }
 chat-session-none = У { $nickname } пока нет сессии
 chat-marks = { $nickname }: 3 отм. — { $moe3 }, 2 отм. — { $moe2 }, 1 отм. — { $moe1 }
-chat-challenge-active = Челлендж «{ $title }» принят от { $donor }! Условие проверит мод Броневика.
+chat-challenge-active = Челлендж «{ $title }» принят от { $donor }! Условие проверит мод «Трёх отметок».
 chat-challenge-succeeded = Челлендж «{ $title }» выполнен! 🎉
 chat-challenge-failed = Челлендж «{ $title }» провален.
 chat-challenge-expired = Время на челлендж «{ $title }» вышло.

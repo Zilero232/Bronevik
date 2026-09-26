@@ -1,5 +1,5 @@
-import type { ArmorGeometry, ArmorPieceGeometry } from '@bronevik/gamedata';
-import type { ArmorModulesData } from '@bronevik/schemas';
+import type { ArmorGeometry, ArmorPieceGeometry } from '@otmetki/gamedata';
+import type { ArmorModulesData } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

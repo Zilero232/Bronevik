@@ -1,4 +1,4 @@
-import type { Nation, TankClass } from '@bronevik/icons';
+import type { Nation, TankClass } from '@otmetki/icons';
 
 import type { PREMIUM_FILTERS } from '../../../config';
 

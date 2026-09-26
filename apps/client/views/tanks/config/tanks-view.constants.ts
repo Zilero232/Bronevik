@@ -1,4 +1,4 @@
-import { serverPeriodSchema, skillCohortSchema } from '@bronevik/schemas';
+import { serverPeriodSchema, skillCohortSchema } from '@otmetki/schemas';
 import { parseAsInteger, parseAsStringLiteral } from 'nuqs';
 
 export const TANKS_VIEWS = ['table', 'tierlist'] as const;

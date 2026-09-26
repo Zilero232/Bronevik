@@ -1,4 +1,4 @@
-import { clanIdSchema } from '@bronevik/schemas';
+import { clanIdSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 export const clanLookupParamsSchema = z.object({

@@ -1,6 +1,6 @@
-import type { ChallengeCondition } from '@bronevik/schemas';
+import type { ChallengeCondition } from '@otmetki/schemas';
 
-import { toRoman } from '@bronevik/icons';
+import { toRoman } from '@otmetki/icons';
 import { isDefined } from 'remeda';
 
 import type {

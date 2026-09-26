@@ -1,4 +1,4 @@
-import { traceArmorRay } from '@bronevik/gamedata';
+import { traceArmorRay } from '@otmetki/gamedata';
 
 import type { DescribeHitInput, HitReport } from './hit-report.types';
 

@@ -1,4 +1,4 @@
-import type { ApiUsageQuery, UpdateWebhookEndpointInput } from '@bronevik/schemas';
+import type { ApiUsageQuery, UpdateWebhookEndpointInput } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { openApiDocumentSchema, openApiOperationSchema, openApiParameterSchema } from './developer.schemas';

@@ -8,7 +8,7 @@ import { ClanListService } from '../clan-list.service';
 const row = {
   clanId: 10n,
   tag: 'BRNVK',
-  name: 'Броневик',
+  name: 'Три отметки',
   color: '#ff0000',
   motto: null,
   emblems: null,

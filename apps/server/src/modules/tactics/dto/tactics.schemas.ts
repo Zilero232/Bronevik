@@ -1,4 +1,4 @@
-import { isoDateTimeSchema, uuidSchema, visibilitySchema } from '@bronevik/schemas';
+import { isoDateTimeSchema, uuidSchema, visibilitySchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { arenaIdSchema } from '../../community-core';

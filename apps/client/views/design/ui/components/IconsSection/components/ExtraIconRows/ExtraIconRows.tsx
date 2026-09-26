@@ -1,6 +1,6 @@
 'use client';
 
-import { MarkOfExcellenceIcon, MasteryIcon, NATION_ICONS, NATIONS, TierIcon, TIERS } from '@bronevik/icons';
+import { MarkOfExcellenceIcon, MasteryIcon, NATION_ICONS, NATIONS, TierIcon, TIERS } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import type { ExtraIconRowsProps } from './ExtraIconRows.types';

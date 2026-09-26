@@ -1,4 +1,4 @@
-import type { TankDetailQuery, TankServerStatsQuery, TankTrendQuery, TopPlayersQuery } from '@bronevik/schemas';
+import type { TankDetailQuery, TankServerStatsQuery, TankTrendQuery, TopPlayersQuery } from '@otmetki/schemas';
 
 export type TankStatsListInput = TankServerStatsQuery;
 

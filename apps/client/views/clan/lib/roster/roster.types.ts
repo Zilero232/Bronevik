@@ -1,4 +1,4 @@
-import type { ClanMember } from '@bronevik/schemas';
+import type { ClanMember } from '@otmetki/schemas';
 
 import type { INACTIVE_FILTERS, ROLE_FILTERS, ROLE_GROUP_KEYS } from '../../config';
 import type { ActivityStatus } from '../activity-status';

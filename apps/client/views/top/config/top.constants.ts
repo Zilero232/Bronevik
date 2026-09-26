@@ -1,4 +1,4 @@
-import type { LeaderboardScope, RatingKind, RatingPeriod } from '@bronevik/schemas';
+import type { LeaderboardScope, RatingKind, RatingPeriod } from '@otmetki/schemas';
 
 import type { TopFilterState } from '../lib/top-filter';
 

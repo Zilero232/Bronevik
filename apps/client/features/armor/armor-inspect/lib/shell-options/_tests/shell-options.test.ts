@@ -1,6 +1,6 @@
-import type { ArmorGunModuleData, ArmorShellOptionData } from '@bronevik/schemas';
+import type { ArmorGunModuleData, ArmorShellOptionData } from '@otmetki/schemas';
 
-import { penetrationAtDistance } from '@bronevik/gamedata';
+import { penetrationAtDistance } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { pickShell, resolveShell } from '../shell-options';

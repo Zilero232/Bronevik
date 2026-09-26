@@ -1,4 +1,4 @@
-import type { TierListEntry, TierListRank } from '@bronevik/schemas';
+import type { TierListEntry, TierListRank } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 

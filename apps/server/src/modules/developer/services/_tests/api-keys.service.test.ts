@@ -9,9 +9,10 @@ import type { PrismaService } from '../../../../core';
 import type { OtmetkiAuth } from '../../../../lib/auth';
 
 import { API_KEY_PLUGIN } from '../../../../lib/auth';
-import { API_PLANS } from '../../config';
+import { API_TIERS } from '../../config';
 import { ApiKeysService } from '../api-keys.service';
-import { DeveloperPlanService } from '../developer-plan.service';
+import { ApiTierService } from '../api-tier.service';
+import { WebhookEndpointsService } from '../webhook-endpoints.service';
 
 const keyRow = (overrides: Partial<ApiKey> = {}): ApiKey => ({
   id: '00000000-0000-4000-8000-000000000001',
@@ -22,15 +23,15 @@ const keyRow = (overrides: Partial<ApiKey> = {}): ApiKey => ({
   prefix: API_KEY_PLUGIN.prefix,
   key: 'hashed',
   permissions: null,
-  metadata: JSON.stringify({ plan: 'free' }),
+  metadata: JSON.stringify({ tier: 'free' }),
   enabled: true,
   rateLimitEnabled: false,
   rateLimitTimeWindow: null,
   rateLimitMax: null,
   requestCount: 0,
-  remaining: API_PLANS.free.requestsPerDay,
+  remaining: API_TIERS.free.requestsPerDay,
   refillInterval: 86_400_000,
-  refillAmount: API_PLANS.free.requestsPerDay,
+  refillAmount: API_TIERS.free.requestsPerDay,
   lastRefillAt: null,
   lastRequest: null,
   expiresAt: null,
@@ -41,13 +42,13 @@ const keyRow = (overrides: Partial<ApiKey> = {}): ApiKey => ({
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const plans = mock<DeveloperPlanService>();
+  const tiers = mock<ApiTierService>();
   const auth = mockDeep<AuthService<OtmetkiAuth>>();
 
-  plans.planFor.mockResolvedValue('free');
-  plans.cachedPlanFor.mockResolvedValue('free');
+  tiers.tierFor.mockResolvedValue('free');
+  tiers.cachedTierFor.mockResolvedValue('free');
 
-  return { service: new ApiKeysService(prisma, plans, auth), prisma, plans, auth };
+  return { service: new ApiKeysService(prisma, tiers, mock<WebhookEndpointsService>(), auth), prisma, tiers, auth };
 };
 
 const verified = (overrides: Partial<ApiKey> = {}) => {
@@ -57,19 +58,19 @@ const verified = (overrides: Partial<ApiKey> = {}) => {
 };
 
 describe('ApiKeysService.create', () => {
-  it('creates the key through the plugin with the daily quota of the owner plan', async () => {
-    const { service, prisma, plans, auth } = createService();
+  it('creates the key through the plugin with the daily quota of the owner tier', async () => {
+    const { service, prisma, tiers, auth } = createService();
 
     prisma.apiKey.count.mockResolvedValue(0);
-    plans.planFor.mockResolvedValue('pro');
-    auth.api.createApiKey.mockResolvedValue({ ...keyRow({ metadata: null }), key: 'otm_secret', metadata: { plan: 'pro' }, permissions: null });
+    tiers.tierFor.mockResolvedValue('plus');
+    auth.api.createApiKey.mockResolvedValue({ ...keyRow({ metadata: null }), key: 'otm_secret', metadata: { tier: 'plus' }, permissions: null });
 
     const created = await service.create({ userId: 'user', name: 'bot' });
     const body = auth.api.createApiKey.mock.calls[0]?.[0]?.body;
 
-    expect(body).toMatchObject({ userId: 'user', name: 'bot', refillAmount: API_PLANS.pro.requestsPerDay, metadata: { plan: 'pro' } });
+    expect(body).toMatchObject({ userId: 'user', name: 'bot', refillAmount: API_TIERS.plus.requestsPerDay, metadata: { tier: 'plus' } });
     expect(created.secret).toBe('otm_secret');
-    expect(created.key.plan).toBe('pro');
+    expect(created.key.tier).toBe('plus');
   });
 
   it('refuses a key over the active-key limit', async () => {
@@ -111,7 +112,7 @@ describe('ApiKeysService.revoke', () => {
 });
 
 describe('ApiKeysService.verify', () => {
-  it('returns the owner, the plan and the daily budget left', async () => {
+  it('returns the owner, the tier and the daily budget left', async () => {
     const { service, auth } = createService();
 
     auth.api.verifyApiKey.mockResolvedValue(verified({ remaining: 42 }));
@@ -119,8 +120,8 @@ describe('ApiKeysService.verify', () => {
     await expect(service.verify('otm_key')).resolves.toEqual({
       id: keyRow().id,
       userId: 'user',
-      plan: 'free',
-      dailyLimit: API_PLANS.free.requestsPerDay,
+      tier: 'free',
+      dailyLimit: API_TIERS.free.requestsPerDay,
       dailyRemaining: 42
     });
   });
@@ -149,10 +150,10 @@ describe('ApiKeysService.verify', () => {
     expect(error).toMatchObject({ retryAfterSec: expect.any(Number) });
   });
 
-  it('moves the owner keys to a changed plan in the background', async () => {
-    const { service, prisma, plans, auth } = createService();
+  it('moves the owner keys to a changed tier in the background', async () => {
+    const { service, prisma, tiers, auth } = createService();
 
-    plans.cachedPlanFor.mockResolvedValue('pro');
+    tiers.cachedTierFor.mockResolvedValue('plus');
     prisma.apiKey.findMany.mockResolvedValue([keyRow()]);
     auth.api.verifyApiKey.mockResolvedValue(verified());
 
@@ -160,8 +161,8 @@ describe('ApiKeysService.verify', () => {
     await vi.waitFor(() => expect(prisma.apiKey.update).toHaveBeenCalled());
 
     expect(prisma.apiKey.update.mock.calls[0]?.[0].data).toMatchObject({
-      refillAmount: API_PLANS.pro.requestsPerDay,
-      metadata: JSON.stringify({ plan: 'pro' })
+      refillAmount: API_TIERS.plus.requestsPerDay,
+      metadata: JSON.stringify({ tier: 'plus' })
     });
   });
 });

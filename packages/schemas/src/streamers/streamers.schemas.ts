@@ -30,7 +30,7 @@ export const overlaySchema = z.object({
   accountId: accountIdSchema.nullable(),
   config: overlayConfigSchema,
   publicUrl: z.url(),
-  isPro: z.boolean(),
+  isPaused: z.boolean(),
   updatedAt: isoDateTimeSchema
 });
 
@@ -117,6 +117,7 @@ export const overlayDataSchema = z.object({
   kind: overlayKindSchema,
   name: z.string(),
   config: overlayConfigSchema,
+  isPaused: z.boolean(),
   player: z.object({ accountId: accountIdSchema, nickname: z.string() }).nullable(),
   session: z
     .object({

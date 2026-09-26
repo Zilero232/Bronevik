@@ -1,0 +1,1 @@
+export { StrokeShape } from './StrokeShape';

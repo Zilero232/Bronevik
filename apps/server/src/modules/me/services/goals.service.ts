@@ -4,14 +4,18 @@ import { match } from 'ts-pattern';
 
 import type { BaselineInput, CreateGoalInput, Goal, OwnedInput, UpdateGoalInput } from '../me.types';
 
-import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
+import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
+import { EntitlementsService } from '../../billing';
 import { GOALS } from '../config';
 import { toGoal } from '../lib';
 
 @Injectable()
 export class GoalsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly entitlements: EntitlementsService
+  ) {}
 
   async list(userId: string): Promise<Goal[]> {
     const rows = await this.prisma.goal.findMany({ where: { userId }, orderBy: [{ status: 'asc' }, { endsAt: 'asc' }] });
@@ -37,9 +41,7 @@ export class GoalsService {
       throw new AppForbiddenException('FORBIDDEN', 'Goals can be set only for your own linked accounts');
     }
 
-    if (active >= GOALS.maxActive) {
-      throw new AppConflictException('CONFLICT', `At most ${GOALS.maxActive} active goals`);
-    }
+    await this.entitlements.assertWithinLimit({ userId, key: 'goals', count: active });
 
     const baseline = await this.baseline({ accountId: account, metric, tankId: tankId ?? null });
 

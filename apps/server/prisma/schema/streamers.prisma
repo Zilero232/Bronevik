@@ -90,7 +90,6 @@ model Overlay {
   theme     String      @default("steel")
   config    Json
   publicKey String      @unique @default(dbgenerated("replace((gen_random_uuid())::text, '-'::text, ''::text)")) @map("public_key")
-  isPro     Boolean     @default(false) @map("is_pro")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)

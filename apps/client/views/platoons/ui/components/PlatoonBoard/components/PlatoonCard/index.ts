@@ -1,0 +1,1 @@
+export { PlatoonCard } from './PlatoonCard';

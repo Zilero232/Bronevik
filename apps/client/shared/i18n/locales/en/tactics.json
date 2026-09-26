@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "title": "Tactic boards",
+    "description": "Draw tactics on the map with your platoon: arrows, LT/MT/HT/TD/SPG positions, layers and live co-editing."
+  },
+  "boardMeta": {
+    "title": "Tactic board",
+    "description": "A shared tactic board: a map plan for your platoon or clan."
+  },
+  "list": {
+    "title": "Tactic boards",
+    "description": "Your boards with map plans. Share the link and draw together in real time.",
+    "signIn": "Sign in",
+    "signInTitle": "Sign in to create boards",
+    "signInHint": "Boards belong to an account. Opening someone else's board by link works without signing in.",
+    "empty": "No boards yet",
+    "emptyHint": "Create your first board and draw a plan on the map.",
+    "noMap": "No map",
+    "counts": "Layers: {layers} · lines: {strokes} · icons: {icons}",
+    "delete": "Delete board",
+    "deleteTitle": "Delete the board?",
+    "deleteText": "“{title}” will be deleted with all its layers. Its links will stop working.",
+    "cancel": "Cancel"
+  },
+  "create": {
+    "open": "New board",
+    "title": "New board",
+    "description": "Title, map and mode. You can change all of it later.",
+    "submit": "Create"
+  },
+  "edit": {
+    "open": "Settings",
+    "title": "Board settings",
+    "description": "Title, map, mode and access.",
+    "submit": "Save"
+  },
+  "settings": {
+    "none": "Not set",
+    "title": "Title",
+    "titlePlaceholder": "e.g. Push through the 1st line",
+    "titleError": "1 to 120 characters",
+    "map": "Map",
+    "mode": "Mode",
+    "visibility": "Access",
+    "visibilityHint": {
+      "public": "Anyone with the plain link can view. Editing needs the editor link.",
+      "unlisted": "Only people you send the link to can view.",
+      "private": "Only you can see the board; links do not work."
+    },
+    "serverError": "Could not save. Try again.",
+    "cancel": "Cancel"
+  },
+  "visibility": {
+    "public": "Public",
+    "unlisted": "Link only",
+    "private": "Private"
+  },
+  "roles": {
+    "owner": "Owner",
+    "edit": "Editor",
+    "view": "Viewer"
+  },
+  "toast": {
+    "created": "Board created",
+    "deleted": "Board deleted",
+    "saved": "Saved",
+    "rotated": "Links replaced, the old ones no longer work",
+    "failed": "Something went wrong, try again"
+  },
+  "board": {
+    "backToList": "Back to boards",
+    "notFound": "Board not found",
+    "notFoundHint": "It was deleted, made private, or the link is outdated.",
+    "textLabel": "Board text",
+    "textPlaceholder": "Type and press Enter",
+    "layers": {
+      "defaultName": "Layer {number}"
+    },
+    "limits": {
+      "strokes": "This layer already has {max} lines — add a new layer",
+      "icons": "This layer already has {max} icons — add a new layer",
+      "layers": "At most {max} layers"
+    }
+  },
+  "share": {
+    "title": "Share",
+    "public": "Public link",
+    "view": "View link",
+    "edit": "Edit link",
+    "rotate": "Replace links",
+    "privateHint": "The board is private, links do not work. Change access to share it.",
+    "rotateHint": "Replacing links disables every link handed out before."
+  },
+  "toolbar": {
+    "label": "Tools",
+    "tools": {
+      "select": "Select and move",
+      "pen": "Pen",
+      "arrow": "Arrow",
+      "line": "Line",
+      "circle": "Circle",
+      "rect": "Rectangle",
+      "text": "Text",
+      "eraser": "Eraser"
+    },
+    "icons": {
+      "lightTank": "LT",
+      "mediumTank": "MT",
+      "heavyTank": "HT",
+      "AT-SPG": "TD",
+      "SPG": "SPG",
+      "flag": "Flag",
+      "marker": "Marker"
+    },
+    "team": "Team",
+    "teams": {
+      "ally": "Allies",
+      "enemy": "Enemies",
+      "neutral": "Neutral"
+    },
+    "color": "Colour",
+    "width": "Width",
+    "undo": "Undo",
+    "redo": "Redo",
+    "deleteSelected": "Delete selected",
+    "clearLayer": "Clear layer"
+  },
+  "layers": {
+    "title": "Layers",
+    "count": "{count} of {max}",
+    "add": "Add layer",
+    "empty": "Nothing on the board yet",
+    "emptyEditable": "Start drawing and a layer is created for you",
+    "hide": "Hide layer",
+    "show": "Show layer",
+    "rename": "Rename layer",
+    "remove": "Delete layer",
+    "untitled": "Untitled"
+  },
+  "status": {
+    "connected": "Online",
+    "connecting": "Connecting…",
+    "disconnected": "Offline",
+    "denied": "No access",
+    "readOnly": "View only",
+    "alone": "Nobody else here",
+    "guest": "Guest"
+  }
+}

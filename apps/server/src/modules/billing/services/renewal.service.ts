@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { PLUS } from '@otmetki/schemas';
 import { addHours, subDays } from 'date-fns';
 
 import type { Subscription } from '../../../../generated';
@@ -7,6 +8,7 @@ import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS, PLUS_SUBSCRIPTION, RENEWAL } from '../config';
 import { describePlan, isPlusPlan, planPrice, renewalIdempotenceKey, YooKassaClient } from '../lib';
+import { EntitlementsService } from './entitlements.service';
 import { SubscriptionService } from './subscription.service';
 import { WebhookService } from './webhook.service';
 
@@ -18,11 +20,12 @@ export class RenewalService {
     private readonly prisma: PrismaService,
     private readonly yookassa: YooKassaClient,
     private readonly subscriptions: SubscriptionService,
-    private readonly webhooks: WebhookService
+    private readonly webhooks: WebhookService,
+    private readonly entitlements: EntitlementsService
   ) {}
 
   async chargeDue(now = new Date()): Promise<number> {
-    if (!this.subscriptions.isRecurringEnabled || !this.yookassa.isConfigured) {
+    if (!PLUS.checkoutEnabled || !this.subscriptions.isRecurringEnabled || !this.yookassa.isConfigured) {
       return 0;
     }
 
@@ -52,24 +55,28 @@ export class RenewalService {
   }
 
   async expireDue(now = new Date()): Promise<number> {
+    const lapsedWhere = {
+      status: { in: [...PLUS_SUBSCRIPTION.runningStatuses] },
+      currentPeriodEnd: { lt: now },
+      OR: [{ cancelAtPeriodEnd: true }, { savedCardId: null }]
+    };
+
+    const overdueWhere = { status: 'pastDue' as const, currentPeriodEnd: { lt: subDays(now, RENEWAL.pastDueGraceDays) } };
+
+    const ending = await this.prisma.subscription.findMany({ where: { OR: [lapsedWhere, overdueWhere] }, select: { userId: true } });
+
     const [lapsed, overdue, unpaid] = await this.prisma.$transaction([
-      this.prisma.subscription.updateMany({
-        where: {
-          status: { in: ['active', 'trialing'] },
-          currentPeriodEnd: { lt: now },
-          OR: [{ cancelAtPeriodEnd: true }, { savedCardId: null }]
-        },
-        data: { status: 'expired' }
-      }),
-      this.prisma.subscription.updateMany({
-        where: { status: 'pastDue', currentPeriodEnd: { lt: subDays(now, RENEWAL.pastDueGraceDays) } },
-        data: { status: 'expired' }
-      }),
+      this.prisma.subscription.updateMany({ where: lapsedWhere, data: { status: 'expired' } }),
+      this.prisma.subscription.updateMany({ where: overdueWhere, data: { status: 'expired' } }),
       this.prisma.subscription.updateMany({
         where: { status: 'active', currentPeriodEnd: { lt: now }, cancelAtPeriodEnd: false, savedCardId: { not: null } },
         data: { status: 'pastDue' }
       })
     ]);
+
+    for (const { userId } of ending) {
+      await this.entitlements.syncTracking(userId);
+    }
 
     return lapsed.count + overdue.count + unpaid.count;
   }
@@ -100,8 +107,6 @@ export class RenewalService {
         yookassaPaymentId: payment.id,
         amount: amountRub,
         status: 'pending',
-        kind: 'subscription',
-        product: PLUS_SUBSCRIPTION.product,
         plan,
         isAutoCharge: true
       },

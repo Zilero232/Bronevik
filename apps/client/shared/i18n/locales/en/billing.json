@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Subscription",
-    "description": "Three Marks Plus status, auto-renew, promo codes, referral link and payment history."
+    "description": "{plus} status, trial, auto-renew, promo codes, referral link and payment history."
   },
   "header": {
     "title": "Subscription",
-    "description": "Three Marks Plus status, auto-renew, promo codes and payments."
+    "description": "{plus} status, trial, auto-renew, promo codes and payments."
   },
   "status": {
     "titlePlus": "Plus is active",
@@ -21,7 +21,7 @@
     "plan": "Plan",
     "plans": {
       "monthly": "Month",
-      "halfYearly": "Six months",
+      "quarterly": "Quarter",
       "yearly": "Year"
     },
     "noPlan": "None",
@@ -44,7 +44,10 @@
       "upgrade": "Get Plus"
     },
     "error": "Couldn't load your subscription",
-    "errorHint": "Refresh the page in a moment."
+    "errorHint": "Refresh the page in a moment.",
+    "trialNotice": "Trial: {days, plural, =0 {last day} one {# day left} other {# days left}}. It does not renew — Plus switches off on its own.",
+    "graceNotice": "The renewal payment failed. Update your card — Plus keeps working until {date}.",
+    "trialCta": "Try {days, plural, one {# day} other {# days}} free"
   },
   "autoRenew": {
     "dismiss": "Not now",
@@ -80,7 +83,7 @@
   },
   "referral": {
     "title": "Build your platoon",
-    "description": "Share your link: when a friend gets Plus for the first time, you get {days, plural, one {# day} other {# days}} of subscription.",
+    "description": "Share your link: your friend gets a {trialDays, plural, one {#-day} other {#-day}} Plus trial, and when they subscribe for the first time you get {days, plural, one {# day} other {# days}}.",
     "linkLabel": "Your link",
     "steps": {
       "share": "Send the link to a friend or drop it in your clan chat.",
@@ -103,7 +106,7 @@
     },
     "plans": {
       "monthly": "Month",
-      "halfYearly": "Six months",
+      "quarterly": "Quarter",
       "yearly": "Year"
     },
     "statuses": {

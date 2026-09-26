@@ -1,0 +1,153 @@
+{
+  "meta": {
+    "title": "Guides",
+    "description": "Player guides for tanks and maps: positions, tactics and gameplay tips."
+  },
+  "detailMeta": {
+    "title": "Guide",
+    "description": "A player guide to a tank, a map or a game situation."
+  },
+  "editorMeta": {
+    "newTitle": "New guide",
+    "editTitle": "Edit guide",
+    "description": "Write a guide to a tank, a map or the game in general."
+  },
+  "kinds": {
+    "all": "All",
+    "tank": "Tank",
+    "map": "Map",
+    "general": "General"
+  },
+  "locales": {
+    "ru": "Русский",
+    "en": "English"
+  },
+  "status": {
+    "draft": "Draft",
+    "pending": "In review",
+    "published": "Published",
+    "rejected": "Rejected",
+    "hidden": "Hidden"
+  },
+  "list": {
+    "title": "Guides",
+    "description": "Tank and map breakdowns written by players. Filter by vehicle or map.",
+    "write": "Write a guide",
+    "tableTitle": "All guides",
+    "total": "{total, plural, one {# guide} other {# guides}}",
+    "errorTitle": "Could not load guides",
+    "errorDescription": "The server did not respond. Try again.",
+    "emptyTitle": "No guides yet",
+    "emptyDescription": "Be the first to write one.",
+    "emptyFilteredDescription": "Nothing matches these filters.",
+    "page": "Page {page} of {pages}",
+    "prev": "Previous",
+    "next": "Next",
+    "sorts": {
+      "recent": "Newest",
+      "popular": "Popular"
+    },
+    "filters": {
+      "kind": "Guide type",
+      "tank": "Any tank",
+      "anyMap": "Any map",
+      "reset": "Reset"
+    },
+    "columns": {
+      "title": "Guide",
+      "kind": "Type",
+      "subject": "Tank / map",
+      "author": "Author",
+      "likes": "Likes",
+      "date": "Date"
+    }
+  },
+  "mine": {
+    "title": "My guides",
+    "errorTitle": "Could not load your guides",
+    "emptyTitle": "You have not written any guides",
+    "emptyDescription": "Share what you know. A guide goes live after review.",
+    "write": "Write",
+    "edit": "Edit"
+  },
+  "authors": {
+    "title": "Top authors",
+    "errorTitle": "Could not load authors",
+    "emptyTitle": "No authors yet",
+    "emptyDescription": "Authors of published guides will show up here.",
+    "guides": "{count, plural, one {# guide} other {# guides}}",
+    "likes": "Likes"
+  },
+  "detail": {
+    "breadcrumb": "Guides",
+    "author": "Author",
+    "kind": "Type",
+    "tank": "Tank",
+    "map": "Map",
+    "published": "Published",
+    "created": "Created",
+    "updated": "Updated",
+    "language": "Language",
+    "statusNotice": {
+      "draft": "This is a draft. Only you can see it.",
+      "pending": "This guide is in review. Only you can see it for now.",
+      "published": "This guide is published.",
+      "rejected": "A moderator rejected this guide. Fix it and save again.",
+      "hidden": "A moderator hid this guide."
+    },
+    "errorTitle": "Could not load the guide",
+    "errorDescription": "The server did not respond. Try again.",
+    "like": "Like",
+    "unlike": "Remove like",
+    "likeSignIn": "Sign in to like",
+    "likeUnavailable": "Likes open once the guide is published",
+    "likeFailed": "Could not save the like",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteTitle": "Delete this guide?",
+    "deleteDescription": "The guide, its likes and comments will be gone for good.",
+    "cancel": "Cancel",
+    "deleted": "Guide deleted",
+    "deleteFailed": "Could not delete the guide"
+  },
+  "editor": {
+    "breadcrumb": "Guides",
+    "description": "A guide to a tank, a map or the game in general. Goes live after review.",
+    "newTitle": "New guide",
+    "editTitle": "Edit guide",
+    "signIn": "Sign in",
+    "signInTitle": "Sign in required",
+    "signInDescription": "Sign in to write guides.",
+    "loadErrorTitle": "Could not load the guide",
+    "loadErrorDescription": "The server did not respond. Try again.",
+    "foreignTitle": "This is not your guide",
+    "foreignDescription": "Only the author can edit a guide.",
+    "kind": "Type",
+    "locale": "Language",
+    "tank": "Tank",
+    "tankPlaceholder": "Pick a tank",
+    "map": "Map",
+    "mapPlaceholder": "Pick a map",
+    "title": "Title",
+    "titlePlaceholder": "For example: Playing the IS-7 in city maps",
+    "counter": "{length} / {max}",
+    "body": "Text",
+    "bodyPlaceholder": "Write in Markdown: headings, lists, tables.",
+    "write": "Write",
+    "preview": "Preview",
+    "previewEmpty": "The preview will show up here.",
+    "markdownHint": "Markdown: **bold**, _italic_, ## heading, - list, [link](https://…), tables and `code`. HTML is not supported.",
+    "moderationHint": "Saving sends the guide to review.",
+    "save": "Save",
+    "publish": "Send to review",
+    "created": "Guide sent to review",
+    "updated": "Changes saved and sent to review",
+    "failed": "Could not save the guide",
+    "errors": {
+      "tank": "Pick a tank",
+      "map": "Pick a map",
+      "title": "{min} to {max} characters",
+      "body": "{min} to {max} characters"
+    }
+  }
+}

@@ -6,7 +6,7 @@ import { RatingPaletteToggle } from '@/features/app/rating-palette';
 import { RatingPatternsToggle } from '@/features/app/rating-patterns';
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { ThemeToggle } from '@/features/app/switch-theme';
-import { SITE_NAV, SITE_NAV_MORE } from '@/shared/constants';
+import { SITE_NAV, SITE_NAV_COMMUNITY, SITE_NAV_MORE } from '@/shared/constants';
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { Drawer } from '@/ui-kit';
 
@@ -23,6 +23,14 @@ export const MobileNav = ({ open, onOpenChange }: MobileNavProps) => {
     <Drawer open={open} title={t('label')} onOpenChange={onOpenChange}>
       <nav className={s.list}>
         {[...SITE_NAV, ...SITE_NAV_MORE].map((item) => (
+          <Link key={item.key} className={s.link} data-active={pathname.startsWith(item.href)} href={item.href} onClick={() => onOpenChange(false)}>
+            {t(item.key)}
+          </Link>
+        ))}
+      </nav>
+      <nav aria-label={t('community')} className={s.list}>
+        <span className={s.heading}>{t('community')}</span>
+        {SITE_NAV_COMMUNITY.map((item) => (
           <Link key={item.key} className={s.link} data-active={pathname.startsWith(item.href)} href={item.href} onClick={() => onOpenChange(false)}>
             {t(item.key)}
           </Link>

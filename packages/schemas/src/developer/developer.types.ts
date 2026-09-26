@@ -5,10 +5,10 @@ import type {
   apiErrorLogSchema,
   apiKeySchema,
   apiKeysSchema,
-  apiPlanLimitsSchema,
-  apiPlanOfferSchema,
-  apiPlanSchema,
-  apiPlansSchema,
+  apiTierLimitsSchema,
+  apiTierOfferSchema,
+  apiTierSchema,
+  apiTiersSchema,
   apiUsagePointSchema,
   apiUsageQuerySchema,
   apiUsageSchema,
@@ -27,8 +27,8 @@ import type {
   webhookPayloadSchema
 } from './developer.schemas';
 
-export type ApiPlan = z.infer<typeof apiPlanSchema>;
-export type ApiPlanLimits = z.infer<typeof apiPlanLimitsSchema>;
+export type ApiTier = z.infer<typeof apiTierSchema>;
+export type ApiTierLimits = z.infer<typeof apiTierLimitsSchema>;
 export type ApiKey = z.infer<typeof apiKeySchema>;
 export type ApiKeys = z.infer<typeof apiKeysSchema>;
 export type CreateApiKeyInput = z.infer<typeof createApiKeySchema>;
@@ -38,8 +38,8 @@ export type ApiUsageQuery = z.infer<typeof apiUsageQuerySchema>;
 export type ApiUsage = z.infer<typeof apiUsageSchema>;
 export type ApiErrorLogEntry = z.infer<typeof apiErrorLogEntrySchema>;
 export type ApiErrorLog = z.infer<typeof apiErrorLogSchema>;
-export type ApiPlanOffer = z.infer<typeof apiPlanOfferSchema>;
-export type ApiPlans = z.infer<typeof apiPlansSchema>;
+export type ApiTierOffer = z.infer<typeof apiTierOfferSchema>;
+export type ApiTiers = z.infer<typeof apiTiersSchema>;
 export type DeveloperOverview = z.infer<typeof developerOverviewSchema>;
 export type WebhookEvent = z.infer<typeof webhookEventSchema>;
 export type WebhookFilter = z.infer<typeof webhookFilterSchema>;

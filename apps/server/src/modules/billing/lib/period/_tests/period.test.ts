@@ -1,7 +1,7 @@
 import { addDays, addMonths } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import { cancelsAtPeriodEnd, extendPeriod, isEntitled, isPeriodActive, renewalIdempotenceKey } from '../period';
+import { cancelsAtPeriodEnd, extendPeriod, isPeriodActive, renewalIdempotenceKey } from '../period';
 
 const now = new Date('2026-09-25T12:00:00Z');
 
@@ -25,18 +25,6 @@ describe('isPeriodActive', () => {
   it('is false exactly at the end of the period', () => {
     expect(isPeriodActive({ currentPeriodEnd: now, now })).toBe(false);
     expect(isPeriodActive({ currentPeriodEnd: null, now })).toBe(false);
-  });
-});
-
-describe('isEntitled', () => {
-  it('needs both an entitled status and a running period', () => {
-    const future = addDays(now, 1);
-
-    expect(isEntitled({ subscription: { status: 'active', currentPeriodEnd: future }, now })).toBe(true);
-    expect(isEntitled({ subscription: { status: 'pastDue', currentPeriodEnd: future }, now })).toBe(true);
-    expect(isEntitled({ subscription: { status: 'expired', currentPeriodEnd: future }, now })).toBe(false);
-    expect(isEntitled({ subscription: { status: 'active', currentPeriodEnd: addDays(now, -1) }, now })).toBe(false);
-    expect(isEntitled({ subscription: null, now })).toBe(false);
   });
 });
 

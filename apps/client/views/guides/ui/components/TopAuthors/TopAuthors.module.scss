@@ -1,0 +1,43 @@
+@use '@/shared/styles/mixins' as *;
+
+.list {
+  @include stack(0);
+
+  padding: var(--space-2) var(--space-4);
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  @include data-list-row;
+
+  min-height: var(--row-h-compact);
+  font-size: var(--text-sm);
+}
+
+.rank {
+  @include numeric;
+
+  width: 20px;
+  color: var(--color-text-dim);
+  text-align: right;
+}
+
+.name {
+  overflow: hidden;
+  min-width: 0;
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stat {
+  @include numeric;
+
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-1);
+  white-space: nowrap;
+}

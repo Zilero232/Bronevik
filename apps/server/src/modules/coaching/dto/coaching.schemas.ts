@@ -6,11 +6,20 @@ import { COACHING } from '../config';
 
 const priceSchema = z.number().min(COACHING.minPriceRub).max(COACHING.maxPriceRub);
 
+const httpsLinkSchema = z.url({ protocol: /^https$/ });
+
+export const coachContactsSchema = z.object({
+  telegram: httpsLinkSchema.optional(),
+  discord: z.string().trim().min(2).max(COACHING.contactMaxLength).optional(),
+  vk: httpsLinkSchema.optional(),
+  booking: httpsLinkSchema.optional()
+});
+
 export const coachOfferSchema = z.object({
   id: uuidSchema,
   title: z.string(),
   description: z.string().nullable(),
-  priceRub: z.number(),
+  priceRub: z.number().nullable(),
   durationMinutes: z.number().int().positive(),
   withReplay: z.boolean(),
   isActive: z.boolean()
@@ -23,7 +32,9 @@ export const coachSchema = z.object({
   accountId: accountIdSchema,
   headline: z.string(),
   bio: z.string().nullable(),
-  priceRub: z.number(),
+  priceRub: z.number().nullable(),
+  priceNote: z.string().nullable(),
+  contacts: coachContactsSchema,
   tankIds: z.array(tankIdSchema),
   isActive: z.boolean(),
   rating: z.number().nullable(),
@@ -42,7 +53,9 @@ export const upsertCoachSchema = z.object({
   accountId: accountIdSchema,
   headline: z.string().trim().min(5).max(140),
   bio: z.string().trim().max(4000).optional(),
-  priceRub: priceSchema,
+  priceRub: priceSchema.optional(),
+  priceNote: z.string().trim().max(COACHING.priceNoteMaxLength).optional(),
+  contacts: coachContactsSchema.default({}),
   tankIds: z.array(tankIdSchema).max(30).default([]),
   isActive: z.boolean().default(true)
 });
@@ -50,7 +63,7 @@ export const upsertCoachSchema = z.object({
 const offerFieldsSchema = z.object({
   title: z.string().trim().min(3).max(140),
   description: z.string().trim().max(2000).optional(),
-  priceRub: priceSchema,
+  priceRub: priceSchema.optional(),
   durationMinutes: z.number().int().min(15).max(600),
   withReplay: z.boolean()
 });
@@ -59,7 +72,7 @@ export const createOfferSchema = offerFieldsSchema.extend({ withReplay: z.boolea
 
 export const updateOfferSchema = offerFieldsSchema.extend({ isActive: z.boolean() }).partial();
 
-const coachingOrderStatusSchema = z.enum(['requested', 'accepted', 'paid', 'completed', 'cancelled', 'disputed']);
+const coachingOrderStatusSchema = z.enum(['requested', 'accepted', 'completed', 'cancelled']);
 
 export const coachingOrderSchema = z.object({
   id: uuidSchema,
@@ -68,8 +81,9 @@ export const coachingOrderSchema = z.object({
   offerId: uuidSchema.nullable(),
   replayId: uuidSchema.nullable(),
   status: coachingOrderStatusSchema,
-  priceRub: z.number(),
+  priceRub: z.number().nullable(),
   notes: z.string().nullable(),
+  studentContact: z.string().nullable().describe('Shown to the coach once the request is accepted'),
   review: z.string().nullable(),
   score: z.number().int().min(1).max(5).nullable(),
   createdAt: isoDateTimeSchema,
@@ -82,12 +96,11 @@ export const createOrderSchema = z.object({
   coachUserId: uuidSchema,
   offerId: uuidSchema.optional(),
   replayId: uuidSchema.optional(),
-  notes: z.string().trim().max(2000).optional()
+  notes: z.string().trim().max(2000).optional(),
+  studentContact: z.string().trim().min(2).max(COACHING.contactMaxLength)
 });
 
 export const reviewOrderSchema = z.object({
   score: z.number().int().min(1).max(5),
   review: z.string().trim().max(2000).optional()
 });
-
-export const checkoutSchema = z.object({ confirmationUrl: z.url(), paymentId: z.string() });

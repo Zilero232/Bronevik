@@ -1,0 +1,22 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-5));
+
+  padding-block: var(--space-7) var(--space-8);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
+}
+
+.campaign {
+  @include stack(var(--space-3));
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}

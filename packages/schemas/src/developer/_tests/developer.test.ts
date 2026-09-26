@@ -1,26 +1,26 @@
 import { describe, expect, it } from 'vitest';
 
-import { API_KEY, API_PLAN_LIMITS, WEBHOOK } from '../developer.constants';
-import { apiPlanLimitsSchema, apiPlanSchema, createApiKeySchema, createWebhookEndpointSchema, webhookFilterSchema } from '../developer.schemas';
+import { API_KEY, API_TIER_LIMITS, WEBHOOK } from '../developer.constants';
+import { apiTierLimitsSchema, apiTierSchema, createApiKeySchema, createWebhookEndpointSchema, webhookFilterSchema } from '../developer.schemas';
 
 describe('developer schemas', () => {
-  it('describes every plan with valid limits', () => {
-    expect(Object.keys(API_PLAN_LIMITS).sort()).toEqual([...apiPlanSchema.options].sort());
+  it('describes every tier with valid limits', () => {
+    expect(Object.keys(API_TIER_LIMITS).sort()).toEqual([...apiTierSchema.options].sort());
 
-    for (const limits of Object.values(API_PLAN_LIMITS)) {
-      expect(apiPlanLimitsSchema.safeParse(limits).success).toBe(true);
+    for (const limits of Object.values(API_TIER_LIMITS)) {
+      expect(apiTierLimitsSchema.safeParse(limits).success).toBe(true);
     }
   });
 
-  it('never lowers a limit on a more expensive plan', () => {
-    const limits = apiPlanSchema.options.map((plan) => API_PLAN_LIMITS[plan]);
+  it('never lowers a limit on a higher tier', () => {
+    const limits = apiTierSchema.options.map((tier) => API_TIER_LIMITS[tier]);
 
-    limits.slice(1).forEach((plan, index) => {
+    limits.slice(1).forEach((tier, index) => {
       const cheaper = limits[index];
 
-      expect(plan.requestsPerDay).toBeGreaterThanOrEqual(cheaper?.requestsPerDay ?? 0);
-      expect(plan.requestsPerSecond).toBeGreaterThanOrEqual(cheaper?.requestsPerSecond ?? 0);
-      expect(plan.webhooks).toBeGreaterThanOrEqual(cheaper?.webhooks ?? 0);
+      expect(tier.requestsPerDay).toBeGreaterThanOrEqual(cheaper?.requestsPerDay ?? 0);
+      expect(tier.requestsPerSecond).toBeGreaterThanOrEqual(cheaper?.requestsPerSecond ?? 0);
+      expect(tier.webhooks).toBeGreaterThanOrEqual(cheaper?.webhooks ?? 0);
     });
   });
 

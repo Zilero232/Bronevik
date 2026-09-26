@@ -1,15 +1,27 @@
-import type { CoachingOffer, CoachingOrder } from '../../../../../generated';
-import type { CoachingOrderView, CoachOfferView, CoachView } from '../../coaching.types';
+import { isIncludedIn } from 'remeda';
+
+import type { CoachingOffer, Prisma } from '../../../../../generated';
+import type { CoachContacts, CoachingOrderView, CoachOfferView, CoachView, OrderViewInput } from '../../coaching.types';
 import type { CoachViewInput } from './coaching-views.types';
 
 import { toIso } from '../../../../common/lib';
 import { toAuthorView } from '../../../community-core';
+import { COACHING } from '../../config';
+import { coachContactsSchema } from '../../dto/coaching.schemas';
+
+const priceOf = (price: Prisma.Decimal | null): number | null => (price === null ? null : Number(price));
+
+export const contactsOf = (value: unknown): CoachContacts => {
+  const parsed = coachContactsSchema.safeParse(value ?? {});
+
+  return parsed.success ? parsed.data : {};
+};
 
 export const toOfferView = (offer: CoachingOffer): CoachOfferView => ({
   id: offer.id,
   title: offer.title,
   description: offer.description,
-  priceRub: Number(offer.priceRub),
+  priceRub: priceOf(offer.priceRub),
   durationMinutes: offer.durationMinutes,
   withReplay: offer.withReplay,
   isActive: offer.isActive
@@ -22,7 +34,9 @@ export const toCoachView = ({ coach, stats }: CoachViewInput): CoachView => ({
   accountId: Number(coach.accountId),
   headline: coach.headline,
   bio: coach.bio,
-  priceRub: Number(coach.priceRub),
+  priceRub: priceOf(coach.priceRub),
+  priceNote: coach.priceNote,
+  contacts: contactsOf(coach.contacts),
   tankIds: coach.tankIds,
   isActive: coach.isActive,
   rating: coach.rating,
@@ -31,17 +45,22 @@ export const toCoachView = ({ coach, stats }: CoachViewInput): CoachView => ({
   offers: coach.offers.map(toOfferView)
 });
 
-export const toOrderView = (order: CoachingOrder): CoachingOrderView => ({
-  id: order.id,
-  coachUserId: order.coachUserId,
-  studentUserId: order.studentUserId,
-  offerId: order.offerId,
-  replayId: order.replayId,
-  status: order.status,
-  priceRub: Number(order.priceRub),
-  notes: order.notes,
-  review: order.review,
-  score: order.score,
-  createdAt: order.createdAt.toISOString(),
-  completedAt: toIso(order.completedAt)
-});
+export const toOrderView = ({ order, viewerId }: OrderViewInput): CoachingOrderView => {
+  const showsContact = order.studentUserId === viewerId || isIncludedIn(order.status, COACHING.contactVisibleStatuses);
+
+  return {
+    id: order.id,
+    coachUserId: order.coachUserId,
+    studentUserId: order.studentUserId,
+    offerId: order.offerId,
+    replayId: order.replayId,
+    status: order.status,
+    priceRub: priceOf(order.priceRub),
+    notes: order.notes,
+    studentContact: showsContact ? order.studentContact : null,
+    review: order.review,
+    score: order.score,
+    createdAt: order.createdAt.toISOString(),
+    completedAt: toIso(order.completedAt)
+  };
+};

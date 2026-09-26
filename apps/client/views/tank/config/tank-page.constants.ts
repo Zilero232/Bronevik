@@ -4,10 +4,10 @@ export const TANK_PAGE = {
   trendDays: 60,
   topLimit: 10,
   skeletonRows: 5,
-  skeletonBuilds: 3,
   chartHeight: 200,
   rowHeight: 36,
-  podium: 3
+  podium: 3,
+  researchImage: 'contour'
 } as const;
 
 export const TANK_SECTIONS = {
@@ -16,7 +16,10 @@ export const TANK_SECTIONS = {
   mastery: 'mastery',
   players: 'players',
   builds: 'builds',
-  patches: 'patches'
+  patches: 'patches',
+  economy: 'economy',
+  learning: 'learning',
+  obtain: 'obtain'
 } as const;
 
 export const TOP_METRICS = ['wn8', 'avgDamage', 'winRate'] as const;

@@ -1,0 +1,37 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--gap-panel));
+
+  padding-block: var(--space-7) var(--space-8);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
+}
+
+.content {
+  width: 100%;
+  max-width: 900px;
+}
+
+.notice {
+  @include well;
+
+  max-width: 900px;
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--color-warning);
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+
+  &[data-status='rejected'],
+  &[data-status='hidden'] {
+    border-left-color: var(--color-danger);
+  }
+}
+
+.skeleton {
+  @include stack(var(--gap-panel));
+}

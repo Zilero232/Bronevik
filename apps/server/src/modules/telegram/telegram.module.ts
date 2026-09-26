@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { MissionsModule } from '../missions';
 import { PlayersModule } from '../players';
 import {
   TelegramBotService,
@@ -9,6 +10,7 @@ import {
   TelegramInlineService,
   TelegramLinkService,
   TelegramLookupCommandsService,
+  TelegramMissionCommandsService,
   TelegramPlayerCommandsService,
   TelegramSettingsService,
   TelegramStatsService
@@ -18,7 +20,7 @@ import { TelegramLinkController } from './telegram-link.controller';
 import { TelegramController } from './telegram.controller';
 
 @Module({
-  imports: [TelegramCoreModule, PlayersModule],
+  imports: [TelegramCoreModule, PlayersModule, MissionsModule],
   controllers: [TelegramController, TelegramLinkController],
   providers: [
     TelegramBotService,
@@ -28,6 +30,7 @@ import { TelegramController } from './telegram.controller';
     TelegramInlineService,
     TelegramLinkService,
     TelegramLookupCommandsService,
+    TelegramMissionCommandsService,
     TelegramPlayerCommandsService,
     TelegramSettingsService,
     TelegramStatsService

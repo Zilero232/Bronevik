@@ -8,7 +8,8 @@ export const CALC_URL_PARSER = parseAsStringLiteral(CALCULATOR_IDS).withDefault(
 
 export const TOOLS_LAYOUT = {
   panelId: 'calculator-panel',
-  chartHeight: 240
+  chartHeight: 240,
+  mediansSkeleton: 80
 } as const;
 
 export const TOOLS_FORMAT = {

@@ -1,0 +1,35 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+}
+
+.header {
+  padding: 0 var(--space-4);
+}
+
+.verdict {
+  padding: 0 var(--space-4);
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.list {
+  padding: 0 var(--space-4) var(--space-3);
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  @include data-list-row;
+
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.value {
+  @include numeric;
+
+  color: var(--color-text-muted);
+}

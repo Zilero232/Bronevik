@@ -3,15 +3,17 @@ import type { PopularBuilds, ProvisionOption } from '@otmetki/schemas';
 import { Injectable } from '@nestjs/common';
 import { loadoutSchema } from '@otmetki/schemas';
 import { subDays } from 'date-fns';
-import { unique } from 'remeda';
+import { isNonNullish, unique } from 'remeda';
 
-import type { PopularBuildsInput } from '../builds.types';
+import type { BattleSamplesInput, PopularBuildsInput } from '../builds.types';
 import type { LoadoutSample, RankedLoadout } from '../lib';
 
 import { Prisma } from '../../../../generated';
 import { PrismaService } from '../../../core';
+import { bonusTypesOf } from '../../collector';
+import { readStoredLoadout } from '../../mod';
 import { POPULAR_SOURCE } from '../config';
-import { battleLoadoutSchema, hasItems, rankLoadouts, toProvisionOption } from '../lib';
+import { hasItems, rankLoadouts, toProvisionOption } from '../lib';
 import { BuildDataService } from './build-data.service';
 
 @Injectable()
@@ -22,7 +24,7 @@ export class PopularBuildsService {
   ) {}
 
   async popular({ tankId, query }: PopularBuildsInput): Promise<PopularBuilds> {
-    const fromBattles = (await this.battleSamples(tankId)).filter(hasItems);
+    const fromBattles = (await this.battleSamples({ tankId, mode: query.mode })).filter(hasItems);
     const samples = fromBattles.length > 0 ? fromBattles : (await this.buildSamples(tankId)).filter(hasItems);
     const source = fromBattles.length > 0 ? 'battles' : samples.length > 0 ? 'builds' : 'none';
     const ranked = rankLoadouts({ samples, limit: query.limit });
@@ -46,18 +48,34 @@ export class PopularBuildsService {
     };
   }
 
-  private async battleSamples(tankId: number): Promise<LoadoutSample[]> {
+  private async battleSamples({ tankId, mode }: BattleSamplesInput): Promise<LoadoutSample[]> {
     const rows = await this.prisma.battle.findMany({
-      where: { tankId, startedAt: { gte: subDays(new Date(), POPULAR_SOURCE.windowDays) }, loadout: { not: Prisma.DbNull } },
+      where: {
+        tankId,
+        startedAt: { gte: subDays(new Date(), POPULAR_SOURCE.windowDays) },
+        loadout: { not: Prisma.DbNull },
+        ...(mode ? { battleType: { in: bonusTypesOf(mode) } } : {})
+      },
       select: { loadout: true, result: true, damageDealt: true },
       orderBy: { startedAt: 'desc' },
       take: POPULAR_SOURCE.maxBattles
     });
 
     return rows.flatMap((row) => {
-      const parsed = battleLoadoutSchema.safeParse(row.loadout);
+      const loadout = readStoredLoadout(row.loadout);
 
-      return parsed.success ? [{ ...parsed.data, weight: 1, won: row.result === 'draw' ? null : row.result === 'win', damage: row.damageDealt }] : [];
+      return loadout
+        ? [
+            {
+              optionalDevices: loadout.optionalDevices.filter(isNonNullish),
+              consumables: loadout.consumables.filter(isNonNullish),
+              directives: loadout.directives.filter(isNonNullish),
+              weight: 1,
+              won: row.result === 'draw' ? null : row.result === 'win',
+              damage: row.damageDealt
+            }
+          ]
+        : [];
     });
   }
 

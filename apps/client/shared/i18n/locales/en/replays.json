@@ -1,0 +1,246 @@
+{
+  "meta": {
+    "title": "Replays",
+    "description": "Mir Tankov battle replays: search by tank, map and player, scoreboards, battle flow and heatmaps."
+  },
+  "detailMeta": {
+    "title": "Battle replay",
+    "description": "Battle results from a replay: team scoreboard, battle flow and heatmap."
+  },
+  "modes": {
+    "ctf": "Standard battle",
+    "domination": "Encounter",
+    "assault": "Assault",
+    "assault2": "Assault (alt.)",
+    "comp7": "Onslaught",
+    "ctf30x30": "Grand battle",
+    "domination30x30": "Encounter 30×30",
+    "domination3": "Encounter (alt.)",
+    "epic": "Frontline",
+    "bob": "Bloggers battle",
+    "bootcamp": "Boot camp",
+    "maps_training": "Map training"
+  },
+  "results": {
+    "win": "Victory",
+    "loss": "Defeat",
+    "draw": "Draw"
+  },
+  "head": {
+    "title": "Replays",
+    "description": "Upload your battles and study others: filter by tank, map, mode and player."
+  },
+  "list": {
+    "title": "Replay feed",
+    "total": "{total, plural, one {# replay} other {# replays}}",
+    "tabs": {
+      "all": "All",
+      "mine": "My replays"
+    },
+    "errorTitle": "Replays failed to load",
+    "errorDescription": "The server did not respond. Try again.",
+    "prev": "Previous",
+    "next": "Next",
+    "page": "{page} of {pages}",
+    "resetFilters": "Reset filters",
+    "emptyTitle": "No replays",
+    "emptyDescription": "Public parsed replays show up here. Be the first to upload one.",
+    "emptyFilteredDescription": "Nothing matches these filters.",
+    "emptyMineTitle": "You have not uploaded anything yet",
+    "emptyMineDescription": "Upload a .mtreplay or .wotreplay file and it will show up here.",
+    "columns": {
+      "tank": "Tank",
+      "map": "Map",
+      "result": "Result",
+      "damage": "Damage",
+      "assist": "Assist",
+      "frags": "Frags",
+      "xp": "XP",
+      "owner": "Player",
+      "playedAt": "Played"
+    },
+    "unknownMap": "Unknown map",
+    "status": {
+      "uploaded": "Queued",
+      "parsing": "Parsing",
+      "parsed": "Ready",
+      "failed": "Parse failed"
+    }
+  },
+  "filters": {
+    "any": "Any",
+    "tank": "Tank",
+    "tankPlaceholder": "Any tank",
+    "map": "Map",
+    "mode": "Mode",
+    "player": "Player",
+    "playerPlaceholder": "Nickname",
+    "result": "Result",
+    "sort": "Sort",
+    "reset": "Reset",
+    "results": {
+      "win": "Victory",
+      "loss": "Defeat",
+      "draw": "Draw"
+    },
+    "sorts": {
+      "recent": "Newest",
+      "damage": "By damage",
+      "xp": "By XP",
+      "views": "By views"
+    }
+  },
+  "upload": {
+    "title": "Upload a replay",
+    "dropTitle": "Drop a file or pick one",
+    "dropHint": "{extensions}, up to {size} MB",
+    "size": "{size} MB",
+    "problems": {
+      "empty": "The file is empty.",
+      "extension": "Pick a .mtreplay or .wotreplay file.",
+      "size": "The file is larger than {size} MB."
+    },
+    "visibility": "Visibility",
+    "visibilities": {
+      "public": "Public",
+      "unlisted": "Unlisted",
+      "private": "Private"
+    },
+    "visibilityHints": {
+      "public": "The replay goes to the public feed.",
+      "unlisted": "Not in the feed, opens by link.",
+      "private": "Only you can see it."
+    },
+    "start": "Upload",
+    "uploading": "Uploading",
+    "processing": "Uploaded, parsing the battle…",
+    "open": "Open replay",
+    "another": "Upload another",
+    "parseFailed": "The replay could not be parsed.",
+    "errors": {
+      "validation": "The server rejected the data.",
+      "unauthorized": "Sign in to continue.",
+      "forbidden": "You are not allowed to do this.",
+      "notFound": "Replay not found or not yours.",
+      "conflict": "This replay is already uploaded.",
+      "rateLimited": "Too many uploads, try again in a minute.",
+      "unknown": "Something went wrong. Try again."
+    }
+  },
+  "detail": {
+    "errorTitle": "Replay failed to load",
+    "errorDescription": "The server did not respond. Try again.",
+    "breadcrumb": "Replays",
+    "untitled": "Replay",
+    "backToList": "Back to replays",
+    "failedTitle": "Replay could not be parsed",
+    "failedDescription": "The file is damaged or its version is not supported.",
+    "processingTitle": "Parsing the replay",
+    "processingDescription": "This usually takes a few seconds. The page updates by itself.",
+    "download": "Download",
+    "duration": "{duration} battle",
+    "visibility": {
+      "public": "Public",
+      "unlisted": "Unlisted",
+      "private": "Private"
+    },
+    "recorder": "Recorded by",
+    "views": "{views, plural, one {# view} other {# views}}",
+    "figures": {
+      "damage": "Damage",
+      "assist": "Assist",
+      "blocked": "Blocked",
+      "frags": "Frags",
+      "spotted": "Spotted",
+      "xp": "XP"
+    },
+    "medals": "Medals"
+  },
+  "owner": {
+    "title": "Your replay",
+    "visibility": "Visibility",
+    "visibilities": {
+      "public": "Public",
+      "unlisted": "Unlisted",
+      "private": "Private"
+    },
+    "delete": "Delete",
+    "deleteTitle": "Delete this replay?",
+    "deleteDescription": "The file and its analysis are removed for good.",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete",
+    "visibilitySaved": "Visibility saved",
+    "deleted": "Replay deleted",
+    "errors": {
+      "validation": "The server rejected the data.",
+      "unauthorized": "Sign in to continue.",
+      "forbidden": "You are not allowed to do this.",
+      "notFound": "Only the uploader can manage this replay.",
+      "conflict": "This replay is already uploaded.",
+      "rateLimited": "Too many uploads, try again in a minute.",
+      "unknown": "Something went wrong. Try again."
+    }
+  },
+  "scoreboard": {
+    "columns": {
+      "tank": "Tank",
+      "player": "Player",
+      "damage": "Damage",
+      "assist": "Assist",
+      "blocked": "Blocked",
+      "frags": "Frags",
+      "spotted": "Spotted",
+      "hits": "Hit rate",
+      "xp": "XP",
+      "life": "Destroyed"
+    },
+    "totals": "{alive} of {players} alive · damage {damage} · frags {frags}",
+    "teams": {
+      "allies": "Allies",
+      "enemies": "Enemies"
+    },
+    "empty": "No player data",
+    "note": "Post-battle results from the replay file.",
+    "recorder": "recorder",
+    "destroyed": "destroyed"
+  },
+  "timeline": {
+    "title": "Battle flow",
+    "meta": "Vehicles alive per team",
+    "allies": "Allies",
+    "enemies": "Enemies",
+    "chartLabel": "Vehicles alive in each team over the battle",
+    "killsLabel": "Kills",
+    "killedBy": "{killer} destroyed {victim}",
+    "destroyed": "{victim} destroyed",
+    "note": "Built from when vehicles were destroyed. The replay does not record damage over time.",
+    "emptyTitle": "No battle flow",
+    "emptyDescription": "The replay has no post-battle results, usually because recording stopped early."
+  },
+  "heatmap": {
+    "title": "Heatmap",
+    "noArenaTitle": "Unknown map",
+    "noArenaDescription": "The replay does not name its map.",
+    "modeLabel": "Mode",
+    "modes": {
+      "replay": "This mode",
+      "all": "All modes"
+    },
+    "scopeLabel": "Vehicle class",
+    "scopes": {
+      "all": "All",
+      "lightTank": "LT",
+      "mediumTank": "MT",
+      "heavyTank": "HT",
+      "atSpg": "TD",
+      "spg": "SPG"
+    },
+    "errorTitle": "Heatmap failed to load",
+    "errorDescription": "Try again.",
+    "chartLabel": "Where vehicles spend time on {map}",
+    "samples": "{samples} positions from all replays",
+    "empty": "No data for this selection yet",
+    "low": "less",
+    "high": "more"
+  }
+}

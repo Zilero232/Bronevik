@@ -14,5 +14,8 @@ export const FEATURES = {
   communityMaintenance: true,
   clanWorkspace: true,
   weeklyChallenges: true,
-  pulse: true
+  pulse: true,
+  tankEconomy: true,
+  learningCurve: true,
+  buildUsage: true
 } as const;

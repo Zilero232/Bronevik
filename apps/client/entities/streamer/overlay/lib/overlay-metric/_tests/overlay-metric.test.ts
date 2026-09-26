@@ -12,6 +12,7 @@ const DATA: OverlayData = {
   kind: 'session',
   name: 'Session',
   config: overlayConfigSchema.parse({ metrics: ['battles'] }),
+  isPaused: false,
   player: { accountId: 1, nickname: 'Tester' },
   session: {
     battles: 12,

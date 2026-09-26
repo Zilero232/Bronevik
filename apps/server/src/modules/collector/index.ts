@@ -1,4 +1,5 @@
-export { BRONYA_REFERENCE, parseBronyaReference } from './aggregates';
+export { bonusTypesOf, BRONYA_REFERENCE, parseBronyaReference, storedBuildUsageSchema } from './aggregates';
+export type { StoredBuildUsage } from './aggregates';
 export { BoardModule } from './board';
 export { CollectorModule } from './collector.module';
 export { COLLECTOR_STATE_KEY, WORKER_CONCURRENCY } from './config';

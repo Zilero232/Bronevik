@@ -17,6 +17,7 @@ export {
   Skeleton,
   Switch,
   TankImage,
+  Textarea,
   TierNumeral
 } from './atoms';
 export type {
@@ -42,6 +43,7 @@ export type {
   TankImageProps,
   TankImageSize,
   TankImageSubject,
+  TextareaProps,
   TierNumeralProps
 } from './atoms';
 export {
@@ -62,6 +64,7 @@ export {
   Drawer,
   EmptyState,
   ErrorState,
+  FormField,
   GameVersionBadge,
   KeyFigure,
   KeyFigures,
@@ -89,6 +92,7 @@ export type {
   DrawerProps,
   EmptyStateProps,
   ErrorStateProps,
+  FormFieldProps,
   GameVersionBadgeProps,
   KeyFigureProps,
   KeyFiguresProps,

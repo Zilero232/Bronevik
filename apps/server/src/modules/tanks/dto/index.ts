@@ -1,7 +1,13 @@
 export {
+  AccountEconomyDto,
+  AccountEconomyQueryDto,
+  MyTankLearningDto,
   TankArmorDto,
   TankDetailDto,
   TankDetailQueryDto,
+  TankEconomyDto,
+  TankEconomyPageDto,
+  TankEconomyQueryDto,
   TankLookupParamsDto,
   TankParamsDto,
   TankPatchesDto,

@@ -3,6 +3,8 @@
 import { Info } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/shared/constants';
+import { Link } from '@/shared/i18n/navigation';
 import { Card, CardHeader, DataSourceNote, ErrorState, Skeleton, Sparkline, Tooltip } from '@/ui-kit';
 
 import { useServerStatus } from '../../../../../model/hooks';
@@ -16,7 +18,14 @@ export const StatusPanel = () => {
 
   return (
     <Card className={s.root} padding='none'>
-      <CardHeader title={t('title')} />
+      <CardHeader
+        action={
+          <Link className={s.more} href={ROUTES.pulse}>
+            {t('pulse')}
+          </Link>
+        }
+        title={t('title')}
+      />
       {status.isPending && <Skeleton className={s.body} height={96} shape='block' />}
       {status.isError && <ErrorState isCompact onRetry={status.retry} />}
       {!status.isPending && !status.isError && (

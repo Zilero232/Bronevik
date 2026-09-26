@@ -1,3 +1,4 @@
+export { CREW_ROLE_ORDER, HOW_TO_BUILD, SHELL_KINDS } from './how-to-build.constants';
 export { MARK_ICONS, MOE_DELTA_DAYS, MOE_KEYS, MOE_PLATES, MOE_SERIES_TONES } from './moe.constants';
 export { PARAM_CONFIGS, PARAM_KEYS } from './params.constants';
 export { VERDICT_TONES } from './patches.constants';

@@ -1,0 +1,27 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.title {
+  @include label;
+
+  margin: 0;
+}
+
+.figures {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.hint {
+  @include source-line;
+
+  margin: 0;
+}

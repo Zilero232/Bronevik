@@ -3,7 +3,8 @@
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/ui-kit';
+import { LimitNotice } from '@/features/plus/plus-gate';
+import { Badge, Button } from '@/ui-kit';
 
 import type { OverlayListProps } from './OverlayList.types';
 
@@ -15,10 +16,13 @@ export const OverlayList = ({ overlays, selectedId, onSelect, onCreate }: Overla
   return (
     <nav aria-label={t('list')} className={s.root}>
       <ul className={s.list}>
-        {overlays.map(({ id, name, kind, config }) => (
+        {overlays.map(({ id, name, kind, config, isPaused }) => (
           <li key={id}>
-            <button aria-current={id === selectedId} className={s.item} type='button' onClick={() => onSelect(id)}>
-              <span className={s.name}>{name}</span>
+            <button aria-current={id === selectedId} className={s.item} data-paused={isPaused} type='button' onClick={() => onSelect(id)}>
+              <span className={s.name}>
+                {name}
+                {isPaused && <Badge tone='warning'>{t('paused')}</Badge>}
+              </span>
               <span className={s.meta}>
                 {t(`kind.${kind}`)} · {t(`theme.${config.theme}`)}
               </span>
@@ -26,6 +30,7 @@ export const OverlayList = ({ overlays, selectedId, onSelect, onCreate }: Overla
           </li>
         ))}
       </ul>
+      <LimitNotice limitKey='overlays' used={overlays.length} />
       <Button block aria-pressed={selectedId === null} size='sm' variant='secondary' onClick={onCreate}>
         <Plus size={14} />
         {t('new')}

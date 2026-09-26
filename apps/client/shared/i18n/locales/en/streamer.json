@@ -163,7 +163,9 @@
         "size": "Width {width}, height {height} — then fit it with the frame.",
         "transparent": "The background is already transparent: no custom CSS or chroma key needed."
       }
-    }
+    },
+    "paused": "Paused",
+    "pausedHint": "This overlay is over the free limit and paused: its link shows a neutral placeholder. It runs again with Plus or once you are back to two overlays."
   },
   "challenges": {
     "description": "A viewer donates with a code, the mod checks the battle, the result goes to chat and the overlay.",

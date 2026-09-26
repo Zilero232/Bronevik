@@ -72,6 +72,25 @@ class BattleEventTest(unittest.TestCase):
         for foreign in ('98765', '87654321', 'enemy_player_secret', '4321', '2849'):
             self.assertNotIn(foreign, serialized)
 
+    def test_economy_costs(self):
+        results = _support.battle_results()
+        vehicle = results['personal'][1]
+        vehicle['freeXP'] = 57
+        vehicle['autoRepairCost'] = 4200
+        vehicle['autoLoadCost'] = (1800, 0)
+        vehicle['autoEquipCost'] = [3000, 0, 0]
+        stats = build_battle_event(results)['stats']
+        self.assertEqual(stats['free_xp'], 57)
+        self.assertEqual(stats['repair_cost'], 4200)
+        self.assertEqual(stats['ammo_cost'], 1800)
+        self.assertEqual(stats['consumables_cost'], 3000)
+
+    def test_economy_costs_absent(self):
+        results = _support.battle_results()
+        results['personal'][1]['autoLoadCost'] = None
+        stats = build_battle_event(results)['stats']
+        self.assertNotIn('ammo_cost', stats)
+
     def test_rejects_garbage(self):
         with self.assertRaises(PayloadError):
             build_battle_event({})

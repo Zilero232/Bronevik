@@ -18,6 +18,7 @@
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@dagrejs/dagre": "^3.1.1",
+    "@hocuspocus/provider": "4.7.0",
     "@hookform/resolvers": "^5.9.1",
     "@number-flow/react": "^0.6.2",
     "@otmetki/gamedata": "workspace:*",
@@ -49,6 +50,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "catalog:",
+    "konva": "^10.7.0",
     "lucide-react": "^1.48.0",
     "modern-normalize": "^3.0.1",
     "motion": "catalog:",
@@ -59,11 +61,16 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "^7.88.0",
+    "react-konva": "^19.3.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "remeda": "catalog:",
     "sonner": "^2.0.8",
     "sugar-high": "^2.5.0",
     "three": "^0.186.1",
     "ts-pattern": "catalog:",
+    "y-protocols": "catalog:",
+    "yjs": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

@@ -1,10 +1,14 @@
 import type {
+  EconomyAccount,
   RatingPeriod,
   ServerPeriod,
   SkillCohort,
   SortOrder,
   StatsMode,
+  TankEconomySortField,
+  TankRole,
   TankServerStatsSortField,
+  TankStatus,
   TopPlayersMetric,
   VehicleType
 } from '@otmetki/schemas';
@@ -16,6 +20,8 @@ export type TankStatsInput = {
   tiers?: number[];
   types?: VehicleType[];
   nations?: string[];
+  statuses?: TankStatus[];
+  roles?: TankRole[];
   premium?: boolean;
   sort?: TankServerStatsSortField;
   order?: SortOrder;
@@ -68,5 +74,35 @@ export type VehicleCatalogInput = {
 
 export type CompareTanksInput = {
   tankIds: number[];
+  signal?: AbortSignal;
+};
+
+export type TankEconomyTableInput = {
+  account?: EconomyAccount;
+  tiers?: number[];
+  types?: VehicleType[];
+  nations?: string[];
+  statuses?: TankStatus[];
+  roles?: TankRole[];
+  sort?: TankEconomySortField;
+  order?: SortOrder;
+  limit?: number;
+  offset?: number;
+  minBattles?: number;
+  signal?: AbortSignal;
+};
+
+export type TankEconomyInput = {
+  tankId: number;
+  signal?: AbortSignal;
+};
+
+export type MyEconomyInput = {
+  days: number;
+  signal?: AbortSignal;
+};
+
+export type MyLearningInput = {
+  tankId: number;
   signal?: AbortSignal;
 };

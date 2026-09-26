@@ -12,8 +12,9 @@ import {
 } from '../common/primitives/primitives.schemas';
 import { paginatedSchema, paginationQuerySchema, sortQuery } from '../common/query/query.schemas';
 import { leaderboardEntrySchema } from '../leaderboards/leaderboards.schemas';
-import { masteryThresholdSchema, moeThresholdSchema } from '../marks/marks.schemas';
+import { masteryThresholdSchema, moeThresholdSchema, sweatIndexSchema } from '../marks/marks.schemas';
 import { tierSchema, vehicleFilterSchema, vehicleSummarySchema, vehicleTypeSchema } from '../vehicles/vehicles.schemas';
+import { tankEconomySchema, tankLearningSchema, tankObtainSchema, tankTraitsFilterSchema } from './tank-insights.schemas';
 import { PATCH_VERDICTS, TANK_TREND, TOP_PLAYERS_QUERY } from './tanks.constants';
 
 export const tierListRankSchema = z.enum(['S', 'A', 'B', 'C', 'D', 'F']);
@@ -54,6 +55,7 @@ export const tankServerStatsSortFieldSchema = z.enum([
 
 export const tankServerStatsQuerySchema = z.object({
   ...vehicleFilterSchema.shape,
+  ...tankTraitsFilterSchema.shape,
   ...sortQuery(tankServerStatsSortFieldSchema).shape,
   ...paginationQuerySchema.shape,
   period: serverPeriodSchema.default('7d'),
@@ -117,7 +119,11 @@ export const tankDetailSchema = z.object({
   serverStats: z.array(tankServerStatsRowSchema),
   moe: moeThresholdSchema.nullable(),
   mastery: masteryThresholdSchema.nullable(),
-  topPlayers: z.array(leaderboardEntrySchema)
+  topPlayers: z.array(leaderboardEntrySchema),
+  obtain: tankObtainSchema,
+  economy: tankEconomySchema,
+  learning: tankLearningSchema,
+  sweat: sweatIndexSchema
 });
 
 export const tankTrendQuerySchema = z.object({

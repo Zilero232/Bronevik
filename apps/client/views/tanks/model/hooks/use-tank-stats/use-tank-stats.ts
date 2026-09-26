@@ -10,10 +10,10 @@ import { TANKS_VIEW } from '../../../config';
 import { useTanksState } from '../use-tanks-state';
 
 export const useTankStats = () => {
-  const [{ period, cohort }] = useTanksState();
+  const [{ period, cohort, statuses, roles }] = useTanksState();
   const { query } = useVehicleFilters();
 
-  const params = { period, cohort, ...query, limit: TANKS_VIEW.statsLimit };
+  const params = { period, cohort, ...query, statuses, roles, limit: TANKS_VIEW.statsLimit };
 
   return useQuery({
     queryKey: QUERY_KEYS.tanks.stats(params),

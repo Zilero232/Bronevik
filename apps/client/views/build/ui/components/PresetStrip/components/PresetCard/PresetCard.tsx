@@ -2,6 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { GameIcon } from '@/entities/tank/build';
 import { PERCENT_TEXT, percentText } from '@/shared/lib';
 import { Badge } from '@/ui-kit';
 
@@ -9,7 +10,6 @@ import type { PresetCardProps } from './PresetCard.types';
 
 import { BUILD_VIEW } from '../../../../../config';
 import { usePresetCard } from '../../../../../model/hooks';
-import { GameIcon } from '../../../GameIcon';
 
 import s from './PresetCard.module.scss';
 

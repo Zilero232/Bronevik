@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import type { Prisma } from '../../../../../generated';
 import type { BattleDataInput, SessionIncrement, SessionUuidInput } from './battle.types';
 
+import { toStoredLoadout } from '../loadout';
 import { BATTLE } from './battle.constants';
 
 export const sessionUuid = ({ accountId, sessionId }: SessionUuidInput): string => {
@@ -39,8 +40,13 @@ export const toBattleData = ({ event, accountId, deviceId, sessionId, previousMo
     spotted: stats.spotted,
     frags: stats.frags,
     xp: stats.xp,
+    freeXp: stats.free_xp ?? null,
     credits: stats.factual_credits,
     creditsGross: stats.original_credits,
+    isPremiumAccount: stats.is_premium,
+    repairCost: stats.repair_cost ?? null,
+    ammoCost: stats.ammo_cost ?? null,
+    consumablesCost: stats.consumables_cost ?? null,
     survived: stats.is_alive,
     lifetimeSec: stats.life_time_s,
     shotsFired: stats.shots,
@@ -51,6 +57,7 @@ export const toBattleData = ({ event, accountId, deviceId, sessionId, previousMo
     marksOnGun: moe?.marks_on_gun ?? null,
     queueTimeMs: event.queue_time_s === null ? null : Math.round(secondsToMilliseconds(event.queue_time_s)),
     durationSec: event.duration_s,
+    loadout: event.loadout ? toStoredLoadout(event.loadout) : undefined,
     achievements: [],
     startedAt: fromUnixTime(event.arena_created_at)
   };

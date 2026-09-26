@@ -1,15 +1,12 @@
 enum SubscriptionProduct {
   plus
-  clanPanel    @map("clan_panel")
-  developerPro @map("developer_pro")
-  overlaysPro  @map("overlays_pro")
 
   @@map("subscription_product")
 }
 
 enum SubscriptionPlan {
   monthly
-  halfYearly @map("half_yearly")
+  quarterly
   yearly
 
   @@map("subscription_plan")
@@ -35,14 +32,6 @@ enum PaymentStatus {
   @@map("payment_status")
 }
 
-enum PaymentKind {
-  subscription
-  donation
-  coaching
-
-  @@map("payment_kind")
-}
-
 model Subscription {
   id String @id @default(dbgenerated("gen_random_uuid()"))
 
@@ -50,7 +39,6 @@ model Subscription {
   product SubscriptionProduct
   plan    SubscriptionPlan    @default(monthly)
   status  SubscriptionStatus  @default(active)
-  clanId  BigInt?             @map("clan_id")
 
   currentPeriodEnd  DateTime? @map("current_period_end") @db.Timestamptz(3)
   cancelAtPeriodEnd Boolean   @default(false) @map("cancel_at_period_end")
@@ -79,14 +67,12 @@ model Payment {
   subscriptionId    String? @map("subscription_id")
   yookassaPaymentId String  @unique @map("yookassa_payment_id")
 
-  amount       Decimal              @db.Decimal(10, 2)
-  currency     String               @default("RUB")
-  status       PaymentStatus        @default(pending)
-  kind         PaymentKind          @default(subscription)
-  product      SubscriptionProduct?
+  amount       Decimal           @db.Decimal(10, 2)
+  currency     String            @default("RUB")
+  status       PaymentStatus     @default(pending)
   plan         SubscriptionPlan?
-  isAutoCharge Boolean              @default(false) @map("is_auto_charge")
-  promoCode    String?              @map("promo_code")
+  isAutoCharge Boolean           @default(false) @map("is_auto_charge")
+  promoCode    String?           @map("promo_code")
   metadata     Json?
 
   paidAt    DateTime? @map("paid_at") @db.Timestamptz(3)
@@ -103,11 +89,10 @@ model Payment {
 model PromoCode {
   code String @id
 
-  product         SubscriptionProduct?
-  discountPercent Int?                 @map("discount_percent") @db.SmallInt
-  freeDays        Int?                 @map("free_days") @db.SmallInt
-  maxUses         Int?                 @map("max_uses")
-  usedCount       Int                  @default(0) @map("used_count")
+  discountPercent Int? @map("discount_percent") @db.SmallInt
+  freeDays        Int? @map("free_days") @db.SmallInt
+  maxUses         Int? @map("max_uses")
+  usedCount       Int  @default(0) @map("used_count")
 
   expiresAt DateTime? @map("expires_at") @db.Timestamptz(3)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -143,4 +128,14 @@ model Referral {
 
   @@index([referrerUserId])
   @@map("referral")
+}
+
+model PlusTrial {
+  accountId BigInt @id @map("account_id")
+
+  userId    String   @map("user_id")
+  startedAt DateTime @default(now()) @map("started_at") @db.Timestamptz(3)
+
+  @@index([userId])
+  @@map("plus_trial")
 }

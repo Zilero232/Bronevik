@@ -14,6 +14,10 @@ export const MODEL_SOURCES = {
   RU: { owner: 'unicum-gg', repo: 'wot.models', ref: 'Lesta', isTest: false }
 } as const;
 
+export const LOCALE_SOURCES = {
+  RU: { owner: 'izeberg', repo: 'wot-src', ref: 'RU' }
+} as const;
+
 export const MODEL_PATHS = {
   version: '.version_name',
   index: 'vehicles.json',
@@ -42,5 +46,6 @@ export const GAME_PATHS = {
   postProgression: 'sources/res/scripts/item_defs/vehicles/common/post_progression',
   perks: 'sources/res/scripts/item_defs/perks/perks.xml',
   tankmen: 'sources/res/scripts/item_defs/tankmen/tankmen.xml',
-  arenas: 'sources/res/scripts/arena_defs'
+  arenas: 'sources/res/scripts/arena_defs',
+  personalMissions: 'sources/res/scripts/item_defs/personal_missions'
 } as const;

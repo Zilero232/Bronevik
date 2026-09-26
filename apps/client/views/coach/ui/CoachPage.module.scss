@@ -1,0 +1,103 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-4));
+
+  padding-block: var(--space-7) var(--space-8);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
+}
+
+.title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.grid {
+  display: grid;
+  align-items: start;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr) 360px;
+
+  @include below(2xl) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main,
+.side {
+  @include stack(var(--space-4));
+
+  min-width: 0;
+}
+
+.summary {
+  @include stack(var(--space-3));
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  gap: var(--space-5);
+
+  dd {
+    margin: 0;
+  }
+}
+
+.fact {
+  @include stack(var(--space-1));
+}
+
+.label {
+  @include label;
+}
+
+.value {
+  @include numeric(var(--text-xl));
+}
+
+.rating {
+  @include numeric(var(--text-xl));
+
+  display: flex;
+  align-items: center;
+  color: var(--color-premium);
+  gap: var(--space-1);
+}
+
+.profile {
+  align-self: flex-start;
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+}
+
+.bio {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.tanks {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.tank {
+  @include well;
+
+  display: flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+}

@@ -39,5 +39,6 @@
     "invalid": "Invalid overlay link",
     "unavailable": "Overlay unavailable"
   },
-  "attribution": "data: Lesta Games"
+  "attribution": "data: Lesta Games",
+  "paused": "Overlay paused"
 }

@@ -10,8 +10,16 @@ import { PlusPage } from '@/views/plus';
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
   const t = await getTranslations({ locale, namespace: 'plus.meta' });
+  const tBrand = await getTranslations({ locale, namespace: 'brand' });
 
-  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.plus, locale, index: true, follow: true });
+  return createPageMetadata({
+    title: t('title', { plus: tBrand('plus') }),
+    description: t('description'),
+    path: ROUTES.plus,
+    locale,
+    index: true,
+    follow: true
+  });
 };
 
 const Page = () => (

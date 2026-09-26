@@ -17,7 +17,7 @@ import {
   WebhookEventDto
 } from './dto';
 import { WebhookIpGuard } from './guards';
-import { CheckoutService, PromoService, ReferralService, SubscriptionService, WebhookService } from './services';
+import { CheckoutService, PromoService, ReferralService, SubscriptionService, TrialService, WebhookService } from './services';
 
 @ApiTags('billing')
 @Controller()
@@ -27,6 +27,7 @@ export class BillingController {
     private readonly checkout: CheckoutService,
     private readonly promos: PromoService,
     private readonly referrals: ReferralService,
+    private readonly trials: TrialService,
     private readonly webhooks: WebhookService
   ) {}
 
@@ -54,6 +55,13 @@ export class BillingController {
   @ZodResponse({ type: CheckoutResultDto })
   createCheckout(@CurrentUserId() userId: string, @Body() { plan, promoCode }: CheckoutDto) {
     return this.checkout.createCheckout({ userId, plan, promoCode });
+  }
+
+  @Post('me/billing/trial')
+  @HttpCode(HttpStatus.OK)
+  @ZodResponse({ type: BillingStatusDto })
+  startTrial(@CurrentUserId() userId: string) {
+    return this.trials.start(userId);
   }
 
   @Post('me/billing/cancel')

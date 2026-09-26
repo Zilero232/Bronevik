@@ -8,9 +8,13 @@ import type { TankDetailInput } from '../tanks.types';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { SERVER_PERIOD_TO_DB, STATS_MODE_TO_DB } from '../../../common/lib';
 import { PrismaService } from '../../../core';
+import { SweatIndexService } from '../../marks';
 import { readVehicleStats, ThresholdsService, toMasteryThreshold, toMoeThreshold, VehicleCatalogService } from '../../reference';
 import { TANK_PROFILES, TOP_PLAYERS } from '../config';
 import { toServerStatsRow } from '../lib';
+import { TankEconomyReportService } from './tank-economy-report.service';
+import { TankLearningService } from './tank-learning.service';
+import { TankObtainService } from './tank-obtain.service';
 import { TopPlayersService } from './top-players.service';
 
 @Injectable()
@@ -19,7 +23,11 @@ export class TankDetailService {
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
     private readonly thresholds: ThresholdsService,
-    private readonly topPlayers: TopPlayersService
+    private readonly topPlayers: TopPlayersService,
+    private readonly obtainInfo: TankObtainService,
+    private readonly economy: TankEconomyReportService,
+    private readonly learning: TankLearningService,
+    private readonly sweat: SweatIndexService
   ) {}
 
   async resolve(idOrSlug: string): Promise<number> {
@@ -41,7 +49,7 @@ export class TankDetailService {
       throw new AppNotFoundException('TANK_NOT_FOUND', `No tank ${idOrSlug}`);
     }
 
-    const [stats, profiles, moe, mastery, top] = await Promise.all([
+    const [stats, profiles, moe, mastery, top, obtain, economy, learning, sweat] = await Promise.all([
       this.prisma.tankServerStats.findMany({
         where: { tankId, mode: STATS_MODE_TO_DB[query.mode], period: SERVER_PERIOD_TO_DB[query.period] }
       }),
@@ -51,7 +59,11 @@ export class TankDetailService {
       this.topPlayers.top({
         tankId,
         query: { period: 'overall', metric: 'wn8', limit: TOP_PLAYERS.detailLimit, minBattles: TOP_PLAYERS.defaultMinBattles }
-      })
+      }),
+      this.obtainInfo.obtain(tankId),
+      this.economy.forTank(tankId),
+      this.learning.forTank(tankId),
+      this.sweat.forTank(tankId)
     ]);
 
     return {
@@ -65,7 +77,11 @@ export class TankDetailService {
       serverStats: stats.map((row) => toServerStatsRow({ row, vehicle: entry.summary, period: query.period, cohort: row.cohort, mode: query.mode })),
       moe: moe ? toMoeThreshold(moe) : null,
       mastery: mastery ? toMasteryThreshold(mastery) : null,
-      topPlayers: top.entries
+      topPlayers: top.entries,
+      obtain,
+      economy,
+      learning,
+      sweat
     };
   }
 }

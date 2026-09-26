@@ -5,7 +5,15 @@ import { match } from 'ts-pattern';
 import { WORKER_CONCURRENCY } from '../../config';
 import { accountRatingsPayloadSchema, JOB, QUEUE } from '../../contracts';
 import { MetricsService } from '../../metrics';
-import { AccountRatingsService, ServerStatsService, TankPercentilesService, TierMaintenanceService } from '../services';
+import {
+  AccountRatingsService,
+  BuildUsageService,
+  LearningCurveService,
+  ServerStatsService,
+  TankEconomyService,
+  TankPercentilesService,
+  TierMaintenanceService
+} from '../services';
 
 @Processor(QUEUE.aggregate, { concurrency: WORKER_CONCURRENCY.aggregate })
 export class AggregateProcessor extends WorkerHost {
@@ -14,6 +22,9 @@ export class AggregateProcessor extends WorkerHost {
     private readonly serverStats: ServerStatsService,
     private readonly percentiles: TankPercentilesService,
     private readonly maintenance: TierMaintenanceService,
+    private readonly economy: TankEconomyService,
+    private readonly learning: LearningCurveService,
+    private readonly buildUsage: BuildUsageService,
     private readonly metrics: MetricsService
   ) {
     super();
@@ -28,6 +39,9 @@ export class AggregateProcessor extends WorkerHost {
           .with(JOB.aggregate.serverStats, () => this.serverStats.compute())
           .with(JOB.aggregate.tankPercentiles, () => this.percentiles.compute())
           .with(JOB.aggregate.tierMaintenance, () => this.maintenance.run())
+          .with(JOB.aggregate.tankEconomy, () => this.economy.compute())
+          .with(JOB.aggregate.learningCurve, () => this.learning.compute())
+          .with(JOB.aggregate.buildUsage, () => this.buildUsage.compute())
           .otherwise(async () => ({ ignored: job.name }))
     });
   }

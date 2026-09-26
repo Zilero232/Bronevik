@@ -1,21 +1,18 @@
 import type { ApiErrorCode } from '@otmetki/schemas';
 
-import type { SubscriptionStatus } from '../../../../generated';
+import { BRAND } from '@otmetki/schemas';
+
 import type { PromoRejection } from '../lib/promo-check';
 
 export const PLUS_PLANS = {
   monthly: { plan: 'monthly', months: 1, priceRub: 199 },
+  quarterly: { plan: 'quarterly', months: 3, priceRub: 529 },
   yearly: { plan: 'yearly', months: 12, priceRub: 1_990 }
 } as const;
 
-export const PLUS_SUBSCRIPTION = {
-  product: 'plus',
-  entitledStatuses: ['active', 'trialing', 'pastDue'] satisfies SubscriptionStatus[]
-} as const;
-
 export const PAYMENT_DESCRIPTION = {
-  purchase: 'Три отметки Плюс: {months} мес.',
-  renewal: 'Продление «Три отметки Плюс»: {months} мес.'
+  purchase: `${BRAND.plusName}: {months} мес.`,
+  renewal: `Продление «${BRAND.plusName}»: {months} мес.`
 } as const;
 
 export const BILLING_LINKS = {
@@ -28,8 +25,12 @@ export const PRICING = {
 
 export const PROMO_REJECTION_CODE = {
   unknown: 'PROMO_INVALID',
-  wrongProduct: 'PROMO_INVALID',
   expired: 'PROMO_EXPIRED',
   exhausted: 'PROMO_EXHAUSTED',
   alreadyRedeemed: 'PROMO_ALREADY_REDEEMED'
 } as const satisfies Record<PromoRejection, ApiErrorCode>;
+
+export const ENTITLEMENTS = {
+  cacheTtlMs: 60_000,
+  cacheMaxEntries: 10_000
+} as const;

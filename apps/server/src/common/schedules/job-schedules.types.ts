@@ -1,4 +1,4 @@
-import type { JobSchedule } from '../../modules/notifications';
+import type { JobSchedule } from '../lib';
 
 export type CreateJobSchedulesInput = {
   queue: string;

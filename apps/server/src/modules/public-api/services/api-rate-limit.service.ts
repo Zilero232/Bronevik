@@ -1,7 +1,7 @@
-import type { ApiPlan } from '@otmetki/schemas';
+import type { ApiTier } from '@otmetki/schemas';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { API_PLAN_LIMITS } from '@otmetki/schemas';
+import { API_TIER_LIMITS } from '@otmetki/schemas';
 import { millisecondsInSecond } from 'date-fns/constants';
 import { Redis } from 'ioredis';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
@@ -17,22 +17,22 @@ import { API_RATE_LIMIT } from '../config';
 @Injectable()
 export class ApiRateLimitService {
   private readonly logger = new Logger(ApiRateLimitService.name);
-  private readonly limiters = new Map<ApiPlan, RateLimiterRedis>();
+  private readonly limiters = new Map<ApiTier, RateLimiterRedis>();
 
   constructor(@Inject(REDIS) private readonly redis: Redis) {}
 
-  async consume(key: Pick<AuthenticatedApiKey, 'id' | 'plan'>): Promise<SecondBudget> {
-    const limit = API_PLAN_LIMITS[key.plan].requestsPerSecond;
+  async consume(key: Pick<AuthenticatedApiKey, 'id' | 'tier'>): Promise<SecondBudget> {
+    const limit = API_TIER_LIMITS[key.tier].requestsPerSecond;
 
     try {
-      const { remainingPoints } = await this.limiter(key.plan).consume(key.id);
+      const { remainingPoints } = await this.limiter(key.tier).consume(key.id);
 
       return { limit, remaining: remainingPoints };
     } catch (error) {
       if (error instanceof RateLimiterRes) {
         throw new AppTooManyRequestsException(
           'RATE_LIMITED',
-          `Up to ${limit} requests per second on the ${key.plan} plan`,
+          `Up to ${limit} requests per second on the ${key.tier} tier`,
           Math.max(1, Math.ceil(error.msBeforeNext / millisecondsInSecond))
         );
       }
@@ -43,8 +43,8 @@ export class ApiRateLimitService {
     }
   }
 
-  private limiter(plan: ApiPlan): RateLimiterRedis {
-    const existing = this.limiters.get(plan);
+  private limiter(tier: ApiTier): RateLimiterRedis {
+    const existing = this.limiters.get(tier);
 
     if (existing) {
       return existing;
@@ -52,12 +52,12 @@ export class ApiRateLimitService {
 
     const limiter = new RateLimiterRedis({
       storeClient: this.redis,
-      keyPrefix: `${API_RATE_LIMIT.secondPrefix}:${plan}`,
-      points: API_PLAN_LIMITS[plan].requestsPerSecond,
+      keyPrefix: `${API_RATE_LIMIT.secondPrefix}:${tier}`,
+      points: API_TIER_LIMITS[tier].requestsPerSecond,
       duration: API_RATE_LIMIT.secondWindow
     });
 
-    this.limiters.set(plan, limiter);
+    this.limiters.set(tier, limiter);
 
     return limiter;
   }

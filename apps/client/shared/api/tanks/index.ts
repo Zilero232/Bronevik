@@ -1,9 +1,25 @@
 export { compareTanks } from './compare-tanks';
-export { getTank, getTankPatches, getTankTopPlayers, getTankTrend, getTierList, listTankStats, listVehicles } from './tanks';
+export {
+  getMyEconomy,
+  getMyTankLearning,
+  getTank,
+  getTankEconomy,
+  getTankPatches,
+  getTankTopPlayers,
+  getTankTrend,
+  getTierList,
+  listTankEconomy,
+  listTankStats,
+  listVehicles
+} from './tanks';
 
 export type {
   CompareTanksInput,
+  MyEconomyInput,
+  MyLearningInput,
   TankDetailInput,
+  TankEconomyInput,
+  TankEconomyTableInput,
   TankPatchesInput,
   TankStatsInput,
   TankTopPlayersInput,

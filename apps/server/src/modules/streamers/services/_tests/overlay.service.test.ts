@@ -15,8 +15,9 @@ const config = overlayConfigSchema.parse({ metrics: ['wn8'] });
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const data = mock<OverlayDataService>();
+  const entitlements = mock<EntitlementsService>();
 
-  return { service: new OverlayService(prisma, mock<AppConfigService>(), mock<EntitlementsService>(), data), prisma, data };
+  return { service: new OverlayService(prisma, mock<AppConfigService>(), entitlements, data), prisma, data, entitlements };
 };
 
 describe('OverlayService.preview', () => {
@@ -27,5 +28,18 @@ describe('OverlayService.preview', () => {
 
     await expect(service.preview({ userId: 'u1', accountId: 7, kind: 'wn8', config })).rejects.toBeInstanceOf(AppForbiddenException);
     expect(data.preview).not.toHaveBeenCalled();
+  });
+});
+
+describe('OverlayService.create', () => {
+  it('checks the overlay count against the Plus limits before creating', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    prisma.overlay.count.mockResolvedValue(2);
+    entitlements.assertWithinLimit.mockRejectedValue(new AppForbiddenException('SUBSCRIPTION_REQUIRED', 'limit', { feature: 'overlays', limit: 2 }));
+
+    await expect(service.create({ userId: 'u1', name: 'x', kind: 'wn8', config })).rejects.toBeInstanceOf(AppForbiddenException);
+    expect(entitlements.assertWithinLimit).toHaveBeenCalledWith({ userId: 'u1', key: 'overlays', count: 2, feature: 'overlays' });
+    expect(prisma.overlay.create).not.toHaveBeenCalled();
   });
 });

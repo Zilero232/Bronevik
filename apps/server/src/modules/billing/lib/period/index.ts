@@ -1,1 +1,1 @@
-export { cancelsAtPeriodEnd, extendPeriod, isEntitled, renewalIdempotenceKey } from './period';
+export { cancelsAtPeriodEnd, extendPeriod, isPeriodActive, renewalIdempotenceKey } from './period';

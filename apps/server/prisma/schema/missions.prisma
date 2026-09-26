@@ -1,0 +1,118 @@
+enum MissionBranchKind {
+  vehicleClass @map("vehicle_class")
+  alliance
+  levelGroup   @map("level_group")
+
+  @@map("mission_branch_kind")
+}
+
+enum MissionProgressSource {
+  manual
+  mod
+
+  @@map("mission_progress_source")
+}
+
+model MissionCampaign {
+  gameVersionId Int @map("game_version_id")
+  campaignId    Int @map("campaign_id")
+
+  branch        String?
+  name          String?
+  description   String?
+  rewardTankId  Int?    @map("reward_tank_id")
+  rewardTankTag String? @map("reward_tank_tag")
+
+  gameVersion GameVersion        @relation(fields: [gameVersionId], references: [id], onDelete: Cascade)
+  operations  MissionOperation[]
+
+  @@id([gameVersionId, campaignId])
+  @@map("mission_campaign")
+}
+
+model MissionOperation {
+  gameVersionId Int @map("game_version_id")
+  operationId   Int @map("operation_id")
+  campaignId    Int @map("campaign_id")
+
+  name               String?
+  description        String?
+  iconId             String? @map("icon_id")
+  nextOperationIds   Int[]   @map("next_operation_ids")
+  chainsCount        Int     @map("chains_count") @db.SmallInt
+  missionsPerChain   Int     @map("missions_per_chain") @db.SmallInt
+  chainsToUnlockNext Int     @map("chains_to_unlock_next") @db.SmallInt
+  rewardTankId       Int?    @map("reward_tank_id")
+  rewardTankTag      String? @map("reward_tank_tag")
+
+  campaign MissionCampaign @relation(fields: [gameVersionId, campaignId], references: [gameVersionId, campaignId], onDelete: Cascade)
+  branches MissionBranch[]
+
+  @@id([gameVersionId, operationId])
+  @@index([gameVersionId, campaignId])
+  @@map("mission_operation")
+}
+
+model MissionBranch {
+  gameVersionId Int @map("game_version_id")
+  operationId   Int @map("operation_id")
+  chainId       Int @map("chain_id") @db.SmallInt
+
+  kind    MissionBranchKind
+  key     String
+  nations String[]
+  minTier Int               @map("min_tier") @db.SmallInt
+  maxTier Int               @map("max_tier") @db.SmallInt
+
+  operation MissionOperation @relation(fields: [gameVersionId, operationId], references: [gameVersionId, operationId], onDelete: Cascade)
+  missions  Mission[]
+
+  @@id([gameVersionId, operationId, chainId])
+  @@map("mission_branch")
+}
+
+model Mission {
+  gameVersionId Int @map("game_version_id")
+  questId       Int @map("quest_id")
+
+  name            String
+  campaignId      Int      @map("campaign_id")
+  operationId     Int      @map("operation_id")
+  chainId         Int      @map("chain_id") @db.SmallInt
+  position        Int      @db.SmallInt
+  title           String
+  shortTitle      String?  @map("short_title")
+  description     String?
+  advice          String?
+  minTier         Int      @map("min_tier") @db.SmallInt
+  maxTier         Int      @map("max_tier") @db.SmallInt
+  vehicleClasses  String[] @map("vehicle_classes")
+  alliances       String[]
+  isInitial       Boolean  @map("is_initial")
+  isFinal         Boolean  @map("is_final")
+  hasHonors       Boolean  @map("has_honors")
+  requiredUnlocks Int[]    @map("required_unlocks")
+  conditions      Json
+
+  branch MissionBranch @relation(fields: [gameVersionId, operationId, chainId], references: [gameVersionId, operationId, chainId], onDelete: Cascade)
+
+  @@id([gameVersionId, questId])
+  @@index([gameVersionId, operationId, chainId, position])
+  @@map("mission")
+}
+
+model UserMissionProgress {
+  userId  String @map("user_id")
+  questId Int    @map("quest_id")
+
+  done   Boolean               @default(false)
+  honors Boolean               @default(false)
+  source MissionProgressSource @default(manual)
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, questId])
+  @@map("user_mission_progress")
+}

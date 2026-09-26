@@ -8,6 +8,7 @@ import {
   billingControllerRedeemPromo,
   billingControllerRegisterReferral,
   billingControllerResumeAutoRenew,
+  billingControllerStartTrial,
   billingControllerStatus
 } from '../generated';
 import { SESSION_REQUEST } from '../http';
@@ -25,6 +26,8 @@ export const createCheckout = (input: CheckoutInput): Promise<CheckoutResult> =>
 export const cancelAutoRenew = (): Promise<BillingStatus> => fromSdk(() => billingControllerCancelAutoRenew(SESSION_REQUEST));
 
 export const resumeAutoRenew = (): Promise<BillingStatus> => fromSdk(() => billingControllerResumeAutoRenew(SESSION_REQUEST));
+
+export const startPlusTrial = (): Promise<BillingStatus> => fromSdk(() => billingControllerStartTrial(SESSION_REQUEST));
 
 export const redeemPromo = (input: PromoRedeemInput): Promise<BillingStatus> =>
   fromSdk(() => billingControllerRedeemPromo({ ...SESSION_REQUEST, body: input }));

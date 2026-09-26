@@ -2,19 +2,21 @@ import type { CreatedWebhookEndpoint, WebhookDelivery, WebhookEndpoint } from '@
 
 import { Injectable } from '@nestjs/common';
 
-import type { CreateEndpointInput, OwnedKeyInput, UpdateEndpointInput } from '../developer.types';
+import type { ApplyTierInput, CreateEndpointInput, OwnedKeyInput, UpdateEndpointInput } from '../developer.types';
 
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
-import { API_PLANS, WEBHOOK_DELIVERY, WEBHOOK_EVENT_TO_DB } from '../config';
+import { API_TIERS, WEBHOOK_DELIVERY, WEBHOOK_EVENT_TO_DB } from '../config';
 import { generateWebhookSecret, resolvesPublicly, toWebhookDelivery, toWebhookEndpoint } from '../lib';
-import { DeveloperPlanService } from './developer-plan.service';
+import { ApiTierService } from './api-tier.service';
+import { HostLookupService } from './host-lookup.service';
 
 @Injectable()
 export class WebhookEndpointsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly plans: DeveloperPlanService
+    private readonly tiers: ApiTierService,
+    private readonly hosts: HostLookupService
   ) {}
 
   async list(userId: string): Promise<WebhookEndpoint[]> {
@@ -26,11 +28,11 @@ export class WebhookEndpointsService {
   async create({ userId, url, events, filter }: CreateEndpointInput): Promise<CreatedWebhookEndpoint> {
     await this.assertPublic(url);
 
-    const [plan, existing] = await Promise.all([this.plans.planFor(userId), this.prisma.webhookEndpoint.count({ where: { userId } })]);
-    const limit = API_PLANS[plan].webhooks;
+    const [tier, existing] = await Promise.all([this.tiers.tierFor(userId), this.prisma.webhookEndpoint.count({ where: { userId } })]);
+    const limit = API_TIERS[tier].webhooks;
 
     if (existing >= limit) {
-      throw new AppConflictException('PLAN_LIMIT_REACHED', `The ${plan} plan allows ${limit} webhook endpoint(s)`);
+      throw new AppConflictException('PLAN_LIMIT_REACHED', `The ${tier} tier allows ${limit} webhook endpoint(s)`, { feature: 'apiLimits', limit });
     }
 
     const secret = generateWebhookSecret();
@@ -47,6 +49,10 @@ export class WebhookEndpointsService {
 
     if (url !== undefined) {
       await this.assertPublic(url);
+    }
+
+    if (isActive) {
+      await this.assertActiveRoom({ userId, id });
     }
 
     const row = await this.prisma.webhookEndpoint.update({
@@ -79,8 +85,45 @@ export class WebhookEndpointsService {
     return rows.flatMap(toWebhookDelivery);
   }
 
+  async enforceTier({ userId, tier }: ApplyTierInput): Promise<number> {
+    const active = await this.prisma.webhookEndpoint.findMany({
+      where: { userId, isActive: true },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true }
+    });
+
+    const over = active.slice(API_TIERS[tier].webhooks).map((endpoint) => endpoint.id);
+
+    if (over.length === 0) {
+      return 0;
+    }
+
+    const { count } = await this.prisma.webhookEndpoint.updateMany({
+      where: { id: { in: over } },
+      data: { isActive: false, disabledAt: new Date() }
+    });
+
+    return count;
+  }
+
+  private async assertActiveRoom({ userId, id }: OwnedKeyInput): Promise<void> {
+    const [tier, active] = await Promise.all([
+      this.tiers.tierFor(userId),
+      this.prisma.webhookEndpoint.count({ where: { userId, isActive: true, id: { not: id } } })
+    ]);
+
+    const limit = API_TIERS[tier].webhooks;
+
+    if (active >= limit) {
+      throw new AppConflictException('PLAN_LIMIT_REACHED', `The ${tier} tier allows ${limit} active webhook endpoint(s)`, {
+        feature: 'apiLimits',
+        limit
+      });
+    }
+  }
+
   private async assertPublic(url: string): Promise<void> {
-    if (!(await resolvesPublicly({ url }))) {
+    if (!(await resolvesPublicly({ url, lookup: this.hosts.resolve }))) {
       throw new AppBadRequestException('VALIDATION_FAILED', 'A webhook must point to a public https address');
     }
   }

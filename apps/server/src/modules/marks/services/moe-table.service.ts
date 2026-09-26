@@ -11,24 +11,27 @@ import { page, sortRows, toIsoDate } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { ThresholdsService, toMasteryThreshold, toMoeThreshold, VehicleCatalogService } from '../../reference';
 import { MOE_TABLE } from '../config';
-import { historySeries } from '../lib';
+import { EMPTY_SWEAT, historySeries } from '../lib';
+import { SweatIndexService } from './sweat-index.service';
 
 @Injectable()
 export class MoeTableService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly thresholds: ThresholdsService,
-    private readonly catalog: VehicleCatalogService
+    private readonly catalog: VehicleCatalogService,
+    private readonly sweat: SweatIndexService
   ) {}
 
   async table(query: MoeQuery): Promise<Paginated<MoeRow>> {
     const now = new Date();
 
-    const [current, week, month, eligible] = await Promise.all([
+    const [current, week, month, eligible, sweat] = await Promise.all([
       this.thresholds.latest(query.source),
       this.thresholds.asOf({ date: subDays(now, MOE_TABLE.trendDays.week), source: query.source }),
       this.thresholds.asOf({ date: subDays(now, MOE_TABLE.trendDays.month), source: query.source }),
-      this.catalog.filter(query)
+      this.catalog.filter(query),
+      this.sweat.all()
     ]);
 
     const needle = query.search?.toLocaleLowerCase('ru');
@@ -54,6 +57,7 @@ export class MoeTableService {
             p95Delta7d: moe && weekAgo ? moe.p95 - weekAgo.p95 : null,
             p95Delta30d: moe && monthAgo ? moe.p95 - monthAgo.p95 : null
           },
+          sweat: sweat.get(tankId) ?? EMPTY_SWEAT,
           updatedAt: moe ? moe.capturedAt.toISOString() : null
         };
       });
@@ -71,6 +75,8 @@ export class MoeTableService {
           .with('tier', () => row.vehicle.tier)
           .with('p95Delta30d', () => row.trend.p95Delta30d)
           .with('p95Change30d', () => (row.trend.p95Delta30d === null ? null : Math.abs(row.trend.p95Delta30d)))
+          .with('sweat', () => row.sweat.moe)
+          .with('masterySweat', () => row.sweat.mastery)
           .exhaustive()
     });
 

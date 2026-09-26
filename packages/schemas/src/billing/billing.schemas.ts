@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
 import { isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
+import { plusStateSchema } from '../plus/plus.schemas';
 import { PROMO_CODE } from './billing.constants';
 
-export const plusPlanSchema = z.enum(['monthly', 'yearly']);
+export const plusPlanSchema = z.enum(['monthly', 'quarterly', 'yearly']);
 
-export const subscriptionPlanSchema = z.enum(['monthly', 'halfYearly', 'yearly']);
+export const subscriptionPlanSchema = plusPlanSchema;
 
 export const subscriptionStatusSchema = z.enum(['trialing', 'active', 'pastDue', 'canceled', 'expired']);
 
@@ -37,6 +38,8 @@ export const billingStatusSchema = z.object({
   cancelAtPeriodEnd: z.boolean(),
   card: z.string().nullable(),
   isRecurringAvailable: z.boolean(),
+  isCheckoutAvailable: z.boolean(),
+  plus: plusStateSchema,
   plans: plansSchema
 });
 

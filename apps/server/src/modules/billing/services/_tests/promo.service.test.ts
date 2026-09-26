@@ -10,7 +10,7 @@ import { AppBadRequestException } from '../../../../common/exceptions';
 import { PROMO_REJECTION_CODE } from '../../config';
 import { PromoService } from '../promo.service';
 
-const promo = mock<PromoCode>({ code: 'FREE7', product: null, discountPercent: null, freeDays: 7, maxUses: null, usedCount: 0, expiresAt: null });
+const promo = mock<PromoCode>({ code: 'FREE7', discountPercent: null, freeDays: 7, maxUses: null, usedCount: 0, expiresAt: null });
 
 describe('PromoService', () => {
   const createService = () => {

@@ -12,6 +12,7 @@ from ..binding import BIND_PATH, BindError, CredentialStore, build_bind_request,
 from ..config import Config
 from ..i18n import Translator, resolve_language
 from ..jsonutil import dumps_bytes
+from ..loadout import LoadoutTracker
 from ..moe import ThresholdCurve, project, rating_to_percent
 from ..outbox import Outbox
 from ..panels import format_moe_panel, format_session_panel, format_session_plain
@@ -24,6 +25,7 @@ from ..storage import JsonFile
 from ..version import MOD_ID, VERSION
 from .battle import BattleMoeTracker
 from .dossier import current_vehicle_id, current_vehicle_moe
+from .loadout import read_current_loadout
 from .fetch import create_transport
 from .log import log, log_exception, safe
 from .settings_ui import SettingsUi
@@ -105,6 +107,7 @@ class OtmetkiApp(object):
         self.transport = create_transport()
         self.queue_timer = QueueTimer()
         self.queue_wait_by_arena = {}
+        self.loadouts = LoadoutTracker()
         self.thresholds = {}
         self.threshold_requests = set()
         self.hangar_moe = {}
@@ -347,6 +350,9 @@ class OtmetkiApp(object):
     @safe
     def _on_enqueued(self, queue_type, *args):
         self.queue_timer.enqueued(queue_type, time.time())
+        if self.config.is_enabled('send_loadouts'):
+            tank_id, loadout = read_current_loadout()
+            self.loadouts.queued(tank_id, loadout)
 
     @safe
     def _on_dequeued(self, queue_type, *args):
@@ -372,6 +378,7 @@ class OtmetkiApp(object):
         arena_id = getattr(player, 'arenaUniqueID', None)
         wait = self.queue_timer.take_last_wait()
         if arena_id:
+            self.loadouts.battle_started(arena_id, _player_tank_id(player))
             if wait is not None:
                 self.queue_wait_by_arena[arena_id] = wait
             if arena_id not in [entry[0] for entry in self.pending_arenas]:
@@ -451,6 +458,7 @@ class OtmetkiApp(object):
             'vehicle_tier': tier,
             'map_name': _map_name(common.get('arenaTypeID')),
             'queue_time_s': self.queue_wait_by_arena.pop(arena_id, None),
+            'loadout': self.loadouts.take(arena_id, tank_id) if self.config.is_enabled('send_loadouts') else None,
         })
         event['session_id'] = self.session.add(event, now)
         self.seen_arenas.append(arena_id)

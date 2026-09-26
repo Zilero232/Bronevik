@@ -1,0 +1,77 @@
+@use 'sass:math';
+@use '@/shared/styles/mixins' as *;
+
+$levels: 6;
+
+@mixin heat-fill($property) {
+  @for $level from 1 through $levels {
+    &[data-level='#{$level}'] {
+      #{$property}: color-mix(in srgb, var(--color-accent) #{math.round(math.div($level, $levels) * 90%)}, var(--color-surface-sunken));
+    }
+  }
+}
+
+.body {
+  @include stack(var(--space-3));
+
+  padding: var(--space-4);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.figure {
+  @include stack(var(--space-2));
+
+  margin: 0;
+}
+
+.map {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  border: 1px solid var(--color-border);
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+.ground {
+  fill: var(--color-surface-sunken);
+}
+
+.cell {
+  @include heat-fill(fill);
+}
+
+.line {
+  stroke: var(--color-border);
+  stroke-width: 0.15;
+}
+
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-3);
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--color-border);
+
+  @include heat-fill(background-color);
+}

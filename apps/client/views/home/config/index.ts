@@ -1,1 +1,1 @@
-export { HOME, HOME_LINKS } from './home.constants';
+export { HOME } from './home.constants';

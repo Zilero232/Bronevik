@@ -1,0 +1,86 @@
+{
+  "comments": {
+    "title": "Comments",
+    "count": "{count, plural, one {# comment} other {# comments}}",
+    "placeholder": "Write a comment",
+    "replyPlaceholder": "Your reply",
+    "send": "Send",
+    "reply": "Reply",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleted": "Comment deleted",
+    "removed": "Comment deleted",
+    "failed": "Something went wrong. Try again.",
+    "signIn": "Sign in",
+    "signInHint": "to leave a comment",
+    "emptyTitle": "No comments yet",
+    "emptyDescription": "Start the discussion.",
+    "errorTitle": "Could not load comments",
+    "errorDescription": "The server did not respond. Try again.",
+    "counter": "{length} / {max}",
+    "errors": {
+      "body": "The comment is empty or too long"
+    }
+  },
+  "report": {
+    "trigger": "Report",
+    "signIn": "Sign in to report",
+    "title": "Report",
+    "description": "Moderators will review the report. The author will not know who sent it.",
+    "reason": "Reason",
+    "reasons": {
+      "spam": "Spam or ads",
+      "abuse": "Abuse",
+      "cheating": "Cheats or banned mods",
+      "copyright": "Someone else’s content",
+      "other": "Other"
+    },
+    "details": "Details",
+    "detailsHint": "Optional · {length} / {max}",
+    "detailsPlaceholder": "What is wrong?",
+    "detailsError": "The text is too long",
+    "submit": "Send",
+    "cancel": "Cancel",
+    "sent": "Report sent",
+    "failed": "Could not send the report"
+  },
+  "stats": {
+    "battles": "Battles",
+    "wn8": "WN8",
+    "winRate": "Win rate",
+    "none": "No stats yet"
+  },
+  "requirements": {
+    "title": "Requirements",
+    "none": "No requirements",
+    "minBattles": "{value}+ battles",
+    "minWn8": "WN8 from {value}",
+    "maxWn8": "WN8 up to {value}",
+    "minWinRate": "win rate from {value}%",
+    "fields": {
+      "legend": "Player requirements",
+      "minBattles": "Battles from",
+      "minWn8": "WN8 from",
+      "maxWn8": "WN8 up to",
+      "minWinRate": "Win rate from, %",
+      "any": "Any",
+      "invalid": "A non-negative number"
+    }
+  },
+  "gate": {
+    "signIn": "Sign in",
+    "signInHint": "Sign in to post",
+    "linkLesta": "Link account",
+    "linkLestaHint": "A linked Lesta account is required"
+  },
+  "accounts": {
+    "label": "Account",
+    "primary": "Primary account"
+  },
+  "contact": {
+    "copy": "Copy nickname",
+    "copyHint": "There are no private messages — message the player in game",
+    "copied": "Nickname copied",
+    "profile": "Profile"
+  }
+}

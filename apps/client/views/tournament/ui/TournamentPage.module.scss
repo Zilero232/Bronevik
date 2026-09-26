@@ -1,0 +1,36 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-4));
+
+  padding-block: var(--space-7) var(--space-8);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
+}
+
+.grid {
+  display: grid;
+  align-items: start;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr) 340px;
+
+  @include below(2xl) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main,
+.side {
+  @include stack(var(--space-4));
+
+  min-width: 0;
+}
+
+.description {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}

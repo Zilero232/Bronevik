@@ -9,12 +9,14 @@ import { COHORT_TO_DB, page, SERVER_PERIOD_TO_DB, sortRows, STATS_MODE_TO_DB } f
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { toServerStatsRow } from '../lib';
+import { TankTraitsService } from './tank-traits.service';
 
 @Injectable()
 export class TankStatsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly catalog: VehicleCatalogService
+    private readonly catalog: VehicleCatalogService,
+    private readonly traits: TankTraitsService
   ) {}
 
   async list(query: TankStatsListInput): Promise<Paginated<TankServerStatsRow>> {
@@ -27,7 +29,7 @@ export class TankStatsService {
           battles: { gte: query.minBattles }
         }
       }),
-      this.catalog.filter(query)
+      this.catalog.filter(query).then((entries) => this.traits.filter({ entries, filter: query }))
     ]);
 
     const vehicles = new Map(eligible.map((entry) => [entry.summary.tankId, entry.summary]));

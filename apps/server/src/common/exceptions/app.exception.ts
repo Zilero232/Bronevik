@@ -1,4 +1,4 @@
-import type { ApiErrorCode } from '@otmetki/schemas';
+import type { ApiErrorCode, ApiErrorDetails } from '@otmetki/schemas';
 
 import { HttpException, HttpStatus } from '@nestjs/common';
 
@@ -17,8 +17,8 @@ export class AppUnauthorizedException extends HttpException {
 }
 
 export class AppForbiddenException extends HttpException {
-  constructor(code: ApiErrorCode, error: string) {
-    super(errorBody({ code, error }), HttpStatus.FORBIDDEN);
+  constructor(code: ApiErrorCode, error: string, details?: ApiErrorDetails) {
+    super(errorBody({ code, error, details }), HttpStatus.FORBIDDEN);
   }
 }
 
@@ -29,8 +29,8 @@ export class AppNotFoundException extends HttpException {
 }
 
 export class AppConflictException extends HttpException {
-  constructor(code: ApiErrorCode, error: string) {
-    super(errorBody({ code, error }), HttpStatus.CONFLICT);
+  constructor(code: ApiErrorCode, error: string, details?: ApiErrorDetails) {
+    super(errorBody({ code, error, details }), HttpStatus.CONFLICT);
   }
 }
 

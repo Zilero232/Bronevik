@@ -1,0 +1,1 @@
+export { BoardSettingsDialog } from './BoardSettingsDialog';

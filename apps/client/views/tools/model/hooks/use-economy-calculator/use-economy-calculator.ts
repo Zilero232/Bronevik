@@ -1,5 +1,14 @@
 'use client';
 
+import type { VehicleSummary } from '@otmetki/schemas';
+
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+
+import { economyView } from '@/entities/tank/tank';
+import { getTankEconomy } from '@/shared/api/tanks';
+import { QUERY_KEYS } from '@/shared/constants';
+
 import type { EconomyValues } from './use-economy-calculator.types';
 
 import { ECONOMY } from '../../../config';
@@ -7,13 +16,43 @@ import { shellPriceValues } from '../../../lib/calc-defaults';
 import { useCalcState } from '../use-calc-state';
 
 export const useEconomyCalculator = () => {
+  const [vehicle, setVehicle] = useState<VehicleSummary | null>(null);
   const { values, field, replace } = useCalcState<EconomyValues>({
     ...ECONOMY.defaults,
     ...shellPriceValues(ECONOMY.defaults.tier),
     isPremiumVehicle: false
   });
 
+  const tankId = vehicle?.tankId ?? 0;
+
+  const medians = useQuery({
+    queryKey: QUERY_KEYS.tanks.tankEconomy(tankId),
+    queryFn: ({ signal }) => getTankEconomy({ tankId, signal }),
+    enabled: vehicle !== null
+  });
+
+  const economy = vehicle ? (medians.data ?? null) : null;
+  const premium = economy ? economyView({ economy, account: 'premium', withReserve: false }) : null;
+  const standard = economy ? economyView({ economy, account: 'standard', withReserve: false }) : null;
+
   const onTierChange = (tier: number) => replace({ ...values, tier, ...shellPriceValues(tier) });
 
-  return { values, field, onTierChange };
+  const onVehicleChange = (next: VehicleSummary | null) => {
+    setVehicle(next);
+
+    if (next) {
+      replace({ ...values, tier: next.tier, isPremiumVehicle: next.isPremium, ...shellPriceValues(next.tier) });
+    }
+  };
+
+  return {
+    values,
+    field,
+    onTierChange,
+    vehicle,
+    onVehicleChange,
+    medians: { premium, standard, windowDays: economy?.windowDays ?? 0 },
+    isMediansPending: vehicle !== null && medians.isPending,
+    isMediansError: medians.isError
+  };
 };

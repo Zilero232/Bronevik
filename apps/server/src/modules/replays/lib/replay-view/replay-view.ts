@@ -6,10 +6,15 @@ import type { ToReplayViewInput } from './replay-view.types';
 import { replaySummarySchema } from '../../../../lib/replay';
 import { REPLAY_LINKS } from '../../config';
 
+const toCount = (value: number | null | undefined): number | null =>
+  value === null || value === undefined || !Number.isFinite(value) ? null : Math.max(0, Math.round(value));
+
 const toPlayerView = (player: ReplayPlayer): ReplayPlayerView | null => {
   if (player.accountId === null || player.accountId <= 0 || player.tankId === null || player.tankId <= 0) {
     return null;
   }
+
+  const { result } = player;
 
   return {
     accountId: player.accountId,
@@ -17,9 +22,26 @@ const toPlayerView = (player: ReplayPlayer): ReplayPlayerView | null => {
     clanTag: player.clanTag || null,
     team: Math.min(2, Math.max(1, player.team)),
     tankId: player.tankId,
-    damageDealt: player.result ? Math.max(0, Math.round(player.result.damageDealt)) : null,
-    frags: player.result ? Math.max(0, Math.round(player.result.frags)) : null,
-    survived: player.result?.survived ?? null
+    damageDealt: toCount(result?.damageDealt),
+    frags: toCount(result?.frags),
+    survived: result?.survived ?? null,
+    vehicleId: player.vehicleId,
+    vehicleType: player.vehicleType,
+    maxHealth: toCount(player.maxHealth),
+    isRecorder: player.isRecorder,
+    damageAssisted: result ? toCount(result.assistRadio + result.assistTrack + result.assistStun) : null,
+    assistRadio: toCount(result?.assistRadio),
+    assistTrack: toCount(result?.assistTrack),
+    assistStun: toCount(result?.assistStun),
+    damageBlocked: toCount(result?.blocked),
+    damageReceived: toCount(result?.damageReceived),
+    spotted: toCount(result?.spotted),
+    xp: toCount(result?.xp),
+    shots: toCount(result?.shots),
+    hits: toCount(result?.hits),
+    penetrations: toCount(result?.penetrations),
+    lifeTimeSec: toCount(result?.lifeTimeSeconds),
+    killerVehicleId: result?.killerVehicleId ?? null
   };
 };
 

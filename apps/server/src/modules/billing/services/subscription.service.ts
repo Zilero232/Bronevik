@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { isPlusState, PLUS } from '@otmetki/schemas';
 
 import type { ActivateInput, BillingStatus, GrantDaysInput, PaymentHistoryItem, SetAutoRenewInput } from '../billing.types';
 
 import { AppBadRequestException } from '../../../common/exceptions';
-import { toIso } from '../../../common/lib';
+import { isEntitled, toIso } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS, PLUS_SUBSCRIPTION } from '../config';
-import { cancelsAtPeriodEnd, extendPeriod, isEntitled } from '../lib';
+import { cancelsAtPeriodEnd, extendPeriod } from '../lib';
+import { EntitlementsService } from './entitlements.service';
 
 @Injectable()
 export class SubscriptionService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly config: AppConfigService
+    private readonly config: AppConfigService,
+    private readonly entitlements: EntitlementsService
   ) {}
 
   get isRecurringEnabled(): boolean {
@@ -63,19 +66,21 @@ export class SubscriptionService {
   }
 
   async status(userId: string): Promise<BillingStatus> {
-    const subscription = await this.prisma.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } });
-    const now = new Date();
-
-    const isPlus = isEntitled({ subscription, now });
+    const [subscription, plus] = await Promise.all([
+      this.prisma.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } }),
+      this.entitlements.refresh(userId)
+    ]);
 
     return {
-      isPlus,
+      isPlus: isPlusState(plus.state),
       plan: subscription?.plan ?? null,
       status: subscription?.status ?? null,
       currentPeriodEnd: toIso(subscription?.currentPeriodEnd),
       cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
       card: subscription?.savedCardTitle ?? null,
       isRecurringAvailable: this.isRecurringEnabled,
+      isCheckoutAvailable: PLUS.checkoutEnabled,
+      plus,
       plans: this.plans()
     };
   }

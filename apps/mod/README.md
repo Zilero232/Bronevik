@@ -18,6 +18,7 @@ The mod follows the Lesta Fair Play Policy (see [market research](../../docs/res
   - the player's own vehicle dossier;
   - the player's own damage and assist feedback events, which also drive the vanilla damage log and ribbons;
   - the player's own queue events;
+  - the loadout of the player's own selected vehicle in the hangar (equipment, consumables, directives, loaded shells, field modifications, crew skills), read when the player joins the queue;
   - an account command about the player's own vehicle.
 - **It never reads or shows enemy information.** It has no positions, reload timers, aim or gun-marker data, spotting beyond vanilla, or minimap markers.
 - **It has no aim assist.** It does not touch the crosshair, the camera or vehicle parameters.
@@ -132,7 +133,8 @@ The test suite validates the example and the builder output against the schema w
   - `vehicle{tank_id, name, tier}`, where `tank_id` is the same as the Lesta API `tank_id`;
   - `stats{…}`: damage, radio/track/stun assist, blocked, spotted, frags, shots, direct and penetrating enemy hits, xp, credits, life time, alive, premium;
   - `moe{marks_on_gun, damage_rating (%×100), moving_avg_damage}` after the battle. This is the raw data point for our own RU thresholds;
-  - `queue_time_s`, `session_id`.
+  - `queue_time_s`, `session_id`;
+  - `loadout` (optional, null when unknown): the own vehicle's `optional_devices`, `consumables`, `directives` (intCD per slot, null for empty), `shells[{shell_id, count}]`, `field_modifications[]`, `crew[{role, skills[] in learning order}]`, `gameplay_id` (`arena_type_id >> 16`). It feeds the site's recommended builds.
 - **`moe_snapshot`:** `tank_id`, `damage_rating`, `moving_avg_damage`, `marks_on_gun`, `battles`.
 - **`moe_distribution`:** `tank_id`, `battle_count`, `damage_better_than_n_percent[]` (the raw client answer).
 - **`queue`:** `queue_type`, `wait_s`, `outcome` (arena / dequeued), `tank_id`.
@@ -191,16 +193,16 @@ Optional checks:
 
 `mods/configs/otmetki/config.json` (created on first start):
 
-| Key                                                                                      | Default                   | Meaning                                                                                                                                                |
-| ---------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `enabled`                                                                                | `true`                    | Master switch                                                                                                                                          |
-| `server_url`                                                                             | `https://api.otmetki.app` | API base. Must be https, or http://localhost / http://127.0.0.1 for development. **The domain is a placeholder until the domain decision (spec §12).** |
-| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times` | `true`                    | Per-feature data switches                                                                                                                              |
-| `battle_moe_panel`, `hangar_session_panel`                                               | `true`                    | UI switches                                                                                                                                            |
-| `session_idle_minutes`                                                                   | `60`                      | New session after this idle gap (10–1440)                                                                                                              |
-| `flush_interval_seconds`                                                                 | `15`                      | Send interval (5–600)                                                                                                                                  |
-| `bind_code`                                                                              | `""`                      | Fallback binding without ModsSettingsAPI; cleared after use                                                                                            |
-| `language`                                                                               | `auto`                    | `ru`, `en` or `auto` (client language)                                                                                                                 |
+| Key                                                                                                       | Default                   | Meaning                                                                                                                                                |
+| --------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `enabled`                                                                                                 | `true`                    | Master switch                                                                                                                                          |
+| `server_url`                                                                                              | `https://api.otmetki.app` | API base. Must be https, or http://localhost / http://127.0.0.1 for development. **The domain is a placeholder until the domain decision (spec §12).** |
+| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times`, `send_loadouts` | `true`                    | Per-feature data switches                                                                                                                              |
+| `battle_moe_panel`, `hangar_session_panel`                                                                | `true`                    | UI switches                                                                                                                                            |
+| `session_idle_minutes`                                                                                    | `60`                      | New session after this idle gap (10–1440)                                                                                                              |
+| `flush_interval_seconds`                                                                                  | `15`                      | Send interval (5–600)                                                                                                                                  |
+| `bind_code`                                                                                               | `""`                      | Fallback binding without ModsSettingsAPI; cleared after use                                                                                            |
+| `language`                                                                                                | `auto`                    | `ru`, `en` or `auto` (client language)                                                                                                                 |
 
 The device secret is stored in plain text in `credentials.json`, as other mods store tokens. It is scoped to one device and one account, and the user can revoke it on the site.
 

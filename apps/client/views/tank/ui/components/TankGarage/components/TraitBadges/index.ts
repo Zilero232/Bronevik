@@ -1,0 +1,1 @@
+export { TraitBadges } from './TraitBadges';

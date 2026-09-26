@@ -1,0 +1,32 @@
+@use '@/shared/styles/mixins' as *;
+
+.list {
+  @include stack(var(--space-2));
+
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.label {
+  @include label;
+}
+
+.value {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-accent);
+  gap: var(--space-1);
+}

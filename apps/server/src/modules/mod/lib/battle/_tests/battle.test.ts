@@ -39,6 +39,14 @@ describe('toBattleData', () => {
     expect(data.queueTimeMs).toBe(battle.queue_time_s === null ? null : Math.round(battle.queue_time_s * 1000));
   });
 
+  it('stores the own loadout in the camelCase shape and leaves it out when the mod sent none', () => {
+    const withLoadout = toBattleData({ event: battle, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
+    const without = toBattleData({ event: { ...battle, loadout: null }, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
+
+    expect(withLoadout.loadout).toMatchObject({ optionalDevices: battle.loadout?.optional_devices, gameplayId: battle.loadout?.gameplay_id });
+    expect(without.loadout).toBeUndefined();
+  });
+
   it('computes the MoE delta only when a previous value exists', () => {
     const percent = battle.moe ? moePercent(battle.moe.damage_rating) : null;
     const withPrevious = toBattleData({ event: battle, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: 50 });
@@ -46,6 +54,26 @@ describe('toBattleData', () => {
 
     expect(withPrevious.moePercentDelta).toBe(percent === null ? null : percent - 50);
     expect(without.moePercentDelta).toBeNull();
+  });
+
+  it('stores missing economy costs as null rather than zero', () => {
+    const { repair_cost: _repair, ammo_cost: _ammo, consumables_cost: _consumables, free_xp: _freeXp, ...stats } = battle.stats;
+    const data = toBattleData({ event: { ...battle, stats }, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
+
+    expect([data.repairCost, data.ammoCost, data.consumablesCost, data.freeXp]).toEqual([null, null, null, null]);
+    expect(data.isPremiumAccount).toBe(battle.stats.is_premium);
+  });
+
+  it('keeps reported economy costs', () => {
+    const data = toBattleData({
+      event: { ...battle, stats: { ...battle.stats, repair_cost: 0, ammo_cost: 1800, consumables_cost: 3000, free_xp: 57 } },
+      accountId: 1n,
+      deviceId: 'd',
+      sessionId: null,
+      previousMoePercent: null
+    });
+
+    expect([data.repairCost, data.ammoCost, data.consumablesCost, data.freeXp]).toEqual([0, 1800, 3000, 57]);
   });
 });
 

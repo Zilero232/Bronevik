@@ -4,8 +4,8 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
 
+import { JOB_SCHEDULES, registerJobSchedules } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { JOB_SCHEDULES, registerJobSchedules } from '../../notifications';
 import { BILLING_QUEUE, BILLING_SCHEDULES } from '../config';
 
 @Injectable()

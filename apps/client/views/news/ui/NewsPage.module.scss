@@ -1,0 +1,30 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-5));
+
+  padding-block: var(--space-7) var(--space-8);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
+}
+
+.filters {
+  max-width: 100%;
+  align-self: flex-start;
+  overflow-x: auto;
+}
+
+.list {
+  @include stack(var(--space-3));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.more {
+  align-self: center;
+}

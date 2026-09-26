@@ -14,6 +14,8 @@ import type {
   moeRowSchema,
   moeSortFieldSchema,
   moeThresholdSchema,
+  sweatIndexSchema,
+  sweatLevelSchema,
   thresholdSourceSchema,
   thresholdTrendSchema
 } from './marks.schemas';
@@ -33,3 +35,5 @@ export type MoeHistoryBatchQuery = z.infer<typeof moeHistoryBatchQuerySchema>;
 export type MoeHistoryPoint = z.infer<typeof moeHistoryPointSchema>;
 export type MoeHistoryBatch = z.infer<typeof moeHistoryBatchSchema>;
 export type MoeProjection = z.infer<typeof moeProjectionSchema>;
+export type SweatLevel = z.infer<typeof sweatLevelSchema>;
+export type SweatIndex = z.infer<typeof sweatIndexSchema>;

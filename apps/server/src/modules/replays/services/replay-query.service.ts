@@ -24,6 +24,10 @@ export class ReplayQueryService {
   async get({ id, viewerUserId }: ViewReplayInput): Promise<ReplayView> {
     const replay = await this.visible({ id, viewerUserId });
 
+    if (replay.status !== 'parsed') {
+      return this.view(replay);
+    }
+
     await this.prisma.replay.updateMany({ where: { id }, data: { views: { increment: 1 } } });
 
     return this.view({ ...replay, views: replay.views + 1 });

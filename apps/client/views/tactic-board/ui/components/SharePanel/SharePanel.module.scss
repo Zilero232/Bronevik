@@ -1,0 +1,19 @@
+@use '@/shared/styles/mixins' as *;
+
+.title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.links {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.hint {
+  @include source-line;
+
+  margin-top: var(--space-3);
+}

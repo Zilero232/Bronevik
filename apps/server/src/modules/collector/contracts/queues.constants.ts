@@ -26,7 +26,10 @@ export const JOB = {
     accountRatings: 'account-ratings',
     serverStats: 'server-stats',
     tankPercentiles: 'tank-percentiles',
-    tierMaintenance: 'tier-maintenance'
+    tierMaintenance: 'tier-maintenance',
+    tankEconomy: 'tank-economy',
+    learningCurve: 'learning-curve',
+    buildUsage: 'build-usage'
   },
   news: { rss: 'rss' },
   purge: { dispatch: 'dispatch', account: 'account' },

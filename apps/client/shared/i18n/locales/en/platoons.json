@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "title": "Platoon finder",
+    "description": "Platoon board for Mir Tankov: find partners by tier, mode, voice and WN8."
+  },
+  "head": {
+    "title": "Platoon finder",
+    "description": "Players looking for a platoon right now or later tonight. One active post per player."
+  },
+  "modes": {
+    "random": "Random",
+    "ranked": "Ranked",
+    "onslaught": "Onslaught",
+    "stronghold": "Stronghold",
+    "frontline": "Front Line",
+    "event": "Event"
+  },
+  "filters": {
+    "title": "Filters",
+    "tier": "Tier",
+    "tierTitle": "Tier {tier}",
+    "mode": "Mode",
+    "anyMode": "Any mode",
+    "voice": "Voice",
+    "voiceOptions": {
+      "any": "Any",
+      "yes": "With voice",
+      "no": "No voice"
+    },
+    "minWn8": "WN8 from",
+    "maxWn8": "WN8 to",
+    "at": "Free at",
+    "atHint": "Your local time",
+    "reset": "Reset"
+  },
+  "board": {
+    "title": "Posts",
+    "count": "{total, plural, one {# post} other {# posts}}",
+    "more": "Show more",
+    "reset": "Reset filters",
+    "emptyTitle": "No posts",
+    "emptyDescription": "Nobody is looking for a platoon right now. Post yours — it stays up for a few hours.",
+    "emptyFilteredDescription": "Nobody matches these filters. Loosen them or post your own.",
+    "errorTitle": "Couldn't load the board",
+    "errorDescription": "The server didn't respond. Try again."
+  },
+  "card": {
+    "unknownNick": "Unnamed player",
+    "own": "Yours",
+    "expires": "Expires",
+    "tiers": "Tiers",
+    "anyTier": "Any",
+    "modes": "Modes",
+    "anyMode": "Any",
+    "voice": "Voice",
+    "voiceYes": "Yes",
+    "voiceNo": "No",
+    "minWn8": "Partner WN8 from",
+    "when": "When",
+    "availability": {
+      "anytime": "Any time",
+      "now": "Free now{hasUntil, select, yes { until {until}} other {}}",
+      "later": "From {from}{hasUntil, select, yes { until {until}} other {}}",
+      "ended": "Window ended at {until}"
+    },
+    "tanks": "Tanks",
+    "close": "Take down"
+  },
+  "create": {
+    "open": "Post an ad",
+    "title": "Looking for a platoon",
+    "description": "Your post is public. Other players copy your nickname to reach you.",
+    "tiers": "Tiers",
+    "modes": "Modes",
+    "tanks": "Tanks",
+    "tanksPlaceholder": "Add a tank",
+    "removeTank": "Remove {name}",
+    "minWn8": "Partner WN8 from",
+    "minWn8Error": "A whole number from 0 to 10,000",
+    "expiresIn": "Show for",
+    "hours": "{count, plural, one {# hour} other {# hours}}",
+    "availableFrom": "Free from",
+    "availableUntil": "Free until",
+    "windowError": "The end must be after the start",
+    "voice": "I have voice chat",
+    "message": "Message",
+    "messagePlaceholder": "E.g. playing mediums, need a partner for the evening",
+    "messageError": "At most 500 characters",
+    "replaceNote": "A new post replaces your current one.",
+    "cancel": "Cancel",
+    "submit": "Post"
+  },
+  "toast": {
+    "created": "Post published",
+    "closed": "Post taken down"
+  },
+  "errors": {
+    "forbidden": "Link your Lesta account in your profile first",
+    "notFound": "The post is already closed or expired",
+    "conflict": "Data conflict, try again",
+    "validation": "Check the form fields",
+    "unauthorized": "Sign in to continue",
+    "rateLimited": "Too many requests, wait a bit",
+    "unknown": "Something went wrong, try later"
+  }
+}

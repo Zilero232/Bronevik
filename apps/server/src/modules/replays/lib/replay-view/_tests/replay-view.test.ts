@@ -64,3 +64,46 @@ describe('toReplayView', () => {
     expect(view.downloadUrl).toBe(new URL(REPLAY_LINKS.file.replace('{id}', row().id), apiUrl).href);
   });
 });
+
+describe('toReplayView scoreboard fields', () => {
+  const view = toReplayView({ replay: row(), apiUrl });
+  const byVehicle = new Map(summary.players.map((player) => [player.vehicleId, player]));
+
+  it('sums radio, track and stun assist into the assisted damage of each player', () => {
+    for (const player of view.players) {
+      expect(player.damageAssisted).toBe((player.assistRadio ?? 0) + (player.assistTrack ?? 0) + (player.assistStun ?? 0));
+    }
+  });
+
+  it('keeps the vehicle id so a killer reference resolves to a participant of the battle', () => {
+    const killed = view.players.filter((player) => player.killerVehicleId !== null);
+
+    expect(killed.length).toBeGreaterThan(0);
+
+    for (const player of killed) {
+      expect(byVehicle.has(player.killerVehicleId ?? -1)).toBe(true);
+    }
+  });
+
+  it('marks exactly the recorder and reports only destroyed vehicles as having a killer', () => {
+    expect(view.players.filter((player) => player.isRecorder)).toHaveLength(1);
+    expect(view.players.filter((player) => player.survived === true && player.killerVehicleId !== null)).toEqual([]);
+  });
+
+  it('never exposes a life time longer than the battle', () => {
+    for (const player of view.players) {
+      expect(player.lifeTimeSec ?? 0).toBeLessThanOrEqual(Math.ceil(summary.durationSeconds ?? Number.POSITIVE_INFINITY));
+    }
+  });
+
+  it('leaves every result field null when a participant has no post-battle result', () => {
+    const withoutResult = { ...summary, players: summary.players.map((player) => ({ ...player, result: null })) };
+    const player = toReplayView({ replay: row({ summary: withoutResult }), apiUrl }).players[0];
+
+    expect(player?.xp).toBeNull();
+    expect(player?.damageAssisted).toBeNull();
+    expect(player?.lifeTimeSec).toBeNull();
+    expect(player?.killerVehicleId).toBeNull();
+    expect(player?.vehicleId).not.toBeNull();
+  });
+});

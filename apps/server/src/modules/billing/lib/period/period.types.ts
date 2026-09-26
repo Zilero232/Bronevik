@@ -1,5 +1,3 @@
-import type { Subscription } from '../../../../../generated';
-
 export type ExtendPeriodInput = {
   currentPeriodEnd: Date | null;
   now: Date;
@@ -21,9 +19,4 @@ export type AutoRenewInput = {
 export type RenewalKeyInput = {
   subscriptionId: string;
   currentPeriodEnd: Date;
-};
-
-export type IsEntitledInput = {
-  subscription: Pick<Subscription, 'currentPeriodEnd' | 'status'> | null;
-  now: Date;
 };

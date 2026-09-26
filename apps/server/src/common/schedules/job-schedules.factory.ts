@@ -7,7 +7,7 @@ import { Queue } from 'bullmq';
 import type { CreateJobSchedulesInput } from './job-schedules.types';
 
 import { AppConfigService } from '../../config';
-import { JOB_SCHEDULES, registerJobSchedules } from '../../modules/notifications';
+import { JOB_SCHEDULES, registerJobSchedules } from '../lib';
 
 export const createJobSchedules = ({ queue, schedules, label }: CreateJobSchedulesInput): Type<OnApplicationBootstrap> => {
   @Injectable()

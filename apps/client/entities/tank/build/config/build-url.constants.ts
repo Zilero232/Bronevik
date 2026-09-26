@@ -1,7 +1,12 @@
 export const BUILD_URL = {
   primary: 'build',
-  compare: 'vs'
+  compare: 'vs',
+  preset: 'preset',
+  mode: 'mode',
+  cohort: 'cohort'
 } as const;
+
+export const BUILD_PRESETS = ['recommended'] as const;
 
 export const LOADOUT_CODE = {
   sectionSeparator: ';',

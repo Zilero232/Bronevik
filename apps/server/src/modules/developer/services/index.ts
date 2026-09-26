@@ -1,6 +1,7 @@
 export { ApiKeysService } from './api-keys.service';
+export { ApiTierService } from './api-tier.service';
 export { ApiUsageReportService } from './api-usage-report.service';
-export { DeveloperPlanService } from './developer-plan.service';
+export { HostLookupService } from './host-lookup.service';
 export { SessionCloseService } from './session-close.service';
 export { WebhookDeliveryService } from './webhook-delivery.service';
 export { WebhookEmitterService } from './webhook-emitter.service';

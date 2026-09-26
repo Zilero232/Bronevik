@@ -1,0 +1,31 @@
+@use '@/shared/styles/mixins' as *;
+
+.dialog {
+  width: min(640px, calc(100vw - var(--space-6)));
+  max-height: calc(100dvh - var(--space-8));
+  overflow-y: auto;
+}
+
+.root {
+  @include stack(var(--space-4));
+}
+
+.row {
+  display: grid;
+  align-items: end;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.warning {
+  @include well;
+
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+  color: var(--color-warning);
+  font-size: var(--text-sm);
+}

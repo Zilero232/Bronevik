@@ -36,3 +36,13 @@ export const EVENT_CALENDAR = {
   defaultWindowDays: 60,
   dropsSlugPrefix: 'drops-news-'
 } as const;
+
+export const EVENT_ICS = {
+  productId: 'otmetki/events',
+  calName: 'Три отметки — события «Мир танков»',
+  uidSuffix: '@otmetki',
+  defaultDuration: { days: 1 },
+  timeType: 'utc',
+  contentType: 'text/calendar; charset=utf-8',
+  cacheControl: 'public, max-age=1800'
+} as const;

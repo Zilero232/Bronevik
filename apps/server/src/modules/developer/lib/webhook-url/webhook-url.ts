@@ -1,11 +1,8 @@
 import ipaddr from 'ipaddr.js';
-import { lookup as dnsLookup } from 'node:dns/promises';
 
-import type { HostLookup, ResolvesPubliclyInput } from './webhook-url.types';
+import type { ResolvesPubliclyInput } from './webhook-url.types';
 
 import { WEBHOOK_URL } from '../../config';
-
-const systemLookup: HostLookup = async (host) => dnsLookup(host, { all: true });
 
 const hostOf = (url: string): string => new URL(url).hostname.replace(/^\[|\]$/g, '');
 
@@ -25,7 +22,7 @@ export const isPublicWebhookUrl = (value: string): boolean => {
   return !ipaddr.isValid(host) || isPublicAddress(host);
 };
 
-export const resolvesPublicly = async ({ url, lookup = systemLookup }: ResolvesPubliclyInput): Promise<boolean> => {
+export const resolvesPublicly = async ({ url, lookup }: ResolvesPubliclyInput): Promise<boolean> => {
   if (!isPublicWebhookUrl(url)) {
     return false;
   }

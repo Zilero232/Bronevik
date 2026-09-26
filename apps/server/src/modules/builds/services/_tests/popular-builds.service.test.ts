@@ -53,6 +53,19 @@ describe('PopularBuildsService', () => {
     expect(prisma.build.findMany).not.toHaveBeenCalled();
   });
 
+  it('reads the per-slot loadouts the mod sends and filters battles by mode', async () => {
+    const { service, prisma } = createService();
+
+    prisma.battle.findMany.mockResolvedValue([
+      battle({ loadout: { optionalDevices: [null, 1, null], consumables: [] }, result: 'win', damageDealt: 2_000 })
+    ]);
+
+    const popular = await service.popular({ tankId: 1, query: { limit: 5, mode: 'onslaught' } });
+
+    expect(popular.builds[0]?.optionalDevices.map((option) => option.id)).toEqual([device.provisionId]);
+    expect(prisma.battle.findMany.mock.calls[0]?.[0]?.where?.battleType).toEqual({ in: ['43'] });
+  });
+
   it('falls back to published builds weighted by likes', async () => {
     const { service, prisma } = createService();
 

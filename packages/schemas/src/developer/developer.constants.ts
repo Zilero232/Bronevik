@@ -1,7 +1,7 @@
-export const API_PLAN_LIMITS = {
+export const API_TIER_LIMITS = {
   free: { requestsPerDay: 10_000, requestsPerSecond: 5, webhooks: 1 },
-  pro: { requestsPerDay: 250_000, requestsPerSecond: 25, webhooks: 10 },
-  partner: { requestsPerDay: 2_000_000, requestsPerSecond: 100, webhooks: 50 }
+  plus: { requestsPerDay: 50_000, requestsPerSecond: 10, webhooks: 5 },
+  community: { requestsPerDay: 2_000_000, requestsPerSecond: 100, webhooks: 50 }
 } as const;
 
 export const API_KEY = {

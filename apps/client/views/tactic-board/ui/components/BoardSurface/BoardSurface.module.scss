@@ -1,0 +1,24 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include well;
+
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: min(100%, 82vh);
+  aspect-ratio: 1;
+  cursor: crosshair;
+  margin-inline: auto;
+  touch-action: none;
+  user-select: none;
+
+  &[data-tool='select'],
+  &[data-editable='false'] {
+    cursor: default;
+  }
+
+  &[data-tool='text'] {
+    cursor: text;
+  }
+}

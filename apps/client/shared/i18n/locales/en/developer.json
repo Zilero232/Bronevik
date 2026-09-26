@@ -4,6 +4,11 @@
     "description": "Three Marks API keys, request statistics, error log and webhooks."
   },
   "cancel": "Cancel",
+  "tierName": {
+    "free": "Free",
+    "plus": "Plus",
+    "community": "Community"
+  },
   "toast": {
     "keyCreated": "Key created",
     "keyRevoked": "Key revoked",
@@ -17,12 +22,8 @@
     "title": "API and webhooks",
     "lead": "Keys, quota usage, request errors and webhook deliveries — everything about your integrations in one place.",
     "docs": "API documentation",
-    "plan": "Plan",
-    "planName": {
-      "free": "Free",
-      "pro": "Pro",
-      "partner": "Partner"
-    },
+    "tier": "API tier",
+    "upsell": "Plus raises your personal limits",
     "readouts": {
       "perDay": "Requests a day",
       "perSecond": "Requests per second",
@@ -130,7 +131,7 @@
     "title": "Webhooks",
     "description": "The server POSTs to your URL when a followed player earns a mark, finishes a session, or a clan roster changes.",
     "create": "New webhook",
-    "limit": "{count} of {max} webhooks used on your plan.",
+    "limit": "{count} of {max} webhooks used on your tier.",
     "empty": "No webhooks yet",
     "emptyHint": "Add a URL and events will start coming in.",
     "delete": "Delete",

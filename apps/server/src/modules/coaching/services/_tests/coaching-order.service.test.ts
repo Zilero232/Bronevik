@@ -17,10 +17,10 @@ const order: CoachingOrder = {
   studentUserId: 'student',
   offerId: null,
   replayId: null,
-  paymentId: null,
   status: 'accepted',
   priceRub: new Prisma.Decimal(COACHING.minPriceRub),
   notes: null,
+  studentContact: '@student',
   review: null,
   score: null,
   createdAt: now,
@@ -33,6 +33,8 @@ const coach: CoachProfile = {
   headline: 'Heavy tanks coach',
   bio: null,
   priceRub: new Prisma.Decimal(COACHING.minPriceRub),
+  priceNote: null,
+  contacts: null,
   tankIds: [],
   isActive: true,
   rating: null,
@@ -53,17 +55,17 @@ describe('CoachingOrderService.order', () => {
   it('refuses to let a coach hire themselves', async () => {
     const { service, prisma } = createService();
 
-    await expect(service.order({ userId: 'coach', coachUserId: 'coach' })).rejects.toBeInstanceOf(AppBadRequestException);
+    await expect(service.order({ userId: 'coach', coachUserId: 'coach', studentContact: '@coach' })).rejects.toBeInstanceOf(AppBadRequestException);
     expect(prisma.coachingOrder.create).not.toHaveBeenCalled();
   });
 
-  it('charges the coach price when no offer is chosen', async () => {
+  it('quotes the coach price when no offer is chosen', async () => {
     const { service, prisma } = createService();
 
     prisma.coachProfile.findFirst.mockResolvedValue(coach);
     prisma.coachingOrder.create.mockResolvedValue({ ...order, status: 'requested' });
 
-    await service.order({ userId: 'student', coachUserId: 'coach' });
+    await service.order({ userId: 'student', coachUserId: 'coach', studentContact: '@student' });
 
     expect(prisma.coachingOrder.create).toHaveBeenCalledWith({ data: expect.objectContaining({ priceRub: coach.priceRub, offerId: null }) });
   });
@@ -74,7 +76,9 @@ describe('CoachingOrderService.order', () => {
     prisma.coachProfile.findFirst.mockResolvedValue(coach);
     prisma.coachingOffer.findFirst.mockResolvedValue(null);
 
-    await expect(service.order({ userId: 'student', coachUserId: 'coach', offerId: 'offer' })).rejects.toBeInstanceOf(AppNotFoundException);
+    await expect(service.order({ userId: 'student', coachUserId: 'coach', offerId: 'offer', studentContact: '@student' })).rejects.toBeInstanceOf(
+      AppNotFoundException
+    );
   });
 });
 
@@ -99,5 +103,17 @@ describe('CoachingOrderService.review', () => {
 
     await expect(service.review({ id: order.id, userId: 'student', score: 5 })).rejects.toBeInstanceOf(AppNotFoundException);
     expect(prisma.coachProfile.update).not.toHaveBeenCalled();
+  });
+});
+
+describe('CoachingOrderService.complete', () => {
+  it('completes an accepted order with no payment step', async () => {
+    const { service, prisma } = createService();
+
+    prisma.coachingOrder.updateMany.mockResolvedValue({ count: 1 });
+
+    await service.complete({ id: order.id, userId: 'coach' });
+
+    expect(prisma.coachingOrder.updateMany.mock.calls[0]?.[0].where).toMatchObject({ coachUserId: 'coach', status: 'accepted' });
   });
 });

@@ -54,6 +54,7 @@ model GameVersion {
   dataEntries      GameDataEntry[]
   newsItems        NewsItem[]
   builds           Build[]
+  missionCampaigns MissionCampaign[]
 
   @@unique([source, version])
   @@index([releasedAt])

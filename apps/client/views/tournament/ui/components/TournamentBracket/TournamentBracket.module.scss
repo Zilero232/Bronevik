@@ -1,0 +1,41 @@
+@use '@/shared/styles/mixins' as *;
+
+.scroller {
+  padding: var(--space-4);
+  overflow-x: auto;
+}
+
+.columns {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-5);
+  list-style: none;
+}
+
+.column {
+  display: flex;
+  min-width: 200px;
+  flex-direction: column;
+}
+
+.round {
+  @include label;
+
+  margin: 0 0 var(--space-3);
+}
+
+.matches {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-3);
+  list-style: none;
+}
+
+.slot {
+  position: relative;
+}

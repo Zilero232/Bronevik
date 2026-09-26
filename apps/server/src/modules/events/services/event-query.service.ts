@@ -4,7 +4,8 @@ import { Injectable } from '@nestjs/common';
 import { addDays, subDays } from 'date-fns';
 
 import { PrismaService } from '../../../core';
-import { EVENT_CALENDAR } from '../config';
+import { EVENT_CALENDAR, EVENT_ICS } from '../config';
+import { eventsIcs } from '../lib/event-ics';
 import { EVENT_KIND_TO_DB, toEventView } from '../lib/event-kind';
 
 @Injectable()
@@ -25,6 +26,10 @@ export class EventQueryService {
     });
 
     return events.map(toEventView);
+  }
+
+  async calendarIcs(): Promise<string> {
+    return eventsIcs({ events: await this.calendar({}), calName: EVENT_ICS.calName });
   }
 
   async activeDrops(): Promise<GameEventView[]> {

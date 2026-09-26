@@ -1,10 +1,15 @@
+export { useBuildHistory } from './use-build-history';
+export type { UseBuildHistoryInput } from './use-build-history';
 export { useCohortBreakdown } from './use-cohort-breakdown';
 export type { CohortLine } from './use-cohort-breakdown';
+export { useEconomySection } from './use-economy-section';
+export { useHowToBuild } from './use-how-to-build';
+export { useLearningChart } from './use-learning-chart';
 export { useMoeChart } from './use-moe-chart';
 export { useMoePlates } from './use-moe-plates';
 export type { MoePlate } from './use-moe-plates';
+export { useMyLearning } from './use-my-learning';
 export { usePatchChange } from './use-patch-change';
-export { usePopularBuilds } from './use-popular-builds';
 export { useServerFigures } from './use-server-figures';
 export type { ServerFigure } from './use-server-figures';
 export { useTankDetail } from './use-tank-detail';

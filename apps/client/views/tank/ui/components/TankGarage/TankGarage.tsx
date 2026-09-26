@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { TankImage } from '@/entities/tank/tank';
 
 import { useTank } from '../../../model/context';
-import { GarageActions, ParamsPanel } from './components';
+import { GarageActions, ParamsPanel, TraitBadges } from './components';
 
 import s from './TankGarage.module.scss';
 
@@ -31,6 +31,7 @@ export const TankGarage = () => {
         <h1 className={s.name} data-premium={identity.isPremium} id='tank-name'>
           {detail.vehicle.name}
         </h1>
+        <TraitBadges />
         <div className={s.stage} data-nation={identity.nation}>
           <NationFlag aria-hidden className={s.flag} nation={identity.nation} />
           <TankImage isPriority className={s.render} size='big' tank={identity} withTint={false} />

@@ -1,9 +1,10 @@
+import { PLUS_SUBSCRIPTION } from '../../../common/lib';
 import { BILLING_QUEUE } from './queue.config';
 
 export const RENEWAL = {
   leadHours: 24,
   batchSize: 100,
-  pastDueGraceDays: 3
+  pastDueGraceDays: PLUS_SUBSCRIPTION.pastDueGraceDays
 } as const;
 
 export const BILLING_SCHEDULES = [

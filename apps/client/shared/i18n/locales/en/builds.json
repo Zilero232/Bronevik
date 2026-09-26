@@ -134,5 +134,11 @@
     "errorTitle": "Couldn't load the build",
     "errorDescription": "The server didn't respond. Try again in a few seconds.",
     "back": "Back to tanks"
+  },
+  "recommended": {
+    "loading": "Loading the recommended build…",
+    "missing": "Not enough data for a recommended build yet: {battles} of {min} battles.",
+    "error": "Could not load the recommended build.",
+    "dismiss": "Dismiss"
   }
 }

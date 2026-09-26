@@ -1,6 +1,6 @@
 import type { BillingStatus } from '@otmetki/schemas';
 
-export type RenewalInput = Pick<BillingStatus, 'cancelAtPeriodEnd' | 'currentPeriodEnd' | 'isRecurringAvailable' | 'status'>;
+export type RenewalInput = Pick<BillingStatus, 'cancelAtPeriodEnd' | 'card' | 'currentPeriodEnd' | 'isRecurringAvailable' | 'status'>;
 
 export type PeriodEndKind = 'accessUntil' | 'ended' | 'renews';
 

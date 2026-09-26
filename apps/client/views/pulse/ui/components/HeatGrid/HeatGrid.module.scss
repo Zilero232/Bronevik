@@ -1,0 +1,66 @@
+@use '@/shared/styles/mixins' as *;
+
+.scroller {
+  padding: var(--space-4);
+  overflow-x: auto;
+
+  @include hide-scrollbar;
+}
+
+.grid {
+  --cell: 22px;
+
+  border-collapse: separate;
+  border-spacing: 3px;
+
+  @include below(md) {
+    --cell: 14px;
+
+    border-spacing: 2px;
+  }
+}
+
+.caption {
+  @include sr-only;
+}
+
+.hour {
+  @include label;
+
+  min-width: var(--cell);
+  font-weight: 500;
+  text-align: start;
+}
+
+.day {
+  @include label;
+
+  padding-right: var(--space-2);
+  text-align: start;
+  white-space: nowrap;
+}
+
+.cell {
+  width: var(--cell);
+  height: var(--cell);
+  padding: 0;
+  border-radius: var(--radius-xs);
+  background-color: var(--color-surface-sunken);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+
+  &[data-level='1'] {
+    background-color: color-mix(in srgb, var(--color-accent) 22%, var(--color-surface-sunken));
+  }
+
+  &[data-level='2'] {
+    background-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-surface-sunken));
+  }
+
+  &[data-level='3'] {
+    background-color: color-mix(in srgb, var(--color-accent) 72%, var(--color-surface-sunken));
+  }
+
+  &[data-level='4'] {
+    background-color: var(--color-accent);
+  }
+}

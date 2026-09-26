@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<tail_1>
+		<id>1</id>
+		<seasonID>1</seasonID>
+		<nextTileIDs>2</nextTileIDs>
+		<chainsCount>5</chainsCount>
+		<questsInChain>15</questsInChain>
+		<chainsCountToUnlockNext>5</chainsCountToUnlockNext>
+		<userString>#personal_missions_details:tile_1</userString>
+		<description>#personal_missions_details:tile_1_descr</description>
+		<iconID>tile_1_1</iconID>
+	</tail_1>
+	<tail_5>
+		<id>5</id>
+		<seasonID>2</seasonID>
+		<nextTileIDs/>
+		<chainsCount>4</chainsCount>
+		<questsInChain>15</questsInChain>
+		<chainsCountToUnlockNext>0</chainsCountToUnlockNext>
+		<userString>#personal_missions_details:tile_5</userString>
+		<description/>
+		<iconID>tile_5_1</iconID>
+	</tail_5>
+	<quests>
+		<tokenQuest>
+			<id>pt_final_s1_t1</id>
+			<bonus>
+				<slots>1</slots>
+				<vehicle>
+					germany:G104_Stug_IV
+					<crewLvl>100</crewLvl>
+				</vehicle>
+			</bonus>
+		</tokenQuest>
+		<tokenQuest>
+			<id>pt_final_s1_t1_camouflage</id>
+			<bonus>
+				<customizations/>
+			</bonus>
+		</tokenQuest>
+	</quests>
+</root>

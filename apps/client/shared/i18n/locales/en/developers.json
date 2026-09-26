@@ -9,8 +9,8 @@
     "getKey": "Get a key"
   },
   "figures": {
-    "requestsPerDay": "Requests a day on Free",
-    "requestsPerSecond": "Requests per second on Free",
+    "requestsPerDay": "Free requests per day",
+    "requestsPerSecond": "Free requests per second",
     "version": "API version"
   },
   "quickstart": {
@@ -82,27 +82,36 @@
       "disable": "After {count, plural, one {# failure} other {# failures}} in a row the webhook is switched off; turn it back on in the dashboard."
     }
   },
-  "plans": {
-    "title": "Plans",
-    "description": "Free is available right away, Pro and Partner on request.",
+  "tiers": {
+    "title": "Limits",
+    "description": "The API is free for everyone. A Plus subscription raises your personal limits, and open free community projects get higher limits on request.",
     "limit": "Limit",
-    "yours": "Your plan",
-    "legal": "Lesta’s terms forbid commercial redistribution of their API data. Pro and Partner will only cover our own derived data (WN8, history, thresholds, mod data), and only after written approval from Lesta. Until then they are available on request, free of charge.",
+    "yours": "Your tier",
     "names": {
       "free": "Free",
-      "pro": "Pro",
-      "partner": "Partner"
+      "plus": "Plus",
+      "community": "Community"
     },
     "limits": {
-      "requestsPerDay": "Requests a day",
+      "requestsPerDay": "Requests per day",
       "requestsPerSecond": "Requests per second",
       "webhooks": "Webhooks"
     },
     "access": {
-      "label": "Access",
-      "free": "Right away",
-      "pro": "After Lesta approval",
-      "partner": "After Lesta approval"
+      "label": "How to get it",
+      "free": "Right away, with any key",
+      "plus": "With a Plus subscription, for personal non-commercial use",
+      "community": "Free for open free projects — contact us"
+    }
+  },
+  "terms": {
+    "title": "API terms",
+    "items": {
+      "free": "The public API is free: anyone can get a key, and the API has no paid plans.",
+      "personal": "Plus limits are for personal non-commercial use: your own bots, widgets and scripts.",
+      "community": "Open free community projects can get Community limits at no cost — contact us about your project.",
+      "resale": "Reselling access to our API or putting its data behind a paywall is forbidden.",
+      "lesta": "Part of the data comes from the Lesta API, so Lesta Games’ terms apply too: credit the data source and do not use it commercially."
     }
   }
 }

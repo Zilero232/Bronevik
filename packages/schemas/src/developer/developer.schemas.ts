@@ -3,26 +3,26 @@ import { z } from 'zod';
 import { accountIdSchema, clanIdSchema, countSchema, isoDateSchema, isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { API_KEY, WEBHOOK } from './developer.constants';
 
-export const apiPlanSchema = z.enum(['free', 'pro', 'partner']);
+export const apiTierSchema = z.enum(['free', 'plus', 'community']);
 
-export const apiPlanLimitsSchema = z.object({
+export const apiTierLimitsSchema = z.object({
   requestsPerDay: z.number().int().positive(),
   requestsPerSecond: z.number().int().positive(),
   webhooks: countSchema
 });
 
-export const apiPlanOfferSchema = z.object({
-  plan: apiPlanSchema,
-  limits: apiPlanLimitsSchema
+export const apiTierOfferSchema = z.object({
+  tier: apiTierSchema,
+  limits: apiTierLimitsSchema
 });
 
-export const apiPlansSchema = z.array(apiPlanOfferSchema);
+export const apiTiersSchema = z.array(apiTierOfferSchema);
 
 export const apiKeySchema = z.object({
   id: uuidSchema,
   name: z.string(),
   prefix: z.string().length(API_KEY.prefixLength),
-  plan: apiPlanSchema,
+  tier: apiTierSchema,
   scopes: z.array(z.string()),
   createdAt: isoDateTimeSchema,
   lastUsedAt: isoDateTimeSchema.nullable(),
@@ -56,8 +56,8 @@ export const apiUsageQuerySchema = z.object({
 
 export const apiUsageSchema = z.object({
   apiKeyId: uuidSchema,
-  plan: apiPlanSchema,
-  limits: apiPlanLimitsSchema,
+  tier: apiTierSchema,
+  limits: apiTierLimitsSchema,
   today: apiUsagePointSchema,
   history: z.array(apiUsagePointSchema),
   topEndpoints: z.array(z.object({ endpoint: z.string(), requests: countSchema }))
@@ -76,8 +76,8 @@ export const apiErrorLogEntrySchema = z.object({
 export const apiErrorLogSchema = z.array(apiErrorLogEntrySchema);
 
 export const developerOverviewSchema = z.object({
-  plan: apiPlanSchema,
-  limits: apiPlanLimitsSchema,
+  tier: apiTierSchema,
+  limits: apiTierLimitsSchema,
   keys: apiKeysSchema,
   webhooks: countSchema
 });

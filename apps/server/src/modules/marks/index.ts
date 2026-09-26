@@ -1,2 +1,2 @@
 export { MarksModule } from './marks.module';
-export { MoeTableService } from './services';
+export { MoeTableService, SweatIndexService } from './services';

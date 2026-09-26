@@ -1,3 +1,4 @@
+import { modBattleLoadoutSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
 import { BIND_CODE } from '../../config';
@@ -85,11 +86,16 @@ export const battleResultEventSchema = z.strictObject({
     life_time_s: count,
     is_alive: z.boolean(),
     death_reason: z.number().int().min(-1),
-    is_premium: z.boolean()
+    is_premium: z.boolean(),
+    free_xp: count.optional(),
+    repair_cost: count.optional(),
+    ammo_cost: count.optional(),
+    consumables_cost: count.optional()
   }),
   moe: moeValuesSchema.nullable(),
   queue_time_s: z.number().min(0).nullable(),
-  session_id: z.string().max(64).nullable()
+  session_id: z.string().max(64).nullable(),
+  loadout: modBattleLoadoutSchema.nullable().optional()
 });
 
 const moeSnapshotEventSchema = z.strictObject({

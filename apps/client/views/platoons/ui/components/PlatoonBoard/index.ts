@@ -1,0 +1,1 @@
+export { PlatoonBoard } from './PlatoonBoard';

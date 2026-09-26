@@ -1,0 +1,47 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: var(--space-1);
+  white-space: nowrap;
+
+  &[data-destroyed='true'] .nickname {
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--color-text-dim);
+  }
+
+  &[data-recorder='true'] .nickname {
+    color: var(--color-accent);
+  }
+}
+
+.nickname {
+  overflow: hidden;
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+  text-overflow: ellipsis;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
+.clan {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.marker {
+  @include label;
+
+  color: var(--color-accent);
+}
+
+.srOnly {
+  @include sr-only;
+}

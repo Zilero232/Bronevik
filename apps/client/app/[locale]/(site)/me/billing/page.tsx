@@ -10,8 +10,9 @@ import { BillingPage } from '@/views/billing';
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
   const t = await getTranslations({ locale, namespace: 'billing.meta' });
+  const tBrand = await getTranslations({ locale, namespace: 'brand' });
 
-  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.account.billing, locale });
+  return createPageMetadata({ title: t('title'), description: t('description', { plus: tBrand('plus') }), path: ROUTES.account.billing, locale });
 };
 
 const Page = () => (

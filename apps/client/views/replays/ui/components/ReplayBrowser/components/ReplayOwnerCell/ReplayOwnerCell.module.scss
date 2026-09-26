@@ -1,0 +1,24 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--color-text);
+  gap: var(--space-1);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-accent);
+  }
+}
+
+.clan,
+.unknown {
+  color: var(--color-text-muted);
+}
+
+.clan {
+  font-size: var(--text-xs);
+}

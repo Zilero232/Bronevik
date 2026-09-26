@@ -67,6 +67,27 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
   { id: 'server-stats-hourly', queue: QUEUE.aggregate, name: JOB.aggregate.serverStats, repeat: { pattern: '20 * * * *' } },
   { id: 'tank-percentiles-daily', queue: QUEUE.aggregate, name: JOB.aggregate.tankPercentiles, repeat: { pattern: '0 7 * * *' } },
   { id: 'tier-maintenance-daily', queue: QUEUE.aggregate, name: JOB.aggregate.tierMaintenance, repeat: { pattern: '0 1 * * *' } },
+  {
+    id: 'build-usage-nightly',
+    queue: QUEUE.aggregate,
+    name: JOB.aggregate.buildUsage,
+    repeat: { pattern: '40 4 * * *' },
+    enabled: FEATURES.buildUsage
+  },
+  {
+    id: 'tank-economy-daily',
+    queue: QUEUE.aggregate,
+    name: JOB.aggregate.tankEconomy,
+    repeat: { pattern: '30 7 * * *' },
+    enabled: FEATURES.tankEconomy
+  },
+  {
+    id: 'learning-curve-daily',
+    queue: QUEUE.aggregate,
+    name: JOB.aggregate.learningCurve,
+    repeat: { pattern: '45 7 * * *' },
+    enabled: FEATURES.learningCurve
+  },
   { id: 'news-rss', queue: QUEUE.news, name: JOB.news.rss, repeat: { pattern: '*/30 * * * *' }, enabled: FEATURES.news },
   { id: 'purge-dispatch', queue: QUEUE.purge, name: JOB.purge.dispatch, repeat: { every: 10 * 60_000 } },
   {

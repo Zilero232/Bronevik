@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "title": "Tank builds from player data",
+    "description": "Which equipment, consumables and skills players use on every tank — from battles of players running the Three Marks mod."
+  },
+  "head": {
+    "title": "Builds",
+    "description": "What players put on every tank: battles of players with our mod over 30 days. Open a tank to build it in the constructor."
+  },
+  "modeLabel": "Mode",
+  "modes": {
+    "random": "Random",
+    "onslaught": "Onslaught",
+    "frontline": "Front Line",
+    "ranked": "Ranked"
+  },
+  "table": {
+    "caption": "{count, plural, one {# tank} other {# tanks}}",
+    "tank": "Tank",
+    "coverage": "Sample",
+    "players": "{count, plural, one {# player} other {# players}}",
+    "winRate": "Wins",
+    "avgDamage": "Avg damage",
+    "equipment": "Equipment",
+    "consumables": "Consumables",
+    "noData": "not enough data",
+    "emptyTitle": "No tanks match these filters",
+    "resetFilters": "Reset filters",
+    "errorTitle": "Could not load builds",
+    "errorDescription": "Check your connection and try again."
+  },
+  "source": "Data: battles of players running the Three Marks mod, their own tanks only. Shares stay hidden below {min} battles."
+}

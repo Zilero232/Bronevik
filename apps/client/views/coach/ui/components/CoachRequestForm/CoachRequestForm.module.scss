@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.body,
+.form {
+  @include stack(var(--space-3));
+}
+
+.note {
+  @include source-line;
+
+  margin: 0;
+}

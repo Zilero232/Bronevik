@@ -1,0 +1,97 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Controller, FormProvider } from 'react-hook-form';
+
+import { TankPicker } from '@/features/tank/pick-tank';
+import { Button, Card, FormField, Input, SegmentedControl, Select } from '@/ui-kit';
+
+import type { GuideEditorFormProps } from './GuideEditorForm.types';
+
+import { GUIDE_FORM } from '../../../config';
+import { useGuideEditorForm } from '../../../model/hooks';
+import { GuideBodyField } from './components';
+
+import s from './GuideEditorForm.module.scss';
+
+export const GuideEditorForm = ({ guide }: GuideEditorFormProps) => {
+  const t = useTranslations('guides.editor');
+  const {
+    form,
+    isEdit,
+    kind,
+    kindOptions,
+    localeOptions,
+    tank,
+    onTankChange,
+    map,
+    mapItems,
+    onMapChange,
+    titleLength,
+    titleMax,
+    isPending,
+    onSubmit
+  } = useGuideEditorForm(guide);
+
+  const { errors } = form.formState;
+
+  return (
+    <FormProvider {...form}>
+      <Card className={s.root} padding='lg'>
+        <form noValidate className={s.form} onSubmit={onSubmit}>
+          <div className={s.row}>
+            <FormField label={t('kind')}>
+              <Controller
+                render={({ field }) => (
+                  <SegmentedControl aria-label={t('kind')} options={kindOptions} value={field.value} onChange={field.onChange} />
+                )}
+                control={form.control}
+                name='kind'
+              />
+            </FormField>
+            <FormField label={t('locale')}>
+              <Controller
+                render={({ field }) => (
+                  <SegmentedControl aria-label={t('locale')} options={localeOptions} value={field.value} onChange={field.onChange} />
+                )}
+                control={form.control}
+                name='locale'
+              />
+            </FormField>
+          </div>
+          {kind === 'tank' && (
+            <FormField error={errors.tankId && t('errors.tank')} label={t('tank')}>
+              <TankPicker className={s.subject} placeholder={t('tankPlaceholder')} value={tank} onChange={onTankChange} />
+            </FormField>
+          )}
+          {kind === 'map' && (
+            <FormField error={errors.arenaId && t('errors.map')} label={t('map')}>
+              <Select className={s.subject} items={mapItems} value={map} onValueChange={onMapChange} />
+            </FormField>
+          )}
+          <FormField
+            error={errors.title && t('errors.title', { min: GUIDE_FORM.titleMin, max: titleMax ?? titleLength })}
+            hint={t('counter', { length: titleLength, max: titleMax ?? titleLength })}
+            htmlFor='guide-title'
+            label={t('title')}
+          >
+            <Input
+              id='guide-title'
+              isInvalid={Boolean(errors.title)}
+              maxLength={titleMax}
+              placeholder={t('titlePlaceholder')}
+              {...form.register('title')}
+            />
+          </FormField>
+          <GuideBodyField />
+          <div className={s.footer}>
+            <p className={s.moderation}>{t('moderationHint')}</p>
+            <Button disabled={isPending} type='submit'>
+              {isEdit ? t('save') : t('publish')}
+            </Button>
+          </div>
+        </form>
+      </Card>
+    </FormProvider>
+  );
+};

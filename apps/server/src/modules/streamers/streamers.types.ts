@@ -15,7 +15,7 @@ import type {
 import type { ChatClient } from '@twurple/chat';
 import type { z } from 'zod';
 
-import type { Challenge, StreamerProvider } from '../../../generated';
+import type { Challenge, Overlay, StreamerProvider } from '../../../generated';
 import type { ChallengeVerdict, ChatCommand, ChatMessage, ChatValues } from './lib';
 
 export type StreamerProfileView = z.infer<typeof streamerProfileSchema>;
@@ -170,4 +170,9 @@ export type DonationEventInput = {
 export type EvaluateInput = {
   challenge: Challenge;
   now: Date;
+};
+
+export type OverlayViewInput = {
+  overlay: Overlay;
+  isPaused: boolean;
 };

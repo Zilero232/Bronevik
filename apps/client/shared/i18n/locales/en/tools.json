@@ -159,6 +159,19 @@
     "series": {
       "base": "No premium",
       "premium": "Premium"
+    },
+    "tank": "Tank (optional)",
+    "tankPlaceholder": "Pick a tank to fill in its tier and real medians",
+    "real": {
+      "title": "Real medians: {tank}",
+      "pickHint": "Pick a tank to compare the estimate with medians from mod users’ battles.",
+      "credits": "Income without premium",
+      "net": "Profit without premium",
+      "creditsPremium": "Income with premium",
+      "netPremium": "Profit with premium",
+      "note": "Medians of random battles by mod users over {days} days.",
+      "emptyTitle": "Not enough battles on {tank} yet",
+      "emptyDescription": "Medians appear once mod users play enough battles."
     }
   },
   "gold": {

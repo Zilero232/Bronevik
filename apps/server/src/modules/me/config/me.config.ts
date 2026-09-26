@@ -1,5 +1,4 @@
 export const GOALS = {
-  maxActive: 10,
   maxDurationDays: 366
 } as const;
 

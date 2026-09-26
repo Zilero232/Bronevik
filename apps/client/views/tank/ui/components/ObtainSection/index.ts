@@ -1,0 +1,1 @@
+export { ObtainSection } from './ObtainSection';

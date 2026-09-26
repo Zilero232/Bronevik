@@ -4,13 +4,11 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { WebhookEndpoint } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
-import { API_PLANS, WEBHOOK_EVENT_TO_DB } from '../../config';
-import { DeveloperPlanService } from '../developer-plan.service';
+import { API_TIERS, WEBHOOK_EVENT_TO_DB } from '../../config';
+import { ApiTierService } from '../api-tier.service';
 import { WebhookEndpointsService } from '../webhook-endpoints.service';
 
 const lookup = vi.hoisted(() => vi.fn<(host: string) => Promise<{ address: string; family: number }[]>>());
-
-vi.mock('node:dns/promises', () => ({ lookup }));
 
 beforeEach(() => {
   lookup.mockReset();
@@ -34,11 +32,11 @@ const endpoint = (overrides: Partial<WebhookEndpoint> = {}): WebhookEndpoint => 
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const plans = mock<DeveloperPlanService>();
+  const tiers = mock<ApiTierService>();
 
-  plans.planFor.mockResolvedValue('free');
+  tiers.tierFor.mockResolvedValue('free');
 
-  return { service: new WebhookEndpointsService(prisma, plans), prisma };
+  return { service: new WebhookEndpointsService(prisma, tiers, { resolve: lookup }), prisma };
 };
 
 const input = { userId: 'user', url: 'https://hooks.example.com/otmetki', events: ['mark.gained' as const], filter: { accountIds: [1] } };
@@ -57,10 +55,10 @@ describe('WebhookEndpointsService.create', () => {
     expect(created.endpoint.events).toEqual(['mark.gained']);
   });
 
-  it('refuses an endpoint over the plan limit', async () => {
+  it('refuses an endpoint over the tier limit', async () => {
     const { service, prisma } = createService();
 
-    prisma.webhookEndpoint.count.mockResolvedValue(API_PLANS.free.webhooks);
+    prisma.webhookEndpoint.count.mockResolvedValue(API_TIERS.free.webhooks);
 
     await expect(service.create(input)).rejects.toMatchObject({ response: { code: 'PLAN_LIMIT_REACHED' } });
   });
@@ -100,5 +98,27 @@ describe('WebhookEndpointsService.update', () => {
     prisma.webhookEndpoint.findFirst.mockResolvedValue(null);
 
     await expect(service.update({ userId: 'user', id: 'id', isActive: false })).rejects.toMatchObject({ response: { code: 'NOT_FOUND' } });
+  });
+});
+
+describe('WebhookEndpointsService.enforceTier', () => {
+  it('switches off the newest active endpoints over the tier limit and deletes nothing', async () => {
+    const { service, prisma } = createService();
+
+    prisma.webhookEndpoint.findMany.mockResolvedValue([endpoint({ id: 'old' }), endpoint({ id: 'new' })]);
+    prisma.webhookEndpoint.updateMany.mockResolvedValue({ count: 1 });
+
+    expect(await service.enforceTier({ userId: 'user', tier: 'free' })).toBe(1);
+    expect(prisma.webhookEndpoint.updateMany.mock.calls[0]?.[0].where).toEqual({ id: { in: ['new'] } });
+    expect(prisma.webhookEndpoint.delete).not.toHaveBeenCalled();
+  });
+
+  it('refuses to switch an endpoint back on over the tier limit', async () => {
+    const { service, prisma } = createService();
+
+    prisma.webhookEndpoint.findFirst.mockResolvedValue(endpoint());
+    prisma.webhookEndpoint.count.mockResolvedValue(API_TIERS.free.webhooks);
+
+    await expect(service.update({ userId: 'user', id: 'id', isActive: true })).rejects.toMatchObject({ response: { code: 'PLAN_LIMIT_REACHED' } });
   });
 });

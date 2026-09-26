@@ -4,6 +4,7 @@ cmd-marks = Marks of excellence
 cmd-clan = My clan
 cmd-tank = Tank: /tank name
 cmd-top = Top players by WN8
+cmd-lbz = Next personal missions
 cmd-settings = Notifications
 cmd-login = Sign in on the site
 cmd-help = Help
@@ -26,6 +27,7 @@ help =
     /clan — your clan
     /tank name — tank mark thresholds
     /top — top players by WN8
+    /lbz — next personal missions
     /settings — notifications
     /login — sign-in link for the site
 
@@ -67,6 +69,24 @@ tank-no-thresholds = No mark thresholds yet.
 top-empty = The rating is still being computed.
 top-header = Top by WN8:
 top-line = { $place }. { $nickname } — { $wn8 } ({ $battles } battles)
+lbz-not-linked = Link Telegram to your account on the site to track personal missions.
+lbz-empty = Missions are not loaded yet or all of them are done.
+lbz-header = Personal missions: { $operation }
+lbz-line =
+    { $branch }: { $title }
+    { $condition }
+lbz-branch-lightTank = LT
+lbz-branch-mediumTank = MT
+lbz-branch-heavyTank = HT
+lbz-branch-AT-SPG = TD
+lbz-branch-SPG = SPG
+lbz-branch-Alliance-USSR = Union
+lbz-branch-Alliance-Germany = Bloc
+lbz-branch-Alliance-USA = Alliance
+lbz-branch-Alliance-France = Coalition
+lbz-branch-LevelGroup1 = VI–VII
+lbz-branch-LevelGroup2 = VIII–IX
+lbz-branch-LevelGroup3 = X–XI
 settings-title = Notifications in Telegram and the browser. Tap to toggle.
 settings-channel-telegram = Telegram
 settings-channel-webPush = Browser push

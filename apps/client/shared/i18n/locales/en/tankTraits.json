@@ -1,0 +1,58 @@
+{
+  "status": {
+    "label": "Status",
+    "researchable": "Researchable",
+    "premium": "Premium",
+    "collector": "Collector",
+    "reward": "Reward",
+    "removed": "Removed"
+  },
+  "source": {
+    "techTree": "Research in the tech tree",
+    "inGameShop": "In-game shop for gold",
+    "premiumShop": "Premium shop",
+    "collectorShop": "Collector vehicles section",
+    "clanWars": "Clan battles reward",
+    "subscription": "Subscription",
+    "lootboxes": "Containers",
+    "reward": "Reward for events, personal missions, the battle pass or a marathon"
+  },
+  "role": {
+    "label": "Role",
+    "HT_assault": "Assault heavy",
+    "HT_break": "Break-through heavy",
+    "HT_universal": "Versatile heavy",
+    "HT_support": "Support heavy",
+    "MT_universal": "Versatile medium",
+    "MT_sniper": "Sniper medium",
+    "MT_assault": "Assault medium",
+    "MT_support": "Support medium",
+    "LT_universal": "Versatile light",
+    "LT_wheeled": "Wheeled light",
+    "ATSPG_sniper": "Sniper tank destroyer",
+    "ATSPG_assault": "Assault tank destroyer",
+    "ATSPG_support": "Support tank destroyer",
+    "ATSPG_universal": "Versatile tank destroyer",
+    "SPG": "SPG",
+    "SPG_assault": "Assault SPG",
+    "SPG_flame": "Flamethrower SPG",
+    "any": "Any role"
+  },
+  "sweat": {
+    "label": "Marks difficulty",
+    "masteryLabel": "Ace Tanker difficulty",
+    "easy": "Easy",
+    "moderate": "Moderate",
+    "hard": "Hard",
+    "extreme": "Sweaty",
+    "hint": "95% threshold against the average player damage on the tank: ×{value}",
+    "masteryHint": "Ace Tanker threshold against the average player XP on the tank: ×{value}"
+  },
+  "difficulty": {
+    "label": "Learning",
+    "easy": "Easy",
+    "moderate": "Moderate",
+    "hard": "Hard",
+    "hardcore": "Hardcore"
+  }
+}

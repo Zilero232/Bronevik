@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { countSchema, isoDateSchema, isoDateTimeSchema, percentSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
 import { listParam, paginatedSchema, paginationQuerySchema, sortQuery } from '../common/query/query.schemas';
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
-import { MOE_HISTORY } from './marks.constants';
+import { MOE_HISTORY, SWEAT_LEVELS } from './marks.constants';
 
 export const thresholdSourceSchema = z.enum(['otmetki', 'poliroid', 'kttc', 'lesta', 'manual']);
 
@@ -42,15 +42,25 @@ export const thresholdTrendSchema = z.object({
   p95Delta30d: z.number().int().nullable()
 });
 
+export const sweatLevelSchema = z.enum(SWEAT_LEVELS);
+
+export const sweatIndexSchema = z.object({
+  moe: z.number().positive().nullable().describe('95% threshold divided by the average-cohort mean damage on the tank'),
+  moeLevel: sweatLevelSchema.nullable(),
+  mastery: z.number().positive().nullable().describe('Ace Tanker threshold divided by the average-cohort mean XP on the tank'),
+  masteryLevel: sweatLevelSchema.nullable()
+});
+
 export const moeRowSchema = z.object({
   vehicle: vehicleSummarySchema,
   moe: moeThresholdSchema.nullable(),
   mastery: masteryThresholdSchema.nullable(),
   trend: thresholdTrendSchema,
+  sweat: sweatIndexSchema,
   updatedAt: isoDateTimeSchema.nullable()
 });
 
-export const moeSortFieldSchema = z.enum(['p65', 'p85', 'p95', 'p100', 'master', 'tier', 'p95Delta30d', 'p95Change30d']);
+export const moeSortFieldSchema = z.enum(['p65', 'p85', 'p95', 'p100', 'master', 'tier', 'p95Delta30d', 'p95Change30d', 'sweat', 'masterySweat']);
 
 export const moeQuerySchema = z.object({
   ...vehicleFilterSchema.shape,

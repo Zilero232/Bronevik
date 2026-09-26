@@ -1,3 +1,4 @@
+export { BRAND } from './brand';
 export { ratingPeriodSchema, recentPeriodSchema, serverPeriodSchema, skillCohortSchema, statsModeSchema } from './period';
 export type { RatingPeriod, RecentPeriod, ServerPeriod, SkillCohort, StatsMode } from './period';
 export {
@@ -14,8 +15,8 @@ export {
   tankIdSchema,
   uuidSchema
 } from './primitives';
-export type { AccountId, ClanId, ClanTag, Nickname, TankId } from './primitives';
 
+export type { AccountId, ClanId, ClanTag, Nickname, TankId } from './primitives';
 export {
   booleanParam,
   cursorPageSchema,

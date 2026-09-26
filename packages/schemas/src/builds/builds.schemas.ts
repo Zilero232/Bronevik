@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
-import { countSchema, percentSchema, ratioSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
+import { countSchema, isoDateTimeSchema, percentSchema, ratioSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
+import { listParam } from '../common/query/query.schemas';
 import { loadoutSchema } from '../community/community.schemas';
-import { BUILD_OPTIONS, POPULAR_BUILDS } from './builds.constants';
+import { nationSchema, tierSchema, vehicleSummarySchema, vehicleTypeSchema } from '../vehicles/vehicles.schemas';
+import { BUILD_OPTIONS, BUILD_USAGE, POPULAR_BUILDS } from './builds.constants';
 
 export const vehicleProfileIdSchema = z.enum(BUILD_OPTIONS.profiles);
 
@@ -140,8 +142,17 @@ export const loadoutResultSchema = z.object({
   ignored: z.array(z.string()).describe('Loadout items that do not exist or do not fit this vehicle and were left out')
 });
 
+export const buildModeSchema = z
+  .enum(BUILD_USAGE.modes)
+  .describe('random: random battles; onslaught: Onslaught; frontline: Front Line; ranked: ranked battles');
+
+export const buildCohortSchema = z
+  .enum(BUILD_USAGE.cohorts)
+  .describe('all: every player with the mod; top10 / top1: the best 10% / 1% on this tank by our rating (top1 needs Plus)');
+
 export const popularBuildsQuerySchema = z.object({
-  limit: z.coerce.number().int().min(1).max(POPULAR_BUILDS.maxLimit).default(POPULAR_BUILDS.defaultLimit)
+  limit: z.coerce.number().int().min(1).max(POPULAR_BUILDS.maxLimit).default(POPULAR_BUILDS.defaultLimit),
+  mode: buildModeSchema.optional().describe('Only battles of this mode; every mode when omitted')
 });
 
 export const popularBuildSchema = z.object({
@@ -159,4 +170,126 @@ export const popularBuildsSchema = z.object({
   source: z.enum(POPULAR_BUILDS.sources).describe('battles: loadouts the mod reported; builds: published community builds; none: no data yet'),
   sampleSize: countSchema,
   builds: z.array(popularBuildSchema)
+});
+
+const pickStats = {
+  battles: countSchema.describe('Battles with this pick'),
+  share: ratioSchema.describe('Share of players who pick it, each player weighted equally'),
+  winRate: percentSchema.nullable(),
+  avgDamage: z.number().nonnegative().nullable()
+};
+
+export const provisionPickSchema = z.object({ option: provisionOptionSchema, ...pickStats });
+
+export const equipmentSlotUsageSchema = z.object({
+  slot: z.number().int().nonnegative(),
+  picks: z.array(provisionPickSchema)
+});
+
+export const fieldModificationUsageSchema = z.object({
+  level: z.number().int().positive(),
+  kind: fieldModificationStepSchema.shape.kind,
+  picks: z.array(provisionPickSchema)
+});
+
+export const crewSkillPickSchema = z.object({
+  skill: z.string(),
+  name: z.string(),
+  image: z.string().nullable(),
+  isCommon: z.boolean(),
+  share: ratioSchema.describe('Share of crew members of this role who learned it'),
+  avgPosition: z.number().nonnegative().describe('Average learning order, 0 = the first skill')
+});
+
+export const crewRoleUsageSchema = z.object({
+  role: z.string(),
+  members: countSchema,
+  skills: z.array(crewSkillPickSchema)
+});
+
+export const shellUsageSchema = z.object({
+  shellId: z.number().int().positive(),
+  name: z.string().nullable(),
+  kind: z.string().nullable(),
+  isPremium: z.boolean(),
+  share: ratioSchema.describe('Share of players who carry this shell'),
+  ammoShare: ratioSchema.describe('Share of the loaded ammunition'),
+  avgCount: z.number().nonnegative()
+});
+
+export const buildUsageSchema = z.object({
+  mode: buildModeSchema,
+  cohort: buildCohortSchema,
+  battles: countSchema,
+  players: countSchema,
+  minSample: countSchema,
+  isEnough: z.boolean().describe('False while the sample is below minSample; shares are withheld then'),
+  windowDays: countSchema,
+  gameVersion: z.string().nullable(),
+  computedAt: isoDateTimeSchema.nullable(),
+  winRate: percentSchema.nullable(),
+  avgDamage: z.number().nonnegative().nullable(),
+  equipment: z.array(equipmentSlotUsageSchema),
+  consumables: z.array(provisionPickSchema),
+  directives: z.array(provisionPickSchema),
+  shells: z.array(shellUsageSchema),
+  fieldModifications: z.array(fieldModificationUsageSchema),
+  crew: z.array(crewRoleUsageSchema)
+});
+
+export const buildUsageQuerySchema = z.object({
+  mode: buildModeSchema.default(BUILD_USAGE.defaultMode),
+  cohort: buildCohortSchema.default(BUILD_USAGE.defaultCohort)
+});
+
+export const recommendedBuildSchema = z.object({
+  tankId: tankIdSchema,
+  usage: buildUsageSchema,
+  loadout: loadoutSchema.nullable().describe('The most picked option on every axis, ready for the constructor; null without enough data'),
+  result: loadoutResultSchema.nullable()
+});
+
+export const buildHistoryEntrySchema = z.object({
+  gameVersion: z.string(),
+  computedAt: isoDateTimeSchema,
+  battles: countSchema,
+  players: countSchema,
+  winRate: percentSchema.nullable(),
+  equipment: z.array(provisionPickSchema),
+  consumables: z.array(provisionPickSchema),
+  directives: z.array(provisionPickSchema),
+  fieldModifications: z.array(provisionPickSchema)
+});
+
+export const buildHistorySchema = z.object({
+  tankId: tankIdSchema,
+  mode: buildModeSchema,
+  cohort: buildCohortSchema,
+  entries: z.array(buildHistoryEntrySchema)
+});
+
+export const buildsCatalogQuerySchema = z.object({
+  tiers: listParam(tierSchema).optional(),
+  types: listParam(vehicleTypeSchema).optional(),
+  nations: listParam(nationSchema).optional(),
+  mode: buildModeSchema.default(BUILD_USAGE.defaultMode)
+});
+
+export const buildsCatalogEntrySchema = z.object({
+  vehicle: vehicleSummarySchema,
+  battles: countSchema,
+  players: countSchema,
+  isEnough: z.boolean(),
+  winRate: percentSchema.nullable(),
+  avgDamage: z.number().nonnegative().nullable(),
+  topEquipment: z.array(provisionPickSchema),
+  topConsumables: z.array(provisionPickSchema),
+  computedAt: isoDateTimeSchema.nullable()
+});
+
+export const buildsCatalogSchema = z.object({
+  mode: buildModeSchema,
+  cohort: buildCohortSchema,
+  minSample: countSchema,
+  entries: z.array(buildsCatalogEntrySchema)
 });

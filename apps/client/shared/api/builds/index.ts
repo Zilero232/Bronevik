@@ -1,3 +1,10 @@
-export { calculateLoadout, getBuildOptions, listPopularBuilds } from './builds';
+export { calculateLoadout, getBuildHistory, getBuildOptions, getRecommendedBuild, listBuildsCatalog, listPopularBuilds } from './builds';
 
-export type { BuildOptionsInput, CalculateLoadoutInput, PopularBuildsInput } from './builds.types';
+export type {
+  BuildHistoryInput,
+  BuildOptionsInput,
+  BuildsCatalogInput,
+  CalculateLoadoutInput,
+  PopularBuildsInput,
+  RecommendedBuildInput
+} from './builds.types';

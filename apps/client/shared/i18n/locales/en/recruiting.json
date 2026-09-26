@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "title": "Clan recruiting",
+    "description": "Mir Tankov clans looking for players and players looking for a clan, with battle, WN8 and win rate requirements."
+  },
+  "head": {
+    "title": "Clan recruiting",
+    "description": "Posts from clans and players. Only clan officers can post for a clan."
+  },
+  "tabs": {
+    "clan_seeks_player": "Clans recruiting",
+    "player_seeks_clan": "Players looking for a clan"
+  },
+  "board": {
+    "count": "{total, plural, one {# post} other {# posts}}",
+    "more": "Show more",
+    "emptyTitle": "No posts",
+    "empty": {
+      "clan_seeks_player": "No clan is recruiting right now. Officers can be the first to post.",
+      "player_seeks_clan": "Nobody is looking for a clan. Tell clans about yourself — they'll see your stats."
+    },
+    "errorTitle": "Couldn't load posts",
+    "errorDescription": "The server didn't respond. Try again."
+  },
+  "card": {
+    "unknownNick": "Unnamed player",
+    "expires": "until",
+    "clanPage": "Clan page",
+    "close": "Take down"
+  },
+  "create": {
+    "open": {
+      "clan_seeks_player": "Recruit for clan",
+      "player_seeks_clan": "Look for a clan"
+    },
+    "title": {
+      "clan_seeks_player": "Recruiting post",
+      "player_seeks_clan": "Looking for a clan"
+    },
+    "description": {
+      "clan_seeks_player": "Players see your requirements. The post is tied to the clan where you're an officer.",
+      "player_seeks_clan": "Your stats are attached: battles, WN8 and win rate."
+    },
+    "checkingClan": "Checking your clan…",
+    "notOfficer": "Only a commander, deputy, personnel, recruitment or combat officer can post for a clan. None of your linked accounts holds such a role.",
+    "clan": "Clan",
+    "postTitle": "Title",
+    "titlePlaceholder": {
+      "clan_seeks_player": "E.g. recruiting for Stronghold, tier X",
+      "player_seeks_clan": "E.g. medium tank player looking for an active clan"
+    },
+    "titleError": "5 to 140 characters",
+    "body": "Text",
+    "bodyPlaceholder": {
+      "clan_seeks_player": "What the clan is about, when you play, what you offer",
+      "player_seeks_clan": "What you like to play, when you're online, what you expect"
+    },
+    "bodyError": "10 to 4000 characters",
+    "expiresIn": "Show for",
+    "days": "{count, plural, one {# day} other {# days}}",
+    "cancel": "Cancel",
+    "submit": "Post"
+  },
+  "toast": {
+    "created": "Post published",
+    "closed": "Post taken down"
+  },
+  "errors": {
+    "notOfficer": "Only officers of this clan can recruit",
+    "forbidden": "Link your Lesta account in your profile first",
+    "notFound": "The post is closed already or another officer posted it",
+    "conflict": "Data conflict, try again",
+    "validation": "Check the form fields",
+    "unauthorized": "Sign in to continue",
+    "rateLimited": "Too many requests, wait a bit",
+    "unknown": "Something went wrong, try later"
+  }
+}

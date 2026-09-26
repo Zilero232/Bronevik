@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<regular_1_1_1>
+		<id>1</id>
+		<tags>initial lightTank</tags>
+		<minLevel>4</minLevel>
+		<maxLevel>10</maxLevel>
+		<requiredUnlocks/>
+		<userString>#personal_missions_details:quest_1_1</userString>
+		<shortUserString>#personal_missions_details:quest_1_1_short</shortUserString>
+		<description>#personal_missions_details:quest_1_1_descr</description>
+		<advice>#personal_missions_details:quest_1_1_advise</advice>
+	</regular_1_1_1>
+	<regular_1_1_15>
+		<id>15</id>
+		<tags>final lightTank</tags>
+		<minLevel>4</minLevel>
+		<maxLevel>10</maxLevel>
+		<requiredUnlocks>1 2 3</requiredUnlocks>
+		<rewardByDemand>1</rewardByDemand>
+		<userString>#personal_missions_details:quest_1_15</userString>
+		<shortUserString/>
+		<description/>
+		<advice/>
+	</regular_1_1_15>
+	<pm2_5_1_1>
+		<id>301</id>
+		<tags>initial Alliance-USSR</tags>
+		<minLevel>6</minLevel>
+		<maxLevel>10</maxLevel>
+		<requiredUnlocks/>
+		<userString>#personal_missions_details:pm2_5_1_1</userString>
+		<shortUserString/>
+		<description/>
+		<advice/>
+	</pm2_5_1_1>
+</root>

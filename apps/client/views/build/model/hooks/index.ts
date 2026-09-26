@@ -7,4 +7,5 @@ export { useMobileStats } from './use-mobile-stats';
 export { useModulesPanel } from './use-modules-panel';
 export { usePopularBuilds } from './use-popular-builds';
 export { usePresetCard } from './use-preset-card';
+export { useRecommendedPreset } from './use-recommended-preset';
 export { useSlotsPanel } from './use-slots-panel';

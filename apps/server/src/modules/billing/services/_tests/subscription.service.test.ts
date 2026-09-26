@@ -5,6 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Subscription } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
+import type { EntitlementsService } from '../entitlements.service';
 
 import { PLUS_PLANS } from '../../config';
 import { SubscriptionService } from '../subscription.service';
@@ -18,7 +19,7 @@ const createService = (isRecurring: boolean) => {
   config.get.mockReturnValue(isRecurring);
   prisma.subscription.upsert.mockResolvedValue(mock<Subscription>({ id: 'sub-1' }));
 
-  return { service: new SubscriptionService(prisma, config), prisma };
+  return { service: new SubscriptionService(prisma, config, mock<EntitlementsService>()), prisma };
 };
 
 const upserted = (prisma: ReturnType<typeof createService>['prisma']) => prisma.subscription.upsert.mock.calls[0]?.[0];

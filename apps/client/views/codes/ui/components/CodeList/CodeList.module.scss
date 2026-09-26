@@ -1,0 +1,15 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  padding: var(--space-4);
+  margin: 0;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  list-style: none;
+
+  @include below(sm) {
+    padding: var(--space-3);
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

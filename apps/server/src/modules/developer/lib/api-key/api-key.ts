@@ -1,16 +1,16 @@
-import type { ApiKey, ApiPlan } from '@otmetki/schemas';
+import type { ApiKey, ApiTier } from '@otmetki/schemas';
 
-import { apiPlanSchema } from '@otmetki/schemas';
+import { apiTierSchema } from '@otmetki/schemas';
 import { addMilliseconds, differenceInSeconds } from 'date-fns';
 import { z } from 'zod';
 
-import type { ApiKeyRow, PlanQuota, QuotaRetryAfterInput, RebasedRemainingInput, VerifyFailure } from './api-key.types';
+import type { ApiKeyRow, QuotaRetryAfterInput, RebasedRemainingInput, TierQuota, VerifyFailure } from './api-key.types';
 
 import { toIso } from '../../../../common/lib';
 import { API_KEY_PLUGIN } from '../../../../lib/auth';
-import { API_KEY_POLICY, API_PLANS } from '../../config';
+import { API_KEY_POLICY, API_TIERS } from '../../config';
 
-const keyMetadataSchema = z.object({ plan: apiPlanSchema });
+const keyMetadataSchema = z.object({ tier: apiTierSchema });
 
 const parseJson = (value: string): unknown => {
   try {
@@ -20,20 +20,20 @@ const parseJson = (value: string): unknown => {
   }
 };
 
-export const keyPlanOf = (metadata: unknown): ApiPlan | null => {
+export const keyTierOf = (metadata: unknown): ApiTier | null => {
   const parsed = keyMetadataSchema.safeParse(typeof metadata === 'string' ? parseJson(metadata) : metadata);
 
-  return parsed.success ? parsed.data.plan : null;
+  return parsed.success ? parsed.data.tier : null;
 };
 
-export const planQuota = (plan: ApiPlan): PlanQuota => ({
-  refillAmount: API_PLANS[plan].requestsPerDay,
+export const tierQuota = (tier: ApiTier): TierQuota => ({
+  refillAmount: API_TIERS[tier].requestsPerDay,
   refillInterval: API_KEY_POLICY.quotaRefillMs,
-  metadata: { plan }
+  metadata: { tier }
 });
 
-export const rebasedRemaining = ({ plan, remaining, refillAmount }: RebasedRemainingInput): number => {
-  const limit = API_PLANS[plan].requestsPerDay;
+export const rebasedRemaining = ({ tier, remaining, refillAmount }: RebasedRemainingInput): number => {
+  const limit = API_TIERS[tier].requestsPerDay;
 
   if (remaining === null || refillAmount === null) {
     return limit;
@@ -46,7 +46,7 @@ export const toApiKey = (row: ApiKeyRow): ApiKey => ({
   id: row.id,
   name: row.name ?? '',
   prefix: (row.start ?? '').slice(API_KEY_PLUGIN.prefix.length),
-  plan: keyPlanOf(row.metadata) ?? 'free',
+  tier: keyTierOf(row.metadata) ?? 'free',
   scopes: [],
   createdAt: row.createdAt.toISOString(),
   lastUsedAt: toIso(row.lastRequest),

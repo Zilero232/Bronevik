@@ -54,6 +54,7 @@ export class WebhookService {
 
       if (row.isAutoCharge && row.subscriptionId) {
         await this.prisma.subscription.update({ where: { id: row.subscriptionId }, data: { status: 'pastDue' } });
+        this.entitlements.invalidate(row.userId);
       }
 
       return false;
@@ -72,7 +73,7 @@ export class WebhookService {
         const claimed = await tx.payment.updateMany({ where: { id: row.id, status: 'pending' }, data: { status: 'succeeded', paidAt: now } });
 
         if (claimed.count === 0) {
-          return false;
+          return null;
         }
 
         const subscriptionId = await this.subscriptions.activate({ db: tx, userId: row.userId, plan, method, now });
@@ -83,18 +84,23 @@ export class WebhookService {
           await this.promos.recordRedemption({ db: tx, userId: row.userId, code: row.promoCode });
         }
 
-        await this.referrals.reward({ db: tx, userId: row.userId, now });
-
-        return true;
+        return { referrer: await this.referrals.reward({ db: tx, userId: row.userId, now }) };
       },
       { isolationLevel: 'Serializable' }
     );
 
-    if (settled) {
-      await this.entitlements.syncTracking(row.userId);
-      this.logger.log(`payment ${paymentId} settled for ${row.userId}`);
+    if (!settled) {
+      return false;
     }
 
-    return settled;
+    await this.entitlements.syncTracking(row.userId);
+
+    if (settled.referrer) {
+      await this.entitlements.syncTracking(settled.referrer);
+    }
+
+    this.logger.log(`payment ${paymentId} settled for ${row.userId}`);
+
+    return true;
   }
 }

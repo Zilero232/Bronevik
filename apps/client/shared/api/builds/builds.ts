@@ -1,8 +1,23 @@
-import type { BuildOptions, LoadoutResult, PopularBuilds } from '@otmetki/schemas';
+import type { BuildHistory, BuildOptions, BuildsCatalog, LoadoutResult, PopularBuilds, RecommendedBuild } from '@otmetki/schemas';
 
-import type { BuildOptionsInput, CalculateLoadoutInput, PopularBuildsInput } from './builds.types';
+import type {
+  BuildHistoryInput,
+  BuildOptionsInput,
+  BuildsCatalogInput,
+  CalculateLoadoutInput,
+  PopularBuildsInput,
+  RecommendedBuildInput
+} from './builds.types';
 
-import { buildsControllerLoadout, buildsControllerOptions, buildsControllerPopular } from '../generated';
+import {
+  buildsCatalogControllerList,
+  buildsControllerHistory,
+  buildsControllerLoadout,
+  buildsControllerOptions,
+  buildsControllerPopular,
+  buildsControllerRecommended
+} from '../generated';
+import { listParam } from '../http';
 import { fromSdk } from '../source';
 import { BUILD_REQUEST } from './builds.constants';
 
@@ -14,3 +29,14 @@ export const calculateLoadout = ({ signal, tankId, request }: CalculateLoadoutIn
 
 export const listPopularBuilds = ({ signal, tankId, limit = BUILD_REQUEST.popularLimit }: PopularBuildsInput): Promise<PopularBuilds> =>
   fromSdk(() => buildsControllerPopular({ path: { id: tankId }, query: { limit }, signal }));
+
+export const getRecommendedBuild = ({ signal, tankId, mode, cohort }: RecommendedBuildInput): Promise<RecommendedBuild> =>
+  fromSdk(() => buildsControllerRecommended({ path: { id: tankId }, query: { mode, cohort }, signal }));
+
+export const getBuildHistory = ({ signal, tankId, mode, cohort }: BuildHistoryInput): Promise<BuildHistory> =>
+  fromSdk(() => buildsControllerHistory({ path: { id: tankId }, query: { mode, cohort }, signal }));
+
+export const listBuildsCatalog = ({ signal, tiers, types, nations, mode }: BuildsCatalogInput): Promise<BuildsCatalog> =>
+  fromSdk(() =>
+    buildsCatalogControllerList({ query: { mode, tiers: listParam(tiers), types: listParam(types), nations: listParam(nations) }, signal })
+  );

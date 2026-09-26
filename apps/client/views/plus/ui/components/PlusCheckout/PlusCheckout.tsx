@@ -11,7 +11,8 @@ import s from './PlusCheckout.module.scss';
 
 export const PlusCheckout = () => {
   const t = useTranslations('plus.checkout');
-  const { offers, access, planRegistration, promoRegistration, promoError, isSubmitting, onSubmit } = usePlusCheckoutForm();
+  const { offers, access, planRegistration, promoRegistration, promoError, isSubmitting, isStartingTrial, onSubmit, onStartTrial } =
+    usePlusCheckoutForm();
 
   return (
     <section className={s.root}>
@@ -25,8 +26,20 @@ export const PlusCheckout = () => {
           registration={planRegistration}
           onRetry={offers.retry}
         />
-        {access.isSignedIn && !access.isPlus && <PromoField error={promoError} registration={promoRegistration} />}
-        <CheckoutAction isPending={access.isPending} isPlus={access.isPlus} isSignedIn={access.isSignedIn} isSubmitting={isSubmitting} />
+        {access.isSignedIn && !access.isPlus && access.isCheckoutAvailable && <PromoField error={promoError} registration={promoRegistration} />}
+        <CheckoutAction
+          isCheckoutAvailable={access.isCheckoutAvailable}
+          isPending={access.isPending}
+          isPlus={access.isPlus}
+          isSignedIn={access.isSignedIn}
+          isStartingTrial={isStartingTrial}
+          isSubmitting={isSubmitting}
+          periodEnd={access.periodEnd}
+          state={access.state}
+          trialAvailable={access.trialAvailable}
+          trialDays={access.trialDays}
+          onStartTrial={onStartTrial}
+        />
       </form>
     </section>
   );

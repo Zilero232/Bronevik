@@ -1,0 +1,1 @@
+export { PlatoonTanksField } from './PlatoonTanksField';

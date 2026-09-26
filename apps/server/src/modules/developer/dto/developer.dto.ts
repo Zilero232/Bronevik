@@ -1,7 +1,7 @@
 import {
   apiErrorLogSchema,
   apiKeysSchema,
-  apiPlansSchema,
+  apiTiersSchema,
   apiUsageQuerySchema,
   apiUsageSchema,
   createApiKeySchema,
@@ -19,7 +19,7 @@ import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
 export class DeveloperIdParamsDto extends createZodDto(z.object({ id: uuidSchema })) {}
-export class ApiPlansDto extends createZodDto(apiPlansSchema) {}
+export class ApiTiersDto extends createZodDto(apiTiersSchema) {}
 export class DeveloperOverviewDto extends createZodDto(developerOverviewSchema) {}
 export class ApiKeysDto extends createZodDto(apiKeysSchema) {}
 export class CreateApiKeyDto extends createZodDto(createApiKeySchema) {}

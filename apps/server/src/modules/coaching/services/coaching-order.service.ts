@@ -17,10 +17,10 @@ export class CoachingOrderService {
       orderBy: { createdAt: 'desc' }
     });
 
-    return rows.map(toOrderView);
+    return rows.map((order) => toOrderView({ order, viewerId: userId }));
   }
 
-  async order({ userId, coachUserId, offerId, replayId, notes }: CreateOrderRequest): Promise<CoachingOrderView> {
+  async order({ userId, coachUserId, offerId, replayId, notes, studentContact }: CreateOrderRequest): Promise<CoachingOrderView> {
     if (coachUserId === userId) {
       throw new AppBadRequestException('VALIDATION_FAILED', 'You cannot hire yourself');
     }
@@ -44,27 +44,35 @@ export class CoachingOrderService {
         offerId: offer?.id ?? null,
         replayId: replayId ?? null,
         notes: notes ?? null,
+        studentContact,
         priceRub: offer?.priceRub ?? coach.priceRub
       }
     });
 
-    return toOrderView(order);
+    return toOrderView({ order, viewerId: userId });
   }
 
   async accept({ id, userId }: OwnedById): Promise<CoachingOrderView> {
-    return this.transition({ id, where: { coachUserId: userId, status: 'requested' }, status: 'accepted' });
+    return this.transition({ id, userId, where: { coachUserId: userId, status: 'requested' }, status: 'accepted' });
   }
 
   async cancel({ id, userId }: OwnedById): Promise<CoachingOrderView> {
     return this.transition({
       id,
+      userId,
       where: { OR: [{ coachUserId: userId }, { studentUserId: userId }], status: { in: ['requested', 'accepted'] } },
       status: 'cancelled'
     });
   }
 
   async complete({ id, userId }: OwnedById): Promise<CoachingOrderView> {
-    const order = await this.transition({ id, where: { coachUserId: userId, status: 'paid' }, status: 'completed', completedAt: new Date() });
+    const order = await this.transition({
+      id,
+      userId,
+      where: { coachUserId: userId, status: 'accepted' },
+      status: 'completed',
+      completedAt: new Date()
+    });
 
     await this.prisma.coachProfile.update({ where: { userId }, data: { ordersDone: { increment: 1 } } });
 
@@ -86,10 +94,10 @@ export class CoachingOrderService {
 
     await this.prisma.coachProfile.update({ where: { userId: order.coachUserId }, data: { rating: average._avg.score } });
 
-    return toOrderView(updated);
+    return toOrderView({ order: updated, viewerId: userId });
   }
 
-  private async transition({ id, where, status, completedAt }: OrderTransition): Promise<CoachingOrderView> {
+  private async transition({ id, userId, where, status, completedAt }: OrderTransition): Promise<CoachingOrderView> {
     const { count } = await this.prisma.coachingOrder.updateMany({
       where: { id, ...where },
       data: { status, ...(completedAt ? { completedAt } : {}) }
@@ -99,6 +107,6 @@ export class CoachingOrderService {
       throw new AppForbiddenException('FORBIDDEN', `Order ${id} cannot move to ${status}`);
     }
 
-    return toOrderView(await this.prisma.coachingOrder.findUniqueOrThrow({ where: { id } }));
+    return toOrderView({ order: await this.prisma.coachingOrder.findUniqueOrThrow({ where: { id } }), viewerId: userId });
   }
 }

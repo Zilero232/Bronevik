@@ -10,6 +10,7 @@ import type { CatalogEntry } from '../../../reference';
 import { ThresholdsService, VehicleCatalogService } from '../../../reference';
 import { MOE_TABLE } from '../../config';
 import { MoeTableService } from '../moe-table.service';
+import { SweatIndexService } from '../sweat-index.service';
 
 const vehicle = (tankId: number, name: string): VehicleSummary => ({
   tankId,
@@ -43,16 +44,33 @@ const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const thresholds = mock<ThresholdsService>();
   const catalog = mock<VehicleCatalogService>();
+  const sweat = mock<SweatIndexService>();
   const empty = { moe: new Map(), mastery: new Map() };
 
   thresholds.latest.mockResolvedValue(empty);
   thresholds.asOf.mockResolvedValue(empty);
   catalog.filter.mockResolvedValue([entry(vehicle(1, 'IS-7')), entry(vehicle(2, 'Object 279'))]);
 
-  return { service: new MoeTableService(prisma, thresholds, catalog), prisma };
+  sweat.all.mockResolvedValue(
+    new Map([
+      [1, { moe: 1.4, moeLevel: 'easy', mastery: null, masteryLevel: null }],
+      [2, { moe: 2.1, moeLevel: 'hard', mastery: null, masteryLevel: null }]
+    ])
+  );
+
+  return { service: new MoeTableService(prisma, thresholds, catalog, sweat), prisma };
 };
 
 describe('MoeTableService.table', () => {
+  it('sorts by the sweat index, hardest first', async () => {
+    const { service } = createService();
+
+    const page = await service.table({ sort: 'sweat', limit: 25, offset: 0, order: 'desc' });
+
+    expect(page.items.map((row) => row.vehicle.tankId)).toEqual([2, 1]);
+    expect(page.items[0]?.sweat.moeLevel).toBe('hard');
+  });
+
   it('finds tanks by a part of the name, ignoring case', async () => {
     const { service } = createService();
 

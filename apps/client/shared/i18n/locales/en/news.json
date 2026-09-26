@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "title": "«Мир танков» news and patch notes — Три отметки",
+    "description": "News, update notes and the developer blog of «Мир танков» from tanki.su, linked to the vehicles they mention."
+  },
+  "head": {
+    "title": "News",
+    "description": "News, patch notes and the developer blog from tanki.su, linked to the tanks they mention"
+  },
+  "filters": {
+    "label": "Publication type",
+    "all": "All",
+    "news": "News",
+    "patch_notes": "Patch notes",
+    "dev_blog": "Dev blog"
+  },
+  "error": {
+    "title": "Could not load the news",
+    "description": "The server did not respond. Try again."
+  },
+  "empty": {
+    "title": "No publications yet",
+    "description": "News appears after the next tanki.su crawl."
+  },
+  "version": "Update {version}",
+  "mentions": "Mentioned vehicles",
+  "more": "Show more ({shown} of {total})"
+}

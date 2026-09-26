@@ -4,6 +4,7 @@
   "design": "Design system",
   "players": "Players",
   "tanks": "Tanks",
+  "builds": "Builds",
   "marks": "Marks",
   "top": "Leaderboards",
   "clans": "Clans",
@@ -11,5 +12,19 @@
   "streamers": "Streamers",
   "developers": "Developers",
   "maps": "Maps",
-  "more": "More"
+  "more": "More",
+  "community": "Community",
+  "replays": "Replays",
+  "guides": "Guides",
+  "tactics": "Tactics",
+  "platoons": "Platoon finder",
+  "recruiting": "Recruiting",
+  "coaching": "Coaches",
+  "tournaments": "Tournaments",
+  "news": "News",
+  "events": "Events",
+  "shop": "Shop",
+  "codes": "Bonus codes",
+  "pulse": "Server pulse",
+  "missions": "Missions"
 }

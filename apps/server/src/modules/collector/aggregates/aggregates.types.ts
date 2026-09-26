@@ -20,3 +20,20 @@ export type PercentileRow = {
   spotted: number[];
   defence: number[];
 };
+
+export type ComputeTankUsageInput = {
+  tankId: number;
+  since: Date;
+  battleTypes: string[];
+  gameVersion: string;
+};
+
+export type TankRanksInput = {
+  tankId: number;
+  accountIds: bigint[];
+};
+
+export type BuildRankRow = {
+  account_id: bigint;
+  rank: number;
+};

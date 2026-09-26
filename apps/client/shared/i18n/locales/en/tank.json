@@ -148,27 +148,56 @@
     "emptyTitle": "The leaderboard is empty"
   },
   "builds": {
-    "title": "Popular builds",
-    "source": {
-      "battles": "Mod",
-      "builds": "Builds",
-      "none": "No data"
+    "title": "How to build",
+    "modeLabel": "Mode",
+    "cohortLabel": "Players",
+    "modes": {
+      "random": "Random",
+      "onslaught": "Onslaught",
+      "frontline": "Front Line",
+      "ranked": "Ranked"
     },
-    "sourceHint": {
-      "battles": "From battles of players running the mod",
-      "builds": "From builds players published",
-      "none": "No statistics yet"
+    "cohorts": {
+      "all": "All",
+      "top10": "Top 10%",
+      "top1": "Top 1%"
     },
-    "share": "of players",
-    "winRate": "Wins",
-    "avgDamage": "Avg damage",
-    "battles": "Battles",
+    "sample": "Based on {battles, plural, one {# battle} other {# battles}} of {players, plural, one {# player} other {# players}} with the mod over {days} days",
+    "sampleShort": "{battles, plural, one {# battle} other {# battles}}",
     "equipment": "Equipment",
-    "consumables": "Consumables and directives",
-    "none": "None",
+    "slot": "Slot {slot}",
+    "consumables": "Consumables",
+    "directives": "Directives",
+    "shells": "Ammunition",
+    "fieldMods": "Field modification",
+    "level": "Level {level}",
+    "crew": "Crew skills",
+    "winRate": "Wins {value}",
+    "avgCount": "≈{count} pcs",
+    "premium": "prem.",
+    "shellKinds": {
+      "ARMOR_PIERCING": "AP",
+      "ARMOR_PIERCING_CR": "APCR",
+      "HIGH_EXPLOSIVE": "HE",
+      "HOLLOW_CHARGE": "HEAT",
+      "ARMOR_PIERCING_HE": "AP-HE",
+      "FLAME": "Flame",
+      "unknown": "Shell"
+    },
     "open": "Open in the constructor",
-    "emptyTitle": "No builds yet",
-    "emptyDescription": "Builds appear once statistics come in."
+    "emptyTitle": "Not enough data yet",
+    "emptyDescription": "Shares appear once players with the mod reach {min} battles. Now: {battles}.",
+    "errorTitle": "Could not load builds",
+    "note": "Counted from battles of players running our mod — their own tanks only.",
+    "history": {
+      "title": "Meta build by patch",
+      "version": "Version",
+      "battles": "Battles",
+      "equipment": "Equipment",
+      "consumables": "Consumables",
+      "emptyTitle": "No history yet",
+      "errorTitle": "Could not load the history"
+    }
   },
   "patches": {
     "title": "Changes by patch",
@@ -183,5 +212,54 @@
     "emptyDescription": "This vehicle’s specs did not change in the tracked updates.",
     "firstSeen": "The first tracked update with this vehicle.",
     "noSpecChanges": "The changes did not touch the specs shown here."
+  },
+  "economy": {
+    "title": "Economy",
+    "account": "Premium account",
+    "premium": "With premium account",
+    "standard": "Without premium account",
+    "credits": "Income per battle",
+    "net": "Net profit",
+    "costs": "Costs",
+    "costsHint": "Repair, ammo and consumables",
+    "xp": "Experience",
+    "freeXp": "Free experience",
+    "reserve": "Credit reserve +50%",
+    "reserveHint": "Adds half of the base income to the median",
+    "emptyTitle": "No economy data yet",
+    "emptyDescription": "Medians appear once mod users play enough random battles on this tank.",
+    "noAccountData": "Not enough battles for this account type yet",
+    "note": "Medians over {battles} random battles by {players} mod users in {days} days.",
+    "noteEmpty": "Computed from battle results sent by the mod and from replays."
+  },
+  "learning": {
+    "title": "Learning curve",
+    "winRate": "Win rate",
+    "chartAria": "Win rate by battles played on the tank",
+    "gain": "Win-rate gain from new to experienced players: {gain} pp",
+    "emptyTitle": "No learning curve yet",
+    "emptyDescription": "We need more observations of players on this tank.",
+    "note": "Based on {battles} battles by tracked players in {days} days, grouped by battles on the tank.",
+    "mine": {
+      "title": "Your place on the curve",
+      "battles": "Your battles",
+      "winRate": "Your win rate",
+      "bucketWinRate": "Players at {bucket}",
+      "ahead": "{delta} pp above players at your stage",
+      "behind": "{delta} pp below players at your stage",
+      "emptyTitle": "No data for your account",
+      "emptyDescription": "Link a Lesta account and play the tank to see your place."
+    }
+  },
+  "obtain": {
+    "title": "How to get it",
+    "unavailable": "The tank cannot be obtained right now",
+    "priceGold": "{value} gold",
+    "priceCredits": "{value} credits",
+    "researchFrom": "Researched from",
+    "xp": "{value} XP",
+    "offers": "Shop offers: {count}",
+    "news": "Mentioned in news",
+    "note": "From the game files and our shop offer history."
   }
 }

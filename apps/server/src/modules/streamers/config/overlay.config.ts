@@ -2,8 +2,6 @@ export const OVERLAY = {
   cacheTtlMs: 5_000,
   streamRefreshMs: 30_000,
   channelPrefix: 'otmetki:overlay:account:',
-  freeLimit: 2,
-  plusLimit: 20,
   publicPath: '/overlay/{publicKey}'
 } as const;
 

@@ -1,1 +1,13 @@
-export { BuildOptionsDto, BuildTankParamsDto, LoadoutRequestDto, LoadoutResultDto, PopularBuildsDto, PopularBuildsQueryDto } from './builds.dto';
+export {
+  BuildHistoryDto,
+  BuildOptionsDto,
+  BuildsCatalogDto,
+  BuildsCatalogQueryDto,
+  BuildTankParamsDto,
+  BuildUsageQueryDto,
+  LoadoutRequestDto,
+  LoadoutResultDto,
+  PopularBuildsDto,
+  PopularBuildsQueryDto,
+  RecommendedBuildDto
+} from './builds.dto';

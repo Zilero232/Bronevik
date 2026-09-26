@@ -85,22 +85,26 @@ model Battle {
   result     BattleResult
   team       Int?         @db.SmallInt
 
-  damageDealt          Int     @map("damage_dealt")
-  damageAssistedRadio  Int     @map("damage_assisted_radio")
-  damageAssistedTrack  Int     @map("damage_assisted_track")
-  damageAssistedStun   Int     @map("damage_assisted_stun")
-  damageBlocked        Int     @map("damage_blocked")
-  damageReceived       Int     @map("damage_received")
+  damageDealt          Int      @map("damage_dealt")
+  damageAssistedRadio  Int      @map("damage_assisted_radio")
+  damageAssistedTrack  Int      @map("damage_assisted_track")
+  damageAssistedStun   Int      @map("damage_assisted_stun")
+  damageBlocked        Int      @map("damage_blocked")
+  damageReceived       Int      @map("damage_received")
   spotted              Int
   frags                Int
   xp                   Int
-  freeXp               Int?    @map("free_xp")
+  freeXp               Int?     @map("free_xp")
   credits              Int?
-  creditsGross         Int?    @map("credits_gross")
+  creditsGross         Int?     @map("credits_gross")
+  isPremiumAccount     Boolean? @map("is_premium_account")
+  repairCost           Int?     @map("repair_cost")
+  ammoCost             Int?     @map("ammo_cost")
+  consumablesCost      Int?     @map("consumables_cost")
   survived             Boolean
-  lifetimeSec          Int?    @map("lifetime_sec")
-  capturePoints        Int     @default(0) @map("capture_points")
-  droppedCapturePoints Int     @default(0) @map("dropped_capture_points")
+  lifetimeSec          Int?     @map("lifetime_sec")
+  capturePoints        Int      @default(0) @map("capture_points")
+  droppedCapturePoints Int      @default(0) @map("dropped_capture_points")
 
   shotsFired   Int?  @map("shots_fired")
   shotsHit     Int?  @map("shots_hit")

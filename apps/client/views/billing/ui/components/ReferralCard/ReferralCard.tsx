@@ -1,6 +1,6 @@
 'use client';
 
-import { REFERRAL } from '@otmetki/schemas';
+import { PLUS_TRIAL, REFERRAL } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { Card, CardHeader, CopyField, Skeleton } from '@/ui-kit';
@@ -17,7 +17,7 @@ export const ReferralCard = () => {
   return (
     <Card className={s.root} padding='lg'>
       <CardHeader title={t('title')} />
-      <p className={s.lead}>{t('description', { days: REFERRAL.bonusDays })}</p>
+      <p className={s.lead}>{t('description', { days: REFERRAL.bonusDays, trialDays: PLUS_TRIAL.referralDays })}</p>
       {link ? <CopyField label={t('linkLabel')} value={link} /> : <Skeleton height={44} shape='block' />}
       <ol className={s.steps}>
         {BILLING_REFERRAL.steps.map((step) => (

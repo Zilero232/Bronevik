@@ -1,0 +1,18 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  gap: var(--space-3);
+}
+
+.label {
+  @include label;
+}
+
+.delete {
+  margin-left: auto;
+}

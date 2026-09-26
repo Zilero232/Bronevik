@@ -1,7 +1,10 @@
+export { EconomySection } from './EconomySection';
+export { HowToBuild } from './HowToBuild';
+export { LearningSection } from './LearningSection';
 export { MarksSection } from './MarksSection';
 export { MasteryPanel } from './MasteryPanel';
+export { ObtainSection } from './ObtainSection';
 export { PatchHistory } from './PatchHistory';
-export { PopularBuilds } from './PopularBuilds';
 export { ServerStats } from './ServerStats';
 export { TankGarage } from './TankGarage';
 export { TankSkeleton } from './TankSkeleton';

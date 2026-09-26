@@ -18,6 +18,7 @@ export const OverlayPage = ({ publicId }: OverlayPageProps) => {
     <div className={s.root}>
       {match({ isValid, data, isError })
         .with({ isValid: false }, () => <p className={s.notice}>{t('error.invalid')}</p>)
+        .with({ data: { isPaused: true } }, () => <p className={s.notice}>{t('paused')}</p>)
         .with({ data: P.nonNullable }, ({ data: loaded }) => <OverlayStage data={loaded} patch={patch} />)
         .with({ isError: true }, () => <p className={s.notice}>{t('error.unavailable')}</p>)
         .otherwise(() => null)}

@@ -104,6 +104,9 @@ Other differences:
   - a logout button when auth is used
 - **Deletion**: delete data on Lesta's request; don't keep stale data.
 
+### Monetisation status
+Our only paid product is the Plus subscription ([Plus spec](../superpowers/specs/2026-09-26-plus-subscription.md)); the API and core stats stay free and there are no ads. Checkout stays disabled (`PLUS.checkoutEnabled = false` in `packages/schemas/src/plus`) until Lesta confirms the model in writing, as described in the Plus spec §6; trials and promo days work meanwhile. When the reply arrives, record it here (date, sender, verbatim answer, including the history-window question).
+
 ## Community data
 - **WN8 expected values (Lesta)**: modxvm.com/en/wn8-expected-values-lesta. Daily, JSON/CSV, but behind Cloudflare.
   - Alternatives: tankist.net/services/wn8, kttc.ru/wot/ru/info/wn8etv.

@@ -1,7 +1,8 @@
+import { BUILD_USAGE } from '@otmetki/schemas';
 import { minutesToMilliseconds } from 'date-fns';
-import { createParser } from 'nuqs';
+import { createParser, parseAsStringLiteral } from 'nuqs';
 
-import { BUILD_URL, parseLoadout, serializeLoadout } from '@/entities/tank/build';
+import { BUILD_PRESETS, BUILD_URL, parseLoadout, serializeLoadout } from '@/entities/tank/build';
 
 const loadoutParser = createParser({
   parse: parseLoadout,
@@ -20,4 +21,10 @@ export const BUILD_VIEW = {
   summaryKeys: ['damagePerMinute', 'reloadTime', 'aimingTime', 'viewRange'],
   sides: ['a', 'b'],
   iconSize: { slot: 40, picker: 32, skill: 20, gear: 20 }
+} as const;
+
+export const PRESET_PARSERS = {
+  [BUILD_URL.preset]: parseAsStringLiteral(BUILD_PRESETS),
+  [BUILD_URL.mode]: parseAsStringLiteral(BUILD_USAGE.modes).withDefault(BUILD_USAGE.defaultMode),
+  [BUILD_URL.cohort]: parseAsStringLiteral(BUILD_USAGE.cohorts).withDefault(BUILD_USAGE.defaultCohort)
 } as const;

@@ -9,7 +9,3 @@ export const HOME = {
   recent: { limit: 6 },
   staleMs: 60_000
 } as const;
-
-export const HOME_LINKS = {
-  news: 'https://tanki.su/ru/news/'
-} as const;

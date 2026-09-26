@@ -14,6 +14,7 @@ import s from './CabinetHeader.module.scss';
 
 export const CabinetHeader = () => {
   const t = useTranslations('developer.header');
+  const tTier = useTranslations('developer.tierName');
   const format = useFormatter();
   const { data: overview, isError } = useDeveloperOverview();
 
@@ -38,9 +39,9 @@ export const CabinetHeader = () => {
         </Link>
       </div>
       <div className={s.tag}>
-        <span className={s.tagLabel}>{t('plan')}</span>
-        {overview && <span className={s.plan}>{t(`planName.${overview.plan}`)}</span>}
-        {!overview && isError && <span className={s.plan}>—</span>}
+        <span className={s.tagLabel}>{t('tier')}</span>
+        {overview && <span className={s.tier}>{tTier(overview.tier)}</span>}
+        {!overview && isError && <span className={s.tier}>—</span>}
         {!overview && !isError && <Skeleton height={40} shape='block' width={120} />}
         <dl className={s.readouts}>
           {readouts?.map(({ key, value }) => (
@@ -50,6 +51,11 @@ export const CabinetHeader = () => {
             </div>
           ))}
         </dl>
+        {overview?.tier === 'free' && (
+          <Link className={s.upsell} href={ROUTES.plus}>
+            {t('upsell')}
+          </Link>
+        )}
       </div>
     </header>
   );

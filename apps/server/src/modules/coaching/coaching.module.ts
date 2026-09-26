@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { BillingCoreModule } from '../billing';
 import { CommunityCoreModule } from '../community-core';
 import { CoachingController } from './coaching.controller';
-import { CoachingOrderService, CoachingPaymentService, CoachProfileService } from './services';
+import { CoachingOrderService, CoachProfileService } from './services';
 
 @Module({
-  imports: [BillingCoreModule, CommunityCoreModule],
+  imports: [CommunityCoreModule],
   controllers: [CoachingController],
-  providers: [CoachProfileService, CoachingOrderService, CoachingPaymentService]
+  providers: [CoachProfileService, CoachingOrderService]
 })
 export class CoachingModule {}

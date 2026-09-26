@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "title": "«Мир танков» server pulse: when people play — Три отметки",
+    "description": "How many tracked «Мир танков» players are in battle now, and which hours and weekdays are the busiest."
+  },
+  "head": {
+    "title": "Server pulse",
+    "description": "Activity of tracked players by hour and weekday — our sample, not the official online count"
+  },
+  "figures": {
+    "active": "Played in the last hour",
+    "activeHint": "Tracked players with a battle in the last hour",
+    "tracked": "Tracked",
+    "trackedHint": "Players with battles in the last 28 days",
+    "peak": "Peak hour",
+    "peakHint": "{timezone} time",
+    "peakShare": "Battles at peak"
+  },
+  "heat": {
+    "title": "Activity by hour",
+    "meta": "28 days · {timezone}",
+    "caption": "Players by weekday and hour",
+    "day": "Day",
+    "cell": "{day}, {hour}:00 — {players} players",
+    "empty": "Not enough data yet",
+    "days": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    }
+  },
+  "series": {
+    "title": "Active players",
+    "meta": "7 days, sampled every 15 minutes",
+    "players": "Players",
+    "empty": "No samples collected yet"
+  },
+  "error": {
+    "title": "Could not load the pulse",
+    "description": "The server did not respond. Try again."
+  }
+}

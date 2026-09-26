@@ -1,5 +1,4 @@
 export {
-  CheckoutDto,
   CoachDto,
   CoachesQueryDto,
   CoachingOrderDto,

@@ -6,7 +6,6 @@ import { ZodResponse } from 'nestjs-zod';
 import { CurrentUserId } from '../../common/decorators';
 import { IdParamsDto } from '../community-core';
 import {
-  CheckoutDto,
   CoachDto,
   CoachesQueryDto,
   CoachingOrderDto,
@@ -19,15 +18,14 @@ import {
   UpdateOfferDto,
   UpsertCoachDto
 } from './dto';
-import { CoachingOrderService, CoachingPaymentService, CoachProfileService } from './services';
+import { CoachingOrderService, CoachProfileService } from './services';
 
 @ApiTags('community')
 @Controller('community/coaching')
 export class CoachingController {
   constructor(
     private readonly profiles: CoachProfileService,
-    private readonly coachingOrders: CoachingOrderService,
-    private readonly payments: CoachingPaymentService
+    private readonly coachingOrders: CoachingOrderService
   ) {}
 
   @AllowAnonymous()
@@ -79,20 +77,6 @@ export class CoachingController {
   @ZodResponse({ type: CoachingOrderDto })
   accept(@CurrentUserId() userId: string, @Param() { id }: IdParamsDto) {
     return this.coachingOrders.accept({ id, userId });
-  }
-
-  @Post('orders/:id/pay')
-  @HttpCode(HttpStatus.OK)
-  @ZodResponse({ type: CheckoutDto })
-  pay(@CurrentUserId() userId: string, @Param() { id }: IdParamsDto) {
-    return this.payments.checkout({ id, userId });
-  }
-
-  @Post('orders/:id/confirm-payment')
-  @HttpCode(HttpStatus.OK)
-  @ZodResponse({ type: CoachingOrderDto })
-  confirm(@CurrentUserId() userId: string, @Param() { id }: IdParamsDto) {
-    return this.payments.confirmPayment({ id, userId });
   }
 
   @Post('orders/:id/complete')

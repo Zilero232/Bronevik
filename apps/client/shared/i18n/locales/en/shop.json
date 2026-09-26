@@ -1,0 +1,55 @@
+{
+  "meta": {
+    "title": "«Мир танков» premium shop: offers and tank returns — Три отметки",
+    "description": "Current «Мир танков» premium shop offers, the offer archive, discounts and an estimate of when a tank returns to sale."
+  },
+  "head": {
+    "title": "Premium shop",
+    "description": "Current offers, the offer archive and when tanks should return, based on past sales"
+  },
+  "tabs": {
+    "current": "On sale now",
+    "history": "All offers",
+    "returns": "When it returns"
+  },
+  "offers": {
+    "tanks": "Vehicles in the bundle",
+    "gold": "{amount} gold",
+    "period": "Period",
+    "noEnd": "no end date",
+    "status": "Status",
+    "running": "Running",
+    "ended": "Ended",
+    "timesSeen": "On sale",
+    "timesSeenValue": "{count, plural, one {# time} other {# times}}",
+    "errorTitle": "Could not load the offers",
+    "errorDescription": "The server did not respond. Try again.",
+    "emptyCurrent": "No active offers right now",
+    "emptyHistory": "The offer archive is empty so far",
+    "emptyDescription": "Offers appear after the tanki.su shop news is crawled.",
+    "more": "Show more ({shown} of {total})"
+  },
+  "returns": {
+    "caption": "Sale history and return estimate per tank",
+    "summary": "The estimate is the median gap between past sales — a guess, not an announcement",
+    "columns": {
+      "tank": "Tank",
+      "timesSeen": "Sales",
+      "lastSeen": "Last sale",
+      "discount": "Discount",
+      "interval": "Interval",
+      "next": "Returns"
+    },
+    "days": "{count, plural, one {# day} other {# days}}",
+    "outlook": {
+      "unknown": "not enough data",
+      "overdue": "{days, plural, one {# day} other {# days}} late",
+      "soon": "{days, plural, =0 {expected today} one {in # day} other {in # days}}",
+      "later": "in {days, plural, one {# day} other {# days}}"
+    },
+    "errorTitle": "Could not load the archive",
+    "errorDescription": "The server did not respond. Try again.",
+    "emptyTitle": "The sale archive is empty so far",
+    "emptyDescription": "An estimate appears once a tank has been on sale at least twice."
+  }
+}

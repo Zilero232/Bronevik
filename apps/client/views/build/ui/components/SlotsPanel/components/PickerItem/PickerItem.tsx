@@ -2,12 +2,12 @@
 
 import { useTranslations } from 'next-intl';
 
+import { GameIcon } from '@/entities/tank/build';
 import { Badge } from '@/ui-kit';
 
 import type { PickerItemProps } from './PickerItem.types';
 
 import { BUILD_VIEW } from '../../../../../config';
-import { GameIcon } from '../../../GameIcon';
 
 import s from './PickerItem.module.scss';
 

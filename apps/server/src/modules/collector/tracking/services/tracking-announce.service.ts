@@ -3,8 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { WebhookEmitter } from '../../../../core';
 import type { GainedMark } from '../lib/marks-gain';
 
+import { entitledSubscriptionWhere } from '../../../../common/lib';
 import { PrismaService, WEBHOOK_EMITTER } from '../../../../core';
-import { TRACKING } from '../config';
 
 @Injectable()
 export class TrackingAnnounceService {
@@ -37,7 +37,7 @@ export class TrackingAnnounceService {
     const links = await this.prisma.userLestaAccount.count({
       where: {
         accountId,
-        user: { subscriptions: { some: { product: { in: [...TRACKING.subscriberProducts] }, status: { in: [...TRACKING.subscriberStatuses] } } } }
+        user: { subscriptions: { some: entitledSubscriptionWhere(new Date()) } }
       }
     });
 

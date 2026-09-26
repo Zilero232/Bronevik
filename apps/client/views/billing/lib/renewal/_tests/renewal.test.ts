@@ -9,12 +9,17 @@ const ACTIVE: RenewalInput = {
   status: 'active',
   currentPeriodEnd: '2026-10-12T00:00:00.000Z',
   cancelAtPeriodEnd: false,
-  isRecurringAvailable: true
+  isRecurringAvailable: true,
+  card: 'Visa •••• 4242'
 };
 
 describe('autoRenewState', () => {
   it('is on for an active subscription with a saved payment method', () => {
     expect(autoRenewState(ACTIVE)).toBe('on');
+  });
+
+  it('is unavailable for a card-free trial or promo period', () => {
+    expect(autoRenewState({ ...ACTIVE, status: 'trialing', cancelAtPeriodEnd: true, card: null })).toBe('unavailable');
   });
 
   it('is off once the user cancels auto-renew', () => {

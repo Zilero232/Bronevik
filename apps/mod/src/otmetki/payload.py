@@ -1,6 +1,7 @@
 import uuid
 
 from .compat import is_int, is_number, string_types, to_text
+from .loadout import normalize_loadout
 from .version import SCHEMA_VERSION
 
 REALM = 'RU'
@@ -29,6 +30,13 @@ STAT_FIELDS = (
 )
 
 
+COST_FIELDS = (
+    ('repair_cost', 'autoRepairCost'),
+    ('ammo_cost', 'autoLoadCost'),
+    ('consumables_cost', 'autoEquipCost'),
+)
+
+
 class PayloadError(Exception):
     pass
 
@@ -51,6 +59,26 @@ def _first_dict(value):
     if isinstance(value, (list, tuple)) and value and isinstance(value[0], dict):
         return value[0]
     return None
+
+
+def _credits_part(value):
+    if is_int(value):
+        return value
+    if isinstance(value, (list, tuple)) and value and is_int(value[0]):
+        return value[0]
+    return None
+
+
+def extract_economy(vehicle):
+    economy = {}
+    free_xp = vehicle.get('freeXP')
+    if is_int(free_xp) and free_xp >= 0:
+        economy['free_xp'] = free_xp
+    for target, source in COST_FIELDS:
+        value = _credits_part(vehicle.get(source))
+        if value is not None and value >= 0:
+            economy[target] = value
+    return economy
 
 
 def find_own_vehicle(results):
@@ -102,6 +130,7 @@ def build_battle_event(results, extras=None):
     stats['is_alive'] = death_reason == -1
     stats['death_reason'] = death_reason
     stats['is_premium'] = bool(vehicle.get('isPremium', False))
+    stats.update(extract_economy(vehicle))
     tank_id = _int(vehicle.get('typeCompDescr'))
     event = {
         'type': 'battle_result',
@@ -127,6 +156,7 @@ def build_battle_event(results, extras=None):
         'moe': extract_moe(vehicle),
         'queue_time_s': extras.get('queue_time_s'),
         'session_id': extras.get('session_id'),
+        'loadout': normalize_loadout(extras.get('loadout'), _int(common.get('arenaTypeID'))),
     }
     return event
 

@@ -1,4 +1,4 @@
-export { MOE_HISTORY } from './marks.constants';
+export { MOE_HISTORY, SWEAT_LEVELS } from './marks.constants';
 export {
   masteryThresholdSchema,
   moeHistoryBatchQuerySchema,
@@ -13,6 +13,8 @@ export {
   moeRowSchema,
   moeSortFieldSchema,
   moeThresholdSchema,
+  sweatIndexSchema,
+  sweatLevelSchema,
   thresholdSourceSchema,
   thresholdTrendSchema
 } from './marks.schemas';
@@ -30,6 +32,8 @@ export type {
   MoeRow,
   MoeSortField,
   MoeThreshold,
+  SweatIndex,
+  SweatLevel,
   ThresholdSource,
   ThresholdTrend
 } from './marks.types';

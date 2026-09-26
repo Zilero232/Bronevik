@@ -5,9 +5,22 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { OptionalUserId } from '../../common/decorators';
+import { RequiresPlus } from '../billing';
 import { TankDetailService } from '../tanks';
-import { BuildOptionsDto, BuildTankParamsDto, LoadoutRequestDto, LoadoutResultDto, PopularBuildsDto, PopularBuildsQueryDto } from './dto';
-import { BuildOptionsService, LoadoutService, PopularBuildsService } from './services';
+import { RECOMMENDED_BUILD } from './config';
+import {
+  BuildHistoryDto,
+  BuildOptionsDto,
+  BuildTankParamsDto,
+  BuildUsageQueryDto,
+  LoadoutRequestDto,
+  LoadoutResultDto,
+  PopularBuildsDto,
+  PopularBuildsQueryDto,
+  RecommendedBuildDto
+} from './dto';
+import { BuildOptionsService, BuildUsageService, LoadoutService, PopularBuildsService, RecommendedBuildService } from './services';
 
 @ApiTags('builds')
 @AllowAnonymous()
@@ -17,7 +30,9 @@ export class BuildsController {
     private readonly tanks: TankDetailService,
     private readonly buildOptions: BuildOptionsService,
     private readonly loadouts: LoadoutService,
-    private readonly popularBuilds: PopularBuildsService
+    private readonly popularBuilds: PopularBuildsService,
+    private readonly recommendedBuilds: RecommendedBuildService,
+    private readonly usage: BuildUsageService
   ) {}
 
   @Get(':id/build-options')
@@ -37,6 +52,23 @@ export class BuildsController {
     const tankId = await this.tanks.resolve(String(id));
 
     return this.loadouts.calculate({ tankId, request });
+  }
+
+  @Get(':id/recommended-build')
+  @ZodResponse({ type: RecommendedBuildDto })
+  async recommended(@Param() { id }: BuildTankParamsDto, @Query() query: BuildUsageQueryDto, @OptionalUserId() viewerUserId: string | null) {
+    const tankId = await this.tanks.resolve(String(id));
+
+    return this.recommendedBuilds.recommended({ tankId, query, viewerUserId });
+  }
+
+  @Get(':id/recommended-build/history')
+  @RequiresPlus(RECOMMENDED_BUILD.plusFeature)
+  @ZodResponse({ type: BuildHistoryDto })
+  async history(@Param() { id }: BuildTankParamsDto, @Query() query: BuildUsageQueryDto) {
+    const tankId = await this.tanks.resolve(String(id));
+
+    return this.usage.history({ tankId, query });
   }
 
   @Get(':id/builds/popular')

@@ -144,7 +144,11 @@
             "life_time_s": { "$ref": "#/definitions/count" },
             "is_alive": { "type": "boolean" },
             "death_reason": { "type": "integer", "minimum": -1, "description": "-1 = survived." },
-            "is_premium": { "type": "boolean" }
+            "is_premium": { "type": "boolean" },
+            "free_xp": { "$ref": "#/definitions/count" },
+            "repair_cost": { "$ref": "#/definitions/count" },
+            "ammo_cost": { "$ref": "#/definitions/count" },
+            "consumables_cost": { "$ref": "#/definitions/count" }
           }
         },
         "moe": {
@@ -152,9 +156,53 @@
           "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/moeValues" }]
         },
         "queue_time_s": { "type": ["number", "null"], "minimum": 0 },
-        "session_id": { "type": ["string", "null"], "maxLength": 64 }
+        "session_id": { "type": ["string", "null"], "maxLength": 64 },
+        "loadout": {
+          "description": "Optional. The loadout of the player's own vehicle in this battle, read in the hangar when the player joins the queue. Absent or null when it could not be read.",
+          "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/battleLoadout" }]
+        }
       }
     },
+    "battleLoadout": {
+      "type": "object",
+      "description": "Own vehicle only. Items are compact descriptors (intCD) in slot order, null for an empty slot. Crew skills are in learning order per crew member.",
+      "additionalProperties": false,
+      "required": ["optional_devices", "consumables", "directives", "shells", "field_modifications", "crew", "gameplay_id"],
+      "properties": {
+        "optional_devices": { "type": "array", "maxItems": 4, "items": { "type": ["integer", "null"], "minimum": 1 } },
+        "consumables": { "type": "array", "maxItems": 4, "items": { "type": ["integer", "null"], "minimum": 1 } },
+        "directives": { "type": "array", "maxItems": 3, "items": { "type": ["integer", "null"], "minimum": 1 } },
+        "shells": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["shell_id", "count"],
+            "properties": {
+              "shell_id": { "type": "integer", "minimum": 1 },
+              "count": { "type": "integer", "minimum": 0, "maximum": 1000 }
+            }
+          }
+        },
+        "field_modifications": { "type": "array", "maxItems": 32, "items": { "$ref": "#/definitions/gameTag" } },
+        "crew": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "skills"],
+            "properties": {
+              "role": { "$ref": "#/definitions/gameTag" },
+              "skills": { "type": "array", "maxItems": 12, "items": { "$ref": "#/definitions/gameTag" } }
+            }
+          }
+        },
+        "gameplay_id": { "type": ["integer", "null"], "minimum": 0, "maximum": 1023 }
+      }
+    },
+    "gameTag": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9_.-]+$" },
     "moeValues": {
       "type": "object",
       "additionalProperties": false,

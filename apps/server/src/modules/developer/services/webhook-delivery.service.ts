@@ -9,12 +9,16 @@ import { PrismaService } from '../../../core';
 import { http } from '../../../lib/http';
 import { WEBHOOK_DELIVERY } from '../config';
 import { errorBody, resolvesPublicly, webhookEventFromDb, webhookHeaders } from '../lib';
+import { HostLookupService } from './host-lookup.service';
 
 @Injectable()
 export class WebhookDeliveryService {
   private readonly logger = new Logger(WebhookDeliveryService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly hosts: HostLookupService
+  ) {}
 
   async deliver({ deliveryId, attempt, isFinal }: DeliverInput): Promise<'delivered' | 'skipped'> {
     const delivery = await this.prisma.webhookDelivery.findUnique({ where: { id: deliveryId }, include: { endpoint: true } });
@@ -26,7 +30,7 @@ export class WebhookDeliveryService {
 
     const body = JSON.stringify(delivery.payload);
 
-    if (!(await resolvesPublicly({ url: delivery.endpoint.url }))) {
+    if (!(await resolvesPublicly({ url: delivery.endpoint.url, lookup: this.hosts.resolve }))) {
       await this.fail({
         deliveryId,
         endpointId: delivery.endpointId,

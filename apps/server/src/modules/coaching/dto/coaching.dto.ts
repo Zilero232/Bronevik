@@ -1,7 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 
 import {
-  checkoutSchema,
   coachesQuerySchema,
   coachingOrderListSchema,
   coachingOrderSchema,
@@ -26,4 +25,3 @@ export class CoachingOrderDto extends createZodDto(coachingOrderSchema) {}
 export class CoachingOrderListDto extends createZodDto(coachingOrderListSchema) {}
 export class CreateOrderDto extends createZodDto(createOrderSchema) {}
 export class ReviewOrderDto extends createZodDto(reviewOrderSchema) {}
-export class CheckoutDto extends createZodDto(checkoutSchema) {}

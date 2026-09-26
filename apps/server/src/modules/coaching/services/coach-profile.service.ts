@@ -53,9 +53,28 @@ export class CoachProfileService {
     return toCoachView({ coach, stats: await this.accounts.statsOf([coach.accountId]) });
   }
 
-  async upsertProfile({ userId, accountId, headline, bio, priceRub, tankIds, isActive }: UpsertCoachRequest): Promise<CoachView> {
+  async upsertProfile({
+    userId,
+    accountId,
+    headline,
+    bio,
+    priceRub,
+    priceNote,
+    contacts,
+    tankIds,
+    isActive
+  }: UpsertCoachRequest): Promise<CoachView> {
     const account = await this.accounts.accountOf({ userId, accountId });
-    const data = { accountId: account, headline, bio: bio ?? null, priceRub, tankIds, isActive };
+    const data = {
+      accountId: account,
+      headline,
+      bio: bio ?? null,
+      priceRub: priceRub ?? null,
+      priceNote: priceNote ?? null,
+      contacts,
+      tankIds,
+      isActive
+    };
 
     await this.prisma.coachProfile.upsert({ where: { userId }, create: { userId, ...data }, update: data });
 
@@ -66,7 +85,7 @@ export class CoachProfileService {
     await this.get(userId);
 
     const offer = await this.prisma.coachingOffer.create({
-      data: { coachUserId: userId, title, description: description ?? null, priceRub, durationMinutes, withReplay }
+      data: { coachUserId: userId, title, description: description ?? null, priceRub: priceRub ?? null, durationMinutes, withReplay }
     });
 
     return toOfferView(offer);

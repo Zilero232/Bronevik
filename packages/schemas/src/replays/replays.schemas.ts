@@ -14,7 +14,24 @@ export const replayPlayerSchema = z.object({
   tankId: tankIdSchema,
   damageDealt: countSchema.nullable(),
   frags: countSchema.nullable(),
-  survived: z.boolean().nullable()
+  survived: z.boolean().nullable(),
+  vehicleId: z.number().int().nullable(),
+  vehicleType: z.string().nullable(),
+  maxHealth: countSchema.nullable(),
+  isRecorder: z.boolean().nullable(),
+  damageAssisted: countSchema.nullable(),
+  assistRadio: countSchema.nullable(),
+  assistTrack: countSchema.nullable(),
+  assistStun: countSchema.nullable(),
+  damageBlocked: countSchema.nullable(),
+  damageReceived: countSchema.nullable(),
+  spotted: countSchema.nullable(),
+  xp: countSchema.nullable(),
+  shots: countSchema.nullable(),
+  hits: countSchema.nullable(),
+  penetrations: countSchema.nullable(),
+  lifeTimeSec: countSchema.nullable(),
+  killerVehicleId: z.number().int().nullable()
 });
 
 export const replaySummarySchema = z.object({

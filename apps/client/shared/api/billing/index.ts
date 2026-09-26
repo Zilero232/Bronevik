@@ -6,5 +6,6 @@ export {
   getPlusPlans,
   redeemPromo,
   registerReferral,
-  resumeAutoRenew
+  resumeAutoRenew,
+  startPlusTrial
 } from './billing';

@@ -4,5 +4,5 @@ export type HostLookup = (host: string) => Promise<LookupAddress[]>;
 
 export type ResolvesPubliclyInput = {
   url: string;
-  lookup?: HostLookup;
+  lookup: HostLookup;
 };

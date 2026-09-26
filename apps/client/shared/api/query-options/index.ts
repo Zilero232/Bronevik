@@ -1,6 +1,12 @@
 export {
+  eventsControllerCalendarOptions,
   playersControllerAchievementsOptions,
   referenceControllerServersOptions,
   referenceControllerVersionOptions,
-  shopControllerListNewsOptions
+  shopControllerArchiveOptions,
+  shopControllerListBonusCodesOptions,
+  shopControllerListBonusCodesQueryKey,
+  shopControllerListNewsInfiniteOptions,
+  shopControllerListNewsOptions,
+  shopControllerListOffersInfiniteOptions
 } from '../generated/@tanstack/react-query.gen';

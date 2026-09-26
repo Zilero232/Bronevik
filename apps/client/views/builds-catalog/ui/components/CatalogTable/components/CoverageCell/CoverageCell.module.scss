@@ -1,0 +1,21 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+
+  &[data-enough='false'] {
+    color: var(--color-text-dim);
+  }
+}
+
+.battles {
+  @include numeric;
+}
+
+.players {
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

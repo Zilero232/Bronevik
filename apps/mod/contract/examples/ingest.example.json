@@ -13,6 +13,33 @@
       "event_id": "battle:1152921504606847123",
       "finish_reason": 1,
       "gui_type": 1,
+      "loadout": {
+        "consumables": [1531, 1275, 1787],
+        "crew": [
+          {
+            "role": "commander",
+            "skills": ["commander_sixthSense", "repair"]
+          },
+          {
+            "role": "gunner",
+            "skills": ["gunner_smoothTurret", "repair"]
+          }
+        ],
+        "directives": [null],
+        "field_modifications": ["improvedRammer_1"],
+        "gameplay_id": 0,
+        "optional_devices": [4601, 4857, null],
+        "shells": [
+          {
+            "count": 30,
+            "shell_id": 6145
+          },
+          {
+            "count": 10,
+            "shell_id": 6401
+          }
+        ]
+      },
       "map_name": "05_prohorovka",
       "moe": {
         "damage_rating": 8712,
@@ -38,6 +65,10 @@
         "frags": 2,
         "is_alive": true,
         "is_premium": false,
+        "free_xp": 57,
+        "repair_cost": 4200,
+        "ammo_cost": 1800,
+        "consumables_cost": 3000,
         "life_time_s": 380,
         "original_credits": 48000,
         "original_xp": 1150,

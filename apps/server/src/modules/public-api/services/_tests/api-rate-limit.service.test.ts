@@ -1,16 +1,16 @@
-import { API_PLAN_LIMITS } from '@otmetki/schemas';
+import { API_TIER_LIMITS } from '@otmetki/schemas';
 import RedisMock from 'ioredis-mock';
 import { describe, expect, it } from 'vitest';
 
 import { AppTooManyRequestsException } from '../../../../common/exceptions';
 import { ApiRateLimitService } from '../api-rate-limit.service';
 
-const key = (id: string) => ({ id, plan: 'free' as const });
+const key = (id: string) => ({ id, tier: 'free' as const });
 
 describe('ApiRateLimitService.consume', () => {
-  it('lets a plan use its requests per second and throttles the next one', async () => {
+  it('lets a tier use its requests per second and throttles the next one', async () => {
     const service = new ApiRateLimitService(new RedisMock());
-    const { requestsPerSecond } = API_PLAN_LIMITS.free;
+    const { requestsPerSecond } = API_TIER_LIMITS.free;
 
     for (let request = 0; request < requestsPerSecond; request += 1) {
       await service.consume(key('rps'));
@@ -27,18 +27,18 @@ describe('ApiRateLimitService.consume', () => {
     const service = new ApiRateLimitService(new RedisMock());
 
     await expect(service.consume(key('budget'))).resolves.toEqual({
-      limit: API_PLAN_LIMITS.free.requestsPerSecond,
-      remaining: API_PLAN_LIMITS.free.requestsPerSecond - 1
+      limit: API_TIER_LIMITS.free.requestsPerSecond,
+      remaining: API_TIER_LIMITS.free.requestsPerSecond - 1
     });
   });
 
   it('counts every key on its own', async () => {
     const service = new ApiRateLimitService(new RedisMock());
 
-    for (let request = 0; request < API_PLAN_LIMITS.free.requestsPerSecond; request += 1) {
+    for (let request = 0; request < API_TIER_LIMITS.free.requestsPerSecond; request += 1) {
       await service.consume(key('busy'));
     }
 
-    await expect(service.consume(key('quiet'))).resolves.toMatchObject({ remaining: API_PLAN_LIMITS.free.requestsPerSecond - 1 });
+    await expect(service.consume(key('quiet'))).resolves.toMatchObject({ remaining: API_TIER_LIMITS.free.requestsPerSecond - 1 });
   });
 });

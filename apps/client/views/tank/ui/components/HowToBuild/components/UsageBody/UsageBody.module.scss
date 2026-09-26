@@ -1,0 +1,31 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-4));
+
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.group {
+  @include stack(var(--space-2));
+}
+
+.title {
+  @include label;
+
+  margin: 0;
+}
+
+.columns {
+  display: grid;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @include below(3xl) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include below(lg) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

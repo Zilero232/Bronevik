@@ -1,8 +1,8 @@
 # Plus subscription — design spec
 
-Date: 2026-09-26. Status: draft, awaiting approval.
+Date: 2026-09-26. Status: approved; WP1–WP7 and WP9 implemented. Pending: WP0 (the Lesta letter) and WP8 (new Plus features). See §8.
 
-Related: [2026-09-24-otmetki-design.md](2026-09-24-otmetki-design.md), [../../features.md](../../features.md) (§15, §18, §19 are superseded by this spec), [../../research/lesta-api.md](../../research/lesta-api.md), [../../research/market.md](../../research/market.md).
+Related: [2026-09-24-otmetki-design.md](2026-09-24-otmetki-design.md), [../../features.md](../../features.md) (§15, §18, §19 were updated to follow this spec), [../../research/lesta-api.md](../../research/lesta-api.md), [../../research/market.md](../../research/market.md).
 
 ## 0. Decision
 
@@ -318,3 +318,22 @@ Code changes that follow:
 Order: WP0 and WP1 in parallel → WP2 → WP3/WP4/WP5 in parallel → WP6/WP7 → WP8* → WP9. WP1–WP7 make the current product consistent with the one-subscription model. WP8* adds the new Plus value and can ship incrementally behind `earlyAccess`.
 
 Verification per WP: `bun run verify` + targeted `bun run test` (limits, `isEntitled`, trial eligibility, expiry transitions, tier resolution) + `bun run lint:unused` after the removals.
+
+## 8. Implementation notes
+
+State after WP1–WP7 and WP9 (2026-09-26).
+
+- **Shared contract:** `packages/schemas/src/plus` holds `PLUS` (with `PLUS.checkoutEnabled`, currently `false` until the Lesta reply, §6), `PLUS_FEATURES`, `PLUS_LIMITS`, `PLUS_GRACE`, `PLUS_TRIAL`, `plusStateSchema` and the `plusLimit` helper. `BRAND` lives in `packages/schemas/src/common/brand`. The flag replaces the `FEATURES.plusCheckout` idea from WP0.
+- **Server core:** `apps/server/src/modules/billing`.
+  - `EntitlementsService`: `plusState`, `refresh`, `isPlus`, `limit`, `assertFeature`, `assertWithinLimit`, `syncTracking`, with a 60 s LRU cache that the webhook, renewal and expiry handlers invalidate.
+  - `@RequiresPlus(feature)` decorator + `PlusGuard` for whole endpoints.
+  - `TrialService` + `POST me/billing/trial`.
+  - `entitledSubscriptionWhere` is shared with collector tracking, so the `pastDue` grace period counts for priority polling.
+- **Errors:** API errors carry `details: { feature?, limitKey?, limit? }`. New error codes: `CHECKOUT_UNAVAILABLE` (checkout while the flag is off) and `TRIAL_UNAVAILABLE`.
+- **Existing gates:** overlays compute `isPaused` at read time (`Overlay.isPro` is dropped); goals use `PLUS_LIMITS.goals`.
+- **Client kit:** `apps/client/entities/plus` (`usePlus`) and `apps/client/features/plus` (`PlusGate`, `PlusTeaser`, `LimitNotice`, `PlusBadge`). `LimitNotice` is the component §4.4 calls `LimitReached`.
+- **Remaining:**
+  - WP0: the Lesta letter; turn on `PLUS.checkoutEnabled` only after the written reply is stored in `docs/research/lesta-api.md`;
+  - WP8a–d: progression, deep analytics, battle analysis and AI coach, overlay themes and hangar extras;
+  - soft limits not yet enforced: linked accounts, watched tanks, stored replays, the history window;
+  - the replay overflow cleanup job (§4.5) and its 14-day / 1-day notifications.

@@ -23,7 +23,20 @@ const DETAIL = {
   serverStats: [],
   moe: null,
   mastery: null,
-  topPlayers: []
+  topPlayers: [],
+  obtain: {
+    status: 'researchable',
+    role: null,
+    sources: ['techTree'],
+    priceCredits: null,
+    priceGold: null,
+    researchFrom: [],
+    offers: { total: 0, items: [] },
+    news: []
+  },
+  economy: { tankId: 7169, windowDays: 30, all: null, premium: null, standard: null, computedAt: null },
+  learning: { tankId: 7169, windowDays: 90, buckets: [], gain: null, difficulty: null, computedAt: null },
+  sweat: { moe: null, moeLevel: null, mastery: null, masteryLevel: null }
 } satisfies TankDetail;
 
 describe('isSameTank', () => {

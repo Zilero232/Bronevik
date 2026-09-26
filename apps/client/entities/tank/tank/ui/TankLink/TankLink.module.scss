@@ -1,0 +1,11 @@
+.root {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--color-text);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}

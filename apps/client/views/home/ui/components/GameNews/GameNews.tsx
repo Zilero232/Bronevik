@@ -2,9 +2,11 @@
 
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/shared/constants';
+import { Link } from '@/shared/i18n/navigation';
 import { Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
-import { HOME, HOME_LINKS } from '../../../config';
+import { HOME } from '../../../config';
 import { useGameNews } from '../../../model/hooks';
 import { NewsRow } from './components';
 
@@ -18,9 +20,9 @@ export const GameNews = () => {
     <Card padding='none'>
       <CardHeader
         action={
-          <a className={s.more} href={HOME_LINKS.news} rel='noreferrer' target='_blank'>
-            {t('source')}
-          </a>
+          <Link className={s.more} href={ROUTES.news}>
+            {t('all')}
+          </Link>
         }
         title={t('title')}
       />

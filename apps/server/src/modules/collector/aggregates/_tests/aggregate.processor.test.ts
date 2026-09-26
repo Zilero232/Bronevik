@@ -4,7 +4,15 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../metrics';
-import type { AccountRatingsService, ServerStatsService, TankPercentilesService, TierMaintenanceService } from '../services';
+import type {
+  AccountRatingsService,
+  BuildUsageService,
+  LearningCurveService,
+  ServerStatsService,
+  TankEconomyService,
+  TankPercentilesService,
+  TierMaintenanceService
+} from '../services';
 
 import { JOB } from '../../contracts';
 import { AggregateProcessor } from '../processors/aggregate.processor';
@@ -14,6 +22,9 @@ const createProcessor = () => {
   const serverStats = mock<ServerStatsService>();
   const percentiles = mock<TankPercentilesService>();
   const maintenance = mock<TierMaintenanceService>();
+  const economy = mock<TankEconomyService>();
+  const learning = mock<LearningCurveService>();
+  const buildUsage = mock<BuildUsageService>();
   const metrics = mock<MetricsService>();
 
   metrics.track.mockImplementation(({ run }) => run());
@@ -21,8 +32,10 @@ const createProcessor = () => {
   return {
     accountRatings,
     serverStats,
+    economy,
+    learning,
     metrics,
-    processor: new AggregateProcessor(accountRatings, serverStats, percentiles, maintenance, metrics)
+    processor: new AggregateProcessor(accountRatings, serverStats, percentiles, maintenance, economy, learning, buildUsage, metrics)
   };
 };
 
@@ -35,6 +48,16 @@ describe('AggregateProcessor', () => {
 
     expect(await processor.process(job)).toEqual({ rows: 3 });
     expect(metrics.track).toHaveBeenCalledOnce();
+  });
+
+  it('routes the nightly economy and learning-curve jobs to their services', async () => {
+    const { economy, learning, processor } = createProcessor();
+
+    economy.compute.mockResolvedValue({ rows: 5 });
+    learning.compute.mockResolvedValue({ rows: 8 });
+
+    expect(await processor.process(mock<Job>({ name: JOB.aggregate.tankEconomy, data: {} }))).toEqual({ rows: 5 });
+    expect(await processor.process(mock<Job>({ name: JOB.aggregate.learningCurve, data: {} }))).toEqual({ rows: 8 });
   });
 
   it('validates the account ratings payload before computing', async () => {

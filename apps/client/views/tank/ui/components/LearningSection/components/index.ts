@@ -1,0 +1,1 @@
+export { MyPlace } from './MyPlace';

@@ -1,0 +1,1 @@
+export { TraitFilters } from './TraitFilters';

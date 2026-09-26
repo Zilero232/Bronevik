@@ -17,7 +17,8 @@
     "estimateHint": "Our estimate from tracked players, not the server online count",
     "tracked": "Tracked players",
     "activity": "Activity over 24 hours",
-    "unknown": "no data"
+    "unknown": "no data",
+    "pulse": "Server pulse"
   },
   "garage": {
     "title": "Popular vehicles",
@@ -43,8 +44,8 @@
   },
   "news": {
     "title": "Game news",
-    "source": "tanki.su",
-    "empty": "No news yet"
+    "empty": "No news yet",
+    "all": "All news"
   },
   "clans": {
     "title": "Clans: activity",

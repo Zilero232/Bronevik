@@ -47,6 +47,11 @@ export const OverlayEditor = ({ overlay, onSaved, onRemoved }: OverlayEditorProp
           </footer>
         </div>
         <div className={s.stage}>
+          {overlay?.isPaused && (
+            <p className={s.paused} role='status'>
+              {t('pausedHint')}
+            </p>
+          )}
           <OverlayPreview accountId={overlay?.accountId ?? null} />
           {overlay && <OverlayObsHint layout={layout} publicUrl={overlay.publicUrl} />}
         </div>

@@ -9,6 +9,8 @@ export { isBrowser, isServer } from './env';
 export { flowFormat } from './flow-format';
 export { useHydrated } from './hydrated';
 export { EASE_OUT, POPUP, SPRING } from './motion';
+export { nextPageOffset } from './page-offset';
+export type { OffsetPage } from './page-offset';
 export { PERCENT_TEXT, percentText } from './percent';
 export type { PercentFormatter, PercentTextInput } from './percent';
 export { RATING_TONES, ratingTone, toneOfTier, toneThresholds } from './rating-tone';

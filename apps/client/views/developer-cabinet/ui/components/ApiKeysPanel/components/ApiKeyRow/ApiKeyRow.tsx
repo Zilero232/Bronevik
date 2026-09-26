@@ -13,9 +13,10 @@ import s from './ApiKeyRow.module.scss';
 
 export const ApiKeyRow = ({ apiKey, onRevoke }: ApiKeyRowProps) => {
   const t = useTranslations('developer.keys');
+  const tTier = useTranslations('developer.tierName');
   const format = useFormatter();
 
-  const { name, prefix, plan, createdAt, lastUsedAt, expiresAt } = apiKey;
+  const { name, prefix, tier, createdAt, lastUsedAt, expiresAt } = apiKey;
 
   return (
     <li className={s.root}>
@@ -23,8 +24,8 @@ export const ApiKeyRow = ({ apiKey, onRevoke }: ApiKeyRowProps) => {
         <span className={s.name}>{name}</span>
         <code className={s.prefix}>{prefix}…</code>
       </div>
-      <Badge className={s.plan} tone='steel'>
-        {plan}
+      <Badge className={s.tier} tone={tier === 'free' ? 'steel' : 'accent'}>
+        {tTier(tier)}
       </Badge>
       <dl className={s.meta}>
         <div className={s.cell}>

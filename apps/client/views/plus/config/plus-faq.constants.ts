@@ -1,3 +1,3 @@
 export const PLUS_FAQ = {
-  items: ['payment', 'cancel', 'noAds', 'data', 'promo']
+  items: ['trial', 'free', 'payment', 'cancel', 'expiry', 'noAds', 'data', 'promo']
 } as const;

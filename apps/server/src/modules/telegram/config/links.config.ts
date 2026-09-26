@@ -3,6 +3,7 @@ export const SITE_LINKS = {
   tank: '/t/{slug}',
   clan: '/c/{tag}',
   top: '/top',
+  missions: '/missions/{campaign}/{operation}',
   settings: '/me',
   statCard: '/api/og/player/{accountId}'
 } as const;

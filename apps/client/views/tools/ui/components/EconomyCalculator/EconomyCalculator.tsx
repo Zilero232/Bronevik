@@ -2,22 +2,24 @@
 
 import { useTranslations } from 'next-intl';
 
+import { TankPicker } from '@/features/tank/pick-tank';
 import { RangeSlider, Switch } from '@/ui-kit';
 
 import { ECONOMY } from '../../../config';
 import { useEconomyCalculator } from '../../../model/hooks';
 import { CalcShell } from '../CalcShell';
 import { FieldGrid } from '../FieldGrid';
-import { EconomyResults, EconomyShells } from './components';
+import { EconomyResults, EconomyShells, RealMedians } from './components';
 
 export const EconomyCalculator = () => {
   const t = useTranslations('tools.economy');
-  const { values, field, onTierChange } = useEconomyCalculator();
+  const { values, field, onTierChange, vehicle, onVehicleChange, medians, isMediansPending, isMediansError } = useEconomyCalculator();
 
   return (
     <CalcShell
       inputs={
         <>
+          <TankPicker label={t('tank')} placeholder={t('tankPlaceholder')} value={vehicle} onChange={onVehicleChange} />
           <RangeSlider
             {...ECONOMY.tierRange}
             label={t('tier')}
@@ -44,9 +46,14 @@ export const EconomyCalculator = () => {
           <EconomyShells values={values} onChange={({ key, value }) => field(key)(value)} />
         </>
       }
+      results={
+        <>
+          <EconomyResults values={values} />
+          <RealMedians isError={isMediansError} isPending={isMediansPending} medians={medians} vehicle={vehicle} />
+        </>
+      }
       description={t('description')}
       footer={t('footer')}
-      results={<EconomyResults values={values} />}
       title={t('title')}
     />
   );

@@ -94,7 +94,8 @@
     "view": "View",
     "views": {
       "table": "Table",
-      "tierlist": "Tier list"
+      "tierlist": "Tier list",
+      "economy": "Economy"
     },
     "period": "Period",
     "periods": {
@@ -135,5 +136,47 @@
     "tier": "Tier list tier",
     "hint": "Ranked by WR diff: the gap between wins on the tank and its players’ overall win rate.",
     "emptyTitle": "Too few battles for this tier and class"
+  },
+  "economy": {
+    "title": "Tank economy",
+    "account": "Account type",
+    "accounts": {
+      "premium": "With premium account",
+      "standard": "Without premium account"
+    },
+    "reserve": "Credit reserve +50%",
+    "caption": "Tank economy: {count}",
+    "errorTitle": "Could not load the economy",
+    "errorDescription": "The server did not answer. Try again.",
+    "emptyTitle": "No economy data yet",
+    "emptyDescription": "Medians appear once mod users play enough random battles.",
+    "emptyFilteredTitle": "Nothing matches the filters",
+    "resetFilters": "Reset filters",
+    "note": "Per-battle medians from random battles sent by the mod and from replays over 30 days. The reserve is applied on the site from the base income.",
+    "columns": {
+      "tank": "Tank",
+      "tier": "Tier",
+      "status": "Status",
+      "battles": "Battles",
+      "credits": "Income",
+      "costs": "Costs",
+      "net": "Profit",
+      "xp": "XP",
+      "freeXp": "Free XP"
+    },
+    "mine": {
+      "title": "Your economy over {days} days",
+      "battles": "Battles with the mod",
+      "credits": "Earned",
+      "net": "Net",
+      "earned": "Added by premium",
+      "earnedHint": "Credits the premium account added in battles played with it",
+      "missed": "Premium would add",
+      "missedHint": "Credits a premium account would have added in battles without it",
+      "perBattle": "A premium account adds you {value} credits per battle on average.",
+      "tankLine": "{battles} battles · {credits} cr per battle",
+      "emptyTitle": "No battles from the mod",
+      "emptyDescription": "Install the mod and link your account to see the economy of your random battles."
+    }
   }
 }

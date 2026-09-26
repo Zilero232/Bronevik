@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "«Мир танков» event calendar — Три отметки",
+    "description": "Battle pass, Front Line, Onslaught, ranked battles, marathons and drops in «Мир танков»: what is on now, what is next, and a calendar subscription."
+  },
+  "head": {
+    "title": "Events",
+    "description": "Battle pass, Front Line, Onslaught, ranked battles, marathons and drops — from tanki.su news"
+  },
+  "filters": {
+    "label": "Event type"
+  },
+  "kinds": {
+    "event": "Event",
+    "sale": "Sale",
+    "marathon": "Marathon",
+    "battle_pass": "Battle pass",
+    "front_line": "Front Line",
+    "onslaught": "Onslaught",
+    "ranked": "Ranked battles",
+    "personal_missions": "Personal missions",
+    "drops": "Drops",
+    "other": "Other"
+  },
+  "groups": {
+    "current": "On now",
+    "upcoming": "Coming up",
+    "past": "Past"
+  },
+  "empty": {
+    "current": "Nothing is on right now",
+    "upcoming": "No announcements yet",
+    "past": "No past events",
+    "filtered": "No events of the selected types"
+  },
+  "countdown": {
+    "current": "{days, plural, =0 {ends today} one {# day left} other {# days left}}",
+    "upcoming": "{days, plural, =0 {starts today} one {in # day} other {in # days}}",
+    "past": "ended"
+  },
+  "progress": "Elapsed",
+  "ics": {
+    "title": "Calendar",
+    "hint": "Subscribe in Google, Apple or Outlook — events update on their own.",
+    "subscribe": "Subscribe",
+    "url": "iCal link"
+  },
+  "error": {
+    "title": "Could not load the events",
+    "description": "The server did not respond. Try again."
+  }
+}

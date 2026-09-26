@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "title": "«Мир танков» bonus codes — Три отметки",
+    "description": "Active and expired «Мир танков» bonus codes: what they give, where they come from, when they expire and what players report."
+  },
+  "head": {
+    "title": "Bonus codes",
+    "description": "Codes from the game's news and social channels: what they give and whether they still work, by player reports"
+  },
+  "error": {
+    "title": "Could not load the codes",
+    "description": "The server did not respond. Try again."
+  },
+  "tabs": {
+    "active": "Active",
+    "expired": "Expired"
+  },
+  "empty": {
+    "active": "No active codes right now",
+    "expired": "No expired codes yet"
+  },
+  "status": {
+    "working": "Works",
+    "unknown": "Unverified",
+    "expired": "Expired"
+  },
+  "card": {
+    "noTitle": "Reward not specified",
+    "rewards": "Rewards",
+    "source": "Source",
+    "expires": "Valid until",
+    "noExpiry": "no end date",
+    "discovered": "Found",
+    "tally": "Works: {working} · Doesn't work: {expired}"
+  },
+  "report": {
+    "working": "Works",
+    "expired": "Doesn't work",
+    "signIn": "Sign in to report",
+    "thanks": "Thanks, your report is counted",
+    "failed": "Could not send the report"
+  }
+}

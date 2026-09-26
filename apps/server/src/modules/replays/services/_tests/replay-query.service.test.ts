@@ -84,6 +84,18 @@ describe('ReplayQueryService.get', () => {
     expect(view.views).toBe(replay.views + 1);
     expect(view.downloadUrl).toMatch(/^http:\/\/localhost:4000\//);
   });
+
+  it('does not count views while the replay is still being parsed', async () => {
+    const { service, prisma } = createService();
+    const replay = replayRow({ status: 'parsing' });
+
+    prisma.replay.findUnique.mockResolvedValue(replay);
+
+    const view = await service.get({ id: 'r1', viewerUserId: 'owner' });
+
+    expect(view.views).toBe(replay.views);
+    expect(prisma.replay.updateMany).not.toHaveBeenCalled();
+  });
 });
 
 describe('ReplayQueryService.search', () => {

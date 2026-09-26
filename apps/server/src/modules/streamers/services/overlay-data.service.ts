@@ -2,7 +2,7 @@ import type { Cache } from 'cache-manager';
 
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
-import { challengeConditionSchema, overlayConfigSchema } from '@otmetki/schemas';
+import { challengeConditionSchema, overlayConfigSchema, plusLimit } from '@otmetki/schemas';
 
 import type { Overlay } from '../../../../generated';
 import type { BuildOverlayDataInput, OverlayData, OverlayMoeInput, PreviewOverlayRequest } from '../streamers.types';
@@ -10,6 +10,7 @@ import type { BuildOverlayDataInput, OverlayData, OverlayMoeInput, PreviewOverla
 import { AppNotFoundException } from '../../../common/exceptions';
 import { readRecord, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
+import { EntitlementsService } from '../../billing';
 import { VehicleCatalogService } from '../../reference';
 import { OVERLAY, OVERLAY_KIND_FROM_DB } from '../config';
 import { winStreak } from '../lib';
@@ -19,6 +20,7 @@ export class OverlayDataService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
+    private readonly entitlements: EntitlementsService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache
   ) {}
 
@@ -52,13 +54,46 @@ export class OverlayDataService {
   }
 
   async compute(overlay: Overlay): Promise<OverlayData> {
+    const config = overlayConfigSchema.parse(overlay.config);
+    const kind = OVERLAY_KIND_FROM_DB[overlay.kind];
+
+    if (await this.isPaused(overlay)) {
+      return {
+        kind,
+        name: overlay.name,
+        config,
+        isPaused: true,
+        player: null,
+        session: null,
+        overall: null,
+        moe: null,
+        challenge: null,
+        updatedAt: new Date().toISOString()
+      };
+    }
+
     return this.build({
       userId: overlay.userId,
       accountId: await this.accountOf(overlay),
-      kind: OVERLAY_KIND_FROM_DB[overlay.kind],
+      kind,
       name: overlay.name,
-      config: overlayConfigSchema.parse(overlay.config)
+      config
     });
+  }
+
+  async isPaused(overlay: Overlay): Promise<boolean> {
+    if (await this.entitlements.isPlus(overlay.userId)) {
+      return false;
+    }
+
+    const older = await this.prisma.overlay.count({
+      where: {
+        userId: overlay.userId,
+        OR: [{ createdAt: { lt: overlay.createdAt } }, { createdAt: overlay.createdAt, id: { lt: overlay.id } }]
+      }
+    });
+
+    return older >= plusLimit({ key: 'overlays', isPlus: false });
   }
 
   async preview({ userId, accountId, kind, name, config }: PreviewOverlayRequest): Promise<OverlayData> {
@@ -78,7 +113,7 @@ export class OverlayDataService {
   }
 
   private async build({ userId, accountId, kind, name, config }: BuildOverlayDataInput): Promise<OverlayData> {
-    const base = { kind, name, config, updatedAt: new Date().toISOString() };
+    const base = { kind, name, config, isPaused: false, updatedAt: new Date().toISOString() };
 
     if (accountId === null) {
       return { ...base, player: null, session: null, overall: null, moe: null, challenge: await this.challenge(userId) };

@@ -1,4 +1,16 @@
-import type { TankDetailQuery, TankServerStatsQuery, TankTrendQuery, TopPlayersQuery } from '@otmetki/schemas';
+import type {
+  AccountEconomyQuery,
+  TankDetailQuery,
+  TankEconomyQuery,
+  TankServerStatsQuery,
+  TankTraits,
+  TankTraitsFilter,
+  TankTrendQuery,
+  TopPlayersQuery
+} from '@otmetki/schemas';
+
+import type { CatalogEntry } from '../reference';
+import type { SpecTraits } from './lib/vehicle-traits';
 
 export type TankStatsListInput = TankServerStatsQuery;
 
@@ -23,4 +35,37 @@ export type TrendRow = {
   wins: number;
   damage: number;
   players: number;
+};
+
+export type TraitsEntry = {
+  spec: SpecTraits;
+  hasOffers: boolean;
+  traits: TankTraits;
+};
+
+export type TankEconomyListInput = TankEconomyQuery;
+
+export type AccountEconomyRequest = {
+  userId: string;
+  query: AccountEconomyQuery;
+};
+
+export type MyLearningInput = {
+  userId: string;
+  tankId: number;
+};
+
+export type FilterByTraitsInput = {
+  entries: readonly CatalogEntry[];
+  filter: TankTraitsFilter;
+};
+
+export type AccountEconomyLookup = {
+  accountId: bigint;
+  days: number;
+};
+
+export type AccountLearningLookup = {
+  accountId: bigint;
+  tankId: number;
 };

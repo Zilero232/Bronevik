@@ -1,0 +1,1 @@
+export { EconomyTable } from './EconomyTable';

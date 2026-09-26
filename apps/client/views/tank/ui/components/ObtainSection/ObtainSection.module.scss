@@ -1,0 +1,78 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
+}
+
+.header {
+  padding: 0 var(--space-4);
+}
+
+.body {
+  @include stack(var(--space-3));
+
+  padding: 0 var(--space-4);
+}
+
+.sources {
+  padding-left: var(--space-4);
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.price {
+  @include numeric(var(--text-md));
+
+  margin: 0;
+}
+
+.block {
+  @include stack(var(--space-1));
+}
+
+.title {
+  @include label;
+
+  margin: 0;
+}
+
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  @include data-list-row;
+
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  gap: var(--space-3);
+}
+
+.link {
+  min-width: 0;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.value {
+  @include numeric;
+
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.note {
+  @include source-line;
+
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  margin: 0;
+}

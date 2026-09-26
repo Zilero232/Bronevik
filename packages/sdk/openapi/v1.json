@@ -793,6 +793,48 @@
             }
           },
           {
+            "name": "statuses",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"]
+              }
+            }
+          },
+          {
+            "name": "roles",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "HT_assault",
+                  "HT_break",
+                  "HT_universal",
+                  "HT_support",
+                  "MT_universal",
+                  "MT_sniper",
+                  "MT_assault",
+                  "MT_support",
+                  "LT_universal",
+                  "LT_wheeled",
+                  "ATSPG_sniper",
+                  "ATSPG_assault",
+                  "ATSPG_support",
+                  "ATSPG_universal",
+                  "SPG",
+                  "SPG_assault",
+                  "SPG_flame"
+                ]
+              }
+            }
+          },
+          {
             "name": "sort",
             "required": false,
             "in": "query",
@@ -1212,7 +1254,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["p65", "p85", "p95", "p100", "master", "tier", "p95Delta30d", "p95Change30d"]
+              "enum": ["p65", "p85", "p95", "p100", "master", "tier", "p95Delta30d", "p95Change30d", "sweat", "masterySweat"]
             }
           },
           {
@@ -2154,6 +2196,8 @@
               "PAYMENT_REQUIRED",
               "PAYMENT_FAILED",
               "SUBSCRIPTION_REQUIRED",
+              "CHECKOUT_UNAVAILABLE",
+              "TRIAL_UNAVAILABLE",
               "PROMO_INVALID",
               "PROMO_EXPIRED",
               "PROMO_EXHAUSTED",
@@ -2187,6 +2231,39 @@
             "exclusiveMinimum": true,
             "maximum": 9007199254740991,
             "minimum": 0
+          },
+          "details": {
+            "type": "object",
+            "properties": {
+              "feature": {
+                "type": "string",
+                "enum": [
+                  "history",
+                  "analytics",
+                  "mapAdvisor",
+                  "battleAnalysis",
+                  "aiCoach",
+                  "moeTracker",
+                  "priorityPolling",
+                  "progression",
+                  "overlays",
+                  "cosmetics",
+                  "analyticsExport",
+                  "apiLimits",
+                  "earlyAccess",
+                  "hangarExtras"
+                ]
+              },
+              "limitKey": {
+                "type": "string",
+                "enum": ["linkedAccounts", "goals", "watchedTanks", "overlays", "storedReplays", "historyDays", "aiReviews"]
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
           }
         },
         "required": ["error", "code"]
@@ -5808,9 +5885,532 @@
               "required": ["rank", "accountId", "clanId", "name", "clanTag", "color", "value", "tier", "battles", "delta"],
               "additionalProperties": false
             }
+          },
+          "obtain": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "HT_assault",
+                  "HT_break",
+                  "HT_universal",
+                  "HT_support",
+                  "MT_universal",
+                  "MT_sniper",
+                  "MT_assault",
+                  "MT_support",
+                  "LT_universal",
+                  "LT_wheeled",
+                  "ATSPG_sniper",
+                  "ATSPG_assault",
+                  "ATSPG_support",
+                  "ATSPG_universal",
+                  "SPG",
+                  "SPG_assault",
+                  "SPG_flame",
+                  null
+                ],
+                "nullable": true
+              },
+              "sources": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["techTree", "inGameShop", "premiumShop", "collectorShop", "clanWars", "subscription", "lootboxes", "reward"]
+                }
+              },
+              "priceCredits": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "nullable": true
+              },
+              "priceGold": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "nullable": true
+              },
+              "researchFrom": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "vehicle": {
+                      "type": "object",
+                      "properties": {
+                        "tankId": {
+                          "type": "integer",
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991,
+                          "minimum": 0
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "shortName": {
+                          "type": "string"
+                        },
+                        "slug": {
+                          "type": "string"
+                        },
+                        "nation": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 32
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                        },
+                        "tier": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 11
+                        },
+                        "isPremium": {
+                          "type": "boolean"
+                        },
+                        "isCollectible": {
+                          "type": "boolean"
+                        },
+                        "images": {
+                          "type": "object",
+                          "properties": {
+                            "small": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true
+                            },
+                            "contour": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true
+                            },
+                            "big": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true
+                            }
+                          },
+                          "required": ["small", "contour", "big"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "additionalProperties": false
+                    },
+                    "xp": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "nullable": true
+                    }
+                  },
+                  "required": ["vehicle", "xp"],
+                  "additionalProperties": false
+                }
+              },
+              "offers": {
+                "type": "object",
+                "properties": {
+                  "total": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true
+                        },
+                        "startsAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+                          "nullable": true
+                        },
+                        "endsAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+                          "nullable": true
+                        },
+                        "lastSeenAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                        },
+                        "priceRub": {
+                          "type": "number",
+                          "minimum": 0,
+                          "nullable": true
+                        },
+                        "priceGold": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "nullable": true
+                        },
+                        "discountPercent": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991,
+                          "nullable": true
+                        }
+                      },
+                      "required": ["title", "url", "startsAt", "endsAt", "lastSeenAt", "priceRub", "priceGold", "discountPercent"],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": ["total", "items"],
+                "additionalProperties": false
+              },
+              "news": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "publishedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    }
+                  },
+                  "required": ["title", "url", "publishedAt"],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": ["status", "role", "sources", "priceCredits", "priceGold", "researchFrom", "offers", "news"],
+            "additionalProperties": false
+          },
+          "economy": {
+            "type": "object",
+            "properties": {
+              "tankId": {
+                "type": "integer",
+                "exclusiveMinimum": true,
+                "maximum": 9007199254740991,
+                "minimum": 0
+              },
+              "windowDays": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "all": {
+                "type": "object",
+                "properties": {
+                  "battles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "players": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "costBattles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "Battles whose repair, ammo and consumable costs were reported by the mod"
+                  },
+                  "credits": {
+                    "description": "Median credits earned per battle, all bonuses included",
+                    "type": ["number", "null"]
+                  },
+                  "creditsBase": {
+                    "description": "Median credits earned before the premium account bonus",
+                    "type": ["number", "null"]
+                  },
+                  "repair": {
+                    "type": ["number", "null"]
+                  },
+                  "ammo": {
+                    "type": ["number", "null"]
+                  },
+                  "consumables": {
+                    "type": ["number", "null"]
+                  },
+                  "net": {
+                    "description": "Median credits earned minus repair, ammo and consumables",
+                    "type": ["number", "null"]
+                  },
+                  "xp": {
+                    "type": ["number", "null"]
+                  },
+                  "freeXp": {
+                    "type": ["number", "null"]
+                  }
+                },
+                "required": ["battles", "players", "costBattles", "credits", "creditsBase", "repair", "ammo", "consumables", "net", "xp", "freeXp"],
+                "additionalProperties": false,
+                "nullable": true
+              },
+              "premium": {
+                "type": "object",
+                "properties": {
+                  "battles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "players": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "costBattles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "Battles whose repair, ammo and consumable costs were reported by the mod"
+                  },
+                  "credits": {
+                    "description": "Median credits earned per battle, all bonuses included",
+                    "type": ["number", "null"]
+                  },
+                  "creditsBase": {
+                    "description": "Median credits earned before the premium account bonus",
+                    "type": ["number", "null"]
+                  },
+                  "repair": {
+                    "type": ["number", "null"]
+                  },
+                  "ammo": {
+                    "type": ["number", "null"]
+                  },
+                  "consumables": {
+                    "type": ["number", "null"]
+                  },
+                  "net": {
+                    "description": "Median credits earned minus repair, ammo and consumables",
+                    "type": ["number", "null"]
+                  },
+                  "xp": {
+                    "type": ["number", "null"]
+                  },
+                  "freeXp": {
+                    "type": ["number", "null"]
+                  }
+                },
+                "required": ["battles", "players", "costBattles", "credits", "creditsBase", "repair", "ammo", "consumables", "net", "xp", "freeXp"],
+                "additionalProperties": false,
+                "nullable": true
+              },
+              "standard": {
+                "type": "object",
+                "properties": {
+                  "battles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "players": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "costBattles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "Battles whose repair, ammo and consumable costs were reported by the mod"
+                  },
+                  "credits": {
+                    "description": "Median credits earned per battle, all bonuses included",
+                    "type": ["number", "null"]
+                  },
+                  "creditsBase": {
+                    "description": "Median credits earned before the premium account bonus",
+                    "type": ["number", "null"]
+                  },
+                  "repair": {
+                    "type": ["number", "null"]
+                  },
+                  "ammo": {
+                    "type": ["number", "null"]
+                  },
+                  "consumables": {
+                    "type": ["number", "null"]
+                  },
+                  "net": {
+                    "description": "Median credits earned minus repair, ammo and consumables",
+                    "type": ["number", "null"]
+                  },
+                  "xp": {
+                    "type": ["number", "null"]
+                  },
+                  "freeXp": {
+                    "type": ["number", "null"]
+                  }
+                },
+                "required": ["battles", "players", "costBattles", "credits", "creditsBase", "repair", "ammo", "consumables", "net", "xp", "freeXp"],
+                "additionalProperties": false,
+                "nullable": true
+              },
+              "computedAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+                "nullable": true
+              }
+            },
+            "required": ["tankId", "windowDays", "all", "premium", "standard", "computedAt"],
+            "additionalProperties": false
+          },
+          "learning": {
+            "type": "object",
+            "properties": {
+              "tankId": {
+                "type": "integer",
+                "exclusiveMinimum": true,
+                "maximum": 9007199254740991,
+                "minimum": 0
+              },
+              "windowDays": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "buckets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "index": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "from": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "to": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "nullable": true
+                    },
+                    "battles": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "players": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "winRate": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100",
+                      "nullable": true
+                    },
+                    "avgDamage": {
+                      "type": "number",
+                      "minimum": 0,
+                      "nullable": true
+                    }
+                  },
+                  "required": ["index", "from", "to", "battles", "players", "winRate", "avgDamage"],
+                  "additionalProperties": false
+                }
+              },
+              "gain": {
+                "type": "number",
+                "minimum": -100,
+                "maximum": 100,
+                "description": "Win-rate gain from the first to the last bucket with enough battles",
+                "nullable": true
+              },
+              "difficulty": {
+                "type": "string",
+                "enum": ["easy", "moderate", "hard", "hardcore", null],
+                "nullable": true
+              },
+              "computedAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+                "nullable": true
+              }
+            },
+            "required": ["tankId", "windowDays", "buckets", "gain", "difficulty", "computedAt"],
+            "additionalProperties": false
+          },
+          "sweat": {
+            "type": "object",
+            "properties": {
+              "moe": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "95% threshold divided by the average-cohort mean damage on the tank",
+                "nullable": true
+              },
+              "moeLevel": {
+                "type": "string",
+                "enum": ["easy", "moderate", "hard", "extreme", null],
+                "nullable": true
+              },
+              "mastery": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "Ace Tanker threshold divided by the average-cohort mean XP on the tank",
+                "nullable": true
+              },
+              "masteryLevel": {
+                "type": "string",
+                "enum": ["easy", "moderate", "hard", "extreme", null],
+                "nullable": true
+              }
+            },
+            "required": ["moe", "moeLevel", "mastery", "masteryLevel"],
+            "additionalProperties": false
           }
         },
-        "required": ["vehicle", "description", "specs", "stats", "serverStats", "moe", "mastery", "topPlayers"],
+        "required": [
+          "vehicle",
+          "description",
+          "specs",
+          "stats",
+          "serverStats",
+          "moe",
+          "mastery",
+          "topPlayers",
+          "obtain",
+          "economy",
+          "learning",
+          "sweat"
+        ],
         "additionalProperties": false
       },
       "V1MoePageDto_Output": {
@@ -5991,6 +6591,35 @@
                   "required": ["p95Delta7d", "p95Delta30d"],
                   "additionalProperties": false
                 },
+                "sweat": {
+                  "type": "object",
+                  "properties": {
+                    "moe": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "description": "95% threshold divided by the average-cohort mean damage on the tank",
+                      "nullable": true
+                    },
+                    "moeLevel": {
+                      "type": "string",
+                      "enum": ["easy", "moderate", "hard", "extreme", null],
+                      "nullable": true
+                    },
+                    "mastery": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "description": "Ace Tanker threshold divided by the average-cohort mean XP on the tank",
+                      "nullable": true
+                    },
+                    "masteryLevel": {
+                      "type": "string",
+                      "enum": ["easy", "moderate", "hard", "extreme", null],
+                      "nullable": true
+                    }
+                  },
+                  "required": ["moe", "moeLevel", "mastery", "masteryLevel"],
+                  "additionalProperties": false
+                },
                 "updatedAt": {
                   "type": "string",
                   "format": "date-time",
@@ -5998,7 +6627,7 @@
                   "nullable": true
                 }
               },
-              "required": ["vehicle", "moe", "mastery", "trend", "updatedAt"],
+              "required": ["vehicle", "moe", "mastery", "trend", "sweat", "updatedAt"],
               "additionalProperties": false
             }
           },

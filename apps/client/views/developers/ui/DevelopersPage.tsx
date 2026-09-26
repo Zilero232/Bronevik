@@ -1,4 +1,4 @@
-import { ApiReference, DevelopersHeader, LimitFigures, PlansTable, Quickstart, WebhooksDocs } from './components';
+import { ApiReference, ApiTerms, DevelopersHeader, LimitFigures, Quickstart, TiersTable, WebhooksDocs } from './components';
 
 import s from './DevelopersPage.module.scss';
 
@@ -9,6 +9,7 @@ export const DevelopersPage = () => (
     <Quickstart />
     <ApiReference />
     <WebhooksDocs />
-    <PlansTable />
+    <TiersTable />
+    <ApiTerms />
   </div>
 );

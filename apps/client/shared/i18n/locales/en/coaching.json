@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "title": "Coaches",
+    "description": "Free Mir Tankov coaching: experienced players review replays and help you improve on specific tanks."
+  },
+  "coachMeta": {
+    "title": "Coach",
+    "description": "Coach profile: stats, tanks, session formats and contacts."
+  },
+  "head": {
+    "title": "Coaches",
+    "description": "Experienced players review battles and replays for free. Send a request and the coach gets in touch."
+  },
+  "list": {
+    "title": "Coaches",
+    "tankPlaceholder": "Filter by tank",
+    "reset": "Reset filter",
+    "more": "Show more",
+    "emptyTitle": "No coaches",
+    "emptyDescription": "Nobody offers coaching yet. Be the first.",
+    "emptyFilteredDescription": "Nobody coaches this tank yet.",
+    "errorTitle": "Couldn't load coaches",
+    "errorDescription": "The server didn't respond. Try again."
+  },
+  "card": {
+    "sessions": "{count, plural, one {# session} other {# sessions}}",
+    "offers": "{count, plural, =0 {Format on request} one {# session format} other {# session formats}}",
+    "tanks": "Tanks",
+    "open": "Coach profile"
+  },
+  "coach": {
+    "back": "All coaches",
+    "notFoundTitle": "Coach not found",
+    "notFoundDescription": "The profile may be gone or the link is outdated.",
+    "errorTitle": "Couldn't load the profile",
+    "errorDescription": "The server didn't respond. Try again.",
+    "inactive": "Not taking requests",
+    "rating": "Rating",
+    "noRating": "No ratings",
+    "sessions": "Sessions done",
+    "playerProfile": "Player profile",
+    "about": "About",
+    "tanks": "Tanks"
+  },
+  "offers": {
+    "title": "Session formats",
+    "withReplay": "With replay review",
+    "duration": "{minutes} min",
+    "emptyTitle": "No formats listed",
+    "emptyDescription": "Describe what you'd like to work on in your request."
+  },
+  "contacts": {
+    "title": "Contacts",
+    "booking": "Booking",
+    "bookingAction": "Pick a time",
+    "telegram": "Telegram",
+    "vk": "VK",
+    "discord": "Discord"
+  },
+  "request": {
+    "title": "Book a session",
+    "offer": "Format",
+    "noOffer": "No format",
+    "contact": "How to reach you",
+    "contactHint": "Telegram, Discord or in-game nickname — the coach sees it once they accept",
+    "contactError": "2 to 128 characters",
+    "notes": "What to work on",
+    "notesPlaceholder": "Tank, mode, what goes wrong",
+    "notesError": "At most 2000 characters",
+    "replay": "Replay ID",
+    "replayHint": "Optional: a replay uploaded to the site",
+    "replayError": "That's not a replay ID",
+    "submit": "Send request",
+    "free": "Sessions are free.",
+    "myRequests": "My requests",
+    "own": "This is your coach profile.",
+    "unavailable": "The coach isn't taking requests right now.",
+    "sent": "Request sent"
+  },
+  "orders": {
+    "title": "My requests",
+    "coach": "Coach",
+    "student": "Student",
+    "role": {
+      "coach": "You coach",
+      "student": "You learn"
+    },
+    "status": {
+      "requested": "Waiting",
+      "accepted": "Accepted",
+      "completed": "Done",
+      "cancelled": "Cancelled"
+    },
+    "studentContact": "Student contact",
+    "score": "{score} of 5",
+    "accept": "Accept",
+    "complete": "Mark as done",
+    "decline": "Decline",
+    "cancel": "Cancel",
+    "reviewScore": "Rating",
+    "reviewPlaceholder": "A few words about the session (optional)",
+    "sendReview": "Leave a review",
+    "emptyTitle": "No requests",
+    "emptyDescription": "Pick a coach and send a request.",
+    "errorTitle": "Couldn't load requests",
+    "errorDescription": "The server didn't respond. Try again.",
+    "toast": {
+      "updated": "Request updated"
+    }
+  },
+  "profile": {
+    "become": "Become a coach",
+    "edit": "My coach profile",
+    "becomeTitle": "Coach profile",
+    "editTitle": "Coach profile",
+    "description": "Coaching is free. Say what you specialise in and how to reach you.",
+    "account": "Game account",
+    "headline": "Headline",
+    "headlinePlaceholder": "E.g. light tank replay reviews, 5000+ WN8",
+    "headlineError": "5 to 140 characters",
+    "bio": "More about you",
+    "bioPlaceholder": "Experience, achievements, how a session goes",
+    "bioError": "At most 4000 characters",
+    "tanks": "Tanks",
+    "tanksPlaceholder": "Add a tank",
+    "removeTank": "Remove {name}",
+    "contacts": "Contacts",
+    "vk": "VK",
+    "booking": "Booking link",
+    "bookingHint": "A calendar or booking form",
+    "linkError": "An https:// link is required",
+    "discordError": "2 to 128 characters",
+    "active": "Taking requests",
+    "activeHint": "Turn off to hide the profile from the list",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saved": "Profile saved"
+  },
+  "errors": {
+    "forbidden": "Not allowed for this request, or no linked Lesta account",
+    "notFound": "Coach or request not found",
+    "conflict": "Data conflict, try again",
+    "validation": "Check the form fields",
+    "unauthorized": "Sign in to continue",
+    "rateLimited": "Too many requests, wait a bit",
+    "unknown": "Something went wrong, try later"
+  }
+}

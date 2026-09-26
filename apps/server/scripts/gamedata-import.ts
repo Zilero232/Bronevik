@@ -4,13 +4,14 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { z } from 'zod';
 
-import type { CollectedArmorModels } from '../src/modules/gamedata';
+import type { CollectedArmorModels, RepoReader } from '../src/modules/gamedata';
 
 import { ARMOR_VIEWER } from '../src/config';
 import { createPrismaClient } from '../src/core/prisma/prisma.factory';
 import {
   ArmorVersionMismatchError,
   buildGameData,
+  buildPersonalMissions,
   collectArmorModels,
   createArmorStorage,
   createGithubReader,
@@ -20,9 +21,11 @@ import {
   createRepoReader,
   GAME_DATA_SOURCES,
   isNation,
+  LOCALE_SOURCES,
   MODEL_SOURCES,
   writeArmorModels,
-  writeImportPlan
+  writeImportPlan,
+  writePersonalMissions
 } from '../src/modules/gamedata';
 
 const { values } = parseArgs({
@@ -40,7 +43,8 @@ const { values } = parseArgs({
     'armor-only': { type: 'boolean', default: false },
     'models-ref': { type: 'string' },
     'local-models': { type: 'string' },
-    'armor-dir': { type: 'string' }
+    'armor-dir': { type: 'string' },
+    'skip-missions': { type: 'boolean', default: false }
   }
 });
 
@@ -114,6 +118,26 @@ const collectArmor = async (): Promise<CollectedArmorModels | undefined> => {
 
 const armor = values.armor || values['armor-only'] ? await collectArmor() : undefined;
 
+const createLocaleReader = async (): Promise<RepoReader | undefined> =>
+  createRepoReader({ source: LOCALE_SOURCES.RU, cacheDir, token: process.env.GITHUB_TOKEN }).catch((error: unknown) => {
+    console.warn(`  ! personal missions localization unavailable: ${error instanceof Error ? error.message : String(error)}`);
+
+    return undefined;
+  });
+
+const missions =
+  values['skip-missions'] || values['armor-only'] ? undefined : await buildPersonalMissions({ reader, localeReader: await createLocaleReader() });
+
+if (missions) {
+  console.log(
+    `→ personal missions: ${missions.campaigns.length} campaigns, ${missions.operations.length} operations, ${missions.missions.length} missions`
+  );
+
+  for (const warning of missions.warnings.slice(0, 10)) {
+    console.warn(`  ! ${warning}`);
+  }
+}
+
 if (values['dry-run']) {
   console.log(`✓ dry run finished in ${Math.round(performance.now() - started)} ms`);
   process.exit(0);
@@ -152,6 +176,10 @@ try {
 
     console.log(`✓ ${mode} import of ${plan.title} finished in ${Math.round(performance.now() - started)} ms`);
     console.table(counts);
+
+    if (missions && mode === 'full') {
+      console.table(await writePersonalMissions({ prisma, gameVersionId: counts.gameVersionId, data: missions }));
+    }
   }
 
   if (armor) {

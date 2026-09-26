@@ -1,0 +1,39 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
+}
+
+.header {
+  padding: 0 var(--space-4);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: var(--space-3) var(--space-4) 0;
+  gap: var(--space-2) var(--space-3);
+}
+
+.sample {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+
+  @include below(lg) {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+.body {
+  margin: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.note {
+  padding: 0 var(--space-4) var(--space-4);
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

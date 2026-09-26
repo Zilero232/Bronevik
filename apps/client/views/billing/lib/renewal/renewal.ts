@@ -2,8 +2,8 @@ import type { AutoRenewState, PeriodEndKind, PlanCta, PlanCtaInput, RenewalInput
 
 import { RENEWAL } from '../../config';
 
-export const autoRenewState = ({ status, cancelAtPeriodEnd, isRecurringAvailable }: RenewalInput): AutoRenewState => {
-  if (!isRecurringAvailable || !status || !RENEWAL.renewableStatuses.includes(status)) {
+export const autoRenewState = ({ status, cancelAtPeriodEnd, isRecurringAvailable, card }: RenewalInput): AutoRenewState => {
+  if (!isRecurringAvailable || !card || !status || !RENEWAL.renewableStatuses.includes(status)) {
     return 'unavailable';
   }
 

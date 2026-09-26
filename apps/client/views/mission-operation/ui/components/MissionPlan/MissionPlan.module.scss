@@ -1,0 +1,44 @@
+@use '@/shared/styles/mixins' as *;
+
+.body {
+  @include stack(var(--space-3));
+}
+
+.description,
+.muted {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+}
+
+.steps {
+  @include stack(var(--space-1));
+
+  padding: 0;
+  margin: 0;
+  counter-reset: step;
+  list-style: none;
+}
+
+.step {
+  @include data-list-row;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  counter-increment: step;
+  gap: var(--space-2) var(--space-3);
+
+  &:before {
+    @include numeric(var(--text-sm));
+
+    min-width: 3ch;
+    color: var(--color-text-dim);
+    content: counter(step);
+  }
+}
+
+.title {
+  flex: 1 1 12rem;
+  font-size: var(--text-sm);
+}

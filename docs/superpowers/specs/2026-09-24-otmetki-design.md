@@ -187,8 +187,8 @@ Each phase ends deployed to production.
   - mod companion (sessions, MoE live, own thresholds);
   - streamer overlays + overlay constructor;
   - verifiable challenges (DonationAlerts);
-  - Три отметки Плюс subscription (YooKassa);
-  - developer API paid tiers (after Lesta confirmation);
+  - Три отметки Плюс subscription (YooKassa), the only paid product (see [2026-09-26-plus-subscription.md](2026-09-26-plus-subscription.md));
+  - developer API Plus limits (higher personal non-commercial limits for subscribers; the API itself stays free, with free `community` limits for public apps);
   - webhooks.
 - **P4 — Community & content:**
   - replay upload and server parser, 2D battle player, heatmaps;
@@ -199,7 +199,7 @@ Each phase ends deployed to production.
   - premium shop archive, bonus codes, drops, news aggregator.
 - **P5 — Frontier:**
   - 3D armor viewer;
-  - coaching marketplace, community tournaments, user guides;
+  - coaching listing (contact and booking requests, payment directly to the coach, off-site), community tournaments, user guides;
   - VK bot;
   - en localisation marketing push.
 
@@ -216,7 +216,7 @@ Each phase ends deployed to production.
 | Risk | Mitigation |
 |---|---|
 | Lesta changes API terms or limits, or revokes the key | Comply strictly, request a limit increase early with a caching description, keep the collector budget configurable |
-| "Commercial distribution of API data" clause | Monetise only derived data and services; ask Lesta in writing before P3 |
+| "Commercial distribution of API data" clause | One subscription for our own analytics, storage, AI and cosmetics; core stats and the API stay free; checkout stays off until Lesta confirms in writing |
 | Mod breaks every patch | Minimal hook surface; CI smoke test against the latest client scripts; fast-release pipeline |
 | Mod flagged as unfair | Allowed categories only; publish through МОСТ review |
 | Storage growth | Timescale compression, change-only snapshots, retention policy |

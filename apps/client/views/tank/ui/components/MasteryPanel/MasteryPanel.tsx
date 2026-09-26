@@ -3,6 +3,7 @@
 import { MasteryIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { SweatBadge } from '@/entities/tank/tank';
 import { Card, CardHeader, EmptyState } from '@/ui-kit';
 
 import { MASTERY_LEVELS, TANK_SECTIONS } from '../../../config';
@@ -17,7 +18,11 @@ export const MasteryPanel = () => {
 
   return (
     <Card className={s.root} id={TANK_SECTIONS.mastery} padding='none'>
-      <CardHeader className={s.header} title={t('title')} />
+      <CardHeader
+        action={detail.sweat.masteryLevel ? <SweatBadge kind='mastery' level={detail.sweat.masteryLevel} ratio={detail.sweat.mastery} /> : null}
+        className={s.header}
+        title={t('title')}
+      />
       {detail.mastery ? (
         <ul className={s.list}>
           {MASTERY_LEVELS.map(({ key, level }) => (

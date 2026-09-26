@@ -14,7 +14,6 @@ const post = vi.hoisted(() => vi.fn<(url: string, options: { headers: Record<str
 const lookup = vi.hoisted(() => vi.fn<(host: string) => Promise<{ address: string; family: number }[]>>());
 
 vi.mock('../../../../lib/http', () => ({ http: { post } }));
-vi.mock('node:dns/promises', () => ({ lookup }));
 
 const PUBLIC_ADDRESS = [{ address: '93.184.216.34', family: 4 }];
 
@@ -52,7 +51,7 @@ const createService = () => {
 
   prisma.webhookDelivery.findUnique.mockResolvedValue(delivery);
 
-  return { service: new WebhookDeliveryService(prisma), prisma };
+  return { service: new WebhookDeliveryService(prisma, { resolve: lookup }), prisma };
 };
 
 describe('WebhookDeliveryService.deliver', () => {

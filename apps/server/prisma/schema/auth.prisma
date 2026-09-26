@@ -76,6 +76,7 @@ model User {
 
   bonusCodeReports BonusCodeReport[]
   eventProgress    UserEventProgress[]
+  missionProgress  UserMissionProgress[]
 
   auditLogs        AuditLog[]
   contentReports   ContentReport[]

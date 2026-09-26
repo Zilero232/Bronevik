@@ -1,0 +1,88 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+  @include stack(var(--space-3));
+
+  padding: var(--space-4);
+
+  &[data-running='false'] {
+    opacity: 0.8;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.title {
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--color-text);
+  font-size: var(--text-md);
+  font-weight: 600;
+  gap: var(--space-2);
+  text-decoration: none;
+
+  &:is(a):hover {
+    color: var(--color-accent);
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--color-text-dim);
+}
+
+.tanks {
+  @include stack(var(--space-2));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.amount {
+  @include numeric(var(--text-lg));
+
+  color: var(--color-text);
+}
+
+.old {
+  @include numeric(var(--text-sm));
+
+  color: var(--color-text-dim);
+}
+
+.meta {
+  @include stack(0);
+
+  margin: 0;
+}
+
+.row {
+  @include data-list-row;
+
+  justify-content: space-between;
+  font-size: var(--text-xs);
+
+  dt {
+    @include label;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-text-muted);
+    text-align: end;
+  }
+}

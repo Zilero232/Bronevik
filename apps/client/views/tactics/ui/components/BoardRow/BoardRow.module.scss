@@ -1,0 +1,56 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include data-list-row;
+
+  display: grid;
+  padding: var(--space-3) var(--space-4);
+  column-gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+
+  @include below(md) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: var(--space-2);
+  }
+}
+
+.main {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.title {
+  overflow: hidden;
+  color: var(--color-text);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-3);
+}
+
+.map {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.counts {
+  @include numeric;
+}
+
+.time {
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 
-import { SectionHeader } from '@/ui-kit';
+import { Badge, SectionHeader } from '@/ui-kit';
 
 import { PLUS_BENEFITS } from '../../../config';
 
@@ -13,9 +13,12 @@ export const PlusBenefits = () => {
     <section className={s.root}>
       <SectionHeader description={t('description')} title={t('title')} />
       <dl className={s.list}>
-        {PLUS_BENEFITS.items.map((id) => (
-          <div key={id} className={s.item}>
-            <dt className={s.title}>{t(`items.${id}.title`)}</dt>
+        {PLUS_BENEFITS.items.map(({ id, isLive }) => (
+          <div key={id} className={s.item} data-live={isLive}>
+            <dt className={s.title}>
+              {t(`items.${id}.title`)}
+              <Badge tone={isLive ? 'success' : 'neutral'}>{t(isLive ? 'live' : 'soon')}</Badge>
+            </dt>
             <dd className={s.text}>{t(`items.${id}.text`)}</dd>
           </div>
         ))}

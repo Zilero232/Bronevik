@@ -18,7 +18,11 @@ export const QUERY_KEYS = {
     topPlayers: (params: object) => ['tanks', 'top-players', params] as const,
     trend: (tankId: number) => ['tanks', tankId, 'trend'] as const,
     patches: (tankId: number) => ['tanks', tankId, 'patches'] as const,
-    armor: (idOrSlug: string) => ['tanks', 'armor', idOrSlug] as const
+    armor: (idOrSlug: string) => ['tanks', 'armor', idOrSlug] as const,
+    economy: (params: object) => ['tanks', 'economy', params] as const,
+    tankEconomy: (tankId: number) => ['tanks', tankId, 'economy'] as const,
+    myEconomy: (days: number) => ['tanks', 'economy', 'me', days] as const,
+    myLearning: (tankId: number) => ['tanks', tankId, 'learning-curve', 'me'] as const
   },
   marks: {
     list: (params: object) => ['marks', 'list', params] as const,
@@ -30,7 +34,10 @@ export const QUERY_KEYS = {
   builds: {
     options: (tankId: number) => ['builds', tankId, 'options'] as const,
     stats: (params: object) => ['builds', 'stats', params] as const,
-    popular: (tankId: number) => ['builds', tankId, 'popular'] as const
+    popular: (tankId: number) => ['builds', tankId, 'popular'] as const,
+    recommended: (params: object) => ['builds', 'recommended', params] as const,
+    history: (params: object) => ['builds', 'history', params] as const,
+    catalog: (params: object) => ['builds', 'catalog', params] as const
   },
   tree: (nation: string) => ['tree', nation] as const,
   pulse: ['pulse'] as const,
@@ -39,6 +46,14 @@ export const QUERY_KEYS = {
     page: (idOrTag: string) => ['clans', 'page', idOrTag.toLowerCase()] as const,
     events: (params: object) => ['clans', 'events', params] as const,
     stronghold: (clanId: number) => ['clans', clanId, 'stronghold'] as const
+  },
+  missions: {
+    campaigns: ['missions', 'campaigns'] as const,
+    operation: (params: object) => ['missions', 'operation', params] as const,
+    tanks: (params: object) => ['missions', 'tanks', params] as const,
+    garage: (questId: number) => ['me', 'missions', 'garage', questId] as const,
+    progress: ['me', 'missions', 'progress'] as const,
+    plan: (operation: number) => ['me', 'missions', 'plan', operation] as const
   },
   maps: {
     list: ['maps', 'list'] as const,
@@ -80,6 +95,46 @@ export const QUERY_KEYS = {
   },
   notifications: {
     pushKey: ['notifications', 'push-key'] as const
+  },
+  replays: {
+    all: ['replays'] as const,
+    list: (params: object) => ['replays', 'list', params] as const,
+    mine: (params: object) => ['replays', 'mine', params] as const,
+    detail: (id: string) => ['replays', 'detail', id] as const,
+    tracks: (id: string) => ['replays', 'tracks', id] as const,
+    heatmap: (params: object) => ['replays', 'heatmap', params] as const
+  },
+  tactics: {
+    all: ['tactics'] as const,
+    mine: ['tactics', 'mine'] as const,
+    board: (params: object) => ['tactics', 'board', params] as const
+  },
+  guides: {
+    all: ['guides'] as const,
+    list: (params: object) => ['guides', 'list', params] as const,
+    mine: ['guides', 'mine'] as const,
+    authors: ['guides', 'authors'] as const,
+    detail: (slug: string) => ['guides', 'detail', slug] as const
+  },
+  comments: (params: object) => ['comments', params] as const,
+  platoons: {
+    all: ['platoons'] as const,
+    list: (params: object) => ['platoons', 'list', params] as const
+  },
+  recruiting: {
+    all: ['recruiting'] as const,
+    list: (params: object) => ['recruiting', 'list', params] as const
+  },
+  coaching: {
+    all: ['coaching'] as const,
+    list: (params: object) => ['coaching', 'list', params] as const,
+    coach: (userId: string) => ['coaching', 'coach', userId] as const,
+    orders: ['coaching', 'orders'] as const
+  },
+  tournaments: {
+    all: ['tournaments'] as const,
+    list: (params: object) => ['tournaments', 'list', params] as const,
+    detail: (slug: string) => ['tournaments', 'detail', slug] as const
   },
   streamers: {
     profile: (slug: string) => ['streamers', 'profile', slug.toLowerCase()] as const,

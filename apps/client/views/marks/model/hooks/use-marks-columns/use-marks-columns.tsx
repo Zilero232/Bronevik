@@ -7,7 +7,15 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
 import { MOE_THRESHOLD_KEYS, NUMERIC_COLUMN } from '../../../config';
-import { DeltaCell, DetailsCell, DetailsHeaderCell, TankLinkCell, ThresholdCell, TierCell } from '../../../ui/components/MarksTable/components';
+import {
+  DeltaCell,
+  DetailsCell,
+  DetailsHeaderCell,
+  SweatCell,
+  TankLinkCell,
+  ThresholdCell,
+  TierCell
+} from '../../../ui/components/MarksTable/components';
 
 const column = createColumnHelper<MoeRow>();
 
@@ -40,6 +48,12 @@ export const useMarksColumns = (): ColumnDef<MoeRow, never>[] => {
       header: t('delta'),
       cell: ({ row }) => <DeltaCell delta={row.original.trend.p95Delta30d} />,
       meta: NUMERIC_COLUMN
+    }),
+    column.accessor((row) => row.sweat.moe ?? 0, {
+      id: 'sweat',
+      header: t('sweat'),
+      cell: ({ row }) => <SweatCell sweat={row.original.sweat} />,
+      meta: { align: 'center' }
     }),
     column.display({
       id: 'details',

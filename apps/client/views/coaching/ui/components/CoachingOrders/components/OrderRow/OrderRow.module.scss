@@ -1,0 +1,60 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.who {
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.status {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+
+  &[data-status='accepted'] {
+    color: var(--color-accent);
+  }
+
+  &[data-status='completed'] {
+    color: var(--color-success);
+  }
+
+  &[data-status='cancelled'] {
+    color: var(--color-text-dim);
+  }
+}
+
+.meta {
+  @include source-line;
+
+  margin: 0;
+}
+
+.notes,
+.contact {
+  margin: 0;
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.review {
+  @include stack(var(--space-2));
+}

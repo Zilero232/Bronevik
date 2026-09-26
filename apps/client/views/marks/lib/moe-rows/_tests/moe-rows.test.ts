@@ -18,6 +18,7 @@ const row = (name: string, slug: string, updatedAt: string | null): MoeRow => ({
     images: { small: null, contour: null, big: null }
   },
   moe: null,
+  sweat: { moe: null, moeLevel: null, mastery: null, masteryLevel: null },
   mastery: null,
   trend: { p95Delta7d: null, p95Delta30d: null },
   updatedAt

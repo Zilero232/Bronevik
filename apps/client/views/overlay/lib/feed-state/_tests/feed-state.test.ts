@@ -9,6 +9,7 @@ const DATA: OverlayData = {
   kind: 'session',
   name: 'Session',
   config: overlayConfigSchema.parse({ metrics: ['battles', 'wn8'] }),
+  isPaused: false,
   player: null,
   session: null,
   overall: null,
@@ -64,5 +65,11 @@ describe('feedReducer', () => {
     const polling = feedReducer(INITIAL_FEED_STATE, { type: 'error' });
 
     expect(feedReducer(polling, { type: 'error' })).toBe(polling);
+  });
+});
+
+describe('parseFeedMessage for a paused overlay', () => {
+  it('keeps the paused flag so the page shows the neutral frame', () => {
+    expect(parseFeedMessage(JSON.stringify({ ...DATA, isPaused: true }))?.isPaused).toBe(true);
   });
 });

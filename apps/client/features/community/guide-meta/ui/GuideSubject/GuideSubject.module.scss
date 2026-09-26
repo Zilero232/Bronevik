@@ -1,0 +1,19 @@
+@use '@/shared/styles/mixins' as *;
+
+.map {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  gap: var(--space-1);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.fallback {
+  @include source-line;
+}

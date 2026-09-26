@@ -4,6 +4,7 @@ cmd-marks = Отметки
 cmd-clan = Мой клан
 cmd-tank = Танк: /tank название
 cmd-top = Топ игроков по WN8
+cmd-lbz = Следующие ЛБЗ
 cmd-settings = Уведомления
 cmd-login = Войти на сайт
 cmd-help = Помощь
@@ -26,6 +27,7 @@ help =
     /clan — ваш клан
     /tank название — пороги отметок танка
     /top — топ игроков по WN8
+    /lbz — следующие личные боевые задачи
     /settings — уведомления
     /login — ссылка для входа на сайт
 
@@ -67,6 +69,24 @@ tank-no-thresholds = Порогов отметок пока нет.
 top-empty = Рейтинг ещё считается.
 top-header = Топ по WN8:
 top-line = { $place }. { $nickname } — { $wn8 } ({ $battles } боёв)
+lbz-not-linked = Привяжите Telegram к аккаунту на сайте, чтобы отмечать ЛБЗ.
+lbz-empty = Задачи ещё не загружены или все выполнены.
+lbz-header = ЛБЗ: { $operation }
+lbz-line =
+    { $branch }: { $title }
+    { $condition }
+lbz-branch-lightTank = ЛТ
+lbz-branch-mediumTank = СТ
+lbz-branch-heavyTank = ТТ
+lbz-branch-AT-SPG = ПТ-САУ
+lbz-branch-SPG = САУ
+lbz-branch-Alliance-USSR = Союз
+lbz-branch-Alliance-Germany = Блок
+lbz-branch-Alliance-USA = Альянс
+lbz-branch-Alliance-France = Коалиция
+lbz-branch-LevelGroup1 = VI–VII
+lbz-branch-LevelGroup2 = VIII–IX
+lbz-branch-LevelGroup3 = X–XI
 settings-title = Уведомления в Telegram и браузере. Нажмите, чтобы переключить.
 settings-channel-telegram = Telegram
 settings-channel-webPush = Push в браузере

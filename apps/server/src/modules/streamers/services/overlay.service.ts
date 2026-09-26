@@ -4,7 +4,15 @@ import { Injectable } from '@nestjs/common';
 import { overlayConfigSchema } from '@otmetki/schemas';
 
 import type { Overlay } from '../../../../generated';
-import type { AssertAccountInput, CreateOverlayInput, OverlayData, OwnedInput, PreviewOverlayRequest, UpdateOverlayInput } from '../streamers.types';
+import type {
+  AssertAccountInput,
+  CreateOverlayInput,
+  OverlayData,
+  OverlayViewInput,
+  OwnedInput,
+  PreviewOverlayRequest,
+  UpdateOverlayInput
+} from '../streamers.types';
 
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { toNumber } from '../../../common/lib';
@@ -12,6 +20,7 @@ import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { OVERLAY, OVERLAY_KIND_FROM_DB, OVERLAY_KIND_TO_DB } from '../config';
+import { pausedOverlayIds } from '../lib';
 import { OverlayDataService } from './overlay-data.service';
 
 @Injectable()
@@ -24,18 +33,27 @@ export class OverlayService {
   ) {}
 
   async list(userId: string): Promise<OverlayView[]> {
-    const overlays = await this.prisma.overlay.findMany({ where: { userId }, orderBy: { createdAt: 'asc' } });
+    const [overlays, paused] = await Promise.all([
+      this.prisma.overlay.findMany({ where: { userId }, orderBy: [{ createdAt: 'asc' }, { id: 'asc' }] }),
+      this.pausedIds(userId)
+    ]);
 
-    return overlays.map((overlay) => this.toView(overlay));
+    return overlays.map((overlay) => this.toView({ overlay, isPaused: paused.has(overlay.id) }));
+  }
+
+  async pausedIds(userId: string): Promise<Set<string>> {
+    const [isPlus, overlays] = await Promise.all([
+      this.entitlements.isPlus(userId),
+      this.prisma.overlay.findMany({ where: { userId }, select: { id: true, createdAt: true } })
+    ]);
+
+    return pausedOverlayIds({ overlays, isPlus });
   }
 
   async create({ userId, name, kind, accountId, config }: CreateOverlayInput): Promise<OverlayView> {
-    const [isPlus, count] = await Promise.all([this.entitlements.hasPlus(userId), this.prisma.overlay.count({ where: { userId } })]);
+    const count = await this.prisma.overlay.count({ where: { userId } });
 
-    if (count >= (isPlus ? OVERLAY.plusLimit : OVERLAY.freeLimit)) {
-      throw new AppForbiddenException(isPlus ? 'PLAN_LIMIT_REACHED' : 'SUBSCRIPTION_REQUIRED', 'Overlay limit reached');
-    }
-
+    await this.entitlements.assertWithinLimit({ userId, key: 'overlays', count, feature: 'overlays' });
     await this.assertAccount({ userId, accountId });
 
     const overlay = await this.prisma.overlay.create({
@@ -45,12 +63,11 @@ export class OverlayService {
         kind: OVERLAY_KIND_TO_DB[kind],
         accountId: accountId === undefined ? null : BigInt(accountId),
         theme: config.theme,
-        config,
-        isPro: isPlus
+        config
       }
     });
 
-    return this.toView(overlay);
+    return this.toView({ overlay, isPaused: false });
   }
 
   async update({ userId, id, name, kind, accountId, config }: UpdateOverlayInput): Promise<OverlayView> {
@@ -67,7 +84,7 @@ export class OverlayService {
       }
     });
 
-    return this.toView(overlay);
+    return this.toView({ overlay, isPaused: (await this.pausedIds(userId)).has(overlay.id) });
   }
 
   async preview(input: PreviewOverlayRequest): Promise<OverlayData> {
@@ -81,7 +98,7 @@ export class OverlayService {
     await this.prisma.overlay.delete({ where: { id } });
   }
 
-  toView(overlay: Overlay): OverlayView {
+  toView({ overlay, isPaused }: OverlayViewInput): OverlayView {
     const parsed = overlayConfigSchema.safeParse(overlay.config);
 
     if (!parsed.success) {
@@ -95,7 +112,7 @@ export class OverlayService {
       accountId: overlay.accountId === null ? null : toNumber(overlay.accountId),
       config: parsed.data,
       publicUrl: new URL(OVERLAY.publicPath.replace('{publicKey}', overlay.publicKey), this.config.get('WEB_URL')).href,
-      isPro: overlay.isPro,
+      isPaused,
       updatedAt: overlay.updatedAt.toISOString()
     };
   }

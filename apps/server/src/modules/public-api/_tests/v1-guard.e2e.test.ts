@@ -3,7 +3,7 @@ import type { INestApplication } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import { API_KEY, API_PLAN_LIMITS } from '@otmetki/schemas';
+import { API_KEY, API_TIER_LIMITS } from '@otmetki/schemas';
 import RedisMock from 'ioredis-mock';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
@@ -39,7 +39,7 @@ keys.verify.mockImplementation(async (raw: string) => {
     throw new AppUnauthorizedException('API_KEY_INVALID', 'The API key is not valid');
   }
 
-  return { id: 'key', userId: 'user', plan: 'free', dailyLimit: API_PLAN_LIMITS.free.requestsPerDay, dailyRemaining: 7 };
+  return { id: 'key', userId: 'user', tier: 'free', dailyLimit: API_TIER_LIMITS.free.requestsPerDay, dailyRemaining: 7 };
 });
 
 leaderboards.leaderboard.mockResolvedValue({ ...leaderboard, scope: 'players', metric: 'wn8', period: '30d' });
@@ -92,16 +92,16 @@ describe('/v1 behind the API key guard', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.minBattles).toBe(leaderboard.minBattles);
-    expect(Number(response.headers[API_RATE_LIMIT.headers.limit.toLowerCase()])).toBe(API_PLAN_LIMITS.free.requestsPerSecond);
+    expect(Number(response.headers[API_RATE_LIMIT.headers.limit.toLowerCase()])).toBe(API_TIER_LIMITS.free.requestsPerSecond);
     expect(Number(response.headers[API_RATE_LIMIT.headers.dailyRemaining.toLowerCase()])).toBe(7);
     expect(usage.record).toHaveBeenCalledWith(expect.objectContaining({ keyId: 'key', endpoint: 'GET /v1/leaderboards', failed: false }));
   });
 
-  it('throttles past the plan rate with 429 and Retry-After', async () => {
+  it('throttles past the tier rate with 429 and Retry-After', async () => {
     const statuses: number[] = [];
     let throttled: request.Response | null = null;
 
-    for (let attempt = 0; attempt <= API_PLAN_LIMITS.free.requestsPerSecond; attempt += 1) {
+    for (let attempt = 0; attempt <= API_TIER_LIMITS.free.requestsPerSecond; attempt += 1) {
       const response = await request(app.getHttpServer()).get('/v1/leaderboards?limit=5').set(API_KEY.header, VALID_KEY);
 
       statuses.push(response.status);

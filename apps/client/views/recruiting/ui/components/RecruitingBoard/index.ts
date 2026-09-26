@@ -1,0 +1,1 @@
+export { RecruitingBoard } from './RecruitingBoard';

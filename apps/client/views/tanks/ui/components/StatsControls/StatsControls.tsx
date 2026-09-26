@@ -8,6 +8,7 @@ import { SegmentedControl } from '@/ui-kit';
 
 import { TANKS_VIEWS } from '../../../config';
 import { useTanksState } from '../../../model/hooks';
+import { TraitFilters } from './components';
 
 import s from './StatsControls.module.scss';
 
@@ -44,6 +45,7 @@ export const StatsControls = () => {
         />
       </div>
       <VehicleFilters />
+      <TraitFilters />
     </div>
   );
 };

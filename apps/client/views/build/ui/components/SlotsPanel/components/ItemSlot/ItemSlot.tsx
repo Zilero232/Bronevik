@@ -3,12 +3,12 @@
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { GameIcon } from '@/entities/tank/build';
 import { IconButton } from '@/ui-kit';
 
 import type { ItemSlotProps } from './ItemSlot.types';
 
 import { BUILD_VIEW } from '../../../../../config';
-import { GameIcon } from '../../../GameIcon';
 
 import s from './ItemSlot.module.scss';
 

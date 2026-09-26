@@ -16,7 +16,7 @@ const OVERLAY: Overlay = {
   accountId: 1,
   config: overlayConfigSchema.parse({ metrics: ['moePercent'], theme: 'tracer', accentColor: '#00ff88' }),
   publicUrl: `https://otmetki.example/overlay/${PUBLIC_ID}`,
-  isPro: false,
+  isPaused: false,
   updatedAt: '2026-09-25T10:00:00.000Z'
 };
 

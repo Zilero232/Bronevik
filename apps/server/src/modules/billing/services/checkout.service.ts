@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { PLUS } from '@otmetki/schemas';
 import { randomUUID } from 'node:crypto';
 
 import type { CheckoutInput, CheckoutResult } from '../billing.types';
 
-import { AppBadRequestException } from '../../../common/exceptions';
+import { AppBadRequestException, AppForbiddenException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { BILLING_LINKS, PLUS_SUBSCRIPTION } from '../config';
@@ -22,6 +23,10 @@ export class CheckoutService {
   ) {}
 
   async createCheckout({ userId, plan, promoCode }: CheckoutInput): Promise<CheckoutResult> {
+    if (!PLUS.checkoutEnabled) {
+      throw new AppForbiddenException('CHECKOUT_UNAVAILABLE', 'Paid checkout is not open yet');
+    }
+
     const promo = promoCode ? await this.promos.usable({ userId, code: promoCode }) : null;
 
     if (promo && !promo.discountPercent) {
@@ -51,8 +56,6 @@ export class CheckoutService {
         yookassaPaymentId: payment.id,
         amount: amountRub,
         status: 'pending',
-        kind: 'subscription',
-        product: PLUS_SUBSCRIPTION.product,
         plan,
         promoCode: promo?.code ?? null
       }

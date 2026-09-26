@@ -1,7 +1,7 @@
 export {
   ApiErrorLogDto,
   ApiKeysDto,
-  ApiPlansDto,
+  ApiTiersDto,
   ApiUsageDto,
   ApiUsageQueryDto,
   CreateApiKeyDto,

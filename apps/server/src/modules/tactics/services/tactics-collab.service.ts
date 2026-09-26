@@ -5,6 +5,7 @@ import type { Duplex } from 'node:stream';
 import { Hocuspocus } from '@hocuspocus/server';
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
+import { AuthService } from '@thallesp/nestjs-better-auth';
 import { WebSocketServer } from 'ws';
 
 import type { CollabContext } from '../tactics.types';
@@ -22,14 +23,15 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
     quiet: true,
     debounce: TACTICS.debounceMs,
     maxDebounce: TACTICS.maxDebounceMs,
-    onAuthenticate: async ({ documentName, token, connectionConfig }) => {
+    onAuthenticate: async ({ documentName, token, requestHeaders, connectionConfig }) => {
       const boardId = boardIdOf({ prefix: TACTICS.documentPrefix, name: documentName });
 
       if (!boardId) {
         throw new Error('Unknown board');
       }
 
-      const { role } = await this.boards.access({ id: boardId, userId: null, token: token || null });
+      const session = await this.auth.api.getSession({ headers: requestHeaders }).catch(() => null);
+      const { role } = await this.boards.access({ id: boardId, userId: session?.user.id ?? null, token: token || null });
 
       connectionConfig.readOnly = !canEdit(role);
 
@@ -58,7 +60,8 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
   constructor(
     private readonly adapterHost: HttpAdapterHost,
     private readonly boards: TacticBoardService,
-    private readonly config: AppConfigService
+    private readonly config: AppConfigService,
+    private readonly auth: AuthService
   ) {}
 
   onApplicationBootstrap(): void {

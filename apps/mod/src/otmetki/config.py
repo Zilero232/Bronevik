@@ -7,6 +7,7 @@ FEATURES = (
     'send_moe_snapshots',
     'send_moe_distribution',
     'send_queue_times',
+    'send_loadouts',
     'battle_moe_panel',
     'hangar_session_panel',
 )
@@ -22,6 +23,7 @@ DEFAULTS = {
     'send_moe_snapshots': True,
     'send_moe_distribution': True,
     'send_queue_times': True,
+    'send_loadouts': True,
     'battle_moe_panel': True,
     'hangar_session_panel': True,
 }

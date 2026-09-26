@@ -10,7 +10,19 @@ import { ResourceMissing } from '@/widgets/resource-missing';
 
 import { TankProvider } from '../model/context';
 import { useTankDetail } from '../model/hooks';
-import { MarksSection, MasteryPanel, PatchHistory, PopularBuilds, ServerStats, TankGarage, TankSkeleton, TopPlayers } from './components';
+import {
+  EconomySection,
+  HowToBuild,
+  LearningSection,
+  MarksSection,
+  MasteryPanel,
+  ObtainSection,
+  PatchHistory,
+  ServerStats,
+  TankGarage,
+  TankSkeleton,
+  TopPlayers
+} from './components';
 
 import s from './TankPage.module.scss';
 
@@ -31,8 +43,13 @@ export const TankPage = () => {
               <MarksSection />
               <MasteryPanel />
             </div>
+            <div className={s.pair}>
+              <EconomySection />
+              <ObtainSection />
+            </div>
+            <LearningSection />
             <TopPlayers />
-            <PopularBuilds />
+            <HowToBuild />
             <PatchHistory />
             <p className={s.source}>{ts('source')}</p>
           </TankProvider>

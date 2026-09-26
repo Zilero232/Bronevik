@@ -32,5 +32,7 @@ export { Switch } from './Switch';
 export type { SwitchProps } from './Switch';
 export { TankImage } from './TankImage';
 export type { TankImageProps, TankImageSize, TankImageSubject } from './TankImage';
+export { Textarea } from './Textarea';
+export type { TextareaProps } from './Textarea';
 export { TierNumeral } from './TierNumeral';
 export type { TierNumeralProps } from './TierNumeral';

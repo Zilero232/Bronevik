@@ -28,6 +28,7 @@ import { LeaderboardsModule } from './modules/leaderboards';
 import { MapsModule } from './modules/maps';
 import { MarksModule } from './modules/marks';
 import { MeModule } from './modules/me';
+import { MissionsModule } from './modules/missions';
 import { ModModule } from './modules/mod';
 import { ModerationModule } from './modules/moderation';
 import { NotificationsModule } from './modules/notifications';
@@ -105,6 +106,7 @@ import { TreeModule } from './modules/tree';
     TacticsModule,
     ShopModule,
     EventsModule,
+    MissionsModule,
     ClanWorkspaceModule,
     SocialModule,
     PulseModule,

@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: absolute;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.input {
+  @include field-box;
+
+  min-width: 180px;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  outline: none;
+}

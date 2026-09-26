@@ -1,9 +1,9 @@
-import type { ApiPlan, ApiUsageQuery, CreateApiKeyInput, CreateWebhookEndpointInput, UpdateWebhookEndpointInput } from '@otmetki/schemas';
+import type { ApiTier, ApiUsageQuery, CreateApiKeyInput, CreateWebhookEndpointInput, UpdateWebhookEndpointInput } from '@otmetki/schemas';
 
 export type AuthenticatedApiKey = {
   id: string;
   userId: string;
-  plan: ApiPlan;
+  tier: ApiTier;
   dailyLimit: number;
   dailyRemaining: number;
 };
@@ -17,9 +17,9 @@ export type CreateKeyInput = CreateApiKeyInput & {
   userId: string;
 };
 
-export type ApplyPlanInput = {
+export type ApplyTierInput = {
   userId: string;
-  plan: ApiPlan;
+  tier: ApiTier;
 };
 
 export type RejectKeyInput = {

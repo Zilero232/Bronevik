@@ -1,1 +1,1 @@
-export { toCoachView, toOfferView, toOrderView } from './coaching-views';
+export { contactsOf, toCoachView, toOfferView, toOrderView } from './coaching-views';

@@ -1,4 +1,4 @@
-import type { BillingStatus, PaymentHistoryItem } from '@otmetki/schemas';
+import type { BillingStatus, PaymentHistoryItem, PlusCountKey, PlusFeature } from '@otmetki/schemas';
 
 import type { Prisma } from '../../../generated';
 import type { PrismaService } from '../../core';
@@ -67,4 +67,23 @@ export type SetAutoRenewInput = {
 export type WebhookRequest = {
   ip?: string;
   socket?: { remoteAddress?: string };
+};
+
+export type LimitInput = {
+  userId: string;
+  key: PlusCountKey;
+};
+
+export type AssertFeatureInput = {
+  userId: string;
+  feature: PlusFeature;
+};
+
+export type AssertWithinLimitInput = LimitInput & {
+  count: number;
+  feature?: PlusFeature;
+};
+
+export type PlusRequest = {
+  session?: { user: { id: string } } | null;
 };

@@ -36,3 +36,11 @@
   justify-content: space-between;
   gap: var(--space-3);
 }
+
+.paused {
+  @include well;
+
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-warning);
+  font-size: var(--text-sm);
+}

@@ -52,9 +52,23 @@ export type {
 } from './billing';
 export {
   BUILD_OPTIONS,
+  BUILD_USAGE,
+  buildCohortSchema,
+  buildHistoryEntrySchema,
+  buildHistorySchema,
+  buildModeSchema,
   buildOptionsSchema,
+  buildsCatalogEntrySchema,
+  buildsCatalogQuerySchema,
+  buildsCatalogSchema,
+  buildUsageQuerySchema,
+  buildUsageSchema,
+  crewRoleUsageSchema,
   crewSkillOptionSchema,
+  crewSkillPickSchema,
+  equipmentSlotUsageSchema,
   fieldModificationStepSchema,
+  fieldModificationUsageSchema,
   loadoutRequestSchema,
   loadoutResultSchema,
   modifierEffectSchema,
@@ -66,14 +80,30 @@ export {
   priceSchema,
   provisionKindSchema,
   provisionOptionSchema,
+  provisionPickSchema,
+  recommendedBuildSchema,
   shellStatsSchema,
+  shellUsageSchema,
   vehicleProfileIdSchema,
   vehicleStatsSchema
 } from './builds';
 export type {
+  BuildCohort,
+  BuildHistory,
+  BuildHistoryEntry,
+  BuildMode,
   BuildOptions,
+  BuildsCatalog,
+  BuildsCatalogEntry,
+  BuildsCatalogQuery,
+  BuildUsage,
+  BuildUsageQuery,
+  CrewRoleUsage,
   CrewSkillOption,
+  CrewSkillPick,
+  EquipmentSlotUsage,
   FieldModificationStep,
+  FieldModificationUsage,
   LoadoutRequest,
   LoadoutResult,
   ModifierEffect,
@@ -84,7 +114,10 @@ export type {
   PopularBuildsQuery,
   ProvisionKind,
   ProvisionOption,
+  ProvisionPick,
+  RecommendedBuild,
   ShellStats,
+  ShellUsage,
   VehicleProfileId,
   VehicleStats
 } from './builds';
@@ -128,6 +161,7 @@ export type {
 export {
   accountIdSchema,
   booleanParam,
+  BRAND,
   clanIdSchema,
   clanTagSchema,
   countSchema,
@@ -185,15 +219,15 @@ export { COMPARE, playerComparisonQuerySchema, playerComparisonSchema, tankCompa
 export type { PlayerComparison, PlayerComparisonQuery, TankComparison, TankComparisonQuery } from './compare';
 export {
   API_KEY,
-  API_PLAN_LIMITS,
+  API_TIER_LIMITS,
   apiErrorLogEntrySchema,
   apiErrorLogSchema,
   apiKeySchema,
   apiKeysSchema,
-  apiPlanLimitsSchema,
-  apiPlanOfferSchema,
-  apiPlanSchema,
-  apiPlansSchema,
+  apiTierLimitsSchema,
+  apiTierOfferSchema,
+  apiTierSchema,
+  apiTiersSchema,
   apiUsagePointSchema,
   apiUsageQuerySchema,
   apiUsageSchema,
@@ -217,10 +251,10 @@ export type {
   ApiErrorLogEntry,
   ApiKey,
   ApiKeys,
-  ApiPlan,
-  ApiPlanLimits,
-  ApiPlanOffer,
-  ApiPlans,
+  ApiTier,
+  ApiTierLimits,
+  ApiTierOffer,
+  ApiTiers,
   ApiUsage,
   ApiUsagePoint,
   ApiUsageQuery,
@@ -238,8 +272,8 @@ export type {
   WebhookFilter,
   WebhookPayload
 } from './developer';
-export { API_ERROR_CODES, apiErrorCodeSchema, apiErrorIssueSchema, apiErrorSchema } from './errors';
-export type { ApiError, ApiErrorCode, ApiErrorIssue } from './errors';
+export { API_ERROR_CODES, apiErrorCodeSchema, apiErrorDetailsSchema, apiErrorIssueSchema, apiErrorSchema } from './errors';
+export type { ApiError, ApiErrorCode, ApiErrorDetails, ApiErrorIssue } from './errors';
 export { leaderboardEntrySchema, leaderboardQuerySchema, leaderboardSchema, leaderboardScopeSchema } from './leaderboards';
 export type { Leaderboard, LeaderboardEntry, LeaderboardQuery, LeaderboardScope } from './leaderboards';
 export {
@@ -268,6 +302,9 @@ export {
   moeRowSchema,
   moeSortFieldSchema,
   moeThresholdSchema,
+  SWEAT_LEVELS,
+  sweatIndexSchema,
+  sweatLevelSchema,
   thresholdSourceSchema,
   thresholdTrendSchema
 } from './marks';
@@ -285,6 +322,8 @@ export type {
   MoeRow,
   MoeSortField,
   MoeThreshold,
+  SweatIndex,
+  SweatLevel,
   ThresholdSource,
   ThresholdTrend
 } from './marks';
@@ -315,8 +354,63 @@ export type {
   LinkedAccounts,
   UpdateGoalInput
 } from './me';
-export { bindCodeInputSchema, bindCodeSchema, modDeviceSchema, modDevicesSchema } from './mod';
-export type { BindCode, BindCodeInput, ModDevice, ModDevices } from './mod';
+export {
+  MISSION_BRANCH_KINDS,
+  MISSION_GARAGE_STATES,
+  MISSION_METRICS,
+  MISSION_PROGRESS_SOURCES,
+  MISSION_TANKS_QUERY,
+  missionBranchKindSchema,
+  missionBranchSchema,
+  missionCampaignSchema,
+  missionCampaignsSchema,
+  missionConditionSchema,
+  missionGarageSchema,
+  missionGarageTankSchema,
+  missionIdSchema,
+  missionMetricSchema,
+  missionOperationParamsSchema,
+  missionOperationSchema,
+  missionOperationSummarySchema,
+  missionParamsSchema,
+  missionPlanQuerySchema,
+  missionPlanSchema,
+  missionPlanStepSchema,
+  missionProgressItemSchema,
+  missionProgressSchema,
+  missionProgressSourceSchema,
+  missionSchema,
+  missionTankSchema,
+  missionTanksQuerySchema,
+  missionTanksSchema,
+  updateMissionProgressSchema
+} from './missions';
+export type {
+  Mission,
+  MissionBranch,
+  MissionBranchKind,
+  MissionCampaign,
+  MissionCampaigns,
+  MissionCondition,
+  MissionGarage,
+  MissionGarageTank,
+  MissionMetric,
+  MissionOperation,
+  MissionOperationParams,
+  MissionOperationSummary,
+  MissionPlan,
+  MissionPlanQuery,
+  MissionPlanStep,
+  MissionProgress,
+  MissionProgressItem,
+  MissionProgressSource,
+  MissionTank,
+  MissionTanks,
+  MissionTanksQuery,
+  UpdateMissionProgressInput
+} from './missions';
+export { bindCodeInputSchema, bindCodeSchema, MOD_LOADOUT, modBattleLoadoutSchema, modDeviceSchema, modDevicesSchema } from './mod';
+export type { BindCode, BindCodeInput, ModBattleLoadout, ModDevice, ModDevices } from './mod';
 export {
   INBOX,
   inboxItemSchema,
@@ -422,6 +516,21 @@ export type {
   TimeSeriesPoint,
   TimeSeriesQuery
 } from './players';
+export {
+  isPlusState,
+  PLUS,
+  PLUS_FEATURES,
+  PLUS_GRACE,
+  PLUS_LIMITS,
+  PLUS_STATES,
+  PLUS_TRIAL,
+  plusFeatureSchema,
+  plusLimit,
+  plusLimitKeySchema,
+  plusStateKindSchema,
+  plusStateSchema
+} from './plus';
+export type { PlusCountKey, PlusFeature, PlusLimitInput, PlusLimitKey, PlusState, PlusStateKind } from './plus';
 export { gameVersionSchema, serverOnlineSchema, serversOnlineSchema } from './reference';
 export type { GameVersion, ServerOnline, ServersOnline } from './reference';
 export { replayPlayerSchema, replayStatusSchema, replaySummarySchema } from './replays';
@@ -575,6 +684,59 @@ export {
   topPlayersMetricSchema,
   topPlayersQuerySchema,
   topPlayersSchema
+} from './tanks';
+export { ECONOMY_ACCOUNTS, LEARNING_CURVE, LEARNING_DIFFICULTIES, TANK_ECONOMY, TANK_ROLES, TANK_SOURCES, TANK_STATUSES } from './tanks';
+export {
+  accountEconomyQuerySchema,
+  accountEconomySchema,
+  accountEconomySplitSchema,
+  accountEconomyTankSchema,
+  economyAccountSchema,
+  learningBucketSchema,
+  learningDifficultySchema,
+  myTankLearningSchema,
+  tankEconomyFiguresSchema,
+  tankEconomyPageSchema,
+  tankEconomyQuerySchema,
+  tankEconomyRowSchema,
+  tankEconomySchema,
+  tankEconomySortFieldSchema,
+  tankLearningSchema,
+  tankMentionSchema,
+  tankObtainSchema,
+  tankOfferSchema,
+  tankResearchStepSchema,
+  tankRoleSchema,
+  tankSourceSchema,
+  tankStatusSchema,
+  tankTraitsFilterSchema,
+  tankTraitsSchema
+} from './tanks';
+export type {
+  AccountEconomy,
+  AccountEconomyQuery,
+  AccountEconomySplit,
+  AccountEconomyTank,
+  EconomyAccount,
+  LearningBucket,
+  LearningDifficulty,
+  MyTankLearning,
+  TankEconomy,
+  TankEconomyFigures,
+  TankEconomyPage,
+  TankEconomyQuery,
+  TankEconomyRow,
+  TankEconomySortField,
+  TankLearning,
+  TankMention,
+  TankObtain,
+  TankOffer,
+  TankResearchStep,
+  TankRole,
+  TankSource,
+  TankStatus,
+  TankTraits,
+  TankTraitsFilter
 } from './tanks';
 export type {
   TankDetail,

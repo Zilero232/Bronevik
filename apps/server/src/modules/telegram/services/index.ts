@@ -5,6 +5,7 @@ export { TelegramIdentityService } from './telegram-identity.service';
 export { TelegramInlineService } from './telegram-inline.service';
 export { TelegramLinkService } from './telegram-link.service';
 export { TelegramLookupCommandsService } from './telegram-lookup-commands.service';
+export { TelegramMissionCommandsService } from './telegram-mission-commands.service';
 export { TelegramPlayerCommandsService } from './telegram-player-commands.service';
 export { TelegramSettingsService } from './telegram-settings.service';
 export { TelegramStatsService } from './telegram-stats.service';

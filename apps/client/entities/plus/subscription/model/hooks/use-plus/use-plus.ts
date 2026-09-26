@@ -1,0 +1,36 @@
+'use client';
+
+import { isPlusState, PLUS_TRIAL } from '@otmetki/schemas';
+import { useQuery } from '@tanstack/react-query';
+
+import { useAuthSession } from '@/entities/auth/session';
+import { getBillingStatus } from '@/shared/api/billing';
+import { QUERY_KEYS } from '@/shared/constants';
+
+import { plusLimitsFor } from '../../../lib/plus-limits';
+
+export const usePlus = () => {
+  const { data: session, isPending: isSessionPending } = useAuthSession();
+  const { data: status, isPending: isStatusPending } = useQuery({
+    queryKey: QUERY_KEYS.me.billing.status,
+    queryFn: getBillingStatus,
+    enabled: Boolean(session)
+  });
+
+  const isSignedIn = Boolean(session);
+  const plus = status?.plus ?? null;
+  const isPlus = plus ? isPlusState(plus.state) : false;
+
+  return {
+    isSignedIn,
+    isPlus,
+    state: plus?.state ?? 'none',
+    periodEnd: plus?.periodEnd ?? null,
+    graceEndsAt: plus?.graceEndsAt ?? null,
+    trialAvailable: plus?.trialAvailable ?? false,
+    trialDays: plus?.trialDays ?? PLUS_TRIAL.days,
+    isCheckoutAvailable: status?.isCheckoutAvailable ?? false,
+    limits: plusLimitsFor(isPlus),
+    isPending: isSessionPending || (isSignedIn && isStatusPending)
+  };
+};

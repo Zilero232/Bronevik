@@ -7,7 +7,7 @@ import { AuthService } from '@thallesp/nestjs-better-auth';
 import { differenceInSeconds } from 'date-fns';
 
 import type { OtmetkiAuth } from '../../../lib/auth';
-import type { ApplyPlanInput, AuthenticatedApiKey, CreateKeyInput, OwnedKeyInput, RejectKeyInput } from '../developer.types';
+import type { ApplyTierInput, AuthenticatedApiKey, CreateKeyInput, OwnedKeyInput, RejectKeyInput } from '../developer.types';
 
 import {
   AppBadRequestException,
@@ -18,9 +18,10 @@ import {
 } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { API_PLANS } from '../config';
-import { keyPlanOf, planQuota, quotaRetryAfterSec, rebasedRemaining, toApiKey, verifyFailureOf } from '../lib';
-import { DeveloperPlanService } from './developer-plan.service';
+import { API_TIERS } from '../config';
+import { keyTierOf, quotaRetryAfterSec, rebasedRemaining, tierQuota, toApiKey, verifyFailureOf } from '../lib';
+import { ApiTierService } from './api-tier.service';
+import { WebhookEndpointsService } from './webhook-endpoints.service';
 
 @Injectable()
 export class ApiKeysService {
@@ -28,18 +29,19 @@ export class ApiKeysService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly plans: DeveloperPlanService,
+    private readonly tiers: ApiTierService,
+    private readonly webhooks: WebhookEndpointsService,
     private readonly auth: AuthService<OtmetkiAuth>
   ) {}
 
   async overview(userId: string): Promise<DeveloperOverview> {
-    const plan = await this.plans.planFor(userId);
+    const tier = await this.tiers.tierFor(userId);
 
-    await this.applyPlan({ userId, plan });
+    await this.applyTier({ userId, tier });
 
     const [keys, webhooks] = await Promise.all([this.list(userId), this.prisma.webhookEndpoint.count({ where: { userId } })]);
 
-    return { plan, limits: API_PLANS[plan], keys, webhooks };
+    return { tier, limits: API_TIERS[tier], keys, webhooks };
   }
 
   async list(userId: string): Promise<ApiKey[]> {
@@ -61,8 +63,8 @@ export class ApiKeysService {
       throw new AppConflictException('CONFLICT', `At most ${API_KEY.maxActivePerUser} active API keys`);
     }
 
-    const plan = await this.plans.planFor(userId);
-    const created = await this.auth.api.createApiKey({ body: { userId, name, expiresIn, ...planQuota(plan) } });
+    const tier = await this.tiers.tierFor(userId);
+    const created = await this.auth.api.createApiKey({ body: { userId, name, expiresIn, ...tierQuota(tier) } });
 
     return { key: toApiKey(created), secret: created.key };
   }
@@ -92,39 +94,41 @@ export class ApiKeysService {
       return this.reject({ raw, code: typeof error?.code === 'string' ? error.code : undefined });
     }
 
-    const plan = keyPlanOf(key.metadata) ?? 'free';
-    const dailyLimit = key.refillAmount ?? API_PLANS[plan].requestsPerDay;
+    const tier = keyTierOf(key.metadata) ?? 'free';
+    const dailyLimit = key.refillAmount ?? API_TIERS[tier].requestsPerDay;
 
-    void this.reconcile({ userId: key.referenceId, plan });
+    void this.reconcile({ userId: key.referenceId, tier });
 
-    return { id: key.id, userId: key.referenceId, plan, dailyLimit, dailyRemaining: key.remaining ?? dailyLimit };
+    return { id: key.id, userId: key.referenceId, tier, dailyLimit, dailyRemaining: key.remaining ?? dailyLimit };
   }
 
-  async applyPlan({ userId, plan }: ApplyPlanInput): Promise<void> {
+  async applyTier({ userId, tier }: ApplyTierInput): Promise<void> {
     const keys = await this.prisma.apiKey.findMany({
       where: { referenceId: userId, enabled: true },
       select: { id: true, metadata: true, remaining: true, refillAmount: true }
     });
 
-    for (const key of keys.filter(({ metadata }) => keyPlanOf(metadata) !== plan)) {
-      const { refillAmount, refillInterval, metadata } = planQuota(plan);
+    for (const key of keys.filter(({ metadata }) => keyTierOf(metadata) !== tier)) {
+      const { refillAmount, refillInterval, metadata } = tierQuota(tier);
 
       await this.prisma.apiKey.update({
         where: { id: key.id },
-        data: { refillAmount, refillInterval, metadata: JSON.stringify(metadata), remaining: rebasedRemaining({ plan, ...key }) }
+        data: { refillAmount, refillInterval, metadata: JSON.stringify(metadata), remaining: rebasedRemaining({ tier, ...key }) }
       });
     }
+
+    await this.webhooks.enforceTier({ userId, tier });
   }
 
-  private async reconcile({ userId, plan }: ApplyPlanInput): Promise<void> {
+  private async reconcile({ userId, tier }: ApplyTierInput): Promise<void> {
     try {
-      const current = await this.plans.cachedPlanFor(userId);
+      const current = await this.tiers.cachedTierFor(userId);
 
-      if (current !== plan) {
-        await this.applyPlan({ userId, plan: current });
+      if (current !== tier) {
+        await this.applyTier({ userId, tier: current });
       }
     } catch (error) {
-      this.logger.warn(`API key plan for ${userId} not reconciled: ${errorMessage(error)}`);
+      this.logger.warn(`API key tier for ${userId} not reconciled: ${errorMessage(error)}`);
     }
   }
 

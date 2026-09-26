@@ -1,4 +1,4 @@
-import type { ApiPlan } from '@otmetki/schemas';
+import type { ApiTier } from '@otmetki/schemas';
 
 export type ApiKeyRow = {
   id: string;
@@ -12,14 +12,14 @@ export type ApiKeyRow = {
   expiresAt: Date | null;
 };
 
-export type PlanQuota = {
+export type TierQuota = {
   refillAmount: number;
   refillInterval: number;
-  metadata: { plan: ApiPlan };
+  metadata: { tier: ApiTier };
 };
 
 export type RebasedRemainingInput = {
-  plan: ApiPlan;
+  tier: ApiTier;
   remaining: number | null;
   refillAmount: number | null;
 };

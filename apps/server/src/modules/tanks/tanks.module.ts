@@ -1,13 +1,21 @@
 import { Module } from '@nestjs/common';
 
 import { AppConfigService, ARMOR_VIEWER } from '../../config';
+import { BillingCoreModule } from '../billing';
 import { createArmorStorage } from '../gamedata';
+import { MarksModule } from '../marks';
 import { ARMOR_STORAGE } from './config';
+import { MyTanksController } from './my-tanks.controller';
 import {
+  MyTankInsightsService,
   TankArmorService,
   TankDetailService,
+  TankEconomyReportService,
+  TankLearningService,
+  TankObtainService,
   TankPatchesService,
   TankStatsService,
+  TankTraitsService,
   TankTrendService,
   TierListService,
   TopPlayersService,
@@ -32,7 +40,8 @@ const armorStorageProvider = {
 };
 
 @Module({
-  controllers: [TanksController, VehiclesController],
+  imports: [MarksModule, BillingCoreModule],
+  controllers: [TanksController, MyTanksController, VehiclesController],
   providers: [
     armorStorageProvider,
     TankArmorService,
@@ -42,7 +51,12 @@ const armorStorageProvider = {
     TopPlayersService,
     TankTrendService,
     TankPatchesService,
-    VehicleListService
+    VehicleListService,
+    TankTraitsService,
+    TankObtainService,
+    TankEconomyReportService,
+    TankLearningService,
+    MyTankInsightsService
   ],
   exports: [TankDetailService, TankStatsService, TierListService]
 })

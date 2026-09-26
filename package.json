@@ -27,6 +27,8 @@
       "standardwebhooks": "^1.1.1",
       "ts-pattern": "^5.9.0",
       "typescript": "~6.0.3",
+      "y-protocols": "1.0.7",
+      "yjs": "13.6.33",
       "zod": "^4.6.5"
     }
   },

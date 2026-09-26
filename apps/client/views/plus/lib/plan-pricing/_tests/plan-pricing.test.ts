@@ -48,3 +48,12 @@ describe('planPricing', () => {
     expect(pricey.savingPercent).toBe(0);
   });
 });
+
+describe('planPricing with the quarterly plan', () => {
+  it('counts the quarter saving against three monthly payments', () => {
+    const [, quarterly] = planPricing([MONTHLY, { plan: 'quarterly', months: 3, priceRub: 529 }]);
+
+    expect(quarterly?.savingRub).toBe(68);
+    expect(quarterly?.savingPercent).toBe(11);
+  });
+});

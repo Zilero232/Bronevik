@@ -1,0 +1,92 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+  @include stack(var(--space-3));
+
+  padding: var(--space-4);
+
+  &[data-status='expired'] {
+    opacity: 0.72;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.code {
+  min-width: 0;
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+}
+
+.rewards {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.meta {
+  @include stack(0);
+
+  margin: 0;
+}
+
+.row {
+  @include data-list-row;
+
+  justify-content: space-between;
+  font-size: var(--text-xs);
+
+  dt {
+    @include label;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+}
+
+.source {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-steel);
+  gap: var(--space-1);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+.reports {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.tally {
+  @include numeric(var(--text-xs));
+
+  color: var(--color-text-dim);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}

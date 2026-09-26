@@ -2,11 +2,12 @@
 
 import { useTranslations } from 'next-intl';
 
+import { GameIcon } from '@/entities/tank/build';
+
 import type { FieldModStepProps } from './FieldModStep.types';
 
 import { BUILD_VIEW } from '../../../../../config';
 import { useFieldModStep } from '../../../../../model/hooks';
-import { GameIcon } from '../../../GameIcon';
 
 import s from './FieldModStep.module.scss';
 

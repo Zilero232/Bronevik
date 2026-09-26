@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "title": "Personal missions",
+    "description": "Personal mission campaigns and operations from the game files, mission conditions, fitting tanks by server stats and a progress tracker."
+  },
+  "operationMeta": {
+    "title": "Personal missions: operation {id}",
+    "description": "Operation missions by branch, main and honors conditions, the best tanks by server stats and progress checkmarks."
+  },
+  "hub": {
+    "title": "Personal missions",
+    "description": "Personal missions from the game client. Conditions, tier limits and rewards are game data; tank recommendations come from our stats.",
+    "gameVersion": "Game version {version}",
+    "campaign": "Campaign {id}",
+    "reward": "Reward",
+    "missions": "{count, plural, one {# mission} other {# missions}}",
+    "branches": "{count, plural, one {# branch} other {# branches}}",
+    "progress": "{done} of {total} done",
+    "honors": "With honors: {count}",
+    "emptyTitle": "Missions are not loaded yet",
+    "emptyDescription": "Personal missions appear after the next game data import.",
+    "errorTitle": "Could not load personal missions",
+    "errorDescription": "The server did not respond. Try again."
+  },
+  "operation": {
+    "missions": "Missions",
+    "branches": "Branches",
+    "done": "Done",
+    "honors": "With honors",
+    "notFoundTitle": "Operation not found",
+    "notFoundDescription": "The current game version has no such operation.",
+    "errorTitle": "Could not load the operation",
+    "errorDescription": "The server did not respond. Try again.",
+    "back": "All personal missions"
+  },
+  "branch": {
+    "lightTank": "LT",
+    "mediumTank": "MT",
+    "heavyTank": "HT",
+    "AT-SPG": "TD",
+    "SPG": "SPG",
+    "Alliance-USSR": "Union",
+    "Alliance-Germany": "Bloc",
+    "Alliance-USA": "Alliance",
+    "Alliance-France": "Coalition",
+    "LevelGroup1": "VI–VII",
+    "LevelGroup2": "VIII–IX",
+    "LevelGroup3": "X–XI"
+  },
+  "mission": {
+    "main": "Main conditions",
+    "honors": "With honors",
+    "noHonors": "This mission has no honors conditions.",
+    "advice": "Advice",
+    "tiers": "Tiers {min}–{max}",
+    "final": "Final",
+    "done": "Done",
+    "withHonors": "With honors",
+    "signIn": "Sign in to track your progress.",
+    "select": "Pick a mission in the list.",
+    "series": "Series: {goal}",
+    "win": "Win the battle.",
+    "alive": "Survive the battle.",
+    "generic": "Condition «{id}»"
+  },
+  "tanks": {
+    "title": "Best tanks by our data",
+    "description": "Fitting tanks by «{metric}», cohort: {cohort}, period: {period}.",
+    "cohort": {
+      "all": "all players",
+      "beginner": "beginners",
+      "average": "average players",
+      "good": "good players",
+      "elite": "elite players"
+    },
+    "tank": "Tank",
+    "value": "Value",
+    "winRate": "Wins",
+    "battles": "Battles",
+    "score": "Fit",
+    "ownBattles": "Your battles",
+    "ownWinRate": "Your wins",
+    "emptyTitle": "No data for fitting tanks",
+    "emptyDescription": "Server stats for these tanks are not collected yet.",
+    "errorTitle": "Could not load tanks",
+    "garageTitle": "From your hangar",
+    "garageNoLink": "Link a Lesta account to see your tanks.",
+    "garageNoPrivateData": "Your hangar list becomes available after signing in with Lesta ID with access to account data.",
+    "garageEmpty": "No tank in your hangar fits this mission.",
+    "garageSignIn": "Sign in to see tanks from your hangar."
+  },
+  "metric": {
+    "damage": "Damage",
+    "frags": "Kills",
+    "spotting": "Spotting and assist",
+    "blocked": "Blocked",
+    "survival": "Survival",
+    "xp": "Experience",
+    "accuracy": "Accuracy",
+    "winRate": "Win rate"
+  },
+  "plan": {
+    "title": "Completion plan",
+    "description": "The mission order that closes the operation faster: branches with fewer missions left and more fitting tanks in your hangar come first.",
+    "plusTitle": "The plan is part of Three Marks Plus",
+    "plusDescription": "Conditions, recommendations and the tracker are free. The completion plan comes with Plus.",
+    "plusAction": "About Plus",
+    "signIn": "Sign in to build a plan from your progress.",
+    "empty": "Every mission of this operation is done.",
+    "remaining": "Steps left: {count}",
+    "retry": "Redo with honors",
+    "errorTitle": "Could not build the plan"
+  },
+  "periods": {
+    "1d": "a day",
+    "7d": "7 days",
+    "14d": "14 days",
+    "30d": "30 days",
+    "60d": "60 days"
+  }
+}

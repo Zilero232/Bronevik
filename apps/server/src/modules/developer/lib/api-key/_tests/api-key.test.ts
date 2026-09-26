@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { API_KEY_PLUGIN } from '../../../../../lib/auth';
-import { API_KEY_POLICY, API_PLANS } from '../../../config';
-import { keyPlanOf, planQuota, quotaRetryAfterSec, rebasedRemaining, toApiKey, verifyFailureOf } from '../api-key';
+import { API_KEY_POLICY, API_TIERS } from '../../../config';
+import { keyTierOf, quotaRetryAfterSec, rebasedRemaining, tierQuota, toApiKey, verifyFailureOf } from '../api-key';
 
 const createdAt = new Date('2026-09-25T10:00:00Z');
 
@@ -11,60 +11,60 @@ const row = {
   name: 'bot',
   start: `${API_KEY_PLUGIN.prefix}AbCdEfGh`,
   enabled: true,
-  metadata: '{"plan":"pro"}',
+  metadata: '{"tier":"plus"}',
   createdAt,
   updatedAt: new Date('2026-09-25T11:00:00Z'),
   lastRequest: null,
   expiresAt: null
 };
 
-describe('keyPlanOf', () => {
-  it('reads the plan from stored JSON and from a parsed object', () => {
-    expect(keyPlanOf('{"plan":"partner"}')).toBe('partner');
-    expect(keyPlanOf({ plan: 'pro' })).toBe('pro');
+describe('keyTierOf', () => {
+  it('reads the tier from stored JSON and from a parsed object', () => {
+    expect(keyTierOf('{"tier":"community"}')).toBe('community');
+    expect(keyTierOf({ tier: 'plus' })).toBe('plus');
   });
 
   it('answers null for missing or malformed metadata', () => {
-    expect(keyPlanOf(null)).toBeNull();
-    expect(keyPlanOf('{not json')).toBeNull();
-    expect(keyPlanOf({ plan: 'gold' })).toBeNull();
+    expect(keyTierOf(null)).toBeNull();
+    expect(keyTierOf('{not json')).toBeNull();
+    expect(keyTierOf({ tier: 'gold' })).toBeNull();
   });
 });
 
-describe('planQuota', () => {
-  it('refills the daily request budget of the plan once a day', () => {
-    expect(planQuota('pro')).toEqual({
-      refillAmount: API_PLANS.pro.requestsPerDay,
+describe('tierQuota', () => {
+  it('refills the daily request budget of the tier once a day', () => {
+    expect(tierQuota('plus')).toEqual({
+      refillAmount: API_TIERS.plus.requestsPerDay,
       refillInterval: API_KEY_POLICY.quotaRefillMs,
-      metadata: { plan: 'pro' }
+      metadata: { tier: 'plus' }
     });
   });
 });
 
 describe('rebasedRemaining', () => {
-  it('carries what was already spent today over to the new plan', () => {
+  it('carries what was already spent today over to the new tier', () => {
     const spent = 1_000;
 
-    expect(rebasedRemaining({ plan: 'pro', remaining: API_PLANS.free.requestsPerDay - spent, refillAmount: API_PLANS.free.requestsPerDay })).toBe(
-      API_PLANS.pro.requestsPerDay - spent
+    expect(rebasedRemaining({ tier: 'plus', remaining: API_TIERS.free.requestsPerDay - spent, refillAmount: API_TIERS.free.requestsPerDay })).toBe(
+      API_TIERS.plus.requestsPerDay - spent
     );
   });
 
   it('never goes below zero after a downgrade', () => {
-    expect(rebasedRemaining({ plan: 'free', remaining: 0, refillAmount: API_PLANS.pro.requestsPerDay })).toBe(0);
+    expect(rebasedRemaining({ tier: 'free', remaining: 0, refillAmount: API_TIERS.plus.requestsPerDay })).toBe(0);
   });
 
-  it('starts a key without a quota at the full plan budget', () => {
-    expect(rebasedRemaining({ plan: 'free', remaining: null, refillAmount: null })).toBe(API_PLANS.free.requestsPerDay);
+  it('starts a key without a quota at the full tier budget', () => {
+    expect(rebasedRemaining({ tier: 'free', remaining: null, refillAmount: null })).toBe(API_TIERS.free.requestsPerDay);
   });
 });
 
 describe('toApiKey', () => {
-  it('shows the characters after the key prefix and the plan the key runs on', () => {
+  it('shows the characters after the key prefix and the tier the key runs on', () => {
     const key = toApiKey(row);
 
     expect(key.prefix).toBe('AbCdEfGh');
-    expect(key.plan).toBe('pro');
+    expect(key.tier).toBe('plus');
     expect(key.revokedAt).toBeNull();
   });
 

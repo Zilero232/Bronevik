@@ -9,6 +9,7 @@ import { FieldModsPanel } from '../FieldModsPanel';
 import { LoadoutBar } from '../LoadoutBar';
 import { MobileStats } from '../MobileStats';
 import { ModulesPanel } from '../ModulesPanel';
+import { PresetNotice } from '../PresetNotice';
 import { PresetStrip } from '../PresetStrip';
 import { SlotsPanel } from '../SlotsPanel';
 import { StatsBoard } from '../StatsBoard';
@@ -23,6 +24,7 @@ export const BuildWorkspace = () => {
     <div className={s.root} data-side={side}>
       <BuildHead />
       <LoadoutBar />
+      <PresetNotice />
       <PresetStrip />
       <div className={s.layout}>
         <div className={s.panels}>

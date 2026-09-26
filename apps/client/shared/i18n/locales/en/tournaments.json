@@ -1,0 +1,131 @@
+{
+  "meta": {
+    "title": "Tournaments",
+    "description": "Community Mir Tankov tournaments: registration, participants and single-elimination brackets."
+  },
+  "detailMeta": {
+    "title": "Tournament",
+    "description": "Participants, requirements and the bracket."
+  },
+  "head": {
+    "title": "Tournaments",
+    "description": "Player-run tournaments: register with a linked Lesta account, single elimination, seeded by WN8."
+  },
+  "status": {
+    "draft": "Draft",
+    "registration": "Registration",
+    "running": "Running",
+    "finished": "Finished",
+    "cancelled": "Cancelled"
+  },
+  "list": {
+    "title": "All tournaments",
+    "filter": "Status",
+    "all": "All",
+    "participants": "{count} / {max}",
+    "more": "Show more",
+    "emptyTitle": "No tournaments",
+    "emptyDescription": "Nothing here yet. Create a tournament — registration opens right away.",
+    "errorTitle": "Couldn't load tournaments",
+    "errorDescription": "The server didn't respond. Try again."
+  },
+  "create": {
+    "open": "Create tournament",
+    "title": "New tournament",
+    "description": "Registration opens right after creation and you become the organizer.",
+    "name": "Name",
+    "titleError": "5 to 140 characters",
+    "about": "Description and rules",
+    "aboutPlaceholder": "Battle format, maps, vehicle limits, prizes",
+    "descriptionError": "At most 8000 characters",
+    "startsAt": "Starts",
+    "startsAtError": "Set a date and time",
+    "registrationEndsAt": "Registration until",
+    "registrationEndsAtError": "No later than the start",
+    "maxParticipants": "Max participants",
+    "maxParticipantsError": "2 to 256",
+    "note": "The bracket is seeded by participants' WN8.",
+    "cancel": "Cancel",
+    "submit": "Create"
+  },
+  "page": {
+    "back": "All tournaments",
+    "about": "About",
+    "notFoundTitle": "Tournament not found",
+    "notFoundDescription": "The link may be outdated or the tournament is still a draft.",
+    "errorTitle": "Couldn't load the tournament",
+    "errorDescription": "The server didn't respond. Try again."
+  },
+  "summary": {
+    "startsAt": "Starts",
+    "registrationEndsAt": "Registration until",
+    "untilStart": "Until the start",
+    "participants": "Participants",
+    "champion": "Winner",
+    "requirements": "Requirements"
+  },
+  "organizer": {
+    "title": "Organizer",
+    "open": "Open registration",
+    "start": "Start tournament",
+    "cancel": "Cancel tournament",
+    "hint": "Report match results in the bracket.",
+    "notEnough": "At least 2 participants are needed"
+  },
+  "registration": {
+    "title": "Registration",
+    "teamName": "Team name",
+    "teamNameHint": "Optional",
+    "teamNameError": "2 to 40 characters",
+    "submit": "Join",
+    "requirementsHint": "The server checks your account stats against the requirements.",
+    "state": {
+      "registered": "You're registered",
+      "full": "No places left",
+      "closed": "Registration is closed",
+      "notOpen": "Registration hasn't opened yet",
+      "open": "Registration is open"
+    }
+  },
+  "participants": {
+    "title": "Participants",
+    "seed": "#",
+    "player": "Player",
+    "team": "Team",
+    "emptyTitle": "Nobody yet",
+    "emptyDescription": "Be the first to join."
+  },
+  "bracket": {
+    "title": "Bracket",
+    "reportHint": "Mark the match winner",
+    "emptyTitle": "No bracket yet",
+    "emptyDescription": "The bracket appears once the organizer starts the tournament.",
+    "rounds": {
+      "final": "Final",
+      "semifinal": "Semifinal",
+      "quarterfinal": "Quarterfinal",
+      "round": "Round {number}"
+    },
+    "bye": "Bye",
+    "tbd": "—",
+    "won": "Won",
+    "reportWinner": "{name} won"
+  },
+  "toast": {
+    "created": "Tournament created, registration is open",
+    "opened": "Registration opened",
+    "started": "The tournament has started",
+    "cancelled": "Tournament cancelled",
+    "registered": "You're on the participant list",
+    "reported": "Result saved"
+  },
+  "errors": {
+    "forbidden": "Requirements not met or no linked Lesta account",
+    "notFound": "Tournament not found or you're not the organizer",
+    "conflict": "Not available right now: registration closed, no places left or you're already in",
+    "validation": "Check the data",
+    "unauthorized": "Sign in to continue",
+    "rateLimited": "Too many requests, wait a bit",
+    "unknown": "Something went wrong, try later"
+  }
+}

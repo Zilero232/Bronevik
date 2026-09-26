@@ -1,39 +1,73 @@
 {
   "meta": {
-    "title": "Three Marks Plus — subscription",
-    "description": "Full battle history, advanced charts, Pro stream overlays, priority session polling, export and a clan panel. No ads, payments via YooKassa."
+    "title": "{plus} — subscription",
+    "description": "One subscription on top of the free site: priority polling, more overlays and room, personal API limits, and next deep analytics and tank levels. No ads."
   },
   "header": {
-    "title": "Three Marks Plus",
-    "description": "A subscription for extended Mir Tankov stats: battle history, charts, overlays and export."
+    "description": "One subscription on top of free Three Marks: our analytics, more room and conveniences. Core stats stay free for everyone.",
+    "trialOffer": "Try it for {days, plural, one {# day} other {# days}} free — no card needed."
   },
   "benefits": {
     "title": "What is included",
-    "description": "Features on top of free Three Marks.",
+    "description": "Live — works right after you subscribe. Soon — arrives in Plus at no extra cost.",
+    "soon": "Soon",
+    "live": "Live",
     "items": {
-      "history": {
-        "title": "Full history",
-        "text": "Every battle and session since tracking began, not just the last few weeks."
-      },
-      "charts": {
-        "title": "Advanced charts",
-        "text": "WN8, win rate and damage over any period, broken down by tank and map, with period-to-period comparison."
+      "priorityPolling": {
+        "title": "Priority polling",
+        "text": "Your accounts are polled every 5 minutes instead of 15 — a fresh session shows up almost right after the battle."
       },
       "overlays": {
-        "title": "Pro overlays",
-        "text": "More themes and stream widgets: marks, session and challenges, fine-tuned for your scene."
+        "title": "Up to 20 overlays",
+        "text": "More stream overlays: session, marks, challenges — one for every scene."
       },
-      "polling": {
-        "title": "Priority session polling",
-        "text": "Your stats refresh more often — a fresh session shows up almost right after the battle."
+      "capacity": {
+        "title": "More room",
+        "text": "Up to 10 linked accounts, 10 goals, 300 watched tanks and 1,000 replays."
       },
-      "export": {
-        "title": "Export",
-        "text": "Battles, sessions and marks as CSV — for your own spreadsheets, reviews and reports."
+      "apiLimits": {
+        "title": "Personal API limits",
+        "text": "50,000 requests a day, 10 per second and 5 webhooks for personal projects. The API itself is free for everyone."
       },
-      "clan": {
-        "title": "Clan panel",
-        "text": "A roster overview: activity, ratings and member progress on a single screen."
+      "history": {
+        "title": "Full history",
+        "text": "Charts over the whole stored window instead of the last 90 days."
+      },
+      "analytics": {
+        "title": "Deep analytics",
+        "text": "The \"why I lose\" breakdown, time of day, tilt and the tank learning curve."
+      },
+      "moeTracker": {
+        "title": "Marks tracker Plus",
+        "text": "Per-battle percentage history and an \"evening playlist\" of tanks closest to a mark."
+      },
+      "mapAdvisor": {
+        "title": "Map advisor",
+        "text": "Your results by map, class and spawn side, and platoon chemistry."
+      },
+      "battleAnalysis": {
+        "title": "Battle analysis",
+        "text": "Shots, damage rolls and penetration from mod and replay data."
+      },
+      "aiCoach": {
+        "title": "AI coach",
+        "text": "Session and replay reviews with advice — up to five a day."
+      },
+      "progression": {
+        "title": "Tank levels and seasons",
+        "text": "Levels, challenges and a seasonal reward track, like Dota Plus."
+      },
+      "cosmetics": {
+        "title": "Profile cosmetics",
+        "text": "A badge, frames and covers on the site."
+      },
+      "analyticsExport": {
+        "title": "Analytics export",
+        "text": "Sessions and analytics tables as CSV and JSON."
+      },
+      "earlyAccess": {
+        "title": "Early access",
+        "text": "Beta features before anyone else."
       }
     }
   },
@@ -43,6 +77,7 @@
     "planLabel": "Subscription term",
     "plans": {
       "monthly": "Month",
+      "quarterly": "Quarter",
       "yearly": "Year"
     },
     "unavailable": "Pricing is not available yet",
@@ -66,24 +101,40 @@
       "manage": "Manage subscription",
       "buy": "Get Plus",
       "redirecting": "Opening payment…",
-      "note": "Paid via YooKassa. Turn auto-renew off in your account any time.",
-      "notePlus": "Plus is already active — manage the term, card and auto-renew in your account."
+      "note": "Paid via YooKassa once payments open. Turn auto-renew off in your account any time.",
+      "notePlus": "Plus is already active — manage the term, card and auto-renew in your account.",
+      "trial": "Try {days, plural, one {# day} other {# days}} free",
+      "trialPending": "Starting…",
+      "closed": "Payments soon",
+      "closedNote": "Payments open soon. For now you can start the trial or redeem a promo code."
     }
   },
   "faq": {
     "title": "FAQ",
     "items": {
+      "trial": {
+        "question": "How does the trial work?",
+        "answer": "Seven days of Plus for free and without a card — once per user and per Lesta account. You need a linked account. If a friend invited you, the trial is 14 days. It does not renew on its own: Plus simply switches off afterwards."
+      },
+      "free": {
+        "question": "What stays free?",
+        "answer": "All the essentials: profiles and stats of any player, marks and thresholds, tank tables, leaderboards, sessions, replays, clans, community, tools and the API. Plus sells our analytics, room and conveniences, not Lesta data."
+      },
       "payment": {
         "question": "How does payment work?",
-        "answer": "YooKassa takes the payment — by card or any other method it offers. Only YooKassa sees your card details: Three Marks doesn't store them and only receives a masked card number for auto-renew."
+        "answer": "Payments open later: for now the trial and promo codes are available. YooKassa will take the payment — Three Marks never stores your card details and only receives a masked number for auto-renew."
       },
       "cancel": {
         "question": "Can I cancel?",
-        "answer": "Yes, any time: turn auto-renew off in your account with one click. Plus keeps working until the end of the paid period, then your account returns to the free tier."
+        "answer": "Yes, any time: turn auto-renew off in your account with one click. Plus keeps working until the end of the paid period. Support handles partial refunds."
+      },
+      "expiry": {
+        "question": "What happens when Plus ends?",
+        "answer": "Nothing is deleted. Analytics go back to the free window, extra overlays are paused, and goals, accounts and replays over the limit stay viewable. Renew Plus and everything comes back at once."
       },
       "noAds": {
         "question": "Will there be ads?",
-        "answer": "No — with or without a subscription. Lesta's terms forbid ads in apps with paid features, and we like it better that way too. The project runs on subscriptions and donations."
+        "answer": "No — with or without a subscription."
       },
       "data": {
         "question": "Where does the data come from?",
@@ -91,8 +142,91 @@
       },
       "promo": {
         "question": "How do I use a promo code?",
-        "answer": "Enter a discount code at checkout on this page. A free-days code is redeemed in your account under «Subscription» — the days are added to your current period."
+        "answer": "A free-days code is redeemed in your account under «Subscription» — the days are added to your current period. A discount code is entered at checkout on this page."
       }
+    }
+  },
+  "badge": "Plus",
+  "teaser": {
+    "signIn": "Sign in",
+    "trial": "Try {days, plural, one {# day} other {# days}} free",
+    "subscribe": "Get Plus",
+    "trialStarted": "Plus trial is on for {days, plural, one {# day} other {# days}}",
+    "trialFailed": "Couldn't start the trial. Make sure a Lesta account is linked."
+  },
+  "limitNotice": {
+    "free": "{label}: {used} of {limit}. Plus raises it to {plusLimit}.",
+    "plus": "{label}: {used} of {limit} — the Plus maximum.",
+    "link": "About Plus",
+    "labels": {
+      "linkedAccounts": "Accounts",
+      "goals": "Goals",
+      "watchedTanks": "Watched tanks",
+      "overlays": "Overlays",
+      "storedReplays": "Replays"
+    }
+  },
+  "state": {
+    "trial": "Trial until {date}",
+    "grace": "Payment failed — Plus works until {date}",
+    "active": "Plus is active until {date}"
+  },
+  "gate": {
+    "history": {
+      "title": "Full history",
+      "text": "Charts over the whole stored window, not just 90 days: per-tank history and patch markers on the chart."
+    },
+    "analytics": {
+      "title": "Deep analytics",
+      "text": "The full \"why I lose\" breakdown, results by hour and weekday, a tilt detector and the tank learning curve."
+    },
+    "mapAdvisor": {
+      "title": "Map advisor",
+      "text": "Wins, damage and survival by map, class and spawn side; maps to avoid and platoon chemistry."
+    },
+    "battleAnalysis": {
+      "title": "Battle analysis",
+      "text": "Shot by shot: damage rolls, penetration by distance and shell, a timeline and a comparison with the best on that tank."
+    },
+    "aiCoach": {
+      "title": "AI coach",
+      "text": "A review of a session or replay with advice. Free once a week, up to five a day with Plus."
+    },
+    "moeTracker": {
+      "title": "Marks tracker Plus",
+      "text": "Per-battle mark percentage history, an \"evening playlist\" of tanks closest to a mark, and the full advisor."
+    },
+    "priorityPolling": {
+      "title": "Priority polling",
+      "text": "Your accounts are polled every 5 minutes instead of 15 and first in the queue."
+    },
+    "progression": {
+      "title": "Tank levels and challenges",
+      "text": "XP and levels 1–25 for every tank, three rotating challenges and a seasonal reward track."
+    },
+    "overlays": {
+      "title": "More overlays",
+      "text": "Up to 20 stream overlays instead of two, new themes and progress widgets."
+    },
+    "cosmetics": {
+      "title": "Profile cosmetics",
+      "text": "A Plus badge, frames, covers and a nickname accent — on the site only, never in the game."
+    },
+    "analyticsExport": {
+      "title": "Analytics export",
+      "text": "CSV and JSON with sessions, analytics tables and per-battle mod data. Exporting your own raw data is free."
+    },
+    "apiLimits": {
+      "title": "Personal API limits",
+      "text": "Up to 50,000 requests a day, 10 per second and 5 webhooks — for personal non-commercial projects."
+    },
+    "earlyAccess": {
+      "title": "Early access",
+      "text": "New features in beta before anyone else."
+    },
+    "hangarExtras": {
+      "title": "Hangar extras in the mod",
+      "text": "A map briefing and the evening playlist right in the hangar — outside battle only and from your own data."
     }
   }
 }

@@ -1,0 +1,58 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+
+  display: grid;
+  align-items: center;
+  padding: var(--space-5);
+  gap: var(--space-4);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+
+  @include below(md) {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+}
+
+.icon {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-premium);
+  place-items: center;
+}
+
+.body {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.title {
+  @include heading(var(--text-md));
+}
+
+.text {
+  max-width: 64ch;
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+}
+
+.action {
+  display: flex;
+  justify-content: flex-end;
+
+  @include below(md) {
+    justify-content: flex-start;
+    grid-column: 1 / -1;
+  }
+}

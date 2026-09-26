@@ -1,0 +1,1 @@
+export { TiersTable } from './TiersTable';

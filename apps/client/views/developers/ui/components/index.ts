@@ -1,6 +1,7 @@
 export { ApiReference } from './ApiReference';
+export { ApiTerms } from './ApiTerms';
 export { DevelopersHeader } from './DevelopersHeader';
 export { LimitFigures } from './LimitFigures';
-export { PlansTable } from './PlansTable';
 export { Quickstart } from './Quickstart';
+export { TiersTable } from './TiersTable';
 export { WebhooksDocs } from './WebhooksDocs';

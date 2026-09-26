@@ -23,7 +23,5 @@ export const TRACKING = {
     ratingsLimit: 1000,
     clanPages: 50,
     clanPageLimit: 100
-  },
-  subscriberProducts: ['plus'],
-  subscriberStatuses: ['active', 'trialing']
+  }
 } as const;

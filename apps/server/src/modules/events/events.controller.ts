@@ -1,8 +1,9 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Header, Query } from '@nestjs/common';
+import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
+import { EVENT_ICS } from './config';
 import { GameEventListDto, GameEventsQueryDto } from './dto';
 import { EventQueryService } from './services';
 
@@ -16,6 +17,15 @@ export class EventsController {
   @ZodResponse({ type: GameEventListDto })
   calendar(@Query() query: GameEventsQueryDto) {
     return this.events.calendar(query);
+  }
+
+  @Get('calendar.ics')
+  @Header('content-type', EVENT_ICS.contentType)
+  @Header('cache-control', EVENT_ICS.cacheControl)
+  @ApiProduces(EVENT_ICS.contentType)
+  @ApiOkResponse({ schema: { type: 'string' } })
+  calendarIcs() {
+    return this.events.calendarIcs();
   }
 
   @Get('drops')

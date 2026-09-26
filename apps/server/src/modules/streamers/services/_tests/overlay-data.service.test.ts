@@ -4,8 +4,9 @@ import { overlayConfigSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountRating, PlaySession, StreamerProfile } from '../../../../../generated';
+import type { AccountRating, Overlay, PlaySession, StreamerProfile } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { EntitlementsService } from '../../../billing';
 import type { VehicleCatalogService } from '../../../reference';
 
 import { OverlayDataService } from '../overlay-data.service';
@@ -16,11 +17,12 @@ const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
   const cache = mock<Cache>();
+  const entitlements = mock<EntitlementsService>();
 
   prisma.challenge.findFirst.mockResolvedValue(null);
   prisma.battle.findMany.mockResolvedValue([]);
 
-  return { service: new OverlayDataService(prisma, catalog, cache), prisma };
+  return { service: new OverlayDataService(prisma, catalog, entitlements, cache), prisma, entitlements };
 };
 
 describe('OverlayDataService.preview', () => {
@@ -64,5 +66,44 @@ describe('OverlayDataService.preview', () => {
 
     expect(data.session?.broneIndex).toBe(sessionIndex);
     expect(data.overall?.broneIndex).toBe(overallIndex);
+  });
+});
+
+describe('OverlayDataService.compute', () => {
+  const overlay: Overlay = {
+    id: 'o3',
+    userId: 'u1',
+    accountId: 7n,
+    name: 'WN8',
+    kind: 'wn8',
+    theme: 'steel',
+    config,
+    publicKey: 'key',
+    createdAt: new Date('2026-09-26T10:00:00Z'),
+    updatedAt: new Date('2026-09-26T10:00:00Z')
+  };
+
+  it('shows a neutral paused frame for an overlay over the free limit after Plus ends', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    entitlements.isPlus.mockResolvedValue(false);
+    prisma.overlay.count.mockResolvedValue(2);
+
+    const data = await service.compute(overlay);
+
+    expect(data).toMatchObject({ isPaused: true, player: null, session: null, config });
+    expect(prisma.accountRating.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('keeps every overlay of a subscriber running', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    entitlements.isPlus.mockResolvedValue(true);
+    prisma.playSession.findFirst.mockResolvedValue(null);
+    prisma.accountRating.findUnique.mockResolvedValue(null);
+    prisma.player.findUnique.mockResolvedValue(null);
+
+    expect((await service.compute(overlay)).isPaused).toBe(false);
+    expect(prisma.overlay.count).not.toHaveBeenCalled();
   });
 });

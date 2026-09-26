@@ -1,16 +1,16 @@
-import type { ApiPlan, ApiPlanLimits, WebhookEvent } from '@otmetki/schemas';
+import type { ApiTier, ApiTierLimits, WebhookEvent } from '@otmetki/schemas';
 
-import { API_PLAN_LIMITS } from '@otmetki/schemas';
+import { API_TIER_LIMITS } from '@otmetki/schemas';
 import { millisecondsInDay } from 'date-fns/constants';
 
 import type { WebhookEvent as DbWebhookEvent } from '../../../../generated';
 
-export const API_PLANS: Record<ApiPlan, ApiPlanLimits> = API_PLAN_LIMITS;
+export const API_TIERS: Record<ApiTier, ApiTierLimits> = API_TIER_LIMITS;
 
 export const API_KEY_POLICY = {
   quotaRefillMs: millisecondsInDay,
-  planCacheTtlMs: 300_000,
-  planCacheMaxEntries: 5_000,
+  tierCacheTtlMs: 300_000,
+  tierCacheMaxEntries: 5_000,
   quotaCodes: new Set<string>(['USAGE_EXCEEDED']),
   revokedCodes: new Set<string>(['KEY_DISABLED', 'KEY_EXPIRED'])
 } as const;
@@ -18,11 +18,6 @@ export const API_KEY_POLICY = {
 export const API_USAGE_REPORT = {
   errorLogLimit: 100,
   topEndpoints: 10
-} as const;
-
-export const DEVELOPER_PLAN = {
-  proProducts: ['developerPro'],
-  activeStatuses: ['active', 'trialing', 'pastDue']
 } as const;
 
 export const WEBHOOK_EVENT_TO_DB = {

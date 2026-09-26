@@ -170,3 +170,88 @@ model TankPercentile {
   @@id([tankId, distribution, date])
   @@map("tank_percentile")
 }
+
+enum EconomyAccount {
+  all
+  premium
+  standard
+
+  @@map("economy_account")
+}
+
+model TankEconomyAggregate {
+  tankId  Int            @map("tank_id")
+  account EconomyAccount
+
+  battles     Int
+  players     Int
+  costBattles Int    @default(0) @map("cost_battles")
+  credits     Float?
+  creditsBase Float? @map("credits_base")
+  repair      Float?
+  ammo        Float?
+  consumables Float?
+  net         Float?
+  xp          Float?
+  freeXp      Float? @map("free_xp")
+  windowDays  Int    @map("window_days")
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@id([tankId, account])
+  @@map("tank_economy_aggregate")
+}
+
+model TankLearningCurve {
+  tankId Int @map("tank_id")
+  bucket Int @db.SmallInt
+
+  battles    Int
+  players    Int
+  wins       Int
+  damage     BigInt
+  windowDays Int    @map("window_days")
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@id([tankId, bucket])
+  @@map("tank_learning_curve")
+}
+
+enum BuildMode {
+  random
+  onslaught
+  frontline
+  ranked
+
+  @@map("build_mode")
+}
+
+enum BuildCohort {
+  all
+  top10
+  top1
+
+  @@map("build_cohort")
+}
+
+model BuildUsageAggregate {
+  tankId      Int         @map("tank_id")
+  mode        BuildMode
+  cohort      BuildCohort
+  gameVersion String      @map("game_version")
+
+  battles    Int
+  players    Int
+  winRate    Float? @map("win_rate")
+  avgDamage  Float? @map("avg_damage")
+  usage      Json
+  windowDays Int    @map("window_days")
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@id([tankId, mode, cohort, gameVersion])
+  @@index([mode, cohort, computedAt(sort: Desc)])
+  @@index([tankId, mode, cohort, computedAt(sort: Desc)])
+  @@map("build_usage_aggregate")
+}

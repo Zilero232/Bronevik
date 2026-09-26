@@ -3,41 +3,57 @@ import auth from './auth.json';
 import billing from './billing.json';
 import brand from './brand.json';
 import builds from './builds.json';
+import buildsCatalog from './buildsCatalog.json';
 import clans from './clans.json';
+import coaching from './coaching.json';
+import codes from './codes.json';
 import common from './common.json';
+import community from './community.json';
 import compare from './compare.json';
 import design from './design.json';
 import developer from './developer.json';
 import developers from './developers.json';
 import error from './error.json';
+import events from './events.json';
 import footer from './footer.json';
 import game from './game.json';
+import guides from './guides.json';
 import home from './home.json';
 import inbox from './inbox.json';
 import maps from './maps.json';
 import marks from './marks.json';
 import me from './me.json';
+import missions from './missions.json';
 import nav from './nav.json';
+import news from './news.json';
 import notFound from './notFound.json';
 import notifications from './notifications.json';
 import overlay from './overlay.json';
 import periods from './periods.json';
+import platoons from './platoons.json';
 import play from './play.json';
 import players from './players.json';
 import plus from './plus.json';
 import profile from './profile.json';
+import pulse from './pulse.json';
 import rating from './rating.json';
+import recruiting from './recruiting.json';
+import replays from './replays.json';
 import search from './search.json';
 import settings from './settings.json';
+import shop from './shop.json';
 import stats from './stats.json';
 import streamer from './streamer.json';
 import streamers from './streamers.json';
+import tactics from './tactics.json';
 import tank from './tank.json';
 import tanks from './tanks.json';
+import tankTraits from './tankTraits.json';
 import telegram from './telegram.json';
 import tg from './tg.json';
 import tools from './tools.json';
 import top from './top.json';
+import tournaments from './tournaments.json';
 import tree from './tree.json';
 
 export const en = {
@@ -46,40 +62,56 @@ export const en = {
   billing,
   brand,
   builds,
+  buildsCatalog,
   clans,
+  coaching,
+  codes,
   common,
+  community,
   compare,
   design,
   developer,
   developers,
   error,
+  events,
   footer,
   game,
+  guides,
   home,
   inbox,
   maps,
   marks,
   me,
+  missions,
   nav,
+  news,
   notFound,
   notifications,
   overlay,
   periods,
+  platoons,
   play,
   players,
   plus,
   profile,
+  pulse,
   rating,
+  recruiting,
+  replays,
   search,
   settings,
+  shop,
   stats,
   streamer,
   streamers,
+  tactics,
   tank,
   tanks,
+  tankTraits,
   telegram,
   tg,
   tools,
   top,
+  tournaments,
   tree
 };

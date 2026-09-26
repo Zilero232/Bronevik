@@ -27,47 +27,47 @@ generated/       # Prisma client (gitignored)
 
 A `*-worker.module.ts` next to a module is its half loaded by `WorkerModule` (processors and schedules); the rest is loaded by `AppModule`.
 
-| Module                  | What it owns                                                                                                                            |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `auth`                  | better-auth wiring, Lesta ID OpenID and Telegram sign-in, linked Lesta and Telegram accounts                                            |
-| `billing`               | Три отметки Плюс: plans, YooKassa checkout and webhooks, promo codes, referrals, renewals (worker), entitlements                        |
-| `builds`                | Loadout constructor under `/tanks/:id`: build options, loadout calculation, popular builds                                              |
-| `clan-workspace`        | Clan officers' workspace: events and reminders, API attendance sync, recruit funnel, weekly officer report                              |
-| `clans`                 | Clan pages, list and search, stronghold                                                                                                 |
-| `collector`             | The worker: Lesta tracking, clans, reference, aggregates, news, purge; queue contracts, metrics, bull-board                             |
-| `coaching`              | Coach profiles, coaching orders and their payments                                                                                      |
-| `community-builds`      | Shared player builds                                                                                                                    |
-| `community-core`        | Community accounts shared by the community modules                                                                                      |
-| `community-maintenance` | Community worker: post expiry, pending coaching settlement                                                                              |
-| `compare`               | Player-vs-player and tank-vs-tank comparison                                                                                            |
-| `developer`             | Developer cabinet: API keys (`@better-auth/api-key`), public `/developer/plans`, webhooks (`standardwebhooks` signing, worker delivery) |
-| `events`                | In-game events calendar and drops                                                                                                       |
-| `gamedata`              | Game-client data importer, run by `bun run gamedata:import`                                                                             |
-| `guides`                | Guides and comments                                                                                                                     |
-| `health`                | `/health` (`@nestjs/terminus`): database, Redis, worker heartbeat, Lesta breaker                                                        |
-| `leaderboards`          | Player and clan leaderboards                                                                                                            |
-| `maps`                  | Maps from the arena data: detail, minimaps, team win rates                                                                              |
-| `marks`                 | Marks of excellence tables, thresholds history, projections (and `/v1/moe`)                                                             |
-| `me`                    | The signed-in user: favourites, goals, linked accounts, own marks, notification settings                                                |
-| `mod`                   | Game mod ingest: device binding, signed event batches, event ledger                                                                     |
-| `moderation`            | Content reports and their resolution                                                                                                    |
-| `notifications`         | Notification routing and delivery (site, Telegram, e-mail, web push), inbox, digests, marks watch                                       |
-| `players`               | Player pages: summary, tanks, marks, sessions, history, playtime, insights, achievements                                                |
-| `platoons`              | Platoon board                                                                                                                           |
-| `public-api`            | Public `/v1`: the v1 controllers, API-key guard, rate-limit headers, usage analytics; the only module in the `/v1` OpenAPI document     |
-| `pulse`                 | Server activity pulse: hourly heatmap and sampled online series                                                                         |
-| `recruiting`            | Clan recruiting board                                                                                                                   |
-| `reference`             | Shared reference data: vehicle catalog, expected values, rating thresholds, Bronya references, current game version, server online      |
-| `replays`               | Replay upload, parsing (worker), search, heatmaps, best of week                                                                         |
-| `search`                | Global search and player discovery                                                                                                      |
-| `shop`                  | Premium shop offers, bonus codes, tanki.su news (`/news`) scraping and enrichment                                                       |
-| `social`                | Follows, feed, leagues, weekly challenges, signatures, wrapped                                                                          |
-| `streamers`             | Streamer profiles, OBS overlays (data, SSE, preview), donation challenges, Twitch/DonationAlerts/VK integrations                        |
-| `tactics`               | Tactic boards and their Hocuspocus collaboration                                                                                        |
-| `tanks`                 | Tank pages and `/vehicles`: specs, armor, stats, trends, patches, tier list, top players                                                |
-| `telegram`              | Telegram bot, mini app, account linking, inline search, notification sending                                                            |
-| `tournaments`           | Tournaments, registration, brackets                                                                                                     |
-| `tree`                  | Tech tree per nation                                                                                                                    |
+| Module                  | What it owns                                                                                                                                                                                              |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth`                  | better-auth wiring, Lesta ID OpenID and Telegram sign-in, linked Lesta and Telegram accounts                                                                                                              |
+| `billing`               | Три отметки Плюс: one plan (monthly/quarterly/yearly), trial, YooKassa checkout behind `PLUS.checkoutEnabled`, webhooks, promo codes, referrals, renewals/expiry (worker), entitlements + `@RequiresPlus` |
+| `builds`                | Loadout constructor under `/tanks/:id`: build options, loadout calculation, popular builds                                                                                                                |
+| `clan-workspace`        | Clan officers' workspace: events and reminders, API attendance sync, recruit funnel, weekly officer report                                                                                                |
+| `clans`                 | Clan pages, list and search, stronghold                                                                                                                                                                   |
+| `collector`             | The worker: Lesta tracking, clans, reference, aggregates, news, purge; queue contracts, metrics, bull-board                                                                                               |
+| `coaching`              | Coach profiles with contact/booking links and booking requests; no payments                                                                                                                               |
+| `community-builds`      | Shared player builds                                                                                                                                                                                      |
+| `community-core`        | Community accounts shared by the community modules                                                                                                                                                        |
+| `community-maintenance` | Community worker: post expiry                                                                                                                                                                             |
+| `compare`               | Player-vs-player and tank-vs-tank comparison                                                                                                                                                              |
+| `developer`             | Developer cabinet: API keys (`@better-auth/api-key`), public `/developer/tiers` (free/plus/community), webhooks (`standardwebhooks` signing, worker delivery)                                             |
+| `events`                | In-game events calendar and drops                                                                                                                                                                         |
+| `gamedata`              | Game-client data importer, run by `bun run gamedata:import`                                                                                                                                               |
+| `guides`                | Guides and comments                                                                                                                                                                                       |
+| `health`                | `/health` (`@nestjs/terminus`): database, Redis, worker heartbeat, Lesta breaker                                                                                                                          |
+| `leaderboards`          | Player and clan leaderboards                                                                                                                                                                              |
+| `maps`                  | Maps from the arena data: detail, minimaps, team win rates                                                                                                                                                |
+| `marks`                 | Marks of excellence tables, thresholds history, projections (and `/v1/moe`)                                                                                                                               |
+| `me`                    | The signed-in user: favourites, goals, linked accounts, own marks, notification settings                                                                                                                  |
+| `mod`                   | Game mod ingest: device binding, signed event batches, event ledger                                                                                                                                       |
+| `moderation`            | Content reports and their resolution                                                                                                                                                                      |
+| `notifications`         | Notification routing and delivery (site, Telegram, e-mail, web push), inbox, digests, marks watch                                                                                                         |
+| `players`               | Player pages: summary, tanks, marks, sessions, history, playtime, insights, achievements                                                                                                                  |
+| `platoons`              | Platoon board                                                                                                                                                                                             |
+| `public-api`            | Public `/v1`: the v1 controllers, API-key guard, rate-limit headers, usage analytics; the only module in the `/v1` OpenAPI document                                                                       |
+| `pulse`                 | Server activity pulse: hourly heatmap and sampled online series                                                                                                                                           |
+| `recruiting`            | Clan recruiting board                                                                                                                                                                                     |
+| `reference`             | Shared reference data: vehicle catalog, expected values, rating thresholds, Bronya references, current game version, server online                                                                        |
+| `replays`               | Replay upload, parsing (worker), search, heatmaps, best of week                                                                                                                                           |
+| `search`                | Global search and player discovery                                                                                                                                                                        |
+| `shop`                  | Premium shop offers, bonus codes, tanki.su news (`/news`) scraping and enrichment                                                                                                                         |
+| `social`                | Follows, feed, leagues, weekly challenges, signatures, wrapped                                                                                                                                            |
+| `streamers`             | Streamer profiles, OBS overlays (data, SSE, preview), donation challenges, Twitch/DonationAlerts/VK integrations                                                                                          |
+| `tactics`               | Tactic boards and their Hocuspocus collaboration                                                                                                                                                          |
+| `tanks`                 | Tank pages and `/vehicles`: specs, armor, stats, trends, patches, tier list, top players                                                                                                                  |
+| `telegram`              | Telegram bot, mini app, account linking, inline search, notification sending                                                                                                                              |
+| `tournaments`           | Tournaments, registration, brackets                                                                                                                                                                       |
+| `tree`                  | Tech tree per nation                                                                                                                                                                                      |
 
 Server-side copy is Fluent .ftl through @grammyjs/i18n: the bot, notifications (notifications/config/locales) and streamer chat (streamers/config/locales) each load their files with createFluentStore from telegram/lib. Outside grammy they call i18n.t(locale, key, vars). Only the event → message-id mapping stays in TS.
 

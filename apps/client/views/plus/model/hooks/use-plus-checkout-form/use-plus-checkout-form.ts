@@ -8,16 +8,18 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { usePlus, useStartTrial } from '@/entities/plus/subscription';
+
 import { PLUS_CHECKOUT_FORM_DEFAULT_VALUES } from '../../../config';
-import { usePlusAccess } from '../use-plus-access';
 import { usePlusCheckout } from '../use-plus-checkout';
 import { usePlusOffers } from '../use-plus-offers';
 
 export const usePlusCheckoutForm = () => {
-  const t = useTranslations('plus.checkout');
+  const t = useTranslations('plus');
   const offers = usePlusOffers();
-  const access = usePlusAccess();
+  const access = usePlus();
   const checkout = usePlusCheckout();
+  const trial = useStartTrial();
   const {
     register,
     handleSubmit,
@@ -35,9 +37,15 @@ export const usePlusCheckoutForm = () => {
         return;
       }
 
-      toast.error(t('failed'));
+      toast.error(t('checkout.failed'));
     }
   });
+
+  const onStartTrial = () =>
+    trial.mutate(undefined, {
+      onSuccess: () => toast.success(t('teaser.trialStarted', { days: access.trialDays })),
+      onError: () => toast.error(t('teaser.trialFailed'))
+    });
 
   return {
     offers,
@@ -46,6 +54,8 @@ export const usePlusCheckoutForm = () => {
     promoRegistration: register('promoCode', { setValueAs: (value: string) => value.trim() || undefined }),
     promoError: errors.promoCode,
     isSubmitting: isSubmitting || checkout.isPending || checkout.isSuccess,
-    onSubmit
+    isStartingTrial: trial.isPending,
+    onSubmit,
+    onStartTrial
   };
 };

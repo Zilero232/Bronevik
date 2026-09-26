@@ -1,0 +1,34 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  max-width: 960px;
+}
+
+.form {
+  @include stack(var(--space-5));
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+
+.subject {
+  width: 100%;
+  max-width: 360px;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.moderation {
+  @include source-line;
+
+  margin: 0;
+}

@@ -3,7 +3,7 @@
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { SITE_NAV_MORE } from '@/shared/constants';
+import { SITE_NAV_COMMUNITY, SITE_NAV_MORE } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Popover } from '@/ui-kit';
 
@@ -24,6 +24,16 @@ export const NavMore = () => {
     >
       <ul className={s.list}>
         {SITE_NAV_MORE.map((item) => (
+          <li key={item.key}>
+            <Link className={s.link} href={item.href}>
+              {t(item.key)}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <span className={s.heading}>{t('community')}</span>
+      <ul className={s.list}>
+        {SITE_NAV_COMMUNITY.map((item) => (
           <li key={item.key}>
             <Link className={s.link} href={item.href}>
               {t(item.key)}

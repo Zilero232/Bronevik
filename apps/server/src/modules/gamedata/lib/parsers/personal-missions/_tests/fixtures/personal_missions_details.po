@@ -1,0 +1,20 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+
+msgid "season_1"
+msgstr "Кампания один"
+
+msgid "tile_1"
+msgstr "StuG IV"
+
+msgid "quest_1_1"
+msgstr "ЛТ-1. Тест"
+
+msgid "regular_1_1_1_description_topByExp"
+msgstr "Попасть в топ-%(desiredPosition)s по опыту."
+
+msgid "pm2_5_1_1_description_assist"
+msgstr ""
+"Помочь союзникам нанести %(goal)s "
+"урона."

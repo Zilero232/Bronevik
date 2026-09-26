@@ -3,11 +3,12 @@
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
+import { GameIcon } from '@/entities/tank/build';
+
 import type { CrewRoleProps } from './CrewRole.types';
 
 import { BUILD_VIEW } from '../../../../../config';
 import { useCrewRole } from '../../../../../model/hooks';
-import { GameIcon } from '../../../GameIcon';
 
 import s from './CrewRole.module.scss';
 

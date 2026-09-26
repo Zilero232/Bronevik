@@ -29,7 +29,8 @@
       },
       "delta": "Δ 30 d",
       "details": "Details",
-      "detailsLabel": "Threshold details: {tank}"
+      "detailsLabel": "Threshold details: {tank}",
+      "sweat": "Difficulty"
     }
   },
   "toolbar": {
@@ -48,7 +49,9 @@
       "master": "Ace Tanker XP",
       "tier": "Tier",
       "p95Delta30d": "30-day change",
-      "p95Change30d": "Biggest 30-day change"
+      "p95Change30d": "Biggest 30-day change",
+      "sweat": "Marks difficulty",
+      "masterySweat": "Ace Tanker difficulty"
     }
   },
   "drawer": {

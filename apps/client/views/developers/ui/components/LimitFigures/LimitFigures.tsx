@@ -1,9 +1,9 @@
 'use client';
 
-import { API_PLAN_LIMITS } from '@otmetki/schemas';
+import { API_TIER_LIMITS } from '@otmetki/schemas';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { API_REFERENCE, PLANS } from '../../../config';
+import { API_REFERENCE, TIERS } from '../../../config';
 
 import s from './LimitFigures.module.scss';
 
@@ -13,10 +13,10 @@ export const LimitFigures = () => {
 
   return (
     <dl className={s.root}>
-      {PLANS.figures.map((metric) => (
+      {TIERS.figures.map((metric) => (
         <div key={metric} className={s.figure}>
           <dt className={s.label}>{t(metric)}</dt>
-          <dd className={s.value}>{format.number(API_PLAN_LIMITS[PLANS.open][metric])}</dd>
+          <dd className={s.value}>{format.number(API_TIER_LIMITS[TIERS.open][metric])}</dd>
         </div>
       ))}
       <div className={s.figure}>

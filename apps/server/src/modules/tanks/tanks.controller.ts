@@ -10,6 +10,9 @@ import {
   TankArmorDto,
   TankDetailDto,
   TankDetailQueryDto,
+  TankEconomyDto,
+  TankEconomyPageDto,
+  TankEconomyQueryDto,
   TankLookupParamsDto,
   TankParamsDto,
   TankPatchesDto,
@@ -25,6 +28,7 @@ import {
 import {
   TankArmorService,
   TankDetailService,
+  TankEconomyReportService,
   TankPatchesService,
   TankStatsService,
   TankTrendService,
@@ -44,7 +48,8 @@ export class TanksController {
     private readonly topPlayers: TopPlayersService,
     private readonly trends: TankTrendService,
     private readonly patchNotes: TankPatchesService,
-    private readonly armorModels: TankArmorService
+    private readonly armorModels: TankArmorService,
+    private readonly economy: TankEconomyReportService
   ) {}
 
   @Get()
@@ -59,6 +64,20 @@ export class TanksController {
   @ZodResponse({ type: TierListDto })
   tierList(@Query() query: TierListQueryDto) {
     return this.tierLists.tierList(query);
+  }
+
+  @Get('economy')
+  @CacheTTL(CACHE_TTL.server)
+  @ZodResponse({ type: TankEconomyPageDto })
+  economyTable(@Query() query: TankEconomyQueryDto) {
+    return this.economy.list(query);
+  }
+
+  @Get(':id/economy')
+  @CacheTTL(CACHE_TTL.server)
+  @ZodResponse({ type: TankEconomyDto })
+  async tankEconomy(@Param() { id }: TankParamsDto) {
+    return this.economy.forTank(await this.details.resolve(String(id)));
   }
 
   @Get(':id/top-players')

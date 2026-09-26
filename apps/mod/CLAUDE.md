@@ -13,7 +13,7 @@ A **Python 2.7** `.wotmod` package the «Мир танков» client loads from
 | `src/mod_otmetki.py`  | Entry point the client auto-loads (`gui/mods/mod_*.pyc`)            | —                       |
 | `contract/`           | JSON Schemas the API implements (ingest, bind, MoE thresholds)      | —                       |
 
-Keep as much as possible in the pure half — it is the only half CI can run.
+Keep as much as possible in the pure half — it is the only half the deploy checks can run.
 
 ## Rules
 
@@ -30,4 +30,4 @@ python apps/mod/build.py                         # dev build -> dist/otmetki.<ve
 python apps/mod/build.py --require-pyc           # release build; needs Python 2.7
 ```
 
-CI runs the unittest suite on Python 3 ([.github/workflows/ci.yml](../../.github/workflows/ci.yml)).
+The deploy workflow runs the unittest suite on Python 3 ([.github/workflows/deploy.yml](../../.github/workflows/deploy.yml)).

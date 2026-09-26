@@ -59,7 +59,7 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
         NEXT_PUBLIC_WEB_URL: ${NEXT_PUBLIC_WEB_URL:-https://localhost}
-    image: otmetki-client:latest
+    image: ghcr.io/zilero232/otmetki-client:latest
     container_name: otmetki-client
     restart: always
     depends_on:
@@ -76,7 +76,7 @@ services:
     build:
       context: .
       dockerfile: apps/server/Dockerfile
-    image: otmetki-server:latest
+    image: ghcr.io/zilero232/otmetki-server:latest
     container_name: otmetki-server
     restart: always
     depends_on:
@@ -98,7 +98,7 @@ services:
       test: [CMD, bun, -e, "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
 
   worker:
-    image: otmetki-server:latest
+    image: ghcr.io/zilero232/otmetki-server:latest
     container_name: otmetki-worker
     restart: always
     command: [bun, src/worker.ts]

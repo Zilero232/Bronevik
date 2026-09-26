@@ -30,10 +30,10 @@ Respond to the user in Russian. Code, comments, docs and commits are in English.
 
 ```bash
 bun install
-bun run dev:infra      # TimescaleDB :5434, Redis :6380
+bun run dev:infra      # TimescaleDB :5434, Redis :6380, Mailpit SMTP :1025 (inbox :8025)
 bun run db:push        # prisma db push + the Timescale layer (no migrations before production)
 bun run dev            # server :4000, worker (no port), client :3000
-bun run verify         # typecheck + lint + format:check + lint:css
+bun run verify         # typecheck + lint + UTF-8 check + format:check + lint:css
 bun run test           # vitest (never `bun test`)
 bun run test:e2e       # playwright smoke (starts the client dev server itself)
 bun run test:mod       # python unittest suite of the game mod
@@ -41,7 +41,7 @@ bun run lint:unused    # knip — unused files, exports and dependencies
 bun run lint:dupes     # jscpd — copy-pasted code
 ```
 
-CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs `verify` + `test`, the mod's Python suite and the e2e smoke on every push and pull request.
+Deploy ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) runs manually (workflow_dispatch): `verify` + `test` + the mod suite + the e2e smoke, then builds the client and server images to ghcr and rolls them out on the VPS (`db:push`, health checks). There is no separate CI workflow, as in GnomeVPN.
 
 ## Rules
 

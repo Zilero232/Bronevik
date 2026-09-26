@@ -1,0 +1,236 @@
+name: deploy
+
+# Images go to ghcr, then the VPS pulls them. The web image and the server image
+# (also run as the worker) build in parallel jobs that share
+# .github/actions/docker-image. The VPS holds no clone of the repository, so
+# docker-compose.yml and the Caddyfile are copied on every deploy.
+#
+# Before production the schema is synced with `prisma db push` (no migrations).
+# A push that would lose data fails instead of running.
+#
+# Repository secrets — Settings → Secrets and variables → Actions:
+#   NEXT_PUBLIC_API_URL       baked into the web image at build time
+#   NEXT_PUBLIC_WEB_URL       baked into the web image at build time
+#   DEPLOY_SSH_HOST           VPS
+#   DEPLOY_SSH_USER
+#   DEPLOY_SSH_KEY            private key — preferred
+#   DEPLOY_SSH_PASSWORD       only used when no key is set
+#   DEPLOY_SSH_PORT           optional, defaults to 22
+#   DEPLOY_PATH               where docker-compose.yml lives, e.g. /opt/otmetki
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  # Every check runs here, before any image is built, so an image is never
+  # pushed from a tree that would have failed.
+  checks:
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    env:
+      DATABASE_URL: postgresql://placeholder
+      DIRECT_URL: postgresql://placeholder
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - run: bun run verify
+
+      - run: bun run test
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+
+      # The game mod is Python 2.7 in the client; its pure logic runs on Python 3.
+      - run: python -m unittest discover apps/mod/tests
+
+  # Playwright over the public pages. No API runs here: every page must render
+  # its shell and fall back to its error state.
+  e2e:
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    env:
+      DATABASE_URL: postgresql://placeholder
+      DIRECT_URL: postgresql://placeholder
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Install the browser
+        run: bunx playwright install --with-deps chromium
+
+      - name: Build the client
+        env:
+          NEXT_PUBLIC_API_URL: https://api.invalid
+        run: bun --filter @otmetki/client build
+
+      - name: Serve the client
+        env:
+          PORT: '3000'
+          HOSTNAME: 127.0.0.1
+        run: |
+          cp -r apps/client/.next/static apps/client/.next/standalone/apps/client/.next/static
+          cp -r apps/client/public apps/client/.next/standalone/apps/client/public 2>/dev/null || true
+
+          node apps/client/.next/standalone/apps/client/server.js &
+          echo "$!" > /tmp/web.pid
+
+      - name: Run the smoke tests
+        env:
+          E2E_BASE_URL: http://127.0.0.1:3000
+        run: bun run test:e2e
+
+      - if: always()
+        run: kill "$(cat /tmp/web.pid)" || true
+
+      - if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: playwright-results
+          path: e2e/.results/
+          retention-days: 7
+
+  client:
+    needs: [checks, e2e]
+
+    permissions:
+      contents: read
+      packages: write
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/docker-image
+        with:
+          image: client
+          dockerfile: apps/client/Dockerfile
+          token: ${{ secrets.GITHUB_TOKEN }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            NEXT_PUBLIC_WEB_URL=${{ secrets.NEXT_PUBLIC_WEB_URL }}
+
+  server:
+    needs: [checks, e2e]
+
+    permissions:
+      contents: read
+      packages: write
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/docker-image
+        with:
+          image: server
+          dockerfile: apps/server/Dockerfile
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  vps:
+    needs: [client, server]
+
+    permissions:
+      contents: read
+
+    environment: production
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Copy docker-compose.yml
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
+        with:
+          host: ${{ secrets.DEPLOY_SSH_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          source: docker-compose.yml
+          target: ${{ secrets.DEPLOY_PATH }}
+
+      # Lands flat next to the compose file, which bind-mounts ./Caddyfile.
+      - name: Copy the Caddyfile
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
+        with:
+          host: ${{ secrets.DEPLOY_SSH_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          source: infra/caddy/Caddyfile
+          strip_components: 2
+          target: ${{ secrets.DEPLOY_PATH }}
+
+      - name: Pull, sync the schema, restart
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        with:
+          host: ${{ secrets.DEPLOY_SSH_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          envs: DEPLOY_PATH
+          script: |
+            set -euo pipefail
+            cd "$DEPLOY_PATH"
+            docker compose pull client server worker
+
+            docker compose run --rm --no-deps server bun run db:push
+
+            docker compose up -d
+            docker image prune -f
+
+            for container in otmetki-server otmetki-client; do
+              for attempt in $(seq 1 30); do
+                state=$(docker inspect -f '{{.State.Health.Status}}' "$container" 2>/dev/null || echo missing)
+
+                [ "$state" = healthy ] && break
+
+                if [ "$attempt" = 30 ]; then
+                  echo "$container never became healthy (last state: $state)" >&2
+                  docker compose logs --tail 50 >&2
+                  exit 1
+                fi
+
+                sleep 5
+              done
+            done

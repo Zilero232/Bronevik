@@ -53,12 +53,12 @@
     "format:check": "prettier --check . --cache",
     "format:prisma": "bun --filter @otmetki/server format:prisma",
     "gamedata:import": "bun --filter @otmetki/server gamedata:import",
-    "lint": "eslint . --cache --cache-location node_modules/.cache/eslint/",
-    "lint:css": "stylelint \"apps/client/**/*.scss\" --cache --cache-location node_modules/.cache/stylelint/",
-    "lint:css:fix": "stylelint \"apps/client/**/*.scss\" --fix --cache --cache-location node_modules/.cache/stylelint/",
+    "lint": "eslint . --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:css": "stylelint \"apps/client/**/*.scss\" --cache --cache-location node_modules/.cache/.stylelintcache",
+    "lint:css:fix": "stylelint \"apps/client/**/*.scss\" --fix --cache --cache-location node_modules/.cache/.stylelintcache",
     "lint:dupes": "jscpd",
     "lint:encoding": "node scripts/check-utf8.mjs",
-    "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/eslint/",
+    "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:unused": "knip",
     "prepare": "husky",
     "test": "vitest run",
@@ -72,7 +72,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
-      "eslint --fix --cache --cache-location node_modules/.cache/eslint/",
+      "eslint --fix --cache --cache-location node_modules/.cache/.eslintcache",
       "prettier --write"
     ],
     "**/package.json": [

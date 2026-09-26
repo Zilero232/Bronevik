@@ -4,13 +4,14 @@ import { Injectable } from '@nestjs/common';
 
 import type { Battle } from '../../../../generated';
 import type { BattleInput, BattlesInput } from '../analytics.types';
-import type { ReferenceRow } from '../lib';
+import type { ReferenceRow } from '../mappers';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { BATTLE_REVIEW } from '../config';
-import { readStoredShots, reviewBattle, shotRolls, toMyBattle, toTankReference } from '../lib';
+import { readStoredShots, reviewBattle, shotRolls } from '../lib';
+import { toMyBattle, toTankReference } from '../mappers';
 import { OwnAccountService } from './own-account.service';
 
 @Injectable()

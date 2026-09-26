@@ -3,7 +3,8 @@ import type { BuildOptions, ProvisionKind } from '@otmetki/schemas';
 import { Injectable } from '@nestjs/common';
 
 import { BUILD_SLOTS } from '../config';
-import { fieldModificationSteps, isCrewSkill, isFieldModification, toModuleOption, toProvisionOption } from '../lib';
+import { fieldModificationSteps, isCrewSkill, isFieldModification } from '../lib';
+import { toModuleOption, toProvisionOption } from '../mappers';
 import { BuildDataService } from './build-data.service';
 
 @Injectable()

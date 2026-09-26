@@ -8,11 +8,12 @@ import { useTranslations } from 'next-intl';
 import { useQueryStates } from 'nuqs';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { compareStreamerSettings, getSettingsShare, getSettingsTable } from '@/shared/api/streamers';
+import { getSettingsShare, getSettingsTable } from '@/entities/streamer/streamer';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { CompareColumn } from './use-settings-compare.types';
 
+import { compareStreamerSettings } from '../../../api';
 import { COMPARE_SETTINGS_PAGE, COMPARE_SETTINGS_PARAMS } from '../../../config';
 import { compareSections } from '../../../lib/compare-sections';
 import { compareSlugs, slotValues, withoutSlug, withSlug } from '../../../lib/compare-slugs';

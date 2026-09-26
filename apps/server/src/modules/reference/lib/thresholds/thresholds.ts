@@ -1,8 +1,5 @@
-import type { MasteryThreshold as MasteryThresholdDto, MoeThreshold as MoeThresholdDto } from '@otmetki/schemas';
-
 import type { MasteryThreshold, MoeThreshold } from '../../../../../generated';
 
-import { isoDay } from '../../../../common/lib';
 import { THRESHOLD_SOURCE_PRIORITY } from '../../config';
 
 const rank = (source: string): number => {
@@ -24,23 +21,3 @@ export const preferredBySource = <T extends MasteryThreshold | MoeThreshold>(row
 
   return best;
 };
-
-export const toMoeThreshold = (row: MoeThreshold): MoeThresholdDto => ({
-  tankId: row.tankId,
-  date: isoDay(row.date),
-  source: row.source,
-  p65: row.p65,
-  p85: row.p85,
-  p95: row.p95,
-  p100: row.p100
-});
-
-export const toMasteryThreshold = (row: MasteryThreshold): MasteryThresholdDto => ({
-  tankId: row.tankId,
-  date: isoDay(row.date),
-  source: row.source,
-  class3: row.class3,
-  class2: row.class2,
-  class1: row.class1,
-  master: row.master
-});

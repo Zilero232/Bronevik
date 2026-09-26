@@ -1,4 +1,4 @@
-import type { ConnectableProvider, StreamerProvider } from '@/shared/api/streamers';
+import type { ConnectableProvider, StreamerProvider } from '@/entities/streamer/streamer';
 
 export const CONNECTABLE_PROVIDERS = [
   { provider: 'donationAlerts', path: 'donation-alerts' },

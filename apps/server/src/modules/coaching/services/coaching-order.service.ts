@@ -6,7 +6,7 @@ import type { CoachingOrderView, CreateOrderRequest, OrderTransition, ReviewOrde
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { COACHING } from '../config';
-import { toOrderView } from '../lib';
+import { toOrderView } from '../mappers';
 
 @Injectable()
 export class CoachingOrderService {

@@ -8,7 +8,7 @@ import type { TankTrendInput, TrendRow } from '../tanks.types';
 import { STATS_MODE_SQL } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { TANK_TREND_SQL } from '../config';
-import { toTrendPoints } from '../lib';
+import { toTrendPoints } from '../mappers';
 
 @Injectable()
 export class TankTrendService {

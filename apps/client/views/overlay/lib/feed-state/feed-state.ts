@@ -1,7 +1,7 @@
 import { overlayDataSchema } from '@otmetki/schemas';
 import { match } from 'ts-pattern';
 
-import type { OverlayData } from '@/shared/api/streamers';
+import type { OverlayData } from '@/entities/streamer/streamer';
 
 import type { FeedEvent, FeedState } from './feed-state.types';
 

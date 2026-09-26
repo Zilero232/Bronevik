@@ -2,6 +2,7 @@ import { addMilliseconds } from 'date-fns';
 import { millisecondsInDay } from 'date-fns/constants';
 import { identity, sortBy, unique } from 'remeda';
 
+import type { PremiumOffer } from '../../../../../generated';
 import type { AbsenceBeforeReturnInput, ReturnEstimate } from './offer-return.types';
 
 import { OFFER_RETURN } from '../../config';
@@ -51,3 +52,5 @@ export const absenceBeforeReturn = ({ previous, now, minDays }: AbsenceBeforeRet
 
   return days >= minDays ? days : null;
 };
+
+export const offerAppearance = (offer: Pick<PremiumOffer, 'firstSeenAt' | 'startsAt'>): Date => offer.startsAt ?? offer.firstSeenAt;

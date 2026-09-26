@@ -1,6 +1,5 @@
 export { CommunityCoreModule } from './community-core.module';
 export type { AccountOfInput, ById, IdViewer, LikeInput, LikeResult, Owned, OwnedById, Viewer } from './community-core.types';
-export { AUTHOR_SELECT } from './config';
 export {
   arenaIdSchema,
   authorSchema,
@@ -12,6 +11,9 @@ export {
   postStatusSchema,
   SlugParamsDto
 } from './dto';
-export { readRequirements, statRequirementsSchema, titleSlug, toAuthorView, toPlayerStats, unmetRequirements } from './lib';
-export type { AuthorUser, AuthorView, NamesById, PlayerStats, StatRequirements, StatsByAccount } from './lib';
+export { readRequirements, statRequirementsSchema, titleSlug, unmetRequirements } from './lib';
+export type { PlayerStats, StatRequirements } from './lib';
+export { toAuthorView, toPlayerStats } from './mappers';
+export type { AuthorUser, AuthorView, NamesById, StatsByAccount } from './mappers';
+export { AUTHOR_SELECT } from './selects';
 export { CommunityAccountsService } from './services';

@@ -5,6 +5,7 @@
   "description": "Zod contracts shared by the Three Marks web, api and collector.",
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"

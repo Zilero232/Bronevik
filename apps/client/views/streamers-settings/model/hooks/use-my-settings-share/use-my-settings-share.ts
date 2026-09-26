@@ -5,8 +5,10 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { getSettingsShare, removeSettingsShare, updateSettingsShare } from '@/shared/api/streamers';
+import { getSettingsShare } from '@/entities/streamer/streamer';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { removeSettingsShare, updateSettingsShare } from '../../../api';
 
 export const useMySettingsShare = () => {
   const t = useTranslations('streamerSettings.share');

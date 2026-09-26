@@ -7,12 +7,12 @@ import { useDebounceValue } from '@siberiacancode/reactuse';
 import { keepPreviousData, skipToken, useQuery } from '@tanstack/react-query';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { previewOverlay } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { OverlayFormValues } from '../../../lib/overlay-form';
 import type { UseOverlayPreviewInput } from './use-overlay-preview.types';
 
+import { previewOverlay } from '../../../api';
 import { OVERLAY_EDITOR } from '../../../config';
 
 export const useOverlayPreview = ({ accountId }: UseOverlayPreviewInput) => {

@@ -6,5 +6,4 @@ import { CLAIM } from '../../config';
 
 export const newClaimCode = (): string => `${CLAIM.codePrefix}${randomBytes(CLAIM.codeBytes).toString('hex')}`;
 
-export const bioHasCode = ({ bio, code }: BioHasCodeInput): boolean =>
-  Boolean(bio?.toLowerCase().includes(code.toLowerCase()));
+export const bioHasCode = ({ bio, code }: BioHasCodeInput): boolean => Boolean(bio?.toLowerCase().includes(code.toLowerCase()));

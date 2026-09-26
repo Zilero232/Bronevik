@@ -4,9 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { unfollowStreamer } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { unfollowStreamer } from '../../../api';
 import { useFollowsQuery } from '../use-follows-query';
 
 export const useMyFollows = () => {

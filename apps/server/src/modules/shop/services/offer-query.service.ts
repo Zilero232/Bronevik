@@ -7,7 +7,8 @@ import type { ArchiveEntry, OfferArchive, OfferPage, OffersQuery } from '../shop
 import { toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { OFFER_RETURN } from '../config';
-import { offerAppearance, returnEstimate, toOfferView } from '../lib';
+import { offerAppearance, returnEstimate } from '../lib';
+import { toOfferView } from '../mappers';
 
 @Injectable()
 export class OfferQueryService {

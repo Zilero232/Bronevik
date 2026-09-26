@@ -6,11 +6,11 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { startClaim } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ManualClaimValues } from '../../../lib/claim-form';
 
+import { startClaim } from '../../../api';
 import { MANUAL_CLAIM_DEFAULT_VALUES } from '../../../config';
 import { manualClaimSchema } from '../../../lib/claim-form';
 

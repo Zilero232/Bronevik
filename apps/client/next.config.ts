@@ -29,7 +29,8 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   reactStrictMode: true,
   poweredByHeader: false,
-  compress: true,
+  // Caddy compresses every response (zstd/gzip) in front of the standalone server.
+  compress: false,
   images: IMAGES,
   transpilePackages: TRANSPILED_PACKAGES,
   experimental: { optimizePackageImports: OPTIMIZED_PACKAGES },

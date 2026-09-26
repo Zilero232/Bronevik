@@ -1,7 +1,7 @@
 import { STREAMER_PLATFORMS } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
-import type { StreamerProfile } from '@/shared/api/streamers';
+import type { StreamerProfile } from '@/entities/streamer/streamer';
 
 import { CHANNEL_HOSTS, PROFILE_FORM } from '../../../config';
 import { isChannelHost, rejectedPlatform, toProfileFormValues, toProfileInput } from '../profile-form';

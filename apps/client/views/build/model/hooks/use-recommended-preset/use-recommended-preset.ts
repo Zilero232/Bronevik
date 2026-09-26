@@ -5,8 +5,7 @@ import { useQueryStates } from 'nuqs';
 import { useEffect } from 'react';
 import { match } from 'ts-pattern';
 
-import { BUILD_URL } from '@/entities/tank/build';
-import { getRecommendedBuild } from '@/entities/tank/build';
+import { BUILD_URL, getRecommendedBuild } from '@/entities/tank/build';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { BUILD_VIEW, PRESET_PARSERS } from '../../../config';

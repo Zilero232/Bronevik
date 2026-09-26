@@ -3,7 +3,7 @@ import { mockDeep } from 'vitest-mock-extended';
 
 import type { PrismaService } from '../../../../core';
 
-import { NEWS_KIND_TO_DB } from '../../lib';
+import { NEWS_KIND_TO_DB } from '../../mappers';
 import { NewsQueryService } from '../news-query.service';
 
 const publishedAt = new Date('2026-09-20T10:00:00Z');

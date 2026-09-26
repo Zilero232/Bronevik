@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import type { StreamerProfile } from '@/shared/api/streamers';
+import type { StreamerProfile } from '@/entities/streamer/streamer';
 
 import type { ProfileFormOutput, ProfileFormValues } from '../../../lib/profile-form';
 

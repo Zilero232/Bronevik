@@ -1,4 +1,4 @@
-import type { ConnectableProvider, StreamerIntegration } from '@/shared/api/streamers';
+import type { ConnectableProvider, StreamerIntegration } from '@/entities/streamer/streamer';
 
 export type UseIntegrationCardInput = {
   integration: StreamerIntegration | null;

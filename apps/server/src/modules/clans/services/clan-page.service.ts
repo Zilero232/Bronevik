@@ -9,7 +9,7 @@ import { AppNotFoundException } from '../../../common/exceptions';
 import { clampPercent, CLAN_ROLE_FROM_DB, emptyRating, ratingValue, toIso, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { CLAN_PAGE } from '../config';
-import { toClanSummary } from '../lib';
+import { toClanSummary } from '../mappers';
 
 @Injectable()
 export class ClanPageService {

@@ -4,9 +4,10 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { streamerRouteName } from '@/entities/streamer/streamer';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
-import { createPageMetadata, streamerRouteName } from '@/shared/seo';
+import { createPageMetadata } from '@/shared/seo';
 import { StreamerPage } from '@/views/streamer';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]'>): Promise<Metadata> => {

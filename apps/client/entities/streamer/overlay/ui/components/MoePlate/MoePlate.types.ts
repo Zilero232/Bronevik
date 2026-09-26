@@ -1,4 +1,4 @@
-import type { OverlayData } from '@/shared/api/streamers';
+import type { OverlayData } from '@otmetki/schemas';
 
 export type MoePlateProps = {
   moe: NonNullable<OverlayData['moe']>;

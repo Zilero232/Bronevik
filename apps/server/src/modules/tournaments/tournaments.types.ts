@@ -12,7 +12,7 @@ import type {
   tournamentsQuerySchema,
   withdrawTournamentSchema
 } from './dto/tournaments.schemas';
-import type { TournamentWithParticipants } from './lib';
+import type { TournamentWithParticipants } from './mappers';
 
 export type TournamentView = z.infer<typeof tournamentSchema>;
 export type TournamentsQuery = z.output<typeof tournamentsQuerySchema>;

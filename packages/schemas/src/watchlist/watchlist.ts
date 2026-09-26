@@ -2,4 +2,6 @@ import type { WatchlistDigest } from './watchlist.types';
 
 import { WATCHLIST } from './watchlist.constants';
 
-export const isPlusDigest = (digest: WatchlistDigest): boolean => WATCHLIST.plusDigests.some((plus) => plus === digest);
+const PLUS_DIGESTS: ReadonlySet<WatchlistDigest> = new Set(WATCHLIST.plusDigests);
+
+export const isPlusDigest = (digest: WatchlistDigest): boolean => PLUS_DIGESTS.has(digest);

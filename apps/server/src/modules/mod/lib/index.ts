@@ -1,8 +1,6 @@
-export { countsForSession, moePercent, sessionIncrement, sessionUuid, toBattleData } from './battle';
+export { BATTLE, countsForSession, moePercent, platoonSizeOf, sessionIncrement, sessionUuid } from './battle';
 export { bindCodePattern, bindRequestSchema, bindResponseSchema, ingestBatchSchema, ingestResponseSchema } from './contract';
 export type { BattleResultEvent, BindResponse, IngestBatch, IngestEvent, IngestResponse } from './contract';
 export { deviceSecret, hashSecret, matchesSecretHash, newDeviceId, normalizeBindCode } from './device-secret';
-export { readStoredLoadout, storedLoadoutSchema, toStoredLoadout } from './loadout';
+export { readStoredLoadout, storedLoadoutSchema } from './loadout';
 export type { StoredLoadout } from './loadout';
-export { toStoredShot } from './shots';
-export type { StoredShotRecord } from './shots';

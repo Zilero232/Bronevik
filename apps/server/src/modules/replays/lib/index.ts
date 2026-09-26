@@ -6,4 +6,3 @@ export { overflowPlan, overflowReplayIds } from './replay-overflow';
 export { publicReplayWhere, searchOrder, searchWhere } from './replay-search';
 export { buildTracks } from './replay-tracks';
 export type { ReplayTrack } from './replay-tracks';
-export { toReplayView } from './replay-view';

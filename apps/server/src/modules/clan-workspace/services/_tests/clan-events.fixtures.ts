@@ -1,7 +1,7 @@
 import { addHours, subHours } from 'date-fns';
 
 import type { AccountSnapshot, ClanAttendance, ClanEvent, ClanMember, StatsMode } from '../../../../../generated';
-import type { EventWithAttendance } from '../../lib';
+import type { EventWithAttendance } from '../../mappers';
 
 import { ATTENDANCE_MODES, CLAN_WORKSPACE } from '../../config';
 

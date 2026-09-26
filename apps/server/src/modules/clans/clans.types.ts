@@ -1,4 +1,4 @@
-import type { ClanSummaryRow } from './lib';
+import type { ClanSummaryRow } from './mappers';
 
 export type ClanEventsInput = {
   clanId: bigint;

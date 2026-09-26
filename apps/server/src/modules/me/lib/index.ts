@@ -1,1 +1,1 @@
-export { isGoalEndAllowed, toGoal } from './goal';
+export { isGoalEndAllowed } from './goal';

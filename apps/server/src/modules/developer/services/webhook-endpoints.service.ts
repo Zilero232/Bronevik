@@ -7,7 +7,8 @@ import type { ApplyTierInput, CreateEndpointInput, OwnedKeyInput, UpdateEndpoint
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { API_TIERS, WEBHOOK_DELIVERY, WEBHOOK_EVENT_TO_DB } from '../config';
-import { generateWebhookSecret, resolvesPublicly, toWebhookDelivery, toWebhookEndpoint } from '../lib';
+import { generateWebhookSecret, resolvesPublicly } from '../lib';
+import { toWebhookDelivery, toWebhookEndpoint } from '../mappers';
 import { ApiTierService } from './api-tier.service';
 import { HostLookupService } from './host-lookup.service';
 

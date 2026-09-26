@@ -13,7 +13,7 @@ Guidance for the server app. Extends the root [../../CLAUDE.md](../../CLAUDE.md)
 src/
 ├── main.ts, app.module.ts        # the API
 ├── worker.ts, worker.module.ts   # the collector worker
-├── config/      # env.schema.ts (secrets, addresses, ports only) + *.constants.ts (every tunable), cors.ts (per-path CORS)
+├── config/      # env/ (env.schema.ts: secrets, addresses, ports only) + *.constants.ts (every tunable), cors/ (per-path CORS), lesta-mock/
 ├── core/        # prisma (factory, timescale, error guards), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (S3 / local-disk object storage), webhooks
 ├── common/      # exceptions, filters, decorators, cache, schedules (job schedulers), shared pure helpers in lib/
 ├── lib/         # lesta (Lesta API client), replay (.mtreplay parser, NOTICE), http (ky), auth (better-auth), scrape (robots-aware cheerio crawl, tanki.su listings)
@@ -74,7 +74,21 @@ Server-side copy is Fluent .ftl through @grammyjs/i18n: the bot, notifications (
 
 ## Module convention
 
-`x.module.ts` + `x.controller.ts` (or `processors/` in the collector) + `services/`, plus `dto/`, `lib/`, `config/` as needed. One service per domain of work; nothing but the class in a service, processor or controller file — constants in `config/`, pure functions in `lib/<concern>/`, types in `*.types.ts`. Import across modules only through a module's `index.ts`. The full digest is [.claude/rules/code-style-server.md](../../.claude/rules/code-style-server.md).
+`x.module.ts` + `x.controller.ts` (or `processors/` in the collector) + `services/`, plus the segments below as needed. One service per domain of work; nothing but the class in a service, processor or controller file — constants in `config/`, types in `*.types.ts`.
+
+| Segment                                   | Holds                                                                                                                 |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `dto/`                                    | `createZodDto(...)` request/response classes                                                                          |
+| `services/`                               | one service per domain of work                                                                                        |
+| `processors/`, `schedules/`               | BullMQ workers and their job schedules (collector)                                                                    |
+| `mappers/<name>/`                         | DB row / Prisma payload / Lesta payload → API DTO or view (every `to*View`, `to*Dto`, `toBattleData`-style converter) |
+| `selects/<name>/`                         | Prisma `select` / `include` constants with their `GetPayload` types                                                   |
+| `queries/<name>/`                         | standalone raw-SQL builders (`Prisma.sql` fragments)                                                                  |
+| `lib/<concern>/`                          | pure domain logic only — rules, calculations, parsing                                                                 |
+| `guards/`, `decorators/`, `interceptors/` | Nest enhancers, one folder each                                                                                       |
+| `config/`                                 | `<concern>.constants.ts` / `*.config.ts`                                                                              |
+
+Every item is its own folder with `index.ts` (+ `.types.ts`, `_tests/`), every segment has a barrel, and a file that mixes kinds is split (`tanks/lib/vehicle-sources` keeps `rewardMissions`; `tanks/mappers/vehicle-source-view` takes `toVehicleSourceView`). The names follow what large Nest codebases converge on — a feature module owning `dto/`, `services/`, guards/interceptors/decorators and a dedicated `mappers/` layer between persistence and DTOs ([Encore: NestJS project structure](https://encore.dev/articles/nestjs-project-structure-best-practices), [CatsMiaow/nestjs-project-structure](https://github.com/CatsMiaow/nestjs-project-structure)); `selects/` and `queries/` are this repo's names for Prisma's query shapes, since there is no repository layer. On the client the same converters live in a slice's `api/mappers/`, per FSD's `api` segment ([Slices and segments](https://feature-sliced.design/docs/reference/slices-segments)). Import across modules only through a module's `index.ts`. The full digest is [.claude/rules/code-style-server.md](../../.claude/rules/code-style-server.md).
 
 ## Collector
 

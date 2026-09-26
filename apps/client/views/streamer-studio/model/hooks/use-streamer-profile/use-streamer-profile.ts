@@ -6,8 +6,9 @@ import { toast } from 'sonner';
 
 import { getLinkedAccounts } from '@/entities/auth/session';
 import { isNotFoundError } from '@/shared/api/source';
-import { getMyStreamerProfile, saveStreamerProfile } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { getMyStreamerProfile, saveStreamerProfile } from '../../../api';
 
 const fetchProfile = async () => {
   try {

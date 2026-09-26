@@ -3,7 +3,8 @@
   "compilerOptions": {
     "lib": ["ES2022", "WebWorker"],
     "types": [],
-    "plugins": []
+    "plugins": [],
+    "tsBuildInfoFile": "node_modules/.cache/tsc/sw.tsbuildinfo"
   },
   "include": ["app/sw.ts"],
   "exclude": ["node_modules"]

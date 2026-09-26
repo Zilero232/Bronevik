@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getLiveStreamers } from '@/shared/api/streamers';
+import { getLiveStreamers } from '@/entities/streamer/streamer';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { NAV_MENU } from '../../../config';

@@ -1,4 +1,4 @@
-import type { OverlayData } from '@/shared/api/streamers';
+import type { OverlayData } from '@otmetki/schemas';
 
 export type ChallengePlateProps = {
   challenge: NonNullable<OverlayData['challenge']>;

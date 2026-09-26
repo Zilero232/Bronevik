@@ -26,10 +26,10 @@ export type {
   TierListInput
 } from './api';
 export { tankRouteName, topTankSlugs } from './api';
+export { economyView } from './api';
+export type { EconomyView } from './api';
 export { DIFFICULTY_TONE, ECONOMY_VIEW, KEY_SPECS, STATUS_TONE, SWEAT_TONE, TANK_SPEC_GROUPS, TANK_SPEC_KEYS, TANK_SPECS } from './config';
 export type { TankSpecGroup, TankSpecKey, TankSpecMeta, TankSpecUnit } from './config';
-export { economyView } from './lib/economy-view';
-export type { EconomyView } from './lib/economy-view';
 export { pickVehicles, vehicleIndex } from './lib/pick-vehicles';
 export { isLowerBetter, specBest, specDelta } from './lib/spec-rank';
 export type { SpecVerdict } from './lib/spec-rank';

@@ -5,9 +5,9 @@ import type { SettingsCohort } from '@otmetki/schemas';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { getSettingsAggregates } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { getSettingsAggregates } from '../../../api';
 import { STREAMERS_SETTINGS_PAGE } from '../../../config';
 import { aggregateShares } from '../../../lib/aggregate-shares';
 

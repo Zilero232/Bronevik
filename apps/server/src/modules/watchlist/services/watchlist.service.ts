@@ -46,6 +46,7 @@ export class WatchlistService {
     const clanIds = players.flatMap((player) => (player.clanId === null ? [] : [player.clanId]));
     const clans =
       clanIds.length > 0 ? await this.prisma.clan.findMany({ where: { clanId: { in: clanIds } }, select: { clanId: true, tag: true } }) : [];
+
     const playerOf = new Map(players.map((player) => [player.accountId, player]));
     const tagOf = new Map(clans.map((clan) => [clan.clanId, clan.tag]));
     const wn8Of = new Map(ratings.map((rating) => [rating.accountId, rating.wn8]));

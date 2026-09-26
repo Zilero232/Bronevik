@@ -9,7 +9,7 @@ import { AppBadRequestException, AppNotFoundException } from '../../../common/ex
 import { PrismaService } from '../../../core';
 import { CommunityAccountsService } from '../../community-core';
 import { PLATOON } from '../config';
-import { toPlatoonView } from '../lib';
+import { toPlatoonView } from '../mappers';
 
 @Injectable()
 export class PlatoonService {

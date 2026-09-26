@@ -9,12 +9,12 @@ import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { useSettingsFormatter } from '@/entities/streamer/settings';
-import { requestSettingsApply } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ApplyFormValues } from '../../../lib/apply-form';
 import type { UseApplySettingsFormInput } from './use-apply-settings-form.types';
 
+import { requestSettingsApply } from '../../../api';
 import { APPLY_SETTINGS_DEFAULTS } from '../../../config';
 import { applicableGroups, applyFormSchema, hardwareOptions, toApplyRequest } from '../../../lib/apply-form';
 

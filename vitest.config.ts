@@ -6,8 +6,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['packages/*/src/**', 'apps/server/src/**', 'apps/client/{entities,features,shared,widgets}/**'],
-      exclude: ['**/_tests/**', '**/*.types.ts', '**/index.ts']
+      include: ['packages/*/src/**', 'apps/server/src/**', 'apps/client/{entities,features,shared,views,widgets}/**'],
+      exclude: ['**/_tests/**', '**/*.types.ts', '**/*.d.ts', '**/index.ts', '**/generated/**', 'apps/server/src/dev/**']
     }
   }
 });

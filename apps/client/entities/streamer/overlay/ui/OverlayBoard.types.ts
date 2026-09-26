@@ -1,6 +1,4 @@
-import type { OverlayConfig } from '@otmetki/schemas';
-
-import type { OverlayData } from '@/shared/api/streamers';
+import type { OverlayConfig, OverlayData } from '@otmetki/schemas';
 
 export type OverlayBoardProps = {
   data: OverlayData;

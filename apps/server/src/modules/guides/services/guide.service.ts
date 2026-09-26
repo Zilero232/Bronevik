@@ -17,8 +17,9 @@ import type {
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { AUTHOR_SELECT, titleSlug, toAuthorView } from '../../community-core';
-import { GUIDE_INCLUDE, GUIDES } from '../config';
-import { toGuideView } from '../lib';
+import { GUIDES } from '../config';
+import { toGuideView } from '../mappers';
+import { GUIDE_INCLUDE } from '../selects';
 
 @Injectable()
 export class GuideService {

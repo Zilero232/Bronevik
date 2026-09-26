@@ -22,7 +22,7 @@ export const seededRandom = (seed: number): (() => number) => {
   let state = Math.trunc(seed) >>> 0;
 
   return () => {
-    state = (state + 0x6d_2b_79_f5) >>> 0;
+    state = (state + 1_831_565_813) >>> 0;
 
     let value = Math.imul(state ^ (state >>> 15), 1 | state);
 

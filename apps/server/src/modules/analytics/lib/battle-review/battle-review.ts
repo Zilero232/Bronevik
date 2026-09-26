@@ -1,8 +1,8 @@
-import type { BattleMistake, MyBattle, TankReference } from '@otmetki/schemas';
+import type { BattleMistake } from '@otmetki/schemas';
 
 import { moeAlpha, moeCombinedDamage } from '@otmetki/ratings';
 
-import type { BattleReview, MyBattleInput, RatioToInput, ReferenceRow, ReviewedBattle, ReviewInput } from './battle-review.types';
+import type { BattleReview, RatioToInput, ReviewedBattle, ReviewInput } from './battle-review.types';
 
 import { percentOf } from '../../../../common/lib';
 import { BATTLE_REVIEW } from '../../config';
@@ -119,44 +119,5 @@ export const reviewBattle = (input: ReviewInput): BattleReview => {
       shortfall: movingAverage === null ? null : movingAverage - combined
     },
     mistakes: mistakesOf(input)
-  };
-};
-
-export const toMyBattle = ({ battle, vehicle, mapName }: MyBattleInput): MyBattle => ({
-  id: battle.id,
-  startedAt: battle.startedAt.toISOString(),
-  tankId: battle.tankId,
-  vehicle,
-  arenaId: battle.arenaId,
-  mapName,
-  battleType: battle.battleType,
-  result: battle.result,
-  team: battle.team,
-  damageDealt: battle.damageDealt,
-  damageAssisted: assistedOf(battle),
-  damageBlocked: battle.damageBlocked,
-  frags: battle.frags,
-  spotted: battle.spotted,
-  xp: battle.xp,
-  credits: battle.credits,
-  survived: battle.survived,
-  lifetimeSec: battle.lifetimeSec,
-  durationSec: battle.durationSec,
-  moePercent: battle.moePercent,
-  moePercentDelta: battle.moePercentDelta,
-  platoonSize: battle.platoonSize
-});
-
-export const toTankReference = (row: ReferenceRow): TankReference => {
-  const per = (value: number): number | null => (row.battles > 0 ? value / row.battles : null);
-
-  return {
-    battles: row.battles,
-    winRate: percentOf({ value: row.wins, by: row.battles }),
-    avgDamage: per(row.damage),
-    avgAssisted: per(row.assisted),
-    avgSpotted: per(row.spotted),
-    avgFrags: per(row.frags),
-    avgBlocked: per(row.blocked)
   };
 };

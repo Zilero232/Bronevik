@@ -2,8 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getStreamerSettingsHistory } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { getStreamerSettingsHistory } from '../../../api';
 
 export const useSettingsHistory = (slug: string) => {
   const query = useQuery({

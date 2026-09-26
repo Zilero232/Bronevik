@@ -24,6 +24,13 @@ x-healthcheck: &healthcheck
   retries: 3
   start_period: 20s
 
+# Docker's json-file driver never rotates by default; a chatty worker would fill the disk.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '5'
+
 x-backend-env: &backend-env
   NODE_ENV: production
   DATABASE_URL: postgresql://${POSTGRES_USER:-otmetki}:${POSTGRES_PASSWORD:-otmetki}@postgres:5432/${POSTGRES_DB:-otmetki}
@@ -35,9 +42,12 @@ services:
     image: caddy:2-alpine
     container_name: otmetki-caddy
     restart: always
+    logging: *logging
     depends_on:
-      - client
-      - server
+      client:
+        condition: service_healthy
+      server:
+        condition: service_healthy
     environment:
       SITE_DOMAIN: ${SITE_DOMAIN:-localhost}
       API_DOMAIN: ${API_DOMAIN:-api.localhost}
@@ -45,6 +55,8 @@ services:
       # 80 carries the Let's Encrypt challenge, 443 the site.
       - '80:80'
       - '443:443'
+      # HTTP/3 (QUIC), which Caddy serves by default.
+      - '443:443/udp'
     volumes:
       - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -58,19 +70,16 @@ services:
       dockerfile: apps/client/Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
-        NEXT_PUBLIC_WEB_URL: ${NEXT_PUBLIC_WEB_URL:-https://localhost}
     image: ghcr.io/zilero232/otmetki-client:latest
     container_name: otmetki-client
     restart: always
+    logging: *logging
     depends_on:
       - server
     expose:
       - '3000'
     networks:
       - otmetki
-    healthcheck:
-      <<: *healthcheck
-      test: [CMD, node, -e, "fetch('http://localhost:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
 
   server:
     build:
@@ -79,6 +88,7 @@ services:
     image: ghcr.io/zilero232/otmetki-server:latest
     container_name: otmetki-server
     restart: always
+    logging: *logging
     depends_on:
       postgres:
         condition: service_healthy
@@ -93,15 +103,17 @@ services:
       - '4000'
     networks:
       - otmetki
-    healthcheck:
-      <<: *healthcheck
-      test: [CMD, bun, -e, "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
 
   worker:
     image: ghcr.io/zilero232/otmetki-server:latest
     container_name: otmetki-worker
     restart: always
+    logging: *logging
     command: [bun, src/worker.ts]
+    # The image's HEALTHCHECK probes the API port, which the worker never opens;
+    # its liveness shows up as the heartbeat in the server's /health instead.
+    healthcheck:
+      disable: true
     depends_on:
       server:
         condition: service_started
@@ -120,6 +132,9 @@ services:
     image: timescale/timescaledb-ha:pg17
     container_name: otmetki-postgres
     restart: always
+    logging: *logging
+    # Docker's 64 MB /dev/shm is too small for parallel query workers.
+    shm_size: 256m
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-otmetki}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-otmetki}
@@ -142,6 +157,7 @@ services:
     image: redis:8-alpine
     container_name: otmetki-redis
     restart: always
+    logging: *logging
     # BullMQ needs keys to survive eviction; AOF keeps queued jobs across restarts.
     command: redis-server --appendonly yes --maxmemory-policy noeviction
     volumes:

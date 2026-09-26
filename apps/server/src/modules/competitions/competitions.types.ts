@@ -1,8 +1,8 @@
 import type { CompetitionsQuery, CreateCompetition, JoinCompetitionInput } from '@otmetki/schemas';
 
 import type { Competition, CompetitionSource, Prisma } from '../../../generated';
-import type { COMPETITION_SUMMARY_INCLUDE } from './config';
 import type { ParticipantScore } from './lib/competition-scoring';
+import type { COMPETITION_SUMMARY_INCLUDE } from './selects';
 
 export type CompetitionListInput = {
   query: CompetitionsQuery;

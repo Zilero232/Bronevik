@@ -10,7 +10,14 @@ import { vehicleIdentity } from '../../lib/vehicle-identity';
 
 import s from './TankShowcaseCard.module.scss';
 
-export const TankShowcaseCard = ({ vehicle, href = ROUTES.tanks.detail(vehicle.slug), figures = [], footer, ribbon, className }: TankShowcaseCardProps) => {
+export const TankShowcaseCard = ({
+  vehicle,
+  href = ROUTES.tanks.detail(vehicle.slug),
+  figures = [],
+  footer,
+  ribbon,
+  className
+}: TankShowcaseCardProps) => {
   const tank = vehicleIdentity(vehicle);
 
   return (

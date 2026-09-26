@@ -4,9 +4,10 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { connectIntegration, disconnectIntegration, getIntegrations } from '@/shared/api/streamers';
+import { getIntegrations } from '@/entities/streamer/streamer';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { connectIntegration, disconnectIntegration } from '../../../api';
 import { useStudioMutation } from '../use-studio-mutation';
 
 export const useIntegrations = () => useQuery({ queryKey: QUERY_KEYS.me.streamer.integrations, queryFn: getIntegrations });

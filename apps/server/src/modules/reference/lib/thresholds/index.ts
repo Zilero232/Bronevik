@@ -1,1 +1,1 @@
-export { preferredBySource, toMasteryThreshold, toMoeThreshold } from './thresholds';
+export { preferredBySource } from './thresholds';

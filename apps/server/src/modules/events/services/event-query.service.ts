@@ -6,7 +6,8 @@ import { addDays, subDays } from 'date-fns';
 import { PrismaService } from '../../../core';
 import { EVENT_CALENDAR, EVENT_ICS } from '../config';
 import { eventsIcs } from '../lib/event-ics';
-import { EVENT_KIND_TO_DB, toEventView } from '../lib/event-kind';
+import { EVENT_KIND_TO_DB } from '../lib/event-kind';
+import { toEventView } from '../mappers';
 
 @Injectable()
 export class EventQueryService {

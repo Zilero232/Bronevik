@@ -19,7 +19,8 @@ import {
 import { errorMessage } from '../../../common/lib';
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { API_TIERS } from '../config';
-import { keyTierOf, quotaRetryAfterSec, tierQuota, toApiKey, verifyFailureOf } from '../lib';
+import { keyTierOf, quotaRetryAfterSec, tierQuota, verifyFailureOf } from '../lib';
+import { toApiKey } from '../mappers';
 import { ApiTierSyncService } from './api-tier-sync.service';
 import { ApiTierService } from './api-tier.service';
 

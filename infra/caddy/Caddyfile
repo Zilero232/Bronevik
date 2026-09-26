@@ -4,12 +4,15 @@
 # the API (the developer API /v1 included). With the defaults, localhost and
 # api.localhost, Caddy issues itself a local certificate; with real domains it
 # fetches one from Let's Encrypt over HTTP-01, so port 80 must stay reachable.
+# HTTP/3 is on by default and needs 443/udp published (docker-compose.yml).
 
+# `?` sets a header only when the upstream did not: the apps own their framing
+# policy (overlays and the Telegram Mini App are frameable), Caddy only fills gaps.
 (security_headers) {
 	header {
-		X-Content-Type-Options nosniff
-		X-Frame-Options DENY
-		Referrer-Policy strict-origin-when-cross-origin
+		?X-Content-Type-Options nosniff
+		?X-Frame-Options DENY
+		?Referrer-Policy strict-origin-when-cross-origin
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		-Server
 	}
@@ -23,20 +26,27 @@
 }
 
 {$API_DOMAIN} {
-	encode gzip zstd
+	# Overlay feeds are Server-Sent Events: compressing them would buffer the
+	# stream, so they bypass the encoder. WebSockets (/tactics/ws) are never encoded.
+	@compressible not path_regexp ^/overlays/[^/]+/stream$
+	encode @compressible zstd gzip
 
 	# bull-board (/admin/queues) stays off the public internet: reach it over
 	# an ssh tunnel to the server container instead.
 	respond /admin/* 404
 
-	reverse_proxy server:4000
+	reverse_proxy server:4000 {
+		# A config reload keeps open WebSocket and SSE streams alive for a while
+		# instead of cutting every tactic board and overlay at once.
+		stream_close_delay 5m
+	}
 
 	import security_headers
 	import access_log
 }
 
 {$SITE_DOMAIN} {
-	encode gzip zstd
+	encode zstd gzip
 
 	reverse_proxy client:3000
 

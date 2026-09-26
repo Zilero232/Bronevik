@@ -15,8 +15,9 @@ import type {
 import { AppNotFoundException } from '../../../common/exceptions';
 import { toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { BUILD_INCLUDE, BUILD_SHARE } from '../config';
-import { toBuildView } from '../lib';
+import { BUILD_SHARE } from '../config';
+import { toBuildView } from '../mappers';
+import { BUILD_INCLUDE } from '../selects';
 
 @Injectable()
 export class BuildShareService {

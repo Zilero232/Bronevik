@@ -10,7 +10,7 @@ import { toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { GUIDE_INCLUDE, toGuideView } from '../../guides';
 import { MODERATION } from '../config';
-import { toReportView } from '../lib';
+import { toReportView } from '../mappers';
 
 @Injectable()
 export class ModerationService {

@@ -7,7 +7,7 @@ import type { OwnReplayInput, UpdateVisibilityInput } from '../replays.types';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
 import { ObjectStorage, PrismaService } from '../../../core';
-import { toReplayView } from '../lib';
+import { toReplayView } from '../mappers';
 
 @Injectable()
 export class ReplayOwnerService {

@@ -4,7 +4,8 @@ import { sortBy } from 'remeda';
 
 import type { Prisma } from '../../../../generated';
 import type { OwnedById } from '../../community-core';
-import type { Bracket, TournamentWithParticipants } from '../lib';
+import type { Bracket } from '../lib';
+import type { TournamentWithParticipants } from '../mappers';
 import type {
   CreateTournamentRequest,
   OrganizedInput,
@@ -24,7 +25,8 @@ import { isTransactionConflict, isUniqueViolation, PrismaService } from '../../.
 import { CommunityAccountsService, readRequirements, titleSlug, unmetRequirements } from '../../community-core';
 import { TOURNAMENT } from '../config';
 import { bracketSchema } from '../dto/tournaments.schemas';
-import { BracketError, champion, reportWinner, seedBracket, toTournamentView } from '../lib';
+import { BracketError, champion, reportWinner, seedBracket } from '../lib';
+import { toTournamentView } from '../mappers';
 
 @Injectable()
 export class TournamentService {

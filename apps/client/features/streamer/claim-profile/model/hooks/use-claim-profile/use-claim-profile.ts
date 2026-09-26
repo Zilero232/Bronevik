@@ -8,11 +8,12 @@ import { toast } from 'sonner';
 import { match, P } from 'ts-pattern';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { getClaimStatus, getIntegrations, startClaim, verifyClaim } from '@/shared/api/streamers';
+import { getIntegrations } from '@/entities/streamer/streamer';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ClaimView, InstantClaimMethod } from './use-claim-profile.types';
 
+import { getClaimStatus, startClaim, verifyClaim } from '../../../api';
 import { CLAIM_PROFILE } from '../../../config';
 import { claimFailure, claimStage } from '../../../lib/claim-state';
 

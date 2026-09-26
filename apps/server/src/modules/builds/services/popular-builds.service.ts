@@ -13,7 +13,8 @@ import { PrismaService } from '../../../core';
 import { bonusTypesOf } from '../../collector';
 import { readStoredLoadout } from '../../mod';
 import { POPULAR_SOURCE } from '../config';
-import { hasItems, rankLoadouts, toProvisionOption } from '../lib';
+import { hasItems, rankLoadouts } from '../lib';
+import { toProvisionOption } from '../mappers';
 import { BuildDataService } from './build-data.service';
 
 @Injectable()

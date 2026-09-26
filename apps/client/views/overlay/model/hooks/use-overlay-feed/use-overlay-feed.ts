@@ -3,12 +3,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useReducer } from 'react';
 
-import { getOverlayData, STREAMERS_PATHS } from '@/shared/api/streamers';
+import { STREAMERS_PATHS } from '@/entities/streamer/streamer';
 import { env } from '@/shared/config';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseOverlayFeedInput } from './use-overlay-feed.types';
 
+import { getOverlayData } from '../../../api';
 import { OVERLAY_FEED } from '../../../config';
 import { feedReducer, INITIAL_FEED_STATE } from '../../../lib/feed-state';
 

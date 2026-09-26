@@ -2,9 +2,8 @@
 
 import { keepPreviousData, skipToken, useQuery } from '@tanstack/react-query';
 
-import { serializeLoadout } from '@/entities/tank/build';
+import { calculateLoadout, serializeLoadout } from '@/entities/tank/build';
 import { specsOfStats } from '@/entities/tank/tank';
-import { calculateLoadout } from '@/entities/tank/build';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseBuildStatsInput } from './use-build-stats.types';

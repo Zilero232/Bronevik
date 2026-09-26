@@ -1,42 +1,11 @@
-import type { AccountEconomy, AccountEconomySplit, TankEconomy, TankEconomyFigures } from '@otmetki/schemas';
+import type { AccountEconomy, AccountEconomySplit } from '@otmetki/schemas';
 
 import { TANK_ECONOMY } from '@otmetki/schemas';
-import { firstBy, groupBy, meanBy, sumBy } from 'remeda';
+import { groupBy, meanBy, sumBy } from 'remeda';
 
-import type { TankEconomyAggregate } from '../../../../../generated';
-import type { AccountEconomyInput, EconomyBattle, ToTankEconomyInput } from './tank-economy.types';
+import type { AccountEconomyInput, EconomyBattle } from './tank-economy.types';
 
 import { ACCOUNT_ECONOMY } from '../../config';
-
-const toFigures = (row: TankEconomyAggregate | undefined): TankEconomyFigures | null =>
-  row
-    ? {
-        battles: row.battles,
-        players: row.players,
-        costBattles: row.costBattles,
-        credits: row.credits,
-        creditsBase: row.creditsBase,
-        repair: row.repair,
-        ammo: row.ammo,
-        consumables: row.consumables,
-        net: row.net,
-        xp: row.xp,
-        freeXp: row.freeXp
-      }
-    : null;
-
-export const toTankEconomy = ({ tankId, rows }: ToTankEconomyInput): TankEconomy => {
-  const latest = firstBy(rows, [(row) => row.computedAt.getTime(), 'desc']);
-
-  return {
-    tankId,
-    windowDays: latest?.windowDays ?? TANK_ECONOMY.windowDays,
-    all: toFigures(rows.find((row) => row.account === 'all')),
-    premium: toFigures(rows.find((row) => row.account === 'premium')),
-    standard: toFigures(rows.find((row) => row.account === 'standard')),
-    computedAt: latest ? latest.computedAt.toISOString() : null
-  };
-};
 
 export const battleNet = (battle: EconomyBattle): number | null =>
   battle.repairCost === null || battle.ammoCost === null || battle.consumablesCost === null

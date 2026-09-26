@@ -11,7 +11,8 @@ import { page, sortRows } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { ACCOUNT_ECONOMY } from '../config';
-import { accountEconomy, toTankEconomy } from '../lib';
+import { accountEconomy } from '../lib';
+import { toTankEconomy } from '../mappers';
 import { TankTraitsService } from './tank-traits.service';
 
 @Injectable()

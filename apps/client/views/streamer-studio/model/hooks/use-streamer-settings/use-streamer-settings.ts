@@ -5,8 +5,9 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { isNotFoundError } from '@/shared/api/source';
-import { getMyStreamerSettings, saveMyStreamerSettings } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { getMyStreamerSettings, saveMyStreamerSettings } from '../../../api';
 
 const fetchSettings = async () => {
   try {

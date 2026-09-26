@@ -7,7 +7,7 @@ import type { MissionContext, MissionVersion, OperationLookup, OperationRows } f
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { toBranchView, toCampaignView, toOperationSummary } from '../lib/mission-view';
+import { toBranchView, toCampaignView, toOperationSummary } from '../mappers';
 
 @Injectable()
 export class MissionCatalogService {

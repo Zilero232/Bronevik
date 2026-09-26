@@ -8,7 +8,7 @@ import { Prisma } from '../../../../generated';
 import { clampPercent, ratingValue, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { CLAN_LIST_SORT } from '../config';
-import { toClanSummary } from '../lib';
+import { toClanSummary } from '../mappers';
 
 @Injectable()
 export class ClanListService {

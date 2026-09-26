@@ -1,14 +1,7 @@
 export { THRESHOLD_SOURCE_PRIORITY } from './config';
-export {
-  BRONYA_REFERENCE,
-  bronyaReferencePayload,
-  parseBronyaReference,
-  readVehicleStats,
-  toMasteryThreshold,
-  toMoeThreshold,
-  toVehicleStats
-} from './lib';
-export type { StoredProfile } from './lib';
+export { BRONYA_REFERENCE, bronyaReferencePayload, parseBronyaReference } from './lib';
+export { readVehicleStats, toMasteryThreshold, toMoeThreshold, toVehicleStats } from './mappers';
+export type { StoredProfile } from './mappers';
 export { ReferenceCoreModule } from './reference-core.module';
 export { ReferenceModule } from './reference.module';
 export type { CatalogEntry } from './reference.types';

@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { channelLinks } from '@/entities/streamer/channel';
+import { getStreamerBySlug } from '@/entities/streamer/streamer';
 import { isNotFoundError } from '@/shared/api/source';
-import { getStreamerBySlug } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { STREAMER_PAGE } from '../../../config';

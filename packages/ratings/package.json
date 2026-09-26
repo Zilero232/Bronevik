@@ -5,6 +5,7 @@
   "description": "Pure rating math for «Мир танков»: WN8, EFF, Броня-Индекс, recent periods, marks of excellence and mastery.",
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"

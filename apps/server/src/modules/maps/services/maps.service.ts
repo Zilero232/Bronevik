@@ -6,7 +6,8 @@ import type { BattleSideRow, WinnerRow } from '../lib';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
-import { statsFromBattles, statsFromReplays, toMapDetail, toMapSummary } from '../lib';
+import { statsFromBattles, statsFromReplays } from '../lib';
+import { toMapDetail, toMapSummary } from '../mappers';
 
 @Injectable()
 export class MapsService {

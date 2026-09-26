@@ -2,9 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { activateChallenge, cancelChallenge, createChallenge, getChallenges } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { activateChallenge, cancelChallenge, createChallenge, getChallenges } from '../../../api';
 import { useStudioMutation } from '../use-studio-mutation';
 
 export const useChallenges = () => useQuery({ queryKey: QUERY_KEYS.me.streamer.challenges, queryFn: getChallenges });

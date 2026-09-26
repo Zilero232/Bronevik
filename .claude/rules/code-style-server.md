@@ -30,8 +30,18 @@ the module `exports` only what other modules legitimately call.
 | What                               | Where                                                       |
 | ---------------------------------- | ----------------------------------------------------------- |
 | Constants, timeouts, lookup tables | `config/<concern>.config.ts` or `<name>.constants.ts`       |
-| Pure functions                     | `lib/<name>/` — one folder per **concern**, tested there    |
+| Pure domain logic                  | `lib/<name>/` — one folder per **concern**, tested there    |
+| Row / payload → DTO converters     | `mappers/<name>/` — every `to*View` / `to*Dto`               |
+| Prisma `select` / `include`        | `selects/<name>/` with its `GetPayload` type                 |
+| Standalone raw-SQL builders        | `queries/<name>/` (`Prisma.sql` fragments)                    |
+| Guards, decorators, interceptors   | `guards/`, `decorators/`, `interceptors/`, one folder each    |
 | Types                              | `x.types.ts` next to the file that owns them                |
+
+Every item is its own folder (`<name>.ts` + `.types.ts` + `index.ts` + `_tests/`) and every
+segment has an `index.ts` barrel. A file that mixes a mapper with domain logic is split:
+`tanks/lib/vehicle-sources` keeps `rewardMissions`, `tanks/mappers/vehicle-source-view`
+takes `toVehicleSourceView`. The same folder rule holds in `common/`, `config/` and
+`core/` (`config/cors/`, `config/env/`, `config/lesta-mock/`, `core/prisma/lib/advisory-lock/`).
 
 Import from a module's barrel across boundaries, never reach into its files.
 Inside a module, relative paths are fine.
@@ -52,7 +62,7 @@ throw new AppNotFoundException('CLAN_NOT_FOUND', `No clan with id ${clanId}`);
 
 ## Environment
 
-`config/env.schema.ts` validates on boot and **throws** on a missing or malformed
+`config/env/env.schema.ts` validates on boot and **throws** on a missing or malformed
 variable. Only secrets, addresses, ports and connection strings are env; every
 tunable is an `as const` object in `config/*.constants.ts` (`FEATURES`, `SOURCES`,
 `LESTA`, `TIMESCALE`, `BULL_BOARD`). A new schedule gets a `FEATURES` flag.

@@ -2,7 +2,6 @@ import type { z } from 'zod';
 
 import type { CommentTarget, Prisma } from '../../../generated';
 import type { Owned, OwnedById, Viewer } from '../community-core';
-import type { GUIDE_INCLUDE } from './config';
 import type {
   commentSchema,
   createCommentSchema,
@@ -13,6 +12,7 @@ import type {
   guidesQuerySchema,
   updateGuideSchema
 } from './dto/guides.schemas';
+import type { GUIDE_INCLUDE } from './selects';
 
 export type GuideView = z.infer<typeof guideSchema>;
 export type GuidesQuery = z.output<typeof guidesQuerySchema> & Viewer;

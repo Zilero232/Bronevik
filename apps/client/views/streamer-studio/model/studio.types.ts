@@ -1,7 +1,7 @@
 import type { createChallengeSchema } from '@otmetki/schemas';
 import type { z } from 'zod';
 
-import type { CreateOverlayInput } from '@/shared/api/streamers';
+import type { CreateOverlayInput } from '@/entities/streamer/streamer';
 
 export type SaveOverlayInput = {
   id: string | null;

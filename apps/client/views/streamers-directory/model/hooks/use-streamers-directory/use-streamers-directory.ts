@@ -4,9 +4,9 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { getStreamerDirectory } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { getStreamerDirectory } from '../../../api';
 import { DIRECTORY } from '../../../config';
 import { directoryEntry } from '../../../lib/directory-entry';
 import { directoryQuery } from '../../../lib/directory-query';

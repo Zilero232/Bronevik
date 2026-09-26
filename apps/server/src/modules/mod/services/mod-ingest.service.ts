@@ -9,7 +9,8 @@ import type { BattleEventInput, IngestInput, LedgeredEventInput, MarkGainedInput
 
 import { isUniqueViolation, PrismaService, WEBHOOK_EMITTER } from '../../../core';
 import { ExpectedValuesService } from '../../reference';
-import { countsForSession, moePercent, sessionIncrement, sessionUuid, toBattleData } from '../lib';
+import { countsForSession, moePercent, sessionIncrement, sessionUuid } from '../lib';
+import { toBattleData } from '../mappers';
 import { EventLedgerService } from './event-ledger.service';
 
 @Injectable()

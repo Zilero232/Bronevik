@@ -9,10 +9,9 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { requestStreamerRemoval } from '@/shared/api/streamers';
-
 import type { UseRemovalFormInput } from './use-removal-form.types';
 
+import { requestStreamerRemoval } from '../../../api';
 import { REMOVAL_FORM_DEFAULT_VALUES } from '../../../config';
 
 export const useRemovalForm = ({ slug, onSent }: UseRemovalFormInput) => {

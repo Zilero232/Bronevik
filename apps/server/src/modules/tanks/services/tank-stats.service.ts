@@ -8,7 +8,7 @@ import type { TankStatsListInput } from '../tanks.types';
 import { COHORT_TO_DB, page, SERVER_PERIOD_TO_DB, sortRows, STATS_MODE_TO_DB } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { toServerStatsRow } from '../lib';
+import { toServerStatsRow } from '../mappers';
 import { TankTraitsService } from './tank-traits.service';
 
 @Injectable()

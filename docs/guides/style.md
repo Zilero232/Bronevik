@@ -27,13 +27,24 @@ features/search/command-palette/
   ui/               ← React components — render only
   model/            ← hooks (state, effects, queries, handlers, forms), contexts, state types
   lib/              ← pure slice utilities, one folder per concern
-  api/              ← the I/O boundary tied to this slice's domain (when there is one)
+  api/              ← the slice's requests, api/<resource>/ + api/mappers/<name>/ + index.ts
   config/           ← constants, one file per concern
 ```
 
 **Components only render.** State, effects, queries, handlers and derived data live in
 `model/hooks/`, pure helpers in `lib/<concern>/`, constants in `config/`. The same layout
 holds in every slice of every layer (`entities`, `features`, `widgets`, `views`).
+
+**Every thing is a folder.** A file that has companions — `x.ts` with `x.types.ts`,
+`x.constants.ts`, `x.schemas.ts` or `_tests/` — lives in its own `x/` folder with an `index.ts`.
+Nothing lies flat next to another concern: a folder holds its own concern's files and
+subfolders, and a second concern gets a second folder. This holds in `shared/`, `ui-kit`
+(a primitive's `Name.constants.ts` stays inside its own component folder), the server's
+`common/`, `config/`, `core/` and every package's `src/`. The one flat exception is a
+`config/` folder: one `<concern>.constants.ts` per concern until one grows a companion.
+`shared/lib` is flat, one folder per concern — helpers `shared/lib/<concern>/`, hooks
+`shared/lib/use-<x>/` — with no `hooks/` or `utils/` grouping folder, the same layout
+GnomeVPN and Chatovo use.
 
 Slices are grouped by business domain (`features/app`, `features/search`, `features/stats`,
 `entities/player`, `entities/tank`) — a layer on top of canonical FSD, see
@@ -816,29 +827,50 @@ lives here, not at the top of the `.tsx`.
 
 **Choosing between `lib/` and `model/`:** a function that uses React
 (`useState`, `useEffect`, a context) belongs in `model/`. A pure one — takes
-arguments, returns a value — belongs in `lib/`. Error classes, parsers and
-mappers are `lib/`. A set of settings or constants is `config/`.
+arguments, returns a value — belongs in `lib/`. Error classes and parsers are
+`lib/`. A converter from a server DTO to the shape the UI draws is part of the
+API boundary and goes in `api/mappers/<name>/` (FSD's `api` segment is "request
+functions, data types, mappers"). A set of settings or constants is `config/`.
 
-**A slice's `api/`** is an integration with an external service tied to that
-slice's domain. It differs from `model/` in being an I/O boundary — network,
-realtime — where `model/` holds hooks and state types. The heuristic: code that
-**listens to or sends to** an external service is `api/`; code that **reads or
-derives** domain state is `model/`. A project-agnostic request tied to no slice
-goes in `shared/api/` (below).
+**A slice's `api/`** holds the requests the slice owns, one folder per resource,
+plus one barrel:
 
-**`api/` in `shared/`** — axios wrappers, one folder per resource:
+```text
+entities/tank/tank/api/
+  tanks/          ← tanks.ts + tanks.types.ts + index.ts (+ _tests/)
+  route-meta/     ← tankRouteName, topTankSlugs for the app routes
+  mappers/<name>/ ← API DTO → UI model converters
+  index.ts
+```
+
+Where a request goes is decided by who uses it:
+
+- a read several slices need → `entities/<domain>/<slice>/api/` (`getTank`, `getPlayer`, `listMaps`);
+- an action several slices trigger → `features/<domain>/<slice>/api/` (favourites, watchlist, notification settings, comments, reports);
+- anything one screen alone uses → `views/<view>/api/` (`openTournament`, `createCheckout`), importing its request types from the entity's public API.
+
+The slice's `index.ts` re-exports its `api/`; inside the slice, import `../../../api`.
+An entity never imports another entity — two entities that need each other's data
+are composed a layer up. Query keys stay in the `QUERY_KEYS` registry in
+`shared/constants/query-keys`: invalidation crosses slices, and a registry below
+every layer is the one place they may all import.
+
+**`api/` in `shared/`** — infrastructure only, no domain requests:
 
 ```text
 shared/api/
-  http/          ← the axios instance: baseURL from env, a request timeout
-  search/        ← search() with its constants and types
-  query-client.ts
+  http/           ← http.ts (the axios instance) + http.constants.ts, bearer-token/, client-config/, list-param/
+  generated/      ← the OpenAPI client (hey-api), never edited by hand
+  query-options/  ← re-exports of generated TanStack Query options
+  source/         ← fromServer / fromSdk / fromAuth, NotFoundError / UnauthorizedError / PlusRequiredError
+  auth/           ← the better-auth client base (auth-client/, telegram-login-client/)
+  query-client/
   index.ts
 ```
 
 HTTP goes through the shared axios instance from `shared/api/http`. A hand-rolled
 `fetch` is unnecessary. The response is parsed with the shared schema, so a drifted
-contract fails loudly at the boundary:
+contract fails loudly at the boundary (`entities/search/search/api/search/search.ts`):
 
 ```ts
 export const search = async ({ query, signal }: SearchInput): Promise<SearchResponse> => {
@@ -1066,8 +1098,8 @@ import { searchResponseSchema } from '@otmetki/schemas';
 type SearchResponse = { query: string; results: ... };
 ```
 
-`@/shared/api` exports runtime functions only — the request wrappers and the
-query client.
+`@/shared/api` exports the axios instance and the query client only; request wrappers are
+imported from the slice that owns them.
 
 **Input vs output types.** One Zod schema can yield two types: `.default()`,
 `.coerce` and `.transform()` make `z.input` and `z.output` incompatible.
@@ -1248,7 +1280,11 @@ src/modules/search/
   search.types.ts
   services/               ← the business logic, one service per domain of work
   dto/                    ← createZodDto(...) wrappers
-  lib/                    ← pure functions, one folder per concern
+  mappers/<name>/         ← DB row / Prisma payload / Lesta payload → DTO (every to*View)
+  selects/<name>/         ← Prisma select / include constants and their payload types
+  queries/<name>/         ← standalone raw-SQL builders (Prisma.sql)
+  lib/<concern>/          ← pure domain logic only
+  guards/ decorators/ interceptors/ processors/ schedules/  ← Nest kinds, one folder each
   config/                 ← constants, timeouts, lookup tables
   index.ts                ← the module's public API
 ```

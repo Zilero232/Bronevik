@@ -1,4 +1,4 @@
-import type { OverlayData } from '@/shared/api/streamers';
+import type { OverlayData } from '@/entities/streamer/streamer';
 
 export type FeedTransport = 'polling' | 'stream';
 

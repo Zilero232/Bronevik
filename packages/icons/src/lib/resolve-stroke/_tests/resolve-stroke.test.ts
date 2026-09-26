@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { ICON_DEFAULTS } from '../../icon';
 import { resolveStroke } from '..';
+import { ICON_DEFAULTS } from '../../icon';
 
 describe('resolveStroke', () => {
   it('passes the stroke through when it scales with the icon', () => {

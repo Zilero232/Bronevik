@@ -4,7 +4,8 @@ import type { ClanScope, WorkspaceView } from '../clan-workspace.types';
 
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { isUniqueViolation, PrismaService } from '../../../core';
-import { canOwnWorkspace, toClanEventView } from '../lib';
+import { canOwnWorkspace } from '../lib';
+import { toClanEventView } from '../mappers';
 import { ClanAccessService } from './clan-access.service';
 
 @Injectable()

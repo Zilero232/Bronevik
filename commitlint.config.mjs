@@ -4,7 +4,7 @@
  * Deviations from @commitlint/config-conventional:
  *   - header-max-length 120 (default 100) — existing history has subjects up
  *     to 99 chars; a stricter limit would reject the established style.
- *   - scope stays free-form: the repo already uses app names (web, api, collector, mod) and domain scopes.
+ *   - scope stays free-form: the repo already uses app names (client, server, mod) and domain scopes.
  */
 export default {
   extends: ['@commitlint/config-conventional'],

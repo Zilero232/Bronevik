@@ -1,13 +1,11 @@
-import type { ApiKey, ApiTier } from '@otmetki/schemas';
+import type { ApiTier } from '@otmetki/schemas';
 
 import { apiTierSchema } from '@otmetki/schemas';
 import { addMilliseconds, differenceInSeconds } from 'date-fns';
 import { z } from 'zod';
 
-import type { ApiKeyRow, QuotaRetryAfterInput, RebasedRemainingInput, TierQuota, VerifyFailure } from './api-key.types';
+import type { QuotaRetryAfterInput, RebasedRemainingInput, TierQuota, VerifyFailure } from './api-key.types';
 
-import { toIso } from '../../../../common/lib';
-import { API_KEY_PLUGIN } from '../../../../lib/auth';
 import { API_KEY_POLICY, API_TIERS } from '../../config';
 
 const keyMetadataSchema = z.object({ tier: apiTierSchema });
@@ -41,18 +39,6 @@ export const rebasedRemaining = ({ tier, remaining, refillAmount }: RebasedRemai
 
   return Math.max(0, limit - Math.max(0, refillAmount - remaining));
 };
-
-export const toApiKey = (row: ApiKeyRow): ApiKey => ({
-  id: row.id,
-  name: row.name ?? '',
-  prefix: (row.start ?? '').slice(API_KEY_PLUGIN.prefix.length),
-  tier: keyTierOf(row.metadata) ?? 'free',
-  scopes: [],
-  createdAt: row.createdAt.toISOString(),
-  lastUsedAt: toIso(row.lastRequest),
-  expiresAt: toIso(row.expiresAt),
-  revokedAt: row.enabled ? null : row.updatedAt.toISOString()
-});
 
 export const verifyFailureOf = (code: string | undefined): VerifyFailure => {
   if (API_KEY_POLICY.quotaCodes.has(code ?? '')) {

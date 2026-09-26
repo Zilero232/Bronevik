@@ -14,7 +14,7 @@ import type {
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { AUTHOR_SELECT, CommunityAccountsService } from '../../community-core';
-import { toCoachView, toOfferView } from '../lib';
+import { toCoachView, toOfferView } from '../mappers';
 
 @Injectable()
 export class CoachProfileService {

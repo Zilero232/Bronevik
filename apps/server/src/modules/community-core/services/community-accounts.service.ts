@@ -6,7 +6,7 @@ import type { PlayerStats } from '../lib';
 
 import { AppForbiddenException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
-import { toPlayerStats } from '../lib';
+import { toPlayerStats } from '../mappers';
 
 @Injectable()
 export class CommunityAccountsService {

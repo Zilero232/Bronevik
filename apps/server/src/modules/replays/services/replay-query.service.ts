@@ -20,7 +20,8 @@ import { AppConfigService } from '../../../config';
 import { ObjectStorage, PrismaService } from '../../../core';
 import { BEST_OF_WEEK } from '../config';
 import { replayTracksSchema } from '../dto';
-import { publicReplayWhere, searchOrder, searchWhere, toReplayView } from '../lib';
+import { publicReplayWhere, searchOrder, searchWhere } from '../lib';
+import { toReplayView } from '../mappers';
 
 @Injectable()
 export class ReplayQueryService {

@@ -1,4 +1,4 @@
-import type { StreamerDirectoryFilters } from '@/shared/api/streamers';
+import type { StreamerDirectoryFilters } from '@/entities/streamer/streamer';
 
 import type { DirectoryFilterState, DirectoryToggle } from './directory-query.types';
 

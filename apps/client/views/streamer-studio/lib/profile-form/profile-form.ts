@@ -3,7 +3,7 @@ import type { StreamerPlatform } from '@otmetki/schemas';
 import { apiErrorSchema, STREAMER_PLATFORMS } from '@otmetki/schemas';
 import { fromKeys } from 'remeda';
 
-import type { StreamerProfile, UpsertStreamerProfileInput } from '@/shared/api/streamers';
+import type { StreamerProfile, UpsertStreamerProfileInput } from '@/entities/streamer/streamer';
 
 import type { ChannelHostInput, ProfileFormOutput, ProfileFormValues } from './profile-form.types';
 

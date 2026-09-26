@@ -8,9 +8,9 @@ import { match } from 'ts-pattern';
 
 import type { StatListItem } from '@/ui-kit';
 
-import { usePlus } from '@/features/plus/plus-gate';
 import { getRecommendedBuild } from '@/entities/tank/build';
 import { getTank } from '@/entities/tank/tank';
+import { usePlus } from '@/features/plus/plus-gate';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { deltaVerdict } from '@/shared/lib';
 

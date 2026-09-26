@@ -8,7 +8,7 @@ import { AppBadRequestException, AppNotFoundException } from '../../../common/ex
 import { PrismaService } from '../../../core';
 import { AUTHOR_SELECT } from '../../community-core';
 import { COMMENTS } from '../config';
-import { toCommentView } from '../lib';
+import { toCommentView } from '../mappers';
 
 @Injectable()
 export class CommentService {

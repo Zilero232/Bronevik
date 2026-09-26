@@ -3,8 +3,9 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { getMyFollows } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import { getMyFollows } from '../../../api';
 
 export const useFollowsQuery = () => {
   const { data: session, isPending: isSessionPending } = useAuthSession();

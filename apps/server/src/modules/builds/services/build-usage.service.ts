@@ -6,7 +6,7 @@ import type { BuildHistoryInput, BuildUsageInput } from '../builds.types';
 
 import { PrismaService } from '../../../core';
 import { RECOMMENDED_BUILD } from '../config';
-import { historyEntryOf, shellInfoOf, toBuildUsage } from '../lib';
+import { historyEntryOf, shellInfoOf, toBuildUsage } from '../mappers';
 import { BuildDataService } from './build-data.service';
 import { BuildOptionsService } from './build-options.service';
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { isProduction, validateEnv } from '../env.schema';
 import { LESTA_MOCK } from '../../lesta-mock';
+import { isProduction, validateEnv } from '../env.schema';
 
 const base = {
   DATABASE_URL: 'postgresql://user:pass@localhost:5434/db',

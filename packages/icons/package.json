@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "description": "Three Marks custom SVG icon set as React components, stroke-matched to lucide.",
+  "license": "UNLICENSED",
+  "author": "Alexandr Artemev",
   "sideEffects": false,
   "type": "module",
   "exports": {

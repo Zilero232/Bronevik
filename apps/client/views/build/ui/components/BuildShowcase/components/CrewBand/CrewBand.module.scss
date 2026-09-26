@@ -1,11 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  padding-block: var(--band-padding);
   background-color: var(--color-band);
   box-shadow: 0 0 0 100vmax var(--color-band);
   clip-path: inset(0 -100vmax);
   color: var(--color-text);
+  padding-block: var(--band-padding);
 
   @include below(lg) {
     padding-block: 28px;

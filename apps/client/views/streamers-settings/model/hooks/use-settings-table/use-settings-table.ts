@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useQueryStates } from 'nuqs';
 
 import { useSettingsFormatter } from '@/entities/streamer/settings';
-import { getSettingsTable } from '@/shared/api/streamers';
+import { getSettingsTable } from '@/entities/streamer/streamer';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { SettingsFilterPreset } from './use-settings-table.types';

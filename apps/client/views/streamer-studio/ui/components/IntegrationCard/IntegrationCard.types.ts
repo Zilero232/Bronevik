@@ -1,4 +1,4 @@
-import type { ConnectableProvider, StreamerIntegration, StreamerProvider } from '@/shared/api/streamers';
+import type { ConnectableProvider, StreamerIntegration, StreamerProvider } from '@/entities/streamer/streamer';
 
 export type IntegrationCardProps = {
   provider: StreamerProvider;

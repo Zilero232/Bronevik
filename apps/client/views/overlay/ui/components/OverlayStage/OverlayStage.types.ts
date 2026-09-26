@@ -1,5 +1,5 @@
 import type { OverlayConfigPatch } from '@/entities/streamer/overlay';
-import type { OverlayData } from '@/shared/api/streamers';
+import type { OverlayData } from '@/entities/streamer/streamer';
 
 export type OverlayStageProps = {
   data: OverlayData;

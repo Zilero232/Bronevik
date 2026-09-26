@@ -8,7 +8,8 @@ import { AppNotFoundException } from '../../../common/exceptions';
 import { isUniqueViolation, PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { BONUS_CODE } from '../config';
-import { bonusCodeStatus, toBonusCodeView, VERDICT_TO_DB } from '../lib';
+import { bonusCodeStatus } from '../lib';
+import { toBonusCodeView, VERDICT_TO_DB } from '../mappers';
 
 @Injectable()
 export class BonusCodeService {

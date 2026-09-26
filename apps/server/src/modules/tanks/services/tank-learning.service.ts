@@ -7,7 +7,8 @@ import type { AccountLearningLookup } from '../tanks.types';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { clampPercent, clampPercentDelta } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { bucketOf, toTankLearning } from '../lib';
+import { bucketOf } from '../lib';
+import { toTankLearning } from '../mappers';
 
 @Injectable()
 export class TankLearningService {

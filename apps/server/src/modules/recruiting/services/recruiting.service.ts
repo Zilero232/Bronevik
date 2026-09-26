@@ -9,7 +9,8 @@ import { AppBadRequestException, AppForbiddenException, AppNotFoundException } f
 import { toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { CommunityAccountsService } from '../../community-core';
-import { isRecruitingOfficer, toRecruitingView } from '../lib';
+import { isRecruitingOfficer } from '../lib';
+import { toRecruitingView } from '../mappers';
 
 @Injectable()
 export class RecruitingService {

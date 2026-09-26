@@ -9,7 +9,7 @@ import type { BuildsCatalogInput, CatalogUsageRow } from '../builds.types';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { TankDifficultyService } from '../../tanks';
-import { catalogPicksOf, resolvePicks, toProvisionOption } from '../lib';
+import { catalogPicksOf, resolvePicks, toProvisionOption } from '../mappers';
 import { BuildDataService } from './build-data.service';
 
 @Injectable()

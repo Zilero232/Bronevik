@@ -5,7 +5,8 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { TournamentParticipant } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { CommunityAccountsService, PlayerStats } from '../../../community-core';
-import type { Bracket, TournamentWithParticipants } from '../../lib';
+import type { Bracket } from '../../lib';
+import type { TournamentWithParticipants } from '../../mappers';
 
 import { Prisma } from '../../../../../generated';
 import { AppBadRequestException, AppConflictException, AppForbiddenException } from '../../../../common/exceptions';

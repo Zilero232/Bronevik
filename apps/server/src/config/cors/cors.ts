@@ -2,8 +2,8 @@ import type { CorsOptions } from '@nestjs/common/interfaces/external/cors-option
 
 import { filter, isEmpty, map, pipe, unique } from 'remeda';
 
-import type { CorsOptionsForInput } from './cors.types';
 import type { Env } from '../env';
+import type { CorsOptionsForInput } from './cors.types';
 
 import { CORS } from './cors.constants';
 

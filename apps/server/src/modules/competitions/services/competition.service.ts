@@ -22,8 +22,9 @@ import { randomCode } from '../../../common/lib';
 import { isUniqueViolation, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { titleSlug } from '../../community-core';
-import { COMPETITION_RUN, COMPETITION_SUMMARY_INCLUDE } from '../config';
+import { COMPETITION_RUN } from '../config';
 import { competitionStatus, rankTeams } from '../lib/competition-scoring';
+import { COMPETITION_SUMMARY_INCLUDE } from '../selects';
 
 @Injectable()
 export class CompetitionService {

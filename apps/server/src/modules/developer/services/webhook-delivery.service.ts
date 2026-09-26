@@ -6,7 +6,8 @@ import type { DeliverInput, FailDeliveryInput } from '../developer.types';
 import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { WEBHOOK_DELIVERY } from '../config';
-import { postWebhook, publicAddressOf, webhookEventFromDb, webhookHeaders, WebhookResponseError } from '../lib';
+import { postWebhook, publicAddressOf, webhookHeaders, WebhookResponseError } from '../lib';
+import { webhookEventFromDb } from '../mappers';
 import { HostLookupService } from './host-lookup.service';
 
 @Injectable()

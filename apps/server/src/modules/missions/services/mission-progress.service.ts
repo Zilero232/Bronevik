@@ -9,7 +9,7 @@ import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { MISSION_PLAN } from '../config';
 import { planOperation } from '../lib/mission-plan';
-import { readConditions, toProgressItem } from '../lib/mission-view';
+import { readConditions, toProgressItem } from '../mappers';
 import { MissionCatalogService } from './mission-catalog.service';
 
 @Injectable()

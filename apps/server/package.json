@@ -9,6 +9,7 @@
   "main": "src/main.ts",
   "scripts": {
     "armor:purge": "bun --env-file=../../.env scripts/armor-purge.ts",
+    "db:deploy": "bun scripts/timescale.ts --extensions && prisma db push && bun run db:timescale",
     "db:generate": "prisma generate",
     "db:push": "bun scripts/timescale.ts --extensions && prisma db push && prisma generate && bun run db:timescale",
     "db:studio": "prisma studio",

@@ -1,7 +1,7 @@
 import { overlayConfigSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
-import type { OverlayData } from '@/shared/api/streamers';
+import type { OverlayData } from '@/entities/streamer/streamer';
 
 import { feedReducer, INITIAL_FEED_STATE, parseFeedMessage } from '../feed-state';
 

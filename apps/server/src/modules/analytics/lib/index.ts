@@ -1,5 +1,5 @@
-export { assistedOf, combinedOf, movingAverageBefore, reviewBattle, toMyBattle, toTankReference } from './battle-review';
-export type { BattleReview, ReferenceRow, ReviewedBattle } from './battle-review';
+export { assistedOf, combinedOf, movingAverageBefore, reviewBattle } from './battle-review';
+export type { BattleReview, ReviewedBattle } from './battle-review';
 export { dailyWindow } from './daily-reset';
 export type { DailyWindow } from './daily-reset';
 export { mapHighlights, winRateDelta } from './map-advisor';

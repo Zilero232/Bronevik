@@ -1,1 +1,1 @@
-export { matchesFilter, toCatalogEntry } from './catalog-entry';
+export { matchesFilter } from './catalog-entry';

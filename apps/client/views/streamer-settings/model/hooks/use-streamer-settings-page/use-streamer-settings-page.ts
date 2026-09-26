@@ -3,9 +3,9 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { isNotFoundError } from '@/shared/api/source';
-import { getStreamerSettings } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { getStreamerSettings } from '../../../api';
 import { STREAMER_SETTINGS_PAGE } from '../../../config';
 import { settingsGroups } from '../../../lib/settings-page';
 

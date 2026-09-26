@@ -6,7 +6,7 @@ import { groupBy } from 'remeda';
 
 import { PrismaService } from '../../../core';
 import { TANK_LEARNING } from '../config';
-import { toTankLearning } from '../lib';
+import { toTankLearning } from '../mappers';
 
 @Injectable()
 export class TankDifficultyService {

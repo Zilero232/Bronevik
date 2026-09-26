@@ -11,7 +11,7 @@ import { PrismaService } from '../../../core';
 import { SweatIndexService } from '../../marks';
 import { readVehicleStats, ThresholdsService, toMasteryThreshold, toMoeThreshold, VehicleCatalogService } from '../../reference';
 import { TANK_PROFILES, TOP_PLAYERS } from '../config';
-import { toServerStatsRow } from '../lib';
+import { toServerStatsRow } from '../mappers';
 import { TankEconomyReportService } from './tank-economy-report.service';
 import { TankLearningService } from './tank-learning.service';
 import { TankObtainService } from './tank-obtain.service';

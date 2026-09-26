@@ -1,4 +1,5 @@
 import { PLUS_LIMITS } from '@otmetki/schemas';
+import { sortBy } from 'remeda';
 import { describe, expect, it } from 'vitest';
 
 import { plusLimitsFor } from '../plus-limits';
@@ -10,6 +11,13 @@ describe('plusLimitsFor', () => {
   });
 
   it('covers every countable limit', () => {
-    expect(Object.keys(plusLimitsFor(false)).sort()).toEqual(['goals', 'linkedAccounts', 'overlays', 'storedReplays', 'watchedTanks']);
+    expect(sortBy(Object.keys(plusLimitsFor(false)), (key) => key)).toEqual([
+      'goals',
+      'linkedAccounts',
+      'overlays',
+      'storedReplays',
+      'streamerFollows',
+      'watchedTanks'
+    ]);
   });
 });

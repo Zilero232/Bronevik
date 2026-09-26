@@ -7,7 +7,7 @@ export type DataTableRowTint = 'bad' | 'good' | 'loss' | 'self' | 'win';
 
 export type DataTableProps<T> = {
   data: T[];
-  columns: ColumnDef<T, never>[];
+  columns: ColumnDef<T, any>[];
   initialSorting?: SortingState;
   virtualizeAfter?: number;
   density?: DataTableDensity;

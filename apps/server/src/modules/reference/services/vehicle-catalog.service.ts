@@ -7,7 +7,8 @@ import type { CatalogEntry, VehicleFilter } from '../reference.types';
 
 import { PrismaService } from '../../../core';
 import { CATALOG } from '../config';
-import { matchesFilter, toCatalogEntry, unknownVehicle } from '../lib';
+import { matchesFilter } from '../lib';
+import { toCatalogEntry, unknownVehicle } from '../mappers';
 
 @Injectable()
 export class VehicleCatalogService {

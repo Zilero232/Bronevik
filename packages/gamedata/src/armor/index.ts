@@ -1,4 +1,3 @@
-export { ARMOR_GEOMETRY_FORMAT, base64ToBytes, bytesToBase64, decodeArmorGeometry, encodeArmorGeometry } from './geometry';
 export { ARMOR_FLAGS, ARMOR_PIECE_KINDS, armorFlags, armorPieceKind, hasArmorFlag } from './armor-model';
 export type {
   ArmorChassisModule,
@@ -16,6 +15,7 @@ export type {
   ArmorTurretModule,
   Vec3
 } from './armor-model';
+export { ARMOR_GEOMETRY_FORMAT, base64ToBytes, bytesToBase64, decodeArmorGeometry, encodeArmorGeometry } from './geometry';
 export {
   calculateArmorHit,
   isHollowPlate,

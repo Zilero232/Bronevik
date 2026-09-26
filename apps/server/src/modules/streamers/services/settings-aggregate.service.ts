@@ -61,6 +61,7 @@ export class SettingsAggregateService {
         this.prisma.settingsAggregate.deleteMany({ where: { cohort } }),
         this.prisma.settingsAggregate.createMany({ data })
       ]);
+
       written += data.length;
     }
 

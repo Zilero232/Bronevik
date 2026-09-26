@@ -1,6 +1,5 @@
-import type { OverlayMetric } from '@otmetki/schemas';
+import type { OverlayData, OverlayMetric } from '@otmetki/schemas';
 
-import type { OverlayData } from '@/shared/api/streamers';
 import type { RatingTone } from '@/shared/lib';
 
 export type OverlayResult = NonNullable<NonNullable<OverlayData['session']>['lastBattle']>['result'];

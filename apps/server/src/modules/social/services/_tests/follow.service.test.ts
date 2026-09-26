@@ -80,6 +80,7 @@ describe('FollowService.create', () => {
 
     prisma.follow.count.mockResolvedValue(10);
     prisma.follow.findUnique.mockResolvedValue(null);
+
     entitlements.assertWithinLimit.mockRejectedValue(
       new AppForbiddenException('SUBSCRIPTION_REQUIRED', 'limit', { limitKey: 'watchedTanks', limit: 10 })
     );

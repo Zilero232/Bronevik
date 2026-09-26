@@ -26,12 +26,15 @@ COPY packages/icons/package.json ./packages/icons/package.json
 COPY packages/logger/package.json ./packages/logger/package.json
 COPY packages/ratings/package.json ./packages/ratings/package.json
 COPY packages/schemas/package.json ./packages/schemas/package.json
+COPY packages/sdk/package.json ./packages/sdk/package.json
 
 # Lifecycle scripts are off: the server's postinstall runs `prisma generate`
 # before the schema is copied. Generation runs later, in the runner stage.
-# The retry loop survives registry hiccups that corrupt a tarball mid-download.
+# The retry loop survives registry hiccups that corrupt a tarball mid-download;
+# the third failure fails the build instead of carrying on with a broken tree.
 RUN for attempt in 1 2 3; do \
       bun install --frozen-lockfile --ignore-scripts && break; \
+      [ "$attempt" = 3 ] && exit 1; \
       echo "bun install attempt $attempt failed; clearing cache and retrying"; \
       rm -rf /root/.bun/install/cache ~/.bun/install/cache; \
     done
@@ -56,5 +59,8 @@ WORKDIR /app/apps/server
 RUN DIRECT_URL="postgresql://placeholder" DATABASE_URL="postgresql://placeholder" bunx prisma generate
 
 EXPOSE 4000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD bun -e "fetch('http://localhost:4000/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
 
 CMD ["bun", "src/main.ts"]

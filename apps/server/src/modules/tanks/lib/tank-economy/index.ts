@@ -1,2 +1,2 @@
-export { accountEconomy, battleNet, toTankEconomy } from './tank-economy';
+export { accountEconomy, battleNet } from './tank-economy';
 export type { EconomyBattle } from './tank-economy.types';

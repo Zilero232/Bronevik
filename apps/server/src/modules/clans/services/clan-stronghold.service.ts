@@ -7,7 +7,7 @@ import type { LestaClient } from '../../../lib/lesta';
 import { errorMessage, readNumber, readRecord, toJsonValue, toNumber } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { STRONGHOLD_FETCH } from '../config';
-import { toStronghold } from '../lib';
+import { toStronghold } from '../mappers';
 
 @Injectable()
 export class ClanStrongholdService {

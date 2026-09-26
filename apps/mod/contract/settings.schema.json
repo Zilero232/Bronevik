@@ -22,28 +22,13 @@
               "maximum": 540
             },
             "windowMode": {
-              "enum": [
-                "fullscreen",
-                "borderless",
-                "windowed"
-              ]
+              "enum": ["fullscreen", "borderless", "windowed"]
             },
             "client": {
-              "enum": [
-                "sd",
-                "hd"
-              ]
+              "enum": ["sd", "hd"]
             },
             "preset": {
-              "enum": [
-                "minimum",
-                "low",
-                "medium",
-                "high",
-                "maximum",
-                "ultra",
-                "custom"
-              ]
+              "enum": ["minimum", "low", "medium", "high", "maximum", "ultra", "custom"]
             },
             "overrides": {
               "type": "object",
@@ -92,10 +77,7 @@
               "maximum": 120
             },
             "dynamicFov": {
-              "type": [
-                "array",
-                "null"
-              ],
+              "type": ["array", "null"],
               "items": {
                 "type": "integer",
                 "minimum": 70,
@@ -153,13 +135,7 @@
               "type": "array",
               "uniqueItems": true,
               "items": {
-                "enum": [
-                  "x2",
-                  "x4",
-                  "x8",
-                  "x16",
-                  "x25"
-                ]
+                "enum": ["x2", "x4", "x8", "x16", "x25"]
               }
             }
           }
@@ -178,10 +154,7 @@
                   "maxLength": 120
                 },
                 "gunMarker": {
-                  "enum": [
-                    "server",
-                    "client"
-                  ]
+                  "enum": ["server", "client"]
                 },
                 "colour": {
                   "type": "string",
@@ -200,10 +173,7 @@
                   "maxLength": 120
                 },
                 "gunMarker": {
-                  "enum": [
-                    "server",
-                    "client"
-                  ]
+                  "enum": ["server", "client"]
                 },
                 "colour": {
                   "type": "string",
@@ -226,30 +196,14 @@
                   "type": "array",
                   "uniqueItems": true,
                   "items": {
-                    "enum": [
-                      "icon",
-                      "tier",
-                      "vehicleName",
-                      "playerName",
-                      "hpBar",
-                      "hpValue",
-                      "damage"
-                    ]
+                    "enum": ["icon", "tier", "vehicleName", "playerName", "hpBar", "hpValue", "damage"]
                   }
                 },
                 "alt": {
                   "type": "array",
                   "uniqueItems": true,
                   "items": {
-                    "enum": [
-                      "icon",
-                      "tier",
-                      "vehicleName",
-                      "playerName",
-                      "hpBar",
-                      "hpValue",
-                      "damage"
-                    ]
+                    "enum": ["icon", "tier", "vehicleName", "playerName", "hpBar", "hpValue", "damage"]
                   }
                 }
               }
@@ -262,30 +216,14 @@
                   "type": "array",
                   "uniqueItems": true,
                   "items": {
-                    "enum": [
-                      "icon",
-                      "tier",
-                      "vehicleName",
-                      "playerName",
-                      "hpBar",
-                      "hpValue",
-                      "damage"
-                    ]
+                    "enum": ["icon", "tier", "vehicleName", "playerName", "hpBar", "hpValue", "damage"]
                   }
                 },
                 "alt": {
                   "type": "array",
                   "uniqueItems": true,
                   "items": {
-                    "enum": [
-                      "icon",
-                      "tier",
-                      "vehicleName",
-                      "playerName",
-                      "hpBar",
-                      "hpValue",
-                      "damage"
-                    ]
+                    "enum": ["icon", "tier", "vehicleName", "playerName", "hpBar", "hpValue", "damage"]
                   }
                 }
               }
@@ -298,30 +236,14 @@
                   "type": "array",
                   "uniqueItems": true,
                   "items": {
-                    "enum": [
-                      "icon",
-                      "tier",
-                      "vehicleName",
-                      "playerName",
-                      "hpBar",
-                      "hpValue",
-                      "damage"
-                    ]
+                    "enum": ["icon", "tier", "vehicleName", "playerName", "hpBar", "hpValue", "damage"]
                   }
                 },
                 "alt": {
                   "type": "array",
                   "uniqueItems": true,
                   "items": {
-                    "enum": [
-                      "icon",
-                      "tier",
-                      "vehicleName",
-                      "playerName",
-                      "hpBar",
-                      "hpValue",
-                      "damage"
-                    ]
+                    "enum": ["icon", "tier", "vehicleName", "playerName", "hpBar", "hpValue", "damage"]
                   }
                 }
               }
@@ -416,14 +338,7 @@
     "export": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "device_id",
-        "account_id",
-        "mod_version",
-        "target",
-        "anonymous_stats",
-        "settings"
-      ],
+      "required": ["device_id", "account_id", "mod_version", "target", "anonymous_stats", "settings"],
       "properties": {
         "device_id": {
           "type": "string",
@@ -439,10 +354,7 @@
           "maxLength": 32
         },
         "target": {
-          "enum": [
-            "profile",
-            "private"
-          ]
+          "enum": ["profile", "private"]
         },
         "anonymous_stats": {
           "type": "boolean"
@@ -455,10 +367,7 @@
     "deviceRequest": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "device_id",
-        "account_id"
-      ],
+      "required": ["device_id", "account_id"],
       "properties": {
         "device_id": {
           "type": "string",
@@ -473,20 +382,13 @@
     },
     "pollResponse": {
       "type": "object",
-      "required": [
-        "requests"
-      ],
+      "required": ["requests"],
       "properties": {
         "requests": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "id",
-              "profile_slug",
-              "groups",
-              "settings"
-            ],
+            "required": ["id", "profile_slug", "groups", "settings"],
             "properties": {
               "id": {
                 "type": "string",
@@ -499,17 +401,7 @@
                 "type": "array",
                 "uniqueItems": true,
                 "items": {
-                  "enum": [
-                    "display",
-                    "camera",
-                    "controls",
-                    "zoom",
-                    "sight",
-                    "markers",
-                    "minimap",
-                    "sound",
-                    "battleUi"
-                  ]
+                  "enum": ["display", "camera", "controls", "zoom", "sight", "markers", "minimap", "sound", "battleUi"]
                 }
               },
               "settings": {
@@ -523,11 +415,7 @@
     "result": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "device_id",
-        "account_id",
-        "status"
-      ],
+      "required": ["device_id", "account_id", "status"],
       "properties": {
         "device_id": {
           "type": "string",
@@ -539,10 +427,7 @@
           "minimum": 1
         },
         "status": {
-          "enum": [
-            "applied",
-            "rejected"
-          ]
+          "enum": ["applied", "rejected"]
         }
       }
     }

@@ -7,7 +7,8 @@ import { AppBadRequestException, AppForbiddenException, AppNotFoundException } f
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { GOALS } from '../config';
-import { isGoalEndAllowed, toGoal } from '../lib';
+import { isGoalEndAllowed } from '../lib';
+import { toGoal } from '../mappers';
 
 @Injectable()
 export class GoalsService {

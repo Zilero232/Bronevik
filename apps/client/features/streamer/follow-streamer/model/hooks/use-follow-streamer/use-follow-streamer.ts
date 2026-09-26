@@ -4,11 +4,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { followStreamer, unfollowStreamer } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { FollowState } from './use-follow-streamer.types';
 
+import { followStreamer, unfollowStreamer } from '../../../api';
 import { FOLLOW_STREAMER } from '../../../config';
 import { followErrorKey } from '../../../lib/follow-error';
 import { useFollowsQuery } from '../use-follows-query';

@@ -13,7 +13,7 @@ import { AppConflictException, AppNotFoundException } from '../../../common/exce
 import { toJsonValue } from '../../../common/lib';
 import { isUniqueViolation, PrismaService } from '../../../core';
 import { CLAN_WORKSPACE } from '../config';
-import { toCandidateView } from '../lib';
+import { toCandidateView } from '../mappers';
 import { ClanAccessService } from './clan-access.service';
 
 @Injectable()

@@ -7,7 +7,7 @@ import type { ClanEventView, ClanItemScope, CreateClanEventRequest, ListEventsRe
 import { AppBadRequestException, AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { CLAN_WORKSPACE } from '../config';
-import { toClanEventView } from '../lib';
+import { toClanEventView } from '../mappers';
 import { ClanAccessService } from './clan-access.service';
 
 @Injectable()

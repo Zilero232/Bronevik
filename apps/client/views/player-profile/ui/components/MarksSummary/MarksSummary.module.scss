@@ -1,0 +1,36 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  margin: 0;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  @include below(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.item {
+  display: grid;
+  align-items: center;
+  color: var(--color-text-muted);
+  gap: var(--space-1) var(--space-3);
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.label {
+  @include label;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value {
+  @include numeric(var(--num-md));
+
+  margin: 0;
+  color: var(--color-text);
+  grid-column: 1 / -1;
+}

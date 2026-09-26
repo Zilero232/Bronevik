@@ -1,7 +1,7 @@
 import { WEBHOOK, webhookPayloadSchema } from '@bronevik/schemas';
 import { describe, expect, it } from 'vitest';
 
-import { WEBHOOK_EXAMPLES } from '../webhook-examples.config';
+import { WEBHOOK_EXAMPLES } from '../webhook-examples.constants';
 
 describe('WEBHOOK_EXAMPLES', () => {
   it('documents every event the server emits', () => {

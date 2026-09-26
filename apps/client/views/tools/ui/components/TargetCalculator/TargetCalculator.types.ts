@@ -1,12 +1,4 @@
-import type { TargetMetric } from '../../../config';
-
-export type TargetValues = {
-  metric: TargetMetric;
-  battles: number | null;
-  current: number | null;
-  expected: number | null;
-  target: number | null;
-};
+import type { TargetValues } from '../../../lib/calc-defaults';
 
 export type TargetResultsProps = {
   values: TargetValues;

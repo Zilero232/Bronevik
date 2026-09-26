@@ -1,0 +1,24 @@
+{
+  "classes": {
+    "lightTank": "Light tank",
+    "mediumTank": "Medium tank",
+    "heavyTank": "Heavy tank",
+    "AT-SPG": "Tank destroyer",
+    "SPG": "SPG",
+    "assaultSPG": "Assault SPG"
+  },
+  "nations": {
+    "ussr": "USSR",
+    "germany": "Germany",
+    "usa": "USA",
+    "china": "China",
+    "france": "France",
+    "uk": "UK",
+    "japan": "Japan",
+    "czech": "Czechoslovakia",
+    "sweden": "Sweden",
+    "poland": "Poland",
+    "italy": "Italy",
+    "intunion": "International Union"
+  }
+}

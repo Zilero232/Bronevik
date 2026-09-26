@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { LRUCache } from 'lru-cache';
 
 import type { MasteryThreshold, MoeThreshold, ThresholdSource } from '../../../../generated';
-import type { CachedThresholds, MoeHistoryInput, ThresholdsAsOfInput, ThresholdSet } from '../reference.types';
+import type { MoeHistoryInput, ThresholdsAsOfInput, ThresholdSet } from '../reference.types';
 
 import { PrismaService } from '../../../core';
 import { CATALOG } from '../config';
@@ -9,7 +10,11 @@ import { preferredBySource } from '../lib';
 
 @Injectable()
 export class ThresholdsService {
-  private cache = new Map<string, CachedThresholds>();
+  private readonly cache = new LRUCache<string, ThresholdSet, ThresholdSource | undefined>({
+    max: CATALOG.thresholdKeys,
+    ttl: CATALOG.ttlMs,
+    fetchMethod: (_key, _stale, { context }) => this.asOf({ date: null, source: context })
+  });
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -25,20 +30,10 @@ export class ThresholdsService {
     return mastery.get(tankId) ?? null;
   }
 
-  async latest(source?: ThresholdSource): Promise<CachedThresholds> {
-    const key = source ?? 'any';
-    const cached = this.cache.get(key);
+  async latest(source?: ThresholdSource): Promise<ThresholdSet> {
+    const loaded = await this.cache.fetch(source ?? CATALOG.key, { context: source });
 
-    if (cached && Date.now() - cached.at < CATALOG.ttlMs) {
-      return cached;
-    }
-
-    const loaded = await this.asOf({ date: null, source });
-    const entry = { at: Date.now(), ...loaded };
-
-    this.cache.set(key, entry);
-
-    return entry;
+    return loaded ?? { moe: new Map(), mastery: new Map() };
   }
 
   async asOf({ date, source }: ThresholdsAsOfInput): Promise<ThresholdSet> {

@@ -1,0 +1,47 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  width: 320px;
+  max-width: 100%;
+}
+
+.body {
+  @include stack(var(--space-2));
+
+  padding: var(--space-4);
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  dt {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  dd {
+    @include numeric(var(--text-md));
+
+    margin: 0;
+    color: var(--color-text);
+  }
+}
+
+.term {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.info {
+  display: inline-flex;
+  color: var(--color-text-dim);
+}
+
+.spark {
+  width: 100%;
+}

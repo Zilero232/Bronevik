@@ -31,3 +31,14 @@ export type SentenceGoalInput = {
   condition: ChallengeCondition;
   lead: SentenceLead;
 };
+
+export type ConditionSentenceText = {
+  lead: string;
+  goal: string;
+  filters: string | null;
+};
+
+export type RenderConditionSentenceInput = {
+  sentence: ConditionSentence;
+  translate: (key: SentenceKey, values?: SentencePart['values']) => string;
+};

@@ -1,0 +1,29 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: absolute;
+  inset: 0;
+}
+
+.canvas {
+  touch-action: none;
+
+  &:focus-visible {
+    @include focus-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  transform: translate(calc(var(--x) + 16px), calc(var(--y) + 16px));
+
+  &[data-flip='true'] {
+    transform: translate(calc(var(--x) - 100% - 16px), calc(var(--y) + 16px));
+  }
+}

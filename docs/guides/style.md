@@ -24,12 +24,16 @@ Every slice is a folder of segments. The minimum is `ui/` + `index.ts`:
 ```text
 features/search/command-palette/
   index.ts          ← public API (barrel)
-  ui/               ← React components
-  model/            ← hooks, contexts, state types
-  lib/              ← pure slice utilities
+  ui/               ← React components — render only
+  model/            ← hooks (state, effects, queries, handlers, forms), contexts, state types
+  lib/              ← pure slice utilities, one folder per concern
   api/              ← the I/O boundary tied to this slice's domain (when there is one)
-  config/           ← constants, configuration
+  config/           ← constants, one file per concern
 ```
+
+**Components only render.** State, effects, queries, handlers and derived data live in
+`model/hooks/`, pure helpers in `lib/<concern>/`, constants in `config/`. The same layout
+holds in every slice of every layer (`entities`, `features`, `widgets`, `views`).
 
 Slices are grouped by business domain (`features/app`, `features/search`, `features/stats`,
 `entities/player`, `entities/tank`) — a layer on top of canonical FSD, see
@@ -40,25 +44,66 @@ Slices are grouped by business domain (`features/app`, `features/search`, `featu
 
 ## 2. Slice `ui/` structure
 
-**The main component** lives flat in `ui/`, with its files next to it:
+**One component per folder.** A slice's `ui/` holds at most **one** flat main component;
+every other component gets its own PascalCase folder. Never two flat components side by
+side in a `ui/` root, and never two components in one file.
 
 ```text
-features/search/command-palette/ui/
-  CommandPalette.tsx                 ← JSX + entry component
-  CommandPalette.module.scss         ← component styles
-  CommandPaletteTrigger.tsx
-  CommandPaletteTrigger.types.ts     ← Props and local union types
-  CommandPaletteTrigger.module.scss
-
 features/app/switch-theme/ui/
-  ThemeToggle.tsx
+  ThemeToggle.tsx                    ← the one flat main component
+  ThemeToggle.types.ts               ← Props and local union types
+  ThemeToggle.module.scss
   ThemeToggle.motion.ts              ← motion presets (when the component is animated)
+
+features/search/command-palette/ui/
+  CommandPalette/                    ← a second top-level component → every one gets a folder
+    CommandPalette.tsx
+    CommandPalette.module.scss
+    index.ts
+    components/
+  CommandPaletteTrigger/
+    CommandPaletteTrigger.tsx
+    CommandPaletteTrigger.types.ts
+    CommandPaletteTrigger.module.scss
+    index.ts
 ```
+
+**A component folder holds only these files:**
+
+| File | When |
+| --- | --- |
+| `<Name>.tsx` | always — the component, JSX only |
+| `<Name>.types.ts` | there are Props or local union types |
+| `<Name>.module.scss` | the component has styles |
+| `index.ts` | always — `export { Name } from './Name';` |
+| `components/` | nested subcomponents (barrel + one folder each) |
+| `<Name>.motion.ts` / `<Name>.variants.ts` | motion presets / a `cva` variant map, when needed |
+| `_tests/` | a component with real behaviour |
+
+**Never** `<Name>.helpers.ts`, `<Name>.utils.ts`, `<Name>.constants.ts`, `<Name>.columns.tsx`
+or a `hooks/` folder inside a component folder. Where they go instead:
+
+| Found in a component | Moves to |
+| --- | --- |
+| `useQuery`/`useMutation`, `useEffect`, `useMemo`/`useCallback`/`useReducer`, 2+ `useState`, timers, storage, clipboard, handlers with more than one statement or `async` | `model/hooks/use-<x>/use-<x>.ts` + `use-<x>.types.ts` + `index.ts` |
+| a form (`useForm`, fields, submit) | `model/hooks/use-<x>-form/` (§15) |
+| a helper function (module-level or inside the component) | `lib/<concern>/<concern>.ts` + `index.ts` + `_tests/` |
+| a module-level `const`, icon maps, `DEFAULT_VALUES`, skeleton row counts | `config/<concern>.constants.ts`, re-exported from `config/index.ts` |
+| a second component | `components/<Name>/` |
+
+What a component body may contain: `useTranslations`/`useFormatter`, navigation and context
+hooks, **one** call to its own model hook, **at most one** trivial UI flag (`useBoolean` or a
+single `useState` for open/tab), and JSX.
+
+Table column definitions are the one hook that may be `.tsx`:
+`model/hooks/use-<table>-columns/use-<table>-columns.tsx`. It only references cell
+components, which live in `ui/components/<Table>/components/<X>Cell/`; no JSX-heavy cells or
+`.module.scss` in `model/`.
 
 **Subcomponents** (used only inside the parent) — each one in a `components/` folder:
 
 ```text
-features/search/command-palette/ui/
+features/search/command-palette/ui/CommandPalette/
   CommandPalette.tsx
   components/
     index.ts                   ← barrel: re-exports every subcomponent
@@ -68,8 +113,6 @@ features/search/command-palette/ui/
       PaletteInput.module.scss
       index.ts                 ← `export { PaletteInput } from './PaletteInput';`
     PaletteResults/
-      ...
-    PaletteStatus/
       ...
 ```
 
@@ -133,6 +176,10 @@ ui-kit/
 **Rules:**
 
 - Component folder and file names are **PascalCase** (`Button/`, `Button.tsx`).
+- `ui-kit` has no slice segments. A primitive's pure helpers go to `shared/lib/<concern>/`,
+  its hooks to `shared/lib/use-<x>/` — never `<Name>.helpers.ts` or a `hooks/` folder in the
+  component. The one exception to §2's file list: a primitive's own tuning constants may sit
+  in `<Name>.constants.ts` (`DataTable.constants.ts`), since there is no `config/` to hold them.
 - Styles are **`*.module.scss`**; shared utilities are imported as `@use '@/shared/styles/mixins' as *` (the `@/` alias comes from `sassOptions.loadPaths` + `turbopack.resolveAlias` in `next.config.ts`, so no `../../../`).
 - Headless + a11y — **`@base-ui/react`**; imported from the package subpath: `@base-ui/react/dialog`, `@base-ui/react/select`, `@base-ui/react/popover`, `@base-ui/react/tabs`. Rename the base primitive at the import (`Select as BaseSelect`) so our own export can carry the plain name.
 - Variant maps use **`class-variance-authority`** over the module classes, in `<Name>.variants.ts` (`Button.variants.ts` → `buttonVariants`). The map is exported, so a `Link` can wear a button's look: `className={buttonVariants({ variant: 'secondary' })}`.
@@ -148,7 +195,7 @@ ui-kit/
 export { CommandPaletteProvider, useCommandPalette } from './model/context';
 export { CommandPalette } from './ui/CommandPalette';
 export { CommandPaletteTrigger } from './ui/CommandPaletteTrigger';
-export type { CommandPaletteTriggerProps } from './ui/CommandPaletteTrigger.types';
+export type { CommandPaletteTriggerProps } from './ui/CommandPaletteTrigger';
 ```
 
 ### Effect hooks instead of a pile of `useEffect` in the component
@@ -237,21 +284,25 @@ export const PeriodSwitcher = ({ value, size = 'md', className, onChange }: Peri
 
 ### 2.2. `model/hooks` structure
 
-Symmetrical to `ui/`: **a hook with types of its own gets its own folder**, a flat file only when there are no types.
+Symmetrical to `ui/`: **every hook gets its own folder**, named after it.
 
 ```text
 entities/app/locale/model/hooks/
   index.ts                        ← segment barrel
   use-locale/
     use-locale.ts
-    use-locale.types.ts           ← there is an Input/Output type → the folder is mandatory
+    use-locale.types.ts           ← Input/Output types, when there are any
     index.ts
-
-features/search/command-palette/model/hooks/
-  index.ts
-  use-command-palette-hotkey.ts   ← no types of its own → a flat file is fine
-  use-search-results.ts
+    _tests/                       ← a hook with real logic
+  use-profile-form/               ← a form hook: useForm + zodResolver + submit (§15)
+    use-profile-form.ts
+    use-profile-form.types.ts
+    index.ts
 ```
+
+A component calls **one** hook of its own (`use-<component>`), which composes queries,
+state, effects and handlers and returns what the JSX needs. A hook's constants, when it has
+any, go to the slice's `config/`, not beside the hook.
 
 A hook's `index.ts` re-exports both the hook and its types:
 
@@ -301,8 +352,8 @@ The principle: the JSX reads, and `s.root`/`s.head` tell you the structure.
 Over the line means refactor:
 
 1. Subcomponents → `components/`.
-2. Logic → `model/` (a hook).
-3. Utilities → the slice's `lib/`.
+2. Logic → `model/hooks/use-<x>/`.
+3. Helpers → the slice's `lib/<concern>/`; constants → `config/<concern>.constants.ts`.
 
 **A multi-export primitive** (`Dialog` ships `Dialog`, `DialogTrigger`, `DialogClose`,
 `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogDescription`, `DialogFooter`) stays in
@@ -333,7 +384,9 @@ is how `features/search/command-palette` is built — the context in
 | Component file           | PascalCase + `.tsx`  | `PaletteInput.tsx`                           |
 | Types file               | `<Name>.types.ts`    | `PaletteInput.types.ts`                      |
 | Styles file              | `<Name>.module.scss` | `Button.module.scss`                         |
-| Hook file                | kebab-case           | `use-search-results.ts`                      |
+| Hook folder + file       | kebab-case           | `use-search-results/use-search-results.ts`   |
+| Helper folder + file     | kebab-case           | `lib/group-results/group-results.ts`         |
+| Constants file           | kebab-case           | `config/search.constants.ts`                 |
 | React component (export) | PascalCase           | `CommandPalette`                             |
 | Hook                     | `use` + camelCase    | `useSearchResults`, `useCommandPaletteHotkey` |
 | Utility                  | camelCase            | `groupSearchResults`, `ratingTone`           |
@@ -431,6 +484,7 @@ Only what is needed from outside. Internal subcomponents are not exported.
 ```ts
 // ui/components/PaletteInput/index.ts
 export { PaletteInput } from './PaletteInput';
+export type { PaletteInputProps } from './PaletteInput.types';
 ```
 
 **A subsystem in `model/`:** when a hook is assembled from several files in a subfolder, the `index.ts` next to them exports only the public entry point — the Provider, the hook and the types the outside needs. Internal modules do not go out.
@@ -680,9 +734,8 @@ search({ query, signal });
 features/search/command-palette/model/
   hooks/                          ← a group of hooks
     index.ts                      ← the hooks barrel
-    use-command-palette-hotkey.ts
-    use-search-results.ts
-    _tests/
+    use-command-palette-hotkey/   ← use-command-palette-hotkey.ts + index.ts
+    use-search-results/           ← use-search-results.ts + .types.ts + index.ts + _tests/
   context/                        ← a subsystem is a folder
     index.ts                      ← barrel: { CommandPaletteProvider, useCommandPalette }
     CommandPaletteProvider.tsx
@@ -727,8 +780,8 @@ subfolders — needs no barrel at all; import by file.
 
 **Types:**
 
-- Types local to one hook (its input and output, internal unions) live beside it —
-  in the same file, or in `<hook>.types.ts` once the hook has its own folder.
+- Types local to one hook (its input and output, internal unions) live in its
+  `use-<x>.types.ts`.
 - The slice's public model types — the ones other slices reach through the barrel —
   go in a `model/<name>.types.ts` file (`entities/tank/tank/model/tank.types.ts`).
 - A subsystem folder with types of its own gets `model/<subsystem>/<name>.types.ts`
@@ -737,17 +790,29 @@ subfolders — needs no barrel at all; import by file.
 Do not create a separate `types/` or `hooks/` segment. That splits code by the
 shape of the file rather than by its nature, which is an FSD anti-pattern.
 
-**`lib/`** — pure functions with no React dependency:
+**`lib/`** — pure functions with no React dependency, one folder per concern:
 
 ```text
 features/search/command-palette/lib/
   group-results/       ← splits a flat search response into players / tanks / clans
+    group-results.ts
+    group-results.types.ts
+    index.ts
+    _tests/group-results.test.ts
 shared/lib/
   rating-tone/         ← maps a rating to one of six colour tones
-  seeded-random/       ← deterministic PRNG for mocks and demo counters
+  seeded-random/       ← deterministic PRNG for the daily puzzle
 ```
 
+A helper used by one component still goes here, never into a `<Name>.helpers.ts` or
+`<Name>.utils.ts` beside the component. A project-agnostic helper goes to `shared/lib/`.
+
 A function that returns JSX is a component: move it to `ui/`.
+
+**`config/`** — constants, one file per concern (`config/search.constants.ts`,
+`config/player-stats.constants.ts`), re-exported from `config/index.ts`. Every module-level
+`as const` object, `DEFAULT_VALUES`, icon map or skeleton row count a component or hook needs
+lives here, not at the top of the `.tsx`.
 
 **Choosing between `lib/` and `model/`:** a function that uses React
 (`useState`, `useEffect`, a context) belongs in `model/`. A pure one — takes
@@ -766,7 +831,7 @@ goes in `shared/api/` (below).
 ```text
 shared/api/
   http/          ← the axios instance: baseURL from env, a request timeout
-  search/        ← search() with its mock, constants and types
+  search/        ← search() with its constants and types
   query-client.ts
   index.ts
 ```
@@ -783,12 +848,6 @@ export const search = async ({ query, signal }: SearchInput): Promise<SearchResp
     return { query: trimmed, correctedQuery: null, results: [] };
   }
 
-  if (env.NEXT_PUBLIC_USE_MOCKS) {
-    await wait({ ms: SEARCH_REQUEST.mockLatencyMs, signal });
-
-    return mockSearch(trimmed);
-  }
-
   const { data } = await api.get('/search', { params: { q: trimmed, limit: SEARCH_REQUEST.limit }, signal });
 
   return searchResponseSchema.parse(data);
@@ -797,8 +856,13 @@ export const search = async ({ query, signal }: SearchInput): Promise<SearchResp
 
 Request and response types come from `@bronevik/schemas` — the same contract
 NestJS validates against. The function returns data; errors are thrown, and
-React Query catches them. Every request honours `NEXT_PUBLIC_USE_MOCKS` so the
-client runs without a server.
+React Query catches them.
+
+**No mocks.** No mock data layer, no fixture fallbacks, no fake latency, no
+`USE_MOCKS` switch — every request goes to the real server through `fromServer`
+(`shared/api/source`). With no data a screen shows its empty state; with the server
+down, its error state with a retry. Test doubles in `_tests/` are not this — they
+stay in tests.
 
 ---
 
@@ -883,19 +947,18 @@ Never two blank lines in a row.
 
 ## 13.5. A component body reads top to bottom
 
-Inside a component the order is fixed: **hooks, then derived values, then
-handlers, then the JSX.**
+A component is **hooks, then the JSX** — its handlers and derived values come from its
+model hook (§2). Inside that hook the order is fixed: **hooks, then derived values, then
+handlers, then the returned object.**
 
-```tsx
-export const CommandPalette = () => {
-  // 1. hooks — every one of them, nothing else between
-  const t = useTranslations('search');
+```ts
+// model/hooks/use-command-palette-view/use-command-palette-view.ts
+export const useCommandPaletteView = () => {
   const router = useRouter();
   const { isOpen, setOpen } = useCommandPalette();
   const [query, setQuery] = useState('');
   const { results, total, isEnabled, isFetching, isError } = useSearchResults(query);
 
-  // 2. handlers that act on those values
   const onOpenChange = (next: boolean) => {
     setOpen(next);
 
@@ -909,7 +972,16 @@ export const CommandPalette = () => {
     router.push(href);
   };
 
-  // 3. the markup
+  return { isOpen, query, setQuery, results, total, isEnabled, isFetching, isError, onOpenChange, go };
+};
+```
+
+```tsx
+// ui/CommandPalette/CommandPalette.tsx
+export const CommandPalette = () => {
+  const t = useTranslations('search');
+  const { isOpen, query, setQuery, results, onOpenChange, go } = useCommandPaletteView();
+
   return <Command.Dialog ...>...</Command.Dialog>;
 };
 ```
@@ -1017,12 +1089,22 @@ serves both ends.
 
 ## 15. Forms — react-hook-form + zodResolver
 
-The client has no forms yet, and `react-hook-form` is not installed. When the first
-form lands, it uses `react-hook-form` with `@hookform/resolvers/zod` — add both to
-`apps/client/package.json` in that change — and follows these rules:
+`react-hook-form` and `@hookform/resolvers/zod` are installed in `apps/client`. Every
+form uses them, and the form logic lives in a hook, not the component:
+
+```text
+views/me/model/hooks/use-goal-form/
+  use-goal-form.ts          ← useForm + zodResolver, submit mutation, setError mapping
+  use-goal-form.types.ts
+  index.ts
+views/me/config/goal-form.constants.ts   ← GOAL_FORM_DEFAULT_VALUES
+```
+
+The component calls `useGoalForm()` and renders fields — no `useForm`, `useState` fields
+or submit handler in the `.tsx`.
 
 - The schema comes from `@bronevik/schemas`, never inline in the form.
-- `DEFAULT_VALUES` is a module-level constant, not an object literal rebuilt on
+- Default values are a constant in `config/`, not an object literal rebuilt on
   every render.
 - Server-side errors go through `setError('field', { message })`.
 - Validation messages are i18n keys resolved in the component — the schema never
@@ -1191,7 +1273,15 @@ src/modules/search/
 - Cross-imports between slices of the same layer.
 - CSS-in-JS. SCSS modules only (`cva` maps module classes, it does not style).
 - Duplicating a schema between client and server. Only `@bronevik/schemas`.
-- `useState` for form fields. Only `react-hook-form`.
+- `useState` for form fields. Only `react-hook-form`, inside a `use-<x>-form` hook.
+- Logic in a component: queries, effects, memoised or derived data, handlers with more
+  than one statement. They go to `model/hooks/use-<x>/`.
+- `<Name>.helpers.ts`, `<Name>.utils.ts`, `<Name>.constants.ts` or `hooks/` inside a
+  component folder (§2). Helpers → `lib/<concern>/`, constants → `config/`.
+- Two flat components in one `ui/` root, or two components in one file.
+- Mock data layers or fixture fallbacks in app code (§11).
+- Prisma migrations before production. The schema is synced with `bun run db:push`
+  (`prisma db push` + the Timescale layer); no `prisma migrate` until the first release.
 - Nested `if (...) return <X />` across three or more branches. Use
   `ts-pattern`'s `match`.
 - Prop-drilling when the leaf can call the hook itself.
@@ -1199,7 +1289,7 @@ src/modules/search/
   CLAUDE.md or the commit message. An `eslint-disable-next-line` carries its reason
   after `--`.
 - A user-visible string that does not go through i18n — and it goes into both
-  `en.json` and `ru.json`, never one of them.
+  `locales/ru/<namespace>.json` and `locales/en/<namespace>.json`, never one of them.
 - `Link`, `useRouter` or `usePathname` from `next/*` — use `@/shared/i18n/navigation`.
 
 ---

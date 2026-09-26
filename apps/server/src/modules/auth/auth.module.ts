@@ -7,7 +7,7 @@ import { validateEnv } from '../../config';
 import { LESTA_CLIENT, PrismaService } from '../../core';
 import { createAuth } from '../../lib/auth';
 import { AuthStoresModule } from './auth-stores.module';
-import { AUTH_BODY_PARSER, AUTH_LOG_CONTEXT } from './config';
+import { AUTH_MODULE } from './config';
 import { LestaAccountsService, TelegramAccountsService } from './services';
 
 @Module({
@@ -24,10 +24,10 @@ import { LestaAccountsService, TelegramAccountsService } from './services';
           lesta,
           lestaStore,
           telegramStore,
-          logger: new Logger(AUTH_LOG_CONTEXT)
+          logger: new Logger(AUTH_MODULE.logContext)
         }),
         disableTrustedOriginsCors: true,
-        bodyParser: { rawBody: true, json: { limit: AUTH_BODY_PARSER.jsonLimit } }
+        bodyParser: { rawBody: true, json: { limit: AUTH_MODULE.jsonLimit } }
       })
     })
   ],

@@ -1,1 +1,0 @@
-export { LinkHero } from './LinkHero';

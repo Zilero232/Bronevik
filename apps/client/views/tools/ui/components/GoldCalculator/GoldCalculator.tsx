@@ -7,7 +7,10 @@ import type { GoldValues } from './GoldCalculator.types';
 import { GOLD } from '../../../config';
 import { creditsToGold, freeXpToGold, goldToCredits, goldToFreeXp } from '../../../lib/gold-conversion';
 import { useCalcState } from '../../../model/hooks';
-import { CalcShell, FieldGrid, ResultFigure, ResultList } from '../CalcKit';
+import { CalcShell } from '../CalcShell';
+import { FieldGrid } from '../FieldGrid';
+import { ResultFigure } from '../ResultFigure';
+import { ResultList } from '../ResultList';
 import { GoldBundles } from './components';
 
 export const GoldCalculator = () => {
@@ -40,7 +43,7 @@ export const GoldCalculator = () => {
           <ResultFigure hint={t('goldToCreditsHint', { gold: format.number(gold) })} label={t('goldToCredits')} value={goldToCredits(gold)} />
           <ResultList
             items={[
-              { key: 'goldToXp', label: t('goldToXp'), value: format.number(goldToFreeXp(gold)), tone: 'accent' },
+              { key: 'goldToXp', label: t('goldToXp'), value: format.number(goldToFreeXp(gold)) },
               { key: 'creditsToGold', label: t('creditsToGold', { credits: format.number(credits) }), value: format.number(creditsToGold(credits)) },
               { key: 'xpToGold', label: t('xpToGold', { xp: format.number(xp) }), value: format.number(freeXpToGold(xp)) }
             ]}

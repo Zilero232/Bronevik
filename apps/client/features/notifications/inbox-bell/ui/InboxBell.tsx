@@ -15,7 +15,7 @@ import s from './InboxBell.module.scss';
 
 export const InboxBell = ({ className }: InboxBellProps) => {
   const t = useTranslations('inbox');
-  const { isSignedIn, page, isPending, isError } = useInboxPreview();
+  const { isSignedIn, page, isPending, isError, isRetrying, retry } = useInboxPreview();
   const [isOpen, toggleOpen] = useBoolean(false);
 
   if (!isSignedIn) {
@@ -34,7 +34,14 @@ export const InboxBell = ({ className }: InboxBellProps) => {
       <Popover.Portal>
         <Popover.Positioner align='end' className={s.positioner} sideOffset={10}>
           <Popover.Popup className={s.popup}>
-            <InboxPanel isError={isError} isPending={isPending} page={page} onClose={() => toggleOpen(false)} />
+            <InboxPanel
+              isError={isError}
+              isPending={isPending}
+              isRetrying={isRetrying}
+              page={page}
+              onClose={() => toggleOpen(false)}
+              onRetry={() => void retry()}
+            />
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>

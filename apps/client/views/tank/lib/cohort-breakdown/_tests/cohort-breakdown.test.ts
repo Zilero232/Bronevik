@@ -1,13 +1,22 @@
-import type { SkillCohort, TankServerStatsRow } from '@bronevik/schemas';
+import type { SkillCohort, TankServerStatsRow, VehicleSummary } from '@bronevik/schemas';
 
 import { describe, expect, it } from 'vitest';
-
-import { MOCK_VEHICLES, mockVehicleSummary } from '@/shared/mocks';
 
 import { BREAKDOWN_COHORTS } from '../../../config';
 import { cohortBreakdown, cohortRow } from '../cohort-breakdown';
 
-const VEHICLE = mockVehicleSummary(MOCK_VEHICLES[0]);
+const VEHICLE: VehicleSummary = {
+  tankId: 1,
+  name: 'Объект 140',
+  shortName: 'Об. 140',
+  slug: 'object-140',
+  nation: 'ussr',
+  type: 'mediumTank',
+  tier: 10,
+  isPremium: false,
+  isCollectible: false,
+  images: { small: null, contour: null, big: null }
+};
 
 const row = (cohort: SkillCohort, winRate: number, avgDamage: number): TankServerStatsRow => ({
   vehicle: VEHICLE,
@@ -47,7 +56,7 @@ describe('cohortBreakdown', () => {
   it('reports the win rate in percent', () => {
     const elite = cohortBreakdown(ROWS).find(({ cohort }) => cohort === 'elite');
 
-    expect(elite?.winRate).toBeCloseTo(cohortRow(ROWS, 'elite')?.winRate ?? 0);
+    expect(elite?.winRate).toBeCloseTo(cohortRow({ rows: ROWS, cohort: 'elite' })?.winRate ?? 0);
   });
 
   it('skips a cohort the server has no row for', () => {

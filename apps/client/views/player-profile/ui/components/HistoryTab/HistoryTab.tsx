@@ -1,41 +1,40 @@
 'use client';
 
-import { AtSign, Shield } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
-import { useNicknameHistory } from '../../../model/hooks';
-import { TabCard } from '../TabCard';
-import { TabState } from '../TabState';
+import { HISTORY } from '../../../config';
+import { useHistoryTab } from '../../../model/hooks';
+import { ProfilePanel } from '../ProfilePanel';
 import { HistoryTimeline } from './components';
 
 import s from './HistoryTab.module.scss';
 
 export const HistoryTab = () => {
   const t = useTranslations('profile.history');
-  const { data: history, isPending, isError } = useNicknameHistory();
+  const { nicknames, clans, isEmpty, isPending, isError, isRetrying, retry } = useHistoryTab();
 
   if (isError) {
-    return <TabState kind='error' />;
+    return <ErrorState isRetrying={isRetrying} onRetry={retry} />;
   }
 
   if (isPending) {
-    return <Skeleton height={320} shape='block' />;
+    return <Skeleton height={HISTORY.skeletonHeight} shape='block' />;
   }
 
-  if (history.length === 0) {
-    return <TabState kind='empty' />;
+  if (isEmpty) {
+    return <EmptyState title={t('empty')} />;
   }
 
   return (
     <div className={s.root}>
-      <TabCard eyebrow={t('eyebrow')} title={t('nicknames')}>
-        <HistoryTimeline entries={history.filter(({ kind }) => kind === 'nickname')} icon={<AtSign size={14} />} />
-      </TabCard>
-      <TabCard eyebrow={t('eyebrow')} title={t('clans')}>
-        <HistoryTimeline entries={history.filter(({ kind }) => kind === 'clan')} icon={<Shield size={14} />} />
-      </TabCard>
+      <ProfilePanel isFlush title={t('nicknames')}>
+        <HistoryTimeline entries={nicknames} />
+      </ProfilePanel>
+      <ProfilePanel isFlush title={t('clans')}>
+        <HistoryTimeline entries={clans} />
+      </ProfilePanel>
     </div>
   );
 };

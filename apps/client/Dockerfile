@@ -19,12 +19,10 @@ WORKDIR /app
 
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_WEB_URL
-ARG NEXT_PUBLIC_USE_MOCKS=false
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
-    NEXT_PUBLIC_WEB_URL=${NEXT_PUBLIC_WEB_URL} \
-    NEXT_PUBLIC_USE_MOCKS=${NEXT_PUBLIC_USE_MOCKS}
+    NEXT_PUBLIC_WEB_URL=${NEXT_PUBLIC_WEB_URL}
 
 # Manifests first, so the install layer stays cached until a package.json or
 # the lockfile changes. --frozen-lockfile validates the on-disk workspace

@@ -1,23 +1,7 @@
 import { isAxiosError } from 'axios';
 
-import { env } from '@/shared/config/client-env';
-
-import type { FromSourceInput } from './source.types';
-
-import { MOCK_SOURCE } from './source.constants';
+import { HTTP_STATUS } from './source.constants';
 import { NotFoundError, UnauthorizedError } from './source.errors';
-
-const HTTP_STATUS = {
-  unauthorized: 401,
-  notFound: 404
-} as const;
-
-const mockDelay = (signal?: AbortSignal) =>
-  new Promise<void>((resolve) => {
-    const timer = setTimeout(resolve, MOCK_SOURCE.latencyMs + Math.random() * MOCK_SOURCE.jitterMs);
-
-    signal?.addEventListener('abort', () => clearTimeout(timer), { once: true });
-  });
 
 const normalizeError = (error: unknown) => {
   if (!isAxiosError(error)) {
@@ -35,19 +19,15 @@ const normalizeError = (error: unknown) => {
   return error;
 };
 
-export const fromSource = async <T>({ mock, fetch, signal }: FromSourceInput<T>): Promise<T> => {
-  if (env.NEXT_PUBLIC_USE_MOCKS) {
-    await mockDelay(signal);
-
-    return mock();
-  }
-
+export const fromServer = async <T>(fetch: () => Promise<T>): Promise<T> => {
   try {
     return await fetch();
   } catch (error) {
     throw normalizeError(error);
   }
 };
+
+export const fromSdk = <T>(request: () => Promise<{ data: T }>): Promise<T> => fromServer(async () => (await request()).data);
 
 export const isNotFoundError = (error: unknown): error is NotFoundError => error instanceof NotFoundError;
 

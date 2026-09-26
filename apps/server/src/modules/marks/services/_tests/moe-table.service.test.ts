@@ -45,7 +45,7 @@ const createService = () => {
   const catalog = mock<VehicleCatalogService>();
   const empty = { moe: new Map(), mastery: new Map() };
 
-  thresholds.latest.mockResolvedValue({ ...empty, at: Date.now() });
+  thresholds.latest.mockResolvedValue(empty);
   thresholds.asOf.mockResolvedValue(empty);
   catalog.filter.mockResolvedValue([entry(vehicle(1, 'IS-7')), entry(vehicle(2, 'Object 279'))]);
 

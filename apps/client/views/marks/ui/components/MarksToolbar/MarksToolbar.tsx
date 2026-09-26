@@ -7,7 +7,7 @@ import { ArrowDownWideNarrow, ArrowUpNarrowWide, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { VehicleFilters } from '@/features/tank/filter-vehicles';
-import { Card, IconButton, Input, Select } from '@/ui-kit';
+import { IconButton, Input, Select } from '@/ui-kit';
 
 import { useMarksUrlState } from '../../../model/hooks';
 
@@ -20,7 +20,7 @@ export const MarksToolbar = () => {
   const isDesc = order === 'desc';
 
   return (
-    <Card className={s.root} padding='md' variant='sunken'>
+    <div className={s.root}>
       <VehicleFilters withPremium />
       <div className={s.row}>
         <Input
@@ -50,6 +50,6 @@ export const MarksToolbar = () => {
           </IconButton>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };

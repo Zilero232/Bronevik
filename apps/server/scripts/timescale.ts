@@ -17,7 +17,13 @@ if (!url) {
 
 const sqlDir = fileURLToPath(new URL('../prisma/sql/timescale/', import.meta.url));
 const files = await Promise.all((await readdir(sqlDir)).map(async (name) => ({ name, sql: await readFile(`${sqlDir}${name}`, 'utf8') })));
-const statements = buildTimescaleStatements({ files, config: TIMESCALE, refresh: process.argv.includes('--refresh') });
+const statements = buildTimescaleStatements({
+  files,
+  config: TIMESCALE,
+  refresh: process.argv.includes('--refresh'),
+  extensionsOnly: process.argv.includes('--extensions')
+});
+
 const client = new Client({ connectionString: url });
 
 console.log('→ config', TIMESCALE);

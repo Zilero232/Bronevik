@@ -7,7 +7,8 @@
 }
 
 .heading {
-  @include display(var(--text-lg));
+  font-size: var(--text-md);
+  font-weight: 600;
 }
 
 .event {

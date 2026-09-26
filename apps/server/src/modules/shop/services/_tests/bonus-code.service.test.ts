@@ -1,3 +1,4 @@
+import { subDays } from 'date-fns';
 import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -11,7 +12,6 @@ import { BONUS_CODE } from '../../config';
 import { BonusCodeService } from '../bonus-code.service';
 
 const now = new Date('2026-09-25T12:00:00Z');
-const dayMs = 86_400_000;
 
 const discovered = { code: 'MT2026TDAY', title: 'Tankman day', source: BONUS_CODE.wotexpressSource, sourceUrl: null, expiresAt: null };
 
@@ -105,7 +105,7 @@ describe('BonusCodeService.refreshStatuses', () => {
 
     const stale = prisma.bonusCode.updateMany.mock.calls[0]?.[0];
 
-    expect(stale?.where?.discoveredAt).toEqual({ lt: new Date(now.getTime() - BONUS_CODE.staleAfterDays * dayMs) });
+    expect(stale?.where?.discoveredAt).toEqual({ lt: subDays(now, BONUS_CODE.staleAfterDays) });
     expect(stale?.where?.lastReportAt).toBeNull();
 
     expect(prisma.bonusCode.update.mock.calls[0]?.[0]).toMatchObject({

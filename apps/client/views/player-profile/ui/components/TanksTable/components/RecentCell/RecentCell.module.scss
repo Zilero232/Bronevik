@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric;
+
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.rate {
+  font-size: var(--text-xs);
+}
+
+.dim {
+  color: var(--color-text-dim);
+}

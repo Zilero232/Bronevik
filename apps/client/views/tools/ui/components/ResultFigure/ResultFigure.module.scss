@@ -1,0 +1,40 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+
+  --figure: var(--color-text);
+
+  &[data-tone='good'] {
+    --figure: var(--color-success);
+  }
+
+  &[data-tone='bad'] {
+    --figure: var(--color-danger);
+  }
+}
+
+.label {
+  @include label;
+}
+
+.value {
+  @include numeric(var(--num-lg));
+
+  color: var(--figure);
+
+  [data-size='md'] > & {
+    font-size: var(--num-md);
+  }
+}
+
+.fallback {
+  color: var(--figure);
+  font-size: var(--text-md);
+  font-weight: 500;
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}

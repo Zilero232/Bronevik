@@ -1,14 +1,28 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  position: relative;
+  @include shell;
+  @include stack(var(--gap-section));
+
+  padding-block: var(--space-7) var(--space-8);
 }
 
-.sections {
-  @include shell;
-  @include stack(var(--space-11));
+.tables {
+  display: grid;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
-  @include below(md) {
-    gap: var(--space-9);
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.pair {
+  display: grid;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

@@ -1,11 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  gap: var(--space-5);
+.header {
+  padding: 0 var(--space-4);
 }
 
 .charts {
-  @include stack(var(--space-5));
+  @include stack(var(--space-4));
+
+  padding: var(--space-3) var(--space-4) var(--space-4);
 }
 
 .chart {
@@ -15,5 +17,5 @@
 }
 
 .label {
-  @include hud-label;
+  @include label;
 }

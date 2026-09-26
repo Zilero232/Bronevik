@@ -1,36 +1,70 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  gap: var(--space-5);
+.header {
+  padding: 0 var(--space-4);
 }
 
-.list {
-  @include stack(var(--space-5));
+.table {
+  width: 100%;
+  border-collapse: collapse;
 
-  padding: 0;
-  margin: 0;
-  list-style: none;
+  th,
+  td {
+    height: var(--row-h);
+    padding: 0 var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    text-align: right;
+  }
+
+  thead th {
+    @include label;
+
+    height: 32px;
+    background-color: var(--color-surface-raised);
+  }
+
+  th:first-child {
+    text-align: left;
+  }
+
+  tbody th {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+
+  td {
+    @include numeric;
+
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: none;
+  }
 }
 
-.row {
-  @include stack(var(--space-2));
+.rated {
+  @include tone;
+
+  color: var(--tone);
 }
 
-.name {
-  display: flex;
-  align-items: baseline;
-  color: var(--color-text);
-  font-family: var(--font-display);
-  font-size: var(--text-md);
-  font-stretch: 85%;
-  font-weight: 600;
+.damage {
+  display: inline-flex;
+  align-items: center;
   gap: var(--space-2);
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
 }
 
-.step {
-  @include hud-label;
+.track {
+  width: 48px;
+  height: 2px;
+  background-color: var(--color-border);
+}
 
-  color: var(--color-accent);
+.bar {
+  display: block;
+  height: 100%;
+  background-color: var(--color-steel);
 }

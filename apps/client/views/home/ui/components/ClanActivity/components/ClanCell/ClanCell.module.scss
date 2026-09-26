@@ -1,0 +1,25 @@
+.root {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  color: var(--color-text);
+  gap: var(--space-3);
+  text-decoration: none;
+
+  &:hover .tag {
+    color: var(--color-accent);
+  }
+}
+
+.tag {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.name {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

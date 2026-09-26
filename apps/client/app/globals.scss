@@ -13,30 +13,14 @@ html {
 
 body {
   position: relative;
-  background: var(--dusk), var(--brushed), var(--color-bg);
-  background-attachment: fixed;
+  background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: var(--text-md);
   -webkit-font-smoothing: antialiased;
+  font-variant-numeric: lining-nums;
   line-height: var(--leading-body);
   -webkit-tap-highlight-color: transparent;
-}
-
-body:after {
-  position: fixed;
-  z-index: 0;
-  background-image: var(--noise);
-  content: '';
-  inset: 0;
-  mix-blend-mode: overlay;
-  opacity: var(--noise-opacity);
-  pointer-events: none;
-}
-
-body > * {
-  position: relative;
-  z-index: 1;
 }
 
 ::selection {
@@ -90,24 +74,14 @@ select,
 
 .bronevik-toaster [data-sonner-toast] {
   align-items: center;
-  padding: 12px 16px;
+  padding: 8px 12px;
   border: 1px solid var(--color-border-strong) !important;
-  border-radius: var(--radius-md) !important;
-  background: var(--brushed), var(--color-surface-raised) !important;
-  box-shadow: var(--elevation-3) !important;
+  border-radius: var(--radius-sm) !important;
+  border-left: 2px solid var(--toast-tone, var(--color-steel)) !important;
+  background: var(--color-surface-raised) !important;
+  box-shadow: var(--shadow-popover) !important;
   color: var(--color-text) !important;
   font-family: var(--font-sans);
-}
-
-.bronevik-toaster [data-sonner-toast]:before {
-  position: absolute;
-  top: 10px;
-  bottom: 10px;
-  left: 0;
-  width: 3px;
-  border-radius: 0 2px 2px 0;
-  background-color: var(--toast-tone, var(--color-steel));
-  content: '';
 }
 
 .bronevik-toaster [data-sonner-toast][data-type='success'] {

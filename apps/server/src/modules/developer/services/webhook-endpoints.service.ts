@@ -7,7 +7,7 @@ import type { CreateEndpointInput, OwnedKeyInput, UpdateEndpointInput } from '..
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { API_PLANS, WEBHOOK_DELIVERY, WEBHOOK_EVENT_TO_DB } from '../config';
-import { generateWebhookSecret, isPublicWebhookUrl, toWebhookDelivery, toWebhookEndpoint } from '../lib';
+import { generateWebhookSecret, resolvesPublicly, toWebhookDelivery, toWebhookEndpoint } from '../lib';
 import { DeveloperPlanService } from './developer-plan.service';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class WebhookEndpointsService {
   }
 
   async create({ userId, url, events, filter }: CreateEndpointInput): Promise<CreatedWebhookEndpoint> {
-    this.assertPublic(url);
+    await this.assertPublic(url);
 
     const [plan, existing] = await Promise.all([this.plans.planFor(userId), this.prisma.webhookEndpoint.count({ where: { userId } })]);
     const limit = API_PLANS[plan].webhooks;
@@ -46,7 +46,7 @@ export class WebhookEndpointsService {
     await this.owned({ userId, id });
 
     if (url !== undefined) {
-      this.assertPublic(url);
+      await this.assertPublic(url);
     }
 
     const row = await this.prisma.webhookEndpoint.update({
@@ -79,8 +79,8 @@ export class WebhookEndpointsService {
     return rows.flatMap(toWebhookDelivery);
   }
 
-  private assertPublic(url: string): void {
-    if (!isPublicWebhookUrl(url)) {
+  private async assertPublic(url: string): Promise<void> {
+    if (!(await resolvesPublicly({ url }))) {
       throw new AppBadRequestException('VALIDATION_FAILED', 'A webhook must point to a public https address');
     }
   }

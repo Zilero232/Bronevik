@@ -8,24 +8,23 @@
 
 .root {
   @include reset-button;
-  @include plate(var(--chamfer-md));
-  @include stack(var(--space-3));
+  @include panel;
+  @include stack(var(--space-2));
 
   width: 100%;
-  padding: var(--space-4);
+  padding: var(--space-3);
   text-align: left;
-  transition: background-color var(--duration-base) ease;
 
   &:hover {
-    background-color: var(--color-border-strong);
+    border-color: var(--color-text-dim);
   }
 
   &:focus-visible {
     @include focus-ring;
   }
 
-  &[data-active='true'] {
-    background-color: var(--side);
+  &[aria-pressed='true'] {
+    border-color: var(--side);
 
     .cta {
       color: var(--side);
@@ -46,28 +45,35 @@
   display: inline-flex;
   align-items: baseline;
   font-size: var(--text-lg);
-  font-weight: 700;
+  font-weight: 600;
   gap: var(--space-2);
 }
 
 .label {
-  @include hud-label;
+  @include label;
 }
 
 .gear {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
+  @include stack(2px);
 }
 
 .gearItem {
   @include category;
 
-  padding: 2px var(--space-2);
-  border-left: 2px solid var(--category);
-  background: var(--color-surface-sunken);
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  padding-left: var(--space-2);
+  box-shadow: inset 2px 0 0 var(--category);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
+  gap: var(--space-2);
+}
+
+.gearName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stats {
@@ -95,11 +101,8 @@
 }
 
 .cta {
-  @include hud-label;
+  @include label;
 
-  display: inline-flex;
-  align-items: center;
   padding-top: var(--space-2);
-  border-top: 1px dashed var(--color-border);
-  gap: var(--space-2);
+  border-top: 1px solid var(--color-border);
 }

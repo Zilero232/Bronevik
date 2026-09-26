@@ -3,12 +3,16 @@
 .root {
   --event: var(--color-steel);
 
-  position: relative;
   display: grid;
+  min-height: var(--row-h);
   align-items: center;
-  column-gap: var(--space-3);
-  grid-template-columns: 32px minmax(0, 1fr) auto;
-  padding-block: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  column-gap: var(--space-4);
+  grid-template-columns: 48px minmax(0, 1fr);
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   &[data-type='joined'] {
     --event: var(--color-success);
@@ -23,22 +27,11 @@
   }
 }
 
-.icon {
-  position: relative;
-  display: inline-flex;
-  width: 32px;
-  height: 32px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--event) 55%, transparent);
-  background: color-mix(in srgb, var(--event) 14%, var(--color-surface));
-  color: var(--event);
+.time {
+  @include numeric;
 
-  @include chamfer-path(6px);
-}
-
-.body {
-  min-width: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
 }
 
 .text {
@@ -50,7 +43,6 @@
 .nickname {
   color: var(--color-text);
   font-weight: 600;
-  text-decoration: none;
 
   &:is(a):hover {
     color: var(--color-accent);
@@ -61,23 +53,10 @@
   }
 }
 
-.roles {
-  @include hud-label;
-
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  margin: var(--space-1) 0 0;
-  gap: var(--space-1);
-}
-
-.newRole {
+.action {
   color: var(--event);
 }
 
-.time {
-  @include numeric;
-
-  color: var(--color-text-dim);
-  font-size: var(--text-xs);
+.roles {
+  color: var(--color-text-muted);
 }

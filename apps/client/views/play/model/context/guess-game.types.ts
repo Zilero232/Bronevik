@@ -23,4 +23,5 @@ export type GuessGame = {
   submit: (vehicle: VehicleSummary) => void;
 };
 
-export type GuessGameState = { kind: 'error' } | { kind: 'loading' } | { kind: 'ready'; game: GuessGame } | { kind: 'unavailable' };
+export type GuessGameState =
+  { kind: 'error'; isRetrying: boolean; retry: () => void } | { kind: 'loading' } | { kind: 'ready'; game: GuessGame } | { kind: 'unavailable' };

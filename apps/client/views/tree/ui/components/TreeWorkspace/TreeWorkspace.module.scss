@@ -1,13 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-9));
+  @include stack(var(--space-6));
 }
 
 .stage {
   display: grid;
   align-items: start;
-  gap: var(--space-4);
+  gap: var(--gap-panel);
   grid-template-columns: minmax(0, 1fr) 320px;
 
   @include below(3xl) {

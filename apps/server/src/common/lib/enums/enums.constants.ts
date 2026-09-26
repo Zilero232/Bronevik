@@ -99,6 +99,7 @@ export const NOTIFICATION_EVENT_FROM_DB = {
   sessionFinished: 'session_finished',
   clanRosterChanged: 'clan_roster_changed',
   clanEventReminder: 'clan_event_reminder',
+  clanWeeklyReport: 'clan_weekly_report',
   bonusCode: 'bonus_code',
   premiumOffer: 'premium_offer',
   tankChanged: 'tank_changed',

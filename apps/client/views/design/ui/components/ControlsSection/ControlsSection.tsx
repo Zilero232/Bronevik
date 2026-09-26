@@ -9,9 +9,9 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { PeriodSwitcher } from '@/features/stats/select-period';
-import { MOCK_PLAYERS } from '@/shared/mocks';
 import { Avatar, Badge, Button, IconButton, Input, Kbd, Select, Switch, Tabs } from '@/ui-kit';
 
+import { AVATAR_SPECIMENS } from '../../../config';
 import { DesignBlock, DesignRow } from '../DesignBlock';
 
 import s from './ControlsSection.module.scss';
@@ -60,7 +60,7 @@ export const ControlsSection = () => {
       </DesignRow>
       <DesignRow className={s.inputs} label={t('inputs')}>
         <Input icon={<Crosshair size={16} />} placeholder={t('placeholder')} trailing={<Kbd>/</Kbd>} />
-        <Input isInvalid defaultValue='Stalevar_1987!' size='sm' />
+        <Input isInvalid defaultValue={t('invalidValue')} size='sm' />
         <Select
           items={NATIONS.map((value) => {
             const Icon = NATION_ICONS[value];
@@ -89,8 +89,8 @@ export const ControlsSection = () => {
         />
       </DesignRow>
       <DesignRow label={t('avatars')}>
-        {MOCK_PLAYERS.slice(0, 5).map((player, index) => (
-          <Avatar key={player.id} name={player.nickname} size={index === 0 ? 'lg' : 'md'} />
+        {AVATAR_SPECIMENS.map((name, index) => (
+          <Avatar key={name} name={name} size={index === 0 ? 'lg' : 'md'} />
         ))}
       </DesignRow>
     </DesignBlock>

@@ -1,15 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md));
+  @include panel;
 
-  position: relative;
   display: flex;
-  min-height: 150px;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: var(--space-5);
-  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3);
+  border-top: 2px solid var(--slot);
+  gap: var(--space-2);
 
   --slot: var(--color-accent);
 
@@ -24,77 +22,45 @@
   &[data-slot='3'] {
     --slot: var(--rating-unicum);
   }
-
-  &:after {
-    position: absolute;
-    top: 0;
-    right: var(--space-5);
-    left: var(--space-5);
-    height: 3px;
-    border-radius: 0 0 3px 3px;
-    background-color: var(--slot);
-    content: '';
-  }
-}
-
-.index {
-  @include numeric;
-
-  position: absolute;
-  top: var(--space-3);
-  left: var(--space-4);
-  color: var(--slot);
-  font-size: var(--text-xs);
-  font-weight: 700;
-}
-
-.remove {
-  position: absolute;
-  top: var(--space-2);
-  right: var(--space-2);
 }
 
 .body {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.text {
-  @include stack(2px);
+  @include stack(var(--space-2));
 
   min-width: 0;
   flex: 1;
 }
 
-.nickname {
-  overflow: hidden;
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-stretch: 80%;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.player {
+  min-width: 0;
+  color: var(--color-text);
 
   &:hover {
     color: var(--color-accent);
   }
 }
 
-.clan {
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
+.figure {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
 }
 
-.bi {
-  @include numeric;
+.label {
+  @include label;
+}
 
-  font-size: var(--text-xs);
-  font-weight: 700;
+.value {
+  @include numeric(var(--text-md));
+  @include tone;
+
+  color: var(--tone);
 }
 
 .error {
+  display: flex;
+  align-items: center;
   color: var(--color-danger);
   font-size: var(--text-sm);
+  gap: var(--space-2);
 }

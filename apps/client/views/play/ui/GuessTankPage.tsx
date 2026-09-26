@@ -1,39 +1,41 @@
 'use client';
 
-import { CircleOff, TriangleAlert } from 'lucide-react';
+import { CircleOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { EmptyState } from '@/ui-kit';
+import { DataSourceNote, EmptyState, ErrorState, PageHeader } from '@/ui-kit';
 
-import { GuessGameContext, useGuessGameState } from '../model/context';
-import { GuessArena, GuessHero, GuessSkeleton } from './components';
+import { GuessGameContext } from '../model/context';
+import { useGuessGameState } from '../model/hooks';
+import { GuessArena, GuessLegend, GuessSkeleton } from './components';
 
 import s from './GuessTankPage.module.scss';
 
 export const GuessTankPage = () => {
-  const t = useTranslations('play.states');
+  const t = useTranslations('play');
   const state = useGuessGameState();
 
   return (
     <div className={s.root}>
-      <GuessHero />
-      <div className={s.body}>
-        {match(state)
-          .with({ kind: 'loading' }, () => <GuessSkeleton />)
-          .with({ kind: 'error' }, () => (
-            <EmptyState description={t('errorDescription')} icon={<TriangleAlert size={28} />} title={t('errorTitle')} />
-          ))
-          .with({ kind: 'unavailable' }, () => (
-            <EmptyState description={t('emptyDescription')} icon={<CircleOff size={28} />} title={t('emptyTitle')} />
-          ))
-          .with({ kind: 'ready' }, ({ game }) => (
-            <GuessGameContext value={game}>
-              <GuessArena />
-            </GuessGameContext>
-          ))
-          .exhaustive()}
-      </div>
+      <PageHeader description={t('head.description')} title={t('head.title')}>
+        <GuessLegend />
+      </PageHeader>
+      {match(state)
+        .with({ kind: 'loading' }, () => <GuessSkeleton />)
+        .with({ kind: 'error' }, ({ isRetrying, retry }) => (
+          <ErrorState description={t('states.errorDescription')} isRetrying={isRetrying} title={t('states.errorTitle')} onRetry={retry} />
+        ))
+        .with({ kind: 'unavailable' }, () => (
+          <EmptyState description={t('states.emptyDescription')} icon={<CircleOff size={16} />} title={t('states.emptyTitle')} />
+        ))
+        .with({ kind: 'ready' }, ({ game }) => (
+          <GuessGameContext value={game}>
+            <GuessArena />
+          </GuessGameContext>
+        ))
+        .exhaustive()}
+      <DataSourceNote />
     </div>
   );
 };

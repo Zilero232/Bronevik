@@ -5,7 +5,7 @@ import type { NotificationSettings } from '@bronevik/schemas';
 import { useTranslations } from 'next-intl';
 import { match, P } from 'ts-pattern';
 
-import { Skeleton } from '@/ui-kit';
+import { ErrorState, Skeleton } from '@/ui-kit';
 
 import { useNotificationSettings } from '../../../model/hooks';
 import { ChannelsSection } from '../ChannelsSection';
@@ -17,7 +17,7 @@ import s from './SettingsPanel.module.scss';
 
 export const SettingsPanel = () => {
   const t = useTranslations('notifications.settings');
-  const { settings, isPending, save } = useNotificationSettings();
+  const { settings, isPending, isFetching, refetch, save } = useNotificationSettings();
 
   const onPatch = (patch: Partial<NotificationSettings>) => save.mutate(patch);
 
@@ -36,5 +36,5 @@ export const SettingsPanel = () => {
         <Skeleton height={320} shape='block' />
       </div>
     ))
-    .otherwise(() => <p className={s.error}>{t('error')}</p>);
+    .otherwise(() => <ErrorState isRetrying={isFetching} title={t('error')} onRetry={() => void refetch()} />);
 };

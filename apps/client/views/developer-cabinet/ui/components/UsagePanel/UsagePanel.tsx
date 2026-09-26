@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { match, P } from 'ts-pattern';
 
 import { STAGGER_ITEM } from '@/shared/lib';
-import { EmptyState, SectionHeader, SegmentedControl, Select, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, SectionHeader, SegmentedControl, Select, Skeleton } from '@/ui-kit';
 
 import type { UsagePeriod } from './UsagePanel.types';
 
@@ -19,12 +19,13 @@ import s from './UsagePanel.module.scss';
 
 export const UsagePanel = () => {
   const t = useTranslations('developer.usage');
-  const { data: keys } = useApiKeys();
+  const keysQuery = useApiKeys();
   const [keyId, setKeyId] = useState('');
   const [period, setPeriod] = useState<UsagePeriod>(USAGE.initialPeriod);
 
+  const keys = keysQuery.data;
   const selectedId = keys?.some(({ id }) => id === keyId) ? keyId : (keys?.[0]?.id ?? '');
-  const { data: usage, isPlaceholderData } = useApiKeyUsage({ id: selectedId, days: Number(period) });
+  const usageQuery = useApiKeyUsage({ id: selectedId, days: Number(period) });
 
   return (
     <motion.section className={s.root} id='usage' variants={STAGGER_ITEM}>
@@ -47,10 +48,16 @@ export const UsagePanel = () => {
           />
         </div>
       )}
-      {match({ selectedId, usage })
+      {match({ selectedId, usage: usageQuery.data, isFailed: keysQuery.isError || usageQuery.isError })
+        .with({ isFailed: true }, () => (
+          <ErrorState
+            isRetrying={keysQuery.isFetching || usageQuery.isFetching}
+            onRetry={() => void (keysQuery.isError ? keysQuery.refetch() : usageQuery.refetch())}
+          />
+        ))
         .with({ selectedId: '' }, () => <EmptyState description={t('noKeysHint')} icon={<Activity size={22} />} title={t('noKeys')} />)
         .with({ usage: P.nonNullable }, ({ usage: loaded }) => (
-          <div className={s.body} data-stale={isPlaceholderData}>
+          <div className={s.body} data-stale={usageQuery.isPlaceholderData}>
             <UsageToday usage={loaded} />
             <UsageCharts history={loaded.history} />
             <div className={s.split}>

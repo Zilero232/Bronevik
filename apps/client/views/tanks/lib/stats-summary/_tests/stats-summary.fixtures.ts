@@ -1,6 +1,6 @@
 import type { TankServerStatsRow } from '@bronevik/schemas';
 
-export const mockStatsRowsForTest = (seeds: Pick<TankServerStatsRow, 'battles' | 'winRateDiff'>[]): TankServerStatsRow[] =>
+export const statsRowsFixture = (seeds: Pick<TankServerStatsRow, 'battles' | 'winRateDiff'>[]): TankServerStatsRow[] =>
   seeds.map(({ battles, winRateDiff }, index) => ({
     vehicle: {
       tankId: index + 1,

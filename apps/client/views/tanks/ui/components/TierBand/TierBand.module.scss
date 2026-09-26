@@ -2,13 +2,14 @@
 
 .root {
   display: grid;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--brushed), var(--color-surface);
-  grid-template-columns: 72px minmax(0, 1fr);
+  border-bottom: 1px solid var(--color-border);
+  grid-template-columns: 48px minmax(0, 1fr);
 
   --band: var(--rating-average);
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   &[data-rank='S'] {
     --band: var(--rating-unicum);
@@ -29,33 +30,24 @@
   &[data-rank='F'] {
     --band: var(--rating-bad);
   }
-
-  @include below(md) {
-    grid-template-columns: 44px minmax(0, 1fr);
-  }
 }
 
 .rank {
-  @include display(var(--text-2xl));
+  @include heading(var(--text-xl));
 
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--band) 38%, transparent), color-mix(in srgb, var(--band) 8%, transparent));
-  box-shadow: inset -2px 0 0 var(--band);
+  border-right: 2px solid var(--band);
+  background-color: var(--color-surface-raised);
   color: var(--band);
-  text-shadow: 0 0 18px var(--band);
 }
 
 .cards {
-  display: grid;
-  padding: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  padding: var(--space-2);
   margin: 0;
-  gap: var(--space-2);
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--space-1);
   list-style: none;
-
-  @include below(md) {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }

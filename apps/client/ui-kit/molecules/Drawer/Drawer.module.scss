@@ -7,7 +7,7 @@
   background-color: var(--color-overlay);
   inset: 0;
   opacity: calc(1 - var(--drawer-swipe-progress, 0));
-  transition: opacity 0.4s var(--ease-out);
+  transition: opacity var(--duration-base) var(--ease-out);
 
   &[data-starting-style],
   &[data-ending-style] {
@@ -33,15 +33,15 @@
   width: min(360px, 88vw);
   height: 100%;
   flex-direction: column;
-  padding: calc(var(--space-5) + var(--safe-area-top)) var(--space-5) calc(var(--space-5) + var(--safe-area-bottom));
+  padding: calc(var(--space-4) + var(--safe-area-top)) var(--space-4) calc(var(--space-4) + var(--safe-area-bottom));
   border-left: 1px solid var(--color-border-strong);
-  background: var(--brushed), var(--color-surface-raised);
-  box-shadow: var(--elevation-3);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-popover);
   overflow-y: auto;
   overscroll-behavior: contain;
   pointer-events: auto;
   transform: translateX(var(--drawer-swipe-movement-x, 0));
-  transition: transform 0.45s var(--ease-out);
+  transition: transform var(--duration-base) var(--ease-out);
 
   &[data-starting-style],
   &[data-ending-style] {
@@ -64,13 +64,13 @@
 }
 
 .title {
-  @include hud-label;
+  @include label;
 }
 
 .close {
-  @include icon-button(34px);
+  @include icon-button(32px);
 }
 
 .content {
-  @include stack(var(--space-5));
+  @include stack(var(--space-4));
 }

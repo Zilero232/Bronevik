@@ -13,6 +13,7 @@ export const notificationEventSchema = z
     'session_finished',
     'clan_roster_changed',
     'clan_event_reminder',
+    'clan_weekly_report',
     'bonus_code',
     'premium_offer',
     'tank_changed',

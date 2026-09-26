@@ -1,14 +1,16 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  gap: var(--space-4);
+  @include stack(var(--space-3));
 }
 
-.bar {
+.row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  padding-bottom: var(--space-4);
-  border-bottom: 1px dashed var(--color-border);
   gap: var(--space-3);
+}
+
+.view {
+  margin-left: auto;
 }

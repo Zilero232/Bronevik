@@ -1,1 +1,2 @@
-export { useIsScrolled } from './use-is-scrolled';
+export { useGameStatus } from './use-game-status';
+export type { GameStatus } from './use-game-status';

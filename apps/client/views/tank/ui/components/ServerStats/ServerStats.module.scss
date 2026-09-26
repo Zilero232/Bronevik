@@ -1,10 +1,20 @@
 @use '@/shared/styles/mixins' as *;
 
+.root {
+  @include stack(var(--gap-panel));
+
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
+}
+
+.header {
+  padding: 0 var(--space-4);
+}
+
 .layout {
   display: grid;
   align-items: start;
-  gap: var(--space-4);
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  gap: var(--gap-panel);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
 
   @include below(3xl) {
     grid-template-columns: minmax(0, 1fr);

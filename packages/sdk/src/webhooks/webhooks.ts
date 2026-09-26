@@ -1,47 +1,23 @@
-import type { CompareInput, HmacHexInput, VerifyWebhookInput } from './webhooks.types';
+import { Webhook, WebhookVerificationError } from 'standardwebhooks';
 
-import { WEBHOOK_SIGNATURE } from './webhooks.constants';
+import type { BronevikWebhook, VerifyWebhookInput, WebhookHeaders } from './webhooks.types';
 
-const encoder = new TextEncoder();
+const flatHeaders = (headers: WebhookHeaders): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(headers).flatMap(([name, value]) =>
+      value === undefined ? [] : [[name.toLowerCase(), Array.isArray(value) ? value.join(',') : value]]
+    )
+  );
 
-const hmacHex = async ({ secret, data }: HmacHexInput): Promise<string> => {
-  const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
+const isBronevikWebhook = (value: unknown): value is BronevikWebhook =>
+  typeof value === 'object' && value !== null && 'id' in value && 'event' in value && 'data' in value;
 
-  return [...new Uint8Array(signature)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
-};
+export const verifyWebhook = ({ secret, body, headers }: VerifyWebhookInput): BronevikWebhook => {
+  const payload = new Webhook(secret).verify(body, flatHeaders(headers));
 
-const constantTimeEqual = ({ left, right }: CompareInput): boolean => {
-  if (left.length !== right.length) {
-    return false;
+  if (!isBronevikWebhook(payload)) {
+    throw new WebhookVerificationError('The payload is not a Bronevik webhook');
   }
 
-  let difference = 0;
-
-  for (let index = 0; index < left.length; index += 1) {
-    difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
-  }
-
-  return difference === 0;
-};
-
-export const verifyWebhookSignature = async ({
-  secret,
-  body,
-  signature,
-  timestamp,
-  toleranceSec = WEBHOOK_SIGNATURE.toleranceSec,
-  now = new Date()
-}: VerifyWebhookInput): Promise<boolean> => {
-  if (!signature?.startsWith(WEBHOOK_SIGNATURE.scheme) || !timestamp || !/^\d+$/.test(timestamp)) {
-    return false;
-  }
-
-  if (Math.abs(now.getTime() / 1000 - Number(timestamp)) > toleranceSec) {
-    return false;
-  }
-
-  const expected = await hmacHex({ secret, data: `${timestamp}.${body}` });
-
-  return constantTimeEqual({ left: signature.slice(WEBHOOK_SIGNATURE.scheme.length).toLowerCase(), right: expected });
+  return payload;
 };

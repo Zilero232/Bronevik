@@ -1,0 +1,34 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: start;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+
+  @include from(3xl) {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+
+  &[data-fullscreen='true'] {
+    overflow: auto;
+    padding: var(--space-4);
+    background: var(--color-bg);
+  }
+}
+
+.viewport {
+  display: flex;
+  min-height: 560px;
+  flex-direction: column;
+
+  @include plate(var(--chamfer-lg), var(--color-border-strong), var(--color-bg-deep));
+
+  @include below(md) {
+    min-height: 420px;
+  }
+
+  [data-fullscreen='true'] & {
+    min-height: calc(100dvh - var(--space-8));
+  }
+}

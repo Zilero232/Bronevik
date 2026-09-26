@@ -28,10 +28,11 @@ const toModule = ({ option, slot, turretId }: ToModuleInput): BuildModule => ({
   turretId: turretId ?? null
 });
 
-export const toBuildItem = ({ id, tag, name, categories, price }: ProvisionOption): BuildItem => ({
+export const toBuildItem = ({ id, tag, name, image, categories, price }: ProvisionOption): BuildItem => ({
   id,
   tag,
   name: gameLabel(name),
+  image,
   category: categories.find(isCategory) ?? null,
   isPremium: price?.currency === PREMIUM_CURRENCY
 });
@@ -59,7 +60,13 @@ export const buildCatalog = (options: BuildOptions): BuildCatalog => ({
     level,
     options: items.map(toBuildItem)
   })),
-  skills: options.crewSkills.map(({ skill, name, roles, isCommon }): BuildSkill => ({ id: skill, name: gameLabel(name), roles, isCommon })),
+  skills: options.crewSkills.map(({ skill, name, image, roles, isCommon }): BuildSkill => ({
+    id: skill,
+    name: gameLabel(name),
+    image,
+    roles,
+    isCommon
+  })),
   crewRoles: crewRolesOf(options)
 });
 

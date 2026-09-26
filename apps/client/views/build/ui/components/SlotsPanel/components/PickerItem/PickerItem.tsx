@@ -1,50 +1,41 @@
 'use client';
 
-import { Check } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
-import { STAGGER_ITEM } from '@/shared/lib';
 import { Badge } from '@/ui-kit';
 
 import type { PickerItemProps } from './PickerItem.types';
 
-import { CATEGORY_ICONS } from '../../../../../config';
+import { BUILD_VIEW } from '../../../../../config';
+import { GameIcon } from '../../../GameIcon';
 
 import s from './PickerItem.module.scss';
 
 export const PickerItem = ({ item, isSelected, isTaken, onPick }: PickerItemProps) => {
   const t = useTranslations('builds');
 
-  const { id, name, category, isPremium } = item;
-  const CategoryIcon = category ? CATEGORY_ICONS[category] : null;
+  const { id, name, image, category, isPremium } = item;
 
   return (
-    <motion.li className={s.item} variants={STAGGER_ITEM}>
+    <li className={s.item}>
       <button
         aria-pressed={isSelected}
         className={s.root}
         data-category={category ?? undefined}
-        data-selected={isSelected}
         disabled={isTaken}
         type='button'
         onClick={() => onPick(id)}
       >
-        <span className={s.head}>
-          {CategoryIcon && (
-            <span className={s.icon}>
-              <CategoryIcon size={14} strokeWidth={2} />
-            </span>
-          )}
+        <GameIcon size={BUILD_VIEW.iconSize.picker} src={image} />
+        <span className={s.text}>
           <span className={s.name}>{name}</span>
-          {isSelected && <Check className={s.check} size={16} />}
+          <span className={s.tags}>
+            {category && <span className={s.category}>{t(`categories.${category}`)}</span>}
+            {isTaken && <span className={s.taken}>{t('slot.taken')}</span>}
+          </span>
         </span>
-        <span className={s.tags}>
-          {category && <span className={s.spec}>{t(`categories.${category}`)}</span>}
-          {isPremium && <Badge tone='warning'>{t('slot.premium')}</Badge>}
-          {isTaken && <span className={s.taken}>{t('slot.taken')}</span>}
-        </span>
+        {isPremium && <Badge tone='warning'>{t('slot.premium')}</Badge>}
       </button>
-    </motion.li>
+    </li>
   );
 };

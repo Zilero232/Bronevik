@@ -1,12 +1,10 @@
-export type CountdownInput = {
+export type CodeLifetimeInput = {
   expiresAt: string;
   issuedAt: number;
   now: number;
 };
 
-export type Countdown = {
+export type CodeLifetime = {
   left: number;
-  ratio: number;
-  label: string;
-  isExpired: boolean;
+  total: number;
 };

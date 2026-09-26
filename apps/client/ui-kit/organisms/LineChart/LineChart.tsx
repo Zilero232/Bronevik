@@ -1,8 +1,10 @@
 'use client';
 
+import { CHART, useChartFormat } from '@/shared/lib';
+
 import type { LineChartProps } from './LineChart.types';
 
-import { CHART, ChartFrame, useChartFormat } from '../ChartKit';
+import { ChartFrame } from '../ChartKit';
 import { LineChartPlot } from './components';
 
 export const LineChart = ({

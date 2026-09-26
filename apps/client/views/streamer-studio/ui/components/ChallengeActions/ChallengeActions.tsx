@@ -1,6 +1,5 @@
 'use client';
 
-import { Ban } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { ChallengeActionsProps } from './ChallengeActions.types';
@@ -25,7 +24,6 @@ export const ChallengeActions = ({ id, status }: ChallengeActionsProps) => {
       <ConfirmAction
         confirmLabel={t('cancel')}
         description={t('cancelDescription')}
-        icon={<Ban size={14} />}
         isPending={cancel.isPending}
         title={t('cancelTitle')}
         triggerLabel={t('cancel')}

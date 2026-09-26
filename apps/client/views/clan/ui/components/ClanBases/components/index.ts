@@ -1,3 +1,5 @@
+export { BaseCard } from './BaseCard';
+export { BaseRow } from './BaseRow';
+export { BaseSection } from './BaseSection';
 export { GlobalMapCard } from './GlobalMapCard';
-export { LevelPips } from './LevelPips';
 export { StrongholdCard } from './StrongholdCard';

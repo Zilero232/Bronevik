@@ -25,4 +25,5 @@ export type BuildTimescaleStatementsInput = {
   files: readonly TimescaleSqlFile[];
   config: TimescaleConfig;
   refresh?: boolean;
+  extensionsOnly?: boolean;
 };

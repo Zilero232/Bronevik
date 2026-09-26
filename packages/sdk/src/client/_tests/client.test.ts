@@ -53,12 +53,30 @@ describe('createBronevikClient', () => {
       .mockResolvedValueOnce(json({ error: 'slow down', code: 'RATE_LIMITED' }, 429))
       .mockResolvedValueOnce(json({ mode: 'random', period: '7d', generatedAt: '', entries: [] }));
 
-    const client = createBronevikClient({ apiKey: 'brv_key', baseUrl: 'https://api.test', fetch, retry: { minTimeoutMs: 1, maxTimeoutMs: 1 } });
+    const client = createBronevikClient({ apiKey: 'brv_key', baseUrl: 'https://api.test', fetch, retry: { delay: () => 0 } });
 
     const { response } = await getTierList({ client });
 
     expect(response?.status).toBe(200);
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('waits for Retry-After and gives up after the retry limit', async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(async () => {
+      const response = json({ error: 'slow down', code: 'RATE_LIMITED' }, 429);
+
+      response.headers.set('retry-after', '0');
+
+      return response;
+    });
+
+    const client = createBronevikClient({ apiKey: 'brv_key', baseUrl: 'https://api.test', fetch, retry: { limit: 2, delay: () => 0 } });
+
+    const { response, error } = await getTierList({ client });
+
+    expect(response?.status).toBe(429);
+    expect(error).toEqual({ error: 'slow down', code: 'RATE_LIMITED' });
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 
   it('makes one attempt when retries are off', async () => {

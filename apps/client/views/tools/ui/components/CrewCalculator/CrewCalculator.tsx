@@ -8,7 +8,7 @@ import type { CrewValues } from './CrewCalculator.types';
 
 import { CREW_BONUSES, CREW_XP } from '../../../config';
 import { useCalcState } from '../../../model/hooks';
-import { CalcShell } from '../CalcKit';
+import { CalcShell } from '../CalcShell';
 import { CrewResults } from './components';
 
 import s from './CrewCalculator.module.scss';

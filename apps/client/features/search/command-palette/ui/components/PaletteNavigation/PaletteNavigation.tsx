@@ -1,8 +1,7 @@
 import { Command } from 'cmdk';
-import { Palette } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES, SITE_NAV, SITE_NAV_ICONS } from '@/shared/constants';
+import { ROUTES, SITE_NAV, SITE_NAV_MORE } from '@/shared/constants';
 
 import type { PaletteNavigationProps } from './PaletteNavigation.types';
 
@@ -14,8 +13,8 @@ export const PaletteNavigation = ({ query, onSelect }: PaletteNavigationProps) =
 
   const needle = query.trim().toLocaleLowerCase();
   const items = [
-    ...SITE_NAV.map((item) => ({ key: item.key, href: item.href, label: tNav(item.key), icon: SITE_NAV_ICONS[item.key] })),
-    { key: 'design', href: ROUTES.design, label: tNav('design'), icon: Palette }
+    ...[...SITE_NAV, ...SITE_NAV_MORE].map((item) => ({ key: item.key, href: item.href, label: tNav(item.key) })),
+    { key: 'design', href: ROUTES.design, label: tNav('design') }
   ].filter((item) => !needle || item.label.toLocaleLowerCase().includes(needle));
 
   if (items.length === 0) {
@@ -24,20 +23,9 @@ export const PaletteNavigation = ({ query, onSelect }: PaletteNavigationProps) =
 
   return (
     <Command.Group heading={t('sections')}>
-      {items.map((item) => {
-        const Icon = item.icon;
-
-        return (
-          <PaletteItem
-            key={item.key}
-            icon={<Icon size={20} strokeWidth={1.75} />}
-            meta={item.href}
-            title={item.label}
-            value={`nav-${item.key}`}
-            onSelect={() => onSelect(item.href)}
-          />
-        );
-      })}
+      {items.map((item) => (
+        <PaletteItem key={item.key} meta={item.href} title={item.label} value={`nav-${item.key}`} onSelect={() => onSelect(item.href)} />
+      ))}
     </Command.Group>
   );
 };

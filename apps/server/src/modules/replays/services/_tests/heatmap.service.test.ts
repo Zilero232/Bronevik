@@ -59,6 +59,7 @@ describe('HeatmapService.get', () => {
 
     expect(heatmap.gridSize).toBe(HEATMAP.gridSize);
     expect(heatmap.samples).toBe(0);
+    expect(heatmap.updatedAt).toBeNull();
   });
 });
 

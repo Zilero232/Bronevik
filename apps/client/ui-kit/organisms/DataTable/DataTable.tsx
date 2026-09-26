@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 import type { DataTableProps } from './DataTable.types';
 
-import { DataTableHead, DataTableRows, DataTableSkeleton, DataTableVirtualRows } from './components';
+import { DataTableHead, DataTableRows, DataTableSkeleton, DataTableToolbar, DataTableVirtualRows } from './components';
 import { DATA_TABLE } from './DataTable.constants';
 
 import s from './DataTable.module.scss';
@@ -18,10 +18,14 @@ export const DataTable = <T,>({
   columns,
   initialSorting = [],
   virtualizeAfter = DATA_TABLE.virtualizeAfter,
-  rowHeight = DATA_TABLE.rowHeight,
+  density = 'default',
+  rowHeight = DATA_TABLE.rowHeight[density],
   isLoading = false,
   emptyState,
   caption,
+  summary,
+  toolbar,
+  footer,
   className,
   getRowId,
   onRowClick
@@ -46,23 +50,27 @@ export const DataTable = <T,>({
   const columnCount = table.getVisibleLeafColumns().length;
 
   return (
-    <div ref={setScrollNode} className={clsx(s.root, className)} data-virtual={isVirtual}>
-      <table className={s.table}>
-        {caption && <caption className={s.caption}>{caption}</caption>}
-        <DataTableHead table={table} />
-        {isLoading && <DataTableSkeleton columnCount={columnCount} />}
-        {!isLoading && isVirtual && (
-          <DataTableVirtualRows
-            columnCount={columnCount}
-            rowHeight={rowHeight}
-            rows={rows}
-            scrollElement={() => scrollNode}
-            onRowClick={onRowClick}
-          />
-        )}
-        {!isLoading && !isVirtual && <DataTableRows rows={rows} onRowClick={onRowClick} />}
-      </table>
-      {!isLoading && rows.length === 0 && emptyState}
+    <div className={clsx(s.frame, className)} data-density={density} style={{ '--table-row-h': `${rowHeight}px` }}>
+      {(summary || toolbar) && <DataTableToolbar summary={summary} toolbar={toolbar} />}
+      <div ref={setScrollNode} className={s.root} data-virtual={isVirtual}>
+        <table className={s.table}>
+          {caption && <caption className={s.caption}>{caption}</caption>}
+          <DataTableHead table={table} />
+          {isLoading && <DataTableSkeleton columnCount={columnCount} />}
+          {!isLoading && isVirtual && (
+            <DataTableVirtualRows
+              columnCount={columnCount}
+              rowHeight={rowHeight}
+              rows={rows}
+              scrollElement={() => scrollNode}
+              onRowClick={onRowClick}
+            />
+          )}
+          {!isLoading && !isVirtual && <DataTableRows rows={rows} onRowClick={onRowClick} />}
+        </table>
+        {!isLoading && rows.length === 0 && emptyState}
+      </div>
+      {footer && <div className={s.footer}>{footer}</div>}
     </div>
   );
 };

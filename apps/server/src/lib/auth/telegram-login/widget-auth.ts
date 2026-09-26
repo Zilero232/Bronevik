@@ -35,7 +35,7 @@ export const verifyWidgetPayload = ({ payload, botToken, now = new Date() }: Ver
   const secret = createHash('sha256').update(botToken).digest();
   const expected = createHmac('sha256', secret).update(checkString(payload)).digest('hex');
 
-  return timingSafeEqual(hash, expected);
+  return timingSafeEqual({ left: hash, right: expected });
 };
 
 export const widgetIdentity = (payload: WidgetPayload): TelegramIdentity | null => {

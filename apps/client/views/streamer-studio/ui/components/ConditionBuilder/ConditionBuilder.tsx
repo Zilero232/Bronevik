@@ -2,7 +2,6 @@
 
 import type { ChallengeCondition, ChallengeMetric } from '@bronevik/schemas';
 
-import { challengeConditionSchema, challengeMetricSchema } from '@bronevik/schemas';
 import { useTranslations } from 'next-intl';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -10,13 +9,11 @@ import { NumberField, SegmentedControl, Select } from '@/ui-kit';
 
 import type { ChallengeFormOutput, ChallengeFormValues } from '../../../model/studio.types';
 
-import { CHALLENGE_FORM } from '../../../config';
+import { CHALLENGE_CONDITION_OPTIONS, CHALLENGE_FORM } from '../../../config';
 import { ConditionScopeField } from '../ConditionScopeField';
 import { FormField } from '../FormField';
 
 import s from './ConditionBuilder.module.scss';
-
-const { operator: operatorSchema, aggregate: aggregateSchema } = challengeConditionSchema.shape;
 
 export const ConditionBuilder = () => {
   const t = useTranslations('streamer.challenges.condition');
@@ -29,7 +26,7 @@ export const ConditionBuilder = () => {
         <Controller
           render={({ field }) => (
             <Select<ChallengeMetric>
-              items={challengeMetricSchema.options.map((metric) => ({ value: metric, label: t(`metric.${metric}`) }))}
+              items={CHALLENGE_CONDITION_OPTIONS.metrics.map((metric) => ({ value: metric, label: t(`metric.${metric}`) }))}
               label={t('metricLabel')}
               value={field.value}
               onValueChange={field.onChange}
@@ -42,9 +39,11 @@ export const ConditionBuilder = () => {
           <Controller
             render={({ field }) => (
               <SegmentedControl<ChallengeCondition['operator']>
-                options={operatorSchema
-                  .unwrap()
-                  .options.map((operator) => ({ value: operator, label: t(`operator.${operator}`), 'aria-label': t(`operatorName.${operator}`) }))}
+                options={CHALLENGE_CONDITION_OPTIONS.operators.map((operator) => ({
+                  value: operator,
+                  label: t(`operator.${operator}`),
+                  'aria-label': t(`operatorName.${operator}`)
+                }))}
                 aria-label={t('operatorLabel')}
                 value={field.value ?? 'gte'}
                 onChange={field.onChange}
@@ -80,7 +79,7 @@ export const ConditionBuilder = () => {
           render={({ field }) => (
             <SegmentedControl<ChallengeCondition['aggregate']>
               aria-label={t('aggregateLabel')}
-              options={aggregateSchema.unwrap().options.map((aggregate) => ({ value: aggregate, label: t(`aggregate.${aggregate}`) }))}
+              options={CHALLENGE_CONDITION_OPTIONS.aggregates.map((aggregate) => ({ value: aggregate, label: t(`aggregate.${aggregate}`) }))}
               size='sm'
               value={field.value ?? 'single'}
               onChange={field.onChange}

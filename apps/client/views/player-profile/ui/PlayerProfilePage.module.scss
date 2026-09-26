@@ -2,13 +2,8 @@
 
 .root {
   @include shell;
-  @include stack(var(--space-7));
+  @include stack(var(--gap-panel));
 
-  padding-top: var(--space-7);
-  padding-bottom: var(--space-10);
-
-  @include below(md) {
-    padding-top: var(--space-4);
-    gap: var(--space-5);
-  }
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-8);
 }

@@ -1,17 +1,14 @@
 'use client';
 
-import { ShellApIcon, ShellHeatIcon, ShellHeIcon } from '@bronevik/icons';
 import { useTranslations } from 'next-intl';
 
 import { NumberField } from '@/ui-kit';
 
 import type { EconomyShellsProps } from '../../EconomyCalculator.types';
 
-import { ECONOMY, SHELL_KINDS } from '../../../../../config';
+import { ECONOMY, SHELL_ICONS, SHELL_KINDS } from '../../../../../config';
 
 import s from './EconomyShells.module.scss';
-
-const SHELL_ICONS = { ap: ShellApIcon, heat: ShellHeatIcon, he: ShellHeIcon } as const;
 
 export const EconomyShells = ({ values, onChange }: EconomyShellsProps) => {
   const t = useTranslations('tools.economy');
@@ -25,7 +22,7 @@ export const EconomyShells = ({ values, onChange }: EconomyShellsProps) => {
         return (
           <div key={kind} className={s.row}>
             <span className={s.kind}>
-              <Icon aria-hidden size={20} />
+              <Icon aria-hidden size={16} />
               {t(`shellKinds.${kind}`)}
             </span>
             <NumberField

@@ -1,2 +1,2 @@
-export { renderSignature, signatureTree } from './signature';
+export { renderSignature } from './signature';
 export type { SignatureFont } from './signature.types';

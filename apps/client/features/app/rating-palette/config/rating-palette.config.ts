@@ -1,4 +1,4 @@
-export const RATING_PALETTES = ['default', 'xvm'] as const;
+export const RATING_PALETTES = ['default', 'xvm', 'wotlife'] as const;
 
 export type RatingPalette = (typeof RATING_PALETTES)[number];
 

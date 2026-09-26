@@ -5,14 +5,12 @@ import { Dices } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { MOCK_PLAYERS } from '@/shared/mocks';
 import { AnimatedNumber, Button, EmptyState, ProgressBar, ProgressRing, Skeleton, Sparkline, StatTile } from '@/ui-kit';
 
+import { SPARKLINE_SPECIMEN } from '../../../config';
 import { DesignBlock, DesignRow } from '../DesignBlock';
 
 import s from './DataSection.module.scss';
-
-const [{ trend: TREND }] = MOCK_PLAYERS;
 
 export const DataSection = () => {
   const t = useTranslations('design.data');
@@ -21,7 +19,14 @@ export const DataSection = () => {
   return (
     <DesignBlock eyebrow='06' id='data' title={t('title')}>
       <div className={s.tiles}>
-        <StatTile delta={2.4} deltaLabel='+2.4%' icon={<RandomBattleIcon size={18} />} label={t('battles')} trend={TREND} value={value} />
+        <StatTile
+          delta={2.4}
+          deltaLabel='+2.4%'
+          icon={<RandomBattleIcon size={18} />}
+          label={t('battles')}
+          trend={[...SPARKLINE_SPECIMEN]}
+          value={value}
+        />
         <StatTile format={{ maximumFractionDigits: 2 }} label={t('winRate')} suffix='%' tone='great' value={64.82} />
         <StatTile delta={-1.1} deltaLabel='−1.1%' label={t('damage')} tone='steel' value={3184} />
         <StatTile hint={t('marksHint')} icon={<Mark3Icon size={18} />} label={t('marks')} tone='unicum' value={212} />
@@ -52,9 +57,9 @@ export const DataSection = () => {
         </ProgressRing>
       </DesignRow>
       <DesignRow label={t('sparklines')}>
-        <Sparkline data={TREND} height={40} width={160} />
-        <Sparkline data={[...TREND].reverse()} height={40} tone='bad' width={160} />
-        <Sparkline data={TREND} height={40} tone='steel' width={160} withArea={false} />
+        <Sparkline data={[...SPARKLINE_SPECIMEN]} height={40} width={160} />
+        <Sparkline data={[...SPARKLINE_SPECIMEN].reverse()} height={40} tone='bad' width={160} />
+        <Sparkline data={[...SPARKLINE_SPECIMEN]} height={40} tone='steel' width={160} withArea={false} />
       </DesignRow>
       <DesignRow className={s.skeletons} label={t('skeleton')}>
         <Skeleton height={44} shape='circle' width={44} />

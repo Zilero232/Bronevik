@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
+import { randomCode } from '../../../../../common/lib';
 import { CHALLENGE } from '../../../config';
-import { extractChallengeCodes, generateChallengeCode } from '../challenge-code';
+import { extractChallengeCodes } from '../challenge-code';
 
-describe('generateChallengeCode', () => {
-  it('produces a code that can be read back from a message', () => {
-    const code = generateChallengeCode();
+describe('challenge codes', () => {
+  it('reads back a code generated from the challenge alphabet', () => {
+    const code = randomCode({ alphabet: CHALLENGE.codeAlphabet, length: CHALLENGE.codeLength });
 
     expect(code).toHaveLength(CHALLENGE.codeLength);
     expect(extractChallengeCodes(`donate ${CHALLENGE.codePrefix}${code}!`)).toEqual([code]);

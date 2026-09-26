@@ -1,4 +1,24 @@
 export {
+  armorChassisModuleSchema,
+  armorGunModuleSchema,
+  armorModelSchema,
+  armorModelSourceSchema,
+  armorModulesSchema,
+  armorPieceArmorSchema,
+  armorPlateSchema,
+  armorShellOptionSchema,
+  armorTurretModuleSchema
+} from './armor';
+export type {
+  ArmorChassisModuleData,
+  ArmorGunModuleData,
+  ArmorModelResponse,
+  ArmorModulesData,
+  ArmorPlateData,
+  ArmorShellOptionData,
+  ArmorTurretModuleData
+} from './armor';
+export {
   billingStatusSchema,
   checkoutResultSchema,
   checkoutSchema,
@@ -10,6 +30,7 @@ export {
   plusPlanSchema,
   PROMO_CODE,
   promoRedeemSchema,
+  REFERRAL,
   referralSchema,
   subscriptionPlanSchema,
   subscriptionStatusSchema
@@ -170,7 +191,9 @@ export {
   apiKeySchema,
   apiKeysSchema,
   apiPlanLimitsSchema,
+  apiPlanOfferSchema,
   apiPlanSchema,
+  apiPlansSchema,
   apiUsagePointSchema,
   apiUsageQuerySchema,
   apiUsageSchema,
@@ -196,6 +219,8 @@ export type {
   ApiKeys,
   ApiPlan,
   ApiPlanLimits,
+  ApiPlanOffer,
+  ApiPlans,
   ApiUsage,
   ApiUsagePoint,
   ApiUsageQuery,
@@ -333,6 +358,8 @@ export {
   nicknameHistorySchema,
   PLAYER_ACTIVITY,
   PLAYER_TANKS,
+  playerAchievementSchema,
+  playerAchievementsSchema,
   playerClanSchema,
   playerHistoryEntrySchema,
   playerInsightsSchema,
@@ -367,6 +394,8 @@ export type {
   InsightTipCode,
   MoeThresholdValues,
   NicknameHistory,
+  PlayerAchievement,
+  PlayerAchievements,
   PlayerActivity,
   PlayerClan,
   PlayerHistoryEntry,
@@ -393,6 +422,8 @@ export type {
   TimeSeriesPoint,
   TimeSeriesQuery
 } from './players';
+export { gameVersionSchema, serverOnlineSchema, serversOnlineSchema } from './reference';
+export type { GameVersion, ServerOnline, ServersOnline } from './reference';
 export { replayPlayerSchema, replayStatusSchema, replaySummarySchema } from './replays';
 export type { ReplayPlayer, ReplayStatus, ReplaySummary } from './replays';
 export {
@@ -447,6 +478,10 @@ export {
   gameEventKindSchema,
   gameEventSchema,
   gameEventsQuerySchema,
+  newsItemSchema,
+  newsKindSchema,
+  newsPageSchema,
+  newsQuerySchema,
   premiumOfferSchema
 } from './shop';
 export type {
@@ -457,29 +492,64 @@ export type {
   GameEvent,
   GameEventKind,
   GameEventsQuery,
+  NewsItem,
+  NewsKind,
+  NewsPage,
+  NewsQuery,
   PremiumOffer
 } from './shop';
 export {
+  activateChallengeSchema,
   challengeConditionSchema,
+  challengeListSchema,
   challengeMetricSchema,
   challengeSchema,
   challengeStatusSchema,
+  connectableProviderSchema,
+  connectUrlSchema,
   createChallengeSchema,
+  createOverlaySchema,
+  integrationListSchema,
   overlayConfigSchema,
+  overlayDataSchema,
   overlayKindSchema,
+  overlayListSchema,
   overlayMetricSchema,
-  overlaySchema
+  overlayPublicIdSchema,
+  overlayResultSchema,
+  overlaySchema,
+  previewOverlaySchema,
+  STREAMER_PROFILE,
+  streamerChallengeSchema,
+  streamerIntegrationSchema,
+  streamerProfileSchema,
+  streamerProviderSchema,
+  streamerSlugSchema,
+  updateOverlaySchema,
+  upsertStreamerProfileSchema
 } from './streamers';
 export type {
+  ActivateChallengeInput,
   Challenge,
   ChallengeCondition,
   ChallengeMetric,
   ChallengeStatus,
+  ConnectableProvider,
   CreateChallengeInput,
+  CreateOverlayInput,
   Overlay,
   OverlayConfig,
+  OverlayData,
   OverlayKind,
-  OverlayMetric
+  OverlayMetric,
+  OverlayResult,
+  PreviewOverlayInput,
+  StreamerChallenge,
+  StreamerIntegration,
+  StreamerProfile,
+  StreamerProvider,
+  UpdateOverlayInput,
+  UpsertStreamerProfileInput
 } from './streamers';
 export {
   PATCH_VERDICTS,

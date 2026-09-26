@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { telegramBotProvider, telegramI18nProvider } from './bot';
+import { telegramBotProvider, telegramI18nProvider } from './providers';
 import { TelegramSenderService } from './services/telegram-sender.service';
 
 @Module({

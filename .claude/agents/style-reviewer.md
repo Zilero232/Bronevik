@@ -41,7 +41,9 @@ Check, in this order:
 
 **Signature conventions** — **2+ parameters → one object**, with the shape in a sibling `*.types.ts` as `<Fn>Input`. NestJS constructors injecting collaborators positionally are the framework's convention and are not a finding.
 
-**Folder shape** — one folder per **concern**, each with `index.ts`, `<name>.types.ts` and `<name>.constants.ts` where needed. A one-line helper wrapped in its own folder and barrel is a finding in the other direction; it belongs in the concern's `<name>.helpers.ts`.
+**Folder shape** (style.md §2, `code-style-client.md` "Components only render") — a component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts`, nested `components/` (plus `.motion.ts` / `.variants.ts` / `_tests/`). Findings: a `*.helpers.ts`, `*.utils.ts`, `*.constants.ts`, `*.columns.tsx` or `hooks/` inside a component folder (→ `lib/<concern>/`, `config/<concern>.constants.ts`, `model/hooks/use-<x>/`; in `ui-kit` → `shared/lib/`, where only a primitive's own `<Name>.constants.ts` may stay); two flat components in one `ui/` root or two components in one file (→ `components/<Name>/`); a flat hook file in `model/hooks/` (→ `use-<x>/use-<x>.ts` + `index.ts`). Related helpers share one `lib/<concern>/` folder rather than one folder per function.
+
+**Logic in components** — a `.tsx` that runs `useQuery`/`useMutation`, `useEffect`, `useMemo`/`useCallback`/`useReducer`, two or more `useState`, `useForm`, timers, storage or clipboard, or declares a multi-statement or `async` handler, a helper function or a module-level constant. Fix: the component's own `model/hooks/use-<x>/` (forms: `use-<x>-form/`), `lib/<concern>/`, `config/`. One trivial UI flag (open/tab) may stay.
 
 **Formatting the autofixers own** — import order, JSX prop order, statement padding, arrow bodies (`arrow-body-style: as-needed`), braces (`curly: all`). Do not hand-fix these: run `bun run fix` and say you ran it. Never recommend a block body for an arrow that only returns — the linter rejects it.
 
@@ -61,6 +63,8 @@ Check, in this order:
 - **A hand-rolled CSS `transition` for something `motion` already drives**, or a motion preset inlined instead of living in a sibling `<Component>.motion.ts` or `shared/lib/motion`.
 - **`backdrop-filter` on an opaque surface** (menus, popovers, select lists on `--color-surface-raised`) — only translucent overlays and the sticky header keep a blur.
 - **`'use no memo'` without a mutable library instance to justify it** — it belongs to the TanStack Table components only.
+- **A mock data layer** — mock files, fixture fallbacks, fake latency or a mocks switch in app code. Requests go through `fromServer`; screens show empty/error states. Test doubles inside `_tests/` are fine.
+- **A Prisma migration** (`prisma migrate`, a `migrations/` folder) before production — the schema is synced with `bun run db:push`.
 - **Slice-level `model/index.ts`** — barrels belong in `model/hooks/`, `model/context/`, not at the slice root.
 - **Business logic in `shared/`** — domain hooks and types belong in `features/` or `entities/`.
 - **A page layout that skips `SiteFooter`** — the Lesta attribution is a hard constraint.

@@ -1,4 +1,4 @@
-export { PROMO_CODE } from './billing.constants';
+export { PROMO_CODE, REFERRAL } from './billing.constants';
 export {
   billingStatusSchema,
   checkoutResultSchema,

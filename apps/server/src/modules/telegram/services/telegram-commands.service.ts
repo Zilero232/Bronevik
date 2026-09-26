@@ -1,14 +1,16 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InlineKeyboard } from 'grammy';
 
-import type { BotCommandSpec, BotContext, ConsumeInput, GuardInput, OpenButtonInput, PlayerTextInput, TelegramIdentity } from '../telegram.types';
+import type { BotCommandSpec, BotContext, ConsumeInput, GuardInput, TelegramIdentity } from '../telegram.types';
 
+import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { BOT_FALLBACK_USERNAME, SITE_LINKS, WEB_LOGIN } from '../config';
-import { formatNumber, formatPercent, isPublicUrl, looksLikeLinkCode, playerUrl, siteUrl, statCardUrl } from '../lib';
+import { BOT, WEB_LOGIN } from '../config';
+import { isPublicUrl, looksLikeLinkCode } from '../lib';
 import { TelegramIdentityService } from './telegram-identity.service';
 import { TelegramLinkService } from './telegram-link.service';
-import { TelegramStatsService } from './telegram-stats.service';
+import { TelegramLookupCommandsService } from './telegram-lookup-commands.service';
+import { TelegramPlayerCommandsService } from './telegram-player-commands.service';
 
 @Injectable()
 export class TelegramCommandsService {
@@ -16,19 +18,20 @@ export class TelegramCommandsService {
 
   constructor(
     private readonly config: AppConfigService,
-    private readonly stats: TelegramStatsService,
+    private readonly players: TelegramPlayerCommandsService,
+    private readonly lookups: TelegramLookupCommandsService,
     private readonly links: TelegramLinkService,
     private readonly identity: TelegramIdentityService
   ) {}
 
   get commands(): BotCommandSpec[] {
     return [
-      { command: 'me', run: (ctx) => this.me(ctx) },
-      { command: 'session', run: (ctx) => this.session(ctx) },
-      { command: 'marks', run: (ctx) => this.marks(ctx) },
-      { command: 'clan', run: (ctx) => this.clan(ctx) },
-      { command: 'tank', run: (ctx) => this.tank(ctx) },
-      { command: 'top', run: (ctx) => this.top(ctx) },
+      { command: 'me', run: (ctx) => this.players.me(ctx) },
+      { command: 'session', run: (ctx) => this.players.session(ctx) },
+      { command: 'marks', run: (ctx) => this.players.marks(ctx) },
+      { command: 'clan', run: (ctx) => this.lookups.clan(ctx) },
+      { command: 'tank', run: (ctx) => this.lookups.tank(ctx) },
+      { command: 'top', run: (ctx) => this.lookups.top(ctx) },
       { command: 'login', run: (ctx) => this.login(ctx) },
       { command: 'help', run: (ctx) => this.help(ctx) }
     ];
@@ -56,7 +59,7 @@ export class TelegramCommandsService {
       const isNotFound = error instanceof HttpException && error.getStatus() === HttpStatus.NOT_FOUND;
 
       if (!isNotFound) {
-        this.logger.warn(`telegram command failed: ${error instanceof Error ? error.message : String(error)}`);
+        this.logger.warn(`telegram command failed: ${errorMessage(error)}`);
       }
 
       await ctx.reply(ctx.t(isNotFound ? 'player-not-found' : 'error-generic'));
@@ -103,180 +106,6 @@ export class TelegramCommandsService {
     }
   }
 
-  private async me(ctx: BotContext): Promise<void> {
-    const nickname = typeof ctx.match === 'string' ? ctx.match.trim() : '';
-    const accountId = nickname ? await this.stats.resolve(nickname) : ctx.chat$?.accountId;
-
-    if (!accountId) {
-      await ctx.reply(ctx.t('not-linked'));
-
-      return;
-    }
-
-    const card = await this.stats.player(accountId);
-    const webUrl = this.config.get('WEB_URL');
-
-    await ctx.reply(await this.playerText({ ctx, card }), {
-      link_preview_options: { url: statCardUrl({ webUrl, accountId }), prefer_large_media: true },
-      reply_markup: this.openButton({ ctx, url: playerUrl({ webUrl, nickname: card.nickname }) })
-    });
-  }
-
-  async playerText({ ctx, card }: PlayerTextInput): Promise<string> {
-    const locale = await ctx.i18n.getLocale();
-    const missing = ctx.t('missing');
-
-    return ctx.t('player-card', {
-      nickname: card.nickname,
-      clan: card.clanTag ? `[${card.clanTag}]` : '',
-      battles: formatNumber({ value: card.battles, locale }) ?? missing,
-      winRate: formatPercent({ value: card.winRate === null ? null : card.winRate / 100, locale }) ?? missing,
-      avgDamage: formatNumber({ value: card.avgDamage, locale }) ?? missing,
-      wn8: formatNumber({ value: card.wn8, locale }) ?? missing
-    });
-  }
-
-  private async session(ctx: BotContext): Promise<void> {
-    const accountId = ctx.chat$?.accountId;
-
-    if (!accountId) {
-      await ctx.reply(ctx.t('not-linked'));
-
-      return;
-    }
-
-    const session = await this.stats.session(accountId);
-
-    if (!session) {
-      await ctx.reply(ctx.t('session-none'));
-
-      return;
-    }
-
-    const locale = await ctx.i18n.getLocale();
-    const missing = ctx.t('missing');
-
-    await ctx.reply(
-      ctx.t('session-card', {
-        startedAt: new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Moscow' }).format(session.startedAt),
-        state: ctx.t(session.isOpen ? 'session-open' : 'session-closed'),
-        battles: session.battles,
-        winRate: formatPercent({ value: session.wins / session.battles, locale }) ?? missing,
-        avgDamage: formatNumber({ value: session.avgDamage, locale }) ?? missing,
-        wn8: formatNumber({ value: session.wn8, locale }) ?? missing
-      })
-    );
-  }
-
-  private async marks(ctx: BotContext): Promise<void> {
-    const accountId = ctx.chat$?.accountId;
-
-    if (!accountId) {
-      await ctx.reply(ctx.t('not-linked'));
-
-      return;
-    }
-
-    const card = await this.stats.marks(accountId);
-
-    if (card.moe1 + card.moe2 + card.moe3 === 0 && card.closest.length === 0) {
-      await ctx.reply(ctx.t('marks-none'));
-
-      return;
-    }
-
-    const locale = await ctx.i18n.getLocale();
-    const lines = card.closest.map((line) =>
-      ctx.t('marks-line', { tank: line.tankName, percent: formatNumber({ value: line.percent, locale, digits: 2 }) ?? '0', marks: line.marks })
-    );
-
-    const text = [
-      ctx.t('marks-card', { moe3: card.moe3, moe2: card.moe2, moe1: card.moe1 }),
-      ...(lines.length > 0 ? ['', ctx.t('marks-closest'), ...lines] : [])
-    ];
-
-    await ctx.reply(text.join('\n'));
-  }
-
-  private async clan(ctx: BotContext): Promise<void> {
-    const accountId = ctx.chat$?.accountId;
-
-    if (!accountId) {
-      await ctx.reply(ctx.t('not-linked'));
-
-      return;
-    }
-
-    const clan = await this.stats.clan(accountId);
-
-    if (!clan) {
-      await ctx.reply(ctx.t('clan-none'));
-
-      return;
-    }
-
-    await ctx.reply(ctx.t('clan-card', { tag: clan.tag, name: clan.name, members: clan.membersCount, role: clan.role }), {
-      reply_markup: this.openButton({ ctx, url: siteUrl({ webUrl: this.config.get('WEB_URL'), path: SITE_LINKS.clan.replace('{tag}', clan.tag) }) })
-    });
-  }
-
-  private async tank(ctx: BotContext): Promise<void> {
-    const query = typeof ctx.match === 'string' ? ctx.match.trim() : '';
-
-    if (!query) {
-      await ctx.reply(ctx.t('tank-usage'));
-
-      return;
-    }
-
-    const tank = await this.stats.tank(query);
-
-    if (!tank) {
-      await ctx.reply(ctx.t('tank-not-found'));
-
-      return;
-    }
-
-    const locale = await ctx.i18n.getLocale();
-    const missing = ctx.t('missing');
-    const text = tank.moe
-      ? ctx.t('tank-card', {
-          name: tank.name,
-          tier: tank.tier,
-          type: tank.type,
-          p65: formatNumber({ value: tank.moe.p65, locale }) ?? missing,
-          p85: formatNumber({ value: tank.moe.p85, locale }) ?? missing,
-          p95: formatNumber({ value: tank.moe.p95, locale }) ?? missing
-        })
-      : `${tank.name}\n${ctx.t('tank-no-thresholds')}`;
-
-    await ctx.reply(text, {
-      reply_markup: this.openButton({ ctx, url: siteUrl({ webUrl: this.config.get('WEB_URL'), path: SITE_LINKS.tank.replace('{slug}', tank.slug) }) })
-    });
-  }
-
-  private async top(ctx: BotContext): Promise<void> {
-    const rows = await this.stats.top();
-
-    if (rows.length === 0) {
-      await ctx.reply(ctx.t('top-empty'));
-
-      return;
-    }
-
-    const locale = await ctx.i18n.getLocale();
-    const lines = rows.map((row, index) =>
-      ctx.t('top-line', {
-        place: index + 1,
-        nickname: row.nickname,
-        wn8: formatNumber({ value: row.wn8, locale }) ?? '0',
-        battles: formatNumber({ value: row.battles, locale }) ?? '0'
-      })
-    );
-
-    await ctx.reply([ctx.t('top-header'), ...lines].join('\n'));
-  }
-
   private async login(ctx: BotContext): Promise<void> {
     const identity = this.identityOf(ctx);
 
@@ -294,10 +123,6 @@ export class TelegramCommandsService {
   }
 
   private async help(ctx: BotContext): Promise<void> {
-    await ctx.reply(ctx.t('help', { bot: this.config.get('TELEGRAM_BOT_USERNAME') || BOT_FALLBACK_USERNAME }));
-  }
-
-  private openButton({ ctx, url }: OpenButtonInput): InlineKeyboard | undefined {
-    return isPublicUrl(url) ? new InlineKeyboard().url(ctx.t('open-site'), url) : undefined;
+    await ctx.reply(ctx.t('help', { bot: this.config.get('TELEGRAM_BOT_USERNAME') || BOT.fallbackUsername }));
   }
 }

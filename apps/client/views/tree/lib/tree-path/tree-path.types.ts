@@ -21,3 +21,8 @@ export type PathRoute = {
   ids: number[];
   cost: number;
 };
+
+export type RouteToInput = {
+  id: number;
+  visiting: Set<number>;
+};

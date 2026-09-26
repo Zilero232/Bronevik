@@ -1,6 +1,6 @@
 # @bronevik/sdk
 
-TypeScript client for the Bronevik public API (`/v1`). The functions and types are generated from the OpenAPI spec with [`@hey-api/openapi-ts`](https://heyapi.dev); a small wrapper adds the API key, the base URL and retries, and `verifyWebhookSignature` checks webhook deliveries.
+TypeScript client for the Bronevik public API (`/v1`). The functions and types are generated from the OpenAPI spec with [`@hey-api/openapi-ts`](https://heyapi.dev); the generated client runs on [`ky`](https://github.com/sindresorhus/ky), a small wrapper adds the API key, the base URL and retries, and `verifyWebhook` checks webhook deliveries with [Standard Webhooks](https://www.standardwebhooks.com).
 
 Create a key in the site's developer page (`/me/developer`). The key is shown once. Interactive docs live at `/v1/docs`, the raw spec at `/v1/docs/openapi.json`.
 
@@ -32,10 +32,10 @@ Units: every rate (`winRate`, `survivalRate`, `accuracy`) is a percent from 0 to
 
 ### Retries
 
-Requests answered with 408, 425, 429 or 5xx, and network failures, are retried up to three times with exponential backoff, honouring `Retry-After`. Tune or disable it:
+Requests answered with 408, 425, 429 or 5xx, and network failures, are retried up to three times by ky with exponential backoff, honouring `Retry-After` on 413, 429 and 503 (up to a minute). The `retry` option takes [ky's retry options](https://github.com/sindresorhus/ky#retry) and is merged over the defaults (`BRONEVIK_RETRY`):
 
 ```ts
-createBronevikClient({ apiKey, retry: { retries: 5, minTimeoutMs: 1_000 } });
+createBronevikClient({ apiKey, retry: { limit: 5, backoffLimit: 30_000 } });
 createBronevikClient({ apiKey, retry: false });
 ```
 
@@ -51,28 +51,33 @@ Every response carries `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimi
 
 ### Webhooks
 
-Endpoints are managed in `/me/developer`; each one follows players (`accountIds`) and/or clans (`clanIds`) and receives `mark.gained`, `session.ended` and `clan.member_changed`. A delivery is a JSON `POST` signed with the endpoint secret (shown once):
+Endpoints are managed in `/me/developer`; each one follows players (`accountIds`) and/or clans (`clanIds`) and receives `mark.gained`, `session.ended` and `clan.member_changed`. A delivery is a JSON `POST` signed per [Standard Webhooks](https://www.standardwebhooks.com) with the endpoint secret (`whsec_…`, shown once): the `webhook-id` (the delivery id, stable across retries), `webhook-timestamp` and `webhook-signature` headers, plus `X-Bronevik-Event`.
+
+Any Standard Webhooks library verifies it — `npm i standardwebhooks`, `pip install standardwebhooks`, or the Go, Ruby, PHP, Rust, Java and C# ports. The SDK re-exports the JavaScript one:
 
 ```ts
-import { verifyWebhookSignature, WEBHOOK_SIGNATURE } from '@bronevik/sdk';
+import { verifyWebhook, WebhookVerificationError } from '@bronevik/sdk';
 
 app.post('/bronevik', async (request, reply) => {
-  const valid = await verifyWebhookSignature({
-    secret: process.env.BRONEVIK_WEBHOOK_SECRET!,
-    body: request.rawBody,
-    signature: request.headers[WEBHOOK_SIGNATURE.signatureHeader],
-    timestamp: request.headers[WEBHOOK_SIGNATURE.timestampHeader]
-  });
+  try {
+    const { event, data } = verifyWebhook({ secret: process.env.BRONEVIK_WEBHOOK_SECRET!, body: request.rawBody, headers: request.headers });
+  } catch (error) {
+    if (error instanceof WebhookVerificationError) {
+      return reply.code(401).send();
+    }
 
-  if (!valid) {
-    return reply.code(401).send();
+    throw error;
   }
-
-  const { event, data } = JSON.parse(request.rawBody);
 });
 ```
 
-The signature is `sha256=` + hex HMAC-SHA256 of `"<X-Bronevik-Timestamp>.<raw body>"`. Deliveries older than five minutes are rejected by default. A failed delivery is retried six times with exponential backoff; twenty failed deliveries in a row switch the endpoint off.
+```python
+from standardwebhooks import Webhook
+
+payload = Webhook(secret).verify(raw_body, headers)
+```
+
+Verify the raw body exactly as received. Deliveries older than five minutes are rejected. A failed delivery is retried six times with exponential backoff; twenty failed deliveries in a row switch the endpoint off.
 
 ## Regenerating
 

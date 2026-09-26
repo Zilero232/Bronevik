@@ -1,28 +1,19 @@
-import type { overlayConfigSchema } from '@bronevik/schemas';
-import type { z } from 'zod';
+import type { ActivateChallengeInput as ActivateChallengeBody, UpdateOverlayInput as UpdateOverlayBody } from '@bronevik/schemas';
 
-import type {
-  activateChallengeSchema,
-  connectableProviderSchema,
-  createOverlaySchema,
-  overlayDataSchema,
-  streamerChallengeSchema,
-  streamerIntegrationSchema,
-  streamerProfileSchema,
-  streamerProviderSchema,
-  upsertStreamerProfileSchema
-} from './streamers.schemas';
+export type {
+  ConnectableProvider,
+  CreateOverlayInput,
+  OverlayData,
+  PreviewOverlayInput,
+  StreamerChallenge,
+  StreamerIntegration,
+  StreamerProfile,
+  StreamerProvider,
+  UpsertStreamerProfileInput
+} from '@bronevik/schemas';
 
-export type StreamerProfile = z.infer<typeof streamerProfileSchema>;
-export type UpsertStreamerProfileInput = z.infer<typeof upsertStreamerProfileSchema>;
-export type CreateOverlayInput = Omit<z.infer<typeof createOverlaySchema>, 'config'> & { config: z.input<typeof overlayConfigSchema> };
-export type OverlayData = z.infer<typeof overlayDataSchema>;
-export type StreamerChallenge = z.infer<typeof streamerChallengeSchema>;
-export type ActivateChallengeInput = z.infer<typeof activateChallengeSchema> & { id: string };
-export type StreamerProvider = z.infer<typeof streamerProviderSchema>;
-export type ConnectableProvider = z.infer<typeof connectableProviderSchema>;
-export type StreamerIntegration = z.infer<typeof streamerIntegrationSchema>;
+export type ActivateChallengeInput = ActivateChallengeBody & { id: string };
 
-export type UpdateOverlayInput = Partial<CreateOverlayInput> & {
+export type UpdateOverlayInput = UpdateOverlayBody & {
   id: string;
 };

@@ -1,1 +1,1 @@
-export { PHASE_VIEW, WEB_LOGIN } from './web-login.config';
+export { WEB_LOGIN, WEB_LOGIN_PHASE_TONE } from './web-login.constants';

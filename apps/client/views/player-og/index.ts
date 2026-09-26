@@ -1,4 +1,5 @@
+export { ogLabels } from './lib';
+export type { OgLabels } from './lib';
+export { FallbackOgCard } from './ui/FallbackOgCard';
 export { PlayerOgCard } from './ui/PlayerOgCard';
-export type { PlayerOgCardLabels } from './ui/PlayerOgCard.types';
 export { SessionOgCard } from './ui/SessionOgCard';
-export type { SessionOgCardLabels } from './ui/SessionOgCard.types';

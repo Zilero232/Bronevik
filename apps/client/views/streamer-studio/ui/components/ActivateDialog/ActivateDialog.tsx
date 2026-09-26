@@ -1,11 +1,7 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useBoolean } from '@siberiacancode/reactuse';
-import { Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
-import { useForm } from 'react-hook-form';
 
 import {
   Button,
@@ -23,8 +19,7 @@ import {
 
 import type { ActivateDialogProps } from './ActivateDialog.types';
 
-import { ACTIVATE_FORM_DEFAULTS, activateFormSchema } from '../../../lib/activate-form';
-import { useActivateChallenge } from '../../../model/hooks';
+import { useActivateForm } from '../../../model/hooks';
 import { FormField } from '../FormField';
 
 import s from './ActivateDialog.module.scss';
@@ -32,19 +27,12 @@ import s from './ActivateDialog.module.scss';
 export const ActivateDialog = ({ id }: ActivateDialogProps) => {
   const t = useTranslations('streamer.challenges.actions');
   const tConfirm = useTranslations('streamer.confirm');
-  const activate = useActivateChallenge();
-  const [isOpen, setOpen] = useBoolean(false);
   const donorId = useId();
-  const form = useForm({ resolver: zodResolver(activateFormSchema), defaultValues: ACTIVATE_FORM_DEFAULTS });
-
-  const onSubmit = form.handleSubmit(({ donorName }) =>
-    activate.mutate({ id, donorName: donorName === '' ? undefined : donorName }, { onSuccess: () => setOpen(false) })
-  );
+  const { form, isOpen, isPending, onOpenChange, onSubmit } = useActivateForm(id);
 
   return (
-    <Dialog open={isOpen} onOpenChange={(next) => setOpen(next)}>
-      <DialogTrigger className={buttonVariants({ size: 'sm' })} disabled={activate.isPending}>
-        <Play size={14} />
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogTrigger className={buttonVariants({ size: 'sm' })} disabled={isPending}>
         {t('activate')}
       </DialogTrigger>
       <DialogContent>
@@ -58,7 +46,7 @@ export const ActivateDialog = ({ id }: ActivateDialogProps) => {
           </FormField>
           <DialogFooter>
             <DialogClose className={buttonVariants({ variant: 'ghost', size: 'sm' })}>{tConfirm('cancel')}</DialogClose>
-            <Button disabled={activate.isPending} size='sm' type='submit'>
+            <Button disabled={isPending} size='sm' type='submit'>
               {t('activate')}
             </Button>
           </DialogFooter>

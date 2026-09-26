@@ -1,0 +1,36 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.mark {
+  display: inline-flex;
+  color: var(--color-text-muted);
+
+  &[data-marks='2'] {
+    color: var(--color-steel);
+  }
+
+  &[data-marks='3'] {
+    color: var(--color-accent);
+  }
+}
+
+.mastery {
+  display: inline-flex;
+  color: var(--color-text-dim);
+
+  &[data-level='first'] {
+    color: var(--color-steel);
+  }
+
+  &[data-level='master'] {
+    color: var(--color-premium);
+  }
+}
+
+.empty {
+  width: 18px;
+  height: 18px;
+}

@@ -1,26 +1,12 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md));
   @include stack(var(--space-3));
-
-  padding: var(--space-5);
-}
-
-.head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.eyebrow,
-.draws {
-  @include hud-label;
 }
 
 .teams {
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-3);
 }
@@ -38,45 +24,35 @@
   }
 }
 
-.teamLabel {
-  @include hud-label;
+.label {
+  @include label;
 
   color: inherit;
 }
 
 .rate {
+  @include numeric(var(--num-md));
+}
+
+.draws {
   @include numeric;
 
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  line-height: 1;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
 }
 
-.rope {
-  position: relative;
+.bar {
   display: flex;
   overflow: hidden;
-  height: 12px;
+  height: 6px;
   background: var(--color-danger);
-
-  @include chamfer-path(4px);
 }
 
-.pull {
+.fill {
   display: block;
   height: 100%;
+  border-right: 2px solid var(--color-surface);
   background: var(--color-success);
-  box-shadow: 4px 0 0 var(--color-surface);
-}
-
-.center {
-  position: absolute;
-  top: -2px;
-  bottom: -2px;
-  left: 50%;
-  width: 2px;
-  background: var(--color-text);
-  transform: translateX(-50%);
 }
 
 .verdict {

@@ -1,10 +1,10 @@
 import { createHmac, timingSafeEqual as nodeTimingSafeEqual } from 'node:crypto';
 
-import type { HmacInput, VerifySignatureInput } from './hmac.types';
+import type { HmacInput, TimingSafeEqualInput, VerifySignatureInput } from './hmac.types';
 
 import { HMAC } from './hmac.constants';
 
-export const timingSafeEqual = (left: string, right: string): boolean => {
+export const timingSafeEqual = ({ left, right }: TimingSafeEqualInput): boolean => {
   const a = Buffer.from(left);
   const b = Buffer.from(right);
 
@@ -28,5 +28,5 @@ export const verifySignatureHeader = ({ header, key, body }: VerifySignatureInpu
     return false;
   }
 
-  return timingSafeEqual(received, hmacSha256Hex({ key, data: body }));
+  return timingSafeEqual({ left: received, right: hmacSha256Hex({ key, data: body }) });
 };

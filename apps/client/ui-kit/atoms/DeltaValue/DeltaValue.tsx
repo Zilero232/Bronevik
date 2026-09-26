@@ -1,27 +1,22 @@
 'use client';
 
 import { clsx } from 'clsx';
-import { AnimatePresence, motion } from 'motion/react';
 import { useFormatter } from 'next-intl';
 
-import { POPUP } from '@/shared/lib';
+import { deltaVerdict } from '@/shared/lib';
 
 import type { DeltaValueProps } from './DeltaValue.types';
 
 import s from './DeltaValue.module.scss';
 
-export const DeltaValue = ({ value, verdict, format, suffix = '', className }: DeltaValueProps) => {
+export const DeltaValue = ({ value, verdict, isLowerBetter = false, format = 'signed', suffix = '', className }: DeltaValueProps) => {
   const formatter = useFormatter();
-
-  const text = `${formatter.number(value, { signDisplay: 'exceptZero', maximumFractionDigits: 2, ...format })}${suffix}`;
+  const resolved = verdict ?? deltaVerdict({ value, isLowerBetter });
 
   return (
-    <span className={clsx(s.root, className)} data-verdict={verdict}>
-      <AnimatePresence initial={false} mode='popLayout'>
-        <motion.span key={text} animate='visible' className={s.value} exit='exit' initial='hidden' variants={POPUP}>
-          {verdict !== 'same' && text}
-        </motion.span>
-      </AnimatePresence>
+    <span className={clsx(s.root, className)} data-verdict={resolved}>
+      {resolved !== 'same' &&
+        `${typeof format === 'string' ? formatter.number(value, format) : formatter.number(value, { signDisplay: 'exceptZero', maximumFractionDigits: 2, ...format })}${suffix}`}
     </span>
   );
 };

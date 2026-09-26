@@ -1,11 +1,3 @@
-enum ApiPlan {
-  free
-  pro
-  partner
-
-  @@map("api_plan")
-}
-
 enum WebhookEvent {
   moeGained           @map("moe_gained")
   sessionFinished     @map("session_finished")
@@ -36,24 +28,37 @@ enum ModerationStatus {
 model ApiKey {
   id String @id @default(dbgenerated("gen_random_uuid()"))
 
-  userId  String   @map("user_id")
-  name    String
-  prefix  String   @unique
-  keyHash String   @unique @map("key_hash")
-  plan    ApiPlan  @default(free)
-  scopes  String[]
+  configId    String  @default("default") @map("config_id")
+  referenceId String  @map("reference_id")
+  name        String?
+  start       String?
+  prefix      String?
+  key         String  @unique
+  permissions String?
+  metadata    String?
 
-  lastUsedAt DateTime? @map("last_used_at") @db.Timestamptz(3)
-  expiresAt  DateTime? @map("expires_at") @db.Timestamptz(3)
-  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  enabled             Boolean @default(true)
+  rateLimitEnabled    Boolean @default(true) @map("rate_limit_enabled")
+  rateLimitTimeWindow Int?    @map("rate_limit_time_window")
+  rateLimitMax        Int?    @map("rate_limit_max")
+  requestCount        Int     @default(0) @map("request_count")
+  remaining           Int?
+  refillInterval      Int?    @map("refill_interval")
+  refillAmount        Int?    @map("refill_amount")
 
-  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastRefillAt DateTime? @map("last_refill_at") @db.Timestamptz(3)
+  lastRequest  DateTime? @map("last_request") @db.Timestamptz(3)
+  expiresAt    DateTime? @map("expires_at") @db.Timestamptz(3)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user   User            @relation(fields: [referenceId], references: [id], onDelete: Cascade)
   usage  ApiUsageDaily[]
   errors ApiErrorLog[]
   apps   DeveloperApp[]
 
-  @@index([userId])
+  @@index([referenceId])
+  @@index([configId])
   @@map("api_key")
 }
 

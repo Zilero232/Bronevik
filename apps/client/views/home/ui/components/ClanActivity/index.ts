@@ -1,0 +1,1 @@
+export { ClanActivity } from './ClanActivity';

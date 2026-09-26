@@ -1,6 +1,6 @@
 'use client';
 
-import type { RecentPeriod } from '@bronevik/schemas';
+import type { RatingPeriod } from '@bronevik/schemas';
 
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
@@ -14,8 +14,7 @@ import { parseCompareIds } from '../../../lib/compare-math';
 export const useCompareState = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const [period, setPeriod] = useState<'overall' | RecentPeriod>('overall');
+  const [period, setPeriod] = useState<RatingPeriod>('overall');
 
   const ids = parseCompareIds(searchParams.get('ids'));
 

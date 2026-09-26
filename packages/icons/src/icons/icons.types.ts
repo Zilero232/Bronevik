@@ -3,6 +3,8 @@ import type { ComponentType } from 'react';
 
 import type { IconProps, Tier } from '../lib';
 
+export type TankClassKind = 'assaultSPG' | VehicleType;
+
 export type MarkCount = 1 | 2 | 3;
 
 export type MarkStyle = 'rings' | 'stars';
@@ -34,7 +36,7 @@ export type TankClassGlyphProps = IconProps & {
 };
 
 export type TankClassIconProps = TankClassGlyphProps & {
-  tankClass: VehicleType;
+  tankClass: TankClassKind;
 };
 
 export type TankClassIconComponent = ComponentType<TankClassGlyphProps> & { displayName?: string };

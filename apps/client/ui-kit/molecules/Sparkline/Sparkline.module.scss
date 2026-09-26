@@ -7,8 +7,9 @@
   @include tone(--spark);
 }
 
-.gradient stop {
-  stop-color: var(--spark);
+.area {
+  fill: var(--spark);
+  opacity: 0.08;
 }
 
 .line {
@@ -16,10 +17,5 @@
   stroke: var(--spark);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.75;
-}
-
-.dot {
-  fill: var(--spark);
-  filter: drop-shadow(0 0 3px var(--spark));
+  stroke-width: 1;
 }

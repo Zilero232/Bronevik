@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "title": "Tech tree",
+    "description": "Research lines of every nation with the XP and credits to each tank."
+  },
+  "nations": {
+    "label": "Nation"
+  },
+  "canvas": {
+    "label": "Tech tree: {nation}",
+    "tier": "Tier {tier}"
+  },
+  "controls": {
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit the whole tree"
+  },
+  "node": {
+    "select": "Trace the path to {name}",
+    "xp": "{value} XP",
+    "root": "Starter tank"
+  },
+  "path": {
+    "title": "Path to the tank",
+    "totalXp": "XP along the line",
+    "totalCredits": "Credits to buy",
+    "steps": "{count, plural, =0 {This is the starter tank — nothing to research} one {# tank on the way} other {# tanks on the way}}",
+    "route": "Research chain",
+    "start": "start",
+    "openTank": "Tank page",
+    "openBuild": "Open in build constructor",
+    "clear": "Clear selection",
+    "empty": "Pick a tank in the tree to count the XP and credits"
+  },
+  "premiums": {
+    "title": "Premium tanks of the nation",
+    "description": "Not researched: bought for gold.",
+    "empty": "No premium tanks for this nation in the catalogue"
+  },
+  "states": {
+    "loading": "Loading the tech tree",
+    "emptyTitle": "No tree for this nation yet",
+    "errorTitle": "Couldn't load the tree"
+  },
+  "head": {
+    "title": "Tech tree",
+    "description": "Mir Tankov research branches by nation: pick a tank to see the path, XP and credits."
+  }
+}

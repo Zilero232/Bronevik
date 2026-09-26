@@ -1,0 +1,26 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.value {
+  @include numeric;
+  @include tone;
+
+  color: var(--tone);
+  font-weight: 600;
+
+  &:not([data-tone]) {
+    color: var(--color-text);
+  }
+}
+
+.delta {
+  @include numeric;
+
+  color: var(--color-success);
+  font-size: var(--text-2xs);
+}

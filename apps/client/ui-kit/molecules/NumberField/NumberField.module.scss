@@ -7,27 +7,15 @@
 }
 
 .label {
-  @include hud-label;
+  @include label;
 }
 
 .group {
   display: flex;
-  height: 42px;
+  height: 32px;
   align-items: stretch;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-surface-sunken);
-  box-shadow: inset 0 1px 2px var(--shade-25);
-  transition:
-    border-color var(--duration-base) ease,
-    box-shadow var(--duration-base) ease;
 
-  &:focus-within {
-    border-color: var(--color-accent);
-    box-shadow:
-      inset 0 1px 2px var(--shade-25),
-      0 0 0 3px var(--color-accent-soft);
-  }
+  @include field-box;
 }
 
 .input {
@@ -38,9 +26,8 @@
   padding: 0 var(--space-2);
   border: none;
   background: none;
-  font-size: var(--text-lg);
-  font-stretch: 85%;
-  font-weight: 700;
+  font-size: var(--text-md);
+  font-weight: 600;
   outline: none;
   text-align: center;
 }
@@ -50,7 +37,6 @@
   align-items: center;
   padding-right: var(--space-2);
   color: var(--color-text-dim);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
 }
 
@@ -58,18 +44,24 @@
   @include reset-button;
 
   display: inline-flex;
-  width: 36px;
+  width: 28px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  border-left: 1px solid var(--color-border);
   color: var(--color-text-muted);
   transition:
     color var(--duration-fast) ease,
     background-color var(--duration-fast) ease;
 
+  &:first-child {
+    border-right: 1px solid var(--color-border);
+    border-left: none;
+  }
+
   &:hover {
     background-color: var(--color-surface-hover);
-    color: var(--color-accent);
+    color: var(--color-text);
   }
 
   &:disabled {

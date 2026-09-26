@@ -1,3 +1,4 @@
+import { fromUnixTime, secondsToMilliseconds } from 'date-fns';
 import { createHash } from 'node:crypto';
 
 import type { Prisma } from '../../../../../generated';
@@ -48,10 +49,10 @@ export const toBattleData = ({ event, accountId, deviceId, sessionId, previousMo
     moePercent: percent,
     moePercentDelta: percent !== null && previousMoePercent !== null ? percent - previousMoePercent : null,
     marksOnGun: moe?.marks_on_gun ?? null,
-    queueTimeMs: event.queue_time_s === null ? null : Math.round(event.queue_time_s * 1000),
+    queueTimeMs: event.queue_time_s === null ? null : Math.round(secondsToMilliseconds(event.queue_time_s)),
     durationSec: event.duration_s,
     achievements: [],
-    startedAt: new Date(event.arena_created_at * 1000)
+    startedAt: fromUnixTime(event.arena_created_at)
   };
 };
 

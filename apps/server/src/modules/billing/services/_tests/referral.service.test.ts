@@ -1,3 +1,4 @@
+import { REFERRAL } from '@bronevik/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -6,7 +7,6 @@ import type { PrismaService } from '../../../../core';
 import type { SubscriptionService } from '../subscription.service';
 
 import { AppBadRequestException, AppConflictException } from '../../../../common/exceptions';
-import { REFERRAL } from '../../config';
 import { ReferralService } from '../referral.service';
 
 describe('ReferralService', () => {

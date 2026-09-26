@@ -1,47 +1,44 @@
 'use client';
 
 import { toRoman } from '@bronevik/icons';
-import { LayoutGroup } from 'motion/react';
 import { useTranslations } from 'next-intl';
+import { match } from 'ts-pattern';
 
-import { EmptyState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, SegmentedControl, Skeleton } from '@/ui-kit';
 
-import { TIER_LIST_TIERS } from '../../../config';
-import { groupByRank } from '../../../lib/tier-groups';
-import { useTanksState, useTierList } from '../../../model/hooks';
+import { TANKS_VIEW, TIER_LIST_TIERS } from '../../../config';
+import { useTierList } from '../../../model/hooks';
 import { TierBand } from '../TierBand';
 
 import s from './TierList.module.scss';
 
 export const TierList = () => {
   const t = useTranslations('tanks.tierList');
-  const [{ tier }, setState] = useTanksState();
-  const { data, isLoading, isError } = useTierList();
-
-  const groups = groupByRank(data?.entries ?? []);
+  const { tier, groups, isLoading, isError, isFetching, refetch, onTierChange } = useTierList();
 
   return (
     <section aria-label={t('title')} className={s.root}>
       <div className={s.head}>
-        <p className={s.hint}>{t('hint')}</p>
         <SegmentedControl
           aria-label={t('tier')}
           options={TIER_LIST_TIERS.map((value) => ({ value: String(value), label: toRoman(value) }))}
           size='sm'
           value={String(tier)}
-          onChange={(next) => setState({ tier: Number(next) })}
+          onChange={onTierChange}
         />
+        <p className={s.hint}>{t('hint')}</p>
       </div>
-      {isLoading && <Skeleton height={320} shape='block' width='100%' />}
-      {isError && <EmptyState code='ERR' description={t('errorDescription')} title={t('errorTitle')} />}
-      {!isLoading && !isError && groups.length === 0 && <EmptyState description={t('emptyDescription')} title={t('emptyTitle')} />}
-      <LayoutGroup>
-        <div className={s.bands}>
-          {groups.map((group) => (
-            <TierBand key={group.rank} group={group} />
-          ))}
-        </div>
-      </LayoutGroup>
+      {match({ isLoading, isError, isEmpty: groups.length === 0 })
+        .with({ isLoading: true }, () => <Skeleton height={TANKS_VIEW.tierListSkeleton} shape='block' width='100%' />)
+        .with({ isError: true }, () => <ErrorState isRetrying={isFetching} onRetry={() => void refetch()} />)
+        .with({ isEmpty: true }, () => <EmptyState title={t('emptyTitle')} />)
+        .otherwise(() => (
+          <div className={s.bands}>
+            {groups.map((group) => (
+              <TierBand key={group.rank} group={group} />
+            ))}
+          </div>
+        ))}
     </section>
   );
 };

@@ -5,6 +5,10 @@ export const LOGGER = {
   },
   pretty: {
     ignore: 'context',
-    messageFormat: '[{context}] {msg}'
+    messageFormat: '{if context}[{context}] {end}{msg}'
+  },
+  http: {
+    requestIdHeader: 'x-request-id',
+    quietPaths: ['/health']
   }
 } as const;

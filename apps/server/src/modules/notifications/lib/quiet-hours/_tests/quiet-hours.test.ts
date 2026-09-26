@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { TIME } from '../../../../../config';
 import { quietDelayMs } from '../quiet-hours';
 
 const hour = 60 * 60_000;
@@ -26,7 +27,10 @@ describe('quietDelayMs', () => {
     expect(quietDelayMs({ quietHours: { start: 0, end: 7 }, now: utc('22:00'), timeZone: 'Europe/Moscow' })).toBe(6 * hour);
   });
 
-  it('falls back to Moscow time for an unknown zone instead of throwing', () => {
-    expect(() => quietDelayMs({ quietHours: { start: 0, end: 7 }, now: utc('22:00'), timeZone: 'Mars/Olympus' })).not.toThrow();
+  it('falls back to the server time zone for an unknown zone instead of throwing', () => {
+    const now = utc('22:00');
+    const quietHours = { start: 0, end: 7 };
+
+    expect(quietDelayMs({ quietHours, now, timeZone: 'Mars/Olympus' })).toBe(quietDelayMs({ quietHours, now, timeZone: TIME.zone }));
   });
 });

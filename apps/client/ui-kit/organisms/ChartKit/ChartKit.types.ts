@@ -1,6 +1,8 @@
 import type { scaleBand, scaleLinear } from '@visx/scale';
 import type { PointerEvent, ReactNode } from 'react';
 
+import type { ChartHoverState } from '@/shared/lib';
+
 import type { ProgressTone } from '../../atoms';
 
 type LinearScale = ReturnType<typeof scaleLinear<number>>;
@@ -24,15 +26,6 @@ export type ChartBaseProps = {
   formatValue?: (value: number) => string;
 };
 
-export type ChartLayoutInput = {
-  width: number;
-  height: number;
-  labels: string[];
-  series: ChartSeries[];
-  yDomain?: [number, number];
-  includeZero?: boolean;
-};
-
 export type ChartAxesProps = {
   xScale: BandScale | LinearScale;
   yScale: LinearScale;
@@ -42,35 +35,18 @@ export type ChartAxesProps = {
   formatValue: (value: number) => string;
 };
 
-export type ChartTooltipState = {
-  index: number;
-  left: number;
-  top: number;
-};
-
 export type ChartTooltipProps = {
-  state: ChartTooltipState;
+  state: ChartHoverState;
   labels: string[];
   series: ChartSeries[];
   formatValue: (value: number) => string;
-};
-
-export type ClampIndexInput = {
-  value: number;
-  count: number;
-};
-
-export type UseChartHoverInput = {
-  count: number;
-  toIndex: (x: number) => number;
-  toPosition: (index: number) => { left: number; top: number };
 };
 
 export type ChartCanvasProps = ChartAxesProps & {
   width: number;
   height: number;
   series: ChartSeries[];
-  hover: ChartTooltipState | null;
+  hover: ChartHoverState | null;
   children: ReactNode;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerLeave: () => void;

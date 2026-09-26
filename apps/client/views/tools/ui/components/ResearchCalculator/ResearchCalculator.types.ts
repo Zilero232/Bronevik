@@ -1,11 +1,7 @@
 import type { VehicleSummary } from '@bronevik/schemas';
 
-import type { RESEARCH } from '../../../config';
 import type { ResearchCost } from '../../../lib/research-plan';
-
-export type ResearchValues = { -readonly [K in keyof typeof RESEARCH.defaults]: number } & {
-  isPremium: boolean;
-};
+import type { ResearchValues } from '../../../model/hooks';
 
 export type ResearchResultsProps = {
   vehicle: VehicleSummary | null;

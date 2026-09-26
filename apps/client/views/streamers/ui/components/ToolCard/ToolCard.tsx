@@ -12,8 +12,7 @@ import { Badge } from '@/ui-kit';
 
 import type { ToolCardProps } from './ToolCard.types';
 
-import { DEMO_SLUG } from '../../../config';
-import { ChatMock } from '../ChatMock';
+import { ChatPreview } from '../ChatPreview';
 
 import s from './ToolCard.module.scss';
 
@@ -44,11 +43,12 @@ export const ToolCard = ({ tool, icon: Icon }: ToolCardProps) => {
             ))}
           </ul>
         ))
-        .with('commands', () => <ChatMock />)
+        .with('commands', () => <ChatPreview />)
         .with('page', () => (
           <code className={s.url}>
             {new URL(SITE.url).host}
-            <span className={s.slug}>{ROUTES.streamer(DEMO_SLUG)}</span>
+            {ROUTES.streamer('')}
+            <span className={s.slug}>{t('page.slug')}</span>
           </code>
         ))
         .exhaustive()}

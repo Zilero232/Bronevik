@@ -12,6 +12,8 @@ export type TabsProps<T extends string = string> = {
   items: TabItem<T>[];
   value?: T;
   defaultValue?: T;
+  variant?: 'panel' | 'strip';
+  aside?: ReactNode;
   className?: string;
   panelClassName?: string;
   onValueChange?: (value: T) => void;

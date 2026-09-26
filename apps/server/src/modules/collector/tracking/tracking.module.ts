@@ -10,6 +10,7 @@ import {
   PollPipelineService,
   RatingsTriggerService,
   SeedService,
+  TrackingAnnounceService,
   TrackingLestaService,
   TrackingStoreService
 } from './services';
@@ -18,6 +19,7 @@ import {
   imports: [PurgeModule],
   providers: [
     TrackingLestaService,
+    TrackingAnnounceService,
     TrackingStoreService,
     RatingsTriggerService,
     PollPipelineService,

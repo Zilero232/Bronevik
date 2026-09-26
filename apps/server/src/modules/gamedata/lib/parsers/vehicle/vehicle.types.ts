@@ -70,3 +70,13 @@ export type ParseModulesInput<T> = {
   shared: Record<string, XmlNode>;
   parse: (input: NamedSource) => T;
 };
+
+export type ArmorExtrasInput = {
+  armor: XmlValue | undefined;
+  hitTester: XmlValue | undefined;
+};
+
+export type ArmorExtras = {
+  spacedArmor?: string[];
+  collision?: string;
+};

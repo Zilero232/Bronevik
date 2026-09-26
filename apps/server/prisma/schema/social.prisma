@@ -13,6 +13,7 @@ enum NotificationEvent {
   sessionFinished     @map("session_finished")
   clanRosterChanged   @map("clan_roster_changed")
   clanEventReminder   @map("clan_event_reminder")
+  clanWeeklyReport    @map("clan_weekly_report")
   bonusCode           @map("bonus_code")
   premiumOffer        @map("premium_offer")
   tankChanged         @map("tank_changed")

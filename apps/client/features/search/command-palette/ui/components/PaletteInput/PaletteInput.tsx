@@ -1,5 +1,5 @@
-import { AnimatedCrosshair, CrosshairIcon } from '@bronevik/icons';
 import { Command } from 'cmdk';
+import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Kbd } from '@/ui-kit';
@@ -14,7 +14,7 @@ export const PaletteInput = ({ value, isFetching, onValueChange }: PaletteInputP
   return (
     <div className={s.root}>
       <span aria-hidden className={s.icon} data-busy={isFetching}>
-        {isFetching ? <AnimatedCrosshair size={22} /> : <CrosshairIcon size={22} />}
+        <Search size={16} />
       </span>
       <Command.Input className={s.input} placeholder={t('placeholder')} value={value} onValueChange={onValueChange} />
       <Kbd>Esc</Kbd>

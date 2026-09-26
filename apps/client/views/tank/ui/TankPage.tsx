@@ -1,37 +1,59 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import { match, P } from 'ts-pattern';
 
 import { isNotFoundError } from '@/shared/api/source';
+import { ROUTES } from '@/shared/constants';
+import { ResourceMissing } from '@/widgets/resource-missing';
 
 import { TankProvider } from '../model/context';
 import { useTankDetail } from '../model/hooks';
-import { MarksSection, PatchHistory, PopularBuilds, ServerStats, TankHero, TankMissing, TankSkeleton, TopPlayers } from './components';
+import { MarksSection, MasteryPanel, PatchHistory, PopularBuilds, ServerStats, TankGarage, TankSkeleton, TopPlayers } from './components';
 
 import s from './TankPage.module.scss';
 
 export const TankPage = () => {
-  const { data: detail, isPending, error } = useTankDetail();
+  const t = useTranslations('tank.missing');
+  const ts = useTranslations('tank');
+  const { slug } = useParams<{ slug: string }>();
+  const { data: detail, isPending, error, refetch } = useTankDetail();
 
   return (
     <div className={s.root}>
       {match({ detail, isPending, error })
         .with({ detail: P.nonNullable }, ({ detail: loaded }) => (
           <TankProvider detail={loaded}>
-            <TankHero />
-            <div className={s.sections}>
-              <ServerStats />
+            <TankGarage />
+            <ServerStats />
+            <div className={s.pair}>
               <MarksSection />
-              <TopPlayers />
-              <PopularBuilds />
-              <PatchHistory />
+              <MasteryPanel />
             </div>
+            <TopPlayers />
+            <PopularBuilds />
+            <PatchHistory />
+            <p className={s.source}>{ts('source')}</p>
           </TankProvider>
         ))
         .with({ isPending: true }, () => <TankSkeleton />)
-        .with({ error: P.when(isNotFoundError) }, () => <TankMissing reason='notFound' />)
+        .with({ error: P.when(isNotFoundError) }, () => (
+          <ResourceMissing
+            back={{ href: ROUTES.tanks, label: t('back') }}
+            description={t('notFound.description', { slug: decodeURIComponent(slug) })}
+            reason='notFound'
+            title={t('notFound.title')}
+          />
+        ))
         .otherwise(() => (
-          <TankMissing reason='error' />
+          <ResourceMissing
+            back={{ href: ROUTES.tanks, label: t('back') }}
+            description={t('error.description', { slug: decodeURIComponent(slug) })}
+            reason='error'
+            title={t('error.title')}
+            onRetry={() => void refetch()}
+          />
         ))}
     </div>
   );

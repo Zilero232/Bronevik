@@ -1,2 +1,2 @@
-export { CHAT_COMMANDS, DEMO_CONFIG, DEMO_OVERLAY, DEMO_SLUG, FLOW_STEPS, LANDING_ANCHORS, TOOL_CARDS } from './landing.config';
+export { CHAT_COMMANDS, FLOW_STEPS, LANDING_ANCHORS, MONITOR_WIDGETS, TOOL_CARDS } from './landing.config';
 export type { ToolKey } from './landing.config';

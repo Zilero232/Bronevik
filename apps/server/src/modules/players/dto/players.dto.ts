@@ -4,6 +4,7 @@ import {
   insightsQuerySchema,
   nicknameHistorySchema,
   paginationQuerySchema,
+  playerAchievementsSchema,
   playerInsightsSchema,
   playerMarksSchema,
   playerProfileSchema,
@@ -51,3 +52,5 @@ export class PlaytimeDto extends createZodDto(playtimeSchema) {}
 
 export class PopularPlayersQueryDto extends createZodDto(popularPlayersQuerySchema) {}
 export class PopularPlayersDto extends createZodDto(popularPlayersSchema) {}
+
+export class PlayerAchievementsDto extends createZodDto(playerAchievementsSchema) {}

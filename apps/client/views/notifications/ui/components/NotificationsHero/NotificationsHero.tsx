@@ -13,7 +13,7 @@ const SIGNAL_BARS = 5;
 
 export const NotificationsHero = () => {
   const t = useTranslations('notifications.hero');
-  const { data } = useInboxFeedQuery();
+  const { data, isError } = useInboxFeedQuery();
 
   const unread = data?.pages[0]?.unread;
   const isLive = (unread ?? 0) > 0;
@@ -28,7 +28,10 @@ export const NotificationsHero = () => {
             ))}
           </span>
           <span className={s.readout}>
-            <span className={s.value}>{unread === undefined ? <Skeleton width={56} /> : <AnimatedNumber value={unread} />}</span>
+            <span className={s.value}>
+              {unread !== undefined && <AnimatedNumber value={unread} />}
+              {unread === undefined && (isError ? '—' : <Skeleton width={56} />)}
+            </span>
             <span className={s.label}>{t('unread')}</span>
           </span>
           <span className={s.hint}>{isLive ? t('unreadHint') : t('quietHint')}</span>

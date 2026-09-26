@@ -1,60 +1,40 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Redis } from 'ioredis';
-import { z } from 'zod';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { HealthCheckService, PrismaHealthIndicator } from '@nestjs/terminus';
 
 import type { Health } from '../health.types';
 
-import { PrismaService, REDIS } from '../../../core';
-import { COLLECTOR_STATE_KEY } from '../../collector';
+import { PrismaService } from '../../../core';
 import { HEALTH } from '../config';
 import { healthSchema } from '../dto';
-
-const heartbeatSchema = z.object({ collectedAt: z.iso.datetime() });
-const circuitSchema = z.object({ state: healthSchema.shape.lestaCircuit });
+import { CollectorStateIndicator, RedisIndicator } from '../indicators';
 
 @Injectable()
 export class HealthService {
   constructor(
+    private readonly health: HealthCheckService,
+    private readonly prismaIndicator: PrismaHealthIndicator,
     private readonly prisma: PrismaService,
-    @Inject(REDIS) private readonly redis: Redis
+    private readonly redis: RedisIndicator,
+    private readonly collector: CollectorStateIndicator
   ) {}
 
   async check(): Promise<Health> {
-    const [database, redis, worker, lestaCircuit] = await Promise.all([
-      this.prisma.$queryRaw`SELECT 1`.then(
-        () => 'ok' as const,
-        () => 'down' as const
-      ),
-      this.redis.ping().then(
-        () => 'ok' as const,
-        () => 'down' as const
-      ),
-      this.worker(),
-      this.lestaCircuit()
-    ]);
+    return this.health
+      .check([
+        () => this.prismaIndicator.pingCheck(HEALTH.key.database, this.prisma),
+        () => this.redis.ping(),
+        () => this.collector.worker(),
+        () => this.collector.lestaCircuit()
+      ])
+      .then(
+        (result) => healthSchema.parse(result),
+        (error: unknown) => {
+          if (error instanceof ServiceUnavailableException) {
+            return healthSchema.parse(error.getResponse());
+          }
 
-    return { status: database === 'ok' && redis === 'ok' ? 'ok' : 'degraded', database, redis, worker, lestaCircuit };
-  }
-
-  private async worker(): Promise<Health['worker']> {
-    const heartbeat = heartbeatSchema.safeParse(await this.state(COLLECTOR_STATE_KEY.queues));
-
-    if (!heartbeat.success) {
-      return 'unknown';
-    }
-
-    return Date.now() - new Date(heartbeat.data.collectedAt).getTime() < HEALTH.workerStaleMs ? 'ok' : 'stale';
-  }
-
-  private async lestaCircuit(): Promise<Health['lestaCircuit']> {
-    const circuit = circuitSchema.safeParse(await this.state(COLLECTOR_STATE_KEY.circuitBreaker));
-
-    return circuit.success ? circuit.data.state : 'unknown';
-  }
-
-  private async state(key: string): Promise<unknown> {
-    const row = await this.prisma.collectorState.findUnique({ where: { key }, select: { value: true } }).catch(() => null);
-
-    return row?.value;
+          throw error;
+        }
+      );
   }
 }

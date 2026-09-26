@@ -11,11 +11,9 @@
     "**/dist/**",
     "**/generated/**",
     "**/coverage/**",
-    "**/prisma/migrations/**",
     "**/_tests/**",
     "**/tests/**",
     "**/*.test.{ts,tsx}",
-    "**/shared/mocks/**",
     "**/shared/i18n/locales/**"
   ],
   "gitignore": true,

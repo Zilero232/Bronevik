@@ -8,6 +8,8 @@ import {
   TelegramIdentityService,
   TelegramInlineService,
   TelegramLinkService,
+  TelegramLookupCommandsService,
+  TelegramPlayerCommandsService,
   TelegramSettingsService,
   TelegramStatsService
 } from './services';
@@ -25,6 +27,8 @@ import { TelegramController } from './telegram.controller';
     TelegramIdentityService,
     TelegramInlineService,
     TelegramLinkService,
+    TelegramLookupCommandsService,
+    TelegramPlayerCommandsService,
     TelegramSettingsService,
     TelegramStatsService
   ],

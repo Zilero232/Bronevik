@@ -1,12 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { addMilliseconds } from 'date-fns';
 import { HTTPError } from 'ky';
 
 import type { DeliverInput, FailDeliveryInput } from '../developer.types';
 
+import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { http } from '../../../lib/http';
 import { WEBHOOK_DELIVERY } from '../config';
-import { webhookEventFromDb, webhookHeaders } from '../lib';
+import { errorBody, resolvesPublicly, webhookEventFromDb, webhookHeaders } from '../lib';
 
 @Injectable()
 export class WebhookDeliveryService {
@@ -23,12 +25,24 @@ export class WebhookDeliveryService {
     }
 
     const body = JSON.stringify(delivery.payload);
-    const timestamp = Math.floor(Date.now() / 1000);
+
+    if (!(await resolvesPublicly({ url: delivery.endpoint.url }))) {
+      await this.fail({
+        deliveryId,
+        endpointId: delivery.endpointId,
+        attempt,
+        responseStatus: null,
+        responseBody: WEBHOOK_DELIVERY.blockedResponse,
+        isFinal
+      });
+
+      throw new Error(`${WEBHOOK_DELIVERY.blockedResponse}: ${delivery.endpoint.url}`);
+    }
 
     try {
       const response = await http.post(delivery.endpoint.url, {
         body,
-        headers: webhookHeaders({ secret: delivery.endpoint.secret, body, event, deliveryId, timestamp }),
+        headers: webhookHeaders({ secret: delivery.endpoint.secret, body, event, deliveryId, sentAt: new Date() }),
         timeout: WEBHOOK_DELIVERY.timeoutMs,
         redirect: 'manual'
       });
@@ -51,7 +65,7 @@ export class WebhookDeliveryService {
       return 'delivered';
     } catch (error) {
       const responseStatus = error instanceof HTTPError ? error.response.status : null;
-      const responseBody = error instanceof HTTPError ? await error.response.text().catch(() => null) : error instanceof Error ? error.message : null;
+      const responseBody = error instanceof HTTPError ? errorBody(error.data) : errorMessage(error);
 
       await this.fail({ deliveryId, endpointId: delivery.endpointId, attempt, responseStatus, responseBody, isFinal });
 
@@ -67,7 +81,7 @@ export class WebhookDeliveryService {
         attempt,
         responseStatus,
         responseBody: responseBody?.slice(0, WEBHOOK_DELIVERY.responseBodyMaxLength) ?? null,
-        nextAttemptAt: isFinal ? null : new Date(Date.now() + WEBHOOK_DELIVERY.backoffMs * 2 ** (attempt - 1))
+        nextAttemptAt: isFinal ? null : addMilliseconds(new Date(), WEBHOOK_DELIVERY.backoffMs * 2 ** (attempt - 1))
       }
     });
 

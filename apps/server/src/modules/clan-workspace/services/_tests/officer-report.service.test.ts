@@ -1,3 +1,4 @@
+import { addDays, subDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -9,7 +10,7 @@ import type { ClanAccessService } from '../clan-access.service';
 import { CLAN_WORKSPACE } from '../../config';
 import { OfficerReportService } from '../officer-report.service';
 
-const now = new Date('2026-09-21T10:00:00Z');
+const now = new Date('2026-09-23T10:00:00Z');
 const weekKey = '2026-09-21';
 
 const workspace = (clanId: bigint, tag: string): ClanWorkspace & { clan: { tag: string } } => ({
@@ -62,10 +63,10 @@ describe('OfficerReportService.sendWeekly', () => {
       userIds: ['officer'],
       dedupeKey: `clan-report-100-${weekKey}`,
       notification: expect.objectContaining({
+        event: 'clanWeeklyReport',
         clanId: 100,
         clanTag: 'BRNV',
-        title: new Date(now.getTime() - CLAN_WORKSPACE.reportDays * 86_400_000).toISOString(),
-        startsAt: null,
+        from: subDays(now, CLAN_WORKSPACE.reportDays).toISOString(),
         report: { events: 3, attendanceRate: 0.5, newCandidates: 2, inactiveMembers: 5 }
       })
     });
@@ -75,7 +76,7 @@ describe('OfficerReportService.sendWeekly', () => {
     const { service, notifications } = createService();
 
     await service.sendWeekly(now);
-    await service.sendWeekly(new Date(now.getTime() + 3_600_000));
+    await service.sendWeekly(addDays(now, 3));
 
     const keys = notifications.notifyMany.mock.calls.map(([input]) => input.dedupeKey);
 

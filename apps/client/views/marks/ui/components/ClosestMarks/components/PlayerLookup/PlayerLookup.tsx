@@ -1,52 +1,34 @@
 'use client';
 
-import type { SubmitEvent } from 'react';
-
-import { Crosshair, UserSearch } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
-import { useState } from 'react';
 
 import { Button, Input } from '@/ui-kit';
 
-import type { PlayerLookupProps } from '../../ClosestMarks.types';
+import type { PlayerLookupProps } from './PlayerLookup.types';
 
-import { usePlayerSuggestions } from '../../../../../model/hooks';
+import { usePlayerLookup } from '../../../../../model/hooks';
 
 import s from './PlayerLookup.module.scss';
 
 export const PlayerLookup = ({ player, onPick }: PlayerLookupProps) => {
   const t = useTranslations('marks.closest');
   const format = useFormatter();
-  const [input, setInput] = useState(player);
-  const { players } = usePlayerSuggestions(input === player ? '' : input);
-
-  const pick = (value: string) => {
-    setInput(value);
-    onPick(value.trim());
-  };
-
-  const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    pick(input);
-  };
+  const { input, players, canSubmit, pick, onSubmit, onChange } = usePlayerLookup({ player, onPick });
 
   return (
     <form className={s.root} role='search' onSubmit={onSubmit}>
-      <span className={s.icon}>
-        <Crosshair aria-hidden size={28} />
-      </span>
-      <p className={s.lead}>{t('lead')}</p>
       <div className={s.row}>
         <Input
           aria-label={t('label')}
           autoComplete='off'
-          icon={<UserSearch size={16} />}
+          icon={<Search size={14} />}
           placeholder={t('placeholder')}
           value={input}
           wrapperClassName={s.input}
-          onChange={(event) => setInput(event.target.value)}
+          onChange={onChange}
         />
-        <Button disabled={!input.trim()} type='submit'>
+        <Button disabled={!canSubmit} size='sm' type='submit' variant='secondary'>
           {t('submit')}
         </Button>
       </div>

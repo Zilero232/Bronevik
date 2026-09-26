@@ -1,7 +1,0 @@
-@use '@/shared/styles/mixins' as *;
-
-.root {
-  @include tile-grid;
-
-  margin-top: calc(var(--space-9) * -1);
-}

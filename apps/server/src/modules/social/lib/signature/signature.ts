@@ -4,7 +4,7 @@ import satori from 'satori';
 import type { SignatureData } from '../../social.types';
 import type { NodeInput, RenderSignatureInput, SignatureNode, StatInput } from './signature.types';
 
-import { ratingValue } from '../../../../common/lib';
+import { formatNumberOr, formatPercentOr, ratingValue } from '../../../../common/lib';
 import { SIGNATURE, TIER_COLORS } from '../../config';
 
 const div = ({ style, children }: NodeInput): SignatureNode => ({
@@ -12,10 +12,6 @@ const div = ({ style, children }: NodeInput): SignatureNode => ({
   key: null,
   props: { style, ...(children === undefined ? {} : { children }) }
 });
-
-const format = (value: number | null): string => (value === null ? '—' : Math.round(value).toLocaleString('ru-RU'));
-
-const percent = (value: number | null): string => (value === null ? '—' : `${(value * 100).toFixed(2)}%`);
 
 const stat = ({ label, value, color }: StatInput): SignatureNode =>
   div({
@@ -29,6 +25,7 @@ const stat = ({ label, value, color }: StatInput): SignatureNode =>
 export const signatureTree = (data: SignatureData): SignatureNode => {
   const tier = ratingValue({ kind: 'wn8', value: data.wn8 }).tier;
   const wn8Color = tier ? TIER_COLORS[tier] : SIGNATURE.foreground;
+  const { locale, missing } = SIGNATURE;
 
   return div({
     style: {
@@ -57,10 +54,10 @@ export const signatureTree = (data: SignatureData): SignatureNode => {
       div({
         style: { display: 'flex' },
         children: [
-          stat({ label: 'WN8', value: format(data.wn8), color: wn8Color }),
-          stat({ label: 'WR', value: percent(data.winRate), color: SIGNATURE.foreground }),
-          stat({ label: 'DMG', value: format(data.avgDamage), color: SIGNATURE.foreground }),
-          stat({ label: 'BATTLES', value: format(data.battles), color: SIGNATURE.foreground })
+          stat({ label: 'WN8', value: formatNumberOr({ value: data.wn8, locale, missing }), color: wn8Color }),
+          stat({ label: 'WR', value: formatPercentOr({ value: data.winRate, locale, missing }), color: SIGNATURE.foreground }),
+          stat({ label: 'DMG', value: formatNumberOr({ value: data.avgDamage, locale, missing }), color: SIGNATURE.foreground }),
+          stat({ label: 'BATTLES', value: formatNumberOr({ value: data.battles, locale, missing }), color: SIGNATURE.foreground })
         ]
       })
     ]

@@ -1,22 +1,20 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md));
-  @include stack(var(--space-4));
+  @include stack(var(--space-3));
 
-  padding: var(--space-5);
   margin: 0;
 }
 
 .caption {
-  @include hud-label;
+  @include label;
 }
 
 .bar {
   display: flex;
   overflow: hidden;
-  height: 14px;
-  gap: 2px;
+  height: 6px;
+  gap: 1px;
 }
 
 .segment,
@@ -42,55 +40,46 @@
 
 .segment {
   flex-basis: 0;
-  background: repeating-linear-gradient(90deg, transparent 0 6px, rgb(0 0 0 / 25%) 6px 7px), var(--status);
-  transform-origin: left center;
+  background: var(--status);
 }
 
 .legend {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   padding: 0;
   margin: 0;
-  gap: var(--space-3);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3) var(--space-6);
   list-style: none;
-
-  @include below(xl) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 .item {
-  display: grid;
-  align-items: center;
-  column-gap: var(--space-2);
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
+  align-self: center;
   border-radius: var(--radius-full);
   background: var(--status);
-  box-shadow: 0 0 8px var(--status);
 }
 
 .label {
-  overflow: hidden;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .value {
   @include numeric;
 
-  font-size: var(--text-lg);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .share {
-  @include hud-label;
+  @include numeric;
 
-  grid-column: 2 / span 2;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
 }

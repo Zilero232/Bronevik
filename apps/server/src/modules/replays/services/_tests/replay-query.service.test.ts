@@ -3,9 +3,8 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Player, Replay } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
-import type { PrismaService } from '../../../../core';
+import type { ObjectStorage, PrismaService } from '../../../../core';
 import type { ReplaySearchQuery } from '../../replays.types';
-import type { ReplayStorage } from '../../storage';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { BEST_OF_WEEK } from '../../config';
@@ -55,7 +54,7 @@ const searchQuery: ReplaySearchQuery = { limit: 20, offset: 0, sort: 'recent' };
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const storage = mock<ReplayStorage>();
+  const storage = mock<ObjectStorage>();
   const config = mock<AppConfigService>();
 
   config.get.mockReturnValue('http://localhost:4000');
@@ -98,6 +97,19 @@ describe('ReplayQueryService.search', () => {
     expect(page).toEqual({ items: [], total: 0, limit: searchQuery.limit, offset: 40 });
     expect(prisma.replay.findMany).not.toHaveBeenCalled();
     expect(prisma.replay.count).not.toHaveBeenCalled();
+  });
+
+  it('searches by the account id even when the nickname is unknown', async () => {
+    const { service, prisma } = createService();
+
+    prisma.player.findFirst.mockResolvedValue(null);
+    prisma.replay.findMany.mockResolvedValue([]);
+    prisma.replay.count.mockResolvedValue(0);
+
+    await service.search({ ...searchQuery, player: 'Renamed', accountId: 9 });
+
+    expect(prisma.player.findFirst).not.toHaveBeenCalled();
+    expect(prisma.replay.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ playerAccountIds: { has: 9n } });
   });
 
   it('filters by the participant account of a known player', async () => {

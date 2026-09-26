@@ -42,7 +42,7 @@ const rawReserveStockSchema = z
   })
   .loose();
 
-export const rawReserveSchema = z
+const rawReserveSchema = z
   .object({
     type: optionalString,
     title: optionalString,

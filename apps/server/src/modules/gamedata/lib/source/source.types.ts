@@ -2,32 +2,50 @@ import type { GAME_DATA_SOURCES } from './source.constants';
 
 type GameDataSourceId = keyof typeof GAME_DATA_SOURCES;
 
-type GameDataSource = (typeof GAME_DATA_SOURCES)[GameDataSourceId];
-
-export type SourceRevision = {
-  sourceId: GameDataSourceId;
+export type RepoSource = {
   owner: string;
   repo: string;
   ref: string;
+};
+
+export type RepoRevision = RepoSource & {
   sha: string;
   committedAt?: string;
 };
 
-export type SourceReader = {
-  revision: SourceRevision;
+export type SourceRevision = RepoRevision & {
+  sourceId: GameDataSourceId;
+};
+
+export type RepoReader = {
+  revision: RepoRevision;
   read: (path: string) => Promise<string | undefined>;
+};
+
+export type SourceReader = RepoReader & {
+  revision: SourceRevision;
 };
 
 export type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
-export type CreateGithubReaderInput = {
-  sourceId: GameDataSourceId;
+export type CreateRepoReaderInput = {
+  source: RepoSource;
   ref?: string;
   cacheDir: string;
   token?: string;
   concurrency?: number;
   retryDelayMs?: number;
   fetch?: FetchLike;
+};
+
+export type CreateGithubReaderInput = Omit<CreateRepoReaderInput, 'source'> & {
+  sourceId: GameDataSourceId;
+};
+
+export type CreateLocalRepoReaderInput = {
+  source: RepoSource;
+  root: string;
+  sha?: string;
 };
 
 export type CreateLocalReaderInput = {
@@ -37,7 +55,7 @@ export type CreateLocalReaderInput = {
 };
 
 export type ResolveCommitInput = {
-  source: GameDataSource;
+  source: RepoSource;
   ref: string;
   token?: string;
   fetch: FetchLike;

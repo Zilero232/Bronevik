@@ -3,27 +3,17 @@
 
 .root {
   @include verdict;
-  @include stack(var(--space-1));
+  @include stack(2px);
 
-  position: relative;
   min-width: 0;
-}
-
-.flash {
-  position: absolute;
-  border-radius: var(--radius-xs);
-  background: var(--side, var(--color-accent));
-  inset: -2px -6px;
-  pointer-events: none;
 }
 
 .number {
   @include numeric;
 
-  position: relative;
   display: inline-flex;
   align-items: baseline;
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: 600;
   gap: var(--space-1);
   white-space: nowrap;
@@ -44,8 +34,7 @@
   position: relative;
   display: block;
   overflow: hidden;
-  height: 3px;
-  border-radius: 1px;
+  height: 2px;
   background: var(--color-border);
 }
 

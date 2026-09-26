@@ -1,0 +1,60 @@
+{
+  "parts": {
+    "Hull": {
+      "positions": [-1.5, 0, -3, 1.5, 0, -3, 1.5, 1, 3, -1.5, 1, 3, 0, 1.2, 0, 0.2, 1.2, 0],
+      "indices": [0, 1, 2, 0, 2, 3, 2, 4, 5, 3, 4, 5],
+      "groups": [
+        { "name": "armor_1", "start": 0, "count": 3 },
+        { "name": "armor_12", "start": 3, "count": 3 },
+        { "name": "surveyingDevice", "start": 6, "count": 3 },
+        { "name": "armor_1", "start": 9, "count": 3 }
+      ]
+    },
+    "Chassis": {
+      "positions": [-1.6, 0, -3, -1.6, 0.8, 3, -1.6, 0, 3, 1.6, 0, -3, 1.6, 0.8, 3, 1.6, 0, 3],
+      "indices": [0, 1, 2, 3, 4, 5],
+      "groups": [
+        { "name": "leftTrack", "start": 0, "count": 3 },
+        { "name": "rightTrack", "start": 3, "count": 3 }
+      ]
+    },
+    "Turret_01": {
+      "positions": [-1, 0, -1, 1, 0, -1, 0, 0.8, 1],
+      "indices": [0, 1, 2],
+      "groups": [{ "name": "armor_1", "start": 0, "count": 3 }]
+    },
+    "Turret_02": {
+      "positions": [-1.1, 0, -1.1, 1.1, 0, -1.1, 0, 0.9, 1.1],
+      "indices": [0, 1, 2],
+      "groups": [{ "name": "armor_1", "start": 0, "count": 3 }]
+    },
+    "Gun_01": {
+      "positions": [0, 0, 0, 0.1, 0, 4, 0, 0.1, 4, -0.3, -0.3, 0, 0.3, -0.3, 0, 0, 0.3, 0],
+      "indices": [0, 1, 2, 3, 4, 5],
+      "groups": [
+        { "name": "gun", "start": 0, "count": 3 },
+        { "name": "armor_1", "start": 3, "count": 3 }
+      ]
+    },
+    "Gun_10": {
+      "positions": [0, 0, 0, 0.1, 0, 5, 0, 0.1, 5],
+      "indices": [0, 1, 2],
+      "groups": [{ "name": "gun", "start": 0, "count": 3 }]
+    }
+  },
+  "armor": {
+    "Hull": { "armor_1": 110, "armor_12": 0 },
+    "Chassis": { "leftTrack": 20, "rightTrack": 20 },
+    "Gun_01": { "gun": 30, "armor_1": 100 }
+  },
+  "spaced": { "Gun_01": ["armor_1"] },
+  "hullPosition": [0, 0.8, 0],
+  "modules": { "hull": "Hull", "IS-1": "Chassis", "IS-2M": "Chassis" },
+  "mounts": {
+    "turret": [0, 0.7, 0.5],
+    "guns": { "Turret_01": [0, 0.2, 0.8], "Turret_02": [0, 0.25, 0.9] },
+    "pitch": { "Gun_01": [-20, 3], "Gun_10": [-20, 3] },
+    "sweep": {},
+    "hullPitch": null
+  }
+}

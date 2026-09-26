@@ -1,1 +1,0 @@
-export { TreeHero } from './TreeHero';

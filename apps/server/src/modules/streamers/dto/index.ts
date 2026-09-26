@@ -12,6 +12,7 @@ export {
   OverlayDto,
   OverlayListDto,
   OverlayParamsDto,
+  PreviewOverlayDto,
   SlugParamsDto,
   StreamerChallengeDto,
   StreamerProfileDto,

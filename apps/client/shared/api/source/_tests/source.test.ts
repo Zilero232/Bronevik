@@ -1,17 +1,7 @@
 import { AxiosError, AxiosHeaders } from 'axios';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { isNotFoundError, isUnauthorizedError } from '../source';
-
-const flags = vi.hoisted(() => ({ useMocks: false }));
-
-vi.mock('@/shared/config/client-env', () => ({
-  env: {
-    get NEXT_PUBLIC_USE_MOCKS() {
-      return flags.useMocks;
-    }
-  }
-}));
+import { fromServer, isNotFoundError, isUnauthorizedError } from '../source';
 
 const httpError = (status: number) =>
   new AxiosError('failed', String(status), undefined, undefined, {
@@ -22,35 +12,22 @@ const httpError = (status: number) =>
     data: null
   });
 
-const { fromSource } = await import('../source');
-
-describe('fromSource', () => {
+describe('fromServer', () => {
   it('turns a 404 from the API into a not-found error the pages can branch on', async () => {
-    flags.useMocks = false;
-
-    await expect(fromSource({ mock: () => 1, fetch: () => Promise.reject(httpError(404)) })).rejects.toSatisfy(isNotFoundError);
+    await expect(fromServer(() => Promise.reject(httpError(404)))).rejects.toSatisfy(isNotFoundError);
   });
 
   it('turns a 401 into an unauthorized error', async () => {
-    flags.useMocks = false;
-
-    await expect(fromSource({ mock: () => 1, fetch: () => Promise.reject(httpError(401)) })).rejects.toSatisfy(isUnauthorizedError);
+    await expect(fromServer(() => Promise.reject(httpError(401)))).rejects.toSatisfy(isUnauthorizedError);
   });
 
   it('passes other failures through untouched', async () => {
-    flags.useMocks = false;
-
     const failure = httpError(500);
 
-    await expect(fromSource({ mock: () => 1, fetch: () => Promise.reject(failure) })).rejects.toBe(failure);
+    await expect(fromServer(() => Promise.reject(failure))).rejects.toBe(failure);
   });
 
-  it('answers from the mock without touching the network when mocks are on', async () => {
-    flags.useMocks = true;
-
-    const fetch = vi.fn(() => Promise.resolve(2));
-
-    await expect(fromSource({ mock: () => 1, fetch })).resolves.toBe(1);
-    expect(fetch).not.toHaveBeenCalled();
+  it('resolves with what the server answered', async () => {
+    await expect(fromServer(() => Promise.resolve(2))).resolves.toBe(2);
   });
 });

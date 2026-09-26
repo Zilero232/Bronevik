@@ -3,20 +3,10 @@
 .grid {
   display: grid;
   align-items: start;
-  gap: var(--space-5);
+  gap: var(--gap-panel);
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
 
   @include below(3xl) {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  > :last-child {
-    position: sticky;
-    top: calc(var(--header-height) + var(--space-4));
-
-    @include below(3xl) {
-      position: static;
-      order: -1;
-    }
   }
 }

@@ -27,3 +27,4 @@ export type {
 export { createRatingsMethods } from './ratings';
 export { createStrongholdMethods } from './stronghold';
 export { createTanksMethods } from './tanks';
+export { createWgnMethods } from './wgn';

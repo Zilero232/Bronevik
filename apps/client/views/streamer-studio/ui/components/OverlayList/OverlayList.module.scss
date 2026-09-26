@@ -14,15 +14,13 @@
 
 .item {
   @include reset-button;
+  @include stack(var(--space-1));
 
-  display: flex;
   width: 100%;
-  align-items: center;
   padding: var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
-  gap: var(--space-3);
   text-align: start;
 
   &:hover {
@@ -31,20 +29,8 @@
 
   &[aria-current='true'] {
     border-color: var(--color-accent);
-    background: var(--color-accent-soft);
-    box-shadow: inset 3px 0 0 var(--color-accent);
+    background: var(--color-surface-hover);
   }
-}
-
-.icon {
-  flex-shrink: 0;
-  color: var(--color-accent);
-}
-
-.text {
-  @include stack(2px);
-
-  min-width: 0;
 }
 
 .name {

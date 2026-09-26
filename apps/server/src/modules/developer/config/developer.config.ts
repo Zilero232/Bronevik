@@ -1,43 +1,23 @@
 import type { ApiPlan, ApiPlanLimits, WebhookEvent } from '@bronevik/schemas';
 
 import { API_PLAN_LIMITS } from '@bronevik/schemas';
+import { millisecondsInDay } from 'date-fns/constants';
 
 import type { WebhookEvent as DbWebhookEvent } from '../../../../generated';
 
 export const API_PLANS: Record<ApiPlan, ApiPlanLimits> = API_PLAN_LIMITS;
 
-export const API_KEY_FORMAT = {
-  label: 'brv',
-  prefixBytes: 6,
-  secretBytes: 32,
-  pattern: /^brv_([\w-]{8})_([\w-]{43})$/
+export const API_KEY_POLICY = {
+  quotaRefillMs: millisecondsInDay,
+  planCacheTtlMs: 300_000,
+  planCacheMaxEntries: 5_000,
+  quotaCodes: new Set<string>(['USAGE_EXCEEDED']),
+  revokedCodes: new Set<string>(['KEY_DISABLED', 'KEY_EXPIRED'])
 } as const;
 
-export const API_KEY_CACHE = {
-  ttlMs: 30_000,
-  maxEntries: 5_000
-} as const;
-
-export const API_RATE_LIMIT = {
-  secondPrefix: 'bronevik:api:rps',
-  dayPrefix: 'bronevik:api:quota',
-  secondWindow: 1,
-  dayWindow: 86_400,
-  headers: {
-    limit: 'X-RateLimit-Limit',
-    remaining: 'X-RateLimit-Remaining',
-    dailyLimit: 'X-RateLimit-Daily-Limit',
-    dailyRemaining: 'X-RateLimit-Daily-Remaining',
-    retryAfter: 'Retry-After'
-  }
-} as const;
-
-export const API_USAGE = {
-  flushIntervalMs: 10_000,
-  errorMessageMaxLength: 500,
+export const API_USAGE_REPORT = {
   errorLogLimit: 100,
-  topEndpoints: 10,
-  unmatchedEndpoint: 'unmatched'
+  topEndpoints: 10
 } as const;
 
 export const DEVELOPER_PLAN = {
@@ -65,6 +45,7 @@ export const WEBHOOK_DELIVERY = {
   disableAfterFailures: 20,
   responseBodyMaxLength: 1_000,
   secretBytes: 32,
+  blockedResponse: 'refused: the webhook host resolves to a non-public address',
   userAgent: 'Bronevik-Webhooks/1.0 (+https://bronevik.app)',
   deliveriesShown: 50
 } as const;
@@ -74,6 +55,8 @@ export const SESSION_CLOSE = {
   batchSize: 500
 } as const;
 
-export const PUBLIC_API = {
-  tagPrefix: 'v1-'
+export const WEBHOOK_URL = {
+  protocol: 'https:',
+  allowedRange: 'unicast',
+  blockedHostSuffixes: ['.localhost', '.local', '.internal']
 } as const;

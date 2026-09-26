@@ -5,10 +5,14 @@ import type { TreeLayout } from '../tree-layout';
 
 export type TreeElementState = 'dimmed' | 'idle' | 'path' | 'selected';
 
+export type NodeStateInput = {
+  id: number;
+  path: number[];
+};
+
 export type TankNodeData = {
   node: TechTreeNode;
   state: TreeElementState;
-  delay: number;
   onSelect: (tankId: number) => void;
 };
 
@@ -17,7 +21,6 @@ export type TankFlowNode = Node<TankNodeData, 'tank'>;
 export type BranchEdgeData = {
   xp: number | null;
   state: TreeElementState;
-  delay: number;
 };
 
 export type BranchFlowEdge = Edge<BranchEdgeData, 'branch'>;

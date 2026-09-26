@@ -1,0 +1,184 @@
+{
+  "meta": {
+    "title": "Design system",
+    "description": "Every Bronevik component, icon and token on a single page."
+  },
+  "eyebrow": "«Bronya» design system",
+  "title": "Steel at dusk",
+  "description": "Graphite armour, hot metal and cold steel. Every component, icon and animation on a single page.",
+  "colors": {
+    "title": "Colours and tokens",
+    "surfaces": "Surfaces",
+    "accents": "Accents",
+    "signals": "Signals and text",
+    "rating": "Rating scale",
+    "patterns": "Pattern mode",
+    "spacing": "Spacing"
+  },
+  "type": {
+    "title": "Typography",
+    "display": {
+      "meta": "Tektur · display",
+      "sample": "Armour-piercing"
+    },
+    "heading": {
+      "meta": "Tektur · heading",
+      "sample": "Server-wide vehicle stats"
+    },
+    "body": {
+      "meta": "Onest · body",
+      "sample": "Bronevik collects «Мир танков» stats and turns them into clear charts, mark thresholds and hints for every battle."
+    },
+    "mono": {
+      "meta": "IBM Plex Mono · HUD",
+      "sample": "Range 445 m · bearing 042° · target locked"
+    },
+    "numbers": {
+      "meta": "Tabular numerals",
+      "sample": "3,412 · 64.82% · 1,284,551,902"
+    }
+  },
+  "icons": {
+    "title": "Icons",
+    "size": "Size",
+    "stroke": "Stroke width",
+    "replay": "Replay",
+    "groups": {
+      "brand": "Mark",
+      "classes": "Vehicle classes",
+      "nations": "Nations",
+      "marks": "Marks of excellence",
+      "mastery": "Mastery",
+      "modes": "Battle modes",
+      "misc": "Combat",
+      "tiers": "Tiers",
+      "animated": "Animated",
+      "silhouettes": "Silhouettes (backdrops)",
+      "nationsColor": "Nations in colour",
+      "masteryTinted": "Mastery in metal",
+      "marksRings": "Marks as rings",
+      "tiersEngraved": "Engraved tiers",
+      "renders": "Vehicle renders",
+      "surfaces": "Surfaces"
+    },
+    "variants": {
+      "regular": "Classes — regular",
+      "premium": "Classes — premium",
+      "elite": "Classes — elite"
+    },
+    "riveted": "Riveted panel",
+    "rendersError": "Could not load the vehicle catalogue.",
+    "rendersEmpty": "No vehicles with renders yet.",
+    "loadErrorTitle": "Couldn't load data",
+    "loadErrorDescription": "The server did not respond. Check your connection and try again.",
+    "retry": "Retry"
+  },
+  "controls": {
+    "title": "Controls",
+    "buttons": "Buttons",
+    "primary": "Battle!",
+    "secondary": "Compare",
+    "ghost": "Cancel",
+    "danger": "Delete",
+    "disabled": "Unavailable",
+    "iconButtons": "Icon buttons",
+    "search": "Search",
+    "notifications": "Notifications",
+    "favorite": "Add to favourites",
+    "aim": "Aim",
+    "badges": "Badges",
+    "inputs": "Inputs",
+    "placeholder": "Player nickname",
+    "nation": "Nation",
+    "segmented": "Period",
+    "switch": "Switch",
+    "switchLabel": "Notify me about new marks",
+    "switchHint": "We will message you on Telegram",
+    "tabs": "Tabs",
+    "tabOverview": "Overview",
+    "tabOverviewBody": "The player's key numbers for the selected period.",
+    "tabTanks": "Vehicles",
+    "tabTanksBody": "Stats for every vehicle in the garage.",
+    "tabMarks": "Marks",
+    "tabMarksBody": "Mark progress and a damage forecast.",
+    "avatars": "Avatars",
+    "small": "Small",
+    "large": "Large",
+    "invalidValue": "invalid value!"
+  },
+  "overlays": {
+    "title": "Overlays and notifications",
+    "tooltip": "Tooltip",
+    "tooltipBody": "The Bronya Index weighs damage, spotting and survival.",
+    "wn8Hint": "WN8 above 2900 is unicum level",
+    "popover": "Popover",
+    "popoverTitle": "Mark threshold",
+    "popoverBody": "Calculated from the top 95% of results over the last 14 days.",
+    "openPopover": "Details",
+    "dialog": "Dialog",
+    "openDialog": "Open dialog",
+    "dialogTitle": "Reset the session?",
+    "dialogBody": "Current session counters will be cleared. Overall stats stay the same.",
+    "cancel": "Cancel",
+    "confirm": "Reset",
+    "toasts": "Toasts",
+    "toastSuccess": "Profile updated",
+    "toastSuccessBody": "37 new battles loaded.",
+    "toastError": "Could not load data",
+    "toastErrorBody": "The Lesta server did not respond. Retrying in a minute.",
+    "toastWarning": "Stats are hidden by privacy settings",
+    "toastInfo": "New patch: mark thresholds recalculated",
+    "burst": "Celebration",
+    "celebrate": "Celebrate",
+    "toastKinds": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Info"
+    }
+  },
+  "data": {
+    "title": "Data",
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "damage": "Average damage",
+    "marks": "Marks",
+    "marksHint": "3 stars",
+    "number": "Counter",
+    "shuffle": "New value",
+    "progress": "Progress",
+    "moe": "Mark",
+    "master": "Mastery",
+    "index": "Bronya Index",
+    "rings": "Rings",
+    "sparklines": "Sparklines",
+    "skeleton": "Loading",
+    "emptyCode": "404 // No contact",
+    "emptyTitle": "No battles yet",
+    "emptyBody": "Play at least one battle and your stats will appear here."
+  },
+  "charts": {
+    "title": "Charts",
+    "line": "Line chart",
+    "area": "Area chart",
+    "bar": "Bar chart",
+    "point": "Point {point}",
+    "seriesA": "Series A",
+    "seriesB": "Series B"
+  },
+  "table": {
+    "title": "Table",
+    "mode": "Table mode",
+    "loading": "Loading",
+    "empty": "Empty",
+    "caption": "{count, plural, one {# vehicle} other {# vehicles}}",
+    "emptyTitle": "No vehicles",
+    "emptyBody": "No vehicle stats have been collected yet.",
+    "live": "Server",
+    "errorTitle": "Server is unavailable",
+    "errorBody": "Could not load vehicle stats.",
+    "loadErrorTitle": "Couldn't load data",
+    "loadErrorDescription": "The server did not respond. Check your connection and try again.",
+    "retry": "Retry"
+  }
+}

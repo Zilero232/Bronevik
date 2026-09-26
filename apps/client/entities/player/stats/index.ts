@@ -1,6 +1,5 @@
-export { periodStats, ratingValueTone, signed, statsDelta, winRateTone } from './lib/stats-view';
+export { periodStats, ratingValueTone, signed, winRateTone } from './lib/stats-view';
 export { StatsTiles } from './ui/StatsTiles';
-export type { StatsTilesProps } from './ui/StatsTiles.types';
-
+export type { StatsTilesProps } from './ui/StatsTiles';
 export { TankAwards } from './ui/TankAwards';
-export type { TankAwardsProps } from './ui/TankAwards.types';
+export type { TankAwardsProps } from './ui/TankAwards';

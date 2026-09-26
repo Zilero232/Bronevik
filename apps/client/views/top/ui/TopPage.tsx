@@ -4,46 +4,49 @@ import type { LeaderboardScope } from '@bronevik/schemas';
 
 import { useTranslations } from 'next-intl';
 
-import { EmptyState, SectionHeader, SegmentedControl, Skeleton } from '@/ui-kit';
+import { Card, CardHeader, DataSourceNote, ErrorState, PageHeader, Tabs } from '@/ui-kit';
 
-import { PODIUM_SIZE, TOP_SCOPE_ICONS, TOP_SCOPES } from '../config';
+import { TOP_SCOPES } from '../config';
 import { useTop } from '../model/hooks';
-import { TopFilters, TopPodium, TopTable } from './components';
+import { TopFilters, TopTable } from './components';
 
 import s from './TopPage.module.scss';
 
 export const TopPage = () => {
   const t = useTranslations('top');
-  const { state, filter, board, isPending, isError, isRefreshing, update } = useTop();
-
-  const scopes = TOP_SCOPES.map((value) => {
-    const Icon = TOP_SCOPE_ICONS[value];
-
-    return { value, label: t(`scopes.${value}`), icon: <Icon size={15} /> };
-  });
+  const { state, filter, board, isPending, isError, isRefreshing, isRetrying, retry, update } = useTop();
 
   return (
     <div className={s.root}>
-      <SectionHeader description={t('description')} eyebrow={t('eyebrow')} index='// TOP' title={t('title')} />
-      <div className={s.scopes}>
-        <SegmentedControl<LeaderboardScope>
-          aria-label={t('scopeLabel')}
-          options={scopes}
-          value={state.scope}
-          onChange={(scope) => update({ scope })}
+      <PageHeader description={t('description')} title={t('title')} />
+      <Card padding='none'>
+        <CardHeader
+          tabs={
+            <Tabs<LeaderboardScope>
+              items={TOP_SCOPES.map((value) => ({ value, label: t(`scopes.${value}`) }))}
+              value={state.scope}
+              onValueChange={(scope) => update({ scope })}
+            />
+          }
         />
-      </div>
-      <TopFilters state={state} onChange={update} />
-      {board && board.minBattles !== null && <p className={s.threshold}>{t('minBattles', { count: board.minBattles })}</p>}
-      {isError && <EmptyState description={t('errorDescription')} title={t('errorTitle')} />}
-      {isPending && <Skeleton height={560} shape='block' />}
-      {board && board.entries.length === 0 && <EmptyState description={t('emptyDescription')} title={t('emptyTitle')} />}
-      {board && board.entries.length > 0 && (
-        <div className={s.board} data-refreshing={isRefreshing}>
-          <TopPodium entries={board.entries.slice(0, PODIUM_SIZE)} filter={filter} />
-          <TopTable entries={board.entries.slice(PODIUM_SIZE)} filter={filter} />
+        <div className={s.body}>
+          <TopFilters state={state} onChange={update} />
+          {isError ? (
+            <ErrorState isCompact description={t('errorDescription')} isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />
+          ) : (
+            <div className={s.board} data-refreshing={isRefreshing}>
+              <TopTable
+                entries={board?.entries ?? []}
+                filter={filter}
+                isLoading={isPending}
+                summary={board && board.minBattles !== null ? t('minBattles', { count: board.minBattles }) : undefined}
+                tank={state.tank}
+              />
+            </div>
+          )}
         </div>
-      )}
+      </Card>
+      <DataSourceNote />
     </div>
   );
 };

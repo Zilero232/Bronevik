@@ -4,7 +4,7 @@ import type { LestaClient } from '../../../lib/lesta';
 import type { LestaPlayerInfo } from '../players.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { fromUnixSeconds } from '../../../common/lib';
+import { errorMessage, fromUnixSeconds } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { CollectorProducerService } from '../../collector';
 import { PLAYER_LOOKUP } from '../config';
@@ -102,7 +102,7 @@ export class PlayerResolverService {
 
   private touch(accountId: bigint) {
     void this.prisma.player.update({ where: { accountId }, data: { lastViewedAt: new Date() } }).catch((error: unknown) => {
-      this.logger.debug(`lastViewedAt of ${accountId} not updated: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.debug(`lastViewedAt of ${accountId} not updated: ${errorMessage(error)}`);
     });
   }
 }

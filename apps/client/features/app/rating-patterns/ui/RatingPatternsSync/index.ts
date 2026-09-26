@@ -1,0 +1,1 @@
+export { RatingPatternsSync } from './RatingPatternsSync';

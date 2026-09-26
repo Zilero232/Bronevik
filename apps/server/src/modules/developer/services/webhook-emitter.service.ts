@@ -7,7 +7,7 @@ import { randomUUID } from 'node:crypto';
 
 import type { EmitWebhookInput, WebhookEmitter } from '../../../core';
 
-import { toJsonValue } from '../../../common/lib';
+import { errorMessage, toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { JOB, QUEUE } from '../../collector';
 import { WEBHOOK_DELIVERY, WEBHOOK_EVENT_TO_DB } from '../config';
@@ -48,7 +48,7 @@ export class WebhookEmitterService implements WebhookEmitter {
 
       return matched.length;
     } catch (error) {
-      this.logger.warn(`${event} webhooks not queued: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`${event} webhooks not queued: ${errorMessage(error)}`);
 
       return 0;
     }

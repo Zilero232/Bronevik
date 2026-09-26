@@ -1,6 +1,6 @@
 import type { VehicleType } from '@bronevik/schemas';
 
-import type { NationIconComponent, TankClassIconComponent } from './icons/icons.types';
+import type { NationIconComponent, TankClassIconComponent, TankClassKind } from './icons/icons.types';
 import type { IconComponent } from './lib';
 
 import {
@@ -10,7 +10,7 @@ import {
   SpgSilhouetteIcon,
   TankDestroyerSilhouetteIcon
 } from './icons/class-silhouettes';
-import { HeavyTankIcon, LightTankIcon, MediumTankIcon, SpgIcon, TankDestroyerIcon } from './icons/classes';
+import { AssaultSpgIcon, HeavyTankIcon, LightTankIcon, MediumTankIcon, SpgIcon, TankDestroyerIcon } from './icons/classes';
 import { BronevikLogoIcon } from './icons/logo';
 import { Mark1Icon, Mark2Icon, Mark3Icon } from './icons/marks';
 import { MasteryFirstIcon, MasteryMasterIcon, MasterySecondIcon, MasteryThirdIcon } from './icons/mastery';
@@ -35,6 +35,8 @@ export const TANK_CLASSES = ['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', '
 
 export type TankClass = VehicleType;
 
+export const TANK_CLASS_KINDS = [...TANK_CLASSES, 'assaultSPG'] as const satisfies readonly TankClassKind[];
+
 export const NATIONS = ['ussr', 'germany', 'usa', 'china', 'france', 'uk', 'japan', 'czech', 'sweden', 'poland', 'italy', 'intunion'] as const;
 
 export type Nation = (typeof NATIONS)[number];
@@ -53,6 +55,11 @@ export const TANK_CLASS_ICONS: Record<VehicleType, TankClassIconComponent> = {
   heavyTank: HeavyTankIcon,
   'AT-SPG': TankDestroyerIcon,
   SPG: SpgIcon
+};
+
+export const TANK_CLASS_KIND_ICONS: Record<TankClassKind, TankClassIconComponent> = {
+  ...TANK_CLASS_ICONS,
+  assaultSPG: AssaultSpgIcon
 };
 
 export const TANK_CLASS_SILHOUETTES: Record<VehicleType, IconComponent> = {
@@ -95,6 +102,7 @@ export const ICONS = {
   'class-heavy': HeavyTankIcon,
   'class-td': TankDestroyerIcon,
   'class-spg': SpgIcon,
+  'class-spg-assault': AssaultSpgIcon,
   'silhouette-light': LightTankSilhouetteIcon,
   'silhouette-medium': MediumTankSilhouetteIcon,
   'silhouette-heavy': HeavyTankSilhouetteIcon,
@@ -141,7 +149,7 @@ export type IconName = keyof typeof ICONS;
 
 export const ICON_GROUPS = {
   brand: ['bronevik-logo'],
-  classes: ['class-light', 'class-medium', 'class-heavy', 'class-td', 'class-spg'],
+  classes: ['class-light', 'class-medium', 'class-heavy', 'class-td', 'class-spg', 'class-spg-assault'],
   silhouettes: ['silhouette-light', 'silhouette-medium', 'silhouette-heavy', 'silhouette-td', 'silhouette-spg'],
   nations: [
     'nation-ussr',

@@ -1,7 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .label {
-  @include hud-label;
+  @include label;
 
   display: block;
   margin-bottom: 6px;
@@ -12,7 +12,7 @@
 
   display: inline-flex;
   min-width: 180px;
-  height: 42px;
+  height: 32px;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-3);
@@ -22,11 +22,11 @@
   color: var(--color-text);
   font-size: var(--text-sm);
   gap: var(--space-3);
-  transition: border-color var(--duration-base) ease;
+  transition: border-color var(--duration-fast) ease;
 
   &:hover,
   &[data-popup-open] {
-    border-color: var(--color-steel-dim);
+    border-color: var(--color-text-dim);
   }
 }
 
@@ -56,7 +56,7 @@
   min-width: var(--anchor-width);
   padding: var(--space-1);
 
-  @include popup-motion(0.97);
+  @include popup-motion;
 
   &[data-side='none'] {
     transition: none;
@@ -72,7 +72,7 @@
 .item {
   display: grid;
   align-items: center;
-  padding: 8px 10px;
+  padding: 6px 8px;
   border-radius: var(--radius-xs);
   cursor: default;
   font-size: var(--text-sm);
@@ -82,7 +82,7 @@
   user-select: none;
 
   &[data-highlighted] {
-    background-color: var(--color-accent-soft);
+    background-color: var(--color-surface-hover);
     color: var(--color-text);
   }
 }

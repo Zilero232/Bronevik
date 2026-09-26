@@ -1,16 +1,42 @@
-import { WEBHOOK_URL } from './webhook-url.constants';
+import ipaddr from 'ipaddr.js';
+import { lookup as dnsLookup } from 'node:dns/promises';
+
+import type { HostLookup, ResolvesPubliclyInput } from './webhook-url.types';
+
+import { WEBHOOK_URL } from '../../config';
+
+const systemLookup: HostLookup = async (host) => dnsLookup(host, { all: true });
+
+const hostOf = (url: string): string => new URL(url).hostname.replace(/^\[|\]$/g, '');
+
+export const isPublicAddress = (address: string): boolean => ipaddr.isValid(address) && ipaddr.process(address).range() === WEBHOOK_URL.allowedRange;
 
 export const isPublicWebhookUrl = (value: string): boolean => {
-  if (!URL.canParse(value)) {
+  if (!URL.canParse(value) || new URL(value).protocol !== WEBHOOK_URL.protocol) {
     return false;
   }
 
-  const { protocol, hostname } = new URL(value);
-  const host = hostname.replace(/^\[|\]$/g, '');
+  const host = hostOf(value).toLowerCase();
 
-  if (protocol !== 'https:') {
+  if (WEBHOOK_URL.blockedHostSuffixes.some((suffix) => `.${host}`.endsWith(suffix))) {
     return false;
   }
 
-  return ![...WEBHOOK_URL.blockedHosts, ...WEBHOOK_URL.blockedIpv4, ...WEBHOOK_URL.blockedIpv6].some((pattern) => pattern.test(host));
+  return !ipaddr.isValid(host) || isPublicAddress(host);
+};
+
+export const resolvesPublicly = async ({ url, lookup = systemLookup }: ResolvesPubliclyInput): Promise<boolean> => {
+  if (!isPublicWebhookUrl(url)) {
+    return false;
+  }
+
+  const host = hostOf(url);
+
+  if (ipaddr.isValid(host)) {
+    return true;
+  }
+
+  const addresses = await lookup(host).catch(() => []);
+
+  return addresses.length > 0 && addresses.every(({ address }) => isPublicAddress(address));
 };

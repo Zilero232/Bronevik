@@ -1,0 +1,79 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.strip {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+
+  @include below(lg) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.plate {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+  padding: var(--space-4);
+  border-left: 1px solid var(--color-border);
+
+  &:first-child {
+    border-left: none;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  color: var(--color-steel);
+  gap: var(--space-2);
+}
+
+.percent {
+  @include numeric(var(--text-md));
+
+  color: var(--color-text);
+}
+
+.caption {
+  @include label;
+}
+
+.value {
+  @include numeric(var(--num-lg));
+
+  display: flex;
+  align-items: baseline;
+  color: var(--color-text);
+  gap: var(--space-1);
+}
+
+.unit {
+  @include label;
+}
+
+.deltas {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--text-xs);
+  gap: var(--space-3);
+}
+
+.delta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.updated {
+  @include source-line;
+
+  padding: 0 var(--space-4) var(--space-3);
+  margin: 0;
+}

@@ -1,14 +1,30 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  position: relative;
-}
-
-.sections {
   @include shell;
-  @include stack(var(--space-11));
+  @include stack(var(--gap-section));
+
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-8);
 
   @include below(md) {
-    gap: var(--space-9);
+    gap: var(--space-7);
   }
+}
+
+.pair {
+  display: grid;
+  align-items: start;
+  gap: var(--gap-panel);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.source {
+  @include source-line;
+
+  margin: 0;
 }

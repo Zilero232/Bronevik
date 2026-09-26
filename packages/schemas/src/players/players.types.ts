@@ -9,6 +9,8 @@ import type {
   insightTipCodeSchema,
   moeThresholdValuesSchema,
   nicknameHistorySchema,
+  playerAchievementSchema,
+  playerAchievementsSchema,
   playerClanSchema,
   playerHistoryEntrySchema,
   playerInsightsSchema,
@@ -67,3 +69,5 @@ export type TimeSeriesMetric = z.infer<typeof timeSeriesMetricSchema>;
 export type TimeSeriesPoint = z.infer<typeof timeSeriesPointSchema>;
 export type TimeSeriesQuery = z.infer<typeof timeSeriesQuerySchema>;
 export type TimeSeries = z.infer<typeof timeSeriesSchema>;
+export type PlayerAchievement = z.infer<typeof playerAchievementSchema>;
+export type PlayerAchievements = z.infer<typeof playerAchievementsSchema>;

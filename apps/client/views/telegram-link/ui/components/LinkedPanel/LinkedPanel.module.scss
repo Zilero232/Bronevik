@@ -1,38 +1,15 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-5));
+  @include stack(var(--gap-panel));
 }
 
-.header {
-  @include riveted-plate(var(--chamfer-lg));
-
-  display: grid;
+.body {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  padding: var(--space-6);
-  gap: var(--space-5);
-  grid-template-columns: auto minmax(0, 1fr) auto;
-
-  @include below(xl) {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  @include below(md) {
-    padding: var(--space-5) var(--space-4);
-  }
-}
-
-.seal {
-  display: inline-flex;
-  width: 64px;
-  height: 64px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--color-ally) 60%, transparent);
-  background: radial-gradient(circle, color-mix(in srgb, var(--color-ally) 22%, transparent), transparent 70%);
-  color: var(--color-ally);
-
-  @include chamfer-path(var(--chamfer-sm));
+  justify-content: space-between;
+  gap: var(--space-4);
 }
 
 .identity {
@@ -41,14 +18,14 @@
   min-width: 0;
 }
 
-.eyebrow {
-  @include hud-label;
+.status {
+  @include label;
 
-  color: var(--color-ally);
+  color: var(--color-success);
 }
 
 .username {
-  @include display(var(--text-2xl));
+  @include heading(var(--text-xl));
 
   overflow-wrap: anywhere;
   text-transform: none;
@@ -63,8 +40,4 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-
-  @include below(xl) {
-    grid-column: 1 / -1;
-  }
 }

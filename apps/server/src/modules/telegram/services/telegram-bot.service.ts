@@ -8,9 +8,9 @@ import pRetry from 'p-retry';
 
 import type { BotContext } from '../telegram.types';
 
+import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { TELEGRAM_BOT, TELEGRAM_I18N } from '../bot';
-import { BOT_API, BOT_COMMANDS, BOT_LOCALES, FALLBACK_BOT_LOCALE } from '../config';
+import { BOT, BOT_API, BOT_COMMANDS, TELEGRAM_TOKENS } from '../config';
 import { looksLikeLinkCode, webhookUrl } from '../lib';
 import { TelegramChatService } from './telegram-chat.service';
 import { TelegramCommandsService } from './telegram-commands.service';
@@ -24,8 +24,8 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
   private isPolling = false;
 
   constructor(
-    @Inject(TELEGRAM_BOT) private readonly bot: Bot<BotContext> | null,
-    @Inject(TELEGRAM_I18N) private readonly i18n: I18n<BotContext>,
+    @Inject(TELEGRAM_TOKENS.bot) private readonly bot: Bot<BotContext> | null,
+    @Inject(TELEGRAM_TOKENS.i18n) private readonly i18n: I18n<BotContext>,
     private readonly config: AppConfigService,
     private readonly chats: TelegramChatService,
     private readonly commands: TelegramCommandsService,
@@ -55,7 +55,7 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
     this.ready = this.launch(this.bot);
 
     this.ready.catch((error: unknown) => {
-      this.logger.error(`telegram bot could not start: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(`telegram bot could not start: ${errorMessage(error)}`);
     });
   }
 
@@ -95,7 +95,7 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
     bot.on('message:text', (ctx) => this.commands.guard({ ctx, run: () => this.onText(ctx) }));
 
     bot.catch(({ error }) => {
-      this.logger.error(`telegram update failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(`telegram update failed: ${errorMessage(error)}`);
     });
   }
 
@@ -122,7 +122,7 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
     });
 
     await this.describe(bot).catch((error: unknown) => {
-      this.logger.warn(`telegram commands not updated: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`telegram commands not updated: ${errorMessage(error)}`);
     });
 
     const base = this.config.get('TELEGRAM_WEBHOOK_URL');
@@ -140,16 +140,16 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
 
     void bot.start({ onStart: ({ username }) => this.logger.log(`telegram bot @${username} is polling`) }).catch((error: unknown) => {
       this.isPolling = false;
-      this.logger.error(`telegram polling stopped: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(`telegram polling stopped: ${errorMessage(error)}`);
     });
   }
 
   private async describe(bot: Bot<BotContext>): Promise<void> {
     const commandsFor = (locale: string) => BOT_COMMANDS.map((command) => ({ command, description: this.i18n.t(locale, `cmd-${command}`) }));
 
-    await bot.api.setMyCommands(commandsFor(FALLBACK_BOT_LOCALE));
+    await bot.api.setMyCommands(commandsFor(BOT.fallbackLocale));
 
-    for (const locale of BOT_LOCALES) {
+    for (const locale of BOT.locales) {
       await bot.api.setMyCommands(commandsFor(locale), { language_code: locale });
     }
   }

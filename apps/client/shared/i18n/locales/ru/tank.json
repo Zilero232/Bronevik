@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "title": "{name} — статистика, отметки, сборки",
+    "description": "{name}: серверная статистика, пороги отметок и мастера, популярные сборки и история изменений."
+  },
+  "specs": {
+    "shellDamage": "Урон",
+    "shellPenetration": "Бронепробитие",
+    "damagePerMinute": "Урон в минуту",
+    "reloadTime": "Перезарядка",
+    "rateOfFire": "Скорострельность",
+    "aimingTime": "Сведение",
+    "dispersion": "Разброс на 100 м",
+    "dispersionMovement": "Разброс в движении",
+    "depression": "Угол склонения",
+    "maxHealth": "Прочность",
+    "weight": "Масса",
+    "enginePower": "Мощность двигателя",
+    "powerToWeight": "Удельная мощность",
+    "speedForward": "Макс. скорость",
+    "speedBackward": "Скорость назад",
+    "hullTraverse": "Поворот корпуса",
+    "turretTraverse": "Поворот башни",
+    "viewRange": "Обзор",
+    "radioRange": "Дальность связи"
+  },
+  "units": {
+    "deg": "°",
+    "deg_s": "°/с",
+    "hp": "ед.",
+    "hp_t": "л.с./т",
+    "kmh": "км/ч",
+    "m": "м",
+    "mm": "мм",
+    "per_min": "выстр./мин",
+    "s": "с",
+    "t": "т"
+  },
+  "specGroups": {
+    "firepower": "Огневая мощь",
+    "survivability": "Живучесть",
+    "mobility": "Подвижность",
+    "scouting": "Обзор и связь"
+  },
+  "source": "Данные: API Леста Игры",
+  "loading": "Загружаем данные машины",
+  "garage": {
+    "premium": "Прем",
+    "regular": "Прокачиваемый",
+    "actionsLabel": "Действия с машиной",
+    "build": "Конструктор сборки",
+    "compare": "Сравнить"
+  },
+  "params": {
+    "title": "Характеристики",
+    "empty": "Характеристик пока нет",
+    "configs": {
+      "stock": "Сток",
+      "top": "Топ"
+    }
+  },
+  "missing": {
+    "back": "Ко всем танкам",
+    "notFound": {
+      "title": "Такой машины нет",
+      "description": "Танк «{slug}» не найден. Проверьте ссылку или выберите машину в списке."
+    },
+    "error": {
+      "title": "Не удалось загрузить машину",
+      "description": "Данные по «{slug}» сейчас недоступны."
+    }
+  },
+  "stats": {
+    "title": "Сервер за {period}",
+    "periodLabel": "Период статистики",
+    "periods": {
+      "1d": "24 ч",
+      "7d": "7 дн",
+      "14d": "14 дн",
+      "30d": "30 дн",
+      "60d": "60 дн"
+    },
+    "figures": {
+      "winRate": "Процент побед",
+      "avgDamage": "Средний урон",
+      "battles": "Бои",
+      "players": "Игроки",
+      "winRateDiff": "WR diff"
+    },
+    "pp": "п.п.",
+    "emptyTitle": "Нет боёв за период",
+    "emptyDescription": "Выберите период подлиннее.",
+    "cohortsTitle": "По уровню игроков",
+    "cohorts": {
+      "beginner": "Новички",
+      "average": "Средние",
+      "good": "Хорошие",
+      "elite": "Топ-10 %"
+    },
+    "cohortLabel": "Игроки",
+    "cohortWinRate": "Победы",
+    "cohortDamage": "Урон",
+    "cohortBattles": "Бои",
+    "trendTitle": "Динамика за {days} дн",
+    "trendEmpty": "Нет данных за период",
+    "trendWinRate": "Процент побед",
+    "trendDamage": "Средний урон"
+  },
+  "marks": {
+    "title": "Отметки на стволе",
+    "noMoeTitle": "Порогов отметок пока нет",
+    "noMoeDescription": "По этой машине ещё мало данных.",
+    "plates": {
+      "p65": "1 отметка",
+      "p85": "2 отметки",
+      "p95": "3 отметки",
+      "p100": "100 %"
+    },
+    "damageUnit": "урона",
+    "deltaDays": "{days} дн",
+    "updated": "Обновлено {date}",
+    "historyTitle": "Пороги за 60 дней",
+    "historyEmpty": "Истории порогов пока нет"
+  },
+  "mastery": {
+    "title": "Знак «Мастер»",
+    "levels": {
+      "class3": "3-я степень",
+      "class2": "2-я степень",
+      "class1": "1-я степень",
+      "master": "Мастер"
+    },
+    "xpUnit": "опыта",
+    "empty": "Порогов пока нет",
+    "note": "Опыт за бой, нужный для знака классности."
+  },
+  "players": {
+    "title": "Лучшие игроки на танке",
+    "metricLabel": "Метрика рейтинга",
+    "metrics": {
+      "wn8": "WN8",
+      "avgDamage": "Ср. урон",
+      "winRate": "Победы"
+    },
+    "caption": "Лучшие игроки на {name}",
+    "player": "Игрок",
+    "battlesColumn": "Бои",
+    "emptyTitle": "Рейтинг пока пуст"
+  },
+  "builds": {
+    "title": "Популярные сборки",
+    "source": {
+      "battles": "Мод",
+      "builds": "Сборки",
+      "none": "Нет данных"
+    },
+    "sourceHint": {
+      "battles": "По боям игроков с модом",
+      "builds": "По опубликованным сборкам игроков",
+      "none": "Статистики пока нет"
+    },
+    "share": "игроков",
+    "winRate": "Победы",
+    "avgDamage": "Ср. урон",
+    "battles": "Бои",
+    "equipment": "Оборудование",
+    "consumables": "Снаряжение и инструкции",
+    "none": "Не установлено",
+    "open": "Открыть в конструкторе",
+    "emptyTitle": "Сборок пока нет",
+    "emptyDescription": "Сборки появятся, когда наберётся статистика."
+  },
+  "patches": {
+    "title": "Изменения по патчам",
+    "verdicts": {
+      "buff": "Ап",
+      "nerf": "Нерф",
+      "mixed": "Спорно",
+      "new": "Новинка",
+      "changed": "Изменения"
+    },
+    "emptyTitle": "Изменений нет",
+    "emptyDescription": "В отслеживаемых обновлениях ТТХ этой машины не менялись.",
+    "firstSeen": "Первое появление машины в отслеживаемых обновлениях.",
+    "noSpecChanges": "Изменения не затронули показанные характеристики."
+  }
+}

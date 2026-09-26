@@ -1,10 +1,8 @@
 'use client';
 
-import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
-import { STAGGER, STAGGER_ITEM } from '@/shared/lib';
-import { SectionHeader } from '@/ui-kit';
+import { Card, CardHeader } from '@/ui-kit';
 
 import { COMPARE_PRESETS } from '../../../config';
 import { useComparePresets } from '../../../model/hooks';
@@ -17,15 +15,15 @@ export const ComparePresets = () => {
   const { pendingKey, apply } = useComparePresets();
 
   return (
-    <section className={s.root}>
-      <SectionHeader description={t('description')} eyebrow={t('eyebrow')} index='// 01' title={t('title')} />
-      <motion.ul animate='visible' className={s.grid} initial='hidden' variants={STAGGER}>
+    <Card padding='none'>
+      <CardHeader className={s.header} title={t('title')} />
+      <ul className={s.grid}>
         {COMPARE_PRESETS.map((preset) => (
-          <motion.li key={preset.key} variants={STAGGER_ITEM}>
+          <li key={preset.key}>
             <PresetCard isDisabled={pendingKey !== null} isPending={pendingKey === preset.key} preset={preset} onApply={() => void apply(preset)} />
-          </motion.li>
+          </li>
         ))}
-      </motion.ul>
-    </section>
+      </ul>
+    </Card>
   );
 };

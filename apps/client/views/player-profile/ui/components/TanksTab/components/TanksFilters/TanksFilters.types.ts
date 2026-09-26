@@ -1,6 +1,6 @@
-import type { useTanksFilter } from '../../../../../model/hooks';
+import type { TanksFilterControls } from '../../../../../model/hooks';
 
 export type TanksFiltersProps = {
-  filters: ReturnType<typeof useTanksFilter>;
+  filters: TanksFilterControls;
   total: number;
 };

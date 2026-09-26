@@ -1,10 +1,18 @@
+import { firstBy } from 'remeda';
+
 import type { AttendedInput, BattleSample, NearestInput } from './attendance.types';
 
 const lastBefore = ({ samples, at }: NearestInput) =>
-  samples.filter((sample) => sample.capturedAt <= at).sort((a, b) => b.capturedAt.getTime() - a.capturedAt.getTime())[0];
+  firstBy(
+    samples.filter((sample) => sample.capturedAt <= at),
+    [(sample) => sample.capturedAt.getTime(), 'desc']
+  );
 
 const firstAfter = ({ samples, at }: NearestInput) =>
-  samples.filter((sample) => sample.capturedAt >= at).sort((a, b) => a.capturedAt.getTime() - b.capturedAt.getTime())[0];
+  firstBy(
+    samples.filter((sample) => sample.capturedAt >= at),
+    (sample) => sample.capturedAt.getTime()
+  );
 
 export const attendedAccounts = ({ samples, startsAt, endsAt }: AttendedInput): Map<bigint, boolean> => {
   const byAccount = new Map<bigint, BattleSample[]>();

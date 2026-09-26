@@ -1,0 +1,28 @@
+.root {
+  --event: var(--color-accent);
+
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--event) 38%, transparent);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  color: var(--event);
+
+  @each $tone in ally, elite, premium, steel, success, warning {
+    &[data-tone='#{$tone}'] {
+      --event: var(--color-#{$tone});
+    }
+  }
+}
+
+.sm {
+  width: 28px;
+  height: 28px;
+}
+
+.md {
+  width: 32px;
+  height: 32px;
+}

@@ -25,7 +25,7 @@ export class TelegramController {
   async receive(@Body() update: Update, @Headers(WEBHOOK.secretHeader) secret: string | undefined): Promise<void> {
     const expected = this.config.get('TELEGRAM_WEBHOOK_SECRET');
 
-    if (!expected || !secret || !timingSafeEqual(secret, expected)) {
+    if (!expected || !secret || !timingSafeEqual({ left: secret, right: expected })) {
       return;
     }
 

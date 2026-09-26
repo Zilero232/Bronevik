@@ -3,12 +3,9 @@
 .root {
   display: inline-flex;
   max-width: 100%;
-  padding: 3px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
   background-color: var(--color-surface-sunken);
-  box-shadow: inset 0 1px 3px var(--shade-25);
-  gap: 2px;
   overflow-x: auto;
 
   @include hide-scrollbar;
@@ -21,53 +18,50 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 3px;
+  border-left: 1px solid var(--color-border);
   color: var(--color-text-muted);
   font-family: var(--font-display);
-  font-feature-settings: 'tnum' 1;
-  font-stretch: 85%;
+  font-variant-numeric: tabular-nums lining-nums;
   font-weight: 600;
-  gap: 6px;
+  gap: var(--space-2);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  transition: color var(--duration-base) ease;
+  transition:
+    color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
   white-space: nowrap;
+
+  &:first-child {
+    border-left: none;
+  }
 
   &:hover {
     color: var(--color-text);
   }
 
   &[data-active='true'] {
-    color: var(--color-accent-contrast);
+    @include chip-active;
+  }
+
+  :global(svg) {
+    width: 16px;
+    height: 16px;
   }
 }
 
 .md .option {
-  height: 32px;
-  padding: 0 var(--space-3);
-  font-size: var(--text-sm);
+  height: 30px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-xs);
 }
 
 .sm .option {
   height: 26px;
-  padding: 0 var(--space-2);
+  padding: 0 var(--space-3);
   font-size: var(--text-xs);
-}
-
-.indicator {
-  position: absolute;
-  z-index: 0;
-  border-radius: 3px;
-  background: linear-gradient(180deg, var(--color-accent-hot) -60%, var(--color-accent));
-  box-shadow:
-    inset 0 1px 0 var(--shine-30),
-    0 0 16px -4px var(--color-accent);
-  inset: 0;
 }
 
 .icon,
 .label {
-  position: relative;
-  z-index: 1;
   display: inline-flex;
 }

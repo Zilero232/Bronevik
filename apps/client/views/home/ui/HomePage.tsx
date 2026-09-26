@@ -1,16 +1,19 @@
-import { FeatureGrid, HomeHero, HotTanks, LiveCounters, MarksShowcase, TopPlayers } from './components';
+import { ClanActivity, GameNews, GarageStrip, HomeHead, MarksMovement, StrongTanks, TopPlayers } from './components';
 
 import s from './HomePage.module.scss';
 
 export const HomePage = () => (
   <div className={s.root}>
-    <HomeHero />
-    <div className={s.sections}>
-      <LiveCounters />
-      <FeatureGrid />
+    <HomeHead />
+    <GarageStrip />
+    <div className={s.tables}>
+      <StrongTanks />
       <TopPlayers />
-      <HotTanks />
-      <MarksShowcase />
+      <MarksMovement />
+    </div>
+    <div className={s.pair}>
+      <GameNews />
+      <ClanActivity />
     </div>
   </div>
 );

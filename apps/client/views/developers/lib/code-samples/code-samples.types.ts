@@ -1,4 +1,4 @@
-import type { CODE_SAMPLES } from './code-samples.constants';
+import type { CODE_SAMPLES } from '../../config/code-samples.constants';
 
 export type QuickstartLanguage = (typeof CODE_SAMPLES.quickstart)[number];
 

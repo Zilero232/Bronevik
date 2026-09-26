@@ -35,3 +35,8 @@ export type NumericHintInput = {
   match: number;
   close: number;
 };
+
+export type RelativeInput = {
+  target: number | null;
+  share: number;
+};

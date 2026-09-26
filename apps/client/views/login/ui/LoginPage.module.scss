@@ -1,83 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include shell;
+  @include stack(var(--space-7));
 
-  display: grid;
-  align-items: center;
-  padding: var(--space-10) 0;
-  gap: var(--space-9);
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 440px);
-
-  @include below(2xl) {
-    padding: var(--space-6) 0 var(--space-9);
-    gap: var(--space-7);
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.brand {
-  @include stack(var(--space-5));
-}
-
-.logo {
-  display: inline-flex;
-  color: var(--color-accent);
-  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--color-accent) 40%, transparent));
-}
-
-.title {
-  @include display(var(--text-3xl));
-
-  font-stretch: 72%;
-  font-weight: 800;
-  line-height: 0.95;
-}
-
-.hot {
-  background: linear-gradient(95deg, var(--color-accent-hot), var(--color-accent) 50%, var(--color-accent-deep));
-  background-clip: text;
-  color: transparent;
-}
-
-.lead {
-  max-width: 48ch;
-  color: var(--color-text-muted);
-  font-size: var(--text-lg);
-}
-
-.perks {
-  @include stack(var(--space-2));
-
-  padding: 0;
-  margin: 0;
-  list-style: none;
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-  }
-
-  svg {
-    color: var(--color-success);
-  }
-}
-
-.safety {
-  display: flex;
-  max-width: 52ch;
-  align-items: flex-start;
-  padding: var(--space-3) var(--space-4);
-  border-left: 3px solid var(--color-steel);
-  background-color: var(--color-steel-soft);
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  gap: var(--space-3);
-
-  svg {
-    flex-shrink: 0;
-    margin-top: 2px;
-    color: var(--color-steel);
-  }
+  width: min(100%, 440px);
+  padding: var(--space-8) 0;
+  margin-inline: auto;
 }

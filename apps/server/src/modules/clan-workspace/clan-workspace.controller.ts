@@ -22,7 +22,7 @@ import {
   WorkspaceDto
 } from './dto';
 import { EVENT_KIND_TO_DB } from './lib';
-import { ClanEventsService, OfficerReportService, RecruitFunnelService, WorkspaceService } from './services';
+import { ClanEventAttendanceService, ClanEventsService, OfficerReportService, RecruitFunnelService, WorkspaceService } from './services';
 
 @ApiTags('clan-workspace')
 @Controller('clan-workspace/:clanId')
@@ -30,6 +30,7 @@ export class ClanWorkspaceController {
   constructor(
     private readonly workspaces: WorkspaceService,
     private readonly events: ClanEventsService,
+    private readonly attendance: ClanEventAttendanceService,
     private readonly funnel: RecruitFunnelService,
     private readonly reports: OfficerReportService
   ) {}
@@ -73,21 +74,21 @@ export class ClanWorkspaceController {
   @Put('events/:id/attendance')
   @ZodResponse({ type: ClanEventDto })
   setAttendance(@CurrentUserId() userId: string, @Param() { clanId, id }: ClanEventParamsDto, @Body() { entries }: SetAttendanceDto) {
-    return this.events.setAttendance({ clanId, userId, id, entries });
+    return this.attendance.setAttendance({ clanId, userId, id, entries });
   }
 
   @Post('events/:id/attendance/sync')
   @HttpCode(HttpStatus.OK)
   @ZodResponse({ type: ClanEventDto })
   syncAttendance(@CurrentUserId() userId: string, @Param() { clanId, id }: ClanEventParamsDto) {
-    return this.events.syncFromApi({ clanId, userId, id });
+    return this.attendance.syncFromApi({ clanId, userId, id });
   }
 
   @Post('events/:id/rsvp')
   @HttpCode(HttpStatus.OK)
   @ZodResponse({ type: ClanEventDto })
   rsvp(@CurrentUserId() userId: string, @Param() { clanId, id }: ClanEventParamsDto, @Body() { status }: RsvpDto) {
-    return this.events.rsvp({ clanId, userId, id, status });
+    return this.attendance.rsvp({ clanId, userId, id, status });
   }
 
   @Get('candidates')

@@ -1,0 +1,183 @@
+{
+  "meta": {
+    "title": "Clans",
+    "description": "Rating and search of «Мир танков» clans."
+  },
+  "clanMeta": {
+    "title": "{name} — clan",
+    "description": "Roster, activity, history and stronghold of the {name} clan."
+  },
+  "head": {
+    "title": "Clans",
+    "description": "Rating and search of «Мир танков» clans: average WN8, win rate, Stronghold and Global Map."
+  },
+  "search": {
+    "label": "Search clans",
+    "placeholder": "Clan tag or name — e.g. KOPTE",
+    "hint": "At least 2 characters · matches tag and name",
+    "empty": "No clans match «{query}».",
+    "members": "{count, plural, one {# member} other {# members}}",
+    "loading": "Searching clans…",
+    "error": "Search is unavailable right now."
+  },
+  "rating": {
+    "sortLabel": "Sort by",
+    "sorts": {
+      "wn8": "Avg WN8",
+      "winRate": "Win rate",
+      "members": "Members",
+      "activeMembers": "Active in 7 days",
+      "eloRating10": "Tier X Elo",
+      "strongholdLevel": "Stronghold level"
+    },
+    "active": "{active} / {total}",
+    "shown": "Showing {shown} of {total}",
+    "more": "Show more",
+    "errorTitle": "Rating failed to load",
+    "title": "Clan rating",
+    "errorDescription": "The server is not responding.",
+    "emptyTitle": "No clans yet",
+    "emptyDescription": "Clans have not been collected yet.",
+    "columns": {
+      "clan": "Clan",
+      "name": "Name",
+      "members": "Members",
+      "wn8": "Avg WN8",
+      "winRate": "Win rate",
+      "stronghold": "Stronghold",
+      "elo": "Elo X"
+    }
+  },
+  "missing": {
+    "toClans": "All clans",
+    "notFoundTitle": "Clan not found",
+    "notFoundDescription": "There is no clan tagged [{tag}] — it may have been disbanded, or the tag is misspelled.",
+    "errorTitle": "Could not load the clan",
+    "errorDescription": "Data for [{tag}] is unavailable right now."
+  },
+  "tabs": {
+    "roster": "Roster",
+    "stronghold": "Stronghold",
+    "globalMap": "Global Map",
+    "history": "History"
+  },
+  "clan": {
+    "loading": "Loading clan",
+    "founded": "Founded {date}",
+    "members": "{count, plural, one {# member} other {# members}} on the roster",
+    "activeShort": "{active} of {total} active in 7 d",
+    "stats": {
+      "winRate": "Avg win rate",
+      "wn8": "Avg WN8",
+      "battlesPerDay": "Battles per day",
+      "stronghold": "Stronghold",
+      "provinces": "Global Map provinces",
+      "elo": "Elo X"
+    }
+  },
+  "roster": {
+    "shown": "{shown} of {total}",
+    "emptyTitle": "Nobody here",
+    "activityTitle": "Roster activity",
+    "unknown": "no data",
+    "daysAgo": "{days, plural, =0 {today} one {# day ago} other {# days ago}}",
+    "status": {
+      "active": "On duty",
+      "recent": "Played this week",
+      "idle": "Resting",
+      "gone": "Missing"
+    },
+    "columns": {
+      "nickname": "Member",
+      "role": "Role",
+      "daysInClan": "Days in clan",
+      "lastBattle": "Last battle",
+      "battles": "Battles",
+      "winRate": "Win rate",
+      "recentWn8": "WN8 30 d"
+    },
+    "roles": {
+      "commander": "Commander",
+      "executive_officer": "Executive officer",
+      "personnel_officer": "Personnel officer",
+      "combat_officer": "Combat officer",
+      "intelligence_officer": "Intelligence officer",
+      "quartermaster": "Quartermaster",
+      "recruitment_officer": "Recruitment officer",
+      "junior_officer": "Junior officer",
+      "private": "Private",
+      "recruit": "Recruit",
+      "reservist": "Reservist"
+    },
+    "filters": {
+      "role": "Role",
+      "idle": "Not played",
+      "idleAll": "All",
+      "idleDays": "{days}+ d",
+      "reset": "Reset",
+      "roles": {
+        "all": "All",
+        "command": "Command",
+        "officers": "Officers",
+        "soldiers": "Soldiers",
+        "reserve": "Reserve"
+      }
+    },
+    "emptyDescription": "No member matches these filters."
+  },
+  "events": {
+    "title": "Roster moves",
+    "loading": "Loading history",
+    "error": "History failed to load",
+    "emptyTitle": "No events yet",
+    "dayCount": "{count, plural, one {# event} other {# events}}",
+    "shown": "Showing {shown} of {total}",
+    "more": "Show more",
+    "unknownPlayer": "Unknown player",
+    "types": {
+      "joined": "joined the clan",
+      "left": "left the clan",
+      "kicked": "was kicked from the clan",
+      "role_changed": "changed role"
+    },
+    "roleChange": "({from} → {to})",
+    "chart": {
+      "title": "Joins and leaves",
+      "joined": "Joined",
+      "left": "Left",
+      "net": "Net",
+      "ariaLabel": "Members who joined and left the clan per week",
+      "period": "12 weeks"
+    }
+  },
+  "bases": {
+    "loading": "Loading stronghold",
+    "error": "Stronghold data is unavailable",
+    "errorDescription": "Lesta did not answer about the Stronghold. Try again later.",
+    "stronghold": {
+      "levelOf": "Level {level} of {max}",
+      "levelUnknown": "Level unknown",
+      "buildingsTitle": "Buildings",
+      "reservesTitle": "Reserves",
+      "reserveLevel": "lvl {level}",
+      "count": "×{count}",
+      "battles": "Skirmish battles",
+      "winRate": "Skirmish win rate",
+      "resources": "Industrial resource",
+      "skirmishesTitle": "Skirmishes by tier",
+      "tier": "Tier {tier}",
+      "battlesCount": "{count, plural, one {# battle} other {# battles}}",
+      "noSkirmishes": "No skirmishes yet.",
+      "noBuildings": "Stronghold buildings have not been collected yet.",
+      "reservesHidden": "Reserves show up only once a clan officer shares access."
+    },
+    "globalMap": {
+      "provinces": "{count, plural, =0 {No provinces} one {# province} other {# provinces}}",
+      "provincesLabel": "Provinces",
+      "dailyRevenue": "Daily income",
+      "provincesTitle": "Provinces",
+      "noProvinces": "The clan holds no provinces on the Global Map.",
+      "elo": "Elo tier {tier}"
+    }
+  }
+}

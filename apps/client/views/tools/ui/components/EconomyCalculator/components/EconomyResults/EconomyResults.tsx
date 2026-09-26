@@ -6,9 +6,9 @@ import { BarChart } from '@/ui-kit';
 
 import type { EconomyResultsProps } from '../../EconomyCalculator.types';
 
-import { TOOLS_LAYOUT } from '../../../../../config';
+import { TOOLS_FORMAT, TOOLS_LAYOUT } from '../../../../../config';
 import { battleEconomy } from '../../../../../lib/battle-economy';
-import { ResultFigure } from '../../../CalcKit';
+import { ResultFigure } from '../../../ResultFigure';
 
 import s from './EconomyResults.module.scss';
 
@@ -27,13 +27,12 @@ export const EconomyResults = ({ values }: EconomyResultsProps) => {
   });
 
   const { gross, grossPremium, repair, ammo, consumables, net, netPremium } = economy;
-  const signed = { signDisplay: 'exceptZero' } as const;
 
   return (
     <>
       <div className={s.figures}>
-        <ResultFigure format={signed} label={t('net')} size='md' tone={net < 0 ? 'bad' : 'good'} value={net} />
-        <ResultFigure format={signed} label={t('netPremium')} size='md' tone={netPremium < 0 ? 'bad' : 'good'} value={netPremium} />
+        <ResultFigure format={TOOLS_FORMAT.signed} label={t('net')} size='md' tone={net < 0 ? 'bad' : 'good'} value={net} />
+        <ResultFigure format={TOOLS_FORMAT.signed} label={t('netPremium')} size='md' tone={netPremium < 0 ? 'bad' : 'good'} value={netPremium} />
       </div>
       <BarChart
         series={[

@@ -6,7 +6,7 @@ import type { CheckoutInput, CheckoutResult } from '../billing.types';
 import { AppBadRequestException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
-import { BILLING_LINKS, PLUS_PRODUCT } from '../config';
+import { BILLING_LINKS, PLUS_SUBSCRIPTION } from '../config';
 import { describePlan, planPrice, YooKassaClient } from '../lib';
 import { PromoService } from './promo.service';
 import { SubscriptionService } from './subscription.service';
@@ -25,7 +25,7 @@ export class CheckoutService {
     const promo = promoCode ? await this.promos.usable({ userId, code: promoCode }) : null;
 
     if (promo && !promo.discountPercent) {
-      throw new AppBadRequestException('VALIDATION_FAILED', 'This promo code grants free days, redeem it without a payment');
+      throw new AppBadRequestException('PROMO_REDEEM_ONLY', 'This promo code grants free days, redeem it without a payment');
     }
 
     const amountRub = planPrice({ plan, discountPercent: promo?.discountPercent ?? null });
@@ -36,7 +36,7 @@ export class CheckoutService {
       returnUrl: new URL(BILLING_LINKS.returnPath, this.config.get('WEB_URL')).href,
       idempotenceKey: randomUUID(),
       savePaymentMethod: this.subscriptions.isRecurringEnabled,
-      metadata: { userId, plan, product: PLUS_PRODUCT }
+      metadata: { userId, plan, product: PLUS_SUBSCRIPTION.product }
     });
 
     const confirmationUrl = payment.confirmation?.confirmation_url;
@@ -52,7 +52,7 @@ export class CheckoutService {
         amount: amountRub,
         status: 'pending',
         kind: 'subscription',
-        product: PLUS_PRODUCT,
+        product: PLUS_SUBSCRIPTION.product,
         plan,
         promoCode: promo?.code ?? null
       }

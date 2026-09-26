@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "title": "Compare players",
+    "description": "Compare up to four «Мир танков» players by WN8, Bronya Index, win rate and marks."
+  },
+  "title": "Compare players",
+  "description": "Compare two to four «Мир танков» players by WN8, Bronya Index, win rate and marks.",
+  "slot": "Slot {index} of {max}",
+  "add": "Add a player by nickname",
+  "overall": "All time",
+  "emptyTitle": "Add at least two players",
+  "errorTitle": "The comparison did not load",
+  "missingTitle": "These players are not collected yet",
+  "remove": "Remove from comparison",
+  "slotError": "Player #{id} not found",
+  "broneIndex": "Bronya Index",
+  "caption": "Player metrics",
+  "metric": "Metric",
+  "best": "Best result",
+  "metrics": {
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
+    "wn8": "WN8",
+    "eff": "EFF",
+    "broneIndex": "Bronya Index",
+    "avgFrags": "Avg frags",
+    "avgSpotted": "Avg spotted",
+    "avgXp": "Avg XP",
+    "survivalRate": "Survival",
+    "accuracy": "Accuracy",
+    "avgTier": "Avg battle tier",
+    "moe3": "3 marks",
+    "mastery": "Ace Tankers"
+  }
+}

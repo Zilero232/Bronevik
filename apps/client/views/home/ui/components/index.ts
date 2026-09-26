@@ -1,6 +1,7 @@
-export { FeatureGrid } from './FeatureGrid';
-export { HomeHero } from './HomeHero';
-export { HotTanks } from './HotTanks';
-export { LiveCounters } from './LiveCounters';
-export { MarksShowcase } from './MarksShowcase';
+export { ClanActivity } from './ClanActivity';
+export { GameNews } from './GameNews';
+export { GarageStrip } from './GarageStrip';
+export { HomeHead } from './HomeHead';
+export { MarksMovement } from './MarksMovement';
+export { StrongTanks } from './StrongTanks';
 export { TopPlayers } from './TopPlayers';

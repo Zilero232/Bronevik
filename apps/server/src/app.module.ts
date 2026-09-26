@@ -10,39 +10,48 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { CACHE_STORE, THROTTLE } from './common/cache';
 import { AllExceptionsFilter } from './common/filters';
 import { AppConfigModule, AppConfigService } from './config';
-import { LestaModule, PrismaModule, QueuesModule, REDIS, RedisModule } from './core';
+import { AppLoggerModule, LestaModule, LOGGER, PrismaModule, QueuesModule, REDIS, RedisModule } from './core';
 import { AuthModule } from './modules/auth';
 import { BillingModule } from './modules/billing';
 import { BuildsModule } from './modules/builds';
 import { ClanWorkspaceModule } from './modules/clan-workspace';
 import { ClansModule } from './modules/clans';
+import { CoachingModule } from './modules/coaching';
 import { BoardModule, CollectorProducerModule, CollectorQueuesModule } from './modules/collector';
-import { CommunityModule } from './modules/community';
+import { CommunityBuildsModule } from './modules/community-builds';
 import { CompareModule } from './modules/compare';
 import { DeveloperEventsModule, DeveloperModule } from './modules/developer';
 import { EventsModule } from './modules/events';
+import { GuidesModule } from './modules/guides';
 import { HealthModule } from './modules/health';
 import { LeaderboardsModule } from './modules/leaderboards';
 import { MapsModule } from './modules/maps';
 import { MarksModule } from './modules/marks';
 import { MeModule } from './modules/me';
 import { ModModule } from './modules/mod';
+import { ModerationModule } from './modules/moderation';
 import { NotificationsModule } from './modules/notifications';
+import { PlatoonsModule } from './modules/platoons';
 import { PlayersModule } from './modules/players';
+import { PublicApiModule } from './modules/public-api';
 import { PulseModule } from './modules/pulse';
+import { RecruitingModule } from './modules/recruiting';
 import { ReferenceModule } from './modules/reference';
 import { ReplaysModule } from './modules/replays';
 import { SearchModule } from './modules/search';
 import { ShopModule } from './modules/shop';
 import { SocialModule } from './modules/social';
 import { StreamersModule } from './modules/streamers';
+import { TacticsModule } from './modules/tactics';
 import { TanksModule } from './modules/tanks';
 import { TelegramModule } from './modules/telegram';
+import { TournamentsModule } from './modules/tournaments';
 import { TreeModule } from './modules/tree';
 
 @Module({
   imports: [
     AppConfigModule,
+    AppLoggerModule.forService(LOGGER.service.server),
     PrismaModule,
     RedisModule,
     LestaModule,
@@ -80,12 +89,20 @@ import { TreeModule } from './modules/tree';
     MeModule,
     ModModule,
     DeveloperModule,
+    PublicApiModule,
     NotificationsModule,
     TelegramModule,
     BillingModule,
     StreamersModule,
     ReplaysModule,
-    CommunityModule,
+    CommunityBuildsModule,
+    GuidesModule,
+    PlatoonsModule,
+    RecruitingModule,
+    CoachingModule,
+    TournamentsModule,
+    ModerationModule,
+    TacticsModule,
     ShopModule,
     EventsModule,
     ClanWorkspaceModule,

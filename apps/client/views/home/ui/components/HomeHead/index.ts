@@ -1,0 +1,1 @@
+export { HomeHead } from './HomeHead';

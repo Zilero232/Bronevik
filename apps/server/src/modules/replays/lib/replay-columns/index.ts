@@ -1,2 +1,2 @@
-export { replayColumns, replayPlayedAt } from './replay-columns';
+export { replayColumns } from './replay-columns';
 export type { ReplayColumns } from './replay-columns.types';

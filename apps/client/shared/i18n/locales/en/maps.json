@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "title": "Maps",
+    "description": "Every «Мир танков» random-battle map: camouflage, size, modes and team stats."
+  },
+  "mapMeta": {
+    "title": "{name} — map",
+    "description": "{name}: size, battle modes and team win rates."
+  },
+  "head": {
+    "title": "Maps",
+    "description": "Random-battle maps of «Мир танков»: camouflage, size and modes."
+  },
+  "filters": {
+    "search": "Search maps",
+    "searchPlaceholder": "Map name — e.g. Prokhorovka",
+    "modes": "Mode",
+    "camouflage": "Camouflage",
+    "shown": "{shown} of {total}",
+    "reset": "Reset"
+  },
+  "modes": {
+    "standard": "Standard battle",
+    "encounter": "Encounter",
+    "assault": "Assault",
+    "onslaught": "Onslaught"
+  },
+  "camouflage": {
+    "summer": "Summer",
+    "winter": "Winter",
+    "desert": "Desert"
+  },
+  "size": "{size}×{size} m",
+  "columns": {
+    "name": "Map",
+    "camouflage": "Camouflage",
+    "size": "Size",
+    "modes": "Modes"
+  },
+  "grid": {
+    "errorTitle": "Maps failed to load",
+    "reset": "Reset filters",
+    "noMatchTitle": "No such maps",
+    "emptyTitle": "The map list is empty",
+    "errorDescription": "The server is not responding."
+  },
+  "missing": {
+    "toMaps": "All maps",
+    "notFoundTitle": "Map not found",
+    "notFoundDescription": "Map “{id}” is not in rotation — it may have been removed from random battles.",
+    "errorTitle": "Could not load the map",
+    "errorDescription": "Data for «{id}» is unavailable right now."
+  },
+  "map": {
+    "loading": "Loading map",
+    "sizeLabel": "Size",
+    "meters": "m",
+    "playersLabel": "Players per team",
+    "roundLabel": "Battle length",
+    "minutes": "min",
+    "stats": {
+      "emptyTitle": "No stats yet",
+      "battles": "Battles played",
+      "tugLabel": "Win rate by team",
+      "draws": "Draws: {value}",
+      "team1": "Team one",
+      "team2": "Team two",
+      "verdict": "Team {side, select, 1 {one} other {two}} wins more often by {gap} pp.",
+      "source": {
+        "battles": "From mod battles",
+        "replays": "From uploaded replays"
+      }
+    },
+    "nav": {
+      "label": "Neighbouring maps",
+      "prev": "Previous",
+      "next": "Next"
+    }
+  }
+}

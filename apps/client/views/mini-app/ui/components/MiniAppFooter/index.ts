@@ -1,0 +1,1 @@
+export { MiniAppFooter } from './MiniAppFooter';

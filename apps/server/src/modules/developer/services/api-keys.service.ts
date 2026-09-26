@@ -1,82 +1,82 @@
 import type { ApiKey, CreatedApiKey, DeveloperOverview } from '@bronevik/schemas';
 
+import { defaultKeyHasher } from '@better-auth/api-key';
 import { API_KEY } from '@bronevik/schemas';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { AuthService } from '@thallesp/nestjs-better-auth';
+import { differenceInSeconds } from 'date-fns';
 
-import type { AuthenticatedApiKey, CachedApiKey, CreateKeyInput, OwnedKeyInput } from '../developer.types';
+import type { BronevikAuth } from '../../../lib/auth';
+import type { ApplyPlanInput, AuthenticatedApiKey, CreateKeyInput, OwnedKeyInput, RejectKeyInput } from '../developer.types';
 
-import { AppConflictException, AppNotFoundException, AppUnauthorizedException } from '../../../common/exceptions';
+import {
+  AppBadRequestException,
+  AppConflictException,
+  AppNotFoundException,
+  AppTooManyRequestsException,
+  AppUnauthorizedException
+} from '../../../common/exceptions';
+import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { API_KEY_CACHE, API_PLANS } from '../config';
-import { apiKeyPrefix, generateApiKey, matchesApiKeyHash, toApiKey } from '../lib';
+import { API_PLANS } from '../config';
+import { keyPlanOf, planQuota, quotaRetryAfterSec, rebasedRemaining, toApiKey, verifyFailureOf } from '../lib';
 import { DeveloperPlanService } from './developer-plan.service';
 
 @Injectable()
 export class ApiKeysService {
-  private readonly cache = new Map<string, CachedApiKey>();
+  private readonly logger = new Logger(ApiKeysService.name);
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly plans: DeveloperPlanService
+    private readonly plans: DeveloperPlanService,
+    private readonly auth: AuthService<BronevikAuth>
   ) {}
 
   async overview(userId: string): Promise<DeveloperOverview> {
-    const [plan, keys, webhooks] = await Promise.all([
-      this.plans.planFor(userId),
-      this.list(userId),
-      this.prisma.webhookEndpoint.count({ where: { userId } })
-    ]);
+    const plan = await this.plans.planFor(userId);
+
+    await this.applyPlan({ userId, plan });
+
+    const [keys, webhooks] = await Promise.all([this.list(userId), this.prisma.webhookEndpoint.count({ where: { userId } })]);
 
     return { plan, limits: API_PLANS[plan], keys, webhooks };
   }
 
   async list(userId: string): Promise<ApiKey[]> {
-    const rows = await this.prisma.apiKey.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
+    const rows = await this.prisma.apiKey.findMany({ where: { referenceId: userId }, orderBy: { createdAt: 'desc' } });
 
     return rows.map(toApiKey);
   }
 
   async create({ userId, name, expiresAt }: CreateKeyInput): Promise<CreatedApiKey> {
-    const active = await this.prisma.apiKey.count({ where: { userId, revokedAt: null } });
+    const expiresIn = expiresAt ? differenceInSeconds(new Date(expiresAt), new Date()) : null;
+
+    if (expiresIn !== null && expiresIn < 1) {
+      throw new AppBadRequestException('VALIDATION_FAILED', 'expiresAt must be in the future');
+    }
+
+    const active = await this.prisma.apiKey.count({ where: { referenceId: userId, enabled: true } });
 
     if (active >= API_KEY.maxActivePerUser) {
       throw new AppConflictException('CONFLICT', `At most ${API_KEY.maxActivePerUser} active API keys`);
     }
 
     const plan = await this.plans.planFor(userId);
-    const generated = generateApiKey();
+    const created = await this.auth.api.createApiKey({ body: { userId, name, expiresIn, ...planQuota(plan) } });
 
-    const row = await this.prisma.apiKey.create({
-      data: {
-        userId,
-        name,
-        prefix: generated.prefix,
-        keyHash: generated.hash,
-        plan,
-        scopes: [],
-        expiresAt: expiresAt ? new Date(expiresAt) : null
-      }
-    });
-
-    return { key: toApiKey(row), secret: generated.key };
+    return { key: toApiKey(created), secret: created.key };
   }
 
   async revoke({ userId, id }: OwnedKeyInput): Promise<void> {
-    const row = await this.prisma.apiKey.findFirst({ where: { id, userId } });
+    const row = await this.owned({ userId, id });
 
-    if (!row) {
-      throw new AppNotFoundException('NOT_FOUND', 'API key not found');
+    if (row.enabled) {
+      await this.auth.api.updateApiKey({ body: { keyId: id, userId, enabled: false } });
     }
-
-    if (!row.revokedAt) {
-      await this.prisma.apiKey.update({ where: { id }, data: { revokedAt: new Date() } });
-    }
-
-    this.cache.delete(row.prefix);
   }
 
   async owned({ userId, id }: OwnedKeyInput) {
-    const row = await this.prisma.apiKey.findFirst({ where: { id, userId } });
+    const row = await this.prisma.apiKey.findFirst({ where: { id, referenceId: userId } });
 
     if (!row) {
       throw new AppNotFoundException('NOT_FOUND', 'API key not found');
@@ -85,45 +85,69 @@ export class ApiKeysService {
     return row;
   }
 
-  async authenticate(raw: string): Promise<AuthenticatedApiKey> {
-    const prefix = apiKeyPrefix(raw);
+  async verify(raw: string): Promise<AuthenticatedApiKey> {
+    const { valid, error, key } = await this.auth.api.verifyApiKey({ body: { key: raw.trim() } });
 
-    if (!prefix) {
-      throw new AppUnauthorizedException('API_KEY_INVALID', 'The API key is malformed');
+    if (!valid || !key) {
+      return this.reject({ raw, code: typeof error?.code === 'string' ? error.code : undefined });
     }
 
-    const cached = this.cache.get(prefix);
+    const plan = keyPlanOf(key.metadata) ?? 'free';
+    const dailyLimit = key.refillAmount ?? API_PLANS[plan].requestsPerDay;
 
-    if (cached && Date.now() - cached.at < API_KEY_CACHE.ttlMs) {
-      if (!matchesApiKeyHash({ key: raw, hash: cached.hash })) {
-        throw new AppUnauthorizedException('API_KEY_INVALID', 'The API key is not valid');
+    void this.reconcile({ userId: key.referenceId, plan });
+
+    return { id: key.id, userId: key.referenceId, plan, dailyLimit, dailyRemaining: key.remaining ?? dailyLimit };
+  }
+
+  async applyPlan({ userId, plan }: ApplyPlanInput): Promise<void> {
+    const keys = await this.prisma.apiKey.findMany({
+      where: { referenceId: userId, enabled: true },
+      select: { id: true, metadata: true, remaining: true, refillAmount: true }
+    });
+
+    for (const key of keys.filter(({ metadata }) => keyPlanOf(metadata) !== plan)) {
+      const { refillAmount, refillInterval, metadata } = planQuota(plan);
+
+      await this.prisma.apiKey.update({
+        where: { id: key.id },
+        data: { refillAmount, refillInterval, metadata: JSON.stringify(metadata), remaining: rebasedRemaining({ plan, ...key }) }
+      });
+    }
+  }
+
+  private async reconcile({ userId, plan }: ApplyPlanInput): Promise<void> {
+    try {
+      const current = await this.plans.cachedPlanFor(userId);
+
+      if (current !== plan) {
+        await this.applyPlan({ userId, plan: current });
       }
-
-      return cached.key;
+    } catch (error) {
+      this.logger.warn(`API key plan for ${userId} not reconciled: ${errorMessage(error)}`);
     }
+  }
 
-    const row = await this.prisma.apiKey.findUnique({ where: { prefix } });
+  private async reject({ raw, code }: RejectKeyInput): Promise<never> {
+    const failure = verifyFailureOf(code);
 
-    if (!row || !matchesApiKeyHash({ key: raw, hash: row.keyHash })) {
-      throw new AppUnauthorizedException('API_KEY_INVALID', 'The API key is not valid');
-    }
-
-    if (row.revokedAt || (row.expiresAt && row.expiresAt <= new Date())) {
+    if (failure === 'revoked') {
       throw new AppUnauthorizedException('API_KEY_REVOKED', 'The API key was revoked or has expired');
     }
 
-    const key: AuthenticatedApiKey = {
-      id: row.id,
-      userId: row.userId,
-      plan: row.plan === 'partner' ? 'partner' : await this.plans.planFor(row.userId)
-    };
-
-    if (this.cache.size >= API_KEY_CACHE.maxEntries) {
-      this.cache.clear();
+    if (failure === 'invalid') {
+      throw new AppUnauthorizedException('API_KEY_INVALID', 'The API key is not valid');
     }
 
-    this.cache.set(prefix, { key, hash: row.keyHash, at: Date.now() });
+    const row = await this.prisma.apiKey.findUnique({
+      where: { key: await defaultKeyHasher(raw.trim()) },
+      select: { lastRefillAt: true, createdAt: true, refillInterval: true }
+    });
 
-    return key;
+    throw new AppTooManyRequestsException(
+      'PLAN_LIMIT_REACHED',
+      'The daily request quota of this key is used up',
+      row ? quotaRetryAfterSec({ ...row, now: new Date() }) : null
+    );
   }
 }

@@ -1,24 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include riveted-plate(var(--chamfer-lg));
-  @include stack(var(--space-6));
+  @include panel;
+  @include stack(var(--space-5));
 
-  padding: var(--space-6);
+  padding: var(--space-5);
 
-  @include below(md) {
-    padding: var(--space-4);
-  }
-
-  &[data-plus='true'] {
-    background: color-mix(in srgb, var(--color-premium) 55%, var(--color-border-strong));
-
-    .crest {
-      border-color: var(--color-premium);
-      background: color-mix(in srgb, var(--color-premium) 12%, transparent);
-      box-shadow: 0 0 24px -6px var(--color-premium-glow);
-      color: var(--color-premium);
-    }
+  &[data-plus='true'] .title {
+    color: var(--color-premium);
   }
 }
 
@@ -26,38 +15,17 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-4);
-}
-
-.crest {
-  display: inline-flex;
-  width: 56px;
-  height: 56px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-full);
-  color: var(--color-text-muted);
-}
-
-.heading {
-  @include stack(2px);
-
-  flex: 1;
-}
-
-.eyebrow {
-  @include hud-label;
+  gap: var(--space-3);
 }
 
 .title {
-  @include display(var(--text-xl));
+  @include heading(var(--text-lg));
 }
 
 .facts {
   display: grid;
   margin: 0;
-  gap: var(--space-3);
+  gap: 1px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 
   @include below(3xl) {

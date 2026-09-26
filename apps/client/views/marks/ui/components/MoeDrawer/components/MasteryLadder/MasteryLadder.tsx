@@ -5,9 +5,9 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { ProgressBar } from '@/ui-kit';
 
-import type { MasteryLadderProps } from '../../MoeDrawer.types';
+import type { MasteryLadderProps } from './MasteryLadder.types';
 
-import { MASTERY_LEVELS } from '../../MoeDrawer.constants';
+import { MASTERY_LEVELS } from '../../../../../config';
 
 import s from './MasteryLadder.module.scss';
 
@@ -23,7 +23,7 @@ export const MasteryLadder = ({ mastery }: MasteryLadderProps) => {
     <ul className={s.root}>
       {MASTERY_LEVELS.map(({ level, key }) => (
         <li key={key} className={s.row}>
-          <MasteryIcon aria-hidden tinted className={s.icon} level={level} size={28} />
+          <MasteryIcon aria-hidden tinted className={s.icon} level={level} size={20} />
           <ProgressBar
             label={t(`masteryLevels.${level}`)}
             max={mastery.master}

@@ -58,16 +58,19 @@ export const notificationSchema = z.discriminatedUnion('event', [
     clanId: z.number().int().positive(),
     clanTag: z.string(),
     title: z.string(),
-    startsAt: z.string().nullable(),
-    report: z
-      .object({
-        events: z.number().int().nonnegative(),
-        attendanceRate: z.number().min(0).max(1).nullable(),
-        newCandidates: z.number().int().nonnegative(),
-        inactiveMembers: z.number().int().nonnegative()
-      })
-      .nullable()
-      .default(null)
+    startsAt: z.string().nullable()
+  }),
+  z.object({
+    event: z.literal('clanWeeklyReport'),
+    clanId: z.number().int().positive(),
+    clanTag: z.string(),
+    from: z.string(),
+    report: z.object({
+      events: z.number().int().nonnegative(),
+      attendanceRate: z.number().min(0).max(1).nullable(),
+      newCandidates: z.number().int().nonnegative(),
+      inactiveMembers: z.number().int().nonnegative()
+    })
   }),
   z.object({
     event: z.literal('badgeAwarded'),

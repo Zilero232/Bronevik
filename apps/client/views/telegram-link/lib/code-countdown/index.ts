@@ -1,2 +1,2 @@
-export { countdown, formatCountdown } from './code-countdown';
-export type { Countdown, CountdownInput } from './code-countdown.types';
+export { codeLifetime, formatCountdown } from './code-countdown';
+export type { CodeLifetime, CodeLifetimeInput } from './code-countdown.types';

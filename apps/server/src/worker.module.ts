@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 
 import { AppConfigModule, validateEnv } from './config';
-import { LestaModule, PrismaModule, QueuesModule, RedisModule } from './core';
+import { AppLoggerModule, LestaModule, LOGGER, PrismaModule, QueuesModule, RedisModule } from './core';
 import { BillingWorkerModule } from './modules/billing';
 import { ClanWorkspaceWorkerModule } from './modules/clan-workspace';
 import { CollectorModule } from './modules/collector';
-import { CommunityWorkerModule } from './modules/community';
+import { CommunityMaintenanceWorkerModule } from './modules/community-maintenance';
 import { DeveloperEventsModule, DeveloperWorkerModule } from './modules/developer';
 import { EventsWorkerModule } from './modules/events';
 import { NotificationsWorkerModule } from './modules/notifications';
@@ -21,6 +21,7 @@ const env = validateEnv(process.env);
 @Module({
   imports: [
     AppConfigModule,
+    AppLoggerModule.forService(LOGGER.service.worker),
     ScheduleModule.forRoot(),
     PrismaModule,
     RedisModule,
@@ -35,7 +36,7 @@ const env = validateEnv(process.env);
     ReplaysWorkerModule,
     ShopWorkerModule,
     EventsWorkerModule,
-    CommunityWorkerModule,
+    CommunityMaintenanceWorkerModule,
     ClanWorkspaceWorkerModule,
     SocialWorkerModule,
     PulseWorkerModule

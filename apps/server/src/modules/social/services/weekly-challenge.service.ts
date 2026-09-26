@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { unique } from 'remeda';
 
 import type { WeekStats } from '../lib';
 import type { ChallengesView, RecordChallengeInput, WeekStatsInput } from '../social.types';
@@ -133,7 +134,7 @@ export class WeeklyChallengeService {
     ]);
 
     const vehicles = await this.prisma.vehicle.findMany({
-      where: { tankId: { in: [...new Set([...battles, ...deltas].map((row) => row.tankId))] } },
+      where: { tankId: { in: unique([...battles, ...deltas].map((row) => row.tankId)) } },
       select: { tankId: true, type: true }
     });
 

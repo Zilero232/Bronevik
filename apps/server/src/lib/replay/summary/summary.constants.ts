@@ -8,4 +8,6 @@ export const REPLAY_PATTERN = {
   dateTime: /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2}):(\d{2})$/
 } as const;
 
-export const ALIVE_DEATH_REASON = -1;
+export const VEHICLE_RESULT = {
+  aliveDeathReason: -1
+} as const;

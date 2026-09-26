@@ -17,7 +17,7 @@ import s from './CabinetHeader.module.scss';
 export const CabinetHeader = () => {
   const t = useTranslations('developer.header');
   const format = useFormatter();
-  const { data: overview } = useDeveloperOverview();
+  const { data: overview, isError } = useDeveloperOverview();
 
   const readouts =
     overview &&
@@ -41,7 +41,9 @@ export const CabinetHeader = () => {
       </div>
       <div className={s.tag}>
         <span className={s.tagLabel}>{t('plan')}</span>
-        {overview ? <span className={s.plan}>{t(`planName.${overview.plan}`)}</span> : <Skeleton height={40} shape='block' width={120} />}
+        {overview && <span className={s.plan}>{t(`planName.${overview.plan}`)}</span>}
+        {!overview && isError && <span className={s.plan}>—</span>}
+        {!overview && !isError && <Skeleton height={40} shape='block' width={120} />}
         <dl className={s.readouts}>
           {readouts?.map(({ key, value }) => (
             <div key={key} className={s.readout}>

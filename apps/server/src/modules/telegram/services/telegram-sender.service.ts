@@ -5,14 +5,14 @@ import { Bot, InlineKeyboard } from 'grammy';
 
 import type { BotContext, SendNotificationInput, SendTextInput } from '../telegram.types';
 
-import { TELEGRAM_BOT, TELEGRAM_I18N } from '../bot';
+import { TELEGRAM_TOKENS } from '../config';
 import { isPublicUrl } from '../lib';
 
 @Injectable()
 export class TelegramSenderService {
   constructor(
-    @Inject(TELEGRAM_BOT) private readonly bot: Bot<BotContext> | null,
-    @Inject(TELEGRAM_I18N) private readonly i18n: I18n<BotContext>
+    @Inject(TELEGRAM_TOKENS.bot) private readonly bot: Bot<BotContext> | null,
+    @Inject(TELEGRAM_TOKENS.i18n) private readonly i18n: I18n<BotContext>
   ) {}
 
   get isEnabled(): boolean {

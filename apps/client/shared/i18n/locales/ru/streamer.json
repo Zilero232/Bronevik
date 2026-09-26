@@ -1,0 +1,323 @@
+{
+  "meta": {
+    "title": "Студия стримера",
+    "description": "Профиль стримера, оверлеи для OBS, интеграции с донатами и челленджи зрителей."
+  },
+  "publicMeta": {
+    "title": "{name} — стример «Мира танков»",
+    "description": "{name}: трансляции, ссылки на каналы и статистика в «Мире танков»."
+  },
+  "confirm": {
+    "cancel": "Отмена"
+  },
+  "studio": {
+    "title": "Студия стримера",
+    "lead": "Профиль, интеграции, оверлеи для OBS и челленджи зрителей «Мира танков».",
+    "openPublic": "Моя страница",
+    "tabs": {
+      "profile": "Профиль",
+      "integrations": "Интеграции",
+      "overlays": "Оверлеи",
+      "challenges": "Челленджи"
+    },
+    "toast": {
+      "saved": "Профиль сохранён",
+      "failed": "Не получилось. Попробуйте ещё раз.",
+      "connected": "Интеграция подключена",
+      "connectFailed": "Не удалось подключить интеграцию",
+      "disconnected": "Интеграция отключена",
+      "overlaySaved": "Оверлей сохранён",
+      "overlayRemoved": "Оверлей удалён",
+      "challengeCreated": "Челлендж создан — ждём донат с кодом",
+      "challengeActivated": "Челлендж запущен",
+      "challengeCancelled": "Челлендж отменён"
+    }
+  },
+  "profile": {
+    "description": "Публичная страница: ссылки на каналы, пара слов о себе и статистика привязанного аккаунта.",
+    "slug": "Адрес страницы",
+    "slugHint": "Латиница, цифры и дефис, от 3 до 32 символов.",
+    "slugPlaceholder": "ваш-ник",
+    "displayName": "Имя на странице",
+    "bio": "О себе",
+    "bioPlaceholder": "Во что играете, когда эфиры, чем удивляете чат",
+    "bioCount": "{count} из {max}",
+    "links": "Каналы и ссылки",
+    "link": {
+      "twitch": "Twitch",
+      "vk": "VK Видео Live",
+      "youtube": "YouTube",
+      "telegram": "Telegram",
+      "boosty": "Boosty"
+    },
+    "linkPlaceholder": {
+      "twitch": "https://twitch.tv/…",
+      "vk": "https://live.vkvideo.ru/…",
+      "youtube": "https://youtube.com/@…",
+      "telegram": "https://t.me/…",
+      "boosty": "https://boosty.to/…"
+    },
+    "account": "Аккаунт «Мира танков»",
+    "accountNone": "Не показывать статистику",
+    "accountHint": "Статистика этого аккаунта попадёт на страницу и в оверлеи. Привязать аккаунт можно во вкладке «Обзор».",
+    "save": "Сохранить профиль",
+    "publicLink": "Открыть страницу",
+    "errors": {
+      "slug": "Только латиница, цифры и дефис, от 3 до 32 символов",
+      "slugTaken": "Этот адрес уже занят — выберите другой",
+      "displayName": "От 2 до 64 символов",
+      "bio": "Не длиннее {max} символов",
+      "link": "Нужна ссылка вида https://…"
+    }
+  },
+  "integrations": {
+    "description": "Подключение через официальный вход сервиса, пароли мы не видим.",
+    "provider": {
+      "donationAlerts": "DonationAlerts",
+      "twitch": "Twitch",
+      "vkPlayLive": "VK Видео Live",
+      "youtube": "YouTube"
+    },
+    "about": {
+      "donationAlerts": "Ловим донаты с кодом челленджа и запускаем проверку автоматически.",
+      "twitch": "Бот отвечает на !stat, !session и !marks и пишет итог челленджа в чат.",
+      "vkPlayLive": "Команды чата и итоги челленджей для VK Видео Live.",
+      "youtube": "Команды чата для трансляций на YouTube."
+    },
+    "connected": "Подключено",
+    "notConnected": "Не подключено",
+    "soon": "Скоро",
+    "connectedAs": "{login} · с {date}",
+    "connect": "Подключить",
+    "disconnect": "Отключить",
+    "disconnectTitle": "Отключить {name}?",
+    "disconnectDescription": "Броневик перестанет получать события от {name}. Подключить обратно можно в любой момент."
+  },
+  "overlays": {
+    "description": "Ссылку на оверлей вставьте в OBS как источник «Браузер».",
+    "list": "Ваши оверлеи",
+    "new": "Новый оверлей",
+    "defaultName": "Новый оверлей",
+    "kind": {
+      "session": "Сессия",
+      "wn8": "WN8",
+      "moe": "Отметка",
+      "damage": "Урон",
+      "win_rate": "Процент побед",
+      "win_streak": "Серия побед",
+      "challenge": "Челлендж",
+      "custom": "Свой набор"
+    },
+    "theme": {
+      "steel": "Сталь",
+      "tracer": "Трассер",
+      "minimal": "Минимал",
+      "transparent": "Прозрачный"
+    },
+    "layout": {
+      "row": "Строка",
+      "column": "Столбец",
+      "grid": "Сетка"
+    },
+    "reset": {
+      "session": "С началом сессии",
+      "day": "Каждый день",
+      "manual": "Вручную"
+    },
+    "fields": {
+      "name": "Название",
+      "kind": "Шаблон",
+      "metrics": "Показатели",
+      "metricsHint": "До {max} показателей, порядок — как выбрали.",
+      "theme": "Оформление",
+      "layout": "Раскладка",
+      "accent": "Свой акцентный цвет",
+      "accentHint": "Под цвета вашего канала",
+      "fontScale": "Масштаб",
+      "animate": "Анимация",
+      "animateHint": "Цифры докручиваются и вспыхивают при изменении",
+      "showTank": "Показывать танк",
+      "showTankHint": "Название машины у отметки и последнего боя",
+      "reset": "Сброс сессии",
+      "locale": "Язык"
+    },
+    "save": "Сохранить",
+    "create": "Создать оверлей",
+    "remove": "Удалить",
+    "removeTitle": "Удалить оверлей?",
+    "removeDescription": "«{name}» перестанет работать в OBS. Это нельзя отменить.",
+    "errors": {
+      "name": "Дайте оверлею название",
+      "metrics": "Выберите от 1 до {max} показателей"
+    },
+    "preview": {
+      "title": "Превью",
+      "hint": "Данные привязанного аккаунта. Клетка — прозрачный фон."
+    },
+    "obs": {
+      "url": "Ссылка для OBS",
+      "title": "Как добавить в OBS",
+      "steps": {
+        "source": "В OBS: «Источники» → «+» → «Браузер».",
+        "url": "Вставьте ссылку выше в поле URL.",
+        "size": "Ширина {width}, высота {height} — дальше подгоните рамкой.",
+        "transparent": "Фон уже прозрачный: ни своего CSS, ни хромакея не нужно."
+      }
+    }
+  },
+  "challenges": {
+    "description": "Зритель донатит с кодом, мод проверяет бой, итог приходит в чат и оверлей.",
+    "form": {
+      "heading": "Новый челлендж",
+      "title": "Название",
+      "titlePlaceholder": "3000 урона на ЛТ",
+      "amount": "Сумма доната",
+      "amountSuffix": "₽",
+      "expires": "Действует",
+      "expiresOption": "{minutes, plural, =30 {30 минут} =60 {1 час} =120 {2 часа} =240 {4 часа} =720 {12 часов} =1440 {сутки} other {# мин}}",
+      "submit": "Создать челлендж",
+      "errors": {
+        "title": "От 3 до 120 символов",
+        "amount": "Сумма должна быть больше нуля"
+      }
+    },
+    "condition": {
+      "legend": "Условие",
+      "metricLabel": "Показатель",
+      "metric": {
+        "damage": "Урон",
+        "assist": "Урон по засвету и сбитию",
+        "blocked": "Заблокированный урон",
+        "frags": "Фраги",
+        "spotted": "Засвет",
+        "xp": "Опыт",
+        "win": "Победа",
+        "survive": "Выживание",
+        "moePercent": "Процент отметки"
+      },
+      "operatorLabel": "Сравнение",
+      "operator": {
+        "gte": "≥",
+        "lte": "≤",
+        "eq": "="
+      },
+      "operatorName": {
+        "gte": "Не меньше",
+        "lte": "Не больше",
+        "eq": "Ровно"
+      },
+      "value": "Порог",
+      "battles": "Боёв",
+      "aggregateLabel": "Как считать",
+      "aggregateHint": "Для одного боя не важно.",
+      "aggregate": {
+        "single": "Каждый бой",
+        "sum": "Сумма",
+        "avg": "Среднее"
+      },
+      "scopeLabel": "Техника",
+      "scope": {
+        "any": "Любая",
+        "tank": "Танк",
+        "type": "Класс",
+        "tier": "Уровень"
+      },
+      "tierOption": "{tier} и выше"
+    },
+    "sentence": {
+      "lead": {
+        "single": "За один бой —",
+        "each": "В каждом из {battles, plural, one {# боя} other {# боёв}} —",
+        "sum": "Суммарно за {battles, plural, one {# бой} few {# боя} other {# боёв}} —",
+        "avg": "В среднем за {battles, plural, one {# бой} few {# боя} other {# боёв}} —"
+      },
+      "goal": {
+        "win": "победить",
+        "survive": "выжить"
+      },
+      "op": {
+        "gte": "не меньше {value, number}",
+        "lte": "не больше {value, number}",
+        "eq": "ровно {value, number}"
+      },
+      "metric": {
+        "damage": "урона",
+        "assist": "урона по засвету и сбитию",
+        "blocked": "заблокированного урона",
+        "frags": "фрагов",
+        "spotted": "засвеченных",
+        "xp": "опыта",
+        "win": "побед",
+        "survive": "выживаний",
+        "moePercent": "% отметки"
+      },
+      "filter": {
+        "tank": "на {name}",
+        "tier": "на технике {tier} уровня и выше",
+        "type": {
+          "lightTank": "на ЛТ",
+          "mediumTank": "на СТ",
+          "heavyTank": "на ТТ",
+          "AT-SPG": "на ПТ-САУ",
+          "SPG": "на САУ"
+        }
+      }
+    },
+    "status": {
+      "pending": "Ждёт доната",
+      "active": "В игре",
+      "succeeded": "Выполнен",
+      "failed": "Провален",
+      "cancelled": "Отменён",
+      "expired": "Истёк",
+      "refunded": "Возврат"
+    },
+    "list": {
+      "title": "Челленджи",
+      "empty": "Челленджей пока нет",
+      "code": "Код для доната",
+      "codeHint": "Зритель пишет его в сообщении к донату",
+      "progress": "Прогресс",
+      "battles": "Бои: {done} из {total}",
+      "donor": "Донатер",
+      "expires": "Истекает"
+    },
+    "actions": {
+      "activate": "Запустить",
+      "activateTitle": "Запустить челлендж?",
+      "activateDescription": "Нужно, если донат пришёл мимо интеграции. С этой минуты мод считает бои.",
+      "donorName": "Кто задонатил",
+      "donorPlaceholder": "Ник зрителя — необязательно",
+      "donorError": "Не длиннее 64 символов",
+      "cancel": "Отменить",
+      "cancelTitle": "Отменить челлендж?",
+      "cancelDescription": "Проверка остановится, в чат уйдёт сообщение об отмене."
+    }
+  },
+  "page": {
+    "eyebrow": "Стример «Мира танков»",
+    "live": "В эфире",
+    "offline": "Не в эфире",
+    "channels": "Где смотреть",
+    "link": {
+      "twitch": "Twitch",
+      "vk": "VK Видео Live",
+      "youtube": "YouTube",
+      "telegram": "Telegram",
+      "boosty": "Boosty",
+      "other": "Ссылка"
+    },
+    "stats": {
+      "title": "Боевая статистика",
+      "battles": "Бои",
+      "winRate": "Победы",
+      "wn8": "WN8",
+      "avgDamage": "Ср. урон",
+      "profile": "Полный профиль игрока",
+      "hidden": "Статистика аккаунта сейчас недоступна"
+    },
+    "errorTitle": "Страница стримера недоступна",
+    "errorDescription": "Не получилось загрузить данные. Попробуйте ещё раз.",
+    "retry": "Повторить"
+  }
+}

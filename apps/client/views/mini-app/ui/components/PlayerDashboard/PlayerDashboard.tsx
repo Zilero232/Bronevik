@@ -1,8 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
-
-import { STAGGER, STAGGER_ITEM } from '@/shared/lib';
+import { ErrorState } from '@/ui-kit';
 
 import type { PlayerDashboardProps } from './PlayerDashboard.types';
 
@@ -16,25 +14,19 @@ import { StatGrid } from '../StatGrid';
 import s from './PlayerDashboard.module.scss';
 
 export const PlayerDashboard = ({ accountId, nickname }: PlayerDashboardProps) => {
-  const { profile, session, marks } = usePlayerDigest(accountId);
+  const { profile, session, marks, isError, isRetrying, retry } = usePlayerDigest(accountId);
+
+  if (isError) {
+    return <ErrorState isRetrying={isRetrying} onRetry={retry} />;
+  }
 
   return (
-    <motion.div animate='visible' className={s.root} initial='hidden' variants={STAGGER}>
-      <motion.div variants={STAGGER_ITEM}>
-        <PlayerHeader nickname={nickname} summary={profile?.summary} />
-      </motion.div>
-      <motion.div variants={STAGGER_ITEM}>
-        <StatGrid stats={profile?.summary.overall} />
-      </motion.div>
-      <motion.div variants={STAGGER_ITEM}>
-        <SessionCard nickname={nickname} session={session} />
-      </motion.div>
-      <motion.div variants={STAGGER_ITEM}>
-        <MarksCard marks={marks} />
-      </motion.div>
-      <motion.div variants={STAGGER_ITEM}>
-        <QuickLinks nickname={nickname} />
-      </motion.div>
-    </motion.div>
+    <div className={s.root}>
+      <PlayerHeader nickname={nickname} summary={profile?.summary} />
+      <StatGrid stats={profile?.summary.overall} />
+      <SessionCard nickname={nickname} session={session} />
+      <MarksCard marks={marks} />
+      <QuickLinks nickname={nickname} />
+    </div>
   );
 };

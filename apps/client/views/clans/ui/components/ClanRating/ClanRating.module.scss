@@ -1,30 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
-.list {
-  @include stack(var(--space-2));
-
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
 .sort {
-  min-width: 200px;
-}
-
-.footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: var(--space-4);
-  gap: var(--space-3);
+  min-width: 180px;
 }
 
 .progress {
-  @include hud-label;
-}
-
-.spinner {
-  @include spin;
+  @include source-line;
 }

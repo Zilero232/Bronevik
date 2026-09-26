@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric;
+  @include tone;
+
+  color: var(--tone);
+  font-weight: 600;
+
+  &:not([data-tone]) {
+    color: var(--color-text-dim);
+  }
+}

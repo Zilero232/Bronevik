@@ -1,3 +1,5 @@
+import { sortBy } from 'remeda';
+
 import type { ActivityRow, BestHour, BestHoursInput, Sample } from './pulse-grid.types';
 
 import { PULSE } from '../../config';
@@ -24,10 +26,9 @@ export const bestHours = ({ grid, count }: BestHoursInput): BestHour[] => {
     return [];
   }
 
-  return totals
-    .map((value, hour) => ({ hour, share: value / all }))
-    .sort((a, b) => b.share - a.share || a.hour - b.hour)
-    .slice(0, count);
+  const shares = totals.map((value, hour) => ({ hour, share: value / all }));
+
+  return sortBy(shares, [(entry) => entry.share, 'desc'], (entry) => entry.hour).slice(0, count);
 };
 
 export const encodeSample = (sample: Sample): string => `${sample.at.getTime()}:${sample.players}`;

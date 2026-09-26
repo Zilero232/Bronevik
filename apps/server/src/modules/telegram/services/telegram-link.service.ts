@@ -5,11 +5,12 @@ import { randomBytes } from 'node:crypto';
 import type { ConsumeLinkCodeInput, IssuedLinkCode, TelegramStatus, TxUserInput } from '../telegram.types';
 
 import { AppBadRequestException, AppConflictException } from '../../../common/exceptions';
+import { randomCode } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { AUTH_PROVIDER, isPlaceholderEmail } from '../../../lib/auth';
 import { LINK_CODE, SETTINGS_MENU, WEB_LOGIN } from '../config';
-import { generateLinkCode, normaliseLinkCode, siteUrl } from '../lib';
+import { normaliseLinkCode, siteUrl } from '../lib';
 import { TelegramIdentityService } from './telegram-identity.service';
 
 @Injectable()
@@ -21,7 +22,7 @@ export class TelegramLinkService {
   ) {}
 
   async issueCode(userId: string): Promise<IssuedLinkCode> {
-    const code = generateLinkCode();
+    const code = randomCode(LINK_CODE);
     const expiresAt = addMinutes(new Date(), LINK_CODE.ttlMinutes);
     const botUsername = this.config.get('TELEGRAM_BOT_USERNAME');
 

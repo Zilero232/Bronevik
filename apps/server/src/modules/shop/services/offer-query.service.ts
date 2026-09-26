@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { sortBy, unique } from 'remeda';
 
 import type { Prisma } from '../../../../generated';
 import type { ArchiveEntry, OfferArchive, OfferPage, OffersQuery } from '../shop.types';
@@ -59,33 +60,32 @@ export class OfferQueryService {
 
     const vehicles = await this.prisma.vehicle.findMany({ where: { tankId: { in: [...byTank.keys()] } }, select: { tankId: true, name: true } });
 
-    return [...byTank.entries()]
-      .map(([id, entry]) => {
-        const estimate = returnEstimate(entry.appearances);
+    const archive = [...byTank.entries()].map(([id, entry]) => {
+      const estimate = returnEstimate(entry.appearances);
 
-        return {
-          tankId: id,
-          tankName: vehicles.find((vehicle) => vehicle.tankId === id)?.name ?? null,
-          timesSeen: estimate.timesSeen,
-          lastSeenAt: toIso(estimate.lastSeenAt),
-          lastDiscountPercent: entry.lastDiscountPercent,
-          medianIntervalDays: estimate.medianIntervalDays,
-          nextExpectedAt: toIso(estimate.nextExpectedAt)
-        };
-      })
-      .sort((a, b) => (b.lastSeenAt ?? '').localeCompare(a.lastSeenAt ?? ''))
-      .slice(0, OFFER_RETURN.archiveLimit);
+      return {
+        tankId: id,
+        tankName: vehicles.find((vehicle) => vehicle.tankId === id)?.name ?? null,
+        timesSeen: estimate.timesSeen,
+        lastSeenAt: toIso(estimate.lastSeenAt),
+        lastDiscountPercent: entry.lastDiscountPercent,
+        medianIntervalDays: estimate.medianIntervalDays,
+        nextExpectedAt: toIso(estimate.nextExpectedAt)
+      };
+    });
+
+    return sortBy(archive, [(item) => item.lastSeenAt ?? '', 'desc']).slice(0, OFFER_RETURN.archiveLimit);
   }
 
   private async timesSeen(tankIds: readonly number[]): Promise<Map<number, number>> {
-    const unique = [...new Set(tankIds)];
+    const ids = unique(tankIds);
     const counts = new Map<number, number>();
 
-    if (unique.length === 0) {
+    if (ids.length === 0) {
       return counts;
     }
 
-    const rows = await this.prisma.premiumOffer.findMany({ where: { tankIds: { hasSome: unique } }, select: { tankIds: true } });
+    const rows = await this.prisma.premiumOffer.findMany({ where: { tankIds: { hasSome: ids } }, select: { tankIds: true } });
 
     for (const row of rows) {
       for (const id of row.tankIds) {

@@ -2,9 +2,9 @@ import { chunk, mergeAll, unique } from 'remeda';
 
 import type { BatchByIdInput, BatchListInput, ChunkIdsInput, LestaId } from './batching.types';
 
-export const LESTA_BATCH_SIZE = 100;
+import { LESTA_API } from '../client/client.constants';
 
-export const chunkIds = <Id extends LestaId>({ ids, size = LESTA_BATCH_SIZE }: ChunkIdsInput<Id>): Id[][] => {
+export const chunkIds = <Id extends LestaId>({ ids, size = LESTA_API.batchSize }: ChunkIdsInput<Id>): Id[][] => {
   if (ids.length === 0) {
     return [];
   }

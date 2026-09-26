@@ -22,6 +22,45 @@ barrel — `@/ui-kit`; primitives live in `atoms/`, `molecules/`, `organisms/`.
 `model/` barrels live in subfolders (`model/hooks/index.ts`), never a slice-level
 `model/index.ts`.
 
+## Components only render
+
+```text
+<layer>/<domain>/<slice>/
+  index.ts
+  ui/
+    <Main>.tsx .types.ts .module.scss     ← at most ONE flat main component
+    <Other>/                              ← every further component gets a folder
+      <Other>.tsx  <Other>.types.ts  <Other>.module.scss  index.ts
+      [<Other>.motion.ts] [<Other>.variants.ts]
+      components/  index.ts  <Sub>/…     ← nesting max 2 levels
+  model/hooks/use-<x>/  use-<x>.ts  use-<x>.types.ts  index.ts  _tests/
+  model/hooks/use-<x>-form/               ← react-hook-form + zodResolver
+  model/context/
+  lib/<concern>/  <concern>.ts  <concern>.types.ts  index.ts  _tests/
+  config/  index.ts  <concern>.constants.ts
+```
+
+- A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`,
+  `index.ts`, nested `components/` (plus `.motion.ts` / `.variants.ts` / `_tests/`).
+  **Never** `*.helpers.ts`, `*.utils.ts`, `*.constants.ts`, `*.columns.tsx` or `hooks/`
+  there. One component per folder and per file; no `ui/` root with two flat components.
+- A `.tsx` may call `useTranslations`/`useFormatter`, navigation and context hooks,
+  **one** model hook of its own and at most one trivial UI flag (`useBoolean` /
+  a single `useState` for open or tab). Queries, mutations, effects,
+  `useMemo`/`useCallback`/`useReducer`, timers, storage, clipboard and multi-statement
+  or `async` handlers go to `model/hooks/use-<x>/`; forms to `use-<x>-form/`.
+- Module-level constants → `config/<concern>.constants.ts`; helpers →
+  `lib/<concern>/`. `ui-kit` has no segments: its helpers go to `shared/lib/<concern>/`,
+  its hooks to `shared/lib/use-<x>/`; only a primitive's own `<Name>.constants.ts` may stay.
+- Table columns: `model/hooks/use-<table>-columns/use-<table>-columns.tsx`; cells are
+  components in `ui/components/<Table>/components/<X>Cell/`.
+
+## No mocks
+
+No mock data layer, fixture fallback or fake latency. Every request goes through
+`fromServer` (`shared/api/source`); with no data a screen shows its empty state, with
+the API down its error state with a retry.
+
 ## Server and browser are both real
 
 Every page is rendered on the server first. A component that touches `window`
@@ -52,22 +91,19 @@ locale. Server code reads the locale with `rootParams.locale()` from
 
 ## A component body reads top to bottom
 
-Hooks first, then the values derived from them, then the handlers that act on
-those values, then the JSX. Every hook sits above the first `const` that is not
-one, so the dependency order is the reading order and nothing is declared after
-something that already used it.
+Hooks first, then the JSX. Every hook sits above the first `const` that is not
+one, so the dependency order is the reading order. Handlers and derived values
+come back from the component's model hook rather than being declared here.
 
 ```tsx
 const t = useTranslations('search');
-const router = useRouter();
-const { isOpen, setOpen } = useCommandPalette();
-const [query, setQuery] = useState('');
-const { results, total, isEnabled, isFetching, isError } = useSearchResults(query);
-
-const onOpenChange = (next: boolean) => { ... };
+const { query, setQuery, results, total, isOpen, onOpenChange } = useCommandPaletteView();
 
 return ( ... );
 ```
+
+The same ordering applies inside a hook: hooks, then derived values, then handlers,
+then the returned object.
 
 React already forbids a conditional hook; this keeps them visually grouped too,
 so a hook added later cannot drift below a branch by accident.
@@ -99,8 +135,8 @@ that reason. Generic hooks come from `@siberiacancode/reactuse` (`useBoolean`,
 
 ## i18n
 
-Everything user-visible goes through next-intl, in **both** `en.json` and
-`ru.json` (`shared/i18n/locales/`), always in sync. Shared Zod schemas come from
+Everything user-visible goes through next-intl, in **both** languages: `shared/i18n/locales/{ru,en}/<namespace>.json`
+(one file per top-level namespace; a new namespace needs a file in both folders and a line in both `index.ts`), always in sync. Shared Zod schemas come from
 `@bronevik/schemas`, not inline.
 
 ## Theming and tokens
@@ -163,3 +199,7 @@ text. Nothing in the client needs it today.
 
 `bun --filter @bronevik/client build` is the only check that catches SSR
 breakage — typecheck passes on code that throws during prerender.
+
+## Route prop types
+
+Never hand-write `params`/`searchParams` types in `app/`. Use Next's generated globals (no import): `PageProps<'/[locale]/t/[slug]'>` for pages, metadata and `opengraph-image`; `Pick<PageProps<'…'>, 'params'>` for an inner component that only receives params; `LayoutProps<'…'>` for layouts; `RouteContext<'…'>` for route handlers. Route keys omit route groups. `bun run typecheck` runs `next typegen` first.

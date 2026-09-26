@@ -5,7 +5,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 
 import type { Overlay } from '../../../../generated';
-import type { OverlayData, OverlayMoeInput } from '../streamers.types';
+import type { BuildOverlayDataInput, OverlayData, OverlayMoeInput, PreviewOverlayRequest } from '../streamers.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { readRecord, toNumber } from '../../../common/lib';
@@ -48,35 +48,53 @@ export class OverlayDataService {
   }
 
   async accountOf(overlay: Overlay): Promise<bigint | null> {
-    if (overlay.accountId !== null) {
-      return overlay.accountId;
-    }
+    return overlay.accountId ?? this.profileAccount(overlay.userId);
+  }
 
-    const profile = await this.prisma.streamerProfile.findUnique({ where: { userId: overlay.userId }, select: { accountId: true } });
+  async compute(overlay: Overlay): Promise<OverlayData> {
+    return this.build({
+      userId: overlay.userId,
+      accountId: await this.accountOf(overlay),
+      kind: OVERLAY_KIND_FROM_DB[overlay.kind],
+      name: overlay.name,
+      config: overlayConfigSchema.parse(overlay.config)
+    });
+  }
+
+  async preview({ userId, accountId, kind, name, config }: PreviewOverlayRequest): Promise<OverlayData> {
+    return this.build({
+      userId,
+      accountId: accountId === undefined ? await this.profileAccount(userId) : BigInt(accountId),
+      kind,
+      name: name ?? '',
+      config
+    });
+  }
+
+  private async profileAccount(userId: string): Promise<bigint | null> {
+    const profile = await this.prisma.streamerProfile.findUnique({ where: { userId }, select: { accountId: true } });
 
     return profile?.accountId ?? null;
   }
 
-  async compute(overlay: Overlay): Promise<OverlayData> {
-    const accountId = await this.accountOf(overlay);
-    const config = overlayConfigSchema.parse(overlay.config);
-    const base = { kind: OVERLAY_KIND_FROM_DB[overlay.kind], name: overlay.name, config, updatedAt: new Date().toISOString() };
+  private async build({ userId, accountId, kind, name, config }: BuildOverlayDataInput): Promise<OverlayData> {
+    const base = { kind, name, config, updatedAt: new Date().toISOString() };
 
     if (accountId === null) {
-      return { ...base, player: null, session: null, overall: null, moe: null, challenge: await this.challenge(overlay.userId) };
+      return { ...base, player: null, session: null, overall: null, moe: null, challenge: await this.challenge(userId) };
     }
 
     const [player, overall, session, challenge] = await Promise.all([
       this.prisma.player.findUnique({ where: { accountId }, select: { nickname: true } }),
       this.prisma.accountRating.findUnique({ where: { accountId_period: { accountId, period: 'overall' } } }),
       this.session(accountId),
-      this.challenge(overlay.userId)
+      this.challenge(userId)
     ]);
 
     return {
       ...base,
       player: player ? { accountId: toNumber(accountId), nickname: player.nickname } : null,
-      overall: overall ? { battles: overall.battles, winRate: overall.winRate, wn8: overall.wn8 } : null,
+      overall: overall ? { battles: overall.battles, winRate: overall.winRate, wn8: overall.wn8, broneIndex: overall.broneIndex } : null,
       session: session?.view ?? null,
       moe: session?.lastTankId ? await this.moe({ accountId, tankId: session.lastTankId }) : null,
       challenge
@@ -108,6 +126,7 @@ export class OverlayDataService {
         avgDamage: session.battles > 0 ? session.damageDealt / session.battles : null,
         frags: session.frags,
         wn8: session.wn8,
+        broneIndex: session.broneIndex,
         winStreak: winStreak({ results: battles.map((battle) => battle.result) }),
         lastBattle:
           last && vehicle ? { tankId: last.tankId, tankName: vehicle.shortName || vehicle.name, result: last.result, damage: last.damageDealt } : null

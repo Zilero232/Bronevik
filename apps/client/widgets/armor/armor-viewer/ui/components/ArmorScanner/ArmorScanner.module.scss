@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: absolute;
+  display: grid;
+  overflow: hidden;
+  inset: 0;
+  place-items: center;
+}
+
+.grid {
+  position: absolute;
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 32px 32px;
+  inset: 0;
+  mask-image: radial-gradient(circle at center, #000 30%, transparent 75%);
+}
+
+.reticle {
+  position: absolute;
+  width: min(46%, 320px);
+  aspect-ratio: 16 / 9;
+
+  @include corner-brackets(18px, var(--color-accent));
+}
+
+.sweep {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  box-shadow: var(--glow-accent);
+}
+
+.label {
+  position: relative;
+  margin-top: calc(min(46%, 320px) * 0.4);
+
+  @include hud-label;
+}

@@ -2,50 +2,45 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { ProgressBar } from '@/ui-kit';
+
 import type { BattlePassResultsProps } from '../../BattlePassCalculator.types';
 
-import { battlePassPlan } from '../../../../../lib/battle-pass';
-import { useToday } from '../../../../../model/hooks';
-import { ResultFigure, ResultList } from '../../../CalcKit';
-import { PassTrack } from '../PassTrack';
+import { useBattlePassPlan } from '../../../../../model/hooks';
+import { ResultFigure } from '../../../ResultFigure';
+import { ResultList } from '../../../ResultList';
 
 export const BattlePassResults = ({ values }: BattlePassResultsProps) => {
   const t = useTranslations('tools.pass');
   const format = useFormatter();
-  const today = useToday();
-
-  const stages = values.stages ?? 0;
-  const daysLeft = values.daysLeft ?? 0;
-  const plan = battlePassPlan({
-    stage: values.stage ?? 0,
-    stagePoints: values.stagePoints ?? 0,
-    pointsPerStage: values.pointsPerStage ?? 0,
-    stages,
-    daysLeft,
-    pointsPerBattle: values.pointsPerBattle ?? 0,
-    battlesPerDay: values.battlesPerDay,
-    today
-  });
-
-  const { finishDate, isOnTrack } = plan;
-  const finish = finishDate ? format.dateTime(finishDate, { day: 'numeric', month: 'long' }) : '—';
+  const { plan, progress, daysLeft, isPaceEnough } = useBattlePassPlan(values);
 
   return (
     <>
-      <PassTrack progress={plan.progress} stages={stages} />
       <ResultFigure
         fallback={t('noPace')}
         hint={t('perDayHint', { days: daysLeft })}
         label={t('perDay')}
-        tone={plan.battlesPerDayNeeded !== null && plan.battlesPerDayNeeded <= values.battlesPerDay ? 'good' : 'accent'}
+        tone={isPaceEnough ? 'good' : 'neutral'}
         value={plan.battlesPerDayNeeded}
+      />
+      <ProgressBar
+        label={t('trackLabel')}
+        tone='accent'
+        value={progress * 100}
+        valueLabel={format.number(progress, { style: 'percent', maximumFractionDigits: 0 })}
       />
       <ResultList
         items={[
           { key: 'pointsLeft', label: t('pointsLeft'), value: format.number(plan.pointsLeft) },
           { key: 'battles', label: t('battlesNeeded'), value: plan.battlesNeeded === null ? '—' : format.number(plan.battlesNeeded) },
-          { key: 'finish', label: t('finish'), value: finish, tone: isOnTrack ? 'good' : 'bad' },
-          { key: 'status', label: t('status'), value: isOnTrack ? t('onTrack') : t('behind'), tone: isOnTrack ? 'good' : 'bad' }
+          {
+            key: 'finish',
+            label: t('finish'),
+            value: plan.finishDate ? format.dateTime(plan.finishDate, { day: 'numeric', month: 'long' }) : '—',
+            tone: plan.isOnTrack ? 'good' : 'bad'
+          },
+          { key: 'status', label: t('status'), value: plan.isOnTrack ? t('onTrack') : t('behind'), tone: plan.isOnTrack ? 'good' : 'bad' }
         ]}
       />
     </>

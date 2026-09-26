@@ -1,16 +1,18 @@
+import { identity, sortBy, unique } from 'remeda';
+
 import type { ReturnEstimate } from './offer-return.types';
 
 import { OFFER_RETURN } from '../../config';
 
 const median = (values: readonly number[]): number => {
-  const sorted = [...values].sort((a, b) => a - b);
+  const sorted = sortBy(values, identity());
   const middle = Math.floor(sorted.length / 2);
 
   return sorted.length % 2 === 1 ? (sorted[middle] ?? 0) : ((sorted[middle - 1] ?? 0) + (sorted[middle] ?? 0)) / 2;
 };
 
 export const returnEstimate = (appearances: readonly Date[]): ReturnEstimate => {
-  const times = [...new Set(appearances.map((date) => date.getTime()))].sort((a, b) => a - b);
+  const times = sortBy(unique(appearances.map((date) => date.getTime())), identity());
   const last = times.at(-1);
 
   if (last === undefined) {

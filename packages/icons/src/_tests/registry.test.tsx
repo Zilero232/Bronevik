@@ -1,7 +1,17 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { ICON_GROUPS, ICONS, isNation, NATION_ICONS, NATIONS, TANK_CLASS_ICONS, TANK_CLASSES } from '../registry';
+import {
+  ICON_GROUPS,
+  ICONS,
+  isNation,
+  NATION_ICONS,
+  NATIONS,
+  TANK_CLASS_ICONS,
+  TANK_CLASS_KIND_ICONS,
+  TANK_CLASS_KINDS,
+  TANK_CLASSES
+} from '../registry';
 
 describe('icon registry', () => {
   it('lists every registered icon in exactly one group', () => {
@@ -13,6 +23,7 @@ describe('icon registry', () => {
 
   it('covers every tank class and nation', () => {
     TANK_CLASSES.forEach((tankClass) => expect(TANK_CLASS_ICONS[tankClass]).toBeDefined());
+    TANK_CLASS_KINDS.forEach((kind) => expect(TANK_CLASS_KIND_ICONS[kind]).toBeDefined());
     NATIONS.forEach((nation) => expect(NATION_ICONS[nation]).toBeDefined());
   });
 

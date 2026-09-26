@@ -1,0 +1,27 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  color: var(--color-text);
+  gap: var(--space-3);
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.tag {
+  padding-left: var(--space-2);
+  border-left: 2px solid var(--color-border-strong);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.name {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

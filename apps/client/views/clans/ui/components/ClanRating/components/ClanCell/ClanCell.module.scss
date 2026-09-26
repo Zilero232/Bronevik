@@ -1,0 +1,22 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+  gap: var(--space-3);
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.tag {
+  font-family: var(--font-display);
+  font-weight: 700;
+  white-space: nowrap;
+}

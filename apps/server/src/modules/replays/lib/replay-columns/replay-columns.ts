@@ -1,3 +1,5 @@
+import { unique } from 'remeda';
+
 import type { ReplaySummary } from '../../../../lib/replay';
 import type { ReplayColumns } from './replay-columns.types';
 
@@ -39,6 +41,6 @@ export const replayColumns = (summary: ReplaySummary): ReplayColumns => {
     frags: result ? Math.round(result.frags) : null,
     xp: result ? Math.round(result.xp) : null,
     playedAt: replayPlayedAt(summary),
-    playerAccountIds: [...new Set(summary.players.flatMap((player) => (player.accountId === null ? [] : [player.accountId])))].map(BigInt)
+    playerAccountIds: unique(summary.players.flatMap((player) => (player.accountId === null ? [] : [player.accountId]))).map(BigInt)
   };
 };

@@ -1,2 +1,2 @@
 export { ClansModule } from './clans.module';
-export { ClanListService, ClanPageService, ClanResolverService, ClanStrongholdService } from './services';
+export { ClanListService, ClanPageService, ClanResolverService } from './services';

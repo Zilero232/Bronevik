@@ -1,24 +1,5 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  @include plate(var(--chamfer-md));
-  @include stack(var(--space-4));
-
-  padding: var(--space-4);
-}
-
-.header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.title {
-  @include display(var(--text-lg));
-}
-
 .counts {
   display: flex;
   margin: 0;
@@ -31,14 +12,14 @@
   gap: var(--space-1);
 
   dt {
-    @include hud-label;
+    @include label;
   }
 
   dd {
     @include numeric;
 
     margin: 0;
-    font-weight: 700;
+    font-weight: 600;
   }
 
   &[data-marks='moe3'] dd {

@@ -6,9 +6,3 @@ export type MarksTableProps = {
   isStale: boolean;
   onSelect: (row: MoeRow) => void;
 };
-
-export type UseMoeColumnsInput = {
-  onOpen: (row: MoeRow) => void;
-  sparks: ReadonlyMap<number, readonly number[]>;
-  isSparkReady: boolean;
-};

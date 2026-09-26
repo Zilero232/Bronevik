@@ -9,8 +9,7 @@ export const PLAYER_STATS = {
 
 export const HISTORY = {
   defaultDays: 90,
-  maxDays: 730,
-  dayMs: 86_400_000
+  maxDays: 730
 } as const;
 
 export const PLAYER_MARKS = {

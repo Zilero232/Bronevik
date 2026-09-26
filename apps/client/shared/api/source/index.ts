@@ -1,2 +1,2 @@
-export { fromSource, isNotFoundError, isUnauthorizedError } from './source';
-export { NotFoundError, UnauthorizedError } from './source.errors';
+export { fromAuth } from './from-auth';
+export { fromSdk, fromServer, isNotFoundError, isUnauthorizedError } from './source';

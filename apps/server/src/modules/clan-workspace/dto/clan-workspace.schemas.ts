@@ -5,11 +5,11 @@ export const clanParamsSchema = z.object({ clanId: clanIdSchema });
 
 export const clanEventParamsSchema = z.object({ clanId: clanIdSchema, id: uuidSchema });
 
-export const clanEventKindSchema = z.enum(['clan_wars', 'stronghold', 'training', 'tournament', 'other']);
+const clanEventKindSchema = z.enum(['clan_wars', 'stronghold', 'training', 'tournament', 'other']);
 
-export const attendanceStatusSchema = z.enum(['invited', 'confirmed', 'declined', 'attended', 'absent']);
+const attendanceStatusSchema = z.enum(['invited', 'confirmed', 'declined', 'attended', 'absent']);
 
-export const recruitStatusSchema = z.enum(['sourced', 'contacted', 'trial', 'accepted', 'rejected']);
+const recruitStatusSchema = z.enum(['sourced', 'contacted', 'trial', 'accepted', 'rejected']);
 
 export const candidateStatsSchema = z.object({
   nickname: z.string().nullable(),

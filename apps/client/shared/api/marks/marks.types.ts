@@ -1,7 +1,5 @@
 import type { MoeSortField, SortOrder, ThresholdSource, VehicleType } from '@bronevik/schemas';
 
-import type { MockTank } from '@/shared/mocks';
-
 export type MoeListInput = {
   tiers?: number[];
   types?: VehicleType[];
@@ -36,9 +34,4 @@ export type MoeProjectionInput = {
   targetMarks: number;
   avgDamage: number;
   signal?: AbortSignal;
-};
-
-export type MockThresholdInput = {
-  tank: MockTank;
-  daysAgo: number;
 };

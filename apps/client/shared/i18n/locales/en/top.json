@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "title": "Player and clan leaderboards",
+    "description": "«Мир танков» leaderboards: top players, clans, rising stars, marks of excellence and streamers."
+  },
+  "title": "Leaderboards",
+  "description": "Top «Мир танков» players, clans and streamers by WN8, Bronya Index, win rate and damage.",
+  "minBattles": "Players with at least {count, plural, one {# battle} other {# battles}} in the period",
+  "scopes": {
+    "players": "Players",
+    "clans": "Clans",
+    "risingStars": "Rising",
+    "marks": "Marks",
+    "streamers": "Streamers"
+  },
+  "errorTitle": "The leaderboard did not load",
+  "errorDescription": "The ratings server is not responding.",
+  "emptyTitle": "No entries",
+  "emptyDescription": "Nobody matches these filters.",
+  "metrics": {
+    "wn8": "WN8",
+    "eff": "EFF",
+    "broneIndex": "Bronya Index",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage"
+  },
+  "overall": "All time",
+  "allTiers": "All tiers",
+  "allTypes": "All classes",
+  "metric": "Metric",
+  "period": "Period",
+  "tier": "Tier",
+  "type": "Class",
+  "tank": "Tank",
+  "clearTank": "Clear tank",
+  "tankPlaceholder": "Any tank",
+  "marksLabel": "3 marks",
+  "columns": {
+    "clan": "Clan",
+    "player": "Player",
+    "battles": "Battles",
+    "tank": "Tank"
+  }
+}

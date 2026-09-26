@@ -1,15 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ZodError } from 'zod';
 
+import type { Replay } from '../../../../generated';
 import type { ReplayTrack } from '../lib';
-import type { ParseOutcome, TracksOfInput } from '../replays.types';
+import type { ParseOutcome, ParseReplayInput, TracksOfInput } from '../replays.types';
 
-import { toJsonValue } from '../../../common/lib';
-import { PrismaService } from '../../../core';
+import { errorMessage, toJsonValue } from '../../../common/lib';
+import { ObjectStorage, PrismaService } from '../../../core';
 import { parsePackets, parseReplay, ReplayFormatError } from '../../../lib/replay';
 import { REPLAY_PARSE, REPLAY_UPLOAD } from '../config';
 import { buildTracks, replayColumns, tracksStorageKey } from '../lib';
-import { ReplayStorage } from '../storage';
 import { HeatmapService } from './heatmap.service';
 
 @Injectable()
@@ -18,11 +18,11 @@ export class ReplayParseService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly storage: ReplayStorage,
+    private readonly storage: ObjectStorage,
     private readonly heatmaps: HeatmapService
   ) {}
 
-  async parse(replayId: string): Promise<ParseOutcome> {
+  async parse({ replayId, isFinalAttempt }: ParseReplayInput): Promise<ParseOutcome> {
     const replay = await this.prisma.replay.findUnique({ where: { id: replayId } });
 
     if (!replay) {
@@ -31,6 +31,23 @@ export class ReplayParseService {
 
     await this.prisma.replay.update({ where: { id: replayId }, data: { status: 'parsing' } });
 
+    try {
+      return await this.run(replay);
+    } catch (error) {
+      await this.prisma.replay.update({
+        where: { id: replayId },
+        data: {
+          status: isFinalAttempt ? 'failed' : 'uploaded',
+          parseError: errorMessage(error).slice(0, REPLAY_PARSE.maxErrorLength)
+        }
+      });
+
+      throw error;
+    }
+  }
+
+  private async run(replay: Replay): Promise<ParseOutcome> {
+    const replayId = replay.id;
     const bytes = await this.storage.get(replay.storageKey);
     let parsed: ReturnType<typeof parseReplay>;
 
@@ -99,7 +116,7 @@ export class ReplayParseService {
 
       return buildTracks({ packets, players: summary.players, stepSeconds: REPLAY_PARSE.trackStepSeconds });
     } catch (error) {
-      this.logger.warn(`packet parse skipped: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`packet parse skipped: ${errorMessage(error)}`);
 
       return [];
     }

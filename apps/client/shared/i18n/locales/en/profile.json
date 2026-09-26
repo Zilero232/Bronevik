@@ -1,0 +1,270 @@
+{
+  "meta": {
+    "title": "{nickname} — player stats",
+    "description": "{nickname} in «Мир танков»: Bronya Index, WN8, win rate, tanks, marks of excellence and sessions."
+  },
+  "loading": "Loading the player dossier",
+  "overall": "All time",
+  "stats": {
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
+    "avgFrags": "Avg frags",
+    "survival": "Survival",
+    "accuracy": "Accuracy"
+  },
+  "awards": {
+    "marks": "{count, plural, one {# mark} other {# marks}} of excellence",
+    "mastery": {
+      "third": "Mastery badge, 3rd class",
+      "second": "Mastery badge, 2nd class",
+      "first": "Mastery badge, 1st class",
+      "master": "Ace Tanker"
+    }
+  },
+  "missing": {
+    "search": "Back to player search",
+    "notFoundTitle": "Player not found",
+    "notFoundDescription": "There is no «Мир танков» player “{nickname}”, or the nickname has changed.",
+    "errorTitle": "The profile did not load",
+    "errorDescription": "The stats server did not return data for “{nickname}”."
+  },
+  "tabs": {
+    "overview": "Overview",
+    "tanks": "Vehicles",
+    "sessions": "Sessions",
+    "marks": "Marks",
+    "achievements": "Achievements",
+    "charts": "Charts",
+    "insights": "Breakdown",
+    "history": "History"
+  },
+  "overview": {
+    "favoritesTitle": "Favourite vehicles",
+    "favoritesEmpty": "No battles on any vehicle",
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "marksTitle": "Marks",
+    "closestTitle": "Closest to the next mark",
+    "closestEmpty": "No vehicles are working towards a mark",
+    "periodsTitle": "Ratings by period",
+    "periodsEmpty": "No battles in any period",
+    "period": "Period",
+    "broneIndex": "Bronya Index",
+    "avgDamage": "Avg dmg",
+    "activityTitle": "Activity over the year",
+    "activitySummary": "{total, plural, one {# battle} other {# battles}} over {active, plural, one {# day} other {# days}}",
+    "activityEmpty": "No battles over the last year",
+    "activityDay": "{date}: {battles, plural, =0 {no battles} one {# battle} other {# battles}}{battles, plural, =0 {} other {, {winRate}% wins}}",
+    "activityHint": "Hover a day to see its battles",
+    "activityAria": "Activity calendar: {total} battles over {active} active days",
+    "less": "Less",
+    "more": "More"
+  },
+  "tanks": {
+    "caption": "Player vehicles",
+    "reset": "Reset filters",
+    "emptyTitle": "Nothing matches",
+    "search": "Search by tank name",
+    "allNations": "All nations",
+    "premiumLabel": "Vehicle kind",
+    "premium": {
+      "all": "All",
+      "regular": "Tech tree",
+      "premium": "Premium"
+    },
+    "tiersLabel": "Tiers",
+    "typesLabel": "Classes",
+    "total": "{count, plural, one {# tank} other {# tanks}}",
+    "columns": {
+      "tank": "Tank",
+      "battles": "Battles",
+      "winRate": "Win rate",
+      "avgDamage": "Avg dmg",
+      "awards": "Awards",
+      "moe": "MoE",
+      "recent": "30 days"
+    }
+  },
+  "sessions": {
+    "eyebrow": "Session",
+    "live": "In progress",
+    "source": {
+      "api": "From the API",
+      "mod": "From the mod"
+    },
+    "duration": "{minutes, plural, one {# minute} other {# minutes}} in battle",
+    "share": "Session card",
+    "copied": "Link copied",
+    "best": "Best tank of the day",
+    "worst": "Worst tank of the day",
+    "battlesCount": "{count, plural, one {# battle} other {# battles}}",
+    "avgDamageShort": "avg dmg {value}",
+    "tanks": "Session vehicles",
+    "battles": "Battles",
+    "result": {
+      "win": "Victory",
+      "loss": "Defeat",
+      "draw": "Draw"
+    },
+    "frags": "{count, plural, =0 {no frags} one {# frag} other {# frags}}",
+    "errorTitle": "The session did not load",
+    "errorDescription": "We could not fetch this session. It may have been removed.",
+    "listLabel": "Sessions",
+    "more": "Show more",
+    "back": "{nickname} dossier",
+    "meta": {
+      "title": "{nickname} session",
+      "description": "Session summary for {nickname}: battles, wins, damage and the best tanks of the day."
+    },
+    "empty": "No sessions yet"
+  },
+  "marks": {
+    "progressTitle": "Marks progress",
+    "sortLabel": "Sort",
+    "sort": {
+      "closest": "Closest to a mark",
+      "percent": "By percent",
+      "battles": "By battles"
+    },
+    "summary": {
+      "moe3": "3 marks",
+      "moe2": "2 marks",
+      "moe1": "1 mark",
+      "mastery": "Ace Tanker"
+    },
+    "collection": "Three-mark collection",
+    "collectionValue": "{done} of {total}",
+    "battles": "{count, plural, one {# battle} other {# battles}}",
+    "toNext": "to {percent}%: +{damage} damage",
+    "projection": {
+      "projected": "≈ {count, plural, one {# battle} other {# battles}} to 3 marks at your average",
+      "done": "Three marks earned",
+      "unknown": "Not enough data for a forecast",
+      "unreachable": "Your current average is not enough for 3 marks"
+    },
+    "empty": "No vehicles with a tracked mark"
+  },
+  "charts": {
+    "title": "Metric charts",
+    "granularityLabel": "Chart step",
+    "granularity": {
+      "day": "Days",
+      "week": "Weeks",
+      "month": "Months"
+    },
+    "metricLabel": "Metric",
+    "metric": {
+      "wn8": "WN8",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "battles": "Battles",
+      "eff": "EFF",
+      "broneIndex": "Bronya Index"
+    },
+    "summary": {
+      "last": "Now",
+      "average": "Average",
+      "max": "Maximum",
+      "min": "Minimum",
+      "change": "Change"
+    },
+    "markers": "Events on the chart",
+    "marker": {
+      "patch": "Update {label}",
+      "event": "Event “{label}”"
+    },
+    "empty": "No data for the selected period"
+  },
+  "insights": {
+    "title": "Breakdown by class, tier and vehicle",
+    "byClass": "By vehicle class",
+    "byTier": "By tier",
+    "tierLabel": "Tier {tier}",
+    "battles": "{count, plural, one {# battle} other {# battles}}",
+    "weakTanks": "Where you trail the server",
+    "strongTanks": "Where you beat the server",
+    "deltaPp": "{value} pp",
+    "damageRatio": "{value}% of server damage",
+    "tips": {
+      "weak_class": {
+        "title": "Weak class",
+        "body": "In {type} vehicles your win rate is {winRateDelta} pp below the server average."
+      },
+      "weak_tier": {
+        "title": "Weak tier",
+        "body": "At tier {tierRoman} you win {winRateDelta} pp less often than the server — worth revisiting those vehicles."
+      },
+      "low_damage_tank": {
+        "title": "Damage shortfall",
+        "body": "On the {tank} you deal {damageRatio}% of the server average damage."
+      },
+      "not_enough_battles": {
+        "title": "Too few battles",
+        "body": "A fair breakdown needs at least {required} battles — you have {battles}."
+      },
+      "no_weak_spots": {
+        "title": "No weak spots",
+        "body": "You match or beat the server in every class and tier."
+      }
+    },
+    "playtime": {
+      "title": "Results by time of day",
+      "beta": "Beta",
+      "approximate": "Times are approximate: without the mod we only see battles through API polls.",
+      "bestHour": "Best time: {from}:00–{to}:00 · {rate}% wins",
+      "worstHour": "Worst time: {from}:00–{to}:00 · {rate}% wins",
+      "bestWeekday": "Strong day: {day} · {rate}% wins",
+      "gridLabel": "Win rate by hour and weekday",
+      "cell": "{hour}:00 · {battles} battles · {rate}% wins",
+      "empty": "No battle time data"
+    },
+    "empty": "Too few battles for a breakdown"
+  },
+  "history": {
+    "nicknames": "Nicknames",
+    "clans": "Clans",
+    "empty": "No nickname or clan changes",
+    "unknown": "unknown",
+    "now": "now",
+    "noChanges": "No changes"
+  },
+  "og": {
+    "eyebrow": "DOSSIER",
+    "broneIndex": "Bronya Index",
+    "winRate": "Win rate",
+    "battles": "Battles",
+    "noClan": "No clan",
+    "source": "Data: Lesta Games",
+    "session": "SESSION",
+    "avgDamage": "Avg damage",
+    "best": "Best tank"
+  },
+  "header": {
+    "period": "Stats period",
+    "noPeriodData": "No battles in this period, showing all-time stats.",
+    "updated": "Updated",
+    "noClan": "No clan",
+    "since": "Account since {year}",
+    "lastBattle": "Last battle",
+    "compare": "Compare",
+    "broneIndex": "Bronya Index",
+    "winRate": "Win rate",
+    "battles": "Battles",
+    "avgDamage": "Avg damage",
+    "avgXp": "Avg XP"
+  },
+  "achievements": {
+    "empty": "The player has no achievements",
+    "sections": {
+      "battle": "Battle heroes",
+      "epic": "Epic",
+      "special": "Special",
+      "memorial": "Commemorative",
+      "group": "Group",
+      "class": "Mastery",
+      "action": "Events",
+      "other": "Other"
+    }
+  }
+}

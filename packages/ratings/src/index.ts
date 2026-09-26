@@ -28,13 +28,15 @@ export {
   moePercentForDamage,
   nextMoeEma,
   projectMoeBattles,
-  simulateMoe
+  simulateMoe,
+  toMoeThresholds
 } from './moe';
 export type {
   MoeCombinedDamageInput,
   MoeDamageForPercentInput,
   MoePercentForDamageInput,
   MoeProjection,
+  MoeThresholdPercentiles,
   MoeThresholds,
   NextMoeEmaInput,
   ProjectMoeBattlesInput,

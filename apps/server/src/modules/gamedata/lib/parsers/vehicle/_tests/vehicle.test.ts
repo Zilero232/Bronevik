@@ -4,6 +4,7 @@ import { loadIs, readFixture, VEHICLE_FIXTURES } from '../../../_tests/fixtures'
 import { makeCompactDescr, nationId } from '../../../ids';
 import { get, num, parseXml } from '../../../xml';
 import { parseShells } from '../shells';
+import { parseCollisionPiece, parseSpacedArmor } from '../vehicle.helpers';
 
 const vehicleXml = parseXml(readFixture(VEHICLE_FIXTURES.vehicle));
 const sharedGuns = parseXml(readFixture(VEHICLE_FIXTURES.components.guns));
@@ -73,5 +74,51 @@ describe('parseVehicle', () => {
     expect(vehicle.engines.every((engine) => engine.power > 0)).toBe(true);
     expect(vehicle.radios.every((radio) => radio.distance > 0)).toBe(true);
     expect(vehicle.fuelTanks[0].weight).toBeGreaterThan(0);
+  });
+
+  it('keeps the thickness of spaced mantlet plates and flags them as spaced', () => {
+    const guns = vehicle.turrets.flatMap((item) => item.guns);
+    const mantlet = guns.find((item) => item.collision === 'Gun_01');
+
+    expect(mantlet?.armor?.armor_1).toBeGreaterThan(0);
+    expect(mantlet?.armor?.gun).toBeGreaterThan(0);
+    expect(mantlet?.spacedArmor).toEqual(expect.arrayContaining(['armor_1', 'armor_2', 'armor_3']));
+    expect(mantlet?.spacedArmor).not.toContain('gun');
+  });
+
+  it('keeps a zero-thickness spaced plate in both the armor and the spaced list', () => {
+    const mantlet = vehicle.turrets.flatMap((item) => item.guns).find((item) => item.armor?.armor_4 === 0);
+
+    expect(mantlet?.spacedArmor).toContain('armor_4');
+  });
+
+  it('reads the collision piece of every module that names one', () => {
+    const pieces = vehicle.turrets.flatMap((item) => item.guns.map((entry) => entry.collision));
+
+    expect(pieces).toEqual(expect.arrayContaining(['Gun_01', 'Gun_10']));
+  });
+
+  it('leaves plain hull armor without a spaced list', () => {
+    expect(vehicle.hull.spacedArmor).toBeUndefined();
+    expect(vehicle.chassis[0].armor.leftTrack).toBeGreaterThan(0);
+  });
+});
+
+describe('parseSpacedArmor / parseCollisionPiece', () => {
+  it('flags only plates whose vehicle damage factor is zero', () => {
+    const armor = parseXml(
+      '<root><armor><armor_1>100</armor_1><armor_14>30<vehicleDamageFactor>0</vehicleDamageFactor></armor_14><armor_15>30<vehicleDamageFactor>1</vehicleDamageFactor></armor_15></armor></root>'
+    ).armor;
+
+    expect(parseSpacedArmor(armor)).toEqual(['armor_14']);
+  });
+
+  it('turns the client collision model path into a piece name', () => {
+    const hitTester = parseXml(
+      '<root><hitTester><collisionModelClient>vehicles/russian/R45_IS-7/collision_client/Turret_01.model</collisionModelClient></hitTester></root>'
+    ).hitTester;
+
+    expect(parseCollisionPiece(hitTester)).toBe('Turret_01');
+    expect(parseCollisionPiece(undefined)).toBeUndefined();
   });
 });

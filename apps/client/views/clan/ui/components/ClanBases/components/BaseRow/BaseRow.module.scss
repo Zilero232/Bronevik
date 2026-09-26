@@ -1,0 +1,28 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include data-list-row;
+
+  justify-content: space-between;
+
+  &[data-muted='true'] {
+    color: var(--color-text-dim);
+  }
+}
+
+.label {
+  overflow: hidden;
+  min-width: 0;
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.values {
+  @include numeric;
+
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  white-space: nowrap;
+}

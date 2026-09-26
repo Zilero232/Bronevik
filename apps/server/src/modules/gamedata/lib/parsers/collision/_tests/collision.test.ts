@@ -1,0 +1,54 @@
+import { describe, expect, it } from 'vitest';
+
+import { COLLISION_FIXTURES, readFixture } from '../../../_tests/fixtures';
+import { parseCollision, parseModelIndex } from '../collision';
+
+const RAW = JSON.parse(readFixture(COLLISION_FIXTURES.collision)) as Record<string, unknown>;
+
+const withHull = (hull: unknown) => JSON.stringify({ ...RAW, parts: { Hull: hull } });
+
+describe('parseCollision', () => {
+  it('reads parts, armor, spaced plates, modules and mounts and drops unknown keys', () => {
+    const collision = parseCollision(readFixture(COLLISION_FIXTURES.collision));
+
+    expect(Object.keys(collision.parts)).toEqual(['Hull', 'Chassis', 'Turret_01', 'Turret_02', 'Gun_01', 'Gun_10']);
+    expect(collision.spaced.Gun_01).toEqual(['armor_1']);
+    expect(collision.hullPosition).toEqual([0, 0.8, 0]);
+    expect(collision.mounts.guns.Turret_02).toEqual([0, 0.25, 0.9]);
+    expect(collision.mounts).not.toHaveProperty('sweep');
+  });
+
+  it('fills the optional blocks with empty defaults', () => {
+    const collision = parseCollision(JSON.stringify({ parts: {} }));
+
+    expect(collision).toMatchObject({ armor: {}, spaced: {}, modules: {}, mounts: { guns: {}, pitch: {} } });
+  });
+
+  it('refuses an index that points past the vertex list', () => {
+    expect(() => parseCollision(withHull({ positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], indices: [0, 1, 3], groups: [] }))).toThrow(/past the vertex/);
+  });
+
+  it('refuses a group that splits a triangle or runs past the index list', () => {
+    const positions = [0, 0, 0, 1, 0, 0, 0, 1, 0];
+
+    expect(() => parseCollision(withHull({ positions, indices: [0, 1, 2], groups: [{ name: 'armor_1', start: 1, count: 3 }] }))).toThrow();
+    expect(() => parseCollision(withHull({ positions, indices: [0, 1, 2], groups: [{ name: 'armor_1', start: 0, count: 6 }] }))).toThrow();
+  });
+
+  it('refuses positions that are not xyz triples', () => {
+    expect(() => parseCollision(withHull({ positions: [0, 0], indices: [], groups: [] }))).toThrow();
+  });
+});
+
+describe('parseModelIndex', () => {
+  it('maps vehicle tags, clones included, to nation folders', () => {
+    const index = parseModelIndex(readFixture(COLLISION_FIXTURES.index));
+
+    expect(index.R01_IS_IGR).toBe(index.R01_IS);
+    expect(index['R45_IS-7']).toBe('russian/R45_IS-7');
+  });
+
+  it('refuses a folder that escapes the vehicles tree', () => {
+    expect(() => parseModelIndex(JSON.stringify({ R01_IS: '../../etc' }))).toThrow();
+  });
+});

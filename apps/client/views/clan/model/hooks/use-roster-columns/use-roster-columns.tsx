@@ -6,18 +6,13 @@ import { clanRoleSchema } from '@bronevik/schemas';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
-import { Link } from '@/shared/i18n/navigation';
+import { WinRateCell } from '@/entities/tank/tank';
 
 import type { RosterRow } from '../../../lib/roster';
 
-import { ActivityCell, RatingCell, WinRateCell } from './use-roster-columns.cells';
-
-import s from './use-roster-columns.module.scss';
+import { ActivityCell, NicknameCell, RatingCell, RoleCell } from '../../../ui/components/ClanRoster/components';
 
 const column = createColumnHelper<RosterRow>();
-
-const DASH = '—';
 
 export const useRosterColumns = (): ColumnDef<RosterRow, never>[] => {
   const t = useTranslations('clans.roster');
@@ -26,26 +21,18 @@ export const useRosterColumns = (): ColumnDef<RosterRow, never>[] => {
   return [
     column.accessor('nickname', {
       header: t('columns.nickname'),
-      cell: (info) => (
-        <Link className={s.nickname} href={ROUTES.player(info.getValue())}>
-          {info.getValue()}
-        </Link>
-      ),
+      cell: (info) => <NicknameCell nickname={info.getValue()} />,
       meta: { width: '20%' }
     }),
     column.accessor((row) => clanRoleSchema.options.indexOf(row.role), {
       id: 'role',
       header: t('columns.role'),
-      cell: (info) => (
-        <span className={s.role} data-role={info.row.original.role}>
-          {t(`roles.${info.row.original.role}`)}
-        </span>
-      )
+      cell: (info) => <RoleCell role={info.row.original.role} />
     }),
     column.accessor((row) => row.daysInClan ?? -1, {
       id: 'daysInClan',
       header: t('columns.daysInClan'),
-      cell: (info) => (info.getValue() < 0 ? DASH : format.number(info.getValue())),
+      cell: (info) => (info.getValue() < 0 ? '—' : format.number(info.getValue())),
       meta: { align: 'end', isNumeric: true }
     }),
     column.accessor((row) => row.inactiveDays ?? Number.MAX_SAFE_INTEGER, {
@@ -62,20 +49,20 @@ export const useRosterColumns = (): ColumnDef<RosterRow, never>[] => {
     column.accessor((row) => row.winRate ?? 0, {
       id: 'winRate',
       header: t('columns.winRate'),
-      cell: (info) => <WinRateCell winRate={info.row.original.winRate} />,
-      meta: { align: 'end' }
+      cell: (info) => <WinRateCell value={info.row.original.winRate} />,
+      meta: { align: 'end', isNumeric: true }
     }),
     column.accessor((row) => row.wn8.value ?? 0, {
       id: 'wn8',
       header: 'WN8',
-      cell: (info) => <RatingCell {...info.row.original.wn8} />,
-      meta: { align: 'end' }
+      cell: (info) => <RatingCell rating={info.row.original.wn8} />,
+      meta: { align: 'end', isNumeric: true }
     }),
     column.accessor((row) => row.recentWn8.value ?? 0, {
       id: 'recentWn8',
       header: t('columns.recentWn8'),
-      cell: (info) => <RatingCell {...info.row.original.recentWn8} />,
-      meta: { align: 'end' }
+      cell: (info) => <RatingCell rating={info.row.original.recentWn8} />,
+      meta: { align: 'end', isNumeric: true }
     })
   ];
 };

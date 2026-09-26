@@ -1,34 +1,30 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-3));
+  @include stack(var(--space-2));
 }
 
 .heading {
-  @include hud-label;
+  @include label;
+
+  margin: 0;
 }
 
 .list {
-  @include stack(0);
+  @include panel;
 
   padding: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   margin: 0;
-  background-color: var(--color-surface-sunken);
   list-style: none;
 }
 
 .row {
-  display: grid;
-  align-items: center;
-  padding: var(--space-3) var(--space-4);
-  gap: var(--space-4);
-  grid-template-columns: minmax(0, 1fr) 72px 76px 64px auto;
+  @include data-list-row;
 
-  & + & {
-    border-top: 1px solid var(--color-border);
-  }
+  display: grid;
+  min-height: var(--row-h-media);
+  padding: 0 var(--space-3) 0 0;
+  grid-template-columns: minmax(0, 1fr) 72px 76px 64px 64px;
 
   @include below(lg) {
     grid-template-columns: minmax(0, 1fr) auto auto;
@@ -48,5 +44,18 @@
 
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+  text-align: end;
+}
+
+.value {
+  text-align: end;
+}
+
+.rating {
+  @include numeric;
+  @include tone;
+
+  color: var(--tone);
+  font-weight: 600;
   text-align: end;
 }

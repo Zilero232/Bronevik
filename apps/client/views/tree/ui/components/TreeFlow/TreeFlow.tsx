@@ -1,14 +1,13 @@
 'use client';
 
-import { Background, BackgroundVariant, ReactFlow, ViewportPortal } from '@xyflow/react';
+import { ReactFlow, ViewportPortal } from '@xyflow/react';
 
 import type { TreeFlowProps } from './TreeFlow.types';
 
-import { TREE_VIEW } from '../../../config';
+import { TREE_FLOW_TYPES, TREE_VIEW } from '../../../config';
 import { toFlowElements } from '../../../lib/tree-flow';
 import { TierRuler } from '../TierRuler';
 import { TreeControls } from '../TreeControls';
-import { EDGE_TYPES, NODE_TYPES } from './TreeFlow.constants';
 
 import s from './TreeFlow.module.scss';
 
@@ -23,7 +22,7 @@ export const TreeFlow = ({ tree, layout, path, onSelect }: TreeFlowProps) => {
       key={tree.nation}
       className={s.root}
       edges={edges}
-      edgeTypes={EDGE_TYPES}
+      edgeTypes={TREE_FLOW_TYPES.edges}
       elementsSelectable={false}
       fitViewOptions={{ padding: TREE_VIEW.fitPadding, minZoom: TREE_VIEW.fitMinZoom }}
       maxZoom={TREE_VIEW.maxZoom}
@@ -31,12 +30,11 @@ export const TreeFlow = ({ tree, layout, path, onSelect }: TreeFlowProps) => {
       nodes={nodes}
       nodesConnectable={false}
       nodesDraggable={false}
-      nodeTypes={NODE_TYPES}
+      nodeTypes={TREE_FLOW_TYPES.nodes}
       preventScrolling={false}
       zoomOnScroll={false}
       onPaneClick={() => onSelect(null)}
     >
-      <Background className={s.grid} gap={28} size={1.2} variant={BackgroundVariant.Dots} />
       <ViewportPortal>
         <TierRuler height={layout.height} tiers={layout.tiers} />
       </ViewportPortal>

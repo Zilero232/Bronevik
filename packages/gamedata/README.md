@@ -19,11 +19,12 @@ const stats = calculateLoadout({
 
 The root exports `calculateLoadout` with its input and output types (`LoadoutInput`, `FinalStats`, …), the crew and module helpers (`computeCrew`, `roleFactor`, `resolveModules`, `CREW`, `SKILL_EFFECT`, `VISION`), the model types (`VehicleSpec`, `OptionalDevice`, `Equipment`, `CrewSkill`, `FieldModification`, …) and the modifier model (`Modifier`, `applyModifier`, `matchesDeviceTags`, `STATIC_DEFAULTS`, `FACTOR_DEFAULTS`).
 
-| Folder          | Concern                                                        |
-| --------------- | -------------------------------------------------------------- |
-| `src/model`     | The data shapes the importer produces and the calculator reads |
-| `src/modifiers` | The structured modifier model and its application              |
-| `src/loadout`   | `calculateLoadout` → final stats                               |
+| Folder          | Concern                                                                                                                                                              |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/model`     | The data shapes the importer produces and the calculator reads                                                                                                       |
+| `src/modifiers` | The structured modifier model and its application                                                                                                                    |
+| `src/loadout`   | `calculateLoadout` → final stats                                                                                                                                     |
+| `src/armor`     | Penetration math (`calculateArmorHit`, `traceArmorRay`, `penetrationAtDistance`), armor flags and the binary geometry codec shared by the importer and the 3D viewer |
 
 The calculator is tested against real parsed vehicles in the server (`apps/server/src/modules/gamedata/lib/_tests/calculate-loadout.test.ts`), where the parsers and fixtures live.
 

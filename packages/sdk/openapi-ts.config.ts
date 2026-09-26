@@ -8,5 +8,5 @@ export default defineConfig({
       schemaName: (name) => name.replace(/^V1/, '').replace(/Dto(?:_(?:Output|Input))?$/, '')
     }
   },
-  plugins: ['@hey-api/client-fetch', '@hey-api/typescript', '@hey-api/sdk']
+  plugins: ['@hey-api/client-ky', '@hey-api/typescript', '@hey-api/sdk']
 });

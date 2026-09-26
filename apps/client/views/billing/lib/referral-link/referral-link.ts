@@ -1,4 +1,5 @@
-import { REFERRAL } from '@/shared/api/billing';
+import { REFERRAL } from '@bronevik/schemas';
+
 import { ROUTES } from '@/shared/constants';
 
 import type { ReferralLinkInput } from './referral-link.types';

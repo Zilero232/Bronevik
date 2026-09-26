@@ -1,7 +1,5 @@
-import type { LeaderboardEntry, TopPlayersMetric } from '@bronevik/schemas';
+import type { TopPlayerRow } from '../../../../../model/hooks';
 
 export type TopPlayerRowProps = {
-  entry: LeaderboardEntry;
-  metric: TopPlayersMetric;
-  index: number;
+  row: TopPlayerRow;
 };

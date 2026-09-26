@@ -19,7 +19,6 @@ export const PlayerHeader = ({ nickname, summary }: PlayerHeaderProps) => {
   return (
     <header className={s.root}>
       <div className={s.identity}>
-        <span className={s.eyebrow}>{t('eyebrow')}</span>
         <h1 className={s.nickname}>{nickname}</h1>
         <span className={s.clan}>{clan ? `[${clan.tag}] ${clan.name}` : t('noClan')}</span>
       </div>

@@ -1,0 +1,1 @@
+export { StrongTanks } from './StrongTanks';

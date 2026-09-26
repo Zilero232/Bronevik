@@ -21,6 +21,7 @@ export const useMapsCatalog = () => {
     data: catalog,
     isPending,
     isError,
+    isFetching,
     refetch
   } = useQuery({
     queryKey: QUERY_KEYS.maps.list,
@@ -37,8 +38,9 @@ export const useMapsCatalog = () => {
     isFiltered: q.length > 0 || modes.length > 0 || camo.length > 0,
     isPending,
     isError,
-    setFilters,
-    reset: () => setFilters(null),
-    retry: () => refetch()
+    isRetrying: isFetching,
+    setFilters: (patch: Partial<typeof filters>) => void setFilters(patch),
+    reset: () => void setFilters(null),
+    retry: () => void refetch()
   };
 };

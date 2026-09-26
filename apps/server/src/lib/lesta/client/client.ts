@@ -9,7 +9,8 @@ import {
   createGlobalmapMethods,
   createRatingsMethods,
   createStrongholdMethods,
-  createTanksMethods
+  createTanksMethods,
+  createWgnMethods
 } from '../methods';
 import { createRequester } from './requester';
 
@@ -26,7 +27,8 @@ export const createLestaClient = (options: LestaClientOptions) => {
     globalmap: createGlobalmapMethods(requester),
     stronghold: createStrongholdMethods(requester),
     ratings: createRatingsMethods(requester),
-    clanratings: createClanratingsMethods(requester)
+    clanratings: createClanratingsMethods(requester),
+    wgn: createWgnMethods(requester)
   };
 };
 

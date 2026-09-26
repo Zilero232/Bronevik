@@ -1,4 +1,4 @@
-import type { RetryOptions } from '../retry';
+import type { RetryOptions } from 'ky';
 
 export type BronevikClientOptions = {
   apiKey: string;

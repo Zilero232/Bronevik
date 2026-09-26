@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { TankIdentity, vehicleIdentity } from '@/entities/tank/tank';
 import { EntityPicker } from '@/features/search/pick-entity';
-import { Badge, IconButton, Select } from '@/ui-kit';
+import { IconButton, Select } from '@/ui-kit';
 
 import type { TopFilterState } from '../../../lib/top-filter';
 import type { TopFiltersProps } from './TopFilters.types';
@@ -32,7 +32,7 @@ export const TopFilters = ({ state, onChange }: TopFiltersProps) => {
     ...TANK_CLASSES.map((value) => {
       const Icon = TANK_CLASS_ICONS[value];
 
-      return { value, label: tGame(value), icon: <Icon size={14} /> };
+      return { value, label: tGame(value), icon: <Icon size={16} /> };
     })
   ];
 
@@ -61,18 +61,14 @@ export const TopFilters = ({ state, onChange }: TopFiltersProps) => {
         <div className={s.tank}>
           <span className={s.label}>{t('tank')}</span>
           {tank ? (
-            <Badge className={s.picked} tone='accent'>
-              <TankIdentity image='contour' tank={tank} withNation={false} />
+            <span className={s.picked}>
+              <TankIdentity image='contour' tank={vehicleIdentity(tank)} withNation={false} />
               <IconButton aria-label={t('clearTank')} size='sm' onClick={() => onChange({ tank: null })}>
-                <X size={12} />
+                <X size={14} />
               </IconButton>
-            </Badge>
+            </span>
           ) : (
-            <EntityPicker
-              kind='tank'
-              placeholder={t('tankPlaceholder')}
-              onPick={({ vehicle }) => onChange({ tank: { tankId: vehicle.tankId, ...vehicleIdentity(vehicle) } })}
-            />
+            <EntityPicker kind='tank' placeholder={t('tankPlaceholder')} onPick={({ vehicle }) => onChange({ tank: vehicle })} />
           )}
         </div>
       )}

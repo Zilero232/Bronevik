@@ -1,8 +1,8 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include panel;
   @include stack(var(--space-5));
-  @include corner-brackets(12px, var(--color-border-strong));
 
   padding: var(--space-5);
 }
@@ -20,7 +20,7 @@
 }
 
 .path {
-  color: var(--color-accent);
+  color: var(--color-text);
 }
 
 .textarea {

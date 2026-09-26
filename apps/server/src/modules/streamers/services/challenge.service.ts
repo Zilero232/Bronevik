@@ -1,6 +1,7 @@
 import { challengeConditionSchema } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
 import { addMinutes } from 'date-fns';
+import pRetry from 'p-retry';
 
 import type { Challenge } from '../../../../generated';
 import type {
@@ -13,10 +14,10 @@ import type {
 } from '../streamers.types';
 
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
-import { readRecord, toIso } from '../../../common/lib';
+import { randomCode, readRecord, toIso } from '../../../common/lib';
 import { isUniqueViolation, PrismaService } from '../../../core';
 import { CHALLENGE } from '../config';
-import { generateChallengeCode, matchDonation } from '../lib';
+import { matchDonation } from '../lib';
 
 @Injectable()
 export class ChallengeService {
@@ -46,30 +47,34 @@ export class ChallengeService {
       throw new AppConflictException('PLAN_LIMIT_REACHED', 'Too many open challenges');
     }
 
-    for (let attempt = 0; attempt < CHALLENGE.codeAttempts; attempt += 1) {
-      try {
-        const challenge = await this.prisma.challenge.create({
-          data: {
-            streamerUserId: userId,
-            accountId: profile.accountId,
-            code: generateChallengeCode(),
-            title,
-            condition,
-            amount,
-            currency: CHALLENGE.defaultCurrency,
-            progress: { battles: 0, value: 0, battleIds: [], durationMinutes: expiresInMinutes }
-          }
-        });
+    const accountId = profile.accountId;
 
-        return this.toView(challenge);
-      } catch (error) {
-        if (!isUniqueViolation(error)) {
-          throw error;
-        }
+    try {
+      const challenge = await pRetry(
+        () =>
+          this.prisma.challenge.create({
+            data: {
+              streamerUserId: userId,
+              accountId,
+              code: randomCode({ alphabet: CHALLENGE.codeAlphabet, length: CHALLENGE.codeLength }),
+              title,
+              condition,
+              amount,
+              currency: CHALLENGE.defaultCurrency,
+              progress: { battles: 0, value: 0, battleIds: [], durationMinutes: expiresInMinutes }
+            }
+          }),
+        { retries: CHALLENGE.codeAttempts - 1, minTimeout: 0, shouldRetry: ({ error }) => isUniqueViolation(error) }
+      );
+
+      return this.toView(challenge);
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new AppConflictException('CONFLICT', 'Could not allocate a challenge code');
       }
-    }
 
-    throw new AppConflictException('CONFLICT', 'Could not allocate a challenge code');
+      throw error;
+    }
   }
 
   async cancel({ userId, id }: OwnedInput): Promise<StreamerChallengeView> {

@@ -1,0 +1,1 @@
+export { RatingPaletteToggle } from './RatingPaletteToggle';

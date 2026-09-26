@@ -1,5 +1,5 @@
-import type { PlayerMarks } from '@bronevik/schemas';
+import type { MarksDigest } from '../../../lib/dashboard-picks';
 
 export type MarksCardProps = {
-  marks: PlayerMarks | undefined;
+  marks: MarksDigest | undefined;
 };

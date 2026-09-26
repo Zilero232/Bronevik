@@ -17,7 +17,8 @@ export const useClanSearch = () => {
   const {
     data: page,
     isFetching,
-    isError
+    isError,
+    refetch
   } = useQuery({
     queryKey: QUERY_KEYS.clans.list({ search: debounced, limit: CLAN_RATING.searchLimit }),
     queryFn: ({ signal }) => listClans({ search: debounced, sort: 'members', limit: CLAN_RATING.searchLimit, signal }),
@@ -27,5 +28,5 @@ export const useClanSearch = () => {
 
   const results = isEnabled ? (page?.items.map(({ clan }) => clan) ?? []) : [];
 
-  return { query, setQuery, results, isEnabled, isFetching, isError };
+  return { query, setQuery, results, isEnabled, isFetching, isError, refetch };
 };

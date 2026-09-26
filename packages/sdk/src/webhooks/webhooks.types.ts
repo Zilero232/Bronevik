@@ -1,18 +1,14 @@
+export type WebhookHeaders = Record<string, string | string[] | undefined>;
+
 export type VerifyWebhookInput = {
   secret: string;
   body: string;
-  signature: string | null | undefined;
-  timestamp: string | null | undefined;
-  toleranceSec?: number;
-  now?: Date;
+  headers: WebhookHeaders;
 };
 
-export type HmacHexInput = {
-  secret: string;
-  data: string;
-};
-
-export type CompareInput = {
-  left: string;
-  right: string;
+export type BronevikWebhook = {
+  id: string;
+  event: string;
+  createdAt: string;
+  data: Record<string, unknown>;
 };

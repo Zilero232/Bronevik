@@ -1,12 +1,12 @@
 'use client';
 
 import { scaleBand } from '@visx/scale';
-import { motion } from 'motion/react';
+
+import { bandLayout, clampIndex, useChartHover } from '@/shared/lib';
 
 import type { BarChartPlotProps } from '../../BarChart.types';
 
-import { bandLayout, ChartCanvas, clampIndex, useChartHover } from '../../../ChartKit';
-import { BAR_MOTION } from '../../BarChart.motion';
+import { ChartCanvas } from '../../../ChartKit';
 
 import s from '../../../ChartKit/ChartKit.module.scss';
 
@@ -31,14 +31,12 @@ export const BarChartPlot = ({ labels, series, width, height, yDomain, formatVal
             const top = yScale(Math.max(item.values[index] ?? 0, 0));
 
             return (
-              <motion.rect
+              <rect
                 key={label}
                 className={s.bar}
-                custom={index}
                 data-active={pointer.hover?.index === index}
                 height={Math.max(yScale(0) - top, 0)}
-                rx={1.5}
-                variants={BAR_MOTION}
+                rx={1}
                 width={inner.bandwidth()}
                 x={(xScale(label) ?? 0) + (inner(item.id) ?? 0)}
                 y={top}

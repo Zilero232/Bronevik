@@ -1,6 +1,5 @@
 'use client';
 
-import { Crown, LogIn, Settings2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
@@ -18,22 +17,19 @@ export const CheckoutAction = ({ isSignedIn, isPlus, isPending, isSubmitting }: 
   return (
     <div className={s.root}>
       {match({ isPending, isSignedIn, isPlus })
-        .with({ isPending: true }, () => <Skeleton height={48} shape='block' width={260} />)
+        .with({ isPending: true }, () => <Skeleton height={40} shape='block' width={220} />)
         .with({ isSignedIn: false }, () => (
-          <Link className={buttonVariants({ size: 'lg' })} href={ROUTES.login}>
-            <LogIn size={18} />
+          <Link className={buttonVariants()} href={ROUTES.login}>
             {t('signIn')}
           </Link>
         ))
         .with({ isPlus: true }, () => (
-          <Link className={buttonVariants({ variant: 'secondary', size: 'lg' })} href={ROUTES.account.billing}>
-            <Settings2 size={18} />
+          <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.account.billing}>
             {t('manage')}
           </Link>
         ))
         .otherwise(() => (
-          <Button className={s.buy} disabled={isSubmitting} size='lg' type='submit'>
-            <Crown size={18} />
+          <Button disabled={isSubmitting} type='submit'>
             {isSubmitting ? t('redirecting') : t('buy')}
           </Button>
         ))}

@@ -1,0 +1,8 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  padding-block: var(--space-8) var(--space-10);
+
+  @include shell;
+  @include stack(var(--space-6));
+}

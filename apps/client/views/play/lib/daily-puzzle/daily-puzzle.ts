@@ -1,3 +1,4 @@
+import { addDays, differenceInCalendarDays, differenceInSeconds, format, parseISO, subDays } from 'date-fns';
 import { sortBy } from 'remeda';
 
 import { seededRandom } from '@/shared/lib';
@@ -6,19 +7,17 @@ import type { PickDailyTankInput } from './daily-puzzle.types';
 
 import { GUESS_TANK } from '../../config';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+const DAY_FORMAT = 'yyyy-MM-dd';
 
-const OFFSET_MS = GUESS_TANK.moscowOffsetHours * 60 * 60 * 1000;
+export const puzzleDay = (now: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: GUESS_TANK.timeZone }).format(now);
 
-const isoDay = (ms: number) => new Date(ms).toISOString().slice(0, 10);
+export const previousDay = (day: string) => format(subDays(parseISO(day), 1), DAY_FORMAT);
 
-export const puzzleDay = (now: Date) => isoDay(now.getTime() + OFFSET_MS);
+export const puzzleNumber = (day: string) => differenceInCalendarDays(parseISO(day), parseISO(GUESS_TANK.epoch)) + 1;
 
-export const previousDay = (day: string) => isoDay(Date.parse(day) - DAY_MS);
+export const nextPuzzleAt = (now: Date) => addDays(parseISO(`${puzzleDay(now)}T00:00:00${GUESS_TANK.utcOffset}`), 1);
 
-export const puzzleNumber = (day: string) => Math.floor((Date.parse(day) - Date.parse(GUESS_TANK.epoch)) / DAY_MS) + 1;
-
-export const msUntilNextPuzzle = (now: Date) => DAY_MS - ((now.getTime() + OFFSET_MS) % DAY_MS);
+export const secondsUntilNextPuzzle = (now: Date) => differenceInSeconds(nextPuzzleAt(now), now, { roundingMethod: 'ceil' });
 
 export const dailyPool = (vehicles: PickDailyTankInput['vehicles']) => {
   const preferred = vehicles.filter(({ tier, isPremium }) => tier >= GUESS_TANK.minTier && !isPremium);

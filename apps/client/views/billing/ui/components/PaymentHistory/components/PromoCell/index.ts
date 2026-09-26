@@ -1,0 +1,1 @@
+export { PromoCell } from './PromoCell';

@@ -4,6 +4,7 @@ import type { SharedComponents } from '../parsers/vehicle';
 import type { SourceReader } from '../source';
 import type { ArenaData, BuildGameDataInput, GameData, NationData, ReadNationInput, ReadRequiredInput } from './game-data.types';
 
+import { errorMessage } from '../../../../common/lib';
 import { ARENA_FILES, isBattleArena, parseArena, parseArenaList } from '../parsers/arenas';
 import { parseCrew } from '../parsers/crew';
 import { parseEquipments } from '../parsers/equipment';
@@ -12,8 +13,6 @@ import { parsePostProgression } from '../parsers/post-progression';
 import { COMPONENT_FILES, emptyComponents, parseSharedComponents, parseShells, parseVehicle, SHELLS_FILE } from '../parsers/vehicle';
 import { isRegularVehicle, parseVehicleList } from '../parsers/vehicle-list';
 import { GAME_PATHS } from '../source';
-
-const describe = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 
 const readRequired = async ({ reader, path }: ReadRequiredInput): Promise<string> => {
   const content = await reader.read(path);
@@ -69,7 +68,7 @@ const readNation = async ({ reader, nation, includeVehicle, vehicleLimit }: Read
       try {
         return parseVehicle({ xml, entry, components, shells });
       } catch (error) {
-        warnings.push(`Failed to parse ${nation}/${entry.tag}: ${describe(error)}`);
+        warnings.push(`Failed to parse ${nation}/${entry.tag}: ${errorMessage(error)}`);
 
         return undefined;
       }
@@ -106,7 +105,7 @@ const readArenas = async (reader: SourceReader): Promise<ArenaData> => {
       try {
         return parseArena({ xml, arenaId: item.name, numericId: item.id });
       } catch (error) {
-        warnings.push(`Failed to parse arena ${item.name}: ${describe(error)}`);
+        warnings.push(`Failed to parse arena ${item.name}: ${errorMessage(error)}`);
 
         return undefined;
       }

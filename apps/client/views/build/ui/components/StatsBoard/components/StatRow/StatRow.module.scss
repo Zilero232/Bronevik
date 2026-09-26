@@ -5,7 +5,7 @@
 
   th,
   td {
-    padding: var(--space-2) var(--space-2);
+    padding: var(--space-1);
     vertical-align: top;
   }
 }
@@ -19,17 +19,30 @@
 
 .base {
   display: block;
-  margin-top: 2px;
   color: var(--color-text-dim);
-  font-family: var(--font-mono);
   font-size: var(--text-2xs);
 }
 
 .value {
-  width: 42%;
+  width: 40%;
+
+  .root[data-compare='true'] & {
+    width: 30%;
+  }
 }
 
 .delta {
   text-align: right;
   white-space: nowrap;
+}
+
+.winner {
+  @include label;
+
+  display: block;
+  color: var(--color-accent);
+
+  &[data-side='b'] {
+    color: var(--color-steel);
+  }
 }

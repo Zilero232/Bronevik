@@ -1,20 +1,20 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include riveted-plate(var(--chamfer-lg));
+  @include panel;
   @include stack(var(--space-4));
 
-  padding: var(--space-6) var(--space-5);
+  padding: var(--space-5);
 }
 
 .title {
-  @include display(var(--text-xl));
+  @include heading(var(--text-lg));
 }
 
 .sentence {
+  @include well;
+
   padding: var(--space-3) var(--space-4);
-  border-left: 2px solid var(--color-accent);
-  background: var(--color-accent-soft);
 }
 
 .row {

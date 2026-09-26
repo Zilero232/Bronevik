@@ -1,11 +1,3 @@
-import type { Nation, TankClass, Tier } from '@bronevik/icons';
+import type { useTanksFilter } from './use-tanks-filter';
 
-export type PremiumFilter = 'all' | 'premium' | 'regular';
-
-export type TanksFilterState = {
-  tiers: Tier[];
-  types: TankClass[];
-  nation: 'all' | Nation;
-  premium: PremiumFilter;
-  query: string;
-};
+export type TanksFilterControls = ReturnType<typeof useTanksFilter>;

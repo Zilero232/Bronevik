@@ -1,14 +1,10 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md));
+  @include panel;
   @include stack(var(--space-3));
 
-  padding: var(--space-5);
-
-  &[data-state='on'] {
-    @include plate(var(--chamfer-md), color-mix(in srgb, var(--color-success) 45%, var(--color-border)));
-  }
+  padding: var(--space-4);
 
   &[data-state='soon'] {
     opacity: 0.62;
@@ -23,7 +19,7 @@
 }
 
 .name {
-  @include display(var(--text-lg));
+  @include heading(var(--text-lg));
 }
 
 .about {

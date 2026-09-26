@@ -8,8 +8,9 @@ import type { DigestEmailInput } from '../notifications.types';
 
 import { AppConfigService } from '../../../config';
 import { isPlaceholderEmail } from '../../../lib/auth';
-import { NOTIFICATION_COPY, SMTP_TIMEOUTS } from '../config';
-import { DigestEmail } from '../emails/digest-email';
+import { SMTP_TIMEOUTS } from '../config';
+import { notificationText } from '../lib';
+import { DigestEmail } from '../templates/digest-email';
 
 @Injectable()
 export class EmailService {
@@ -46,7 +47,14 @@ export class EmailService {
       return;
     }
 
-    const email = DigestEmail({ locale, title: rendered.title, body: rendered.body, url: rendered.url, cta: NOTIFICATION_COPY[locale].open });
+    const email = DigestEmail({
+      locale,
+      title: rendered.title,
+      body: rendered.body,
+      url: rendered.url,
+      cta: notificationText({ locale, key: 'open' })
+    });
+
     const [html, text] = await Promise.all([render(email), render(email, { plainText: true })]);
 
     await this.transporter.sendMail({ from: this.from, to, subject: rendered.title, html, text });

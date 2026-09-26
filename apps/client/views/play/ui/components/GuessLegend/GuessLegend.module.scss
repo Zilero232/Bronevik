@@ -1,0 +1,37 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-4);
+  list-style: none;
+}
+
+.item {
+  @include label;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-xs);
+  background-color: var(--color-surface-raised);
+
+  &[data-verdict='match'] {
+    background-color: var(--color-success);
+  }
+
+  &[data-verdict='close'] {
+    background-color: var(--color-warning);
+  }
+
+  &[data-verdict='miss'] {
+    background-color: var(--color-danger);
+  }
+}

@@ -2,9 +2,9 @@ import type { I18nFlavor } from '@grammyjs/i18n';
 import type { Context } from 'grammy';
 
 import type { NotificationChannel, NotificationEvent, NotificationSettings, Prisma } from '../../../generated';
-import type { BOT_LOCALES } from './config';
+import type { BOT } from './config';
 
-export type BotLocale = (typeof BOT_LOCALES)[number];
+export type BotLocale = (typeof BOT.locales)[number];
 
 export type LinkedChat = {
   userId: string;
@@ -159,11 +159,6 @@ export type ConsumeInput = {
 export type PlayerTextInput = {
   ctx: BotContext;
   card: PlayerCard;
-};
-
-export type OpenButtonInput = {
-  ctx: BotContext;
-  url: string;
 };
 
 export type SettingsSnapshot = Pick<NotificationSettings, 'channels' | 'events' | 'weeklyDigest'>;

@@ -13,7 +13,7 @@ import { match } from 'ts-pattern';
 import { revokeApiKey } from '@/shared/api/developer';
 import { QUERY_KEYS } from '@/shared/constants';
 import { STAGGER_ITEM } from '@/shared/lib';
-import { Button, EmptyState, SectionHeader, Skeleton } from '@/ui-kit';
+import { Button, EmptyState, ErrorState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { useApiKeys, useDeveloperMutation } from '../../../model/hooks';
 import { ConfirmDialog } from '../ConfirmDialog';
@@ -23,7 +23,7 @@ import s from './ApiKeysPanel.module.scss';
 
 export const ApiKeysPanel = () => {
   const t = useTranslations('developer.keys');
-  const { data: keys, isPending } = useApiKeys();
+  const { data: keys, isPending, isError, isFetching, refetch } = useApiKeys();
   const revoke = useDeveloperMutation({ mutationFn: revokeApiKey, invalidates: [QUERY_KEYS.me.developer.keys], successKey: 'keyRevoked' });
   const [isCreating, toggleCreating] = useBoolean(false);
   const [revoking, setRevoking] = useState<ApiKey | null>(null);
@@ -41,7 +41,7 @@ export const ApiKeysPanel = () => {
     <motion.section className={s.root} id='keys' variants={STAGGER_ITEM}>
       <SectionHeader
         action={
-          <Button disabled={isPending || isFull} onClick={() => toggleCreating(true)}>
+          <Button disabled={isPending || isError || isFull} onClick={() => toggleCreating(true)}>
             <Plus size={16} />
             {t('create')}
           </Button>
@@ -52,8 +52,9 @@ export const ApiKeysPanel = () => {
         title={t('title')}
       />
       {isFull && <p className={s.limit}>{t('limit', { max: API_KEY.maxActivePerUser })}</p>}
-      {match({ isPending, count })
+      {match({ isPending, isError, count })
         .with({ isPending: true }, () => <Skeleton height={180} shape='block' />)
+        .with({ isError: true }, () => <ErrorState isRetrying={isFetching} onRetry={() => void refetch()} />)
         .with({ count: 0 }, () => <EmptyState description={t('emptyHint')} icon={<KeyRound size={22} />} title={t('empty')} />)
         .otherwise(() => (
           <ul className={s.list}>

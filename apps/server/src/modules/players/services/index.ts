@@ -1,3 +1,4 @@
+export { PlayerAchievementsService } from './player-achievements.service';
 export { PlayerHistoryService } from './player-history.service';
 export { PlayerInsightsService } from './player-insights.service';
 export { PlayerMarksService } from './player-marks.service';

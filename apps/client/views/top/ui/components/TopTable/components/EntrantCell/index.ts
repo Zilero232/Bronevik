@@ -1,0 +1,1 @@
+export { EntrantCell } from './EntrantCell';

@@ -61,8 +61,8 @@ jobs:
 
       - run: python -m unittest discover apps/mod/tests
 
-  # Playwright over the public pages. The client runs on mocks by default
-  # (NEXT_PUBLIC_USE_MOCKS), so the job needs no database and no API. It runs
+  # Playwright over the public pages. No API runs here: the smoke checks that
+  # every page renders its shell and falls back to its error state. It runs
   # beside `checks` rather than after it: a lint error and a broken page are
   # worth learning about in the same run.
   e2e:

@@ -3,20 +3,16 @@
 .root {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  color: var(--color-text-muted);
+  align-items: baseline;
   gap: var(--space-2);
 }
 
 .label {
-  @include hud-label;
+  @include label;
 }
 
 .clock {
-  @include numeric;
+  @include numeric(var(--num-md));
 
-  color: var(--color-accent);
-  font-size: var(--text-xl);
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  color: var(--color-text);
 }

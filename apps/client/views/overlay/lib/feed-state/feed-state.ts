@@ -1,8 +1,7 @@
+import { overlayDataSchema } from '@bronevik/schemas';
 import { match } from 'ts-pattern';
 
 import type { OverlayData } from '@/shared/api/streamers';
-
-import { overlayDataSchema } from '@/shared/api/streamers';
 
 import type { FeedEvent, FeedState } from './feed-state.types';
 
@@ -16,7 +15,7 @@ export const parseFeedMessage = (payload: string): OverlayData | null => {
   }
 };
 
-export const initialFeedState = (useMocks: boolean): FeedState => ({ transport: useMocks ? 'polling' : 'stream', data: null });
+export const INITIAL_FEED_STATE: FeedState = { transport: 'stream', data: null };
 
 export const feedReducer = (state: FeedState, event: FeedEvent): FeedState =>
   match(event)

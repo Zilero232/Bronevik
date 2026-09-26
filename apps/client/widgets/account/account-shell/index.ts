@@ -1,3 +1,3 @@
 export { AccountShell } from './ui/AccountShell';
 
-export type { AccountShellProps } from './ui/AccountShell.types';
+export type { AccountShellProps } from './ui/AccountShell';

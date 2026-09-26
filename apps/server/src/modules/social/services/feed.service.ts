@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { subDays } from 'date-fns';
 
 import type { FeedInput, FeedItem } from '../social.types';
 
@@ -19,7 +20,7 @@ export class FeedService {
   async feed({ userId, days }: FeedInput): Promise<{ items: FeedItem[] }> {
     const { accountIds } = await this.follows.circle(userId);
     const until = new Date();
-    const since = new Date(until.getTime() - days * 86_400_000);
+    const since = subDays(until, days);
     const [snapshots, records, badges, players] = await Promise.all([
       this.events.tankEvents({ accountIds, since, until }),
       this.events.recordEvents({ accountIds, since, until }),

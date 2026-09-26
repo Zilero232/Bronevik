@@ -4,7 +4,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import type { LestaClient } from '../../../lib/lesta';
 
-import { readNumber, readRecord, toJsonValue, toNumber } from '../../../common/lib';
+import { errorMessage, readNumber, readRecord, toJsonValue, toNumber } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { STRONGHOLD_FETCH } from '../config';
 import { toStronghold } from '../lib';
@@ -69,7 +69,7 @@ export class ClanStrongholdService {
         update: { level, stats: toJsonValue(info) }
       });
     } catch (error) {
-      this.logger.warn(`stronghold of clan ${clanId} not fetched: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`stronghold of clan ${clanId} not fetched: ${errorMessage(error)}`);
 
       return null;
     }

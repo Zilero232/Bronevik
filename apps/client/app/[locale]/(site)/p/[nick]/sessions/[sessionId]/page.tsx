@@ -9,11 +9,7 @@ import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { PlayerSessionPage } from '@/views/player-session';
 
-type PageProps = {
-  params: Promise<{ nick: string; sessionId: string }>;
-};
-
-export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
+export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
   const { nick, sessionId } = await params;
   const nickname = decodeURIComponent(nick);
@@ -27,13 +23,13 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
   });
 };
 
-const SessionRoute = async ({ params }: PageProps) => {
+const SessionRoute = async ({ params }: Pick<PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>, 'params'>) => {
   const { nick, sessionId } = await params;
 
   return <PlayerSessionPage nickname={decodeURIComponent(nick)} sessionId={sessionId} />;
 };
 
-const Page = ({ params }: PageProps) => (
+const Page = ({ params }: PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>) => (
   <Suspense>
     <SessionRoute params={params} />
   </Suspense>

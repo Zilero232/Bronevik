@@ -26,7 +26,7 @@ const buildServiceWorkerFile = async (path: string) => {
 
 export const { generateStaticParams } = serwist;
 
-export const GET = async (_request: Request, { params }: { params: Promise<{ path: string }> }) => {
+export const GET = async (_request: Request, { params }: RouteContext<'/serwist/[path]'>) => {
   const { path } = await params;
 
   return new Response(await buildServiceWorkerFile(path), {

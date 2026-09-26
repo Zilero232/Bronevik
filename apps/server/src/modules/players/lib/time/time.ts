@@ -1,9 +1,10 @@
-import { MOSCOW } from './time.constants';
+import { tz } from '@date-fns/tz';
+import { format, startOfDay } from 'date-fns';
 
-export const moscowDay = (date: Date): string => new Date(date.getTime() + MOSCOW.offsetMs).toISOString().slice(0, 10);
+import { TIME } from '../../../../config';
 
-export const moscowDayStart = (date: Date): Date => {
-  const day = moscowDay(date);
+const moscow = tz(TIME.zone);
 
-  return new Date(Date.parse(`${day}T00:00:00.000Z`) - MOSCOW.offsetMs);
-};
+export const moscowDay = (date: Date): string => format(date, 'yyyy-MM-dd', { in: moscow });
+
+export const moscowDayStart = (date: Date): Date => new Date(startOfDay(date, { in: moscow }).getTime());

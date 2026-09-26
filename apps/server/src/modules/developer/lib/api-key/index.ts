@@ -1,2 +1,2 @@
-export { apiKeyPrefix, generateApiKey, hashApiKey, matchesApiKeyHash, toApiKey } from './api-key';
-export type { GeneratedApiKey } from './api-key.types';
+export { keyPlanOf, planQuota, quotaRetryAfterSec, rebasedRemaining, toApiKey, verifyFailureOf } from './api-key';
+export type { ApiKeyRow, PlanQuota, VerifyFailure } from './api-key.types';

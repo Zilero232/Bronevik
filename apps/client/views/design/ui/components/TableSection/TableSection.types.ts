@@ -1,1 +1,1 @@
-export type TableMode = 'empty' | 'large' | 'loading' | 'small';
+export type TableMode = 'empty' | 'live' | 'loading';

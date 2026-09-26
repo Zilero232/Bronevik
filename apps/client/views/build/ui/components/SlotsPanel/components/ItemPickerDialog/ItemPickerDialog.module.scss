@@ -1,5 +1,4 @@
 @use '@/shared/styles/mixins' as *;
-@use '../../../../styles/build' as *;
 
 .content {
   --side: var(--color-accent);
@@ -13,18 +12,11 @@
   }
 }
 
-.hint {
-  @include category;
-
-  padding-left: var(--space-3);
-  border-left: 2px solid var(--category);
-}
-
 .grid {
   display: grid;
   padding: 0;
   margin: 0;
-  gap: var(--space-3);
+  gap: var(--space-1);
   grid-template-columns: repeat(2, minmax(0, 1fr));
   list-style: none;
 

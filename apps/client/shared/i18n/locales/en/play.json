@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "title": "Guess the tank",
+    "description": "A daily puzzle: guess the tank by its silhouette and stats."
+  },
+  "head": {
+    "title": "Guess the tank",
+    "description": "A daily puzzle on «Mir Tankov» vehicles: six tries, a new target at 00:00 MSK.",
+    "legendLabel": "Legend",
+    "legend": {
+      "match": "Direct hit",
+      "close": "Close",
+      "miss": "Miss"
+    }
+  },
+  "status": {
+    "puzzle": "Puzzle",
+    "shells": "Tries left",
+    "shellsTotal": "of {total}",
+    "streak": "Streak"
+  },
+  "mystery": {
+    "classified": "Classified",
+    "status": {
+      "playing": "Target spotted, not identified",
+      "won": "Target identified and destroyed",
+      "lost": "Target slipped out of view"
+    }
+  },
+  "clues": {
+    "title": "Intel",
+    "locked": "After miss {miss}",
+    "labels": {
+      "tier": "Tier",
+      "nation": "Nation",
+      "shell": "Shell",
+      "health": "Hit points",
+      "letter": "Name"
+    },
+    "shellValue": "{damage} damage · {penetration} penetration",
+    "letterValue": "Starts with “{letter}”",
+    "count": "{count} of {total}"
+  },
+  "form": {
+    "label": "Shot {attempt} of {total}",
+    "placeholder": "Start typing a tank name",
+    "submit": "Check"
+  },
+  "grid": {
+    "title": "Shot log",
+    "slot": "Shot {attempt}",
+    "premium": "Premium",
+    "regular": "Researchable",
+    "columns": {
+      "tank": "Tank",
+      "tier": "Tier",
+      "type": "Class",
+      "nation": "Nation",
+      "premium": "Prem",
+      "damage": "Avg dmg",
+      "winRate": "Win rate"
+    },
+    "verdict": {
+      "match": "match",
+      "close": "close",
+      "miss": "miss",
+      "unknown": "no data"
+    },
+    "direction": {
+      "up": "the target has more",
+      "down": "the target has less"
+    }
+  },
+  "result": {
+    "wonTitle": "{count, plural, one {Identified with the first shot!} other {Target destroyed in # shots}}",
+    "lostTitle": "Out of shells",
+    "wonText": "It is indeed the {name}.",
+    "lostText": "Today's tank was the {name}. A new target tomorrow at 00:00 MSK.",
+    "share": "Share result",
+    "shareTitle": "Bronevik · Guess the tank",
+    "copied": "Result copied",
+    "copiedHint": "Paste it into your platoon or clan chat.",
+    "openTank": "Tank specs",
+    "next": "Next puzzle in",
+    "stats": {
+      "streak": "Streak",
+      "best": "Best streak",
+      "played": "Played",
+      "wins": "Wins"
+    }
+  },
+  "states": {
+    "loading": "Preparing today's puzzle",
+    "errorTitle": "Couldn't load the vehicle catalog",
+    "errorDescription": "The puzzle needs the catalog. Refresh the page a bit later.",
+    "emptyTitle": "The catalog is empty",
+    "emptyDescription": "There are no vehicles in the catalog to pick a puzzle from."
+  }
+}

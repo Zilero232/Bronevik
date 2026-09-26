@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include tone;
+  @include numeric(var(--text-md));
+
+  color: var(--color-text);
+
+  &[data-tone] {
+    color: var(--tone);
+  }
+}

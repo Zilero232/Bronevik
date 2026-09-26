@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { escapeLike, searchCandidates, switchLayout, transliterate } from '../layout-switch';
-import { KEYBOARD, TRANSLIT } from '../layout-switch.constants';
+import { KEYBOARD } from '../layout-switch.constants';
 
 describe('switchLayout', () => {
   it('maps a nickname typed on the Russian layout back to Latin', () => {
@@ -29,13 +29,21 @@ describe('switchLayout', () => {
 
 describe('transliterate', () => {
   it('turns every Cyrillic letter into Latin or nothing', () => {
-    const output = transliterate(Object.keys(TRANSLIT).join(''));
+    const output = transliterate(KEYBOARD.cyrillic);
 
     expect(output).toMatch(/^[a-z]*$/);
   });
 
   it('spells a Russian word the way players write their nicknames', () => {
     expect(transliterate('неки')).toBe('neki');
+  });
+
+  it('keeps the short spellings players use for ё and х', () => {
+    expect(transliterate('Хрёнь')).toBe('Hren');
+  });
+
+  it('keeps the case of the first letter of a digraph', () => {
+    expect(transliterate('Щука')).toBe('Schuka');
   });
 });
 

@@ -4,7 +4,6 @@ import {
   candidateListSchema,
   candidateSchema,
   candidatesQuerySchema,
-  candidateStatsSchema,
   clanEventListSchema,
   clanEventParamsSchema,
   clanEventSchema,
@@ -22,7 +21,6 @@ import {
 
 export class ClanParamsDto extends createZodDto(clanParamsSchema) {}
 export class ClanEventParamsDto extends createZodDto(clanEventParamsSchema) {}
-export class CandidateStatsDto extends createZodDto(candidateStatsSchema) {}
 export class ClanEventDto extends createZodDto(clanEventSchema) {}
 export class ClanEventListDto extends createZodDto(clanEventListSchema) {}
 export class ClanEventsQueryDto extends createZodDto(clanEventsQuerySchema) {}

@@ -1,0 +1,217 @@
+{
+  "meta": {
+    "title": "Calculators",
+    "description": "XP and credits to a tank, battles to a goal, marks, crew, battle economy and the battle pass."
+  },
+  "nav": "Calculators",
+  "calcs": {
+    "research": "XP and credits",
+    "target": "Battles to a goal",
+    "moe": "Marks",
+    "crew": "Crew",
+    "economy": "Battle economy",
+    "gold": "Gold",
+    "pass": "Battle pass"
+  },
+  "research": {
+    "title": "XP and credits to a tank",
+    "description": "Pick a tank — we take its research and purchase cost from the tech tree (or a tier estimate) and count the battles left.",
+    "footer": "Costs come from the nation's tech tree; without data a tier average is used. A premium account adds +50 % XP and credits.",
+    "tank": "Target tank",
+    "pickTank": "Pick a tank…",
+    "fields": {
+      "currentXp": "XP on the previous tank",
+      "freeXp": "Free XP",
+      "credits": "Credits",
+      "xpPerBattle": "XP per battle",
+      "creditsPerBattle": "Credits per battle"
+    },
+    "battlesPerDay": "Battles per day",
+    "premium": "Premium account",
+    "premiumHint": "+50 % XP and credits per battle",
+    "pickTitle": "Pick a tank to count the XP and credits you need",
+    "premiumTank": "Premium tanks are not researched: they are bought for gold",
+    "noIncome": "Enter the income per battle",
+    "days": "≈ {count, plural, one {# day} other {# days}} at {perDay} battles a day",
+    "battles": "Battles to the tank",
+    "progress": "Research XP",
+    "cost": "Cost",
+    "costValue": "{xp} XP · {credits} credits",
+    "xpLeft": "XP missing",
+    "creditsLeft": "Credits missing",
+    "battlesForXp": "Battles for XP",
+    "battlesForCredits": "Battles for credits",
+    "source": "Price source",
+    "sources": {
+      "tree": "Tech tree",
+      "tier": "Tier estimate"
+    }
+  },
+  "target": {
+    "title": "Battles to a goal",
+    "description": "How many battles lift your overall win rate, average damage or WN8 to a target, given how you expect to play in each new battle.",
+    "footer": {
+      "winRate": "Win rate is a plain average over all battles, so the result is exact.",
+      "avgDamage": "Average damage is a plain average over all battles, so the result is exact.",
+      "wn8": "Account WN8 is approximated as a battle-weighted average of per-battle WN8. The real value depends on the tanks you play."
+    },
+    "metric": "Metric",
+    "metrics": {
+      "winRate": "Win rate",
+      "avgDamage": "Average damage",
+      "wn8": "WN8"
+    },
+    "fields": {
+      "battles": "Battles so far",
+      "current": "Current value",
+      "expected": "Expected in new battles",
+      "target": "Target"
+    },
+    "done": "Target already reached",
+    "impossible": "Out of reach: new battles have to beat {target}",
+    "battles": "Battles to the target",
+    "battlesHint": "From {from} to {to} at the expected pace",
+    "curveAria": "How the metric grows with new battles",
+    "targetLine": "Target"
+  },
+  "moe": {
+    "title": "Battles to a mark",
+    "description": "A short version of the projection: current percent, average combined damage and target. The full chart lives on the marks page.",
+    "tank": "Tank",
+    "pickTank": "Pick a tank…",
+    "percent": "Current mark percent",
+    "damage": "Average combined damage",
+    "damageHint": "Damage + the higher of spotting and tracking assist",
+    "target": "Target",
+    "marks": "{count, plural, one {# mark} other {# marks}}",
+    "openMarks": "Full projection",
+    "pickTitle": "Pick a tank to count battles to a mark",
+    "unreachable": "This damage will not get the mark",
+    "hint": "The {percent}% bar is {damage} combined damage",
+    "battles": "Battles to the mark",
+    "noData": "No mark thresholds for this tank yet, or no damage entered"
+  },
+  "crew": {
+    "title": "Crew experience",
+    "description": "Battles to the next skill. Each new skill costs twice the previous one, and the last percents are the most expensive.",
+    "footer": "Formula: XP per percent = 50 · 100^(level/100) · 2^skill number. The first skill is about 220k XP, the second twice that. Bonuses multiply.",
+    "skill": "Skill in training",
+    "skillValue": "Skill {skill}",
+    "percent": "Skill progress",
+    "xpPerBattle": "Crew XP per battle",
+    "xpHint": "Without premium or bonuses",
+    "books": "XP from crew books",
+    "booksHint": "One-off amount",
+    "bonuses": {
+      "premium": {
+        "label": "Premium account",
+        "hint": "×1.5 XP"
+      },
+      "accelerated": {
+        "label": "Accelerated crew training",
+        "hint": "×2 on an elite tank"
+      },
+      "reserve": {
+        "label": "Crew XP reserve",
+        "hint": "+200 % crew XP"
+      }
+    },
+    "noXp": "Enter the XP per battle",
+    "battlesHint": "To 100 % of skill {skill}",
+    "battles": "Battles to the skill",
+    "xpLeft": "XP left",
+    "perBattle": "XP per battle with bonuses",
+    "upcomingAria": "Battles for the next skills",
+    "upcomingSeries": "Battles per skill"
+  },
+  "economy": {
+    "title": "Battle economy",
+    "description": "Estimate the income and costs of an average battle — repair, shells and consumables — and what is left with and without premium.",
+    "footer": "Income is estimated from tier, damage and spotting; shell prices default to the tier and can be edited. Premium adds +50 % income, costs stay the same.",
+    "tier": "Tank tier",
+    "tierValue": "Tier {tier}",
+    "premiumVehicle": "Premium tank",
+    "premiumVehicleHint": "Higher income, cheaper repair",
+    "fields": {
+      "damage": "Average damage",
+      "spotting": "Spotting damage",
+      "standard": "Standard consumables",
+      "premium": "Premium consumables"
+    },
+    "shells": "Shells per battle",
+    "shellKinds": {
+      "ap": "AP",
+      "heat": "Premium (HEAT)",
+      "he": "HE"
+    },
+    "shellCount": "Count",
+    "shellPrice": "Price",
+    "net": "Net without premium",
+    "netPremium": "Net with premium",
+    "chartAria": "Income and costs per battle with and without premium",
+    "rows": {
+      "gross": "Income",
+      "repair": "Repair",
+      "ammo": "Shells",
+      "consumables": "Consumables",
+      "net": "Net"
+    },
+    "series": {
+      "base": "No premium",
+      "premium": "Premium"
+    }
+  },
+  "gold": {
+    "title": "Gold",
+    "description": "How many credits and how much free XP gold buys — and how much gold a given amount needs.",
+    "footer": "Rates: 1 gold = {credits} credits, 1 gold = {xp} free XP (converting XP from elite tanks).",
+    "fields": {
+      "gold": "Gold",
+      "credits": "Credits needed",
+      "xp": "XP to convert"
+    },
+    "goldToCredits": "Credits for gold",
+    "goldToCreditsHint": "For {gold} gold",
+    "goldToXp": "Free XP for this gold",
+    "creditsToGold": "Gold for {credits} credits",
+    "xpToGold": "Gold to convert {xp} XP",
+    "bundles": {
+      "caption": "Gold bundles",
+      "gold": "Gold",
+      "credits": "Credits",
+      "xp": "Free XP"
+    }
+  },
+  "pass": {
+    "title": "Battle pass",
+    "description": "How many battles a day finish the pass before the season ends, and when you finish at your current pace.",
+    "footer": "Points per battle depend on the result and your place in the team — use your average over the last few days.",
+    "fields": {
+      "stage": "Current stage",
+      "stagePoints": "Points in the stage",
+      "pointsPerStage": "Points per stage",
+      "stages": "Total stages",
+      "daysLeft": "Days left",
+      "pointsPerBattle": "Points per battle"
+    },
+    "battlesPerDay": "Your pace, battles a day",
+    "noPace": "Enter points per battle",
+    "perDay": "Battles needed a day",
+    "perDayHint": "To finish within {days, plural, one {# day} other {# days}}",
+    "pointsLeft": "Points left",
+    "battlesNeeded": "Battles left",
+    "finish": "Finish at your pace",
+    "status": "Status",
+    "onTrack": "On track",
+    "behind": "Behind",
+    "trackLabel": "Pass progress"
+  },
+  "head": {
+    "title": "Calculators",
+    "description": "Calculators for Mir Tankov: XP and credits to a tank, marks of excellence, crew, battle economy, gold and the battle pass."
+  },
+  "shell": {
+    "inputs": "Inputs",
+    "results": "Result"
+  }
+}

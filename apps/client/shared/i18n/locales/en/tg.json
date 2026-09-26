@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "title": "Mini app",
+    "description": "Bronevik in Telegram: stats, your last session and marks."
+  },
+  "outside": {
+    "title": "Open in Telegram",
+    "description": "This is the Bronevik mini app. Open it from {bot} and it will recognise your account.",
+    "open": "Open in Telegram",
+    "site": "Go to the site"
+  },
+  "failed": {
+    "title": "Could not sign you in",
+    "description": "Telegram did not confirm the sign-in. Try again or link Telegram in your account on the site."
+  },
+  "preview": {
+    "text": "Mini app preview in the browser",
+    "open": "In Telegram"
+  },
+  "noAccount": {
+    "title": "No Lesta account linked",
+    "description": "Link your game account with Lesta ID on the site and your stats will show up here.",
+    "action": "Link on the site"
+  },
+  "header": {
+    "noClan": "No clan"
+  },
+  "stats": {
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
+    "battles": "Battles"
+  },
+  "session": {
+    "last": "Last session",
+    "live": "Current session",
+    "liveBadge": "live",
+    "empty": "No sessions yet.",
+    "battles": "Battles",
+    "winRate": "Wins",
+    "avgDamage": "Damage",
+    "details": "Session recap"
+  },
+  "marks": {
+    "title": "Closest to a mark",
+    "counts": {
+      "moe3": "3 marks",
+      "moe2": "2 marks",
+      "moe1": "1 mark"
+    },
+    "progress": "{current}% → {target}%",
+    "damageLeft": "≈{damage} more average damage",
+    "empty": "No mark progress yet. Percentages show with the companion mod."
+  },
+  "links": {
+    "title": "Full site",
+    "profile": "Profile",
+    "marks": "Marks",
+    "account": "Account",
+    "tools": "Calculators"
+  }
+}

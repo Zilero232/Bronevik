@@ -1,1 +1,0 @@
-export { HotTanks } from './HotTanks';

@@ -1,13 +1,10 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-5));
-}
-
-.split {
   display: grid;
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   @include below(3xl) {
     grid-template-columns: minmax(0, 1fr);

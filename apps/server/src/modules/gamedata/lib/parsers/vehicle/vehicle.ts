@@ -6,6 +6,7 @@ import type { ModuleContext, ModuleParseInput, ParseModulesInput, ParseShotsInpu
 import { nationId } from '../../ids';
 import { bool, entries, get, list, node, num, nums, parseXml, text, words } from '../../xml';
 import {
+  armorExtras,
   parseArmor,
   parseModuleBase,
   parsePitchLimits,
@@ -96,7 +97,9 @@ const parseGun = ({ name, source, context }: ModuleParseInput): Gun => {
           reloadLockTime: num(dualGun.reloadLockTime)
         }
       : undefined,
-    shots: parseShots({ value: source.shots, context })
+    shots: parseShots({ value: source.shots, context }),
+    ...(source.armor === undefined ? {} : { armor: parseArmor(source.armor) }),
+    ...armorExtras({ armor: source.armor, hitTester: source.hitTester })
   };
 };
 
@@ -112,7 +115,8 @@ const parseTurret = ({ name, source, context }: ModuleParseInput): Turret => {
     yawLimits: parseYawLimits(source.yawLimits),
     guns: entries(source.guns).map(([gunName, value]) =>
       parseGun({ name: gunName, source: resolveModule({ name: gunName, value, shared: context.components.guns }), context })
-    )
+    ),
+    ...armorExtras({ armor: source.armor, hitTester: source.hitTester })
   };
 };
 
@@ -132,7 +136,8 @@ const parseChassis = ({ name, source, context }: ModuleParseInput): Chassis => {
     brakeForce: num(source.brakeForce),
     maxClimbAngle: num(source.maxClimbAngle),
     armor: parseArmor(source.armor),
-    repairTime: num(source.repairTime)
+    repairTime: num(source.repairTime),
+    ...armorExtras({ armor: source.armor, hitTester: source.hitTester })
   };
 };
 
@@ -175,7 +180,8 @@ export const parseVehicle = ({ xml, entry, components, shells }: ParseVehicleInp
       maxHealth: num(hull.maxHealth) ?? 0,
       armor: hullArmor,
       primaryArmor: resolvePrimaryArmor({ armor: hullArmor, value: hull.primaryArmor }),
-      ammoBayHealth: num(get(hull, 'ammoBayHealth/maxHealth'))
+      ammoBayHealth: num(get(hull, 'ammoBayHealth/maxHealth')),
+      ...armorExtras({ armor: hull.armor, hitTester: hull.hitTester })
     },
     chassis: parseModules({
       value: root.chassis,

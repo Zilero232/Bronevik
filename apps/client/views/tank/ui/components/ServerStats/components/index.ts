@@ -1,5 +1,4 @@
-export { CohortBar } from './CohortBar';
 export { CohortBreakdown } from './CohortBreakdown';
 export { PeriodSwitch } from './PeriodSwitch';
-export { StatsTiles } from './StatsTiles';
+export { ServerFigures } from './ServerFigures';
 export { TrendCharts } from './TrendCharts';

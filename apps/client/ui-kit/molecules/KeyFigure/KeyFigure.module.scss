@@ -1,0 +1,68 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-4);
+  gap: var(--space-2);
+
+  @include tone;
+}
+
+.framed {
+  @include panel;
+}
+
+.label {
+  @include label;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value {
+  @include numeric(var(--num-md));
+
+  color: var(--color-text);
+  white-space: nowrap;
+
+  .root:is([data-tone='bad'], [data-tone='below'], [data-tone='average'], [data-tone='good'], [data-tone='great'], [data-tone='unicum']) & {
+    color: var(--tone);
+  }
+
+  .lg & {
+    font-size: var(--num-lg);
+  }
+
+  .xl & {
+    font-size: var(--num-xl);
+  }
+}
+
+.foot {
+  display: flex;
+  min-height: 16px;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.deltaLabel {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.hint {
+  overflow: hidden;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spark {
+  margin-left: auto;
+}

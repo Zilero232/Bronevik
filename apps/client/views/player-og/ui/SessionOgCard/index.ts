@@ -1,0 +1,1 @@
+export { SessionOgCard } from './SessionOgCard';

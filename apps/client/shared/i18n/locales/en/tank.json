@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "title": "{name} — stats, marks, builds",
+    "description": "{name}: server stats, marks of excellence and mastery thresholds, popular builds and patch history."
+  },
+  "specs": {
+    "shellDamage": "Damage",
+    "shellPenetration": "Penetration",
+    "damagePerMinute": "Damage per minute",
+    "reloadTime": "Reload",
+    "rateOfFire": "Rate of fire",
+    "aimingTime": "Aiming time",
+    "dispersion": "Dispersion at 100 m",
+    "dispersionMovement": "Dispersion on move",
+    "depression": "Gun depression",
+    "maxHealth": "Hit points",
+    "weight": "Weight",
+    "enginePower": "Engine power",
+    "powerToWeight": "Power-to-weight",
+    "speedForward": "Top speed",
+    "speedBackward": "Reverse speed",
+    "hullTraverse": "Hull traverse",
+    "turretTraverse": "Turret traverse",
+    "viewRange": "View range",
+    "radioRange": "Signal range"
+  },
+  "units": {
+    "deg": "°",
+    "deg_s": "°/s",
+    "hp": "HP",
+    "hp_t": "hp/t",
+    "kmh": "km/h",
+    "m": "m",
+    "mm": "mm",
+    "per_min": "rds/min",
+    "s": "s",
+    "t": "t"
+  },
+  "specGroups": {
+    "firepower": "Firepower",
+    "survivability": "Survivability",
+    "mobility": "Mobility",
+    "scouting": "Scouting"
+  },
+  "source": "Data: Lesta Games API",
+  "loading": "Loading the vehicle",
+  "garage": {
+    "premium": "Premium",
+    "regular": "Tech tree",
+    "actionsLabel": "Vehicle actions",
+    "build": "Build constructor",
+    "compare": "Compare"
+  },
+  "params": {
+    "title": "Specifications",
+    "empty": "No specifications yet",
+    "configs": {
+      "stock": "Stock",
+      "top": "Top"
+    }
+  },
+  "missing": {
+    "back": "All tanks",
+    "notFound": {
+      "title": "No such vehicle",
+      "description": "The tank “{slug}” was not found. Check the link or pick a vehicle from the list."
+    },
+    "error": {
+      "title": "Could not load the vehicle",
+      "description": "Data for “{slug}” is unavailable right now."
+    }
+  },
+  "stats": {
+    "title": "Server, last {period}",
+    "periodLabel": "Statistics period",
+    "periods": {
+      "1d": "24 h",
+      "7d": "7 days",
+      "14d": "14 days",
+      "30d": "30 days",
+      "60d": "60 days"
+    },
+    "figures": {
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "battles": "Battles",
+      "players": "Players",
+      "winRateDiff": "WR diff"
+    },
+    "pp": "pp",
+    "emptyTitle": "No battles in this period",
+    "emptyDescription": "Pick a longer period.",
+    "cohortsTitle": "By player skill",
+    "cohorts": {
+      "beginner": "Beginners",
+      "average": "Average",
+      "good": "Good",
+      "elite": "Top 10 %"
+    },
+    "cohortLabel": "Players",
+    "cohortWinRate": "Wins",
+    "cohortDamage": "Damage",
+    "cohortBattles": "Battles",
+    "trendTitle": "Trend, {days} days",
+    "trendEmpty": "No data for the period",
+    "trendWinRate": "Win rate",
+    "trendDamage": "Avg damage"
+  },
+  "marks": {
+    "title": "Marks of excellence",
+    "noMoeTitle": "No mark thresholds yet",
+    "noMoeDescription": "Not enough data for this vehicle yet.",
+    "plates": {
+      "p65": "1 mark",
+      "p85": "2 marks",
+      "p95": "3 marks",
+      "p100": "100 %"
+    },
+    "damageUnit": "damage",
+    "deltaDays": "{days} d",
+    "updated": "Updated {date}",
+    "historyTitle": "Thresholds, 60 days",
+    "historyEmpty": "No threshold history yet"
+  },
+  "mastery": {
+    "title": "Mastery badge",
+    "levels": {
+      "class3": "3rd class",
+      "class2": "2nd class",
+      "class1": "1st class",
+      "master": "Ace Tanker"
+    },
+    "xpUnit": "XP",
+    "empty": "No thresholds yet",
+    "note": "Experience per battle needed for each class."
+  },
+  "players": {
+    "title": "Best players on this tank",
+    "metricLabel": "Rating metric",
+    "metrics": {
+      "wn8": "WN8",
+      "avgDamage": "Avg damage",
+      "winRate": "Win rate"
+    },
+    "caption": "Best players on {name}",
+    "player": "Player",
+    "battlesColumn": "Battles",
+    "emptyTitle": "The leaderboard is empty"
+  },
+  "builds": {
+    "title": "Popular builds",
+    "source": {
+      "battles": "Mod",
+      "builds": "Builds",
+      "none": "No data"
+    },
+    "sourceHint": {
+      "battles": "From battles of players running the mod",
+      "builds": "From builds players published",
+      "none": "No statistics yet"
+    },
+    "share": "of players",
+    "winRate": "Wins",
+    "avgDamage": "Avg damage",
+    "battles": "Battles",
+    "equipment": "Equipment",
+    "consumables": "Consumables and directives",
+    "none": "None",
+    "open": "Open in the constructor",
+    "emptyTitle": "No builds yet",
+    "emptyDescription": "Builds appear once statistics come in."
+  },
+  "patches": {
+    "title": "Changes by patch",
+    "verdicts": {
+      "buff": "Buff",
+      "nerf": "Nerf",
+      "mixed": "Mixed",
+      "new": "New",
+      "changed": "Changed"
+    },
+    "emptyTitle": "No changes",
+    "emptyDescription": "This vehicle’s specs did not change in the tracked updates.",
+    "firstSeen": "The first tracked update with this vehicle.",
+    "noSpecChanges": "The changes did not touch the specs shown here."
+  }
+}

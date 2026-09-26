@@ -3,7 +3,6 @@ import type { ClanListSortField } from '@bronevik/schemas';
 export const CLAN_PAGE = {
   numericId: /^\d{1,12}$/,
   recentEvents: 20,
-  dayMs: 86_400_000,
   recentPeriod: 'd30'
 } as const;
 

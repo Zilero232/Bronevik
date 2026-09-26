@@ -1,20 +1,24 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { match, P } from 'ts-pattern';
 
 import { isNotFoundError } from '@/shared/api/source';
+import { ROUTES } from '@/shared/constants';
+import { ResourceMissing } from '@/widgets/resource-missing';
 
 import { BuildProvider } from '../model/context';
 import { useBuildData } from '../model/hooks';
-import { BuildMissing, BuildSkeleton, BuildWorkspace } from './components';
+import { BuildSkeleton, BuildWorkspace } from './components';
 
 import s from './BuildPage.module.scss';
 
 export const BuildPage = () => {
+  const t = useTranslations('builds.missing');
   const { tank } = useParams<{ tank: string }>();
   const slug = decodeURIComponent(tank);
-  const { vehicle, options, isPending, error } = useBuildData(slug);
+  const { vehicle, options, isPending, isRetrying, error, refetch } = useBuildData(slug);
 
   return (
     <div className={s.root}>
@@ -25,9 +29,23 @@ export const BuildPage = () => {
           </BuildProvider>
         ))
         .with({ isPending: true }, () => <BuildSkeleton />)
-        .with({ error: P.when(isNotFoundError) }, () => <BuildMissing reason='notFound' slug={slug} />)
+        .with({ error: P.when(isNotFoundError) }, () => (
+          <ResourceMissing
+            back={{ href: ROUTES.tanks, label: t('back') }}
+            description={t('notFoundDescription', { slug })}
+            reason='notFound'
+            title={t('notFoundTitle')}
+          />
+        ))
         .otherwise(() => (
-          <BuildMissing reason='error' slug={slug} />
+          <ResourceMissing
+            back={{ href: ROUTES.tanks, label: t('back') }}
+            description={t('errorDescription')}
+            isRetrying={isRetrying}
+            reason='error'
+            title={t('errorTitle')}
+            onRetry={refetch}
+          />
         ))}
     </div>
   );

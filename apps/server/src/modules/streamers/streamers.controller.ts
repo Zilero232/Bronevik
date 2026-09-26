@@ -15,8 +15,10 @@ import {
   IdParamsDto,
   IntegrationListDto,
   OAuthCallbackDto,
+  OverlayDataDto,
   OverlayDto,
   OverlayListDto,
+  PreviewOverlayDto,
   SlugParamsDto,
   StreamerChallengeDto,
   StreamerProfileDto,
@@ -58,6 +60,13 @@ export class StreamersController {
   @ZodResponse({ type: OverlayDto, status: HttpStatus.CREATED })
   createOverlay(@CurrentUserId() userId: string, @Body() body: CreateOverlayDto) {
     return this.overlays.create({ ...body, userId });
+  }
+
+  @Post('me/overlays/preview')
+  @HttpCode(HttpStatus.OK)
+  @ZodResponse({ type: OverlayDataDto })
+  previewOverlay(@CurrentUserId() userId: string, @Body() body: PreviewOverlayDto) {
+    return this.overlays.preview({ ...body, userId });
   }
 
   @Patch('me/overlays/:id')

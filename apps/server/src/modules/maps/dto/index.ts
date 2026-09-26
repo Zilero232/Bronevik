@@ -1,1 +1,1 @@
-export * from './maps.dto';
+export { MapDetailDto, MapListDto, MapParamsDto, MapsQueryDto } from './maps.dto';

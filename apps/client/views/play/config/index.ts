@@ -1,2 +1,1 @@
-export { GUESS_MOTION } from './guess-motion.config';
-export { GUESS_CELLS, GUESS_CLUES, GUESS_TANK, GUESS_TOLERANCE } from './guess-tank.config';
+export { GUESS_CELLS, GUESS_CLUES, GUESS_LEGEND, GUESS_SHARE_MARKS, GUESS_TANK, GUESS_TOLERANCE, GUESS_VIEW } from './guess-tank.constants';

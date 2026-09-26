@@ -1,6 +1,7 @@
 import type { GameEventsQuery, GameEvent as GameEventView } from '@bronevik/schemas';
 
 import { Injectable } from '@nestjs/common';
+import { addDays, subDays } from 'date-fns';
 
 import { PrismaService } from '../../../core';
 import { EVENT_CALENDAR } from '../config';
@@ -12,8 +13,8 @@ export class EventQueryService {
 
   async calendar({ kind, from, to }: GameEventsQuery): Promise<GameEventView[]> {
     const now = new Date();
-    const start = from ? new Date(from) : new Date(now.getTime() - EVENT_CALENDAR.defaultWindowDays * 86_400_000);
-    const end = to ? new Date(to) : new Date(now.getTime() + EVENT_CALENDAR.defaultWindowDays * 86_400_000);
+    const start = from ? new Date(from) : subDays(now, EVENT_CALENDAR.defaultWindowDays);
+    const end = to ? new Date(to) : addDays(now, EVENT_CALENDAR.defaultWindowDays);
     const events = await this.prisma.gameEvent.findMany({
       where: {
         ...(kind ? { kind: EVENT_KIND_TO_DB[kind] } : {}),
@@ -28,7 +29,7 @@ export class EventQueryService {
 
   async activeDrops(): Promise<GameEventView[]> {
     const now = new Date();
-    const since = new Date(now.getTime() - EVENT_CALENDAR.newsLookbackDays * 86_400_000);
+    const since = subDays(now, EVENT_CALENDAR.newsLookbackDays);
     const events = await this.prisma.gameEvent.findMany({
       where: { kind: 'drops', OR: [{ endsAt: { gte: now } }, { endsAt: null, startsAt: { gte: since } }] },
       orderBy: { startsAt: 'desc' }

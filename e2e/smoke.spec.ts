@@ -2,6 +2,10 @@ import { expect, test } from '@playwright/test';
 
 import { ROUTES } from '../apps/client/shared/constants/routes';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+
+const OFFLINE_PAGES = ['/en', '/en/tanks', '/en/marks'] as const;
+
 const LOCALES = [
   {
     name: 'ru',
@@ -61,4 +65,27 @@ test('an unknown route renders the not-found page', async ({ page }) => {
 
   expect(response?.status()).toBe(404);
   await expect(page.locator('footer')).toBeVisible();
+});
+
+test.describe('without the API', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route(`${API_URL}/**`, (route) => route.abort());
+  });
+
+  for (const path of OFFLINE_PAGES) {
+    test(`${path} falls back to its error state with a retry`, async ({ page }) => {
+      const response = await page.goto(path);
+
+      expect(response?.status()).toBe(200);
+      await expect(page.locator('main')).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Retry' }).first()).toBeVisible();
+      await expect(page.locator('footer')).toBeVisible();
+    });
+  }
+
+  test('the home page shows the server stats error instead of numbers', async ({ page }) => {
+    await page.goto('/en');
+
+    await expect(page.getByText('Server stats failed to load.')).toBeVisible();
+  });
 });

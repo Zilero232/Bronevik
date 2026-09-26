@@ -1,1 +1,0 @@
-export { MoeThresholds } from './MoeThresholds';

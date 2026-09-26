@@ -1,1 +1,0 @@
-export { ProjectionResult } from './ProjectionResult';

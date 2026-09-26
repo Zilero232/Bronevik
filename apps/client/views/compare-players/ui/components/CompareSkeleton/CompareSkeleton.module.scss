@@ -4,11 +4,11 @@
   @include shell;
   @include stack(var(--space-6));
 
-  padding-top: var(--space-8);
+  padding-top: var(--space-7);
 }
 
 .slots {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--gap-panel);
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }

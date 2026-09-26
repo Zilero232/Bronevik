@@ -1,6 +1,6 @@
 'use client';
 
-import { MonitorPlay, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/ui-kit';
@@ -18,19 +18,16 @@ export const OverlayList = ({ overlays, selectedId, onSelect, onCreate }: Overla
         {overlays.map(({ id, name, kind, config }) => (
           <li key={id}>
             <button aria-current={id === selectedId} className={s.item} type='button' onClick={() => onSelect(id)}>
-              <MonitorPlay aria-hidden className={s.icon} size={16} />
-              <span className={s.text}>
-                <span className={s.name}>{name}</span>
-                <span className={s.meta}>
-                  {t(`kind.${kind}`)} · {t(`theme.${config.theme}`)}
-                </span>
+              <span className={s.name}>{name}</span>
+              <span className={s.meta}>
+                {t(`kind.${kind}`)} · {t(`theme.${config.theme}`)}
               </span>
             </button>
           </li>
         ))}
       </ul>
       <Button block aria-pressed={selectedId === null} size='sm' variant='secondary' onClick={onCreate}>
-        <Plus size={15} />
+        <Plus size={14} />
         {t('new')}
       </Button>
     </nav>

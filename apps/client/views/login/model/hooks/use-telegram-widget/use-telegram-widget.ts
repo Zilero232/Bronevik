@@ -1,22 +1,25 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { getTelegramWidget, signInWithTelegram } from '@/shared/api/auth';
 import { QUERY_KEYS } from '@/shared/constants';
 
-import type { TelegramAuthHandler, UseTelegramWidgetInput } from './use-telegram-widget.types';
+import type { TelegramAuthHandler } from './use-telegram-widget.types';
 
 import { LOGIN } from '../../../config';
+import { useCompleteSignIn } from '../use-complete-sign-in';
 
-export const useTelegramWidget = ({ container, onSignedIn }: UseTelegramWidgetInput) => {
-  const { data: config } = useQuery({ queryKey: QUERY_KEYS.auth.telegramWidget, queryFn: getTelegramWidget, staleTime: Infinity });
+export const useTelegramWidget = () => {
+  const completeSignIn = useCompleteSignIn();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { data: config, isError } = useQuery({ queryKey: QUERY_KEYS.auth.telegramWidget, queryFn: getTelegramWidget, staleTime: Infinity });
 
   const botUsername = config?.enabled ? config.botUsername : null;
 
   useEffect(() => {
-    const node = container.current;
+    const node = containerRef.current;
 
     if (!node || !botUsername) {
       return;
@@ -25,7 +28,7 @@ export const useTelegramWidget = ({ container, onSignedIn }: UseTelegramWidgetIn
     const script = document.createElement('script');
 
     const onAuth: TelegramAuthHandler = (user) => {
-      void signInWithTelegram(user).then(onSignedIn);
+      void signInWithTelegram(user).then(completeSignIn);
     };
 
     Reflect.set(window, LOGIN.telegramCallback, onAuth);
@@ -34,7 +37,7 @@ export const useTelegramWidget = ({ container, onSignedIn }: UseTelegramWidgetIn
     script.async = true;
     script.dataset.telegramLogin = botUsername;
     script.dataset.size = 'large';
-    script.dataset.radius = '6';
+    script.dataset.radius = '2';
     script.dataset.requestAccess = 'write';
     script.dataset.onauth = `${LOGIN.telegramCallback}(user)`;
     node.append(script);
@@ -43,8 +46,8 @@ export const useTelegramWidget = ({ container, onSignedIn }: UseTelegramWidgetIn
       node.replaceChildren();
       Reflect.deleteProperty(window, LOGIN.telegramCallback);
     };
-    // eslint-disable-next-line react/exhaustive-deps -- the widget is injected once per bot; onSignedIn is rebuilt every render
+    // eslint-disable-next-line react/exhaustive-deps -- the widget is injected once per bot; completeSignIn is rebuilt every render
   }, [botUsername]);
 
-  return { isEnabled: Boolean(botUsername), isLoaded: config !== undefined };
+  return { containerRef, isEnabled: Boolean(botUsername), isLoaded: config !== undefined || isError };
 };

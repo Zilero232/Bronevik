@@ -2,12 +2,12 @@
 
 .root {
   min-height: 100dvh;
-  background: var(--dusk), var(--color-bg);
+  background-color: var(--color-bg);
   color: var(--color-text);
 }
 
 .column {
-  @include stack(var(--space-6));
+  @include stack(var(--space-7));
 
   width: min(100%, 560px);
   min-height: 100dvh;

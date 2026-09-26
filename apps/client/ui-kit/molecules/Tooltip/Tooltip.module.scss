@@ -6,16 +6,16 @@
 
 .popup {
   max-width: 260px;
-  padding: 6px 10px;
+  padding: 4px 8px;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
   background-color: var(--color-surface-raised);
-  box-shadow: var(--elevation-2);
+  box-shadow: var(--shadow-popover);
   color: var(--color-text);
   font-size: var(--text-xs);
   line-height: 1.45;
 
-  @include popup-motion(0.96);
+  @include popup-motion;
 
   &[data-instant] {
     transition: none;

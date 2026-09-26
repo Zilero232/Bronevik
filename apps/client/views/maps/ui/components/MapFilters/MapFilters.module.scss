@@ -3,27 +3,16 @@
 .root {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--space-4) var(--space-6);
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
 }
 
 .search {
-  width: min(100%, 320px);
+  width: min(100%, 280px);
 
   @include below(md) {
     width: 100%;
   }
-}
-
-.group {
-  @include stack(var(--space-2));
-
-  min-width: 0;
-  max-width: 100%;
-}
-
-.label {
-  @include hud-label;
 }
 
 .status {
@@ -31,15 +20,11 @@
   align-items: center;
   margin-left: auto;
   gap: var(--space-3);
-
-  @include below(md) {
-    width: 100%;
-    justify-content: space-between;
-    margin-left: 0;
-  }
 }
 
 .count {
-  @include hud-label;
   @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
 }

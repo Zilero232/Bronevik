@@ -1,0 +1,13 @@
+.description {
+  max-width: 80ch;
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+  gap: var(--space-3);
+}

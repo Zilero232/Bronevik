@@ -38,7 +38,7 @@ bronevik/
 │  │  ├─ src/worker.ts    the collector: BullMQ consumers, snapshot pipeline, aggregations (modules/collector)
 │  │  ├─ src/lib/         lesta (typed thin client: batching, fields, rate limiting, retries), replay parser, http
 │  │  ├─ src/modules/gamedata  game-client data importer (`bun run gamedata:import`)
-│  │  └─ prisma/          Prisma 7 schema (multi-file), migrations, Timescale SQL; client generated into generated/
+│  │  └─ prisma/          Prisma 7 schema (multi-file, synced with db push), Timescale SQL; client generated into generated/
 │  └─ mod/        (P3) Python 2.7 .wotmod companion, own build script
 ├─ packages/      only code shared between apps
 │  ├─ ratings/       pure functions: WN8, EFF, Броня-Индекс, recent-period math, MoE projection

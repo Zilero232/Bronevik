@@ -1,1 +1,0 @@
-export { MoeProjection } from './MoeProjection';

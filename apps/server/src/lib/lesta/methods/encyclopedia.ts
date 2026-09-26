@@ -4,7 +4,7 @@ import type { FieldList, LestaCallOptions, LestaRequester, LestaResponse, Select
 import type { EncyclopediaInfo, Vehicle, VehicleProfile } from '../schemas';
 import type { VehicleProfileInput, VehicleProfilesInput, VehiclesInput } from './methods.types';
 
-import { LESTA_BATCH_SIZE } from '../batching';
+import { LESTA_API } from '../client/client.constants';
 import { callParams, fieldAwareSchema } from '../client/client.helpers';
 import { encyclopediaInfoSchema, idMapOf, vehicleProfileSchema, vehicleSchema } from '../schemas';
 import { batchedMap, passthrough, passthroughById } from './methods.helpers';
@@ -40,7 +40,7 @@ export const createEncyclopediaMethods = (requester: LestaRequester) => {
     let pageTotal = 1;
 
     while (pageNo <= pageTotal) {
-      const { data, meta } = await vehicles({ ...input, pageNo, limit: input.limit ?? LESTA_BATCH_SIZE });
+      const { data, meta } = await vehicles({ ...input, pageNo, limit: input.limit ?? LESTA_API.batchSize });
 
       Object.assign(collected, data);
       pageTotal = meta.page_total ?? 1;

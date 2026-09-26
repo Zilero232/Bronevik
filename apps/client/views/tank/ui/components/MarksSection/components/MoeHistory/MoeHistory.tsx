@@ -1,45 +1,35 @@
 'use client';
 
-import { parseISO } from 'date-fns';
-import { useFormatter, useTranslations } from 'next-intl';
-import { match, P } from 'ts-pattern';
+import { useTranslations } from 'next-intl';
+import { match } from 'ts-pattern';
 
-import { Card, CardHeader, LineChart, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, LineChart, Skeleton } from '@/ui-kit';
 
-import { moeSeries } from '../../../../../lib';
-import { useMoeHistory } from '../../../../../model/hooks';
-import { SectionNotice } from '../../../SectionNotice';
-import { MOE_SERIES_TONES } from './MoeHistory.constants';
+import { TANK_PAGE } from '../../../../../config';
+import { useMoeChart } from '../../../../../model/hooks';
 
 import s from './MoeHistory.module.scss';
 
-const CHART_HEIGHT = 300;
-
 export const MoeHistory = () => {
   const t = useTranslations('tank.marks');
-  const format = useFormatter();
-  const { data: history, isPending, isError } = useMoeHistory();
+  const { chart, isEmpty, isPending, isError, refetch, formatValue } = useMoeChart();
 
   return (
-    <Card className={s.root} padding='lg'>
-      <CardHeader eyebrow={t('historyEyebrow')} title={t('historyTitle')} />
-      {match({ points: history ?? [], isPending, isError })
-        .with({ isPending: true }, () => <Skeleton height={CHART_HEIGHT} shape='block' width='100%' />)
-        .with({ isError: true }, () => <SectionNotice kind='error' />)
-        .with({ points: P.union([], [P._]) }, () => <SectionNotice kind='empty' />)
-        .otherwise(({ points }) => {
-          const { labels, series } = moeSeries(points);
-
-          return (
-            <LineChart
-              ariaLabel={t('historyTitle')}
-              formatValue={(value) => format.number(value, { maximumFractionDigits: 0 })}
-              height={CHART_HEIGHT}
-              labels={labels.map((date) => format.dateTime(parseISO(date), { day: 'numeric', month: 'short' }))}
-              series={series.map(({ key, values }) => ({ id: key, label: t(`plates.${key}`), values, tone: MOE_SERIES_TONES[key] }))}
-            />
-          );
-        })}
-    </Card>
+    <div className={s.root}>
+      <span className={s.label}>{t('historyTitle')}</span>
+      {match({ isPending, isError, isEmpty })
+        .with({ isPending: true }, () => <Skeleton height={TANK_PAGE.chartHeight} shape='block' width='100%' />)
+        .with({ isError: true }, () => <ErrorState onRetry={() => void refetch()} />)
+        .with({ isEmpty: true }, () => <EmptyState title={t('historyEmpty')} />)
+        .otherwise(() => (
+          <LineChart
+            ariaLabel={t('historyTitle')}
+            formatValue={formatValue}
+            height={TANK_PAGE.chartHeight}
+            labels={chart.labels}
+            series={chart.series}
+          />
+        ))}
+    </div>
   );
 };

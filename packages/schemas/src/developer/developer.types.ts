@@ -6,7 +6,9 @@ import type {
   apiKeySchema,
   apiKeysSchema,
   apiPlanLimitsSchema,
+  apiPlanOfferSchema,
   apiPlanSchema,
+  apiPlansSchema,
   apiUsagePointSchema,
   apiUsageQuerySchema,
   apiUsageSchema,
@@ -36,6 +38,8 @@ export type ApiUsageQuery = z.infer<typeof apiUsageQuerySchema>;
 export type ApiUsage = z.infer<typeof apiUsageSchema>;
 export type ApiErrorLogEntry = z.infer<typeof apiErrorLogEntrySchema>;
 export type ApiErrorLog = z.infer<typeof apiErrorLogSchema>;
+export type ApiPlanOffer = z.infer<typeof apiPlanOfferSchema>;
+export type ApiPlans = z.infer<typeof apiPlansSchema>;
 export type DeveloperOverview = z.infer<typeof developerOverviewSchema>;
 export type WebhookEvent = z.infer<typeof webhookEventSchema>;
 export type WebhookFilter = z.infer<typeof webhookFilterSchema>;

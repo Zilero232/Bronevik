@@ -18,10 +18,16 @@ export {
   VEHICLE_TYPE_FROM_DB,
   VEHICLE_TYPE_TO_DB
 } from './enums';
-export { hmacSha256Hex, timingSafeEqual, verifySignatureHeader } from './hmac';
+export { errorMessage } from './errors';
+export { timingSafeEqual, verifySignatureHeader } from './hmac';
 export { readNumber, readRecord, toJsonValue } from './json';
+export { formatNumber, formatNumberOr, formatPercent, formatPercentOr } from './number-format';
+export type { FormatNumberInput, FormatPercentInput } from './number-format';
+export { randomCode } from './random-code';
+export type { RandomCodeInput } from './random-code';
 export { emptyRating, ratingValue } from './rating';
-export { clampPercent, clampPercentDelta, fromUnixSeconds, percentOf, ratio, toIso, toIsoDate, toNumber } from './serialize';
+export { clampPercent, clampPercentDelta, fromUnixSeconds, isoDay, percentOf, ratio, toIso, toIsoDate, toNumber } from './serialize';
+export { slugify } from './slug';
 export { page, sortRows } from './sort';
 export { previousWeek, weekWindow } from './week';
 export type { WeekWindow } from './week';

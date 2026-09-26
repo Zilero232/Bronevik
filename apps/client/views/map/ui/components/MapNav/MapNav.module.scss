@@ -2,20 +2,19 @@
 
 .root {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--gap-panel);
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .link {
-  @include plate(var(--chamfer-sm));
+  @include panel;
 
   display: flex;
+  min-height: var(--row-h-media);
   align-items: center;
-  padding: var(--space-3) var(--space-4);
   color: var(--color-text);
   gap: var(--space-3);
-  text-decoration: none;
-  transition: background var(--duration-base) ease;
+  padding-inline: var(--space-4);
 
   &[data-side='next'] {
     justify-content: flex-end;
@@ -24,7 +23,7 @@
   }
 
   &:hover {
-    background: var(--color-accent);
+    border-color: var(--color-text-dim);
   }
 
   &:focus-visible {
@@ -34,23 +33,22 @@
 
 .arrow {
   flex: none;
-  color: var(--color-accent);
+  color: var(--color-text-dim);
 }
 
 .text {
-  @include stack(var(--space-1));
+  @include stack(0);
 
   min-width: 0;
 }
 
 .hint {
-  @include hud-label;
+  @include label;
 }
 
 .name {
-  @include display(var(--text-md));
-
   overflow: hidden;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

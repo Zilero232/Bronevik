@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { batchById, batchList, chunkIds, LESTA_BATCH_SIZE } from '../batching';
+import { LESTA_API } from '../../client/client.constants';
+import { batchById, batchList, chunkIds } from '../batching';
 
 describe('chunkIds', () => {
   it('splits into chunks no larger than the Lesta limit', () => {
-    const ids = Array.from({ length: LESTA_BATCH_SIZE * 2 + 1 }, (_, index) => index);
+    const ids = Array.from({ length: LESTA_API.batchSize * 2 + 1 }, (_, index) => index);
     const chunks = chunkIds({ ids });
 
-    expect(chunks.map((part) => part.length)).toEqual([LESTA_BATCH_SIZE, LESTA_BATCH_SIZE, 1]);
+    expect(chunks.map((part) => part.length)).toEqual([LESTA_API.batchSize, LESTA_API.batchSize, 1]);
     expect(chunks.flat()).toEqual(ids);
   });
 

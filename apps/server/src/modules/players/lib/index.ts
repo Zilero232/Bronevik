@@ -1,3 +1,4 @@
+export { playerAchievements } from './achievements';
 export { computeInsights } from './insights';
 export { combinedSource, nextMark } from './next-mark';
 export { PLAYTIME, playtimeCells } from './playtime';

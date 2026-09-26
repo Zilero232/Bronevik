@@ -12,7 +12,7 @@ import s from './PushCard.module.scss';
 
 export const PushCard = () => {
   const t = useTranslations('notifications.push');
-  const { status, isMock, subscribe, unsubscribe } = usePushSubscription();
+  const { status, subscribe, unsubscribe } = usePushSubscription();
 
   return (
     <SettingsCard className={s.root} description={t('description')} eyebrow={t('eyebrow')} icon={<BellRing size={18} />} title={t('title')}>
@@ -33,7 +33,6 @@ export const PushCard = () => {
           {t('unsubscribe')}
         </Button>
       )}
-      {isMock && <p className={s.mock}>{t('mock')}</p>}
     </SettingsCard>
   );
 };

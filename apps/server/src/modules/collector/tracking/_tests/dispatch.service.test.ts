@@ -6,7 +6,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Player } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
-import { LESTA_BATCH_SIZE } from '../../../../lib/lesta';
+import { LESTA_API } from '../../../../lib/lesta';
 import { JOB } from '../../contracts';
 import { DispatchService } from '../services';
 
@@ -33,7 +33,7 @@ describe('DispatchService.dispatchActive', () => {
 
   it('pushes the next poll forward and queues Lesta-sized batches', async () => {
     const { prisma, pollQueue, dispatch } = createDispatch();
-    const due = players(LESTA_BATCH_SIZE + 5);
+    const due = players(LESTA_API.batchSize + 5);
 
     prisma.player.findMany.mockResolvedValue(due);
 

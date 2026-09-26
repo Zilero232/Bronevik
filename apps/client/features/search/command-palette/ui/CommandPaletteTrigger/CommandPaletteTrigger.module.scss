@@ -1,0 +1,58 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include reset-button;
+  @include field-box;
+
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-dim);
+  gap: var(--space-3);
+  text-align: left;
+
+  &:hover {
+    border-color: var(--color-text-dim);
+    color: var(--color-text-muted);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.label {
+  overflow: hidden;
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.keys {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 3px;
+}
+
+.bar {
+  width: 240px;
+  height: 32px;
+  padding: 0 var(--space-2) 0 var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.hero {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--space-3) 0 var(--space-4);
+  font-size: var(--text-md);
+
+  @include below(md) {
+    .keys {
+      display: none;
+    }
+  }
+}

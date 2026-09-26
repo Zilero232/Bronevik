@@ -1,0 +1,1 @@
+export { ArmorScene } from './ArmorScene';

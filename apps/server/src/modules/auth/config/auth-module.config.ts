@@ -1,5 +1,4 @@
-export const AUTH_BODY_PARSER = {
-  jsonLimit: '512kb'
+export const AUTH_MODULE = {
+  jsonLimit: '512kb',
+  logContext: 'Auth'
 } as const;
-
-export const AUTH_LOG_CONTEXT = 'Auth';

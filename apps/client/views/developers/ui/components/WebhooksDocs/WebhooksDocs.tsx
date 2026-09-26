@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { SectionHeader } from '@/ui-kit';
+import { Card, CardBody, CardHeader } from '@/ui-kit';
 
 import { EventPayloads, SignatureDocs } from './components';
 
@@ -12,12 +12,16 @@ export const WebhooksDocs = () => {
   const t = useTranslations('developers.webhooks');
 
   return (
-    <section className={s.root} id='webhooks'>
-      <SectionHeader description={t('description')} eyebrow={t('eyebrow')} index='04' title={t('title')} />
-      <div className={s.layout}>
-        <EventPayloads />
-        <SignatureDocs />
-      </div>
-    </section>
+    <Card id='webhooks'>
+      <CardHeader title={t('title')}>
+        <p className={s.description}>{t('description')}</p>
+      </CardHeader>
+      <CardBody>
+        <div className={s.layout}>
+          <EventPayloads />
+          <SignatureDocs />
+        </div>
+      </CardBody>
+    </Card>
   );
 };

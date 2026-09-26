@@ -1,11 +1,13 @@
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
-import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Header, Param, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
+import { ARMOR_VIEWER } from '../../config';
 import {
+  TankArmorDto,
   TankDetailDto,
   TankDetailQueryDto,
   TankLookupParamsDto,
@@ -20,7 +22,15 @@ import {
   TopPlayersDto,
   TopPlayersQueryDto
 } from './dto';
-import { TankDetailService, TankPatchesService, TankStatsService, TankTrendService, TierListService, TopPlayersService } from './services';
+import {
+  TankArmorService,
+  TankDetailService,
+  TankPatchesService,
+  TankStatsService,
+  TankTrendService,
+  TierListService,
+  TopPlayersService
+} from './services';
 
 @ApiTags('tanks')
 @AllowAnonymous()
@@ -33,7 +43,8 @@ export class TanksController {
     private readonly details: TankDetailService,
     private readonly topPlayers: TopPlayersService,
     private readonly trends: TankTrendService,
-    private readonly patchNotes: TankPatchesService
+    private readonly patchNotes: TankPatchesService,
+    private readonly armorModels: TankArmorService
   ) {}
 
   @Get()
@@ -75,6 +86,14 @@ export class TanksController {
     const tankId = await this.details.resolve(String(id));
 
     return this.patchNotes.patches(tankId);
+  }
+
+  @Get(':idOrSlug/armor')
+  @CacheTTL(CACHE_TTL.reference)
+  @Header('Cache-Control', ARMOR_VIEWER.cacheControl)
+  @ZodResponse({ type: TankArmorDto })
+  async armor(@Param() { idOrSlug }: TankLookupParamsDto) {
+    return this.armorModels.armor(await this.details.resolve(idOrSlug));
   }
 
   @Get(':idOrSlug')

@@ -1,16 +1,14 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-6));
-}
+  @include stack(var(--space-4));
 
-.hero {
-  width: 100%;
+  padding-top: var(--space-6);
 }
 
 .presets {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--gap-panel);
   grid-template-columns: repeat(3, minmax(0, 1fr));
 
   @include below(2xl) {
@@ -24,8 +22,8 @@
 
 .layout {
   display: grid;
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr) 320px;
 
   @include below(3xl) {
     grid-template-columns: minmax(0, 1fr);
@@ -33,11 +31,11 @@
 }
 
 .panels {
-  @include stack(var(--space-5));
+  @include stack(var(--gap-panel));
 }
 
 .stats {
-  @include stack(var(--space-2));
+  @include stack(var(--space-1));
 
   @include below(3xl) {
     display: none;

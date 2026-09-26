@@ -1,6 +1,7 @@
 import type { TankReference } from '@bronevik/ratings';
 
 import { Injectable } from '@nestjs/common';
+import { LRUCache } from 'lru-cache';
 
 import { PrismaService } from '../../../core';
 import { BRONYA_REFERENCE, parseBronyaReference } from '../../collector';
@@ -8,22 +9,16 @@ import { CATALOG } from '../config';
 
 @Injectable()
 export class BronyaReferencesService {
-  private table: Map<number, TankReference> = new Map();
-  private loadedAt = 0;
-  private pending: Promise<Map<number, TankReference>> | null = null;
+  private readonly cache = new LRUCache<string, Map<number, TankReference>>({
+    max: 1,
+    ttl: CATALOG.ttlMs,
+    fetchMethod: () => this.load()
+  });
 
   constructor(private readonly prisma: PrismaService) {}
 
   async all(): Promise<Map<number, TankReference>> {
-    if (Date.now() - this.loadedAt < CATALOG.ttlMs) {
-      return this.table;
-    }
-
-    this.pending ??= this.load().finally(() => {
-      this.pending = null;
-    });
-
-    return this.pending;
+    return (await this.cache.fetch(CATALOG.key)) ?? new Map();
   }
 
   private async load(): Promise<Map<number, TankReference>> {
@@ -31,16 +26,12 @@ export class BronyaReferencesService {
     const date = latest._max.date;
     const rows = date ? await this.prisma.tankPercentile.findMany({ where: { distribution: BRONYA_REFERENCE.distribution, date } }) : [];
 
-    this.table = new Map(
+    return new Map(
       rows.flatMap((row) => {
         const reference = parseBronyaReference({ tankId: row.tankId, value: row.percentiles });
 
         return reference ? [[row.tankId, reference] as const] : [];
       })
     );
-
-    this.loadedAt = Date.now();
-
-    return this.table;
   }
 }

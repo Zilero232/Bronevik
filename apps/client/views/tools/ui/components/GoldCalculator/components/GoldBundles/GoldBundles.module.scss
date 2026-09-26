@@ -14,11 +14,11 @@
   }
 
   thead th {
-    @include hud-label;
+    @include label;
   }
 
   tbody th {
-    color: var(--color-warning);
+    color: var(--color-text);
     text-align: start;
   }
 
@@ -32,7 +32,7 @@
 }
 
 .caption {
-  @include hud-label;
+  @include label;
 
   padding-bottom: var(--space-2);
   text-align: start;

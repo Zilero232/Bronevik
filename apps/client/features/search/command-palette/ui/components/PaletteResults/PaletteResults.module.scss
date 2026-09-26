@@ -1,0 +1,9 @@
+@use '@/shared/styles/mixins' as *;
+
+.rating {
+  @include numeric;
+  @include tone;
+
+  color: var(--tone);
+  font-weight: 600;
+}

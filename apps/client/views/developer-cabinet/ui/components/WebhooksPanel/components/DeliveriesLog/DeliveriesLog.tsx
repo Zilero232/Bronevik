@@ -6,7 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
-import { Badge, DataTable } from '@/ui-kit';
+import { Badge, DataTable, ErrorState } from '@/ui-kit';
 
 import type { DeliveriesLogProps } from './DeliveriesLog.types';
 
@@ -20,7 +20,7 @@ const column = createColumnHelper<WebhookDelivery>();
 
 export const DeliveriesLog = ({ webhookId }: DeliveriesLogProps) => {
   const t = useTranslations('developer.deliveries');
-  const { data: deliveries, isPending } = useWebhookDeliveries(webhookId);
+  const { data: deliveries, isPending, isError, isFetching, refetch } = useWebhookDeliveries(webhookId);
 
   const columns: ColumnDef<WebhookDelivery, never>[] = [
     column.accessor('event', { header: t('event'), cell: (info) => <code className={s.event}>{info.getValue()}</code> }),
@@ -41,7 +41,7 @@ export const DeliveriesLog = ({ webhookId }: DeliveriesLogProps) => {
         caption={t('caption')}
         columns={columns}
         data={deliveries ?? []}
-        emptyState={<p className={s.empty}>{t('empty')}</p>}
+        emptyState={isError ? <ErrorState isRetrying={isFetching} onRetry={() => void refetch()} /> : <p className={s.empty}>{t('empty')}</p>}
         getRowId={({ id }) => id}
         initialSorting={[{ id: 'createdAt', desc: true }]}
         isLoading={isPending}

@@ -5,6 +5,7 @@ import type { PromoCodeInput, RecordRedemptionInput } from '../billing.types';
 
 import { AppBadRequestException } from '../../../common/exceptions';
 import { isUniqueViolation, PrismaService } from '../../../core';
+import { PROMO_REJECTION_CODE } from '../config';
 import { promoRejection } from '../lib';
 import { EntitlementsService } from './entitlements.service';
 import { SubscriptionService } from './subscription.service';
@@ -31,7 +32,9 @@ export class PromoService {
     const rejection = promoRejection({ promo, now: new Date(), alreadyRedeemed: redeemed !== null });
 
     if (rejection || !promo) {
-      throw new AppBadRequestException('VALIDATION_FAILED', `Promo code rejected: ${rejection ?? 'unknown'}`);
+      const reason = rejection ?? 'unknown';
+
+      throw new AppBadRequestException(PROMO_REJECTION_CODE[reason], `Promo code rejected: ${reason}`);
     }
 
     return promo;
@@ -41,7 +44,7 @@ export class PromoService {
     const promo = await this.usable({ userId, code });
 
     if (!promo.freeDays || promo.discountPercent) {
-      throw new AppBadRequestException('VALIDATION_FAILED', 'This promo code is a checkout discount, pass it with the plan');
+      throw new AppBadRequestException('PROMO_CHECKOUT_ONLY', 'This promo code is a checkout discount, pass it with the plan');
     }
 
     const days = promo.freeDays;
@@ -59,7 +62,7 @@ export class PromoService {
       await db.promoRedemption.create({ data: { code, userId } });
     } catch (error) {
       if (isUniqueViolation(error)) {
-        throw new AppBadRequestException('VALIDATION_FAILED', 'Promo code rejected: alreadyRedeemed');
+        throw new AppBadRequestException(PROMO_REJECTION_CODE.alreadyRedeemed, 'Promo code rejected: alreadyRedeemed');
       }
 
       throw error;

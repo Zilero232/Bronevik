@@ -22,7 +22,12 @@ export const TreeControls = () => {
       <IconButton aria-label={t('zoomOut')} size='sm' variant='outline' onClick={() => zoomOut()}>
         <Minus size={16} />
       </IconButton>
-      <IconButton aria-label={t('fit')} size='sm' variant='outline' onClick={() => fitView({ padding: TREE_VIEW.fitPadding, duration: 400 })}>
+      <IconButton
+        aria-label={t('fit')}
+        size='sm'
+        variant='outline'
+        onClick={() => fitView({ padding: TREE_VIEW.fitPadding, duration: TREE_VIEW.fitDuration })}
+      >
         <Maximize size={15} />
       </IconButton>
     </Panel>

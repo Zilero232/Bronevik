@@ -1,0 +1,14 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+}
+
+.title {
+  @include label;
+}
+
+.list {
+  padding: 0 var(--space-4) var(--space-3);
+  margin: 0;
+}

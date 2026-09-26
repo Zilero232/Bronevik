@@ -1,7 +1,0 @@
-@use '@/shared/styles/mixins' as *;
-
-.root {
-  @include shell;
-
-  padding: var(--space-10) 0;
-}

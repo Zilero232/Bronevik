@@ -1,10 +1,7 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
-import { STAGGER } from '@/shared/lib';
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/ui-kit';
 
 import type { ItemPickerDialogProps } from './ItemPickerDialog.types';
@@ -23,17 +20,16 @@ export const ItemPickerDialog = ({ open, title, items, selectedId, takenIds, onP
       <DialogContent className={s.content} data-side={side}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          {items.length === 0 && <DialogDescription className={s.hint}>{t('slot.noItems')}</DialogDescription>}
+          {items.length === 0 && <DialogDescription>{t('slot.noItems')}</DialogDescription>}
         </DialogHeader>
-        <motion.ul animate='visible' className={s.grid} initial='hidden' variants={STAGGER}>
+        <ul className={s.grid}>
           {items.map((item) => (
             <PickerItem key={item.id} isSelected={item.id === selectedId} isTaken={takenIds.includes(item.id)} item={item} onPick={onPick} />
           ))}
-        </motion.ul>
+        </ul>
         {selectedId !== null && (
           <DialogFooter>
-            <Button variant='ghost' onClick={() => onPick(null)}>
-              <X size={16} />
+            <Button size='sm' variant='ghost' onClick={() => onPick(null)}>
               {t('slot.clear')}
             </Button>
           </DialogFooter>

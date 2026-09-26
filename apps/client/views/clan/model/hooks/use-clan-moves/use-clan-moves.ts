@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { sumBy } from 'remeda';
 
 import { listClanEvents } from '@/shared/api/clans';
 import { QUERY_KEYS } from '@/shared/constants';
@@ -11,13 +12,27 @@ import { CLAN_EVENTS } from '../../../config';
 import { weeklyMoves } from '../../../lib/event-groups';
 
 export const useClanMoves = ({ clanId, now }: UseClanMovesInput) => {
-  const { data: sample, isPending } = useQuery({
+  const {
+    data: sample,
+    isPending,
+    isError,
+    isFetching,
+    refetch
+  } = useQuery({
     queryKey: QUERY_KEYS.clans.events({ clanId, limit: CLAN_EVENTS.chartSample, offset: 0 }),
     queryFn: ({ signal }) => listClanEvents({ clanId, limit: CLAN_EVENTS.chartSample, offset: 0, signal })
   });
 
+  const moves = sample ? weeklyMoves({ events: sample.items, now, weeks: CLAN_EVENTS.chartWeeks }) : [];
+  const joined = sumBy(moves, (week) => week.joined);
+  const left = sumBy(moves, (week) => week.left);
+
   return {
-    moves: sample ? weeklyMoves({ events: sample.items, now, weeks: CLAN_EVENTS.chartWeeks }) : [],
-    isPending
+    moves,
+    totals: { joined, left, net: joined - left },
+    isPending,
+    isError,
+    isRetrying: isFetching,
+    refetch
   };
 };

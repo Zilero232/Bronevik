@@ -1,0 +1,1 @@
+export { TanksTable } from './TanksTable';

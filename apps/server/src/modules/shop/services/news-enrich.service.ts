@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { unique } from 'remeda';
 
 import { PrismaService } from '../../../core';
 import { NEWS_ENRICH } from '../config';
@@ -35,7 +36,7 @@ export class NewsEnrichService {
         data: {
           kind: isPatchNotes(item.title) ? 'patchNotes' : item.kind,
           gameVersionId: item.gameVersionId ?? gameVersion?.id ?? null,
-          tankIds: [...new Set([...item.tankIds, ...mentioned])],
+          tankIds: unique([...item.tankIds, ...mentioned]),
           enrichedAt: now
         }
       });

@@ -7,8 +7,8 @@ export const SITE = {
   lang: 'ru-RU',
   copyrightYear: 2026,
   themeColor: {
-    light: '#e9e6df',
-    dark: '#0d0f11'
+    light: '#e4e5dd',
+    dark: '#121410'
   },
   en: {
     title: 'Bronevik',

@@ -6,7 +6,7 @@ import { EASE_OUT } from './motion';
 
 const DISTANCE_STEPS = [1, 0.78, 0.6] as const;
 
-export const BURST_TRANSITION = { duration: 0.75, ease: EASE_OUT } as const;
+const BURST_TRANSITION = { duration: 0.75, ease: EASE_OUT } as const;
 
 export const createBurst = ({ count, radius, spread = 0.35 }: BurstInput): BurstParticle[] =>
   Array.from({ length: count }, (_, index) => {

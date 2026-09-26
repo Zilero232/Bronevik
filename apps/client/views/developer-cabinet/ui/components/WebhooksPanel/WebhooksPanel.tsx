@@ -11,7 +11,7 @@ import { match } from 'ts-pattern';
 import { removeWebhook } from '@/shared/api/developer';
 import { QUERY_KEYS } from '@/shared/constants';
 import { STAGGER_ITEM } from '@/shared/lib';
-import { Button, EmptyState, SectionHeader, Skeleton } from '@/ui-kit';
+import { Button, EmptyState, ErrorState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import type { WebhookEditorState } from './WebhooksPanel.types';
 
@@ -24,7 +24,7 @@ import s from './WebhooksPanel.module.scss';
 export const WebhooksPanel = () => {
   const t = useTranslations('developer.webhooks');
   const { data: overview } = useDeveloperOverview();
-  const { data: webhooks, isPending } = useWebhooks();
+  const { data: webhooks, isPending, isError, isFetching, refetch } = useWebhooks();
   const remove = useDeveloperMutation({ mutationFn: removeWebhook, invalidates: [QUERY_KEYS.me.developer.webhooks], successKey: 'webhookDeleted' });
   const [editor, setEditor] = useState<WebhookEditorState>({ mode: 'closed' });
   const [removing, setRemoving] = useState<WebhookEndpoint | null>(null);
@@ -43,7 +43,7 @@ export const WebhooksPanel = () => {
     <motion.section className={s.root} id='webhooks' variants={STAGGER_ITEM}>
       <SectionHeader
         action={
-          <Button disabled={!overview || isFull} onClick={() => setEditor({ mode: 'create' })}>
+          <Button disabled={!overview || isError || isFull} onClick={() => setEditor({ mode: 'create' })}>
             <Plus size={16} />
             {t('create')}
           </Button>
@@ -54,8 +54,9 @@ export const WebhooksPanel = () => {
         title={t('title')}
       />
       {overview && isFull && <p className={s.limit}>{t('limit', { count, max: limit })}</p>}
-      {match({ isPending, count })
+      {match({ isPending, isError, count })
         .with({ isPending: true }, () => <Skeleton height={160} shape='block' />)
+        .with({ isError: true }, () => <ErrorState isRetrying={isFetching} onRetry={() => void refetch()} />)
         .with({ count: 0 }, () => <EmptyState description={t('emptyHint')} icon={<Webhook size={22} />} title={t('empty')} />)
         .otherwise(() => (
           <ul className={s.list}>

@@ -1,9 +1,5 @@
 'use client';
 
-import { motion } from 'motion/react';
-
-import { STAGGER, STAGGER_ITEM } from '@/shared/lib';
-
 import { useGuessGame } from '../../../model/context';
 import { ClueBoard } from '../ClueBoard';
 import { GameResult } from '../GameResult';
@@ -18,16 +14,16 @@ export const GuessArena = () => {
   const { status } = useGuessGame();
 
   return (
-    <motion.div animate='visible' className={s.root} initial='hidden' variants={STAGGER}>
-      <motion.aside className={s.side} variants={STAGGER_ITEM}>
+    <div className={s.root}>
+      <aside className={s.side}>
         <MysteryTank />
         <ClueBoard />
-      </motion.aside>
-      <motion.div className={s.main} variants={STAGGER_ITEM}>
+      </aside>
+      <div className={s.main}>
         <GuessStatusBar />
         {status === 'playing' ? <GuessForm /> : <GameResult />}
         <GuessGrid />
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };

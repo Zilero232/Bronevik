@@ -1,4 +1,4 @@
-import type { SkillCohort } from '@bronevik/schemas';
+import type { SkillCohort, TankServerStatsRow } from '@bronevik/schemas';
 
 export type CohortBar = {
   cohort: Exclude<SkillCohort, 'all'>;
@@ -7,4 +7,14 @@ export type CohortBar = {
   battles: number;
   winRateShare: number;
   damageShare: number;
+};
+
+export type CohortRowInput = {
+  rows: readonly TankServerStatsRow[];
+  cohort: SkillCohort;
+};
+
+export type ShareInput = {
+  value: number;
+  max: number;
 };

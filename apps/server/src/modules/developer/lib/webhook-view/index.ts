@@ -1,1 +1,1 @@
-export { toWebhookDelivery, toWebhookEndpoint, webhookEventFromDb } from './webhook-view';
+export { errorBody, toWebhookDelivery, toWebhookEndpoint, webhookEventFromDb } from './webhook-view';

@@ -97,11 +97,14 @@ editing the catalog, not the packages.
 
 ## Folders are one concern, not one function
 
-Each gets its own `index.ts`, `<name>.types.ts` and `<name>.constants.ts` where
-it needs them. A helper too small to have its own types belongs in the
-`<name>.helpers.ts` of the concern that uses it (`ChartKit.helpers.ts`,
-`Avatar.helpers.ts`) — a one-line regex behind its own barrel is three levels of
-indirection for one statement.
+A `lib/<concern>/` or `model/hooks/use-<x>/` folder gets its own `index.ts`,
+`<name>.ts`, `<name>.types.ts` where needed and `_tests/`. Related helpers share
+one concern folder rather than one folder per function.
+
+Never a `*.helpers.ts`, `*.utils.ts` or `*.constants.ts` beside a component:
+helpers go to `lib/<concern>/` (project-agnostic ones to `shared/lib/<concern>/`),
+constants to `config/<concern>.constants.ts`. The client's component-folder rules
+are in `code-style-client.md`.
 
 ## Constants group into objects, and config splits by concern
 
@@ -120,13 +123,13 @@ export const SEARCH_DEBOUNCE_MS = 180;
 export const SEARCH_REQUEST = {
   limit: 15,
   perKind: 5,
-  debounceMs: 180,
-  mockLatencyMs: 220
+  debounceMs: 180
 } as const;
 ```
 
-A `config/` folder holds one file per concern — `player-lookup.config.ts`,
-`player-stats.config.ts` — not one `<module>.config.ts` that accumulates
+A `config/` folder holds one file per concern — `player-lookup.constants.ts`,
+`player-stats.constants.ts` in the client (existing `*.config.ts` files are the
+older name; the server keeps `*.config.ts`) — not one `<module>.config.ts` that accumulates
 everything the module ever needed. The barrel re-exports them, so a call site
 still imports from `../config` and never learns the file names.
 

@@ -2,35 +2,35 @@ import type { ApiErrorCode } from '@bronevik/schemas';
 
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-const body = (code: ApiErrorCode, error: string) => ({ error, code });
+import { errorBody } from './lib';
 
 export class AppBadRequestException extends HttpException {
   constructor(code: ApiErrorCode, error: string) {
-    super(body(code, error), HttpStatus.BAD_REQUEST);
+    super(errorBody({ code, error }), HttpStatus.BAD_REQUEST);
   }
 }
 
 export class AppUnauthorizedException extends HttpException {
   constructor(code: ApiErrorCode, error: string) {
-    super(body(code, error), HttpStatus.UNAUTHORIZED);
+    super(errorBody({ code, error }), HttpStatus.UNAUTHORIZED);
   }
 }
 
 export class AppForbiddenException extends HttpException {
   constructor(code: ApiErrorCode, error: string) {
-    super(body(code, error), HttpStatus.FORBIDDEN);
+    super(errorBody({ code, error }), HttpStatus.FORBIDDEN);
   }
 }
 
 export class AppNotFoundException extends HttpException {
   constructor(code: ApiErrorCode, error: string) {
-    super(body(code, error), HttpStatus.NOT_FOUND);
+    super(errorBody({ code, error }), HttpStatus.NOT_FOUND);
   }
 }
 
 export class AppConflictException extends HttpException {
   constructor(code: ApiErrorCode, error: string) {
-    super(body(code, error), HttpStatus.CONFLICT);
+    super(errorBody({ code, error }), HttpStatus.CONFLICT);
   }
 }
 
@@ -40,6 +40,6 @@ export class AppTooManyRequestsException extends HttpException {
     error: string,
     readonly retryAfterSec: number | null = null
   ) {
-    super({ ...body(code, error), ...(retryAfterSec === null ? {} : { retryAfterSec }) }, HttpStatus.TOO_MANY_REQUESTS);
+    super({ ...errorBody({ code, error }), ...(retryAfterSec === null ? {} : { retryAfterSec }) }, HttpStatus.TOO_MANY_REQUESTS);
   }
 }

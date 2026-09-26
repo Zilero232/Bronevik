@@ -1,1 +1,1 @@
-export { MAP_GRID, MAP_TEAMS, MAP_VIEW } from './map.config';
+export { MAP_TEAMS } from './map.constants';

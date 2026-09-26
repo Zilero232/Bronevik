@@ -49,3 +49,8 @@ export type StatRowInput = {
   key: TankSpecKey;
   specs: BuildStatGroupsInput;
 };
+
+export type ReadSpecInput = {
+  specs: TankSpecs | null | undefined;
+  key: string;
+};

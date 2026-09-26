@@ -1,12 +1,11 @@
 import { load } from 'cheerio';
+import { setTimeout } from 'node:timers/promises';
 import robotsParser from 'robots-parser';
 
 import type { CrawlPagesInput, RobotsPolicy, ScrapedPage } from './crawl.types';
 
 import { http, HTTP } from '../../http';
 import { SCRAPE } from '../scrape.constants';
-
-const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 const robotsFor = async (origin: string): Promise<RobotsPolicy> => {
   const url = `${origin}/robots.txt`;
@@ -43,7 +42,7 @@ export const crawlPages = async ({ urls, delaySecs = SCRAPE.delaySecs }: CrawlPa
     const since = Date.now() - (lastHit.get(origin) ?? 0);
 
     if (since < gapMs) {
-      await wait(gapMs - since);
+      await setTimeout(gapMs - since);
     }
 
     lastHit.set(origin, Date.now());

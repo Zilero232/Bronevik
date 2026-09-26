@@ -1,3 +1,3 @@
 export { useTanksFilter } from './use-tanks-filter';
 
-export type { PremiumFilter, TanksFilterState } from './use-tanks-filter.types';
+export type { TanksFilterControls } from './use-tanks-filter.types';

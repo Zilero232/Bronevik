@@ -1,0 +1,12 @@
+.root {
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+
+  &[data-top='true'] {
+    color: var(--color-text);
+  }
+}

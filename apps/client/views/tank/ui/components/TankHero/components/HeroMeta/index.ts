@@ -1,1 +1,0 @@
-export { HeroMeta } from './HeroMeta';

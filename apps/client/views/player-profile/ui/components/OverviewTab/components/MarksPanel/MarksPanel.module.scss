@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-4));
+}
+
+.heading {
+  @include label;
+}
+
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  @include data-list-row;
+}
+
+.tank {
+  min-width: 0;
+  flex: 1;
+}
+
+.percent {
+  @include numeric;
+
+  font-weight: 600;
+}
+
+.glyph {
+  color: var(--color-text-muted);
+}
+
+.next {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}

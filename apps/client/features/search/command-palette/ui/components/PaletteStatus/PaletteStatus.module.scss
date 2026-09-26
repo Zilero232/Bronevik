@@ -1,6 +1,6 @@
 .hint,
 .error {
-  padding: var(--space-3) var(--space-5);
+  padding: var(--space-3) var(--space-4);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
@@ -9,10 +9,19 @@
   color: var(--color-danger);
 }
 
+.failure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-inline-end: var(--space-4);
+}
+
 .loading {
   display: flex;
   flex-direction: column;
-  padding: var(--space-2) var(--space-5);
+  padding: var(--space-2) var(--space-4);
   gap: var(--space-3);
 }
 

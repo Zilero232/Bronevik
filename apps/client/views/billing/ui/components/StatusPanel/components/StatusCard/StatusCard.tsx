@@ -1,6 +1,5 @@
 'use client';
 
-import { Crown } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
@@ -28,13 +27,7 @@ export const StatusCard = ({ status }: StatusCardProps) => {
   return (
     <section className={s.root} data-plus={isPlus}>
       <header className={s.head}>
-        <span aria-hidden className={s.crest}>
-          <Crown size={26} strokeWidth={1.6} />
-        </span>
-        <div className={s.heading}>
-          <span className={s.eyebrow}>{t('eyebrow')}</span>
-          <h2 className={s.title}>{t(isPlus ? 'titlePlus' : 'titleFree')}</h2>
-        </div>
+        <h2 className={s.title}>{t(isPlus ? 'titlePlus' : 'titleFree')}</h2>
         <Badge tone={subscriptionTone(state)}>{t(`states.${state ?? 'none'}`)}</Badge>
       </header>
       <dl className={s.facts}>

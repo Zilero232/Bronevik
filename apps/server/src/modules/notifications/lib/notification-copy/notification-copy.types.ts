@@ -1,14 +1,11 @@
-import type { NOTIFICATION_LOCALES } from '../../config/copy.config';
+import type { TranslationVariables } from '@grammyjs/i18n';
+
+import type { NOTIFICATION_COPY } from '../../config/copy.config';
 import type { Digest, ParsedNotification } from '../../contracts';
 
-export type NotificationLocale = (typeof NOTIFICATION_LOCALES)[number];
+export type NotificationLocale = (typeof NOTIFICATION_COPY.locales)[number];
 
-type TemplateValues = Record<string, number | string>;
-
-export type FillTemplateInput = {
-  template: string;
-  values: TemplateValues;
-};
+export type CopyValues = TranslationVariables;
 
 export type RenderedNotification = {
   title: string;
@@ -28,8 +25,19 @@ export type RenderDigestInput = {
   webUrl: string;
 };
 
+export type NotificationTextInput = {
+  locale: NotificationLocale;
+  key: string;
+  values?: CopyValues;
+};
+
+export type NotificationMessage = {
+  message: string;
+  values: CopyValues;
+  path: string;
+};
+
 export type LinkInput = {
   webUrl: string;
-  template: string;
-  values: TemplateValues;
+  path: string;
 };

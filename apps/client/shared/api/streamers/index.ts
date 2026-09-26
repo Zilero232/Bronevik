@@ -11,18 +11,19 @@ export {
   getOverlayData,
   getOverlays,
   getStreamerBySlug,
+  previewOverlay,
   removeOverlay,
   saveStreamerProfile,
   updateOverlay
 } from './streamers';
-export { PROVIDER_FROM_PATH, PROVIDER_PATH, STREAMER_PROFILE, STREAMERS_PATHS } from './streamers.constants';
-export { overlayDataSchema, overlayPublicIdSchema, upsertStreamerProfileSchema } from './streamers.schemas';
+export { STREAMERS_PATHS } from './streamers.constants';
 
 export type {
   ActivateChallengeInput,
   ConnectableProvider,
   CreateOverlayInput,
   OverlayData,
+  PreviewOverlayInput,
   StreamerChallenge,
   StreamerIntegration,
   StreamerProfile,

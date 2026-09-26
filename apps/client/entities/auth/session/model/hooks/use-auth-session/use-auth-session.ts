@@ -5,11 +5,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAuthSession, signOut } from '@/shared/api/auth';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import { AUTH_SESSION } from '../../../config';
+
 export const useAuthSession = () =>
   useQuery({
     queryKey: QUERY_KEYS.auth.session,
     queryFn: getAuthSession,
-    staleTime: 5 * 60_000,
+    staleTime: AUTH_SESSION.staleMs,
     retry: false
   });
 

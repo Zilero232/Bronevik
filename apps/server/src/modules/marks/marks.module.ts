@@ -7,6 +7,6 @@ import { MoeTableService, ProjectionService } from './services';
 @Module({
   controllers: [MarksController, MoePublicController],
   providers: [MoeTableService, ProjectionService],
-  exports: [MoeTableService, ProjectionService]
+  exports: [MoeTableService]
 })
 export class MarksModule {}

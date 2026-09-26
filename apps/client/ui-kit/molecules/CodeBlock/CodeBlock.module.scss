@@ -1,59 +1,45 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md), var(--color-border-strong), var(--color-bg-deep));
+  @include panel;
+
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  margin: 0;
+  background: var(--color-bg-deep);
 
   --sh-class: var(--color-steel);
   --sh-identifier: var(--color-text);
   --sh-sign: var(--color-text-muted);
-  --sh-property: var(--color-accent-hot);
+  --sh-property: var(--color-premium);
   --sh-entity: var(--color-steel);
   --sh-jsxliterals: var(--color-text);
   --sh-string: var(--color-success);
   --sh-keyword: var(--color-accent);
   --sh-comment: var(--color-text-dim);
   --sh-space: inherit;
-
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  margin: 0;
 }
 
 .bar {
   display: flex;
+  min-height: 36px;
   align-items: center;
-  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+  padding: 0 var(--space-2) 0 var(--space-4);
   border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
   gap: var(--space-3);
 }
 
-.lamps {
-  display: inline-flex;
-  gap: 5px;
-
-  i {
-    width: 7px;
-    height: 7px;
-    border-radius: var(--radius-full);
-    background-color: var(--color-border-strong);
-
-    &:first-child {
-      background-color: var(--color-accent);
-      box-shadow: 0 0 6px var(--color-accent);
-    }
-  }
-}
-
 .title {
-  @include hud-label;
+  @include label;
 
   flex: 1;
   color: var(--color-text);
 }
 
 .language {
-  @include hud-label;
+  @include label;
 }
 
 .pre {
@@ -68,7 +54,7 @@
   counter-reset: line;
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  line-height: 1.7;
+  line-height: 1.6;
   tab-size: 2;
   white-space: pre;
 

@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { ClanEventKind, ClanRole, RecruitStatus } from '../../../generated';
+import type { ClanEvent, ClanEventKind, ClanRole, RecruitStatus } from '../../../generated';
 import type {
   candidateSchema,
   candidateStatsSchema,
@@ -36,6 +36,11 @@ export type Membership = {
   accountId: bigint;
   role: ClanRole;
   isOfficer: boolean;
+};
+
+export type SyncAttendanceInput = {
+  event: ClanEvent;
+  now: Date;
 };
 
 export type ReportWindow = {

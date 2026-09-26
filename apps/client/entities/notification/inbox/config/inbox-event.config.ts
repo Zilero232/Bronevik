@@ -1,6 +1,20 @@
 import type { NotificationEvent } from '@bronevik/schemas';
 
-import { Award, BadgePercent, CalendarClock, Flag, Medal, Star, Target, Ticket, TrendingDown, Trophy, Users, Wrench } from 'lucide-react';
+import {
+  Award,
+  BadgePercent,
+  CalendarClock,
+  ClipboardList,
+  Flag,
+  Medal,
+  Star,
+  Target,
+  Ticket,
+  TrendingDown,
+  Trophy,
+  Users,
+  Wrench
+} from 'lucide-react';
 
 import type { InboxEventLook } from '../model/inbox.types';
 
@@ -11,6 +25,7 @@ export const INBOX_EVENT = {
   session_finished: { icon: Flag, tone: 'steel' },
   clan_roster_changed: { icon: Users, tone: 'ally' },
   clan_event_reminder: { icon: CalendarClock, tone: 'warning' },
+  clan_weekly_report: { icon: ClipboardList, tone: 'ally' },
   bonus_code: { icon: Ticket, tone: 'premium' },
   premium_offer: { icon: BadgePercent, tone: 'premium' },
   tank_changed: { icon: Wrench, tone: 'steel' },

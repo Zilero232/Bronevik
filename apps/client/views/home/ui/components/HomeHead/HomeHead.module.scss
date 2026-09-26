@@ -1,0 +1,7 @@
+@use '@/shared/styles/mixins' as *;
+
+.search {
+  @include stack(var(--space-3));
+
+  max-width: 640px;
+}

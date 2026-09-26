@@ -4,7 +4,7 @@ import { overlayConfigSchema } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
 
 import type { Overlay } from '../../../../generated';
-import type { AssertAccountInput, CreateOverlayInput, OwnedInput, UpdateOverlayInput } from '../streamers.types';
+import type { AssertAccountInput, CreateOverlayInput, OverlayData, OwnedInput, PreviewOverlayRequest, UpdateOverlayInput } from '../streamers.types';
 
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { toNumber } from '../../../common/lib';
@@ -12,13 +12,15 @@ import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { OVERLAY, OVERLAY_KIND_FROM_DB, OVERLAY_KIND_TO_DB } from '../config';
+import { OverlayDataService } from './overlay-data.service';
 
 @Injectable()
 export class OverlayService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: AppConfigService,
-    private readonly entitlements: EntitlementsService
+    private readonly entitlements: EntitlementsService,
+    private readonly data: OverlayDataService
   ) {}
 
   async list(userId: string): Promise<OverlayView[]> {
@@ -66,6 +68,12 @@ export class OverlayService {
     });
 
     return this.toView(overlay);
+  }
+
+  async preview(input: PreviewOverlayRequest): Promise<OverlayData> {
+    await this.assertAccount({ userId: input.userId, accountId: input.accountId });
+
+    return this.data.preview(input);
   }
 
   async remove({ userId, id }: OwnedInput): Promise<void> {

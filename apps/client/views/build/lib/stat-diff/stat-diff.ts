@@ -1,14 +1,22 @@
 import { clamp, isNumber } from 'remeda';
 
-import type { TankSpecs } from '@/entities/tank/tank';
-
 import { isLowerBetter, specBest, specDelta, TANK_SPEC_GROUPS, TANK_SPEC_KEYS, TANK_SPECS } from '@/entities/tank/tank';
 
-import type { BarFillInput, BuildSide, BuildStatGroupsInput, MinusInput, StatGroup, StatRow, StatRowInput, WinnerInput } from './stat-diff.types';
+import type {
+  BarFillInput,
+  BuildSide,
+  BuildStatGroupsInput,
+  MinusInput,
+  ReadSpecInput,
+  StatGroup,
+  StatRow,
+  StatRowInput,
+  WinnerInput
+} from './stat-diff.types';
 
 import { STAT_BAR } from './stat-diff.constants';
 
-const read = (specs: TankSpecs | null | undefined, key: string) => {
+const read = ({ specs, key }: ReadSpecInput) => {
   const value = specs?.[key];
 
   return isNumber(value) ? value : null;
@@ -38,9 +46,9 @@ const winnerOf = ({ key, a, b }: WinnerInput): BuildSide | null => {
 
 const statRow = ({ key, specs }: StatRowInput): StatRow => {
   const { base: baseSpecs, a: aSpecs, b: bSpecs } = specs;
-  const base = read(baseSpecs, key);
-  const a = read(aSpecs, key);
-  const b = bSpecs ? read(bSpecs, key) : null;
+  const base = read({ specs: baseSpecs, key });
+  const a = read({ specs: aSpecs, key });
+  const b = bSpecs ? read({ specs: bSpecs, key }) : null;
 
   return {
     key,
@@ -61,5 +69,7 @@ const statRow = ({ key, specs }: StatRowInput): StatRow => {
 export const buildStatGroups = (input: BuildStatGroupsInput): StatGroup[] =>
   TANK_SPEC_GROUPS.map((group) => ({
     group,
-    rows: TANK_SPEC_KEYS.filter((key) => TANK_SPECS[key].group === group && read(input.a, key) !== null).map((key) => statRow({ key, specs: input }))
+    rows: TANK_SPEC_KEYS.filter((key) => TANK_SPECS[key].group === group && read({ specs: input.a, key }) !== null).map((key) =>
+      statRow({ key, specs: input })
+    )
   })).filter(({ rows }) => rows.length > 0);

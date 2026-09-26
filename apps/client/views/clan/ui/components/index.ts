@@ -1,6 +1,5 @@
 export { ClanBases } from './ClanBases';
 export { ClanEvents } from './ClanEvents';
-export { ClanHero } from './ClanHero';
-export { ClanMissing } from './ClanMissing';
+export { ClanHeader } from './ClanHeader';
 export { ClanRoster } from './ClanRoster';
 export { ClanSkeleton } from './ClanSkeleton';

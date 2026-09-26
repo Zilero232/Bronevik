@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../core';
-import { PLUS_PRODUCT } from '../config';
+import { PLUS_SUBSCRIPTION } from '../config';
 import { isEntitled } from '../lib';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class EntitlementsService {
 
   async hasPlus(userId: string): Promise<boolean> {
     const subscription = await this.prisma.subscription.findUnique({
-      where: { userId_product: { userId, product: PLUS_PRODUCT } },
+      where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } },
       select: { status: true, currentPeriodEnd: true }
     });
 

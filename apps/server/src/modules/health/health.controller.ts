@@ -1,4 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import type { Response } from 'express';
+
+import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
@@ -16,7 +18,11 @@ export class HealthController {
 
   @Get()
   @ZodResponse({ type: HealthDto })
-  async check() {
-    return this.health.check();
+  async check(@Res({ passthrough: true }) response: Response) {
+    const result = await this.health.check();
+
+    response.status(result.status === 'error' ? HttpStatus.SERVICE_UNAVAILABLE : HttpStatus.OK);
+
+    return result;
   }
 }

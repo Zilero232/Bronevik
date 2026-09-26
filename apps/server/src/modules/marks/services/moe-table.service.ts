@@ -70,6 +70,7 @@ export class MoeTableService {
           .with('master', () => row.mastery?.master ?? null)
           .with('tier', () => row.vehicle.tier)
           .with('p95Delta30d', () => row.trend.p95Delta30d)
+          .with('p95Change30d', () => (row.trend.p95Delta30d === null ? null : Math.abs(row.trend.p95Delta30d)))
           .exhaustive()
     });
 

@@ -3,26 +3,25 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { DataTable, EmptyState, SegmentedControl } from '@/ui-kit';
+import { Button, DataTable, EmptyState, SegmentedControl } from '@/ui-kit';
 
 import type { TableMode } from './TableSection.types';
 
-import { TABLE_ROWS } from '../../../config';
-import { useTankColumns } from '../../../model/hooks';
+import { useDesignTankStats, useTankColumns } from '../../../model/hooks';
 import { DesignBlock } from '../DesignBlock';
 
 export const TableSection = () => {
   const t = useTranslations('design.table');
   const columns = useTankColumns();
-  const [mode, setMode] = useState<TableMode>('small');
+  const [mode, setMode] = useState<TableMode>('live');
+  const { data, isLoading, isError, refetch } = useDesignTankStats();
 
-  const data = { small: [...TABLE_ROWS.small], large: [...TABLE_ROWS.large], loading: [], empty: [] }[mode];
+  const rows = mode === 'live' ? (data?.items ?? []) : [];
 
   const switcher = (
     <SegmentedControl<TableMode>
       options={[
-        { value: 'small', label: t('small') },
-        { value: 'large', label: t('large') },
+        { value: 'live', label: t('live') },
         { value: 'loading', label: t('loading') },
         { value: 'empty', label: t('empty') }
       ]}
@@ -35,16 +34,25 @@ export const TableSection = () => {
 
   return (
     <DesignBlock action={switcher} eyebrow='08' id='table' title={t('title')}>
-      <DataTable
-        key={mode}
-        caption={t('caption', { count: data.length })}
-        columns={columns}
-        data={data}
-        emptyState={<EmptyState description={t('emptyBody')} title={t('emptyTitle')} />}
-        getRowId={(row) => String(row.id)}
-        initialSorting={[{ id: 'winRate', desc: true }]}
-        isLoading={mode === 'loading'}
-      />
+      {mode === 'live' && isError ? (
+        <EmptyState
+          action={<Button onClick={() => refetch()}>{t('retry')}</Button>}
+          code='ERR'
+          description={t('errorBody')}
+          title={t('errorTitle')}
+        />
+      ) : (
+        <DataTable
+          key={mode}
+          caption={t('caption', { count: rows.length })}
+          columns={columns}
+          data={rows}
+          emptyState={<EmptyState description={t('emptyBody')} title={t('emptyTitle')} />}
+          getRowId={(row) => String(row.vehicle.tankId)}
+          initialSorting={[{ id: 'winRate', desc: true }]}
+          isLoading={mode === 'loading' || (mode === 'live' && isLoading)}
+        />
+      )}
     </DesignBlock>
   );
 };

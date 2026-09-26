@@ -13,3 +13,11 @@ export const AUTH_PROVIDER = {
   lesta: 'lesta-id',
   telegram: 'telegram'
 } as const;
+
+export const API_KEY_PLUGIN = {
+  modelName: 'apiKey',
+  prefix: 'brv_',
+  keyLength: 64,
+  minExpiresInDays: 0,
+  maxExpiresInDays: 3_650
+} as const;

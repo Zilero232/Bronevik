@@ -1,6 +1,7 @@
 import type { ClanMember, ClanMemberEvent, ClanPage, Paginated } from '@bronevik/schemas';
 
 import { Injectable } from '@nestjs/common';
+import { differenceInDays } from 'date-fns';
 
 import type { ClanEventsInput } from '../clans.types';
 
@@ -59,7 +60,7 @@ export class ClanPageService {
       }
     });
 
-    const now = Date.now();
+    const now = new Date();
 
     return rows.map((row) => {
       const overall = row.player.ratings.find((rating) => rating.period === 'overall');
@@ -72,7 +73,7 @@ export class ClanPageService {
         role: CLAN_ROLE_FROM_DB[row.role],
         joinedAt: toIso(row.joinedAt),
         lastBattleAt: toIso(lastBattleAt),
-        inactiveDays: lastBattleAt ? Math.max(0, Math.floor((now - lastBattleAt.getTime()) / CLAN_PAGE.dayMs)) : null,
+        inactiveDays: lastBattleAt ? Math.max(0, differenceInDays(now, lastBattleAt)) : null,
         battles: overall?.battles ?? null,
         winRate: clampPercent(overall?.winRate),
         wn8: overall ? ratingValue({ kind: 'wn8', value: overall.wn8 }) : emptyRating(),

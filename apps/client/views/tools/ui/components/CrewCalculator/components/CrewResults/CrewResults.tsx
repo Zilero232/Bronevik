@@ -8,7 +8,8 @@ import type { CrewResultsProps } from '../../CrewCalculator.types';
 
 import { TOOLS_LAYOUT } from '../../../../../config';
 import { crewPlan } from '../../../../../lib/crew-xp';
-import { ResultFigure, ResultList } from '../../../CalcKit';
+import { ResultFigure } from '../../../ResultFigure';
+import { ResultList } from '../../../ResultList';
 
 export const CrewResults = ({ values }: CrewResultsProps) => {
   const t = useTranslations('tools.crew');
@@ -23,7 +24,7 @@ export const CrewResults = ({ values }: CrewResultsProps) => {
         fallback={t('noXp')}
         hint={t('battlesHint', { skill })}
         label={t('battles')}
-        tone={plan.battles === 0 ? 'good' : 'accent'}
+        tone={plan.battles === 0 ? 'good' : 'neutral'}
         value={plan.battles}
       />
       <ResultList

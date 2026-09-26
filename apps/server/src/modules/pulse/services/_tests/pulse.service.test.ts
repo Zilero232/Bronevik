@@ -1,6 +1,8 @@
+import type { ChainableCommander, Redis } from 'ioredis';
+
 import RedisMock from 'ioredis-mock';
 import { describe, expect, it } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PrismaService } from '../../../../core';
 
@@ -9,6 +11,18 @@ import { decodeSample, encodeSample } from '../../lib/pulse-grid';
 import { PulseService } from '../pulse.service';
 
 const now = new Date('2026-09-25T12:00:00Z');
+
+const EXEC_FAILURES: [string, [Error | null, unknown][] | null][] = [
+  [
+    'rejects one of its commands',
+    [
+      [new Error('WRONGTYPE'), null],
+      [null, 0]
+    ]
+  ],
+  ['is aborted', null]
+];
+
 const dayMs = 86_400_000;
 
 const createService = async () => {
@@ -80,5 +94,19 @@ describe('PulseService.sample', () => {
       { at: kept, players: 6 },
       { at: now, players: 40 }
     ]);
+  });
+
+  it.each(EXEC_FAILURES)('fails loudly when the sample transaction %s', async (_, results) => {
+    const prisma = mockDeep<PrismaService>();
+    const redis = mock<Redis>();
+    const chain = mock<ChainableCommander>();
+
+    prisma.player.count.mockResolvedValue(40);
+    chain.zadd.mockReturnValue(chain);
+    chain.zremrangebyscore.mockReturnValue(chain);
+    chain.exec.mockResolvedValue(results);
+    redis.multi.mockReturnValue(chain);
+
+    await expect(new PulseService(prisma, redis).sample(now)).rejects.toThrow();
   });
 });

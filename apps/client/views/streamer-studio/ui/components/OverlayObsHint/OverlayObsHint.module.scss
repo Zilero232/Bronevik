@@ -1,42 +1,21 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-sm), var(--color-border), var(--color-surface-sunken));
+  @include well;
   @include stack(var(--space-3));
 
   padding: var(--space-4);
 }
 
 .title {
-  @include hud-label;
-
-  color: var(--color-accent);
+  @include label;
 }
 
 .steps {
   @include stack(var(--space-2));
 
-  padding: 0;
+  padding-left: var(--space-5);
   margin: 0;
-  counter-reset: step;
-  list-style: none;
-}
-
-.step {
-  position: relative;
-  padding-left: var(--space-7);
   color: var(--color-text-muted);
-  counter-increment: step;
   font-size: var(--text-sm);
-
-  &:before {
-    @include numeric;
-
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: var(--color-accent);
-    content: counter(step, decimal-leading-zero);
-    font-weight: 700;
-  }
 }

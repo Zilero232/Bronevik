@@ -1,0 +1,1 @@
+export { PlayerCell } from './PlayerCell';

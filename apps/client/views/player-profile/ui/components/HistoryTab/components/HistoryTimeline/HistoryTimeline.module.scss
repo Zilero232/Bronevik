@@ -1,65 +1,36 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(0);
-
-  position: relative;
   padding: 0;
   margin: 0;
   list-style: none;
-
-  &:before {
-    position: absolute;
-    top: 14px;
-    bottom: 14px;
-    left: 13px;
-    width: 1px;
-    background: linear-gradient(var(--color-accent), var(--color-border));
-    content: '';
-  }
 }
 
 .entry {
-  position: relative;
-  display: grid;
-  align-items: center;
-  padding: var(--space-3) 0;
-  column-gap: var(--space-4);
-  grid-template-columns: 28px minmax(0, 1fr);
-}
+  @include data-list-row;
 
-.dot {
-  z-index: 1;
-  display: inline-flex;
-  width: 28px;
-  height: 28px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 50%;
-  background-color: var(--color-surface-raised);
-  color: var(--color-text-muted);
-  grid-row: span 2;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
 
-  [data-current='true'] & {
-    border-color: var(--color-accent);
-    box-shadow: var(--glow-accent);
-    color: var(--color-accent);
+  &[data-current='true'] {
+    box-shadow: inset 2px 0 0 var(--color-accent);
   }
 }
 
 .value {
-  font-family: var(--font-mono);
   font-size: var(--text-md);
   font-weight: 600;
 }
 
 .range {
+  @include numeric;
+
   color: var(--color-text-muted);
   font-size: var(--text-xs);
 }
 
 .empty {
+  padding: var(--space-3) var(--space-4);
   color: var(--color-text-dim);
   font-size: var(--text-sm);
 }

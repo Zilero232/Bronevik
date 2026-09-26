@@ -1,0 +1,11 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric;
+
+  color: var(--color-text-dim);
+
+  &[data-top='true'] {
+    color: var(--color-premium);
+  }
+}

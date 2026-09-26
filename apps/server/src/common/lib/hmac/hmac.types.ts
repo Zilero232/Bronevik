@@ -1,3 +1,8 @@
+export type TimingSafeEqualInput = {
+  left: string;
+  right: string;
+};
+
 export type HmacInput = {
   key: string | Buffer;
   data: string | Buffer;

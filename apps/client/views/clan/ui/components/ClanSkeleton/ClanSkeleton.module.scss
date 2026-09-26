@@ -1,35 +1,15 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include shell;
-  @include stack(var(--space-6));
-
-  padding-top: var(--space-9);
+  @include stack(var(--space-5));
 }
 
-.hero {
+.head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-6);
+  gap: var(--space-5);
 }
 
 .lines {
   @include stack(var(--space-3));
-}
-
-.ring {
-  @include below(md) {
-    display: none;
-  }
-}
-
-.tiles {
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-
-  @include below(2xl) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }

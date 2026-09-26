@@ -1,6 +1,7 @@
 'use client';
 
 import { parseAsStringLiteral, useQueryStates } from 'nuqs';
+import { mapValues } from 'remeda';
 
 import type { UseRosterInput } from './use-roster.types';
 
@@ -17,13 +18,15 @@ export const useRoster = ({ members, now }: UseRosterInput) => {
   const [{ role, idle }, setFilters] = useQueryStates(ROSTER_PARSERS, { history: 'replace' });
 
   const all = toRosterRows({ members, now });
+  const distribution = activityDistribution(members.map(({ inactiveDays }) => inactiveDays));
 
   return {
     role,
     idle,
     rows: filterRoster({ rows: all, role, inactive: idle }),
     total: all.length,
-    distribution: activityDistribution(members.map(({ inactiveDays }) => inactiveDays)),
+    distribution,
+    shares: mapValues(distribution, (count) => (all.length > 0 ? count / all.length : 0)),
     isFiltered: role !== 'all' || idle !== 'all',
     setFilters,
     reset: () => setFilters(null)

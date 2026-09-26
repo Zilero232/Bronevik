@@ -13,89 +13,160 @@
   margin-inline: auto;
 }
 
-@mixin chamfer-path($size) {
-  clip-path: polygon(0 0, calc(100% - #{$size}) 0, 100% $size, 100% 100%, $size 100%, 0 calc(100% - #{$size}));
+@mixin panel {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--panel-gradient);
+  box-shadow: var(--panel-highlight);
 }
 
-@mixin plate($size: var(--chamfer-md), $border: var(--color-border), $fill: var(--color-surface)) {
-  position: relative;
-  background: $border;
-  isolation: isolate;
-
-  @include chamfer-path($size);
-
-  &:before {
-    position: absolute;
-    z-index: -1;
-    background: var(--brushed), $fill;
-    content: '';
-    inset: 1px;
-
-    @include chamfer-path(calc(#{$size} - 0.4px));
-  }
+@mixin well {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
 }
 
-@mixin rivets($fill: var(--color-surface), $inset: 9px) {
-  $rivet: radial-gradient(circle at 40% 35%, var(--rivet-light) 0 0.7px, var(--rivet-body) 1.3px 2px, var(--rivet-shade) 2.5px, transparent 3px);
-
-  background:
-    $rivet left #{$inset} top #{$inset} / 6px 6px no-repeat,
-    $rivet right #{$inset} top #{$inset} / 6px 6px no-repeat,
-    $rivet left #{$inset} bottom #{$inset} / 6px 6px no-repeat,
-    $rivet right #{$inset} bottom #{$inset} / 6px 6px no-repeat,
-    var(--brushed),
-    $fill;
-}
-
-@mixin riveted-plate($size: var(--chamfer-md), $border: var(--color-border), $fill: var(--color-surface)) {
-  @include plate($size, $border, $fill);
-
-  &:before {
-    @include rivets($fill);
-  }
-}
-
-@mixin stencil {
-  font-family: var(--font-display);
-  font-stretch: 78%;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  mask-image: linear-gradient(180deg, #000 0 49%, transparent 49% 55%, #000 55%);
-}
-
-@mixin camo-divider {
-  display: block;
-  height: 7px;
-  background:
-    linear-gradient(var(--color-border-strong), var(--color-border-strong)) left bottom / 100% 1px no-repeat,
-    var(--camo) left top / 48px 6px repeat-x;
-  content: '';
-  mask-image: linear-gradient(90deg, #000 0 180px, rgb(0 0 0 / 35%) 240px, rgb(0 0 0 / 20%) 60%, transparent);
-}
-
-@mixin hud-label {
+@mixin label {
   color: var(--color-text-muted);
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: var(--text-2xs);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
-@mixin display($size: var(--text-2xl)) {
+@mixin heading($size: var(--text-xl)) {
   font-family: var(--font-display);
   font-size: $size;
-  font-stretch: var(--stretch-condensed);
   font-weight: 700;
   letter-spacing: var(--tracking-display);
   line-height: var(--leading-tight);
   text-transform: uppercase;
 }
 
-@mixin numeric {
+@mixin numeric($size: null) {
   font-family: var(--font-display);
-  font-feature-settings: 'tnum' 1;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
+
+  @if $size {
+    font-size: $size;
+    font-weight: 600;
+    line-height: 1;
+  }
+}
+
+@mixin source-line {
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}
+
+@mixin field-box {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text);
+  transition: border-color var(--duration-fast) ease;
+
+  &:focus-within {
+    border-color: var(--color-accent);
+  }
+}
+
+@mixin chip-active {
+  background-color: var(--color-surface-hover);
+  box-shadow: inset 0 -2px 0 var(--color-accent);
+  color: var(--color-text);
+}
+
+@mixin data-list-row {
+  display: flex;
+  min-height: var(--row-h);
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-3);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+@mixin hud-label {
+  @include label;
+}
+
+@mixin display($size: var(--text-2xl)) {
+  @include heading($size);
+}
+
+@mixin chamfer-path($size: 0) {
+  clip-path: none;
+}
+
+@mixin plate($size: 0, $border: var(--color-border-strong), $fill: var(--color-surface)) {
+  position: relative;
+  border-radius: var(--radius-sm);
+  background: $border;
+  isolation: isolate;
+
+  &:before {
+    position: absolute;
+    z-index: -1;
+    border-radius: var(--radius-xs);
+    background: $fill;
+    content: '';
+    inset: 1px;
+  }
+}
+
+@mixin rivets($fill: var(--color-surface), $inset: 0) {
+  background: $fill;
+}
+
+@mixin riveted-plate($size: 0, $border: var(--color-border-strong), $fill: var(--color-surface)) {
+  @include plate($size, $border, $fill);
+}
+
+@mixin stencil {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+}
+
+@mixin camo-divider {
+  display: block;
+  height: 1px;
+  background: var(--color-border);
+  content: '';
+}
+
+@mixin corner-brackets($size: 0, $color: transparent) {
+  background: none;
+}
+
+@mixin tile-grid {
+  display: grid;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  @include below(3xl) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@mixin accent-outline-hover($hover-color: var(--color-text)) {
+  border: 1px solid var(--color-border);
+  transition:
+    border-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+
+  &:hover {
+    border-color: var(--color-text-dim);
+    color: $hover-color;
+  }
 }
 
 @mixin focus-ring {
@@ -121,23 +192,11 @@
   }
 }
 
-@mixin corner-brackets($size: 10px, $color: var(--color-accent)) {
-  background:
-    linear-gradient($color, $color) top left / #{$size} 1px no-repeat,
-    linear-gradient($color, $color) top left / 1px #{$size} no-repeat,
-    linear-gradient($color, $color) top right / #{$size} 1px no-repeat,
-    linear-gradient($color, $color) top right / 1px #{$size} no-repeat,
-    linear-gradient($color, $color) bottom left / #{$size} 1px no-repeat,
-    linear-gradient($color, $color) bottom left / 1px #{$size} no-repeat,
-    linear-gradient($color, $color) bottom right / #{$size} 1px no-repeat,
-    linear-gradient($color, $color) bottom right / 1px #{$size} no-repeat;
-}
-
 @mixin popup-surface {
   border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background-color: var(--color-surface-raised);
-  box-shadow: var(--elevation-3);
+  box-shadow: var(--shadow-popover);
   color: var(--color-text);
 }
 
@@ -155,17 +214,34 @@
   }
 }
 
-@mixin tile-grid {
-  display: grid;
-  gap: var(--space-4);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-
-  @include below(3xl) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@mixin rating-tier($var: --tone) {
+  @each $tier,
+    $token
+      in (
+        very_bad: very-bad,
+        bad: bad,
+        below_avg: below-avg,
+        avg: avg,
+        good: good,
+        very_good: very-good,
+        great: great,
+        unicum: unicum,
+        super_unicum: super-unicum
+      )
+  {
+    &[data-tier='#{$tier}'] {
+      #{$var}: var(--rating-tier-#{$token});
+    }
   }
+}
 
-  @include below(sm) {
-    grid-template-columns: minmax(0, 1fr);
+@mixin nation-tint($var: --nation) {
+  #{$var}: var(--color-border-strong);
+
+  @each $nation in ussr, germany, usa, uk, france, china, japan, czech, sweden, poland, italy, intunion {
+    &[data-nation='#{$nation}'] {
+      #{$var}: var(--nation-#{$nation});
+    }
   }
 }
 
@@ -190,35 +266,18 @@
   color: var(--color-text-muted);
   font-family: var(--font-display);
   font-size: var(--text-sm);
-  font-stretch: 85%;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-@mixin popup-motion($scale: 0.97) {
-  transform-origin: var(--transform-origin);
-  transition:
-    opacity var(--duration-fast) ease,
-    transform var(--duration-fast) ease;
+@mixin popup-motion($scale: 1) {
+  transition: opacity var(--duration-fast) ease;
 
   &[data-starting-style],
   &[data-ending-style] {
     opacity: 0;
-    transform: scale($scale);
-  }
-}
-
-@mixin accent-outline-hover($hover-color: var(--color-accent)) {
-  border: 1px solid var(--color-border);
-  transition:
-    border-color var(--duration-base) ease,
-    color var(--duration-base) ease;
-
-  &:hover {
-    border-color: var(--color-accent);
-    color: $hover-color;
   }
 }
 

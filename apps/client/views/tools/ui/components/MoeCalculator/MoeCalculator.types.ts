@@ -1,16 +1,3 @@
-import type { VehicleSummary } from '@bronevik/schemas';
+import type { UseMoeProjectionInput } from '../../../model/hooks';
 
-import type { MoeTargetValue } from '../../../config';
-
-export type MoeResultsProps = {
-  vehicle: VehicleSummary | null;
-  percent: number;
-  damage: number;
-  target: MoeTargetValue;
-};
-
-export type MoeValues = {
-  percent: number;
-  damage: number | null;
-  target: MoeTargetValue;
-};
+export type MoeResultsProps = UseMoeProjectionInput;

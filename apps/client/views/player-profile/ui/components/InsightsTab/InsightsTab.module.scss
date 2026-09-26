@@ -1,11 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-5));
+  @include stack(var(--gap-panel));
 }
 
 .body {
-  @include stack(var(--space-6));
+  @include stack(var(--space-5));
 }
 
 .pair {

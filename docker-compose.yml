@@ -59,7 +59,6 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
         NEXT_PUBLIC_WEB_URL: ${NEXT_PUBLIC_WEB_URL:-https://localhost}
-        NEXT_PUBLIC_USE_MOCKS: ${NEXT_PUBLIC_USE_MOCKS:-false}
     image: bronevik-client:latest
     container_name: bronevik-client
     restart: always

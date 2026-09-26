@@ -9,15 +9,24 @@ Architecture is **Feature-Sliced Design** with two local tweaks: `pages` → `vi
 ## Layer map
 
 ```text
-app/          # Next.js routes — [locale]/(site)/… plus global-error and providers
-views/        # whole screens per route: home, design, error, not-found
-widgets/      # composable blocks shared by several views: site/site-header, site/site-footer
-features/     # user interactions by domain: app/ (switch-locale, switch-theme, rating-patterns), search/ (command palette), stats/ (select-period)
-entities/     # domain concepts: app/locale, player/player, tank/tank
-shared/       # project-agnostic: api/ config/ constants/ i18n/ lib/ mocks/ seo/ styles/
-ui-kit/       # the design system: atoms/ molecules/ organisms/ (charts, DataTable, toaster)
+app/          # Next.js routes — [locale]/{(site),(overlay),(tma)}, api/og, serwist, providers, global-error
+views/        # one screen per route (36): home, design, error, not-found, login, me, billing, plus,
+              #   notifications, players, player-profile, player-session, player-og, compare-players, top,
+              #   clan, clans, tank, tanks, compare-tanks, build, marks, tree, map, maps, play, tools,
+              #   streamer, streamers, streamer-studio, overlay, developers, developer-cabinet,
+              #   mini-app, telegram-link, telegram-login
+widgets/      # account/account-shell, player/session-detail, site/{site-header,site-footer}
+features/     # app/{rating-palette,rating-patterns,switch-locale,switch-theme}, auth/lesta-link,
+              #   notifications/inbox-bell, player/toggle-favorite, search/{command-palette,pick-entity},
+              #   stats/select-period, tank/{filter-vehicles,pick-tank}
+entities/     # app/locale, armor/armor-model, auth/session, map/map, notification/inbox,
+              #   player/{player,profile,recent-players,stats}, streamer/{broadcast,overlay}, tank/{build,tank}
+shared/       # project-agnostic: api/ (one folder per resource + http, source) config/ constants/ i18n/ lib/ seo/ styles/
+ui-kit/       # the design system: atoms/ molecules/ organisms/ (ChartKit + charts, DataTable, PageHero, toaster)
 config/       # build-time helpers for next.config.ts — not imported by the app
 ```
+
+Inside a slice: `index.ts`, `ui/`, `model/hooks/`, `model/context/`, `lib/<concern>/`, `config/`, rarely `api/`.
 
 Imports go downward only: `app → views → widgets → features → entities → shared`. `ui-kit` sits beside `shared` and every layer may import it. Alias `@/*` → `apps/client/*`.
 
@@ -26,6 +35,7 @@ Imports go downward only: `app → views → widgets → features → entities �
 - **Public API**: import the slice (`@/features/search/command-palette`), never the domain group or past the barrel.
 - **`ui-kit`** has one root barrel — `@/ui-kit`.
 - **`model/` barrels** live in subfolders (`model/hooks/index.ts`), never a slice-level `model/index.ts`.
+- **Components only render.** A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts` if needed). State, effects, queries, handlers and derived data go to `model/hooks/use-<x>/use-<x>.ts` (+ `.types.ts`, `index.ts`), forms to `use-<x>-form/` (react-hook-form + zodResolver); pure helpers to `lib/<concern>/<concern>.ts` + `index.ts` + `_tests/`; constants to `config/<concern>.constants.ts`. Never `*.helpers.ts` / `*.utils.ts` / `*.constants.ts` inside a component folder. One component per folder; a `ui/` root has at most one flat component. Details: [style.md §2](../../docs/guides/style.md).
 - **Shared Zod schemas** come from `@bronevik/schemas`, icons from `@bronevik/icons` (next to `lucide-react`).
 - **Styling** is SCSS modules; tokens (`_tokens.scss`), breakpoints (`xs` … `4xl`) and mixins live in `shared/styles/`. `stylelint` runs on every `*.scss`. No CSS-in-JS; `class-variance-authority` only maps variant props to module classes (`Button.variants.ts`).
 - **Two themes.** Dark (default) and light, switched by `next-themes` through `data-theme` on `<html>`. A colour token goes into both palettes in `_tokens.scss`; components read tokens and carry no theme code.
@@ -40,12 +50,12 @@ Imports go downward only: `app → views → widgets → features → entities �
 
 - **Never import `Link`, `useRouter` or `usePathname` from `next/*`.** Use `@/shared/i18n/navigation`, which keeps the locale in every href.
 - **`next/root-params` is how server code reads the locale** (`rootParams.locale()` in layouts, pages and `generateMetadata`).
-- Every user-visible string goes through next-intl, in both `shared/i18n/locales/ru.json` and `en.json`.
+- Every user-visible string goes through next-intl, in both languages: `shared/i18n/locales/{ru,en}/<namespace>.json` (one file per namespace, same keys in both languages).
 
 ## Data
 
 - `shared/api` holds the axios instance and the TanStack Query client; hooks live in the slice that owns them (`views/home/model/hooks`, `features/search/command-palette/model/hooks`).
-- `NEXT_PUBLIC_USE_MOCKS` (default `true`, see `shared/config/client-env.ts`) serves `shared/mocks` instead of the API. That is why the e2e smoke and `next build` need no running server. Production builds pass `false` (Dockerfile build arg).
+- **No mocks.** Every request in `shared/api` goes to the server through `fromServer` (`shared/api/source`), which turns a 404 into `NotFoundError` and a 401 into `UnauthorizedError`. With no data a screen shows its empty state; with the API down, its error state with a retry. Queries run in the browser, so `next build` and the e2e smoke need no running server.
 - Env is read only through `@/shared/config` (`env`), which validates it with Zod. `next.config.ts` loads `NEXT_PUBLIC_*` from the root `.env` via `config/root-env.ts`.
 
 ## Lesta terms in the UI

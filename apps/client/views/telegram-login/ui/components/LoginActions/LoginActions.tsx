@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, LogIn, Send } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
@@ -20,20 +20,18 @@ export const LoginActions = ({ phase }: LoginActionsProps) => {
     .with('redeeming', () => null)
     .with('success', () => (
       <div className={s.root}>
-        <Link className={buttonVariants({ size: 'lg' })} href={ROUTES.me}>
-          <LayoutDashboard size={18} />
+        <Link className={buttonVariants()} href={ROUTES.me}>
           {t('account')}
         </Link>
       </div>
     ))
     .otherwise(() => (
       <div className={s.root}>
-        <a className={buttonVariants({ size: 'lg' })} href={TELEGRAM_BOT.url} rel='noreferrer' target='_blank'>
-          <Send size={18} />
+        <a className={buttonVariants()} href={TELEGRAM_BOT.url} rel='noreferrer' target='_blank'>
           {t('openBot', { bot: `@${TELEGRAM_BOT.username}` })}
+          <ExternalLink size={14} />
         </a>
-        <Link className={buttonVariants({ variant: 'ghost', size: 'lg' })} href={ROUTES.login}>
-          <LogIn size={18} />
+        <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.login}>
           {t('otherWays')}
         </Link>
       </div>

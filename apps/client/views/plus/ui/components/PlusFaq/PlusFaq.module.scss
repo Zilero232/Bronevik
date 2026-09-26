@@ -1,21 +1,19 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include shell;
-  @include stack(var(--space-6));
+  @include stack(var(--space-3));
 }
 
 .list {
-  @include stack(var(--space-2));
-
-  max-width: 860px;
+  @include panel;
 }
 
 .item {
-  @include plate(var(--chamfer-sm));
+  & + & {
+    border-top: 1px solid var(--color-border);
+  }
 
   &[open] .chevron {
-    color: var(--color-premium);
     transform: rotate(180deg);
   }
 }
@@ -24,7 +22,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-3) var(--space-4);
   cursor: pointer;
   font-weight: 600;
   gap: var(--space-3);
@@ -44,12 +42,11 @@
 .chevron {
   flex-shrink: 0;
   color: var(--color-text-muted);
-  transition: transform var(--duration-base) var(--ease-out);
 }
 
 .answer {
   max-width: 70ch;
-  padding: 0 var(--space-5) var(--space-5);
+  padding: 0 var(--space-4) var(--space-3);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   line-height: var(--leading-body);

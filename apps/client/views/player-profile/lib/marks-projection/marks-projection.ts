@@ -1,4 +1,4 @@
-import { projectMoeBattles } from '@bronevik/ratings';
+import { projectMoeBattles, toMoeThresholds } from '@bronevik/ratings';
 
 import type { MarksProjection, MarksProjectionInput } from './marks-projection.types';
 
@@ -22,7 +22,7 @@ export const projectMarks = ({ row, averageDamage, targetPercent }: MarksProject
     currentPercent: moePercent,
     targetPercent,
     averageCombinedDamage: damage,
-    thresholds: { oneMark: thresholds.p65, twoMarks: thresholds.p85, threeMarks: thresholds.p95, hundredPercent: thresholds.p100 ?? undefined }
+    thresholds: toMoeThresholds(thresholds)
   });
 
   return battles === null ? { kind: 'unreachable' } : { kind: 'projected', battles };

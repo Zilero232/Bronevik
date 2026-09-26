@@ -6,6 +6,6 @@ import { ClanListService, ClanPageService, ClanResolverService, ClanStrongholdSe
 @Module({
   controllers: [ClansController],
   providers: [ClanResolverService, ClanPageService, ClanListService, ClanStrongholdService],
-  exports: [ClanResolverService, ClanPageService, ClanListService, ClanStrongholdService]
+  exports: [ClanResolverService, ClanPageService, ClanListService]
 })
 export class ClansModule {}

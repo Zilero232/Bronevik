@@ -4,7 +4,7 @@ import { toRoman } from '@bronevik/icons';
 import { challengeConditionSchema, challengeMetricSchema } from '@bronevik/schemas';
 import { describe, expect, it } from 'vitest';
 
-import { buildConditionSentence } from '../condition-sentence';
+import { buildConditionSentence, renderConditionSentence } from '../condition-sentence';
 
 const condition = (patch: Partial<ChallengeCondition>): ChallengeCondition =>
   challengeConditionSchema.parse({ metric: 'damage', value: 3_000, ...patch });
@@ -73,5 +73,29 @@ describe('buildConditionSentence', () => {
     const { filters } = buildConditionSentence({ condition: condition({ tankType: 'lightTank', minTier: 8 }), tankName: null });
 
     expect(filters).toEqual([{ key: 'filter.type.lightTank' }, { key: 'filter.tier', values: { tier: toRoman(8) } }]);
+  });
+});
+
+describe('renderConditionSentence', () => {
+  const translate = (key: string, values?: Record<string, number | string>) => (values ? `${key}(${Object.values(values).join('|')})` : key);
+
+  it('translates every part and keeps the goal words in order', () => {
+    const sentence = buildConditionSentence({ condition: condition({ battles: 3, aggregate: 'sum' }), tankName: null });
+    const text = renderConditionSentence({ sentence, translate });
+
+    expect(text.lead).toBe(translate(sentence.lead.key, sentence.lead.values));
+    expect(text.goal).toBe(sentence.goal.map(({ key, values }) => translate(key, values)).join(' '));
+  });
+
+  it('leaves the filters out when the challenge fits any vehicle', () => {
+    const sentence = buildConditionSentence({ condition: condition({}), tankName: null });
+
+    expect(renderConditionSentence({ sentence, translate }).filters).toBeNull();
+  });
+
+  it('joins several filters into one list', () => {
+    const sentence = buildConditionSentence({ condition: condition({ tankType: 'lightTank', minTier: 8 }), tankName: null });
+
+    expect(renderConditionSentence({ sentence, translate }).filters?.split(', ')).toHaveLength(sentence.filters.length);
   });
 });

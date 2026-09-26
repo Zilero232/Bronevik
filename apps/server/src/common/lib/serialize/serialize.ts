@@ -5,7 +5,9 @@ import type { RatioInput } from './serialize.types';
 
 export const toIso = (date: Date | null | undefined): string | null => (date ? date.toISOString() : null);
 
-export const toIsoDate = (date: Date | null | undefined): string | null => (date ? date.toISOString().slice(0, 10) : null);
+export const isoDay = (date: Date): string => date.toISOString().slice(0, 10);
+
+export const toIsoDate = (date: Date | null | undefined): string | null => (date ? isoDay(date) : null);
 
 export const toNumber = (value: bigint | number): number => (typeof value === 'bigint' ? Number(value) : value);
 

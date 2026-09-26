@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { unique } from 'remeda';
 
 import type { CreateFollowInput, FollowCircle, FollowView, RemoveFollowInput } from '../social.types';
 
@@ -59,6 +60,6 @@ export class FollowService {
 
     const own = new Set(links.map((link) => link.accountId));
 
-    return { accountIds: [...new Set([...own, ...follows.map((follow) => follow.targetId)])], own };
+    return { accountIds: unique([...own, ...follows.map((follow) => follow.targetId)]), own };
   }
 }

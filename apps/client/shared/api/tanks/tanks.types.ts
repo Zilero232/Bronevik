@@ -6,12 +6,8 @@ import type {
   StatsMode,
   TankServerStatsSortField,
   TopPlayersMetric,
-  VehicleProfileId,
-  VehicleStats,
   VehicleType
 } from '@bronevik/schemas';
-
-import type { MockTank } from '@/shared/mocks';
 
 export type TankStatsInput = {
   period?: ServerPeriod;
@@ -73,25 +69,4 @@ export type VehicleCatalogInput = {
 export type CompareTanksInput = {
   tankIds: number[];
   signal?: AbortSignal;
-};
-
-export type MockTopEntriesInput = {
-  seed: number;
-  limit: number;
-  base: number;
-};
-
-export type MockVehicleStatsInput = {
-  tank: MockTank;
-  profile: VehicleProfileId;
-};
-
-export type MockTopValueInput = {
-  tankId: number;
-  metric: TopPlayersMetric;
-};
-
-export type MockSpecInput = {
-  stats: VehicleStats;
-  key: string;
 };

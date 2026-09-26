@@ -1,6 +1,4 @@
-export { PopularityCell } from './PopularityCell';
 export { StatsControls } from './StatsControls';
 export { StatsTable } from './StatsTable';
-export { TanksHero } from './TanksHero';
+export { TanksFigures } from './TanksFigures';
 export { TierList } from './TierList';
-export { WrDiffCell } from './WrDiffCell';

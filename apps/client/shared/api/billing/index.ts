@@ -8,4 +8,3 @@ export {
   registerReferral,
   resumeAutoRenew
 } from './billing';
-export { BILLING_PATHS, REFERRAL } from './billing.constants';

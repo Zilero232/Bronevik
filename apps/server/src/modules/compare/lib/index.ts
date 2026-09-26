@@ -1,1 +1,1 @@
-export { bestBySpec, isLowerBetter, numericSpecs } from './specs';
+export { bestBySpec, numericSpecs } from './specs';

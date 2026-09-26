@@ -2,7 +2,7 @@ import type { TechTreeEdge } from '@bronevik/schemas';
 
 import { firstBy, sumBy } from 'remeda';
 
-import type { PathCost, PathCostInput, PathRoute, PathToInput } from './tree-path.types';
+import type { PathCost, PathCostInput, PathRoute, PathToInput, RouteToInput } from './tree-path.types';
 
 const parentsOf = (edges: TechTreeEdge[]) =>
   edges.reduce((parents, { from, to }) => parents.set(to, [...(parents.get(to) ?? []), from]), new Map<number, number[]>());
@@ -17,7 +17,7 @@ export const pathTo = ({ nodes, edges, targetId }: PathToInput): number[] => {
   const parents = parentsOf(edges);
   const routes = new Map<number, PathRoute>();
 
-  const routeTo = (id: number, visiting: Set<number>): PathRoute => {
+  const routeTo = ({ id, visiting }: RouteToInput): PathRoute => {
     const known = routes.get(id);
 
     if (known) {
@@ -26,7 +26,7 @@ export const pathTo = ({ nodes, edges, targetId }: PathToInput): number[] => {
 
     const candidates = (parents.get(id) ?? []).filter((parent) => xpOf.has(parent) && !visiting.has(parent));
     const best = firstBy(
-      candidates.map((parent) => routeTo(parent, new Set([...visiting, id]))),
+      candidates.map((parent) => routeTo({ id: parent, visiting: new Set([...visiting, id]) })),
       ({ cost }) => cost
     );
 
@@ -37,7 +37,7 @@ export const pathTo = ({ nodes, edges, targetId }: PathToInput): number[] => {
     return route;
   };
 
-  return routeTo(targetId, new Set()).ids;
+  return routeTo({ id: targetId, visiting: new Set() }).ids;
 };
 
 export const pathCost = ({ nodes, path }: PathCostInput): PathCost => {

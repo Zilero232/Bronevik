@@ -1,0 +1,26 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+
+  min-width: 0;
+}
+
+.title {
+  @include label;
+
+  margin: 0;
+}
+
+.list {
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+  margin: 0;
+  list-style: none;
+}
+
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

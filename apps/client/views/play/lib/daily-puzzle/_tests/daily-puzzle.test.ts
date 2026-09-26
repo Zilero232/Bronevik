@@ -1,9 +1,10 @@
 import type { VehicleSummary } from '@bronevik/schemas';
 
+import { addSeconds, subSeconds } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
 import { GUESS_TANK } from '../../../config';
-import { msUntilNextPuzzle, pickDailyTank, previousDay, puzzleDay, puzzleNumber } from '../daily-puzzle';
+import { nextPuzzleAt, pickDailyTank, previousDay, puzzleDay, puzzleNumber, secondsUntilNextPuzzle } from '../daily-puzzle';
 
 const vehicle = ({ tankId, tier, isPremium = false }: { tankId: number; tier: number; isPremium?: boolean }): VehicleSummary => ({
   tankId,
@@ -44,13 +45,22 @@ describe('puzzleNumber', () => {
   });
 });
 
-describe('msUntilNextPuzzle', () => {
+describe('nextPuzzleAt', () => {
   it('lands exactly on the next puzzle day', () => {
     const now = new Date(Date.UTC(2026, 8, 24, 12, 34, 56));
-    const next = new Date(now.getTime() + msUntilNextPuzzle(now));
+    const next = nextPuzzleAt(now);
 
     expect(previousDay(puzzleDay(next))).toBe(puzzleDay(now));
-    expect(puzzleDay(new Date(next.getTime() - 1))).toBe(puzzleDay(now));
+    expect(puzzleDay(subSeconds(next, 1))).toBe(puzzleDay(now));
+  });
+});
+
+describe('secondsUntilNextPuzzle', () => {
+  it('counts whole seconds up to Moscow midnight', () => {
+    const now = new Date(Date.UTC(2026, 8, 24, 20, 59, 30));
+
+    expect(secondsUntilNextPuzzle(now)).toBe(30);
+    expect(puzzleDay(addSeconds(now, secondsUntilNextPuzzle(now)))).not.toBe(puzzleDay(now));
   });
 });
 

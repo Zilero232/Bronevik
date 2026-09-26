@@ -4,12 +4,12 @@ import s from './CompareSkeleton.module.scss';
 
 export const CompareSkeleton = () => (
   <div aria-busy className={s.root}>
-    <Skeleton height={80} width='min(420px, 80%)' />
+    <Skeleton height={28} width='min(320px, 70%)' />
     <div className={s.slots}>
-      {Array.from({ length: 4 }, (_, index) => (
-        <Skeleton key={index} height={150} shape='block' />
+      {Array.from({ length: 2 }, (_, index) => (
+        <Skeleton key={index} height={72} shape='block' />
       ))}
     </div>
-    <Skeleton height={420} shape='block' />
+    <Skeleton height={360} shape='block' />
   </div>
 );

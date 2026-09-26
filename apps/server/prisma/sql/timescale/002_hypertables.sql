@@ -1,6 +1,6 @@
 -- Cumulative snapshots and per-change deltas become hypertables partitioned by captured_at.
 -- create_default_indexes is off: every index the tables need is declared in the Prisma schema,
--- so `prisma migrate dev` never sees an index it does not know about and never tries to drop it.
+-- so `prisma db push` never sees an index it does not know about and never tries to drop it.
 
 SELECT create_hypertable(
   'account_snapshot',

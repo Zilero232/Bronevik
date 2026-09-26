@@ -10,18 +10,12 @@
   position: absolute;
   display: flex;
   justify-content: center;
-  border-inline: 1px dashed color-mix(in srgb, var(--color-border) 60%, transparent);
-
-  &[data-odd='true'] {
-    background: linear-gradient(180deg, color-mix(in srgb, var(--color-steel) 5%, transparent), transparent 70%);
-  }
+  border-inline: 1px solid var(--color-border);
 }
 
 .label {
-  @include display(var(--text-xl));
+  @include heading(var(--text-lg));
 
-  margin-top: calc(var(--space-2) * -1);
+  padding-top: var(--space-2);
   color: var(--color-text-dim);
-  font-stretch: 75%;
-  letter-spacing: 0.08em;
 }

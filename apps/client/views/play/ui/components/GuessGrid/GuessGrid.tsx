@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { Card, CardHeader } from '@/ui-kit';
+
 import { GUESS_CELLS, GUESS_TANK } from '../../../config';
 import { useGuessGame } from '../../../model/context';
 import { GuessRow } from '../GuessRow';
@@ -15,11 +17,10 @@ export const GuessGrid = () => {
   const empty = status === 'playing' ? GUESS_TANK.maxGuesses - guesses.length : 0;
 
   return (
-    <section aria-labelledby='guess-grid' className={s.root}>
-      <h2 className={s.title} id='guess-grid'>
-        {t('title')}
-      </h2>
+    <Card padding='none' variant='panel'>
+      <CardHeader title={t('title')} />
       <div aria-hidden className={s.head}>
+        <span>{t('columns.tank')}</span>
         {GUESS_CELLS.map((key) => (
           <span key={key}>{t(`columns.${key}`)}</span>
         ))}
@@ -34,6 +35,6 @@ export const GuessGrid = () => {
           </li>
         ))}
       </ol>
-    </section>
+    </Card>
   );
 };

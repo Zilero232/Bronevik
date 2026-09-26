@@ -1,7 +1,6 @@
 'use client';
 
 import { MarkOfExcellenceIcon } from '@bronevik/icons';
-import { ArrowUpRight } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { TankIdentity, vehicleIdentity } from '@/entities/tank/tank';
@@ -11,9 +10,9 @@ import { buttonVariants, DeltaValue, Drawer } from '@/ui-kit';
 
 import type { MoeDrawerProps } from './MoeDrawer.types';
 
+import { DRAWER_THRESHOLDS } from '../../../config';
 import { thresholdVerdict } from '../../../lib/moe-thresholds';
 import { MasteryLadder, MoeHistoryChart } from './components';
-import { DRAWER_THRESHOLDS } from './MoeDrawer.constants';
 
 import s from './MoeDrawer.module.scss';
 
@@ -29,7 +28,6 @@ export const MoeDrawer = ({ row, isOpen, onOpenChange }: MoeDrawerProps) => {
             <TankIdentity withNation size='lg' tank={vehicleIdentity(row.vehicle)} />
             <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.tank(row.vehicle.slug)}>
               {t('openTank')}
-              <ArrowUpRight size={14} />
             </Link>
           </div>
           <section className={s.block}>

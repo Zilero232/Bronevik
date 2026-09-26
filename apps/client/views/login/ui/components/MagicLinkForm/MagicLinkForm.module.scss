@@ -1,11 +1,10 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include well;
   @include stack(var(--space-3));
 
   padding: var(--space-4);
-  border: 1px dashed var(--color-border-strong);
-  border-radius: var(--radius-md);
 }
 
 .head {
@@ -16,7 +15,7 @@
 }
 
 .title {
-  @include hud-label;
+  @include label;
 }
 
 .error {

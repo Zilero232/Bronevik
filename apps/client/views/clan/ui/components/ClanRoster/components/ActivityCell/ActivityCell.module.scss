@@ -1,0 +1,39 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  gap: var(--space-3);
+  white-space: nowrap;
+}
+
+.dot {
+  --dot: var(--color-text-dim);
+
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: var(--radius-full);
+  background: var(--dot);
+
+  &[data-status='active'] {
+    --dot: var(--color-success);
+  }
+
+  &[data-status='recent'] {
+    --dot: var(--color-steel);
+  }
+
+  &[data-status='idle'] {
+    --dot: var(--color-warning);
+  }
+
+  &[data-status='gone'] {
+    --dot: var(--color-danger);
+  }
+}
+
+.srOnly {
+  @include sr-only;
+}

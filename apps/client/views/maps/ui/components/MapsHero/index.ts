@@ -1,1 +1,0 @@
-export { MapsHero } from './MapsHero';

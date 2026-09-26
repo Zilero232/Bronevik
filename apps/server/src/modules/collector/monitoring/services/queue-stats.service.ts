@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-import { startOfMinute } from 'date-fns';
+import { differenceInSeconds, startOfMinute } from 'date-fns';
 
 import { AppConfigService, LESTA } from '../../../../config';
 import { bulkRequestsPerSecond, PrismaService } from '../../../../core';
@@ -37,7 +37,7 @@ export class QueueStatsService {
     for (const queue of this.registry.all()) {
       const counts = await queue.getJobCounts(...MONITORING.countedStates);
       const [oldest] = await queue.getJobs([...MONITORING.waitingStates], 0, 0, true);
-      const lagSeconds = oldest ? Math.max(0, Math.round((now.getTime() - oldest.timestamp) / 1000)) : 0;
+      const lagSeconds = oldest ? Math.max(0, differenceInSeconds(now, oldest.timestamp, { roundingMethod: 'round' })) : 0;
       const queueDepth = (counts.waiting ?? 0) + (counts.prioritized ?? 0) + (counts.delayed ?? 0);
 
       queues[queue.name] = { ...counts, lagSeconds };

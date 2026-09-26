@@ -1,0 +1,38 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+
+  &:after {
+    width: 100%;
+    margin-top: var(--space-3);
+
+    @include camo-divider;
+  }
+}
+
+.eyebrow {
+  margin: var(--space-3) 0 0;
+  color: var(--color-accent);
+
+  @include hud-label;
+}
+
+.title {
+  margin: 0;
+
+  @include display(var(--text-4xl));
+
+  @include below(md) {
+    font-size: var(--text-3xl);
+  }
+}
+
+.version {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}

@@ -1,0 +1,138 @@
+{
+  "meta": {
+    "title": "{name} — build constructor",
+    "description": "Equipment, crew, field modifications and final stats of the {name}."
+  },
+  "head": {
+    "title": "{name} build",
+    "lead": "Equipment, consumables, directives, crew and field modification · final Мир танков stats recalculated by the server",
+    "picker": "Switch tank",
+    "toTank": "Tank page",
+    "share": "Share"
+  },
+  "share": {
+    "done": "Build link copied",
+    "doneBody": "Send it to your platoon mate — the whole build opens as is.",
+    "failed": "Couldn't copy the link"
+  },
+  "loadout": {
+    "label": "Which build to edit",
+    "a": "Build A",
+    "b": "Build B",
+    "compare": "Compare with another build",
+    "compareHint": "A second build appears alongside, stats side by side",
+    "copy": "Copy A to B",
+    "reset": "Reset",
+    "resetHint": "Clear the current build",
+    "code": "Build code"
+  },
+  "presets": {
+    "title": "Ready-made builds",
+    "description": "What players run on this tank. Click a card to apply the build.",
+    "source": {
+      "battles": "Mod data",
+      "builds": "Player builds",
+      "none": "No data"
+    },
+    "share": "Share",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
+    "battles": "{count, plural, one {# battle} other {# battles}}",
+    "apply": "Apply to build {side}",
+    "active": "Applied",
+    "empty": "No data on popular builds yet",
+    "error": "Couldn't load popular builds"
+  },
+  "panels": {
+    "modules": {
+      "title": "Modules",
+      "description": "Stock or top for each slot",
+      "stock": "Stock",
+      "top": "Top",
+      "slots": {
+        "gun": "Gun",
+        "turret": "Turret",
+        "engine": "Engine",
+        "chassis": "Suspension",
+        "radio": "Radio"
+      }
+    },
+    "equipment": {
+      "title": "Equipment",
+      "description": "Equipment changes the specs — the server recalculates the effect",
+      "pick": "Choose equipment"
+    },
+    "consumables": {
+      "title": "Consumables",
+      "description": "Repair kits, first aid, rations and fuel",
+      "pick": "Choose a consumable"
+    },
+    "directives": {
+      "title": "Directives",
+      "description": "Up to three per battle",
+      "pick": "Choose a directive"
+    },
+    "crew": {
+      "title": "Crew",
+      "description": "Skills and perks per role — up to {max} each",
+      "counter": "{count} of {max}",
+      "full": "All skill slots are taken",
+      "roles": {
+        "commander": "Commander",
+        "gunner": "Gunner",
+        "driver": "Driver",
+        "radioman": "Radio operator",
+        "loader": "Loader",
+        "common": "Common skills"
+      }
+    },
+    "fieldMods": {
+      "title": "Field modification",
+      "description": "Pick one of two branches on every level",
+      "step": "Level {step}",
+      "still": "Stationary",
+      "stillHint": "Count bonuses that only work while the tank stands still — the binocular telescope, for one"
+    }
+  },
+  "slot": {
+    "index": "Slot {index}",
+    "empty": "Empty",
+    "emptyHint": "Click to choose",
+    "clear": "Remove",
+    "taken": "Already in another slot",
+    "premium": "Premium",
+    "noItems": "Nothing is available for this vehicle."
+  },
+  "categories": {
+    "firepower": "Firepower",
+    "mobility": "Mobility",
+    "survivability": "Survivability",
+    "stealth": "Stealth"
+  },
+  "stats": {
+    "title": "Specifications",
+    "caption": "Final build stats against the base vehicle",
+    "captionCompare": "Stats of builds A and B and the difference between them",
+    "stat": "Stat",
+    "value": "Value",
+    "delta": "vs base",
+    "diff": "B − A",
+    "base": "Base: {value}",
+    "winner": "{side} better",
+    "updating": "Recalculating…",
+    "error": "Couldn't recalculate the stats",
+    "showAll": "All stats",
+    "hide": "Collapse",
+    "summary": "Build summary",
+    "colA": "A",
+    "colB": "B",
+    "empty": "No stats data"
+  },
+  "missing": {
+    "notFoundTitle": "Tank not found",
+    "notFoundDescription": "There's no vehicle “{slug}”. Check the link or pick a tank from the list.",
+    "errorTitle": "Couldn't load the build",
+    "errorDescription": "The server didn't respond. Try again in a few seconds.",
+    "back": "Back to tanks"
+  }
+}

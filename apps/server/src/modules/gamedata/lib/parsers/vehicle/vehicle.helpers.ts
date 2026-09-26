@@ -1,10 +1,10 @@
 import type { Armor, ModuleBase, PitchLimits, PitchPoint, RateOfFire, Unlock } from '@bronevik/gamedata';
 
 import type { XmlNode, XmlValue } from '../../xml';
-import type { ModuleBaseInput, ResolveModuleInput, ResolvePrimaryArmorInput } from './vehicle.types';
+import type { ArmorExtras, ArmorExtrasInput, ModuleBaseInput, ResolveModuleInput, ResolvePrimaryArmorInput } from './vehicle.types';
 
 import { makeCompactDescr } from '../../ids';
-import { entries, isXmlNode, list, localizationFallback, localizationKey, mergeNodes, node, num, nums, price, text, words } from '../../xml';
+import { entries, get, isXmlNode, list, localizationFallback, localizationKey, mergeNodes, node, num, nums, price, text, words } from '../../xml';
 
 export const resolveModule = ({ name, value, shared }: ResolveModuleInput): XmlNode => mergeNodes(shared[name], node(value));
 
@@ -35,6 +35,28 @@ export const parseArmor = (value: XmlValue | undefined): Armor => {
   }
 
   return armor;
+};
+
+export const parseSpacedArmor = (value: XmlValue | undefined): string[] =>
+  entries(value).flatMap(([plate, thickness]) => {
+    const container = node(thickness);
+    const damageFactor = container ? num(container.vehicleDamageFactor) : undefined;
+
+    return damageFactor === 0 && num(thickness) !== undefined ? [plate] : [];
+  });
+
+export const parseCollisionPiece = (value: XmlValue | undefined): string | undefined => {
+  const path = text(get(value, 'collisionModelClient'));
+  const file = path?.split('/').pop();
+
+  return file ? file.replace(/\.model$/i, '') : undefined;
+};
+
+export const armorExtras = ({ armor, hitTester }: ArmorExtrasInput): ArmorExtras => {
+  const spacedArmor = parseSpacedArmor(armor);
+  const collision = parseCollisionPiece(hitTester);
+
+  return { ...(spacedArmor.length > 0 ? { spacedArmor } : {}), ...(collision ? { collision } : {}) };
 };
 
 export const resolvePrimaryArmor = ({ armor, value }: ResolvePrimaryArmorInput): number[] => words(value).map((plate) => armor[plate] ?? 0);

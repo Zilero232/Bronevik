@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { unique } from 'remeda';
 
 import type { ClanRecipientsInput, ClanScope, Membership } from '../clan-workspace.types';
 
@@ -60,7 +61,7 @@ export class ClanAccessService {
     const players =
       accountIds.length === 0
         ? []
-        : await this.prisma.player.findMany({ where: { accountId: { in: [...new Set(accountIds)] } }, select: { accountId: true, nickname: true } });
+        : await this.prisma.player.findMany({ where: { accountId: { in: unique(accountIds) } }, select: { accountId: true, nickname: true } });
 
     return new Map(players.map((player) => [player.accountId, player.nickname]));
   }
@@ -73,6 +74,6 @@ export class ClanAccessService {
         ? []
         : await this.prisma.userLestaAccount.findMany({ where: { accountId: { in: accountIds } }, select: { userId: true } });
 
-    return [...new Set(links.map((link) => link.userId))];
+    return unique(links.map((link) => link.userId));
   }
 }

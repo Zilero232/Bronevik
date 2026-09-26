@@ -1,6 +1,4 @@
-import type { VehicleType } from '@bronevik/schemas';
-
-import type { TankClassGlyphProps, TankClassIconProps } from './icons.types';
+import type { TankClassGlyphProps, TankClassIconProps, TankClassKind } from './icons.types';
 
 import { IconBase } from '../lib';
 import { CLASS_GLYPHS, CLASS_SLUGS, CLASS_VARIANT } from './classes.shapes';
@@ -34,7 +32,7 @@ export const TankClassIcon = ({ tankClass, variant = 'regular', ...props }: Tank
   </IconBase>
 );
 
-const classIcon = (tankClass: VehicleType) => {
+const classIcon = (tankClass: TankClassKind) => {
   const Icon = (props: TankClassGlyphProps) => <TankClassIcon tankClass={tankClass} {...props} />;
 
   Icon.displayName = `class-${CLASS_SLUGS[tankClass]}`;
@@ -51,3 +49,5 @@ export const HeavyTankIcon = classIcon('heavyTank');
 export const TankDestroyerIcon = classIcon('AT-SPG');
 
 export const SpgIcon = classIcon('SPG');
+
+export const AssaultSpgIcon = classIcon('assaultSPG');

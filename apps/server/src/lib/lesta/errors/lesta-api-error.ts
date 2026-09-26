@@ -1,5 +1,6 @@
 import type { LestaApiErrorInput, LestaHttpErrorInput, LestaNetworkErrorInput } from './errors.types';
 
+import { errorMessage } from '../../../common/lib/errors';
 import { RETRYABLE_HTTP_STATUS, RETRYABLE_LESTA_CODES } from './errors.constants';
 
 export class LestaApiError extends Error {
@@ -38,7 +39,7 @@ export class LestaNetworkError extends Error {
   readonly method: string;
 
   constructor({ method, cause }: LestaNetworkErrorInput) {
-    super(`Lesta API ${method} network failure: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
+    super(`Lesta API ${method} network failure: ${errorMessage(cause)}`, { cause });
     this.name = 'LestaNetworkError';
     this.method = method;
   }

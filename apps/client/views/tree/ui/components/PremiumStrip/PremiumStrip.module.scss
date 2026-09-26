@@ -1,25 +1,29 @@
 @use '@/shared/styles/mixins' as *;
 
+.root {
+  @include stack(var(--space-3));
+}
+
 .grid {
   display: grid;
   padding: 0;
   margin: 0;
-  gap: var(--space-3);
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   list-style: none;
 }
 
-.card {
-  @include plate(var(--chamfer-md), color-mix(in srgb, var(--color-premium) 45%, var(--color-border)), var(--color-surface));
-  @include stack(var(--space-3));
+.slot {
+  @include panel;
+  @include stack(var(--space-2));
 
-  padding: var(--space-4) var(--space-5);
+  height: 100%;
+  padding: var(--space-3);
   color: inherit;
   text-decoration: none;
-  transition: background-color var(--duration-base) ease;
 
   &:hover {
-    background-color: var(--color-premium);
+    border-color: var(--color-text-dim);
   }
 
   &:focus-visible {
@@ -27,16 +31,6 @@
   }
 }
 
-.crown {
-  color: var(--color-premium);
-}
-
 .render {
   align-self: center;
-}
-
-.more {
-  @include hud-label;
-
-  color: var(--color-premium);
 }

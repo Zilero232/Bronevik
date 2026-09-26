@@ -8,17 +8,16 @@ import type { BestOfWeek, MineInput, ReplayFile, ReplayPage, ReplaySearchQuery, 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { toIsoDate, weekWindow } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { PrismaService } from '../../../core';
+import { ObjectStorage, PrismaService } from '../../../core';
 import { BEST_OF_WEEK } from '../config';
 import { replayTracksSchema } from '../dto';
 import { publicReplayWhere, searchOrder, searchWhere, toReplayView } from '../lib';
-import { ReplayStorage } from '../storage';
 
 @Injectable()
 export class ReplayQueryService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly storage: ReplayStorage,
+    private readonly storage: ObjectStorage,
     private readonly config: AppConfigService
   ) {}
 
@@ -31,11 +30,12 @@ export class ReplayQueryService {
   }
 
   async search(query: ReplaySearchQuery): Promise<ReplayPage> {
-    const player = query.player
+    const byNickname = query.accountId === undefined ? query.player : undefined;
+    const player = byNickname
       ? await this.prisma.player.findFirst({ where: { nickname: { equals: query.player, mode: 'insensitive' } }, select: { accountId: true } })
       : null;
 
-    if (query.player && !player) {
+    if (byNickname && !player) {
       return { items: [], total: 0, limit: query.limit, offset: query.offset };
     }
 

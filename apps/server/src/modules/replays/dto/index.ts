@@ -14,4 +14,4 @@ export {
   UploadedReplayDto,
   UploadReplayDto
 } from './replays.dto';
-export { replaySearchQuerySchema, replayTracksSchema } from './replays.schemas';
+export { replayParseJobSchema, replayTracksSchema } from './replays.schemas';

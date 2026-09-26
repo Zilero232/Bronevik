@@ -90,3 +90,9 @@ parse with the Zod schema and refuse on failure.
 
 Purge jobs, deletion requests (`PurgeGuardService`) and the Timescale retention
 policies (`TIMESCALE` in `config/timescale.constants.ts`) are not optional.
+
+## No Prisma migrations before production
+
+The schema is synced with `bun run db:push` (`prisma db push`, `prisma generate`
+and the Timescale layer via `db:timescale`). Never add `prisma migrate` or a
+`migrations/` folder until the first production release.

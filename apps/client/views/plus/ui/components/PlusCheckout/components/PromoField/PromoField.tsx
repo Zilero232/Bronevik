@@ -1,7 +1,6 @@
 'use client';
 
 import { PROMO_CODE } from '@bronevik/schemas';
-import { TicketPercent } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
@@ -26,7 +25,6 @@ export const PromoField = ({ registration, error }: PromoFieldProps) => {
         aria-describedby={`${id}-hint`}
         aria-invalid={Boolean(error)}
         autoComplete='off'
-        icon={<TicketPercent size={16} />}
         id={id}
         isInvalid={Boolean(error)}
         maxLength={PROMO_CODE.maxLength}

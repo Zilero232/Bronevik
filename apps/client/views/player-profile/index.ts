@@ -1,2 +1,2 @@
-export { PlayerProfileFallback } from './ui/PlayerProfileFallback';
+export { PlayerProfileFallback } from './ui/components';
 export { PlayerProfilePage } from './ui/PlayerProfilePage';

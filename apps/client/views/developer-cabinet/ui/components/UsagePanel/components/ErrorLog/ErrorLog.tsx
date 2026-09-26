@@ -6,7 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
-import { Badge, Card, CardHeader, DataTable } from '@/ui-kit';
+import { Badge, Card, CardHeader, DataTable, ErrorState } from '@/ui-kit';
 
 import type { ErrorLogProps } from './ErrorLog.types';
 
@@ -19,7 +19,7 @@ const column = createColumnHelper<ApiErrorLogEntry>();
 
 export const ErrorLog = ({ keyId }: ErrorLogProps) => {
   const t = useTranslations('developer.usage.errorLog');
-  const { data: entries, isPending } = useApiKeyErrors(keyId);
+  const { data: entries, isPending, isError, isFetching, refetch } = useApiKeyErrors(keyId);
 
   const columns: ColumnDef<ApiErrorLogEntry, never>[] = [
     column.accessor('occurredAt', { header: t('time'), cell: (info) => <TimeAgo className={s.time} value={info.getValue()} /> }),
@@ -56,7 +56,7 @@ export const ErrorLog = ({ keyId }: ErrorLogProps) => {
         caption={t('title')}
         columns={columns}
         data={entries ?? []}
-        emptyState={<p className={s.empty}>{t('empty')}</p>}
+        emptyState={isError ? <ErrorState isRetrying={isFetching} onRetry={() => void refetch()} /> : <p className={s.empty}>{t('empty')}</p>}
         getRowId={({ id }) => id}
         initialSorting={[{ id: 'occurredAt', desc: true }]}
         isLoading={isPending}

@@ -10,10 +10,6 @@ import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { TankPage } from '@/views/tank';
 
-type PageProps = {
-  params: Promise<{ slug: string }>;
-};
-
 const nameOf = async (value: string) => {
   'use cache';
 
@@ -38,7 +34,7 @@ export const generateStaticParams = async () => {
   }
 };
 
-export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
+export const generateMetadata = async ({ params }: PageProps<'/[locale]/t/[slug]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
   const { slug } = await params;
   const t = await getTranslations({ locale, namespace: 'tank.meta' });

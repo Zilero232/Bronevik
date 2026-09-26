@@ -10,17 +10,19 @@ import { Badge, IconButton, Skeleton } from '@/ui-kit';
 
 import { useMeMutation, useMeSection } from '../../../model/hooks';
 import { MeCard } from '../MeCard';
+import { SectionError } from '../SectionError';
 
 import s from './FavoritesCard.module.scss';
 
 export const FavoritesCard = () => {
   const t = useTranslations('me.favorites');
-  const { data: favorites, isPending } = useMeSection({ section: 'favorites', fetcher: getFavorites });
+  const { data: favorites, isPending, isError, isFetching, refetch } = useMeSection({ section: 'favorites', fetcher: getFavorites });
   const remove = useMeMutation({ section: 'favorites', mutationFn: removeFavorite, successKey: 'favoriteRemoved' });
 
   return (
     <MeCard description={t('description')} icon={<Star size={18} />} title={t('title')}>
       {isPending && <Skeleton height={160} shape='block' />}
+      {isError && <SectionError isRetrying={isFetching} onRetry={() => void refetch()} />}
       {favorites?.length === 0 && <p className={s.empty}>{t('empty')}</p>}
       <ul className={s.list}>
         {favorites?.map(({ id, kind, title, label, isOwn, targetId }) => (

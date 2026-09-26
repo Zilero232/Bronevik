@@ -1,0 +1,9 @@
+.more {
+  color: var(--color-steel);
+  font-size: var(--text-sm);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}

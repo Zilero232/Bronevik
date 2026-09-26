@@ -6,12 +6,13 @@ import { z } from 'zod';
 
 import type {
   CreateGithubReaderInput,
+  CreateRepoReaderInput,
   MinimapUrlInput,
   RawUrlInput,
+  RepoReader,
   ResolveCommitInput,
   ResolvedCommit,
-  SourceReader,
-  SourceRevision
+  SourceReader
 } from './source.types';
 
 import { FETCH, GAME_DATA_SOURCES, GITHUB, MINIMAP_SOURCES } from './source.constants';
@@ -63,18 +64,16 @@ const resolveCommit = async ({ source, ref, token, fetch }: ResolveCommitInput):
   return { sha: body.sha, committedAt: body.commit?.committer?.date };
 };
 
-export const createGithubReader = async ({
-  sourceId,
+export const createRepoReader = async ({
+  source,
   ref,
   cacheDir,
   token,
   concurrency = FETCH.concurrency,
   retryDelayMs = FETCH.retryDelayMs,
   fetch: fetchImpl = fetch
-}: CreateGithubReaderInput): Promise<SourceReader> => {
-  const source = GAME_DATA_SOURCES[sourceId];
+}: CreateRepoReaderInput): Promise<RepoReader> => {
   const commit = await resolveCommit({ source, ref: ref ?? source.ref, token, fetch: fetchImpl });
-  const revision: SourceRevision = { sourceId, owner: source.owner, repo: source.repo, ref: ref ?? source.ref, ...commit };
   const root = join(cacheDir, source.owner, source.repo, commit.sha);
   const limit = pLimit(concurrency);
 
@@ -119,5 +118,11 @@ export const createGithubReader = async ({
     return body;
   };
 
-  return { revision, read };
+  return { revision: { owner: source.owner, repo: source.repo, ref: ref ?? source.ref, ...commit }, read };
+};
+
+export const createGithubReader = async ({ sourceId, ...input }: CreateGithubReaderInput): Promise<SourceReader> => {
+  const { revision, read } = await createRepoReader({ source: GAME_DATA_SOURCES[sourceId], ...input });
+
+  return { revision: { sourceId, ...revision }, read };
 };

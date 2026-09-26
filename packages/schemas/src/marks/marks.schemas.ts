@@ -50,7 +50,7 @@ export const moeRowSchema = z.object({
   updatedAt: isoDateTimeSchema.nullable()
 });
 
-export const moeSortFieldSchema = z.enum(['p65', 'p85', 'p95', 'p100', 'master', 'tier', 'p95Delta30d']);
+export const moeSortFieldSchema = z.enum(['p65', 'p85', 'p95', 'p100', 'master', 'tier', 'p95Delta30d', 'p95Change30d']);
 
 export const moeQuerySchema = z.object({
   ...vehicleFilterSchema.shape,

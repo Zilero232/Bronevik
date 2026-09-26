@@ -1,3 +1,3 @@
 export { CheckoutAction } from './CheckoutAction';
-export { PlanPrice } from './PlanPrice';
+export { PlanTable } from './PlanTable';
 export { PromoField } from './PromoField';

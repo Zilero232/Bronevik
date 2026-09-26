@@ -1,0 +1,7 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric;
+
+  font-weight: 600;
+}

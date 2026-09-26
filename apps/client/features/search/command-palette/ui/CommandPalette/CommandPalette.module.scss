@@ -1,0 +1,42 @@
+@use '@/shared/styles/mixins' as *;
+
+.overlay {
+  position: fixed;
+  z-index: var(--z-overlay);
+  backdrop-filter: blur(6px);
+  background-color: var(--color-overlay);
+  inset: 0;
+}
+
+.content {
+  @include popup-surface;
+
+  position: fixed;
+  z-index: calc(var(--z-overlay) + 1);
+  top: min(14vh, 120px);
+  left: 50%;
+  display: flex;
+  overflow: hidden;
+  width: min(680px, calc(100vw - 24px));
+  max-height: min(620px, calc(100dvh - 140px));
+  flex-direction: column;
+  outline: none;
+  transform: translateX(-50%);
+
+  @include below(md) {
+    top: 12px;
+  }
+}
+
+.list {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: var(--space-2);
+  scroll-padding-block: var(--space-2);
+
+  :global([cmdk-group-heading]) {
+    @include label;
+
+    padding: var(--space-3) var(--space-4) var(--space-2);
+  }
+}

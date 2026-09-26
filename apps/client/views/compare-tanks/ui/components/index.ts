@@ -1,10 +1,3 @@
-export { BoardSkeleton } from './BoardSkeleton';
-export { ColumnHead } from './ColumnHead';
 export { CompareBoard } from './CompareBoard';
 export { CompareDock } from './CompareDock';
-export { CompareHero } from './CompareHero';
 export { ComparePresets } from './ComparePresets';
-export { LabelColumn } from './LabelColumn';
-export { PresetCard } from './PresetCard';
-export { TankColumn } from './TankColumn';
-export { ValueCell } from './ValueCell';

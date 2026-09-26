@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "title": "Telegram",
+    "description": "Link Telegram to Bronevik: bot commands, alerts about marks and sessions, the mini app."
+  },
+  "toast": {
+    "codeFailed": "Could not get a code. Please try again.",
+    "linked": "Telegram linked",
+    "unlinked": "Telegram unlinked",
+    "unlinkFailed": "Could not unlink Telegram"
+  },
+  "header": {
+    "title": "Telegram",
+    "description": "The bot sends alerts about marks and sessions and answers commands for your «Мир танков» account."
+  },
+  "request": {
+    "title": "Linking",
+    "description": "Get a one-time code and send it to the bot. The bot never needs your Lesta password or data.",
+    "steps": {
+      "open": "Get a code and open {bot}",
+      "send": "Tap Start or send the command with the code",
+      "done": "This page updates by itself once linked"
+    },
+    "issue": "Get a code",
+    "note": "The code is single-use and valid for a few minutes. Do not forward it."
+  },
+  "ticket": {
+    "label": "Link code",
+    "expires": "Valid for",
+    "expired": "Code expired",
+    "openBot": "Open the bot",
+    "reissue": "Get a new code",
+    "fallback": "If the button did not work, send the bot this command",
+    "another": "Another code"
+  },
+  "linked": {
+    "status": "Linked",
+    "anonymous": "Telegram without a username",
+    "description": "Bot commands answer for your primary account; alerts arrive in this chat.",
+    "openBot": "Open the bot"
+  },
+  "unlink": {
+    "trigger": "Unlink",
+    "title": "Unlink Telegram?",
+    "description": "The bot will stop sending alerts and answering for your account. You can link again at any time.",
+    "cancel": "Cancel",
+    "confirm": "Unlink"
+  },
+  "commands": {
+    "title": "Bot commands",
+    "list": {
+      "me": "your stats: WN8, win rate, damage",
+      "session": "the current session",
+      "marks": "marks of excellence and the damage to the next one",
+      "clan": "clan roster and activity",
+      "tank": "a tank card by name"
+    },
+    "inline": "inline mode: mention the bot and a nickname in any chat",
+    "alertsTitle": "Notifications",
+    "alerts": {
+      "mark": "New mark",
+      "threshold": "Mark threshold drop",
+      "session": "Session recap",
+      "bonus": "Bonus codes",
+      "sale": "Sale on a tracked tank"
+    },
+    "settings": "Notification settings"
+  },
+  "miniApp": {
+    "title": "Mini app",
+    "description": "Stats, your last session and marks inside Telegram, no browser needed.",
+    "open": "Open in Telegram",
+    "preview": "Open in the browser"
+  },
+  "webLogin": {
+    "meta": {
+      "title": "Sign in with Telegram",
+      "description": "Sign in to Bronevik with a one-time link from the bot."
+    },
+    "label": "Telegram sign-in",
+    "phases": {
+      "missing": {
+        "title": "No sign-in code",
+        "description": "This page opens from a link the bot sends. Send the bot {command} to get a new one."
+      },
+      "invalid": {
+        "title": "Broken link",
+        "description": "The code in the link is invalid; it may have been cut off when copied. Request a new one with {command}."
+      },
+      "redeeming": {
+        "title": "Checking the code",
+        "description": "This takes a couple of seconds."
+      },
+      "failed": {
+        "title": "Link is no longer valid",
+        "description": "The code has expired or was already used. Request a new link with {command}."
+      },
+      "success": {
+        "title": "Signed in",
+        "description": "Taking you to your account."
+      }
+    },
+    "actions": {
+      "account": "To my account",
+      "openBot": "Open {bot}",
+      "otherWays": "Other ways to sign in"
+    }
+  }
+}

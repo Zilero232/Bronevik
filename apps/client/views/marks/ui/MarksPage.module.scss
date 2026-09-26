@@ -1,19 +1,37 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  position: relative;
-  padding-bottom: var(--space-11);
+  @include shell;
+  @include stack(var(--space-4));
+
+  padding-bottom: var(--space-8);
 }
 
-.sections {
-  @include shell;
-  @include stack(var(--space-11));
+.layout {
+  display: grid;
+  align-items: start;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr) 320px;
 
-  @include below(md) {
-    gap: var(--space-9);
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.section {
-  @include stack(var(--space-5));
+.main {
+  @include stack(var(--space-3));
+
+  min-width: 0;
+}
+
+.rail {
+  @include stack(var(--gap-panel));
+
+  min-width: 0;
+}
+
+.source {
+  @include source-line;
+
+  margin: 0;
 }

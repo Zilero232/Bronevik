@@ -1,1 +1,1 @@
-export { buildFeed, isMarkGain, isMasteryGain } from './feed';
+export { buildFeed } from './feed';

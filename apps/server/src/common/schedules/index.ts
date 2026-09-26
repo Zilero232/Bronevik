@@ -1,1 +1,1 @@
-export { JobSchedulesService } from './job-schedules.service';
+export { createJobSchedules } from './job-schedules.factory';

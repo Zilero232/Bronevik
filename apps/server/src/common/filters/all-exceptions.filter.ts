@@ -8,16 +8,9 @@ import { ZodSerializationException, ZodValidationException } from 'nestjs-zod';
 import type { ReplyInput } from './all-exceptions.types';
 
 import { isPrismaRequestError } from '../../core';
+import { errorMessage } from '../lib';
 import { MOD_CONTRACT_PATHS, MOD_ERROR_CODES, PRISMA_TO_HTTP } from './all-exceptions.constants';
-import {
-  codeForStatus,
-  hasBodyField,
-  isLestaError,
-  middlewareStatus,
-  modErrorForStatus,
-  retryAfterSeconds,
-  zodIssues
-} from './all-exceptions.helpers';
+import { bodyWithField, codeForStatus, isLestaError, middlewareStatus, modErrorForStatus, retryAfterSeconds, zodIssues } from './lib';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -67,13 +60,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const body = exception.getResponse();
       const status = exception.getStatus();
 
-      response.status(status).json(hasBodyField(body, 'code') ? body : { error: exception.message, code: codeForStatus(status) });
+      response.status(status).json(bodyWithField({ body, field: 'code' }) ?? { error: exception.message, code: codeForStatus(status) });
 
       return;
     }
 
     if (isLestaError(exception)) {
-      this.logger.warn(exception instanceof Error ? exception.message : String(exception));
+      this.logger.warn(errorMessage(exception));
       response.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Lesta API is unavailable', code: 'LESTA_UNAVAILABLE' });
 
       return;
@@ -103,7 +96,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       const body = exception.getResponse();
       const status = exception.getStatus();
-      const isModBody = hasBodyField(body, 'error') && MOD_ERROR_CODES.includes(body.error);
+      const modBody = bodyWithField({ body, field: 'error' });
+      const isModBody = modBody !== null && MOD_ERROR_CODES.includes(modBody.error);
 
       response.status(status).json(isModBody ? body : { error: modErrorForStatus(status) });
 

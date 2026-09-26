@@ -1,27 +1,30 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-sm), var(--color-border), var(--color-surface));
-  @include stack(var(--space-2));
+  display: grid;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-2);
+  grid-template-columns: minmax(0, 2fr) repeat(6, minmax(0, 1fr));
 
-  padding: var(--space-3);
+  &:last-child {
+    border-bottom: none;
+  }
 
   &[data-correct='true'] {
-    background: var(--color-success);
+    background-color: var(--color-surface-hover);
+  }
+
+  @include below(md) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
 
 .name {
   min-width: 0;
-}
 
-.cells {
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  perspective: 600px;
-
-  @include below(sm) {
-    gap: var(--space-1);
+  @include below(md) {
+    grid-column: 1 / -1;
   }
 }

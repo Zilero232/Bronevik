@@ -1,13 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md));
+  @include panel;
   @include stack(var(--space-3));
 
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-4);
 
   &[data-status='active'] {
-    @include plate(var(--chamfer-md), color-mix(in srgb, var(--color-accent) 55%, var(--color-border)));
+    border-color: var(--color-accent);
   }
 
   &[data-status='cancelled'],
@@ -33,14 +33,11 @@
 }
 
 .amount {
-  @include numeric;
-
-  font-size: var(--text-lg);
-  font-weight: 700;
+  @include numeric(var(--text-lg));
 }
 
 .title {
-  @include display(var(--text-lg));
+  @include heading(var(--text-lg));
 }
 
 .foot {

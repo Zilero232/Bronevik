@@ -9,7 +9,7 @@ import { AnimatedNumber } from '@/ui-kit';
 import type { OverlayValueProps } from './OverlayValue.types';
 
 import { OVERLAY_BOARD } from '../../../config';
-import { formatOverlayValue, OVERLAY_VALUE_FORMAT, OVERLAY_VALUE_SUFFIX } from '../../../lib/overlay-metric';
+import { formatOverlayValue, OVERLAY_VALUE } from '../../../lib/overlay-metric';
 
 import s from './OverlayValue.module.scss';
 
@@ -30,8 +30,8 @@ export const OverlayValue = ({ value, kind, animate, className }: OverlayValuePr
           />
           <AnimatedNumber
             duration={OVERLAY_BOARD.countSeconds}
-            format={OVERLAY_VALUE_FORMAT[kind]}
-            suffix={OVERLAY_VALUE_SUFFIX[kind]}
+            format={OVERLAY_VALUE.format[kind]}
+            suffix={OVERLAY_VALUE.suffix[kind]}
             value={value}
           />
         </>

@@ -10,6 +10,7 @@ import { useMeMutation, useMeSection } from '../../../model/hooks';
 import { BindCodeDisplay } from '../BindCodeDisplay';
 import { DeviceList } from '../DeviceList';
 import { MeCard } from '../MeCard';
+import { SectionError } from '../SectionError';
 
 import s from './ModBindCard.module.scss';
 
@@ -17,7 +18,7 @@ const STEPS = ['install', 'open', 'enter'] as const;
 
 export const ModBindCard = () => {
   const t = useTranslations('me.mod');
-  const { data: devices } = useMeSection({ section: 'devices', fetcher: getModDevices });
+  const { data: devices, isError, isFetching, refetch } = useMeSection({ section: 'devices', fetcher: getModDevices });
   const issue = useMeMutation({ section: 'devices', mutationFn: () => issueBindCode() });
   const revoke = useMeMutation({ section: 'devices', mutationFn: revokeModDevice, successKey: 'deviceRevoked' });
 
@@ -39,7 +40,11 @@ export const ModBindCard = () => {
           </li>
         ))}
       </ol>
-      <DeviceList devices={devices ?? []} isRevoking={revoke.isPending} onRevoke={(id) => revoke.mutate(id)} />
+      {isError ? (
+        <SectionError isRetrying={isFetching} onRetry={() => void refetch()} />
+      ) : (
+        <DeviceList devices={devices ?? []} isRevoking={revoke.isPending} onRevoke={(id) => revoke.mutate(id)} />
+      )}
     </MeCard>
   );
 };

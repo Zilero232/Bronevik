@@ -1,0 +1,1 @@
+export { RecentCell } from './RecentCell';

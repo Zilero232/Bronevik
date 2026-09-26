@@ -13,10 +13,11 @@ export const API_KEY = {
 
 export const WEBHOOK = {
   events: ['mark.gained', 'session.ended', 'clan.member_changed'],
-  signatureHeader: 'X-Bronevik-Signature',
-  timestampHeader: 'X-Bronevik-Timestamp',
+  signatureHeader: 'webhook-signature',
+  timestampHeader: 'webhook-timestamp',
+  deliveryHeader: 'webhook-id',
   eventHeader: 'X-Bronevik-Event',
-  deliveryHeader: 'X-Bronevik-Delivery',
-  signatureScheme: 'sha256',
+  signatureScheme: 'v1',
+  secretPrefix: 'whsec_',
   maxFilterIds: 100
 } as const;

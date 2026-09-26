@@ -2,54 +2,63 @@
 
 .root {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--space-9) var(--space-5);
-  gap: var(--space-3);
-  text-align: center;
-}
-
-.scope {
-  position: relative;
-  display: grid;
-  width: 104px;
-  height: 104px;
-  margin-bottom: var(--space-3);
+  max-height: 120px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: var(--space-4);
   color: var(--color-text-muted);
-  place-items: center;
+  gap: var(--space-2) var(--space-3);
 }
 
-.rings {
-  position: absolute;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, transparent 48%, var(--color-border) 48.5%, transparent 50%),
-    radial-gradient(circle, transparent 68%, var(--color-border) 68.5%, transparent 70%),
-    radial-gradient(circle, var(--color-accent-soft), transparent 70%);
-  inset: 0;
+.compact {
+  min-height: var(--row-h);
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
 }
 
 .icon {
-  position: relative;
   display: inline-flex;
+  height: 20px;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--color-text-dim);
+
+  :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+
+  .compact & {
+    height: auto;
+  }
 }
 
-.code {
-  @include hud-label;
-
-  color: var(--color-accent);
+.text {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .title {
-  @include display(var(--text-xl));
+  color: var(--color-text);
+  font-size: var(--text-md);
+  font-weight: 500;
+  line-height: 20px;
+
+  .compact & {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: 400;
+  }
 }
 
 .description {
-  max-width: 44ch;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
 .action {
-  margin-top: var(--space-3);
+  flex-shrink: 0;
 }

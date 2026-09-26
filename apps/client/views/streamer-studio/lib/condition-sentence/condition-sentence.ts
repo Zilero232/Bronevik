@@ -3,7 +3,15 @@ import type { ChallengeCondition } from '@bronevik/schemas';
 import { toRoman } from '@bronevik/icons';
 import { isDefined } from 'remeda';
 
-import type { BuildConditionSentenceInput, ConditionSentence, SentenceGoalInput, SentenceLead, SentencePart } from './condition-sentence.types';
+import type {
+  BuildConditionSentenceInput,
+  ConditionSentence,
+  ConditionSentenceText,
+  RenderConditionSentenceInput,
+  SentenceGoalInput,
+  SentenceLead,
+  SentencePart
+} from './condition-sentence.types';
 
 const OUTCOME_METRICS = ['win', 'survive'] as const;
 
@@ -46,5 +54,15 @@ export const buildConditionSentence = ({ condition, tankName }: BuildConditionSe
     lead: { key: `lead.${lead}`, values: { battles: condition.battles } },
     goal: goalOf({ condition, lead }),
     filters: filtersOf({ condition, tankName })
+  };
+};
+
+export const renderConditionSentence = ({ sentence, translate }: RenderConditionSentenceInput): ConditionSentenceText => {
+  const say = ({ key, values }: SentencePart) => translate(key, values);
+
+  return {
+    lead: say(sentence.lead),
+    goal: sentence.goal.map(say).join(' '),
+    filters: sentence.filters.length > 0 ? sentence.filters.map(say).join(', ') : null
   };
 };

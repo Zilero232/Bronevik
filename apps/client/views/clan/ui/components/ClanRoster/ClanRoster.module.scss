@@ -3,8 +3,3 @@
 .root {
   @include stack(var(--space-5));
 }
-
-.count {
-  @include hud-label;
-  @include numeric;
-}

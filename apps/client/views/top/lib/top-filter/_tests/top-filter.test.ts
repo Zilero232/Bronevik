@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TopFilterState } from '../top-filter.types';
+import type { TopFilterState, TopTank } from '../top-filter.types';
 
 import { TOP_METRICS } from '../../../config';
 import { metricFor, toLeaderboardFilter } from '../top-filter';
@@ -30,7 +30,18 @@ describe('toLeaderboardFilter', () => {
   });
 
   it('sends the tank only for scopes that rank players on a tank', () => {
-    const tank = { tankId: 7_169, name: 'ИС-7', nation: 'ussr', type: 'heavyTank', tier: 10 } as const;
+    const tank: TopTank = {
+      tankId: 7_169,
+      name: 'ИС-7',
+      shortName: 'ИС-7',
+      slug: 'is-7',
+      nation: 'ussr',
+      type: 'heavyTank',
+      tier: 10,
+      isPremium: false,
+      isCollectible: false,
+      images: { small: null, contour: null, big: null }
+    };
 
     expect(toLeaderboardFilter({ ...STATE, tank }).tankId).toBe(tank.tankId);
     expect(toLeaderboardFilter({ ...STATE, scope: 'clans', tank }).tankId).toBeUndefined();

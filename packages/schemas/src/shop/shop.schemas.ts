@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { countSchema, isoDateTimeSchema, tankIdSchema, uuidSchema } from '../common/primitives/primitives.schemas';
+import { paginatedSchema, paginationQuerySchema } from '../common/query/query.schemas';
 
 export const bonusCodeStatusSchema = z.enum(['unknown', 'working', 'expired']);
 export const bonusCodeVerdictSchema = z.enum(['working', 'expired', 'already_used']);
@@ -78,3 +79,25 @@ export const gameEventsQuerySchema = z.object({
   from: isoDateTimeSchema.optional(),
   to: isoDateTimeSchema.optional()
 });
+
+export const newsKindSchema = z.enum(['news', 'patch_notes', 'dev_blog']);
+
+export const newsQuerySchema = paginationQuerySchema.extend({
+  kind: newsKindSchema.optional(),
+  tankId: tankIdSchema.optional()
+});
+
+export const newsItemSchema = z.object({
+  id: uuidSchema,
+  source: z.string(),
+  url: z.url(),
+  kind: newsKindSchema,
+  title: z.string(),
+  summary: z.string().nullable(),
+  image: z.string().nullable(),
+  tankIds: z.array(tankIdSchema),
+  gameVersion: z.string().nullable(),
+  publishedAt: isoDateTimeSchema
+});
+
+export const newsPageSchema = paginatedSchema(newsItemSchema);

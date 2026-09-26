@@ -1,14 +1,34 @@
-import type { ApiKey } from '../../../../../generated';
+import type { ApiPlan } from '@bronevik/schemas';
 
-export type GeneratedApiKey = {
-  key: string;
-  prefix: string;
-  hash: string;
+export type ApiKeyRow = {
+  id: string;
+  name: string | null;
+  start: string | null;
+  enabled: boolean;
+  metadata: unknown;
+  createdAt: Date;
+  updatedAt: Date;
+  lastRequest: Date | null;
+  expiresAt: Date | null;
 };
 
-export type MatchesApiKeyHashInput = {
-  key: string;
-  hash: string;
+export type PlanQuota = {
+  refillAmount: number;
+  refillInterval: number;
+  metadata: { plan: ApiPlan };
 };
 
-export type ApiKeyRow = Pick<ApiKey, 'createdAt' | 'expiresAt' | 'id' | 'lastUsedAt' | 'name' | 'plan' | 'prefix' | 'revokedAt' | 'scopes'>;
+export type RebasedRemainingInput = {
+  plan: ApiPlan;
+  remaining: number | null;
+  refillAmount: number | null;
+};
+
+export type VerifyFailure = 'invalid' | 'quota' | 'revoked';
+
+export type QuotaRetryAfterInput = {
+  lastRefillAt: Date | null;
+  createdAt: Date;
+  refillInterval: number | null;
+  now: Date;
+};

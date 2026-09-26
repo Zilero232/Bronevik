@@ -5,4 +5,6 @@ export type HistoryChartProps = {
   series?: TimeSeries;
   isLoading: boolean;
   isError: boolean;
+  isRetrying: boolean;
+  onRetry: () => void;
 };

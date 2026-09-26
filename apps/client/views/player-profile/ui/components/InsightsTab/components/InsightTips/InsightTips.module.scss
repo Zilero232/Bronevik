@@ -4,19 +4,17 @@
   display: grid;
   padding: 0;
   margin: 0;
-  gap: var(--space-3);
+  gap: var(--gap-panel);
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   list-style: none;
 }
 
 .tip {
-  display: flex;
-  align-items: flex-start;
-  padding: var(--space-4);
-  border: 1px solid color-mix(in srgb, var(--tip) 35%, var(--color-border));
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--tip) 10%, transparent), transparent 60%), var(--color-surface-sunken);
-  gap: var(--space-3);
+  @include stack(var(--space-1));
+  @include well;
+
+  padding: var(--space-3) var(--space-4);
+  border-left: 2px solid var(--tip);
 
   --tip: var(--color-warning);
 
@@ -31,19 +29,6 @@
   &[data-code='low_damage_tank'] {
     --tip: var(--color-danger);
   }
-}
-
-.icon {
-  display: inline-flex;
-  flex-shrink: 0;
-  padding: 6px;
-  border-radius: var(--radius-sm);
-  background-color: color-mix(in srgb, var(--tip) 16%, transparent);
-  color: var(--tip);
-}
-
-.text {
-  @include stack(var(--space-1));
 }
 
 .title {

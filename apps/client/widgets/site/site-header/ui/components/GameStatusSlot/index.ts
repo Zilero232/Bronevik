@@ -1,0 +1,1 @@
+export { GameStatusSlot } from './GameStatusSlot';

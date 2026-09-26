@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { subDays } from 'date-fns';
 import { createHash } from 'node:crypto';
 
 import type { BonusCodeView, DiscoverBonusCodeInput, ListBonusCodesInput, RecountInput, ReportBonusCodeInput } from '../shop.types';
@@ -61,7 +62,7 @@ export class BonusCodeService {
   }
 
   async refreshStatuses(now: Date): Promise<number> {
-    const staleBefore = new Date(now.getTime() - BONUS_CODE.staleAfterDays * 86_400_000);
+    const staleBefore = subDays(now, BONUS_CODE.staleAfterDays);
     const stale = await this.prisma.bonusCode.updateMany({
       where: { status: { not: 'expired' }, discoveredAt: { lt: staleBefore }, lastReportAt: null },
       data: { status: 'expired' }
@@ -77,7 +78,7 @@ export class BonusCodeService {
   }
 
   private async recount({ code, now }: RecountInput) {
-    const since = new Date(now.getTime() - BONUS_CODE.reportWindowDays * 86_400_000);
+    const since = subDays(now, BONUS_CODE.reportWindowDays);
     const [counts, latest, current] = await Promise.all([
       this.prisma.bonusCodeReport.groupBy({ by: ['verdict'], where: { code, createdAt: { gte: since } }, _count: { _all: true } }),
       this.prisma.bonusCodeReport.findFirst({ where: { code }, orderBy: { createdAt: 'desc' }, select: { createdAt: true } }),

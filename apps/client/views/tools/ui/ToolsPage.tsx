@@ -1,15 +1,23 @@
 'use client';
 
-import { CalculatorNav, CalculatorPanel, ToolsHero } from './components';
+import { useTranslations } from 'next-intl';
+
+import { PageHeader } from '@/ui-kit';
+
+import { CalculatorNav, CalculatorPanel } from './components';
 
 import s from './ToolsPage.module.scss';
 
-export const ToolsPage = () => (
-  <div className={s.root}>
-    <ToolsHero />
-    <div className={s.sections}>
-      <CalculatorNav />
-      <CalculatorPanel />
+export const ToolsPage = () => {
+  const t = useTranslations('tools.head');
+
+  return (
+    <div className={s.root}>
+      <PageHeader description={t('description')} title={t('title')} />
+      <div className={s.layout}>
+        <CalculatorNav />
+        <CalculatorPanel />
+      </div>
     </div>
-  </div>
-);
+  );
+};

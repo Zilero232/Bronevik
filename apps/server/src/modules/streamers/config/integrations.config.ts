@@ -19,8 +19,8 @@ export const OAUTH_STATE = {
 
 export const INTEGRATIONS = {
   syncIntervalMs: 5 * 60_000,
-  doneRedirectPath: '/me?streamer=connected',
-  failedRedirectPath: '/me?streamer=failed'
+  doneRedirectPath: '/me/streamer?streamer=connected',
+  failedRedirectPath: '/me/streamer?streamer=failed'
 } as const;
 
 export const NO_SCOPES: readonly string[] = [];

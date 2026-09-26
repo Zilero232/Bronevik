@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include nation-tint;
+
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+  align-items: center;
+  padding-left: var(--space-3);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--nation) 70%, transparent);
+}

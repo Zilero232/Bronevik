@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { PlayersController } from './players.controller';
 import {
+  PlayerAchievementsService,
   PlayerHistoryService,
   PlayerInsightsService,
   PlayerMarksService,
@@ -16,6 +17,7 @@ import {
 @Module({
   controllers: [PlayersController],
   providers: [
+    PlayerAchievementsService,
     PlayerResolverService,
     PlayerSummaryService,
     PlayerTanksService,

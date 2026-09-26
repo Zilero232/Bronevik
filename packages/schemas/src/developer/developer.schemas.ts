@@ -11,6 +11,13 @@ export const apiPlanLimitsSchema = z.object({
   webhooks: countSchema
 });
 
+export const apiPlanOfferSchema = z.object({
+  plan: apiPlanSchema,
+  limits: apiPlanLimitsSchema
+});
+
+export const apiPlansSchema = z.array(apiPlanOfferSchema);
+
 export const apiKeySchema = z.object({
   id: uuidSchema,
   name: z.string(),
@@ -111,7 +118,7 @@ export const updateWebhookEndpointSchema = z.object({
 
 export const createdWebhookEndpointSchema = z.object({
   endpoint: webhookEndpointSchema,
-  secret: z.string().min(32).describe('HMAC-SHA256 signing secret; shown only once')
+  secret: z.string().startsWith(WEBHOOK.secretPrefix).min(32).describe('Standard Webhooks signing secret (whsec_…); shown only once')
 });
 
 export const webhookDeliverySchema = z.object({
@@ -134,4 +141,6 @@ export const webhookPayloadSchema = z
     createdAt: isoDateTimeSchema,
     data: z.record(z.string(), z.unknown())
   })
-  .describe(`Signed with ${WEBHOOK.signatureHeader}: ${WEBHOOK.signatureScheme}=hex(HMAC-SHA256(secret, "<${WEBHOOK.timestampHeader}>.<raw body>"))`);
+  .describe(
+    `Signed per Standard Webhooks (standardwebhooks.com): ${WEBHOOK.deliveryHeader}, ${WEBHOOK.timestampHeader} and ${WEBHOOK.signatureHeader} (${WEBHOOK.signatureScheme},<base64 HMAC-SHA256>)`
+  );

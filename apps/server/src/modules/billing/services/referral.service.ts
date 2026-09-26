@@ -1,10 +1,10 @@
+import { REFERRAL } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
 
 import type { RegisterReferralInput, RewardReferralInput } from '../billing.types';
 
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
 import { isUniqueViolation, PrismaService } from '../../../core';
-import { REFERRAL } from '../config';
 import { SubscriptionService } from './subscription.service';
 
 @Injectable()

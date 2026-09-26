@@ -1,2 +1,2 @@
-export { batchById, batchList, chunkIds, LESTA_BATCH_SIZE } from './batching';
+export { batchById, batchList, chunkIds } from './batching';
 export type { BatchByIdInput, BatchListInput, ChunkIdsInput, LestaId } from './batching.types';

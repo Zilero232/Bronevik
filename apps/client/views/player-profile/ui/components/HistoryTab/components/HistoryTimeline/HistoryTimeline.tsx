@@ -1,46 +1,32 @@
 'use client';
 
-import { motion } from 'motion/react';
 import { useFormatter, useTranslations } from 'next-intl';
-
-import { ROW_ITEM } from '@/shared/lib';
 
 import type { HistoryTimelineProps } from './HistoryTimeline.types';
 
+import { HISTORY } from '../../../../../config';
+
 import s from './HistoryTimeline.module.scss';
 
-const MONTH_YEAR = { month: 'long', year: 'numeric' } as const;
-
-export const HistoryTimeline = ({ entries, icon }: HistoryTimelineProps) => {
+export const HistoryTimeline = ({ entries }: HistoryTimelineProps) => {
   const t = useTranslations('profile.history');
   const format = useFormatter();
 
   if (entries.length === 0) {
-    return <p className={s.empty}>{t('empty')}</p>;
+    return <p className={s.empty}>{t('noChanges')}</p>;
   }
 
   return (
     <ol className={s.root}>
-      {entries.map(({ kind, value, from, to }, index) => (
-        <motion.li
-          key={`${kind}-${value}-${from}`}
-          animate='visible'
-          className={s.entry}
-          custom={index}
-          data-current={to === null}
-          initial='hidden'
-          variants={ROW_ITEM}
-        >
-          <span aria-hidden className={s.dot}>
-            {icon}
-          </span>
+      {entries.map(({ kind, value, from, to }) => (
+        <li key={`${kind}-${value}-${from}`} className={s.entry} data-current={to === null}>
           <span className={s.value}>{value}</span>
           <span className={s.range}>
-            {from ? format.dateTime(new Date(from), MONTH_YEAR) : t('unknown')}
+            {from ? format.dateTime(new Date(from), HISTORY.date) : t('unknown')}
             {' — '}
-            {to ? format.dateTime(new Date(to), MONTH_YEAR) : t('now')}
+            {to ? format.dateTime(new Date(to), HISTORY.date) : t('now')}
           </span>
-        </motion.li>
+        </li>
       ))}
     </ol>
   );

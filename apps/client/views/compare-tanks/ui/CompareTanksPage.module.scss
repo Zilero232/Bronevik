@@ -2,7 +2,14 @@
 
 .root {
   @include shell;
-  @include stack(var(--space-6));
+  @include stack(var(--space-5));
 
-  padding-bottom: var(--space-10);
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-8);
+}
+
+.source {
+  @include source-line;
+
+  margin: 0;
 }

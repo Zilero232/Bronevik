@@ -14,7 +14,7 @@ export const EventPayloads = () => {
 
   return (
     <div className={s.root}>
-      <h3 className={s.heading}>{t('eventsTitle')}</h3>
+      <h4 className={s.heading}>{t('eventsTitle')}</h4>
       <Tabs
         items={WEBHOOK.events.map((event) => ({
           value: event,

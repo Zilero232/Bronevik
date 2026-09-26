@@ -1,1 +1,0 @@
-export { BillingHeading } from './BillingHeading';

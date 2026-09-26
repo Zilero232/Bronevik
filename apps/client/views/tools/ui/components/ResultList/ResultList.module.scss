@@ -1,0 +1,37 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  border-top: 1px solid var(--color-border);
+  margin: 0;
+}
+
+.row {
+  @include data-list-row;
+
+  justify-content: space-between;
+
+  --value: var(--color-text);
+
+  &[data-tone='good'] {
+    --value: var(--color-success);
+  }
+
+  &[data-tone='bad'] {
+    --value: var(--color-danger);
+  }
+}
+
+.label {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.value {
+  @include numeric;
+
+  margin: 0;
+  color: var(--value);
+  font-size: var(--text-md);
+  font-weight: 600;
+  text-align: end;
+}

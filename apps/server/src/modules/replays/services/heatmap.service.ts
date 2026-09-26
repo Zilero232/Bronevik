@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { unique } from 'remeda';
 
 import type { VehicleType } from '../../../../generated';
 import type { ReplayTrack } from '../lib';
@@ -16,15 +17,16 @@ export class HeatmapService {
   async get({ arenaId, mode, scope }: HeatmapQueryInput): Promise<Heatmap> {
     const row = await this.prisma.mapHeatmap.findUnique({ where: { arenaId_mode_scope: { arenaId, mode, scope } } });
     const cells = row ? readHeatmapCells(row.data) : null;
+    const stored = row && cells ? { row, cells } : null;
 
     return {
       arenaId,
       mode,
       scope,
-      gridSize: row && cells ? row.gridSize : HEATMAP.gridSize,
-      samples: row && cells ? row.samples : 0,
-      cells: cells ?? emptyGrid(HEATMAP.gridSize),
-      updatedAt: row?.updatedAt.toISOString() ?? null
+      gridSize: stored?.row.gridSize ?? HEATMAP.gridSize,
+      samples: stored?.row.samples ?? 0,
+      cells: stored?.cells ?? emptyGrid(HEATMAP.gridSize),
+      updatedAt: stored?.row.updatedAt.toISOString() ?? null
     };
   }
 
@@ -45,7 +47,7 @@ export class HeatmapService {
       }
     }
 
-    const modes = [...new Set([HEATMAP.allMode, mode ?? HEATMAP.allMode])];
+    const modes = unique([HEATMAP.allMode, mode ?? HEATMAP.allMode]);
     let written = 0;
 
     await this.prisma.$transaction(async (tx) => {

@@ -7,15 +7,13 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, hsl(var(--avatar-hue) 38% 34%), hsl(var(--avatar-hue) 30% 16%));
+  border-radius: var(--radius-sm);
+  background: hsl(var(--avatar-hue) 22% 28%);
   color: var(--color-avatar-text);
   font-family: var(--font-display);
-  font-stretch: 80%;
   font-weight: 700;
   text-transform: uppercase;
   user-select: none;
-
-  @include chamfer-path(22%);
 }
 
 .image {

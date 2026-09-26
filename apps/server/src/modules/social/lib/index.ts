@@ -1,4 +1,4 @@
-export { badgeCodeOf, challengeProgress, isCompleted } from './challenges';
+export { badgeCodeOf, challengeProgress } from './challenges';
 export type { ChallengeDefinition, WeekStats } from './challenges';
 export { buildFeed } from './feed';
 export { rankLeague } from './league';

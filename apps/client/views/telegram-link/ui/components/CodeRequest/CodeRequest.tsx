@@ -1,9 +1,8 @@
 'use client';
 
-import { RadioTower } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/ui-kit';
+import { Button, Card, CardBody, CardHeader } from '@/ui-kit';
 
 import type { CodeRequestProps } from './CodeRequest.types';
 
@@ -17,28 +16,24 @@ export const CodeRequest = ({ code, botUsername, issuedAt, isIssuing, onIssue }:
   const t = useTranslations('telegram.request');
 
   return (
-    <section className={s.root}>
-      <header className={s.header}>
-        <h2 className={s.title}>{t('title')}</h2>
+    <Card>
+      <CardHeader title={t('title')} />
+      <CardBody className={s.body}>
         <p className={s.description}>{t('description')}</p>
-      </header>
-      <ol className={s.steps}>
-        {BOT_FEATURES.steps.map((step, index) => (
-          <li key={step} className={s.step}>
-            <span className={s.number}>{index + 1}</span>
-            {t(`steps.${step}`, { bot: `@${botName(botUsername)}` })}
-          </li>
-        ))}
-      </ol>
-      {code ? (
-        <CodeTicket botUsername={botUsername} code={code} isIssuing={isIssuing} issuedAt={issuedAt} onReissue={onIssue} />
-      ) : (
-        <Button block disabled={isIssuing} size='lg' onClick={onIssue}>
-          <RadioTower size={18} />
-          {t('issue')}
-        </Button>
-      )}
-      <p className={s.note}>{t('note')}</p>
-    </section>
+        <ol className={s.steps}>
+          {BOT_FEATURES.steps.map((step) => (
+            <li key={step}>{t(`steps.${step}`, { bot: `@${botName(botUsername)}` })}</li>
+          ))}
+        </ol>
+        {code ? (
+          <CodeTicket key={code.code} botUsername={botUsername} code={code} isIssuing={isIssuing} issuedAt={issuedAt} onReissue={onIssue} />
+        ) : (
+          <Button block disabled={isIssuing} size='lg' onClick={onIssue}>
+            {t('issue')}
+          </Button>
+        )}
+        <p className={s.note}>{t('note')}</p>
+      </CardBody>
+    </Card>
   );
 };

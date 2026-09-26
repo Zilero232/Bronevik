@@ -1,41 +1,31 @@
 'use client';
 
+import type { TankClass } from '@bronevik/icons';
+
 import { useDebounceValue } from '@siberiacancode/reactuse';
 import { useState } from 'react';
+import { isDeepEqual } from 'remeda';
 
-import type { PlayerTanksFilter } from '@/shared/api/players';
+import type { TanksFilterState } from '../../../lib/tanks-filter';
 
-import type { TanksFilterState } from './use-tanks-filter.types';
-
-import { matchesTankQuery, toggleValue } from './use-tanks-filter.helpers';
-
-const INITIAL: TanksFilterState = { tiers: [], types: [], nation: 'all', premium: 'all', query: '' };
-
-const QUERY_DEBOUNCE_MS = 200;
+import { TANKS_FILTER } from '../../../config';
+import { matchesTankQuery, tanksRequest, tiersOf } from '../../../lib/tanks-filter';
 
 export const useTanksFilter = () => {
-  const [filter, setFilter] = useState<TanksFilterState>(INITIAL);
+  const [filter, setFilter] = useState<TanksFilterState>(TANKS_FILTER.initial);
 
-  const query = useDebounceValue(filter.query, QUERY_DEBOUNCE_MS);
-
-  const { tiers, types, nation, premium } = filter;
-  const request: PlayerTanksFilter = {
-    tiers,
-    types,
-    nations: nation === 'all' ? [] : [nation],
-    premium: premium === 'all' ? undefined : premium === 'premium'
-  };
+  const query = useDebounceValue(filter.query, TANKS_FILTER.queryDebounceMs);
 
   const update = (patch: Partial<TanksFilterState>) => setFilter((current) => ({ ...current, ...patch }));
 
   return {
     filter,
-    request,
+    request: tanksRequest(filter),
     matches: (name: string) => matchesTankQuery({ name, query }),
-    isDirty: JSON.stringify(filter) !== JSON.stringify(INITIAL),
-    toggleTier: (tier: TanksFilterState['tiers'][number]) => update({ tiers: toggleValue({ values: tiers, value: tier }) }),
-    toggleType: (type: TanksFilterState['types'][number]) => update({ types: toggleValue({ values: types, value: type }) }),
+    isDirty: !isDeepEqual(filter, TANKS_FILTER.initial),
+    setTiers: (values: string[]) => update({ tiers: tiersOf(values) }),
+    setTypes: (types: TankClass[]) => update({ types }),
     update,
-    reset: () => setFilter(INITIAL)
+    reset: () => setFilter(TANKS_FILTER.initial)
   };
 };

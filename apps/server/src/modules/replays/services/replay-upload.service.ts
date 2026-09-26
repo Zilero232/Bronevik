@@ -5,18 +5,18 @@ import { Queue } from 'bullmq';
 import type { UploadedReplay, UploadFromModInput, UploadReplayInput } from '../replays.types';
 
 import { AppBadRequestException, AppConflictException } from '../../../common/exceptions';
-import { isUniqueViolation, PrismaService } from '../../../core';
+import { errorMessage } from '../../../common/lib';
+import { isUniqueViolation, ObjectStorage, PrismaService } from '../../../core';
 import { parseReplay } from '../../../lib/replay';
 import { ModDeviceService } from '../../mod';
 import { REPLAY_UPLOAD, REPLAYS_QUEUE } from '../config';
 import { replayExtension, replayStorageKey, sha256Hex } from '../lib';
-import { ReplayStorage } from '../storage';
 
 @Injectable()
 export class ReplayUploadService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly storage: ReplayStorage,
+    private readonly storage: ObjectStorage,
     private readonly devices: ModDeviceService,
     @InjectQueue(REPLAYS_QUEUE.name) private readonly queue: Queue
   ) {}
@@ -41,7 +41,7 @@ export class ReplayUploadService {
     try {
       parseReplay(bytes);
     } catch (error) {
-      throw new AppBadRequestException('REPLAY_INVALID', `Not a readable replay: ${error instanceof Error ? error.message : String(error)}`);
+      throw new AppBadRequestException('REPLAY_INVALID', `Not a readable replay: ${errorMessage(error)}`);
     }
 
     const sha256 = sha256Hex(bytes);

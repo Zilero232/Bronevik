@@ -10,6 +10,17 @@ export const MINIMAP_SOURCES = {
   IZEBERG_RU: { owner: 'unicum-gg', repo: 'wot.maps', ref: 'Lesta' }
 } as const;
 
+export const MODEL_SOURCES = {
+  RU: { owner: 'unicum-gg', repo: 'wot.models', ref: 'Lesta', isTest: false }
+} as const;
+
+export const MODEL_PATHS = {
+  version: '.version_name',
+  index: 'vehicles.json',
+  vehicles: 'vehicles',
+  collision: 'collision.json'
+} as const;
+
 export const GITHUB = {
   api: 'https://api.github.com',
   raw: 'https://raw.githubusercontent.com',

@@ -1,1 +1,0 @@
-export { CohortBar } from './CohortBar';

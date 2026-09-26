@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
+import type { PremiumOffer, Prisma } from '../../../../generated';
 import type { ScrapeSummary, StoreOfferInput } from '../shop.types';
 
 import { toJsonValue } from '../../../common/lib';
 import { SOURCES } from '../../../config';
-import { PrismaService } from '../../../core';
+import { isUniqueViolation, PrismaService } from '../../../core';
 import { crawlPages, parseTankiListing } from '../../../lib/scrape';
 import { NotificationService } from '../../notifications';
 import { NEWS_ENRICH, OFFER_SCRAPE } from '../config';
@@ -53,20 +54,22 @@ export class OfferScrapeService {
   private async store({ item, detail, vehicles, now }: StoreOfferInput): Promise<number> {
     const tankIds = matchTankNames({ text: `${item.title}\n${detail?.text ?? ''}`, vehicles, minLength: NEWS_ENRICH.minTankNameLength });
     const discountPercent = detail?.tankDiscountPercent ?? null;
-    const offer = await this.prisma.premiumOffer.create({
-      data: {
-        source: OFFER_SCRAPE.source,
-        externalId: new URL(item.url).pathname,
-        title: item.title,
-        url: item.url,
-        image: item.image,
-        tankIds,
-        discountPercent,
-        contents: toJsonValue({ discounts: detail?.discounts ?? [], bonusCodes: detail?.bonusCodes ?? [] }),
-        startsAt: item.publishedAt ?? now,
-        endsAt: detail?.endsAt ?? null
-      }
+    const offer = await this.createOffer({
+      source: OFFER_SCRAPE.source,
+      externalId: new URL(item.url).pathname,
+      title: item.title,
+      url: item.url,
+      image: item.image,
+      tankIds,
+      discountPercent,
+      contents: toJsonValue({ discounts: detail?.discounts ?? [], bonusCodes: detail?.bonusCodes ?? [] }),
+      startsAt: item.publishedAt ?? now,
+      endsAt: detail?.endsAt ?? null
     });
+
+    if (!offer) {
+      return 0;
+    }
 
     for (const code of detail?.bonusCodes ?? []) {
       await this.bonusCodes.discover({
@@ -87,5 +90,17 @@ export class OfferScrapeService {
     }
 
     return notified;
+  }
+
+  private async createOffer(data: Prisma.PremiumOfferUncheckedCreateInput): Promise<PremiumOffer | null> {
+    try {
+      return await this.prisma.premiumOffer.create({ data });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        return null;
+      }
+
+      throw error;
+    }
   }
 }

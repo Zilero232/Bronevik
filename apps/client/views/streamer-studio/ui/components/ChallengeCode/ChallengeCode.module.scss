@@ -15,14 +15,9 @@
 }
 
 .code {
-  @include numeric;
+  @include numeric(var(--text-2xl));
 
-  color: var(--color-accent);
-  font-size: var(--text-2xl);
-  font-stretch: var(--stretch-condensed);
-  font-weight: 800;
   letter-spacing: 0.08em;
-  line-height: 1;
 }
 
 .hint {

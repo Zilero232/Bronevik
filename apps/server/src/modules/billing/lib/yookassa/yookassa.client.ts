@@ -1,6 +1,7 @@
 import type { ChargeSavedMethodInput, CreatePaymentInput, YooKassaCredentials, YooKassaPayment, YooKassaRequestInput } from './yookassa.types';
 
 import { AppBadRequestException } from '../../../../common/exceptions';
+import { errorMessage } from '../../../../common/lib';
 import { http } from '../../../../lib/http';
 import { YOOKASSA } from '../../config';
 import { toAmount } from './yookassa.helpers';
@@ -59,10 +60,7 @@ export class YooKassaClient {
 
       return yookassaPaymentSchema.parse(body);
     } catch (error) {
-      throw new AppBadRequestException(
-        'PAYMENT_FAILED',
-        `YooKassa ${method.toUpperCase()} ${path} failed: ${error instanceof Error ? error.message : String(error)}`
-      );
+      throw new AppBadRequestException('PAYMENT_FAILED', `YooKassa ${method.toUpperCase()} ${path} failed: ${errorMessage(error)}`);
     }
   }
 }

@@ -1,1 +1,1 @@
-export { HOME_FEATURES } from './features';
+export { HOME, HOME_LINKS } from './home.constants';

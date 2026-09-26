@@ -27,7 +27,7 @@ describe('signatureTree', () => {
   });
 
   it('shows placeholders for a player without ratings', () => {
-    expect(JSON.stringify(signatureTree({ ...data, wn8: null, winRate: null, battles: null, avgDamage: null }))).toContain('—');
+    expect(JSON.stringify(signatureTree({ ...data, wn8: null, winRate: null, battles: null, avgDamage: null }))).toContain(SIGNATURE.missing);
   });
 });
 

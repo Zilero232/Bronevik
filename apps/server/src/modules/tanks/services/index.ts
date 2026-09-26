@@ -1,3 +1,4 @@
+export { TankArmorService } from './tank-armor.service';
 export { TankDetailService } from './tank-detail.service';
 export { TankPatchesService } from './tank-patches.service';
 export { TankStatsService } from './tank-stats.service';

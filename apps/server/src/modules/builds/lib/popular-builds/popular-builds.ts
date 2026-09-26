@@ -1,10 +1,10 @@
-import { sortBy, sumBy } from 'remeda';
+import { sortBy, sumBy, unique } from 'remeda';
 
 import type { LoadoutSample, RankedLoadout, RankLoadoutsInput } from './popular-builds.types';
 
 import { percentOf, ratio } from '../../../../common/lib';
 
-const normalize = (ids: readonly number[]): number[] => [...new Set(ids)].sort((left, right) => left - right);
+const normalize = (ids: readonly number[]): number[] => sortBy(unique(ids), (id) => id);
 
 export const hasItems = (sample: LoadoutSample): boolean =>
   sample.optionalDevices.length > 0 || sample.consumables.length > 0 || sample.directives.length > 0;

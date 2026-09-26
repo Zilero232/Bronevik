@@ -1,58 +1,52 @@
 'use client';
 
-import { BRONYA_INDEX } from '@bronevik/ratings';
 import { X } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { usePlayerProfile } from '@/entities/player/profile';
+import { PlayerIdentity } from '@/entities/player/player';
 import { ratingValueTone } from '@/entities/player/stats';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { SCALE_IN } from '@/shared/lib';
-import { Avatar, IconButton, ProgressRing, Skeleton } from '@/ui-kit';
+import { IconButton, RetryButton, Skeleton } from '@/ui-kit';
 
 import type { PlayerSlotProps } from './PlayerSlot.types';
+
+import { usePlayerSlot } from '../../../model/hooks';
 
 import s from './PlayerSlot.module.scss';
 
 export const PlayerSlot = ({ accountId, index, onRemove }: PlayerSlotProps) => {
   const t = useTranslations('compare');
   const format = useFormatter();
-  const { data: profile, isError } = usePlayerProfile(String(accountId));
-
-  const summary = profile?.summary;
-  const broneIndex = summary?.overall.broneIndex;
+  const { summary, isError, canRetry, isRetrying, retry } = usePlayerSlot(accountId);
 
   return (
-    <motion.article animate='visible' className={s.root} data-slot={index} initial='hidden' variants={SCALE_IN}>
-      <span className={s.index}>{String(index + 1).padStart(2, '0')}</span>
-      <IconButton aria-label={t('remove')} className={s.remove} size='sm' onClick={onRemove}>
-        <X size={16} />
-      </IconButton>
-      {isError && <p className={s.error}>{t('slotError', { id: accountId })}</p>}
-      {!summary && !isError && <Skeleton height={64} shape='block' />}
-      {summary && broneIndex && (
-        <div className={s.body}>
-          <Avatar name={summary.nickname} size='md' />
-          <div className={s.text}>
-            <Link className={s.nickname} href={ROUTES.player(summary.nickname)}>
-              {summary.nickname}
+    <article className={s.root} data-slot={index}>
+      <div className={s.body}>
+        {isError && (
+          <span className={s.error}>
+            {t('slotError', { id: accountId })}
+            {canRetry && <RetryButton disabled={isRetrying} size='sm' variant='ghost' onClick={retry} />}
+          </span>
+        )}
+        {!summary && !isError && <Skeleton height={20} width='60%' />}
+        {summary && (
+          <>
+            <Link className={s.player} href={ROUTES.player(summary.nickname)}>
+              <PlayerIdentity player={{ nickname: summary.nickname, clanTag: summary.clan?.tag ?? null }} />
             </Link>
-            <span className={s.clan}>{summary.clan ? `[${summary.clan.tag}]` : t('noClan')}</span>
-          </div>
-          <ProgressRing
-            label={t('broneIndex')}
-            max={BRONYA_INDEX.scale}
-            size={72}
-            thickness={5}
-            tone={ratingValueTone(broneIndex)}
-            value={broneIndex.value ?? 0}
-          >
-            <span className={s.bi}>{format.number(broneIndex.value ?? 0, { useGrouping: false })}</span>
-          </ProgressRing>
-        </div>
-      )}
-    </motion.article>
+            <span className={s.figure}>
+              <span className={s.label}>{t('broneIndex')}</span>
+              <span className={s.value} data-tone={ratingValueTone(summary.overall.broneIndex)}>
+                {summary.overall.broneIndex.value === null ? '—' : format.number(summary.overall.broneIndex.value, 'integer')}
+              </span>
+            </span>
+          </>
+        )}
+      </div>
+      <IconButton aria-label={t('remove')} size='sm' onClick={onRemove}>
+        <X size={14} />
+      </IconButton>
+    </article>
   );
 };

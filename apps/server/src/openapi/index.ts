@@ -1,3 +1,3 @@
 export { internalDocument, publicDocument, setupDocs } from './openapi';
 export { OPENAPI } from './openapi.constants';
-export { pickPaths } from './pick-paths';
+export type { PublicDocumentInput } from './openapi.types';

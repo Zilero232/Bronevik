@@ -3,6 +3,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { LestaAccountStore, LinkLestaAccountInput } from '../../../lib/auth';
 import type { LestaClient } from '../../../lib/lesta';
 
+import { errorMessage } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { CollectorProducerService } from '../../collector';
 
@@ -57,7 +58,7 @@ export class LestaAccountsService implements LestaAccountStore {
       links.map(async (link) => {
         if (link.accessToken) {
           await this.lesta.auth.logout({ accessToken: link.accessToken }).catch((error: unknown) => {
-            this.logger.warn(`Lesta token of ${link.accountId} was not revoked: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.warn(`Lesta token of ${link.accountId} was not revoked: ${errorMessage(error)}`);
           });
         }
       })

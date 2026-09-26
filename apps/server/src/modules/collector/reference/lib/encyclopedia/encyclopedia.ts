@@ -1,12 +1,11 @@
-import slugifyText from '@sindresorhus/slugify';
 import { flatten } from 'flat';
-import { entries, isNumber } from 'remeda';
+import { entries, isNumber, sortBy } from 'remeda';
 
 import type { ModuleType, ProvisionType, VehicleType } from '../../../../../../generated';
 import type { Vehicle } from '../../../../../lib/lesta';
 import type { SpecChange, SpecDiffInput, VehicleSlugsInput } from './encyclopedia.types';
 
-import { readRecord, VEHICLE_TYPE_TO_DB } from '../../../../../common/lib';
+import { readRecord, slugify, VEHICLE_TYPE_TO_DB } from '../../../../../common/lib';
 import { MODULE_TYPES, PROVISION_TYPES, SPEC_DIFF } from './encyclopedia.constants';
 
 const isKey = <T extends object>(table: T, key: string): key is Extract<keyof T, string> => Object.hasOwn(table, key);
@@ -18,13 +17,11 @@ export const toProvisionType = (value: string | null | undefined): ProvisionType
 
 export const toModuleType = (value: string | null | undefined): ModuleType | null => MODULE_TYPES.find((type) => type === value) ?? null;
 
-export const slugify = (value: string): string => slugifyText(value, { decamelize: false });
-
 export const vehicleSlugs = ({ vehicles }: VehicleSlugsInput): Map<number, string> => {
   const taken = new Set<string>();
   const slugs = new Map<number, string>();
 
-  for (const vehicle of [...vehicles].sort((left, right) => left.tank_id - right.tank_id)) {
+  for (const vehicle of sortBy(vehicles, (vehicle) => vehicle.tank_id)) {
     const base = slugify(vehicle.tag ?? '') || `tank-${vehicle.tank_id}`;
     const slug = taken.has(base) ? `${base}-${vehicle.tank_id}` : base;
 

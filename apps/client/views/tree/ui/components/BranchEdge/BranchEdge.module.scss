@@ -1,59 +1,36 @@
 @use '@/shared/styles/mixins' as *;
 
 .path {
-  stroke: var(--color-steel-dim);
-  stroke-width: 1.5;
-  transition:
-    stroke var(--duration-base) ease,
-    stroke-opacity var(--duration-base) ease;
+  stroke: var(--color-border-strong);
+  stroke-width: 1;
 
   &[data-state='dimmed'] {
-    stroke-opacity: 0.3;
+    stroke-opacity: 0.4;
   }
 
   &[data-state='path'] {
     stroke: var(--color-accent);
-    stroke-width: 2.5;
-  }
-}
-
-.flow {
-  animation: branch-flow 0.9s linear infinite;
-  filter: drop-shadow(0 0 4px var(--color-accent));
-  stroke: var(--color-accent-hot);
-  stroke-dasharray: 6 14;
-  stroke-linecap: round;
-  stroke-width: 2.5;
-
-  @include reduced-motion {
-    animation: none;
   }
 }
 
 .label {
-  @include hud-label;
   @include numeric;
 
   position: absolute;
-  padding: 1px var(--space-1);
+  padding: 0 var(--space-1);
   border: 1px solid var(--color-border);
-  background-color: var(--color-bg-deep);
+  border-radius: var(--radius-xs);
+  background-color: var(--color-surface-sunken);
   color: var(--color-text-dim);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   pointer-events: none;
 
   &[data-state='dimmed'] {
-    filter: opacity(0.35);
+    opacity: 0.4;
   }
 
   &[data-state='path'] {
     border-color: var(--color-accent);
-    color: var(--color-accent);
-  }
-}
-
-@keyframes branch-flow {
-  to {
-    stroke-dashoffset: -20;
+    color: var(--color-text);
   }
 }

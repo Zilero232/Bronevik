@@ -1,0 +1,20 @@
+import type { LestaCallOptions, LestaRequester } from '../client/client.types';
+import type { ServerOnline } from '../schemas';
+
+import { LESTA_API } from '../client/client.constants';
+import { callParams } from '../client/client.helpers';
+import { serversInfoSchema } from '../schemas';
+
+export const createWgnMethods = (requester: LestaRequester) => {
+  const servers = async (options: LestaCallOptions = {}): Promise<ServerOnline[]> => {
+    const { data } = await requester.call({
+      method: `${LESTA_API.wgnPath}servers/info`,
+      params: { ...callParams(options), game: LESTA_API.game },
+      schema: serversInfoSchema
+    });
+
+    return data[LESTA_API.game] ?? [];
+  };
+
+  return { servers };
+};

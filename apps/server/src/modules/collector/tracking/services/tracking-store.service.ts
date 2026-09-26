@@ -1,27 +1,26 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { addDays, fromUnixTime } from 'date-fns';
 import { groupBy } from 'remeda';
 
 import type { StatsMode, TrackingTier } from '../../../../../generated';
-import type { WebhookEmitter } from '../../../../core';
 import type { TankBaseline } from '../lib/account-diff';
-import type { GainedMark } from '../lib/marks-gain';
 import type { AccountChanges, LatestTankSnapshotsInput, MarkSyncedInput, PollStorePort, StoredPlayer, UpsertPlayerInput } from '../lib/poll-pipeline';
 import type { SnapshotMode, TankSnapshotRow } from '../lib/snapshots';
 
-import { PrismaService, WEBHOOK_EMITTER } from '../../../../core';
+import { PrismaService } from '../../../../core';
 import { PurgeGuardService } from '../../purge';
 import { TRACKING } from '../config';
 import { gainedMarks, snapshotMarks } from '../lib/marks-gain';
 import { nextPollAt } from '../lib/poll-schedule';
 import { isSnapshotMode } from '../lib/snapshots';
+import { TrackingAnnounceService } from './tracking-announce.service';
 
 @Injectable()
 export class TrackingStoreService implements PollStorePort {
   constructor(
     private readonly prisma: PrismaService,
     private readonly guard: PurgeGuardService,
-    @Inject(WEBHOOK_EMITTER) private readonly webhooks: WebhookEmitter
+    private readonly announce: TrackingAnnounceService
   ) {}
 
   async blockedAccounts(accountIds: readonly number[]): Promise<Set<number>> {
@@ -91,7 +90,7 @@ export class TrackingStoreService implements PollStorePort {
       return;
     }
 
-    const isSubscriber = player.trackingTier === 'active' && (await this.isSubscriber(id));
+    const isSubscriber = player.trackingTier === 'active' && (await this.announce.isSubscriber(id));
 
     await this.prisma.player.update({
       where: { accountId: id },
@@ -212,37 +211,6 @@ export class TrackingStoreService implements PollStorePort {
       }
     });
 
-    await this.announceMarks(gainedMarks({ current: marks, previous }));
-  }
-
-  private async announceMarks(gained: readonly GainedMark[]): Promise<void> {
-    for (const mark of gained) {
-      const player = await this.prisma.player.findUnique({ where: { accountId: mark.accountId }, select: { clanId: true, nickname: true } });
-
-      await this.webhooks.emit({
-        event: 'mark.gained',
-        subject: { accountIds: [Number(mark.accountId)], clanIds: player?.clanId ? [Number(player.clanId)] : [] },
-        data: {
-          accountId: Number(mark.accountId),
-          nickname: player?.nickname ?? null,
-          tankId: mark.tankId,
-          marks: mark.marks,
-          previousMarks: mark.previous,
-          percent: null,
-          source: 'api'
-        }
-      });
-    }
-  }
-
-  private async isSubscriber(accountId: bigint): Promise<boolean> {
-    const links = await this.prisma.userLestaAccount.count({
-      where: {
-        accountId,
-        user: { subscriptions: { some: { product: { in: [...TRACKING.subscriberProducts] }, status: { in: [...TRACKING.subscriberStatuses] } } } }
-      }
-    });
-
-    return links > 0;
+    await this.announce.announceMarks(gainedMarks({ current: marks, previous }));
   }
 }

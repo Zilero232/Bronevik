@@ -1,7 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-6));
+  @include stack(var(--space-4));
 
   --side: var(--color-accent);
   --side-soft: var(--color-accent-soft);
@@ -10,17 +10,13 @@
     --side: var(--color-steel);
     --side-soft: var(--color-steel-soft);
   }
-
-  @include below(md) {
-    gap: var(--space-5);
-  }
 }
 
 .layout {
   display: grid;
   align-items: start;
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr) 320px;
 
   @include below(3xl) {
     grid-template-columns: minmax(0, 1fr);
@@ -28,14 +24,14 @@
 }
 
 .panels {
-  @include stack(var(--space-5));
+  @include stack(var(--gap-panel));
 
   min-width: 0;
 }
 
 .pair {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--gap-panel);
   grid-template-columns: repeat(2, minmax(0, 1fr));
 
   @include below(xl) {
@@ -51,4 +47,10 @@
   @include below(3xl) {
     display: none;
   }
+}
+
+.source {
+  @include source-line;
+
+  margin: 0;
 }

@@ -2,7 +2,7 @@
 
 .root {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--gap-panel);
   grid-template-columns: repeat(2, minmax(0, 1fr));
 
   @include below(lg) {
@@ -11,39 +11,35 @@
 }
 
 .card {
-  @include stack(var(--space-3));
-
-  position: relative;
-  padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--brushed), var(--color-surface);
+  @include panel;
 
   --edge: var(--color-success);
+
+  display: flex;
+  align-items: center;
+  box-shadow: inset 2px 0 0 var(--edge);
+  gap: var(--space-3);
 
   &[data-kind='worst'] {
     --edge: var(--color-danger);
   }
+}
 
-  &:before {
-    position: absolute;
-    top: 12px;
-    bottom: 12px;
-    left: 0;
-    width: 3px;
-    border-radius: 0 2px 2px 0;
-    background-color: var(--edge);
-    content: '';
-  }
+.render {
+  flex-shrink: 0;
+}
+
+.body {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+  padding: var(--space-3) var(--space-4) var(--space-3) 0;
 }
 
 .label {
-  @include hud-label;
+  @include label;
 
-  display: inline-flex;
-  align-items: center;
   color: var(--edge);
-  gap: var(--space-1);
 }
 
 .stats {
@@ -51,6 +47,14 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
+}
+
+.rating {
+  @include numeric;
+  @include tone;
+
+  color: var(--tone);
+  font-weight: 600;
 }
 
 .muted {

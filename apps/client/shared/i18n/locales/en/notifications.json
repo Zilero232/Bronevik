@@ -1,0 +1,135 @@
+{
+  "meta": {
+    "title": "Notifications",
+    "description": "Your Bronevik notification log: marks of excellence, sessions, clan and bonus codes. Delivery channels, quiet hours and browser push."
+  },
+  "hero": {
+    "eyebrow": "Radio link",
+    "title": "Notifications",
+    "description": "Everything Bronevik spotted for you: new marks, session results, clan moves and bonus codes. Choose where and when to send the signal.",
+    "unread": "Unread",
+    "unreadHint": "Fresh reports on the air",
+    "quietHint": "All clear — everything is read"
+  },
+  "feed": {
+    "eyebrow": "Log",
+    "title": "Reports",
+    "filterLabel": "Which notifications to show",
+    "filter": {
+      "all": "All",
+      "unread": "New"
+    },
+    "markAll": "Mark all read",
+    "loadMore": "Load more",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "dayUnread": "{count} new of {total}",
+    "dayTotal": "{total, plural, one {# report} other {# reports}}",
+    "error": "The log failed to load. Refresh the page a bit later.",
+    "empty": {
+      "title": "All quiet",
+      "description": "As soon as there is a new mark, a session result or a bonus code, the report lands here."
+    },
+    "emptyUnread": {
+      "title": "All caught up",
+      "description": "No new reports. Time to queue for a battle."
+    }
+  },
+  "events": {
+    "moe_gained": "New mark of excellence",
+    "moe_threshold_dropped": "Mark threshold dropped",
+    "mastery_gained": "Ace Tanker badge",
+    "session_finished": "Session results",
+    "clan_roster_changed": "Clan roster",
+    "clan_event_reminder": "Clan event",
+    "clan_weekly_report": "Weekly clan report",
+    "bonus_code": "Bonus codes",
+    "premium_offer": "Vehicle discounts",
+    "tank_changed": "Stat changes",
+    "goal_reached": "Goal reached",
+    "badge_awarded": "New badge",
+    "challenge_resolved": "Streamer challenge"
+  },
+  "eventGroups": {
+    "marks": "Marks and mastery",
+    "battles": "Battles and progress",
+    "clan": "Clan",
+    "offers": "Shop and patches",
+    "streams": "Streams"
+  },
+  "settings": {
+    "error": "Settings failed to load. Try refreshing the page.",
+    "failed": "Could not save the setting. It has been reverted.",
+    "channelsEyebrow": "Frequencies",
+    "channels": "Delivery channels",
+    "channelsHint": "Where to send reports. You can enable several.",
+    "channel": {
+      "site": "On the site",
+      "telegram": "Telegram",
+      "email": "E-mail",
+      "web_push": "Browser push"
+    },
+    "channelHint": {
+      "site": "The bell in the header and the log on this page",
+      "telegram": "A message from the bot — needs a linked Telegram",
+      "email": "A letter to the address in your profile",
+      "web_push": "A system notification, even with the tab closed"
+    },
+    "eventsEyebrow": "Enabled: {count} of {total}",
+    "events": "What to report",
+    "eventsHint": "Pick the events worth a glance away from the battle.",
+    "reportsEyebrow": "Digests",
+    "reports": "Reports",
+    "sessionReport": "Session report",
+    "sessionReportHint": "Your evening's results as soon as you stop playing",
+    "weeklyDigest": "Weekly digest",
+    "weeklyDigestHint": "The week, marks and goal progress — every Monday"
+  },
+  "quiet": {
+    "eyebrow": "Silent mode",
+    "title": "Quiet hours",
+    "description": "During these hours Bronevik stays silent: reports pile up in the log instead of waking you with push and bot messages.",
+    "enable": "Enable quiet hours",
+    "enableHint": "23:00 to 08:00 your time by default",
+    "start": "Start",
+    "end": "End",
+    "save": "Save",
+    "sameHour": "Start and end cannot be the same hour",
+    "span": "{count, plural, one {# hour} other {# hours}} of silence",
+    "crossesMidnight": "Across midnight",
+    "dialLabel": "Quiet hours from {start} to {end}",
+    "nowQuiet": "Silent mode is on right now",
+    "nowLoud": "Notifications arrive right away now"
+  },
+  "push": {
+    "eyebrow": "Web Push",
+    "title": "Browser push",
+    "description": "System notifications on this device — even with the site closed.",
+    "status": {
+      "loading": "Checking the browser…",
+      "unsupported": "This browser has no push support",
+      "denied": "Notifications are blocked",
+      "unconfigured": "Push is not configured on the server",
+      "idle": "Not connected",
+      "subscribed": "Connected"
+    },
+    "hint": {
+      "loading": "Checking whether this browser can receive push.",
+      "unsupported": "Open the site in a recent Chrome, Firefox, Edge or Safari — or install Bronevik as an app.",
+      "denied": "Allow notifications for this site in the browser settings (the lock icon by the address bar) and reload the page.",
+      "unconfigured": "The server has not issued a push key yet. Other channels work as usual.",
+      "idle": "The browser will ask for permission — press «Allow».",
+      "subscribed": "This device receives push. You can turn it off at any time."
+    },
+    "subscribe": "Connect push",
+    "unsubscribe": "Turn off on this device",
+    "subscribedToast": "Push connected",
+    "unsubscribedToast": "Push turned off on this device",
+    "dismissed": "Permission not granted — push is not connected",
+    "failed": "Something went wrong. Try again."
+  },
+  "dashboard": {
+    "description": "The report log, channels, quiet hours and push live on their own page.",
+    "open": "Open notifications"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "code": "500 // Equipment failure",
+  "title": "Something went wrong",
+  "body": "We already know about it. Please try again in a couple of seconds.",
+  "loadErrorTitle": "Couldn't load data",
+  "loadErrorDescription": "The server did not respond. Check your connection and try again.",
+  "retry": "Retry"
+}

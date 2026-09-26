@@ -2,7 +2,7 @@
   "name": "@bronevik/sdk",
   "version": "0.0.0",
   "private": true,
-  "description": "TypeScript client for the Bronevik public API (/v1): generated from the OpenAPI spec with @hey-api/openapi-ts, plus an API-key, base-URL and retry wrapper and a webhook signature check.",
+  "description": "TypeScript client for the Bronevik public API (/v1): generated from the OpenAPI spec with @hey-api/openapi-ts, on the ky client with an API-key, base-URL and retry wrapper, plus a Standard Webhooks verifier.",
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
   "type": "module",
@@ -18,7 +18,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "p-retry": "catalog:"
+    "ky": "catalog:",
+    "standardwebhooks": "catalog:"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0",

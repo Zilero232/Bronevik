@@ -17,7 +17,7 @@ import { z } from 'zod';
 
 import { HEATMAP } from '../config';
 
-export const replaySortSchema = z.enum(['recent', 'damage', 'xp', 'views']);
+const replaySortSchema = z.enum(['recent', 'damage', 'xp', 'views']);
 
 const slugPart = z
   .string()
@@ -93,3 +93,5 @@ export const replayTracksSchema = z.object({
     })
   )
 });
+
+export const replayParseJobSchema = z.object({ replayId: z.uuid() });

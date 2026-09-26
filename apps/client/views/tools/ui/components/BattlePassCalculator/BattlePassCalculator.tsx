@@ -4,12 +4,12 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { RangeSlider } from '@/ui-kit';
 
-import type { BattlePassValues } from './BattlePassCalculator.types';
+import type { BattlePassValues } from '../../../model/hooks';
 
-import { BATTLE_PASS } from '../../../config';
+import { BATTLE_PASS, BATTLE_PASS_FIELDS } from '../../../config';
 import { useCalcState } from '../../../model/hooks';
-import { CalcShell, FieldGrid } from '../CalcKit';
-import { BATTLE_PASS_FIELDS } from './BattlePassCalculator.constants';
+import { CalcShell } from '../CalcShell';
+import { FieldGrid } from '../FieldGrid';
 import { BattlePassResults } from './components';
 
 export const BattlePassCalculator = () => {

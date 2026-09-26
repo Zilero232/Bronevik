@@ -1,3 +1,5 @@
+import { unique } from 'remeda';
+
 import type { BestIndicesInput } from './compare-math.types';
 
 import { COMPARE_LIMIT } from '../../config';
@@ -15,11 +17,9 @@ export const bestIndices = ({ values, direction }: BestIndicesInput): number[] =
 };
 
 export const parseCompareIds = (raw: string | null): number[] =>
-  [
-    ...new Set(
-      (raw ?? '')
-        .split(',')
-        .map((part) => Number(part.trim()))
-        .filter((id) => Number.isInteger(id) && id > 0)
-    )
-  ].slice(0, COMPARE_LIMIT.max);
+  unique(
+    (raw ?? '')
+      .split(',')
+      .map((part) => Number(part.trim()))
+      .filter((id) => Number.isInteger(id) && id > 0)
+  ).slice(0, COMPARE_LIMIT.max);

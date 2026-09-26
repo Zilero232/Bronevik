@@ -10,5 +10,6 @@ export const PRISMA_POOL = {
 
 export const PRISMA_CODE = {
   uniqueViolation: 'P2002',
-  notFound: 'P2025'
+  notFound: 'P2025',
+  transactionConflict: 'P2034'
 } as const;

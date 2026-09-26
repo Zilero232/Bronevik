@@ -1,1 +1,1 @@
-export { extractChallengeCodes, generateChallengeCode } from './challenge-code';
+export { extractChallengeCodes } from './challenge-code';

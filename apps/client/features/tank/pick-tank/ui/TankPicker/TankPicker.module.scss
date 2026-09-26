@@ -1,0 +1,107 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+}
+
+.label {
+  @include label;
+}
+
+.failure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+}
+
+.group {
+  @include field-box;
+
+  display: flex;
+  height: 32px;
+  align-items: center;
+  padding: 0 var(--space-1) 0 var(--space-3);
+  gap: var(--space-2);
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--color-text-dim);
+}
+
+.input {
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-text-dim);
+  }
+}
+
+.trigger {
+  @include icon-button(24px);
+}
+
+.positioner {
+  z-index: var(--z-popover);
+  outline: none;
+}
+
+.popup {
+  @include popup-surface;
+  @include popup-motion;
+
+  width: max(var(--anchor-width), 280px);
+  max-width: var(--available-width);
+}
+
+.list {
+  max-height: min(360px, var(--available-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  &[data-empty] {
+    padding: 0;
+  }
+}
+
+.item {
+  display: flex;
+  min-height: var(--row-h);
+  align-items: center;
+  padding: 0 var(--space-3);
+  cursor: default;
+  outline: none;
+  user-select: none;
+
+  &[data-highlighted] {
+    background-color: var(--color-surface-hover);
+    box-shadow: inset 2px 0 0 var(--color-accent);
+  }
+
+  &[data-selected] {
+    color: var(--color-accent);
+  }
+}
+
+.empty {
+  padding: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+
+  &:empty {
+    display: none;
+  }
+}

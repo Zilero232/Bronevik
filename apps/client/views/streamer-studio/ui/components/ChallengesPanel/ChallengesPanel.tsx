@@ -2,8 +2,6 @@
 
 import { useTranslations } from 'next-intl';
 
-import { SectionHeader } from '@/ui-kit';
-
 import { ChallengeForm } from '../ChallengeForm';
 import { ChallengeList } from '../ChallengeList';
 
@@ -14,7 +12,7 @@ export const ChallengesPanel = () => {
 
   return (
     <section className={s.root}>
-      <SectionHeader description={t('description')} eyebrow={t('eyebrow')} title={t('title')} />
+      <p className={s.note}>{t('description')}</p>
       <div className={s.layout}>
         <ChallengeForm />
         <ChallengeList />

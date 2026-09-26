@@ -1,59 +1,51 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
   appearance: none;
   cursor: pointer;
   font-family: var(--font-display);
-  font-stretch: 85%;
   font-weight: 600;
   gap: var(--space-2);
-  isolation: isolate;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   transition:
-    transform var(--duration-fast) ease,
-    box-shadow var(--duration-base) ease,
-    color var(--duration-base) ease,
-    background-color var(--duration-base) ease;
+    color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
   user-select: none;
   white-space: nowrap;
-
-  @include chamfer-path(var(--chamfer-sm));
-
-  &:active:not(:disabled) {
-    transform: translateY(1px);
-  }
 
   &:disabled {
     cursor: not-allowed;
     opacity: 0.45;
   }
 
-  &:focus-visible {
-    clip-path: none;
+  :global(svg) {
+    width: 14px;
+    height: 14px;
   }
 }
 
 .sm {
-  height: 32px;
-  padding: 0 var(--space-3);
-  font-size: var(--text-xs);
+  height: 28px;
+  padding: 0 12px;
+  font-size: var(--text-sm);
 }
 
 .md {
-  height: 42px;
-  padding: 0 var(--space-5);
+  height: 32px;
+  padding: 0 14px;
   font-size: var(--text-sm);
 }
 
 .lg {
-  height: 52px;
-  padding: 0 var(--space-7);
+  height: 40px;
+  padding: 0 18px;
   font-size: var(--text-md);
 }
 
@@ -62,67 +54,40 @@
 }
 
 .primary {
-  background: linear-gradient(180deg, var(--color-accent-hot) -40%, var(--color-accent) 55%, var(--color-accent-deep) 140%);
-  box-shadow: inset 0 1px 0 var(--shine-35);
+  background-color: var(--color-accent);
   color: var(--color-accent-contrast);
 
-  &:after {
-    position: absolute;
-    z-index: -1;
-    background: linear-gradient(100deg, transparent 30%, var(--shine-45) 50%, transparent 70%);
-    content: '';
-    inset: 0;
-    transform: translateX(-120%);
-    transition: transform 0.6s var(--ease-out);
-  }
-
-  &:hover:not(:disabled):after {
-    transform: translateX(120%);
-  }
-
   &:hover:not(:disabled) {
-    box-shadow:
-      inset 0 1px 0 var(--shine-35),
-      0 0 32px -6px var(--color-accent);
+    background-color: var(--color-accent-hover);
   }
 }
 
 .secondary {
-  background: var(--color-steel-dim);
+  border-color: var(--color-border-strong);
+  background-color: var(--color-surface-raised);
   color: var(--color-text);
 
-  &:before {
-    position: absolute;
-    z-index: -1;
-    background: var(--brushed), var(--color-surface-raised);
-    content: '';
-    inset: 1px;
-    transition: background-color var(--duration-base) ease;
-
-    @include chamfer-path(calc(var(--chamfer-sm) - 0.4px));
-  }
-
   &:hover:not(:disabled) {
-    background: var(--color-steel);
-    color: var(--color-steel);
+    border-color: var(--color-text-dim);
+    background-color: var(--color-surface-hover);
   }
 }
 
 .ghost {
-  background: transparent;
+  background-color: transparent;
   color: var(--color-text-muted);
 
   &:hover:not(:disabled) {
-    background: var(--color-surface-hover);
+    background-color: var(--color-surface-hover);
     color: var(--color-text);
   }
 }
 
 .danger {
-  background: var(--color-danger);
+  background-color: var(--color-danger);
   color: var(--color-on-solid);
 
   &:hover:not(:disabled) {
-    box-shadow: 0 0 26px -6px var(--color-danger);
+    background-color: color-mix(in srgb, var(--color-danger) 85%, var(--color-text));
   }
 }

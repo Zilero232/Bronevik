@@ -262,3 +262,18 @@ export const popularPlayersSchema = z.object({
   days: countSchema,
   items: z.array(popularPlayerSchema)
 });
+
+export const playerAchievementSchema = z.object({
+  section: z.string().nullable(),
+  name: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  image: z.string().nullable(),
+  imageBig: z.string().nullable(),
+  count: countSchema,
+  maxSeries: countSchema.nullable()
+});
+
+export const playerAchievementsSchema = z.object({
+  items: z.array(playerAchievementSchema)
+});

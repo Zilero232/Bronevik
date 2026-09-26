@@ -1,38 +1,39 @@
 import { WEBHOOK } from '@bronevik/schemas';
-import { createHmac } from 'node:crypto';
+import { Webhook, WebhookVerificationError } from 'standardwebhooks';
 import { describe, expect, it } from 'vitest';
 
-import { generateWebhookSecret, signWebhook, webhookHeaders } from '../webhook-signature';
+import { generateWebhookSecret, webhookHeaders } from '../webhook-signature';
 
-const secret = 'whsec_test';
+const secret = generateWebhookSecret();
 const body = '{"event":"mark.gained"}';
-const timestamp = 1_790_000_000;
-
-describe('signWebhook', () => {
-  it('signs the timestamp and the raw body together with HMAC-SHA256', () => {
-    const expected = createHmac('sha256', secret).update(`${timestamp}.${body}`).digest('hex');
-
-    expect(signWebhook({ secret, timestamp, body })).toBe(`${WEBHOOK.signatureScheme}=${expected}`);
-  });
-
-  it('changes with the timestamp, so a replayed delivery cannot reuse it', () => {
-    expect(signWebhook({ secret, timestamp, body })).not.toBe(signWebhook({ secret, timestamp: timestamp + 1, body }));
-  });
-});
+const sentAt = new Date();
+const headers = webhookHeaders({ secret, body, event: 'mark.gained', deliveryId: 'msg_delivery', sentAt });
 
 describe('webhookHeaders', () => {
-  it('carries the event, the delivery id, the timestamp and the signature', () => {
-    const headers = webhookHeaders({ secret, body, event: 'mark.gained', deliveryId: 'delivery', timestamp });
+  it('produces a delivery that a Standard Webhooks verifier accepts', () => {
+    expect(new Webhook(secret).verify(body, headers)).toEqual(JSON.parse(body));
+  });
 
+  it('fails verification once the body is changed', () => {
+    expect(() => new Webhook(secret).verify(`${body} `, headers)).toThrow(WebhookVerificationError);
+  });
+
+  it('fails verification with another endpoint secret', () => {
+    expect(() => new Webhook(generateWebhookSecret()).verify(body, headers)).toThrow(WebhookVerificationError);
+  });
+
+  it('carries the event and uses the delivery id as the message id', () => {
     expect(headers[WEBHOOK.eventHeader]).toBe('mark.gained');
-    expect(headers[WEBHOOK.deliveryHeader]).toBe('delivery');
-    expect(headers[WEBHOOK.timestampHeader]).toBe(String(timestamp));
-    expect(headers[WEBHOOK.signatureHeader]).toBe(signWebhook({ secret, timestamp, body }));
+    expect(headers[WEBHOOK.deliveryHeader]).toBe('msg_delivery');
+    expect(headers[WEBHOOK.signatureHeader]?.startsWith(`${WEBHOOK.signatureScheme},`)).toBe(true);
   });
 });
 
 describe('generateWebhookSecret', () => {
-  it('creates a distinct secret every time', () => {
-    expect(generateWebhookSecret()).not.toBe(generateWebhookSecret());
+  it('creates a distinct whsec_ secret every time', () => {
+    const next = generateWebhookSecret();
+
+    expect(next.startsWith(WEBHOOK.secretPrefix)).toBe(true);
+    expect(next).not.toBe(generateWebhookSecret());
   });
 });

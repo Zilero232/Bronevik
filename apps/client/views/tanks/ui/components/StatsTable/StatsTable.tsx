@@ -2,55 +2,43 @@
 
 import { useTranslations } from 'next-intl';
 
-import { useVehicleFilters } from '@/features/tank/filter-vehicles';
-import { ROUTES } from '@/shared/constants';
-import { useRouter } from '@/shared/i18n/navigation';
-import { Button, DataTable, EmptyState } from '@/ui-kit';
+import { Button, DataTable, EmptyState, ErrorState } from '@/ui-kit';
 
-import { useTankColumns, useTankStats } from '../../../model/hooks';
+import { TANKS_VIEW } from '../../../config';
+import { useStatsTable } from '../../../model/hooks';
 
 export const StatsTable = () => {
   const t = useTranslations('tanks.table');
-  const router = useRouter();
-  const { data, isLoading, isError, refetch } = useTankStats();
-  const { reset, isActive } = useVehicleFilters();
-  const columns = useTankColumns();
+  const { columns, rows, total, isLoading, isError, isFetching, isFiltered, onReset, onRetry, onRowClick } = useStatsTable();
 
   if (isError) {
-    return (
-      <EmptyState
-        action={<Button onClick={() => refetch()}>{t('retry')}</Button>}
-        code='ERR'
-        description={t('errorDescription')}
-        title={t('errorTitle')}
-      />
-    );
+    return <ErrorState description={t('errorDescription')} isRetrying={isFetching} title={t('errorTitle')} onRetry={onRetry} />;
   }
 
   return (
     <DataTable
       emptyState={
-        isActive ? (
+        isFiltered ? (
           <EmptyState
             action={
-              <Button variant='secondary' onClick={reset}>
+              <Button size='sm' variant='secondary' onClick={onReset}>
                 {t('resetFilters')}
               </Button>
             }
-            description={t('emptyDescription')}
             title={t('emptyTitle')}
           />
         ) : (
-          <EmptyState description={t('noStatsDescription')} title={t('noStatsTitle')} />
+          <EmptyState title={t('noStatsTitle')} />
         )
       }
-      caption={t('caption', { count: data?.total ?? 0 })}
+      caption={t('caption', { count: total })}
       columns={columns}
-      data={data?.items ?? []}
+      data={rows}
       getRowId={(row) => String(row.vehicle.tankId)}
       initialSorting={[{ id: 'battles', desc: true }]}
       isLoading={isLoading}
-      onRowClick={(row) => router.push(ROUTES.tank(row.vehicle.slug))}
+      rowHeight={TANKS_VIEW.rowHeight}
+      onRowClick={onRowClick}
     />
   );
 };

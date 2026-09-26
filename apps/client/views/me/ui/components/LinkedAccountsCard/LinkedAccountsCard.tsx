@@ -10,17 +10,19 @@ import { Badge, Skeleton } from '@/ui-kit';
 
 import { useMeSection } from '../../../model/hooks';
 import { MeCard } from '../MeCard';
+import { SectionError } from '../SectionError';
 
 import s from './LinkedAccountsCard.module.scss';
 
 export const LinkedAccountsCard = () => {
   const t = useTranslations('me.accounts');
   const format = useFormatter();
-  const { data: accounts, isPending } = useMeSection({ section: 'accounts', fetcher: getLinkedAccounts });
+  const { data: accounts, isPending, isError, isFetching, refetch } = useMeSection({ section: 'accounts', fetcher: getLinkedAccounts });
 
   return (
     <MeCard description={t('description')} icon={<KeyRound size={18} />} title={t('title')}>
       {isPending && <Skeleton height={140} shape='block' />}
+      {isError && <SectionError isRetrying={isFetching} onRetry={() => void refetch()} />}
       {accounts && (
         <ul className={s.list}>
           {accounts.lesta.map(({ accountId, nickname, isPrimary, tokenExpiresAt }) => (

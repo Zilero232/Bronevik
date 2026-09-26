@@ -1,4 +1,5 @@
+import type { MapTeams } from '../../../lib/team-stats';
+
 export type TugOfWarProps = {
-  team1: number;
-  team2: number;
+  teams: MapTeams;
 };

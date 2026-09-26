@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "title": "Dashboard",
+    "description": "Favorites, goals, linked accounts, the mod and notifications."
+  },
+  "signIn": "Sign in",
+  "guestTitle": "Sign-in required",
+  "guestDescription": "Your dashboard is available after signing in with Lesta ID or Telegram.",
+  "eyebrow": "// Dashboard",
+  "title": "Commander {name}",
+  "signOut": "Sign out",
+  "tabs": {
+    "label": "Dashboard sections",
+    "overview": "Overview",
+    "notifications": "Notifications",
+    "billing": "Subscription",
+    "telegram": "Telegram",
+    "developer": "API",
+    "streamer": "Streaming"
+  },
+  "toast": {
+    "failed": "Something went wrong. Please try again.",
+    "deviceRevoked": "Device unlinked",
+    "favoriteRemoved": "Removed from favorites",
+    "goalAdded": "Goal set",
+    "goalRemoved": "Goal removed",
+    "settingsSaved": "Settings saved"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "description": "Players you keep an eye on.",
+    "empty": "Nobody yet. Press “Add to favorites” on a player profile.",
+    "own": "Mine",
+    "remove": "Remove from favorites",
+    "add": "Add to favorites",
+    "inFavorites": "In favorites",
+    "added": "Added to favorites",
+    "removed": "Removed from favorites",
+    "failed": "Could not update favorites"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "description": "Sign-in methods and linked game accounts.",
+    "lesta": "Lesta ID",
+    "primary": "Primary",
+    "tokenUntil": "token until {date}",
+    "telegram": "Telegram",
+    "notLinked": "not linked",
+    "linkLesta": "Link another Lesta ID account",
+    "note": "We never ask for your Lesta password — sign-in goes through the official Lesta ID."
+  },
+  "mod": {
+    "title": "Companion mod",
+    "description": "Link the mod so sessions, accuracy and marks progress arrive right after each battle.",
+    "issue": "Get a binding code",
+    "steps": {
+      "install": "Install the Bronevik mod into the game client mods folder.",
+      "open": "Start the game and open the mod window in the garage.",
+      "enter": "Enter the code — the device shows up in the list below."
+    },
+    "codeLabel": "Binding code",
+    "expired": "The code expired — get a new one",
+    "expires": "Valid for {time}",
+    "copy": "Copy",
+    "copied": "Copied",
+    "renew": "New code",
+    "devices": "Linked devices",
+    "noDevices": "The mod is not linked yet.",
+    "deviceMeta": "mod {version} · last seen {seen}",
+    "revoke": "Unlink"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Where and what to tell you about.",
+    "channels": "Channels",
+    "events": "Events",
+    "reports": "Reports",
+    "channel": {
+      "site": "On the site",
+      "telegram": "Telegram",
+      "email": "Email",
+      "web_push": "Browser push"
+    },
+    "event": {
+      "moe_gained": "New mark of excellence",
+      "moe_threshold_dropped": "A mark threshold dropped",
+      "mastery_gained": "Ace Tanker earned",
+      "session_finished": "Session finished",
+      "goal_reached": "Goal reached",
+      "bonus_code": "New bonus codes"
+    },
+    "sessionReport": "Post-session report",
+    "sessionReportHint": "Your day's summary in Telegram when you stop playing",
+    "weeklyDigest": "Weekly digest",
+    "weeklyDigestHint": "The week, marks and goal progress every Monday"
+  },
+  "goals": {
+    "title": "Goals",
+    "description": "Set a goal for a week or a month — progress tracks itself.",
+    "empty": "No goals yet. Time to set the first one.",
+    "remove": "Remove goal",
+    "goalTitle": "{metric}: {target}",
+    "progress": "Start {from} · now {current}",
+    "daysLeft": "{count, plural, =0 {last day} one {# day left} other {# days left}}",
+    "overdue": "Deadline passed",
+    "status": {
+      "active": "In progress",
+      "achieved": "Achieved",
+      "failed": "Missed",
+      "cancelled": "Cancelled"
+    },
+    "metric": {
+      "winRate": "Win rate",
+      "wn8": "WN8",
+      "avgDamage": "Average damage",
+      "battles": "Battles",
+      "moe": "Marks of excellence",
+      "broneIndex": "Bronya Index"
+    },
+    "newGoal": "New goal",
+    "metricLabel": "Metric",
+    "targetLabel": "Target",
+    "targetPlaceholder": "For example, 55",
+    "duration": "{count, plural, one {# day} other {# days}}",
+    "durationLabel": "Deadline",
+    "invalid": "Enter a positive number.",
+    "add": "Set goal"
+  }
+}

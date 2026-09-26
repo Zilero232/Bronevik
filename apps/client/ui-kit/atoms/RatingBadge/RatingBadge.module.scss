@@ -1,21 +1,19 @@
 .root {
   display: inline-flex;
   align-items: stretch;
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   background-color: color-mix(in srgb, var(--tier) 14%, transparent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tier) 38%, transparent);
   color: var(--tier);
   font-family: var(--font-display);
-  font-feature-settings: 'tnum' 1;
-  font-stretch: 85%;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 600;
   line-height: 1;
   white-space: nowrap;
 }
 
 .swatch {
-  width: 5px;
+  width: 3px;
   flex-shrink: 0;
   border-radius: var(--radius-xs) 0 0 var(--radius-xs);
   background-color: var(--tier);
@@ -42,10 +40,9 @@
 
 .label {
   color: var(--color-text-muted);
-  font-family: var(--font-mono);
   font-size: 0.72em;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 

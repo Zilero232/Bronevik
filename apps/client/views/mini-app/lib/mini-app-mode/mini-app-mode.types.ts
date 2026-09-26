@@ -14,5 +14,4 @@ export type MiniAppModeInput = {
   signInStatus: MutationStatus;
   hasSession: boolean;
   isSessionPending: boolean;
-  isMock: boolean;
 };

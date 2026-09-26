@@ -3,12 +3,11 @@
 import type { EdgeProps } from '@xyflow/react';
 
 import { EdgeLabelRenderer, getSmoothStepPath } from '@xyflow/react';
-import { motion } from 'motion/react';
 import { useFormatter } from 'next-intl';
 
 import type { BranchFlowEdge } from '../../../lib/tree-flow';
 
-import { EDGE_DRAW, edgeTransition, LABEL_ENTER } from './BranchEdge.motion';
+import { TREE_FORMAT } from '../../../config';
 
 import s from './BranchEdge.module.scss';
 
@@ -22,29 +21,21 @@ export const BranchEdge = ({ sourceX, sourceY, targetX, targetY, sourcePosition,
     targetY,
     sourcePosition,
     targetPosition,
-    borderRadius: 12,
-    offset: 20
+    borderRadius: 0,
+    offset: 16
   });
 
   const state = data?.state ?? 'idle';
-  const delay = data?.delay ?? 0;
   const xp = data?.xp ?? null;
 
   return (
     <>
-      <motion.path {...EDGE_DRAW} className={s.path} d={path} data-state={state} fill='none' transition={edgeTransition(delay)} />
-      {state === 'path' && <path className={s.flow} d={path} fill='none' />}
+      <path className={s.path} d={path} data-state={state} fill='none' />
       {xp !== null && xp > 0 && (
         <EdgeLabelRenderer>
-          <motion.span
-            {...LABEL_ENTER}
-            className={s.label}
-            data-state={state}
-            style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}
-            transition={edgeTransition(delay + 0.3)}
-          >
-            {format.number(xp, { notation: 'compact', maximumFractionDigits: 1 })}
-          </motion.span>
+          <span className={s.label} data-state={state} style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}>
+            {format.number(xp, TREE_FORMAT.compact)}
+          </span>
         </EdgeLabelRenderer>
       )}
     </>

@@ -113,6 +113,9 @@ export type Gun = ModuleBase & {
   autoreload?: { reloadTimes: number[]; boostStartTime?: number; boostResidueTime?: number; boostFraction?: number };
   dualGun?: { chargeTime?: number; reloadTimes: number[]; rateTime?: number; reloadLockTime?: number };
   shots: Shot[];
+  armor?: Armor;
+  spacedArmor?: string[];
+  collision?: string;
 };
 
 export type Armor = Record<string, number>;
@@ -124,6 +127,8 @@ export type Turret = ModuleBase & {
   primaryArmor: number[];
   yawLimits?: [number, number];
   guns: Gun[];
+  spacedArmor?: string[];
+  collision?: string;
 };
 
 export type Chassis = ModuleBase & {
@@ -135,6 +140,8 @@ export type Chassis = ModuleBase & {
   maxClimbAngle?: number;
   armor: Armor;
   repairTime?: number;
+  spacedArmor?: string[];
+  collision?: string;
 };
 
 export type Engine = ModuleBase & {
@@ -154,6 +161,8 @@ export type Hull = {
   armor: Armor;
   primaryArmor: number[];
   ammoBayHealth?: number;
+  spacedArmor?: string[];
+  collision?: string;
 };
 
 export type CrewMember = {

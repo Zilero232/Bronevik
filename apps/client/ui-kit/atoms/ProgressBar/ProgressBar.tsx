@@ -2,10 +2,7 @@
 
 import { Progress } from '@base-ui/react/progress';
 import { clsx } from 'clsx';
-import { motion } from 'motion/react';
 import { clamp } from 'remeda';
-
-import { EASE_OUT, REVEAL_VIEWPORT } from '@/shared/lib';
 
 import type { ProgressBarProps } from './ProgressBar.types';
 
@@ -23,14 +20,7 @@ export const ProgressBar = ({ value, max = 100, label, valueLabel, tone = 'accen
         </div>
       )}
       <Progress.Track className={s.track}>
-        <motion.span
-          className={s.fill}
-          initial={{ scaleX: 0 }}
-          transition={{ duration: 1.1, ease: EASE_OUT }}
-          viewport={REVEAL_VIEWPORT}
-          whileInView={{ scaleX: ratio }}
-        />
-        <span aria-hidden className={s.ticks} />
+        <span className={s.fill} style={{ '--ratio': ratio }} />
       </Progress.Track>
     </Progress.Root>
   );

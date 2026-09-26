@@ -24,7 +24,8 @@ export const useEntitySearch = <K extends PickableKind>({ kind, query }: UseEnti
   const {
     data: response,
     isFetching,
-    isError
+    isError,
+    refetch
   } = useQuery({
     queryKey: QUERY_KEYS.search(debounced),
     queryFn: ({ signal }) => search({ query: debounced, signal }),
@@ -35,5 +36,5 @@ export const useEntitySearch = <K extends PickableKind>({ kind, query }: UseEnti
 
   const results: PickableResult<K>[] = isEnabled && response ? response.results.filter(isKind(kind)) : [];
 
-  return { results, isEnabled, isFetching: isEnabled && isFetching, isError };
+  return { results, isEnabled, isFetching: isEnabled && isFetching, isError, retry: () => refetch() };
 };

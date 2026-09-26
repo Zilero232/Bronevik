@@ -1,13 +1,18 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-6));
+  @include stack(var(--space-5));
+}
+
+.note {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
 }
 
 .grid {
   display: grid;
   align-items: start;
-  gap: var(--space-5);
+  gap: var(--space-3);
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
 
   @include below(2xl) {
@@ -16,7 +21,10 @@
 }
 
 .side {
+  @include panel;
   @include stack(var(--space-5));
+
+  padding: var(--space-5);
 }
 
 .footer {

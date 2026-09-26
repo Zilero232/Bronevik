@@ -8,12 +8,16 @@
   animation: bronevik-spin $duration linear infinite;
 }
 
-@mixin scanner($duration: 1.6s) {
-  animation: bronevik-scan $duration var(--ease-in-out) infinite;
+@mixin pulse($duration: 1.2s) {
+  animation: bronevik-pulse $duration ease-in-out infinite alternate;
 
   @include reduced-motion {
     animation: none;
   }
+}
+
+@mixin scanner($duration: 0) {
+  animation: none;
 }
 
 @keyframes bronevik-spin {
@@ -22,13 +26,13 @@
   }
 }
 
-@keyframes bronevik-scan {
+@keyframes bronevik-pulse {
   from {
-    transform: translateX(-100%);
+    opacity: 0.6;
   }
 
   to {
-    transform: translateX(100%);
+    opacity: 1;
   }
 }
 
@@ -39,17 +43,5 @@
 
   to {
     opacity: 1;
-  }
-}
-
-@keyframes bronevik-pop-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px) scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
   }
 }

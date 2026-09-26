@@ -8,7 +8,7 @@ import { groupInboxByDay } from '../../lib/group-by-day';
 import { useInboxFeedQuery } from './use-inbox-feed-query';
 
 export const useInboxFeed = () => {
-  const { data, isPending, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useInboxFeedQuery();
+  const { data, isPending, isError, isFetching, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInboxFeedQuery();
   const [filter, setFilter] = useState<InboxFeedFilter>('all');
 
   const pages = data?.pages ?? [];
@@ -21,10 +21,12 @@ export const useInboxFeed = () => {
     unread: pages[0]?.unread ?? 0,
     isEmpty: items.length === 0,
     isPending,
-    isError,
+    isError: isError && !data,
+    isRetrying: isFetching,
     hasNextPage,
     isFetchingNextPage,
     setFilter,
-    loadMore: () => fetchNextPage()
+    loadMore: () => fetchNextPage(),
+    retry: () => refetch()
   };
 };

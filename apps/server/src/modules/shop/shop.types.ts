@@ -1,9 +1,15 @@
-import type { BonusCodeVerdict, BonusCode as BonusCodeView, PremiumOffer as PremiumOfferView } from '@bronevik/schemas';
+import type {
+  BonusCodeVerdict,
+  BonusCode as BonusCodeView,
+  newsPageSchema,
+  newsQuerySchema,
+  PremiumOffer as PremiumOfferView
+} from '@bronevik/schemas';
 import type { z } from 'zod';
 
 import type { BonusCodeStatus } from '../../../generated';
 import type { ListingItem } from '../../lib/scrape';
-import type { newsPageSchema, newsQuerySchema, offerArchiveSchema, offerPageSchema, offersQuerySchema } from './dto/shop.schemas';
+import type { offerArchiveSchema, offerPageSchema, offersQuerySchema } from './dto/shop.schemas';
 import type { NamedVehicle, OfferDetail } from './lib';
 
 export type OffersQuery = z.output<typeof offersQuerySchema>;

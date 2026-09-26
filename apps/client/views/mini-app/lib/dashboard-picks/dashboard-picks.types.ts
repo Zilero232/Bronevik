@@ -1,4 +1,4 @@
-import type { LinkedAccounts, PlayerMarkRow } from '@bronevik/schemas';
+import type { LinkedAccounts, PlayerMarkRow, PlayerMarks } from '@bronevik/schemas';
 
 export type LestaAccount = LinkedAccounts['lesta'][number];
 
@@ -12,4 +12,9 @@ export type MarkChase = {
   percent: number;
   target: number;
   gap: number;
+};
+
+export type MarksDigest = {
+  summary: PlayerMarks['summary'];
+  chases: MarkChase[];
 };

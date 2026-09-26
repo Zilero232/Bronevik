@@ -10,10 +10,6 @@ import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { MapPage } from '@/views/map';
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-};
-
 const nameOf = async (value: string) => {
   'use cache';
 
@@ -38,7 +34,7 @@ export const generateStaticParams = async () => {
   }
 };
 
-export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
+export const generateMetadata = async ({ params }: PageProps<'/[locale]/maps/[id]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
   const { id } = await params;
   const t = await getTranslations({ locale, namespace: 'maps.mapMeta' });

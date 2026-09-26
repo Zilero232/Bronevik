@@ -1,13 +1,22 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  @include stack(var(--space-5));
+.header {
+  padding: 0 var(--space-4);
 }
 
 .grid {
-  @include tile-grid;
-
-  padding: 0;
+  display: grid;
+  padding: var(--space-3) var(--space-4) var(--space-4);
   margin: 0;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   list-style: none;
+
+  @include below(3xl) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

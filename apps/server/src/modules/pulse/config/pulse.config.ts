@@ -1,4 +1,4 @@
-import { FEATURES } from '../../../config';
+import { FEATURES, TIME } from '../../../config';
 
 export const PULSE_QUEUE = {
   name: 'pulse',
@@ -10,7 +10,7 @@ export const PULSE_SCHEDULES = [
 ] as const;
 
 export const PULSE = {
-  timezone: 'Europe/Moscow',
+  timezone: TIME.zone,
   heatmapDays: 28,
   activeWindowMinutes: 60,
   samplesKey: 'pulse:samples',

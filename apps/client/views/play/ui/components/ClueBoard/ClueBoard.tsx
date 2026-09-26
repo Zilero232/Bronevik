@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { Card, CardHeader } from '@/ui-kit';
+
 import { GUESS_CLUES } from '../../../config';
 import { useGuessGame } from '../../../model/context';
 import { ClueCard } from '../ClueCard';
@@ -13,18 +15,13 @@ export const ClueBoard = () => {
   const { clueCount } = useGuessGame();
 
   return (
-    <section aria-labelledby='guess-clues' className={s.root}>
-      <h2 className={s.title} id='guess-clues'>
-        {t('title')}
-        <span className={s.count}>
-          {clueCount}/{GUESS_CLUES.length}
-        </span>
-      </h2>
+    <Card padding='none' variant='panel'>
+      <CardHeader meta={t('count', { count: clueCount, total: GUESS_CLUES.length })} title={t('title')} />
       <ol className={s.list}>
         {GUESS_CLUES.map((clue, index) => (
           <ClueCard key={clue} clue={clue} index={index} isRevealed={index < clueCount} />
         ))}
       </ol>
-    </section>
+    </Card>
   );
 };

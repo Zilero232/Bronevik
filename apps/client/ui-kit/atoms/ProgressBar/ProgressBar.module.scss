@@ -5,13 +5,7 @@
   flex-direction: column;
   gap: 6px;
 
-  --tone-hot: var(--tone);
-
   @include tone;
-
-  &[data-tone='accent'] {
-    --tone-hot: var(--color-accent-hot);
-  }
 }
 
 .head {
@@ -22,7 +16,7 @@
 }
 
 .label {
-  @include hud-label;
+  @include label;
 }
 
 .value {
@@ -42,7 +36,7 @@
 }
 
 .md .track {
-  height: 8px;
+  height: 6px;
 }
 
 .sm .track {
@@ -51,15 +45,8 @@
 
 .fill {
   position: absolute;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 55%, transparent), var(--tone) 70%, var(--tone-hot));
-  box-shadow: 0 0 12px -2px var(--tone);
+  background-color: var(--tone);
   inset: 0;
+  transform: scaleX(var(--ratio, 0));
   transform-origin: left center;
-}
-
-.ticks {
-  position: absolute;
-  background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), var(--color-bg) calc(10% - 1px) 10%);
-  inset: 0;
-  opacity: 0.55;
 }

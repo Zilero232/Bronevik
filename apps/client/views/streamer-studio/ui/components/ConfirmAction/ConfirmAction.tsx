@@ -1,6 +1,5 @@
 'use client';
 
-import { useBoolean } from '@siberiacancode/reactuse';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -18,19 +17,15 @@ import {
 
 import type { ConfirmActionProps } from './ConfirmAction.types';
 
-export const ConfirmAction = ({ triggerLabel, title, description, confirmLabel, icon, isPending = false, onConfirm }: ConfirmActionProps) => {
-  const t = useTranslations('streamer.confirm');
-  const [isOpen, setOpen] = useBoolean(false);
+import { useConfirmAction } from '../../../model/hooks';
 
-  const onConfirmClick = () => {
-    onConfirm();
-    setOpen(false);
-  };
+export const ConfirmAction = ({ triggerLabel, title, description, confirmLabel, isPending = false, onConfirm }: ConfirmActionProps) => {
+  const t = useTranslations('streamer.confirm');
+  const { isOpen, onOpenChange, onConfirmClick } = useConfirmAction(onConfirm);
 
   return (
-    <Dialog open={isOpen} onOpenChange={(next) => setOpen(next)}>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger className={buttonVariants({ variant: 'ghost', size: 'sm' })} disabled={isPending}>
-        {icon}
         {triggerLabel}
       </DialogTrigger>
       <DialogContent>

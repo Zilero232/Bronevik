@@ -12,6 +12,13 @@ export type MoeThresholds = {
   hundredPercent?: number;
 };
 
+export type MoeThresholdPercentiles = {
+  p65: number;
+  p85: number;
+  p95: number;
+  p100?: number | null;
+};
+
 export type MoeDamageForPercentInput = {
   percent: number;
   thresholds: MoeThresholds;

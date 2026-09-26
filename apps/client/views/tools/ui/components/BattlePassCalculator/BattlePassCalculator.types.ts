@@ -1,18 +1,5 @@
-export type BattlePassValues = {
-  stage: number | null;
-  stagePoints: number | null;
-  pointsPerStage: number | null;
-  stages: number | null;
-  daysLeft: number | null;
-  pointsPerBattle: number | null;
-  battlesPerDay: number;
-};
+import type { BattlePassValues } from '../../../model/hooks';
 
 export type BattlePassResultsProps = {
   values: BattlePassValues;
-};
-
-export type PassTrackProps = {
-  stages: number;
-  progress: number;
 };

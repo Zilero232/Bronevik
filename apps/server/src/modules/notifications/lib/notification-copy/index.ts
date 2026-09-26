@@ -1,2 +1,2 @@
-export { fillTemplate, renderDigest, renderNotification, resolveNotificationLocale } from './notification-copy';
-export type { NotificationLocale, RenderedNotification } from './notification-copy.types';
+export { notificationText, renderDigest, renderNotification, resolveNotificationLocale } from './notification-copy';
+export type { NotificationLocale, NotificationTextInput, RenderedNotification } from './notification-copy.types';

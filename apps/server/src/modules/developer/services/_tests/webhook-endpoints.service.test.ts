@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { WebhookEndpoint } from '../../../../../generated';
@@ -8,11 +8,20 @@ import { API_PLANS, WEBHOOK_EVENT_TO_DB } from '../../config';
 import { DeveloperPlanService } from '../developer-plan.service';
 import { WebhookEndpointsService } from '../webhook-endpoints.service';
 
+const lookup = vi.hoisted(() => vi.fn<(host: string) => Promise<{ address: string; family: number }[]>>());
+
+vi.mock('node:dns/promises', () => ({ lookup }));
+
+beforeEach(() => {
+  lookup.mockReset();
+  lookup.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
+});
+
 const endpoint = (overrides: Partial<WebhookEndpoint> = {}): WebhookEndpoint => ({
   id: '00000000-0000-4000-8000-000000000001',
   userId: 'user',
   url: 'https://hooks.example.com/bronevik',
-  secret: 'whsec',
+  secret: 'whsec_c2VjcmV0',
   events: ['moeGained'],
   filter: { accountIds: [1] },
   isActive: true,
@@ -60,6 +69,15 @@ describe('WebhookEndpointsService.create', () => {
     const { service, prisma } = createService();
 
     await expect(service.create({ ...input, url: 'https://192.168.1.1/hook' })).rejects.toMatchObject({ response: { code: 'VALIDATION_FAILED' } });
+    expect(prisma.webhookEndpoint.create).not.toHaveBeenCalled();
+  });
+
+  it('refuses a public name that resolves into a private network', async () => {
+    const { service, prisma } = createService();
+
+    lookup.mockResolvedValue([{ address: '127.0.0.1', family: 4 }]);
+
+    await expect(service.create(input)).rejects.toMatchObject({ response: { code: 'VALIDATION_FAILED' } });
     expect(prisma.webhookEndpoint.create).not.toHaveBeenCalled();
   });
 });

@@ -15,6 +15,7 @@ export const TANK_DAILY_STATS_REFRESH = {
 
 export const TIMESCALE_SQL = {
   extension: '.sql',
+  extensionsFile: '001_extensions.sql',
   policiesLabel: 'policies',
   refreshLabel: 'refresh'
 } as const;

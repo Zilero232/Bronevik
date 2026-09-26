@@ -1,12 +1,13 @@
 'use client';
 
-import { useFormatter, useNow, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { Badge, ProgressBar } from '@/ui-kit';
 
 import type { ChallengeCardProps } from './ChallengeCard.types';
 
-import { CHALLENGE_NOW_REFRESH_MS, CHALLENGE_STATUS_TONE } from '../../../config';
+import { CHALLENGE_STATUS_TONE } from '../../../config';
+import { useChallengeCard } from '../../../model/hooks';
 import { ChallengeActions } from '../ChallengeActions';
 import { ChallengeCode } from '../ChallengeCode';
 import { ConditionSentenceText } from '../ConditionSentenceText';
@@ -15,9 +16,8 @@ import s from './ChallengeCard.module.scss';
 
 export const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
   const t = useTranslations('streamer.challenges');
-  const format = useFormatter();
-  const now = useNow({ updateInterval: CHALLENGE_NOW_REFRESH_MS });
   const { id, title, code, status, amount, currency, condition, progress, donorName, expiresAt } = challenge;
+  const { amountLabel, expiresLabel } = useChallengeCard({ amount, currency, expiresAt });
 
   return (
     <article className={s.root} data-status={status}>
@@ -25,7 +25,7 @@ export const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
         <ChallengeCode code={code} />
         <div className={s.badges}>
           <Badge tone={CHALLENGE_STATUS_TONE[status]}>{t(`status.${status}`)}</Badge>
-          <span className={s.amount}>{format.number(amount, { style: 'currency', currency, maximumFractionDigits: 0 })}</span>
+          <span className={s.amount}>{amountLabel}</span>
         </div>
       </header>
       <h4 className={s.title}>{title}</h4>
@@ -47,10 +47,10 @@ export const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
               <dd>{donorName}</dd>
             </div>
           )}
-          {expiresAt && (
+          {expiresLabel && (
             <div className={s.metaItem}>
               <dt>{t('list.expires')}</dt>
-              <dd>{format.relativeTime(new Date(expiresAt), now)}</dd>
+              <dd>{expiresLabel}</dd>
             </div>
           )}
         </dl>

@@ -2,6 +2,6 @@
 
 .root {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--gap-panel);
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }

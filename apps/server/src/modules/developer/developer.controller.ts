@@ -19,14 +19,14 @@ import {
   WebhookEndpointDto,
   WebhookEndpointsDto
 } from './dto';
-import { ApiKeysService, ApiUsageService, WebhookEndpointsService } from './services';
+import { ApiKeysService, ApiUsageReportService, WebhookEndpointsService } from './services';
 
 @ApiTags('developer')
 @Controller('me/developer')
 export class DeveloperController {
   constructor(
     private readonly keys: ApiKeysService,
-    private readonly usage: ApiUsageService,
+    private readonly usage: ApiUsageReportService,
     private readonly webhooks: WebhookEndpointsService
   ) {}
 

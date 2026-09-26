@@ -1,10 +1,9 @@
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { GridRows } from '@visx/grid';
 
-import type { ChartAxesProps } from '../../ChartKit.types';
+import { CHART, tickIndices } from '@/shared/lib';
 
-import { CHART } from '../../ChartKit.constants';
-import { tickIndices } from '../../ChartKit.helpers';
+import type { ChartAxesProps } from '../../ChartKit.types';
 
 import s from '../../ChartKit.module.scss';
 

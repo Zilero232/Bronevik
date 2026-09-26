@@ -10,7 +10,7 @@ import { readRecord } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { VehicleCatalogService } from '../../reference';
-import { CHALLENGE } from '../config';
+import { CHALLENGE, CHAT_COPY } from '../config';
 import { evaluateChallenge } from '../lib';
 import { ChatAnnouncerService } from './chat-announcer.service';
 import { OverlayPublisherService } from './overlay-publisher.service';
@@ -86,7 +86,7 @@ export class ChallengeFeedService {
 
       const text = await this.stats.text({
         streamerUserId: challenge.streamerUserId,
-        pick: (copy) => copy.challengeExpired,
+        message: CHAT_COPY.messages.challengeExpired,
         values: { title: challenge.title }
       });
 
@@ -167,7 +167,7 @@ export class ChallengeFeedService {
     const streamerUserId = challenge.streamerUserId;
     const text = await this.stats.text({
       streamerUserId,
-      pick: (copy) => (isSucceeded ? copy.challengeSucceeded : copy.challengeFailed),
+      message: isSucceeded ? CHAT_COPY.messages.challengeSucceeded : CHAT_COPY.messages.challengeFailed,
       values: { title: challenge.title }
     });
 

@@ -1,11 +1,8 @@
 export {
-  ChallengeDto,
   ChallengesDto,
   CreateFollowDto,
   FeedDto,
-  FeedItemDto,
   FeedQueryDto,
-  FollowDto,
   FollowListDto,
   FollowParamsDto,
   LeagueDto,

@@ -1,10 +1,11 @@
+import { fromUnixTime } from 'date-fns';
 import { sumBy } from 'remeda';
 
 import type { ArenaBlock, PersonalResult, VehicleResult } from '../header';
 import type { ClientVersion, PlayerResult, ReplayGame } from './summary.types';
 
 import { personalResultSchema } from '../header';
-import { ALIVE_DEATH_REASON, GAME_TITLE, REPLAY_PATTERN } from './summary.constants';
+import { GAME_TITLE, REPLAY_PATTERN, VEHICLE_RESULT } from './summary.constants';
 
 export const blankToNull = (value: string | null | undefined) => value || null;
 
@@ -56,7 +57,7 @@ export const unixToIso = (seconds: number | null | undefined) => {
     return null;
   }
 
-  return new Date(seconds * 1000).toISOString();
+  return fromUnixTime(seconds).toISOString();
 };
 
 export const findPersonalResult = (personal: Record<string, unknown> | null | undefined): PersonalResult | null => {
@@ -90,7 +91,8 @@ export const toPlayerResult = (entries: VehicleResult[]): PlayerResult | null =>
 
   const last = entries.at(-1) ?? first;
   const health = last.health ?? null;
-  const survived = last.deathReason === null || last.deathReason === undefined ? (health ?? 0) > 0 : last.deathReason === ALIVE_DEATH_REASON;
+  const survived =
+    last.deathReason === null || last.deathReason === undefined ? (health ?? 0) > 0 : last.deathReason === VEHICLE_RESULT.aliveDeathReason;
 
   return {
     damageDealt: sum((entry) => entry.damageDealt),

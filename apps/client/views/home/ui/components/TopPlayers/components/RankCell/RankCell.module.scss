@@ -1,0 +1,11 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric(var(--text-sm));
+
+  color: var(--color-text-dim);
+
+  &[data-rank] {
+    color: var(--color-premium);
+  }
+}

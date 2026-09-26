@@ -3,15 +3,15 @@
 .root {
   @include hide-scrollbar;
 
-  display: flex;
+  display: inline-flex;
+  max-width: 100%;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
 
   @include below(xl) {
     flex-wrap: nowrap;
-    margin-inline: calc(var(--space-4) * -1);
     overflow-x: auto;
-    padding-inline: var(--space-4);
   }
 }
 
@@ -19,23 +19,21 @@
   @include reset-button;
   @include nav-label;
 
-  position: relative;
   display: inline-flex;
+  height: 28px;
   flex-shrink: 0;
   align-items: center;
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+  font-size: var(--text-xs);
   gap: var(--space-2);
-  isolation: isolate;
-  scroll-snap-align: start;
-  transition:
-    border-color var(--duration-base) ease,
-    color var(--duration-base) ease;
+  padding-inline: var(--space-3);
 
-  @include chamfer-path(8px);
+  &:last-child {
+    border-right: none;
+  }
 
   &:hover {
-    border-color: var(--color-border-strong);
+    background-color: var(--color-surface-hover);
     color: var(--color-text);
   }
 
@@ -43,23 +41,11 @@
     @include focus-ring;
   }
 
-  &[data-active='true'] {
-    border-color: var(--color-accent);
-    color: var(--color-accent-contrast);
+  &[aria-checked='true'] {
+    @include chip-active;
   }
-}
-
-.glow {
-  position: absolute;
-  z-index: -1;
-  background: linear-gradient(135deg, var(--color-accent-hot), var(--color-accent) 60%, var(--color-accent-deep));
-  inset: 0;
 }
 
 .icon {
   flex-shrink: 0;
-}
-
-.label {
-  font-size: var(--text-xs);
 }

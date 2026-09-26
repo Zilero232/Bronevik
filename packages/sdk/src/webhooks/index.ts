@@ -1,3 +1,4 @@
-export { verifyWebhookSignature } from './webhooks';
-export { WEBHOOK_SIGNATURE } from './webhooks.constants';
-export type { VerifyWebhookInput } from './webhooks.types';
+export { verifyWebhook } from './webhooks';
+export { WEBHOOK_HEADERS } from './webhooks.constants';
+export type { BronevikWebhook, VerifyWebhookInput, WebhookHeaders } from './webhooks.types';
+export { Webhook, WebhookVerificationError } from 'standardwebhooks';

@@ -1,6 +1,6 @@
+import { REFERRAL } from '@bronevik/schemas';
 import { describe, expect, it } from 'vitest';
 
-import { REFERRAL } from '@/shared/api/billing';
 import { ROUTES } from '@/shared/constants';
 
 import { referralLink } from '../referral-link';

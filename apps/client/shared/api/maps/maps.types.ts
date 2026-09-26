@@ -8,8 +8,3 @@ export type MapListInput = {
   search?: string;
   signal?: AbortSignal;
 };
-
-export type MinimapUrlInput = {
-  arenaId: string;
-  mode?: string;
-};

@@ -1,9 +1,9 @@
-import { BronevikLogoIcon } from '@bronevik/icons';
-import { ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Suspense } from 'react';
 
+import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { env, EXTERNAL_LINKS, SITE } from '@/shared/config';
-import { ROUTES, SITE_NAV } from '@/shared/constants';
+import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
 import s from './SiteFooter.module.scss';
@@ -15,51 +15,38 @@ export const SiteFooter = () => {
   return (
     <footer className={s.root}>
       <div className={s.inner}>
-        <div className={s.brand}>
-          <span className={s.logo}>
-            <BronevikLogoIcon size={28} strokeWidth={1.75} />
-            {t('brand')}
-          </span>
-          <p className={s.tagline}>{t('tagline')}</p>
-        </div>
-        <nav aria-label={t('sections')} className={s.column}>
-          <span className={s.heading}>{t('sections')}</span>
-          {SITE_NAV.map((item) => (
-            <Link key={item.key} className={s.link} href={item.href}>
-              {tNav(item.key)}
-            </Link>
-          ))}
-        </nav>
-        <div className={s.column}>
-          <span className={s.heading}>{t('project')}</span>
-          <Link className={s.link} href={ROUTES.design}>
-            {tNav('design')}
-          </Link>
-          <Link className={s.link} href={ROUTES.developers}>
-            {t('api')}
-          </Link>
-          <a className={s.link} href={EXTERNAL_LINKS.game} rel='noreferrer' target='_blank'>
-            {t('game')} <ExternalLink size={12} />
-          </a>
-          <a className={s.link} href={EXTERNAL_LINKS.lestaSupport} rel='noreferrer' target='_blank'>
-            {t('support')} <ExternalLink size={12} />
-          </a>
-        </div>
-      </div>
-      <div className={s.legal}>
-        <div className={s.attribution}>
-          <p>{t('lestaCopyright')}</p>
-          <p>
+        <p className={s.legal}>
+          <span>{t('lestaCopyright')}</span>
+          <span>
             {t('dataSource')}{' '}
-            <a className={s.inline} href={EXTERNAL_LINKS.game} rel='noreferrer' target='_blank'>
+            <a className={s.link} href={EXTERNAL_LINKS.game} rel='noreferrer' target='_blank'>
               tanki.su
             </a>
-          </p>
-          <p className={s.disclaimer}>{t('disclaimer')}</p>
-        </div>
-        <p className={s.copyright}>
-          {t('copyright', { year: SITE.copyrightYear })} · v{env.NEXT_PUBLIC_APP_VERSION}
+          </span>
+          <a className={s.link} href={EXTERNAL_LINKS.lestaSupport} rel='noreferrer' target='_blank'>
+            {t('support')}
+          </a>
+          <span className={s.disclaimer}>{t('disclaimer')}</span>
         </p>
+        <div className={s.meta}>
+          <span className={s.copyright}>
+            {t('copyright', { year: SITE.copyrightYear })} · v{env.NEXT_PUBLIC_APP_VERSION}
+          </span>
+          <nav aria-label={t('project')} className={s.links}>
+            <Link className={s.link} href={ROUTES.developers}>
+              {t('api')}
+            </Link>
+            <Link className={s.link} href={ROUTES.streamers}>
+              {t('streamers')}
+            </Link>
+            <Link className={s.link} href={ROUTES.design}>
+              {tNav('design')}
+            </Link>
+          </nav>
+          <Suspense>
+            <LocaleSwitcher className={s.locale} />
+          </Suspense>
+        </div>
       </div>
     </footer>
   );

@@ -10,12 +10,13 @@ import { useMeMutation, useMeSection } from '../../../model/hooks';
 import { GoalForm } from '../GoalForm';
 import { GoalItem } from '../GoalItem';
 import { MeCard } from '../MeCard';
+import { SectionError } from '../SectionError';
 
 import s from './GoalsCard.module.scss';
 
 export const GoalsCard = () => {
   const t = useTranslations('me.goals');
-  const { data: goals, isPending } = useMeSection({ section: 'goals', fetcher: getGoals });
+  const { data: goals, isPending, isError, isFetching, refetch } = useMeSection({ section: 'goals', fetcher: getGoals });
   const remove = useMeMutation({ section: 'goals', mutationFn: removeGoal, successKey: 'goalRemoved' });
 
   return (
@@ -23,6 +24,7 @@ export const GoalsCard = () => {
       <div className={s.root}>
         <div className={s.list}>
           {isPending && <Skeleton height={180} shape='block' />}
+          {isError && <SectionError isRetrying={isFetching} onRetry={() => void refetch()} />}
           {goals?.length === 0 && <p className={s.empty}>{t('empty')}</p>}
           {goals?.map((goal, index) => (
             <GoalItem key={goal.id} goal={goal} index={index} onRemove={() => remove.mutate(goal.id)} />

@@ -1,0 +1,1 @@
+export { ArmorPieceMesh } from './ArmorPieceMesh';

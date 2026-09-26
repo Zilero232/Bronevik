@@ -18,6 +18,7 @@ export const useComparison = () => {
     data: comparison,
     isPending,
     isPlaceholderData,
+    isFetching,
     isError,
     refetch
   } = useQuery({
@@ -41,5 +42,5 @@ export const useComparison = () => {
 
   const isLoading = isPending || (isPlaceholderData && vehicles.length === 0);
 
-  return { ids, vehicles, statsOf, isStatsLoading, isLoading, isError, refetch };
+  return { ids, vehicles, statsOf, isStatsLoading, isLoading, isError, isFetching, refetch };
 };

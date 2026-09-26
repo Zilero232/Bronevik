@@ -1,118 +1,63 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  position: relative;
-  display: grid;
-  align-items: stretch;
-  gap: var(--space-8);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  @include data-list-row;
 
-  @include below(md) {
-    gap: var(--space-7);
-  }
-
-  &[data-single='true'] {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  padding-block: var(--space-1);
 }
 
-.node {
+.level {
   @include numeric;
 
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: inline-flex;
-  width: 30px;
-  height: 30px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-surface-raised);
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  width: 24px;
+  flex: none;
+  color: var(--color-text-dim);
   font-weight: 700;
-  transform: translate(-50%, -50%) rotate(45deg);
+  text-align: center;
+}
 
-  .root[data-single='true'] & {
-    right: var(--space-6);
-    left: auto;
-  }
+.options {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: var(--space-1);
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 
-  .root:not([data-chosen='none']) & {
-    border-color: var(--side);
-    box-shadow: 0 0 16px -4px var(--side);
-    color: var(--side);
+  @include below(md) {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .option {
   @include reset-button;
-  @include stack(var(--space-1));
 
-  position: relative;
+  display: flex;
   min-width: 0;
-  padding: var(--space-3) var(--space-4);
+  min-height: 32px;
+  align-items: center;
+  padding: 0 var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: var(--color-surface-sunken);
-  isolation: isolate;
+  gap: var(--space-2);
   text-align: left;
 
-  &[data-side='right'] {
-    text-align: right;
-  }
-
-  &:after {
-    position: absolute;
-    top: 50%;
-    width: var(--space-8);
-    height: 2px;
-    background: var(--color-border);
-    content: '';
-  }
-
-  &[data-side='left']:after {
-    left: 100%;
-  }
-
-  &[data-side='right']:after {
-    right: 100%;
-  }
-
-  &[aria-pressed='true'] {
-    border-color: var(--side);
-
-    &:after {
-      background: var(--side);
-    }
-  }
-
   &:hover {
-    border-color: var(--side);
+    border-color: var(--color-text-dim);
   }
 
   &:focus-visible {
     @include focus-ring;
   }
 
-  @include below(md) {
-    padding: var(--space-2) var(--space-3);
-
-    &:after {
-      width: var(--space-7);
-    }
+  &[aria-pressed='true'] {
+    border-color: var(--side);
+    background: var(--side-soft);
   }
 }
 
-.indicator {
-  position: absolute;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(135deg, var(--side-soft), transparent 80%);
-  inset: 0;
-}
-
 .name {
-  font-weight: 600;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

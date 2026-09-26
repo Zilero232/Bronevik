@@ -6,7 +6,7 @@ import { AppBadRequestException } from '../../../common/exceptions';
 import { toIso } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
-import { PLUS_PLANS, PLUS_PRODUCT } from '../config';
+import { PLUS_PLANS, PLUS_SUBSCRIPTION } from '../config';
 import { cancelsAtPeriodEnd, extendPeriod, isEntitled } from '../lib';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class SubscriptionService {
   }
 
   async activate({ db, userId, plan, method, now }: ActivateInput): Promise<string> {
-    const current = await db.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_PRODUCT } } });
+    const current = await db.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } });
     const isRunning = isEntitled({ subscription: current, now });
 
     const data = {
@@ -41,8 +41,8 @@ export class SubscriptionService {
     };
 
     const subscription = await db.subscription.upsert({
-      where: { userId_product: { userId, product: PLUS_PRODUCT } },
-      create: { userId, product: PLUS_PRODUCT, ...data },
+      where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } },
+      create: { userId, product: PLUS_SUBSCRIPTION.product, ...data },
       update: data,
       select: { id: true }
     });
@@ -51,19 +51,19 @@ export class SubscriptionService {
   }
 
   async grantDays({ db, userId, days, now }: GrantDaysInput): Promise<void> {
-    const current = await db.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_PRODUCT } } });
+    const current = await db.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } });
     const isRunning = isEntitled({ subscription: current, now });
     const currentPeriodEnd = extendPeriod({ currentPeriodEnd: isRunning ? (current?.currentPeriodEnd ?? null) : null, now, days });
 
     await db.subscription.upsert({
-      where: { userId_product: { userId, product: PLUS_PRODUCT } },
-      create: { userId, product: PLUS_PRODUCT, status: 'active', currentPeriodEnd, cancelAtPeriodEnd: true },
+      where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } },
+      create: { userId, product: PLUS_SUBSCRIPTION.product, status: 'active', currentPeriodEnd, cancelAtPeriodEnd: true },
       update: { currentPeriodEnd, ...(isRunning ? {} : { status: 'active' as const, cancelAtPeriodEnd: true }) }
     });
   }
 
   async status(userId: string): Promise<BillingStatus> {
-    const subscription = await this.prisma.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_PRODUCT } } });
+    const subscription = await this.prisma.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } });
     const now = new Date();
 
     const isPlus = isEntitled({ subscription, now });
@@ -101,7 +101,7 @@ export class SubscriptionService {
   }
 
   async setAutoRenew({ userId, isEnabled }: SetAutoRenewInput): Promise<BillingStatus> {
-    const subscription = await this.prisma.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_PRODUCT } } });
+    const subscription = await this.prisma.subscription.findUnique({ where: { userId_product: { userId, product: PLUS_SUBSCRIPTION.product } } });
 
     if (!subscription) {
       throw new AppBadRequestException('SUBSCRIPTION_REQUIRED', 'There is no Plus subscription to change');

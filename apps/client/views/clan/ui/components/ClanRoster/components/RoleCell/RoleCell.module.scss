@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+
+  &[data-role='commander'],
+  &[data-role='executive_officer'] {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+}

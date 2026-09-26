@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "title": "{name}: 3D armor layout",
+    "description": "Interactive 3D armor layout of the {name}: effective armor, ricochets, spaced armor and penetration by the chosen shell at any range."
+  },
+  "link": "3D armor",
+  "page": {
+    "eyebrow": "Armor layout",
+    "back": "Back to the vehicle",
+    "version": "Game version {version}",
+    "fallbackTitle": "Armor"
+  },
+  "states": {
+    "loading": "Scanning the armor…",
+    "emptyTitle": "No 3D armor model yet",
+    "emptyDescription": "This vehicle has no armor geometry yet. It will appear after the next data update.",
+    "errorTitle": "Couldn't load the armor model",
+    "errorDescription": "The server didn't answer. Try again in a minute."
+  },
+  "attribution": {
+    "lesta": "Armor geometry and characteristics: © Lesta Games. All rights reserved. Data source: Lesta Games.",
+    "site": "Official game website",
+    "geometry": "Collision geometry from the <link>{repo}</link> mirror, commit {commit}.",
+    "note": "Only the simplified collision model is shown, with no visual models or textures."
+  },
+  "controls": {
+    "panel": "Firing parameters",
+    "shell": "Shell",
+    "noShells": "This gun has no shells",
+    "shellOption": "{kind} · {penetration} mm",
+    "distance": "Range",
+    "distanceValue": "{distance} m · {penetration} mm",
+    "randomness": "Penetration spread",
+    "randomnessLesta": "±25%",
+    "randomnessClient": "±15%",
+    "turret": "Turret",
+    "gun": "Gun",
+    "layers": "Model layers",
+    "presets": "View",
+    "toolbar": "View controls",
+    "fullscreen": "Full screen",
+    "exitFullscreen": "Exit full screen",
+    "screenshot": "Screenshot",
+    "share": "Share",
+    "shareCopied": "Link copied",
+    "screenshotSaved": "Screenshot saved",
+    "canvas": "3D armor model. Arrow keys rotate the camera, plus and minus zoom, Home returns to the front view.",
+    "hint": "Hover the armor to see its effective thickness."
+  },
+  "layers": {
+    "hull": "Hull",
+    "turret": "Turret",
+    "gun": "Gun",
+    "chassis": "Tracks",
+    "spaced": "Spaced armor"
+  },
+  "presets": {
+    "front": "Front",
+    "side": "Side",
+    "rear": "Rear",
+    "top": "Top"
+  },
+  "kinds": {
+    "ap": "AP",
+    "apcr": "APCR",
+    "heat": "HEAT",
+    "he": "HE"
+  },
+  "legend": {
+    "title": "Legend",
+    "pen": "Penetrates",
+    "chance": "Within the spread",
+    "noPen": "Doesn't penetrate",
+    "ricochet": "Ricochet",
+    "spaced": "Spaced armor and tracks",
+    "module": "Modules and barrel",
+    "hollow": "No armor",
+    "heNote": "HE compares penetration with nominal armor; the angle is ignored."
+  },
+  "hit": {
+    "label": "Hit",
+    "nominal": "Nominal",
+    "angle": "Angle",
+    "effective": "Effective",
+    "total": "Total along the ray",
+    "penetration": "Penetration",
+    "layers": "{count, plural, one {# layer} other {# layers}}",
+    "overmatch": "Overmatched",
+    "mm": "{value} mm",
+    "degrees": "{value}°",
+    "verdict": {
+      "pen": "Penetration",
+      "chance": "Chance to penetrate",
+      "noPen": "Won't penetrate",
+      "ricochet": "Ricochet",
+      "hollow": "No armor"
+    }
+  },
+  "pieces": {
+    "hull": "Hull",
+    "chassis": "Chassis",
+    "turret": "Turret",
+    "gun": "Gun"
+  }
+}

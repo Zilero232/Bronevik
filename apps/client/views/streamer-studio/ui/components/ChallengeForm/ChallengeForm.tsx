@@ -1,18 +1,12 @@
 'use client';
 
-import { challengeConditionSchema, createChallengeSchema } from '@bronevik/schemas';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Swords } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
+import { Controller, FormProvider } from 'react-hook-form';
 
 import { Button, Input, NumberField, Select } from '@/ui-kit';
 
-import type { ChallengeFormOutput, ChallengeFormValues } from '../../../model/studio.types';
-
-import { CHALLENGE_FORM, CHALLENGE_FORM_DEFAULTS } from '../../../config';
-import { useCreateChallenge } from '../../../model/hooks';
+import { CHALLENGE_FORM } from '../../../config';
+import { useChallengeForm } from '../../../model/hooks';
 import { ConditionBuilder } from '../ConditionBuilder';
 import { ConditionSentenceText } from '../ConditionSentenceText';
 import { FormField } from '../FormField';
@@ -21,28 +15,8 @@ import s from './ChallengeForm.module.scss';
 
 export const ChallengeForm = () => {
   const t = useTranslations('streamer.challenges.form');
-  const create = useCreateChallenge();
-  const [round, setRound] = useState(0);
-  const form = useForm<ChallengeFormValues, unknown, ChallengeFormOutput>({
-    resolver: zodResolver(createChallengeSchema),
-    defaultValues: CHALLENGE_FORM_DEFAULTS
-  });
-
-  const condition = useWatch({ control: form.control, name: 'condition' });
-  const {
-    formState: { errors }
-  } = form;
-
-  const parsed = challengeConditionSchema.safeParse(condition);
-
-  const onSubmit = form.handleSubmit((values) =>
-    create.mutate(values, {
-      onSuccess: () => {
-        form.reset(CHALLENGE_FORM_DEFAULTS);
-        setRound((value) => value + 1);
-      }
-    })
-  );
+  const { form, round, condition, expiryFallback, isPending, onSubmit } = useChallengeForm();
+  const { errors } = form.formState;
 
   return (
     <FormProvider {...form}>
@@ -57,7 +31,7 @@ export const ChallengeForm = () => {
           />
         </FormField>
         <ConditionBuilder key={round} />
-        {parsed.success && <ConditionSentenceText className={s.sentence} condition={parsed.data} />}
+        {condition && <ConditionSentenceText className={s.sentence} condition={condition} />}
         <div className={s.row}>
           <Controller
             render={({ field }) => (
@@ -78,7 +52,7 @@ export const ChallengeForm = () => {
               <Select
                 items={CHALLENGE_FORM.expiryMinutes.map((minutes) => ({ value: String(minutes), label: t('expiresOption', { minutes }) }))}
                 label={t('expires')}
-                value={String(field.value ?? CHALLENGE_FORM_DEFAULTS.expiresInMinutes)}
+                value={String(field.value ?? expiryFallback)}
                 onValueChange={(value) => field.onChange(Number(value))}
               />
             )}
@@ -87,8 +61,7 @@ export const ChallengeForm = () => {
           />
         </div>
         {errors.amount && <p className={s.error}>{t('errors.amount')}</p>}
-        <Button block disabled={create.isPending} type='submit'>
-          <Swords size={16} />
+        <Button block disabled={isPending} type='submit'>
           {t('submit')}
         </Button>
       </form>

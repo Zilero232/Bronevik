@@ -1,41 +1,30 @@
 'use client';
 
 import { clsx } from 'clsx';
-import { motion } from 'motion/react';
 import { useLocale } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
-import { FADE, REVEAL_VIEWPORT } from '@/shared/lib';
+import { calendarLayout, heatLevel, useScrollToEnd } from '@/shared/lib';
 
 import type { CalendarHeatmapProps, HeatmapDay } from './CalendarHeatmap.types';
 
-import { calendarLayout, heatLevel } from './CalendarHeatmap.helpers';
+import { CALENDAR_HEATMAP } from './CalendarHeatmap.constants';
 
 import s from './CalendarHeatmap.module.scss';
 
-const DEFAULT_LEVELS = 5;
-
-export const CalendarHeatmap = ({ days, levels = DEFAULT_LEVELS, ariaLabel, legend, className, renderReadout }: CalendarHeatmapProps) => {
+export const CalendarHeatmap = ({ days, levels = CALENDAR_HEATMAP.levels, ariaLabel, legend, className, renderReadout }: CalendarHeatmapProps) => {
   const locale = useLocale();
 
   const [active, setActive] = useState<HeatmapDay | null>(null);
 
-  const scrollerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-
-    if (scroller) {
-      scroller.scrollLeft = scroller.scrollWidth;
-    }
-  }, [days.length]);
+  const scrollerRef = useScrollToEnd<HTMLDivElement>(days.length);
 
   const { weeks, months } = calendarLayout(days);
   const max = Math.max(0, ...days.map(({ value }) => value));
   const monthFormat = new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' });
 
   return (
-    <motion.div className={clsx(s.root, className)} initial='hidden' variants={FADE} viewport={REVEAL_VIEWPORT} whileInView='visible'>
+    <div className={clsx(s.root, className)}>
       <div ref={scrollerRef} className={s.scroller}>
         <div aria-label={ariaLabel} className={s.grid} role='img' style={{ gridTemplateColumns: `repeat(${weeks.length}, var(--cell))` }}>
           {months.map(({ index, date }) => (
@@ -74,6 +63,6 @@ export const CalendarHeatmap = ({ days, levels = DEFAULT_LEVELS, ariaLabel, lege
           </span>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };

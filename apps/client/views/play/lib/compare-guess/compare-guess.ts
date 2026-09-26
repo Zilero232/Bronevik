@@ -1,4 +1,4 @@
-import type { CellHint, CompareGuessInput, GuessFeedback, NumericHintInput } from './compare-guess.types';
+import type { CellHint, CompareGuessInput, GuessFeedback, NumericHintInput, RelativeInput } from './compare-guess.types';
 
 import { GUESS_TOLERANCE } from '../../config';
 
@@ -20,7 +20,7 @@ const numericHint = ({ guess, target, match, close }: NumericHintInput): CellHin
   return { verdict: gap <= close ? 'close' : 'miss', direction: target > guess ? 'up' : 'down' };
 };
 
-const relative = (target: number | null, share: number) => (target === null ? 0 : Math.abs(target) * share);
+const relative = ({ target, share }: RelativeInput) => (target === null ? 0 : Math.abs(target) * share);
 
 export const compareGuess = ({ guess, target }: CompareGuessInput): GuessFeedback => {
   const isCorrect = guess.vehicle.tankId === target.vehicle.tankId;
@@ -39,8 +39,8 @@ export const compareGuess = ({ guess, target }: CompareGuessInput): GuessFeedbac
       damage: numericHint({
         guess: guess.avgDamage,
         target: target.avgDamage,
-        match: relative(target.avgDamage, GUESS_TOLERANCE.damageMatch),
-        close: relative(target.avgDamage, GUESS_TOLERANCE.damageClose)
+        match: relative({ target: target.avgDamage, share: GUESS_TOLERANCE.damageMatch }),
+        close: relative({ target: target.avgDamage, share: GUESS_TOLERANCE.damageClose })
       }),
       winRate: numericHint({ guess: guess.winRate, target: target.winRate, match: GUESS_TOLERANCE.winRateMatch, close: GUESS_TOLERANCE.winRateClose })
     }

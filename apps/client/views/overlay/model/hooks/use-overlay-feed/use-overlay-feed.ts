@@ -10,10 +10,10 @@ import { QUERY_KEYS } from '@/shared/constants';
 import type { UseOverlayFeedInput } from './use-overlay-feed.types';
 
 import { OVERLAY_FEED } from '../../../config';
-import { feedReducer, initialFeedState } from '../../../lib/feed-state';
+import { feedReducer, INITIAL_FEED_STATE } from '../../../lib/feed-state';
 
 export const useOverlayFeed = ({ publicId, isEnabled }: UseOverlayFeedInput) => {
-  const [{ transport, data: streamed }, dispatch] = useReducer(feedReducer, env.NEXT_PUBLIC_USE_MOCKS, initialFeedState);
+  const [{ transport, data: streamed }, dispatch] = useReducer(feedReducer, INITIAL_FEED_STATE);
 
   const isPolling = transport === 'polling';
 

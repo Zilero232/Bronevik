@@ -7,7 +7,7 @@ import { chunk, range, sortBy } from 'remeda';
 
 import type { PopularPlayersInput, PopularRow } from '../players.types';
 
-import { ratingValue, toNumber } from '../../../common/lib';
+import { errorMessage, ratingValue, toNumber } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
 import { PLAYER_VIEWS } from '../config';
 
@@ -29,7 +29,7 @@ export class PlayerViewsService {
       .expire(key, PLAYER_VIEWS.retentionSeconds)
       .exec()
       .catch((error: unknown) => {
-        this.logger.debug(`view of ${accountId} not counted: ${error instanceof Error ? error.message : String(error)}`);
+        this.logger.debug(`view of ${accountId} not counted: ${errorMessage(error)}`);
       });
   }
 

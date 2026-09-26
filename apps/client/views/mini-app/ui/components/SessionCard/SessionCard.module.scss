@@ -1,7 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md));
+  @include panel;
   @include stack(var(--space-4));
 
   padding: var(--space-4);
@@ -17,11 +17,11 @@
 }
 
 .title {
-  @include display(var(--text-lg));
+  @include heading(var(--text-lg));
 }
 
 .time {
-  @include hud-label;
+  @include label;
 }
 
 .stats {
@@ -40,7 +40,7 @@
   @include tone;
 
   dt {
-    @include hud-label;
+    @include label;
   }
 
   dd {
@@ -48,7 +48,7 @@
 
     margin: 0;
     font-size: var(--text-lg);
-    font-weight: 700;
+    font-weight: 600;
   }
 
   &[data-tone] dd {
@@ -67,7 +67,7 @@
 }
 
 .empty {
-  @include plate(var(--chamfer-md));
+  @include panel;
 
   padding: var(--space-5) var(--space-4);
   color: var(--color-text-muted);

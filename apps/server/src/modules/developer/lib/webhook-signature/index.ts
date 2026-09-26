@@ -1,1 +1,1 @@
-export { generateWebhookSecret, signWebhook, webhookHeaders } from './webhook-signature';
+export { generateWebhookSecret, webhookHeaders } from './webhook-signature';

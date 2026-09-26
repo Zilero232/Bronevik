@@ -1,32 +1,31 @@
-import { createChallengeSchema, overlaySchema } from '@bronevik/schemas';
-import { createZodDto } from 'nestjs-zod';
-
 import {
   activateChallengeSchema,
   challengeListSchema,
-  connectProviderSchema,
   connectUrlSchema,
+  createChallengeSchema,
   createOverlaySchema,
-  idParamsSchema,
   integrationListSchema,
-  oauthCallbackSchema,
   overlayDataSchema,
   overlayListSchema,
-  overlayParamsSchema,
-  slugParamsSchema,
+  overlaySchema,
+  previewOverlaySchema,
   streamerChallengeSchema,
   streamerProfileSchema,
   updateOverlaySchema,
-  upsertProfileSchema
-} from './streamers.schemas';
+  upsertStreamerProfileSchema
+} from '@bronevik/schemas';
+import { createZodDto } from 'nestjs-zod';
+
+import { connectProviderSchema, idParamsSchema, oauthCallbackSchema, overlayParamsSchema, slugParamsSchema } from './streamers.schemas';
 
 export class StreamerProfileDto extends createZodDto(streamerProfileSchema) {}
-export class UpsertProfileDto extends createZodDto(upsertProfileSchema) {}
+export class UpsertProfileDto extends createZodDto(upsertStreamerProfileSchema) {}
 export class SlugParamsDto extends createZodDto(slugParamsSchema) {}
 export class OverlayDto extends createZodDto(overlaySchema) {}
 export class OverlayListDto extends createZodDto(overlayListSchema) {}
 export class CreateOverlayDto extends createZodDto(createOverlaySchema) {}
 export class UpdateOverlayDto extends createZodDto(updateOverlaySchema) {}
+export class PreviewOverlayDto extends createZodDto(previewOverlaySchema) {}
 export class IdParamsDto extends createZodDto(idParamsSchema) {}
 export class OverlayParamsDto extends createZodDto(overlayParamsSchema) {}
 export class OverlayDataDto extends createZodDto(overlayDataSchema) {}

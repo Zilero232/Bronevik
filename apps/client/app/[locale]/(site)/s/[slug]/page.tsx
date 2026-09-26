@@ -10,10 +10,6 @@ import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { StreamerPage } from '@/views/streamer';
 
-type PageProps = {
-  params: Promise<{ slug: string }>;
-};
-
 const nameOf = async (slug: string) => {
   'use cache';
 
@@ -24,7 +20,7 @@ const nameOf = async (slug: string) => {
   }
 };
 
-export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
+export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
   const slug = decodeURIComponent((await params).slug);
   const t = await getTranslations({ locale, namespace: 'streamer.publicMeta' });
@@ -40,13 +36,13 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
   });
 };
 
-const StreamerRoute = async ({ params }: PageProps) => {
+const StreamerRoute = async ({ params }: Pick<PageProps<'/[locale]/s/[slug]'>, 'params'>) => {
   const { slug } = await params;
 
   return <StreamerPage slug={decodeURIComponent(slug)} />;
 };
 
-const Page = ({ params }: PageProps) => (
+const Page = ({ params }: PageProps<'/[locale]/s/[slug]'>) => (
   <Suspense>
     <StreamerRoute params={params} />
   </Suspense>

@@ -11,6 +11,7 @@ export const ROUTES = {
   login: '/login',
   tanks: '/tanks',
   tank: (slug: string) => `/t/${slug}`,
+  tankArmor: (slug: string) => `/t/${slug}/armor`,
   compareTanks: '/tanks/compare',
   build: (slug: string) => `/builds/${slug}`,
   tree: '/tree',

@@ -1,1 +1,1 @@
-export { latestDeadline, parseRussianDay, parseRussianDeadlines } from './russian-date';
+export { latestDeadline, parseRussianDay } from './russian-date';

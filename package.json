@@ -16,6 +16,7 @@
       "@types/react": "^19.3.0",
       "better-auth": "^1.7.5",
       "date-fns": "^4.4.0",
+      "ky": "^2.1.0",
       "motion": "^13.4.3",
       "p-retry": "^8.0.1",
       "pino": "^10.3.1",
@@ -23,16 +24,16 @@
       "react": "^19.3.0",
       "react-dom": "^19.3.0",
       "remeda": "^2.50.0",
+      "standardwebhooks": "^1.1.1",
       "ts-pattern": "^5.9.0",
       "typescript": "~6.0.3",
       "zod": "^4.6.5"
     }
   },
   "scripts": {
+    "armor:purge": "bun --filter @bronevik/server armor:purge",
     "build": "bun --filter @bronevik/client build",
-    "db:deploy": "bun --filter @bronevik/server db:deploy",
     "db:generate": "bun --filter @bronevik/server db:generate",
-    "db:migrate": "bun --filter @bronevik/server db:migrate",
     "db:push": "bun --filter @bronevik/server db:push",
     "db:studio": "bun --filter @bronevik/server db:studio",
     "db:timescale": "bun --filter @bronevik/server db:timescale",
@@ -90,7 +91,7 @@
     "@testing-library/user-event": "^14.6.7",
     "@types/bun": "catalog:",
     "@vitejs/plugin-react": "^6.1.1",
-    "@vitest/coverage-v8": "^5.0.1",
+    "@vitest/coverage-v8": "^5.0.2",
     "babel-plugin-react-compiler": "^1.0.0",
     "concurrently": "^10.0.5",
     "eslint": "^10.11.0",
@@ -107,7 +108,7 @@
     "stylelint-config-standard-scss": "^17.0.0",
     "stylelint-order": "^8.1.1",
     "typescript": "catalog:",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.2"
   },
   "packageManager": "bun@1.3.1",
   "engines": {

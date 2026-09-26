@@ -2,6 +2,8 @@ import type { MoeThreshold } from '@bronevik/schemas';
 
 import { differenceInCalendarDays, parseISO } from 'date-fns';
 
+import type { SpecVerdict } from '@/entities/tank/tank';
+
 import type { MoeDeltaInput, MoeSeries } from './moe-deltas.types';
 
 import { MOE_KEYS } from '../../config';
@@ -31,3 +33,11 @@ export const moeSeries = (history: readonly MoeThreshold[]): MoeSeries => ({
     values: history.map((point) => point[key] ?? 0)
   }))
 });
+
+export const thresholdVerdict = (delta: number): SpecVerdict => {
+  if (delta === 0) {
+    return 'same';
+  }
+
+  return delta > 0 ? 'worse' : 'better';
+};

@@ -1,0 +1,23 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric;
+
+  color: var(--color-text-dim);
+  font-weight: 600;
+
+  &[data-medal='gold'] {
+    color: var(--color-premium);
+    font-weight: 700;
+  }
+
+  &[data-medal='silver'] {
+    color: var(--color-mastery-silver);
+    font-weight: 700;
+  }
+
+  &[data-medal='bronze'] {
+    color: var(--color-mastery-bronze);
+    font-weight: 700;
+  }
+}

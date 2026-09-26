@@ -1,112 +1,29 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  position: sticky;
-  z-index: 2;
+  @include stack(var(--space-2));
+
+  position: relative;
+  font-weight: 400;
+  text-transform: none;
+}
+
+.remove {
+  position: absolute;
+  z-index: 1;
   top: 0;
-  display: flex;
-  overflow: hidden;
-  height: var(--head-h);
-  flex-direction: column;
-  padding: var(--space-3) var(--space-4) var(--space-4);
-  border-bottom: 1px solid var(--color-border-strong);
-  background: var(--brushed), var(--color-surface-raised);
-  gap: var(--space-2);
-  isolation: isolate;
-
-  &:after {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--color-steel), transparent);
-    content: '';
-  }
-
-  &[data-premium='true']:after {
-    background: linear-gradient(90deg, var(--color-premium), transparent);
-  }
-}
-
-.render {
-  position: absolute;
-  z-index: -1;
-  top: var(--space-6);
-  right: var(--space-4);
-  width: min(160px, 58%);
-  opacity: 0.95;
-}
-
-.watermark {
-  position: absolute;
-  z-index: -1;
-  right: var(--space-2);
-  bottom: calc(var(--space-2) * -1);
-  color: transparent;
-  font-family: var(--font-display);
-  font-size: 5.5rem;
-  font-stretch: 70%;
-  font-weight: 900;
-  line-height: 1;
-  pointer-events: none;
-  -webkit-text-stroke: 1px var(--color-border-strong);
-}
-
-.top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.slot {
-  color: var(--color-accent);
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  font-weight: 600;
-  letter-spacing: var(--tracking-label);
+  right: 0;
 }
 
 .link {
-  display: flex;
   min-width: 0;
-  align-items: flex-start;
-  margin-top: auto;
-  color: inherit;
-  gap: var(--space-1);
+  color: var(--color-text);
+
+  &:hover {
+    color: var(--color-accent);
+  }
 
   &:focus-visible {
     @include focus-ring;
   }
-}
-
-.identity {
-  min-width: 0;
-  flex-wrap: wrap;
-  row-gap: 0;
-}
-
-.arrow {
-  flex-shrink: 0;
-  color: var(--color-text-dim);
-  transition: color var(--duration-base) ease;
-
-  .link:hover & {
-    color: var(--color-accent);
-  }
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  gap: 4px;
-  white-space: nowrap;
 }

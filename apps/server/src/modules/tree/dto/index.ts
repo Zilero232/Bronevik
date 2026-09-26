@@ -1,1 +1,1 @@
-export * from './tree.dto';
+export { TechTreeDto, TechTreeParamsDto } from './tree.dto';

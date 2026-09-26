@@ -1,12 +1,9 @@
 import type { WebhookEvent } from '@bronevik/schemas';
 
-export type SignWebhookInput = {
+export type WebhookHeadersInput = {
   secret: string;
-  timestamp: number;
   body: string;
-};
-
-export type WebhookHeadersInput = SignWebhookInput & {
   event: WebhookEvent;
   deliveryId: string;
+  sentAt: Date;
 };

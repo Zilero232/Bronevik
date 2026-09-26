@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { subDays } from 'date-fns';
 
 import { PrismaService } from '../../../core';
 import { EVENT_CALENDAR } from '../config';
@@ -9,7 +10,7 @@ export class DropsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async run(now: Date): Promise<number> {
-    const since = new Date(now.getTime() - EVENT_CALENDAR.newsLookbackDays * 86_400_000);
+    const since = subDays(now, EVENT_CALENDAR.newsLookbackDays);
     const news = await this.prisma.newsItem.findMany({
       where: { publishedAt: { gte: since } },
       select: { id: true, title: true, url: true, image: true, summary: true, publishedAt: true }

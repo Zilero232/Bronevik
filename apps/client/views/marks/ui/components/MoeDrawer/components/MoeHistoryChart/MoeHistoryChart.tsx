@@ -1,14 +1,13 @@
 'use client';
 
-import { LineChartIcon } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
 import type { ChartSeries } from '@/ui-kit';
 
-import { EmptyState, LineChart, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, LineChart, Skeleton } from '@/ui-kit';
 
-import type { MoeHistoryChartProps } from '../../MoeDrawer.types';
+import type { MoeHistoryChartProps } from './MoeHistoryChart.types';
 
 import { MOE_LIST } from '../../../../../config';
 import { historySeries } from '../../../../../lib/moe-history';
@@ -17,7 +16,7 @@ import { useMoeHistory } from '../../../../../model/hooks';
 export const MoeHistoryChart = ({ tankId }: MoeHistoryChartProps) => {
   const t = useTranslations('marks.drawer');
   const format = useFormatter();
-  const { data: history = [], isPending, isError } = useMoeHistory({ tankId });
+  const { data: history = [], isPending, isError, isFetching, refetch } = useMoeHistory({ tankId });
 
   const { dates, p65, p85, p95, p100 } = historySeries(history);
 
@@ -28,8 +27,9 @@ export const MoeHistoryChart = ({ tankId }: MoeHistoryChartProps) => {
     ...(p100.length === dates.length ? [{ id: 'p100', label: '100%', values: p100, tone: 'unicum' as const }] : [])
   ];
 
-  return match({ isPending, hasData: !isError && dates.length > 1 })
+  return match({ isPending, isError, hasData: dates.length > 1 })
     .with({ isPending: true }, () => <Skeleton height={MOE_LIST.historyChartHeight} width='100%' />)
+    .with({ isError: true }, () => <ErrorState isRetrying={isFetching} onRetry={() => void refetch()} />)
     .with({ hasData: true }, () => (
       <LineChart
         ariaLabel={t('historyAria')}
@@ -39,5 +39,5 @@ export const MoeHistoryChart = ({ tankId }: MoeHistoryChartProps) => {
         series={series}
       />
     ))
-    .otherwise(() => <EmptyState description={t('noHistoryHint')} icon={<LineChartIcon size={24} />} title={t('noHistory')} />);
+    .otherwise(() => <EmptyState description={t('noHistoryHint')} title={t('noHistory')} />);
 };

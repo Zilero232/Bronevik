@@ -3,8 +3,6 @@ import type { ScheduleDefinition } from '../schedules.types';
 import { FEATURES } from '../../../../config';
 import { JOB, QUEUE } from '../../contracts';
 
-export const SCHEDULE_TIMEZONE = 'Europe/Moscow';
-
 export const SCHEDULES: readonly ScheduleDefinition[] = [
   { id: 'tier-a-dispatch', queue: QUEUE.poll, name: JOB.poll.dispatch, repeat: { every: 60_000 }, needsLesta: true },
   {

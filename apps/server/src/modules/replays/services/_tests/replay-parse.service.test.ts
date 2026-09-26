@@ -2,8 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Replay } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
-import type { ReplayStorage } from '../../storage';
+import type { ObjectStorage, PrismaService } from '../../../../core';
 import type { HeatmapService } from '../heatmap.service';
 
 import { REPLAY_PARSE } from '../../config';
@@ -11,7 +10,7 @@ import { ReplayParseService } from '../replay-parse.service';
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const storage = mock<ReplayStorage>();
+  const storage = mock<ObjectStorage>();
   const heatmaps = mock<HeatmapService>();
 
   return { service: new ReplayParseService(prisma, storage, heatmaps), prisma, storage, heatmaps };
@@ -23,7 +22,7 @@ describe('ReplayParseService.parse', () => {
 
     prisma.replay.findUnique.mockResolvedValue(null);
 
-    expect(await service.parse('r1')).toEqual({ status: 'missing', hasTracks: false });
+    expect(await service.parse({ replayId: 'r1', isFinalAttempt: false })).toEqual({ status: 'missing', hasTracks: false });
     expect(prisma.replay.update).not.toHaveBeenCalled();
     expect(storage.get).not.toHaveBeenCalled();
   });
@@ -34,7 +33,7 @@ describe('ReplayParseService.parse', () => {
     prisma.replay.findUnique.mockResolvedValue(mock<Replay>({ id: 'r1', storageKey: 'replays/r1.mtreplay', heatmapAppliedAt: null }));
     storage.get.mockResolvedValue(new TextEncoder().encode('not a replay'));
 
-    expect(await service.parse('r1')).toEqual({ status: 'failed', hasTracks: false });
+    expect(await service.parse({ replayId: 'r1', isFinalAttempt: false })).toEqual({ status: 'failed', hasTracks: false });
 
     const failed = prisma.replay.update.mock.calls.at(-1)?.[0].data;
 
@@ -51,8 +50,21 @@ describe('ReplayParseService.parse', () => {
     prisma.replay.findUnique.mockResolvedValue(mock<Replay>({ id: 'r1', storageKey: 'replays/r1.mtreplay', heatmapAppliedAt: null }));
     storage.get.mockResolvedValue(new TextEncoder().encode('not a replay'));
 
-    await service.parse('r1');
+    await service.parse({ replayId: 'r1', isFinalAttempt: false });
 
     expect(prisma.replay.update.mock.calls[0]?.[0]).toEqual({ where: { id: 'r1' }, data: { status: 'parsing' } });
+  });
+
+  it.each([
+    [true, 'failed'],
+    [false, 'uploaded']
+  ] as const)('leaves no replay stuck in parsing when storage throws (final attempt: %s)', async (isFinalAttempt, status) => {
+    const { service, prisma, storage } = createService();
+
+    prisma.replay.findUnique.mockResolvedValue(mock<Replay>({ id: 'r1', storageKey: 'replays/r1.mtreplay', heatmapAppliedAt: null }));
+    storage.get.mockRejectedValue(new Error('storage down'));
+
+    await expect(service.parse({ replayId: 'r1', isFinalAttempt })).rejects.toThrow('storage down');
+    expect(prisma.replay.update.mock.calls.at(-1)?.[0]).toEqual({ where: { id: 'r1' }, data: { status, parseError: 'storage down' } });
   });
 });

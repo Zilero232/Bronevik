@@ -62,4 +62,15 @@ describe('buildTimescaleStatements', () => {
       sql: `CALL refresh_continuous_aggregate('${CONTINUOUS_AGGREGATE.tankDailyStats}', NULL, NULL);`
     });
   });
+
+  it('runs only the extensions file before the schema is pushed', () => {
+    const statements = buildTimescaleStatements({
+      files: [...files, { name: TIMESCALE_SQL.extensionsFile, sql: 'EXT' }],
+      config: CONFIG,
+      extensionsOnly: true,
+      refresh: true
+    });
+
+    expect(statements).toEqual([{ label: TIMESCALE_SQL.extensionsFile, sql: 'EXT' }]);
+  });
 });

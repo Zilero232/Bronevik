@@ -17,7 +17,8 @@ export const QUERY_KEYS = {
     detail: (params: object) => ['tanks', 'detail', params] as const,
     topPlayers: (params: object) => ['tanks', 'top-players', params] as const,
     trend: (tankId: number) => ['tanks', tankId, 'trend'] as const,
-    patches: (tankId: number) => ['tanks', tankId, 'patches'] as const
+    patches: (tankId: number) => ['tanks', tankId, 'patches'] as const,
+    armor: (idOrSlug: string) => ['tanks', 'armor', idOrSlug] as const
   },
   marks: {
     list: (params: object) => ['marks', 'list', params] as const,
@@ -32,6 +33,7 @@ export const QUERY_KEYS = {
     popular: (tankId: number) => ['builds', tankId, 'popular'] as const
   },
   tree: (nation: string) => ['tree', nation] as const,
+  pulse: ['pulse'] as const,
   clans: {
     list: (params: object) => ['clans', 'list', params] as const,
     page: (idOrTag: string) => ['clans', 'page', idOrTag.toLowerCase()] as const,

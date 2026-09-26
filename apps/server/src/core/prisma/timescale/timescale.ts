@@ -39,11 +39,20 @@ export const buildPolicyStatements = (config: TimescaleConfig): string[] => {
   return [...compression, ...retention, ...refresh];
 };
 
-export const buildTimescaleStatements = ({ files, config, refresh = false }: BuildTimescaleStatementsInput): TimescaleStatement[] => {
+export const buildTimescaleStatements = ({
+  files,
+  config,
+  refresh = false,
+  extensionsOnly = false
+}: BuildTimescaleStatementsInput): TimescaleStatement[] => {
   const scripts = sortBy(
     files.filter(({ name }) => name.endsWith(TIMESCALE_SQL.extension)),
     ({ name }) => name
   ).map(({ name, sql }) => ({ label: name, sql }));
+
+  if (extensionsOnly) {
+    return scripts.filter(({ label }) => label === TIMESCALE_SQL.extensionsFile);
+  }
 
   const policies = buildPolicyStatements(config).map((sql) => ({ label: TIMESCALE_SQL.policiesLabel, sql }));
 

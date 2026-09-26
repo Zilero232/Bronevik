@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  min-height: 560px;
+
+  @include plate(var(--chamfer-lg), var(--color-border-strong), var(--color-bg-deep));
+
+  @include below(md) {
+    min-height: 420px;
+  }
+}

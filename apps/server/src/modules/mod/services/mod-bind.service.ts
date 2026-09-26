@@ -6,10 +6,11 @@ import type { BindResponse } from '../lib';
 import type { BindCode, BindCodeInput } from '../mod.types';
 
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
+import { randomCode } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { BIND_CODE } from '../config';
-import { bindCodePattern, bindRequestSchema, deviceSecret, hashSecret, newBindCode, newDeviceId, normalizeBindCode } from '../lib';
+import { bindCodePattern, bindRequestSchema, deviceSecret, hashSecret, newDeviceId, normalizeBindCode } from '../lib';
 
 @Injectable()
 export class ModBindService {
@@ -31,7 +32,7 @@ export class ModBindService {
       throw new AppForbiddenException('FORBIDDEN', 'This Lesta account is not linked to you');
     }
 
-    const code = newBindCode();
+    const code = randomCode(BIND_CODE);
     const expiresAt = addMinutes(new Date(), BIND_CODE.ttlMinutes);
 
     await this.prisma.$transaction([

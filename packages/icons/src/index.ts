@@ -11,7 +11,7 @@ export {
   SpgSilhouetteIcon,
   TankDestroyerSilhouetteIcon
 } from './icons/class-silhouettes';
-export { HeavyTankIcon, LightTankIcon, MediumTankIcon, SpgIcon, TankClassIcon, TankDestroyerIcon } from './icons/classes';
+export { AssaultSpgIcon, HeavyTankIcon, LightTankIcon, MediumTankIcon, SpgIcon, TankClassIcon, TankDestroyerIcon } from './icons/classes';
 export type {
   MarkCount,
   MarkOfExcellenceIconProps,
@@ -24,6 +24,7 @@ export type {
   TankClassGlyphProps,
   TankClassIconComponent,
   TankClassIconProps,
+  TankClassKind,
   TankClassVariant,
   TierIconProps
 } from './icons/icons.types';
@@ -62,6 +63,8 @@ export {
   NATION_ICONS,
   NATIONS,
   TANK_CLASS_ICONS,
+  TANK_CLASS_KIND_ICONS,
+  TANK_CLASS_KINDS,
   TANK_CLASS_SILHOUETTES,
   TANK_CLASSES
 } from './registry';

@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { subDays } from 'date-fns';
 
 import type { ClanScope, ReportWindow, WeeklyReportView } from '../clan-workspace.types';
 
+import { isoDay, weekWindow } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { CLAN_WORKSPACE } from '../config';
@@ -24,7 +26,7 @@ export class OfficerReportService {
 
   async sendWeekly(now: Date): Promise<number> {
     const workspaces = await this.prisma.clanWorkspace.findMany({ select: { clanId: true, clan: { select: { tag: true } } } });
-    const weekKey = now.toISOString().slice(0, 10);
+    const weekKey = isoDay(weekWindow(now).start);
 
     for (const workspace of workspaces) {
       const report = await this.build({ clanId: workspace.clanId, now });
@@ -34,11 +36,10 @@ export class OfficerReportService {
         userIds,
         dedupeKey: `clan-report-${workspace.clanId}-${weekKey}`,
         notification: {
-          event: 'clanEventReminder',
+          event: 'clanWeeklyReport',
           clanId: Number(workspace.clanId),
           clanTag: workspace.clan.tag,
-          title: report.from,
-          startsAt: null,
+          from: report.from,
           report: {
             events: report.events,
             attendanceRate: report.attendanceRate,
@@ -53,8 +54,8 @@ export class OfficerReportService {
   }
 
   private async build({ clanId, now }: ReportWindow): Promise<WeeklyReportView> {
-    const from = new Date(now.getTime() - CLAN_WORKSPACE.reportDays * 86_400_000);
-    const inactiveBefore = new Date(now.getTime() - CLAN_WORKSPACE.inactiveDays * 86_400_000);
+    const from = subDays(now, CLAN_WORKSPACE.reportDays);
+    const inactiveBefore = subDays(now, CLAN_WORKSPACE.inactiveDays);
     const [events, attendance, newCandidates, inactiveMembers] = await Promise.all([
       this.prisma.clanEvent.count({ where: { clanId, startsAt: { gte: from, lt: now } } }),
       this.prisma.clanAttendance.findMany({ where: { event: { clanId, startsAt: { gte: from, lt: now } } }, select: { status: true } }),

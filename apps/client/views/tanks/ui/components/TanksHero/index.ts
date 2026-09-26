@@ -1,1 +1,0 @@
-export { TanksHero } from './TanksHero';

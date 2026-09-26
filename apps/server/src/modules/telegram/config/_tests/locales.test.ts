@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { BOT_COMMANDS, BOT_LOCALE_FILES, BOT_LOCALES, SETTINGS_MENU } from '..';
-import { createBotI18n } from '../../bot';
+import { BOT, BOT_COMMANDS, BOT_LOCALE_FILES, SETTINGS_MENU } from '..';
+import { createBotI18n } from '../../providers';
 
-const messageKeys = (locale: (typeof BOT_LOCALES)[number]) =>
+const messageKeys = (locale: (typeof BOT.locales)[number]) =>
   readFileSync(BOT_LOCALE_FILES[locale], 'utf8')
     .split(/\r?\n/u)
     .flatMap((line) => /^([a-z][\w-]*)\s*=/u.exec(line)?.[1] ?? [])
@@ -12,7 +12,7 @@ const messageKeys = (locale: (typeof BOT_LOCALES)[number]) =>
 
 describe('bot locales', () => {
   it('define the same messages in every language', () => {
-    const [first, ...rest] = BOT_LOCALES;
+    const [first, ...rest] = BOT.locales;
 
     for (const locale of rest) {
       expect(messageKeys(locale)).toEqual(messageKeys(first));
@@ -26,7 +26,7 @@ describe('bot locales', () => {
       ...SETTINGS_MENU.events.map((event) => `settings-event-${event}`)
     ];
 
-    for (const locale of BOT_LOCALES) {
+    for (const locale of BOT.locales) {
       expect(messageKeys(locale)).toEqual(expect.arrayContaining(required));
     }
   });

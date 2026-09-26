@@ -3,8 +3,9 @@ import { addHours, subDays } from 'date-fns';
 
 import type { Subscription } from '../../../../generated';
 
+import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { PLUS_PLANS, PLUS_PRODUCT, RENEWAL } from '../config';
+import { PLUS_PLANS, PLUS_SUBSCRIPTION, RENEWAL } from '../config';
 import { describePlan, isPlusPlan, planPrice, renewalIdempotenceKey, YooKassaClient } from '../lib';
 import { SubscriptionService } from './subscription.service';
 import { WebhookService } from './webhook.service';
@@ -27,7 +28,7 @@ export class RenewalService {
 
     const due = await this.prisma.subscription.findMany({
       where: {
-        product: PLUS_PRODUCT,
+        product: PLUS_SUBSCRIPTION.product,
         status: { in: ['active', 'pastDue'] },
         cancelAtPeriodEnd: false,
         savedCardId: { not: null },
@@ -42,7 +43,7 @@ export class RenewalService {
       try {
         charged += (await this.charge(subscription)) ? 1 : 0;
       } catch (error) {
-        this.logger.warn(`renewal of ${subscription.id} failed: ${error instanceof Error ? error.message : String(error)}`);
+        this.logger.warn(`renewal of ${subscription.id} failed: ${errorMessage(error)}`);
         await this.prisma.subscription.update({ where: { id: subscription.id }, data: { status: 'pastDue' } });
       }
     }
@@ -88,7 +89,7 @@ export class RenewalService {
       description: describePlan({ plan, isRenewal: true }),
       paymentMethodId: subscription.savedCardId,
       idempotenceKey: renewalIdempotenceKey({ subscriptionId: subscription.id, currentPeriodEnd: subscription.currentPeriodEnd }),
-      metadata: { userId: subscription.userId, plan, product: PLUS_PRODUCT, subscriptionId: subscription.id }
+      metadata: { userId: subscription.userId, plan, product: PLUS_SUBSCRIPTION.product, subscriptionId: subscription.id }
     });
 
     await this.prisma.payment.upsert({
@@ -100,7 +101,7 @@ export class RenewalService {
         amount: amountRub,
         status: 'pending',
         kind: 'subscription',
-        product: PLUS_PRODUCT,
+        product: PLUS_SUBSCRIPTION.product,
         plan,
         isAutoCharge: true
       },

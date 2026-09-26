@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  padding: var(--space-5);
+
+  @include riveted-plate(var(--chamfer-md));
+  @include stack(var(--space-5));
+}
+
+.divider {
+  @include camo-divider;
+}

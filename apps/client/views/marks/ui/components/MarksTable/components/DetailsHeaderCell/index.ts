@@ -1,0 +1,1 @@
+export { DetailsHeaderCell } from './DetailsHeaderCell';

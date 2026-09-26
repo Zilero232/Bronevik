@@ -1,8 +1,8 @@
 import { API_KEY, WEBHOOK } from '@bronevik/schemas';
 import { describe, expect, it } from 'vitest';
 
+import { CODE_SAMPLES } from '../../../config/code-samples.constants';
 import { quickstartSamples, webhookSamples } from '../code-samples';
-import { CODE_SAMPLES } from '../code-samples.constants';
 
 const BASE = 'https://api.example.test';
 
@@ -33,14 +33,20 @@ describe('webhookSamples', () => {
     expect(samples.map(({ id }) => id)).toEqual([...CODE_SAMPLES.webhook]);
   });
 
-  it('checks the documented signature scheme by hand', () => {
-    samples.filter(({ id }) => id !== 'sdk').forEach(({ code }) => expect(code).toContain(`${WEBHOOK.signatureScheme}=`));
+  it('points non-SDK samples at the standardwebhooks library', () => {
+    samples.filter(({ id }) => id !== 'sdk').forEach(({ code }) => expect(code).toContain('standardwebhooks'));
   });
 
-  it('reads the signature and timestamp headers the server sends', () => {
+  it('passes every signed header the server sends to the verifier', () => {
+    const node = samples.find(({ id }) => id === 'node')?.code ?? '';
+
+    [WEBHOOK.deliveryHeader, WEBHOOK.timestampHeader, WEBHOOK.signatureHeader].forEach((name) => expect(node).toContain(name.toLowerCase()));
+  });
+
+  it('verifies through the SDK with the raw body and the request headers', () => {
     const sdk = samples.find(({ id }) => id === 'sdk')?.code ?? '';
 
-    expect(sdk).toContain(WEBHOOK.signatureHeader.toLowerCase());
-    expect(sdk).toContain(WEBHOOK.timestampHeader.toLowerCase());
+    expect(sdk).toContain('verifyWebhook');
+    expect(sdk).toContain(CODE_SAMPLES.secretVariable);
   });
 });

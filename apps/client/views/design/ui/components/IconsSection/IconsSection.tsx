@@ -21,10 +21,12 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { TankImage } from '@/entities/tank/tank';
-import { Button, Card, SegmentedControl } from '@/ui-kit';
+import { useVehicleCatalog } from '@/features/tank/pick-tank';
+import { Button, Card, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import { DesignBlock, DesignRow } from '../DesignBlock';
 import { CLASS_VARIANTS, ICON_GROUP_ORDER, ICON_SIZES, ICON_STROKES, MARK_COUNTS, MASTERY_LEVELS, RENDER_SAMPLES } from './IconsSection.constants';
+import { renderSamples } from './IconsSection.helpers';
 
 import s from './IconsSection.module.scss';
 
@@ -33,7 +35,9 @@ export const IconsSection = () => {
   const [size, setSize] = useState<(typeof ICON_SIZES)[number]>('32');
   const [stroke, setStroke] = useState<(typeof ICON_STROKES)[number]>('1.75');
   const [replay, setReplay] = useState(0);
+  const catalog = useVehicleCatalog();
 
+  const samples = renderSamples(catalog.data ?? []);
   const iconProps = { size: Number(size), strokeWidth: Number(stroke) };
 
   const controls = (
@@ -125,7 +129,24 @@ export const IconsSection = () => {
         ))}
       </DesignRow>
       <DesignRow label={t('groups.renders')}>
-        {RENDER_SAMPLES.map(({ key, size: renderSize, tank }) => (
+        {catalog.isLoading &&
+          RENDER_SAMPLES.map(({ key }) => (
+            <span key={key} className={s.render}>
+              <Skeleton height={96} shape='block' width={160} />
+              <code className={s.name}>{key}</code>
+            </span>
+          ))}
+        {catalog.isError && (
+          <>
+            <span className={s.name}>{t('rendersError')}</span>
+            <Button size='sm' variant='secondary' onClick={() => catalog.refetch()}>
+              <RotateCcw size={14} />
+              {t('retry')}
+            </Button>
+          </>
+        )}
+        {catalog.isSuccess && samples.length === 0 && <span className={s.name}>{t('rendersEmpty')}</span>}
+        {samples.map(({ key, size: renderSize, tank }) => (
           <span key={key} className={s.render}>
             <TankImage size={renderSize} tank={tank} />
             <code className={s.name}>{key}</code>

@@ -1,0 +1,1 @@
+export { MoeStrip } from './MoeStrip';

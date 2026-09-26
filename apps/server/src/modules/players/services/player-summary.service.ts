@@ -5,7 +5,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { FromSnapshotInput } from '../players.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { CLAN_ROLE_FROM_DB, clanEmblem, RATING_PERIOD_FROM_DB, RATING_PERIOD_TO_DB, toIso, toNumber } from '../../../common/lib';
+import { CLAN_ROLE_FROM_DB, clanEmblem, errorMessage, RATING_PERIOD_FROM_DB, RATING_PERIOD_TO_DB, toIso, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { PLAYER_STATS } from '../config';
 import { statsBlockFromRating, statsBlockFromTotals, totalsFromLestaBlock } from '../lib';
@@ -108,7 +108,7 @@ export class PlayerSummaryService {
 
   private async fromLesta(accountId: bigint): Promise<StatsBlock> {
     const info = await this.resolver.fetchInfo(accountId).catch((error: unknown) => {
-      this.logger.warn(`live stats of ${accountId} unavailable: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`live stats of ${accountId} unavailable: ${errorMessage(error)}`);
 
       return null;
     });

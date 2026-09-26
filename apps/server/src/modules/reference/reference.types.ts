@@ -17,10 +17,6 @@ export type ThresholdSet = {
   mastery: Map<number, MasteryThreshold>;
 };
 
-export type CachedThresholds = ThresholdSet & {
-  at: number;
-};
-
 export type ThresholdsAsOfInput = {
   date: Date | null;
   source?: ThresholdSource;

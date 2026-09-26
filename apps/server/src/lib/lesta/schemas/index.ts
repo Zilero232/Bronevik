@@ -20,3 +20,5 @@ export { battleStatsBlockSchema } from './statistics.schemas';
 export type { BattleStatsBlock } from './statistics.types';
 export { tankAchievementsSchema, tankMasterySchema, tankStatsSchema } from './tanks.schemas';
 export type { TankAchievements, TankMastery, TankStats } from './tanks.types';
+export { serverOnlineSchema, serversInfoSchema } from './wgn.schemas';
+export type { ServerOnline, ServersInfo } from './wgn.types';

@@ -2,8 +2,8 @@ import type { Client } from '../generated/client';
 import type { BronevikClientOptions } from './client.types';
 
 import { createClient, createConfig } from '../generated/client';
-import { retryingFetch } from '../retry';
-import { BRONEVIK_API } from './client.constants';
+import { restoreErrorBody } from '../lib';
+import { BRONEVIK_API, BRONEVIK_RETRY } from './client.constants';
 
 export const createBronevikClient = ({
   apiKey,
@@ -15,6 +15,7 @@ export const createBronevikClient = ({
     createConfig({
       baseUrl,
       auth: () => apiKey,
-      fetch: retry === false ? fetch : retryingFetch({ ...retry, fetch })
+      retry: retry === false ? 0 : { ...BRONEVIK_RETRY, ...retry },
+      kyOptions: { fetch, throwHttpErrors: true, hooks: { beforeError: [restoreErrorBody] } }
     })
   );

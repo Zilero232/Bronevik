@@ -12,17 +12,22 @@ bun run gamedata:import -- --source PT_RU   # public test: snapshot only
 bun run gamedata:import -- --local /path/to/wot.src-checkout
 ```
 
-| Option                | What it does                                                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `--source`            | `RU` (default, `unicum-gg/wot.src@RU`), `PT_RU` (`unicum-gg/wot.src@PT_RU`), `IZEBERG_RU` (`izeberg/wot-src@RU`, backup mirror) |
-| `--ref <branch\|sha>` | Pin another branch or an exact commit                                                                                           |
-| `--local <dir>`       | Read a local checkout of the mirror instead of GitHub                                                                           |
-| `--cache <dir>`       | Raw file cache, default `apps/server/.cache` (git-ignored), keyed by commit sha                                                 |
-| `--nations ussr,uk`   | Only these nations                                                                                                              |
-| `--limit <n>`         | At most `n` vehicles per nation                                                                                                 |
-| `--dry-run`           | Fetch, parse and plan; print counts; no database                                                                                |
-| `--snapshot`          | Only `GameVersion` + raw `GameDataEntry` rows. Always on for test-server sources                                                |
-| `--no-current`        | Do not flag the imported version as `GameVersion.isCurrent`                                                                     |
+| Option                 | What it does                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `--source`             | `RU` (default, `unicum-gg/wot.src@RU`), `PT_RU` (`unicum-gg/wot.src@PT_RU`), `IZEBERG_RU` (`izeberg/wot-src@RU`, backup mirror) |
+| `--ref <branch\|sha>`  | Pin another branch or an exact commit                                                                                           |
+| `--local <dir>`        | Read a local checkout of the mirror instead of GitHub                                                                           |
+| `--cache <dir>`        | Raw file cache, default `apps/server/.cache` (git-ignored), keyed by commit sha                                                 |
+| `--nations ussr,uk`    | Only these nations                                                                                                              |
+| `--limit <n>`          | At most `n` vehicles per nation                                                                                                 |
+| `--dry-run`            | Fetch, parse and plan; print counts; no database                                                                                |
+| `--snapshot`           | Only `GameVersion` + raw `GameDataEntry` rows. Always on for test-server sources                                                |
+| `--no-current`         | Do not flag the imported version as `GameVersion.isCurrent`                                                                     |
+| `--armor`              | Also build 3D armor models from `unicum-gg/wot.models@Lesta` (see below)                                                        |
+| `--armor-only`         | Build armor models only; the catalog is left untouched                                                                          |
+| `--models-ref <sha>`   | Pin the models mirror to another branch or commit                                                                               |
+| `--local-models <dir>` | Read a local checkout of the models mirror instead of GitHub                                                                    |
+| `--armor-dir <dir>`    | Local armor storage, default `<repo>/.data/armor` (only with `REPLAY_STORAGE=local`)                                            |
 
 `DATABASE_URL` comes from the root `.env`. `GITHUB_TOKEN` is optional: the importer makes a single GitHub API call per run (to pin the branch to a commit). Everything else is downloaded from `raw.githubusercontent.com` by commit sha, so a cached run makes no network requests at all. A full RU import (about 1 000 vehicles, 1 070 files, roughly 200 MB) takes about 70 s cold and 50 s warm.
 
@@ -51,18 +56,27 @@ bun run gamedata:import -- --local /path/to/wot.src-checkout
 
 Ids follow the client compact descriptor, `id << 8 | nation << 4 | itemType`, so `tankId` and `moduleId` match the Lesta API `tank_id`/`module_id`. Optional devices and equipment use nation 15 (`provision_id`). Field modifications use the reserved item type 0 (`id << 8 | 15 << 4`) so they can never collide with a real provision.
 
+## Armor models
+
+`--armor` fetches `vehicles.json` and `vehicles/<folder>/collision.json` from [`unicum-gg/wot.models`](https://github.com/unicum-gg/wot.models) (branch `Lesta`, pinned to a commit, cached under `--cache` like `wot.src`). It refuses a mirror whose `.version_name` differs from the imported `wot.src` version and never runs for a test-server source; the previous models stay. Only collision geometry is used — no visual models or textures.
+
+Geometry comes from the mirror; thickness, spaced flags (`vehicleDamageFactor 0`) and the module → piece map (`hitTester/collisionModelClient`) come from our own `VehicleSpec`. The mirror's `armor`/`spaced` blocks are only a cross-check, and every disagreement is printed. Vertices are welded and packed by `encodeArmorGeometry` from `@bronevik/gamedata` (int16-quantised positions, 16/32-bit indices, plate groups, mounts). The object is stored through the replay storage abstraction (`REPLAY_STORAGE` local disk or S3) under `armor/<tankId>/<hash>.bin`, so an unchanged model is never re-uploaded, and one `VehicleArmorModel` row per tank holds the key, hash, game version, mirror commit and the per-module plate tables with shells. `GET /tanks/:idOrSlug/armor` serves it (`armorModelSchema`), switched off by `ARMOR_VIEWER.enabled` in `src/config/armor.constants.ts`.
+
+The target is 20 KB gzipped per tank: IS-7 is about 10 KB, but modern high-poly collision meshes reach 50 KB and are reported as over budget. `bun run armor:purge -- --yes` deletes every stored object and row — the kill switch if Lesta asks.
+
 ## Layout
 
-| Folder                       | Concern                                                                                                                          |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `lib/xml`                    | `fast-xml-parser` wrapper and typed readers (`num`, `nums`, `price`, `mergeNodes`, `identifiedNodes`…)                           |
-| `lib/ids`                    | Nations and compact descriptors                                                                                                  |
-| `lib/modifiers`              | Parsing modifier and factor blocks out of XML into the package's `Modifier` model                                                |
-| `lib/parsers/*`              | Pure parsers: `vehicle-list`, `vehicle`, `optional-devices`, `equipment`, `crew`, `post-progression`, `arenas`, `vehicle-filter` |
-| `lib/source`                 | GitHub raw fetcher with disk cache, local-checkout and in-memory readers                                                         |
-| `lib/game-data`              | `buildGameData({ reader })` reads and parses everything for one revision                                                         |
-| `lib/importer`               | `createImportPlan` (pure rows + summaries), `diffSpecs`, `writeImportPlan` (Prisma upserts)                                      |
-| `scripts/gamedata-import.ts` | The `gamedata:import` CLI (in `apps/server/scripts`)                                                                             |
+| Folder                       | Concern                                                                                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/xml`                    | `fast-xml-parser` wrapper and typed readers (`num`, `nums`, `price`, `mergeNodes`, `identifiedNodes`…)                                        |
+| `lib/ids`                    | Nations and compact descriptors                                                                                                               |
+| `lib/modifiers`              | Parsing modifier and factor blocks out of XML into the package's `Modifier` model                                                             |
+| `lib/parsers/*`              | Pure parsers: `vehicle-list`, `vehicle`, `optional-devices`, `equipment`, `crew`, `post-progression`, `arenas`, `vehicle-filter`, `collision` |
+| `lib/armor`                  | Armor models: `collect` (mirror + version guard), `join`, `pack`, `storage`, `writer` (upload, rows, purge)                                   |
+| `lib/source`                 | GitHub raw fetcher with disk cache, local-checkout and in-memory readers                                                                      |
+| `lib/game-data`              | `buildGameData({ reader })` reads and parses everything for one revision                                                                      |
+| `lib/importer`               | `createImportPlan` (pure rows + summaries), `diffSpecs`, `writeImportPlan` (Prisma upserts)                                                   |
+| `scripts/gamedata-import.ts` | The `gamedata:import` CLI (in `apps/server/scripts`)                                                                                          |
 
 ## Database mapping
 

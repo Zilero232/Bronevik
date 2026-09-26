@@ -50,9 +50,11 @@ vi.stubGlobal(
   }))
 );
 
-vi.mock('next/font/local', () => ({
-  default: () => ({ className: 'font-mock', variable: 'font-mock-variable', style: { fontFamily: 'mock' } })
-}));
+const mockFont = () => ({ className: 'font-mock', variable: 'font-mock-variable', style: { fontFamily: 'mock' } });
+
+vi.mock('next/font/local', () => ({ default: mockFont }));
+
+vi.mock('next/font/google', () => ({ Fira_Sans: mockFont, Fira_Sans_Condensed: mockFont, JetBrains_Mono: mockFont }));
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({

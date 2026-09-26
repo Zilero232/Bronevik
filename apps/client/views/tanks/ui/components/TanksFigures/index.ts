@@ -1,0 +1,1 @@
+export { TanksFigures } from './TanksFigures';

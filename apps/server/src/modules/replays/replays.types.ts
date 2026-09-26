@@ -81,6 +81,11 @@ export type ReplayFile = {
   bytes: Uint8Array;
 };
 
+export type ParseReplayInput = {
+  replayId: string;
+  isFinalAttempt: boolean;
+};
+
 export type ParseOutcome = {
   status: 'failed' | 'missing' | 'parsed';
   hasTracks: boolean;

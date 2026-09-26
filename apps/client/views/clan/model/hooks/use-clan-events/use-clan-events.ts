@@ -9,7 +9,7 @@ import { CLAN_EVENTS } from '../../../config';
 import { groupEventsByDay } from '../../../lib/event-groups';
 
 export const useClanEvents = (clanId: number) => {
-  const { data, isPending, isError, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInfiniteQuery({
+  const { data, isPending, isError, isFetching, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInfiniteQuery({
     queryKey: QUERY_KEYS.clans.events({ clanId, limit: CLAN_EVENTS.pageSize }),
     queryFn: ({ signal, pageParam }) => listClanEvents({ clanId, limit: CLAN_EVENTS.pageSize, offset: pageParam, signal }),
     initialPageParam: 0,
@@ -25,9 +25,10 @@ export const useClanEvents = (clanId: number) => {
     total,
     isPending,
     isError,
+    isRetrying: isFetching,
     hasNextPage,
     isFetchingNextPage,
-    loadMore: () => fetchNextPage(),
-    retry: () => refetch()
+    loadMore: () => void fetchNextPage(),
+    retry: () => void refetch()
   };
 };

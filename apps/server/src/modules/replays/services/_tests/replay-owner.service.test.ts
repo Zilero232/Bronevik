@@ -3,15 +3,14 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Replay } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
-import type { PrismaService } from '../../../../core';
-import type { ReplayStorage } from '../../storage';
+import type { ObjectStorage, PrismaService } from '../../../../core';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { ReplayOwnerService } from '../replay-owner.service';
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const storage = mock<ReplayStorage>();
+  const storage = mock<ObjectStorage>();
   const config = mock<AppConfigService>();
 
   config.get.mockReturnValue('http://localhost:4000');
@@ -28,7 +27,17 @@ describe('ReplayOwnerService.remove', () => {
     await service.remove({ id: 'r1', userId: 'owner' });
 
     expect(prisma.replay.delete).toHaveBeenCalledWith({ where: { id: 'r1' } });
-    expect(storage.remove.mock.calls.map(([key]) => key)).toEqual(['replays/r1.mtreplay', 'replays/r1.tracks.json']);
+    expect(storage.remove.mock.calls.map(([key]) => key)).toEqual(['replays/r1.tracks.json', 'replays/r1.mtreplay']);
+  });
+
+  it('keeps the row when the storage refuses to delete the file, so the removal can be retried', async () => {
+    const { service, prisma, storage } = createService();
+
+    prisma.replay.findFirst.mockResolvedValue(mock<Replay>({ storageKey: 'replays/r1.mtreplay', timelineKey: null }));
+    storage.remove.mockRejectedValue(new Error('storage down'));
+
+    await expect(service.remove({ id: 'r1', userId: 'owner' })).rejects.toThrow('storage down');
+    expect(prisma.replay.delete).not.toHaveBeenCalled();
   });
 
   it('removes only the replay file when there is no timeline', async () => {

@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "title": "Bronevik Plus — subscription",
+    "description": "Full battle history, advanced charts, Pro stream overlays, priority session polling, export and a clan panel. No ads, payments via YooKassa."
+  },
+  "header": {
+    "title": "Bronevik Plus",
+    "description": "A subscription for extended Mir Tankov stats: battle history, charts, overlays and export."
+  },
+  "benefits": {
+    "title": "What is included",
+    "description": "Features on top of free Bronevik.",
+    "items": {
+      "history": {
+        "title": "Full history",
+        "text": "Every battle and session since tracking began, not just the last few weeks."
+      },
+      "charts": {
+        "title": "Advanced charts",
+        "text": "WN8, win rate and damage over any period, broken down by tank and map, with period-to-period comparison."
+      },
+      "overlays": {
+        "title": "Pro overlays",
+        "text": "More themes and stream widgets: marks, session and challenges, fine-tuned for your scene."
+      },
+      "polling": {
+        "title": "Priority session polling",
+        "text": "Your stats refresh more often — a fresh session shows up almost right after the battle."
+      },
+      "export": {
+        "title": "Export",
+        "text": "Battles, sessions and marks as CSV — for your own spreadsheets, reviews and reports."
+      },
+      "clan": {
+        "title": "Clan panel",
+        "text": "A roster overview: activity, ratings and member progress on a single screen."
+      }
+    }
+  },
+  "checkout": {
+    "title": "Plan",
+    "description": "Savings are counted against the monthly price.",
+    "planLabel": "Subscription term",
+    "plans": {
+      "monthly": "Month",
+      "yearly": "Year"
+    },
+    "unavailable": "Pricing is not available yet",
+    "columns": {
+      "plan": "Term",
+      "price": "Price",
+      "perMonth": "Per month",
+      "saving": "Saving"
+    },
+    "savingValue": "{amount} · −{percent}%",
+    "failed": "Couldn't open the payment page. Please try again.",
+    "promo": {
+      "label": "Promo code",
+      "placeholder": "If you have one",
+      "hint": "The discount is applied on the payment page.",
+      "rejected": "That promo code didn't work: check the spelling or its expiry date.",
+      "invalid": "Between {min} and {max} characters."
+    },
+    "action": {
+      "signIn": "Sign in to subscribe",
+      "manage": "Manage subscription",
+      "buy": "Get Plus",
+      "redirecting": "Opening payment…",
+      "note": "Paid via YooKassa. Turn auto-renew off in your account any time.",
+      "notePlus": "Plus is already active — manage the term, card and auto-renew in your account."
+    }
+  },
+  "faq": {
+    "title": "FAQ",
+    "items": {
+      "payment": {
+        "question": "How does payment work?",
+        "answer": "YooKassa takes the payment — by card or any other method it offers. Only YooKassa sees your card details: Bronevik doesn't store them and only receives a masked card number for auto-renew."
+      },
+      "cancel": {
+        "question": "Can I cancel?",
+        "answer": "Yes, any time: turn auto-renew off in your account with one click. Plus keeps working until the end of the paid period, then your account returns to the free tier."
+      },
+      "noAds": {
+        "question": "Will there be ads?",
+        "answer": "No — with or without a subscription. Lesta's terms forbid ads in apps with paid features, and we like it better that way too. The project runs on subscriptions and donations."
+      },
+      "data": {
+        "question": "Where does the data come from?",
+        "answer": "Stats come from Lesta's public API and from our mod if you have it installed. Bronevik is a fan project not affiliated with Lesta. We never ask for your game password: sign-in is via Lesta ID only."
+      },
+      "promo": {
+        "question": "How do I use a promo code?",
+        "answer": "Enter a discount code at checkout on this page. A free-days code is redeemed in your account under «Subscription» — the days are added to your current period."
+      }
+    }
+  }
+}

@@ -1,40 +1,43 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  display: grid;
-  align-items: center;
-  padding: var(--space-3) var(--space-2);
-  border-bottom: 1px solid var(--color-border);
-  gap: var(--space-4);
-  grid-template-columns: 3ch minmax(0, 1fr) auto;
-}
+  > td {
+    height: var(--row-h);
+    padding: 0 var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    text-align: right;
+  }
 
-.rank {
-  @include numeric;
+  &:last-child > td {
+    border-bottom: none;
+  }
 
-  color: var(--color-text-dim);
-  font-size: var(--text-xl);
-  font-stretch: 75%;
-  font-weight: 800;
-
-  .root[data-podium='true'] & {
-    color: var(--color-accent);
-    text-shadow: 0 0 18px color-mix(in srgb, var(--color-accent) 45%, transparent);
+  &:hover > td {
+    background-color: var(--color-surface-hover);
   }
 }
 
-.who {
-  @include stack(2px);
+.rank {
+  @include numeric(var(--text-sm));
 
-  min-width: 0;
+  width: 4ch;
+  color: var(--color-text-dim);
+
+  &[data-podium='true'] {
+    color: var(--color-premium);
+  }
 }
 
-.name {
-  overflow: hidden;
+.player {
+  min-width: 0;
+
+  .root > & {
+    text-align: left;
+  }
+}
+
+.link {
   color: var(--color-text);
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 
   &:hover {
     color: var(--color-accent);
@@ -45,13 +48,15 @@
   }
 }
 
-.meta {
-  @include hud-label;
+.number {
+  @include numeric(var(--text-sm));
 
-  display: flex;
-  gap: var(--space-2);
+  color: var(--color-text-muted);
 }
 
-.clan {
-  color: var(--color-steel);
+.metric {
+  @include numeric(var(--text-sm));
+  @include tone;
+
+  color: var(--tone);
 }

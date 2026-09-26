@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { BUILD_VIEW, PANEL_ICONS } from '../../../config';
+import { BUILD_VIEW } from '../../../config';
 import { useBuildContext } from '../../../model/context';
 import { PanelCard } from '../PanelCard';
 import { CrewRole } from './components';
@@ -14,7 +14,7 @@ export const CrewPanel = () => {
   const { catalog } = useBuildContext();
 
   return (
-    <PanelCard description={t('description', { max: BUILD_VIEW.maxSkillsPerRole })} icon={PANEL_ICONS.crew} index='// 06' title={t('title')}>
+    <PanelCard description={t('description', { max: BUILD_VIEW.maxSkillsPerRole })} title={t('title')}>
       <div className={s.roles}>
         {catalog.crewRoles.map((role) => (
           <CrewRole key={role} role={role} />

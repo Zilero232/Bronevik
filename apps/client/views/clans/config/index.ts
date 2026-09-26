@@ -1,1 +1,1 @@
-export { CLAN_RATING, CLAN_SORTS } from './clans.config';
+export { CLAN_RATING, CLAN_SORTS } from './clans.constants';

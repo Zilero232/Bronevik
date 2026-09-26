@@ -1,1 +1,0 @@
-export { LabelColumn } from './LabelColumn';

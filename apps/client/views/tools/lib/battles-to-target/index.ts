@@ -1,3 +1,3 @@
-export { averageCurve, battlesToAverage, runningAverage } from './battles-to-target';
+export { averageCurve, battlesToAverage } from './battles-to-target';
 
-export type { AverageCurveInput, AverageCurvePoint, BattlesToAverageInput, RunningAverageInput, TargetOutcome } from './battles-to-target.types';
+export type { AverageCurveInput, AverageCurvePoint, BattlesToAverageInput, TargetOutcome } from './battles-to-target.types';

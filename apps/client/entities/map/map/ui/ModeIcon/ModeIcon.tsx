@@ -1,20 +1,11 @@
-import { OnslaughtIcon, RandomBattleIcon } from '@bronevik/icons';
-import { Flag, Gamepad2, Swords } from 'lucide-react';
-
 import type { ModeIconProps } from './ModeIcon.types';
 
+import { MODE_ICON } from '../../config';
 import { mapModeKind } from '../../lib/map-mode';
 
-const ICONS = {
-  standard: RandomBattleIcon,
-  encounter: Swords,
-  assault: Flag,
-  onslaught: OnslaughtIcon
-} as const;
-
-export const ModeIcon = ({ mode, size = 16 }: ModeIconProps) => {
+export const ModeIcon = ({ mode, size = MODE_ICON.size }: ModeIconProps) => {
   const kind = mapModeKind(mode);
-  const Icon = kind ? ICONS[kind] : Gamepad2;
+  const Icon = kind ? MODE_ICON.kinds[kind] : MODE_ICON.fallback;
 
   return <Icon aria-hidden size={size} />;
 };

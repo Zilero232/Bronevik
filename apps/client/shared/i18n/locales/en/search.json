@@ -1,0 +1,19 @@
+{
+  "label": "Global search",
+  "placeholder": "Player nickname, tank or clan tag…",
+  "heroPlaceholder": "Find a player, tank or clan",
+  "trigger": "Search…",
+  "open": "Open",
+  "players": "Players",
+  "tanks": "Tanks",
+  "clans": "Clans",
+  "noClan": "No clan",
+  "members": "{count, plural, one {# member} other {# members}}",
+  "sections": "Sections",
+  "hint": "Type at least two characters — we search players, tanks and clans.",
+  "error": "Search is temporarily unavailable. Please try again.",
+  "loading": "Searching…",
+  "empty": "No target found. Check the spelling.",
+  "navigate": "select",
+  "source": "Data by Lesta Games"
+}

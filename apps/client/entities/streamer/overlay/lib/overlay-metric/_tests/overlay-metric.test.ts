@@ -6,7 +6,7 @@ import type { OverlayData } from '@/shared/api/streamers';
 import { RATING_TONES } from '@/shared/lib';
 
 import { formatOverlayValue, readOverlayMetric } from '../overlay-metric';
-import { OVERLAY_PLACEHOLDER, OVERLAY_VALUE_SUFFIX } from '../overlay-metric.constants';
+import { OVERLAY_VALUE } from '../overlay-metric.constants';
 
 const DATA: OverlayData = {
   kind: 'session',
@@ -20,6 +20,7 @@ const DATA: OverlayData = {
     avgDamage: 3_120,
     frags: 15,
     wn8: 2_950,
+    broneIndex: 1_420,
     winStreak: 3,
     lastBattle: { tankId: 1, tankName: 'T-34', result: 'loss', damage: 1_800 }
   },
@@ -32,6 +33,10 @@ const DATA: OverlayData = {
 const EMPTY: OverlayData = { ...DATA, session: null, moe: null };
 
 describe('readOverlayMetric', () => {
+  it('reads the session Bronya index', () => {
+    expect(readOverlayMetric({ data: DATA, metric: 'broneIndex' }).value).toBe(DATA.session?.broneIndex);
+  });
+
   it('reads every metric the contract allows', () => {
     overlayMetricSchema.options.forEach((metric) => {
       expect(readOverlayMetric({ data: DATA, metric }).metric).toBe(metric);
@@ -65,13 +70,13 @@ describe('readOverlayMetric', () => {
 
 describe('formatOverlayValue', () => {
   it('shows the placeholder for a missing value', () => {
-    expect(formatOverlayValue({ value: null, kind: 'count', locale: 'en' })).toBe(OVERLAY_PLACEHOLDER);
+    expect(formatOverlayValue({ value: null, kind: 'count', locale: 'en' })).toBe(OVERLAY_VALUE.placeholder);
   });
 
   it('keeps one decimal and the percent suffix for percentages', () => {
     const text = formatOverlayValue({ value: 58.33, kind: 'percent', locale: 'en' });
 
-    expect(text.endsWith(OVERLAY_VALUE_SUFFIX.percent)).toBe(true);
+    expect(text.endsWith(OVERLAY_VALUE.suffix.percent)).toBe(true);
     expect(text).toContain('58.3');
   });
 

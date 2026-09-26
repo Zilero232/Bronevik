@@ -6,6 +6,7 @@ import type {
   MoeDamageForPercentInput,
   MoePercentForDamageInput,
   MoeProjection,
+  MoeThresholdPercentiles,
   MoeThresholds,
   NextMoeEmaInput,
   ProjectMoeBattlesInput,
@@ -17,6 +18,13 @@ import { MOE } from './moe.constants';
 
 export const moeCombinedDamage = ({ damage, spottingAssist, trackingAssist, stunAssist = 0 }: MoeCombinedDamageInput): number =>
   damage + Math.max(spottingAssist, trackingAssist, stunAssist);
+
+export const toMoeThresholds = ({ p65, p85, p95, p100 }: MoeThresholdPercentiles): MoeThresholds => ({
+  oneMark: p65,
+  twoMarks: p85,
+  threeMarks: p95,
+  hundredPercent: p100 ?? undefined
+});
 
 export const moeMarks = (percent: number): number => MOE.markPercents.filter((mark) => percent >= mark).length;
 

@@ -3,4 +3,5 @@ export type PaletteStatusProps = {
   isEnabled: boolean;
   isFetching: boolean;
   isError: boolean;
+  onRetry: () => void;
 };

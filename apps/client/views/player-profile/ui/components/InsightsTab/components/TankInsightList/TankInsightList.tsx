@@ -3,7 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { signed } from '@/entities/player/stats';
-import { TankIdentity, vehicleIdentity } from '@/entities/tank/tank';
+import { TankCell } from '@/entities/tank/tank';
 import { percentText } from '@/shared/lib';
 
 import type { TankInsightListProps } from './TankInsightList.types';
@@ -20,7 +20,7 @@ export const TankInsightList = ({ kind, tanks }: TankInsightListProps) => {
       <ol className={s.list}>
         {tanks.map(({ vehicle, battles, winRate, winRateDelta, damageRatio }) => (
           <li key={vehicle.tankId} className={s.row}>
-            <TankIdentity className={s.tank} tank={vehicleIdentity(vehicle)} withNation={false} />
+            <TankCell className={s.tank} vehicle={vehicle} />
             <span className={s.meta}>
               {percentText({ format, value: winRate })} · {t('battles', { count: battles })}
             </span>

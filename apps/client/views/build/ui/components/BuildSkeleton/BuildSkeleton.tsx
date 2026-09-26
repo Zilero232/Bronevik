@@ -1,28 +1,26 @@
 import { Skeleton } from '@/ui-kit';
 
+import { BUILD_SKELETON } from '../../../config';
+
 import s from './BuildSkeleton.module.scss';
-
-const PANELS = [220, 260, 200, 240];
-
-const STAT_LINES = Array.from({ length: 12 }, (_, index) => index);
 
 export const BuildSkeleton = () => (
   <div aria-busy className={s.root}>
-    <Skeleton className={s.hero} height={260} />
-    <Skeleton height={56} />
+    <Skeleton height={120} />
+    <Skeleton height={36} />
     <div className={s.presets}>
-      <Skeleton height={148} />
-      <Skeleton height={148} />
-      <Skeleton height={148} />
+      {BUILD_SKELETON.presets.map((preset) => (
+        <Skeleton key={preset} height={120} />
+      ))}
     </div>
     <div className={s.layout}>
       <div className={s.panels}>
-        {PANELS.map((height) => (
+        {BUILD_SKELETON.panels.map((height) => (
           <Skeleton key={height} height={height} />
         ))}
       </div>
       <div className={s.stats}>
-        {STAT_LINES.map((line) => (
+        {BUILD_SKELETON.statLines.map((line) => (
           <Skeleton key={line} height={28} />
         ))}
       </div>

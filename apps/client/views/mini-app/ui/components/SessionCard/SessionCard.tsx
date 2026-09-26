@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronRight, Radio } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { match, P } from 'ts-pattern';
 
@@ -28,10 +28,7 @@ export const SessionCard = ({ nickname, session }: SessionCardProps) => {
         <header className={s.header}>
           <span className={s.title}>{isLive ? t('live') : t('last')}</span>
           {isLive ? (
-            <Badge tone='success'>
-              <Radio size={12} />
-              {t('liveBadge')}
-            </Badge>
+            <Badge tone='success'>{t('liveBadge')}</Badge>
           ) : (
             <time className={s.time} dateTime={startedAt}>
               {format.dateTime(new Date(startedAt), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}

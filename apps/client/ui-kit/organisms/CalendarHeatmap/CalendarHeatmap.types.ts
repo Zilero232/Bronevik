@@ -1,32 +1,8 @@
 import type { ReactNode } from 'react';
 
-export type HeatmapDay = {
-  date: string;
-  value: number;
-};
+import type { CalendarDay } from '@/shared/lib';
 
-export type CalendarCell = {
-  key: string;
-  day: HeatmapDay | null;
-};
-
-export type CalendarWeek = CalendarCell[];
-
-export type CalendarMonth = {
-  index: number;
-  date: string;
-};
-
-export type CalendarLayout = {
-  weeks: CalendarWeek[];
-  months: CalendarMonth[];
-};
-
-export type HeatLevelInput = {
-  value: number;
-  max: number;
-  levels: number;
-};
+export type HeatmapDay = CalendarDay;
 
 export type CalendarHeatmapLegend = {
   less: ReactNode;

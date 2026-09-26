@@ -6,10 +6,11 @@ export type { BarChartProps } from './BarChart';
 export { CalendarHeatmap } from './CalendarHeatmap';
 export type { CalendarHeatmapProps, HeatmapDay } from './CalendarHeatmap';
 export type { ChartSeries } from './ChartKit';
-
 export { DataTable } from './DataTable';
-export type { DataTableProps } from './DataTable';
+export type { DataTableDensity, DataTableProps } from './DataTable';
 export { LineChart } from './LineChart';
 export type { LineChartProps } from './LineChart';
+export { PageHeader } from './PageHeader';
+export type { PageBreadcrumb, PageHeaderProps } from './PageHeader';
 export { PageHero } from './PageHero';
 export type { PageHeroProps } from './PageHero';

@@ -1,4 +1,5 @@
 import {
+  armorModelSchema,
   tankDetailQuerySchema,
   tankDetailSchema,
   tankPatchesSchema,
@@ -32,3 +33,4 @@ export class TankTrendDto extends createZodDto(tankTrendSchema) {}
 export class TankPatchesDto extends createZodDto(tankPatchesSchema) {}
 export class VehicleFilterDto extends createZodDto(vehicleFilterSchema) {}
 export class VehicleCatalogDto extends createZodDto(vehicleCatalogSchema) {}
+export class TankArmorDto extends createZodDto(armorModelSchema) {}

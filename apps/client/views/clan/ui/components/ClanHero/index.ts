@@ -1,1 +1,0 @@
-export { ClanHero } from './ClanHero';

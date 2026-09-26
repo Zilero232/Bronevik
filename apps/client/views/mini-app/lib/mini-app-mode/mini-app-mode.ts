@@ -9,7 +9,6 @@ export const resolveMiniAppMode = (input: MiniAppModeInput): MiniAppMode =>
     .with({ env: 'telegram', signInStatus: 'success' }, () => 'dashboard')
     .with({ env: 'telegram', signInStatus: 'error' }, () => 'failed')
     .with({ env: 'telegram' }, () => 'loading')
-    .with({ isMock: true }, () => 'preview')
     .with({ hasSession: true }, () => 'preview')
     .with({ isSessionPending: true }, () => 'loading')
     .with({ env: P.any }, () => 'outside')

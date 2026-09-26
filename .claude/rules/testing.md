@@ -30,7 +30,7 @@ The one exception is the game mod: `apps/mod/tests/` is a Python `unittest` suit
 
 `bun run test` from the repo root — **one** Vitest run across the whole monorepo, wired through `test.projects` in the root [vitest.config.ts](../../vitest.config.ts), which picks up every `apps/*/vitest.config.ts` and `packages/*/vitest.config.ts`. Workspaces carry their own configs (`name`, environment, env); they have no `test` script of their own and don't need one. Never `bun test` — that is Bun's own runner, not Vitest.
 
-E2E — `bun run test:e2e`, two projects (`desktop` + `mobile`). Without `E2E_BASE_URL` the config starts the client dev server itself; CI builds the client and serves the standalone output instead. The client runs on mocks by default (`NEXT_PUBLIC_USE_MOCKS`), so e2e needs neither the server app nor a database. On Windows, run Playwright through node (`node node_modules/@playwright/test/cli.js test`) if `bunx playwright` hangs.
+E2E — `bun run test:e2e`, two projects (`desktop` + `mobile`). Without `E2E_BASE_URL` the config starts the client dev server itself; CI builds the client and serves the standalone output instead. The client has no mocks and e2e runs without the server app or a database: the smoke aborts every API request and checks that pages render their shell and error states. On Windows, run Playwright through node (`node node_modules/@playwright/test/cli.js test`) if `bunx playwright` hangs.
 
 The mod — `bun run test:mod` (`python -m unittest discover apps/mod/tests`), on Python 3; the pure code is 2/3 compatible.
 
@@ -41,7 +41,7 @@ CI ([.github/workflows/ci.yml](../../.github/workflows/ci.yml)) runs all three.
 - **client** — jsdom, `@testing-library/react`, setup in [apps/client/vitest.setup.ts](../../apps/client/vitest.setup.ts) (stubs `ResizeObserver`, `IntersectionObserver` and `matchMedia`, mocks `next/navigation` and `next/font/local`, cleans the DOM after each test). Client env is declared in the config — don't read `.env` from a test.
 - **server** (API and worker) — node, with a dummy env in the config, legacy decorators with metadata enabled for Nest and `reflect-metadata` loaded by `vitest.setup.ts`. Without the env any import that pulls the Prisma chain fails Zod env validation; adding a required variable means adding it there too. Pure logic stays in `lib/` and tests without Nest; services and processors are tested with `vitest-mock-extended` (`mockDeep<PrismaService>()`, `mock<Queue>()`) — never an `as` cast to fake a collaborator.
 - **packages** — node, no env.
-- **server `lib/lesta`** — `ioredis-mock` stands in for the shared rate-limit bucket.
+- **server `lib/lesta`** — `ioredis-mock` stands in for the shared rate-limit bucket. Every `RedisMock` instance shares one in-memory store across files (`isolate: false`), so the server's `vitest.setup.ts` flushes it before every test; a test that needs Redis state sets it up inside the test, not in `beforeAll`.
 
 ## What to test
 

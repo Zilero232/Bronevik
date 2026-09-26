@@ -1,17 +1,17 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include well;
+
   display: grid;
   overflow: hidden;
-  height: 560px;
-  padding: var(--space-6);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface-sunken);
-  gap: var(--space-5);
+  height: 620px;
+  padding: var(--space-5);
+  gap: var(--space-4);
   grid-template-columns: repeat(10, minmax(140px, 1fr));
 
   @include below(md) {
-    height: 440px;
+    height: 460px;
   }
 }
 

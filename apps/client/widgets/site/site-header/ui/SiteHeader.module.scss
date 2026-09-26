@@ -5,18 +5,8 @@
   z-index: var(--z-header);
   top: 0;
   padding-top: var(--safe-area-top);
-  border-bottom: 1px solid transparent;
-  backdrop-filter: blur(10px) saturate(1.2);
-  background-color: color-mix(in srgb, var(--color-bg) 62%, transparent);
-  overflow-x: clip;
-  transition:
-    background-color var(--duration-base) ease,
-    border-color var(--duration-base) ease;
-
-  &[data-scrolled='true'] {
-    border-bottom-color: var(--color-border);
-    background-color: color-mix(in srgb, var(--color-bg) 86%, transparent);
-  }
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-deep);
 }
 
 .inner {
@@ -24,8 +14,8 @@
 
   display: flex;
   height: var(--header-height);
-  align-items: center;
-  gap: var(--space-5);
+  align-items: stretch;
+  gap: var(--space-6);
 }
 
 .nav {
@@ -62,43 +52,5 @@
 .burger {
   @include from(3xl) {
     display: none;
-  }
-}
-
-.tracer {
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 22%;
-  height: 1px;
-  animation: header-tracer 9s var(--ease-in-out) infinite;
-  background: linear-gradient(90deg, transparent, var(--color-accent-hot), var(--color-accent), transparent);
-  opacity: 0;
-  pointer-events: none;
-
-  @include reduced-motion {
-    display: none;
-  }
-}
-
-@keyframes header-tracer {
-  0% {
-    opacity: 0;
-    transform: translateX(-100%);
-  }
-
-  8% {
-    opacity: 1;
-  }
-
-  40% {
-    opacity: 1;
-    transform: translateX(460%);
-  }
-
-  45%,
-  100% {
-    opacity: 0;
-    transform: translateX(460%);
   }
 }

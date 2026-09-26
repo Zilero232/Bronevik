@@ -9,7 +9,7 @@ import { EVENT_KIND_FROM_DB } from './views.constants';
 
 const nullableStats = candidateStatsSchema.nullable().catch(null);
 
-export const readCandidateStats = (value: unknown): CandidateStats | null => nullableStats.parse(value ?? null);
+const readCandidateStats = (value: unknown): CandidateStats | null => nullableStats.parse(value ?? null);
 
 export const toClanEventView = ({ event, nicknames }: ToEventViewInput): ClanEventView => ({
   id: event.id,

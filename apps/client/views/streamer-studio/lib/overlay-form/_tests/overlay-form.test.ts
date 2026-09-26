@@ -4,7 +4,7 @@ import { overlayConfigSchema, overlayKindSchema } from '@bronevik/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { KIND_PRESETS } from '../../../config';
-import { publicIdOf, toOverlayFormValues } from '../overlay-form';
+import { toOverlayFormValues } from '../overlay-form';
 import { overlayFormSchema } from '../overlay-form.schemas';
 
 const PUBLIC_ID = 'a'.repeat(32);
@@ -41,19 +41,5 @@ describe('toOverlayFormValues', () => {
     const values = toOverlayFormValues({ overlay: OVERLAY, locale: 'ru', name: 'ignored' });
 
     expect(values).toEqual({ name: OVERLAY.name, kind: OVERLAY.kind, config: OVERLAY.config });
-  });
-});
-
-describe('publicIdOf', () => {
-  it('takes the last path segment of the public URL', () => {
-    expect(publicIdOf(OVERLAY.publicUrl)).toBe(PUBLIC_ID);
-  });
-
-  it('ignores a trailing slash and a query string', () => {
-    expect(publicIdOf(`${OVERLAY.publicUrl}/?preview=1`)).toBe(PUBLIC_ID);
-  });
-
-  it('returns null for something that is not a URL', () => {
-    expect(publicIdOf('not a url')).toBeNull();
   });
 });

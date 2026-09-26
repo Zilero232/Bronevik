@@ -1,20 +1,17 @@
 'use client';
 
 import { curveMonotoneX } from '@visx/curve';
-import { LinearGradient } from '@visx/gradient';
 import { AreaClosed, LinePath } from '@visx/shape';
-import { motion } from 'motion/react';
 
-import { DRAW_IN, FADE, useSvgId } from '@/shared/lib';
+import { clampIndex, linearLayout, useChartHover } from '@/shared/lib';
 
 import type { LineChartPlotProps } from '../../LineChart.types';
 
-import { ChartCanvas, clampIndex, linearLayout, useChartHover } from '../../../ChartKit';
+import { ChartCanvas } from '../../../ChartKit';
 
 import s from '../../../ChartKit/ChartKit.module.scss';
 
 export const LineChartPlot = ({ labels, series, width, height, yDomain, withArea = false, formatValue }: LineChartPlotProps) => {
-  const gradientId = useSvgId('line');
   const layout = linearLayout({ width, height, labels, series, yDomain });
   const { innerHeight, xScale, yScale } = layout;
   const pointer = useChartHover({
@@ -29,20 +26,18 @@ export const LineChartPlot = ({ labels, series, width, height, yDomain, withArea
     <ChartCanvas {...layout} {...pointer} formatValue={formatValue} height={height} labels={labels} series={series} width={width}>
       {series.map((item) => {
         const points = item.values.map((value, index) => ({ index, value }));
-        const fillId = `${gradientId}-${item.id}`;
 
         return (
           <g key={item.id} className={s.series} data-tone={item.tone ?? 'accent'}>
-            <LinearGradient className={s.gradient} fromOpacity={0.32} id={fillId} toOpacity={0} />
             {withArea && (
               <AreaClosed curve={curveMonotoneX} data={points} x={(point) => xScale(point.index)} y={(point) => yScale(point.value)} yScale={yScale}>
-                {({ path }) => <motion.path d={path(points) ?? ''} fill={`url(#${fillId})`} variants={FADE} />}
+                {({ path }) => <path className={s.area} d={path(points) ?? ''} />}
               </AreaClosed>
             )}
             <LinePath curve={curveMonotoneX} data={points} x={(point) => xScale(point.index)} y={(point) => yScale(point.value)}>
-              {({ path }) => <motion.path className={s.line} d={path(points) ?? ''} variants={DRAW_IN} />}
+              {({ path }) => <path className={s.line} d={path(points) ?? ''} />}
             </LinePath>
-            {hover && <circle className={s.dot} cx={xScale(hover.index)} cy={yScale(item.values[hover.index] ?? 0)} r={4} />}
+            {hover && <circle className={s.dot} cx={xScale(hover.index)} cy={yScale(item.values[hover.index] ?? 0)} r={3} />}
           </g>
         );
       })}

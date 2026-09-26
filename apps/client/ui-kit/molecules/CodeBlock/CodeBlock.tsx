@@ -1,10 +1,11 @@
 'use client';
 
-import { useCopy } from '@siberiacancode/reactuse';
 import { clsx } from 'clsx';
 import { Check, Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { highlight } from 'sugar-high';
+
+import { useCopyFeedback } from '@/shared/lib';
 
 import type { CodeBlockProps } from './CodeBlock.types';
 
@@ -14,19 +15,14 @@ import s from './CodeBlock.module.scss';
 
 export const CodeBlock = ({ code, language, title, className }: CodeBlockProps) => {
   const t = useTranslations('common');
-  const { copied, copy } = useCopy();
+  const { copied, onCopyClick } = useCopyFeedback({ value: code });
 
   return (
     <figure className={clsx(s.root, className)}>
       <figcaption className={s.bar}>
-        <span aria-hidden className={s.lamps}>
-          <i />
-          <i />
-          <i />
-        </span>
         <span className={s.title}>{title ?? language}</span>
         {title && <span className={s.language}>{language}</span>}
-        <IconButton aria-label={copied ? t('copied') : t('copy')} isActive={copied} size='sm' onClick={() => copy(code)}>
+        <IconButton aria-label={copied ? t('copied') : t('copy')} isActive={copied} size='sm' onClick={onCopyClick}>
           {copied ? <Check size={14} /> : <Copy size={14} />}
         </IconButton>
       </figcaption>

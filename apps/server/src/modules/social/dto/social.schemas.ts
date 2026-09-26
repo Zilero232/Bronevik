@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { LEAGUE, WRAPPED } from '../config';
 
-export const followKindSchema = z.enum(['player', 'clan', 'tank']);
+const followKindSchema = z.enum(['player', 'clan', 'tank']);
 
 export const followSchema = z.object({
   id: uuidSchema,
@@ -37,7 +37,7 @@ export const feedSchema = z.object({ items: z.array(feedItemSchema) });
 
 export const feedQuerySchema = z.object({ days: z.coerce.number().int().min(1).max(60).optional() });
 
-export const leagueMetricSchema = z.enum(LEAGUE.metrics);
+const leagueMetricSchema = z.enum(LEAGUE.metrics);
 
 export const leagueQuerySchema = z.object({
   metric: leagueMetricSchema.default('damage'),

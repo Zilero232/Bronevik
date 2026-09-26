@@ -1,13 +1,8 @@
-'use client';
-
-import { Crown, Gem } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
 import { TankIdentity, TankImage, vehicleIdentity } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { REVEAL_VIEWPORT, STAGGER, STAGGER_ITEM } from '@/shared/lib';
 import { EmptyState, SectionHeader } from '@/ui-kit';
 
 import type { PremiumStripProps } from './PremiumStrip.types';
@@ -18,23 +13,21 @@ export const PremiumStrip = ({ premiums }: PremiumStripProps) => {
   const t = useTranslations('tree.premiums');
 
   return (
-    <section>
-      <SectionHeader description={t('description')} eyebrow={t('eyebrow')} title={t('title')} />
+    <section className={s.root}>
+      <SectionHeader description={t('description')} title={t('title')} />
       {premiums.length === 0 ? (
-        <EmptyState description={t('emptyDescription')} icon={<Gem size={26} />} title={t('emptyTitle')} />
+        <EmptyState isCompact title={t('empty')} />
       ) : (
-        <motion.ul className={s.grid} initial='hidden' variants={STAGGER} viewport={REVEAL_VIEWPORT} whileInView='visible'>
+        <ul className={s.grid}>
           {premiums.map(({ vehicle }) => (
-            <motion.li key={vehicle.tankId} variants={STAGGER_ITEM}>
-              <Link className={s.card} href={ROUTES.tank(vehicle.slug)}>
-                <Crown aria-hidden className={s.crown} size={16} />
+            <li key={vehicle.tankId}>
+              <Link className={s.slot} href={ROUTES.tank(vehicle.slug)}>
                 <TankImage isDecorative className={s.render} size='big' tank={vehicleIdentity(vehicle)} />
-                <TankIdentity size='lg' tank={vehicleIdentity(vehicle)} withNation={false} />
-                <span className={s.more}>{t('open')}</span>
+                <TankIdentity tank={vehicleIdentity(vehicle)} withNation={false} />
               </Link>
-            </motion.li>
+            </li>
           ))}
-        </motion.ul>
+        </ul>
       )}
     </section>
   );

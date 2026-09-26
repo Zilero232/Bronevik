@@ -1,1 +1,1 @@
-export { deviceSecret, hashSecret, matchesSecretHash, newBindCode, newDeviceId, normalizeBindCode } from './device-secret';
+export { deviceSecret, hashSecret, matchesSecretHash, newDeviceId, normalizeBindCode } from './device-secret';

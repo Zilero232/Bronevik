@@ -1,9 +1,10 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-lg), var(--color-border-strong), var(--color-surface-sunken));
+  @include well;
 
   position: relative;
+  overflow: hidden;
   height: 620px;
 
   @include below(md) {

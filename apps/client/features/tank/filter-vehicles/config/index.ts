@@ -1,1 +1,1 @@
-export { PREMIUM_FILTERS, VEHICLE_FILTER_PARSERS, VEHICLE_TIERS } from './filter-vehicles.config';
+export { PREMIUM_FILTERS, PREMIUM_VALUE, VEHICLE_FILTER_ICON, VEHICLE_FILTER_PARSERS, VEHICLE_TIERS } from './filter-vehicles.config';

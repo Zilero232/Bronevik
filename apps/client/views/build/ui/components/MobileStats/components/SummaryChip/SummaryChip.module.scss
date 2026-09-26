@@ -9,9 +9,8 @@
 }
 
 .label {
-  @include hud-label;
+  @include label;
 
-  font-size: 0.625rem;
   white-space: nowrap;
 }
 
@@ -21,7 +20,7 @@
   display: inline-flex;
   align-items: baseline;
   font-size: var(--text-md);
-  font-weight: 700;
+  font-weight: 600;
   gap: var(--space-1);
 }
 

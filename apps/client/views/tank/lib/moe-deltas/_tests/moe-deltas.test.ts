@@ -4,7 +4,7 @@ import { addDays, formatISO, parseISO } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
 import { MOE_KEYS } from '../../../config';
-import { moeDelta, moeSeries } from '../moe-deltas';
+import { moeDelta, moeSeries, thresholdVerdict } from '../moe-deltas';
 
 const START = parseISO('2026-07-01');
 
@@ -60,5 +60,19 @@ describe('moeSeries', () => {
     const { series } = moeSeries([point(0), point(1, null)]);
 
     expect(series.map(({ key }) => key)).not.toContain('p100');
+  });
+});
+
+describe('thresholdVerdict', () => {
+  it('calls a rising threshold worse for the player, since the mark gets harder', () => {
+    expect(thresholdVerdict(STEP)).toBe('worse');
+  });
+
+  it('calls a falling threshold better', () => {
+    expect(thresholdVerdict(-STEP)).toBe('better');
+  });
+
+  it('calls an unchanged threshold the same', () => {
+    expect(thresholdVerdict(0)).toBe('same');
   });
 });

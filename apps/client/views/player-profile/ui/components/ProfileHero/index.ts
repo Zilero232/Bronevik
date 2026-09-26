@@ -1,1 +1,0 @@
-export { ProfileHero } from './ProfileHero';

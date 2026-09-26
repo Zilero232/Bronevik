@@ -1,27 +1,5 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-7));
-}
-
-.head {
-  @include stack(var(--space-3));
-}
-
-.layout {
-  display: grid;
-  gap: var(--space-6);
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-
-  @include below(3xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.viewer {
-  aspect-ratio: 1;
-}
-
-.side {
   @include stack(var(--space-4));
 }

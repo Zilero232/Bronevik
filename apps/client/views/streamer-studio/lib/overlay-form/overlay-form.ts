@@ -11,11 +11,3 @@ export const toOverlayFormValues = ({ overlay, locale, name }: ToOverlayFormValu
 
   return { name, kind: 'session', config: overlayConfigSchema.parse({ metrics: [...KIND_PRESETS.session], locale }) };
 };
-
-export const publicIdOf = (publicUrl: string): string | null => {
-  try {
-    return new URL(publicUrl).pathname.split('/').filter(Boolean).at(-1) ?? null;
-  } catch {
-    return null;
-  }
-};

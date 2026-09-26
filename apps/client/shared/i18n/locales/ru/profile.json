@@ -1,0 +1,270 @@
+{
+  "meta": {
+    "title": "{nickname} — статистика игрока",
+    "description": "Статистика {nickname} в «Мире танков»: Броня-Индекс, WN8, процент побед, танки, отметки и сессии."
+  },
+  "loading": "Загружаем досье игрока",
+  "overall": "Всё время",
+  "stats": {
+    "battles": "Бои",
+    "winRate": "Победы",
+    "avgDamage": "Ср. урон",
+    "avgFrags": "Ср. фраги",
+    "survival": "Выживаемость",
+    "accuracy": "Точность"
+  },
+  "awards": {
+    "marks": "{count, plural, one {# отметка} few {# отметки} many {# отметок} other {# отметки}} на стволе",
+    "mastery": {
+      "third": "Знак классности III степени",
+      "second": "Знак классности II степени",
+      "first": "Знак классности I степени",
+      "master": "Мастер"
+    }
+  },
+  "missing": {
+    "search": "К поиску игроков",
+    "notFoundTitle": "Игрок не найден",
+    "notFoundDescription": "Игрока «{nickname}» нет в «Мире танков» или он сменил ник.",
+    "errorTitle": "Профиль не загрузился",
+    "errorDescription": "Сервер статистики не вернул данные игрока «{nickname}»."
+  },
+  "tabs": {
+    "overview": "Обзор",
+    "tanks": "Техника",
+    "sessions": "Сессии",
+    "marks": "Отметки",
+    "achievements": "Достижения",
+    "charts": "Графики",
+    "insights": "Разбор",
+    "history": "История"
+  },
+  "overview": {
+    "favoritesTitle": "Любимая техника",
+    "favoritesEmpty": "Нет боёв на технике",
+    "battles": "Бои",
+    "winRate": "Победы",
+    "marksTitle": "Отметки",
+    "closestTitle": "Ближе всего к следующей отметке",
+    "closestEmpty": "Нет танков в процессе получения отметки",
+    "periodsTitle": "Рейтинг по периодам",
+    "periodsEmpty": "Нет боёв ни за один период",
+    "period": "Период",
+    "broneIndex": "Броня-Индекс",
+    "avgDamage": "Ср. урон",
+    "activityTitle": "Активность за год",
+    "activitySummary": "{total, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} за {active, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
+    "activityEmpty": "Нет боёв за последний год",
+    "activityDay": "{date}: {battles, plural, =0 {не играл} one {# бой} few {# боя} many {# боёв} other {# боя}}{battles, plural, =0 {} other {, {winRate}% побед}}",
+    "activityHint": "Наведите на день, чтобы увидеть бои",
+    "activityAria": "Календарь активности: {total} боёв за {active} активных дней",
+    "less": "Меньше",
+    "more": "Больше"
+  },
+  "tanks": {
+    "caption": "Танки игрока",
+    "reset": "Сбросить фильтры",
+    "emptyTitle": "Ничего не подошло",
+    "search": "Поиск по названию танка",
+    "allNations": "Все нации",
+    "premiumLabel": "Тип техники",
+    "premium": {
+      "all": "Все",
+      "regular": "Прокачиваемые",
+      "premium": "Премиум"
+    },
+    "tiersLabel": "Уровни",
+    "typesLabel": "Классы",
+    "total": "{count, plural, one {# танк} few {# танка} many {# танков} other {# танка}}",
+    "columns": {
+      "tank": "Танк",
+      "battles": "Бои",
+      "winRate": "Победы",
+      "avgDamage": "Ср. урон",
+      "awards": "Награды",
+      "moe": "Отметка",
+      "recent": "30 дней"
+    }
+  },
+  "sessions": {
+    "eyebrow": "Сессия",
+    "live": "Идёт сейчас",
+    "source": {
+      "api": "По данным API",
+      "mod": "С мода"
+    },
+    "duration": "{minutes, plural, one {# минута} few {# минуты} many {# минут} other {# минуты}} в бою",
+    "share": "Карточка сессии",
+    "copied": "Ссылка скопирована",
+    "best": "Лучший танк дня",
+    "worst": "Худший танк дня",
+    "battlesCount": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
+    "avgDamageShort": "ср. урон {value}",
+    "tanks": "Танки сессии",
+    "battles": "Бои",
+    "result": {
+      "win": "Победа",
+      "loss": "Поражение",
+      "draw": "Ничья"
+    },
+    "frags": "{count, plural, =0 {без фрагов} one {# фраг} few {# фрага} many {# фрагов} other {# фрага}}",
+    "errorTitle": "Сессия не загрузилась",
+    "errorDescription": "Мы не смогли получить эту сессию. Возможно, она уже удалена.",
+    "listLabel": "Список сессий",
+    "more": "Показать ещё",
+    "back": "Досье {nickname}",
+    "meta": {
+      "title": "Сессия {nickname}",
+      "description": "Итоги игровой сессии {nickname}: бои, победы, урон и лучшие танки дня."
+    },
+    "empty": "Сессий пока нет"
+  },
+  "marks": {
+    "progressTitle": "Прогресс отметок",
+    "sortLabel": "Сортировка",
+    "sort": {
+      "closest": "Ближе к отметке",
+      "percent": "По проценту",
+      "battles": "По боям"
+    },
+    "summary": {
+      "moe3": "3 отметки",
+      "moe2": "2 отметки",
+      "moe1": "1 отметка",
+      "mastery": "Мастер"
+    },
+    "collection": "Коллекция трёх отметок",
+    "collectionValue": "{done} из {total}",
+    "battles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
+    "toNext": "до {percent}%: +{damage} урона",
+    "projection": {
+      "projected": "≈ {count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} до 3 отметок при вашем среднем",
+      "done": "Три отметки взяты",
+      "unknown": "Мало данных для прогноза",
+      "unreachable": "Текущего среднего урона не хватает на 3 отметки"
+    },
+    "empty": "Нет танков с отслеживаемой отметкой"
+  },
+  "charts": {
+    "title": "Графики показателей",
+    "granularityLabel": "Шаг графика",
+    "granularity": {
+      "day": "Дни",
+      "week": "Недели",
+      "month": "Месяцы"
+    },
+    "metricLabel": "Показатель",
+    "metric": {
+      "wn8": "WN8",
+      "winRate": "Победы",
+      "avgDamage": "Ср. урон",
+      "battles": "Бои",
+      "eff": "EFF",
+      "broneIndex": "Броня-Индекс"
+    },
+    "summary": {
+      "last": "Сейчас",
+      "average": "В среднем",
+      "max": "Максимум",
+      "min": "Минимум",
+      "change": "Изменение"
+    },
+    "markers": "События на графике",
+    "marker": {
+      "patch": "Обновление {label}",
+      "event": "Событие «{label}»"
+    },
+    "empty": "Нет данных за выбранный период"
+  },
+  "insights": {
+    "title": "Разбор по классам, уровням и технике",
+    "byClass": "По классам техники",
+    "byTier": "По уровням",
+    "tierLabel": "{tier} уровень",
+    "battles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
+    "weakTanks": "Где вы ниже сервера",
+    "strongTanks": "Где вы сильнее сервера",
+    "deltaPp": "{value} п.п.",
+    "damageRatio": "урон {value}% от сервера",
+    "tips": {
+      "weak_class": {
+        "title": "Слабый класс",
+        "body": "На технике класса «{type}» ваш процент побед на {winRateDelta} п.п. ниже среднего по серверу."
+      },
+      "weak_tier": {
+        "title": "Проседающий уровень",
+        "body": "На {tierRoman} уровне вы выигрываете на {winRateDelta} п.п. реже сервера — стоит пересмотреть технику."
+      },
+      "low_damage_tank": {
+        "title": "Недобор урона",
+        "body": "На {tank} вы наносите {damageRatio}% от среднего урона сервера."
+      },
+      "not_enough_battles": {
+        "title": "Мало боёв",
+        "body": "Для честного разбора нужно хотя бы {required} боёв — сейчас {battles}."
+      },
+      "no_weak_spots": {
+        "title": "Слабых мест не видно",
+        "body": "Вы держитесь на уровне сервера или выше по всем классам и уровням."
+      }
+    },
+    "playtime": {
+      "title": "Результаты по времени суток",
+      "beta": "Бета",
+      "approximate": "Время примерное: без мода мы видим бои только по опросам API.",
+      "bestHour": "Лучшее время: {from}:00–{to}:00 · {rate}% побед",
+      "worstHour": "Хуже всего: {from}:00–{to}:00 · {rate}% побед",
+      "bestWeekday": "Сильный день: {day} · {rate}% побед",
+      "gridLabel": "Процент побед по часам и дням недели",
+      "cell": "{hour}:00 · {battles} боёв · {rate}% побед",
+      "empty": "Нет данных о времени боёв"
+    },
+    "empty": "Мало боёв для разбора"
+  },
+  "history": {
+    "nicknames": "Ники",
+    "clans": "Кланы",
+    "empty": "Смен ника и клана не было",
+    "unknown": "неизвестно",
+    "now": "сейчас",
+    "noChanges": "Изменений не было"
+  },
+  "og": {
+    "eyebrow": "ДОСЬЕ",
+    "broneIndex": "Броня-Индекс",
+    "winRate": "Победы",
+    "battles": "Бои",
+    "noClan": "Без клана",
+    "source": "Данные: Леста Игры",
+    "session": "СЕССИЯ",
+    "avgDamage": "Ср. урон",
+    "best": "Лучший танк"
+  },
+  "header": {
+    "period": "Период статистики",
+    "noPeriodData": "За этот период боёв нет, показана статистика за всё время.",
+    "updated": "Обновлено",
+    "noClan": "Без клана",
+    "since": "Аккаунт с {year}",
+    "lastBattle": "Последний бой",
+    "compare": "Сравнить",
+    "broneIndex": "Броня-Индекс",
+    "winRate": "Победы",
+    "battles": "Бои",
+    "avgDamage": "Средний урон",
+    "avgXp": "Средний опыт"
+  },
+  "achievements": {
+    "empty": "У игрока нет достижений",
+    "sections": {
+      "battle": "Герои битвы",
+      "epic": "Эпические",
+      "special": "Особые",
+      "memorial": "Памятные",
+      "group": "Групповые",
+      "class": "Классность",
+      "action": "Акции",
+      "other": "Прочие"
+    }
+  }
+}

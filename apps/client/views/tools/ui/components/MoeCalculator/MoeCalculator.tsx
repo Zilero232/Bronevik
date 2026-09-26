@@ -1,30 +1,22 @@
 'use client';
 
-import type { VehicleSummary } from '@bronevik/schemas';
-
 import { MarkOfExcellenceIcon } from '@bronevik/icons';
 import { useFormatter, useTranslations } from 'next-intl';
-import { useState } from 'react';
 
 import { TankPicker } from '@/features/tank/pick-tank';
 import { NumberField, RangeSlider, SegmentedControl } from '@/ui-kit';
 
 import type { MoeTargetValue } from '../../../config';
-import type { MoeValues } from './MoeCalculator.types';
 
 import { MOE_CALC, MOE_TARGETS } from '../../../config';
-import { useCalcState } from '../../../model/hooks';
-import { CalcShell } from '../CalcKit';
+import { useMoeCalculator } from '../../../model/hooks';
+import { CalcShell } from '../CalcShell';
 import { MoeResults } from './components';
 
 export const MoeCalculator = () => {
   const t = useTranslations('tools.moe');
   const format = useFormatter();
-  const [vehicle, setVehicle] = useState<VehicleSummary | null>(null);
-  const { values, field } = useCalcState<MoeValues>({ ...MOE_CALC.defaults, target: '3' });
-
-  const { percent, damage, target } = values;
-  const { percentRange, damageRange } = MOE_CALC;
+  const { vehicle, setVehicle, values, field } = useMoeCalculator();
 
   return (
     <CalcShell
@@ -32,13 +24,13 @@ export const MoeCalculator = () => {
         <>
           <TankPicker label={t('tank')} placeholder={t('pickTank')} value={vehicle} onChange={setVehicle} />
           <RangeSlider
-            {...percentRange}
+            {...MOE_CALC.percentRange}
             label={t('percent')}
-            value={percent}
-            valueLabel={`${format.number(percent, { maximumFractionDigits: 2 })}%`}
+            value={values.percent}
+            valueLabel={format.number(values.percent / 100, { style: 'percent', maximumFractionDigits: 2 })}
             onValueChange={field('percent')}
           />
-          <NumberField {...damageRange} hint={t('damageHint')} label={t('damage')} value={damage} onValueChange={field('damage')} />
+          <NumberField {...MOE_CALC.damageRange} hint={t('damageHint')} label={t('damage')} value={values.damage} onValueChange={field('damage')} />
           <SegmentedControl<MoeTargetValue>
             options={MOE_TARGETS.map((option) => ({
               value: option.value,
@@ -46,13 +38,13 @@ export const MoeCalculator = () => {
               icon: <MarkOfExcellenceIcon aria-hidden marks={option.marks} size={16} />
             }))}
             aria-label={t('target')}
-            value={target}
+            value={values.target}
             onChange={field('target')}
           />
         </>
       }
       description={t('description')}
-      results={<MoeResults damage={damage ?? 0} percent={percent} target={target} vehicle={vehicle} />}
+      results={<MoeResults damage={values.damage ?? 0} percent={values.percent} target={values.target} vehicle={vehicle} />}
       title={t('title')}
     />
   );

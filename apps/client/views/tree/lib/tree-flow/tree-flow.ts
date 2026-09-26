@@ -1,9 +1,8 @@
-import type { TreeElementState, TreeFlowInput } from './tree-flow.types';
+import type { NodeStateInput, TreeElementState, TreeFlowInput } from './tree-flow.types';
 
-import { TREE_MOTION } from '../../config';
 import { pathEdgeKeys } from '../tree-path';
 
-const nodeState = ({ id, path }: { id: number; path: number[] }): TreeElementState => {
+const nodeState = ({ id, path }: NodeStateInput): TreeElementState => {
   if (path.length === 0) {
     return 'idle';
   }
@@ -16,10 +15,7 @@ const nodeState = ({ id, path }: { id: number; path: number[] }): TreeElementSta
 };
 
 export const toFlowElements = ({ tree, layout, path, onSelect }: TreeFlowInput) => {
-  const firstTier = layout.tiers[0] ?? 1;
-  const tierOf = new Map(tree.nodes.map(({ vehicle }) => [vehicle.tankId, vehicle.tier]));
   const onPath = pathEdgeKeys(path);
-  const delayOf = (tier: number) => (tier - firstTier) * TREE_MOTION.tierStep;
 
   const nodes = tree.nodes.flatMap((node) => {
     const position = layout.positions.get(node.vehicle.tankId);
@@ -30,7 +26,7 @@ export const toFlowElements = ({ tree, layout, path, onSelect }: TreeFlowInput) 
             id: String(node.vehicle.tankId),
             type: 'tank' as const,
             position,
-            data: { node, state: nodeState({ id: node.vehicle.tankId, path }), delay: delayOf(node.vehicle.tier), onSelect }
+            data: { node, state: nodeState({ id: node.vehicle.tankId, path }), onSelect }
           }
         ]
       : [];
@@ -49,7 +45,7 @@ export const toFlowElements = ({ tree, layout, path, onSelect }: TreeFlowInput) 
         target: String(to),
         type: 'branch' as const,
         zIndex: isOnPath ? 1 : 0,
-        data: { xp, state, delay: delayOf(tierOf.get(from) ?? firstTier) + TREE_MOTION.edgeLag }
+        data: { xp, state }
       };
     });
 

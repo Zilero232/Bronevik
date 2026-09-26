@@ -21,6 +21,7 @@ export type BuildItem = {
   id: number;
   tag: string;
   name: string;
+  image: string | null;
   category: BuildCategory | null;
   isPremium: boolean;
 };
@@ -34,6 +35,7 @@ export type BuildFieldStep = {
 export type BuildSkill = {
   id: string;
   name: string;
+  image: string | null;
   roles: string[];
   isCommon: boolean;
 };

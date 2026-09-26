@@ -266,3 +266,19 @@ model GameDataEntry {
   @@index([kind, key])
   @@map("game_data_entry")
 }
+
+model VehicleArmorModel {
+  tankId Int @id @map("tank_id")
+
+  gameVersion String @map("game_version")
+  storageKey  String @map("storage_key")
+  hash        String
+  bytes       Int
+  modules     Json
+  sourceSha   String @map("source_sha")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([gameVersion])
+  @@map("vehicle_armor_model")
+}

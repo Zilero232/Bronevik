@@ -5,7 +5,6 @@ export type ConfirmActionProps = {
   title: ReactNode;
   description: ReactNode;
   confirmLabel: ReactNode;
-  icon?: ReactNode;
   isPending?: boolean;
   onConfirm: () => void;
 };

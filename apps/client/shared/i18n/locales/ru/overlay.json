@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "title": "Оверлей для OBS",
+    "description": "Виджет статистики для трансляции: добавьте страницу в OBS как источник «Браузер»."
+  },
+  "metric": {
+    "battles": "Бои",
+    "winRate": "Победы",
+    "avgDamage": "Ср. урон",
+    "wn8": "WN8",
+    "broneIndex": "Броня-Индекс",
+    "moePercent": "Отметка",
+    "winStreak": "Серия побед",
+    "frags": "Фраги",
+    "lastBattle": "Последний бой"
+  },
+  "result": {
+    "win": "Победа",
+    "loss": "Поражение",
+    "draw": "Ничья"
+  },
+  "moe": {
+    "label": "Отметка · {count} из 3"
+  },
+  "challenge": {
+    "label": "Челлендж",
+    "battles": "Бои: {done} из {total}",
+    "status": {
+      "pending": "Ждёт доната",
+      "active": "В игре",
+      "succeeded": "Выполнен",
+      "failed": "Провален",
+      "cancelled": "Отменён",
+      "expired": "Истёк",
+      "refunded": "Возврат"
+    }
+  },
+  "error": {
+    "invalid": "Неверная ссылка на оверлей",
+    "unavailable": "Оверлей недоступен"
+  },
+  "attribution": "данные: Леста Игры"
+}

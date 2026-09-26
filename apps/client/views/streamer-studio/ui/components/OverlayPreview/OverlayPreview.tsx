@@ -1,34 +1,34 @@
 'use client';
 
-import { MonitorPlay } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { match, P } from 'ts-pattern';
 
-import { EmptyState } from '@/ui-kit';
+import { OverlayBoard } from '@/entities/streamer/overlay';
+import { ErrorState, Skeleton } from '@/ui-kit';
 
 import type { OverlayPreviewProps } from './OverlayPreview.types';
 
-import { useOverlayPreviewSrc } from '../../../model/hooks';
+import { OVERLAY_EDITOR } from '../../../config';
+import { useOverlayPreview } from '../../../model/hooks';
 
 import s from './OverlayPreview.module.scss';
 
-export const OverlayPreview = ({ config, publicId, isDraft }: OverlayPreviewProps) => {
+export const OverlayPreview = ({ accountId }: OverlayPreviewProps) => {
   const t = useTranslations('streamer.overlays.preview');
-  const src = useOverlayPreviewSrc({ publicId, config });
+  const { data, config, isError, isFetching, onRetry } = useOverlayPreview({ accountId });
 
   return (
     <figure className={s.root}>
-      <figcaption className={s.caption}>
-        <span className={s.rec} />
-        {t('title')}
-      </figcaption>
+      <figcaption className={s.caption}>{t('title')}</figcaption>
       <div className={s.screen}>
-        {src ? (
-          <iframe className={s.frame} src={src} title={t('frameTitle')} />
-        ) : (
-          <EmptyState description={t('needsSave')} icon={<MonitorPlay size={20} />} title={t('emptyTitle')} />
-        )}
+        {match({ data, isError })
+          .with({ isError: true }, () => <ErrorState isRetrying={isFetching} onRetry={onRetry} />)
+          .with({ data: P.nonNullable }, ({ data: overlayData }) => <OverlayBoard config={config} data={overlayData} />)
+          .otherwise(() => (
+            <Skeleton height={OVERLAY_EDITOR.previewHeight} shape='block' />
+          ))}
       </div>
-      <p className={s.hint}>{isDraft && src ? t('draftHint') : t('hint')}</p>
+      <p className={s.hint}>{t('hint')}</p>
     </figure>
   );
 };

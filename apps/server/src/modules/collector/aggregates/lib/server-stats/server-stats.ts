@@ -5,7 +5,7 @@ import type { BuildServerStatsInput, DailyStatsRow, ServerStatsRow } from './ser
 
 import { CohortFilter } from '../../../../../../generated';
 import { tierListRanks } from '../tier-list';
-import { ALL_COHORTS } from './server-stats.constants';
+import { SERVER_STATS } from './server-stats.constants';
 
 const cohortFilters: ReadonlySet<string> = new Set(Object.values(CohortFilter));
 
@@ -32,7 +32,7 @@ const sumRows = (rows: readonly DailyStatsRow[]): DailyStatsRow =>
     }),
     {
       tankId: rows[0]?.tankId ?? 0,
-      cohort: ALL_COHORTS,
+      cohort: SERVER_STATS.allCohorts,
       samples: 0,
       battles: 0,
       wins: 0,
@@ -50,7 +50,7 @@ const sumRows = (rows: readonly DailyStatsRow[]): DailyStatsRow =>
 
 export const buildServerStats = ({ rows, players, tiers, mode, period }: BuildServerStatsInput): ServerStatsRow[] => {
   const perTankAll = Object.values(groupBy(rows, (row) => row.tankId)).map((group) => sumRows(group));
-  const byCohort = [...perTankAll, ...rows.filter((row) => row.cohort !== ALL_COHORTS)];
+  const byCohort = [...perTankAll, ...rows.filter((row) => row.cohort !== SERVER_STATS.allCohorts)];
   const playerCounts = new Map(players.map((row) => [playerKey(row), row.players]));
   const result: ServerStatsRow[] = [];
 

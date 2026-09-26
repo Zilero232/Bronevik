@@ -3,67 +3,40 @@
 .root {
   position: relative;
   display: flex;
-  height: var(--row-h);
-  flex-shrink: 0;
+  height: 100%;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-4);
-  border-bottom: 1px solid var(--color-border);
-  gap: var(--space-2);
+  justify-content: flex-end;
+  padding: 0 var(--space-3);
 
   &[data-best='true'] {
-    background: linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 85%);
     box-shadow: inset 2px 0 0 var(--color-accent);
   }
 }
 
 .value {
-  @include numeric;
-
-  display: inline-flex;
-  align-items: baseline;
-  font-size: var(--text-md);
-  font-stretch: 85%;
-  font-weight: 600;
-  gap: 3px;
+  @include numeric(var(--text-sm));
 
   .root[data-best='true'] & {
-    color: var(--color-accent-hot);
-    text-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 55%, transparent);
+    color: var(--color-accent);
   }
-}
-
-.unit {
-  color: var(--color-text-dim);
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  font-weight: 500;
-}
-
-.crown {
-  display: inline-flex;
-  color: var(--color-accent-hot);
-  filter: drop-shadow(0 0 6px var(--color-accent));
 }
 
 .track {
   position: absolute;
-  right: var(--space-4);
-  bottom: 7px;
-  left: var(--space-4);
+  right: var(--space-3);
+  bottom: 4px;
+  left: var(--space-3);
   height: 2px;
-  background: var(--color-border);
+  background-color: var(--color-border);
 }
 
 .bar {
   display: block;
   height: 100%;
-  background: var(--color-steel);
-  transform-origin: left;
+  background-color: var(--color-steel);
 
   .root[data-best='true'] & {
-    background: linear-gradient(90deg, var(--color-accent-deep), var(--color-accent-hot));
-    box-shadow: 0 0 8px var(--color-accent);
+    background-color: var(--color-accent);
   }
 }
 

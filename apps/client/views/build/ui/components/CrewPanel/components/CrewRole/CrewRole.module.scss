@@ -1,13 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-3));
+  @include well;
+  @include stack(var(--space-2));
 
   min-width: 0;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-sunken);
+  padding: var(--space-2) var(--space-3);
 }
 
 .head {
@@ -18,57 +16,44 @@
 }
 
 .title {
+  @include label;
+
   margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--text-sm);
-  font-stretch: 85%;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  color: var(--color-text);
 }
 
 .counter {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
+  @include numeric;
 
-.srOnly {
-  @include sr-only;
-}
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
 
-.pip {
-  width: 10px;
-  height: 4px;
-  border-radius: 1px;
-  background: var(--color-border-strong);
-
-  &[data-on='true'] {
-    background: var(--side);
-    box-shadow: 0 0 8px -1px var(--side);
+  &[data-full='true'] {
+    color: var(--side);
   }
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .chip {
   @include reset-button;
 
   display: inline-flex;
+  min-height: 28px;
   align-items: center;
-  padding: var(--space-1) var(--space-3);
+  padding: 0 var(--space-2);
   border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
   gap: var(--space-1);
 
   &:hover:not(:disabled) {
-    border-color: var(--side);
+    border-color: var(--color-text-dim);
     color: var(--color-text);
   }
 
@@ -81,7 +66,7 @@
     opacity: 0.4;
   }
 
-  &[data-on='true'] {
+  &[aria-pressed='true'] {
     border-color: var(--side);
     background: var(--side-soft);
     color: var(--color-text);

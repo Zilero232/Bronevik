@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { subDays } from 'date-fns';
 
 import type { RecordEventRow, SnapshotEventRow, SnapshotWindow } from '../social.types';
 
@@ -14,7 +15,7 @@ export class SnapshotEventsService {
       return [];
     }
 
-    const lookback = new Date(since.getTime() - FEED.lookbackDays * 86_400_000);
+    const lookback = subDays(since, FEED.lookbackDays);
 
     return this.prisma.$queryRaw<SnapshotEventRow[]>`
       SELECT account_id, tank_id, captured_at, marks_on_gun, prev_marks, mark_of_mastery, prev_mastery
@@ -40,7 +41,7 @@ export class SnapshotEventsService {
       return [];
     }
 
-    const lookback = new Date(since.getTime() - FEED.lookbackDays * 86_400_000);
+    const lookback = subDays(since, FEED.lookbackDays);
 
     return this.prisma.$queryRaw<RecordEventRow[]>`
       SELECT account_id, captured_at, max_damage, prev_max_damage, max_damage_tank_id

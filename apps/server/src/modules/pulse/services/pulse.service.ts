@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { subDays, subMinutes } from 'date-fns';
 import { Redis } from 'ioredis';
 
 import type { ActivityRow } from '../lib/pulse-grid';
@@ -24,8 +25,8 @@ export class PulseService {
       return parsed.data;
     }
 
-    const since = new Date(now.getTime() - PULSE.heatmapDays * 86_400_000);
-    const activeSince = new Date(now.getTime() - PULSE.activeWindowMinutes * 60_000);
+    const since = subDays(now, PULSE.heatmapDays);
+    const activeSince = subMinutes(now, PULSE.activeWindowMinutes);
     const [rows, activePlayers, trackedPlayers, members] = await Promise.all([
       this.prisma.$queryRaw<ActivityRow[]>`
         SELECT EXTRACT(ISODOW FROM last_battle_at AT TIME ZONE ${PULSE.timezone})::int AS dow,
@@ -37,7 +38,7 @@ export class PulseService {
       `,
       this.prisma.player.count({ where: { lastBattleAt: { gte: activeSince, lte: now } } }),
       this.prisma.player.count({ where: { lastBattleAt: { gte: since } } }),
-      this.redis.zrangebyscore(PULSE.samplesKey, now.getTime() - PULSE.seriesDays * 86_400_000, now.getTime())
+      this.redis.zrangebyscore(PULSE.samplesKey, subDays(now, PULSE.seriesDays).getTime(), now.getTime())
     ]);
 
     const heatmap = activityGrid(rows);
@@ -63,14 +64,24 @@ export class PulseService {
 
   async sample(now: Date): Promise<number> {
     const players = await this.prisma.player.count({
-      where: { lastBattleAt: { gte: new Date(now.getTime() - PULSE.activeWindowMinutes * 60_000), lte: now } }
+      where: { lastBattleAt: { gte: subMinutes(now, PULSE.activeWindowMinutes), lte: now } }
     });
 
-    await this.redis
+    const results = await this.redis
       .multi()
       .zadd(PULSE.samplesKey, now.getTime(), encodeSample({ at: now, players }))
-      .zremrangebyscore(PULSE.samplesKey, 0, now.getTime() - PULSE.retentionDays * 86_400_000)
+      .zremrangebyscore(PULSE.samplesKey, 0, subDays(now, PULSE.retentionDays).getTime())
       .exec();
+
+    if (!results) {
+      throw new Error('The pulse sample transaction was aborted');
+    }
+
+    const failure = results.find(([error]) => error)?.[0];
+
+    if (failure) {
+      throw failure;
+    }
 
     return players;
   }

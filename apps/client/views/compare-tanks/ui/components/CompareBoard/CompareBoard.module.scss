@@ -1,32 +1,20 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-3));
+  @include stack(var(--space-2));
 }
 
 .hint {
-  @include hud-label;
-
-  display: flex;
-  align-items: center;
-  color: var(--color-accent);
-  gap: var(--space-2);
-
-  &:before {
-    width: 18px;
-    height: 1px;
-    background: currentcolor;
-    content: '';
-  }
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
 }
 
 .scroller {
-  position: relative;
+  @include panel;
+
   overflow: auto;
   max-height: calc(100dvh - var(--header-height) - var(--space-8));
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
   overscroll-behavior-x: contain;
 
   &:focus-visible {
@@ -34,28 +22,82 @@
   }
 }
 
-.grid {
-  --head-h: 176px;
-  --section-h: 40px;
-  --row-h: 50px;
-  --label-w: 220px;
-  --col-w: 200px;
+.table {
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
 
-  position: relative;
-  display: flex;
-  min-width: max-content;
+.corner,
+.head {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface-raised);
+  vertical-align: bottom;
+}
+
+.corner {
+  @include label;
+
+  z-index: 3;
+  left: 0;
+  width: 200px;
+  text-align: left;
 
   @include below(lg) {
-    --head-h: 164px;
-    --label-w: 128px;
-    --col-w: 164px;
+    width: 128px;
   }
 }
 
-.column {
-  display: flex;
-  width: var(--col-w);
-  flex: 1 0 var(--col-w);
-  flex-direction: column;
+.head {
+  min-width: 176px;
+  border-left: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.section {
+  @include label;
+
+  position: sticky;
+  left: 0;
+  height: 32px;
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text);
+  text-align: left;
+}
+
+.row:hover > * {
+  background-color: var(--color-surface-hover);
+}
+
+.label {
+  position: sticky;
+  z-index: 1;
+  left: 0;
+  height: var(--row-h);
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  text-align: left;
+}
+
+.unit {
+  margin-left: var(--space-1);
+  color: var(--color-text-dim);
+  font-size: var(--text-2xs);
+}
+
+.cell {
+  height: var(--row-h);
+  padding: 0;
+  border-bottom: 1px solid var(--color-border);
   border-left: 1px solid var(--color-border);
 }

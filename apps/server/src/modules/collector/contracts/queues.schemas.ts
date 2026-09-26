@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { LESTA_BATCH_SIZE } from '../../../lib/lesta';
+import { LESTA_API } from '../../../lib/lesta';
 import { CLAN_DISPATCH_SCOPES, ENROL_REASONS } from './queues.constants';
 
 const accountId = z.number().int().positive();
@@ -12,7 +12,7 @@ export const enrolPayloadSchema = z.object({
 });
 
 export const accountBatchPayloadSchema = z.object({
-  accountIds: z.array(accountId).min(1).max(LESTA_BATCH_SIZE)
+  accountIds: z.array(accountId).min(1).max(LESTA_API.batchSize)
 });
 
 export const clanDispatchPayloadSchema = z.object({
@@ -20,7 +20,7 @@ export const clanDispatchPayloadSchema = z.object({
 });
 
 export const clanRefreshPayloadSchema = z.object({
-  clanIds: z.array(clanId).min(1).max(LESTA_BATCH_SIZE),
+  clanIds: z.array(clanId).min(1).max(LESTA_API.batchSize),
   snapshot: z.boolean().default(false)
 });
 

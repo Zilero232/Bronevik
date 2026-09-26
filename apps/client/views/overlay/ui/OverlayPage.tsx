@@ -1,9 +1,8 @@
 'use client';
 
+import { overlayPublicIdSchema } from '@bronevik/schemas';
 import { useTranslations } from 'next-intl';
 import { match, P } from 'ts-pattern';
-
-import { overlayPublicIdSchema } from '@/shared/api/streamers';
 
 import type { OverlayPageProps } from './OverlayPage.types';
 

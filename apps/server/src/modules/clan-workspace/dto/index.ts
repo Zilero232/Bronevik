@@ -2,7 +2,6 @@ export {
   CandidateDto,
   CandidateListDto,
   CandidatesQueryDto,
-  CandidateStatsDto,
   ClanEventDto,
   ClanEventListDto,
   ClanEventParamsDto,

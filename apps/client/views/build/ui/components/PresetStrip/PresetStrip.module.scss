@@ -1,33 +1,20 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-4));
+  @include stack(var(--space-2));
 }
 
 .head {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--space-2) var(--space-4);
-}
-
-.index {
-  @include hud-label;
-
-  color: var(--color-text-dim);
+  gap: var(--space-1) var(--space-3);
 }
 
 .title {
-  @include display(var(--text-lg));
+  @include heading(var(--text-lg));
 
-  display: inline-flex;
-  align-items: center;
   margin: 0;
-  gap: var(--space-2);
-
-  svg {
-    color: var(--side);
-  }
 }
 
 .description {
@@ -40,7 +27,7 @@
   display: grid;
   padding: 0;
   margin: 0;
-  gap: var(--space-4);
+  gap: var(--gap-panel);
   grid-template-columns: repeat(3, minmax(0, 1fr));
   list-style: none;
 

@@ -1,23 +1,37 @@
 @use '@/shared/styles/mixins' as *;
 
-.list {
-  display: grid;
-  padding: 0;
-  margin: 0;
-  column-gap: var(--space-5);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  list-style: none;
+.root {
+  overflow-x: auto;
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
+}
+
+.header {
+  padding: 0 var(--space-4);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
 
   &[data-stale='true'] {
     opacity: 0.6;
   }
 
-  @include below(2xl) {
-    grid-template-columns: minmax(0, 1fr);
+  th {
+    @include label;
+
+    height: 32px;
+    padding: 0 var(--space-4);
+    border-bottom: 1px solid var(--color-border-strong);
+    background-color: var(--color-surface-raised);
+    text-align: right;
+
+    &:nth-child(2) {
+      text-align: left;
+    }
   }
 }
 
-.skeleton {
-  display: grid;
-  gap: var(--space-2);
+.caption {
+  @include sr-only;
 }

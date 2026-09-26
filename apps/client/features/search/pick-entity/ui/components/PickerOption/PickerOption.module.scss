@@ -1,12 +1,25 @@
+@use '@/shared/styles/mixins' as *;
+
 .root {
   display: flex;
+  width: 100%;
+  min-width: 0;
   align-items: center;
   gap: var(--space-3);
 }
 
 .battles {
+  @include numeric;
+
   margin-left: auto;
   color: var(--color-text-dim);
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
+}
+
+.rating {
+  @include numeric;
+  @include tone;
+
+  color: var(--tone);
+  font-weight: 600;
 }

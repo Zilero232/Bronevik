@@ -2,7 +2,7 @@
 
 .roles {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--gap-panel);
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 
   @include below(sm) {

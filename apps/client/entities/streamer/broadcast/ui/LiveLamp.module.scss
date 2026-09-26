@@ -1,16 +1,16 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include hud-label;
+  @include label;
 
   display: inline-flex;
   align-items: center;
-  padding: 3px 9px 3px 7px;
+  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
   border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   background: var(--color-surface-sunken);
   color: var(--color-text-muted);
-  gap: 7px;
+  gap: var(--space-2);
 
   &[data-live='true'] {
     border-color: color-mix(in srgb, var(--color-enemy) 55%, transparent);
@@ -36,6 +36,5 @@
 
   [data-live='true'] > & {
     background: var(--color-enemy);
-    box-shadow: 0 0 10px var(--color-enemy);
   }
 }

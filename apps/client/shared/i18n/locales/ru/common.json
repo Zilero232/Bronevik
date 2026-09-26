@@ -1,0 +1,31 @@
+{
+  "loadErrorTitle": "Сервер статистики не отвечает",
+  "loadErrorDescription": "Проверьте соединение и повторите попытку.",
+  "retry": "Повторить",
+  "copy": "Скопировать",
+  "copied": "Скопировано",
+  "show": "Показать",
+  "hide": "Скрыть",
+  "close": "Закрыть",
+  "language": "Язык",
+  "themeDark": "Включить тёмную тему",
+  "themeLight": "Включить светлую тему",
+  "empty": "Нет данных",
+  "dataSource": "Данные: API Леста Игры",
+  "gameVersion": "Обновление {version}",
+  "gameVersionHint": "Текущая версия «Мир танков»",
+  "apiStatus": {
+    "ok": "API Лесты: работает",
+    "degraded": "API Лесты: задержка",
+    "down": "API Лесты: недоступен",
+    "unknown": "API Лесты: нет данных"
+  },
+  "breadcrumbs": "Путь по разделам",
+  "tier": "Уровень {tier}",
+  "premium": "Прем",
+  "elite": "Элита",
+  "sortAscending": "по возрастанию",
+  "sortDescending": "по убыванию",
+  "more": "Ещё",
+  "updated": "обновлено"
+}

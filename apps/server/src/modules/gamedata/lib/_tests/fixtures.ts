@@ -26,6 +26,11 @@ export const VEHICLE_FIXTURES = {
   }
 } as const;
 
+export const COLLISION_FIXTURES = {
+  collision: 'collision/_tests/fixtures/collision.json',
+  index: 'collision/_tests/fixtures/vehicles.json'
+} as const;
+
 export const COMMON_FIXTURES = {
   optionalDevices: 'optional-devices/_tests/fixtures/optional_devices.xml',
   equipments: 'equipment/_tests/fixtures/equipments.xml',

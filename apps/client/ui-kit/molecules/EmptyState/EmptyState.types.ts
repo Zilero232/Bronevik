@@ -5,6 +5,7 @@ export type EmptyStateProps = {
   description?: ReactNode;
   icon?: ReactNode;
   action?: ReactNode;
+  isCompact?: boolean;
   code?: ReactNode;
   className?: string;
 };

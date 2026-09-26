@@ -1,15 +1,8 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  position: relative;
-  padding-bottom: var(--space-11);
-}
-
-.sections {
   @include shell;
-  @include stack(var(--space-11));
+  @include stack(var(--space-3));
 
-  @include below(md) {
-    gap: var(--space-9);
-  }
+  padding-block: var(--space-8);
 }

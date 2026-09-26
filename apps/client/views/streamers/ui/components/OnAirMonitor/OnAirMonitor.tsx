@@ -2,17 +2,13 @@
 
 import { useTranslations } from 'next-intl';
 
-import { OverlayBoard } from '@/entities/streamer/overlay';
-
-import { DEMO_CONFIG } from '../../../config';
-import { formatRecordingClock } from '../../../lib/demo-overlay';
-import { useDemoOverlay } from '../../../model/hooks';
+import { MONITOR_WIDGETS } from '../../../config';
 
 import s from './OnAirMonitor.module.scss';
 
 export const OnAirMonitor = () => {
   const t = useTranslations('streamers.hero');
-  const { data, seconds } = useDemoOverlay();
+  const tKind = useTranslations('streamer.overlays.kind');
 
   return (
     <figure className={s.root}>
@@ -24,10 +20,15 @@ export const OnAirMonitor = () => {
             <span className={s.recDot} />
             {t('rec')}
           </span>
-          <span className={s.clock}>{formatRecordingClock(seconds)}</span>
-          <span className={s.channel}>{t('channel')}</span>
         </div>
-        <OverlayBoard config={DEMO_CONFIG} data={data} />
+        <ul className={s.widgets}>
+          {MONITOR_WIDGETS.map((kind) => (
+            <li key={kind} className={s.widget}>
+              <span className={s.widgetLabel}>{tKind(kind)}</span>
+              <span aria-hidden className={s.widgetSlot} />
+            </li>
+          ))}
+        </ul>
       </div>
       <figcaption className={s.caption}>{t('frame')}</figcaption>
     </figure>

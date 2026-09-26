@@ -4,36 +4,34 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import type { PlaytimeGridProps } from './PlaytimeGrid.types';
 
-import s from './PlaytimeGrid.module.scss';
+import { PLAYTIME } from '../../../../../config';
+import { playtimeShift } from '../../../../../lib/playtime-shift';
 
-const WEEKDAYS = 7;
-const HOURS = Array.from({ length: 24 }, (_, hour) => hour);
-const NEUTRAL_RATE = 50;
-const RATE_SPREAD = 12;
+import s from './PlaytimeGrid.module.scss';
 
 export const PlaytimeGrid = ({ cells, weekdayLabel }: PlaytimeGridProps) => {
   const t = useTranslations('profile.insights.playtime');
   const format = useFormatter();
 
   const maxBattles = Math.max(1, ...cells.map(({ battles }) => battles));
+  const hours = Array.from({ length: PLAYTIME.hours }, (_, hour) => hour);
 
   return (
     <div className={s.scroller}>
       <div aria-label={t('gridLabel')} className={s.grid} role='img'>
         <span />
-        {HOURS.map((hour) => (
+        {hours.map((hour) => (
           <span aria-hidden key={hour} className={s.hour}>
-            {hour % 3 === 0 ? hour : ''}
+            {hour % PLAYTIME.hourLabelStep === 0 ? hour : ''}
           </span>
         ))}
-        {Array.from({ length: WEEKDAYS }, (_, weekday) => [
+        {Array.from({ length: PLAYTIME.weekdays }, (_, weekday) => [
           <span aria-hidden key={`label-${weekday}`} className={s.weekday}>
             {weekdayLabel(weekday)}
           </span>,
-          ...HOURS.map((hour) => {
+          ...hours.map((hour) => {
             const cell = cells.find((item) => item.weekday === weekday && item.hour === hour);
             const rate = cell?.winRate ?? null;
-            const shift = rate === null ? 0 : Math.max(-1, Math.min(1, (rate - NEUTRAL_RATE) / RATE_SPREAD));
 
             return (
               <span
@@ -45,7 +43,7 @@ export const PlaytimeGrid = ({ cells, weekdayLabel }: PlaytimeGridProps) => {
                 }
                 className={s.cell}
                 data-empty={rate === null}
-                style={{ '--shift': shift, '--weight': (cell?.battles ?? 0) / maxBattles }}
+                style={{ '--shift': playtimeShift(rate), '--weight': (cell?.battles ?? 0) / maxBattles }}
               />
             );
           })

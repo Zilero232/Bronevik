@@ -1,9 +1,10 @@
+import { activateChallengeSchema } from '@bronevik/schemas';
 import { z } from 'zod';
 
-import { CHALLENGE_FORM } from '../../config';
-
 export const activateFormSchema = z.object({
-  donorName: z.string().trim().max(CHALLENGE_FORM.donorMax)
+  donorName: z
+    .string()
+    .trim()
+    .pipe(z.union([z.literal(''), activateChallengeSchema.shape.donorName.unwrap()]))
+    .transform((donorName) => (donorName === '' ? undefined : donorName))
 });
-
-export const ACTIVATE_FORM_DEFAULTS: z.input<typeof activateFormSchema> = { donorName: '' };

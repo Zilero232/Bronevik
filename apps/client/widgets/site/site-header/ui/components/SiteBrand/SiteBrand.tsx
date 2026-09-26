@@ -1,4 +1,4 @@
-import { AnimatedLogo } from '@bronevik/icons';
+import { BronevikLogoIcon } from '@bronevik/icons';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
@@ -11,13 +11,8 @@ export const SiteBrand = () => {
 
   return (
     <Link aria-label={t('home')} className={s.root} href={ROUTES.home}>
-      <span className={s.mark}>
-        <AnimatedLogo size={30} strokeWidth={1.75} />
-      </span>
-      <span className={s.text}>
-        <span className={s.word}>{t('name')}</span>
-        <span className={s.tag}>{t('tag')}</span>
-      </span>
+      <BronevikLogoIcon className={s.mark} size={22} strokeWidth={1.75} />
+      <span className={s.word}>{t('name')}</span>
     </Link>
   );
 };

@@ -4,7 +4,7 @@ import { useBoolean } from '@siberiacancode/reactuse';
 
 import type { CommandPaletteProviderProps } from './command-palette-context.types';
 
-import { useCommandPaletteHotkey } from '../hooks';
+import { useCommandPaletteHotkey } from '../hooks/use-command-palette-hotkey';
 import { CommandPaletteContext } from './command-palette-context';
 
 export const CommandPaletteProvider = ({ children }: CommandPaletteProviderProps) => {

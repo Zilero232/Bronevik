@@ -1,11 +1,20 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  position: relative;
-  padding-bottom: var(--space-11);
+  @include shell;
+  @include stack(var(--space-5));
+
+  padding-bottom: var(--space-8);
 }
 
-.sections {
-  @include shell;
-  @include stack(var(--space-7));
+.layout {
+  display: grid;
+  align-items: start;
+  gap: var(--space-6);
+  grid-template-columns: 220px minmax(0, 1fr);
+
+  @include below(2xl) {
+    gap: var(--space-4);
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

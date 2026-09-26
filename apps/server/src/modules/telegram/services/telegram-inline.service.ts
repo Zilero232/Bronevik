@@ -3,10 +3,11 @@ import { InlineQueryResultBuilder } from 'grammy';
 
 import type { BotContext } from '../telegram.types';
 
+import { formatNumberOr, formatPercentOr } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { BOT_TEXT_LIMITS } from '../config';
-import { formatNumber, formatPercent, isPublicUrl, statCardUrl } from '../lib';
-import { TelegramCommandsService } from './telegram-commands.service';
+import { isPublicUrl, statCardUrl } from '../lib';
+import { TelegramPlayerCommandsService } from './telegram-player-commands.service';
 import { TelegramStatsService } from './telegram-stats.service';
 
 @Injectable()
@@ -14,7 +15,7 @@ export class TelegramInlineService {
   constructor(
     private readonly config: AppConfigService,
     private readonly stats: TelegramStatsService,
-    private readonly commands: TelegramCommandsService
+    private readonly players: TelegramPlayerCommandsService
   ) {}
 
   async answer(ctx: BotContext): Promise<void> {
@@ -39,13 +40,13 @@ export class TelegramInlineService {
     const locale = await ctx.i18n.getLocale();
     const missing = ctx.t('missing');
     const image = statCardUrl({ webUrl: this.config.get('WEB_URL'), accountId });
-    const text = await this.commands.playerText({ ctx, card });
+    const text = await this.players.playerText({ ctx, card });
 
     const result = InlineQueryResultBuilder.article(`player-${accountId}`, card.nickname, {
       description: ctx.t('inline-card-description', {
-        wn8: formatNumber({ value: card.wn8, locale }) ?? missing,
-        winRate: formatPercent({ value: card.winRate === null ? null : card.winRate / 100, locale }) ?? missing,
-        battles: formatNumber({ value: card.battles, locale }) ?? missing
+        wn8: formatNumberOr({ value: card.wn8, locale, missing }),
+        winRate: formatPercentOr({ value: card.winRate === null ? null : card.winRate / 100, locale, missing }),
+        battles: formatNumberOr({ value: card.battles, locale, missing })
       }),
       ...(isPublicUrl(image) ? { thumbnail_url: image } : {})
     }).text(text, { link_preview_options: { url: image, prefer_large_media: true } });

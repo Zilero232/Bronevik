@@ -3,5 +3,6 @@ export { EnrolService } from './enrol.service';
 export { PollPipelineService } from './poll-pipeline.service';
 export { RatingsTriggerService } from './ratings-trigger.service';
 export { SeedService } from './seed.service';
+export { TrackingAnnounceService } from './tracking-announce.service';
 export { TrackingLestaService } from './tracking-lesta.service';
 export { TrackingStoreService } from './tracking-store.service';

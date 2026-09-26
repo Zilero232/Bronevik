@@ -5,12 +5,12 @@
 
   padding: var(--space-4);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   margin: 0;
 }
 
 .legend {
-  @include hud-label;
+  @include label;
 
   padding-inline: var(--space-2);
 }

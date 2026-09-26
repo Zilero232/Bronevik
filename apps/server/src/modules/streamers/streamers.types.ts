@@ -1,26 +1,29 @@
-import type { CreateChallengeInput } from '@bronevik/schemas';
+import type {
+  CreateChallengeInput,
+  createOverlaySchema,
+  OverlayConfig,
+  overlayDataSchema,
+  OverlayKind,
+  previewOverlaySchema,
+  streamerChallengeSchema,
+  streamerIntegrationSchema,
+  streamerProfileSchema,
+  updateOverlaySchema,
+  upsertStreamerProfileSchema
+} from '@bronevik/schemas';
 import type { DonationAlertsDonationEvent, EventsListener } from '@donation-alerts/events';
 import type { ChatClient } from '@twurple/chat';
 import type { z } from 'zod';
 
 import type { Challenge, StreamerProvider } from '../../../generated';
-import type { CHAT_COPY } from './config';
-import type {
-  createOverlaySchema,
-  overlayDataSchema,
-  streamerChallengeSchema,
-  streamerIntegrationSchema,
-  streamerProfileSchema,
-  updateOverlaySchema,
-  upsertProfileSchema
-} from './dto/streamers.schemas';
-import type { ChallengeVerdict, ChatCommand } from './lib';
+import type { ChallengeVerdict, ChatCommand, ChatMessage, ChatValues } from './lib';
 
 export type StreamerProfileView = z.infer<typeof streamerProfileSchema>;
-export type UpsertProfileInput = z.infer<typeof upsertProfileSchema> & { userId: string };
+export type UpsertProfileInput = z.infer<typeof upsertStreamerProfileSchema> & { userId: string };
 export type CreateOverlayInput = z.infer<typeof createOverlaySchema> & { userId: string };
 export type UpdateOverlayInput = z.infer<typeof updateOverlaySchema> & { userId: string; id: string };
 export type OverlayData = z.infer<typeof overlayDataSchema>;
+export type PreviewOverlayRequest = z.infer<typeof previewOverlaySchema> & { userId: string };
 export type StreamerChallengeView = z.infer<typeof streamerChallengeSchema>;
 export type StreamerIntegrationView = z.infer<typeof streamerIntegrationSchema>;
 
@@ -108,6 +111,14 @@ export type StoreTokenInput = StoredToken & {
   externalId: string;
 };
 
+export type BuildOverlayDataInput = {
+  userId: string;
+  accountId: bigint | null;
+  kind: OverlayKind;
+  name: string;
+  config: OverlayConfig;
+};
+
 export type OverlayMoeInput = {
   accountId: bigint;
   tankId: number;
@@ -122,8 +133,6 @@ export type ActivateByStreamerInput = OwnedInput & {
   donorName: string | null;
 };
 
-type ChatCopy = (typeof CHAT_COPY)[keyof typeof CHAT_COPY];
-
 export type ChatReplyInput = {
   streamerUserId: string;
   command: ChatCommand;
@@ -131,8 +140,8 @@ export type ChatReplyInput = {
 
 export type ChatTextInput = {
   streamerUserId: string;
-  pick: (copy: ChatCopy) => string;
-  values: Record<string, number | string>;
+  message: ChatMessage;
+  values: ChatValues;
 };
 
 export type TwitchConnection = {

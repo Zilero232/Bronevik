@@ -1,38 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/v1/moe/{tankId}": {
-      "get": {
-        "operationId": "getModMarkThresholds",
-        "parameters": [
-          {
-            "name": "tankId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "maximum": 9007199254740991,
-              "exclusiveMinimum": true,
-              "type": "integer",
-              "minimum": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ModMoeThresholdsDto_Output"
-                }
-              }
-            }
-          }
-        },
-        "summary": "MoE thresholds in the shape the game mod reads; no API key needed",
-        "tags": ["v1-mod"]
-      }
-    },
     "/v1/players/{idOrNick}": {
       "get": {
         "operationId": "getPlayer",
@@ -64,7 +32,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -74,7 +42,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -84,7 +52,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -94,7 +62,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -141,7 +109,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -151,7 +119,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -161,7 +129,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -171,7 +139,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -342,7 +310,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -352,7 +320,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -362,7 +330,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -372,7 +340,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -458,7 +426,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -468,7 +436,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -478,7 +446,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -488,7 +456,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -535,7 +503,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -545,7 +513,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -555,7 +523,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -565,7 +533,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -634,7 +602,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -644,7 +612,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -654,7 +622,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -664,7 +632,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -721,7 +689,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -731,7 +699,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -741,7 +709,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -751,7 +719,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -923,7 +891,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -933,7 +901,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -943,7 +911,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -953,7 +921,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1038,7 +1006,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1048,7 +1016,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1058,7 +1026,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1068,7 +1036,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1135,7 +1103,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1145,7 +1113,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1155,7 +1123,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1165,7 +1133,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1244,7 +1212,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["p65", "p85", "p95", "p100", "master", "tier", "p95Delta30d"]
+              "enum": ["p65", "p85", "p95", "p100", "master", "tier", "p95Delta30d", "p95Change30d"]
             }
           },
           {
@@ -1316,7 +1284,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1326,7 +1294,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1336,7 +1304,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1346,7 +1314,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1416,7 +1384,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1426,7 +1394,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1436,7 +1404,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1446,7 +1414,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1522,7 +1490,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1532,7 +1500,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1542,7 +1510,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1552,7 +1520,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1679,7 +1647,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1689,7 +1657,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1699,7 +1667,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1709,7 +1677,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1756,7 +1724,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1766,7 +1734,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1776,7 +1744,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1786,7 +1754,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1833,7 +1801,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1843,7 +1811,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1853,7 +1821,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1863,7 +1831,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1932,7 +1900,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1942,7 +1910,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1952,7 +1920,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -1962,7 +1930,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -2091,7 +2059,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -2101,7 +2069,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -2111,7 +2079,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -2121,7 +2089,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorDto"
+                  "$ref": "#/components/schemas/V1ApiErrorDto"
                 }
               }
             }
@@ -2154,33 +2122,7 @@
       }
     },
     "schemas": {
-      "ModMoeThresholdsDto_Output": {
-        "type": "object",
-        "properties": {
-          "tank_id": {
-            "type": "integer",
-            "exclusiveMinimum": true,
-            "maximum": 9007199254740991,
-            "minimum": 0
-          },
-          "thresholds": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "minimum": 0
-            }
-          },
-          "updated_at": {
-            "type": "string"
-          },
-          "source": {
-            "type": "string"
-          }
-        },
-        "required": ["tank_id", "thresholds", "updated_at", "source"],
-        "additionalProperties": false
-      },
-      "ApiErrorDto": {
+      "V1ApiErrorDto": {
         "type": "object",
         "properties": {
           "error": {
@@ -2200,6 +2142,7 @@
               "PLAYER_NOT_FOUND",
               "CLAN_NOT_FOUND",
               "TANK_NOT_FOUND",
+              "ARMOR_MODEL_NOT_FOUND",
               "LESTA_UNAVAILABLE",
               "LESTA_ACCOUNT_HIDDEN",
               "API_KEY_INVALID",
@@ -2211,6 +2154,12 @@
               "PAYMENT_REQUIRED",
               "PAYMENT_FAILED",
               "SUBSCRIPTION_REQUIRED",
+              "PROMO_INVALID",
+              "PROMO_EXPIRED",
+              "PROMO_EXHAUSTED",
+              "PROMO_ALREADY_REDEEMED",
+              "PROMO_CHECKOUT_ONLY",
+              "PROMO_REDEEM_ONLY",
               "REPLAY_INVALID",
               "REPLAY_DUPLICATE"
             ]
@@ -5013,10 +4962,8 @@
             "additionalProperties": false
           },
           "description": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "type": "string",
+            "nullable": true
           },
           "specs": {
             "type": "object",

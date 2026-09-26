@@ -1,3 +1,4 @@
+import { sortBy } from 'remeda';
 import { match } from 'ts-pattern';
 
 import type { LeagueValueInput, RankedEntry, RankLeagueInput } from './league.types';
@@ -18,7 +19,7 @@ export const rankLeague = ({ stats, metric, minBattles }: RankLeagueInput): Rank
     value: needsBattles && row.battles < minBattles ? null : valueOf({ stats: row, metric })
   }));
 
-  const sorted = rows.sort((a, b) => (b.value ?? Number.NEGATIVE_INFINITY) - (a.value ?? Number.NEGATIVE_INFINITY) || b.battles - a.battles);
+  const sorted = sortBy(rows, [(row) => row.value ?? Number.NEGATIVE_INFINITY, 'desc'], [(row) => row.battles, 'desc']);
   let rank = 0;
   let previous: number | null | undefined;
 

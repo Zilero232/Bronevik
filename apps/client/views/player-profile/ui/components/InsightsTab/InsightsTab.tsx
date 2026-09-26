@@ -1,45 +1,35 @@
 'use client';
 
-import type { InsightsPeriod, PlayerInsights } from '@bronevik/schemas';
+import type { InsightsPeriod } from '@bronevik/schemas';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 
-import { SegmentedControl, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, SegmentedControl, Skeleton } from '@/ui-kit';
 
-import { PROFILE_PERIODS } from '../../../config';
-import { usePlayerInsights } from '../../../model/hooks';
-import { TabCard } from '../TabCard';
-import { TabState } from '../TabState';
+import { PLAYTIME } from '../../../config';
+import { useInsightsTab } from '../../../model/hooks';
+import { ProfilePanel } from '../ProfilePanel';
 import { GroupBreakdown, InsightTips, PlaytimeCard, TankInsightList } from './components';
 
 import s from './InsightsTab.module.scss';
 
-const hasInsights = ({ tips, byClass, byTier, weakTanks, strongTanks }: PlayerInsights) =>
-  [tips, byClass, byTier, weakTanks, strongTanks].some((list) => list.length > 0);
-
 export const InsightsTab = () => {
   const t = useTranslations('profile.insights');
-  const tProfile = useTranslations('profile');
   const tPeriods = useTranslations('periods');
-
-  const [period, setPeriod] = useState<InsightsPeriod>('overall');
-
-  const { data: insights, isPending, isError } = usePlayerInsights(period);
-
-  const options = PROFILE_PERIODS.map((value) => ({ value, label: value === 'overall' ? tProfile('overall') : tPeriods(value) }));
+  const { period, setPeriod, periodOptions, insights, isEmpty, isPending, isError, isRetrying, retry } = useInsightsTab();
 
   return (
     <div className={s.root}>
-      <TabCard
-        action={<SegmentedControl<InsightsPeriod> aria-label={tPeriods('label')} options={options} size='sm' value={period} onChange={setPeriod} />}
-        eyebrow={t('eyebrow')}
+      <ProfilePanel
+        action={
+          <SegmentedControl<InsightsPeriod> aria-label={tPeriods('label')} options={periodOptions} size='sm' value={period} onChange={setPeriod} />
+        }
         title={t('title')}
       >
-        {isError && <TabState kind='error' />}
-        {isPending && <Skeleton height={360} shape='block' />}
-        {insights && !hasInsights(insights) && <TabState kind='empty' />}
-        {insights && hasInsights(insights) && (
+        {isError && <ErrorState isCompact isRetrying={isRetrying} onRetry={retry} />}
+        {isPending && <Skeleton height={PLAYTIME.skeletonHeight} shape='block' />}
+        {isEmpty && <EmptyState isCompact title={t('empty')} />}
+        {insights && (
           <div className={s.body}>
             <InsightTips insights={insights} />
             <div className={s.pair}>
@@ -52,7 +42,7 @@ export const InsightsTab = () => {
             </div>
           </div>
         )}
-      </TabCard>
+      </ProfilePanel>
       <PlaytimeCard />
     </div>
   );

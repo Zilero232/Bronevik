@@ -1,12 +1,14 @@
 import { RefreshingAuthProvider as DonationAlertsAuthProvider, getAccessToken } from '@donation-alerts/auth';
 import { Injectable, Logger } from '@nestjs/common';
 import { exchangeCode, getTokenInfo } from '@twurple/auth';
+import { addSeconds } from 'date-fns';
 import { match } from 'ts-pattern';
 
 import type { StreamerProvider } from '../../../../generated';
 import type { OAuthCodeInput, OAuthStateInput, ProviderCallbackInput } from '../streamers.types';
 
 import { AppBadRequestException } from '../../../common/exceptions';
+import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { DONATION_ALERTS, INTEGRATIONS, NO_SCOPES, TWITCH } from '../config';
 import { IntegrationStoreService } from './integration-store.service';
@@ -59,7 +61,7 @@ export class IntegrationsService {
 
       return new URL(INTEGRATIONS.doneRedirectPath, webUrl).href;
     } catch (error) {
-      this.logger.warn(`${provider} connect failed for ${owner.userId}: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`${provider} connect failed for ${owner.userId}: ${errorMessage(error)}`);
 
       return new URL(INTEGRATIONS.failedRedirectPath, webUrl).href;
     }
@@ -78,7 +80,7 @@ export class IntegrationsService {
       externalId: String(externalId),
       accessToken: token.accessToken,
       refreshToken: token.refreshToken,
-      expiresAt: new Date(token.obtainmentTimestamp + token.expiresIn * 1000),
+      expiresAt: addSeconds(token.obtainmentTimestamp, token.expiresIn),
       scope: DONATION_ALERTS.scopes.join(' '),
       config: null
     });
@@ -99,7 +101,7 @@ export class IntegrationsService {
       externalId: info.userId,
       accessToken: token.accessToken,
       refreshToken: token.refreshToken,
-      expiresAt: token.expiresIn === null ? null : new Date(token.obtainmentTimestamp + token.expiresIn * 1000),
+      expiresAt: token.expiresIn === null ? null : addSeconds(token.obtainmentTimestamp, token.expiresIn),
       scope: token.scope.join(' '),
       config: { login: info.userName }
     });

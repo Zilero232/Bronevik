@@ -1,7 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  width: min(560px, 100vw);
+  width: min(520px, 100vw);
 }
 
 .body {
@@ -17,16 +17,20 @@
 }
 
 .block {
-  @include stack(var(--space-3));
+  @include stack(var(--space-2));
 }
 
 .heading {
-  @include hud-label;
+  @include label;
+
+  margin: 0;
 }
 
 .thresholds {
   display: grid;
-  gap: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin: 0;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 
   @include below(sm) {
@@ -35,18 +39,18 @@
 }
 
 .threshold {
-  @include plate(var(--chamfer-sm));
   @include stack(var(--space-1));
 
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-right: 1px solid var(--color-border);
 
-  &[data-key='p95'] {
-    @include plate(var(--chamfer-sm), var(--color-accent));
+  &:last-child {
+    border-right: none;
   }
 }
 
 .thresholdLabel {
-  @include hud-label;
+  @include label;
 
   display: inline-flex;
   align-items: center;
@@ -54,10 +58,13 @@
 }
 
 .thresholdValue {
-  @include numeric;
+  @include numeric(var(--num-md));
 
-  font-size: var(--text-lg);
-  font-weight: 700;
+  margin: 0;
+
+  .threshold[data-key='p95'] & {
+    color: var(--color-text);
+  }
 }
 
 .trend {

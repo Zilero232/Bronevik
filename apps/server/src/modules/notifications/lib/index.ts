@@ -4,7 +4,7 @@ export { JOB_SCHEDULES, registerJobSchedules } from './job-schedules';
 export type { JobSchedule } from './job-schedules';
 export { detectMarkGains, markPairKey } from './mark-gains';
 export type { MarkBattle } from './mark-gains';
-export { fillTemplate, renderDigest, renderNotification, resolveNotificationLocale } from './notification-copy';
+export { notificationText, renderDigest, renderNotification, resolveNotificationLocale } from './notification-copy';
 export type { NotificationLocale, RenderedNotification } from './notification-copy';
 export { quietDelayMs } from './quiet-hours';
 export { thresholdDrops } from './threshold-drops';

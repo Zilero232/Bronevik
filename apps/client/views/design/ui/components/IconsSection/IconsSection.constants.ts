@@ -1,8 +1,6 @@
 import type { IconGroup, MarkCount, MasteryLevel, TankClassVariant } from '@bronevik/icons';
 
-import type { TankIdentityData, TankImageSize } from '@/entities/tank/tank';
-
-import { MOCK_TANKS } from '@/shared/mocks';
+import type { TankImageSize } from '@/entities/tank/tank';
 
 export const ICON_SIZES = ['16', '24', '32', '48'] as const;
 
@@ -25,15 +23,11 @@ export const MASTERY_LEVELS = ['third', 'second', 'first', 'master'] as const sa
 
 export const MARK_COUNTS = [1, 2, 3] as const satisfies readonly MarkCount[];
 
-const [flagship] = MOCK_TANKS;
-
-const premium = MOCK_TANKS.find((tank) => tank.isPremium) ?? flagship;
-
-export const RENDER_SAMPLES: { key: string; size: TankImageSize; tank: TankIdentityData }[] = [
-  { key: 'big', size: 'big', tank: flagship },
-  { key: 'small', size: 'small', tank: flagship },
-  { key: 'contour', size: 'contour', tank: flagship },
-  { key: 'premium', size: 'big', tank: premium },
-  { key: 'fallback', size: 'big', tank: { ...premium, images: null } },
-  { key: 'fallback-row', size: 'contour', tank: { ...flagship, images: null } }
-];
+export const RENDER_SAMPLES = [
+  { key: 'big', size: 'big', source: 'flagship', withImages: true },
+  { key: 'small', size: 'small', source: 'flagship', withImages: true },
+  { key: 'contour', size: 'contour', source: 'flagship', withImages: true },
+  { key: 'premium', size: 'big', source: 'premium', withImages: true },
+  { key: 'fallback', size: 'big', source: 'premium', withImages: false },
+  { key: 'fallback-row', size: 'contour', source: 'flagship', withImages: false }
+] as const satisfies readonly { key: string; size: TankImageSize; source: 'flagship' | 'premium'; withImages: boolean }[];

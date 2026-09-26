@@ -5,18 +5,7 @@ export default eslint(
     typescript: true,
     react: true,
     jsxA11y: true,
-    ignores: [
-      '**/node_modules',
-      '**/.next',
-      '**/out',
-      '**/dist',
-      '**/generated',
-      '**/next-env.d.ts',
-
-      'apps/server/prisma/migrations',
-      'docs/**',
-      '**/*.md/**'
-    ]
+    ignores: ['**/node_modules', '**/.next', '**/out', '**/dist', '**/generated', '**/next-env.d.ts', 'docs/**', '**/*.md/**']
   },
 
   // The shared config applies these to every language it parses, and they throw

@@ -1,3 +1,3 @@
 export { GuessArena } from './GuessArena';
-export { GuessHero } from './GuessHero';
+export { GuessLegend } from './GuessLegend';
 export { GuessSkeleton } from './GuessSkeleton';

@@ -6,7 +6,7 @@
   backdrop-filter: blur(4px);
   background-color: var(--color-overlay);
   inset: 0;
-  transition: opacity var(--duration-base) ease;
+  transition: opacity var(--duration-fast) ease;
 
   &[data-starting-style],
   &[data-ending-style] {
@@ -15,7 +15,7 @@
 }
 
 .content {
-  @include plate(var(--chamfer-lg), var(--color-border-strong), var(--color-surface-raised));
+  @include popup-surface;
 
   position: fixed;
   z-index: calc(var(--z-overlay) + 1);
@@ -26,33 +26,29 @@
   max-width: 480px;
   max-height: calc(100dvh - 48px);
   flex-direction: column;
-  padding: var(--space-7);
-  box-shadow: var(--elevation-3);
-  gap: var(--space-5);
+  padding: var(--space-5);
+  gap: var(--space-4);
   overflow-y: auto;
   overscroll-behavior: contain;
   transform: translate(-50%, -50%);
-  transition:
-    opacity var(--duration-base) ease,
-    transform var(--duration-slow) var(--ease-out);
+  transition: opacity var(--duration-fast) ease;
 
   &[data-starting-style],
   &[data-ending-style] {
     opacity: 0;
-    transform: translate(-50%, -46%) scale(0.97);
   }
 
   @include below(md) {
-    padding: var(--space-5);
+    padding: var(--space-4);
   }
 }
 
 .close {
-  @include icon-button(30px);
+  @include icon-button(28px);
 
   position: absolute;
   top: var(--space-4);
-  right: var(--space-5);
+  right: var(--space-4);
 }
 
 .header {
@@ -62,7 +58,7 @@
 }
 
 .title {
-  @include display(var(--text-xl));
+  @include heading(var(--text-lg));
 }
 
 .description {

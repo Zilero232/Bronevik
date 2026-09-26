@@ -23,7 +23,7 @@ const toPlayerView = (player: ReplayPlayer): ReplayPlayerView | null => {
   };
 };
 
-export const readStoredSummary = (value: unknown) => {
+const readStoredSummary = (value: unknown) => {
   const parsed = replaySummarySchema.safeParse(value);
 
   return parsed.success ? parsed.data : null;

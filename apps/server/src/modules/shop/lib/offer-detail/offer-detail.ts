@@ -1,3 +1,5 @@
+import { unique } from 'remeda';
+
 import type { OfferDetail, OfferDiscount, ParseOfferDetailInput } from './offer-detail.types';
 
 import { latestDeadline, textLines } from '../../../../lib/scrape';
@@ -12,7 +14,7 @@ export const discountsOf = (lines: readonly string[]): OfferDiscount[] =>
     return found ? [{ percent: Number(found[1]), context: `${line} ${lines[index + 1] ?? ''}`.trim() }] : [];
   });
 
-export const bonusCodesOf = (lines: readonly string[]): string[] => [...new Set(lines.filter((line) => BONUS_CODE.pattern.test(line)))];
+export const bonusCodesOf = (lines: readonly string[]): string[] => unique(lines.filter((line) => BONUS_CODE.pattern.test(line)));
 
 export const parseOfferDetail = ({ $, publishedAt }: ParseOfferDetailInput): OfferDetail => {
   const lines = textLines($);

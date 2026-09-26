@@ -3,10 +3,9 @@
 .root {
   @include shell;
 
-  position: relative;
-  padding-block: var(--space-8) var(--space-11);
+  padding-block: var(--space-7) var(--space-8);
 
   @include below(md) {
-    padding-top: var(--space-6);
+    padding-top: var(--space-5);
   }
 }

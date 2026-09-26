@@ -3,9 +3,9 @@ import type { TankServerStatsRow } from '@bronevik/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { summarizeStats } from '../stats-summary';
-import { mockStatsRowsForTest } from './stats-summary.fixtures';
+import { statsRowsFixture } from './stats-summary.fixtures';
 
-const rows: TankServerStatsRow[] = mockStatsRowsForTest([
+const rows: TankServerStatsRow[] = statsRowsFixture([
   { battles: 100, winRateDiff: 1 },
   { battles: 300, winRateDiff: -2 },
   { battles: 50, winRateDiff: 4 }

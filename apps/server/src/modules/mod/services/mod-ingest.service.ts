@@ -1,5 +1,6 @@
 import { accountWn8 } from '@bronevik/ratings';
 import { Inject, Injectable } from '@nestjs/common';
+import { fromUnixTime } from 'date-fns';
 import { groupBy, sortBy, sumBy } from 'remeda';
 
 import type { WebhookEmitter } from '../../../core';
@@ -53,7 +54,7 @@ export class ModIngestService {
     const { accountId } = device;
     const tankId = event.vehicle.tank_id;
     const sessionId = event.session_id && countsForSession(event) ? sessionUuid({ accountId, sessionId: event.session_id }) : null;
-    const startedAt = new Date(event.arena_created_at * 1000);
+    const startedAt = fromUnixTime(event.arena_created_at);
     let previousMarks: number | null = null;
 
     try {

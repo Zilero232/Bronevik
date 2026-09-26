@@ -1,17 +1,18 @@
 import type { INestApplication } from '@nestjs/common';
-import type { OpenAPIObject } from '@nestjs/swagger';
+import type { OpenAPIObject, SwaggerDocumentOptions } from '@nestjs/swagger';
 
-export type PickPathsInput = {
-  document: OpenAPIObject;
-  prefix: string;
-};
+import type { OPENAPI } from './openapi.constants';
 
-export type ReachableSchemasInput = {
-  schemas: NonNullable<NonNullable<OpenAPIObject['components']>['schemas']>;
-  paths: OpenAPIObject['paths'];
-};
-
-export type SetupDocsInput = {
+export type PublicDocumentInput = {
   app: INestApplication;
+  include: NonNullable<SwaggerDocumentOptions['include']>;
+};
+
+export type SetupDocsInput = PublicDocumentInput & {
   internal: boolean;
+};
+
+export type RepairNullableInput = {
+  document: OpenAPIObject;
+  version: (typeof OPENAPI.versions)[keyof typeof OPENAPI.versions];
 };

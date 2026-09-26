@@ -9,6 +9,7 @@ import type { DeliverPayload, DigestPayload } from '../contracts';
 import type { ChannelAvailability, RoutingSettings } from '../lib';
 import type { ChannelSendInput, DeliverJob, DeliverToInput } from '../notifications.types';
 
+import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { isUniqueViolation, PrismaService, REDIS } from '../../../core';
 import { TelegramSenderService } from '../../telegram';
@@ -159,7 +160,7 @@ export class DeliveryService {
       await this.prisma.notification.update({ where: { id }, data: { sentAt: new Date(), failedAt: null } });
     } catch (error) {
       await this.prisma.notification.update({ where: { id }, data: { failedAt: new Date() } });
-      this.logger.warn(`${channel} delivery of ${dedupeKey} to ${userId} failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`${channel} delivery of ${dedupeKey} to ${userId} failed: ${errorMessage(error)}`);
 
       throw error;
     }

@@ -55,8 +55,8 @@ export const ATTENDANCE_MODES = {
 
 export const CLAN_WORKSPACE = {
   defaultEventHours: 2,
-  snapshotSlackMs: 2 * 86_400_000,
-  syncLookbackMs: 2 * 86_400_000,
+  snapshotSlackHours: 48,
+  syncLookbackHours: 48,
   reminderLeadMinutes: 30,
   inactiveDays: 7,
   reportDays: 7,

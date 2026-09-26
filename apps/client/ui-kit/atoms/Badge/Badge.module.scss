@@ -1,17 +1,18 @@
 .root {
   display: inline-flex;
+  height: 18px;
   align-items: center;
-  padding: 2px 8px;
+  padding: 0 6px;
   border: 1px solid var(--badge-border, transparent);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   background-color: var(--badge-bg);
   color: var(--badge-fg);
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: var(--text-2xs);
   font-weight: 600;
-  gap: 5px;
-  letter-spacing: 0.08em;
-  line-height: 1.5;
+  gap: 4px;
+  letter-spacing: 0.04em;
+  line-height: 1;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -25,13 +26,16 @@
 .accent {
   --badge-bg: var(--color-accent-soft);
   --badge-fg: var(--color-accent);
-  --badge-border: color-mix(in srgb, var(--color-accent) 30%, transparent);
 }
 
 .steel {
-  --badge-bg: var(--color-steel-soft);
+  --badge-bg: color-mix(in srgb, var(--color-steel) 12%, transparent);
   --badge-fg: var(--color-steel);
-  --badge-border: color-mix(in srgb, var(--color-steel) 30%, transparent);
+}
+
+.premium {
+  --badge-bg: color-mix(in srgb, var(--color-premium) 12%, transparent);
+  --badge-fg: var(--color-premium);
 }
 
 .success {
@@ -50,7 +54,6 @@
 }
 
 .solid {
-  --badge-bg: var(--color-accent);
-  --badge-fg: var(--color-accent-contrast);
-  --badge-border: transparent;
+  --badge-bg: var(--color-accent-soft);
+  --badge-fg: var(--color-accent);
 }

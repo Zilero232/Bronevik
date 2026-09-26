@@ -1,0 +1,86 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  width: 100%;
+}
+
+.field {
+  @include field-box;
+
+  display: flex;
+  height: 32px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  gap: var(--space-2);
+
+  .lg & {
+    height: 40px;
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+
+  .field[data-busy='true'] & {
+    color: var(--color-accent);
+  }
+}
+
+.input {
+  min-width: 0;
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-text-dim);
+  }
+
+  .lg & {
+    font-size: var(--text-md);
+  }
+}
+
+.popup {
+  @include popup-surface;
+
+  position: absolute;
+  z-index: var(--z-popover);
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.list {
+  overflow: auto;
+  max-height: 320px;
+}
+
+.item {
+  display: flex;
+  min-height: var(--row-h);
+  align-items: center;
+  padding: 0 var(--space-3);
+  cursor: pointer;
+
+  &[data-selected='true'] {
+    background-color: var(--color-surface-hover);
+    box-shadow: inset 2px 0 0 var(--color-accent);
+  }
+}
+
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+}

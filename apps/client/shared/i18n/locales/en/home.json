@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "title": "Mir Tankov statistics — Bronevik",
+    "description": "Mir Tankov players, tanks, marks of excellence, leaderboards and clans from the Lesta Games API."
+  },
+  "head": {
+    "title": "Mir Tankov statistics",
+    "description": "Players, tanks, marks and clans from the Lesta Games API",
+    "recent": "Recently viewed"
+  },
+  "status": {
+    "title": "Server",
+    "versionNumber": "Game version",
+    "version": "Update released",
+    "online": "Server online",
+    "activeEstimate": "Active players, last hour",
+    "estimateHint": "Our estimate from tracked players, not the server online count",
+    "tracked": "Tracked players",
+    "activity": "Activity over 24 hours",
+    "unknown": "no data"
+  },
+  "garage": {
+    "title": "Popular vehicles",
+    "period": "this week",
+    "all": "All tanks",
+    "empty": "No battle data for this week"
+  },
+  "strongTanks": {
+    "title": "Strongest tanks",
+    "all": "All tanks",
+    "empty": "No tanks with enough battles"
+  },
+  "topPlayers": {
+    "title": "Best players this week",
+    "all": "All leaderboards",
+    "empty": "No players with enough battles"
+  },
+  "marks": {
+    "title": "Marks: threshold movement",
+    "period": "last 30 days",
+    "all": "All thresholds",
+    "empty": "No mark thresholds yet"
+  },
+  "news": {
+    "title": "Game news",
+    "source": "tanki.su",
+    "empty": "No news yet"
+  },
+  "clans": {
+    "title": "Clans: activity",
+    "period": "this week",
+    "all": "All clans",
+    "empty": "No clan data"
+  },
+  "columns": {
+    "tank": "Tank",
+    "winRate": "Win rate",
+    "winRateDiff": "Δ win rate",
+    "battles": "Battles",
+    "player": "Player",
+    "wn8": "WN8",
+    "broneIndex": "Bronya Index",
+    "avgDamage": "Damage",
+    "threeMarks": "3 marks",
+    "delta30d": "Δ 30 d",
+    "clan": "Clan",
+    "activeMembers": "Active",
+    "members": "Members",
+    "stronghold": "Stronghold"
+  }
+}

@@ -20,9 +20,7 @@ export const OverlayObsHint = ({ publicUrl, layout }: OverlayObsHintProps) => {
       <h4 className={s.title}>{t('title')}</h4>
       <ol className={s.steps}>
         {OBS_STEPS.map((step) => (
-          <li key={step} className={s.step}>
-            {t(`steps.${step}`, { width, height })}
-          </li>
+          <li key={step}>{t(`steps.${step}`, { width, height })}</li>
         ))}
       </ol>
     </section>

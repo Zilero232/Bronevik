@@ -5,12 +5,15 @@ import { ApiClient } from '@donation-alerts/api';
 import { getTokenExpiryDate, RefreshingAuthProvider } from '@donation-alerts/auth';
 import { EventsClient } from '@donation-alerts/events';
 import { Injectable, Logger } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
+import { differenceInSeconds } from 'date-fns';
 
 import type { StreamerIntegration } from '../../../../generated';
 import type { DonationConnection, DonationEventInput } from '../streamers.types';
 
+import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { DONATION_ALERTS, INTEGRATIONS } from '../config';
+import { CHAT_COPY, DONATION_ALERTS, INTEGRATIONS } from '../config';
 import { ChallengeService } from './challenge.service';
 import { ChatAnnouncerService } from './chat-announcer.service';
 import { IntegrationStoreService } from './integration-store.service';
@@ -23,7 +26,6 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
   private readonly connections = new Map<number, DonationConnection>();
   private auth: RefreshingAuthProvider | null = null;
   private events: EventsClient | null = null;
-  private timer: NodeJS.Timeout | null = null;
 
   constructor(
     private readonly config: AppConfigService,
@@ -63,19 +65,19 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
     this.events = new EventsClient({ apiClient: new ApiClient({ authProvider: this.auth }) });
 
     void this.sync();
-    this.timer = setInterval(() => void this.sync(), INTEGRATIONS.syncIntervalMs);
   }
 
   async onModuleDestroy(): Promise<void> {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-
     await Promise.allSettled([...this.connections.values()].map(({ listener }) => listener.remove()));
     this.connections.clear();
   }
 
+  @Interval(INTEGRATIONS.syncIntervalMs)
   async sync(): Promise<void> {
+    if (!this.auth) {
+      return;
+    }
+
     try {
       const integrations = await this.store.byProvider('donationAlerts');
       const active = new Set(integrations.map((integration) => Number(integration.externalId)));
@@ -94,7 +96,7 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
         }
       }
     } catch (error) {
-      this.logger.warn(`DonationAlerts sync failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`DonationAlerts sync failed: ${errorMessage(error)}`);
     }
   }
 
@@ -104,13 +106,14 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
     }
 
     const externalId = Number(integration.externalId);
-    const expiresIn = integration.tokenExpiresAt ? Math.max(0, Math.floor((integration.tokenExpiresAt.getTime() - Date.now()) / 1000)) : 0;
+    const now = new Date();
+    const expiresIn = integration.tokenExpiresAt ? Math.max(0, differenceInSeconds(integration.tokenExpiresAt, now)) : 0;
 
     this.auth.addUser(externalId, {
       accessToken: integration.accessToken,
       refreshToken: integration.refreshToken,
       expiresIn,
-      obtainmentTimestamp: Date.now(),
+      obtainmentTimestamp: now.getTime(),
       scopes: [...DONATION_ALERTS.scopes]
     });
 
@@ -138,13 +141,13 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
 
       const text = await this.stats.text({
         streamerUserId,
-        pick: (copy) => copy.challengeActive,
+        message: CHAT_COPY.messages.challengeActive,
         values: { title: challenge.title, donor: challenge.donorName ?? donation.username }
       });
 
       await Promise.all([this.announcer.announce({ streamerUserId, text }), this.publisher.publish(challenge.accountId)]);
     } catch (error) {
-      this.logger.warn(`donation ${donation.id} was not processed: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`donation ${donation.id} was not processed: ${errorMessage(error)}`);
     }
   }
 }

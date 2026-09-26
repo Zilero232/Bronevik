@@ -1,0 +1,31 @@
+{
+  "loadErrorTitle": "The stats server is not responding",
+  "loadErrorDescription": "Check your connection and try again.",
+  "retry": "Retry",
+  "copy": "Copy",
+  "copied": "Copied",
+  "show": "Show",
+  "hide": "Hide",
+  "close": "Close",
+  "language": "Language",
+  "themeDark": "Switch to dark theme",
+  "themeLight": "Switch to light theme",
+  "empty": "No data",
+  "dataSource": "Data: Lesta Games API",
+  "gameVersion": "Update {version}",
+  "gameVersionHint": "Current «Мир танков» version",
+  "apiStatus": {
+    "ok": "Lesta API: up",
+    "degraded": "Lesta API: slow",
+    "down": "Lesta API: down",
+    "unknown": "Lesta API: no data"
+  },
+  "breadcrumbs": "Breadcrumbs",
+  "tier": "Tier {tier}",
+  "premium": "Premium",
+  "elite": "Elite",
+  "sortAscending": "ascending",
+  "sortDescending": "descending",
+  "more": "More",
+  "updated": "updated"
+}

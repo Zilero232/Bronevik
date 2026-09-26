@@ -5,7 +5,7 @@ dist
 generated
 next-env.d.ts
 bun.lock
-apps/server/prisma/migrations
+**/_tests/fixtures/**/*.html
 
 .agents
 .claude

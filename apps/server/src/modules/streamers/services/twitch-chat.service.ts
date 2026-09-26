@@ -1,13 +1,15 @@
 import type { OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
 
 import { Injectable, Logger } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
 import { RefreshingAuthProvider } from '@twurple/auth';
 import { ChatClient } from '@twurple/chat';
+import { addSeconds, differenceInSeconds } from 'date-fns';
 
 import type { StreamerIntegration } from '../../../../generated';
 import type { ChallengeAnnouncement, ChatAnnouncer, ChatMessageInput, TwitchConnection } from '../streamers.types';
 
-import { readRecord } from '../../../common/lib';
+import { errorMessage, readRecord } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { INTEGRATIONS, TWITCH } from '../config';
 import { parseChatCommand } from '../lib';
@@ -20,7 +22,6 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
   private readonly logger = new Logger(TwitchChatService.name);
   private readonly connections = new Map<string, TwitchConnection>();
   private auth: RefreshingAuthProvider | null = null;
-  private timer: NodeJS.Timeout | null = null;
 
   constructor(
     private readonly config: AppConfigService,
@@ -50,19 +51,14 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
         externalId,
         accessToken: token.accessToken,
         refreshToken: token.refreshToken,
-        expiresAt: token.expiresIn === null ? null : new Date(token.obtainmentTimestamp + token.expiresIn * 1000)
+        expiresAt: token.expiresIn === null ? null : addSeconds(token.obtainmentTimestamp, token.expiresIn)
       });
     });
 
     void this.sync();
-    this.timer = setInterval(() => void this.sync(), INTEGRATIONS.syncIntervalMs);
   }
 
   onModuleDestroy(): void {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-
     for (const { client } of this.connections.values()) {
       client.quit();
     }
@@ -78,7 +74,12 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
     }
   }
 
+  @Interval(INTEGRATIONS.syncIntervalMs)
   async sync(): Promise<void> {
+    if (!this.auth) {
+      return;
+    }
+
     try {
       const integrations = await this.store.byProvider('twitch');
       const active = new Set(integrations.map((integration) => integration.userId));
@@ -97,7 +98,7 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
         }
       }
     } catch (error) {
-      this.logger.warn(`twitch chat sync failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`twitch chat sync failed: ${errorMessage(error)}`);
     }
   }
 
@@ -109,11 +110,12 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
     }
 
     const intent = `${TWITCH.intentPrefix}${integration.externalId}`;
-    const expiresIn = integration.tokenExpiresAt ? Math.max(0, Math.floor((integration.tokenExpiresAt.getTime() - Date.now()) / 1000)) : null;
+    const now = new Date();
+    const expiresIn = integration.tokenExpiresAt ? Math.max(0, differenceInSeconds(integration.tokenExpiresAt, now)) : null;
 
     this.auth.addUser(
       integration.externalId,
-      { accessToken: integration.accessToken, refreshToken: integration.refreshToken, expiresIn, obtainmentTimestamp: Date.now() },
+      { accessToken: integration.accessToken, refreshToken: integration.refreshToken, expiresIn, obtainmentTimestamp: now.getTime() },
       [intent]
     );
 
@@ -141,7 +143,7 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
         await client.say(channel, answer);
       }
     } catch (error) {
-      this.logger.warn(`twitch !${command} failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`twitch !${command} failed: ${errorMessage(error)}`);
     }
   }
 }

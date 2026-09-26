@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { getPushKey, subscribePush, unsubscribePush } from '@/shared/api/notifications';
-import { env } from '@/shared/config';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { currentPushSubscription, INITIAL_PUSH_BROWSER, inspectPushBrowser, subscribeBrowserPush } from '../../api/push-browser';
@@ -22,7 +21,6 @@ export const usePushSubscription = () => {
   }, []);
 
   const publicKey = pushKey?.publicKey;
-  const isMock = env.NEXT_PUBLIC_USE_MOCKS;
 
   const subscribe = useMutation({
     mutationFn: async () => {
@@ -34,9 +32,7 @@ export const usePushSubscription = () => {
         return false;
       }
 
-      if (!isMock) {
-        await subscribePush(await subscribeBrowserPush(publicKey));
-      }
+      await subscribePush(await subscribeBrowserPush(publicKey));
 
       return true;
     },
@@ -55,7 +51,7 @@ export const usePushSubscription = () => {
 
   const unsubscribe = useMutation({
     mutationFn: async () => {
-      const subscription = isMock ? null : await currentPushSubscription();
+      const subscription = await currentPushSubscription();
 
       if (subscription) {
         await unsubscribePush({ endpoint: subscription.endpoint });
@@ -71,7 +67,6 @@ export const usePushSubscription = () => {
 
   return {
     status: resolvePushStatus({ ...browser, publicKey }),
-    isMock,
     subscribe,
     unsubscribe
   };

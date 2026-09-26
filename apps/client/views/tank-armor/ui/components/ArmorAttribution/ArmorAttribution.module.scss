@@ -1,0 +1,28 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  padding: var(--space-4) var(--space-5);
+  border-left: 2px solid var(--color-steel);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+
+  @include stack(var(--space-2));
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    color: var(--color-accent);
+    text-underline-offset: 2px;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+}
+
+.note {
+  color: var(--color-text-muted);
+}

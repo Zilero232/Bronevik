@@ -3,9 +3,9 @@
 import { Avatar as BaseAvatar } from '@base-ui/react/avatar';
 import { clsx } from 'clsx';
 
-import type { AvatarProps } from './Avatar.types';
+import { avatarHue, avatarInitials } from '@/shared/lib';
 
-import { avatarHue, avatarInitials } from './Avatar.helpers';
+import type { AvatarProps } from './Avatar.types';
 
 import s from './Avatar.module.scss';
 

@@ -10,6 +10,7 @@ import type { PrismaService } from '../../../../core';
 import type { NotificationService } from '../../../notifications';
 import type { BonusCodeService } from '../bonus-code.service';
 
+import { Prisma } from '../../../../../generated';
 import { SOURCES } from '../../../../config';
 import { crawlPages, parseTankiListing } from '../../../../lib/scrape';
 import { OFFER_SCRAPE } from '../../config';
@@ -107,6 +108,18 @@ describe('OfferScrapeService.run', () => {
     expect(bonusCodes.discover).toHaveBeenCalledWith(
       expect.objectContaining({ source: OFFER_SCRAPE.source, sourceUrl: detailItem?.url, expiresAt: detail.endsAt })
     );
+  });
+
+  it('skips an offer another run already stored and keeps going with the rest', async () => {
+    const { service, prisma, notifications } = createService();
+
+    prisma.premiumOffer.create.mockRejectedValueOnce(new Prisma.PrismaClientKnownRequestError('duplicate', { code: 'P2002', clientVersion: 'test' }));
+
+    const summary = await service.run(now);
+
+    expect(prisma.premiumOffer.create).toHaveBeenCalledTimes(listing.length - 1);
+    expect(summary.created).toBe(listing.length - 1);
+    expect(notifications.tankDiscounted).not.toHaveBeenCalled();
   });
 
   it('creates nothing and skips the vehicle lookup when the listing is unavailable', async () => {

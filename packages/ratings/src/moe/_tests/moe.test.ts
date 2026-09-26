@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { MoeThresholds } from '..';
 
-import { MOE, moeCombinedDamage, moeDamageForPercent, moeMarks, moePercentForDamage, projectMoeBattles, simulateMoe } from '..';
+import { MOE, moeCombinedDamage, moeDamageForPercent, moeMarks, moePercentForDamage, projectMoeBattles, simulateMoe, toMoeThresholds } from '..';
 
 const THRESHOLDS: MoeThresholds = { oneMark: 2400, twoMarks: 3100, threeMarks: 3700 };
 
@@ -71,5 +71,16 @@ describe('projectMoeBattles', () => {
       projectMoeBattles({ currentPercent: 50, targetPercent: 85, averageCombinedDamage, thresholds: THRESHOLDS }).battles ?? Number.POSITIVE_INFINITY;
 
     expect(project(4500)).toBeLessThan(project(3500));
+  });
+
+  it('maps API percentile thresholds onto mark thresholds', () => {
+    expect(toMoeThresholds({ p65: 2400, p85: 3100, p95: 3700, p100: 4300 })).toEqual({
+      oneMark: 2400,
+      twoMarks: 3100,
+      threeMarks: 3700,
+      hundredPercent: 4300
+    });
+
+    expect(toMoeThresholds({ p65: 2400, p85: 3100, p95: 3700, p100: null }).hundredPercent).toBeUndefined();
   });
 });

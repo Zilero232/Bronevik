@@ -1,5 +1,6 @@
-export { useLinkedAccounts } from './use-linked-accounts';
+export { useMiniAppPage } from './use-mini-app-page';
 export { useMiniAppSignIn } from './use-mini-app-sign-in';
+export { useMiniDashboard } from './use-mini-dashboard';
 export { usePlayerDigest } from './use-player-digest';
 export { useTelegramEnv } from './use-telegram-env';
 export { useTelegramSdk } from './use-telegram-sdk';

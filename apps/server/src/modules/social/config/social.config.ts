@@ -64,7 +64,9 @@ export const SIGNATURE = {
   foreground: '#f3f1ea',
   muted: '#9aa0a6',
   accent: '#ff7a1a',
-  brand: 'bronevik.app'
+  brand: 'bronevik.app',
+  locale: 'ru',
+  missing: '—'
 } as const;
 
 export const TIER_COLORS = {

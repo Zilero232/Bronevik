@@ -1,13 +1,13 @@
 import type { PromoCheckInput, PromoRejection } from './promo-check.types';
 
-import { PLUS_PRODUCT } from '../../config';
+import { PLUS_SUBSCRIPTION } from '../../config';
 
 export const promoRejection = ({ promo, now, alreadyRedeemed }: PromoCheckInput): PromoRejection | null => {
   if (!promo) {
     return 'unknown';
   }
 
-  if (promo.product !== null && promo.product !== PLUS_PRODUCT) {
+  if (promo.product !== null && promo.product !== PLUS_SUBSCRIPTION.product) {
     return 'wrongProduct';
   }
 

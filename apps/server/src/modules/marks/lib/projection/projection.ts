@@ -1,4 +1,4 @@
-import { MOE, projectMoeBattles } from '@bronevik/ratings';
+import { MOE, projectMoeBattles, toMoeThresholds } from '@bronevik/ratings';
 
 import type { ProjectMarksInput } from './projection.types';
 
@@ -14,12 +14,7 @@ export const projectMarks = ({ thresholds, currentPercent, targetMarks, avgDamag
       currentPercent: currentPercent ?? 0,
       targetPercent,
       averageCombinedDamage: avgDamage,
-      thresholds: {
-        oneMark: thresholds.p65,
-        twoMarks: thresholds.p85,
-        threeMarks: thresholds.p95,
-        ...(thresholds.p100 !== null && thresholds.p100 > thresholds.p95 ? { hundredPercent: thresholds.p100 } : {})
-      }
+      thresholds: toMoeThresholds({ ...thresholds, p100: thresholds.p100 !== null && thresholds.p100 > thresholds.p95 ? thresholds.p100 : null })
     });
 
     return battles;

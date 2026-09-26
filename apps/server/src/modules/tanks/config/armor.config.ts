@@ -1,0 +1,1 @@
+export const ARMOR_STORAGE = 'ARMOR_STORAGE';

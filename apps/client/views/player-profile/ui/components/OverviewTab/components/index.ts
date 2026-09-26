@@ -1,4 +1,4 @@
-export { ActivityCard } from './ActivityCard';
-export { HighlightList } from './HighlightList';
-export { RatingHistoryCard } from './RatingHistoryCard';
-export { TankHighlightsCard } from './TankHighlightsCard';
+export { ActivityPanel } from './ActivityPanel';
+export { FavoriteTanksPanel } from './FavoriteTanksPanel';
+export { MarksPanel } from './MarksPanel';
+export { PeriodRatingsPanel } from './PeriodRatingsPanel';

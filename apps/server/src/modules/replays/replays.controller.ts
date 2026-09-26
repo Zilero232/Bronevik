@@ -14,7 +14,6 @@ import {
   UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AllowAnonymous, OptionalAuth } from '@thallesp/nestjs-better-auth';
@@ -24,7 +23,7 @@ import type { UploadedReplayFile } from './replays.types';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { MOD_DEVICE } from '../mod';
-import { REPLAY_UPLOAD } from './config';
+import { REPLAY_UPLOAD, replayFileInterceptor } from './config';
 import {
   BestOfWeekDto,
   BestOfWeekQueryDto,
@@ -43,8 +42,6 @@ import {
 } from './dto';
 import { HeatmapService, ReplayOwnerService, ReplayQueryService, ReplayUploadService } from './services';
 
-const fileInterceptor = FileInterceptor(REPLAY_UPLOAD.field, { limits: { fileSize: REPLAY_UPLOAD.maxBytes, files: 1 } });
-
 @ApiTags('replays')
 @Controller('replays')
 export class ReplaysController {
@@ -57,7 +54,7 @@ export class ReplaysController {
 
   @Post()
   @Throttle({ default: REPLAY_UPLOAD.userThrottle })
-  @UseInterceptors(fileInterceptor)
+  @UseInterceptors(replayFileInterceptor)
   @ApiConsumes('multipart/form-data')
   @ZodResponse({ type: UploadedReplayDto, status: HttpStatus.CREATED })
   upload(@CurrentUserId() userId: string, @UploadedFile() file: UploadedReplayFile | undefined, @Body() { visibility }: UploadReplayDto) {
@@ -67,7 +64,7 @@ export class ReplaysController {
   @AllowAnonymous()
   @Post('mod')
   @Throttle({ default: REPLAY_UPLOAD.modThrottle })
-  @UseInterceptors(fileInterceptor)
+  @UseInterceptors(replayFileInterceptor)
   @ApiConsumes('multipart/form-data')
   @ZodResponse({ type: UploadedReplayDto, status: HttpStatus.CREATED })
   uploadFromMod(

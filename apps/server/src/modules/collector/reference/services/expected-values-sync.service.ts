@@ -1,6 +1,7 @@
 import { parseXvmExpectedValues } from '@bronevik/ratings';
 import { Injectable } from '@nestjs/common';
 
+import { isoDay } from '../../../../common/lib';
 import { SOURCES } from '../../../../config';
 import { PrismaService } from '../../../../core';
 import { http } from '../../../../lib/http';
@@ -28,6 +29,6 @@ export class ExpectedValuesSyncService {
 
     const { count } = await this.prisma.wn8ExpectedValue.createMany({ data: rows, skipDuplicates: true });
 
-    return { date: date.toISOString().slice(0, 10), vehicles: rows.length, inserted: count };
+    return { date: isoDay(date), vehicles: rows.length, inserted: count };
   }
 }

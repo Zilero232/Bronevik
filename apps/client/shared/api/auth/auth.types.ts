@@ -12,6 +12,11 @@ export type TelegramWidgetConfig = {
   enabled: boolean;
 };
 
+export type TelegramWebAppSession = {
+  token: string;
+  user: { id: string; name: string };
+};
+
 export type LestaStartInput = {
   callbackURL: string;
 };

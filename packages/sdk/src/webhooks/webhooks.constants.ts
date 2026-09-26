@@ -1,8 +1,6 @@
-export const WEBHOOK_SIGNATURE = {
-  scheme: 'sha256=',
-  signatureHeader: 'x-bronevik-signature',
-  timestampHeader: 'x-bronevik-timestamp',
-  eventHeader: 'x-bronevik-event',
-  deliveryHeader: 'x-bronevik-delivery',
-  toleranceSec: 300
+export const WEBHOOK_HEADERS = {
+  id: 'webhook-id',
+  timestamp: 'webhook-timestamp',
+  signature: 'webhook-signature',
+  event: 'x-bronevik-event'
 } as const;

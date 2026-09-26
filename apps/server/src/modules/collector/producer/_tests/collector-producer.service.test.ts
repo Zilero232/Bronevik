@@ -3,7 +3,7 @@ import type { Queue } from 'bullmq';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import { LESTA_BATCH_SIZE } from '../../../../lib/lesta';
+import { LESTA_API } from '../../../../lib/lesta';
 import { ENROL_PRIORITY, JOB } from '../../contracts';
 import { CollectorProducerService } from '../collector-producer.service';
 
@@ -43,14 +43,14 @@ describe('CollectorProducerService', () => {
 
   it('splits a poll into batches the Lesta API accepts', async () => {
     const { pollQueue, producer } = createProducer();
-    const accountIds = Array.from({ length: LESTA_BATCH_SIZE * 2 + 1 }, (_, index) => index + 1);
+    const accountIds = Array.from({ length: LESTA_API.batchSize * 2 + 1 }, (_, index) => index + 1);
 
     await producer.poll({ accountIds });
 
     const [jobs] = pollQueue.addBulk.mock.calls[0] ?? [];
 
     expect(jobs).toHaveLength(3);
-    expect(jobs?.every((job) => job.data.accountIds.length <= LESTA_BATCH_SIZE)).toBe(true);
+    expect(jobs?.every((job) => job.data.accountIds.length <= LESTA_API.batchSize)).toBe(true);
   });
 
   it('swallows a queue failure so the request that triggered it still succeeds', async () => {

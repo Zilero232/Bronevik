@@ -1,10 +1,6 @@
-import type { LeaderboardScope, RatingKind, RatingPeriod, VehicleType } from '@bronevik/schemas';
+import type { LeaderboardScope, RatingKind, RatingPeriod, VehicleSummary, VehicleType } from '@bronevik/schemas';
 
-import type { TankIdentityData } from '@/entities/tank/tank';
-
-export type TopTank = TankIdentityData & {
-  tankId: number;
-};
+export type TopTank = VehicleSummary;
 
 export type TopFilterState = {
   scope: LeaderboardScope;

@@ -4,6 +4,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { defer, from, interval, map, merge, Observable, startWith, switchMap } from 'rxjs';
 
+import { errorMessage } from '../../../common/lib';
 import { REDIS } from '../../../core';
 import { OVERLAY } from '../config';
 import { OverlayDataService } from './overlay-data.service';
@@ -56,7 +57,7 @@ export class OverlayStreamService implements OnModuleDestroy {
         void this.connection()
           .subscribe(channel)
           .catch((error: unknown) => {
-            this.logger.warn(`overlay channel ${channel} not subscribed: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.warn(`overlay channel ${channel} not subscribed: ${errorMessage(error)}`);
           });
       }
 

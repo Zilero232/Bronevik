@@ -1,3 +1,5 @@
+import { unique } from 'remeda';
+
 import { NEWS_ENRICH } from '../../config';
 
 export const patchVersion = (title: string): string | null => NEWS_ENRICH.versionPattern.exec(title)?.[1] ?? null;
@@ -7,5 +9,5 @@ export const isPatchNotes = (title: string): boolean => NEWS_ENRICH.patchKind.te
 export const versionCandidates = (version: string): string[] => {
   const parts = version.split('.');
 
-  return [...new Set([version, [...parts, ...Array.from<string>({ length: Math.max(0, 4 - parts.length) }).fill('0')].join('.')])];
+  return unique([version, [...parts, ...Array.from<string>({ length: Math.max(0, 4 - parts.length) }).fill('0')].join('.')]);
 };

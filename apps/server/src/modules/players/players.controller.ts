@@ -10,6 +10,7 @@ import {
   ActivityQueryDto,
   InsightsQueryDto,
   NicknameHistoryDto,
+  PlayerAchievementsDto,
   PlayerInsightsDto,
   PlayerLookupParamsDto,
   PlayerMarksDto,
@@ -28,6 +29,7 @@ import {
   TimeSeriesQueryDto
 } from './dto';
 import {
+  PlayerAchievementsService,
   PlayerHistoryService,
   PlayerInsightsService,
   PlayerMarksService,
@@ -53,7 +55,8 @@ export class PlayersController {
     private readonly marksService: PlayerMarksService,
     private readonly insightsService: PlayerInsightsService,
     private readonly playtimeService: PlayerPlaytimeService,
-    private readonly views: PlayerViewsService
+    private readonly views: PlayerViewsService,
+    private readonly achievementsService: PlayerAchievementsService
   ) {}
 
   @Get('popular')
@@ -135,6 +138,15 @@ export class PlayersController {
     const accountId = await this.resolver.ensure(BigInt(id));
 
     return this.insightsService.insights({ accountId, period });
+  }
+
+  @Get(':idOrNick/achievements')
+  @CacheTTL(CACHE_TTL.player)
+  @ZodResponse({ type: PlayerAchievementsDto })
+  async achievements(@Param() { idOrNick }: PlayerLookupParamsDto) {
+    const accountId = await this.resolver.resolve(idOrNick);
+
+    return this.achievementsService.achievements(accountId);
   }
 
   @Get(':id/playtime')

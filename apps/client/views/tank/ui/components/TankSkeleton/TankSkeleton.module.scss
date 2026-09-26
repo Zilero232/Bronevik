@@ -1,25 +1,18 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include shell;
-  @include stack(var(--space-9));
-
-  padding-top: var(--space-9);
-}
-
-.hero {
   display: grid;
-  align-items: end;
-  gap: var(--space-8);
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-7);
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
 
   @include below(3xl) {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.copy {
-  @include stack(var(--space-4));
+.garage {
+  @include stack(var(--space-3));
 
   min-width: 0;
 
@@ -28,12 +21,6 @@
   }
 }
 
-.specs {
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.tiles {
-  @include tile-grid;
+.params {
+  @include stack(var(--space-2));
 }

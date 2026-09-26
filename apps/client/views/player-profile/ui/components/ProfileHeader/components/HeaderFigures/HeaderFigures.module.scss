@@ -1,0 +1,11 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  align-content: center;
+  border-left: 1px solid var(--color-border);
+
+  @include below(3xl) {
+    border-top: 1px solid var(--color-border);
+    border-left: none;
+  }
+}

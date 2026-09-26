@@ -1,1 +1,0 @@
-export { PatchEntryCard } from './PatchEntryCard';

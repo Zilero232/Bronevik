@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "title": "Tank statistics",
+    "description": "Win rate, damage, WR diff and popularity of every tank on the server."
+  },
+  "source": "Data: Lesta Games API",
+  "head": {
+    "title": "Tank statistics",
+    "description": "Win rate, damage and popularity of Mir Tankov vehicles in random battles.",
+    "tanks": "Tanks in the sample",
+    "battles": "Battles in the period",
+    "strongest": "Top by WR diff",
+    "noLeader": "No data"
+  },
+  "compare": {
+    "meta": {
+      "title": "Tank comparison",
+      "description": "Up to six tanks side by side with the best values highlighted."
+    },
+    "head": {
+      "title": "Tank comparison",
+      "description": "Up to six Mir Tankov vehicles side by side: top-configuration specs and 7-day server statistics."
+    },
+    "dock": {
+      "count": "{count} of {max}",
+      "add": "Add a tank",
+      "full": "All {max} slots are taken. Remove a tank to add another.",
+      "copy": "Copy link",
+      "copied": "Comparison link copied",
+      "copyFailed": "Could not copy the link",
+      "clear": "Clear"
+    },
+    "presets": {
+      "title": "Ready-made sets",
+      "apply": "Compare",
+      "loading": "Loading…",
+      "failed": "Could not load the set",
+      "items": {
+        "heavyX": {
+          "title": "Tier X heavies",
+          "hint": "The backbone of random battles — who holds a line best"
+        },
+        "mediumX": {
+          "title": "Tier X mediums",
+          "hint": "Speed, DPM and view range of the top mediums"
+        },
+        "tdX": {
+          "title": "Tier X tank destroyers",
+          "hint": "Alpha, penetration and camouflage of the hunters"
+        },
+        "premiumVIII": {
+          "title": "Tier VIII premiums",
+          "hint": "The most popular premium tanks for grinding credits"
+        }
+      }
+    },
+    "board": {
+      "label": "Tank comparison table",
+      "count": "{count, plural, one {# tank} other {# tanks}}",
+      "best": "Best value",
+      "remove": "Remove {name} from the comparison",
+      "addMore": "Add at least one more tank.",
+      "stats": "Server, 7 days",
+      "errorTitle": "Could not load the comparison",
+      "notFoundTitle": "No such tanks",
+      "notFoundDescription": "The tanks in the link are not in our database. Clear the comparison and pick vehicles again.",
+      "clear": "Clear comparison",
+      "statsKeys": {
+        "winRate": "Win rate",
+        "winRateDiff": "WR diff",
+        "avgDamage": "Average damage",
+        "battles": "Battles"
+      }
+    }
+  },
+  "filters": {
+    "tier": "Tier",
+    "type": "Class",
+    "nation": "Nation",
+    "premium": "Vehicle type",
+    "premiumOptions": {
+      "all": "All",
+      "regular": "Tech tree",
+      "premium": "Premium"
+    },
+    "reset": "Reset"
+  },
+  "picker": {
+    "placeholder": "Find a tank…",
+    "open": "Open the tank list",
+    "empty": "Nothing found"
+  },
+  "controls": {
+    "view": "View",
+    "views": {
+      "table": "Table",
+      "tierlist": "Tier list"
+    },
+    "period": "Period",
+    "periods": {
+      "1d": "24 h",
+      "7d": "7 d",
+      "14d": "14 d",
+      "30d": "30 d",
+      "60d": "60 d"
+    },
+    "cohort": "Player skill",
+    "cohorts": {
+      "all": "All",
+      "beginner": "Beginners",
+      "average": "Average",
+      "good": "Good",
+      "elite": "Top 10%"
+    }
+  },
+  "table": {
+    "caption": "{count, plural, one {# tank} other {# tanks}}",
+    "tank": "Tank",
+    "tier": "Tier",
+    "winRate": "Win rate",
+    "winRateDiff": "WR diff",
+    "avgDamage": "Damage",
+    "frags": "Frags",
+    "spotted": "Spotted",
+    "survival": "Survived",
+    "battles": "Battles",
+    "emptyTitle": "Nothing matches the filters",
+    "resetFilters": "Reset filters",
+    "errorTitle": "Statistics did not load",
+    "errorDescription": "The statistics server is not responding.",
+    "noStatsTitle": "Server statistics are not collected yet"
+  },
+  "tierList": {
+    "title": "Tier list",
+    "tier": "Tier list tier",
+    "hint": "Ranked by WR diff: the gap between wins on the tank and its players’ overall win rate.",
+    "emptyTitle": "Too few battles for this tier and class"
+  }
+}

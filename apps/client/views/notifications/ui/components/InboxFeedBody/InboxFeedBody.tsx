@@ -4,7 +4,7 @@ import { BellOff, CheckCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { EmptyState, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
 import type { InboxFeedBodyProps } from './InboxFeedBody.types';
 
@@ -13,7 +13,7 @@ import { InboxFeedDay } from '../InboxFeedDay';
 
 import s from './InboxFeedBody.module.scss';
 
-export const InboxFeedBody = ({ days, filter, isEmpty, isPending, isError, onSelect }: InboxFeedBodyProps) => {
+export const InboxFeedBody = ({ days, filter, isEmpty, isPending, isError, isRetrying, onRetry, onSelect }: InboxFeedBodyProps) => {
   const t = useTranslations('notifications.feed');
 
   return match({ isPending, isError, isEmpty, filter })
@@ -24,7 +24,7 @@ export const InboxFeedBody = ({ days, filter, isEmpty, isPending, isError, onSel
         ))}
       </div>
     ))
-    .with({ isError: true }, () => <p className={s.error}>{t('error')}</p>)
+    .with({ isError: true }, () => <ErrorState className={s.empty} isRetrying={isRetrying} title={t('error')} onRetry={onRetry} />)
     .with({ isEmpty: true, filter: 'unread' }, () => (
       <EmptyState
         className={s.empty}

@@ -1,1 +1,1 @@
-export { SCHEDULE_TIMEZONE, SCHEDULES } from './schedules.config';
+export { SCHEDULES } from './schedules.config';

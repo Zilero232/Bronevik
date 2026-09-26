@@ -1,4 +1,4 @@
-export { BOT_API, BOT_COMMANDS, BOT_FALLBACK_USERNAME, BOT_LOCALES, BOT_TEXT_LIMITS, FALLBACK_BOT_LOCALE } from './bot.config';
+export { BOT, BOT_API, BOT_COMMANDS, BOT_TEXT_LIMITS, TELEGRAM_TOKENS } from './bot.constants';
 export { LINK_CODE, WEB_LOGIN } from './link-code.config';
 export { LOCAL_HOSTS, SITE_LINKS } from './links.config';
 export { BOT_LOCALE_FILES } from './locales.config';

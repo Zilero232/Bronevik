@@ -5,7 +5,7 @@ import type { DailyStatsRow, PlayerCountRow } from '../lib/server-stats';
 
 import { PrismaService } from '../../../../core';
 import { AGGREGATES } from '../config';
-import { buildServerStats, SERVER_STATS_PERIODS } from '../lib/server-stats';
+import { buildServerStats, SERVER_STATS } from '../lib/server-stats';
 import { ReferenceTablesService } from './reference-tables.service';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class ServerStatsService {
     let written = 0;
 
     for (const mode of AGGREGATES.serverStatsModes) {
-      for (const { period, days } of SERVER_STATS_PERIODS) {
+      for (const { period, days } of SERVER_STATS.periods) {
         const since = subDays(now, days);
 
         const rows = await this.prisma.$queryRaw<DailyStatsRow[]>`

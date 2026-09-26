@@ -3,49 +3,30 @@
 .root {
   @include stack(var(--space-4));
 
-  &[data-expired='true'] .tape {
-    filter: grayscale(1);
-    opacity: 0.5;
+  &[data-expired='true'] .value {
+    color: var(--color-text-dim);
   }
 }
 
-.tape {
+.code {
+  @include well;
   @include stack(var(--space-2));
 
-  position: relative;
   align-items: center;
-  padding: var(--space-6) var(--space-4);
-  background:
-    radial-gradient(circle, var(--color-bg-deep) 0 3px, transparent 3.5px) left 6px top 8px / 18px 18px repeat-x,
-    radial-gradient(circle, var(--color-bg-deep) 0 3px, transparent 3.5px) left 6px bottom -2px / 18px 18px repeat-x,
-    radial-gradient(ellipse at 50% 40%, var(--color-accent-soft), transparent 70%),
-    var(--color-surface-sunken);
+  padding: var(--space-5) var(--space-4);
   text-align: center;
-
-  @include chamfer-path(var(--chamfer-md));
 }
 
-.tapeLabel {
-  @include hud-label;
+.codeLabel {
+  @include label;
 }
 
-.code {
-  @include stencil;
+.value {
+  @include numeric(var(--text-3xl));
 
-  color: var(--color-accent-hot);
-  font-size: clamp(2.2rem, 7vw, 3.6rem);
-  letter-spacing: 0.22em;
-  line-height: 1;
+  color: var(--color-text);
+  letter-spacing: 0.2em;
   overflow-wrap: anywhere;
-  text-shadow: 0 0 18px color-mix(in srgb, var(--color-accent) 55%, transparent);
-}
-
-.fuse {
-  padding-inline: var(--space-1);
-}
-
-.actions {
-  display: flex;
 }
 
 .fallback {

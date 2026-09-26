@@ -1,3 +1,5 @@
+import { sortBy } from 'remeda';
+
 import type { BuildFeedInput, FeedItem, MarkRow, MasteryGainInput } from './feed.types';
 
 export const isMarkGain = (row: MarkRow): boolean => row.marks_on_gun !== null && row.prev_marks !== null && row.marks_on_gun > row.prev_marks;
@@ -58,5 +60,5 @@ export const buildFeed = ({ snapshots, records, badges, nicknames, aceMastery, l
     });
   }
 
-  return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, limit);
+  return sortBy(items, [(item) => item.at, 'desc']).slice(0, limit);
 };

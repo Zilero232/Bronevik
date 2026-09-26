@@ -1,72 +1,48 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(var(--space-2));
-}
+  @include stack(var(--space-3));
 
-.spinner {
-  color: var(--color-accent);
-
-  @include spin;
-}
-
-.status {
-  min-height: 0;
+  max-width: 560px;
 }
 
 .note {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  @include source-line;
 }
 
-.hint {
-  @include hud-label;
-
-  color: var(--color-text-dim);
+.failure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .results {
-  display: grid;
+  @include panel;
+
   padding: 0;
   margin: 0;
-  gap: var(--space-2);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   list-style: none;
+}
 
-  @include below(lg) {
-    grid-template-columns: minmax(0, 1fr);
+.item {
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child {
+    border-bottom: none;
   }
 }
 
 .result {
-  @include plate(var(--chamfer-sm));
-
-  display: grid;
+  display: flex;
+  min-height: var(--row-h);
   align-items: center;
-  padding: var(--space-3) var(--space-4);
   color: var(--color-text);
-  column-gap: var(--space-3);
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  text-decoration: none;
-
-  &:after {
-    position: absolute;
-    top: var(--space-2);
-    bottom: var(--space-2);
-    left: 0;
-    width: 3px;
-    background: var(--clan);
-    content: '';
-  }
-
-  &:hover .arrow {
-    color: var(--clan);
-    transform: translate(2px, -2px);
-  }
+  gap: var(--space-3);
+  padding-inline: var(--space-4);
 
   &:hover {
-    background: var(--clan);
+    background-color: var(--color-surface-hover);
   }
 
   &:focus-visible {
@@ -75,33 +51,22 @@
 }
 
 .tag {
-  @include display(var(--text-lg));
-
-  color: var(--clan);
-  grid-row: span 2;
+  font-family: var(--font-display);
+  font-weight: 700;
 }
 
 .name {
   overflow: hidden;
-  font-weight: 600;
+  min-width: 0;
+  flex: 1;
+  color: var(--color-text-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .members {
-  @include hud-label;
+  @include numeric;
 
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  grid-column: 2;
-}
-
-.arrow {
   color: var(--color-text-dim);
-  grid-column: 3;
-  grid-row: 1 / span 2;
-  transition:
-    transform var(--duration-base) var(--ease-out),
-    color var(--duration-base) ease;
+  font-size: var(--text-xs);
 }

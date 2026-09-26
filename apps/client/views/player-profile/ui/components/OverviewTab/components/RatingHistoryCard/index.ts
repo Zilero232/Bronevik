@@ -1,1 +1,0 @@
-export { RatingHistoryCard } from './RatingHistoryCard';

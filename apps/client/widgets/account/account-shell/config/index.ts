@@ -1,1 +1,1 @@
-export { ACCOUNT_TABS } from './account-tabs';
+export { ACCOUNT_SHELL, ACCOUNT_TABS } from './account-tabs.constants';

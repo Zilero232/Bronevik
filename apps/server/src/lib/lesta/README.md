@@ -3,7 +3,7 @@
 Typed thin client for the Lesta «Мир танков» API (`api.tanki.su/wot/`).
 
 - Every call is a form-encoded `POST`, validated with zod, and returned as `{ data, meta }` by `request` or as `data` by the typed methods.
-- Id lists are deduplicated and split into batches of `LESTA_BATCH_SIZE` (100), then fetched in parallel and merged.
+- Id lists are deduplicated and split into batches of `LESTA_API.batchSize` (100), then fetched in parallel and merged.
 - Retries use `p-retry` with `LESTA_RETRY` defaults. Only retryable failures are retried: `REQUEST_LIMIT_EXCEEDED`, `SOURCE_NOT_AVAILABLE`, HTTP 429 and 5xx, and network errors (`isRetryableLestaError`).
 - Every attempt takes a token from a `RateLimiter` first. `createRedisRateLimiter` shares one budget across processes, `createMemoryRateLimiter` keeps it in-process, and `noopRateLimiter` is the default.
 

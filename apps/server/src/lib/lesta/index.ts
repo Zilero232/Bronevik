@@ -1,4 +1,4 @@
-export { batchById, batchList, chunkIds, LESTA_BATCH_SIZE } from './batching';
+export { batchById, batchList, chunkIds } from './batching';
 export type { BatchByIdInput, BatchListInput, ChunkIdsInput, LestaId } from './batching';
 
 export { createLestaClient, createRequester, fieldAwareSchema, fieldsParam, LESTA_API, LESTA_LANGUAGES, LESTA_RETRY } from './client';
@@ -60,6 +60,8 @@ export {
   clanMemberHistoryEntrySchema,
   encyclopediaInfoSchema,
   lestaEnvelopeSchema,
+  serverOnlineSchema,
+  serversInfoSchema,
   tankAchievementsSchema,
   tankMasterySchema,
   tankStatsSchema,
@@ -81,6 +83,8 @@ export type {
   EncyclopediaInfo,
   LestaMeta,
   ProlongateResult,
+  ServerOnline,
+  ServersInfo,
   TankAchievements,
   TankMastery,
   TankStats,

@@ -7,8 +7,8 @@ import { ModuleRef } from '@nestjs/core';
 
 import type { IsScheduleActiveInput } from './schedules.types';
 
-import { AppConfigService } from '../../../config';
-import { SCHEDULE_TIMEZONE, SCHEDULES } from './config';
+import { AppConfigService, TIME } from '../../../config';
+import { SCHEDULES } from './config';
 
 @Injectable()
 export class SchedulesService implements OnApplicationBootstrap {
@@ -38,7 +38,7 @@ export class SchedulesService implements OnApplicationBootstrap {
         continue;
       }
 
-      const repeat = 'pattern' in schedule.repeat ? { pattern: schedule.repeat.pattern, tz: SCHEDULE_TIMEZONE } : { every: schedule.repeat.every };
+      const repeat = 'pattern' in schedule.repeat ? { pattern: schedule.repeat.pattern, tz: TIME.zone } : { every: schedule.repeat.every };
 
       await queue.upsertJobScheduler(schedule.id, repeat, { name: schedule.name, data: schedule.data ?? {} });
       registered += 1;

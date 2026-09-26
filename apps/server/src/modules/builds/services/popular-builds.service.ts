@@ -3,6 +3,7 @@ import type { PopularBuilds, ProvisionOption } from '@bronevik/schemas';
 import { loadoutSchema } from '@bronevik/schemas';
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
+import { unique } from 'remeda';
 
 import type { PopularBuildsInput } from '../builds.types';
 import type { LoadoutSample, RankedLoadout } from '../lib';
@@ -87,7 +88,7 @@ export class PopularBuildsService {
   }
 
   private async options(ranked: readonly RankedLoadout[]): Promise<Map<number, ProvisionOption>> {
-    const ids = [...new Set(ranked.flatMap((build) => [...build.optionalDevices, ...build.consumables, ...build.directives]))];
+    const ids = unique(ranked.flatMap((build) => [...build.optionalDevices, ...build.consumables, ...build.directives]));
     const rows = await this.data.provisionsByIds(ids);
 
     return new Map(rows.map((row) => [row.provisionId, toProvisionOption(row)]));

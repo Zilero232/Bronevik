@@ -1,3 +1,3 @@
-export { historySeries, sparkDirection, sparkPoints } from './moe-history';
+export { historySeries } from './moe-history';
 
-export type { MoeHistorySeries, SparkDirection, SparkPointsInput } from './moe-history.types';
+export type { MoeHistorySeries } from './moe-history.types';

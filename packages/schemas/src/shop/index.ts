@@ -7,6 +7,10 @@ export {
   gameEventKindSchema,
   gameEventSchema,
   gameEventsQuerySchema,
+  newsItemSchema,
+  newsKindSchema,
+  newsPageSchema,
+  newsQuerySchema,
   premiumOfferSchema
 } from './shop.schemas';
 export type {
@@ -17,5 +21,9 @@ export type {
   GameEvent,
   GameEventKind,
   GameEventsQuery,
+  NewsItem,
+  NewsKind,
+  NewsPage,
+  NewsQuery,
   PremiumOffer
 } from './shop.types';

@@ -1,20 +1,16 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  --cell-tone: var(--color-surface-raised);
+  --cell-tone: var(--color-border);
 
   position: relative;
   display: grid;
-  min-height: 52px;
-  border: 1px solid color-mix(in srgb, var(--cell-tone) 70%, var(--color-border));
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--cell-tone) 38%, var(--color-surface)),
-    color-mix(in srgb, var(--cell-tone) 18%, var(--color-surface))
-  );
+  min-height: var(--row-h);
+  border: 1px solid color-mix(in srgb, var(--cell-tone) 60%, var(--color-border));
+  border-radius: var(--radius-xs);
+  background-color: color-mix(in srgb, var(--cell-tone) 16%, var(--color-surface));
   color: var(--color-text);
   place-items: center;
-  transform-origin: center top;
 
   &[data-verdict='match'] {
     --cell-tone: var(--color-success);
@@ -27,10 +23,6 @@
   &[data-verdict='miss'] {
     --cell-tone: var(--color-danger);
   }
-
-  @include below(sm) {
-    min-height: 46px;
-  }
 }
 
 .content {
@@ -39,7 +31,7 @@
   display: inline-flex;
   align-items: center;
   font-size: var(--text-sm);
-  font-weight: 700;
+  font-weight: 600;
 
   @include below(sm) {
     font-size: var(--text-xs);
@@ -48,7 +40,7 @@
 
 .arrow {
   position: absolute;
-  top: 3px;
-  right: 3px;
+  top: 2px;
+  right: 2px;
   color: var(--cell-tone);
 }

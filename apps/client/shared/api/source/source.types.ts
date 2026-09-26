@@ -1,5 +1,4 @@
-export type FromSourceInput<T> = {
-  mock: () => T;
-  fetch: () => Promise<T>;
-  signal?: AbortSignal;
+export type AuthResult<T> = {
+  data: T | null;
+  error: { status: number; message?: string } | null;
 };

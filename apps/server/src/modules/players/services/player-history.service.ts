@@ -1,6 +1,7 @@
 import type { PlayerActivity, PlayerHistoryEntry, TimeSeries, TimeSeriesQuery } from '@bronevik/schemas';
 
 import { Injectable } from '@nestjs/common';
+import { subDays } from 'date-fns';
 import { sortBy } from 'remeda';
 
 import type { BucketTankRow } from '../lib';
@@ -57,7 +58,7 @@ export class PlayerHistoryService {
 
   async activity({ accountId, days }: ActivityInput): Promise<PlayerActivity> {
     const to = new Date();
-    const from = moscowDayStart(new Date(to.getTime() - (days - 1) * HISTORY.dayMs));
+    const from = moscowDayStart(subDays(to, days - 1));
 
     const rows = await this.prisma.$queryRaw<ActivityRow[]>`
       SELECT to_char(captured_at AT TIME ZONE 'Europe/Moscow', 'YYYY-MM-DD') AS day,
@@ -109,8 +110,8 @@ export class PlayerHistoryService {
 
   private window(query: TimeSeriesQuery) {
     const to = query.to ? new Date(query.to) : new Date();
-    const earliest = new Date(to.getTime() - HISTORY.maxDays * HISTORY.dayMs);
-    const requested = query.from ? new Date(query.from) : new Date(to.getTime() - HISTORY.defaultDays * HISTORY.dayMs);
+    const earliest = subDays(to, HISTORY.maxDays);
+    const requested = query.from ? new Date(query.from) : subDays(to, HISTORY.defaultDays);
 
     return { from: requested < earliest ? earliest : requested, to };
   }

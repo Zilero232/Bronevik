@@ -1,6 +1,3 @@
 export const QUIET_HOURS = {
-  hoursInDay: 24,
-  msInMinute: 60_000,
-  minutesInHour: 60,
-  fallbackTimeZone: 'Europe/Moscow'
+  hoursInDay: 24
 } as const;

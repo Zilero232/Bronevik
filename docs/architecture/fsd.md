@@ -21,7 +21,7 @@ apps/client/
 ├── widgets/            # blocks composed for more than one view
 ├── features/           # user interactions, grouped by domain
 ├── entities/           # domain concepts, grouped by domain
-├── shared/             # project-agnostic: api, config, constants, i18n, lib, mocks, seo, styles
+├── shared/             # project-agnostic: api, config, constants, i18n, lib, seo, styles
 ├── ui-kit/             # the design system: atoms, molecules, organisms
 └── config/             # build-time helpers for next.config.ts — not imported by the app
 ```
@@ -42,21 +42,41 @@ A layer never imports from itself across slices. Two features that need the same
 
 ```text
 features/
-├── app/        # cross-domain application concerns
-│   ├── rating-patterns/   # colour-blind patterns on rating colours
-│   ├── switch-locale/
-│   └── switch-theme/
-├── search/     # command-palette (cmdk, Ctrl+K and /)
-└── stats/      # select-period
+├── app/            # rating-palette, rating-patterns, switch-locale, switch-theme
+├── auth/           # lesta-link
+├── notifications/  # inbox-bell
+├── player/         # toggle-favorite
+├── search/         # command-palette (cmdk, Ctrl+K and /), pick-entity
+├── stats/          # select-period
+└── tank/           # filter-vehicles, pick-tank
 entities/
-├── app/        # locale
-├── player/     # player — PlayerCard, PlayerIdentity
-└── tank/       # tank — TankCard, TankIdentity
+├── app/            # locale
+├── armor/          # armor-model
+├── auth/           # session
+├── map/            # map
+├── notification/   # inbox
+├── player/         # player, profile, recent-players, stats
+├── streamer/       # broadcast, overlay
+└── tank/           # build, tank
 widgets/
-└── site/       # site-header, site-footer
+├── account/        # account-shell
+├── player/         # session-detail
+└── site/           # site-header, site-footer
 ```
 
-`views/` does not group by domain — route screens sit directly in it: `views/home`, `views/design` (the living design-system page), `views/error`, `views/not-found`.
+`views/` does not group by domain — the 36 route screens sit directly in it:
+
+| Area | Views |
+|---|---|
+| site shell | `home`, `design` (living design-system page), `error`, `not-found` |
+| account | `login`, `me`, `billing`, `plus`, `notifications`, `telegram-link`, `telegram-login` |
+| players | `players`, `player-profile`, `player-session`, `player-og`, `compare-players`, `top` |
+| clans | `clan`, `clans` |
+| tanks | `tank`, `tanks`, `compare-tanks`, `build`, `marks`, `tree`, `tools`, `play` |
+| maps | `map`, `maps` |
+| streamers | `streamer`, `streamers`, `streamer-studio`, `overlay` |
+| developers | `developers`, `developer-cabinet` |
+| Telegram Mini App | `mini-app` |
 
 ## 3. Public API
 
@@ -87,13 +107,13 @@ Inside a slice:
 
 | Segment | Holds |
 |---|---|
-| `ui/` | components |
-| `model/` | hooks, contexts, derived state, model types |
-| `lib/` | pure functions, one folder per concern |
-| `config/` | constants |
+| `ui/` | components — render only |
+| `model/` | `hooks/use-<x>/` (state, effects, queries, handlers, derived data; forms in `use-<x>-form/`), `context/`, model types |
+| `lib/` | pure functions, `lib/<concern>/<concern>.ts` + `index.ts` + `_tests/` |
+| `config/` | constants, `config/<concern>.constants.ts` + `index.ts` |
 | `api/` | requests — but most requests live in `shared/api` |
 
-A folder is one concern, not one function: each gets its own `index.ts`, `<name>.types.ts` and `<name>.constants.ts` where it needs them.
+A folder is one concern, not one function. A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts`); never `*.helpers.ts`, `*.utils.ts`, `*.constants.ts` or `hooks/`. One component per folder, and a `ui/` root holds at most one flat component. Full rules: [style.md §2](../guides/style.md).
 
 ## 5. `ui-kit`
 
@@ -101,13 +121,14 @@ A folder is one concern, not one function: each gets its own `index.ts`, `<name>
 ui-kit/
 ├── atoms/       # AnimatedNumber, Avatar, Badge, Burst, Button, IconButton, Input, Kbd,
 │                # ProgressBar, ProgressRing, RatingBadge, Skeleton, Switch
-├── molecules/   # Card, Dialog, Drawer, EmptyState, Popover, SectionHeader, SegmentedControl,
-│                # Select, Sparkline, StatTile, Tabs, Tooltip
-├── organisms/   # AppToaster, AreaChart, BarChart, ChartKit, DataTable, LineChart
+├── molecules/   # Card, CodeBlock, CopyField, Dialog, Drawer, EmptyState, ErrorState, NumberField,
+│                # Popover, RangeSlider, RetryButton, SectionHeader, SegmentedControl, Select,
+│                # Sparkline, StatTile, Tabs, ToggleChips, Tooltip
+├── organisms/   # AppToaster, AreaChart, BarChart, CalendarHeatmap, ChartKit, DataTable, LineChart, PageHero
 └── index.ts     # the one barrel the rest of the app imports
 ```
 
-**Each component gets its own PascalCase folder** with `Component.tsx`, `Component.module.scss`, and where it needs them `Component.types.ts` and `Component.variants.ts`, plus a barrel.
+**Each component gets its own PascalCase folder** with `Component.tsx`, `Component.module.scss`, and where it needs them `Component.types.ts`, `Component.variants.ts`, `Component.motion.ts` and `Component.constants.ts`, plus a barrel. `ui-kit` has no slice segments: a primitive's helpers go to `shared/lib/<concern>/` and its hooks to `shared/lib/use-<x>/`, never `Component.helpers.ts` or a `hooks/` folder.
 
 Headless primitives come from **`@base-ui/react`** — every molecule that needs behaviour wraps one rather than hand-rolling focus management. Variant maps use `class-variance-authority` over module classes (`Button.variants.ts`). Charts are built on **visx** through `ChartKit`; `DataTable` is **TanStack Table** + **TanStack Virtual**. Styles are SCSS modules; tokens live in `shared/styles/_tokens.scss`, with a dark and a light palette switched by `data-theme`.
 
@@ -122,20 +143,26 @@ app/
 ├── [locale]/              # every page lives under the locale segment
 │   ├── (site)/            # the public site: header + main + footer
 │   │   ├── page.tsx       # home
-│   │   ├── design/        # the design-system page
+│   │   ├── p/ c/ t/ s/    # player, clan, tank, streamer pages
+│   │   ├── builds/ clans/ compare/ design/ developers/ login/ maps/ marks/
+│   │   ├── me/ play/ players/ plus/ streamers/ tanks/ tools/ top/ tree/
 │   │   ├── [...rest]/     # unknown paths → not-found inside the site shell
 │   │   ├── layout.tsx
 │   │   └── not-found.tsx
+│   ├── (overlay)/overlay/ # stream overlays, no site shell
+│   ├── (tma)/tg/          # Telegram Mini App
 │   ├── layout.tsx         # the root layout — html, fonts, providers
 │   ├── error.tsx
 │   └── not-found.tsx
+├── api/og/                # OG image routes
+├── serwist/               # service worker route (sw.ts source)
 ├── providers/             # AppProviders: Query, next-intl, next-themes, motion, tooltips, palette
 ├── globals.scss           # pulls in the tokens and the base element styles
-├── icon.svg
+├── manifest.ts, icon.svg
 └── global-error.tsx
 ```
 
-The route group `(site)` does not appear in the URL — it exists so the group can carry its own layout, which wraps its pages in `SiteHeader` and `SiteFooter`. The footer carries the Lesta attribution every page needs.
+Route groups do not appear in the URL. `(site)` carries the layout that wraps its pages in `SiteHeader` and `SiteFooter`; the footer carries the Lesta attribution every site page needs. `(overlay)` and `(tma)` have their own layouts for OBS overlays and the Telegram Mini App.
 
 **The root layout must be inside `[locale]`.** `next/root-params` only reports a parameter that precedes the single root layout; an outer `app/layout.tsx` makes `rootParams.locale()` unresolvable.
 
@@ -151,6 +178,9 @@ The route group `(site)` does not appear in the URL — it exists so the group c
 | a request | `shared/api/<resource>` |
 | a constant, helper or type with no domain | `shared/` |
 | a visual primitive | `ui-kit/<segment>/<Component>` |
+| a hook with state, effects, queries or handlers | `<slice>/model/hooks/use-<x>/` |
+| a pure helper | `<slice>/lib/<concern>/` |
+| a constant | `<slice>/config/<concern>.constants.ts` |
 
 An example from live code: `views/home` assembles `HomePage` out of its own `ui/components` (`HomeHero`, `LiveCounters`, `TopPlayers`, `HotTanks`, `MarksShowcase`) and `model/hooks` (`useTopPlayers`, `useLiveCounters`). `TopPlayers` in turn takes `PlayerCard` from `entities/player/player`, `PeriodSwitcher` from `features/stats/select-period` and `SectionHeader` / `buttonVariants` from `ui-kit`. It reaches nothing sideways.
 

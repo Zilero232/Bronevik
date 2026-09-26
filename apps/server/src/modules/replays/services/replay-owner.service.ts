@@ -6,15 +6,14 @@ import type { OwnReplayInput, UpdateVisibilityInput } from '../replays.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
-import { PrismaService } from '../../../core';
+import { ObjectStorage, PrismaService } from '../../../core';
 import { toReplayView } from '../lib';
-import { ReplayStorage } from '../storage';
 
 @Injectable()
 export class ReplayOwnerService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly storage: ReplayStorage,
+    private readonly storage: ObjectStorage,
     private readonly config: AppConfigService
   ) {}
 
@@ -29,12 +28,12 @@ export class ReplayOwnerService {
   async remove({ id, userId }: OwnReplayInput): Promise<void> {
     const replay = await this.owned({ id, userId });
 
-    await this.prisma.replay.delete({ where: { id } });
-    await this.storage.remove(replay.storageKey);
-
     if (replay.timelineKey) {
       await this.storage.remove(replay.timelineKey);
     }
+
+    await this.storage.remove(replay.storageKey);
+    await this.prisma.replay.delete({ where: { id } });
   }
 
   private async owned({ id, userId }: OwnReplayInput) {

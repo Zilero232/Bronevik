@@ -2,10 +2,8 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { ratingValueTone, winRateTone } from '@/entities/player/stats';
-import { TankIdentity, vehicleIdentity } from '@/entities/tank/tank';
-import { percentText } from '@/shared/lib';
-import { RatingBadge } from '@/ui-kit';
+import { ratingValueTone } from '@/entities/player/stats';
+import { TankCell, WinRateCell } from '@/entities/tank/tank';
 
 import type { SessionTanksProps } from './SessionTanks.types';
 
@@ -21,11 +19,13 @@ export const SessionTanks = ({ tanks }: SessionTanksProps) => {
       <ul className={s.list}>
         {tanks.map(({ vehicle, stats }) => (
           <li key={vehicle.tankId} className={s.row}>
-            <TankIdentity className={s.tank} tank={vehicleIdentity(vehicle)} />
+            <TankCell className={s.tank} vehicle={vehicle} />
             <span className={s.cell}>{t('battlesCount', { count: stats.battles })}</span>
-            <RatingBadge size='sm' tone={winRateTone(stats.winRate)} value={percentText({ format, value: stats.winRate })} withPips={false} />
+            <WinRateCell className={s.value} value={stats.winRate} />
             <span className={s.cell}>{format.number(stats.avgDamage ?? 0)}</span>
-            <RatingBadge label='WN8' size='sm' tone={ratingValueTone(stats.wn8)} value={format.number(stats.wn8.value ?? 0)} withPips={false} />
+            <span className={s.rating} data-tone={ratingValueTone(stats.wn8)}>
+              {format.number(stats.wn8.value ?? 0)}
+            </span>
           </li>
         ))}
       </ul>

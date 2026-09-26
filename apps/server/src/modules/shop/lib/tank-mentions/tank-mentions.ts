@@ -1,3 +1,5 @@
+import { identity, sortBy } from 'remeda';
+
 import type { MatchTankNamesInput } from './tank-mentions.types';
 
 const escape = (value: string): string => value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
@@ -20,5 +22,5 @@ export const matchTankNames = ({ text, vehicles, minLength }: MatchTankNamesInpu
     }
   }
 
-  return [...found].sort((a, b) => a - b);
+  return sortBy([...found], identity());
 };

@@ -14,13 +14,12 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Replay } from '../../../../generated';
 
-import { PrismaService } from '../../../core';
+import { LocalDiskStorage, ObjectStorage, PrismaService } from '../../../core';
 import { FIXTURE, readFixture } from '../../../lib/replay/_tests/fixtures';
 import { ModDeviceService } from '../../mod';
 import { REPLAYS_QUEUE } from '../config';
 import { ReplaysController } from '../replays.controller';
 import { HeatmapService, ReplayOwnerService, ReplayParseService, ReplayQueryService, ReplayUploadService } from '../services';
-import { LocalDiskStorage, ReplayStorage } from '../storage';
 
 const prisma = mockDeep<PrismaService>();
 const queue = mock<Queue>();
@@ -78,7 +77,7 @@ beforeAll(async () => {
     providers: [
       ReplayUploadService,
       { provide: PrismaService, useValue: prisma },
-      { provide: ReplayStorage, useValue: storage },
+      { provide: ObjectStorage, useValue: storage },
       { provide: ModDeviceService, useValue: mock<ModDeviceService>() },
       { provide: getQueueToken(REPLAYS_QUEUE.name), useValue: queue },
       { provide: ReplayQueryService, useValue: mock<ReplayQueryService>() },
@@ -128,7 +127,7 @@ describe('POST /replays', () => {
     prisma.replay.findUnique.mockResolvedValueOnce(replayRow({ id: replayId, storageKey: String(created?.storageKey) }));
 
     const heatmaps = mock<HeatmapService>();
-    const outcome = await new ReplayParseService(prisma, storage, heatmaps).parse(replayId);
+    const outcome = await new ReplayParseService(prisma, storage, heatmaps).parse({ replayId, isFinalAttempt: true });
     const update = prisma.replay.update.mock.calls.at(-1)?.[0].data;
 
     expect(outcome).toEqual({ status: 'parsed', hasTracks: true });

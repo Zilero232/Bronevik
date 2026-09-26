@@ -1,0 +1,1 @@
+export { FallbackOgCard } from './FallbackOgCard';

@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "title": "OBS overlay",
+    "description": "A stats widget for your stream: add this page to OBS as a Browser source."
+  },
+  "metric": {
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
+    "wn8": "WN8",
+    "broneIndex": "Bronya Index",
+    "moePercent": "Gun mark",
+    "winStreak": "Win streak",
+    "frags": "Frags",
+    "lastBattle": "Last battle"
+  },
+  "result": {
+    "win": "Victory",
+    "loss": "Defeat",
+    "draw": "Draw"
+  },
+  "moe": {
+    "label": "Marks · {count} of 3"
+  },
+  "challenge": {
+    "label": "Challenge",
+    "battles": "Battles: {done} of {total}",
+    "status": {
+      "pending": "Awaiting donation",
+      "active": "In play",
+      "succeeded": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "expired": "Expired",
+      "refunded": "Refunded"
+    }
+  },
+  "error": {
+    "invalid": "Invalid overlay link",
+    "unavailable": "Overlay unavailable"
+  },
+  "attribution": "data: Lesta Games"
+}

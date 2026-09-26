@@ -1,1 +1,0 @@
-export { HeroScope } from './HeroScope';

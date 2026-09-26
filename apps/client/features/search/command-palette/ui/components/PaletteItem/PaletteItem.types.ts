@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 export type PaletteItemProps = {
   value: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   title: ReactNode;
   meta?: ReactNode;
   trailing?: ReactNode;

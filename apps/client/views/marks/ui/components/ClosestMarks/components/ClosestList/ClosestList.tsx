@@ -1,14 +1,11 @@
 'use client';
 
-import { Award, SearchX, Target, TriangleAlert } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { STAGGER } from '@/shared/lib';
-import { Card, EmptyState, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
-import type { ClosestListProps } from '../../ClosestMarks.types';
+import type { ClosestListProps } from './ClosestList.types';
 
 import { PLAYER_LOOKUP } from '../../../../../config';
 import { usePlayerMarks } from '../../../../../model/hooks';
@@ -16,38 +13,30 @@ import { ClosestRow } from '../ClosestRow';
 
 import s from './ClosestList.module.scss';
 
-const SKELETON_ROWS = Array.from({ length: 4 }, (_, index) => index);
-
 export const ClosestList = ({ player }: ClosestListProps) => {
   const t = useTranslations('marks.closest');
-  const { nickname, marks, isNotFound, isLoading, isError } = usePlayerMarks(player);
+  const { nickname, marks, hasPlayer, isNotFound, isLoading, isError, isRetrying, retry } = usePlayerMarks(player);
 
-  return (
-    <Card className={s.root} padding='lg' variant='sunken'>
-      {match({ hasPlayer: player.length > 0, isLoading, isError, isNotFound, isEmpty: marks.length === 0 })
-        .with({ hasPlayer: false }, () => <EmptyState description={t('emptyDescription')} icon={<Target size={28} />} title={t('emptyTitle')} />)
-        .with({ isLoading: true }, () => (
-          <div className={s.list}>
-            {SKELETON_ROWS.map((row) => (
-              <Skeleton key={row} height={56} width='100%' />
-            ))}
-          </div>
-        ))
-        .with({ isError: true }, () => <EmptyState description={t('errorHint')} icon={<TriangleAlert size={28} />} title={t('error')} />)
-        .with({ isNotFound: true }, () => (
-          <EmptyState description={t('notFoundDescription')} icon={<SearchX size={28} />} title={t('notFound', { player })} />
-        ))
-        .with({ isEmpty: true }, () => <EmptyState description={t('noMarksHint')} icon={<Award size={28} />} title={t('noMarks')} />)
-        .otherwise(() => (
-          <>
-            <p className={s.caption}>{t('playerFor', { nickname })}</p>
-            <motion.ol animate='visible' className={s.list} initial='hidden' variants={STAGGER}>
-              {marks.slice(0, PLAYER_LOOKUP.closestLimit).map((mark, index) => (
-                <ClosestRow key={mark.vehicle.tankId} index={index} mark={mark} />
-              ))}
-            </motion.ol>
-          </>
+  return match({ hasPlayer, isLoading, isError, isNotFound, isEmpty: marks.length === 0 })
+    .with({ hasPlayer: false }, () => <p className={s.hint}>{t('hint')}</p>)
+    .with({ isLoading: true }, () => (
+      <div aria-busy className={s.list}>
+        {PLAYER_LOOKUP.skeletonRows.map((row) => (
+          <Skeleton key={row} height={36} width='100%' />
         ))}
-    </Card>
-  );
+      </div>
+    ))
+    .with({ isError: true }, () => <ErrorState isRetrying={isRetrying} title={t('error')} onRetry={retry} />)
+    .with({ isNotFound: true }, () => <EmptyState description={t('notFoundDescription')} title={t('notFound', { player })} />)
+    .with({ isEmpty: true }, () => <EmptyState description={t('noMarksHint')} title={t('noMarks')} />)
+    .otherwise(() => (
+      <div className={s.root}>
+        <p className={s.caption}>{t('playerFor', { nickname })}</p>
+        <ol className={s.list}>
+          {marks.map((mark) => (
+            <ClosestRow key={mark.vehicle.tankId} mark={mark} />
+          ))}
+        </ol>
+      </div>
+    ));
 };

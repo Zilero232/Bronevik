@@ -2,23 +2,20 @@
 
 .root {
   @include reset-button;
-  @include plate(var(--chamfer-md));
+  @include well;
   @include stack(var(--space-2));
 
-  overflow: hidden;
   width: 100%;
-  min-height: 190px;
-  padding: var(--space-5);
+  height: 100%;
+  padding: var(--space-3);
   text-align: left;
-  transition: background-color var(--duration-base) ease;
 
-  &:hover:not(:disabled),
-  &:focus-visible {
-    background: var(--color-accent);
+  &:hover:not(:disabled) {
+    border-color: var(--color-text-dim);
   }
 
   &:focus-visible {
-    outline: none;
+    @include focus-ring;
   }
 
   &:disabled {
@@ -30,33 +27,21 @@
   }
 }
 
-.tier {
-  position: absolute;
-  top: var(--space-2);
-  right: var(--space-4);
-  color: transparent;
-  font-family: var(--font-display);
-  font-size: var(--text-4xl);
-  font-stretch: 70%;
-  font-weight: 900;
-  line-height: 1;
-  pointer-events: none;
-  -webkit-text-stroke: 1px var(--color-border-strong);
+.meta {
+  display: flex;
+  align-items: center;
+  color: var(--color-steel);
+  gap: var(--space-2);
 }
 
-.icon {
-  display: inline-flex;
-  color: var(--color-steel);
+.tier {
+  @include numeric(var(--text-sm));
 
-  .root:hover:not(:disabled) & {
-    color: var(--color-accent);
-  }
+  color: var(--color-text);
 }
 
 .title {
-  @include display(var(--text-lg));
-
-  margin-top: auto;
+  @include heading(var(--text-md));
 }
 
 .hint {
@@ -65,23 +50,8 @@
 }
 
 .cta {
-  @include hud-label;
+  @include label;
 
-  display: inline-flex;
-  align-items: center;
-  margin-top: var(--space-2);
+  margin-top: auto;
   color: var(--color-accent);
-  gap: var(--space-2);
-}
-
-.arrow {
-  transition: translate var(--duration-base) var(--ease-out);
-
-  .root:hover:not(:disabled) & {
-    translate: 4px 0;
-  }
-}
-
-.spinner {
-  @include spin;
 }

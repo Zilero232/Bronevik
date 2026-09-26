@@ -1,1 +1,1 @@
-export { AUTH_BODY_PARSER, AUTH_LOG_CONTEXT } from './auth-module.config';
+export { AUTH_MODULE } from './auth-module.config';

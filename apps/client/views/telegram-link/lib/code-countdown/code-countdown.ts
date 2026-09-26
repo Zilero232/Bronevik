@@ -1,18 +1,18 @@
-import type { Countdown, CountdownInput } from './code-countdown.types';
+import type { CodeLifetime, CodeLifetimeInput } from './code-countdown.types';
 
-const MS_IN_SECOND = 1_000;
-const SECONDS_IN_MINUTE = 60;
+import { CODE_COUNTDOWN } from '../../config/code-countdown.constants';
 
 export const formatCountdown = (seconds: number): string => {
   const safe = Math.max(0, Math.floor(seconds));
 
-  return `${Math.floor(safe / SECONDS_IN_MINUTE)}:${String(safe % SECONDS_IN_MINUTE).padStart(2, '0')}`;
+  return `${Math.floor(safe / CODE_COUNTDOWN.secondsInMinute)}:${String(safe % CODE_COUNTDOWN.secondsInMinute).padStart(2, '0')}`;
 };
 
-export const countdown = ({ expiresAt, issuedAt, now }: CountdownInput): Countdown => {
+export const codeLifetime = ({ expiresAt, issuedAt, now }: CodeLifetimeInput): CodeLifetime => {
   const deadline = new Date(expiresAt).getTime();
-  const left = Math.max(0, Math.ceil((deadline - now) / MS_IN_SECOND));
-  const total = Math.max(1, Math.ceil((deadline - Math.min(issuedAt, now)) / MS_IN_SECOND));
 
-  return { left, ratio: Math.min(1, left / total), label: formatCountdown(left), isExpired: left === 0 };
+  return {
+    left: Math.max(0, Math.ceil((deadline - now) / CODE_COUNTDOWN.msInSecond)),
+    total: Math.max(1, Math.ceil((deadline - Math.min(issuedAt, now)) / CODE_COUNTDOWN.msInSecond))
+  };
 };

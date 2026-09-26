@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { CurrentUserId } from '../../common/decorators';
+import { CurrentUserId, UserAgent } from '../../common/decorators';
 import { InboxPageDto, InboxQueryDto, MarkReadDto, MarkReadResultDto, PushKeyDto, PushSubscriptionDto, PushUnsubscribeDto } from './dto';
 import { InboxService, PushSubscriptionsService } from './services';
 
@@ -37,7 +37,7 @@ export class NotificationsController {
 
   @Post('me/push')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async subscribe(@CurrentUserId() userId: string, @Body() body: PushSubscriptionDto, @Headers('user-agent') userAgent: string | undefined) {
+  async subscribe(@CurrentUserId() userId: string, @Body() body: PushSubscriptionDto, @UserAgent() userAgent: string | undefined) {
     await this.push.subscribe({ userId, ...body, userAgent: userAgent ?? null });
   }
 

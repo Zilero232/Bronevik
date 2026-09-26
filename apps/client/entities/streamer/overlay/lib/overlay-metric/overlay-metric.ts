@@ -4,7 +4,7 @@ import { ratingTone } from '@/shared/lib';
 
 import type { FormatOverlayValueInput, OverlayMetricReading, ReadOverlayMetricInput } from './overlay-metric.types';
 
-import { OVERLAY_PLACEHOLDER, OVERLAY_VALUE_FORMAT, OVERLAY_VALUE_SUFFIX } from './overlay-metric.constants';
+import { OVERLAY_VALUE } from './overlay-metric.constants';
 
 const toneOf = ({ scale, value }: { scale: 'winRate' | 'wn8'; value: number | null }) => (value === null ? null : ratingTone({ scale, value }));
 
@@ -27,7 +27,7 @@ export const readOverlayMetric = ({ data, metric }: ReadOverlayMetricInput): Ove
       value: session?.wn8 ?? null,
       tone: toneOf({ scale: 'wn8', value: session?.wn8 ?? null })
     }))
-    .with('broneIndex', () => ({ ...base, kind: 'rating' as const, value: null }))
+    .with('broneIndex', () => ({ ...base, kind: 'rating' as const, value: session?.broneIndex ?? null }))
     .with('moePercent', () => ({ ...base, kind: 'percent' as const, value: moe?.percent ?? null }))
     .with('winStreak', () => ({ ...base, kind: 'count' as const, value: session?.winStreak ?? null }))
     .with('frags', () => ({ ...base, kind: 'count' as const, value: session?.frags ?? null }))
@@ -41,4 +41,6 @@ export const readOverlayMetric = ({ data, metric }: ReadOverlayMetricInput): Ove
 };
 
 export const formatOverlayValue = ({ value, kind, locale }: FormatOverlayValueInput): string =>
-  value === null ? OVERLAY_PLACEHOLDER : `${new Intl.NumberFormat(locale, OVERLAY_VALUE_FORMAT[kind]).format(value)}${OVERLAY_VALUE_SUFFIX[kind]}`;
+  value === null
+    ? OVERLAY_VALUE.placeholder
+    : `${new Intl.NumberFormat(locale, OVERLAY_VALUE.format[kind]).format(value)}${OVERLAY_VALUE.suffix[kind]}`;

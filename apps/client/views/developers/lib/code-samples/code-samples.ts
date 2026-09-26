@@ -2,11 +2,10 @@ import { API_KEY, WEBHOOK } from '@bronevik/schemas';
 
 import type { CodeSample, QuickstartLanguage, WebhookSampleKind } from './code-samples.types';
 
-import { trimBaseUrl } from '../curl-example';
-import { CODE_SAMPLES } from './code-samples.constants';
+import { CODE_SAMPLES } from '../../config/code-samples.constants';
+import { trimBaseUrl } from '../api-url';
 
-const { nickname, keyVariable, secretVariable, toleranceSec } = CODE_SAMPLES;
-const scheme = `${WEBHOOK.signatureScheme}=`;
+const { nickname, keyVariable, secretVariable } = CODE_SAMPLES;
 const header = (name: string) => name.toLowerCase();
 
 export const quickstartSamples = (baseUrl: string): CodeSample<QuickstartLanguage>[] => {
@@ -59,23 +58,20 @@ export const webhookSamples = (): CodeSample<WebhookSampleKind>[] => [
     id: 'sdk',
     language: 'typescript',
     code: [
-      "import { verifyWebhookSignature } from '@bronevik/sdk';",
+      "import { verifyWebhook } from '@bronevik/sdk';",
       '',
       "app.post('/bronevik', async (request, reply) => {",
-      '  const valid = await verifyWebhookSignature({',
-      `    secret: process.env.${secretVariable},`,
-      '    body: request.rawBody,',
-      `    signature: request.headers['${header(WEBHOOK.signatureHeader)}'],`,
-      `    timestamp: request.headers['${header(WEBHOOK.timestampHeader)}']`,
-      '  });',
+      '  try {',
+      '    const { event, data } = verifyWebhook({',
+      `      secret: process.env.${secretVariable},`,
+      '      body: request.rawBody,',
+      '      headers: request.headers',
+      '    });',
       '',
-      '  if (!valid) {',
+      '    return reply.code(204).send();',
+      '  } catch {',
       '    return reply.code(401).send();',
       '  }',
-      '',
-      '  const { event, data } = JSON.parse(request.rawBody);',
-      '',
-      '  return reply.code(204).send();',
       '});'
     ].join('\n')
   },
@@ -83,34 +79,33 @@ export const webhookSamples = (): CodeSample<WebhookSampleKind>[] => [
     id: 'node',
     language: 'javascript',
     code: [
-      "import { createHmac, timingSafeEqual } from 'node:crypto';",
+      '// npm i standardwebhooks',
+      "import { Webhook } from 'standardwebhooks';",
       '',
-      'export const isValidDelivery = ({ secret, body, signature, timestamp }) => {',
-      `  if (!signature?.startsWith('${scheme}') || Math.abs(Date.now() / 1000 - Number(timestamp)) > ${toleranceSec}) {`,
-      '    return false;',
-      '  }',
+      `const webhook = new Webhook(process.env.${secretVariable});`,
       '',
-      "  const expected = createHmac('sha256', secret).update(timestamp).update('.').update(body).digest('hex');",
-      `  const received = signature.slice('${scheme}'.length);`,
-      '',
-      '  return received.length === expected.length && timingSafeEqual(Buffer.from(received), Buffer.from(expected));',
-      '};'
+      'export const readDelivery = ({ body, headers }) =>',
+      '  webhook.verify(body, {',
+      `    '${header(WEBHOOK.deliveryHeader)}': headers['${header(WEBHOOK.deliveryHeader)}'],`,
+      `    '${header(WEBHOOK.timestampHeader)}': headers['${header(WEBHOOK.timestampHeader)}'],`,
+      `    '${header(WEBHOOK.signatureHeader)}': headers['${header(WEBHOOK.signatureHeader)}']`,
+      '  });'
     ].join('\n')
   },
   {
     id: 'python',
     language: 'python',
     code: [
-      'import hashlib',
-      'import hmac',
-      'import time',
+      '# pip install standardwebhooks',
+      'import os',
+      '',
+      'from standardwebhooks.webhooks import Webhook',
+      '',
+      `webhook = Webhook(os.environ["${secretVariable}"])`,
       '',
       '',
-      'def is_valid_delivery(secret: str, body: bytes, signature: str, timestamp: str) -> bool:',
-      `    if not signature.startswith("${scheme}") or abs(time.time() - int(timestamp)) > ${toleranceSec}:`,
-      '        return False',
-      '    expected = hmac.new(secret.encode(), timestamp.encode() + b"." + body, hashlib.sha256).hexdigest()',
-      `    return hmac.compare_digest(signature[len("${scheme}"):], expected)`
+      'def read_delivery(body: bytes, headers: dict) -> dict:',
+      '    return webhook.verify(body, headers)'
     ].join('\n')
   }
 ];

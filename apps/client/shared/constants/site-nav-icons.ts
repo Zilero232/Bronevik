@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 
-import { HeavyTankIcon, Mark3Icon, StrongholdIcon } from '@bronevik/icons';
-import { Code2, Radio, Trophy, Users, Wrench } from 'lucide-react';
+import { GlobalMapIcon, HeavyTankIcon, Mark3Icon, RadioIcon, StrongholdIcon, TrainingIcon } from '@bronevik/icons';
+import { Code2, Trophy, Users } from 'lucide-react';
 
 import type { SiteNavKey } from './site-nav';
 
@@ -13,7 +13,8 @@ export const SITE_NAV_ICONS: Record<SiteNavKey, SiteNavIcon> = {
   marks: Mark3Icon,
   top: Trophy,
   clans: StrongholdIcon,
-  tools: Wrench,
-  streamers: Radio,
+  maps: GlobalMapIcon,
+  tools: TrainingIcon,
+  streamers: RadioIcon,
   developers: Code2
 };

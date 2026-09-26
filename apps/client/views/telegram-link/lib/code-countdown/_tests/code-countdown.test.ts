@@ -1,18 +1,20 @@
 import { describe, expect, it } from 'vitest';
 
-import { countdown, formatCountdown } from '../code-countdown';
+import { CODE_COUNTDOWN } from '../../../config/code-countdown.constants';
+import { codeLifetime, formatCountdown } from '../code-countdown';
 
 const ISSUED_AT = Date.UTC(2026, 8, 25, 12, 0, 0);
 const TTL_MS = 15 * 60_000;
+const TTL_SECONDS = TTL_MS / CODE_COUNTDOWN.msInSecond;
 const EXPIRES_AT = new Date(ISSUED_AT + TTL_MS).toISOString();
 
 describe('formatCountdown', () => {
   it('pads seconds to two digits', () => {
-    expect(formatCountdown(65)).toBe('1:05');
+    expect(formatCountdown(CODE_COUNTDOWN.secondsInMinute + 5)).toBe('1:05');
   });
 
   it('keeps minutes past an hour unwrapped', () => {
-    expect(formatCountdown(61 * 60)).toBe('61:00');
+    expect(formatCountdown(61 * CODE_COUNTDOWN.secondsInMinute)).toBe('61:00');
   });
 
   it('never shows a negative clock', () => {
@@ -24,45 +26,37 @@ describe('formatCountdown', () => {
   });
 });
 
-describe('countdown', () => {
+describe('codeLifetime', () => {
   it('starts full at the moment of issue', () => {
-    const state = countdown({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT });
+    const lifetime = codeLifetime({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT });
 
-    expect(state.ratio).toBe(1);
-    expect(state.left).toBe(TTL_MS / 1_000);
-    expect(state.isExpired).toBe(false);
+    expect(lifetime.left).toBe(TTL_SECONDS);
+    expect(lifetime.left).toBe(lifetime.total);
   });
 
-  it('drains proportionally to the time spent', () => {
-    const state = countdown({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT + TTL_MS / 4 });
+  it('keeps the total fixed while the time left drains', () => {
+    const lifetime = codeLifetime({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT + TTL_MS / 4 });
 
-    expect(state.ratio).toBeCloseTo(0.75);
+    expect(lifetime.total).toBe(TTL_SECONDS);
+    expect(lifetime.left / lifetime.total).toBeCloseTo(0.75);
   });
 
   it('rounds a partial second up so the clock never reads zero too early', () => {
-    const state = countdown({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT + TTL_MS - 200 });
-
-    expect(state.left).toBe(1);
-    expect(state.isExpired).toBe(false);
+    expect(codeLifetime({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT + TTL_MS - 200 }).left).toBe(1);
   });
 
-  it('expires exactly on the deadline', () => {
-    const state = countdown({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT + TTL_MS });
-
-    expect(state.isExpired).toBe(true);
-    expect(state.ratio).toBe(0);
-  });
-
-  it('stays at zero past the deadline', () => {
-    const state = countdown({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT + TTL_MS * 2 });
-
-    expect(state.left).toBe(0);
-    expect(state.label).toBe(formatCountdown(0));
+  it('reaches zero exactly on the deadline and stays there', () => {
+    expect(codeLifetime({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT + TTL_MS }).left).toBe(0);
+    expect(codeLifetime({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT + TTL_MS * 2 }).left).toBe(0);
   });
 
   it('treats a clock that runs behind the issue time as a full fuse', () => {
-    const state = countdown({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT - 5_000 });
+    const lifetime = codeLifetime({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT, now: ISSUED_AT - 5_000 });
 
-    expect(state.ratio).toBe(1);
+    expect(lifetime.left).toBe(lifetime.total);
+  });
+
+  it('never reports a zero total, so a ratio is always defined', () => {
+    expect(codeLifetime({ expiresAt: EXPIRES_AT, issuedAt: ISSUED_AT + TTL_MS * 2, now: ISSUED_AT + TTL_MS * 2 }).total).toBeGreaterThan(0);
   });
 });

@@ -33,7 +33,9 @@
       "challengeActivated": "Challenge started",
       "challengeCancelled": "Challenge cancelled",
       "settingsSaved": "Settings saved",
-      "channelInvalid": "The server rejected a channel link — check the address"
+      "channelInvalid": "The server rejected a channel link — check the address",
+      "channelTaken": "This channel already belongs to another streamer profile",
+      "predictionsSaved": "Prediction settings saved"
     }
   },
   "profile": {
@@ -101,7 +103,14 @@
     "connect": "Connect",
     "disconnect": "Disconnect",
     "disconnectTitle": "Disconnect {name}?",
-    "disconnectDescription": "Three Marks will stop receiving events from {name}. You can reconnect at any time."
+    "disconnectDescription": "Three Marks will stop receiving events from {name}. You can reconnect at any time.",
+    "predictions": {
+      "label": "Auto predictions",
+      "description": "The mod opens an \"over N damage?\" prediction when a battle starts and resolves it from the result. Needs Twitch affiliate or partner.",
+      "reconnect": "Reconnect Twitch",
+      "reconnectHint": "Reconnect Twitch to grant the new permission predictions need.",
+      "panel": "The Twitch panel extension shows viewers your session and marks."
+    }
   },
   "overlays": {
     "description": "Add the overlay link to OBS as a Browser source.",
@@ -365,7 +374,7 @@
         "target": "Choose «my profile» — the settings show up here marked «from the game via the mod»."
       },
       "hint": "The mod never sends your login, tokens or account data.",
-      "bind": "Bind the mod"
+      "bind": "Install and bind the mod"
     },
     "xml": {
       "title": "Import preferences.xml",
@@ -378,5 +387,21 @@
       "apply": "Move into the form",
       "applied": "Moved into the form: {count}"
     }
+  },
+  "twitchPanel": {
+    "title": "Three Marks",
+    "session": "Last session",
+    "live": "Current session",
+    "noSession": "No sessions yet.",
+    "battles": "Battles",
+    "winRate": "Wins",
+    "avgDamage": "Avg damage",
+    "marks": "Marks",
+    "closest": "Closest to the next mark",
+    "noMarks": "Mark progress shows up with the companion mod.",
+    "open": "Profile on the site",
+    "notConnected": "No account linked",
+    "error": "Couldn't load the streamer's data.",
+    "attribution": "Data: Lesta Games API. An unofficial fan project, not affiliated with Lesta Games."
   }
 }

@@ -25,6 +25,16 @@ export class LestaAccountsService implements LestaAccountStore {
     return link?.userId ?? null;
   }
 
+  async primaryAccountId(userId: string): Promise<number | null> {
+    const link = await this.prisma.userLestaAccount.findFirst({
+      where: { userId },
+      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }],
+      select: { accountId: true }
+    });
+
+    return link ? Number(link.accountId) : null;
+  }
+
   async link({ userId, accountId, nickname, accessToken, expiresAt }: LinkLestaAccountInput): Promise<boolean> {
     const id = BigInt(accountId);
     const limit = await this.entitlements.limit({ userId, key: 'linkedAccounts' });

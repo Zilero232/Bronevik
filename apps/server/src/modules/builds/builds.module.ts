@@ -25,6 +25,7 @@ import {
     BuildUsageService,
     RecommendedBuildService,
     BuildsCatalogService
-  ]
+  ],
+  exports: [BuildDataService]
 })
 export class BuildsModule {}

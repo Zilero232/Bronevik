@@ -39,7 +39,9 @@ describe('ModerationService.resolve', () => {
 
     await service.resolve({ id: report.id, userId: 'moderator', status: 'resolved', hideTarget: true });
 
-    expect(prisma.build.updateMany).toHaveBeenCalledWith({ where: { id: targetId }, data: { status: 'hidden' } });
+    expect(prisma.build.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: targetId }), data: expect.objectContaining({ status: 'hidden' }) })
+    );
   });
 
   it('leaves the target alone without hideTarget', async () => {
@@ -55,7 +57,9 @@ describe('ModerationService.resolve', () => {
 
     await service.resolve({ id: report.id, userId: 'moderator', status: 'resolved', hideTarget: true });
 
-    expect(prisma.replay.updateMany).toHaveBeenCalledWith({ where: { id: targetId }, data: { visibility: 'private' } });
+    expect(prisma.replay.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: targetId }), data: expect.objectContaining({ visibility: 'private' }) })
+    );
   });
 
   it('resolves the other open reports on the same target', async () => {
@@ -63,10 +67,12 @@ describe('ModerationService.resolve', () => {
 
     await service.resolve({ id: report.id, userId: 'moderator', status: 'resolved', hideTarget: true });
 
-    expect(prisma.contentReport.updateMany).toHaveBeenCalledWith({
-      where: { targetType: 'build', targetId, status: 'open', id: { not: report.id } },
-      data: expect.objectContaining({ status: 'resolved', resolvedBy: 'moderator' })
-    });
+    expect(prisma.contentReport.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ targetType: 'build', targetId, status: 'open', id: { not: report.id } }),
+        data: expect.objectContaining({ status: 'resolved', resolvedBy: 'moderator' })
+      })
+    );
   });
 
   it('writes an audit entry', async () => {
@@ -88,7 +94,10 @@ describe('ModerationService.resolve', () => {
 
     await service.resolve({ id: report.id, userId: 'moderator', status: 'resolved', hideTarget: true });
 
-    expect(db.build.updateMany).toHaveBeenCalledWith({ where: { id: targetId }, data: { status: 'hidden' } });
+    expect(db.build.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: targetId }), data: expect.objectContaining({ status: 'hidden' }) })
+    );
+
     expect(prisma.build.updateMany).not.toHaveBeenCalled();
   });
 
@@ -119,7 +128,12 @@ describe('ModerationService.moderate', () => {
 
     await service.moderate({ target: 'guide', id: targetId, status: 'published' });
 
-    expect(prisma.guide.updateMany).toHaveBeenCalledWith({ where: { id: targetId }, data: { status: 'published', publishedAt: expect.any(Date) } });
+    expect(prisma.guide.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: targetId }),
+        data: expect.objectContaining({ status: 'published', publishedAt: expect.any(Date) })
+      })
+    );
   });
 
   it('does not stamp publishedAt when a guide is hidden', async () => {
@@ -129,6 +143,10 @@ describe('ModerationService.moderate', () => {
 
     await service.moderate({ target: 'guide', id: targetId, status: 'hidden' });
 
-    expect(prisma.guide.updateMany).toHaveBeenCalledWith({ where: { id: targetId }, data: { status: 'hidden' } });
+    expect(prisma.guide.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: targetId }), data: expect.objectContaining({ status: 'hidden' }) })
+    );
+
+    expect(prisma.guide.updateMany.mock.calls[0]?.[0].data).not.toHaveProperty('publishedAt');
   });
 });

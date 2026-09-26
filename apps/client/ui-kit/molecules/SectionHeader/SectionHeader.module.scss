@@ -27,8 +27,35 @@
 }
 
 .action {
+  display: flex;
   flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
   font-size: var(--text-sm);
+  gap: var(--space-3) var(--space-6);
+}
+
+.meta {
+  @include label;
+}
+
+.more {
+  @include nav-label;
+
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+  gap: var(--space-2);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
 }
 
 .count {
@@ -46,10 +73,15 @@
   vertical-align: middle;
 }
 
-.display .title {
-  @include heading(var(--display-md));
+.display {
+  align-items: flex-end;
+  margin-bottom: 0;
 
-  @include below(lg) {
-    font-size: var(--text-2xl);
+  .title {
+    @include heading(var(--display-md));
+
+    @include below(lg) {
+      font-size: var(--text-2xl);
+    }
   }
 }

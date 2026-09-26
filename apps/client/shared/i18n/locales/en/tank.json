@@ -155,6 +155,7 @@
     "battlesColumn": "Battles",
     "emptyTitle": "The leaderboard is empty",
     "podiumLabel": "Top three",
+    "rank": "Place {rank}",
     "battles": "{battles} battles"
   },
   "builds": {
@@ -312,6 +313,7 @@
     "stats": "Stats",
     "marks": "Marks",
     "builds": "Build",
+    "math": "Tank math",
     "players": "Players",
     "patches": "Changes"
   }

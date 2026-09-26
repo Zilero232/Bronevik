@@ -72,7 +72,8 @@ export const replaySummarySchema = z.object({
     name: z.string().nullable(),
     vehicleId: z.number().int().nullable(),
     vehicleType: z.string().nullable(),
-    team: z.number().int().nullable()
+    team: z.number().int().nullable(),
+    markOfMastery: z.number().int().min(0).max(4).nullish()
   }),
   players: z.array(replayPlayerSchema)
 });

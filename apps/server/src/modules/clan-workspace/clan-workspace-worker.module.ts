@@ -16,6 +16,7 @@ import { ClanAccessService, ClanEventAttendanceService, ClanEventRemindersServic
     OfficerReportService,
     ClanWorkspaceProcessor,
     ClanWorkspaceSchedulesService
-  ]
+  ],
+  exports: [OfficerReportService]
 })
 export class ClanWorkspaceWorkerModule {}

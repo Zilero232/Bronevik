@@ -11,7 +11,7 @@ import { Badge } from '@/ui-kit';
 import type { ToolCardProps } from './ToolCard.types';
 
 import { ChatPreview } from '../ChatPreview';
-import { OnAirMonitor } from '../OnAirMonitor';
+import { OverlaySample } from '../OverlaySample';
 
 import s from './ToolCard.module.scss';
 
@@ -46,7 +46,7 @@ export const ToolCard = ({ tool, icon: Icon, isFlipped }: ToolCardProps) => {
               {t('challenges.stamp')}
             </span>
           ))
-          .with('overlays', () => <OnAirMonitor />)
+          .with('overlays', () => <OverlaySample />)
           .with('commands', () => <ChatPreview />)
           .with('page', () => (
             <code className={s.url}>

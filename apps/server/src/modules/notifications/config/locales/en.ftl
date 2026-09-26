@@ -104,3 +104,15 @@ streamer-live-title = { $name } is live
 streamer-live-body = The stream has started: { $platform }
 streamer-live-tank-title = { $name } is live on { $tankName }
 streamer-live-tank-body = Streaming { $tankName }: { $platform }
+
+tank-level-up-title = { $tankName }: level { $level }
+tank-level-up-body = Your tank reached level { $level }. { $shells } { $shells ->
+        [one] shell
+       *[other] shells
+    } credited
+
+tank-challenge-done-title = Weekly challenge complete
+tank-challenge-done-body = { $tankName }: this week's challenge is done. { $shells } { $shells ->
+        [one] shell
+       *[other] shells
+    } credited

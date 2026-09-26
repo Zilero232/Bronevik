@@ -2,14 +2,16 @@ import { apiKey } from '@better-auth/api-key';
 import { API_KEY } from '@otmetki/schemas';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { admin, bearer, magicLink } from 'better-auth/plugins';
+import { admin, bearer, customSession, magicLink } from 'better-auth/plugins';
 
 import type { CreateAuthInput } from './auth.types';
 
 import { allowedOrigins, isProduction } from '../../config';
-import { API_KEY_PLUGIN, SESSION } from './auth.constants';
+import { API_KEY_PLUGIN, AUTH_PROVIDER, SESSION } from './auth.constants';
 import { lestaId } from './lesta-id';
+import { socialProviders } from './social-providers';
 import { telegramLogin } from './telegram-login';
+import { vkMiniApp } from './vk-mini-app';
 
 export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, logger }: CreateAuthInput) => {
   const magicLinkEnabled = !isProduction(env);
@@ -29,6 +31,10 @@ export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, logg
       updateAge: SESSION.updateAge
     },
     emailAndPassword: { enabled: false },
+    socialProviders: socialProviders(env),
+    account: {
+      accountLinking: { enabled: true, allowDifferentEmails: true, trustedProviders: [AUTH_PROVIDER.discord, AUTH_PROVIDER.vk] }
+    },
     plugins: [
       bearer(),
       admin(),
@@ -44,7 +50,9 @@ export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, logg
         schema: { apikey: { modelName: API_KEY_PLUGIN.modelName } }
       }),
       lestaId({ lesta, store: lestaStore, apiUrl: env.API_URL, webUrl: env.WEB_URL }),
+      customSession(async ({ user, session }) => ({ user, session, lestaAccountId: await lestaStore.primaryAccountId(user.id) })),
       telegramLogin({ botToken: env.TELEGRAM_BOT_TOKEN, botUsername: env.TELEGRAM_BOT_USERNAME, store: telegramStore }),
+      vkMiniApp({ appId: env.VK_MINI_APP_ID, appSecret: env.VK_MINI_APP_SECRET }),
       ...(magicLinkEnabled
         ? [
             magicLink({

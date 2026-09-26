@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
-import { useRouter } from '@/shared/i18n/navigation';
 import { Button, Card, CardHeader, DataTable, EmptyState, ErrorState, Tabs } from '@/ui-kit';
 
 import type { ReplayTab } from './ReplayBrowser.types';
@@ -18,7 +17,6 @@ import s from './ReplayBrowser.module.scss';
 export const ReplayBrowser = () => {
   const t = useTranslations('replays.list');
   const titleId = useId();
-  const router = useRouter();
   const {
     tab,
     isSignedIn,
@@ -87,8 +85,8 @@ export const ReplayBrowser = () => {
           data={items}
           density='media'
           getRowId={(row) => row.id}
+          getRowLink={(row) => ({ href: ROUTES.replays.detail(row.id), label: row.mapName ?? row.arenaId ?? t('unknownMap') })}
           isLoading={isPending}
-          onRowClick={(row) => router.push(ROUTES.replays.detail(row.id))}
         />
       )}
     </Card>

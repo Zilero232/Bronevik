@@ -32,7 +32,7 @@ describe('parseCrew', () => {
     const eagleEye = skill('commander_eagleEye');
     const perk = eagleEye?.vsePerk === undefined ? undefined : perks.get(eagleEye.vsePerk);
 
-    expect(perk).toBeDefined();
+    expect(perk?.circularVisionRadius).toBeGreaterThan(0);
     expect(eagleEye?.params.find((param) => param.name === 'circularVisionRadius')?.perLevel).toBe(perk?.circularVisionRadius);
     expect(skill('loader_desperado')?.params.some((param) => param.situational)).toBe(true);
     expect(skill('brotherhood')?.extras.crewLevelIncrease).toBeGreaterThan(0);

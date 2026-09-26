@@ -38,6 +38,7 @@ export type LestaAccountStore = {
   findUserId: (accountId: number) => Promise<string | null>;
   link: (input: LinkLestaAccountInput) => Promise<boolean>;
   revokeTokens: (userId: string) => Promise<void>;
+  primaryAccountId: (userId: string) => Promise<number | null>;
 };
 
 export type LestaIdOptions = {
@@ -49,6 +50,7 @@ export type LestaIdOptions = {
 
 export type LestaIdState = {
   callbackURL: string;
+  errorCallbackURL: string | null;
   linkUserId: string | null;
 };
 

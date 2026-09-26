@@ -1,13 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { accountWn8 } from '@otmetki/ratings';
 import { fromUnixTime } from 'date-fns';
 import { groupBy, sortBy, sumBy } from 'remeda';
 
-import type { WebhookEmitter } from '../../../core';
+import type { BattleEventsSink, WebhookEmitter } from '../../../core';
 import type { IngestResponse } from '../lib';
 import type { BattleEventInput, IngestInput, LedgeredEventInput, MarkGainedInput, SessionRef, SessionSummary } from '../mod.types';
 
-import { isUniqueViolation, PrismaService, WEBHOOK_EMITTER } from '../../../core';
+import { BATTLE_EVENTS, isUniqueViolation, PrismaService, WEBHOOK_EMITTER } from '../../../core';
 import { ExpectedValuesService } from '../../reference';
 import { countsForSession, moePercent, sessionIncrement, sessionUuid } from '../lib';
 import { toBattleData } from '../mappers';
@@ -19,7 +19,8 @@ export class ModIngestService {
     private readonly prisma: PrismaService,
     private readonly ledger: EventLedgerService,
     private readonly expected: ExpectedValuesService,
-    @Inject(WEBHOOK_EMITTER) private readonly webhooks: WebhookEmitter
+    @Inject(WEBHOOK_EMITTER) private readonly webhooks: WebhookEmitter,
+    @Optional() @Inject(BATTLE_EVENTS) private readonly battleEvents: BattleEventsSink | null = null
   ) {}
 
   async ingest({ device, batch }: IngestInput): Promise<IngestResponse> {
@@ -139,6 +140,10 @@ export class ModIngestService {
     }
 
     try {
+      if (event.type === 'battle_start') {
+        await this.battleEvents?.started({ accountId: device.accountId, tankId: event.tank_id, occurredAt: fromUnixTime(event.occurred_at) });
+      }
+
       if (event.type === 'moe_snapshot') {
         const values = { marks: event.marks_on_gun, percent: moePercent(event.damage_rating), movingDamage: event.moving_avg_damage };
         const where = { accountId_tankId: { accountId: device.accountId, tankId: event.tank_id } };

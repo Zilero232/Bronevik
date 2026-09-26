@@ -9,6 +9,7 @@
 
 .trigger {
   @include reset-button;
+  @include touch-target;
 
   display: inline-flex;
   min-width: 180px;

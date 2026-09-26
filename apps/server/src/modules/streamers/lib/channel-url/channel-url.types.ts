@@ -1,15 +1,8 @@
-import type { StreamerPlatform } from '@otmetki/schemas';
+import type { StreamerChannel, StreamerChannelInput, StreamerPlatform } from '@otmetki/schemas';
 
-export type ParseChannelInput = {
-  platform: StreamerPlatform;
-  url: string;
-};
+export type ParseChannelInput = StreamerChannelInput;
 
-export type ParsedChannel = {
-  platform: StreamerPlatform;
-  handle: string;
-  url: string;
-};
+export type ParsedChannel = Omit<StreamerChannel, 'verified'>;
 
 export type HandleOfInput = {
   platform: StreamerPlatform;

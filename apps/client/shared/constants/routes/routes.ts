@@ -1,19 +1,25 @@
 import type { MissionOperationRouteInput, PlayerSessionRouteInput } from './routes.types';
 
+import { ROUTE_PARAMS } from './routes.constants';
+
 export const ROUTES = {
   home: '/',
   design: '/design',
   auth: {
     login: '/login',
+    loginNext: (next: string) => `/login?${new URLSearchParams({ [ROUTE_PARAMS.next]: next }).toString()}`,
     telegram: '/login/telegram'
   },
   players: {
     list: '/players',
     profile: (nickname: string) => `/p/${encodeURIComponent(nickname)}`,
     session: ({ nickname, sessionId }: PlayerSessionRouteInput) => `/p/${encodeURIComponent(nickname)}/sessions/${sessionId}`,
+    signature: (nickname: string) => `/p/${encodeURIComponent(nickname)}/signature`,
     compare: '/compare/players'
   },
   top: '/top',
+  bestBattles: '/best-battles',
+  achievements: '/achievements',
   tanks: {
     list: '/tanks',
     detail: (slug: string) => `/t/${slug}`,
@@ -25,6 +31,7 @@ export const ROUTES = {
     detail: (slug: string) => `/builds/${slug}`
   },
   tree: '/tree',
+  supertest: '/supertest',
   marks: '/marks',
   modes: {
     list: '/modes',
@@ -32,6 +39,7 @@ export const ROUTES = {
   },
   maps: {
     list: '/maps',
+    rotation: '/maps?tab=rotation',
     detail: (id: string) => `/maps/${encodeURIComponent(id)}`
   },
   play: {
@@ -51,6 +59,7 @@ export const ROUTES = {
   shop: '/shop',
   events: '/events',
   pulse: '/pulse',
+  honestRng: '/honest-rng',
   streamers: {
     list: '/streamers',
     profile: (slug: string) => `/s/${encodeURIComponent(slug)}`,
@@ -64,6 +73,7 @@ export const ROUTES = {
     }
   },
   developers: '/developers',
+  mod: '/mod',
   plus: '/plus',
   replays: {
     list: '/replays',
@@ -94,11 +104,13 @@ export const ROUTES = {
     detail: (slug: string) => `/competitions/${encodeURIComponent(slug)}`
   },
   miniApp: '/tg',
+  vkMiniApp: '/vk',
   account: {
     overview: '/me',
     progress: '/me/progress',
     cosmetics: '/me/cosmetics',
     analytics: '/me/analytics',
+    analyticsTank: (tankId: number) => `/me/analytics/tanks/${tankId}`,
     battles: '/me/battles',
     battle: (id: string) => `/me/battles/${encodeURIComponent(id)}`,
     developer: '/me/developer',

@@ -11,8 +11,10 @@ import { CACHE_STORE, THROTTLE } from './common/cache';
 import { AllExceptionsFilter } from './common/filters';
 import { AppConfigModule, AppConfigService } from './config';
 import { AppLoggerModule, LestaModule, LOGGER, PrismaModule, QueuesModule, REDIS, RedisModule } from './core';
+import { AchievementsRarityModule } from './modules/achievements-rarity';
 import { AnalyticsModule } from './modules/analytics';
 import { AuthModule } from './modules/auth';
+import { BestBattlesModule } from './modules/best-battles';
 import { BillingModule } from './modules/billing';
 import { BuildsModule } from './modules/builds';
 import { ClanWorkspaceModule } from './modules/clan-workspace';
@@ -23,10 +25,13 @@ import { CommunityBuildsModule } from './modules/community-builds';
 import { CompareModule } from './modules/compare';
 import { CompetitionsModule } from './modules/competitions';
 import { DeveloperEventsModule, DeveloperModule } from './modules/developer';
+import { DiscordModule } from './modules/discord';
 import { EventsModule } from './modules/events';
 import { GuidesModule } from './modules/guides';
 import { HealthModule } from './modules/health';
+import { HonestRngModule } from './modules/honest-rng';
 import { LeaderboardsModule } from './modules/leaderboards';
+import { MapStatsModule } from './modules/map-stats';
 import { MapsModule } from './modules/maps';
 import { MarksModule } from './modules/marks';
 import { MeModule } from './modules/me';
@@ -46,12 +51,15 @@ import { ReplaysModule } from './modules/replays';
 import { SearchModule } from './modules/search';
 import { ShopModule } from './modules/shop';
 import { SocialModule } from './modules/social';
-import { StreamersModule } from './modules/streamers';
+import { StreamerEventsModule, StreamersModule } from './modules/streamers';
+import { SupertestModule } from './modules/supertest';
 import { TacticsModule } from './modules/tactics';
+import { TankMathModule } from './modules/tank-math';
 import { TanksModule } from './modules/tanks';
 import { TelegramModule } from './modules/telegram';
 import { TournamentsModule } from './modules/tournaments';
 import { TreeModule } from './modules/tree';
+import { VkModule } from './modules/vk';
 import { WatchlistModule } from './modules/watchlist';
 
 @Module({
@@ -65,6 +73,7 @@ import { WatchlistModule } from './modules/watchlist';
     CollectorQueuesModule,
     CollectorProducerModule,
     DeveloperEventsModule,
+    StreamerEventsModule,
     CacheModule.registerAsync({
       isGlobal: true,
       inject: [AppConfigService],
@@ -99,6 +108,8 @@ import { WatchlistModule } from './modules/watchlist';
     PublicApiModule,
     NotificationsModule,
     TelegramModule,
+    DiscordModule,
+    VkModule,
     BillingModule,
     StreamersModule,
     ReplaysModule,
@@ -120,6 +131,12 @@ import { WatchlistModule } from './modules/watchlist';
     SocialModule,
     ProgressionModule,
     PulseModule,
+    BestBattlesModule,
+    HonestRngModule,
+    MapStatsModule,
+    TankMathModule,
+    AchievementsRarityModule,
+    SupertestModule,
     BoardModule
   ],
   providers: [

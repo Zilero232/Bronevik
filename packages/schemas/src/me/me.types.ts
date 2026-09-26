@@ -11,6 +11,7 @@ import type {
   goalsSchema,
   goalStatusSchema,
   linkedAccountsSchema,
+  sessionExtrasSchema,
   updateGoalSchema
 } from './me.schemas';
 
@@ -25,3 +26,4 @@ export type Goals = z.infer<typeof goalsSchema>;
 export type CreateGoalInput = z.infer<typeof createGoalSchema>;
 export type UpdateGoalInput = z.infer<typeof updateGoalSchema>;
 export type LinkedAccounts = z.infer<typeof linkedAccountsSchema>;
+export type SessionExtras = z.infer<typeof sessionExtrasSchema>;

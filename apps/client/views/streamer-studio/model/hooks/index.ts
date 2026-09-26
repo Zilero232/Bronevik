@@ -17,6 +17,7 @@ export { useOverlayPreview } from './use-overlay-preview';
 export { useOverlayThemes } from './use-overlay-themes';
 export { useOverlays, useRemoveOverlay, useSaveOverlay } from './use-overlays';
 export { useOverlaysPanel } from './use-overlays-panel';
+export { usePredictionsToggle } from './use-predictions-toggle';
 export { useProfileForm } from './use-profile-form';
 export { useProfileIdentityFields } from './use-profile-identity-fields';
 export { useSettingsField } from './use-settings-field';

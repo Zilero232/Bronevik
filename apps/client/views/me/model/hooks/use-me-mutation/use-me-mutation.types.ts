@@ -1,6 +1,6 @@
 import type { MeSection } from '@/shared/constants';
 
-export type MeToastKey = 'deviceRevoked' | 'favoriteRemoved' | 'goalAdded' | 'goalRemoved';
+export type MeToastKey = 'botUnlinked' | 'deviceRevoked' | 'favoriteRemoved' | 'goalAdded' | 'goalRemoved';
 
 export type UseMeMutationInput<TInput, TOutput> = {
   section: MeSection;

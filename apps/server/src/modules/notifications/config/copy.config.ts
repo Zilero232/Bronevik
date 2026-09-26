@@ -22,5 +22,6 @@ export const NOTIFICATION_LINKS = {
   analytics: '/me/analytics',
   watchlist: '/me/watchlist',
   competitions: '/competitions',
-  streamer: '/s'
+  streamer: '/s',
+  progress: '/me/progress'
 } as const;

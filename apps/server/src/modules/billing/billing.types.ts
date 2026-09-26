@@ -32,11 +32,6 @@ export type CheckoutInput = {
   promoCode?: string;
 };
 
-export type CheckoutResult = {
-  confirmationUrl: string;
-  paymentId: string;
-};
-
 export type PromoCodeInput = {
   userId: string;
   code: string;

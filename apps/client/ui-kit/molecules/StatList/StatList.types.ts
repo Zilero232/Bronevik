@@ -8,6 +8,8 @@ export type StatListItem = {
   value: number | string | null | undefined;
   kind?: StatValueKind;
   suffix?: ReactNode;
+  delta?: number | null;
+  isDeltaLowerBetter?: boolean;
   isHighlighted?: boolean;
   tone?: RatingTone;
 };

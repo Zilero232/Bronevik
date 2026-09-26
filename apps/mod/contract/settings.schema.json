@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://otmetki.app/contract/mod/settings.schema.json",
+  "$id": "https://triotmetki.ru/contract/mod/settings.schema.json",
   "title": "Three Marks mod streamer settings export and apply",
   "description": "Hangar-only. Every request is signed exactly like /mod/ingest (X-Otmetki-Device + X-Otmetki-Signature over the raw body). POST /mod/settings body #/definitions/export -> 204. POST /mod/settings/apply/poll body #/definitions/deviceRequest -> 200 #/definitions/pollResponse. POST /mod/settings/apply/<id>/result body #/definitions/result -> 204. Only standard client settings from a whitelist are sent: never login/account keys, hardware or mods. The mod applies a request only after the player confirms it in the hangar; resolution, refresh rate, window mode and sensitivity are left out unless the player opts in. Mirrors packages/schemas/src/streamer-settings (modSettingsExportSchema, modApplyListSchema, modApplyResultSchema).",
   "definitions": {

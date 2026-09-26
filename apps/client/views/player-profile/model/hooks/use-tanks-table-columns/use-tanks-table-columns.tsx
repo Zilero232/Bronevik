@@ -36,19 +36,19 @@ export const useTanksTableColumns = (): ColumnDef<PlayerTankRow, never>[] => {
       id: 'wn8',
       header: 'WN8',
       cell: (info) => <RatingValue rating={info.row.original.wn8} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
     }),
     column.accessor((row) => row.avgDamage ?? 0, {
       id: 'avgDamage',
       header: t('avgDamage'),
       cell: (info) => format.number(info.getValue(), { maximumFractionDigits: 0 }),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'md' }
     }),
     column.accessor((row) => (row.marksOnGun ?? 0) * 10 + row.markOfMastery, {
       id: 'awards',
       header: t('awards'),
       cell: (info) => <TankAwards markOfMastery={info.row.original.markOfMastery} marksOnGun={info.row.original.marksOnGun} />,
-      meta: { align: 'center' }
+      meta: { align: 'center', hideBelow: 'lg' }
     }),
     column.accessor((row) => row.moePercent ?? -1, {
       id: 'moe',
@@ -60,7 +60,7 @@ export const useTanksTableColumns = (): ColumnDef<PlayerTankRow, never>[] => {
       id: 'recent',
       header: t('recent'),
       cell: (info) => <RecentCell recent={info.row.original.recent} />,
-      meta: { align: 'end' }
+      meta: { align: 'end', hideBelow: 'lg' }
     })
   ];
 };

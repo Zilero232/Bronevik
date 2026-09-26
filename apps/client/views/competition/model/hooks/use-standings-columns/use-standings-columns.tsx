@@ -20,8 +20,7 @@ export const useStandingsColumns = ({ myTeamId, battlesPerPlayer }: UseStandings
   return [
     column.accessor('rank', {
       header: '#',
-      cell: (info) => format.number(info.getValue()),
-      meta: { width: 48, align: 'end', isNumeric: true }
+      meta: { width: 48, align: 'end', isRank: true }
     }),
     column.accessor('name', {
       header: t('columns.team'),
@@ -31,17 +30,17 @@ export const useStandingsColumns = ({ myTeamId, battlesPerPlayer }: UseStandings
       id: 'members',
       header: t('columns.members'),
       cell: (info) => <MembersCell battlesPerPlayer={battlesPerPlayer} members={info.row.original.members} />,
-      meta: { width: '40%' }
+      meta: { width: '40%', hideBelow: 'md' }
     }),
     column.accessor('battles', {
       header: t('columns.battles'),
       cell: (info) => format.number(info.getValue()),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
     }),
     column.accessor('score', {
       header: t('columns.score'),
       cell: (info) => format.number(info.getValue(), COMPETITION_PAGE.scoreFormat),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, bar: { tone: 'accent' } }
     })
   ];
 };

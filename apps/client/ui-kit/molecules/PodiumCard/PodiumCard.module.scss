@@ -1,0 +1,148 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --medal: var(--color-border-strong);
+
+  display: grid;
+  min-width: 0;
+
+  &[data-medal='gold'] {
+    --medal: var(--color-mastery-gold);
+  }
+
+  &[data-medal='silver'] {
+    --medal: var(--color-mastery-silver);
+  }
+
+  &[data-medal='bronze'] {
+    --medal: var(--color-mastery-bronze);
+  }
+
+  @include from(md) {
+    &[data-rank='1'] {
+      order: 2;
+    }
+
+    &[data-rank='2'] {
+      order: 1;
+    }
+
+    &[data-rank='3'] {
+      order: 3;
+    }
+  }
+}
+
+.card {
+  @include media-card;
+  @include stack(var(--space-4));
+  @include tone;
+
+  min-width: 0;
+  padding: var(--space-5);
+  border-top: 3px solid var(--medal);
+  background:
+    radial-gradient(260px 160px at 100% 0%, color-mix(in srgb, var(--medal) 16%, transparent), transparent 70%), var(--surface-sheen),
+    var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+
+  .root[data-rank='1'] & {
+    @include from(md) {
+      padding-block: var(--space-7) var(--space-6);
+    }
+  }
+
+  &:is(a) {
+    @include lift-hover;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+}
+
+.glyph {
+  position: absolute;
+  top: -24px;
+  right: -24px;
+  display: inline-flex;
+  color: var(--medal);
+  opacity: 0.12;
+  pointer-events: none;
+  transform: rotate(-8deg);
+
+  :global(svg) {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+.head {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.rank {
+  @include numeric(var(--num-md));
+
+  display: inline-grid;
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border: 3px solid var(--medal);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-raised);
+  color: var(--medal);
+  font-weight: 700;
+  place-items: center;
+}
+
+.name {
+  overflow: hidden;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.figure {
+  @include stack(var(--space-1));
+
+  position: relative;
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--color-border-strong);
+
+  .card[data-tone] & {
+    border-left-color: var(--tone);
+  }
+}
+
+.label {
+  @include label;
+}
+
+.value {
+  @include numeric(var(--num-lg));
+
+  font-weight: 700;
+
+  .card[data-tone] & {
+    color: var(--tone);
+  }
+}
+
+.meta {
+  position: relative;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.srOnly {
+  @include sr-only;
+}

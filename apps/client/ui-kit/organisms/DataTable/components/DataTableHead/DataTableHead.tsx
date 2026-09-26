@@ -15,15 +15,16 @@ export const DataTableHead = <T,>({ table }: DataTableHeadProps<T>) => {
         <tr key={group.id}>
           {group.headers.map((header) => {
             const sorted = header.column.getIsSorted();
-            const { align = 'start', width, isSticky } = header.column.columnDef.meta ?? {};
+            const { align = 'start', width, isSticky, hideBelow } = header.column.columnDef.meta ?? {};
             const content = header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext());
 
             return (
               <th
                 key={header.id}
-                aria-sort={sorted ? DATA_TABLE.ariaSort[sorted] : undefined}
+                aria-sort={sorted ? DATA_TABLE.ariaSort[sorted] : header.column.getCanSort() ? 'none' : undefined}
                 className={s.th}
                 data-align={align}
+                data-hide-below={hideBelow}
                 data-sticky={isSticky}
                 scope='col'
                 style={{ width }}

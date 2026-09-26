@@ -4,7 +4,7 @@ import { MonitorCog } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Controller } from 'react-hook-form';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import {
   Badge,
@@ -29,6 +29,7 @@ import { useApplySettingsForm } from '../model/hooks';
 import s from './ApplySettings.module.scss';
 
 export const ApplySettings = ({ slug, settings, className }: ApplySettingsProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('streamerSettings.apply');
   const { form, isSignedIn, isSessionPending, isAvailable, isOpen, isPending, request, groupOptions, options, onOpenChange, onSubmit } =
     useApplySettingsForm({ slug, settings });
@@ -39,7 +40,7 @@ export const ApplySettings = ({ slug, settings, className }: ApplySettingsProps)
 
   if (!isSignedIn && !isSessionPending) {
     return (
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={ROUTES.auth.login} title={t('signIn')}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={loginHref} title={t('signIn')}>
         <MonitorCog size={15} />
         {t('trigger')}
       </Link>

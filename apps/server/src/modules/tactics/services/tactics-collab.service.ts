@@ -2,6 +2,7 @@ import type { OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/comm
 import type { IncomingMessage } from 'node:http';
 import type { Duplex } from 'node:stream';
 
+import { Redis as RedisExtension } from '@hocuspocus/extension-redis';
 import { Hocuspocus } from '@hocuspocus/server';
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
@@ -12,7 +13,7 @@ import type { CollabContext } from '../tactics.types';
 
 import { allowedOrigins, AppConfigService } from '../../../config';
 import { TACTICS } from '../config';
-import { boardIdOf, boardSnapshot, canEdit, encodeBoard, restoreBoard, seedBoardDocument } from '../lib';
+import { boardIdOf, boardSnapshot, canEdit, encodeBoard, redisConnection, restoreBoard, seedBoardDocument } from '../lib';
 import { BoardLiveService } from './board-live.service';
 import { TacticBoardService } from './tactic-board.service';
 
@@ -20,51 +21,7 @@ import { TacticBoardService } from './tactic-board.service';
 export class TacticsCollabService implements OnApplicationBootstrap, OnApplicationShutdown {
   private readonly logger = new Logger(TacticsCollabService.name);
   private readonly sockets = new WebSocketServer({ noServer: true, maxPayload: TACTICS.maxPayloadBytes });
-  private readonly hocuspocus = new Hocuspocus<CollabContext>({
-    quiet: true,
-    debounce: TACTICS.debounceMs,
-    maxDebounce: TACTICS.maxDebounceMs,
-    onAuthenticate: async ({ documentName, token, requestHeaders, connectionConfig }) => {
-      const boardId = boardIdOf({ prefix: TACTICS.documentPrefix, name: documentName });
-
-      if (!boardId) {
-        throw new Error('Unknown board');
-      }
-
-      const session = await this.auth.api.getSession({ headers: requestHeaders }).catch(() => null);
-      const { role } = await this.boards.access({ id: boardId, userId: session?.user.id ?? null, token: token || null });
-
-      connectionConfig.readOnly = !canEdit(role);
-
-      return { boardId };
-    },
-    onLoadDocument: async ({ document, context }) => {
-      const { state, data } = await this.boards.loadState(context.boardId);
-
-      if (state) {
-        restoreBoard({ document, state });
-      } else {
-        seedBoardDocument({ document, data });
-      }
-
-      return document;
-    },
-    onStoreDocument: async ({ document, documentName }) => {
-      const boardId = boardIdOf({ prefix: TACTICS.documentPrefix, name: documentName });
-
-      const state = encodeBoard(document);
-
-      if (state.byteLength > TACTICS.maxDocumentBytes) {
-        this.logger.warn(`board ${documentName} is ${state.byteLength} bytes, over the limit, not stored`);
-
-        return;
-      }
-
-      if (boardId) {
-        await this.boards.storeState({ id: boardId, state, snapshot: boardSnapshot(document) });
-      }
-    }
-  });
+  private readonly hocuspocus: Hocuspocus<CollabContext>;
 
   constructor(
     private readonly adapterHost: HttpAdapterHost,
@@ -73,7 +30,57 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
     private readonly auth: AuthService,
     private readonly live: BoardLiveService
   ) {
+    this.hocuspocus = this.createServer();
     this.live.attach(this.hocuspocus);
+  }
+
+  private createServer(): Hocuspocus<CollabContext> {
+    return new Hocuspocus<CollabContext>({
+      quiet: true,
+      extensions: [new RedisExtension({ ...redisConnection(this.config.get('REDIS_URL')), prefix: TACTICS.redisPrefix })],
+      debounce: TACTICS.debounceMs,
+      maxDebounce: TACTICS.maxDebounceMs,
+      onAuthenticate: async ({ documentName, token, requestHeaders, connectionConfig }) => {
+        const boardId = boardIdOf({ prefix: TACTICS.documentPrefix, name: documentName });
+
+        if (!boardId) {
+          throw new Error('Unknown board');
+        }
+
+        const session = await this.auth.api.getSession({ headers: requestHeaders }).catch(() => null);
+        const { role } = await this.boards.access({ id: boardId, userId: session?.user.id ?? null, token: token || null });
+
+        connectionConfig.readOnly = !canEdit(role);
+
+        return { boardId };
+      },
+      onLoadDocument: async ({ document, context }) => {
+        const { state, data } = await this.boards.loadState(context.boardId);
+
+        if (state) {
+          restoreBoard({ document, state });
+        } else {
+          seedBoardDocument({ document, data });
+        }
+
+        return document;
+      },
+      onStoreDocument: async ({ document, documentName }) => {
+        const boardId = boardIdOf({ prefix: TACTICS.documentPrefix, name: documentName });
+
+        const state = encodeBoard(document);
+
+        if (state.byteLength > TACTICS.maxDocumentBytes) {
+          this.logger.warn(`board ${documentName} is ${state.byteLength} bytes, over the limit, not stored`);
+
+          return;
+        }
+
+        if (boardId) {
+          await this.boards.storeState({ id: boardId, state, snapshot: boardSnapshot(document) });
+        }
+      }
+    });
   }
 
   onApplicationBootstrap(): void {
@@ -128,5 +135,6 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
     this.hocuspocus.flushPendingStores();
     this.hocuspocus.closeConnections();
     this.sockets.close();
+    await this.hocuspocus.hooks('onDestroy', { instance: this.hocuspocus });
   }
 }

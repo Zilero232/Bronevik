@@ -2,8 +2,9 @@ import type { AnalyticsOverview, SessionCompareRow } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 
+import type { PlaytimeRow } from '../../players';
 import type { AnalyticsInput, PeriodWindow, SessionsInput, TrendInput, TrendRow, WindowInput } from '../analytics.types';
-import type { PlaytimeCell, RawTankRow } from '../lib';
+import type { RawTankRow } from '../lib';
 
 import { percentOf } from '../../../common/lib';
 import { PrismaService } from '../../../core';
@@ -81,8 +82,8 @@ export class AnalyticsOverviewService {
     `;
   }
 
-  private async battlePlaytime({ accountId, from }: WindowInput): Promise<PlaytimeCell[]> {
-    return this.prisma.$queryRaw<PlaytimeCell[]>`
+  private async battlePlaytime({ accountId, from }: WindowInput): Promise<PlaytimeRow[]> {
+    return this.prisma.$queryRaw<PlaytimeRow[]>`
       SELECT extract(dow FROM started_at AT TIME ZONE ${ANALYTICS_WINDOW.timeZone})::int AS weekday,
              extract(hour FROM started_at AT TIME ZONE ${ANALYTICS_WINDOW.timeZone})::int AS hour,
              count(*)::float8 AS battles,
@@ -94,8 +95,8 @@ export class AnalyticsOverviewService {
     `;
   }
 
-  private async deltaPlaytime({ accountId, from }: WindowInput): Promise<PlaytimeCell[]> {
-    return this.prisma.$queryRaw<PlaytimeCell[]>`
+  private async deltaPlaytime({ accountId, from }: WindowInput): Promise<PlaytimeRow[]> {
+    return this.prisma.$queryRaw<PlaytimeRow[]>`
       SELECT extract(dow FROM captured_at AT TIME ZONE ${ANALYTICS_WINDOW.timeZone})::int AS weekday,
              extract(hour FROM captured_at AT TIME ZONE ${ANALYTICS_WINDOW.timeZone})::int AS hour,
              sum(battles)::float8 AS battles,

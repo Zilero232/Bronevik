@@ -1,6 +1,8 @@
+import type { InboxPage } from '@otmetki/schemas';
+
 import { Injectable } from '@nestjs/common';
 
-import type { InboxListInput, InboxPage, MarkReadInput } from '../notifications.types';
+import type { InboxListInput, MarkReadInput } from '../notifications.types';
 
 import { NOTIFICATION_EVENT_FROM_DB, readRecord, toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';

@@ -1,11 +1,27 @@
 'use client';
 
+import { useLocale } from 'next-intl';
+
+import { returnUrl } from '@/entities/auth/session';
+import { resolveLocale } from '@/shared/i18n';
 import { useHydrated } from '@/shared/lib';
+
+import type { LestaStartUrlInput } from './use-lesta-start-url.types';
 
 import { lestaStartUrl } from '../../../api';
 
-export const useLestaStartUrl = (callbackPath: string) => {
+export const useLestaStartUrl = ({ callbackPath, errorPath }: LestaStartUrlInput) => {
   const isHydrated = useHydrated();
+  const locale = resolveLocale(useLocale());
 
-  return isHydrated ? lestaStartUrl({ callbackURL: new URL(callbackPath, window.location.origin).toString() }) : undefined;
+  if (!isHydrated) {
+    return undefined;
+  }
+
+  const { origin } = window.location;
+
+  return lestaStartUrl({
+    callbackURL: returnUrl({ path: callbackPath, locale, origin }),
+    errorCallbackURL: errorPath ? returnUrl({ path: errorPath, locale, origin }) : undefined
+  });
 };

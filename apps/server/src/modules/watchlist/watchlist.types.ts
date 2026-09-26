@@ -1,6 +1,7 @@
 import type { AddWatchlistPlayerInput, UpdateWatchlistSettingsInput, WatchlistQuery } from '@otmetki/schemas';
 
 import type { WatchlistSettings } from '../../../generated';
+import type { BotContext } from '../telegram';
 
 export type WatchlistListInput = {
   userId: string;
@@ -9,6 +10,12 @@ export type WatchlistListInput = {
 
 export type WatchlistAddInput = AddWatchlistPlayerInput & {
   userId: string;
+};
+
+export type WatchCommandAddInput = {
+  ctx: BotContext;
+  userId: string;
+  nickname: string;
 };
 
 export type WatchlistRemoveInput = {
@@ -25,7 +32,7 @@ export type PlayerActivityInput = {
   since: Date;
 };
 
-export type PlayerActivity = {
+export type PlayerActivityRow = {
   accountId: bigint;
   battles: number;
   wins: number;

@@ -9,6 +9,7 @@ import type { AuthSessionQuery } from './use-auth-session.types';
 
 import { getAuthSession, signOut } from '../../../api';
 import { AUTH_SESSION } from '../../../config';
+import { useResetUserQueries } from '../use-reset-user-queries';
 
 export const useAuthSession = (): AuthSessionQuery => {
   const isHydrated = useHydrated();
@@ -30,12 +31,13 @@ export const useAuthSession = (): AuthSessionQuery => {
 
 export const useSignOut = () => {
   const queryClient = useQueryClient();
+  const resetUserQueries = useResetUserQueries();
 
   return useMutation({
     mutationFn: signOut,
     onSuccess: () => {
       queryClient.setQueryData(QUERY_KEYS.auth.session, null);
-      queryClient.removeQueries({ queryKey: QUERY_KEYS.me.all });
+      resetUserQueries();
     }
   });
 };

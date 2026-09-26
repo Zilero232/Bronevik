@@ -13,6 +13,6 @@ export const generateMetadata = async () => {
   return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.miniApp, locale });
 };
 
-const Page = () => <MiniAppPage />;
+const Page = () => <MiniAppPage platform='telegram' />;
 
 export default Page;

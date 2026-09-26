@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { match } from 'ts-pattern';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
@@ -18,6 +18,7 @@ import { CommentComposer, CommentItem } from './components';
 import s from './CommentsThread.module.scss';
 
 export const CommentsThread = ({ target, targetId, className }: CommentsThreadProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('community.comments');
   const titleId = useId();
   const { nodes, count, viewerId, isSignedIn, isPending, isError, isRetrying, retry } = useCommentsThread({ target, targetId });
@@ -30,7 +31,7 @@ export const CommentsThread = ({ target, targetId, className }: CommentsThreadPr
           <CommentComposer thread={{ target, targetId }} />
         ) : (
           <p className={s.signIn}>
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.auth.login}>
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={loginHref}>
               <LogIn size={14} />
               {t('signIn')}
             </Link>

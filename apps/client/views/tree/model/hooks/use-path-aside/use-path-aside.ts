@@ -3,9 +3,11 @@
 import { useMediaQuery } from '@siberiacancode/reactuse';
 
 import { TREE_VIEW } from '../../../config';
+import { usePathSelection } from '../use-path-selection';
 
-export const usePathAside = (onClear: () => void) => {
+export const usePathAside = () => {
   const isCompact = useMediaQuery(TREE_VIEW.compactQuery);
+  const { selected, onClear } = usePathSelection();
 
   const onOpenChange = (open: boolean) => {
     if (!open) {
@@ -13,5 +15,5 @@ export const usePathAside = (onClear: () => void) => {
     }
   };
 
-  return { isCompact, onOpenChange };
+  return { isCompact, isOpen: selected !== null, onOpenChange };
 };

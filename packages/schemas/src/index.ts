@@ -145,6 +145,8 @@ export type {
   SubscriptionPlan,
   SubscriptionStatus
 } from './billing';
+export { discordStatusSchema, vkStatusSchema } from './bots';
+export type { DiscordStatus, VkStatus } from './bots';
 export {
   BUILD_OPTIONS,
   BUILD_USAGE,
@@ -168,6 +170,7 @@ export {
   loadoutResultSchema,
   modifierEffectSchema,
   moduleOptionSchema,
+  moduleSlotSchema,
   POPULAR_BUILDS,
   popularBuildSchema,
   popularBuildsQuerySchema,
@@ -191,6 +194,7 @@ export type {
   BuildsCatalog,
   BuildsCatalogEntry,
   BuildsCatalogQuery,
+  BuildsCatalogQueryInput,
   BuildUsage,
   BuildUsageQuery,
   CrewRoleUsage,
@@ -203,6 +207,7 @@ export type {
   LoadoutResult,
   ModifierEffect,
   ModuleOption,
+  ModuleSlot,
   ParsedLoadoutRequest,
   PopularBuild,
   PopularBuilds,
@@ -240,6 +245,7 @@ export type {
   ClanListItem,
   ClanListPage,
   ClanListQuery,
+  ClanListQueryInput,
   ClanListSortField,
   ClanMember,
   ClanMemberEvent,
@@ -351,6 +357,7 @@ export type {
   CompetitionScoring,
   CompetitionSource,
   CompetitionsQuery,
+  CompetitionsQueryInput,
   CompetitionStatus,
   CompetitionSummary,
   CompetitionTeam,
@@ -480,6 +487,8 @@ export type {
 } from './developer';
 export { API_ERROR_CODES, apiErrorCodeSchema, apiErrorDetailsSchema, apiErrorIssueSchema, apiErrorSchema } from './errors';
 export type { ApiError, ApiErrorCode, ApiErrorDetails, ApiErrorIssue } from './errors';
+export { createFollowSchema, followKindSchema, followListSchema, followParamsSchema, followSchema } from './follows';
+export type { CreateFollowInput, Follow, FollowKind, FollowList } from './follows';
 export { leaderboardEntrySchema, leaderboardQuerySchema, leaderboardSchema, leaderboardScopeSchema } from './leaderboards';
 export type { Leaderboard, LeaderboardEntry, LeaderboardQuery, LeaderboardScope } from './leaderboards';
 export {
@@ -519,12 +528,15 @@ export type {
   MoeHistory,
   MoeHistoryBatch,
   MoeHistoryBatchQuery,
+  MoeHistoryBatchQueryInput,
   MoeHistoryFilters,
   MoeHistoryPoint,
   MoeHistoryQuery,
+  MoeHistoryQueryInput,
   MoePage,
   MoeProjection,
   MoeQuery,
+  MoeQueryInput,
   MoeRow,
   MoeSortField,
   MoeThreshold,
@@ -545,6 +557,7 @@ export {
   goalsSchema,
   goalStatusSchema,
   linkedAccountsSchema,
+  sessionExtrasSchema,
   updateGoalSchema
 } from './me';
 export type {
@@ -558,6 +571,7 @@ export type {
   Goals,
   GoalStatus,
   LinkedAccounts,
+  SessionExtras,
   UpdateGoalInput
 } from './me';
 export {
@@ -599,6 +613,7 @@ export type {
   MissionCampaigns,
   MissionCondition,
   MissionGarage,
+  MissionGarageState,
   MissionGarageTank,
   MissionMetric,
   MissionOperation,
@@ -681,6 +696,7 @@ export {
   activityDaySchema,
   activityQuerySchema,
   activitySchema,
+  groupInsightSchema,
   insightsPeriodSchema,
   insightsQuerySchema,
   insightTipCodeSchema,
@@ -709,6 +725,7 @@ export {
   popularPlayersSchema,
   recentPeriodsSchema,
   recentPeriodStatsSchema,
+  tankInsightSchema,
   timeSeriesGranularitySchema,
   timeSeriesMarkerSchema,
   timeSeriesMetricSchema,
@@ -719,6 +736,7 @@ export {
 export type {
   ActivityDay,
   ActivityQuery,
+  GroupInsight,
   InsightsPeriod,
   InsightsQuery,
   InsightTipCode,
@@ -745,6 +763,7 @@ export type {
   PopularPlayersQuery,
   RecentPeriods,
   RecentPeriodStats,
+  TankInsight,
   TimeSeries,
   TimeSeriesGranularity,
   TimeSeriesMarker,
@@ -981,6 +1000,7 @@ export {
   challengeMetricSchema,
   challengeSchema,
   challengeStatusSchema,
+  CHANNEL_HOSTS,
   claimMethodSchema,
   claimStatusSchema,
   connectableProviderSchema,
@@ -1028,7 +1048,10 @@ export {
   streamerProviderSchema,
   streamerSlugSchema,
   streamerVideoSchema,
+  twitchChannelParamsSchema,
+  twitchPanelSchema,
   updateOverlaySchema,
+  updatePredictionsSchema,
   upsertStreamerProfileSchema
 } from './streamers';
 export type {
@@ -1061,6 +1084,7 @@ export type {
   StreamerClaim,
   StreamerDirectory,
   StreamerDirectoryQuery,
+  StreamerDirectoryQueryInput,
   StreamerFollow,
   StreamerIntegration,
   StreamerInvitation,
@@ -1070,7 +1094,9 @@ export type {
   StreamerProfileKind,
   StreamerProvider,
   StreamerVideo,
+  TwitchPanel,
   UpdateOverlayInput,
+  UpdatePredictionsInput,
   UpsertStreamerProfileInput
 } from './streamers';
 export {
@@ -1138,6 +1164,7 @@ export type {
   TankEconomyFigures,
   TankEconomyPage,
   TankEconomyQuery,
+  TankEconomyQueryInput,
   TankEconomyRow,
   TankEconomySortField,
   TankLearning,
@@ -1154,24 +1181,29 @@ export type {
 export type {
   TankDetail,
   TankDetailQuery,
+  TankDetailQueryInput,
   TankPatch,
   TankPatchChange,
   TankPatches,
   TankPatchVerdict,
   TankServerStatsQuery,
+  TankServerStatsQueryInput,
   TankServerStatsRow,
   TankServerStatsSortField,
   TankStatsPage,
   TankTrend,
   TankTrendPoint,
   TankTrendQuery,
+  TankTrendQueryInput,
   TierList,
   TierListEntry,
   TierListQuery,
+  TierListQueryInput,
   TierListRank,
   TopPlayers,
   TopPlayersMetric,
-  TopPlayersQuery
+  TopPlayersQuery,
+  TopPlayersQueryInput
 } from './tanks';
 export { VEHICLE_SOURCE, VEHICLE_SOURCE_KINDS } from './tanks';
 export {

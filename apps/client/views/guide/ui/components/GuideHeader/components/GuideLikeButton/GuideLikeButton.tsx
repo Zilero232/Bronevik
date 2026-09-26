@@ -3,7 +3,7 @@
 import { Heart } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants } from '@/ui-kit';
 
@@ -14,13 +14,14 @@ import { useGuideLike } from '../../../../../model/hooks';
 import s from './GuideLikeButton.module.scss';
 
 export const GuideLikeButton = ({ guide }: GuideLikeButtonProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('guides.detail');
   const format = useFormatter();
   const { isSignedIn, isLiked, likesCount, isAvailable, isPending, toggle } = useGuideLike(guide);
 
   if (!isSignedIn) {
     return (
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.auth.login} title={t('likeSignIn')}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={loginHref} title={t('likeSignIn')}>
         <Heart size={14} />
         {format.number(likesCount)}
       </Link>

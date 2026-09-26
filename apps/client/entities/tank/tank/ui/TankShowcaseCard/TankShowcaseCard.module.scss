@@ -7,15 +7,12 @@
 
   display: flex;
   overflow: visible;
-  min-width: 220px;
+  min-width: 0;
   flex-direction: column;
-  padding: 0 var(--space-4) var(--space-4);
-  margin-top: 12px;
   box-shadow:
     inset 3px 0 0 var(--class),
     var(--elev-1);
   color: var(--color-text);
-  gap: var(--space-2);
   text-decoration: none;
 
   &:hover {
@@ -29,17 +26,55 @@
   }
 }
 
+.column {
+  min-width: 200px;
+  padding: 0 var(--space-4) var(--space-4);
+  margin-top: 12px;
+  gap: var(--space-2);
+
+  .stage {
+    height: 120px;
+    margin: -12px calc(var(--space-4) * -1) 0;
+  }
+
+  .render {
+    width: 240px;
+    max-width: 100%;
+  }
+}
+
+.row {
+  display: grid;
+  overflow: hidden;
+  align-items: center;
+  padding: var(--space-4);
+  gap: var(--space-4);
+  grid-template-columns: 140px minmax(0, 1fr);
+
+  .stage {
+    overflow: hidden;
+    min-height: 96px;
+    border-radius: var(--radius-md);
+  }
+
+  .render {
+    width: 140px;
+  }
+
+  .tier {
+    top: var(--space-3);
+  }
+}
+
 .stage {
   position: relative;
   display: grid;
-  height: 120px;
-  margin: -12px calc(var(--space-4) * -1) 0;
   place-items: center;
 }
 
 .render {
   position: relative;
-  width: 240px;
+  height: auto;
   transition: transform var(--duration-lift) var(--ease-out);
 
   .root:hover & {
@@ -61,6 +96,12 @@
   left: var(--space-3);
 }
 
+.body {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+}
+
 .name {
   overflow: hidden;
   font-family: var(--font-display);
@@ -74,12 +115,21 @@
   }
 }
 
+.meta {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-2);
+}
+
 .figures {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
   padding-top: var(--space-2);
   border-top: 1px solid var(--color-border);
   gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
 }
 
 .figure {
@@ -91,17 +141,26 @@
 
 .figureLabel {
   @include label;
+
+  overflow: hidden;
+  font-size: var(--text-2xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .figureValue {
   @include numeric;
 
-  font-size: var(--text-sm);
+  display: inline-flex;
+  align-items: baseline;
+  font-size: var(--text-md);
   font-weight: 700;
+  gap: var(--space-2);
 }
 
 .footer {
   display: flex;
   align-items: center;
+  margin-top: auto;
   gap: var(--space-2);
 }

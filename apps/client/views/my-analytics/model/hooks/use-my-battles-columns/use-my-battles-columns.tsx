@@ -30,7 +30,8 @@ export const useMyBattlesColumns = (): ColumnDef<MyBattle, never>[] => {
     }),
     column.accessor((row) => row.mapName ?? row.arenaId, {
       id: 'map',
-      header: t('map')
+      header: t('map'),
+      meta: { hideBelow: 'md' }
     }),
     column.accessor('result', {
       header: t('result'),
@@ -44,12 +45,12 @@ export const useMyBattlesColumns = (): ColumnDef<MyBattle, never>[] => {
     column.accessor('damageAssisted', {
       header: t('assisted'),
       cell: ({ row }) => <NumberCell value={row.original.damageAssisted} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'md' }
     }),
     column.accessor('frags', {
       header: t('frags'),
       cell: ({ row }) => <NumberCell value={row.original.frags} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
     }),
     column.accessor((row) => row.moePercent ?? -1, {
       id: 'moe',

@@ -1,15 +1,22 @@
+import type { ReactNode } from 'react';
+
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { NextIntlClientProvider } from 'next-intl';
+import { describe, expect, it } from 'vitest';
 
 import { ProgressRing } from '../ProgressRing';
 
 const LOCALE = 'ru';
 
-vi.mock('next-intl', () => ({ useLocale: () => LOCALE }));
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <NextIntlClientProvider locale={LOCALE} messages={{}} timeZone='UTC'>
+    {children}
+  </NextIntlClientProvider>
+);
 
 describe('ProgressRing', () => {
   it('is an accessible progress bar named by its label', () => {
-    render(<ProgressRing label='Прогресс отметки' max={100} value={42} />);
+    render(<ProgressRing label='Прогресс отметки' max={100} value={42} />, { wrapper });
 
     const ring = screen.getByRole('progressbar', { name: 'Прогресс отметки' });
 
@@ -17,11 +24,18 @@ describe('ProgressRing', () => {
     expect(ring).toHaveAttribute('aria-valuemax', '100');
   });
 
+  it('formats its value text in the app locale rather than the runtime default', () => {
+    render(<ProgressRing label='Отметка' max={200} value={50} />, { wrapper });
+
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuetext', new Intl.NumberFormat(LOCALE, { style: 'percent' }).format(50 / 200));
+  });
+
   it('renders its content in the middle and sizes itself', () => {
     render(
       <ProgressRing label='Мастер' size={72} value={42}>
         42
-      </ProgressRing>
+      </ProgressRing>,
+      { wrapper }
     );
 
     const ring = screen.getByRole('progressbar');
@@ -29,30 +43,26 @@ describe('ProgressRing', () => {
     expect(ring).toHaveTextContent('42');
     expect(ring).toHaveStyle({ width: '72px', height: '72px' });
   });
-});
 
-describe('ProgressRing arc', () => {
-  const arcOf = (container: HTMLElement) => container.querySelector('[data-ratio]');
+  it('draws a full ring for an overfull value', () => {
+    const { container } = render(<ProgressRing max={100} value={140} />, { wrapper });
 
-  it('clamps an overfull value to a full ring', () => {
-    const { container } = render(<ProgressRing max={100} value={140} />);
-
-    expect(arcOf(container)).toHaveAttribute('stroke-dasharray', '1 1');
+    expect(container.querySelector('[stroke-dasharray]')).toHaveAttribute('stroke-dasharray', '1 1');
   });
 
-  it('clamps a negative value and a zero max to an empty ring', () => {
-    const { container, rerender } = render(<ProgressRing max={100} value={-5} />);
+  it('draws an empty ring for a zero max', () => {
+    const { container } = render(<ProgressRing max={0} value={10} />, { wrapper });
 
-    expect(arcOf(container)).toHaveAttribute('stroke-dasharray', '0 1');
-
-    rerender(<ProgressRing max={0} value={10} />);
-
-    expect(arcOf(container)).toHaveAttribute('stroke-dasharray', '0 1');
+    expect(container.querySelector('[stroke-dasharray]')).toHaveAttribute('stroke-dasharray', '0 1');
   });
 
-  it('colours the arc by the mark count', () => {
-    render(<ProgressRing label='Отметка' marks={2} value={50} />);
+  it('reports an out-of-range value clamped to the range', () => {
+    const { rerender } = render(<ProgressRing label='Отметка' max={100} value={140} />, { wrapper });
 
-    expect(screen.getByRole('progressbar')).toHaveAttribute('data-marks', '2');
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
+
+    rerender(<ProgressRing label='Отметка' max={100} value={-5} />);
+
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
   });
 });

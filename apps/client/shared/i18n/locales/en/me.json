@@ -34,7 +34,8 @@
     "favoriteRemoved": "Removed from favorites",
     "goalAdded": "Goal set",
     "goalRemoved": "Goal removed",
-    "settingsSaved": "Settings saved"
+    "settingsSaved": "Settings saved",
+    "botUnlinked": "Account unlinked"
   },
   "favorites": {
     "title": "Favorites",
@@ -153,5 +154,28 @@
     "sessionsCsv": "Sessions, CSV",
     "battlesCsv": "Battles, CSV",
     "failed": "Couldn't export the data."
+  },
+  "bots": {
+    "title": "Bots",
+    "description": "Discord and VK: commands, clan roles, reminders.",
+    "linked": "linked",
+    "notLinked": "not linked",
+    "unlink": "Unlink",
+    "unavailable": "The bot is not set up on this server yet.",
+    "discord": {
+      "name": "Discord",
+      "about": "Link Discord so the bot knows your nickname, grants clan and rating roles and posts event reminders.",
+      "link": "Link Discord"
+    },
+    "vk": {
+      "name": "VK",
+      "about": "The same commands in VK plus a mini app with your profile and session.",
+      "link": "Link VK"
+    },
+    "links": {
+      "invite": "Add the bot to a server",
+      "bot": "Message the bot",
+      "miniApp": "Mini app"
+    }
   }
 }

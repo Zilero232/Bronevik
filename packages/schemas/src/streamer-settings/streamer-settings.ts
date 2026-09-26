@@ -10,10 +10,20 @@ import type {
 } from './streamer-settings.types';
 
 import { STREAMER_SETTINGS } from './streamer-settings.constants';
+import { settingsGroupKeySchema, settingsValuesSchema } from './streamer-settings.schemas';
 
 const PROVENANCE_KEYS = new Set(['source', 'sourceUrl', 'checkedAt']);
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isFlatValue = (value: unknown): value is FlatValue =>
+  value === null || typeof value === 'boolean' || typeof value === 'number' || typeof value === 'string';
+
+const groupOrder = (field: string): number => {
+  const parsed = settingsGroupKeySchema.safeParse(field.split('.')[0]);
+
+  return parsed.success ? STREAMER_SETTINGS.groups.indexOf(parsed.data) : -1;
+};
 
 const flatten = (value: unknown, prefix: string, target: FlatSettings): void => {
   if (value === undefined) {
@@ -30,7 +40,13 @@ const flatten = (value: unknown, prefix: string, target: FlatSettings): void => 
     return;
   }
 
-  target[prefix] = Array.isArray(value) ? value.map(String).join(', ') : (value as FlatValue);
+  if (Array.isArray(value)) {
+    target[prefix] = value.map(String).join(', ');
+
+    return;
+  }
+
+  target[prefix] = isFlatValue(value) ? value : String(value);
 };
 
 export const flattenSettings = (settings: SettingsValues | StreamerSettings): FlatSettings => {
@@ -50,10 +66,9 @@ export const zoomMax = (steps: readonly string[] | undefined): (typeof STREAMER_
 export const diffSettings = (list: readonly (SettingsValues | StreamerSettings)[]): SettingsDiffRow[] => {
   const flats = list.map(flattenSettings);
   const fields = [...new Set(flats.flatMap((flat) => Object.keys(flat)))];
-  const order = (field: string) => STREAMER_SETTINGS.groups.indexOf(field.split('.')[0] as SettingsGroupKey);
 
   return fields
-    .sort((left, right) => order(left) - order(right) || left.localeCompare(right))
+    .sort((left, right) => groupOrder(left) - groupOrder(right) || left.localeCompare(right))
     .map((field) => {
       const values = flats.map((flat) => flat[field] ?? null);
       const present = values.filter((value) => value !== null).map(String);
@@ -62,17 +77,7 @@ export const diffSettings = (list: readonly (SettingsValues | StreamerSettings)[
     });
 };
 
-export const toSettingsValues = (settings: StreamerSettings): SettingsValues => {
-  const values: Record<string, unknown> = {};
-
-  for (const [group, content] of Object.entries(settings)) {
-    if (isPlainObject(content)) {
-      values[group] = Object.fromEntries(Object.entries(content).filter(([key]) => !PROVENANCE_KEYS.has(key)));
-    }
-  }
-
-  return values as SettingsValues;
-};
+export const toSettingsValues = (settings: StreamerSettings): SettingsValues => settingsValuesSchema.parse(settings);
 
 export const valuesForApply = ({ values, groups, includeResolution, includeSensitivity }: ApplyValuesInput): SettingsValues => {
   const picked: SettingsValues = {};
@@ -91,7 +96,7 @@ export const valuesForApply = ({ values, groups, includeResolution, includeSensi
     }
   }
 
-  return JSON.parse(JSON.stringify(picked)) as SettingsValues;
+  return settingsValuesSchema.parse(JSON.parse(JSON.stringify(picked)));
 };
 
 export const changedGroups = ({ previous, next }: ChangedGroupsInput): SettingsGroupKey[] =>

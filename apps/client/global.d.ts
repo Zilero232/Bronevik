@@ -22,8 +22,11 @@ declare module '@tanstack/react-table' {
   // eslint-disable-next-line ts/consistent-type-definitions -- column meta is typed by interface merging and must keep the library's generics
   interface ColumnMeta<TData extends RowData, TValue> {
     align?: 'center' | 'end' | 'start';
+    bar?: { tone?: import('@/shared/lib/rating-tone/rating-tone.types').RatingTone | 'accent' | 'steel'; max?: number };
+    hideBelow?: 'lg' | 'md' | 'sm' | 'xl';
     isMedia?: boolean;
     isNumeric?: boolean;
+    isRank?: boolean;
     isSticky?: boolean;
     width?: number | string;
   }

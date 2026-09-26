@@ -6,22 +6,6 @@
   padding-bottom: var(--space-8);
 }
 
-.strip {
-  background-color: var(--color-band-raised);
-  border-block: 1px solid var(--color-border);
-  color: var(--color-text);
-}
-
-.stripInner {
-  display: flex;
-  width: var(--shell-narrow);
-  min-height: 64px;
-  align-items: center;
-  justify-content: flex-end;
-  margin-inline: auto;
-  padding-block: var(--space-3);
-}
-
 .body {
   @include stack(var(--space-5));
 

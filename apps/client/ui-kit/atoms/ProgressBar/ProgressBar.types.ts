@@ -8,6 +8,7 @@ export type ProgressBarProps = {
   value: number;
   max?: number;
   label?: ReactNode;
+  'aria-label'?: string;
   valueLabel?: ReactNode;
   tone?: ProgressTone;
   size?: 'md' | 'sm';

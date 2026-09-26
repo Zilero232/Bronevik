@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+  @include stack(var(--space-3));
+
+  padding: var(--space-5) var(--space-4);
+}
+
+.title {
+  @include heading(var(--text-2xl));
+}
+
+.description {
+  color: var(--color-text-muted);
+}

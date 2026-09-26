@@ -14,7 +14,7 @@
   @include panel;
 
   overflow: auto;
-  max-height: calc(100dvh - var(--header-height) - var(--space-8));
+  max-height: calc(100dvh - var(--header-offset) - var(--space-8));
   overscroll-behavior-x: contain;
 
   &:focus-visible {

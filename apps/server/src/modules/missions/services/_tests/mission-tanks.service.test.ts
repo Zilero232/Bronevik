@@ -6,6 +6,7 @@ import type { PrismaService } from '../../../../core';
 import type { CatalogEntry } from '../../../reference';
 
 import { VehicleCatalogService } from '../../../reference';
+import { MISSION_TANKS } from '../../config';
 import { MissionCatalogService } from '../mission-catalog.service';
 import { MissionTanksService } from '../mission-tanks.service';
 
@@ -97,19 +98,42 @@ const setup = () => {
 
 describe('MissionTanksService.tanks', () => {
   it('ranks eligible tanks by the stat behind the main condition', async () => {
-    const { prisma, vehicles, service } = setup();
+    const { prisma, service } = setup();
 
     prisma.tankServerStats.findMany.mockResolvedValue([stats(1, 0.8), stats(2, 1.3)]);
 
     const result = await service.tanks({ questId: 3, period: '30d', limit: 10 });
+    const [best, worst] = result.tanks;
 
-    expect(vehicles.filter).toHaveBeenCalledWith({ tiers: [8], types: ['lightTank'] });
-    expect(result).toMatchObject({ metric: 'frags', progressId: 'kills', cohort: 'average' });
+    expect(result).toMatchObject({ metric: 'frags', progressId: 'kills', cohort: MISSION_TANKS.cohort });
 
-    expect(result.tanks.map((tank) => [tank.vehicle.tankId, tank.value, tank.score])).toEqual([
-      [2, 1.3, 100],
-      [1, 0.8, 0]
+    expect(result.tanks.map((tank) => [tank.vehicle.tankId, tank.value])).toEqual([
+      [2, 1.3],
+      [1, 0.8]
     ]);
+
+    expect(best?.score).toBeGreaterThan(worst?.score ?? Infinity);
+  });
+
+  it('leaves out tanks with stats that the mission does not accept', async () => {
+    const { prisma, service } = setup();
+
+    prisma.tankServerStats.findMany.mockResolvedValue([stats(1, 0.8), stats(99, 3)]);
+
+    const result = await service.tanks({ questId: 3, period: '30d', limit: 10 });
+
+    expect(result.tanks.map((tank) => tank.vehicle.tankId)).toEqual([1]);
+  });
+
+  it('returns no tanks and queries no stats when no vehicle is eligible', async () => {
+    const { prisma, vehicles, service } = setup();
+
+    vehicles.filter.mockResolvedValue([]);
+
+    const result = await service.tanks({ questId: 3, period: '30d', limit: 10 });
+
+    expect(result).toMatchObject({ cohort: MISSION_TANKS.cohort, generatedAt: null, tanks: [] });
+    expect(prisma.tankServerStats.findMany).not.toHaveBeenCalled();
   });
 
   it('falls back to the whole server when the average cohort has no rows', async () => {
@@ -117,7 +141,7 @@ describe('MissionTanksService.tanks', () => {
 
     prisma.tankServerStats.findMany.mockResolvedValueOnce([]).mockResolvedValueOnce([stats(1, 1)]);
 
-    expect((await service.tanks({ questId: 3, period: '30d', limit: 10 })).cohort).toBe('all');
+    expect((await service.tanks({ questId: 3, period: '30d', limit: 10 })).cohort).toBe(MISSION_TANKS.fallbackCohort);
   });
 });
 
@@ -156,5 +180,17 @@ describe('MissionTanksService.garage', () => {
 
     expect(garage.state).toBe('ready');
     expect(garage.tanks).toEqual([expect.objectContaining({ tankId: 1, value: 1.1, ownBattles: 40, ownWinRate: 50 })]);
+  });
+
+  it('keeps an owned tank without server stats at zero and gives no win rate without own battles', async () => {
+    const { prisma, service } = setup();
+
+    prisma.userLestaAccount.findFirst.mockResolvedValue(mock<UserLestaAccount>({ accountId: 10n }));
+    prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ tankId: 2, battles: 0, wins: 0, inGarage: true })]);
+    prisma.tankServerStats.findMany.mockResolvedValue([]);
+
+    const garage = await service.garage({ userId: 'u', questId: 3 });
+
+    expect(garage.tanks).toEqual([expect.objectContaining({ tankId: 2, value: 0, battles: 0, ownBattles: 0, ownWinRate: null })]);
   });
 });

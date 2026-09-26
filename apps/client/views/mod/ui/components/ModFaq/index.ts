@@ -1,0 +1,1 @@
+export { ModFaq } from './ModFaq';

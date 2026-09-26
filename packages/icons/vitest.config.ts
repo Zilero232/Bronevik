@@ -6,6 +6,8 @@ export default defineConfig({
   test: {
     name: 'icons',
     isolate: false,
+    clearMocks: true,
+    restoreMocks: true,
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}']
   }

@@ -4,14 +4,18 @@ import { match } from 'ts-pattern';
 import type { NotificationLocale } from '../../notifications';
 import type { ChatReplyInput, ChatTextInput } from '../streamers.types';
 
+import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { resolveNotificationLocale } from '../../notifications';
-import { CHAT_COPY } from '../config';
+import { CHAT_COPY, CHAT_LINKS } from '../config';
 import { chatText, chatValue } from '../lib';
 
 @Injectable()
 export class StreamerStatsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: AppConfigService
+  ) {}
 
   async chatLocale(streamerUserId: string): Promise<NotificationLocale> {
     const user = await this.prisma.user.findUnique({ where: { id: streamerUserId }, select: { locale: true } });
@@ -26,10 +30,29 @@ export class StreamerStatsService {
   async reply({ streamerUserId, command }: ChatReplyInput): Promise<string | null> {
     const profile = await this.prisma.streamerProfile.findUnique({
       where: { userId: streamerUserId },
-      select: { accountId: true, displayName: true }
+      select: { id: true, slug: true, accountId: true, displayName: true }
     });
 
-    const accountId = profile?.accountId;
+    if (!profile) {
+      return null;
+    }
+
+    if (command === 'settings') {
+      const [locale, saved] = await Promise.all([
+        this.chatLocale(streamerUserId),
+        this.prisma.streamerSettings.count({ where: { profileId: profile.id } })
+      ]);
+
+      const url = new URL(`${CHAT_LINKS.streamer}/${encodeURIComponent(profile.slug)}/${CHAT_LINKS.settings}`, this.config.get('WEB_URL')).toString();
+
+      return chatText({
+        locale,
+        message: saved > 0 ? CHAT_COPY.messages.settings : CHAT_COPY.messages.settingsNone,
+        values: { name: profile.displayName, url }
+      });
+    }
+
+    const { accountId } = profile;
 
     if (!accountId) {
       return null;

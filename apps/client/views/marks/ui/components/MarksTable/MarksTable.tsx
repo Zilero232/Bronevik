@@ -13,7 +13,7 @@ import s from './MarksTable.module.scss';
 
 export const MarksTable = ({ rows, isLoading, isStale, onSelect }: MarksTableProps) => {
   const t = useTranslations('marks.table');
-  const columns = useMarksColumns();
+  const columns = useMarksColumns(onSelect);
 
   return (
     <div className={s.root} data-stale={isStale}>

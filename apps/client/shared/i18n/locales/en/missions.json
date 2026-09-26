@@ -35,7 +35,9 @@
     "errorTitle": "Could not load the operation",
     "errorDescription": "The server did not respond. Try again.",
     "back": "All personal missions",
-    "saveFailed": "Could not save progress"
+    "saveFailed": "Could not save progress",
+    "progress": "{done} of {total} done",
+    "ratio": "{done}/{total}"
   },
   "branch": {
     "lightTank": "LT",
@@ -61,7 +63,7 @@
     "done": "Done",
     "withHonors": "With honors",
     "signIn": "Sign in to track your progress.",
-    "select": "Pick a mission in the list.",
+    "select": "Pick a mission in a branch.",
     "series": "Series: {goal}",
     "win": "Win the battle.",
     "alive": "Survive the battle.",
@@ -91,7 +93,8 @@
     "garageNoLink": "Link a Lesta account to see your tanks.",
     "garageNoPrivateData": "Your hangar list becomes available after signing in with Lesta ID with access to account data.",
     "garageEmpty": "No tank in your hangar fits this mission.",
-    "garageSignIn": "Sign in to see tanks from your hangar."
+    "garageSignIn": "Sign in to see tanks from your hangar.",
+    "showcaseTitle": "Tanks for these missions"
   },
   "metric": {
     "damage": "Damage",
@@ -121,5 +124,18 @@
     "14d": "14 days",
     "30d": "30 days",
     "60d": "60 days"
+  },
+  "board": {
+    "label": "Operation branches",
+    "tiers": "Tiers {min}–{max}",
+    "progress": "{done} of {total} done",
+    "count": "{count, plural, one {# mission} other {# missions}}",
+    "state": {
+      "available": "available",
+      "current": "next up",
+      "done": "done",
+      "honors": "done with honors",
+      "locked": "locked"
+    }
   }
 }

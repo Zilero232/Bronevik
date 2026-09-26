@@ -1,0 +1,1 @@
+export { BestBattlesFilters } from './BestBattlesFilters';

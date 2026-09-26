@@ -1,3 +1,5 @@
+import type { MoeThresholdPercentiles } from '@otmetki/ratings';
+
 import { z } from 'zod';
 
 import { recentPeriodSchema } from '../common/period/period.schemas';
@@ -20,6 +22,7 @@ export const playerClanSchema = z.object({
   clanId: clanIdSchema,
   tag: z.string(),
   name: z.string(),
+  color: z.string().nullable(),
   role: z.string(),
   emblem: z.url().nullable(),
   joinedAt: isoDateTimeSchema.nullable()
@@ -152,7 +155,7 @@ export const moeThresholdValuesSchema = z.object({
   p85: z.number().nonnegative(),
   p95: z.number().nonnegative(),
   p100: z.number().nonnegative().nullable()
-});
+}) satisfies z.ZodType<MoeThresholdPercentiles>;
 
 export const playerMarkRowSchema = z.object({
   vehicle: vehicleSummarySchema,
@@ -192,7 +195,7 @@ export const insightsQuerySchema = z.object({
   period: insightsPeriodSchema.default('30d')
 });
 
-const groupInsightSchema = z.object({
+export const groupInsightSchema = z.object({
   key: z.string(),
   battles: countSchema,
   winRate: percentSchema.nullable(),
@@ -201,7 +204,7 @@ const groupInsightSchema = z.object({
   damageRatio: z.number().nullable()
 });
 
-const tankInsightSchema = z.object({
+export const tankInsightSchema = z.object({
   vehicle: vehicleSummarySchema,
   battles: countSchema,
   winRate: percentSchema,

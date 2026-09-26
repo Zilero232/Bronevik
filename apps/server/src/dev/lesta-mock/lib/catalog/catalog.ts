@@ -1,21 +1,23 @@
+import type { VehicleType } from '@otmetki/schemas';
+
 import { median } from 'remeda';
 
-import type { MockCatalog, MockExpected, MockVehicle, MockVehicleType } from '../../lesta-mock.types';
-import type { CatalogQueryClient, CatalogRows, ExpectedRow, GameVersionRow, VehicleRow } from './catalog.types';
+import type { MockCatalog, MockExpected, MockVehicle } from '../../lesta-mock.types';
+import type { CatalogQueryClient, CatalogRows, CatalogVehicleRow, ExpectedRow, GameVersionRow } from './catalog.types';
 
 import { MOCK_BATTLE } from '../../config';
 import { CATALOG_DEFAULTS, CATALOG_SQL } from './catalog.constants';
 import { crewSchema, modulesTreeSchema, shotsSchema } from './catalog.schemas';
 
-const VEHICLE_TYPES: readonly MockVehicleType[] = ['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG'];
+const VEHICLE_TYPES: readonly VehicleType[] = ['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG'];
 
 type KnownExpected = {
   tier: number;
-  type: MockVehicleType;
+  type: VehicleType;
   expected: MockExpected;
 };
 
-const toVehicleType = (value: string): MockVehicleType | null => VEHICLE_TYPES.find((type) => type === value) ?? null;
+const toVehicleType = (value: string): VehicleType | null => VEHICLE_TYPES.find((type) => type === value) ?? null;
 
 const toExpected = (row: ExpectedRow): MockExpected => ({
   damage: row.exp_damage,
@@ -39,7 +41,7 @@ const fallbackExpected = (known: readonly KnownExpected[], vehicle: KnownExpecte
   };
 };
 
-const hitPoints = (row: VehicleRow, type: MockVehicleType): number => {
+const hitPoints = (row: CatalogVehicleRow, type: VehicleType): number => {
   const total = (row.hull_hp ?? 0) + (row.turret_hp ?? 0);
 
   return total > 0 ? total : (MOCK_BATTLE.hpFallback[type][row.tier] ?? CATALOG_DEFAULTS.hp);
@@ -91,6 +93,7 @@ export const buildCatalog = (rows: CatalogRows): MockCatalog => {
           kind: shot.kind,
           isPremium: shot.isPremium,
           portion: shot.defaultPortion,
+          damage: shot.damage?.armor ?? null,
           price: price?.amount ?? 0,
           currency: price?.currency ?? CATALOG_DEFAULTS.shellCurrency
         };

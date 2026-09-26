@@ -126,6 +126,16 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       values: { title: event.title, teamName: event.teamName, rank: event.rank, teams: event.teams },
       path: `${NOTIFICATION_LINKS.competitions}/${encodeURIComponent(event.competitionSlug)}`
     }))
+    .with({ event: 'tankLevelUp' }, (event) => ({
+      message: 'tank-level-up',
+      values: { tankName: event.tankName, level: event.level, shells: event.shells },
+      path: NOTIFICATION_LINKS.progress
+    }))
+    .with({ event: 'tankChallengeDone' }, (event) => ({
+      message: 'tank-challenge-done',
+      values: { tankName: event.tankName, shells: event.shells },
+      path: NOTIFICATION_LINKS.progress
+    }))
     .exhaustive();
 
 export const renderNotification = ({ notification, locale, webUrl }: RenderNotificationInput): RenderedNotification => {

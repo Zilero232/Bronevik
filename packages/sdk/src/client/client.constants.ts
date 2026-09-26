@@ -1,7 +1,7 @@
 import type { RetryOptions } from 'ky';
 
 export const OTMETKI_API = {
-  baseUrl: 'https://api.otmetki.app',
+  baseUrl: 'https://api.triotmetki.ru',
   apiKeyHeader: 'X-API-Key'
 } as const;
 

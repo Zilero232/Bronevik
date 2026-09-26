@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import {
   Button,
@@ -30,6 +30,7 @@ import { useReportForm } from '../model/hooks';
 import s from './ReportButton.module.scss';
 
 export const ReportButton = ({ targetType, targetId, className }: ReportButtonProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('community.report');
   const detailsId = useId();
   const { form, isSignedIn, isOpen, isPending, reasons, detailsLength, detailsMaxLength, onOpenChange, onSubmit } = useReportForm({
@@ -39,7 +40,7 @@ export const ReportButton = ({ targetType, targetId, className }: ReportButtonPr
 
   if (!isSignedIn) {
     return (
-      <Link className={buttonVariants({ variant: 'ghost', size: 'sm', className })} href={ROUTES.auth.login} title={t('signIn')}>
+      <Link className={buttonVariants({ variant: 'ghost', size: 'sm', className })} href={loginHref} title={t('signIn')}>
         <Flag size={14} />
         {t('trigger')}
       </Link>

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { heroArt } from '../hero-art';
 
-const CLAN = { clanId: 1, tag: 'TAG', name: 'Clan', role: 'private', emblem: 'https://example.com/e.png', joinedAt: null };
+const CLAN = { clanId: 1, tag: 'TAG', name: 'Clan', color: null, role: 'private', emblem: 'https://example.com/e.png', joinedAt: null };
 
 describe('heroArt', () => {
   it('prefers the clan emblem', () => {

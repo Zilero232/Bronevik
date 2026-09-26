@@ -35,7 +35,18 @@ export const useSectionNav = () => {
     return () => observer.disconnect();
   }, []);
 
-  const items = SECTION_NAV.map((id) => ({ id, label: t(id), href: `#${id}` }));
+  const items = SECTION_NAV.map((id) => ({ value: id, label: t(id) }));
 
-  return { items, active, onSelect: setActive };
+  const onSelect = (id: SectionNavId) => {
+    setActive(id);
+
+    document.getElementById(id)?.scrollIntoView({
+      behavior: window.matchMedia(TANK_PAGE.reducedMotionQuery).matches ? 'auto' : 'smooth',
+      block: 'start'
+    });
+
+    window.history.replaceState(null, '', `#${id}`);
+  };
+
+  return { items, active, onSelect };
 };

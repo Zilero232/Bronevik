@@ -1,15 +1,11 @@
 import type { z } from 'zod';
 
+import type { GlobalMapProvince } from '../../../../../generated';
 import type { rawBuildingSchema } from './stronghold.schemas';
 
 export type RawBuilding = z.infer<typeof rawBuildingSchema>;
 
-export type StrongholdProvince = {
-  provinceId: string;
-  name: string;
-  arenaId: string | null;
-  dailyRevenue: number | null;
-};
+export type StrongholdProvince = Pick<GlobalMapProvince, 'arenaId' | 'dailyRevenue' | 'name' | 'provinceId'>;
 
 export type ToStrongholdInput = {
   clanId: number;

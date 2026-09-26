@@ -65,7 +65,8 @@ throw new AppNotFoundException('CLAN_NOT_FOUND', `No clan with id ${clanId}`);
 `config/env/env.schema.ts` validates on boot and **throws** on a missing or malformed
 variable. Only secrets, addresses, ports and connection strings are env; every
 tunable is an `as const` object in `config/*.constants.ts` (`FEATURES`, `SOURCES`,
-`LESTA`, `TIMESCALE`, `BULL_BOARD`). A new schedule gets a `FEATURES` flag.
+`LESTA`, `TIMESCALE`, `BULL_BOARD`). Schedules run by default; `FEATURES` holds
+only flags that are actually switched off (`moePoliroid`), not always-true switches.
 
 ## The Lesta API
 

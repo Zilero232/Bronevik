@@ -1,0 +1,33 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-4));
+}
+
+.verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.margin {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.figures {
+  display: grid;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include below(md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.limits {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

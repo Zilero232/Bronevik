@@ -23,7 +23,7 @@ export const useTanksFilter = () => {
     request: tanksRequest(filter),
     matches: (name: string) => matchesTankQuery({ name, query }),
     isDirty: !isDeepEqual(filter, TANKS_FILTER.initial),
-    setTiers: (values: string[]) => update({ tiers: tiersOf(values) }),
+    setTiers: (values: readonly number[]) => update({ tiers: tiersOf(values.map(String)) }),
     setTypes: (types: TankClass[]) => update({ types }),
     update,
     reset: () => setFilter(TANKS_FILTER.initial)

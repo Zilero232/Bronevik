@@ -44,6 +44,8 @@
   .lg & {
     font-size: var(--text-md);
   }
+
+  @include touch-input;
 }
 
 .popup {

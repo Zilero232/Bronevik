@@ -30,10 +30,12 @@ COPY packages/sdk/package.json ./packages/sdk/package.json
 
 # Lifecycle scripts are off: the server's postinstall runs `prisma generate`
 # before the schema is copied. Generation runs later, in the runner stage.
+# --production leaves every devDependency out; the Prisma CLI and dotenv are
+# regular dependencies because the deploy runs `db:deploy` in this image.
 # The retry loop survives registry hiccups that corrupt a tarball mid-download;
 # the third failure fails the build instead of carrying on with a broken tree.
 RUN for attempt in 1 2 3; do \
-      bun install --frozen-lockfile --ignore-scripts && break; \
+      bun install --frozen-lockfile --ignore-scripts --production && break; \
       [ "$attempt" = 3 ] && exit 1; \
       echo "bun install attempt $attempt failed; clearing cache and retrying"; \
       rm -rf /root/.bun/install/cache ~/.bun/install/cache; \
@@ -57,6 +59,12 @@ WORKDIR /app/apps/server
 # prisma.config.ts reads DIRECT_URL; `generate` never connects, so a
 # placeholder satisfies it without baking a secret into the image.
 RUN DIRECT_URL="postgresql://placeholder" DATABASE_URL="postgresql://placeholder" bunx prisma generate
+
+# The processes run as the unprivileged `bun` user of the base image; the
+# local-disk replay store (used without S3) is the only path it writes to.
+RUN mkdir -p .data && chown bun:bun .data
+
+USER bun
 
 EXPOSE 4000
 

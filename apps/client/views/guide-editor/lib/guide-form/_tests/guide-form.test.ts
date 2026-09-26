@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { Guide } from '@/entities/guide/guide';
 
-import { toGuideFormValues, toGuideInput } from '../guide-form';
+import { toGuideFormValues, toGuideInput, toGuideUpdateInput } from '../guide-form';
 import { guideFormSchema } from '../guide-form.schemas';
 
 const BODY = 'Stay behind the ridge, wait for spotting and trade damage only when the enemy reloads.';
@@ -84,5 +84,26 @@ describe('toGuideInput', () => {
 
     expect(input).not.toHaveProperty('tankId');
     expect(input).not.toHaveProperty('arenaId');
+  });
+});
+
+describe('toGuideUpdateInput', () => {
+  it('sends null for the subject the kind does not use, so a PATCH clears it', () => {
+    expect(toGuideUpdateInput({ kind: 'general', tankId: 1, arenaId: 'himmelsdorf', locale: 'ru', title: 'Hull down', body: BODY })).toMatchObject({
+      tankId: null,
+      arenaId: null
+    });
+  });
+
+  it('keeps the subject of the chosen kind', () => {
+    const input = toGuideUpdateInput({ kind: 'tank', tankId: 1, arenaId: 'himmelsdorf', locale: 'en', title: 'Hull down', body: BODY });
+
+    expect(input).toEqual({ kind: 'tank', locale: 'en', title: 'Hull down', body: BODY, tankId: 1, arenaId: null });
+  });
+
+  it('clears a map the author removed', () => {
+    expect(
+      toGuideUpdateInput({ kind: 'map', tankId: undefined, arenaId: undefined, locale: 'ru', title: 'Hull down', body: BODY }).arenaId
+    ).toBeNull();
   });
 });

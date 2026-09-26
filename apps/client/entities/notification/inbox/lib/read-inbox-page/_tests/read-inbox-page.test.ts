@@ -48,6 +48,12 @@ describe('readInboxPage', () => {
     expect(next.unread).toBe(0);
   });
 
+  it('does not count ids that were already read', () => {
+    const next = readInboxPage({ page: PAGE, ids: ['a', 'c'], readAt: READ_AT });
+
+    expect(next.unread).toBe(PAGE.unread - 1);
+  });
+
   it('counts a repeated id once', () => {
     const next = readInboxPage({ page: PAGE, ids: ['a', 'a'], readAt: READ_AT });
 

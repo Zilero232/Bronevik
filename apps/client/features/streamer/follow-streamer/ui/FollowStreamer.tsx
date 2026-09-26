@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 import { Bell, BellOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants } from '@/ui-kit';
 
@@ -16,12 +16,13 @@ import { useFollowStreamer } from '../model/hooks';
 import s from './FollowStreamer.module.scss';
 
 export const FollowStreamer = ({ slug, renderExtras, className }: FollowStreamerProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('streamersDirectory.follow');
   const { isSignedIn, state, isBusy, onToggle } = useFollowStreamer(slug);
 
   if (!isSignedIn) {
     return (
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={ROUTES.auth.login}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={loginHref}>
         <Bell size={FOLLOW_STREAMER.iconSize} />
         {t('signIn')}
       </Link>

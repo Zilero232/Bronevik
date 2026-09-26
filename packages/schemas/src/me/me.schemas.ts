@@ -74,3 +74,7 @@ export const linkedAccountsSchema = z.object({
   ),
   telegram: z.object({ telegramId: z.string(), username: z.string().nullable() }).nullable()
 });
+
+export const sessionExtrasSchema = z.object({
+  lestaAccountId: accountIdSchema.nullable().catch(null)
+});

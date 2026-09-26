@@ -1,3 +1,5 @@
+@use '@/shared/styles/mixins' as *;
+
 .root {
   display: flex;
   align-items: center;
@@ -26,11 +28,27 @@
   font-size: var(--text-md);
   outline: none;
 
+  @include touch-input;
+
   &:focus-visible {
     outline: none;
   }
 
   &::placeholder {
     color: var(--color-text-dim);
+  }
+}
+
+.close {
+  display: none;
+}
+
+@include coarse {
+  .esc {
+    display: none;
+  }
+
+  .close {
+    display: inline-flex;
   }
 }

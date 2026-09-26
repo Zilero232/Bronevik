@@ -1,4 +1,6 @@
-import type { MockPlayerState, MockTotals, MockVehicleType } from '../../lesta-mock.types';
+import type { VehicleType } from '@otmetki/schemas';
+
+import type { MockPlayerState, MockTotals } from '../../lesta-mock.types';
 import type { AccountAchievementsInput, AchievementCounts, StageMetric, TankAchievementsInput } from './achievements.types';
 
 import { MOCK_ACHIEVEMENTS, MOCK_SALT, MOCK_SERIES } from '../../config';
@@ -9,7 +11,7 @@ import { sumTotals } from '../stats';
 
 const jitter = (seed: number, index: number, key: number): number => 0.8 + 0.4 * unitFloat(seed, MOCK_SALT.achievements, index, key);
 
-const battlesOfType = (state: MockPlayerState, type: MockVehicleType | undefined): number =>
+const battlesOfType = (state: MockPlayerState, type: VehicleType | undefined): number =>
   [...state.tanks.values()].reduce((sum, tank) => sum + (type === undefined || tank.vehicle.type === type ? tank.random.battles : 0), 0);
 
 const stageMetrics = (state: MockPlayerState, totals: MockTotals, heroes: number): Record<StageMetric, number> => ({

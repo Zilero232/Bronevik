@@ -39,10 +39,10 @@
   --shell-narrow: min(100% - 32px, 1120px);
   --header-height: 64px;
   --header-height-compact: 52px;
-  --utility-height: 28px;
+  --utility-height: 36px;
   --nav-size: 0.9375rem;
   --surface-sheen: linear-gradient(180deg, rgb(255 255 255 / 3%), transparent 70%);
-  --subnav-height: 40px;
+  --subnav-height: 48px;
   --row-h: 36px;
   --row-h-compact: 30px;
   --row-h-media: 44px;
@@ -58,6 +58,7 @@
   --z-popover: 70;
   --z-toast: 80;
   --safe-area-top: env(safe-area-inset-top, 0px);
+  --header-offset: calc(var(--header-height) + 1px);
   --safe-area-right: env(safe-area-inset-right, 0px);
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --safe-area-left: env(safe-area-inset-left, 0px);
@@ -155,7 +156,7 @@
   --color-border-strong: #3a3a42;
   --color-text: #f2f2f3;
   --color-text-muted: #a3a3ad;
-  --color-text-dim: #74747e;
+  --color-text-dim: #8a8a94;
   --color-accent: #ff7a1a;
   --color-accent-hover: #ff8f3d;
   --color-accent-pressed: #e8650a;
@@ -164,7 +165,7 @@
   --color-steel: #8ea4b5;
   --color-success: #6fb544;
   --color-warning: #d9b23c;
-  --color-danger: #d4452f;
+  --color-danger: #ef5b43;
   --color-premium: #e3ad4f;
   --color-elite: #c9a44f;
   --color-ally: #6fb544;
@@ -208,14 +209,14 @@
   --color-border-strong: #c4c4cc;
   --color-text: #17171a;
   --color-text-muted: #55555f;
-  --color-text-dim: #7c7c86;
-  --color-accent: #d85a00;
-  --color-accent-hover: #bf4f00;
-  --color-accent-pressed: #a84500;
-  --color-accent-soft: rgb(216 90 0 / 10%);
+  --color-text-dim: #6a6a74;
+  --color-accent: #b84d00;
+  --color-accent-hover: #a04300;
+  --color-accent-pressed: #8a3a00;
+  --color-accent-soft: rgb(184 77 0 / 10%);
   --color-accent-contrast: #fff;
   --color-steel: #2f5f80;
-  --color-success: #3e8a1c;
+  --color-success: #347a15;
   --color-warning: #9a7a00;
   --color-danger: #b8321f;
   --color-premium: #9a6a12;
@@ -292,4 +293,10 @@
 
 :root:has([data-header-compact='true']) {
   --header-height: var(--header-height-compact);
+}
+
+@media (width < 640px) {
+  :root {
+    --header-offset: calc(var(--header-height) + var(--safe-area-top) + 1px);
+  }
 }

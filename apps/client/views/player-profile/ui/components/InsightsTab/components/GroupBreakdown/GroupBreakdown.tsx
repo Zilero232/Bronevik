@@ -4,8 +4,8 @@ import { TANK_CLASS_ICONS, toRoman } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { signed } from '@/entities/player/stats';
 import { percentText } from '@/shared/lib';
+import { DeltaValue } from '@/ui-kit';
 
 import type { GroupBreakdownProps } from './GroupBreakdown.types';
 
@@ -42,9 +42,7 @@ export const GroupBreakdown = ({ kind, groups }: GroupBreakdownProps) => {
               <span aria-hidden className={s.bar}>
                 <span className={s.fill} data-side={side} style={{ '--fill': `${Math.min(Math.abs(delta) / GROUP_BREAKDOWN.scalePp, 1) * 50}%` }} />
               </span>
-              <span className={s.value} data-side={side}>
-                {signed({ value: delta, digits: 1 })}
-              </span>
+              <DeltaValue isSameShown className={s.value} format={{ maximumFractionDigits: 1 }} value={delta} />
               <span className={s.meta}>
                 {percentText({ format, value: winRate })} · {t('battles', { count: battles })}
               </span>

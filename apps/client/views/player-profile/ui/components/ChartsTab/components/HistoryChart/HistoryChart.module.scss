@@ -37,12 +37,9 @@
     font-weight: 700;
   }
 
-  &[data-trend='up'] dd {
-    color: var(--color-success);
-  }
-
-  &[data-trend='down'] dd {
-    color: var(--color-danger);
+  .change {
+    font-size: inherit;
+    font-weight: inherit;
   }
 }
 

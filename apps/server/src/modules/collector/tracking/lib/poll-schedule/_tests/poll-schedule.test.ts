@@ -23,4 +23,8 @@ describe('nextPollAt', () => {
     expect(active).toBeLessThan(population ?? 0);
     expect(population).toBeLessThan(dormant ?? 0);
   });
+
+  it.each(['population', 'dormant'] as const)('ignores a subscription in the %s tier', (tier) => {
+    expect(nextPollAt({ now, tier, isSubscriber: true, intervals })).toEqual(nextPollAt({ now, tier, isSubscriber: false, intervals }));
+  });
 });

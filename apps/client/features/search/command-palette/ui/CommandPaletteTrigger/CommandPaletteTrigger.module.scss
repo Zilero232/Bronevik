@@ -35,6 +35,10 @@
   display: inline-flex;
   flex-shrink: 0;
   gap: 3px;
+
+  @include coarse {
+    display: none;
+  }
 }
 
 .bar {

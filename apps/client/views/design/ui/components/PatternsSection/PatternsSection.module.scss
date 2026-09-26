@@ -1,0 +1,41 @@
+@use '@/shared/styles/mixins' as *;
+
+.wide {
+  width: 100%;
+}
+
+.panel {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  padding-block: var(--space-4);
+}
+
+.timelines {
+  width: 100%;
+  align-items: flex-start;
+}
+
+.timeline {
+  min-width: min(100%, 320px);
+  flex: 1;
+}
+
+.ribbonCard {
+  @include media-card;
+
+  display: grid;
+  width: 200px;
+  height: 120px;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  place-items: center;
+}
+
+.media {
+  width: 280px;
+}
+
+.mediaGlyph {
+  color: var(--color-steel);
+  opacity: 0.3;
+}

@@ -29,6 +29,7 @@ export type ClanStats = z.infer<typeof clanStatsSchema>;
 export type ClanPage = z.infer<typeof clanPageSchema>;
 export type ClanListSortField = z.infer<typeof clanListSortFieldSchema>;
 export type ClanListQuery = z.infer<typeof clanListQuerySchema>;
+export type ClanListQueryInput = z.input<typeof clanListQuerySchema>;
 export type ClanListItem = z.infer<typeof clanListItemSchema>;
 export type ClanListPage = z.infer<typeof clanListPageSchema>;
 export type StrongholdBuilding = z.infer<typeof strongholdBuildingSchema>;

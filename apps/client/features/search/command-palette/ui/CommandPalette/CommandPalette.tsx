@@ -22,7 +22,7 @@ export const CommandPalette = () => {
       shouldFilter={false}
       onOpenChange={onOpenChange}
     >
-      <PaletteInput isFetching={isFetching} value={query} onValueChange={setQuery} />
+      <PaletteInput isFetching={isFetching} value={query} onClose={() => onOpenChange(false)} onValueChange={setQuery} />
       <Command.List className={s.list}>
         <PaletteStatus isEnabled={isEnabled} isError={isError} isFetching={isFetching} total={total} onRetry={retry} />
         {results && <PaletteResults results={results} onSelect={go} />}

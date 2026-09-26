@@ -17,6 +17,7 @@ import {
   SettingsAggregateService,
   StreamerStatsService,
   TwitchChatService,
+  TwitchPredictionsService,
   VkLiveChatService
 } from './services';
 
@@ -34,6 +35,7 @@ import {
     SettingsAggregateService,
     StreamerStatsService,
     TwitchChatService,
+    TwitchPredictionsService,
     VkLiveChatService,
     StreamersProcessor,
     StreamersSchedulesService

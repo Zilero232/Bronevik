@@ -1,10 +1,12 @@
+import type { StreamerVideo } from '@otmetki/schemas';
+
 import { Injectable, Logger } from '@nestjs/common';
 import { getAppToken } from '@twurple/auth';
 import { chunk } from 'remeda';
 import Parser from 'rss-parser';
 
 import type { LiveStream } from '../lib';
-import type { CachedToken, PlatformVideo } from '../streamers.types';
+import type { CachedToken } from '../streamers.types';
 
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
@@ -139,7 +141,7 @@ export class LivePlatformsService {
     return youtubeChannelSchema.parse(body).items[0]?.snippet.description ?? null;
   }
 
-  async youtubeVideos(channelId: string): Promise<PlatformVideo[]> {
+  async youtubeVideos(channelId: string): Promise<StreamerVideo[]> {
     try {
       const feed = await this.parser.parseURL(`${LIVE.youtube.rssUrl}?channel_id=${encodeURIComponent(channelId)}`);
 

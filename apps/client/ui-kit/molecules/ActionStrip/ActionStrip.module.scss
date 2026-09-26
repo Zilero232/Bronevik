@@ -1,0 +1,109 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  background-color: var(--color-band-raised);
+  border-block: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.inner {
+  display: flex;
+  min-height: 64px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  margin-inline: auto;
+  padding-block: var(--space-3);
+}
+
+.wide {
+  width: var(--shell-width);
+}
+
+.narrow {
+  width: var(--shell-narrow);
+}
+
+.bottom {
+  min-height: 56px;
+  align-items: flex-end;
+  padding-block: 0;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2) var(--space-5);
+  list-style: none;
+}
+
+.link {
+  @include nav-label;
+
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  gap: var(--space-3);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.icon {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  place-items: center;
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
+
+  .link:hover & {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.text {
+  @include below(lg) {
+    @include sr-only;
+  }
+}
+
+.start {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+
+  .bottom & {
+    align-self: flex-end;
+  }
+}
+
+.end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-left: auto;
+  gap: var(--space-2) var(--space-3);
+}

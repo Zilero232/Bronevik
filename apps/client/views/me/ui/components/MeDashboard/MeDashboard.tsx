@@ -8,6 +8,7 @@ import { Avatar, Button } from '@/ui-kit';
 
 import type { MeDashboardProps } from './MeDashboard.types';
 
+import { BotsCard } from '../BotsCard';
 import { DataExportCard } from '../DataExportCard';
 import { FavoritesCard } from '../FavoritesCard';
 import { GoalsCard } from '../GoalsCard';
@@ -43,6 +44,9 @@ export const MeDashboard = ({ name }: MeDashboardProps) => {
         </div>
         <div>
           <LinkedAccountsCard />
+        </div>
+        <div>
+          <BotsCard />
         </div>
         <div>
           <ModBindCard />

@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { apiErrorSchema } from '@otmetki/schemas';
 import { isAxiosError } from 'axios';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
@@ -24,8 +25,16 @@ export const useProfileForm = (profile: StreamerProfile | null) => {
   });
 
   const onError = (error: Error) => {
-    if (isAxiosError(error) && error.response?.status === PROFILE_FORM.slugTakenStatus) {
+    const code = isAxiosError(error) ? apiErrorSchema.safeParse(error.response?.data).data?.code : undefined;
+
+    if (code === PROFILE_FORM.slugTakenCode) {
       form.setError('slug', { type: 'server', message: 'slugTaken' });
+
+      return;
+    }
+
+    if (code === PROFILE_FORM.channelTakenCode) {
+      toast.error(t('channelTaken'));
 
       return;
     }

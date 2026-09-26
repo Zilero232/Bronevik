@@ -4,11 +4,10 @@ import { useTranslations } from 'next-intl';
 
 import { TankSlot } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
-import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { HOME } from '../../../config';
 import { usePopularTanks } from '../../../model/hooks';
-import { SectionTitle } from '../SectionTitle';
 
 import s from './GarageStrip.module.scss';
 
@@ -18,7 +17,7 @@ export const GarageStrip = () => {
 
   return (
     <section aria-labelledby='home-garage' className={s.root}>
-      <SectionTitle id='home-garage' meta={t('period')} more={{ href: ROUTES.tanks.list, label: t('all') }} title={t('title')} />
+      <SectionHeader id='home-garage' meta={t('period')} more={{ href: ROUTES.tanks.list, label: t('all') }} title={t('title')} variant='display' />
       {isPending && (
         <div className={s.strip}>
           {Array.from({ length: HOME.garage.skeletons }, (_, index) => (

@@ -39,7 +39,9 @@ import type {
   streamerProfileSchema,
   streamerProviderSchema,
   streamerVideoSchema,
+  twitchPanelSchema,
   updateOverlaySchema,
+  updatePredictionsSchema,
   upsertStreamerProfileSchema
 } from './streamers.schemas';
 
@@ -65,6 +67,8 @@ export type ActivateChallengeInput = z.infer<typeof activateChallengeSchema>;
 export type StreamerProvider = z.infer<typeof streamerProviderSchema>;
 export type ConnectableProvider = z.infer<typeof connectableProviderSchema>;
 export type StreamerIntegration = z.infer<typeof streamerIntegrationSchema>;
+export type UpdatePredictionsInput = z.infer<typeof updatePredictionsSchema>;
+export type TwitchPanel = z.infer<typeof twitchPanelSchema>;
 
 export type StreamerPlatform = z.infer<typeof streamerPlatformSchema>;
 export type StreamerProfileKind = z.infer<typeof streamerProfileKindSchema>;
@@ -74,6 +78,7 @@ export type StreamerVideo = z.infer<typeof streamerVideoSchema>;
 export type StreamerChannelInput = z.infer<typeof streamerChannelInputSchema>;
 export type StreamerCard = z.infer<typeof streamerCardSchema>;
 export type StreamerDirectoryQuery = z.input<typeof streamerDirectoryQuerySchema>;
+export type StreamerDirectoryQueryInput = z.input<typeof streamerDirectoryQuerySchema>;
 export type StreamerDirectory = z.infer<typeof streamerDirectorySchema>;
 export type ClaimMethod = z.infer<typeof claimMethodSchema>;
 export type StartClaimInput = z.infer<typeof startClaimSchema>;

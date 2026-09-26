@@ -8,6 +8,7 @@ export const TANK_PAGE = {
   rowHeight: 36,
   podium: 3,
   navSpyMargin: '-30% 0px -60% 0px',
+  reducedMotionQuery: '(prefers-reduced-motion: reduce)',
   researchImage: 'contour'
 } as const;
 
@@ -21,10 +22,11 @@ export const TANK_SECTIONS = {
   patches: 'patches',
   economy: 'economy',
   learning: 'learning',
-  obtain: 'obtain'
+  obtain: 'obtain',
+  math: 'math'
 } as const;
 
-export const SECTION_NAV = ['overview', 'stats', 'marks', 'builds', 'players', 'patches'] as const;
+export const SECTION_NAV = ['overview', 'stats', 'marks', 'builds', 'math', 'players', 'patches'] as const;
 
 export const HERO_FIGURES = ['winRate', 'avgDamage', 'mark3'] as const;
 

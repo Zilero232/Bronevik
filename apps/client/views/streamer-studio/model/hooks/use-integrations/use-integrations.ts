@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { getIntegrations } from '@/entities/streamer/streamer';
 import { QUERY_KEYS } from '@/shared/constants';
 
-import { connectIntegration, disconnectIntegration } from '../../../api';
+import { connectIntegration, disconnectIntegration, setTwitchPredictions } from '../../../api';
 import { useStudioMutation } from '../use-studio-mutation';
 
 export const useIntegrations = () => useQuery({ queryKey: QUERY_KEYS.me.streamer.integrations, queryFn: getIntegrations });
@@ -21,6 +21,9 @@ export const useConnectIntegration = () => {
     onError: () => toast.error(t('connectFailed'))
   });
 };
+
+export const useSetPredictions = () =>
+  useStudioMutation({ mutationFn: setTwitchPredictions, queryKey: QUERY_KEYS.me.streamer.integrations, successKey: 'predictionsSaved' });
 
 export const useDisconnectIntegration = () =>
   useStudioMutation({ mutationFn: disconnectIntegration, queryKey: QUERY_KEYS.me.streamer.integrations, successKey: 'disconnected' });

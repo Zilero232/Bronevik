@@ -18,6 +18,7 @@ export const ErrorState = ({ onRetry, title, description, isRetrying = false, is
       description={description ?? t('loadErrorDescription')}
       icon={<TriangleAlert size={16} />}
       isCompact={isCompact}
+      role='alert'
       title={title ?? t('loadErrorTitle')}
     />
   );

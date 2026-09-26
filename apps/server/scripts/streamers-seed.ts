@@ -1,11 +1,12 @@
 import type { StreamerPlatform } from '@otmetki/schemas';
 
-import { STREAMER_PLATFORMS } from '@otmetki/schemas';
+import { CHANNEL_HOSTS, STREAMER_PLATFORMS } from '@otmetki/schemas';
+import { isIncludedIn } from 'remeda';
 
 import { readRecord } from '../src/common/lib';
 import { validateEnv } from '../src/config';
 import { createPrismaClient } from '../src/core/prisma/prisma.factory';
-import { CHANNEL_HOSTS, STREAMER_INVITATIONS } from '../src/modules/streamers/config';
+import { STREAMER_INVITATIONS } from '../src/modules/streamers/config';
 import { parseChannel } from '../src/modules/streamers/lib';
 
 const env = validateEnv(process.env);
@@ -15,7 +16,7 @@ const platformOf = (url: string): StreamerPlatform | null => {
   try {
     const host = new URL(url).hostname.toLowerCase();
 
-    return STREAMER_PLATFORMS.find((platform) => (CHANNEL_HOSTS[platform] as readonly string[]).includes(host)) ?? null;
+    return STREAMER_PLATFORMS.find((platform) => isIncludedIn(host, CHANNEL_HOSTS[platform])) ?? null;
   } catch {
     return null;
   }

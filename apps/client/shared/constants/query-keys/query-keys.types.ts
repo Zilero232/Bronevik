@@ -6,7 +6,7 @@ export type PlayerSectionKeyInput = {
   params?: object;
 };
 
-export type MeSection = 'accounts' | 'devices' | 'favorites' | 'goals' | 'notifications';
+export type MeSection = 'accounts' | 'bots' | 'devices' | 'favorites' | 'goals' | 'notifications';
 
 export type GuideViewerKeyInput = {
   viewerId: string | null;

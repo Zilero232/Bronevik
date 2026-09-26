@@ -1,0 +1,171 @@
+{
+  "meta": {
+    "title": "Three Marks mod — download",
+    "description": "The «Мир танков» companion mod: an in-battle marks panel, a hangar session panel and every battle on the site. Your own data only, fair play by design."
+  },
+  "hero": {
+    "home": "Home",
+    "crumb": "Mod",
+    "eyebrow": "Companion mod",
+    "title": "Three Marks mod",
+    "lead": "Your marks percentage in battle, your session in the hangar and every battle result on the site — from your own data only.",
+    "download": "Download the mod",
+    "most": "Open on MOST",
+    "mostPending": "Coming to MOST",
+    "file": "File {file} · drop it into mods/<client version>/"
+  },
+  "features": {
+    "title": "What the mod does",
+    "items": {
+      "results": {
+        "title": "Battle results on the site",
+        "text": "After a battle the mod sends your results: damage, assist, spotting, kills and XP. Sessions and analytics update right away, no API delay."
+      },
+      "marks": {
+        "title": "Marks progress",
+        "text": "Records the marks percentage and moving average damage of your tanks — the site builds thresholds, projections and history from it."
+      },
+      "panel": {
+        "title": "In-battle marks panel",
+        "text": "Current percentage, the projection after this battle and the damage still needed for the next mark."
+      },
+      "session": {
+        "title": "Hangar session",
+        "text": "Battles, win rate, average damage and WN8 for the current play session."
+      }
+    }
+  },
+  "fairPlay": {
+    "title": "Fair play",
+    "lead": "The mod follows the Lesta fair play policy: it reads only your own data and never helps in battle.",
+    "readsTitle": "What it reads",
+    "neverTitle": "What it never does",
+    "reads": {
+      "results": "The personal block of your battle results",
+      "dossier": "Your vehicle dossier: marks and moving average damage",
+      "feedback": "Your damage and assist — the same events the stock damage log shows",
+      "queue": "Your time in the queue",
+      "loadout": "Equipment, consumables and crew of your tank in the hangar"
+    },
+    "never": {
+      "enemies": "Enemy positions or spotting beyond the stock client",
+      "reload": "Enemy reload timers",
+      "aim": "Aim, dispersion or lead markers",
+      "allies": "Ally spotting markers",
+      "others": "Other players’ data from battle results"
+    }
+  },
+  "install": {
+    "title": "How to install",
+    "steps": {
+      "download": {
+        "title": "Download the mod",
+        "text": "The .wotmod file — from the button above, or from MOST once it is published there."
+      },
+      "copy": {
+        "title": "Drop it into mods",
+        "text": "Copy the file into mods/<client version>/ in the game folder."
+      },
+      "launch": {
+        "title": "Start the game",
+        "text": "The mod window appears in the mod settings in the hangar."
+      },
+      "bind": {
+        "title": "Bind your account",
+        "text": "Get a one-time code in your account and enter it in the mod window. Nothing is sent before binding."
+      }
+    }
+  },
+  "bind": {
+    "title": "Device binding",
+    "text": "The code is single-use and expires in a few minutes. Bound computers are listed in your account, where you can unbind them.",
+    "signedIn": "Get a binding code",
+    "signIn": "Sign in to get a code"
+  },
+  "switches": {
+    "title": "What the mod sends",
+    "lead": "Only your own account’s events, signed with the device key. Every feature can be switched off in the mod window.",
+    "on": "On",
+    "items": {
+      "battleResults": {
+        "title": "Battle results",
+        "text": "Map, mode, outcome, your tank, damage, assist, spotting, kills, XP, credits, the mark after the battle and your platoon."
+      },
+      "moeSnapshots": {
+        "title": "Hangar marks",
+        "text": "Percentage and moving average damage of the selected tank — only when they change."
+      },
+      "moeDistribution": {
+        "title": "Damage distribution",
+        "text": "The client’s answer on how many players you out-damage on the tank, at most once a day."
+      },
+      "queueTimes": {
+        "title": "Queue time",
+        "text": "How long you waited for a battle and on which tank."
+      },
+      "loadouts": {
+        "title": "Tank loadout",
+        "text": "Equipment, consumables, directives, shells, field modifications and crew skills — for the recommended builds."
+      },
+      "shots": {
+        "title": "Your hits",
+        "text": "Damage and outcome of your shots at enemies, without positions or distance — for «Fair RNG»."
+      },
+      "moePanel": {
+        "title": "In-battle marks panel",
+        "text": "Shows the marks projection. Sends nothing."
+      },
+      "sessionPanel": {
+        "title": "Hangar session panel",
+        "text": "Shows session stats. Sends nothing."
+      },
+      "shareSettings": {
+        "title": "Settings sharing",
+        "text": "Graphics, camera, reticle and sound — only when you press «Share» yourself. Login, hardware and mods are never sent."
+      }
+    },
+    "tunables": {
+      "flush": {
+        "title": "Send interval",
+        "text": "How often the mod sends queued events from the hangar.",
+        "value": "{value} s"
+      },
+      "idle": {
+        "title": "Session end",
+        "text": "Minutes without battles before a new session starts.",
+        "value": "{value} min"
+      }
+    }
+  },
+  "faq": {
+    "title": "Questions",
+    "replaysLink": "Upload a replay",
+    "accountLink": "Your account",
+    "items": {
+      "free": {
+        "question": "Is the mod paid?",
+        "answer": "No. The mod is free, and its data works without a Plus subscription."
+      },
+      "ban": {
+        "question": "Can I get banned for it?",
+        "answer": "The mod gives no advantage in battle: it reads nothing about enemies and never touches the reticle. It follows the fair play policy and is being prepared for MOST."
+      },
+      "bind": {
+        "question": "How do I rebind the mod or switch computers?",
+        "answer": "Get a new code in your account and enter it in the mod. You can unbind the old device there too."
+      },
+      "switches": {
+        "question": "Can I switch off single features?",
+        "answer": "Yes. Results, marks, loadouts, hits, the panels and settings sharing each have their own switch in the mod window."
+      },
+      "replays": {
+        "question": "Does the mod upload replays?",
+        "answer": "No. You can upload a replay by hand on the replays page."
+      },
+      "delete": {
+        "question": "How do I delete my data?",
+        "answer": "Unbind the device and request an export or deletion in your account."
+      }
+    }
+  }
+}

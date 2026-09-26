@@ -55,6 +55,7 @@
 
 .plus {
   @include nav-label;
+  @include touch-target;
 
   display: inline-flex;
   height: 36px;
@@ -71,7 +72,7 @@
     background-color var(--duration-fast) ease,
     transform var(--duration-fast) ease;
 
-  &:hover {
+  @include hover {
     background-color: var(--color-accent-hover);
     transform: translateY(-1px);
   }

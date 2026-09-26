@@ -1,5 +1,7 @@
+import type { ModDistribution } from './site.types';
+
 export const SITE = {
-  url: 'https://otmetki.su',
+  url: 'https://triotmetki.ru',
   name: 'Три отметки',
   title: 'Три отметки',
   description: 'Статистика «Мира танков»: игроки, танки, отметки, топы, кланы и инструменты в одном месте.',
@@ -7,8 +9,8 @@ export const SITE = {
   lang: 'ru-RU',
   copyrightYear: 2026,
   themeColor: {
-    light: '#e4e5dd',
-    dark: '#121410'
+    light: '#f1f1f3',
+    dark: '#18181b'
   },
   en: {
     title: 'Three Marks',
@@ -27,3 +29,9 @@ export const TELEGRAM_BOT = {
   username: 'OtmetkiBot',
   url: 'https://t.me/OtmetkiBot'
 } as const;
+
+export const MOD_DISTRIBUTION: ModDistribution = {
+  mostUrl: null,
+  downloadUrl: 'https://triotmetki.ru/downloads/otmetki.wotmod',
+  fileName: 'otmetki.wotmod'
+};

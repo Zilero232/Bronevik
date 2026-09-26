@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
-import { tankRouteName, topTankSlugs } from '@/entities/tank/tank';
+import { tankRouteName, topTankSlugs } from '@/entities/tank/tank/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';

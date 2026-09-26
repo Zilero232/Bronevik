@@ -1,4 +1,4 @@
-import type { ChallengeCondition } from '@otmetki/schemas';
+import type { BattleResult, ChallengeCondition } from '@otmetki/schemas';
 
 export type EvaluatedBattle = {
   id: string;
@@ -6,7 +6,7 @@ export type EvaluatedBattle = {
   tankType: string | null;
   tier: number | null;
   startedAt: Date;
-  result: 'draw' | 'loss' | 'win';
+  result: BattleResult;
   damageDealt: number;
   damageAssistedRadio: number;
   damageAssistedTrack: number;

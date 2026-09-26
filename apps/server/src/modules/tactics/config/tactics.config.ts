@@ -1,6 +1,7 @@
 export const TACTICS = {
   path: '/tactics/ws',
   documentPrefix: 'board:',
+  redisPrefix: 'otmetki:tactics',
   debounceMs: 2000,
   maxDebounceMs: 10_000,
   maxBoardsPerUser: 200,
@@ -10,4 +11,9 @@ export const TACTICS = {
 
 export const BOARD_DOCUMENT = {
   layersKey: 'layers'
+} as const;
+
+export const REDIS_CONNECTION = {
+  defaultPort: 6379,
+  tlsProtocol: 'rediss:'
 } as const;

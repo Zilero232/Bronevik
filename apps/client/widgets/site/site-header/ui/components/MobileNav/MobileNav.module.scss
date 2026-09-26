@@ -90,14 +90,15 @@
   gap: var(--space-3);
   text-decoration: none;
 
-  &:hover,
-  &[data-active='true'] {
+  @include hover {
     background-color: var(--color-surface-hover);
     color: var(--color-text);
   }
 
   &[data-active='true'] {
+    background-color: var(--color-surface-hover);
     box-shadow: inset 2px 0 0 var(--color-accent);
+    color: var(--color-text);
   }
 }
 

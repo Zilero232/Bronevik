@@ -1,16 +1,20 @@
 import type { MutationStatus } from '@tanstack/react-query';
 
-export type TelegramEnv = 'browser' | 'detecting' | 'telegram';
+import type { MINI_APP_PLATFORMS } from '../../config';
 
-export type TelegramLaunch = {
-  env: TelegramEnv;
-  initData: string | null;
+export type MiniAppPlatform = (typeof MINI_APP_PLATFORMS)[number];
+
+export type MiniAppEnv = 'browser' | 'detecting' | 'inside';
+
+export type MiniAppLaunch = {
+  env: MiniAppEnv;
+  payload: string | null;
 };
 
 export type MiniAppMode = 'dashboard' | 'failed' | 'loading' | 'outside' | 'preview';
 
 export type MiniAppModeInput = {
-  env: TelegramEnv;
+  env: MiniAppEnv;
   signInStatus: MutationStatus;
   hasSession: boolean;
   isSessionPending: boolean;

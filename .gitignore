@@ -29,6 +29,7 @@ __pycache__/
 # Test artifacts and tool caches
 coverage/
 e2e/.results/
+e2e/.screens/
 playwright-report/
 .playwright/
 .cache/

@@ -20,11 +20,11 @@ export const useClanColumns = (): ColumnDef<ClanListItem, never>[] => {
   const numberOrDash = (value: number | null) => (value === null ? '—' : format.number(value));
 
   return [
-    column.display({
+    column.accessor((_, index) => index + 1, {
       id: 'rank',
       header: '#',
-      cell: ({ row }) => row.index + 1,
-      meta: { width: 48, align: 'end', isNumeric: true }
+      enableSorting: false,
+      meta: { width: 48, align: 'end', isRank: true }
     }),
     column.accessor('clan.tag', {
       header: t('columns.clan'),
@@ -33,13 +33,14 @@ export const useClanColumns = (): ColumnDef<ClanListItem, never>[] => {
     }),
     column.accessor('clan.name', {
       header: t('columns.name'),
-      enableSorting: false
+      enableSorting: false,
+      meta: { hideBelow: 'md' }
     }),
     column.accessor('clan.membersCount', {
       header: t('columns.members'),
       enableSorting: false,
       cell: ({ row: { original } }) => <ActivityCell item={original} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'lg' }
     }),
     column.accessor('avgWn8', {
       header: t('columns.wn8'),
@@ -51,19 +52,19 @@ export const useClanColumns = (): ColumnDef<ClanListItem, never>[] => {
       header: t('columns.winRate'),
       enableSorting: false,
       cell: (info) => <WinRateCell value={info.getValue()} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
     }),
     column.accessor('strongholdLevel', {
       header: t('columns.stronghold'),
       enableSorting: false,
       cell: (info) => numberOrDash(info.getValue()),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'lg' }
     }),
     column.accessor('eloRating10', {
       header: t('columns.elo'),
       enableSorting: false,
       cell: (info) => numberOrDash(info.getValue()),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'md' }
     })
   ];
 };

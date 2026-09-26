@@ -14,7 +14,7 @@ const nodeState = ({ id, path }: NodeStateInput): TreeElementState => {
   return path.includes(id) ? 'path' : 'dimmed';
 };
 
-export const toFlowElements = ({ tree, layout, path, onSelect }: TreeFlowInput) => {
+export const toFlowElements = ({ tree, layout, path }: TreeFlowInput) => {
   const onPath = pathEdgeKeys(path);
 
   const nodes = tree.nodes.flatMap((node) => {
@@ -26,7 +26,7 @@ export const toFlowElements = ({ tree, layout, path, onSelect }: TreeFlowInput) 
             id: String(node.vehicle.tankId),
             type: 'tank' as const,
             position,
-            data: { node, state: nodeState({ id: node.vehicle.tankId, path }), onSelect }
+            data: { node, state: nodeState({ id: node.vehicle.tankId, path }) }
           }
         ]
       : [];

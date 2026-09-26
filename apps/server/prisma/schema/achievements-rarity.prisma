@@ -1,0 +1,45 @@
+model AccountAchievements {
+  accountId BigInt @id @map("account_id")
+
+  counts     Json
+  maxSeries  Json? @map("max_series")
+  held       Int   @default(0)
+  points     Int   @default(0)
+  completion Float @default(0)
+
+  fetchedAt  DateTime  @map("fetched_at") @db.Timestamptz(3)
+  computedAt DateTime? @map("computed_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@index([points(sort: Desc)])
+  @@index([fetchedAt])
+  @@map("account_achievements")
+}
+
+model AchievementRarity {
+  name String @id
+
+  holders Int
+  sample  Int
+  share   Float
+  points  Int
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@index([share])
+  @@map("achievement_rarity")
+}
+
+model TankRarity {
+  tankId Int @id @map("tank_id")
+
+  owners Int
+  sample Int
+  share  Float
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@index([share])
+  @@map("tank_rarity")
+}

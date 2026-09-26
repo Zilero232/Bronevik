@@ -1,9 +1,9 @@
-import { STREAMER_PLATFORMS } from '@otmetki/schemas';
+import { CHANNEL_HOSTS, STREAMER_PLATFORMS } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import type { StreamerProfile } from '@/entities/streamer/streamer';
 
-import { CHANNEL_HOSTS, PROFILE_FORM } from '../../../config';
+import { PROFILE_FORM } from '../../../config';
 import { isChannelHost, rejectedPlatform, toProfileFormValues, toProfileInput } from '../profile-form';
 import { profileFormSchema } from '../profile-form.schemas';
 

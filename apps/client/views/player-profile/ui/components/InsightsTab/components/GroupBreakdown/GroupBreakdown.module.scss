@@ -64,17 +64,8 @@
   }
 }
 
-.value {
-  @include numeric;
-
-  color: var(--color-success);
+.row .value {
   font-size: var(--text-sm);
-  font-weight: 600;
-  text-align: end;
-
-  &[data-side='down'] {
-    color: var(--color-danger);
-  }
 }
 
 .meta {

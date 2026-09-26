@@ -1,3 +1,4 @@
+import type { Mission, MissionBranch } from '../../../../../../generated';
 import type { PyValue } from '../../python-literal';
 import type { XmlNode } from '../../xml';
 import type { PERSONAL_MISSION_BRANCHES } from './personal-missions.constants';
@@ -32,17 +33,7 @@ export type PersonalOperation = {
   reward: PersonalMissionRewardVehicle | null;
 };
 
-export type PersonalBranchKind = 'alliance' | 'levelGroup' | 'vehicleClass';
-
-export type PersonalBranch = {
-  operationId: number;
-  chainId: number;
-  kind: PersonalBranchKind;
-  key: string;
-  nations: string[];
-  minTier: number;
-  maxTier: number;
-};
+export type PersonalBranch = Omit<MissionBranch, 'gameVersionId'>;
 
 export type PersonalMissionCondition = {
   progressId: string;
@@ -57,27 +48,9 @@ export type PersonalMissionCondition = {
   description: string | null;
 };
 
-export type PersonalMission = {
-  questId: number;
-  name: string;
+export type PersonalMission = Omit<Mission, 'conditions' | 'gameVersionId'> & {
   branch: PersonalMissionBranchName;
-  campaignId: number;
-  operationId: number;
-  chainId: number;
-  position: number;
-  title: string;
-  shortTitle: string | null;
-  description: string | null;
-  advice: string | null;
-  minTier: number;
-  maxTier: number;
-  vehicleClasses: string[];
-  alliances: string[];
   levelGroup: string | null;
-  isInitial: boolean;
-  isFinal: boolean;
-  hasHonors: boolean;
-  requiredUnlocks: number[];
   conditions: PersonalMissionCondition[];
 };
 

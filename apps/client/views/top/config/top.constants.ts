@@ -17,7 +17,6 @@ export const TOP_PERIODS: readonly RatingPeriod[] = ['overall', '24h', '7d', '30
 export const TOP_TANK_SCOPES: readonly LeaderboardScope[] = ['players', 'streamers'];
 
 export const TOP_BOARD = {
-  medals: ['gold', 'silver', 'bronze'],
   podiumSize: 3,
   initialFilter: { scope: 'players', metric: 'wn8', period: '30d', tier: 'all', type: 'all', tank: null } satisfies TopFilterState
 } as const;

@@ -1,7 +1,7 @@
 import type { ApplyRequest, ModApplyList, SettingsShare, SettingsValues } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { applicableGroupSchema, settingsValuesSchema, valuesForApply } from '@otmetki/schemas';
+import { applicableGroupSchema, applyRequestSchema, settingsValuesSchema, valuesForApply } from '@otmetki/schemas';
 import { subDays } from 'date-fns';
 
 import type { AuthenticatedDevice } from '../../mod';
@@ -165,7 +165,7 @@ export class SettingsShareService {
       id: request.id,
       slug: request.slug,
       groups: this.groupsOf(request.groups),
-      status: request.status as ApplyRequest['status'],
+      status: applyRequestSchema.shape.status.parse(request.status),
       createdAt: request.createdAt.toISOString(),
       appliedAt: toIso(request.appliedAt)
     };

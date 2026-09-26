@@ -23,3 +23,38 @@
 .skeleton {
   border-radius: var(--radius-lg);
 }
+
+.art {
+  --art: var(--color-accent);
+
+  position: absolute;
+  background: radial-gradient(circle at 80% 30%, color-mix(in srgb, var(--art) 16%, transparent), transparent 60%), var(--color-band);
+  inset: 0;
+
+  &[data-kind='patch_notes'] {
+    --art: var(--color-steel);
+  }
+
+  &[data-kind='dev_blog'] {
+    --art: var(--tier-mid);
+  }
+}
+
+.emblem {
+  position: absolute;
+  right: -24px;
+  bottom: -40px;
+  color: var(--art);
+  opacity: 0.18;
+  transform: rotate(-8deg);
+}
+
+.version {
+  @include numeric(var(--num-md));
+
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  color: var(--color-text-muted);
+  font-weight: 700;
+}

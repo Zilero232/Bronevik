@@ -1,11 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { StreamerSettings } from '../../../../../generated';
+import type { Prisma, StreamerSettings } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { StreamerProfileService } from '../streamer-profile.service';
 
 import { StreamerSettingsService } from '../streamer-settings.service';
+
+const NOW = new Date('2026-09-26T12:00:00Z');
+
+const ZOOM_SOURCE = 'https://example.com/zoom-settings';
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
@@ -15,10 +19,19 @@ const createService = () => {
   return { service: new StreamerSettingsService(prisma, mock<StreamerProfileService>()), prisma };
 };
 
-const stored = (data: unknown): StreamerSettings => ({
+const stored = (data: Prisma.JsonObject): StreamerSettings => ({
   profileId: 'p1',
-  data: data as StreamerSettings['data'],
+  data,
   updatedAt: new Date('2026-09-01T00:00:00Z')
+});
+
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(NOW);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe('StreamerSettingsService.save', () => {
@@ -31,11 +44,31 @@ describe('StreamerSettingsService.save', () => {
     await service.save({ profileId: 'p1', userId: 'u1', source: 'creator', values: { camera: { fov: 95 }, zoom: { steps: ['x2', 'x16'] } } });
 
     const [call] = prisma.streamerSettingsVersion.create.mock.calls;
-    const data = call?.[0].data.data as Record<string, Record<string, unknown>>;
 
-    expect(data.camera).toEqual(oldCamera);
-    expect(data.zoom).toMatchObject({ steps: ['x2', 'x16'], source: 'creator', sourceUrl: null });
+    expect(call?.[0].data.data).toEqual({
+      camera: oldCamera,
+      zoom: { steps: ['x2', 'x16'], source: 'creator', sourceUrl: null, checkedAt: NOW.toISOString() }
+    });
+
     expect(call?.[0].data.changedGroups).toEqual(['zoom']);
+  });
+
+  it('records where each changed group was taken from', async () => {
+    const { service, prisma } = createService();
+
+    prisma.streamerSettings.findUnique.mockResolvedValue(null);
+
+    await service.save({
+      profileId: 'p1',
+      userId: 'u1',
+      source: 'editorial',
+      values: { zoom: { steps: ['x2'] } },
+      sourceUrls: { zoom: ZOOM_SOURCE }
+    });
+
+    expect(prisma.streamerSettingsVersion.create.mock.calls[0]?.[0].data.data).toMatchObject({
+      zoom: { source: 'editorial', sourceUrl: ZOOM_SOURCE, checkedAt: NOW.toISOString() }
+    });
   });
 
   it('writes nothing when no group changed', async () => {

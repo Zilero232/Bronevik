@@ -1,8 +1,9 @@
+import type { GroupInsight } from '@otmetki/schemas';
+
 import { groupBy, sortBy, sumBy } from 'remeda';
 
 import type {
   ComputeInsightsInput,
-  GroupInsight,
   GroupsOfInput,
   Insights,
   InsightTank,

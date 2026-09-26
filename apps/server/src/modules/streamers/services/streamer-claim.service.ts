@@ -1,18 +1,12 @@
-import type { AdminClaim, StreamerInvitation as InvitationView, StreamerChannelInput, StreamerClaim as StreamerClaimView } from '@otmetki/schemas';
+import type { AdminClaim, EditorialStreamerInput, StreamerInvitation as InvitationView, StreamerClaim as StreamerClaimView } from '@otmetki/schemas';
 
 import { Injectable, Logger } from '@nestjs/common';
+import { claimMethodSchema } from '@otmetki/schemas';
 import { match } from 'ts-pattern';
 
 import type { StreamerClaim, StreamerPlatform } from '../../../../generated';
-import type {
-  ClaimRef,
-  ClaimTarget,
-  CompleteClaimInput,
-  EditorialInput,
-  RemovalRequestInput,
-  ResolveClaimRequest,
-  StartClaimRequest
-} from '../streamers.types';
+import type { ParsedChannel } from '../lib';
+import type { ClaimRef, ClaimTarget, CompleteClaimInput, RemovalRequestInput, ResolveClaimRequest, StartClaimRequest } from '../streamers.types';
 
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { errorMessage, readRecord, toIso } from '../../../common/lib';
@@ -152,7 +146,7 @@ export class StreamerClaimService {
     ]);
   }
 
-  async createEditorial({ slug, displayName, channels }: EditorialInput): Promise<void> {
+  async createEditorial({ slug, displayName, channels }: EditorialStreamerInput): Promise<void> {
     if (!STREAMERS.editorialEnabled) {
       throw new AppForbiddenException('FORBIDDEN', 'Editorial entries are disabled until the legal review');
     }
@@ -160,7 +154,7 @@ export class StreamerClaimService {
     const taken = await this.prisma.streamerProfile.count({ where: { slug } });
 
     if (taken > 0) {
-      throw new AppConflictException('CONFLICT', `The slug ${slug} is taken`);
+      throw new AppConflictException('STREAMER_SLUG_TAKEN', `The slug ${slug} is taken`);
     }
 
     const profile = await this.prisma.streamerProfile.create({ data: { slug, displayName, kind: 'editorial' } });
@@ -228,7 +222,7 @@ export class StreamerClaimService {
     return target.profile ? { profileId: target.profile.id } : { invitationId: target.invitation.id };
   }
 
-  private async channelsOf(target: ClaimTarget): Promise<{ platform: StreamerChannelInput['platform']; handle: string; url: string }[]> {
+  private async channelsOf(target: ClaimTarget): Promise<ParsedChannel[]> {
     if (target.profile) {
       return this.prisma.streamerChannel.findMany({ where: { profileId: target.profile.id } });
     }
@@ -310,7 +304,7 @@ export class StreamerClaimService {
     return {
       id: claim.id,
       slug,
-      method: claim.method as StreamerClaimView['method'],
+      method: claimMethodSchema.parse(claim.method),
       status: claim.status,
       code: claim.code,
       createdAt: claim.createdAt.toISOString(),

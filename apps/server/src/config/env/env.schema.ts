@@ -24,6 +24,19 @@ const envSchema = z.object({
   TELEGRAM_WEBHOOK_URL: z.union([z.url(), z.literal('')]).default(''),
   TELEGRAM_WEBHOOK_SECRET: z.string().default(''),
 
+  DISCORD_BOT_TOKEN: z.string().default(''),
+  DISCORD_APPLICATION_ID: z.string().default(''),
+  DISCORD_CLIENT_SECRET: z.string().default(''),
+
+  VK_BOT_TOKEN: z.string().default(''),
+  VK_GROUP_ID: z.coerce.number().int().nonnegative().default(0),
+  VK_CALLBACK_CONFIRMATION: z.string().default(''),
+  VK_CALLBACK_SECRET: z.string().default(''),
+  VK_MINI_APP_ID: z.coerce.number().int().nonnegative().default(0),
+  VK_MINI_APP_SECRET: z.string().default(''),
+  VK_ID_CLIENT_ID: z.string().default(''),
+  VK_ID_CLIENT_SECRET: z.string().default(''),
+
   VAPID_PUBLIC_KEY: z.string().default(''),
   VAPID_PRIVATE_KEY: z.string().default(''),
   VAPID_SUBJECT: z.string().default(''),

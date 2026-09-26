@@ -1,4 +1,6 @@
-export type MockVehicleType = 'AT-SPG' | 'heavyTank' | 'lightTank' | 'mediumTank' | 'SPG';
+import type { BattleResult, VehicleType } from '@otmetki/schemas';
+
+import type { CrewRole } from '../../../generated';
 
 export type MockExpected = {
   damage: number;
@@ -13,6 +15,7 @@ export type MockShell = {
   kind: string;
   isPremium: boolean;
   portion: number;
+  damage: number | null;
   price: number;
   currency: string;
 };
@@ -28,7 +31,7 @@ export type MockVehicle = {
   shortName: string;
   tag: string | null;
   nation: string;
-  type: MockVehicleType;
+  type: VehicleType;
   tier: number;
   isPremium: boolean;
   isCollectible: boolean;
@@ -87,11 +90,7 @@ export type MockCrewSkill = {
   description: string | null;
 };
 
-export type MockCrewRole = {
-  role: string;
-  name: string;
-  skills: readonly string[];
-};
+export type MockCrewRole = Pick<CrewRole, 'name' | 'role' | 'skills'>;
 
 export type MockCatalog = {
   gameVersion: string;
@@ -225,7 +224,7 @@ export type MockBattle = {
   lifetimeSec: number;
   tankId: number;
   mode: MockBattleMode;
-  result: 'draw' | 'loss' | 'win';
+  result: BattleResult;
   team: number;
   damageDealt: number;
   assistedRadio: number;

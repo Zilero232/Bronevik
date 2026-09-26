@@ -8,6 +8,10 @@
 .canvas {
   touch-action: none;
 
+  @include coarse {
+    touch-action: pan-y;
+  }
+
   &:focus-visible {
     @include focus-ring;
 

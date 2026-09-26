@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
+import type { UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { LestaClient } from '../../../../lib/lesta';
 import type { EntitlementsService } from '../../../billing';
@@ -47,5 +48,27 @@ describe('LestaAccountsService.link', () => {
     const { service } = createService({ others: 1, isKnown: false });
 
     await expect(service.link(identity)).resolves.toBe(true);
+  });
+});
+
+describe('LestaAccountsService.primaryAccountId', () => {
+  it('returns the primary linked account first', async () => {
+    const { service, prisma } = createService({ others: 0, isKnown: false });
+
+    prisma.userLestaAccount.findFirst.mockResolvedValue(mock<UserLestaAccount>({ accountId: 42n }));
+
+    await expect(service.primaryAccountId('user')).resolves.toBe(42);
+
+    expect(prisma.userLestaAccount.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }] })
+    );
+  });
+
+  it('returns null without a linked account', async () => {
+    const { service, prisma } = createService({ others: 0, isKnown: false });
+
+    prisma.userLestaAccount.findFirst.mockResolvedValue(null);
+
+    await expect(service.primaryAccountId('user')).resolves.toBeNull();
   });
 });

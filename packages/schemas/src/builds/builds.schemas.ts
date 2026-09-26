@@ -125,6 +125,8 @@ const moduleSelectionSchema = z.object({
   radio: z.string().optional()
 });
 
+export const moduleSlotSchema = moduleSelectionSchema.keyof();
+
 export const loadoutRequestSchema = z.object({
   loadout: loadoutSchema,
   modules: moduleSelectionSchema.optional().describe('Exact modules by name; overrides loadout.profileId'),

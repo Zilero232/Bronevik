@@ -29,7 +29,7 @@ export const OverlaysSection = () => {
   return (
     <DesignBlock id='overlays' title={t('title')}>
       <DesignRow label={t('tooltip')}>
-        <Tooltip content={t('tooltipBody')}>
+        <Tooltip isNativeButton content={t('tooltipBody')}>
           <IconButton aria-label={t('tooltip')} variant='outline'>
             <Info size={18} />
           </IconButton>

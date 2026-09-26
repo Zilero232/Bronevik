@@ -1,18 +1,19 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InlineKeyboard } from 'grammy';
+import { keys } from 'remeda';
 
 import type { BotCommandSpec, BotContext, ConsumeInput, GuardInput, TelegramIdentity } from '../telegram.types';
 
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { BOT, WEB_LOGIN } from '../config';
-import { isPublicUrl, looksLikeLinkCode } from '../lib';
+import { BotRepliesService } from '../../bot-commands';
+import { BOT, SHARED_COMMAND_OF, WEB_LOGIN } from '../config';
+import { isPublicUrl, looksLikeLinkCode, resolveBotLocale } from '../lib';
 import { TelegramIdentityService } from './telegram-identity.service';
 import { TelegramLinkService } from './telegram-link.service';
-import { TelegramLookupCommandsService } from './telegram-lookup-commands.service';
 import { TelegramMissionCommandsService } from './telegram-mission-commands.service';
-import { TelegramPlayerCommandsService } from './telegram-player-commands.service';
 import { TelegramPlaylistCommandsService } from './telegram-playlist-commands.service';
+import { TelegramSharedCommandsService } from './telegram-shared-commands.service';
 
 @Injectable()
 export class TelegramCommandsService {
@@ -20,8 +21,8 @@ export class TelegramCommandsService {
 
   constructor(
     private readonly config: AppConfigService,
-    private readonly players: TelegramPlayerCommandsService,
-    private readonly lookups: TelegramLookupCommandsService,
+    private readonly shared: TelegramSharedCommandsService,
+    private readonly replies: BotRepliesService,
     private readonly missions: TelegramMissionCommandsService,
     private readonly playlists: TelegramPlaylistCommandsService,
     private readonly links: TelegramLinkService,
@@ -30,12 +31,7 @@ export class TelegramCommandsService {
 
   get commands(): BotCommandSpec[] {
     return [
-      { command: 'me', run: (ctx) => this.players.me(ctx) },
-      { command: 'session', run: (ctx) => this.players.session(ctx) },
-      { command: 'marks', run: (ctx) => this.players.marks(ctx) },
-      { command: 'clan', run: (ctx) => this.lookups.clan(ctx) },
-      { command: 'tank', run: (ctx) => this.lookups.tank(ctx) },
-      { command: 'top', run: (ctx) => this.lookups.top(ctx) },
+      ...keys(SHARED_COMMAND_OF).map((command) => ({ command, run: (ctx: BotContext) => this.shared.run({ ctx, command }) })),
       { command: 'lbz', run: (ctx) => this.missions.lbz(ctx) },
       { command: 'next', run: (ctx) => this.playlists.next(ctx) },
       { command: 'login', run: (ctx) => this.login(ctx) },
@@ -68,7 +64,7 @@ export class TelegramCommandsService {
         this.logger.warn(`telegram command failed: ${errorMessage(error)}`);
       }
 
-      await ctx.reply(ctx.t(isNotFound ? 'player-not-found' : 'error-generic'));
+      await ctx.reply(this.replies.failure({ locale: resolveBotLocale(await ctx.i18n.getLocale()), error }).text);
     }
   }
 

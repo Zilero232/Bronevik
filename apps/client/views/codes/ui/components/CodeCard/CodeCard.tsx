@@ -3,7 +3,7 @@
 import { Check, Copy, ExternalLink, Gift, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import { Badge, Button, buttonVariants, RelativeTime } from '@/ui-kit';
 
@@ -15,6 +15,7 @@ import { useCodeCard } from '../../../model/hooks';
 import s from './CodeCard.module.scss';
 
 export const CodeCard = ({ code }: CodeCardProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('codes');
   const format = useFormatter();
   const { sourceHref, ribbon, copied, onCopy, isSignedIn, isReporting, report } = useCodeCard({ code });
@@ -22,9 +23,9 @@ export const CodeCard = ({ code }: CodeCardProps) => {
   return (
     <li className={s.root} data-status={code.status}>
       {ribbon && (
-        <span className={s.ribbon} data-kind={ribbon.kind}>
+        <Badge shape='corner' tone={ribbon.kind === 'new' ? 'steel' : 'accent'}>
           {ribbon.kind === 'expiring' ? t('ribbon.expiring', { days: ribbon.days }) : t('ribbon.new')}
-        </span>
+        </Badge>
       )}
       <div className={s.ticket}>
         <div aria-hidden className={s.stub}>
@@ -94,7 +95,7 @@ export const CodeCard = ({ code }: CodeCardProps) => {
               </Button>
             </div>
           ) : (
-            <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={ROUTES.auth.login}>
+            <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={loginHref}>
               {t('report.signIn')}
             </Link>
           ))}

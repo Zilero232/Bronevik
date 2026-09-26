@@ -68,34 +68,3 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
-
-.card {
-  @include media-card;
-
-  display: flex;
-  align-items: center;
-  padding: var(--space-4);
-  gap: var(--space-4);
-}
-
-.body {
-  @include stack(var(--space-1));
-
-  min-width: 0;
-  flex: 1;
-}
-
-.tank {
-  min-width: 0;
-}
-
-.percent {
-  @include numeric(var(--num-md));
-}
-
-.next {
-  @include numeric;
-
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-}

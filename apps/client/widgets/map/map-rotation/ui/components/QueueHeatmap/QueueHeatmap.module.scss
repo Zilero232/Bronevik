@@ -1,0 +1,89 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+
+  padding: var(--space-4);
+}
+
+.scroller {
+  overflow-x: auto;
+
+  @include hide-scrollbar;
+}
+
+.grid {
+  --cell: 24px;
+
+  border-collapse: separate;
+  border-spacing: 3px;
+
+  @include below(md) {
+    --cell: 16px;
+
+    border-spacing: 2px;
+  }
+}
+
+.caption {
+  @include sr-only;
+}
+
+.hour {
+  @include label;
+
+  min-width: var(--cell);
+  font-weight: 500;
+  text-align: start;
+
+  &[data-current] {
+    color: var(--color-accent);
+  }
+}
+
+.tier {
+  padding-right: var(--space-2);
+  text-align: start;
+  white-space: nowrap;
+}
+
+.cell {
+  @include tone(--wait);
+
+  width: var(--cell);
+  height: var(--cell);
+  padding: 0;
+  border-radius: var(--radius-xs);
+  background-color: var(--color-surface-sunken);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+
+  &[data-tone] {
+    background-color: color-mix(in srgb, var(--wait) 70%, var(--color-surface-sunken));
+  }
+
+  &[data-current] {
+    box-shadow: inset 0 0 0 2px var(--color-accent);
+  }
+}
+
+.legend {
+  @include label;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.scale {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.swatch {
+  @include tone(--wait);
+
+  width: 16px;
+  height: 10px;
+  border-radius: var(--radius-xs);
+  background-color: color-mix(in srgb, var(--wait) 70%, var(--color-surface-sunken));
+}

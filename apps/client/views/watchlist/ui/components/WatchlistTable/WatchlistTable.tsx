@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/shared/constants';
 import { DataTable } from '@/ui-kit';
 
 import type { WatchlistTableProps } from './WatchlistTable.types';
@@ -20,6 +21,7 @@ export const WatchlistTable = ({ players }: WatchlistTableProps) => {
       data={players}
       density='compact'
       getRowId={({ accountId }) => String(accountId)}
+      getRowLink={({ nickname }) => (nickname ? { href: ROUTES.players.profile(nickname), label: nickname } : null)}
       initialSorting={[...WATCHLIST_PAGE.initialSorting]}
     />
   );

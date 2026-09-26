@@ -10,6 +10,8 @@ import { usePathname, useRouter } from '@/shared/i18n/navigation';
 
 import type { UseLocale } from './use-locale.types';
 
+import { localeHref } from '../../../lib';
+
 export const useLocale = (): UseLocale => {
   const active = useActiveLocale();
   const pathname = usePathname();
@@ -18,8 +20,10 @@ export const useLocale = (): UseLocale => {
   const [isPending, startTransition] = useTransition();
 
   const setLocale = (locale: Locale) => {
+    const { search, hash } = window.location;
+
     startTransition(() => {
-      router.replace(pathname, { locale });
+      router.replace(localeHref({ pathname, search, hash }), { locale });
     });
   };
 

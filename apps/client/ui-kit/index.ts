@@ -61,6 +61,7 @@ export type {
   TiltProps
 } from './atoms';
 export {
+  ActionStrip,
   Card,
   CardBody,
   CardHeader,
@@ -83,6 +84,7 @@ export {
   ErrorState,
   FormField,
   GameVersionBadge,
+  IconFilter,
   KeyFigure,
   KeyFigures,
   Legend,
@@ -90,6 +92,8 @@ export {
   MediaCard,
   NumberCell,
   NumberField,
+  Podium,
+  PodiumCard,
   Popover,
   RangeSlider,
   RetryButton,
@@ -100,11 +104,14 @@ export {
   Sparkline,
   StatList,
   Tabs,
+  Timeline,
   ToggleChips,
   Tooltip,
   TooltipProvider
 } from './molecules';
 export type {
+  ActionStripLink,
+  ActionStripProps,
   CardHeaderProps,
   CardProps,
   CardVariant,
@@ -120,6 +127,9 @@ export type {
   ErrorStateProps,
   FormFieldProps,
   GameVersionBadgeProps,
+  IconFilterKind,
+  IconFilterProps,
+  IconFilterValues,
   KeyFigureProps,
   KeyFiguresProps,
   KeyFigureVariant,
@@ -131,9 +141,12 @@ export type {
   MediaCardProps,
   NumberCellProps,
   NumberFieldProps,
+  PodiumCardProps,
+  PodiumProps,
   PopoverProps,
   RangeSliderProps,
   RetryButtonProps,
+  SectionHeaderMore,
   SectionHeaderProps,
   SegmentedControlProps,
   SegmentedOption,
@@ -146,6 +159,8 @@ export type {
   StatListProps,
   TabItem,
   TabsProps,
+  TimelineItem,
+  TimelineProps,
   ToggleChip,
   ToggleChipsProps,
   TooltipProps
@@ -158,8 +173,10 @@ export type {
   BattleBackdropTone,
   CalendarHeatmapProps,
   ChartSeries,
+  DataTableBarMax,
   DataTableDensity,
   DataTableProps,
+  DataTableRowLink,
   DataTableRowTint,
   HeatmapDay,
   LineChartProps,
@@ -168,5 +185,6 @@ export type {
   PagedListProps,
   PageHeaderProps,
   PageHeroArt,
-  PageHeroProps
+  PageHeroProps,
+  QueryStatusProps
 } from './organisms';

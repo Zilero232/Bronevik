@@ -1,12 +1,14 @@
 import type { ReactNode } from 'react';
 
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
+import { hoursToMilliseconds } from 'date-fns';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FORMATS } from '@/shared/i18n';
 
 import { useRelativeTime } from '../use-relative-time';
+import { RELATIVE_TIME } from '../use-relative-time.constants';
 
 const NOW = new Date('2026-09-25T12:00:00Z');
 
@@ -36,5 +38,15 @@ describe('useRelativeTime', () => {
   it('returns nothing for a missing or broken value', () => {
     expect(renderHook(() => useRelativeTime(null), { wrapper }).result.current).toBeNull();
     expect(renderHook(() => useRelativeTime('not a date'), { wrapper }).result.current).toBeNull();
+  });
+
+  it('moves the text on as time passes', () => {
+    const { result } = renderHook(() => useRelativeTime('2026-09-25T10:00:00Z'), { wrapper });
+
+    act(() => {
+      vi.advanceTimersByTime(hoursToMilliseconds(1) + RELATIVE_TIME.tickMs);
+    });
+
+    expect(result.current?.text).toBe('3 hours ago');
   });
 });

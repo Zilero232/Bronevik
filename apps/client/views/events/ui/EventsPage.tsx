@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import {
+  ActionStrip,
   Band,
   buttonVariants,
   CopyField,
@@ -39,8 +40,17 @@ export const EventsPage = () => {
         lead={t('head.description')}
         title={t('head.title')}
       />
-      <div className={s.strip} data-theme='dark'>
-        <div className={s.stripInner}>
+      <ActionStrip
+        end={
+          <>
+            <CopyField className={s.feed} label={t('ics.url')} value={EVENTS_FEED.ics} />
+            <a className={buttonVariants({ variant: 'primary' })} href={EVENTS_FEED.webcal}>
+              <CalendarPlus aria-hidden size={16} />
+              {t('ics.subscribeIcs')}
+            </a>
+          </>
+        }
+        start={
           <ToggleChips
             aria-label={t('filters.label')}
             options={EVENTS.kinds.map((kind) => ({ value: kind, label: t(`kinds.${kind}`) }))}
@@ -48,15 +58,9 @@ export const EventsPage = () => {
             value={calendar.kinds}
             onChange={calendar.setKinds}
           />
-          <div className={s.stripActions}>
-            <CopyField className={s.feed} label={t('ics.url')} value={EVENTS_FEED.ics} />
-            <a className={buttonVariants({ variant: 'primary' })} href={EVENTS_FEED.webcal}>
-              <CalendarPlus aria-hidden size={16} />
-              {t('ics.subscribeIcs')}
-            </a>
-          </div>
-        </div>
-      </div>
+        }
+        className={s.strip}
+      />
       {calendar.isError && (
         <div className={s.section}>
           <ErrorState description={t('error.description')} isRetrying={calendar.isRetrying} title={t('error.title')} onRetry={calendar.retry} />

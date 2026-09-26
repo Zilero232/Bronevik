@@ -1,0 +1,15 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 0;
+}
+
+.scroller {
+  display: grid;
+  padding-bottom: var(--space-2);
+  gap: var(--space-3);
+  grid-auto-columns: minmax(200px, 1fr);
+  grid-auto-flow: column;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+}

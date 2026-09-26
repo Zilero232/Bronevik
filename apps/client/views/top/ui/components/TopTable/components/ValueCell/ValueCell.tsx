@@ -2,8 +2,8 @@
 
 import { useFormatter } from 'next-intl';
 
-import { signed } from '@/entities/player/stats';
 import { percentText, toneOfTier } from '@/shared/lib';
+import { DeltaValue } from '@/ui-kit';
 
 import type { ValueCellProps } from './ValueCell.types';
 
@@ -14,7 +14,7 @@ export const ValueCell = ({ entry: { value, tier, delta }, filter, isHero = fals
 
   return (
     <span className={s.root} data-hero={isHero}>
-      {delta !== null && <span className={s.delta}>{signed({ value: delta })}</span>}
+      {delta !== null && <DeltaValue className={s.delta} format={{ maximumFractionDigits: 0 }} value={delta} />}
       <span className={s.value} data-tone={tier ? toneOfTier(tier) : undefined}>
         {filter.metric === 'winRate' && filter.scope !== 'marks'
           ? percentText({ format, value, digits: 2 })

@@ -183,5 +183,74 @@
     "loadErrorTitle": "Couldn't load data",
     "loadErrorDescription": "The server did not respond. Check your connection and try again.",
     "retry": "Retry"
+  },
+  "patterns": {
+    "title": "v3 patterns",
+    "actionStrip": "Action strip",
+    "cta": "Install the mod",
+    "links": {
+      "marks": "Marks",
+      "builds": "Builds",
+      "codes": "Codes",
+      "top": "Top"
+    },
+    "sectionHeader": "Section header",
+    "badge": "New",
+    "meta": "last 7 days",
+    "more": "All",
+    "headerTitle": "Strongest tanks of the week",
+    "tabs": "Sticky tabs",
+    "tabItems": {
+      "overview": "Overview",
+      "marks": "Marks",
+      "history": "History"
+    },
+    "tabBody": {
+      "overview": "The indicator slides to the selected tab, and the panel fades in from the direction of the change.",
+      "marks": "The tab bar sticks under the header and respects the safe area.",
+      "history": "Without content the tabs work as in-page section navigation."
+    },
+    "timeline": "Timeline",
+    "events": {
+      "buff": "Buff: rate of fire +8%",
+      "nerf": "Nerf: penetration −10 mm",
+      "event": "Marathon starts",
+      "code": "New bonus code"
+    },
+    "dates": {
+      "buff": "Sep 12",
+      "nerf": "Sep 5",
+      "event": "Sep 1",
+      "code": "Aug 28"
+    },
+    "ribbons": "Ribbons",
+    "expiring": "Expiring",
+    "new": "New",
+    "premium": "Premium",
+    "cornerRibbon": "Corner ribbon",
+    "edgeRibbon": "Edge flag",
+    "mediaCard": "Media card with body text",
+    "mediaTitle": "September 24",
+    "mediaSub": "Patch",
+    "mediaBody": "Update 1.45: balance changes, new maps and recalculated mark thresholds."
+  },
+  "cards": {
+    "title": "Cards and filters",
+    "podium": "Podium",
+    "place": "Place {rank}",
+    "battles": "{count, plural, one {# battle} other {# battles}}",
+    "markProgress": "Mark progress",
+    "marks": {
+      "first": "T-34-85",
+      "second": "Leopard 1",
+      "third": "Obj. 140"
+    },
+    "iconFilter": "Icon filters",
+    "tier": "Tier",
+    "class": "Class",
+    "nation": "Nation",
+    "showcase": "Tank showcase",
+    "winRate": "Win rate",
+    "damage": "Damage"
   }
 }

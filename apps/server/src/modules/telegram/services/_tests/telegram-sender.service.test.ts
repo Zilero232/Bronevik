@@ -15,14 +15,14 @@ describe('TelegramSenderService', () => {
     const sender = new TelegramSenderService(null, createBotI18n());
 
     expect(sender.isEnabled).toBe(false);
-    await expect(sender.sendNotification({ ...message, url: 'https://otmetki.app' })).resolves.toBeUndefined();
+    await expect(sender.sendNotification({ ...message, url: 'https://triotmetki.ru' })).resolves.toBeUndefined();
   });
 
   it('bolds the title with an entity instead of markup and adds an open button for a public link', async () => {
     const bot = mockDeep<Bot<BotContext>>();
     const sender = new TelegramSenderService(bot, createBotI18n());
 
-    await sender.sendNotification({ ...message, url: 'https://otmetki.app/p/Tanker' });
+    await sender.sendNotification({ ...message, url: 'https://triotmetki.ru/p/Tanker' });
 
     const [chatId, text, options] = bot.api.sendMessage.mock.calls[0] ?? [];
 

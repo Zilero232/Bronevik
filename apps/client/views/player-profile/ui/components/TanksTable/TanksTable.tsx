@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/shared/constants';
 import { Button, DataTable, EmptyState } from '@/ui-kit';
 
 import type { TanksTableProps } from './TanksTable.types';
@@ -30,6 +31,7 @@ export const TanksTable = ({ rows, isLoading, onReset }: TanksTableProps) => {
       data={rows}
       density='media'
       getRowId={(row) => String(row.vehicle.tankId)}
+      getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
       initialSorting={TANKS_TABLE.initialSorting}
       isLoading={isLoading}
     />

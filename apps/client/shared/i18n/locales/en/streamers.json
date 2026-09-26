@@ -9,8 +9,6 @@
     "title": "A stream where <hot>the numbers don't lie</hot>",
     "lead": "Live stats in OBS, viewer challenges verified from the actual battle, and a bot that knows your WN8 better than chat does.",
     "ctaHow": "How challenges work",
-    "rec": "REC",
-    "frame": "Overlay layout · filled from your own battles",
     "home": "Home",
     "crumb": "For streamers",
     "pageTitle": "For streamers"
@@ -91,5 +89,10 @@
         "text": "Paste the overlay link as a Browser source — the numbers update on their own."
       }
     }
+  },
+  "sample": {
+    "caption": "Live data · {nickname}, top WN8 this week",
+    "captionPending": "Live data of this week’s top player",
+    "empty": "No players in the leaderboard yet"
   }
 }

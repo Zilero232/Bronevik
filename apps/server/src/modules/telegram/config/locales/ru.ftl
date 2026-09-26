@@ -30,47 +30,11 @@ help =
     /top — топ игроков по WN8
     /lbz — следующие личные боевые задачи
     /next — плейлист вечера: на чём сыграть сегодня
+    /watch [ник] — слежка за игроками
     /settings — уведомления
     /login — ссылка для входа на сайт
 
     В любом чате: @{ $bot } ник — карточка игрока.
-not-linked = Сначала привяжите аккаунт Леста на сайте, или укажите ник: /me ник
-player-not-found = Игрок не найден.
-player-card =
-    { $nickname } { $clan }
-    Боёв: { $battles }
-    Победы: { $winRate }
-    Средний урон: { $avgDamage }
-    WN8: { $wn8 }
-session-none = Сессий пока нет. Сыграйте пару боёв — с модом «Трёх отметок» сессия появится сразу.
-session-card =
-    Сессия с { $startedAt } { $state }
-    Боёв: { $battles }, победы: { $winRate }
-    Средний урон: { $avgDamage }
-    WN8: { $wn8 }
-session-open = (идёт)
-session-closed = (завершена)
-marks-none = Отметок пока нет.
-marks-card =
-    Три отметки: { $moe3 }
-    Две отметки: { $moe2 }
-    Одна отметка: { $moe1 }
-marks-closest = Ближе всего к следующей:
-marks-line = { $tank }: { $percent }% ({ $marks } отм.)
-clan-none = Игрок не состоит в клане.
-clan-card =
-    [{ $tag }] { $name }
-    Участников: { $members }
-    Роль: { $role }
-tank-usage = Укажите название: /tank Об. 140
-tank-not-found = Танк не найден.
-tank-card =
-    { $name } — { $tier } уровень, { $type }
-    Отметки: 1 — { $p65 }, 2 — { $p85 }, 3 — { $p95 }
-tank-no-thresholds = Порогов отметок пока нет.
-top-empty = Рейтинг ещё считается.
-top-header = Топ по WN8:
-top-line = { $place }. { $nickname } — { $wn8 } ({ $battles } боёв)
 lbz-not-linked = Привяжите Telegram к аккаунту на сайте, чтобы отмечать ЛБЗ.
 lbz-empty = Задачи ещё не загружены или все выполнены.
 lbz-header = ЛБЗ: { $operation }
@@ -104,10 +68,7 @@ settings-on = ✅ { $label }
 settings-off = ▫️ { $label }
 settings-not-linked = Настройки доступны после привязки аккаунта: /start
 inline-not-found = Игрок не найден
-inline-card-description = WN8 { $wn8 } · { $winRate } побед · { $battles } боёв
 notification-open = Открыть
-error-generic = Что-то пошло не так. Попробуйте позже.
-missing = —
 
 next-not-linked = Привяжите Telegram и аккаунт Леста на сайте, чтобы получить плейлист вечера.
 next-no-garage = Состав ангара пока неизвестен: войдите на сайт через Леста ID, чтобы мы увидели ваши танки.
@@ -120,3 +81,14 @@ next-reason-longUnplayed = давно не играли ({ $days } дн.)
 next-reason-lowWinRate = есть что поправить
 next-reason-mission = подходит под ЛБЗ
 next-plus-hint = С «Плюсом» — { $size } танков и больше причин.
+watch-not-linked = Привяжите Telegram к аккаунту на сайте, чтобы следить за игроками.
+watch-empty = Список слежки пуст. Добавьте игрока: /watch ник
+watch-header = Слежка: { $count } из { $limit }
+watch-line = { $nickname }: { $battles } { $battles ->
+        [one] бой
+        [few] боя
+       *[many] боёв
+    } за сутки, отметок { $marks }
+watch-added = { $nickname } в списке слежки ({ $count } из { $limit }).
+watch-limit = Лимит слежки исчерпан. С «Плюсом» можно следить за большим числом игроков.
+cmd-watch = Слежка за игроками: /watch ник

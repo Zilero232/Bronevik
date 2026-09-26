@@ -1,3 +1,5 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 
 import { TankIdentity, TankImage, vehicleIdentity } from '@/entities/tank/tank';
@@ -5,12 +7,13 @@ import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { EmptyState, SectionHeader } from '@/ui-kit';
 
-import type { PremiumStripProps } from './PremiumStrip.types';
+import { useTree } from '../../../model/context';
 
 import s from './PremiumStrip.module.scss';
 
-export const PremiumStrip = ({ premiums }: PremiumStripProps) => {
+export const PremiumStrip = () => {
   const t = useTranslations('tree.premiums');
+  const { premiums } = useTree();
 
   return (
     <section className={s.root}>

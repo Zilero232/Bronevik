@@ -1,1 +1,1 @@
-export { BOARD_DOCUMENT, TACTICS } from './tactics.config';
+export { BOARD_DOCUMENT, REDIS_CONNECTION, TACTICS } from './tactics.config';

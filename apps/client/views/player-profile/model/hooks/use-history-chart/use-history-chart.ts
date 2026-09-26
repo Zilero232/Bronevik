@@ -2,7 +2,6 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { signed } from '@/entities/player/stats';
 import { percentText } from '@/shared/lib';
 
 import type { UseHistoryChartInput } from './use-history-chart.types';
@@ -23,7 +22,7 @@ export const useHistoryChart = ({ metric, series }: UseHistoryChartInput) => {
 
   return {
     summary,
-    change: summary ? signed({ value: summary.change, digits: isPercent ? 1 : 0 }) : undefined,
+    changeFormat: { maximumFractionDigits: isPercent ? 1 : 0 },
     isBar: metric === 'battles',
     formatValue,
     labels: points.map(({ at }) => format.dateTime(new Date(at), { day: 'numeric', month: 'short' })),

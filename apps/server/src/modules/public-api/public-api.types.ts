@@ -1,6 +1,7 @@
 import type { ApiTier } from '@otmetki/schemas';
 import type { Request } from 'express';
 
+import type { ApiErrorLog } from '../../../generated';
 import type { AuthenticatedApiKey } from '../developer';
 import type { UsageCounters } from './lib';
 
@@ -20,13 +21,8 @@ export type RecordThrottledInput = {
   endpoint: string;
 };
 
-export type LogErrorInput = {
+export type LogErrorInput = Pick<ApiErrorLog, 'code' | 'message' | 'method' | 'path' | 'status'> & {
   keyId: string;
-  method: string;
-  path: string;
-  status: number;
-  code: string | null;
-  message: string | null;
 };
 
 export type SecondBudget = {

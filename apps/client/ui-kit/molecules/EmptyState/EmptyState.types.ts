@@ -6,5 +6,6 @@ export type EmptyStateProps = {
   icon?: ReactNode;
   action?: ReactNode;
   isCompact?: boolean;
+  role?: 'alert' | 'status';
   className?: string;
 };

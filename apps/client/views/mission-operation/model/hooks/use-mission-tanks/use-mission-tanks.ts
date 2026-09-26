@@ -9,7 +9,7 @@ import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseMissionTanksInput } from './use-mission-tanks.types';
 
-import { GARAGE_NOTICE, MISSION_TANKS_VIEW } from '../../../config';
+import { GARAGE_NOTICE, MISSION_BOARD, MISSION_TANKS_VIEW } from '../../../config';
 import { useMissionGarageColumns } from '../use-mission-garage-columns';
 import { useMissionTanksColumns } from '../use-mission-tanks-columns';
 
@@ -40,6 +40,7 @@ export const useMissionTanks = ({ questId, metric }: UseMissionTanksInput) => {
     columns,
     garageColumns,
     tanks: tanks.data,
+    showcase: (tanks.data?.tanks ?? []).slice(0, MISSION_BOARD.showcaseLimit),
     isPending: tanks.isPending,
     isError: tanks.isError,
     isRetrying: tanks.isFetching,

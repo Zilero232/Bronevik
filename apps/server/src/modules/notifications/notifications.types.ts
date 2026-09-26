@@ -1,6 +1,4 @@
-import type { InboxItem as SharedInboxItem } from '@otmetki/schemas';
-
-import type { NotificationChannel, NotificationEvent } from '../../../generated';
+import type { NotificationChannel, NotificationEvent, TargetKind } from '../../../generated';
 import type { AppNotification, DeliverPayload, Digest, ParsedNotification } from './contracts';
 import type { MarkBattle, NotificationLocale, RenderedNotification } from './lib';
 
@@ -46,7 +44,7 @@ export type TankDiscountInput = {
 };
 
 export type FollowersOfInput = {
-  kind: 'clan' | 'player' | 'tank';
+  kind: TargetKind;
   targetId: bigint;
   event: NotificationEvent;
 };
@@ -119,8 +117,6 @@ export type UnsubscribePushInput = {
   endpoint: string;
 };
 
-type InboxItem = SharedInboxItem;
-
 export type PreviousMarksInput = {
   battles: MarkBattle[];
   since: Date;
@@ -129,11 +125,6 @@ export type PreviousMarksInput = {
 export type DigestOfInput = {
   userId: string;
   since: Date;
-};
-
-export type InboxPage = {
-  items: InboxItem[];
-  unread: number;
 };
 
 export type FirstWinRemindInput = {

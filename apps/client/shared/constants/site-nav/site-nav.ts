@@ -6,12 +6,17 @@ import {
   Clapperboard,
   Code2,
   Crown,
+  Dices,
+  Download,
   Film,
   Flag,
+  Flame,
+  FlaskConical,
   GitCompareArrows,
   GraduationCap,
   ListChecks,
   MapIcon,
+  Medal,
   Network,
   Newspaper,
   Palette,
@@ -39,6 +44,8 @@ export const SITE_NAV = {
         { key: 'players', href: ROUTES.players.list, icon: Users },
         { key: 'top', href: ROUTES.top, icon: Trophy },
         { key: 'clans', href: ROUTES.clans.list, icon: StrongholdIcon },
+        { key: 'bestBattles', href: ROUTES.bestBattles, icon: Flame },
+        { key: 'achievements', href: ROUTES.achievements, icon: Medal },
         { key: 'comparePlayers', href: ROUTES.players.compare, icon: GitCompareArrows }
       ]
     },
@@ -51,6 +58,7 @@ export const SITE_NAV = {
         { key: 'marks', href: ROUTES.marks, icon: Mark3Icon },
         { key: 'modes', href: ROUTES.modes.list, icon: Flag },
         { key: 'tree', href: ROUTES.tree, icon: Network },
+        { key: 'supertest', href: ROUTES.supertest, icon: FlaskConical },
         { key: 'compareTanks', href: ROUTES.tanks.compare, icon: Scale }
       ]
     },
@@ -63,7 +71,8 @@ export const SITE_NAV = {
         { key: 'codes', href: ROUTES.codes, icon: Ticket },
         { key: 'shop', href: ROUTES.shop, icon: ShoppingCart },
         { key: 'news', href: ROUTES.news, icon: Newspaper },
-        { key: 'maps', href: ROUTES.maps.list, icon: GlobalMapIcon }
+        { key: 'maps', href: ROUTES.maps.list, icon: GlobalMapIcon },
+        { key: 'honestRng', href: ROUTES.honestRng, icon: Dices }
       ]
     },
     {
@@ -90,6 +99,7 @@ export const SITE_FOOTER_GROUPS = [
     key: 'project',
     featured: null,
     items: [
+      { key: 'mod', href: ROUTES.mod, icon: Download },
       { key: 'tools', href: ROUTES.tools, icon: TrainingIcon },
       { key: 'plus', href: ROUTES.plus, icon: Crown },
       { key: 'forStreamers', href: ROUTES.streamers.forStreamers, icon: Clapperboard },

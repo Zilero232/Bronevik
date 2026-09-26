@@ -1,7 +1,5 @@
 import { PLUS_GRACE, PLUS_LIMITS } from '@otmetki/schemas';
 
-import { FEATURES } from '../../../config';
-
 export const REPLAY_UPLOAD = {
   field: 'file',
   maxBytes: 50 * 1024 * 1024,
@@ -27,15 +25,13 @@ export const REPLAYS_SCHEDULES = [
     id: 'replays-best-of-week',
     queue: REPLAYS_QUEUE.name,
     name: REPLAYS_QUEUE.jobs.bestOfWeek,
-    repeat: { pattern: '10 0 * * 1' },
-    enabled: FEATURES.replaysBestOfWeek
+    repeat: { pattern: '10 0 * * 1' }
   },
   {
     id: 'replays-overflow-cleanup',
     queue: REPLAYS_QUEUE.name,
     name: REPLAYS_QUEUE.jobs.overflowCleanup,
-    repeat: { pattern: '30 4 * * *' },
-    enabled: FEATURES.replayOverflowCleanup
+    repeat: { pattern: '30 4 * * *' }
   }
 ] as const;
 
@@ -50,6 +46,15 @@ export const REPLAY_PARSE = {
   trackStepSeconds: 1,
   maxErrorLength: 500,
   moscowOffset: '+03:00'
+} as const;
+
+export const REPLAY_MEDALS = {
+  masteryBadges: [
+    { level: 4, name: 'markOfMastery' },
+    { level: 3, name: 'markOfMasteryI' },
+    { level: 2, name: 'markOfMasteryII' },
+    { level: 1, name: 'markOfMasteryIII' }
+  ]
 } as const;
 
 export const HEATMAP = {

@@ -94,8 +94,7 @@
     "notFoundDescription": "Check the nickname or enter the account ID.",
     "noMarks": "Every mark is already taken",
     "noMarksHint": "Each tank has three marks or no percent data.",
-    "playerFor": "Player: {nickname}",
-    "toMark": "{percent} % → {mark} %"
+    "playerFor": "Player: {nickname}"
   },
   "forecast": {
     "title": "Forecast",

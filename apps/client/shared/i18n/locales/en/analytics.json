@@ -284,5 +284,31 @@
   "battlesPage": {
     "title": "Battles",
     "description": "Battles from the «Three Marks» mod. Click a row to open the review."
+  },
+  "tankMeta": {
+    "title": "Tank analytics",
+    "description": "Win rate, damage, WN8 and marks over time on one tank, from the mod."
+  },
+  "tank": {
+    "pick": "Tank trend",
+    "back": "All analytics",
+    "title": "Trend: {name}",
+    "titleFallback": "Tank trend",
+    "description": "Win rate, damage, WN8 and marks percentage on the tank by week or month.",
+    "granularity": {
+      "label": "Chart step",
+      "week": "Weeks",
+      "month": "Months"
+    },
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
+    "wn8": "WN8",
+    "survivalRate": "Survival",
+    "moe": "Marks percentage",
+    "moeTitle": "Marks percentage",
+    "moeEmpty": "Not enough marks data on this tank yet",
+    "empty": "No mod battles on this tank",
+    "emptyText": "Play a few battles on the tank with the mod installed — the trend shows up here."
   }
 }

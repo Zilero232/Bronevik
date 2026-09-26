@@ -1,6 +1,8 @@
+import achievements from './achievements.json';
 import analytics from './analytics.json';
 import armor from './armor.json';
 import auth from './auth.json';
+import bestBattles from './bestBattles.json';
 import billing from './billing.json';
 import brand from './brand.json';
 import builds from './builds.json';
@@ -22,11 +24,14 @@ import footer from './footer.json';
 import game from './game.json';
 import guides from './guides.json';
 import home from './home.json';
+import honestRng from './honestRng.json';
 import inbox from './inbox.json';
 import maps from './maps.json';
+import mapStats from './mapStats.json';
 import marks from './marks.json';
 import me from './me.json';
 import missions from './missions.json';
+import mod from './mod.json';
 import modes from './modes.json';
 import nav from './nav.json';
 import news from './news.json';
@@ -53,8 +58,10 @@ import streamer from './streamer.json';
 import streamers from './streamers.json';
 import streamersDirectory from './streamersDirectory.json';
 import streamerSettings from './streamerSettings.json';
+import supertest from './supertest.json';
 import tactics from './tactics.json';
 import tank from './tank.json';
+import tankMath from './tankMath.json';
 import tanks from './tanks.json';
 import tankTraits from './tankTraits.json';
 import telegram from './telegram.json';
@@ -95,6 +102,7 @@ export const en = {
   marks,
   me,
   missions,
+  mod,
   modes,
   nav,
   news,
@@ -131,5 +139,11 @@ export const en = {
   top,
   tournaments,
   tree,
-  watchlist
+  watchlist,
+  achievements,
+  bestBattles,
+  honestRng,
+  mapStats,
+  supertest,
+  tankMath
 };

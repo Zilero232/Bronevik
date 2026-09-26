@@ -1,3 +1,5 @@
+export { BATTLE_EVENTS } from './battle-events';
+export type { BattleEventsSink, BattleStartedEvent } from './battle-events';
 export { bulkRequestsPerSecond, LESTA_CLIENT, LESTA_CLIENTS, LESTA_OUTCOME_RECORDER, LestaModule } from './lesta';
 export type { LestaClients, LestaOutcomeRecorder, RecordLestaInput } from './lesta';
 export { AppLoggerModule, LOGGER } from './logger';

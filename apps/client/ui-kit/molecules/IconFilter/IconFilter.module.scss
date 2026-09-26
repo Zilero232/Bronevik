@@ -1,0 +1,75 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  max-width: 100%;
+  flex-wrap: wrap;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+}
+
+.chip {
+  @include reset-button;
+  @include class-tint;
+  @include touch-target;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  transition:
+    color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
+
+  &:first-child {
+    border-left: none;
+  }
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &[data-pressed] {
+    @include chip-active;
+  }
+
+  &[data-class][data-pressed] {
+    color: var(--class);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+.md .chip {
+  min-width: 36px;
+  height: 36px;
+}
+
+.sm .chip {
+  min-width: 30px;
+  height: 30px;
+}
+
+.tier {
+  border: none;
+  background: none;
+  gap: 2px;
+
+  .chip {
+    min-width: 34px;
+    border-left: none;
+    color: var(--color-text-muted);
+
+    &[data-pressed] {
+      background: none;
+      box-shadow: none;
+      color: var(--color-text);
+    }
+  }
+}

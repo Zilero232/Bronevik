@@ -42,8 +42,9 @@ export const CalendarHeatmap = ({ days, levels = CALENDAR_HEATMAP.levels, ariaLa
                 data-empty={day === null}
                 data-level={day ? heatLevel({ value: day.value, max, levels }) : 0}
                 style={{ gridColumn: column + 1, gridRow: row + 2 }}
+                onPointerDown={() => setActive(day)}
                 onPointerEnter={() => setActive(day)}
-                onPointerLeave={() => setActive(null)}
+                onPointerLeave={(event) => event.pointerType !== 'touch' && setActive(null)}
               />
             ))
           )}

@@ -43,23 +43,6 @@
   }
 }
 
-.ribbon {
-  position: absolute;
-  top: 16px;
-  right: -36px;
-  width: 140px;
-  padding: 3px 0;
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
-  font-family: var(--font-display);
-  font-size: var(--text-2xs);
-  font-weight: 700;
-  letter-spacing: var(--tracking-label);
-  text-align: center;
-  text-transform: uppercase;
-  transform: rotate(35deg);
-}
-
 .head {
   display: flex;
   align-items: center;

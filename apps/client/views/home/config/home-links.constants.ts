@@ -1,5 +1,5 @@
-import { Mark3Icon, RadioIcon, StrongholdIcon, TrainingIcon } from '@otmetki/icons';
-import { ListChecks, Newspaper, NotebookPen, ScrollText, Swords, Ticket, Wrench } from 'lucide-react';
+import { Mark3Icon, RadioIcon, StrongholdIcon } from '@otmetki/icons';
+import { Download, ListChecks, Newspaper, NotebookPen, ScrollText, Swords, Ticket, Wrench } from 'lucide-react';
 
 import { ROUTES } from '@/shared/constants';
 
@@ -11,7 +11,7 @@ export const HOME_ACTIONS = [
   { key: 'tournaments', href: ROUTES.tournaments.list, icon: Swords }
 ] as const;
 
-export const HOME_CTA = { href: ROUTES.tools, icon: TrainingIcon } as const;
+export const HOME_CTA = { href: ROUTES.mod, icon: Download } as const;
 
 export const HOME_COMMUNITY = [
   { key: 'streamers', href: ROUTES.streamers.forStreamers, icon: RadioIcon },

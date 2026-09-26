@@ -13,6 +13,7 @@
 
 .option {
   @include reset-button;
+  @include touch-target;
 
   position: relative;
   display: inline-flex;

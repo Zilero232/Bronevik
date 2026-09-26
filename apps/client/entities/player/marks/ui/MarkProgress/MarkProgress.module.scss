@@ -1,14 +1,37 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  --mark: var(--tier-mid);
+
   display: flex;
   min-width: 0;
   align-items: center;
   gap: var(--space-4);
+
+  &[data-marks='2'] {
+    --mark: var(--tier-high);
+  }
+
+  &[data-marks='3'] {
+    --mark: var(--color-accent);
+  }
 }
 
-.percent {
-  font-size: var(--text-xs);
+.card {
+  @include media-card;
+
+  padding: var(--space-4);
+  box-shadow:
+    inset 3px 0 0 var(--mark),
+    var(--elev-1);
+}
+
+.ring {
+  flex: none;
+}
+
+.glyph {
+  color: var(--mark);
 }
 
 .text {
@@ -19,6 +42,7 @@
 
 .title {
   overflow: hidden;
+  min-width: 0;
   font-family: var(--font-display);
   font-size: var(--text-md);
   font-weight: 700;
@@ -30,9 +54,12 @@
   @include numeric(var(--num-md));
 
   color: var(--color-text);
+  font-weight: 700;
 }
 
 .hint {
+  @include numeric;
+
   color: var(--color-text-muted);
   font-size: var(--text-xs);
 }

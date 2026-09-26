@@ -1,0 +1,24 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.link {
+  display: inline-flex;
+  min-width: 0;
+  color: var(--color-text);
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.source {
+  @include label;
+
+  color: var(--color-text-dim);
+}

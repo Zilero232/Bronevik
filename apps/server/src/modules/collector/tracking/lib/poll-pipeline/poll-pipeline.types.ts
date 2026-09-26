@@ -12,6 +12,7 @@ export type PollLestaPort = {
   accountInfo: (accountIds: readonly number[]) => Promise<Record<string, AccountInfo | null>>;
   accountTanks: (accountIds: readonly number[]) => Promise<Record<string, AccountTank[] | null>>;
   tankStats: (request: TankStatsRequest) => Promise<TankStats[]>;
+  tankMarks: (request: TankStatsRequest) => Promise<Map<number, number>>;
 };
 
 export type StoredPlayer = {
@@ -98,6 +99,7 @@ export type ProcessAccountInput = {
   info: AccountInfo;
   tanks: readonly AccountTank[];
   baseline: readonly TankBaseline[];
+  tier: TrackingTier;
   now: Date;
 };
 

@@ -6,6 +6,7 @@ import { env } from '@/shared/config/client-env';
 import { bearerToken } from '../../http';
 import { AUTH_CLIENT } from '../auth.constants';
 import { telegramLoginClient } from '../telegram-login-client';
+import { vkMiniAppClient } from '../vk-mini-app-client';
 
 export const authClient = createAuthClient({
   baseURL: new URL(AUTH_CLIENT.basePath, env.NEXT_PUBLIC_API_URL).toString(),
@@ -13,5 +14,5 @@ export const authClient = createAuthClient({
     credentials: 'include',
     auth: { type: 'Bearer', token: () => bearerToken.get() ?? undefined }
   },
-  plugins: [magicLinkClient(), telegramLoginClient()]
+  plugins: [magicLinkClient(), telegramLoginClient(), vkMiniAppClient()]
 });

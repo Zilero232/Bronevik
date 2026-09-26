@@ -9,6 +9,7 @@ import type { IntegrationCardProps } from './IntegrationCard.types';
 
 import { useIntegrationCard } from '../../../model/hooks';
 import { ConfirmAction } from '../ConfirmAction';
+import { PredictionsToggle } from './components';
 
 import s from './IntegrationCard.module.scss';
 
@@ -46,6 +47,7 @@ export const IntegrationCard = ({ provider, path, integration, isLoading }: Inte
           </Button>
         ))
         .otherwise(() => null)}
+      {!isLoading && provider === 'twitch' && integration && <PredictionsToggle integration={integration} />}
     </article>
   );
 };

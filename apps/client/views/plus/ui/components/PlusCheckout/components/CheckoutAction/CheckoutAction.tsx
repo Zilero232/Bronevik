@@ -3,6 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
+import { useLoginHref } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants, Skeleton } from '@/ui-kit';
@@ -23,6 +24,7 @@ export const CheckoutAction = ({
   note,
   onStartTrial
 }: CheckoutActionProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('plus');
   const format = useFormatter();
 
@@ -31,7 +33,7 @@ export const CheckoutAction = ({
       {match({ isPending, isSignedIn, isPlus })
         .with({ isPending: true }, () => <Skeleton height={40} shape='block' width={220} />)
         .with({ isSignedIn: false }, () => (
-          <Link className={buttonVariants()} href={ROUTES.auth.login}>
+          <Link className={buttonVariants()} href={loginHref}>
             {t('checkout.action.signIn')}
           </Link>
         ))

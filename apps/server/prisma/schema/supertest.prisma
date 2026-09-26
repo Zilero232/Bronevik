@@ -1,0 +1,41 @@
+model SupertestAnnouncement {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  url     String  @unique
+  title   String
+  summary String?
+  image   String?
+  source  String
+
+  publishedAt DateTime  @map("published_at") @db.Timestamptz(3)
+  fetchedAt   DateTime  @default(now()) @map("fetched_at") @db.Timestamptz(3)
+  parsedAt    DateTime? @map("parsed_at") @db.Timestamptz(3)
+
+  changes SupertestChange[]
+
+  @@index([publishedAt(sort: Desc)])
+  @@map("supertest_announcement")
+}
+
+model SupertestChange {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  announcementId String  @map("announcement_id")
+  tankId         Int?    @map("tank_id")
+  tankName       String  @map("tank_name")
+  isNewVehicle   Boolean @default(false) @map("is_new_vehicle")
+  param          String?
+  label          String
+  fromValue      Float?  @map("from_value")
+  toValue        Float?  @map("to_value")
+  liveValue      Float?  @map("live_value")
+  unit           String?
+  raw            String
+  position       Int
+
+  announcement SupertestAnnouncement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@index([announcementId, position])
+  @@index([tankId])
+  @@map("supertest_change")
+}

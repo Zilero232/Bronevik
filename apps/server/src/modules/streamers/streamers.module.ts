@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
+import { BotCommandsModule } from '../bot-commands';
 import { ModModule } from '../mod';
 import { ProgressionCoreModule } from '../progression';
 import { AdminStreamersController } from './admin-streamers.controller';
@@ -23,12 +24,13 @@ import {
   StreamerDirectoryService,
   StreamerFollowService,
   StreamerProfileService,
-  StreamerSettingsService
+  StreamerSettingsService,
+  TwitchPanelService
 } from './services';
 import { StreamersController } from './streamers.controller';
 
 @Module({
-  imports: [BillingCoreModule, ProgressionCoreModule, ModModule],
+  imports: [BillingCoreModule, BotCommandsModule, ProgressionCoreModule, ModModule],
   controllers: [OverlaysController, StreamersController, AdminStreamersController, ModSettingsController],
   providers: [
     StreamerProfileService,
@@ -37,6 +39,7 @@ import { StreamersController } from './streamers.controller';
     StreamerClaimService,
     StreamerSettingsService,
     StreamerFollowService,
+    TwitchPanelService,
     SettingsAggregateService,
     SettingsShareService,
     LivePlatformsService,

@@ -29,6 +29,7 @@ import {
   streamersControllerRemoveOverlay,
   streamersControllerSaveProfile,
   streamersControllerSaveSettings,
+  streamersControllerSetPredictions,
   streamersControllerUpdateOverlay
 } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
@@ -67,6 +68,10 @@ export const connectIntegration = async (provider: ConnectableProvider): Promise
 
 export const disconnectIntegration = async (provider: ConnectableProvider): Promise<void> => {
   await fromSdk(() => streamersControllerDisconnect({ ...SESSION_REQUEST, path: { provider } }));
+};
+
+export const setTwitchPredictions = async (enabled: boolean): Promise<void> => {
+  await fromSdk(() => streamersControllerSetPredictions({ ...SESSION_REQUEST, body: { enabled } }));
 };
 
 export const previewOverlay = (input: PreviewOverlayInput): Promise<OverlayData> =>

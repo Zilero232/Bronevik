@@ -2,8 +2,6 @@ import type { RatingTier } from '@otmetki/schemas';
 
 import type { VehicleType } from '../../../../generated';
 
-import { FEATURES } from '../../../config';
-
 export const SOCIAL_QUEUE = {
   name: 'social',
   jobs: { challenges: 'challenges' }
@@ -14,8 +12,7 @@ export const SOCIAL_SCHEDULES = [
     id: 'social-challenges',
     queue: SOCIAL_QUEUE.name,
     name: SOCIAL_QUEUE.jobs.challenges,
-    repeat: { pattern: '35 * * * *' },
-    enabled: FEATURES.weeklyChallenges
+    repeat: { pattern: '35 * * * *' }
   }
 ] as const;
 
@@ -64,7 +61,7 @@ export const SIGNATURE = {
   foreground: '#f3f1ea',
   muted: '#9aa0a6',
   accent: '#ff7a1a',
-  brand: 'otmetki.app',
+  brand: 'triotmetki.ru',
   locale: 'ru',
   missing: '—'
 } as const;

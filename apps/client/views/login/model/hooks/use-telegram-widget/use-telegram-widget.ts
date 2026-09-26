@@ -1,7 +1,9 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -12,9 +14,15 @@ import { LOGIN } from '../../../config';
 import { useCompleteSignIn } from '../use-complete-sign-in';
 
 export const useTelegramWidget = () => {
+  const t = useTranslations('auth');
   const completeSignIn = useCompleteSignIn();
   const containerRef = useRef<HTMLDivElement>(null);
   const { data: config, isError } = useQuery({ queryKey: QUERY_KEYS.auth.telegramWidget, queryFn: getTelegramWidget, staleTime: Infinity });
+  const signIn = useMutation({
+    mutationFn: signInWithTelegram,
+    onSuccess: completeSignIn,
+    onError: () => toast.error(t('telegramFailed'))
+  });
 
   const botUsername = config?.enabled ? config.botUsername : null;
 
@@ -28,7 +36,7 @@ export const useTelegramWidget = () => {
     const script = document.createElement('script');
 
     const onAuth: TelegramAuthHandler = (user) => {
-      void signInWithTelegram(user).then(completeSignIn);
+      signIn.mutate(user);
     };
 
     Reflect.set(window, LOGIN.telegramCallback, onAuth);
@@ -46,8 +54,8 @@ export const useTelegramWidget = () => {
       node.replaceChildren();
       Reflect.deleteProperty(window, LOGIN.telegramCallback);
     };
-    // eslint-disable-next-line react/exhaustive-deps -- the widget is injected once per bot; completeSignIn is rebuilt every render
+    // eslint-disable-next-line react/exhaustive-deps -- the widget is injected once per bot; the mutation object is rebuilt every render
   }, [botUsername]);
 
-  return { containerRef, isEnabled: Boolean(botUsername), isLoaded: config !== undefined || isError };
+  return { containerRef, isEnabled: Boolean(botUsername), isLoaded: config !== undefined || isError, isSigningIn: signIn.isPending };
 };

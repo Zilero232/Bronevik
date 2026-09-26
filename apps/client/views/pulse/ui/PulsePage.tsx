@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { AreaChart, Card, CardHeader, DataSourceNote, EmptyState, ErrorState, KeyFigure, KeyFigures, PageHeader, Skeleton } from '@/ui-kit';
+import { QueueNowCard } from '@/widgets/map/map-rotation';
 
 import { usePulseView } from '../model/hooks';
 import { HeatGrid } from './components';
@@ -30,6 +31,7 @@ export const PulsePage = () => {
             <CardHeader meta={t('heat.meta', { timezone: view.pulse.timezone })} title={t('heat.title')} />
             {view.heat.total === 0 ? <EmptyState isCompact title={t('heat.empty')} /> : <HeatGrid rows={view.heat.rows} />}
           </Card>
+          <QueueNowCard />
           <Card padding='none'>
             <CardHeader meta={t('series.meta')} title={t('series.title')} />
             {view.series.values.length > 1 ? (

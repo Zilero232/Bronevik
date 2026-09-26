@@ -3,7 +3,7 @@ export type VehicleImageInput = {
   tag: string;
 };
 
-export type VehicleImages = {
+export type LestaVehicleImages = {
   big_icon: string;
   small_icon: string;
   contour_icon: string;

@@ -5,6 +5,7 @@ import { match, P } from 'ts-pattern';
 
 import { EmptyState, ErrorState } from '@/ui-kit';
 
+import { TreeProvider } from '../../../model/context';
 import { useTreeExplorer } from '../../../model/hooks';
 import { TreeSkeleton } from '../TreeSkeleton';
 import { TreeWorkspace } from '../TreeWorkspace';
@@ -18,7 +19,9 @@ export const TreeExplorer = () => {
     .with({ isError: true }, () => <ErrorState isRetrying={isFetching} title={t('errorTitle')} onRetry={refetch} />)
     .with({ isEmpty: true }, () => <EmptyState isCompact title={t('emptyTitle')} />)
     .with({ tree: P.nonNullable, layout: P.nonNullable }, ({ tree: loaded, layout: placed }) => (
-      <TreeWorkspace layout={placed} premiums={premiums} tree={loaded} />
+      <TreeProvider layout={placed} premiums={premiums} tree={loaded}>
+        <TreeWorkspace />
+      </TreeProvider>
     ))
     .otherwise(() => <TreeSkeleton />);
 };

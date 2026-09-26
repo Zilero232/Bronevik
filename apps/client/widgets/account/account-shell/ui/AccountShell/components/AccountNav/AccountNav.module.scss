@@ -4,7 +4,7 @@
   @include stack(var(--space-5));
 
   position: sticky;
-  top: calc(var(--header-height) + var(--space-5));
+  top: calc(var(--header-offset) + var(--space-5));
 
   @include below(2xl) {
     @include hide-scrollbar;

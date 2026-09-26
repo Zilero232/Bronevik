@@ -1,10 +1,9 @@
 'use client';
 
-import { toRoman } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { EmptyState, ErrorState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, IconFilter, Skeleton } from '@/ui-kit';
 
 import { TANKS_VIEW, TIER_LIST_TIERS } from '../../../config';
 import { useTierList } from '../../../model/hooks';
@@ -19,12 +18,14 @@ export const TierList = () => {
   return (
     <section aria-label={t('title')} className={s.root}>
       <div className={s.head}>
-        <SegmentedControl
+        <IconFilter
           aria-label={t('tier')}
-          options={TIER_LIST_TIERS.map((value) => ({ value: String(value), label: toRoman(value) }))}
+          isMultiple={false}
+          kind='tier'
+          options={TIER_LIST_TIERS}
           size='sm'
-          value={String(tier)}
-          onChange={onTierChange}
+          value={[tier]}
+          onChange={([next]) => onTierChange(String(next))}
         />
         <p className={s.hint}>{t('hint')}</p>
       </div>

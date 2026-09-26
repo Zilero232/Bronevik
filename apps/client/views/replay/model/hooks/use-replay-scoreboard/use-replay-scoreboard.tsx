@@ -49,22 +49,27 @@ export const useReplayScoreboard = (replay: Replay) => {
       header: t('columns.damage'),
       enableSorting: false,
       cell: (info) => numberOrDash(info.getValue()),
-      meta: numeric
+      meta: { ...numeric, bar: { tone: 'accent' } }
     }),
     column.accessor('damageAssisted', {
       header: t('columns.assist'),
       enableSorting: false,
       cell: (info) => numberOrDash(info.getValue()),
-      meta: numeric
+      meta: { ...numeric, hideBelow: 'md' }
     }),
     column.accessor('damageBlocked', {
       header: t('columns.blocked'),
       enableSorting: false,
       cell: (info) => numberOrDash(info.getValue()),
-      meta: numeric
+      meta: { ...numeric, hideBelow: 'lg' }
     }),
     column.accessor('frags', { header: t('columns.frags'), enableSorting: false, cell: (info) => numberOrDash(info.getValue()), meta: numeric }),
-    column.accessor('spotted', { header: t('columns.spotted'), enableSorting: false, cell: (info) => numberOrDash(info.getValue()), meta: numeric }),
+    column.accessor('spotted', {
+      header: t('columns.spotted'),
+      enableSorting: false,
+      cell: (info) => numberOrDash(info.getValue()),
+      meta: { ...numeric, hideBelow: 'lg' }
+    }),
     column.display({
       id: 'hits',
       header: t('columns.hits'),
@@ -73,14 +78,19 @@ export const useReplayScoreboard = (replay: Replay) => {
 
         return rate === null ? '—' : format.number(rate, { style: 'percent' });
       },
-      meta: numeric
+      meta: { ...numeric, hideBelow: 'xl' }
     }),
-    column.accessor('xp', { header: t('columns.xp'), enableSorting: false, cell: (info) => numberOrDash(info.getValue()), meta: numeric }),
+    column.accessor('xp', {
+      header: t('columns.xp'),
+      enableSorting: false,
+      cell: (info) => numberOrDash(info.getValue()),
+      meta: { ...numeric, hideBelow: 'lg' }
+    }),
     column.accessor('lifeTimeSec', {
       header: t('columns.life'),
       enableSorting: false,
       cell: ({ row: { original } }) => (original.survived === false && original.lifeTimeSec !== null ? formatClock(original.lifeTimeSec) : '—'),
-      meta: numeric
+      meta: { ...numeric, hideBelow: 'xl' }
     })
   ];
 

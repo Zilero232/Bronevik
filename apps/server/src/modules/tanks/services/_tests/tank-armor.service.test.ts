@@ -62,7 +62,7 @@ describe('TankArmorService', () => {
     const stored = new Uint8Array([66, 82, 65]);
     const response = await createService({ row: ROW, stored }).armor(SUMMARY.tankId);
 
-    expect(armorModelSchema.parse(response)).toBeTruthy();
+    expect(armorModelSchema.safeParse(response).success).toBe(true);
     expect([...base64ToBytes(response.geometry)]).toEqual([...stored]);
     expect(response.source.commit).toBe(ROW.sourceSha);
     expect(response.modules.hull.plates[0].thickness).toBe(150);

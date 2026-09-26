@@ -9,7 +9,7 @@ import { errorMessage, toJsonValue } from '../../../common/lib';
 import { ObjectStorage, PrismaService } from '../../../core';
 import { parsePackets, parseReplay, ReplayFormatError } from '../../../lib/replay';
 import { REPLAY_PARSE, REPLAY_UPLOAD } from '../config';
-import { buildTracks, replayColumns, tracksStorageKey } from '../lib';
+import { buildTracks, replayColumns, replayMedals, tracksStorageKey } from '../lib';
 import { HeatmapService } from './heatmap.service';
 
 @Injectable()
@@ -73,7 +73,7 @@ export class ReplayParseService {
         ? null
         : this.prisma.battle.findUnique({
             where: { accountId_arenaUniqueId: { accountId: columns.accountId, arenaUniqueId: columns.arenaUniqueId } },
-            select: { id: true }
+            select: { id: true, achievements: true }
           })
     ]);
 
@@ -94,6 +94,7 @@ export class ReplayParseService {
         ...columns,
         vehicleType: vehicle?.type ?? null,
         battleId: battle?.id ?? null,
+        medals: replayMedals({ markOfMastery: parsed.summary.recorder.markOfMastery, battleAchievements: battle?.achievements ?? [] }),
         summary: toJsonValue({ ...parsed.summary, warnings: parsed.warnings }),
         status: 'parsed',
         parseError: null,

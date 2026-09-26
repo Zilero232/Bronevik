@@ -4,6 +4,7 @@ import { Link2, LogIn } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
+import { useLoginHref } from '@/entities/auth/session';
 import { PlusGate } from '@/features/plus/plus-gate';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
@@ -18,6 +19,7 @@ import { MyModeLineView } from './components';
 import s from './MyModePanel.module.scss';
 
 export const MyModePanel = ({ mode }: MyModePanelProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('modes.mine');
   const { status, line, tanks, days, isRetrying, onRetry } = useMyModeStats(mode);
 
@@ -29,7 +31,7 @@ export const MyModePanel = ({ mode }: MyModePanelProps) => {
           <EmptyState
             isCompact
             action={
-              <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.auth.login}>
+              <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={loginHref}>
                 {t('loginAction')}
               </Link>
             }

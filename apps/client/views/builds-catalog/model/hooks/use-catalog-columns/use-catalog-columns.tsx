@@ -37,9 +37,14 @@ export const useCatalogColumns = (): ColumnDef<BuildsCatalogEntry, never>[] => {
 
         return value === null ? '—' : format.number(value, { maximumFractionDigits: 0 });
       },
-      meta: CATALOG_TABLE.numeric
+      meta: { ...CATALOG_TABLE.numeric, hideBelow: 'md' }
     }),
     column.accessor('topEquipment', { header: t('equipment'), enableSorting: false, cell: (info) => <PicksCell picks={info.getValue()} /> }),
-    column.accessor('topConsumables', { header: t('consumables'), enableSorting: false, cell: (info) => <PicksCell picks={info.getValue()} /> })
+    column.accessor('topConsumables', {
+      header: t('consumables'),
+      enableSorting: false,
+      cell: (info) => <PicksCell picks={info.getValue()} />,
+      meta: { hideBelow: 'lg' }
+    })
   ];
 };

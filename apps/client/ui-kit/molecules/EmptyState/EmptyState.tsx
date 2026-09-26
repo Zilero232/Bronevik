@@ -5,8 +5,8 @@ import type { EmptyStateProps } from './EmptyState.types';
 
 import s from './EmptyState.module.scss';
 
-export const EmptyState = ({ title, description, icon, action, isCompact = false, className }: EmptyStateProps) => (
-  <div className={clsx(s.root, isCompact && s.compact, className)}>
+export const EmptyState = ({ title, description, icon, action, isCompact = false, role, className }: EmptyStateProps) => (
+  <div className={clsx(s.root, isCompact && s.compact, className)} role={role}>
     <span aria-hidden className={s.icon}>
       {icon ?? <Inbox size={16} />}
     </span>

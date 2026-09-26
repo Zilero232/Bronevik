@@ -25,7 +25,7 @@ export const SettingsImportMod = () => {
         <li>{t('steps.target')}</li>
       </ol>
       <p className={s.hint}>{t('hint')}</p>
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.account.overview}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.mod}>
         {t('bind')}
       </Link>
     </section>

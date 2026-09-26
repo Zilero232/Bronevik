@@ -1,1 +1,1 @@
-export { PWA, PWA_ICONS } from './pwa';
+export { PWA, PWA_ICONS, PWA_PRECACHE } from './pwa';

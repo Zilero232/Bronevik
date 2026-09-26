@@ -16,6 +16,7 @@ import {
   LearningSection,
   MarksSection,
   MasteryPanel,
+  MathSection,
   ObtainSection,
   PatchHistory,
   SectionNav,
@@ -52,6 +53,7 @@ export const TankPage = () => {
               </div>
               <LearningSection />
               <HowToBuild />
+              <MathSection />
             </div>
             <TopPlayers />
             <div className={s.shell}>

@@ -31,7 +31,14 @@ export const ChartCanvas = ({
       <Group left={CHART.margin.left} top={CHART.margin.top}>
         <ChartAxes formatValue={formatValue} innerHeight={innerHeight} innerWidth={innerWidth} labels={labels} xScale={xScale} yScale={yScale} />
         {children}
-        <rect className={s.hitbox} height={innerHeight} width={innerWidth} onPointerLeave={onPointerLeave} onPointerMove={onPointerMove} />
+        <rect
+          className={s.hitbox}
+          height={innerHeight}
+          width={innerWidth}
+          onPointerDown={onPointerMove}
+          onPointerLeave={onPointerLeave}
+          onPointerMove={onPointerMove}
+        />
       </Group>
     </svg>
     {hover && <ChartTooltip formatValue={formatValue} labels={labels} series={series} state={hover} />}

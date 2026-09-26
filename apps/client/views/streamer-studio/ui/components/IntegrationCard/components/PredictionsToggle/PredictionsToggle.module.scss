@@ -1,0 +1,18 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.reconnect {
+  @include stack(var(--space-2));
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

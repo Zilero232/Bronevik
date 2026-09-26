@@ -11,7 +11,9 @@ export const PLACEHOLDER_EMAIL = {
 
 export const AUTH_PROVIDER = {
   lesta: 'lesta-id',
-  telegram: 'telegram'
+  telegram: 'telegram',
+  discord: 'discord',
+  vk: 'vk'
 } as const;
 
 export const API_KEY_PLUGIN = {
@@ -20,4 +22,10 @@ export const API_KEY_PLUGIN = {
   keyLength: 64,
   minExpiresInDays: 0,
   maxExpiresInDays: 3_650
+} as const;
+
+export const VK_MINI_APP_AUTH = {
+  maxAgeSeconds: 86_400,
+  launchParamsMaxLength: 4096,
+  fallbackName: 'VK {id}'
 } as const;

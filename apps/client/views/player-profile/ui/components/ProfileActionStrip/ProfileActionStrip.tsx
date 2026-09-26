@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, GitCompareArrows, Share2 } from 'lucide-react';
+import { BarChart3, Check, GitCompareArrows, PenLine, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { FavoriteButton } from '@/features/player/toggle-favorite';
@@ -9,15 +9,13 @@ import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants } from '@/ui-kit';
 
-import { useProfileContext } from '../../../model/context';
-import { useProfileShare } from '../../../model/hooks';
+import { useProfileActions } from '../../../model/hooks';
 
 import s from './ProfileActionStrip.module.scss';
 
 export const ProfileActionStrip = () => {
   const t = useTranslations('profile.actions');
-  const { accountId } = useProfileContext();
-  const { copied, share } = useProfileShare();
+  const { accountId, copied, share, signatureHref, analyticsHref } = useProfileActions();
 
   return (
     <div className={s.root} data-theme='dark'>
@@ -34,6 +32,16 @@ export const ProfileActionStrip = () => {
             {copied ? <Check aria-hidden size={16} /> : <Share2 aria-hidden size={16} />}
             {t('share')}
           </Button>
+          <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={signatureHref}>
+            <PenLine aria-hidden size={16} />
+            {t('signature')}
+          </Link>
+          {analyticsHref && (
+            <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={analyticsHref}>
+              <BarChart3 aria-hidden size={16} />
+              {t('myAnalytics')}
+            </Link>
+          )}
         </div>
         <div className={s.group}>
           <FavoriteButton kind='player' targetId={accountId} />

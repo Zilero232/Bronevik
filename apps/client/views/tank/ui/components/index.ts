@@ -3,6 +3,7 @@ export { HowToBuild } from './HowToBuild';
 export { LearningSection } from './LearningSection';
 export { MarksSection } from './MarksSection';
 export { MasteryPanel } from './MasteryPanel';
+export { MathSection } from './MathSection';
 export { ObtainSection } from './ObtainSection';
 export { PatchHistory } from './PatchHistory';
 export { SectionNav } from './SectionNav';

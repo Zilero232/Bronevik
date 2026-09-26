@@ -4,16 +4,14 @@ import { useTranslations } from 'next-intl';
 
 import { Card, CardHeader, Drawer, EmptyState } from '@/ui-kit';
 
-import type { PathAsideProps } from './PathAside.types';
-
 import { usePathAside } from '../../../model/hooks';
 import { PathPanel } from '../PathPanel';
 
 import s from './PathAside.module.scss';
 
-export const PathAside = ({ selected, steps, cost, onClear }: PathAsideProps) => {
+export const PathAside = () => {
   const t = useTranslations('tree.path');
-  const { isCompact, onOpenChange } = usePathAside(onClear);
+  const { isCompact, isOpen, onOpenChange } = usePathAside();
 
   const placeholder = <EmptyState isCompact title={t('empty')} />;
 
@@ -21,8 +19,8 @@ export const PathAside = ({ selected, steps, cost, onClear }: PathAsideProps) =>
     return (
       <>
         {placeholder}
-        <Drawer open={selected !== null} title={t('title')} onOpenChange={onOpenChange}>
-          {selected && <PathPanel cost={cost} selected={selected} steps={steps} onClear={onClear} />}
+        <Drawer open={isOpen} title={t('title')} onOpenChange={onOpenChange}>
+          <PathPanel />
         </Drawer>
       </>
     );
@@ -31,7 +29,7 @@ export const PathAside = ({ selected, steps, cost, onClear }: PathAsideProps) =>
   return (
     <Card className={s.root} padding='none'>
       <CardHeader title={t('title')} />
-      <div className={s.body}>{selected ? <PathPanel cost={cost} selected={selected} steps={steps} onClear={onClear} /> : placeholder}</div>
+      <div className={s.body}>{isOpen ? <PathPanel /> : placeholder}</div>
     </Card>
   );
 };

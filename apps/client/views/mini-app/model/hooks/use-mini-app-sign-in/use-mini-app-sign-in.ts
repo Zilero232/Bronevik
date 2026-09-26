@@ -5,14 +5,14 @@ import { useEffect, useRef } from 'react';
 
 import { QUERY_KEYS } from '@/shared/constants';
 
-import type { TelegramLaunch } from '../../../lib/mini-app-mode';
+import type { UseMiniAppSignInInput } from './use-mini-app-sign-in.types';
 
-import { signInWithMiniApp } from '../../../api';
+import { signInWithMiniApp, signInWithVkMiniApp } from '../../../api';
 
-export const useMiniAppSignIn = ({ env, initData }: TelegramLaunch) => {
+export const useMiniAppSignIn = ({ launch, platform }: UseMiniAppSignInInput) => {
   const queryClient = useQueryClient();
   const signIn = useMutation({
-    mutationFn: signInWithMiniApp,
+    mutationFn: platform === 'vk' ? signInWithVkMiniApp : signInWithMiniApp,
     onSuccess: async () => {
       queryClient.removeQueries({ queryKey: QUERY_KEYS.me.all });
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.auth.session });
@@ -22,14 +22,14 @@ export const useMiniAppSignIn = ({ env, initData }: TelegramLaunch) => {
   const startedRef = useRef(false);
 
   useEffect(() => {
-    if (env !== 'telegram' || startedRef.current) {
+    if (launch.env !== 'inside' || startedRef.current) {
       return;
     }
 
     startedRef.current = true;
-    signIn.mutate(initData ?? '');
+    signIn.mutate(launch.payload ?? '');
     // eslint-disable-next-line react/exhaustive-deps -- sign in once per launch; the mutation object is rebuilt every render
-  }, [env, initData]);
+  }, [launch.env, launch.payload]);
 
   return signIn;
 };

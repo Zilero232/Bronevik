@@ -16,6 +16,37 @@
   aspect-ratio: 16 / 10;
 }
 
+.stacked {
+  display: grid;
+  height: 100%;
+  grid-template-rows: 120px auto 1fr;
+
+  .media {
+    position: relative;
+    inset: auto;
+  }
+
+  .plate {
+    position: relative;
+    bottom: auto;
+    max-width: calc(100% - var(--space-4));
+    border-radius: var(--radius-sm);
+    margin-top: -22px;
+    margin-left: var(--space-4);
+    justify-self: start;
+  }
+}
+
+.body {
+  display: -webkit-box;
+  overflow: hidden;
+  padding: var(--space-4);
+  -webkit-box-orient: vertical;
+  font-size: var(--text-md);
+  -webkit-line-clamp: 3;
+  line-height: var(--leading-body);
+}
+
 .link {
   @include lift-hover;
 

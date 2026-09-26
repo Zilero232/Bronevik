@@ -1,20 +1,16 @@
 'use client';
 
-import type { TankEconomyRow } from '@otmetki/schemas';
-
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { ECONOMY_VIEW, listTankEconomy } from '@/entities/tank/tank';
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
-import { QUERY_KEYS, ROUTES } from '@/shared/constants';
-import { useRouter } from '@/shared/i18n/navigation';
+import { QUERY_KEYS } from '@/shared/constants';
 
 import { TANKS_ECONOMY } from '../../../config';
 import { useEconomyColumns } from '../use-economy-columns';
 import { useTanksState } from '../use-tanks-state';
 
 export const useEconomyTable = () => {
-  const router = useRouter();
   const [{ statuses, roles, difficulties, account, reserve, clanPayout }, setState] = useTanksState();
   const { query, reset, isActive } = useVehicleFilters();
   const columns = useEconomyColumns({ account, withReserve: reserve, withClanPayout: clanPayout });
@@ -26,10 +22,6 @@ export const useEconomyTable = () => {
     queryFn: ({ signal }) => listTankEconomy({ ...params, signal }),
     placeholderData: keepPreviousData
   });
-
-  const onRowClick = (row: TankEconomyRow) => {
-    router.push(ROUTES.tanks.detail(row.vehicle.slug));
-  };
 
   const onReset = () => {
     void reset();
@@ -66,7 +58,6 @@ export const useEconomyTable = () => {
     isFiltered: isActive || statuses.length > 0 || roles.length > 0 || difficulties.length > 0,
     onReset,
     onRetry,
-    onRowClick,
     onAccountChange,
     onReserveChange,
     onClanPayoutChange

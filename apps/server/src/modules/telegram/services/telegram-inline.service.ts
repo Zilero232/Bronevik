@@ -3,19 +3,17 @@ import { InlineQueryResultBuilder } from 'grammy';
 
 import type { BotContext } from '../telegram.types';
 
-import { formatNumberOr, formatPercentOr } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
+import { BotRepliesService, BotStatsService } from '../../bot-commands';
 import { BOT_TEXT_LIMITS } from '../config';
-import { isPublicUrl, statCardUrl } from '../lib';
-import { TelegramPlayerCommandsService } from './telegram-player-commands.service';
-import { TelegramStatsService } from './telegram-stats.service';
+import { isPublicUrl, resolveBotLocale, statCardUrl } from '../lib';
 
 @Injectable()
 export class TelegramInlineService {
   constructor(
     private readonly config: AppConfigService,
-    private readonly stats: TelegramStatsService,
-    private readonly players: TelegramPlayerCommandsService
+    private readonly stats: BotStatsService,
+    private readonly replies: BotRepliesService
   ) {}
 
   async answer(ctx: BotContext): Promise<void> {
@@ -37,19 +35,13 @@ export class TelegramInlineService {
     }
 
     const card = await this.stats.player(accountId);
-    const locale = await ctx.i18n.getLocale();
-    const missing = ctx.t('missing');
+    const locale = resolveBotLocale(await ctx.i18n.getLocale());
     const image = statCardUrl({ webUrl: this.config.get('WEB_URL'), accountId });
-    const text = await this.players.playerText({ ctx, card });
 
     const result = InlineQueryResultBuilder.article(`player-${accountId}`, card.nickname, {
-      description: ctx.t('inline-card-description', {
-        wn8: formatNumberOr({ value: card.wn8, locale, missing }),
-        winRate: formatPercentOr({ value: card.winRate === null ? null : card.winRate / 100, locale, missing }),
-        battles: formatNumberOr({ value: card.battles, locale, missing })
-      }),
+      description: this.replies.playerBrief({ locale, card }),
       ...(isPublicUrl(image) ? { thumbnail_url: image } : {})
-    }).text(text, { link_preview_options: { url: image, prefer_large_media: true } });
+    }).text(this.replies.playerText({ locale, card }), { link_preview_options: { url: image, prefer_large_media: true } });
 
     await ctx.answerInlineQuery([result], options);
   }

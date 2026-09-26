@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 
+import type { MISSION_GARAGE_STATES } from './missions.constants';
 import type {
   missionBranchKindSchema,
   missionBranchSchema,
@@ -27,6 +28,7 @@ import type {
 
 export type MissionMetric = z.infer<typeof missionMetricSchema>;
 export type MissionBranchKind = z.infer<typeof missionBranchKindSchema>;
+export type MissionGarageState = (typeof MISSION_GARAGE_STATES)[number];
 export type MissionProgressSource = z.infer<typeof missionProgressSourceSchema>;
 export type MissionCondition = z.infer<typeof missionConditionSchema>;
 export type MissionOperationSummary = z.infer<typeof missionOperationSummarySchema>;

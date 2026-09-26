@@ -1,6 +1,6 @@
 import { parseAsStringLiteral } from 'nuqs';
 
-export const CALCULATOR_IDS = ['research', 'target', 'moe', 'crew', 'economy', 'gold', 'pass', 'frontline'] as const;
+export const CALCULATOR_IDS = ['research', 'target', 'moe', 'crew', 'economy', 'gold', 'pass', 'frontline', 'math'] as const;
 
 export type CalculatorId = (typeof CALCULATOR_IDS)[number];
 

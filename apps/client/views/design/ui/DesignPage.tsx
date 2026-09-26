@@ -3,12 +3,14 @@ import { useTranslations } from 'next-intl';
 import { SectionHeader } from '@/ui-kit';
 
 import {
+  CardsSection,
   ChartsSection,
   ColorsSection,
   ControlsSection,
   DataSection,
   IconsSection,
   OverlaysSection,
+  PatternsSection,
   TableSection,
   TypographySection
 } from './components';
@@ -27,6 +29,8 @@ export const DesignPage = () => {
         <IconsSection />
         <ControlsSection />
         <OverlaysSection />
+        <PatternsSection />
+        <CardsSection />
         <DataSection />
         <ChartsSection />
         <TableSection />

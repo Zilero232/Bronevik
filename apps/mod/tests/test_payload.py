@@ -7,6 +7,7 @@ from otmetki.payload import (
     battle_outcome,
     build_battle_event,
     build_envelope,
+    build_battle_start_event,
     build_moe_distribution_event,
     build_moe_snapshot_event,
     build_queue_event,
@@ -90,6 +91,21 @@ class BattleEventTest(unittest.TestCase):
         event = build_battle_event(_support.battle_results(), {'shots': [shot, 'junk']})
         self.assertEqual(event['shots'], [shot])
 
+    def test_achievements_resolve_names_with_mastery_first(self):
+        results = _support.battle_results()
+        vehicle = results['personal'][1]
+        vehicle['markOfMastery'] = 4
+        vehicle['achievements'] = [11, 12, 'junk', 99, 11]
+        names = {11: 'warrior', 12: 'invader'}
+        event = build_battle_event(results, {'achievement_name': names.get})
+        self.assertEqual(event['achievements'], ['markOfMastery', 'warrior', 'invader'])
+
+    def test_achievements_empty_without_resolver(self):
+        results = _support.battle_results()
+        results['personal'][1]['achievements'] = [11]
+        results['personal'][1]['markOfMastery'] = 0
+        self.assertEqual(build_battle_event(results)['achievements'], [])
+
     def test_economy_costs(self):
         results = _support.battle_results()
         vehicle = results['personal'][1]
@@ -131,6 +147,13 @@ class EnvelopeTest(unittest.TestCase):
         self.assertNotIn(b' ', body)
         self.assertEqual(body, dumps_bytes(loads(body)))
         self.assertEqual(envelope['events'][0]['wait_s'], 33.3)
+
+    def test_battle_start_event_carries_only_own_tank(self):
+        event = build_battle_start_event(1790000000.7, 1)
+        self.assertEqual(event['type'], 'battle_start')
+        self.assertEqual(event['occurred_at'], 1790000000)
+        self.assertEqual(event['tank_id'], 1)
+        self.assertIsNone(build_battle_start_event(1790000000, 'x')['tank_id'])
 
     def test_envelope_requires_device(self):
         with self.assertRaises(PayloadError):

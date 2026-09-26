@@ -5,5 +5,7 @@ export type MarkProgressProps = {
   title?: ReactNode;
   damageToNext?: number | null;
   size?: number;
+  variant?: 'card' | 'inline';
+  as?: 'div' | 'li';
   className?: string;
 };

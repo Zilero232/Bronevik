@@ -1,7 +1,16 @@
 import type { VehicleResult } from '../header';
 import type { BuildSummaryInput, OutcomeOfInput, ReplayPlayer, ReplaySummary, WithPersonalInput } from './summary.types';
 
-import { blankToNull, detectGame, findPersonalResult, parseClientVersion, parseDateTime, toPlayerResult, unixToIso } from './summary.helpers';
+import {
+  blankToNull,
+  detectGame,
+  findPersonalResult,
+  masteryOf,
+  parseClientVersion,
+  parseDateTime,
+  toPlayerResult,
+  unixToIso
+} from './summary.helpers';
 import { replaySummarySchema } from './summary.schemas';
 
 const withPersonal = ({ result, personal }: WithPersonalInput) => {
@@ -105,7 +114,8 @@ export const buildSummary = ({ arena, results }: BuildSummaryInput): ReplaySumma
       name: recorderName ?? recorder?.name ?? null,
       vehicleId: recorderVehicleId,
       vehicleType: recorder?.vehicleType ?? blankToNull(arena.playerVehicle),
-      team: recorderTeam
+      team: recorderTeam,
+      markOfMastery: masteryOf(personal?.markOfMastery)
     },
     players
   });

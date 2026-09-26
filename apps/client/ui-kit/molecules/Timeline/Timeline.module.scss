@@ -1,0 +1,151 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --timeline-date: 64px;
+  --timeline-gap: var(--space-4);
+
+  position: relative;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &:before {
+    position: absolute;
+    top: var(--space-3);
+    bottom: var(--space-3);
+    left: 5px;
+    width: 2px;
+    background-color: var(--color-border);
+    content: '';
+  }
+
+  &[data-dated='true']:before {
+    left: calc(var(--timeline-date) + var(--timeline-gap) + 5px);
+  }
+
+  @include below(md) {
+    &[data-dated='true']:before {
+      left: 5px;
+    }
+  }
+}
+
+.node {
+  --node: var(--color-accent);
+
+  position: relative;
+  display: grid;
+  align-items: start;
+  gap: var(--space-1) var(--timeline-gap);
+  grid-template-columns: 12px minmax(0, 1fr);
+  padding-block: var(--space-2);
+
+  .root[data-dated='true'] & {
+    grid-template-columns: var(--timeline-date) 12px minmax(0, 1fr);
+  }
+
+  &[data-tone='success'] {
+    --node: var(--color-success);
+  }
+
+  &[data-tone='danger'] {
+    --node: var(--color-danger);
+  }
+
+  &[data-tone='warning'] {
+    --node: var(--color-warning);
+  }
+
+  &[data-tone='premium'] {
+    --node: var(--color-premium);
+  }
+
+  &[data-tone='steel'] {
+    --node: var(--color-steel);
+  }
+
+  &[data-tone='neutral'] {
+    --node: var(--color-text-dim);
+  }
+
+  @include below(md) {
+    .root[data-dated='true'] & {
+      grid-template-columns: 12px minmax(0, 1fr);
+    }
+  }
+}
+
+.date {
+  @include numeric(var(--text-xs));
+
+  padding-top: var(--space-1);
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-label);
+  text-align: right;
+  text-transform: uppercase;
+
+  .card & {
+    padding-top: var(--space-4);
+  }
+
+  .node[aria-current] & {
+    color: var(--node);
+  }
+
+  @include below(md) {
+    padding-top: 0;
+    grid-column: 2;
+    grid-row: 1;
+    text-align: left;
+
+    .card & {
+      padding-top: 0;
+    }
+  }
+}
+
+.dot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border: 2px solid var(--color-bg);
+  border-radius: var(--radius-full);
+  margin-top: var(--space-1);
+  background-color: var(--node);
+  box-shadow: 0 0 0 1px var(--node);
+
+  .card & {
+    margin-top: var(--space-4);
+  }
+
+  @include below(md) {
+    .root[data-dated='true'] & {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+  }
+}
+
+.content {
+  min-width: 0;
+
+  @include below(md) {
+    .root[data-dated='true'] & {
+      grid-column: 2;
+    }
+  }
+
+  .card & {
+    @include stack(var(--space-2));
+
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--node);
+    background: var(--color-surface);
+  }
+
+  .card .node[aria-current] & {
+    background: color-mix(in srgb, var(--node) 8%, var(--color-surface));
+  }
+}

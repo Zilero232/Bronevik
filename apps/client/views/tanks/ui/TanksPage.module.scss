@@ -10,6 +10,10 @@
   display: grid;
 }
 
+.filters {
+  width: 100%;
+}
+
 .body {
   @include shell;
   @include stack(var(--space-5));

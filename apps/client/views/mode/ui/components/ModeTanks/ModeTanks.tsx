@@ -3,20 +3,20 @@
 import { useTranslations } from 'next-intl';
 
 import { VehicleFilters } from '@/features/tank/filter-vehicles';
+import { ROUTES } from '@/shared/constants';
 import { DataTable, ErrorState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import type { ModeTanksProps } from './ModeTanks.types';
 
 import { MODE_TABLE, MODE_VIEWS } from '../../../config';
 import { useModeTanks } from '../../../model/hooks';
-import { ModeTanksEmpty, RankGroups } from './components';
+import { ModeTankCard, ModeTanksEmpty, RankGroups } from './components';
 
 import s from './ModeTanks.module.scss';
 
 export const ModeTanks = ({ mode }: ModeTanksProps) => {
   const t = useTranslations('modes.table');
-  const { view, onViewChange, columns, rows, groups, minBattles, isLoading, isError, isRetrying, isFiltered, onReset, onRetry, onRowClick } =
-    useModeTanks(mode);
+  const { view, onViewChange, columns, rows, groups, minBattles, isLoading, isError, isRetrying, isFiltered, onReset, onRetry } = useModeTanks(mode);
 
   const emptyState = <ModeTanksEmpty isFiltered={isFiltered} minBattles={minBattles} onReset={onReset} />;
 
@@ -40,10 +40,11 @@ export const ModeTanks = ({ mode }: ModeTanksProps) => {
           data={rows}
           emptyState={emptyState}
           getRowId={(row) => String(row.vehicle.tankId)}
+          getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
           initialSorting={[{ id: 'score', desc: true }]}
           isLoading={isLoading}
+          renderCard={(row) => <ModeTankCard tank={row} />}
           rowHeight={MODE_TABLE.rowHeight}
-          onRowClick={onRowClick}
         />
       )}
       {!isError && view === 'ranks' && isLoading && <Skeleton height={MODE_TABLE.skeletonHeight} shape='block' />}

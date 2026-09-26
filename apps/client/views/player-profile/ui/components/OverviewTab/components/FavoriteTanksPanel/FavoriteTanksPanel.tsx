@@ -3,10 +3,8 @@
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { RatingValue, TankAwards } from '@/entities/player/stats';
-import { TankImage, vehicleIdentity, WinRateCell } from '@/entities/tank/tank';
-import { ROUTES } from '@/shared/constants';
-import { Link } from '@/shared/i18n/navigation';
-import { EmptyState, ErrorState, Skeleton, TierNumeral } from '@/ui-kit';
+import { TankShowcaseCard, WinRateCell } from '@/entities/tank/tank';
+import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
 import { OVERVIEW } from '../../../../../config';
 import { useFavoriteTanks } from '../../../../../model/hooks';
@@ -30,34 +28,15 @@ export const FavoriteTanksPanel = () => {
         <ol className={s.grid}>
           {rows.map(({ vehicle, battles, winRate, wn8, marksOnGun, markOfMastery }) => (
             <li key={vehicle.tankId}>
-              <Link className={s.card} data-class={vehicle.type} data-nation={vehicle.nation} href={ROUTES.tanks.detail(vehicle.slug)}>
-                <span className={s.stage}>
-                  <TierNumeral className={s.tier} tier={vehicle.tier} variant='hex' />
-                  <TankImage className={s.image} size='big' tank={vehicleIdentity(vehicle)} />
-                </span>
-                <span className={s.name} data-premium={vehicle.isPremium || undefined}>
-                  {vehicle.shortName}
-                </span>
-                <dl className={s.stats}>
-                  <div>
-                    <dt>{t('battles')}</dt>
-                    <dd>{format.number(battles)}</dd>
-                  </div>
-                  <div>
-                    <dt>{t('winRate')}</dt>
-                    <dd>
-                      <WinRateCell digits={1} value={winRate} />
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>WN8</dt>
-                    <dd>
-                      <RatingValue rating={wn8} />
-                    </dd>
-                  </div>
-                </dl>
-                <TankAwards className={s.awards} markOfMastery={markOfMastery} marksOnGun={marksOnGun} />
-              </Link>
+              <TankShowcaseCard
+                figures={[
+                  { id: 'battles', label: t('battles'), value: format.number(battles) },
+                  { id: 'winRate', label: t('winRate'), value: <WinRateCell digits={1} value={winRate} /> },
+                  { id: 'wn8', label: 'WN8', value: <RatingValue rating={wn8} /> }
+                ]}
+                footer={<TankAwards markOfMastery={markOfMastery} marksOnGun={marksOnGun} />}
+                vehicle={vehicle}
+              />
             </li>
           ))}
         </ol>

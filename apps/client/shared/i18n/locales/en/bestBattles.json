@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "title": "«Мир танков» best battles: damage, spotting and medal records — Три отметки",
+    "description": "Record «Мир танков» battles of the day, week and month: damage, assistance, spotting, kills, experience and blocked damage by tank, map and medal — with a replay link."
+  },
+  "hero": {
+    "home": "Home",
+    "title": "Best battles",
+    "lead": "Record battles from players running the Three Marks mod and from uploaded replays. Pick a period, a metric, a tank, a map or a medal.",
+    "topDamage": "Damage record",
+    "battles": {
+      "day": "Battles today",
+      "week": "Battles this week",
+      "month": "Battles this month"
+    }
+  },
+  "periods": {
+    "day": "Day",
+    "week": "Week",
+    "month": "Month"
+  },
+  "metrics": {
+    "damage": "Damage",
+    "assisted": "Assistance",
+    "spotted": "Spotted",
+    "frags": "Kills",
+    "xp": "Experience",
+    "blocked": "Blocked"
+  },
+  "filters": {
+    "period": "Period",
+    "metric": "Metric",
+    "tank": "Tank",
+    "tankPlaceholder": "Any tank",
+    "map": "Map",
+    "anyMap": "Any map",
+    "medals": "Medals",
+    "medalBattles": "{count, plural, one {# battle} other {# battles}}",
+    "reset": "Reset"
+  },
+  "sources": {
+    "mod": "Mod",
+    "replay": "Replay"
+  },
+  "results": {
+    "win": "Victory",
+    "loss": "Defeat",
+    "draw": "Draw"
+  },
+  "columns": {
+    "tank": "Tank",
+    "player": "Player",
+    "map": "Map",
+    "medals": "Medals",
+    "replay": "Replay"
+  },
+  "table": {
+    "caption": "Best battles of the period",
+    "more": "Show more",
+    "loading": "Loading…"
+  },
+  "podium": {
+    "title": "Top three battles",
+    "place": "Place {rank}"
+  },
+  "unknownMap": "Unknown map",
+  "replay": "Replay",
+  "error": {
+    "title": "Couldn't load the battles",
+    "description": "The server did not respond. Try again."
+  },
+  "empty": {
+    "title": "No battles yet",
+    "description": "No battles from mod players or public replays in this period yet.",
+    "filtered": "No battles match these filters. Try another period or reset the filters."
+  },
+  "widget": {
+    "title": "Best battles on this tank",
+    "meta": "Last 30 days, by damage",
+    "all": "All battles",
+    "error": "Couldn't load the battles",
+    "empty": "No battles yet",
+    "emptyDescription": "No battles on this tank from mod players or public replays this month.",
+    "unknownMap": "Unknown map",
+    "damage": "damage",
+    "replay": "Open replay"
+  }
+}

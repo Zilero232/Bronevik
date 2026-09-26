@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { useLoginHref } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Skeleton, Switch } from '@/ui-kit';
@@ -12,6 +13,7 @@ import { useCodeAlert } from '../../../model/hooks';
 import s from './CodeAlert.module.scss';
 
 export const CodeAlert = () => {
+  const loginHref = useLoginHref();
   const t = useTranslations('codes.alert');
   const { isSignedIn, isOn, isPending, onToggle } = useCodeAlert();
 
@@ -22,7 +24,7 @@ export const CodeAlert = () => {
   if (!isSignedIn) {
     return (
       <p className={s.root}>
-        <Link className={s.link} href={ROUTES.auth.login}>
+        <Link className={s.link} href={loginHref}>
           {t('signIn')}
         </Link>
         <span className={s.hint}>{t('signInHint')}</span>

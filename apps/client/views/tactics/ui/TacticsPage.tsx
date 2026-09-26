@@ -4,7 +4,7 @@ import { LayoutDashboard, LogIn } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match, P } from 'ts-pattern';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, EmptyState, ErrorState, PageHeader, Skeleton } from '@/ui-kit';
 
@@ -14,6 +14,7 @@ import { BoardList, CreateBoardDialog } from './components';
 import s from './TacticsPage.module.scss';
 
 export const TacticsPage = () => {
+  const loginHref = useLoginHref();
   const t = useTranslations('tactics.list');
   const { isSessionPending, isSignedIn, boards, isPending, isError, isFetching, onRetry } = useTacticsPage();
 
@@ -25,7 +26,7 @@ export const TacticsPage = () => {
         .with({ isSignedIn: false }, () => (
           <EmptyState
             action={
-              <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.auth.login}>
+              <Link className={buttonVariants({ size: 'sm' })} href={loginHref}>
                 <LogIn size={15} />
                 {t('signIn')}
               </Link>

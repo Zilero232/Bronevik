@@ -1,12 +1,7 @@
-type ProjectionThresholds = {
-  p65: number;
-  p85: number;
-  p95: number;
-  p100: number | null;
-};
+import type { MoeThresholdValues } from '@otmetki/schemas';
 
 export type ProjectMarksInput = {
-  thresholds: ProjectionThresholds;
+  thresholds: MoeThresholdValues;
   currentPercent: number | null;
   targetMarks: number;
   avgDamage: number;

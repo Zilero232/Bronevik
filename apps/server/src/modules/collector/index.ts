@@ -7,4 +7,5 @@ export { JOB, QUEUE, webhookDeliverPayloadSchema } from './contracts';
 export type { WebhookDeliverPayload } from './contracts';
 export { MetricsService } from './metrics';
 export { CollectorProducerModule, CollectorProducerService } from './producer';
+export { PurgeGuardModule, PurgeGuardService } from './purge';
 export { CollectorQueuesModule } from './queues';

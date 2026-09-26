@@ -1,0 +1,31 @@
+model DiscordGuild {
+  guildId String @id @map("guild_id")
+
+  clanId          BigInt  @map("clan_id")
+  boundByUserId   String  @map("bound_by_user_id")
+  locale          String  @default("ru")
+  channelId       String? @map("channel_id")
+  reportChannelId String? @map("report_channel_id")
+  memberRoleId    String? @map("member_role_id")
+  tierRoles       Json?   @map("tier_roles")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  members DiscordGuildMember[]
+
+  @@index([clanId])
+  @@map("discord_guild")
+}
+
+model DiscordGuildMember {
+  guildId       String   @map("guild_id")
+  discordUserId String   @map("discord_user_id")
+  roleIds       String[] @default([]) @map("role_ids")
+  seenAt        DateTime @default(now()) @map("seen_at") @db.Timestamptz(3)
+
+  guild DiscordGuild @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
+
+  @@id([guildId, discordUserId])
+  @@map("discord_guild_member")
+}

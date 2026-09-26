@@ -1,8 +1,6 @@
-type ThresholdValues = {
-  p65: number;
-  p85: number;
-  p95: number;
-};
+import type { MoeThresholdValues } from '@otmetki/schemas';
+
+type ThresholdValues = Omit<MoeThresholdValues, 'p100'>;
 
 export type ThresholdDropsInput = {
   previous: ThresholdValues;

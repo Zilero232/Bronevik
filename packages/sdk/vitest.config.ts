@@ -4,6 +4,8 @@ export default defineConfig({
   test: {
     name: 'sdk',
     isolate: false,
+    clearMocks: true,
+    restoreMocks: true,
     environment: 'node',
     include: ['src/**/_tests/**/*.test.ts']
   }

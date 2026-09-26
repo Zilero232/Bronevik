@@ -2,20 +2,24 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { ROUTES } from '@/shared/constants';
+import { returnUrl } from '@/entities/auth/session';
+import { resolveLocale } from '@/shared/i18n';
 
 import type { MagicLinkFormValues } from '../../../lib/magic-link-form';
 
 import { sendMagicLink } from '../../../api';
 import { MAGIC_LINK_FORM_DEFAULT_VALUES } from '../../../config';
 import { magicLinkFormSchema } from '../../../lib/magic-link-form';
+import { useLoginReturn } from '../use-login-return';
 
 export const useMagicLinkForm = () => {
   const t = useTranslations('auth.magic');
+  const locale = resolveLocale(useLocale());
+  const { returnPath, errorPath } = useLoginReturn();
   const {
     register,
     handleSubmit,
@@ -30,7 +34,13 @@ export const useMagicLinkForm = () => {
   });
 
   const onSubmit = handleSubmit(({ email }) => {
-    send.mutate({ email, callbackURL: new URL(ROUTES.account.overview, window.location.origin).toString() });
+    const { origin } = window.location;
+
+    send.mutate({
+      email,
+      callbackURL: returnUrl({ path: returnPath, locale, origin }),
+      errorCallbackURL: returnUrl({ path: errorPath, locale, origin })
+    });
   });
 
   return {

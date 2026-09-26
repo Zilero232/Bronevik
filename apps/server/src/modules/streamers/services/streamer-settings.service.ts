@@ -1,5 +1,4 @@
 import type {
-  ModReference,
   SettingsHistoryEntry,
   SettingsProvenance,
   SettingsTableRow,
@@ -9,7 +8,15 @@ import type {
 } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { changedGroups, settingsGroupKeySchema, streamerSettingsSchema, toSettingsValues, zoomMax } from '@otmetki/schemas';
+import {
+  changedGroups,
+  modReferenceSchema,
+  settingsGroupKeySchema,
+  settingsSourceSchema,
+  streamerSettingsSchema,
+  toSettingsValues,
+  zoomMax
+} from '@otmetki/schemas';
 import { indexBy, unique } from 'remeda';
 
 import type { StreamerProfile } from '../../../../generated';
@@ -53,7 +60,7 @@ export class StreamerSettingsService {
 
     return versions.map((version) => ({
       id: version.id,
-      source: version.source as SettingsHistoryEntry['source'],
+      source: settingsSourceSchema.parse(version.source),
       changedGroups: version.changedGroups.flatMap((group) => {
         const parsed = settingsGroupKeySchema.safeParse(group);
 
@@ -177,7 +184,7 @@ export class StreamerSettingsService {
       settings,
       modReferences: refs.map((ref) => ({
         id: ref.id,
-        kind: ref.kind as ModReference['kind'],
+        kind: modReferenceSchema.shape.kind.parse(ref.kind),
         name: ref.name,
         author: ref.author,
         officialUrl: ref.officialUrl,

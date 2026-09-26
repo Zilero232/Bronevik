@@ -7,6 +7,8 @@ export default defineConfig({
   test: {
     name: 'server',
     isolate: false,
+    clearMocks: true,
+    restoreMocks: true,
     environment: 'node',
     // Bun's isolated linker gives vitest-mock-extended its own copy of vitest (a
     // different peer set), whose chai plugin then replaces the runner's toThrow and

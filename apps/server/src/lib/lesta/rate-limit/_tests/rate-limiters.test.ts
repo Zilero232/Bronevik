@@ -1,50 +1,102 @@
 import RedisMock from 'ioredis-mock';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { RateLimiter } from '../rate-limit.types';
 
+import { RATE_LIMIT } from '../rate-limit.constants';
 import { createMemoryRateLimiter, createRedisRateLimiter } from '../rate-limiters';
 
-const PENDING = Symbol('pending');
+const REQUESTS_PER_SECOND = 2;
 
-const PENDING_WINDOW_MS = 50;
+const WINDOW_MS = RATE_LIMIT.windowSeconds * 1000;
 
-const settledQuickly = async (promise: Promise<void>) =>
-  Promise.race([promise, new Promise<typeof PENDING>((resolve) => setTimeout(resolve, PENDING_WINDOW_MS, PENDING))]);
+const SHARED_KEY = 'shared';
 
-const expectThrottled = async (limiter: RateLimiter) => {
-  const startedAt = Date.now();
+const track = (promise: Promise<void>) => {
+  const state = { settled: false };
 
-  await limiter.acquire();
-  await limiter.acquire();
-
-  const third = limiter.acquire();
-
-  expect(await settledQuickly(third)).toBe(PENDING);
-
-  await third;
-
-  expect(Date.now() - startedAt).toBeGreaterThanOrEqual(500);
-};
-
-describe('rate limiters', () => {
-  it('memory limiter queues requests beyond the per-second budget', async () => {
-    await expectThrottled(createMemoryRateLimiter({ requestsPerSecond: 2 }));
+  void promise.then(() => {
+    state.settled = true;
   });
 
-  it('redis limiter shares one budget between clients on the same key', async () => {
+  return state;
+};
+
+const exhaustBudget = async (limiters: readonly RateLimiter[]) => {
+  for (let index = 0; index < REQUESTS_PER_SECOND; index += 1) {
+    await limiters[index % limiters.length].acquire();
+  }
+};
+
+const expectQueuedUntilWindowEnds = async (limiter: RateLimiter) => {
+  const overflow = track(limiter.acquire());
+
+  await vi.advanceTimersByTimeAsync(WINDOW_MS - 1);
+
+  expect(overflow.settled).toBe(false);
+
+  await vi.advanceTimersByTimeAsync(1);
+
+  expect(overflow.settled).toBe(true);
+};
+
+describe('createMemoryRateLimiter', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('grants the per-second budget without waiting', async () => {
+    const limiter = createMemoryRateLimiter({ requestsPerSecond: REQUESTS_PER_SECOND });
+    const granted = track(exhaustBudget([limiter]));
+
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(granted.settled).toBe(true);
+  });
+
+  it('queues a request beyond the budget until the window ends', async () => {
+    const limiter = createMemoryRateLimiter({ requestsPerSecond: REQUESTS_PER_SECOND });
+
+    await exhaustBudget([limiter]);
+
+    await expectQueuedUntilWindowEnds(limiter);
+  });
+});
+
+describe('createRedisRateLimiter', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('shares one budget between clients on the same key', async () => {
     const redis = new RedisMock();
-    const key = `shared-${Date.now()}`;
-    const instanceA = createRedisRateLimiter({ redis, key, requestsPerSecond: 2 });
-    const instanceB = createRedisRateLimiter({ redis, key, requestsPerSecond: 2 });
+    const instanceA = createRedisRateLimiter({ redis, key: SHARED_KEY, requestsPerSecond: REQUESTS_PER_SECOND });
+    const instanceB = createRedisRateLimiter({ redis, key: SHARED_KEY, requestsPerSecond: REQUESTS_PER_SECOND });
 
-    await instanceA.acquire();
-    await instanceB.acquire();
+    await exhaustBudget([instanceA, instanceB]);
 
-    const third = instanceA.acquire();
+    await expectQueuedUntilWindowEnds(instanceA);
+  });
 
-    expect(await settledQuickly(third)).toBe(PENDING);
+  it('keeps separate budgets for different keys', async () => {
+    const redis = new RedisMock();
+    const instanceA = createRedisRateLimiter({ redis, key: SHARED_KEY, requestsPerSecond: REQUESTS_PER_SECOND });
+    const other = createRedisRateLimiter({ redis, key: 'other', requestsPerSecond: REQUESTS_PER_SECOND });
 
-    await third;
+    await exhaustBudget([instanceA]);
+
+    const granted = track(other.acquire());
+
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(granted.settled).toBe(true);
   });
 });

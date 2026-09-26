@@ -12,3 +12,7 @@ export const PWA = {
   badge: '/icons/maskable-192.png',
   categories: ['games', 'entertainment', 'utilities']
 } as const;
+
+export const PWA_PRECACHE = {
+  globPatterns: ['.next/static/css/**/*.css', '.next/static/media/**/*.woff2']
+} as const;

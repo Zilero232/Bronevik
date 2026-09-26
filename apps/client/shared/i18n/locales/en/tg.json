@@ -11,7 +11,8 @@
   },
   "failed": {
     "title": "Could not sign you in",
-    "description": "Telegram did not confirm the sign-in. Try again or link Telegram in your account on the site."
+    "description": "Telegram did not confirm the sign-in. Try again or link Telegram in your account on the site.",
+    "vkDescription": "VK did not confirm the sign-in. Try again or reopen the mini app."
   },
   "preview": {
     "text": "Mini app preview in the browser",
@@ -57,5 +58,14 @@
     "marks": "Marks",
     "account": "Account",
     "tools": "Calculators"
+  },
+  "vkOutside": {
+    "title": "Open in VK",
+    "description": "This is the Three Marks mini app for VK. Open it from the community or the bot and it will recognise your account.",
+    "site": "Go to the site"
+  },
+  "vkMeta": {
+    "title": "VK mini app",
+    "description": "Three Marks in VK: stats, your last session and marks."
   }
 }

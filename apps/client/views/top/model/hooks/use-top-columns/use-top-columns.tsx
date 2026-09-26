@@ -11,7 +11,7 @@ import { TankCell } from '@/entities/tank/tank';
 
 import type { UseTopColumnsInput } from './use-top-columns.types';
 
-import { EntrantCell, RankCell, ValueCell } from '../../../ui/components/TopTable/components';
+import { EntrantCell, ValueCell } from '../../../ui/components/TopTable/components';
 
 const column = createColumnHelper<LeaderboardEntry>();
 
@@ -22,8 +22,7 @@ export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): Co
 
   const rank = column.accessor('rank', {
     header: '#',
-    cell: (info) => <RankCell rank={info.getValue()} />,
-    meta: { width: 48, align: 'end' }
+    meta: { width: 48, align: 'end', isRank: true }
   });
 
   const entrant = column.accessor('name', {
@@ -47,13 +46,13 @@ export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): Co
   const battles = column.accessor('battles', {
     header: t('columns.battles'),
     cell: (info) => format.number(info.getValue()),
-    meta: { align: 'end', isNumeric: true }
+    meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
   });
 
   const value = column.accessor('value', {
     header: filter.scope === 'marks' ? t('marksLabel') : t(`metrics.${filter.metric}`),
     cell: ({ row: { original } }) => <ValueCell entry={original} filter={filter} />,
-    meta: { align: 'end', isNumeric: true }
+    meta: { align: 'end', isNumeric: true, bar: { tone: 'accent' } }
   });
 
   return [rank, entrant, ...vehicle, battles, value];

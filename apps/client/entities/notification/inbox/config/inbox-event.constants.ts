@@ -5,9 +5,11 @@ import {
   Award,
   BadgePercent,
   CalendarClock,
+  ChevronsUp,
   ClipboardList,
   Eye,
   Flag,
+  ListChecks,
   Medal,
   Radio,
   Star,
@@ -43,5 +45,7 @@ export const INBOX_EVENT = {
   watchlist_digest: { icon: Eye, tone: 'ally' },
   tank_returned: { icon: Store, tone: 'premium' },
   competition_finished: { icon: Swords, tone: 'success' },
-  streamer_live: { icon: Radio, tone: 'accent' }
+  streamer_live: { icon: Radio, tone: 'accent' },
+  tank_level_up: { icon: ChevronsUp, tone: 'success' },
+  tank_challenge_done: { icon: ListChecks, tone: 'success' }
 } as const satisfies Record<NotificationEvent, InboxEventLook>;

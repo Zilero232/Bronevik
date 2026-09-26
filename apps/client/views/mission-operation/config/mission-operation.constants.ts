@@ -38,3 +38,12 @@ export const BRANCH_KEYS = [
   'LevelGroup2',
   'LevelGroup3'
 ] as const;
+
+export const MISSION_BOARD = {
+  classIconSize: 18,
+  ringSize: 40,
+  headerRingSize: 64,
+  ringThickness: 4,
+  nodeIconSize: 14,
+  showcaseLimit: 6
+} as const;

@@ -1,3 +1,5 @@
+import type { PopularBuild } from '@otmetki/schemas';
+
 export type LoadoutSample = {
   optionalDevices: number[];
   consumables: number[];
@@ -7,15 +9,8 @@ export type LoadoutSample = {
   damage: number | null;
 };
 
-export type RankedLoadout = {
-  optionalDevices: number[];
-  consumables: number[];
-  directives: number[];
-  battles: number;
-  share: number;
-  winRate: number | null;
-  avgDamage: number | null;
-};
+export type RankedLoadout = Omit<PopularBuild, 'consumables' | 'directives' | 'optionalDevices'> &
+  Pick<LoadoutSample, 'consumables' | 'directives' | 'optionalDevices'>;
 
 export type RankLoadoutsInput = {
   samples: readonly LoadoutSample[];

@@ -8,11 +8,11 @@ describe('boardSocketUrl', () => {
   });
 
   it('switches https to wss', () => {
-    expect(boardSocketUrl({ apiUrl: 'https://api.otmetki.su', path: '/tactics/ws' })).toBe('wss://api.otmetki.su/tactics/ws');
+    expect(boardSocketUrl({ apiUrl: 'https://api.triotmetki.ru', path: '/tactics/ws' })).toBe('wss://api.triotmetki.ru/tactics/ws');
   });
 
   it('keeps a path prefix of the api url without doubling slashes', () => {
-    expect(boardSocketUrl({ apiUrl: 'https://otmetki.su/api/', path: '/tactics/ws' })).toBe('wss://otmetki.su/api/tactics/ws');
+    expect(boardSocketUrl({ apiUrl: 'https://triotmetki.ru/api/', path: '/tactics/ws' })).toBe('wss://triotmetki.ru/api/tactics/ws');
   });
 });
 

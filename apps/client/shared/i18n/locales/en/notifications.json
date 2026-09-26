@@ -54,7 +54,9 @@
     "watchlist_digest": "Watched players digest",
     "tank_returned": "Tank back in the shop",
     "competition_finished": "Competition results",
-    "streamer_live": "Followed streamer is live"
+    "streamer_live": "Followed streamer is live",
+    "tank_level_up": "Tank level up",
+    "tank_challenge_done": "Weekly challenge complete"
   },
   "eventGroups": {
     "marks": "Marks and mastery",

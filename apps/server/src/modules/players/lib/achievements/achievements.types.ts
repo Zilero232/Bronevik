@@ -1,11 +1,6 @@
-export type AchievementCatalogRow = {
-  name: string;
-  section: string | null;
-  title: string;
-  description: string | null;
-  image: string | null;
-  order: number | null;
-};
+import type { Achievement } from '../../../../../generated';
+
+export type AchievementCatalogRow = Pick<Achievement, 'description' | 'image' | 'name' | 'order' | 'section' | 'title'>;
 
 export type PlayerAchievementsInput = {
   counts: Record<string, number>;

@@ -12,11 +12,6 @@ export type StatsDeltaInput = {
   reference: number | null;
 };
 
-export type SignedInput = {
-  value: number | undefined;
-  digits?: number;
-};
-
 export type ScaledRatingInput = {
   scale: RatingScale;
   value: number | null;

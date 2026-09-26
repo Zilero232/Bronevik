@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://otmetki.app/contract/mod/ingest.schema.json",
+  "$id": "https://triotmetki.ru/contract/mod/ingest.schema.json",
   "title": "Three Marks mod ingest batch",
   "description": "Body of POST /mod/ingest. Headers: Content-Type: application/json; X-Otmetki-Device: <device_id>; X-Otmetki-Signature: sha256=<lowercase hex HMAC-SHA256 of the raw request body bytes, key = UTF-8 bytes of the device secret string exactly as returned by /mod/bind>. The mod serialises with sorted keys, no whitespace and ASCII-only escapes, but the server must verify the signature over the raw bytes it received, never over a re-serialisation. Responses: 200 with #/definitions/ingestResponse (partial duplicates are fine), 409 = whole batch already seen (treated as success), 401/403 = unknown device, bad signature or revoked device (the mod pauses until the user rebinds), 400/404/422 = invalid batch (the mod drops it), 413 = too large (the mod halves the batch size), 429/5xx = retry with backoff (Retry-After in seconds is honoured). Only the player's own data is ever sent.",
   "type": "object",
@@ -85,6 +85,9 @@
         },
         {
           "$ref": "#/definitions/queue"
+        },
+        {
+          "$ref": "#/definitions/battleStart"
         }
       ]
     },
@@ -341,6 +344,16 @@
           "items": {
             "$ref": "#/definitions/battleShot"
           }
+        },
+        "achievements": {
+          "description": "Optional. Names of the medals the player's own vehicle earned in this battle (dossier record names), mastery badge first.",
+          "type": ["array", "null"],
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
         }
       }
     },
@@ -519,6 +532,33 @@
           "items": {
             "type": "integer"
           }
+        }
+      }
+    },
+    "battleStart": {
+      "type": "object",
+      "description": "The own vehicle entered a battle (arena created). Sent at once; the server opens the streamer's Twitch auto-prediction and the matching battle_result resolves it.",
+      "additionalProperties": false,
+      "required": ["type", "event_id", "occurred_at", "tank_id"],
+      "properties": {
+        "type": {
+          "const": "battle_start"
+        },
+        "event_id": {
+          "$ref": "#/definitions/id"
+        },
+        "occurred_at": {
+          "$ref": "#/definitions/unixTime"
+        },
+        "tank_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/tankId"
+            }
+          ]
         }
       }
     },

@@ -2,6 +2,7 @@
 
 .root {
   @include field-box;
+  @include touch-input;
 
   width: 100%;
   min-height: 80px;

@@ -1,0 +1,149 @@
+{
+  "title": "Tank math",
+  "modules": "Gun {gun} · turret {turret}",
+  "note": "Computed from the game files: 100% crew, no equipment or skills unless selected. Formulas: exponential aiming convergence, linear penetration drop from 100 to 500 m, spotting as “view range − (view range − 50) × camouflage”.",
+  "presets": {
+    "label": "Configuration",
+    "top": "Top",
+    "stock": "Stock",
+    "vs": {
+      "top": "vs stock",
+      "stock": "vs top"
+    }
+  },
+  "handling": {
+    "title": "Gun handling",
+    "description": "How the aiming circle blooms from moving, hull and turret traverse and firing — and how many seconds it takes to aim back in.",
+    "meters": "{value} m",
+    "seconds": "{value} s",
+    "score": "Snap dispersion",
+    "scoreHint": "Circle at 100 m, 2 s after stopping from top speed with the turret traversing. Lower is better.",
+    "aimTitle": "Full aim after…",
+    "chart": "Dispersion at 100 m over time after an action",
+    "scenarios": {
+      "move": "Moving",
+      "hull": "Hull traverse",
+      "turret": "Turret traverse",
+      "shot": "Shot",
+      "full": "Moving + turret"
+    },
+    "rows": {
+      "score": "Snap dispersion",
+      "aimingTime": "Aiming time",
+      "dispersion": "Dispersion at 100 m",
+      "aim": {
+        "move": "moving at top speed",
+        "hull": "hull traverse",
+        "turret": "turret traverse",
+        "shot": "a shot",
+        "full": "moving and turret traverse"
+      }
+    }
+  },
+  "ballistics": {
+    "title": "Ballistics",
+    "description": "AP and APCR penetration drops linearly from 100 to 500 m; HEAT and HE keep their penetration. Flight time follows the shell velocity and gravity.",
+    "meters": "{value} m",
+    "millimeters": "{value} mm",
+    "seconds": "{value} s",
+    "premium": "Special",
+    "penetrationChart": "Penetration by distance",
+    "flightChart": "Flight time by distance",
+    "tableCaption": "Shells compared with the first one",
+    "shell": "Shell",
+    "damage": "Damage",
+    "penetrationAt": "Pen at {distance} m",
+    "flightAt": "Flight {distance} m",
+    "outOfRange": "Out of range",
+    "kinds": {
+      "ARMOR_PIERCING": "AP",
+      "ARMOR_PIERCING_CR": "APCR",
+      "HOLLOW_CHARGE": "HEAT",
+      "HIGH_EXPLOSIVE": "HE"
+    }
+  },
+  "spotting": {
+    "title": "Spotting",
+    "description": "My view range against the target's camouflage and back: who spots whom first. Within 50 m a tank is always visible, beyond 445 m never.",
+    "meters": "{value} m",
+    "me": "My tank",
+    "them": "Target",
+    "target": "Target tank",
+    "targetPlaceholder": "Same tank",
+    "foliageLabel": "Cover",
+    "foliage": {
+      "none": "Open",
+      "sparse": "Sparse bush",
+      "single": "Bush",
+      "double": "Two bushes"
+    },
+    "groups": {
+      "state": "State",
+      "camouflage": "Camouflage",
+      "vision": "View range"
+    },
+    "switches": {
+      "isMoving": {
+        "label": "Moving",
+        "hint": "Moving camouflage is lower and binoculars are off"
+      },
+      "isFiring": {
+        "label": "Firing",
+        "hint": "The tank's camouflage is multiplied by the gun factor"
+      },
+      "isFoliageNear": {
+        "label": "Bush within 15 m",
+        "hint": "When firing, a near bush keeps only 30% of its bonus"
+      },
+      "hasCamoNet": {
+        "label": "Camouflage net",
+        "hint": "Works only while standing still"
+      },
+      "hasPaint": {
+        "label": "Camouflage paint",
+        "hint": "Paint bonus from the tank files"
+      },
+      "hasOptics": {
+        "label": "Coated optics",
+        "hint": "+10% view range"
+      },
+      "hasBinoculars": {
+        "label": "Binocular telescope",
+        "hint": "+25% view range while still"
+      },
+      "hasCrewSkills": {
+        "label": "Recon and situational awareness",
+        "hint": "+5% view range"
+      }
+    },
+    "camoSkill": "Camouflage skill",
+    "camoSkillValue": "{value}%",
+    "verdict": {
+      "me": "I spot first",
+      "them": "The target spots first",
+      "even": "We spot each other at once"
+    },
+    "margin": "Difference {value}",
+    "iSpot": "I spot the target at",
+    "iSpotHint": "My view range against the target's camouflage",
+    "theySpot": "The target spots me at",
+    "theySpotHint": "The target's view range against my camouflage",
+    "vsThem": "vs target",
+    "vsMe": "vs me",
+    "rows": {
+      "myView": "My view range",
+      "theirView": "Target view range",
+      "myCamo": "My camouflage",
+      "theirCamo": "Target camouflage"
+    },
+    "limits": "Spotting is capped at 445 m, but view range above 445 m still helps against camouflage. Within 50 m a tank is always visible."
+  },
+  "tool": {
+    "title": "Tank math",
+    "description": "Gun handling, shell ballistics and a spotting calculator for any tank.",
+    "tank": "Tank",
+    "pickTank": "Pick a tank…",
+    "emptyTitle": "Pick a tank",
+    "emptyDescription": "We will work out aiming, penetration by distance and spotting against any opponent."
+  }
+}

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Redirect } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
@@ -45,7 +45,10 @@ import {
   StreamerLiveListDto,
   StreamerProfileDto,
   StreamerSettingsViewDto,
+  TwitchChannelParamsDto,
+  TwitchPanelDto,
   UpdateOverlayDto,
+  UpdatePredictionsDto,
   UpdateSettingsShareDto,
   UpsertProfileDto
 } from './dto';
@@ -60,7 +63,8 @@ import {
   StreamerDirectoryService,
   StreamerFollowService,
   StreamerProfileService,
-  StreamerSettingsService
+  StreamerSettingsService,
+  TwitchPanelService
 } from './services';
 
 @ApiTags('streamers')
@@ -72,6 +76,7 @@ export class StreamersController {
     private readonly challenges: ChallengeService,
     private readonly integrations: IntegrationsService,
     private readonly store: IntegrationStoreService,
+    private readonly panels: TwitchPanelService,
     private readonly directory: StreamerDirectoryService,
     private readonly claims: StreamerClaimService,
     private readonly settings: StreamerSettingsService,
@@ -243,6 +248,20 @@ export class StreamersController {
   @ZodResponse({ type: ConnectUrlDto })
   async connect(@CurrentUserId() userId: string, @Param() { provider }: ConnectProviderDto) {
     return { url: await this.integrations.connectUrl({ userId, provider: PROVIDER_FROM_PATH[provider] }) };
+  }
+
+  @Put('me/integrations/twitch/predictions')
+  @ZodResponse({ type: IntegrationListDto })
+  setPredictions(@CurrentUserId() userId: string, @Body() { enabled }: UpdatePredictionsDto) {
+    return this.store.setPredictions({ userId, enabled });
+  }
+
+  @AllowAnonymous()
+  @SkipThrottle()
+  @Get('twitch-panel/:channelId')
+  @ZodResponse({ type: TwitchPanelDto })
+  twitchPanel(@Param() { channelId }: TwitchChannelParamsDto) {
+    return this.panels.cached(channelId);
   }
 
   @Delete('me/integrations/:provider')

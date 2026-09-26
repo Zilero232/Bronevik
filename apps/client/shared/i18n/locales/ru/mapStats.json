@@ -1,0 +1,66 @@
+{
+  "tabs": {
+    "label": "Разделы карт",
+    "catalog": "Каталог",
+    "rotation": "Ротация и очередь"
+  },
+  "filters": {
+    "tier": "Уровень техники",
+    "mode": "Режим",
+    "allTiers": "Все уровни",
+    "allShort": "Все",
+    "tierItem": "{tier} уровень"
+  },
+  "modes": {
+    "random": "Случайные бои",
+    "onslaught": "Натиск",
+    "frontline": "Линия фронта",
+    "ranked": "Ранговые бои",
+    "steelHunter": "Стальной охотник"
+  },
+  "figures": {
+    "battles": "Боёв в выборке",
+    "battlesHint": "За {days} дн. по данным мода и реплеев",
+    "maps": "Карт в ротации",
+    "waitNow": "Очередь сейчас",
+    "waitNowHint": "Медиана в {hour}:00, {timezone}",
+    "fastest": "Быстрее всего",
+    "fastestHint": "Медиана {wait}",
+    "hour": "в {hour}:00"
+  },
+  "rotation": {
+    "title": "Частота карт",
+    "meta": "{days} дн. · доля боёв",
+    "battles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
+    "empty": "Пока нет боёв на этом уровне",
+    "emptyDescription": "Ротация появится, когда игроки с модом или загруженными реплеями сыграют здесь.",
+    "errorTitle": "Ротация не загрузилась",
+    "errorDescription": "Сервер не отвечает."
+  },
+  "queue": {
+    "title": "Время в очереди",
+    "meta": "Медиана по часам · {days} дн. · {timezone}",
+    "caption": "Медианное время ожидания боя по уровням техники и часам",
+    "cell": "{tier} ур., {hour}:00 — медиана {median}, у 90% не дольше {p90}, {samples} боёв",
+    "noData": "{hour}:00 — мало данных",
+    "legendFast": "Быстро · {wait}",
+    "legendSlow": "Долго · {wait}",
+    "empty": "Пока мало данных об очереди",
+    "emptyDescription": "Время ожидания присылает мод — таблица заполнится по мере боёв.",
+    "errorTitle": "Время очереди не загрузилось",
+    "errorDescription": "Сервер не отвечает."
+  },
+  "now": {
+    "title": "Очередь сейчас",
+    "meta": "{hour}:00 · {timezone}",
+    "more": "Ротация и очередь",
+    "overall": "Медианное ожидание, все уровни",
+    "fastest": "Быстрее всего в {hour}:00 — {wait}",
+    "secondsSuffix": " с",
+    "topMaps": "Чаще всего выпадают",
+    "empty": "Пока мало данных об очереди",
+    "emptyDescription": "Время ожидания и карты присылает мод.",
+    "errorTitle": "Очередь не загрузилась",
+    "errorDescription": "Сервер не отвечает."
+  }
+}

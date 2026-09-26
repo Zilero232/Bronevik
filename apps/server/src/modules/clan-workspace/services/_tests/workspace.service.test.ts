@@ -15,7 +15,17 @@ const scope = { clanId, userId: 'u1' };
 const at = new Date('2026-09-01T00:00:00Z');
 const [owner] = WORKSPACE_ROLES.owners;
 const owners = new Set<ClanRole>(WORKSPACE_ROLES.owners);
-const officerOnly = WORKSPACE_ROLES.officers.find((role) => !owners.has(role));
+const findOfficerOnly = () => {
+  const found = WORKSPACE_ROLES.officers.find((role) => !owners.has(role));
+
+  if (!found) {
+    throw new Error('every officer role is also an owner role');
+  }
+
+  return found;
+};
+
+const officerOnly = findOfficerOnly();
 
 const clan: Clan = {
   clanId: BigInt(clanId),
@@ -63,9 +73,7 @@ describe('WorkspaceService.create', () => {
   });
 
   it('refuses an officer who is not an owner', async () => {
-    expect(officerOnly).toBeDefined();
-
-    const { service, prisma } = createService(officerOnly ?? 'private');
+    const { service, prisma } = createService(officerOnly);
 
     await expect(service.create(scope)).rejects.toBeInstanceOf(AppForbiddenException);
     expect(prisma.clanWorkspace.create).not.toHaveBeenCalled();

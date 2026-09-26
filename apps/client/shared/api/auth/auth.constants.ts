@@ -3,5 +3,6 @@ export const AUTH_CLIENT = {
   lestaStartPath: '/auth/lesta/start',
   telegramWidgetPath: '/telegram/widget',
   telegramCallbackPath: '/telegram/callback',
-  telegramWebAppPath: '/telegram/webapp'
+  telegramWebAppPath: '/telegram/webapp',
+  vkMiniAppPath: '/vk/mini-app'
 } as const;

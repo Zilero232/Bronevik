@@ -1,10 +1,13 @@
 'use client';
 
+import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { ThemeToggle } from '@/features/app/switch-theme';
+import { ROUTES } from '@/shared/constants';
+import { Link } from '@/shared/i18n/navigation';
 
 import { DisplaySettings } from '../DisplaySettings';
 import { GameStatusSlot } from '../GameStatusSlot';
@@ -21,6 +24,10 @@ export const UtilityBar = () => {
           <GameStatusSlot />
         </section>
         <div className={s.settings}>
+          <Link className={s.link} href={ROUTES.mod}>
+            <Download aria-hidden size={14} />
+            {t('mod')}
+          </Link>
           <Suspense>
             <LocaleSwitcher />
           </Suspense>

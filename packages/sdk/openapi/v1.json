@@ -835,6 +835,19 @@
             }
           },
           {
+            "name": "difficulties",
+            "required": false,
+            "in": "query",
+            "description": "Only tanks whose learning curve puts them in one of these difficulties",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["easy", "moderate", "hard", "hardcore"]
+              }
+            }
+          },
+          {
             "name": "sort",
             "required": false,
             "in": "query",
@@ -2205,7 +2218,9 @@
               "PROMO_CHECKOUT_ONLY",
               "PROMO_REDEEM_ONLY",
               "REPLAY_INVALID",
-              "REPLAY_DUPLICATE"
+              "REPLAY_DUPLICATE",
+              "STREAMER_SLUG_TAKEN",
+              "STREAMER_CHANNEL_TAKEN"
             ]
           },
           "issues": {
@@ -2251,12 +2266,24 @@
                   "analyticsExport",
                   "apiLimits",
                   "earlyAccess",
-                  "hangarExtras"
+                  "hangarExtras",
+                  "privateCompetitions",
+                  "streamerAlerts"
                 ]
               },
               "limitKey": {
                 "type": "string",
-                "enum": ["linkedAccounts", "goals", "watchedTanks", "overlays", "storedReplays", "historyDays", "aiReviews"]
+                "enum": [
+                  "linkedAccounts",
+                  "goals",
+                  "watchedTanks",
+                  "watchedPlayers",
+                  "overlays",
+                  "storedReplays",
+                  "streamerFollows",
+                  "historyDays",
+                  "aiReviews"
+                ]
               },
               "limit": {
                 "type": "integer",
@@ -2298,6 +2325,9 @@
                   "name": {
                     "type": "string"
                   },
+                  "color": {
+                    "type": ["string", "null"]
+                  },
                   "role": {
                     "type": "string"
                   },
@@ -2313,7 +2343,7 @@
                     "nullable": true
                   }
                 },
-                "required": ["clanId", "tag", "name", "role", "emblem", "joinedAt"],
+                "required": ["clanId", "tag", "name", "color", "role", "emblem", "joinedAt"],
                 "additionalProperties": false,
                 "nullable": true
               },
@@ -6034,6 +6064,7 @@
                         },
                         "url": {
                           "type": "string",
+                          "maxLength": 2048,
                           "format": "uri",
                           "nullable": true
                         },
@@ -6090,6 +6121,7 @@
                     },
                     "url": {
                       "type": "string",
+                      "maxLength": 2048,
                       "format": "uri"
                     },
                     "publishedAt": {
@@ -6101,9 +6133,127 @@
                   "required": ["title", "url", "publishedAt"],
                   "additionalProperties": false
                 }
+              },
+              "missions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "campaignId": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "operationId": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "campaignName": {
+                      "type": ["string", "null"]
+                    },
+                    "operationName": {
+                      "type": ["string", "null"]
+                    },
+                    "isCampaignReward": {
+                      "type": "boolean",
+                      "description": "The tank is the reward for the whole campaign rather than for one operation"
+                    }
+                  },
+                  "required": ["campaignId", "operationId", "campaignName", "operationName", "isCampaignReward"],
+                  "additionalProperties": false
+                },
+                "description": "Personal-mission operations and campaigns that award this tank"
+              },
+              "editorial": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": ["personalMissions", "event", "battlePass", "bonds", "workshop", "shop", "lootboxes", "clanWars", "other"]
+                    },
+                    "title": {
+                      "type": ["string", "null"]
+                    },
+                    "url": {
+                      "type": ["string", "null"]
+                    },
+                    "note": {
+                      "type": ["string", "null"]
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+                      "nullable": true
+                    },
+                    "endsAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+                      "nullable": true
+                    },
+                    "event": {
+                      "type": "object",
+                      "properties": {
+                        "slug": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": ["string", "null"]
+                        },
+                        "startsAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                        },
+                        "endsAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+                          "nullable": true
+                        }
+                      },
+                      "required": ["slug", "title", "url", "startsAt", "endsAt"],
+                      "additionalProperties": false,
+                      "nullable": true
+                    },
+                    "mission": {
+                      "type": "object",
+                      "properties": {
+                        "campaignId": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "operationId": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": ["campaignId", "operationId"],
+                      "additionalProperties": false,
+                      "nullable": true
+                    }
+                  },
+                  "required": ["id", "kind", "title", "url", "note", "startsAt", "endsAt", "event", "mission"],
+                  "additionalProperties": false
+                },
+                "description": "Editorial sources: events, battle pass, bonds, workshop and so on"
               }
             },
-            "required": ["status", "role", "sources", "priceCredits", "priceGold", "researchFrom", "offers", "news"],
+            "required": ["status", "role", "sources", "priceCredits", "priceGold", "researchFrom", "offers", "news", "missions", "editorial"],
             "additionalProperties": false
           },
           "economy": {

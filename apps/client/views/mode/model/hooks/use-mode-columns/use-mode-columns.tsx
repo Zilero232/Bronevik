@@ -36,7 +36,11 @@ export const useModeColumns = (): ColumnDef<ModeTank, never>[] => {
       meta: { width: MODE_TABLE.tankWidth }
     }),
     column.accessor('battles', { header: t('battles'), cell: (info) => format.number(info.getValue()), meta: MODE_TABLE.numeric }),
-    column.accessor('players', { header: t('players'), cell: (info) => format.number(info.getValue()), meta: MODE_TABLE.numeric }),
+    column.accessor('players', {
+      header: t('players'),
+      cell: (info) => format.number(info.getValue()),
+      meta: { ...MODE_TABLE.numeric, hideBelow: 'lg' }
+    }),
     column.accessor((row) => row.winRate ?? undefined, {
       id: 'winRate',
       header: t('winRate'),
@@ -56,21 +60,21 @@ export const useModeColumns = (): ColumnDef<ModeTank, never>[] => {
       header: t('avgXp'),
       cell: (info) => amount(info.row.original.avgXp),
       sortUndefined: 'last',
-      meta: MODE_TABLE.numeric
+      meta: { ...MODE_TABLE.numeric, hideBelow: 'lg' }
     }),
     column.accessor((row) => row.avgFrags ?? undefined, {
       id: 'avgFrags',
       header: t('avgFrags'),
       cell: (info) => amount(info.row.original.avgFrags, 2),
       sortUndefined: 'last',
-      meta: MODE_TABLE.numeric
+      meta: { ...MODE_TABLE.numeric, hideBelow: 'lg' }
     }),
     column.accessor((row) => row.survivalRate ?? undefined, {
       id: 'survivalRate',
       header: t('survival'),
       cell: (info) => percentText({ format, value: info.row.original.survivalRate }),
       sortUndefined: 'last',
-      meta: MODE_TABLE.numeric
+      meta: { ...MODE_TABLE.numeric, hideBelow: 'xl' }
     })
   ];
 };

@@ -5,7 +5,7 @@ import type { BotContext, PlaylistReasonInput } from '../telegram.types';
 
 import { AppConfigService } from '../../../config';
 import { PlaylistService } from '../../analytics';
-import { SITE_LINKS } from '../config';
+import { SITE_LINKS } from '../../bot-commands';
 import { openButton, siteUrl } from '../lib';
 
 @Injectable()

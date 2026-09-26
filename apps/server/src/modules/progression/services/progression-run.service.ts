@@ -4,10 +4,11 @@ import { subDays } from 'date-fns';
 import { range, sortBy } from 'remeda';
 
 import type { BattleSample } from '../lib';
-import type { AccountRunInput, ApplyXpInput, EvaluateChallengesInput, LoadSamplesInput } from '../progression.types';
+import type { AccountRunInput, ApplyXpInput, EvaluateChallengesInput, LoadSamplesInput, ProgressVehicle } from '../progression.types';
 
 import { entitledSubscriptionWhere, errorMessage, toIsoDate, weekWindow } from '../../../common/lib';
 import { PrismaService } from '../../../core';
+import { NotificationService } from '../../notifications';
 import { PROGRESSION_RUN } from '../config';
 import {
   battlesOf,
@@ -30,7 +31,8 @@ export class ProgressionRunService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly ledger: ShellLedgerService,
-    private readonly seasons: SeasonService
+    private readonly seasons: SeasonService,
+    private readonly notifications: NotificationService
   ) {}
 
   async run(now: Date): Promise<number> {
@@ -71,57 +73,77 @@ export class ProgressionRunService {
     const cursor = await this.prisma.progressionCursor.findUnique({ where: { accountId } });
     const from = cursor?.processedUntil ?? start;
     const fresh = await this.loadSamples({ accountId, from, to: now });
-    const tiers = await this.tiers([...fresh.keys()]);
+    const vehicles = await this.vehicles([...fresh.keys()]);
     const gains = new Map(
-      [...fresh].map(([tankId, samples]) => [tankId, { xp: xpOfSamples({ samples, tier: tiers.get(tankId) ?? 1 }), battles: battlesOf(samples) }])
+      [...fresh].map(([tankId, samples]) => [
+        tankId,
+        { xp: xpOfSamples({ samples, tier: vehicles.get(tankId)?.tier ?? 1 }), battles: battlesOf(samples) }
+      ])
     );
 
-    await this.applyXp({ userId, accountId, now, gains });
-    await this.prisma.progressionCursor.upsert({ where: { accountId }, create: { accountId, processedUntil: now }, update: { processedUntil: now } });
+    await this.applyXp({ userId, accountId, now, gains, vehicles });
     await this.evaluateChallenges({ userId, accountId, now, weekStart: start });
   }
 
-  private async applyXp({ userId, accountId, now, gains }: ApplyXpInput): Promise<void> {
-    for (const [tankId, gain] of gains) {
-      if (gain.xp <= 0) {
-        continue;
-      }
+  private async applyXp({ userId, accountId, now, gains, vehicles }: ApplyXpInput): Promise<void> {
+    const earned = [...gains].filter(([, gain]) => gain.xp > 0);
+    const current = await this.prisma.tankProgress.findMany({ where: { accountId, tankId: { in: earned.map(([tankId]) => tankId) } } });
+    const before = new Map(current.map((row) => [row.tankId, row]));
+    const updates = earned.map(([tankId, gain]) => {
+      const row = before.get(tankId);
 
-      const before = await this.prisma.tankProgress.findUnique({ where: { accountId_tankId: { accountId, tankId } } });
-      const xp = (before?.xp ?? 0) + gain.xp;
-      const level = tankLevelOf(xp).level;
-      const previous = before?.level ?? 1;
+      return { tankId, gain, previous: row?.level ?? 1, level: tankLevelOf((row?.xp ?? 0) + gain.xp).level };
+    });
 
-      await this.prisma.tankProgress.upsert({
-        where: { accountId_tankId: { accountId, tankId } },
-        create: { accountId, tankId, xp, level, battles: gain.battles },
-        update: { xp: { increment: gain.xp }, level, battles: { increment: gain.battles } }
-      });
+    for (const { tankId, previous, level } of updates) {
+      let shells = 0;
 
       for (const reached of range(previous + 1, level + 1)) {
-        await this.ledger.grant({
+        const amount = PROGRESSION_REWARDS.levelShells + (reached === TANK_LEVELS.max ? PROGRESSION_REWARDS.maxLevelShells : 0);
+        const isGranted = await this.ledger.grant({
           userId,
-          amount: PROGRESSION_REWARDS.levelShells + (reached === TANK_LEVELS.max ? PROGRESSION_REWARDS.maxLevelShells : 0),
+          amount,
           reason: 'level',
           key: levelKey({ accountId, tankId, level: reached }),
           points: PROGRESSION_REWARDS.levelPoints,
           now,
           context: { tankId, level: reached }
         });
+
+        shells += isGranted ? amount : 0;
+      }
+
+      if (shells > 0) {
+        await this.notifications.notify({
+          userId,
+          notification: { event: 'tankLevelUp', tankId, tankName: vehicles.get(tankId)?.name ?? String(tankId), level, shells },
+          dedupeKey: levelKey({ accountId, tankId, level })
+        });
       }
     }
+
+    await this.prisma.$transaction([
+      ...updates.map(({ tankId, gain, level }) =>
+        this.prisma.tankProgress.upsert({
+          where: { accountId_tankId: { accountId, tankId } },
+          create: { accountId, tankId, xp: gain.xp, level, battles: gain.battles },
+          update: { xp: { increment: gain.xp }, level, battles: { increment: gain.battles } }
+        })
+      ),
+      this.prisma.progressionCursor.upsert({ where: { accountId }, create: { accountId, processedUntil: now }, update: { processedUntil: now } })
+    ]);
   }
 
   private async evaluateChallenges({ userId, accountId, now, weekStart }: EvaluateChallengesInput): Promise<void> {
     const week = toIsoDate(weekStart) ?? '';
     const samples = await this.loadSamples({ accountId, from: weekStart, to: now });
     const tanks = sortBy([...samples], [([, rows]) => battlesOf(rows), 'desc']).slice(0, TANK_CHALLENGES.maxTanksPerWeek);
-    const tiers = await this.tiers(tanks.map(([tankId]) => tankId));
+    const vehicles = await this.vehicles(tanks.map(([tankId]) => tankId));
     const hasModData =
       (await this.prisma.battle.count({ where: { accountId, startedAt: { gte: subDays(now, PROGRESSION_RUN.modLookbackDays) } } })) > 0;
 
     for (const [tankId, rows] of tanks) {
-      const challenges = weeklyTankChallenges({ seed: `${accountId}:${tankId}:${week}`, tier: tiers.get(tankId) ?? 1, hasModData });
+      const challenges = weeklyTankChallenges({ seed: `${accountId}:${tankId}:${week}`, tier: vehicles.get(tankId)?.tier ?? 1, hasModData });
 
       for (const challenge of challenges) {
         const key = { accountId_tankId_weekStart_code: { accountId, tankId, weekStart, code: challenge.code } };
@@ -146,15 +168,31 @@ export class ProgressionRunService {
           update: { progress, ...completion }
         });
 
-        if (justCompleted) {
-          await this.ledger.grant({
+        if (!justCompleted) {
+          continue;
+        }
+
+        const rewardKey = challengeKey({ accountId, tankId, week, code: challenge.code });
+        const isGranted = await this.ledger.grant({
+          userId,
+          amount: PROGRESSION_REWARDS.challengeShells,
+          reason: 'challenge',
+          key: rewardKey,
+          points: PROGRESSION_REWARDS.challengePoints,
+          now,
+          context: { tankId, week, code: challenge.code }
+        });
+
+        if (isGranted) {
+          await this.notifications.notify({
             userId,
-            amount: PROGRESSION_REWARDS.challengeShells,
-            reason: 'challenge',
-            key: challengeKey({ accountId, tankId, week, code: challenge.code }),
-            points: PROGRESSION_REWARDS.challengePoints,
-            now,
-            context: { tankId, week, code: challenge.code }
+            notification: {
+              event: 'tankChallengeDone',
+              tankId,
+              tankName: vehicles.get(tankId)?.name ?? String(tankId),
+              shells: PROGRESSION_REWARDS.challengeShells
+            },
+            dedupeKey: rewardKey
           });
         }
       }
@@ -185,9 +223,12 @@ export class ProgressionRunService {
     return pickSamplesByTank({ api: deltas.map(sampleFromDelta), mod: battles.map(sampleFromBattle) });
   }
 
-  private async tiers(tankIds: number[]): Promise<Map<number, number>> {
-    const vehicles = await this.prisma.vehicle.findMany({ where: { tankId: { in: tankIds } }, select: { tankId: true, tier: true } });
+  private async vehicles(tankIds: number[]): Promise<Map<number, ProgressVehicle>> {
+    const rows = await this.prisma.vehicle.findMany({
+      where: { tankId: { in: tankIds } },
+      select: { tankId: true, tier: true, name: true, shortName: true }
+    });
 
-    return new Map(vehicles.map((vehicle) => [vehicle.tankId, vehicle.tier]));
+    return new Map(rows.map((row) => [row.tankId, { tier: row.tier, name: row.shortName || row.name }]));
   }
 }

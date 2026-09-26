@@ -1,0 +1,1 @@
+export { SpottingResult } from './SpottingResult';

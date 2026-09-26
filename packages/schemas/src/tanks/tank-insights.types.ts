@@ -41,6 +41,7 @@ export type TankEconomyFigures = z.infer<typeof tankEconomyFiguresSchema>;
 export type TankEconomy = z.infer<typeof tankEconomySchema>;
 export type TankEconomySortField = z.infer<typeof tankEconomySortFieldSchema>;
 export type TankEconomyQuery = z.infer<typeof tankEconomyQuerySchema>;
+export type TankEconomyQueryInput = z.input<typeof tankEconomyQuerySchema>;
 export type TankEconomyRow = z.infer<typeof tankEconomyRowSchema>;
 export type TankEconomyPage = z.infer<typeof tankEconomyPageSchema>;
 export type AccountEconomyQuery = z.infer<typeof accountEconomyQuerySchema>;

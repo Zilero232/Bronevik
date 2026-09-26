@@ -1,6 +1,5 @@
 export { economyView } from './mappers';
 export type { EconomyView } from './mappers';
-export { tankRouteName, topTankSlugs } from './route-meta';
 export {
   compareTanks,
   getMyEconomy,

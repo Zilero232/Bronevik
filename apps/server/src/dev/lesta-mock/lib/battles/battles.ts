@@ -6,6 +6,7 @@ import type { MockRng } from '../random';
 import type { BattleEventInput, LoadoutInput } from './battles.types';
 
 import { MOCK_SALT } from '../../config';
+import { mockArenaWeight, mockMedals, mockQueueSec, mockShots } from '../battle-extras';
 import { createRng, hashSeed } from '../random';
 import { damageRatio } from '../skill';
 import { dayOf } from '../time';
@@ -152,10 +153,15 @@ export const toBattleEvent = ({ world, player, battle, platoonMates }: BattleEve
 
   const xp = Math.round(battle.xp * (battle.premiumAccount ? ECONOMY.premiumAccount : 1));
   const arenas = world.catalog.arenas.filter((arena) => arena.modes.includes(battle.mode === 'frontline' ? 'epic' : 'ctf'));
-  const arena = arenas.length > 0 ? rng.pick(arenas) : undefined;
+  const arena =
+    arenas.length > 0
+      ? rng.weighted(arenas, (candidate) => mockArenaWeight({ seed: world.seed, index: world.catalog.arenas.indexOf(candidate), tier: vehicle.tier }))
+      : undefined;
+
   const arenaUniqueId = BigInt(battle.endedAt) * 1_000_000n + BigInt(hashSeed(world.seed, player.index, battle.endedAt, battle.tankId) % 1_000_000);
   const bonusType = BONUS_TYPES[battle.mode];
   const withMoe = battle.mode === 'random' && vehicle.tier >= BATTLE_ROWS.moeMinTier;
+  const extras = { battle, vehicle, rng: createRng(world.seed, MOCK_SALT.extras, player.index, battle.endedAt) };
 
   return {
     type: 'battle_result',
@@ -203,10 +209,11 @@ export const toBattleEvent = ({ world, player, battle, platoonMates }: BattleEve
       consumables_cost: consumables
     },
     moe: withMoe ? { marks_on_gun: battle.marksOnGun, damage_rating: Math.round(battle.moePercent * 100), moving_avg_damage: battle.moeEma } : null,
-    queue_time_s: rng.int(BATTLE_ROWS.queueSec[0], BATTLE_ROWS.queueSec[1]),
+    queue_time_s: mockQueueSec(extras),
     session_id: battle.mode === 'random' ? `mock-${dayOf(battle.endedAt)}` : null,
     loadout,
     platoon: platoonMates.length > 0 ? { size: platoonMates.length + 1, mates: [...platoonMates] } : { size: 1, mates: [] },
-    shots: null
+    shots: mockShots(extras),
+    achievements: mockMedals(extras)
   };
 };

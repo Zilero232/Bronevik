@@ -1,5 +1,6 @@
 import type { PlusState } from '@otmetki/schemas';
 
+import { PLUS_TRIAL } from '@otmetki/schemas';
 import { addDays } from 'date-fns';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
@@ -16,7 +17,7 @@ const state = (overrides: Partial<PlusState> = {}): PlusState => ({
   periodEnd: null,
   graceEndsAt: null,
   trialAvailable: true,
-  trialDays: 7,
+  trialDays: PLUS_TRIAL.days,
   ...overrides
 });
 
@@ -52,7 +53,7 @@ describe('TrialService.start', () => {
     const { service, prisma, entitlements } = createService();
 
     vi.useFakeTimers({ now });
-    entitlements.refresh.mockResolvedValue(state({ trialDays: 14 }));
+    entitlements.refresh.mockResolvedValue(state({ trialDays: PLUS_TRIAL.referralDays }));
 
     await service.start('u1');
 
@@ -65,7 +66,7 @@ describe('TrialService.start', () => {
       status: 'trialing',
       cancelAtPeriodEnd: true,
       trialStartedAt: now,
-      currentPeriodEnd: addDays(now, 14)
+      currentPeriodEnd: addDays(now, PLUS_TRIAL.referralDays)
     });
 
     expect(entitlements.syncTracking).toHaveBeenCalledWith('u1');
@@ -79,5 +80,16 @@ describe('TrialService.start', () => {
 
     await expect(service.start('u1')).rejects.toMatchObject({ response: { code: 'TRIAL_UNAVAILABLE' } });
     expect(prisma.plusTrial.createMany).not.toHaveBeenCalled();
+  });
+
+  it('refuses a user whose linked accounts were all unlinked meanwhile', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    entitlements.refresh.mockResolvedValue(state());
+    prisma.userLestaAccount.findMany.mockResolvedValue([]);
+
+    await expect(service.start('u1')).rejects.toMatchObject({ response: { code: 'TRIAL_UNAVAILABLE' } });
+    expect(prisma.subscription.upsert).not.toHaveBeenCalled();
+    expect(entitlements.syncTracking).not.toHaveBeenCalled();
   });
 });

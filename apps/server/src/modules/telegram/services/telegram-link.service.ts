@@ -1,8 +1,10 @@
+import type { TelegramLinkCode, TelegramStatus } from '@otmetki/schemas';
+
 import { Injectable } from '@nestjs/common';
 import { addMinutes } from 'date-fns';
 import { randomBytes } from 'node:crypto';
 
-import type { ConsumeLinkCodeInput, IssuedLinkCode, TelegramStatus, TxUserInput } from '../telegram.types';
+import type { ConsumeLinkCodeInput, TxUserInput } from '../telegram.types';
 
 import { AppBadRequestException, AppConflictException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
@@ -21,7 +23,7 @@ export class TelegramLinkService {
     private readonly identity: TelegramIdentityService
   ) {}
 
-  async issueCode(userId: string): Promise<IssuedLinkCode> {
+  async issueCode(userId: string): Promise<TelegramLinkCode> {
     const code = randomCode(LINK_CODE);
     const expiresAt = addMinutes(new Date(), LINK_CODE.ttlMinutes);
     const botUsername = this.config.get('TELEGRAM_BOT_USERNAME');

@@ -1,4 +1,4 @@
-import type { PlayerSearchResult, SearchKind } from '@otmetki/schemas';
+import type { MapSearchResult, PlayerSearchResult, SearchQuery } from '@otmetki/schemas';
 
 export type PlayerMatchRow = {
   accountId: bigint;
@@ -28,11 +28,7 @@ export type TankMatchRow = {
   term: string;
 };
 
-export type MapMatchRow = {
-  arenaId: string;
-  slug: string;
-  name: string;
-  image: string | null;
+export type MapMatchRow = Omit<MapSearchResult, 'kind'> & {
   score: number;
 };
 
@@ -41,11 +37,7 @@ export type TermsInput = {
   limit: number;
 };
 
-export type SearchInput = {
-  q: string;
-  kinds: SearchKind[] | undefined;
-  limit: number;
-};
+export type SearchInput = SearchQuery;
 
 export type PlayerSearchOutcome = {
   results: PlayerSearchResult[];

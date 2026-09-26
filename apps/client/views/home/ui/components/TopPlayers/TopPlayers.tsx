@@ -1,27 +1,27 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Card, DataSourceNote, DataTable, EmptyState, ErrorState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { toneOfTier } from '@/shared/lib';
+import { Card, DataSourceNote, DataTable, EmptyState, ErrorState, Podium, PodiumCard, SectionHeader, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import { HOME } from '../../../config';
 import { useTopPlayerColumns, useTopPlayers } from '../../../model/hooks';
-import { SectionTitle } from '../SectionTitle';
-import { PodiumCard } from './components';
 
 import s from './TopPlayers.module.scss';
 
 export const TopPlayers = () => {
   const t = useTranslations('home.topPlayers');
   const tc = useTranslations('home.columns');
+  const format = useFormatter();
   const { metric, setMetric, podium, rest, isPending, isError, retry } = useTopPlayers();
   const columns = useTopPlayerColumns(metric);
 
   return (
     <section aria-labelledby='home-top-players' className={s.root}>
-      <SectionTitle
-        aside={
+      <SectionHeader
+        action={
           <SegmentedControl
             aria-label={t('metric')}
             options={HOME.topPlayers.metrics.map((value) => ({ value, label: tc(value) }))}
@@ -34,11 +34,12 @@ export const TopPlayers = () => {
         meta={t('period')}
         more={{ href: ROUTES.top, label: t('all') }}
         title={t('title')}
+        variant='display'
       />
       {isError && <ErrorState isCompact onRetry={retry} />}
       {!isError && (
         <>
-          <ol className={s.podium}>
+          <Podium aria-label={t('title')}>
             {isPending &&
               Array.from({ length: HOME.topPlayers.podium }, (_, index) => (
                 <li key={index}>
@@ -47,11 +48,19 @@ export const TopPlayers = () => {
               ))}
             {!isPending &&
               podium.map((entry) => (
-                <li key={`${entry.rank}-${entry.name}`} className={s.place}>
-                  <PodiumCard entry={entry} metricLabel={tc(metric)} />
-                </li>
+                <PodiumCard
+                  key={`${entry.rank}-${entry.name}`}
+                  href={ROUTES.players.profile(entry.name)}
+                  meta={t('battles', { count: entry.battles })}
+                  metricLabel={tc(metric)}
+                  name={entry.clanTag ? `${entry.name} [${entry.clanTag}]` : entry.name}
+                  rank={entry.rank}
+                  rankLabel={`${t('rank')} ${entry.rank}`}
+                  tone={entry.tier ? toneOfTier(entry.tier) : null}
+                  value={format.number(entry.value, { maximumFractionDigits: 0 })}
+                />
               ))}
-          </ol>
+          </Podium>
           {!isPending && podium.length === 0 && <EmptyState isCompact title={t('empty')} />}
           {(isPending || rest.length > 0) && (
             <Card padding='none'>

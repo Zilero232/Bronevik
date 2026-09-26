@@ -11,14 +11,16 @@ import { TankImage, vehicleIdentity } from '@/entities/tank/tank';
 import type { TankFlowNode } from '../../../lib/tree-flow';
 
 import { TREE_FORMAT } from '../../../config';
+import { useTreeParams } from '../../../model/hooks';
 
 import s from './TankNode.module.scss';
 
 export const TankNode = ({ data }: NodeProps<TankFlowNode>) => {
   const t = useTranslations('tree.node');
   const format = useFormatter();
+  const { selectTank } = useTreeParams();
 
-  const { node, state, onSelect } = data;
+  const { node, state } = data;
   const { vehicle, xp } = node;
   const ClassIcon = TANK_CLASS_ICONS[vehicle.type];
   const name = vehicle.shortName || vehicle.name;
@@ -31,7 +33,7 @@ export const TankNode = ({ data }: NodeProps<TankFlowNode>) => {
         aria-pressed={state === 'selected'}
         className={s.body}
         type='button'
-        onClick={() => onSelect(vehicle.tankId)}
+        onClick={() => selectTank(vehicle.tankId)}
       >
         <span className={s.head}>
           <ClassIcon aria-hidden className={s.icon} size={14} variant={vehicle.isPremium ? 'premium' : 'regular'} />

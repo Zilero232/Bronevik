@@ -1,24 +1,25 @@
 import type { ExpectedValuesTable, PeriodWindow, TankReferenceTable, TankTiers } from '@otmetki/ratings';
 
-import type { Prisma, RatingPeriod } from '../../../../../../generated';
+import type { Prisma, RatingPeriod, TankSnapshot } from '../../../../../../generated';
 
-export type TankSnapshotTotals = {
-  tankId: number;
-  capturedAt: Date;
-  battles: number;
-  wins: number;
-  losses: number;
-  damageDealt: number;
-  damageReceived: number;
-  frags: number;
-  spotted: number;
-  xp: number;
-  survived: number;
-  hits: number;
-  shots: number;
-  capturePoints: number;
-  droppedCapturePoints: number;
-};
+export type TankSnapshotTotals = Pick<
+  TankSnapshot,
+  | 'battles'
+  | 'capturedAt'
+  | 'capturePoints'
+  | 'damageDealt'
+  | 'damageReceived'
+  | 'droppedCapturePoints'
+  | 'frags'
+  | 'hits'
+  | 'losses'
+  | 'shots'
+  | 'spotted'
+  | 'survived'
+  | 'tankId'
+  | 'wins'
+  | 'xp'
+>;
 
 type AccountSnapshotPoint = {
   capturedAt: Date;

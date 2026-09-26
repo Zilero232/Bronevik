@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { match } from 'ts-pattern';
 
+import { useLoginHref } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, EmptyState, ErrorState, PageHeader, Skeleton } from '@/ui-kit';
@@ -18,6 +19,7 @@ import { GuideEditorForm } from './components';
 import s from './GuideEditorPage.module.scss';
 
 export const GuideEditorPage = ({ slug }: GuideEditorPageProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('guides.editor');
   const { isEdit, isSessionPending, isSignedIn, guide, isGuidePending, isNotFound, isError, isForeign, isRetrying, retry } = useGuideEditorPage(slug);
 
@@ -42,7 +44,7 @@ export const GuideEditorPage = ({ slug }: GuideEditorPageProps) => {
         .with({ isSignedIn: false }, () => (
           <EmptyState
             action={
-              <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.auth.login}>
+              <Link className={buttonVariants({ size: 'sm' })} href={loginHref}>
                 <LogIn size={14} />
                 {t('signIn')}
               </Link>

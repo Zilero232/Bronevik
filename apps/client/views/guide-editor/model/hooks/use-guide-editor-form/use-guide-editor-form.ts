@@ -9,7 +9,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { sortBy } from 'remeda';
 import { toast } from 'sonner';
 
-import type { CreateGuide, Guide } from '@/entities/guide/guide';
+import type { Guide } from '@/entities/guide/guide';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { listMaps } from '@/entities/map/map';
@@ -22,7 +22,7 @@ import type { GuideFormOutput, GuideFormValues } from '../../../lib/guide-form';
 
 import { createGuide, updateGuide } from '../../../api';
 import { GUIDE_FORM, GUIDE_FORM_KINDS, GUIDE_FORM_LOCALES } from '../../../config';
-import { guideFormSchema, toGuideFormValues, toGuideInput } from '../../../lib/guide-form';
+import { guideFormSchema, toGuideFormValues, toGuideInput, toGuideUpdateInput } from '../../../lib/guide-form';
 
 export const useGuideEditorForm = (guide: Guide | null) => {
   const t = useTranslations('guides');
@@ -45,7 +45,8 @@ export const useGuideEditorForm = (guide: Guide | null) => {
   });
 
   const save = useMutation({
-    mutationFn: (input: CreateGuide) => (guide ? updateGuide({ id: guide.id, body: input }) : createGuide(input)),
+    mutationFn: (values: GuideFormOutput) =>
+      guide ? updateGuide({ id: guide.id, body: toGuideUpdateInput(values) }) : createGuide(toGuideInput(values)),
     onSuccess: (saved) => {
       toast.success(guide ? t('editor.updated') : t('editor.created'));
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guides.all, refetchType: 'none' });
@@ -55,7 +56,7 @@ export const useGuideEditorForm = (guide: Guide | null) => {
     onError: () => toast.error(t('editor.failed'))
   });
 
-  const onSubmit = form.handleSubmit((values) => save.mutate(toGuideInput(values)));
+  const onSubmit = form.handleSubmit((values) => save.mutate(values));
 
   return {
     form,

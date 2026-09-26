@@ -48,6 +48,7 @@
     "dev:seed": "bun --filter @otmetki/server dev:seed",
     "dev:server": "bun --filter @otmetki/server dev",
     "dev:worker": "bun --filter @otmetki/server dev:worker",
+    "e2e:screens": "playwright test -c playwright.screens.config.ts",
     "fix": "bun run lint:fix && bun run format && bun run lint:css:fix && bun run format:prisma",
     "format": "prettier --write . --cache",
     "format:check": "prettier --check . --cache",

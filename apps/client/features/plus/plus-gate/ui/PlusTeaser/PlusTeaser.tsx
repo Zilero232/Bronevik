@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { match } from 'ts-pattern';
 
+import { useLoginHref } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants, Skeleton } from '@/ui-kit';
@@ -18,6 +19,7 @@ import { PlusBadge } from '../PlusBadge';
 import s from './PlusTeaser.module.scss';
 
 export const PlusTeaser = ({ feature, className }: PlusTeaserProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('plus');
   const titleId = useId();
   const { action, trialDays, isPending, isStarting, onStartTrial } = usePlusTeaser();
@@ -42,7 +44,7 @@ export const PlusTeaser = ({ feature, className }: PlusTeaserProps) => {
         {match({ isPending, action })
           .with({ isPending: true }, () => <Skeleton height={36} shape='block' width={180} />)
           .with({ action: 'signIn' }, () => (
-            <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.auth.login}>
+            <Link className={buttonVariants({ variant: 'secondary' })} href={loginHref}>
               {t('teaser.signIn')}
             </Link>
           ))

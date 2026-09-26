@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { assignCohort } from '../../cohort';
 import { tankSnapshotRow } from '../../snapshots';
 import { runPollPipeline } from '../poll-pipeline';
 import { accountInfo, accountTank, block, createFakeLesta, createFakeStore, tankStats } from './poll-pipeline.fixtures';
@@ -76,7 +77,7 @@ describe('runPollPipeline', () => {
     expect(randomDelta?.tier).toBe(8);
     expect(randomDelta?.previousCapturedAt).toEqual(earlier);
     expect(randomDelta?.accountWinRate).toBeGreaterThan(0);
-    expect(randomDelta?.cohort).toBeDefined();
+    expect(randomDelta?.cohort).toBe(assignCohort({ battles: 153, winRate: randomDelta?.accountWinRate ?? 0, wn8: null }));
   });
 
   it('skips the tank scan when last_battle_time did not move', async () => {
@@ -135,5 +136,35 @@ describe('runPollPipeline', () => {
     expect(result.updated).toEqual([2]);
     expect(errors).toEqual([1]);
     expect(synced.map((entry) => entry.accountId)).toEqual([2]);
+  });
+});
+
+describe('runPollPipeline marks on gun', () => {
+  const input = () => ({
+    infos: { 1: accountInfo({ accountId: 1, battles: 150, lastBattleTime }) },
+    tanks: { 1: [accountTank({ tankId: 10, battles: 100 }), accountTank({ tankId: 20, battles: 50 })] },
+    stats: { 1: [tankStats({ tankId: 10, battles: 100 }), tankStats({ tankId: 20, battles: 50 })] },
+    marks: { 1: { 10: 2, 20: 0 } }
+  });
+
+  it('reads marks on gun from tanks/achievements for tier A accounts', async () => {
+    const lesta = createFakeLesta(input());
+    const { store, written } = createFakeStore({});
+
+    await runPollPipeline({ ports: { lesta, store }, accountIds: [1], tier: 'active', now });
+
+    expect(lesta.tankMarks).toHaveBeenCalledWith({ accountId: 1, tankIds: [10, 20] });
+    expect(written[0]?.tankSnapshots.filter((row) => row.tankId === 10).map((row) => row.marksOnGun)).toEqual([2, 2]);
+    expect(written[0]?.tankSnapshots.filter((row) => row.tankId === 20).map((row) => row.marksOnGun)).toEqual([0, 0]);
+  });
+
+  it('skips the achievements call for sweep tiers', async () => {
+    const lesta = createFakeLesta(input());
+    const { store, written } = createFakeStore({});
+
+    await runPollPipeline({ ports: { lesta, store }, accountIds: [1], tier: 'population', now });
+
+    expect(lesta.tankMarks).not.toHaveBeenCalled();
+    expect(written[0]?.tankSnapshots.every((row) => row.marksOnGun === null)).toBe(true);
   });
 });

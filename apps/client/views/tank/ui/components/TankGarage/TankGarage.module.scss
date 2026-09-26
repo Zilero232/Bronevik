@@ -3,7 +3,7 @@
 .root {
   @include stack(var(--gap-panel));
 
-  scroll-margin-top: var(--header-height);
+  scroll-margin-top: var(--header-offset);
 }
 
 .hero {

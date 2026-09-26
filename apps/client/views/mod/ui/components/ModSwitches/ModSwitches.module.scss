@@ -1,0 +1,67 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-4));
+}
+
+.list {
+  @include panel;
+
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  gap: var(--space-2) var(--space-4);
+  grid-template-columns: minmax(0, 1fr) auto;
+
+  & + & {
+    border-top: 1px solid var(--color-border);
+  }
+
+  @include from(2xl) {
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr) auto;
+  }
+}
+
+.term {
+  @include stack(var(--space-1));
+}
+
+.name {
+  font-weight: 600;
+}
+
+.key {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  grid-column: 1 / -1;
+  grid-row: 2;
+  line-height: var(--leading-body);
+
+  @include from(2xl) {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+.value {
+  margin: 0;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+
+  @include from(2xl) {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}

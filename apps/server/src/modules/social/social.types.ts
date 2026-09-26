@@ -1,11 +1,12 @@
+import type { Follow } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { TargetKind } from '../../../generated';
-import type { challengesSchema, feedItemSchema, followSchema, leagueSchema, wrappedSchema } from './dto/social.schemas';
+import type { challengesSchema, feedItemSchema, leagueSchema, wrappedSchema } from './dto/social.schemas';
 import type { ChallengeDefinition, WeekStats } from './lib/challenges';
 import type { LeagueMetric } from './lib/league';
 
-export type FollowView = z.infer<typeof followSchema>;
+export type FollowView = Follow;
 export type FeedItem = z.infer<typeof feedItemSchema>;
 export type LeagueView = z.infer<typeof leagueSchema>;
 export type ChallengesView = z.infer<typeof challengesSchema>;

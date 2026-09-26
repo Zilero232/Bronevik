@@ -12,7 +12,9 @@ export type TabsProps<T extends string = string> = {
   items: TabItem<T>[];
   value?: T;
   defaultValue?: T;
-  variant?: 'panel' | 'strip';
+  variant?: 'panel' | 'sticky' | 'strip';
+  'aria-label'?: string;
+  isKeptMounted?: boolean;
   aside?: ReactNode;
   className?: string;
   panelClassName?: string;

@@ -35,6 +35,7 @@ export type {
   CompetitionScoring,
   CompetitionSource,
   CompetitionsQuery,
+  CompetitionsQueryInput,
   CompetitionStatus,
   CompetitionSummary,
   CompetitionTeam,

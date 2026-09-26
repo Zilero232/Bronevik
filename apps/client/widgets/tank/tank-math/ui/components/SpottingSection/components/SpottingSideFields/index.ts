@@ -1,0 +1,1 @@
+export { SpottingSideFields } from './SpottingSideFields';

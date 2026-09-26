@@ -19,9 +19,6 @@
 }
 
 .delta {
-  @include numeric;
-
-  color: var(--color-success);
   font-size: var(--text-2xs);
 }
 

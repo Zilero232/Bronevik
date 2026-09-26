@@ -16,9 +16,11 @@
     background-color var(--duration-fast) ease,
     border-color var(--duration-fast) ease;
 
-  &:hover:not(:disabled) {
-    background-color: var(--color-surface-hover);
-    color: var(--color-text);
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
   }
 
   &:disabled {
@@ -41,11 +43,15 @@
 }
 
 .sm {
+  @include touch-target;
+
   width: 28px;
   height: 28px;
 }
 
 .md {
+  @include touch-target;
+
   width: 32px;
   height: 32px;
 }

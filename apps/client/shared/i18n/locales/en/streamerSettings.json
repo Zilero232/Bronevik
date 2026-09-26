@@ -252,7 +252,8 @@
     "cancel": "Cancel",
     "saved": "Saved",
     "removed": "Settings deleted",
-    "failed": "Could not save the change"
+    "failed": "Could not save the change",
+    "installMod": "Download the mod"
   },
   "compare": {
     "title": "Compare settings",

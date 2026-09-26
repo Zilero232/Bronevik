@@ -211,7 +211,8 @@ export const MOCK_SALT = {
   loadout: 17,
   economy: 18,
   arena: 19,
-  stronghold: 20
+  stronghold: 20,
+  extras: 21
 } as const;
 
 export const MOCK_CLANS = {

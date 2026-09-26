@@ -3,6 +3,5 @@ export { MyEconomy } from './MyEconomy';
 export { StatsControls } from './StatsControls';
 export { StatsTable } from './StatsTable';
 export { TanksFigures } from './TanksFigures';
-export { TanksFilterStrip } from './TanksFilterStrip';
 export { TanksHero } from './TanksHero';
 export { TierList } from './TierList';

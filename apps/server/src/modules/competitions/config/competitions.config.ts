@@ -1,5 +1,3 @@
-import { FEATURES } from '../../../config';
-
 export const COMPETITION_QUEUE = {
   name: 'competitions',
   jobs: { score: 'score' }
@@ -10,8 +8,7 @@ export const COMPETITION_SCHEDULES = [
     id: 'competitions-score',
     queue: COMPETITION_QUEUE.name,
     name: COMPETITION_QUEUE.jobs.score,
-    repeat: { pattern: '*/15 * * * *' },
-    enabled: FEATURES.competitions
+    repeat: { pattern: '*/15 * * * *' }
   }
 ] as const;
 

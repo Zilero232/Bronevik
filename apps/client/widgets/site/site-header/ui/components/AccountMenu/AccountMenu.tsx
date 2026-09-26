@@ -5,7 +5,8 @@ import { clsx } from 'clsx';
 import { ChevronDown, LogIn, LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ACCOUNT_NAV, ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
+import { ACCOUNT_NAV } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Avatar, buttonVariants, Skeleton } from '@/ui-kit';
 
@@ -14,6 +15,7 @@ import { useAccountMenu } from '../../../model/hooks';
 import s from './AccountMenu.module.scss';
 
 export const AccountMenu = () => {
+  const loginHref = useLoginHref();
   const t = useTranslations('nav.account');
   const tMe = useTranslations('me');
   const { user, isPending, isSigningOut, onSignOut } = useAccountMenu();
@@ -24,7 +26,7 @@ export const AccountMenu = () => {
 
   if (!user) {
     return (
-      <Link className={clsx(buttonVariants({ variant: 'primary', size: 'md' }), s.signIn)} href={ROUTES.auth.login}>
+      <Link className={clsx(buttonVariants({ variant: 'primary', size: 'md' }), s.signIn)} href={loginHref}>
         <LogIn size={15} />
         {t('signIn')}
       </Link>

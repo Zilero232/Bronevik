@@ -17,7 +17,14 @@ export class TrackingLestaService {
     return {
       accountInfo: (accountIds) => client.account.info({ accountIds, extra: TRACKING.lesta.accountExtra }),
       accountTanks: (accountIds) => client.account.tanks({ accountIds }),
-      tankStats: ({ accountId, tankIds }) => client.tanks.stats({ accountId, tankIds, extra: TRACKING.lesta.tankExtra })
+      tankStats: ({ accountId, tankIds }) => client.tanks.stats({ accountId, tankIds, extra: TRACKING.lesta.tankExtra }),
+      tankMarks: async ({ accountId, tankIds }) => {
+        const rows = await client.tanks.achievements({ accountId, tankIds, fields: TRACKING.lesta.marksFields });
+
+        return new Map(
+          rows.flatMap((row) => (row.tank_id === undefined ? [] : [[row.tank_id, row.achievements?.[TRACKING.lesta.marksAchievement] ?? 0]]))
+        );
+      }
     };
   }
 }

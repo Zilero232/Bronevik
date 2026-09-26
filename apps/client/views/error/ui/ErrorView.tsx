@@ -2,7 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Button, EmptyState } from '@/ui-kit';
+import { ROUTES } from '@/shared/constants';
+import { Link } from '@/shared/i18n/navigation';
+import { Button, buttonVariants, EmptyState } from '@/ui-kit';
 
 import type { ErrorViewProps } from './ErrorView.types';
 
@@ -13,7 +15,18 @@ export const ErrorView = ({ reset }: ErrorViewProps) => {
 
   return (
     <section className={s.root}>
-      <EmptyState action={<Button onClick={reset}>{t('retry')}</Button>} description={t('body')} title={t('title')} />
+      <EmptyState
+        action={
+          <div className={s.actions}>
+            <Button onClick={reset}>{t('retry')}</Button>
+            <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.home}>
+              {t('home')}
+            </Link>
+          </div>
+        }
+        description={t('body')}
+        title={t('title')}
+      />
     </section>
   );
 };

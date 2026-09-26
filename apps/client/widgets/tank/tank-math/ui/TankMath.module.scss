@@ -1,0 +1,21 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  scroll-margin-top: calc(var(--header-offset) + var(--space-4));
+}
+
+.header {
+  padding: 0 var(--space-4);
+}
+
+.body {
+  @include stack(var(--space-6));
+
+  padding: var(--space-4);
+}
+
+.note {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

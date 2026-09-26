@@ -1,4 +1,4 @@
-import type { ServerPeriod, SkillCohort } from '@otmetki/schemas';
+import type { MissionGarageState, ServerPeriod, SkillCohort } from '@otmetki/schemas';
 
 import type { PlayerTank, TankServerStats } from '../../../../generated';
 
@@ -16,6 +16,6 @@ export type ServerStatsResult = {
 export type GarageTank = Pick<PlayerTank, 'battles' | 'inGarage' | 'tankId' | 'wins'>;
 
 export type GarageState = {
-  state: 'noLink' | 'noPrivateData' | 'ready';
+  state: MissionGarageState;
   tanks: GarageTank[];
 };

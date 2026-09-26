@@ -9,6 +9,15 @@ import { GAME_TITLE, REPLAY_PATTERN, VEHICLE_RESULT } from './summary.constants'
 
 export const blankToNull = (value: string | null | undefined) => value || null;
 
+export const masteryOf = (value: number | null | undefined): number | null =>
+  value !== null &&
+  value !== undefined &&
+  Number.isInteger(value) &&
+  value >= VEHICLE_RESULT.masteryRange.min &&
+  value <= VEHICLE_RESULT.masteryRange.max
+    ? value
+    : null;
+
 export const detectGame = (clientVersionFromXml: string | null | undefined): ReplayGame => {
   if (!clientVersionFromXml) {
     return 'unknown';

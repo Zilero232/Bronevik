@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ROOT, 'src')
 PACKAGE_ROOT = 'res/scripts/client/gui/mods'
 ZIP_DATE = (2020, 1, 1, 0, 0, 0)
-DESCRIPTION = 'Three Marks companion: own battle results, marks of excellence and session stats for otmetki.app'
+DESCRIPTION = 'Three Marks companion: own battle results, marks of excellence and session stats for triotmetki.ru'
 
 PY27_CANDIDATES = (
     ['py', '-2.7'],

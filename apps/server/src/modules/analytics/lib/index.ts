@@ -7,7 +7,6 @@ export type { MapHighlights } from './map-advisor';
 export { buildPlaylist, seededRandom } from './playlist';
 export type { PlaylistCandidate, PlaylistPick } from './playlist';
 export { splitPlaytime } from './playtime-split';
-export type { PlaytimeCell } from './playtime-split';
 export { shotRolls, summarizeRolls } from './rolls';
 export type { RollSummary } from './rolls';
 export { breakdown, statLine, toAggregateRow, trendPoints } from './stat-line';

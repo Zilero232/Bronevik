@@ -6,8 +6,9 @@ import type { MediaCardProps } from './MediaCard.types';
 
 import s from './MediaCard.module.scss';
 
-export const MediaCard = ({ href, media, title, sub, subIcon, ribbon, aspect = 'portrait', className }: MediaCardProps) => {
-  const body = (
+export const MediaCard = ({ href, isExternal = false, media, title, sub, subIcon, body, ribbon, aspect = 'portrait', className }: MediaCardProps) => {
+  const classes = clsx(s.root, body ? s.stacked : s[aspect], href && s.link, className);
+  const content = (
     <>
       <span className={s.media}>{media}</span>
       {ribbon}
@@ -24,14 +25,23 @@ export const MediaCard = ({ href, media, title, sub, subIcon, ribbon, aspect = '
           </span>
         )}
       </span>
+      {body && <span className={s.body}>{body}</span>}
     </>
   );
 
+  if (href && isExternal) {
+    return (
+      <a className={classes} href={href} rel='noopener noreferrer' target='_blank'>
+        {content}
+      </a>
+    );
+  }
+
   return href ? (
-    <Link className={clsx(s.root, s[aspect], s.link, className)} href={href}>
-      {body}
+    <Link className={classes} href={href}>
+      {content}
     </Link>
   ) : (
-    <article className={clsx(s.root, s[aspect], className)}>{body}</article>
+    <article className={classes}>{content}</article>
   );
 };

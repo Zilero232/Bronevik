@@ -71,6 +71,11 @@ describe('safeCallbackUrl', () => {
   it('never redirects to another origin', () => {
     expect(safeCallbackUrl({ requested: 'https://evil.example/', webUrl })).toBe(webUrl);
     expect(safeCallbackUrl({ requested: '//evil.example/', webUrl })).toBe(webUrl);
+    expect(safeCallbackUrl({ requested: '/\\evil.example/', webUrl })).toBe(webUrl);
+  });
+
+  it('keeps the query of a return path', () => {
+    expect(safeCallbackUrl({ requested: '/en/plus?ref=abc', webUrl })).toBe(`${webUrl}/en/plus?ref=abc`);
   });
 });
 

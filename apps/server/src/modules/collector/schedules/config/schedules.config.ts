@@ -10,7 +10,6 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
     queue: QUEUE.sweep,
     name: JOB.sweep.dispatch,
     repeat: { pattern: '0 3 * * *' },
-    enabled: FEATURES.tierB,
     needsLesta: true
   },
   {
@@ -18,17 +17,15 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
     queue: QUEUE.sweep,
     name: JOB.sweep.dormantDispatch,
     repeat: { pattern: '0 4 * * 0' },
-    enabled: FEATURES.tierB,
     needsLesta: true
   },
-  { id: 'population-seed', queue: QUEUE.sweep, name: JOB.sweep.seed, repeat: { pattern: '0 5 * * 1' }, enabled: FEATURES.seed, needsLesta: true },
+  { id: 'population-seed', queue: QUEUE.sweep, name: JOB.sweep.seed, repeat: { pattern: '0 5 * * 1' }, needsLesta: true },
   {
     id: 'clans-tracked',
     queue: QUEUE.clans,
     name: JOB.clans.dispatch,
     repeat: { pattern: '5 * * * *' },
     data: { scope: 'tracked' },
-    enabled: FEATURES.clans,
     needsLesta: true
   },
   {
@@ -37,7 +34,6 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
     name: JOB.clans.dispatch,
     repeat: { pattern: '30 2 * * *' },
     data: { scope: 'all' },
-    enabled: FEATURES.clans,
     needsLesta: true
   },
   { id: 'game-version-check', queue: QUEUE.reference, name: JOB.reference.versionCheck, repeat: { pattern: '*/30 * * * *' }, needsLesta: true },
@@ -50,7 +46,7 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
     needsLesta: true,
     realLestaOnly: true
   },
-  { id: 'wn8-expected-daily', queue: QUEUE.reference, name: JOB.reference.wn8Expected, repeat: { pattern: '0 6 * * *' }, enabled: FEATURES.wn8Xvm },
+  { id: 'wn8-expected-daily', queue: QUEUE.reference, name: JOB.reference.wn8Expected, repeat: { pattern: '0 6 * * *' } },
   {
     id: 'moe-thresholds-daily',
     queue: QUEUE.reference,
@@ -72,37 +68,32 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
     id: 'build-usage-nightly',
     queue: QUEUE.aggregate,
     name: JOB.aggregate.buildUsage,
-    repeat: { pattern: '40 4 * * *' },
-    enabled: FEATURES.buildUsage
+    repeat: { pattern: '40 4 * * *' }
   },
   {
     id: 'mode-meta-nightly',
     queue: QUEUE.aggregate,
     name: JOB.aggregate.modeMeta,
-    repeat: { pattern: '55 4 * * *' },
-    enabled: FEATURES.modeMeta
+    repeat: { pattern: '55 4 * * *' }
   },
   {
     id: 'tank-economy-daily',
     queue: QUEUE.aggregate,
     name: JOB.aggregate.tankEconomy,
-    repeat: { pattern: '30 7 * * *' },
-    enabled: FEATURES.tankEconomy
+    repeat: { pattern: '30 7 * * *' }
   },
   {
     id: 'learning-curve-daily',
     queue: QUEUE.aggregate,
     name: JOB.aggregate.learningCurve,
-    repeat: { pattern: '45 7 * * *' },
-    enabled: FEATURES.learningCurve
+    repeat: { pattern: '45 7 * * *' }
   },
-  { id: 'news-rss', queue: QUEUE.news, name: JOB.news.rss, repeat: { pattern: '*/30 * * * *' }, enabled: FEATURES.news },
+  { id: 'news-rss', queue: QUEUE.news, name: JOB.news.rss, repeat: { pattern: '*/30 * * * *' } },
   { id: 'purge-dispatch', queue: QUEUE.purge, name: JOB.purge.dispatch, repeat: { every: 10 * 60_000 } },
   {
     id: 'sessions-close',
     queue: QUEUE.developerWebhooks,
     name: JOB.developerWebhooks.closeSessions,
-    repeat: { every: 5 * 60_000 },
-    enabled: FEATURES.sessionClose
+    repeat: { every: 5 * 60_000 }
   }
 ];

@@ -1,6 +1,7 @@
 import type { BuildCohort, BuildMode } from '@otmetki/schemas';
 import type { z } from 'zod';
 
+import type { BuildUsageAggregate } from '../../../../../../generated';
 import type { StoredLoadout } from '../../../../mod';
 import type { storedBuildUsageSchema } from './build-usage.schemas';
 
@@ -14,11 +15,7 @@ export type UsageSample = {
   loadout: StoredLoadout;
 };
 
-export type UsageSummary = {
-  battles: number;
-  players: number;
-  winRate: number | null;
-  avgDamage: number | null;
+export type UsageSummary = Pick<BuildUsageAggregate, 'avgDamage' | 'battles' | 'players' | 'winRate'> & {
   usage: StoredBuildUsage;
 };
 

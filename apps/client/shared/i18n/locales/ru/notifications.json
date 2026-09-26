@@ -54,7 +54,9 @@
     "watchlist_digest": "Сводка по отслеживаемым игрокам",
     "tank_returned": "Танк вернулся в магазин",
     "competition_finished": "Итоги состязания",
-    "streamer_live": "Стример в эфире"
+    "streamer_live": "Стример в эфире",
+    "tank_level_up": "Новый уровень танка",
+    "tank_challenge_done": "Челлендж недели выполнен"
   },
   "eventGroups": {
     "marks": "Отметки и классность",

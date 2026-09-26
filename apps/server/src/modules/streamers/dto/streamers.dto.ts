@@ -35,7 +35,10 @@ import {
   streamerLiveListSchema,
   streamerProfileSchema,
   streamerSettingsViewSchema,
+  twitchChannelParamsSchema,
+  twitchPanelSchema,
   updateOverlaySchema,
+  updatePredictionsSchema,
   updateSettingsShareSchema,
   upsertStreamerProfileSchema
 } from '@otmetki/schemas';
@@ -68,6 +71,9 @@ export class ChallengeListDto extends createZodDto(challengeListSchema) {}
 export class CreateChallengeDto extends createZodDto(createChallengeSchema) {}
 export class ActivateChallengeDto extends createZodDto(activateChallengeSchema) {}
 export class IntegrationListDto extends createZodDto(integrationListSchema) {}
+export class UpdatePredictionsDto extends createZodDto(updatePredictionsSchema) {}
+export class TwitchChannelParamsDto extends createZodDto(twitchChannelParamsSchema) {}
+export class TwitchPanelDto extends createZodDto(twitchPanelSchema) {}
 export class ConnectProviderDto extends createZodDto(connectProviderSchema) {}
 export class ConnectUrlDto extends createZodDto(connectUrlSchema) {}
 export class OAuthCallbackDto extends createZodDto(oauthCallbackSchema) {}

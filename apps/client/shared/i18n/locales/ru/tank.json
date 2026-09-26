@@ -155,6 +155,7 @@
     "battlesColumn": "Бои",
     "emptyTitle": "Рейтинг пока пуст",
     "podiumLabel": "Тройка лучших",
+    "rank": "{rank} место",
     "battles": "{battles} боёв"
   },
   "builds": {
@@ -312,6 +313,7 @@
     "stats": "Статистика",
     "marks": "Отметки",
     "builds": "Сборка",
+    "math": "Математика танка",
     "players": "Игроки",
     "patches": "Изменения"
   }

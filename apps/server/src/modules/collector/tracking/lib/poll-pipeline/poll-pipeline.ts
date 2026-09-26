@@ -1,6 +1,6 @@
 import { winRate } from '@otmetki/ratings';
 import { fromUnixTime } from 'date-fns';
-import { chunk, unique } from 'remeda';
+import { chunk, isIncludedIn, unique } from 'remeda';
 
 import type { Prisma } from '../../../../../../generated';
 import type { AccountInfo } from '../../../../../lib/lesta';
@@ -14,7 +14,7 @@ import { POLL_PIPELINE } from './poll-pipeline.constants';
 
 const snapshotKey = (row: Pick<TankSnapshotRow, 'mode' | 'tankId'>) => `${row.tankId}:${row.mode}`;
 
-const processAccount = async ({ ports, info, tanks, baseline, now }: ProcessAccountInput): Promise<ProcessAccountResult> => {
+const processAccount = async ({ ports, info, tanks, baseline, tier, now }: ProcessAccountInput): Promise<ProcessAccountResult> => {
   const { lesta, store } = ports;
   const accountId = info.account_id;
   const id = BigInt(accountId);
@@ -35,6 +35,7 @@ const processAccount = async ({ ports, info, tanks, baseline, now }: ProcessAcco
 
   if (changedTankIds.length > 0) {
     const stats = await lesta.tankStats({ accountId, tankIds: changedTankIds });
+    const marks = isIncludedIn(tier, POLL_PIPELINE.marksTiers) ? await lesta.tankMarks({ accountId, tankIds: changedTankIds }) : null;
     const previous = new Map((await store.latestTankSnapshots({ accountId, tankIds: changedTankIds })).map((row) => [snapshotKey(row), row]));
     const reference = info.statistics.random ?? info.statistics.all;
     const accountWinRate = winRate(reference);
@@ -45,7 +46,7 @@ const processAccount = async ({ ports, info, tanks, baseline, now }: ProcessAcco
       statsTankIds.add(stat.tank_id);
 
       for (const { mode, block } of modeBlocks(stat)) {
-        const row = tankSnapshotRow({ accountId: id, capturedAt: now, mode, block, stats: stat });
+        const row = tankSnapshotRow({ accountId: id, capturedAt: now, mode, block, stats: stat, marksOnGun: marks?.get(stat.tank_id) });
         const before = previous.get(snapshotKey(row));
 
         if (!shouldWriteSnapshot({ previous: before, battles: row.battles })) {
@@ -164,6 +165,7 @@ export const runPollPipeline = async ({ ports, accountIds, tier, promote = false
             info,
             tanks: tanksByAccount[String(accountId)] ?? [],
             baseline: baselines.get(accountId) ?? [],
+            tier,
             now
           });
 

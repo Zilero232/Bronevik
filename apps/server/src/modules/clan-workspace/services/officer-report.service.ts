@@ -53,7 +53,7 @@ export class OfficerReportService {
     return workspaces.length;
   }
 
-  private async build({ clanId, now }: ReportWindow): Promise<WeeklyReportView> {
+  async build({ clanId, now }: ReportWindow): Promise<WeeklyReportView> {
     const from = subDays(now, CLAN_WORKSPACE.reportDays);
     const inactiveBefore = subDays(now, CLAN_WORKSPACE.inactiveDays);
     const [events, attendance, newCandidates, inactiveMembers] = await Promise.all([

@@ -2,26 +2,32 @@
 
 import { useTranslations } from 'next-intl';
 
-import { DataSourceNote, ErrorState, PageHeader } from '@/ui-kit';
+import { DataSourceNote, PageHeader, Tabs } from '@/ui-kit';
+import { MapRotationPanel } from '@/widgets/map/map-rotation';
 
-import { useMapsCatalog } from '../model/hooks';
-import { MapFilters, MapsTable } from './components';
+import { useMapsTab } from '../model/hooks';
+import { MapsCatalog } from './components';
 
 import s from './MapsPage.module.scss';
 
 export const MapsPage = () => {
   const t = useTranslations('maps');
-  const { filters, maps, total, isFiltered, isPending, isError, isRetrying, setFilters, reset, retry } = useMapsCatalog();
+  const tabs = useTranslations('mapStats.tabs');
+  const { tab, setTab } = useMapsTab();
 
   return (
     <div className={s.root}>
       <PageHeader description={t('head.description')} title={t('head.title')} />
-      <MapFilters filters={filters} isFiltered={isFiltered} shown={maps.length} total={total} onChange={setFilters} onReset={reset} />
-      {isError ? (
-        <ErrorState description={t('grid.errorDescription')} isRetrying={isRetrying} title={t('grid.errorTitle')} onRetry={retry} />
-      ) : (
-        <MapsTable isFiltered={isFiltered} isPending={isPending} maps={maps} onReset={reset} />
-      )}
+      <Tabs
+        items={[
+          { value: 'catalog', label: tabs('catalog'), content: <MapsCatalog /> },
+          { value: 'rotation', label: tabs('rotation'), content: <MapRotationPanel /> }
+        ]}
+        aria-label={tabs('label')}
+        value={tab}
+        variant='panel'
+        onValueChange={setTab}
+      />
       <DataSourceNote />
     </div>
   );

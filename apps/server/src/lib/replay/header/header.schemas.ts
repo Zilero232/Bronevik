@@ -64,7 +64,8 @@ export const vehicleResultSchema = z.looseObject({
 export const personalResultSchema = vehicleResultSchema.extend({
   originalXP: count,
   originalCredits: count,
-  freeXP: count
+  freeXP: count,
+  markOfMastery: count
 });
 
 export const battleResultSchema = z.looseObject({

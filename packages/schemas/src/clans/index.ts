@@ -22,6 +22,7 @@ export type {
   ClanListItem,
   ClanListPage,
   ClanListQuery,
+  ClanListQueryInput,
   ClanListSortField,
   ClanMember,
   ClanMemberEvent,

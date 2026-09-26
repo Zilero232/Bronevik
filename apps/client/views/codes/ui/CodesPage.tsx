@@ -4,7 +4,7 @@ import { Gift } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { DataSourceNote, ErrorState, KeyFigure, PageHero, Tabs } from '@/ui-kit';
+import { ActionStrip, DataSourceNote, ErrorState, KeyFigure, PageHero, Tabs } from '@/ui-kit';
 
 import { useBonusCodes } from '../model/hooks';
 import { CodeAlert, CodeList } from './components';
@@ -32,11 +32,7 @@ export const CodesPage = () => {
         lead={t('head.description')}
         title={t('head.title')}
       />
-      <div className={s.strip} data-theme='dark'>
-        <div className={s.stripInner}>
-          <CodeAlert />
-        </div>
-      </div>
+      <ActionStrip end={<CodeAlert />} width='narrow' />
       <div className={s.body}>
         {codes.isError ? (
           <ErrorState description={t('error.description')} isRetrying={codes.isRetrying} title={t('error.title')} onRetry={codes.retry} />

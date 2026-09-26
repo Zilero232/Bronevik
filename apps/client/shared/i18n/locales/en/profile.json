@@ -195,7 +195,7 @@
     "battles": "{count, plural, one {# battle} other {# battles}}",
     "weakTanks": "Where you trail the server",
     "strongTanks": "Where you beat the server",
-    "deltaPp": "{value} pp",
+    "ppSuffix": " pp",
     "damageRatio": "{value}% of server damage",
     "tips": {
       "weak_class": {
@@ -289,6 +289,30 @@
     "label": "Profile actions",
     "compare": "Compare",
     "share": "Share",
-    "copied": "Profile link copied"
+    "copied": "Profile link copied",
+    "signature": "Signature",
+    "myAnalytics": "My analytics"
+  },
+  "signature": {
+    "meta": {
+      "title": "{nickname}’s signature",
+      "description": "A signature image with {nickname}’s stats for forums and social media."
+    },
+    "crumb": "Signature",
+    "title": "{nickname}’s signature",
+    "description": "A stats image for forums, social media and channel descriptions. Copy a code and paste it where the signature should go.",
+    "preview": "Preview",
+    "refresh": "refreshes every {minutes} min",
+    "alt": "{nickname}’s signature",
+    "imageFailed": "The image has not loaded yet. Try reloading the page later.",
+    "codes": "Embed codes",
+    "snippets": {
+      "bbcode": "BBCode for forums",
+      "html": "HTML",
+      "markdown": "Markdown",
+      "image": "Image link"
+    },
+    "notFound": "Player {nickname} not found",
+    "errorTitle": "Could not load the player"
   }
 }

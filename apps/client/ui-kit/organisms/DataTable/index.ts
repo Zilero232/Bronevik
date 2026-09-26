@@ -1,2 +1,2 @@
 export { DataTable } from './DataTable';
-export type { DataTableDensity, DataTableProps, DataTableRowTint } from './DataTable.types';
+export type { DataTableBarMax, DataTableDensity, DataTableProps, DataTableRowLink, DataTableRowTint } from './DataTable.types';

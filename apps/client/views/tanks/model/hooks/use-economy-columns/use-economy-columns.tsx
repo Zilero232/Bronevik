@@ -6,12 +6,11 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { economyView, TankCell, TankStatusBadge } from '@/entities/tank/tank';
+import { economyView, TankCell, TankStatusBadge, TierCell } from '@/entities/tank/tank';
 
 import type { UseEconomyColumnsInput } from './use-economy-columns.types';
 
 import { TANKS_TABLE } from '../../../config';
-import { TierCell } from '../../../ui/components/StatsTable/components';
 
 const column = createColumnHelper<TankEconomyRow>();
 
@@ -33,18 +32,19 @@ export const useEconomyColumns = ({ account, withReserve, withClanPayout }: UseE
       id: 'tier',
       header: t('tier'),
       cell: (info) => <TierCell tier={info.getValue()} />,
-      meta: TANKS_TABLE.numeric
+      meta: { ...TANKS_TABLE.numeric, hideBelow: 'sm' }
     }),
     column.accessor((row) => row.traits.status, {
       id: 'status',
       header: t('status'),
-      cell: (info) => <TankStatusBadge status={info.getValue()} />
+      cell: (info) => <TankStatusBadge status={info.getValue()} />,
+      meta: { hideBelow: 'lg' }
     }),
     column.accessor((row) => view(row)?.battles ?? 0, {
       id: 'battles',
       header: t('battles'),
       cell: (info) => amount(info.getValue()),
-      meta: TANKS_TABLE.numeric
+      meta: { ...TANKS_TABLE.numeric, hideBelow: 'md' }
     }),
     column.accessor((row) => view(row)?.credits ?? null, {
       id: 'credits',
@@ -56,25 +56,25 @@ export const useEconomyColumns = ({ account, withReserve, withClanPayout }: UseE
       id: 'costs',
       header: t('costs'),
       cell: (info) => amount(info.getValue()),
-      meta: TANKS_TABLE.numeric
+      meta: { ...TANKS_TABLE.numeric, hideBelow: 'md' }
     }),
     column.accessor((row) => view(row)?.net ?? null, {
       id: 'net',
       header: t('net'),
       cell: (info) => amount(info.getValue()),
-      meta: TANKS_TABLE.numeric
+      meta: { ...TANKS_TABLE.numeric, bar: { tone: 'accent' } }
     }),
     column.accessor((row) => view(row)?.xp ?? null, {
       id: 'xp',
       header: t('xp'),
       cell: (info) => amount(info.getValue()),
-      meta: TANKS_TABLE.numeric
+      meta: { ...TANKS_TABLE.numeric, hideBelow: 'lg' }
     }),
     column.accessor((row) => view(row)?.freeXp ?? null, {
       id: 'freeXp',
       header: t('freeXp'),
       cell: (info) => amount(info.getValue()),
-      meta: TANKS_TABLE.numeric
+      meta: { ...TANKS_TABLE.numeric, hideBelow: 'lg' }
     })
   ];
 };

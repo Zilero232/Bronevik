@@ -1,1 +1,1 @@
-export { useConnectIntegration, useDisconnectIntegration, useIntegrations } from './use-integrations';
+export { useConnectIntegration, useDisconnectIntegration, useIntegrations, useSetPredictions } from './use-integrations';

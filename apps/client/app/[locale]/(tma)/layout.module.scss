@@ -16,6 +16,14 @@
   margin-inline: auto;
 }
 
+.skip {
+  @include skip-link;
+}
+
 .main {
   flex: 1;
+
+  &:focus {
+    outline: none;
+  }
 }

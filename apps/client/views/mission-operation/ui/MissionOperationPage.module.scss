@@ -10,14 +10,3 @@
     padding-top: var(--space-5);
   }
 }
-
-.layout {
-  display: grid;
-  align-items: start;
-  gap: var(--space-4);
-  grid-template-columns: minmax(0, 1fr);
-
-  @include from(3xl) {
-    grid-template-columns: 320px minmax(0, 1fr);
-  }
-}

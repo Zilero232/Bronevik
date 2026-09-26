@@ -29,6 +29,10 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
     private readonly stats: StreamerStatsService
   ) {}
 
+  get authProvider(): RefreshingAuthProvider | null {
+    return this.auth;
+  }
+
   onApplicationBootstrap(): void {
     const clientId = this.config.get('TWITCH_CLIENT_ID');
     const clientSecret = this.config.get('TWITCH_CLIENT_SECRET');

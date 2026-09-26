@@ -25,7 +25,9 @@ export const notificationEventSchema = z
     'competition_finished',
     'first_win_available',
     'replay_overflow',
-    'streamer_live'
+    'streamer_live',
+    'tank_level_up',
+    'tank_challenge_done'
   ])
   .describe('Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list');
 

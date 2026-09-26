@@ -19,7 +19,7 @@ $breakpoints: (
     @error "Unknown breakpoint `#{$name}`. Use one of: #{map.keys($breakpoints)}.";
   }
 
-  @media (width <= $value) {
+  @media (width < $value) {
     @content;
   }
 }

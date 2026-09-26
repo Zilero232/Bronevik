@@ -15,6 +15,7 @@ import { safeCallbackUrl, verifyLestaLogin, withError } from './lesta-id.verify'
 
 const stateSchema = z.object({
   callbackURL: z.string(),
+  errorCallbackURL: z.string().nullable().default(null),
   linkUserId: z.string().nullable()
 });
 
@@ -26,13 +27,14 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
         '/lesta/start',
         {
           method: 'GET',
-          query: z.object({ callbackURL: z.string().optional() }).optional()
+          query: z.object({ callbackURL: z.string().optional(), errorCallbackURL: z.string().optional() }).optional()
         },
         async (ctx) => {
           const session = await getSessionFromCtx(ctx).catch(() => null);
           const state = randomBytes(LESTA_ID.stateBytes).toString('base64url');
           const value: LestaIdState = {
             callbackURL: safeCallbackUrl({ requested: ctx.query?.callbackURL, webUrl }),
+            errorCallbackURL: ctx.query?.errorCallbackURL ? safeCallbackUrl({ requested: ctx.query.errorCallbackURL, webUrl }) : null,
             linkUserId: session?.user.id ?? null
           };
 
@@ -71,27 +73,28 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
             throw ctx.redirect(withError({ url: webUrl, code: LESTA_ID_ERROR.state }));
           }
 
-          const { callbackURL, linkUserId } = parsedState.data;
+          const { callbackURL, errorCallbackURL, linkUserId } = parsedState.data;
+          const errorURL = errorCallbackURL ?? callbackURL;
           const login = lesta.auth.parseLoginCallback(query);
 
           if (login.status === 'error') {
-            throw ctx.redirect(withError({ url: callbackURL, code: LESTA_ID_ERROR.denied }));
+            throw ctx.redirect(withError({ url: errorURL, code: LESTA_ID_ERROR.denied }));
           }
 
           const identity = await verifyLestaLogin({ login, lesta }).catch(() => undefined);
 
           if (identity === undefined) {
-            throw ctx.redirect(withError({ url: callbackURL, code: LESTA_ID_ERROR.unavailable }));
+            throw ctx.redirect(withError({ url: errorURL, code: LESTA_ID_ERROR.unavailable }));
           }
 
           if (identity === null) {
-            throw ctx.redirect(withError({ url: callbackURL, code: LESTA_ID_ERROR.token }));
+            throw ctx.redirect(withError({ url: errorURL, code: LESTA_ID_ERROR.token }));
           }
 
           const owner = await store.findUserId(identity.accountId);
 
           if (linkUserId && owner && owner !== linkUserId) {
-            throw ctx.redirect(withError({ url: callbackURL, code: LESTA_ID_ERROR.taken }));
+            throw ctx.redirect(withError({ url: errorURL, code: LESTA_ID_ERROR.taken }));
           }
 
           const existingUserId = linkUserId ?? owner;
@@ -109,7 +112,7 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
             ));
 
           if (!(await store.link({ ...identity, userId: user.id }))) {
-            throw ctx.redirect(withError({ url: callbackURL, code: LESTA_ID_ERROR.limit }));
+            throw ctx.redirect(withError({ url: errorURL, code: LESTA_ID_ERROR.limit }));
           }
 
           const accounts = await ctx.context.internalAdapter.findAccounts(user.id);

@@ -1,6 +1,12 @@
 export const STREAMERS_QUEUE = {
   name: 'streamers.events',
-  jobs: { battleFeed: 'battle-feed', expireChallenges: 'expire-challenges', livePoll: 'live-poll', settingsAggregate: 'settings-aggregate' }
+  jobs: {
+    battleFeed: 'battle-feed',
+    predictionOpen: 'prediction-open',
+    expireChallenges: 'expire-challenges',
+    livePoll: 'live-poll',
+    settingsAggregate: 'settings-aggregate'
+  }
 } as const;
 
 export const STREAMERS_SCHEDULES = [

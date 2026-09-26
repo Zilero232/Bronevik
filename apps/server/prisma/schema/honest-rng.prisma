@@ -1,0 +1,18 @@
+model RngAggregate {
+  scope  String
+  period String
+
+  battles      Int
+  players      Int
+  shots        Int
+  meanRoll     Float? @map("mean_roll")
+  withinSpread Float? @map("within_spread")
+  buckets      Json
+  hitRate      Float? @map("hit_rate")
+  penRate      Float? @map("pen_rate")
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@id([scope, period])
+  @@map("rng_aggregate")
+}

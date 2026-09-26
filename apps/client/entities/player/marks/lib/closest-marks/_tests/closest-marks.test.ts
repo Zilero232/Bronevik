@@ -50,7 +50,7 @@ describe('closestMarks', () => {
     expect(result.map(({ vehicle }) => vehicle.slug)).toEqual(['near', 'mid']);
   });
 
-  it('reports the percent gap to the next mark', () => {
-    expect(closestMarks({ items: [row('near', 80, 120)] })[0]?.gap).toBe(TWO - 80);
+  it('reports the current percent and the damage left', () => {
+    expect(closestMarks({ items: [row('near', 80, 120)] })[0]).toMatchObject({ percent: 80, damageToNext: 120 });
   });
 });

@@ -6,7 +6,7 @@ export const DONATION_ALERTS = {
 
 export const TWITCH = {
   authorizeUrl: 'https://id.twitch.tv/oauth2/authorize',
-  scopes: ['chat:read', 'chat:edit'],
+  scopes: ['chat:read', 'chat:edit', 'channel:manage:predictions'],
   callbackPath: '/streamers/integrations/twitch/callback',
   intentPrefix: 'chat:'
 } as const;
@@ -28,4 +28,9 @@ export const NO_SCOPES = [] as const satisfies readonly string[];
 export const PROVIDER_FROM_PATH = {
   'donation-alerts': 'donationAlerts',
   twitch: 'twitch'
+} as const;
+
+export const TWITCH_PANEL = {
+  cacheTtlMs: 30_000,
+  cachePrefix: 'twitch-panel:'
 } as const;

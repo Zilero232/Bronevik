@@ -34,20 +34,18 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/modes/[m
   });
 };
 
-const ModeRoute = async ({ params }: Pick<PageProps<'/[locale]/modes/[mode]'>, 'params'>) => {
+const Page = async ({ params }: PageProps<'/[locale]/modes/[mode]'>) => {
   const parsed = playModeSchema.safeParse((await params).mode);
 
   if (!parsed.success) {
     notFound();
   }
 
-  return <ModePage mode={parsed.data} />;
+  return (
+    <Suspense>
+      <ModePage mode={parsed.data} />
+    </Suspense>
+  );
 };
-
-const Page = ({ params }: PageProps<'/[locale]/modes/[mode]'>) => (
-  <Suspense>
-    <ModeRoute params={params} />
-  </Suspense>
-);
 
 export default Page;

@@ -53,7 +53,7 @@ export const toBattleData = ({ event, accountId, deviceId, sessionId, previousMo
     queueTimeMs: event.queue_time_s === null ? null : Math.round(secondsToMilliseconds(event.queue_time_s)),
     durationSec: event.duration_s,
     loadout: event.loadout ? toStoredLoadout(event.loadout) : undefined,
-    achievements: [],
+    achievements: event.achievements ?? [],
     startedAt: fromUnixTime(event.arena_created_at)
   };
 };

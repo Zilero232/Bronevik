@@ -3,9 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { Card, CardHeader, EmptyState, ErrorState, Skeleton, Timeline } from '@/ui-kit';
 
-import { TANK_PAGE, TANK_SECTIONS } from '../../../config';
+import { TANK_PAGE, TANK_SECTIONS, VERDICT_TONES } from '../../../config';
 import { useTankPatches } from '../../../model/hooks';
 import { PatchEntry } from './components';
 
@@ -23,11 +23,10 @@ export const PatchHistory = () => {
         .with({ isError: true }, () => <ErrorState onRetry={() => void refetch()} />)
         .with({ list: [] }, () => <EmptyState description={t('emptyDescription')} title={t('emptyTitle')} />)
         .otherwise(({ list }) => (
-          <ol className={s.list}>
-            {list.map((entry) => (
-              <PatchEntry key={entry.version} entry={entry} />
-            ))}
-          </ol>
+          <Timeline
+            className={s.list}
+            items={list.map((entry) => ({ id: entry.version, tone: VERDICT_TONES[entry.verdict], content: <PatchEntry entry={entry} /> }))}
+          />
         ))}
     </Card>
   );

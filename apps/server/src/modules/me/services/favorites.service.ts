@@ -47,14 +47,15 @@ export class FavoritesService {
   }
 
   async create({ userId, kind, targetId, label, isOwn }: CreateFavoriteInput): Promise<Favorite> {
-    const count = await this.prisma.favorite.count({ where: { userId } });
+    const key = { userId_kind_targetId: { userId, kind, targetId: BigInt(targetId) } };
+    const existing = await this.prisma.favorite.findUnique({ where: key, select: { id: true } });
 
-    if (count >= FAVORITES.maxCount) {
+    if (!existing && (await this.prisma.favorite.count({ where: { userId } })) >= FAVORITES.maxCount) {
       throw new AppConflictException('CONFLICT', `At most ${FAVORITES.maxCount} favourites`);
     }
 
     await this.prisma.favorite.upsert({
-      where: { userId_kind_targetId: { userId, kind, targetId: BigInt(targetId) } },
+      where: key,
       create: { userId, kind, targetId: BigInt(targetId), label: label ?? null, isOwn: isOwn ?? false },
       update: { label: label ?? null, isOwn: isOwn ?? false }
     });

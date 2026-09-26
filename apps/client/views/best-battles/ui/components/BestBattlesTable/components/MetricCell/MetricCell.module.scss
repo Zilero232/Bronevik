@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric(var(--text-lg));
+
+  font-weight: 700;
+
+  &[data-secondary='true'] {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+}

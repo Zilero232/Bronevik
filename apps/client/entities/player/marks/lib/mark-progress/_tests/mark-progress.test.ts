@@ -1,7 +1,7 @@
 import { MOE } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
-import { markCountAt, markProgress, markRing } from '../mark-progress';
+import { markCountAt, markProgress, markRing, markTarget } from '../mark-progress';
 
 const [ONE, TWO, THREE] = MOE.markPercents;
 
@@ -41,5 +41,13 @@ describe('markRing', () => {
 
   it('shows a full ring once the third mark is earned', () => {
     expect(markRing(THREE + 1)).toEqual({ marks: 3, nextMark: null, ratio: 1 });
+  });
+});
+
+describe('markTarget', () => {
+  it('aims one mark above the current level and stays on three once it is earned', () => {
+    const levels = [markRing(0).marks, markRing(ONE).marks, markRing(TWO).marks, markRing(THREE).marks];
+
+    expect(levels.map(markTarget)).toEqual([1, 2, 3, 3]);
   });
 });

@@ -14,6 +14,8 @@
 }
 
 .control {
+  @include touch-input;
+
   min-width: 0;
   height: 100%;
   flex: 1;
@@ -38,12 +40,16 @@
 }
 
 .sm {
+  @include touch-target;
+
   height: 28px;
   padding: 0 var(--space-3);
   font-size: var(--text-sm);
 }
 
 .md {
+  @include touch-target;
+
   height: 32px;
   padding: 0 var(--space-3);
   font-size: var(--text-md);

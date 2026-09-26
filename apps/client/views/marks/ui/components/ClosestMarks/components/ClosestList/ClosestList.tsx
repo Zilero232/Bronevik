@@ -3,13 +3,16 @@
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
+import { MarkProgress } from '@/entities/player/marks';
+import { TankCell } from '@/entities/tank/tank';
+import { ROUTES } from '@/shared/constants';
+import { Link } from '@/shared/i18n/navigation';
 import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
 import type { ClosestListProps } from './ClosestList.types';
 
 import { PLAYER_LOOKUP } from '../../../../../config';
 import { usePlayerMarks } from '../../../../../model/hooks';
-import { ClosestRow } from '../ClosestRow';
 
 import s from './ClosestList.module.scss';
 
@@ -34,7 +37,18 @@ export const ClosestList = ({ player }: ClosestListProps) => {
         <p className={s.caption}>{t('playerFor', { nickname })}</p>
         <ol className={s.list}>
           {marks.map((mark) => (
-            <ClosestRow key={mark.vehicle.tankId} mark={mark} />
+            <MarkProgress
+              key={mark.vehicle.tankId}
+              title={
+                <Link className={s.tank} href={ROUTES.tanks.detail(mark.vehicle.slug)}>
+                  <TankCell image='contour' vehicle={mark.vehicle} />
+                </Link>
+              }
+              as='li'
+              damageToNext={mark.damageToNext}
+              percent={mark.percent}
+              variant='card'
+            />
           ))}
         </ol>
       </div>

@@ -10,3 +10,16 @@
   color: var(--color-text-dim);
   font-size: var(--text-sm);
 }
+
+.showcase {
+  @include stack(var(--space-3));
+}
+
+.cards {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  list-style: none;
+}

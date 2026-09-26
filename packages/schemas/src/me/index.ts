@@ -10,6 +10,7 @@ export {
   goalsSchema,
   goalStatusSchema,
   linkedAccountsSchema,
+  sessionExtrasSchema,
   updateGoalSchema
 } from './me.schemas';
 export type {
@@ -23,5 +24,6 @@ export type {
   Goals,
   GoalStatus,
   LinkedAccounts,
+  SessionExtras,
   UpdateGoalInput
 } from './me.types';

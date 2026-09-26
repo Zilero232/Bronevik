@@ -1,0 +1,47 @@
+import { clsx } from 'clsx';
+
+import { Link } from '@/shared/i18n/navigation';
+
+import type { PodiumCardProps } from './PodiumCard.types';
+
+import { PODIUM_CARD } from './PodiumCard.constants';
+
+import s from './PodiumCard.module.scss';
+
+export const PodiumCard = ({ rank, rankLabel, name, metricLabel, value, tone, meta, href, glyph, className }: PodiumCardProps) => {
+  const body = (
+    <>
+      {glyph && (
+        <span aria-hidden className={s.glyph}>
+          {glyph}
+        </span>
+      )}
+      <span className={s.head}>
+        <span className={s.rank}>
+          <span className={s.srOnly}>{rankLabel}</span>
+          <span aria-hidden>{rank}</span>
+        </span>
+        <span className={s.name}>{name}</span>
+      </span>
+      <span className={s.figure}>
+        <span className={s.label}>{metricLabel}</span>
+        <span className={s.value}>{value}</span>
+      </span>
+      {meta && <span className={s.meta}>{meta}</span>}
+    </>
+  );
+
+  return (
+    <li className={clsx(s.root, className)} data-medal={PODIUM_CARD.medals[rank - 1]} data-rank={rank}>
+      {href ? (
+        <Link className={s.card} data-tone={tone ?? undefined} href={href}>
+          {body}
+        </Link>
+      ) : (
+        <div className={s.card} data-tone={tone ?? undefined}>
+          {body}
+        </div>
+      )}
+    </li>
+  );
+};

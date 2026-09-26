@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
+import { ROUTES } from '@/shared/constants';
 import { Button, Card, CardHeader, DataTable } from '@/ui-kit';
 
 import { useRecentColumns, useRecentList } from '../../../model/hooks';
@@ -27,7 +28,13 @@ export const RecentPlayers = () => {
         }
         title={<span id={titleId}>{t('title')}</span>}
       />
-      <DataTable columns={columns} data={players} density='compact' getRowId={(row) => String(row.accountId)} />
+      <DataTable
+        columns={columns}
+        data={players}
+        density='compact'
+        getRowId={(row) => String(row.accountId)}
+        getRowLink={(row) => ({ href: ROUTES.players.profile(row.nickname), label: row.nickname })}
+      />
     </Card>
   );
 };

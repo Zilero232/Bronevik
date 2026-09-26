@@ -15,6 +15,6 @@ export const signInWithTelegram = async (payload: Record<string, number | string
   await fromAuth(authClient.telegram.callback(payload));
 };
 
-export const sendMagicLink = async ({ email, callbackURL }: MagicLinkInput): Promise<void> => {
-  await fromAuth(authClient.signIn.magicLink({ email, callbackURL }));
+export const sendMagicLink = async ({ email, callbackURL, errorCallbackURL }: MagicLinkInput): Promise<void> => {
+  await fromAuth(authClient.signIn.magicLink({ email, callbackURL, errorCallbackURL }));
 };

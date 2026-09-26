@@ -1,12 +1,10 @@
+import { createFollowSchema, followListSchema, followParamsSchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import {
   challengesSchema,
-  createFollowSchema,
   feedQuerySchema,
   feedSchema,
-  followListSchema,
-  followParamsSchema,
   leagueQuerySchema,
   leagueSchema,
   signatureParamsSchema,

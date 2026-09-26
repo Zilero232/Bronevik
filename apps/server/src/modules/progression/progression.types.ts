@@ -48,8 +48,14 @@ export type LoadSamplesInput = {
   to: Date;
 };
 
+export type ProgressVehicle = {
+  tier: number;
+  name: string;
+};
+
 export type ApplyXpInput = AccountRunInput & {
   gains: ReadonlyMap<number, { xp: number; battles: number }>;
+  vehicles: ReadonlyMap<number, ProgressVehicle>;
 };
 
 export type EvaluateChallengesInput = AccountRunInput & {

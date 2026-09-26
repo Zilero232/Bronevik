@@ -5,5 +5,5 @@ import { routing } from '@/shared/i18n';
 export const proxy = createMiddleware(routing);
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+  matcher: ['/((?!api|_next|_vercel|twitch-panel|.*\\..*).*)']
 };

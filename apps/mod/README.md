@@ -142,6 +142,7 @@ The test suite validates the example and the builder output against the schema w
 - **`moe_snapshot`:** `tank_id`, `damage_rating`, `moving_avg_damage`, `marks_on_gun`, `battles`.
 - **`moe_distribution`:** `tank_id`, `battle_count`, `damage_better_than_n_percent[]` (the raw client answer).
 - **`queue`:** `queue_type`, `wait_s`, `outcome` (arena / dequeued), `tank_id`.
+- **`battle_start`:** `tank_id` of the own vehicle when the arena is created, flushed at once. Opens the streamer's Twitch auto-prediction; the matching `battle_result` resolves it.
 - **Server obligations:**
   - verify the HMAC over the raw bytes it received, never over a re-serialisation;
   - check that the device belongs to `account_id`;
@@ -207,16 +208,16 @@ Optional checks:
 
 `mods/configs/otmetki/config.json` (created on first start):
 
-| Key                                                                                                                     | Default                   | Meaning                                                                                                                                                |
-| ----------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `enabled`                                                                                                               | `true`                    | Master switch                                                                                                                                          |
-| `server_url`                                                                                                            | `https://api.otmetki.app` | API base. Must be https, or http://localhost / http://127.0.0.1 for development. **The domain is a placeholder until the domain decision (spec §12).** |
-| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times`, `send_loadouts`, `send_shots` | `true`                    | Per-feature data switches                                                                                                                              |
-| `battle_moe_panel`, `hangar_session_panel`                                                                              | `true`                    | UI switches                                                                                                                                            |
-| `session_idle_minutes`                                                                                                  | `60`                      | New session after this idle gap (10–1440)                                                                                                              |
-| `flush_interval_seconds`                                                                                                | `15`                      | Send interval (5–600)                                                                                                                                  |
-| `bind_code`                                                                                                             | `""`                      | Fallback binding without ModsSettingsAPI; cleared after use                                                                                            |
-| `language`                                                                                                              | `auto`                    | `ru`, `en` or `auto` (client language)                                                                                                                 |
+| Key                                                                                                                     | Default                     | Meaning                                                                          |
+| ----------------------------------------------------------------------------------------------------------------------- | --------------------------- | -------------------------------------------------------------------------------- |
+| `enabled`                                                                                                               | `true`                      | Master switch                                                                    |
+| `server_url`                                                                                                            | `https://api.triotmetki.ru` | API base. Must be https, or http://localhost / http://127.0.0.1 for development. |
+| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times`, `send_loadouts`, `send_shots` | `true`                      | Per-feature data switches                                                        |
+| `battle_moe_panel`, `hangar_session_panel`                                                                              | `true`                      | UI switches                                                                      |
+| `session_idle_minutes`                                                                                                  | `60`                        | New session after this idle gap (10–1440)                                        |
+| `flush_interval_seconds`                                                                                                | `15`                        | Send interval (5–600)                                                            |
+| `bind_code`                                                                                                             | `""`                        | Fallback binding without ModsSettingsAPI; cleared after use                      |
+| `language`                                                                                                              | `auto`                      | `ru`, `en` or `auto` (client language)                                           |
 
 The device secret is stored in plain text in `credentials.json`, as other mods store tokens. It is scoped to one device and one account, and the user can revoke it on the site.
 

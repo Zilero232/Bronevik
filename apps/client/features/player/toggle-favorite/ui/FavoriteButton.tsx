@@ -3,7 +3,7 @@
 import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants } from '@/ui-kit';
 
@@ -14,12 +14,13 @@ import { useFavoriteToggle } from '../model/hooks';
 import s from './FavoriteButton.module.scss';
 
 export const FavoriteButton = ({ kind, targetId, className }: FavoriteButtonProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('me.favorites');
   const { isSignedIn, isFavorite, toggle } = useFavoriteToggle({ kind, targetId });
 
   if (!isSignedIn) {
     return (
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={ROUTES.auth.login}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={loginHref}>
         <Star size={15} />
         {t('add')}
       </Link>

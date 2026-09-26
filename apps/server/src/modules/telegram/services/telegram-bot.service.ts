@@ -10,9 +10,10 @@ import type { BotContext } from '../telegram.types';
 
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { BOT, BOT_API, BOT_COMMANDS, TELEGRAM_TOKENS } from '../config';
+import { BOT, BOT_API, BOT_COMMANDS, EXTERNAL_BOT_COMMANDS, TELEGRAM_TOKENS } from '../config';
 import { looksLikeLinkCode, webhookUrl } from '../lib';
 import { TelegramChatService } from './telegram-chat.service';
+import { TelegramCommandRegistry } from './telegram-command-registry.service';
 import { TelegramCommandsService } from './telegram-commands.service';
 import { TelegramInlineService } from './telegram-inline.service';
 import { TelegramSettingsService } from './telegram-settings.service';
@@ -30,7 +31,8 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
     private readonly chats: TelegramChatService,
     private readonly commands: TelegramCommandsService,
     private readonly inline: TelegramInlineService,
-    private readonly settings: TelegramSettingsService
+    private readonly settings: TelegramSettingsService,
+    private readonly registry: TelegramCommandRegistry
   ) {
     if (this.bot) {
       this.register(this.bot);
@@ -89,6 +91,10 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
 
     for (const { command, run } of this.commands.commands) {
       bot.command(command, (ctx) => this.commands.guard({ ctx, run: () => run(ctx) }));
+    }
+
+    for (const command of EXTERNAL_BOT_COMMANDS) {
+      bot.command(command, (ctx) => this.commands.guard({ ctx, run: () => this.registry.run({ command, ctx }) }));
     }
 
     bot.on('inline_query', (ctx) => this.commands.guard({ ctx, run: () => this.inline.answer(ctx) }));

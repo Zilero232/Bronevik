@@ -1,0 +1,82 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+  @include class-tint;
+
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border-top: 3px solid var(--class);
+  scroll-snap-align: start;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--class) 12%, transparent);
+  gap: var(--space-2);
+}
+
+.identity {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  color: var(--class);
+  gap: var(--space-2);
+}
+
+.text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.label {
+  overflow: hidden;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.meta {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.ringValue {
+  @include numeric(var(--text-sm));
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.list {
+  padding: var(--space-2);
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+
+  & + &:before {
+    position: absolute;
+    top: calc(var(--space-1) * -1);
+    left: calc(var(--space-2) + 13px);
+    width: 2px;
+    height: calc(var(--space-1) * 2);
+    background: var(--color-border-strong);
+    content: '';
+  }
+}

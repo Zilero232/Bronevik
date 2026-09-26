@@ -1,8 +1,8 @@
 'use client';
 
-import { MarkOfExcellenceIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { MarkProgress } from '@/entities/player/marks';
 import { TankCell } from '@/entities/tank/tank';
 import { Band, EmptyState, ErrorState, ProgressRing, Skeleton } from '@/ui-kit';
 
@@ -14,7 +14,6 @@ import s from './MarksPanel.module.scss';
 
 export const MarksPanel = () => {
   const t = useTranslations('profile.overview');
-  const tMarks = useTranslations('profile.marks');
   const format = useFormatter();
   const { counts, closest, isPending, isError, isRetrying, retry } = useOverviewMarks();
 
@@ -44,24 +43,15 @@ export const MarksPanel = () => {
         {!isPending && !isError && closest.length === 0 && <EmptyState isCompact title={t('closestEmpty')} />}
         {closest.length > 0 && (
           <ol className={s.grid}>
-            {closest.map(({ vehicle, percent, progress, nextMark, nextMarks, damageToNext }) => (
-              <li key={vehicle.tankId} className={s.card}>
-                <ProgressRing
-                  label={tMarks('toNext', { percent: nextMark, damage: format.number(damageToNext) })}
-                  marks={nextMarks}
-                  max={1}
-                  size={OVERVIEW.closestRing.size}
-                  thickness={OVERVIEW.closestRing.thickness}
-                  value={progress}
-                >
-                  <MarkOfExcellenceIcon aria-hidden marks={nextMarks} size={22} />
-                </ProgressRing>
-                <div className={s.body}>
-                  <TankCell className={s.tank} image='contour' vehicle={vehicle} />
-                  <span className={s.percent}>{format.number(percent, { maximumFractionDigits: 2 })}%</span>
-                  <span className={s.next}>{tMarks('toNext', { percent: nextMark, damage: format.number(damageToNext) })}</span>
-                </div>
-              </li>
+            {closest.map(({ vehicle, percent, damageToNext }) => (
+              <MarkProgress
+                key={vehicle.tankId}
+                as='li'
+                damageToNext={damageToNext}
+                percent={percent}
+                title={<TankCell image='contour' vehicle={vehicle} />}
+                variant='card'
+              />
             ))}
           </ol>
         )}

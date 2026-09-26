@@ -11,15 +11,17 @@
 }
 
 .group {
+  @include field-box;
+  @include touch-target;
+
   display: flex;
   height: 32px;
   align-items: stretch;
-
-  @include field-box;
 }
 
 .input {
   @include numeric;
+  @include touch-input;
 
   min-width: 0;
   flex: 1;

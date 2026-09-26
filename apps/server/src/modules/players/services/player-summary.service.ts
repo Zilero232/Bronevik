@@ -55,6 +55,7 @@ export class PlayerSummaryService {
             clanId: toNumber(membership.clan.clanId),
             tag: membership.clan.tag,
             name: membership.clan.name,
+            color: membership.clan.color,
             role: CLAN_ROLE_FROM_DB[membership.role],
             emblem: clanEmblem(membership.clan.emblems),
             joinedAt: toIso(membership.joinedAt)

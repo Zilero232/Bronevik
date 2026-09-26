@@ -2,8 +2,6 @@ import type { EquippedCosmetics } from '@otmetki/schemas';
 
 import type { TankChallengeDefinition } from '../progression.types';
 
-import { FEATURES } from '../../../config';
-
 export const PROGRESSION_QUEUE = {
   name: 'progression',
   jobs: { run: 'run' }
@@ -14,8 +12,7 @@ export const PROGRESSION_SCHEDULES = [
     id: 'progression-run',
     queue: PROGRESSION_QUEUE.name,
     name: PROGRESSION_QUEUE.jobs.run,
-    repeat: { pattern: '*/20 * * * *' },
-    enabled: FEATURES.progression
+    repeat: { pattern: '*/20 * * * *' }
   }
 ] as const;
 

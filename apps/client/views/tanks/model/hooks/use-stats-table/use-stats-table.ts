@@ -1,25 +1,16 @@
 'use client';
 
-import type { TankServerStatsRow } from '@otmetki/schemas';
-
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
-import { ROUTES } from '@/shared/constants';
-import { useRouter } from '@/shared/i18n/navigation';
 
 import { useTankColumns } from '../use-tank-columns';
 import { useTankStats } from '../use-tank-stats';
 import { useTanksState } from '../use-tanks-state';
 
 export const useStatsTable = () => {
-  const router = useRouter();
   const { data, isLoading, isError, isFetching, refetch } = useTankStats();
   const [{ statuses, roles, difficulties }, setState] = useTanksState();
   const { reset, isActive } = useVehicleFilters();
   const columns = useTankColumns();
-
-  const onRowClick = (row: TankServerStatsRow) => {
-    router.push(ROUTES.tanks.detail(row.vehicle.slug));
-  };
 
   const onReset = () => {
     void reset();
@@ -39,7 +30,6 @@ export const useStatsTable = () => {
     isFetching,
     isFiltered: isActive || statuses.length > 0 || roles.length > 0 || difficulties.length > 0,
     onReset,
-    onRetry,
-    onRowClick
+    onRetry
   };
 };

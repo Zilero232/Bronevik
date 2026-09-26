@@ -2,6 +2,7 @@ export { useAnalyticsMaps } from './use-analytics-maps';
 export { useAnalyticsOverview } from './use-analytics-overview';
 export { useAnalyticsPlatoons } from './use-analytics-platoons';
 export { useAnalyticsRng } from './use-analytics-rng';
+export { useAnalyticsTank } from './use-analytics-tank';
 export { useAnalyticsToolbar } from './use-analytics-toolbar';
 export { useBreakdownPanel } from './use-breakdown-panel';
 export type { BreakdownDimension } from './use-breakdown-panel';

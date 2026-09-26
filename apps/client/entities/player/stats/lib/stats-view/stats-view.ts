@@ -6,7 +6,7 @@ import type { RatingTone } from '@/shared/lib';
 
 import { ratingTone, toneOfTier } from '@/shared/lib';
 
-import type { PeriodStatsInput, ScaledRatingInput, SignedInput, StatsDeltaInput } from './stats-view.types';
+import type { PeriodStatsInput, ScaledRatingInput, StatsDeltaInput } from './stats-view.types';
 
 export const winRateTone = (percent: number | null): RatingTone => (percent === null ? 'average' : ratingTone({ scale: 'winRate', value: percent }));
 
@@ -17,9 +17,6 @@ export const periodStats = ({ overall, recent, period }: PeriodStatsInput): Stat
 
 export const statsDelta = ({ current, reference }: StatsDeltaInput): number | undefined =>
   current === null || reference === null ? undefined : current - reference;
-
-export const signed = ({ value, digits = 0 }: SignedInput): string | undefined =>
-  value === undefined ? undefined : `${value >= 0 ? '+' : ''}${value.toFixed(digits)}`;
 
 export const scaledRating = ({ scale, value }: ScaledRatingInput): RatingValue => ({
   value,

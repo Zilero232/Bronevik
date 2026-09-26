@@ -54,12 +54,14 @@
 }
 
 .neutral.plate,
-.neutral.ribbon {
+.neutral.ribbon,
+.neutral.corner {
   --badge-fg: var(--color-text-muted);
 }
 
 .plate,
-.ribbon {
+.ribbon,
+.corner {
   border: none;
   background-color: var(--badge-fg);
   color: var(--color-accent-contrast);
@@ -81,4 +83,19 @@
   padding: 0 var(--space-3) 0 var(--space-4);
   border-radius: 0;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 6px 50%);
+}
+
+.corner {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  right: -34px;
+  width: 140px;
+  height: 20px;
+  justify-content: center;
+  padding: 0;
+  border-radius: 0;
+  letter-spacing: var(--tracking-label);
+  pointer-events: none;
+  transform: rotate(35deg);
 }

@@ -2,7 +2,7 @@ export { ACCOUNT_NAV } from './account-nav';
 export type { AccountNavGroup, AccountNavLink } from './account-nav';
 export { QUERY_KEYS } from './query-keys';
 export type { GuideDetailKeyInput, GuideListKeyInput, GuideViewerKeyInput, MeSection, PlayerSection, PlayerSectionKeyInput } from './query-keys';
-export { ROUTES } from './routes';
+export { ROUTE_PARAMS, ROUTES } from './routes';
 export type { MissionOperationRouteInput, PlayerSessionRouteInput } from './routes';
 export { SITE_FOOTER_GROUPS, SITE_NAV } from './site-nav';
 export type { SiteNavGroup, SiteNavGroupEntry, SiteNavIcon, SiteNavItem, SiteNavLink } from './site-nav';

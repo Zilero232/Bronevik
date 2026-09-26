@@ -5,4 +5,4 @@ export type AuthUser = {
   image?: string | null;
 };
 
-export type AuthSession = { user: AuthUser } | null;
+export type AuthSession = { user: AuthUser; lestaAccountId: number | null } | null;

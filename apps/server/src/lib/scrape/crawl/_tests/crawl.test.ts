@@ -30,8 +30,10 @@ beforeAll(async () => {
   base = typeof address === 'object' && address ? `http://127.0.0.1:${address.port}` : '';
 });
 
-afterAll(() => {
-  server.close();
+afterAll(async () => {
+  await new Promise((resolve) => {
+    server.close(resolve);
+  });
 });
 
 describe('crawlPages', () => {

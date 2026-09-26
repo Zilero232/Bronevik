@@ -16,7 +16,7 @@ from ..loadout import LoadoutTracker
 from ..moe import ThresholdCurve, project, rating_to_percent
 from ..outbox import Outbox
 from ..panels import format_moe_panel, format_session_panel, format_session_plain
-from ..payload import REALM, PayloadError, build_battle_event, build_moe_distribution_event, build_moe_snapshot_event, build_queue_event
+from ..payload import REALM, PayloadError, build_battle_event, build_battle_start_event, build_moe_distribution_event, build_moe_snapshot_event, build_queue_event
 from ..queue_timer import QueueTimer
 from ..sender import INGEST_PATH, IngestSender, parse_json_body
 from ..session import SessionAggregator
@@ -25,7 +25,7 @@ from ..storage import JsonFile
 from ..version import MOD_ID, VERSION
 from .battle import BattleMoeTracker
 from .shots import ShotTracker
-from .dossier import current_vehicle_id, current_vehicle_moe
+from .dossier import achievement_name, current_vehicle_id, current_vehicle_moe
 from .loadout import read_current_loadout
 from .fetch import create_transport
 from .log import log, log_exception, safe
@@ -375,6 +375,8 @@ class OtmetkiApp(object):
         finished = self.queue_timer.arena_created(now)
         if finished is not None and self.config.is_enabled('send_queue_times'):
             self.enqueue(build_queue_event(finished[0], finished[1], 'arena', now, current_vehicle_id()))
+        if not BattleReplay.isPlaying() and self.enqueue(build_battle_start_event(now, current_vehicle_id())):
+            self.flush_requested = True
 
     @safe
     def _on_avatar_ready(self, *args):
@@ -475,6 +477,7 @@ class OtmetkiApp(object):
             'queue_time_s': self.queue_wait_by_arena.pop(arena_id, None),
             'loadout': self.loadouts.take(arena_id, tank_id) if self.config.is_enabled('send_loadouts') else None,
             'shots': self.shots_by_arena.pop(arena_id, None) if self.config.is_enabled('send_shots') else None,
+            'achievement_name': achievement_name,
         })
         event['session_id'] = self.session.add(event, now)
         self.seen_arenas.append(arena_id)

@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { ROUTES } from '../apps/client/shared/constants/routes';
+import { waitForHydration } from './support/hydration';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
@@ -39,7 +40,7 @@ for (const locale of LOCALES) {
 
     test('the command palette opens on Ctrl+K', async ({ page }) => {
       await page.goto(locale.home);
-      await page.waitForLoadState('networkidle');
+      await waitForHydration(page.locator('header').getByRole('button').first());
 
       await expect(async () => {
         await page.keyboard.press('Control+k');

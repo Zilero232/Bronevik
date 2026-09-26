@@ -1,17 +1,21 @@
 import { STREAMER_SETTINGS_AGGREGATE_FIELDS, zoomMax } from '@otmetki/schemas';
 import { countBy, entries, sortBy } from 'remeda';
+import { z } from 'zod';
 
 import type { AggregateCohortInput, AggregateRow, BucketOfInput, ReadPathInput, ValueOfInput } from './settings-aggregate.types';
 
-const readPath = ({ source, path }: ReadPathInput): unknown =>
-  path
-    .split('.')
-    .reduce<unknown>((value, key) => (typeof value === 'object' && value !== null ? (value as Record<string, unknown>)[key] : undefined), source);
+import { readRecord } from '../../../../common/lib';
+
+const readPath = ({ source, path }: ReadPathInput): unknown => path.split('.').reduce<unknown>((value, key) => readRecord(value)[key], source);
+
+const zoomStepsOf = (values: ValueOfInput['values']): string[] | undefined => {
+  const parsed = z.array(z.string()).safeParse(readPath({ source: values, path: 'zoom.steps' }));
+
+  return parsed.success ? parsed.data : undefined;
+};
 
 const valueOf = ({ values, field }: ValueOfInput): unknown =>
-  field === 'zoom.max'
-    ? zoomMax(readPath({ source: values, path: 'zoom.steps' }) as string[] | undefined)
-    : readPath({ source: values, path: field });
+  field === 'zoom.max' ? zoomMax(zoomStepsOf(values)) : readPath({ source: values, path: field });
 
 const median = (numbers: readonly number[]): number | null => {
   const sorted = [...numbers].sort((left, right) => left - right);

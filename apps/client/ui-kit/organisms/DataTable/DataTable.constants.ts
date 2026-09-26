@@ -4,5 +4,6 @@ export const DATA_TABLE = {
   overscan: 8,
   skeletonRows: 6,
   sortGlyph: { asc: '▲', desc: '▼' },
-  ariaSort: { asc: 'ascending', desc: 'descending' }
+  ariaSort: { asc: 'ascending', desc: 'descending' },
+  medals: ['gold', 'silver', 'bronze']
 } as const;

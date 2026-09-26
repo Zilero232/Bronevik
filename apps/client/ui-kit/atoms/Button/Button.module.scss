@@ -32,12 +32,16 @@
 }
 
 .sm {
+  @include touch-target;
+
   height: 28px;
   padding: 0 12px;
   font-size: var(--text-sm);
 }
 
 .md {
+  @include touch-target;
+
   height: 32px;
   padding: 0 14px;
   font-size: var(--text-sm);

@@ -12,4 +12,6 @@ export { mergeLiveStatus, wentLive } from './live-status';
 export type { LiveStream } from './live-status';
 export { winStreak } from './overlay-data';
 export { pausedOverlayIds } from './overlay-pause';
+export { clipText, predictionJobSchema, predictionThreshold, predictionWinner, readPredictionState } from './prediction';
+export type { PredictionJob, PredictionState } from './prediction';
 export { aggregateCohort } from './settings-aggregate';

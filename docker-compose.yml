@@ -33,8 +33,8 @@ x-logging: &logging
 
 x-backend-env: &backend-env
   NODE_ENV: production
-  DATABASE_URL: postgresql://${POSTGRES_USER:-otmetki}:${POSTGRES_PASSWORD:-otmetki}@postgres:5432/${POSTGRES_DB:-otmetki}
-  DIRECT_URL: postgresql://${POSTGRES_USER:-otmetki}:${POSTGRES_PASSWORD:-otmetki}@postgres:5432/${POSTGRES_DB:-otmetki}
+  DATABASE_URL: postgresql://${POSTGRES_USER:?}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:?}
+  DIRECT_URL: postgresql://${POSTGRES_USER:?}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:?}
   REDIS_URL: redis://redis:6379
 
 services:
@@ -49,8 +49,8 @@ services:
       server:
         condition: service_healthy
     environment:
-      SITE_DOMAIN: ${SITE_DOMAIN:-localhost}
-      API_DOMAIN: ${API_DOMAIN:-api.localhost}
+      SITE_DOMAIN: ${SITE_DOMAIN:?}
+      API_DOMAIN: ${API_DOMAIN:?}
     ports:
       # 80 carries the Let's Encrypt challenge, 443 the site.
       - '80:80'
@@ -69,7 +69,7 @@ services:
       context: .
       dockerfile: apps/client/Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.localhost}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?}
     image: ghcr.io/zilero232/otmetki-client:latest
     container_name: otmetki-client
     restart: always
@@ -136,9 +136,9 @@ services:
     # Docker's 64 MB /dev/shm is too small for parallel query workers.
     shm_size: 256m
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-otmetki}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-otmetki}
-      POSTGRES_DB: ${POSTGRES_DB:-otmetki}
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      POSTGRES_DB: ${POSTGRES_DB:?}
     ports:
       # Loopback only: Docker's rules sit ahead of UFW, so a published port
       # would face the internet. Reach it over an ssh tunnel.

@@ -43,7 +43,10 @@ export {
   StreamerLiveListDto,
   StreamerProfileDto,
   StreamerSettingsViewDto,
+  TwitchChannelParamsDto,
+  TwitchPanelDto,
   UpdateOverlayDto,
+  UpdatePredictionsDto,
   UpdateSettingsShareDto,
   UpsertProfileDto
 } from './streamers.dto';

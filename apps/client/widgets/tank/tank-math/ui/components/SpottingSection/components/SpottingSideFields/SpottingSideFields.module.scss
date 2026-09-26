@@ -1,0 +1,28 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+  @include well;
+
+  min-width: 0;
+  padding: var(--space-4);
+  border: 0;
+  margin: 0;
+}
+
+.legend {
+  @include heading(var(--text-md));
+
+  width: 100%;
+  padding: 0;
+  float: left;
+}
+
+.group,
+.switches {
+  @include stack(var(--space-2));
+}
+
+.label {
+  @include label;
+}

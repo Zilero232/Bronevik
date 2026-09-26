@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
+import { ROUTES } from '@/shared/constants';
 import { Button, Card, CardHeader, DataTable, EmptyState, ErrorState, Select } from '@/ui-kit';
 
 import type { ClanSort } from './ClanRating.types';
@@ -52,6 +53,7 @@ export const ClanRating = () => {
           data={items}
           emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
           getRowId={(row) => String(row.clan.clanId)}
+          getRowLink={({ clan }) => ({ href: ROUTES.clans.detail(clan.tag), label: clan.name })}
           isLoading={isPending}
         />
       )}

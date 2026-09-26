@@ -12,9 +12,19 @@ import { LoadoutService } from '../loadout.service';
 
 const is = loadIs();
 const catalog = loadCatalog();
-const rammer = catalog.optionalDevices.find((device) => device.name.toLowerCase().includes('rammer') && device.kind === 'standard');
+const findRammer = () => {
+  const found = catalog.optionalDevices.find((device) => device.name.toLowerCase().includes('rammer') && device.kind === 'standard');
 
-const deviceRow = (device: NonNullable<typeof rammer>): Provision => ({
+  if (!found) {
+    throw new Error('the gamedata fixture has no standard rammer');
+  }
+
+  return found;
+};
+
+const rammer = findRammer();
+
+const deviceRow = (device: typeof rammer): Provision => ({
   provisionId: device.provisionId,
   name: device.displayName,
   nameKey: null,
@@ -47,11 +57,9 @@ const createService = (provisions: Provision[]) => {
 
 describe('LoadoutService.calculate', () => {
   it('shortens the reload when a rammer is installed', async () => {
-    expect(rammer).toBeDefined();
-
-    const service = createService(rammer ? [deviceRow(rammer)] : []);
+    const service = createService([deviceRow(rammer)]);
     const bare = await service.calculate({ tankId: is.tankId, request: request({}) });
-    const rammed = await service.calculate({ tankId: is.tankId, request: request({ equipment: [rammer?.provisionId ?? null] }) });
+    const rammed = await service.calculate({ tankId: is.tankId, request: request({ equipment: [rammer.provisionId] }) });
 
     expect(rammed.stats.reloadTime).toBeLessThan(bare.stats.reloadTime);
     expect(rammed.ignored).toEqual([]);

@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import type { BotContext } from '../telegram.types';
 
 import { AppConfigService } from '../../../config';
+import { SITE_LINKS } from '../../bot-commands';
 import { MissionProgressService } from '../../missions';
-import { SITE_LINKS } from '../config';
 import { openButton, siteUrl } from '../lib';
 
 @Injectable()

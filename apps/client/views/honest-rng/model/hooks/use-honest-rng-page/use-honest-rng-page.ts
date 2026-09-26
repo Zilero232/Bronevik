@@ -1,0 +1,62 @@
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+import { useFormatter, useTranslations } from 'next-intl';
+
+import { QUERY_KEYS } from '@/shared/constants';
+import { percentText } from '@/shared/lib';
+
+import { getHonestRng } from '../../../api';
+import { HONEST_RNG_VIEW, RNG_PERIODS } from '../../../config';
+import { bucketMidpoints, bucketShares, rollPercent, toShellKey } from '../../../lib/rng-chart';
+import { useRngPeriod } from '../use-rng-period';
+
+export const useHonestRngPage = () => {
+  const t = useTranslations('honestRng');
+  const format = useFormatter();
+  const [period, setPeriod] = useRngPeriod();
+  const { data, isPending, isError, isFetching, refetch } = useQuery({
+    queryKey: QUERY_KEYS.honestRng.server({ period }),
+    queryFn: ({ signal }) => getHonestRng({ period, signal }),
+    staleTime: HONEST_RNG_VIEW.staleMs
+  });
+
+  const server = data?.server ?? null;
+  const buckets = server?.buckets ?? data?.theory ?? [];
+
+  return {
+    period,
+    periods: RNG_PERIODS.map((value) => ({ value, label: t(`period.${value}`) })),
+    setPeriod: (value: (typeof RNG_PERIODS)[number]) => void setPeriod(value),
+    data: data ?? null,
+    server,
+    isEmpty: data !== undefined && (server === null || server.shots === 0),
+    meanRoll: rollPercent(server?.meanRoll),
+    chart: {
+      labels: bucketMidpoints(buckets).map((value) => format.number(value / HONEST_RNG_VIEW.percentScale, 'signedPercent')),
+      series: [
+        { id: 'fact', label: t('server.fact'), values: bucketShares(server?.buckets ?? []), tone: 'accent' as const },
+        { id: 'theory', label: t('server.theory'), values: bucketShares(data?.theory ?? []), tone: 'steel' as const }
+      ]
+    },
+    tiers: (data?.tiers ?? []).map((row) => ({
+      id: `tier-${row.tier}`,
+      tier: row.tier,
+      shots: row.shots,
+      meanRoll: rollPercent(row.meanRoll),
+      within: row.withinSpread
+    })),
+    shells: (data?.shells ?? []).map((row) => ({
+      id: `shell-${row.shell}`,
+      shell: toShellKey(row.shell),
+      shots: row.shots,
+      meanRoll: rollPercent(row.meanRoll),
+      within: row.withinSpread
+    })),
+    formatPercent: (value: number) => percentText({ format, value, digits: 1 }),
+    isPending,
+    isError,
+    isRetrying: isFetching,
+    retry: () => void refetch()
+  };
+};

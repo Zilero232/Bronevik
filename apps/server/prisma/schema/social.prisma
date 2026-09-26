@@ -26,6 +26,8 @@ enum NotificationEvent {
   firstWinAvailable   @map("first_win_available")
   replayOverflow      @map("replay_overflow")
   streamerLive        @map("streamer_live")
+  tankLevelUp         @map("tank_level_up")
+  tankChallengeDone   @map("tank_challenge_done")
 
   @@map("notification_event")
 }

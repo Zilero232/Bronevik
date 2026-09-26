@@ -1,20 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
 .entry {
-  @include data-list-row;
-
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  padding: 0 var(--space-4);
-
-  &[data-current='true'] {
-    box-shadow: inset 2px 0 0 var(--color-accent);
-  }
+  gap: var(--space-1) var(--space-3);
 }
 
 .value {

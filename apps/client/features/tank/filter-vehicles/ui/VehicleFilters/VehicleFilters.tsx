@@ -1,11 +1,11 @@
 'use client';
 
-import { NATION_ICONS, NATIONS, TANK_CLASS_ICONS, TANK_CLASSES, toRoman } from '@otmetki/icons';
+import { NATIONS, TANK_CLASSES } from '@otmetki/icons';
 import { clsx } from 'clsx';
 import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button, SegmentedControl, ToggleChips } from '@/ui-kit';
+import { Button, IconFilter, SegmentedControl } from '@/ui-kit';
 
 import type { VehicleFiltersProps } from './VehicleFilters.types';
 
@@ -16,36 +16,30 @@ import s from './VehicleFilters.module.scss';
 
 export const VehicleFilters = ({ withPremium = true, className }: VehicleFiltersProps) => {
   const t = useTranslations('tanks.filters');
-  const tGame = useTranslations('game');
   const { filters, isActive, setFilters, reset } = useVehicleFilters();
 
   return (
     <div className={clsx(s.root, className)}>
-      <ToggleChips
+      <IconFilter
         aria-label={t('tier')}
-        options={VEHICLE_TIERS.map((tier) => ({ value: String(tier), label: toRoman(tier) }))}
+        kind='tier'
+        options={VEHICLE_TIERS}
         size='sm'
-        value={filters.tiers.map(String)}
-        onChange={(tiers) => setFilters({ tiers: tiers.map(Number) })}
+        value={filters.tiers}
+        onChange={(tiers) => setFilters({ tiers })}
       />
-      <ToggleChips
-        options={TANK_CLASSES.map((type) => {
-          const Icon = TANK_CLASS_ICONS[type];
-
-          return { value: type, label: <Icon size={VEHICLE_FILTER_ICON.class} />, title: tGame(`classes.${type}`) };
-        })}
+      <IconFilter
         aria-label={t('type')}
+        kind='class'
+        options={TANK_CLASSES}
         size='sm'
         value={filters.types}
         onChange={(types) => setFilters({ types })}
       />
-      <ToggleChips
-        options={NATIONS.map((nation) => {
-          const Icon = NATION_ICONS[nation];
-
-          return { value: nation, label: <Icon palette='color' size={VEHICLE_FILTER_ICON.nation} />, title: tGame(`nations.${nation}`) };
-        })}
+      <IconFilter
         aria-label={t('nation')}
+        kind='nation'
+        options={NATIONS}
         size='sm'
         value={filters.nations}
         onChange={(nations) => setFilters({ nations })}

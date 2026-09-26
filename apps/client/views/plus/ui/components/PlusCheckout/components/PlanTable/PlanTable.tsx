@@ -3,7 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { Badge, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
 import type { PlanTableProps } from './PlanTable.types';
 
@@ -25,7 +25,11 @@ export const PlanTable = ({ pricing, recommended, registration, isPending, isErr
         <div className={s.grid}>
           {pricing.map(({ plan, priceRub, perMonthRub, savingRub, savingPercent }) => (
             <label key={plan} className={s.plan} data-recommended={plan === recommended}>
-              {plan === recommended && <span className={s.ribbon}>{t('recommended')}</span>}
+              {plan === recommended && (
+                <Badge shape='corner' tone='accent'>
+                  {t('recommended')}
+                </Badge>
+              )}
               <span className={s.head}>
                 <input className={s.radio} type='radio' value={plan} {...registration} />
                 <span className={s.name}>{t(`plans.${plan}`)}</span>

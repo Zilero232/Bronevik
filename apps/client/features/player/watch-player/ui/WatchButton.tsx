@@ -3,7 +3,7 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants } from '@/ui-kit';
 
@@ -13,12 +13,13 @@ import { WATCH_BUTTON } from '../config';
 import { useWatchToggle } from '../model/hooks';
 
 export const WatchButton = ({ accountId, className }: WatchButtonProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('watchlist.button');
   const { isSignedIn, isWatched, isPending, onToggle } = useWatchToggle(accountId);
 
   if (!isSignedIn) {
     return (
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={ROUTES.auth.login}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className })} href={loginHref}>
         <Eye size={WATCH_BUTTON.iconSize} />
         {t('watch')}
       </Link>

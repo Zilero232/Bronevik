@@ -1,7 +1,5 @@
 import type { GameEventKind } from '../../../../generated';
 
-import { FEATURES } from '../../../config';
-
 export const EVENTS_QUEUE = {
   name: 'events',
   jobs: { calendar: 'calendar', drops: 'drops' }
@@ -12,10 +10,9 @@ export const EVENTS_SCHEDULES = [
     id: 'events-calendar',
     queue: EVENTS_QUEUE.name,
     name: EVENTS_QUEUE.jobs.calendar,
-    repeat: { pattern: '25 */4 * * *' },
-    enabled: FEATURES.eventsCalendar
+    repeat: { pattern: '25 */4 * * *' }
   },
-  { id: 'events-drops', queue: EVENTS_QUEUE.name, name: EVENTS_QUEUE.jobs.drops, repeat: { every: 30 * 60_000 }, enabled: FEATURES.eventsCalendar }
+  { id: 'events-drops', queue: EVENTS_QUEUE.name, name: EVENTS_QUEUE.jobs.drops, repeat: { every: 30 * 60_000 } }
 ] as const;
 
 export const EVENT_KIND_RULES = [

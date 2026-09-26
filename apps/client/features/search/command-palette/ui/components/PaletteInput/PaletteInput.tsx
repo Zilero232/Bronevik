@@ -1,15 +1,16 @@
 import { Command } from 'cmdk';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Kbd } from '@/ui-kit';
+import { IconButton, Kbd } from '@/ui-kit';
 
 import type { PaletteInputProps } from './PaletteInput.types';
 
 import s from './PaletteInput.module.scss';
 
-export const PaletteInput = ({ value, isFetching, onValueChange }: PaletteInputProps) => {
+export const PaletteInput = ({ value, isFetching, onValueChange, onClose }: PaletteInputProps) => {
   const t = useTranslations('search');
+  const tCommon = useTranslations('common');
 
   return (
     <div className={s.root}>
@@ -17,7 +18,10 @@ export const PaletteInput = ({ value, isFetching, onValueChange }: PaletteInputP
         <Search size={16} />
       </span>
       <Command.Input className={s.input} placeholder={t('placeholder')} value={value} onValueChange={onValueChange} />
-      <Kbd>Esc</Kbd>
+      <Kbd className={s.esc}>Esc</Kbd>
+      <IconButton aria-label={tCommon('close')} className={s.close} size='lg' onClick={onClose}>
+        <X size={18} />
+      </IconButton>
     </div>
   );
 };

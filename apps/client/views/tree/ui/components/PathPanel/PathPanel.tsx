@@ -7,15 +7,19 @@ import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants } from '@/ui-kit';
 
-import type { PathPanelProps } from './PathPanel.types';
-
+import { usePathSelection } from '../../../model/hooks';
 import { PathSteps } from '../PathSteps';
 
 import s from './PathPanel.module.scss';
 
-export const PathPanel = ({ selected, steps, cost, onClear }: PathPanelProps) => {
+export const PathPanel = () => {
   const t = useTranslations('tree.path');
   const format = useFormatter();
+  const { selected, steps, cost, onClear } = usePathSelection();
+
+  if (!selected) {
+    return null;
+  }
 
   return (
     <div className={s.root}>

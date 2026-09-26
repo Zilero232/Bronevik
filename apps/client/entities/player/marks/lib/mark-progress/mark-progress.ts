@@ -3,7 +3,7 @@ import type { MarkCount } from '@otmetki/icons';
 import { MOE, moeMarks } from '@otmetki/ratings';
 import { clamp } from 'remeda';
 
-import type { MarkProgressInput, MarkRing } from './mark-progress.types';
+import type { MarkLevel, MarkProgressInput, MarkRing } from './mark-progress.types';
 
 import { MARK_COUNTS, MARK_LEVELS } from '../../config';
 
@@ -21,3 +21,5 @@ export const markRing = (percent: number): MarkRing => {
 
   return { marks, nextMark, ratio: nextMark === null ? 1 : markProgress({ percent, nextMark }) };
 };
+
+export const markTarget = (marks: MarkLevel): MarkCount => MARK_COUNTS[Math.min(marks, MARK_COUNTS.length - 1)] ?? 3;

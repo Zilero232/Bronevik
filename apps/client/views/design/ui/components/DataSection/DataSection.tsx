@@ -20,17 +20,9 @@ export const DataSection = () => {
   return (
     <DesignBlock id='data' title={t('title')}>
       <div className={s.tiles}>
-        <KeyFigure
-          isFramed
-          delta={2.4}
-          deltaLabel='+2.4%'
-          icon={<RandomBattleIcon size={18} />}
-          label={t('battles')}
-          trend={[...SPARKLINE_SPECIMEN]}
-          value={value}
-        />
+        <KeyFigure isFramed delta={2.4} icon={<RandomBattleIcon size={18} />} label={t('battles')} trend={[...SPARKLINE_SPECIMEN]} value={value} />
         <KeyFigure isFramed format={{ maximumFractionDigits: 2 }} label={t('winRate')} suffix='%' tone='great' value={64.82} />
-        <KeyFigure isFramed delta={-1.1} deltaLabel='−1.1%' label={t('damage')} tone='steel' value={3184} />
+        <KeyFigure isFramed delta={-1.1} label={t('damage')} tone='steel' value={3184} />
         <KeyFigure isFramed hint={t('marksHint')} icon={<Mark3Icon size={18} />} label={t('marks')} tone='unicum' value={212} />
       </div>
       <DesignRow label={t('number')}>

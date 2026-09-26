@@ -59,6 +59,45 @@ export type {
   ModuleSelection,
   ShellStats
 } from './loadout';
+export {
+  aimCurve,
+  aimTime,
+  aimTimeline,
+  BALLISTICS,
+  ballisticsCurve,
+  ballisticsDistances,
+  camouflageFactor,
+  DISPERSION,
+  dispersionAfter,
+  dispersionFactor,
+  effectiveViewRange,
+  flightTime,
+  FOLIAGE_KINDS,
+  HANDLING_SCENARIOS,
+  handlingScore,
+  penetrationAt,
+  scenarioAims,
+  scenarioMotion,
+  SPOTTING,
+  spottingDistance,
+  spottingDuel
+} from './math';
+export type {
+  AimCurvePoint,
+  BallisticShell,
+  BallisticsPoint,
+  Camouflage,
+  FoliageKind,
+  GunHandling,
+  HandlingMotion,
+  HandlingScenario,
+  ScenarioAim,
+  SpottingDuel,
+  SpottingSide,
+  SpottingState,
+  SpottingVerdict,
+  VisionState
+} from './math';
 export { CREW_ROLES, NATIONS } from './model';
 export type {
   Armor,

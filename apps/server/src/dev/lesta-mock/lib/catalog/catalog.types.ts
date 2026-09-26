@@ -1,4 +1,6 @@
-export type VehicleRow = {
+import type { CrewRole } from '../../../../../generated';
+
+export type CatalogVehicleRow = {
   tank_id: number;
   name: string;
   short_name: string;
@@ -37,7 +39,7 @@ export type ShellPriceRow = {
   currency: string | null;
 };
 
-export type ProvisionRow = {
+export type CatalogProvisionRow = {
   provision_id: number;
   name: string;
   tag: string | null;
@@ -49,7 +51,7 @@ export type ProvisionRow = {
   tank_ids: number[];
 };
 
-export type ModuleRow = {
+export type CatalogModuleRow = {
   module_id: number;
   name: string;
   type: string;
@@ -60,7 +62,7 @@ export type ModuleRow = {
   tank_ids: number[];
 };
 
-export type ArenaRow = {
+export type CatalogArenaRow = {
   arena_id: string;
   name: string;
   description: string | null;
@@ -68,7 +70,7 @@ export type ArenaRow = {
   modes: string[];
 };
 
-export type CrewSkillRow = {
+export type CatalogCrewSkillRow = {
   skill: string;
   name: string;
   type: string | null;
@@ -77,11 +79,7 @@ export type CrewSkillRow = {
   description: string | null;
 };
 
-export type CrewRoleRow = {
-  role: string;
-  name: string;
-  skills: string[];
-};
+export type CatalogCrewRoleRow = Pick<CrewRole, 'name' | 'role' | 'skills'>;
 
 export type GameVersionRow = {
   version: string;
@@ -91,14 +89,14 @@ export type GameVersionRow = {
 export type CatalogRows = {
   gameVersion: string;
   tanksUpdatedAt: number;
-  vehicles: VehicleRow[];
+  vehicles: CatalogVehicleRow[];
   expected: ExpectedRow[];
   shellPrices: ShellPriceRow[];
-  provisions: ProvisionRow[];
-  modules: ModuleRow[];
-  arenas: ArenaRow[];
-  crewSkills: CrewSkillRow[];
-  crewRoles: CrewRoleRow[];
+  provisions: CatalogProvisionRow[];
+  modules: CatalogModuleRow[];
+  arenas: CatalogArenaRow[];
+  crewSkills: CatalogCrewSkillRow[];
+  crewRoles: CatalogCrewRoleRow[];
 };
 
 export type CatalogQueryClient = {

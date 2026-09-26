@@ -1,1 +1,0 @@
-export { PodiumCard } from './PodiumCard';

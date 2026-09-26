@@ -1,0 +1,1 @@
+export { MapsCatalog } from './MapsCatalog';

@@ -49,8 +49,12 @@
 
   &[data-virtual='true'] {
     overflow: auto;
-    max-height: calc(100dvh - var(--header-height) - var(--space-8));
+    max-height: calc(100dvh - var(--header-offset) - var(--space-8));
     overscroll-behavior: contain;
+
+    @include below(md) {
+      overscroll-behavior: auto;
+    }
   }
 
   &[data-virtual='false'] {
@@ -78,7 +82,7 @@
 
   .root[data-virtual='false'] & {
     @include from(3xl) {
-      top: var(--header-height);
+      top: var(--header-offset);
     }
   }
 }
@@ -127,16 +131,28 @@
 }
 
 .row {
-  &:hover {
-    background-color: var(--color-surface-hover);
+  @include class-tint;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    &:hover .td:first-child {
+      box-shadow: inset 2px 0 0 var(--color-accent);
+    }
   }
 
   &[data-clickable='true'] {
     cursor: pointer;
   }
 
-  &:hover .td:first-child {
-    box-shadow: inset 2px 0 0 var(--color-accent);
+  &[data-linked='true'] {
+    position: relative;
+
+    &:focus-within {
+      background-color: var(--color-surface-hover);
+    }
   }
 
   &[data-tint] {
@@ -187,6 +203,30 @@
     padding-block: 0;
   }
 
+  &[data-rank='true'] {
+    @include numeric;
+
+    width: 1%;
+    color: var(--color-text-dim);
+    font-weight: 600;
+  }
+
+  &[data-medal] {
+    font-weight: 700;
+  }
+
+  &[data-medal='gold'] {
+    color: var(--color-mastery-gold);
+  }
+
+  &[data-medal='silver'] {
+    color: var(--color-mastery-silver);
+  }
+
+  &[data-medal='bronze'] {
+    color: var(--color-mastery-bronze);
+  }
+
   tr:last-child & {
     border-bottom: none;
   }
@@ -205,5 +245,69 @@
 .th[data-sticky='true'] {
   @include below(3xl) {
     background-color: var(--color-surface-raised);
+  }
+}
+
+.frame[data-media-first='true'] {
+  .td:first-child {
+    padding-left: var(--space-3);
+    padding-block: 0;
+  }
+
+  .row[data-class] .td:first-child {
+    box-shadow: inset 3px 0 0 var(--class);
+  }
+
+  .row[data-tint] .td:first-child {
+    box-shadow: inset 3px 0 0 var(--row-tint);
+  }
+}
+
+.rowLink {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+  }
+}
+
+.row[data-linked='true'] .td :is(a, button, input, select, [role='button']):not(.rowLink) {
+  position: relative;
+  z-index: 1;
+}
+
+@each $step in sm, md, lg, xl {
+  @include below($step) {
+    .th[data-hide-below='#{$step}'],
+    .td[data-hide-below='#{$step}'] {
+      display: none;
+    }
+  }
+}
+
+.cards {
+  display: none;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-3);
+  list-style: none;
+}
+
+.card {
+  min-width: 0;
+}
+
+.frame[data-cards='true'] {
+  @include below(md) {
+    .root {
+      display: none;
+    }
+
+    .cards {
+      display: grid;
+    }
   }
 }

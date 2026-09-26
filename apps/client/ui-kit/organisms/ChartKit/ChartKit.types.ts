@@ -49,5 +49,5 @@ export type ChartCanvasProps = ChartAxesProps & {
   hover: ChartHoverState | null;
   children: ReactNode;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
-  onPointerLeave: () => void;
+  onPointerLeave: (event: PointerEvent<SVGRectElement>) => void;
 };

@@ -1,11 +1,5 @@
-export type ApiKeyRow = {
-  id: string;
-  name: string | null;
-  start: string | null;
-  enabled: boolean;
+import type { ApiKey } from '../../../../../generated';
+
+export type ApiKeyRow = Pick<ApiKey, 'createdAt' | 'enabled' | 'expiresAt' | 'id' | 'lastRequest' | 'name' | 'start' | 'updatedAt'> & {
   metadata: unknown;
-  createdAt: Date;
-  updatedAt: Date;
-  lastRequest: Date | null;
-  expiresAt: Date | null;
 };

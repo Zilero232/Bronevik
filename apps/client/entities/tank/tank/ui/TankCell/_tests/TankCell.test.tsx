@@ -27,7 +27,7 @@ describe('TankCell', () => {
       </NextIntlClientProvider>
     );
 
-    expect(screen.getByText('Obj. 140')).toBeTruthy();
+    expect(screen.getByText('Obj. 140')).toBeInTheDocument();
     expect(container.firstElementChild?.getAttribute('data-nation')).toBe('ussr');
   });
 });

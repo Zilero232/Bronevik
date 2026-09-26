@@ -1,19 +1,20 @@
-import type { BattleResult } from '../../../../../generated';
+import type { Replay } from '../../../../../generated';
 
-export type ReplayColumns = {
-  gameVersion: string | null;
-  arenaUniqueId: bigint | null;
-  arenaId: string | null;
-  mapName: string | null;
-  battleType: string | null;
-  gameplayMode: string | null;
-  accountId: bigint | null;
-  tankId: number | null;
-  result: BattleResult | null;
-  damageDealt: number | null;
-  damageAssisted: number | null;
-  frags: number | null;
-  xp: number | null;
-  playedAt: Date | null;
-  playerAccountIds: bigint[];
-};
+export type ReplayColumns = Pick<
+  Replay,
+  | 'accountId'
+  | 'arenaId'
+  | 'arenaUniqueId'
+  | 'battleType'
+  | 'damageAssisted'
+  | 'damageDealt'
+  | 'frags'
+  | 'gameplayMode'
+  | 'gameVersion'
+  | 'mapName'
+  | 'playedAt'
+  | 'playerAccountIds'
+  | 'result'
+  | 'tankId'
+  | 'xp'
+>;

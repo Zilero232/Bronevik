@@ -4,6 +4,7 @@ import { SITE } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
 
 import { languageAlternates } from '../site-metadata';
+import { THEME_COLOR } from '../site-metadata.constants';
 
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -39,10 +40,7 @@ export const defaultMetadata: Metadata = {
 };
 
 export const defaultViewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: SITE.themeColor.light },
-    { media: '(prefers-color-scheme: dark)', color: SITE.themeColor.dark }
-  ],
+  themeColor: THEME_COLOR,
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,

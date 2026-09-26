@@ -10,7 +10,7 @@ import { HOME } from '../../../config';
 export const useHeroTanks = () => {
   const params = {
     period: HOME.period.server,
-    tiers: [Number(HOME.strongTanks.tiers[0])],
+    tiers: [HOME.strongTanks.tiers[0]],
     sort: 'winRate',
     order: 'desc',
     limit: HOME.strongTanks.limit

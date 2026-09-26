@@ -42,15 +42,10 @@
   font-size: var(--text-2xs);
 }
 
-.delta {
-  @include numeric;
-
-  color: var(--edge);
+.row .delta {
   font-size: var(--text-sm);
-  font-weight: 600;
   grid-column: 2;
   grid-row: 1;
-  text-align: end;
 }
 
 .ratio {

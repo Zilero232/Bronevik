@@ -1,6 +1,7 @@
+import { BOT_LOCALE } from '../../bot-commands';
+
 export const BOT = {
-  locales: ['ru', 'en'],
-  fallbackLocale: 'ru',
+  ...BOT_LOCALE,
   fallbackUsername: 'otmetki_bot'
 } as const;
 
@@ -17,14 +18,20 @@ export const BOT_API = {
   maxDelaySeconds: 30
 } as const;
 
-export const BOT_COMMANDS = ['me', 'session', 'marks', 'clan', 'tank', 'top', 'lbz', 'next', 'settings', 'login', 'help'] as const;
+export const BOT_COMMANDS = ['me', 'session', 'marks', 'clan', 'tank', 'top', 'lbz', 'next', 'watch', 'settings', 'login', 'help'] as const;
+
+export const EXTERNAL_BOT_COMMANDS = ['watch'] as const;
+
+export const SHARED_COMMAND_OF = {
+  me: 'stats',
+  session: 'session',
+  marks: 'marks',
+  clan: 'clan',
+  tank: 'tank',
+  top: 'top'
+} as const;
 
 export const BOT_TEXT_LIMITS = {
-  topSize: 10,
-  topMinBattles: 100,
-  topPeriod: 'd30',
-  closestMarks: 5,
-  tankMatches: 1,
   inlineResults: 5,
   inlineCacheSeconds: 60,
   queryMinLength: 2

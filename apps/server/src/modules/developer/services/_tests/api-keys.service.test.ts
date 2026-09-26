@@ -1,7 +1,9 @@
 import type { AuthService } from '@thallesp/nestjs-better-auth';
 
 import { API_KEY } from '@otmetki/schemas';
-import { describe, expect, it, vi } from 'vitest';
+import { hoursToSeconds, subHours } from 'date-fns';
+import { millisecondsInSecond } from 'date-fns/constants';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { ApiKey } from '../../../../../generated';
@@ -9,10 +11,21 @@ import type { PrismaService } from '../../../../core';
 import type { OtmetkiAuth } from '../../../../lib/auth';
 
 import { API_KEY_PLUGIN } from '../../../../lib/auth';
-import { API_TIERS } from '../../config';
+import { API_KEY_POLICY, API_TIERS } from '../../config';
 import { ApiKeysService } from '../api-keys.service';
 import { ApiTierSyncService } from '../api-tier-sync.service';
 import { ApiTierService } from '../api-tier.service';
+
+const NOW = new Date('2026-09-26T12:00:00Z');
+
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(NOW);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 const keyRow = (overrides: Partial<ApiKey> = {}): ApiKey => ({
   id: '00000000-0000-4000-8000-000000000001',
@@ -30,13 +43,13 @@ const keyRow = (overrides: Partial<ApiKey> = {}): ApiKey => ({
   rateLimitMax: null,
   requestCount: 0,
   remaining: API_TIERS.free.requestsPerDay,
-  refillInterval: 86_400_000,
+  refillInterval: API_KEY_POLICY.quotaRefillMs,
   refillAmount: API_TIERS.free.requestsPerDay,
   lastRefillAt: null,
   lastRequest: null,
   expiresAt: null,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: NOW,
+  updatedAt: NOW,
   ...overrides
 });
 
@@ -88,7 +101,7 @@ describe('ApiKeysService.create', () => {
   it('refuses an expiry in the past', async () => {
     const { service } = createService();
 
-    await expect(service.create({ userId: 'user', name: 'bot', expiresAt: new Date(Date.now() - 1_000).toISOString() })).rejects.toMatchObject({
+    await expect(service.create({ userId: 'user', name: 'bot', expiresAt: NOW.toISOString() })).rejects.toMatchObject({
       response: { code: 'VALIDATION_FAILED' }
     });
   });
@@ -103,6 +116,16 @@ describe('ApiKeysService.revoke', () => {
     await service.revoke({ userId: 'user', id: keyRow().id });
 
     expect(auth.api.updateApiKey.mock.calls[0]?.[0]?.body).toMatchObject({ keyId: keyRow().id, userId: 'user', enabled: false });
+  });
+
+  it('leaves an already disabled key alone', async () => {
+    const { service, prisma, auth } = createService();
+
+    prisma.apiKey.findFirst.mockResolvedValue(keyRow({ enabled: false }));
+
+    await service.revoke({ userId: 'user', id: keyRow().id });
+
+    expect(auth.api.updateApiKey).not.toHaveBeenCalled();
   });
 
   it('answers 404 for somebody else’s key', async () => {
@@ -129,6 +152,18 @@ describe('ApiKeysService.verify', () => {
     });
   });
 
+  it('falls back to the tier quota when the key carries no tier, refill amount or remaining count', async () => {
+    const { service, auth } = createService();
+
+    auth.api.verifyApiKey.mockResolvedValue(verified({ metadata: null, refillAmount: null, remaining: null }));
+
+    await expect(service.verify('otm_key')).resolves.toMatchObject({
+      tier: 'free',
+      dailyLimit: API_TIERS.free.requestsPerDay,
+      dailyRemaining: API_TIERS.free.requestsPerDay
+    });
+  });
+
   it('tells a revoked key from an unknown one', async () => {
     const { service, auth } = createService();
 
@@ -145,12 +180,35 @@ describe('ApiKeysService.verify', () => {
     const { service, prisma, auth } = createService();
 
     auth.api.verifyApiKey.mockResolvedValue({ valid: false, error: { code: 'USAGE_EXCEEDED', message: 'used up' }, key: null });
-    prisma.apiKey.findUnique.mockResolvedValue(keyRow());
+    prisma.apiKey.findUnique.mockResolvedValue(keyRow({ lastRefillAt: subHours(NOW, 1) }));
 
     const error = await service.verify('otm_key').catch((caught: unknown) => caught);
 
-    expect(error).toMatchObject({ response: { code: 'PLAN_LIMIT_REACHED' } });
-    expect(error).toMatchObject({ retryAfterSec: expect.any(Number) });
+    expect(error).toMatchObject({
+      response: { code: 'PLAN_LIMIT_REACHED' },
+      retryAfterSec: API_KEY_POLICY.quotaRefillMs / millisecondsInSecond - hoursToSeconds(1)
+    });
+  });
+
+  it('answers 429 without a Retry-After when the used-up key row is gone', async () => {
+    const { service, prisma, auth } = createService();
+
+    auth.api.verifyApiKey.mockResolvedValue({ valid: false, error: { code: 'USAGE_EXCEEDED', message: 'used up' }, key: null });
+    prisma.apiKey.findUnique.mockResolvedValue(null);
+
+    await expect(service.verify('otm_key')).rejects.toMatchObject({ response: { code: 'PLAN_LIMIT_REACHED' }, retryAfterSec: null });
+  });
+
+  it('leaves the keys alone when the owner tier did not change', async () => {
+    const { service, tiers, auth, tierSync } = createService();
+
+    auth.api.verifyApiKey.mockResolvedValue(verified());
+
+    await service.verify('otm_key');
+    await vi.waitFor(() => expect(tiers.cachedTierFor).toHaveBeenCalledWith('user'));
+    await Promise.resolve();
+
+    expect(tierSync.apply).not.toHaveBeenCalled();
   });
 
   it('moves the owner keys to a changed tier in the background', async () => {

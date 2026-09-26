@@ -19,6 +19,11 @@ export class VehicleSyncService {
 
   async sync(gameVersionId: number): Promise<number> {
     const vehicles = Object.values(await this.clients.bulk.encyclopedia.allVehicles()).filter(isNonNullish);
+
+    if (vehicles.length === 0) {
+      return 0;
+    }
+
     const slugs = vehicleSlugs({ vehicles });
     const previous = previousTankIds(vehicles);
     const history = new Map(

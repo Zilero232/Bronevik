@@ -7,6 +7,9 @@ from .version import SCHEMA_VERSION
 
 REALM = 'RU'
 MAX_PLATOON_MATES = 2
+MAX_ACHIEVEMENTS = 64
+MAX_ACHIEVEMENT_NAME = 64
+MASTERY_BADGES = {4: 'markOfMastery', 3: 'markOfMasteryI', 2: 'markOfMasteryII', 1: 'markOfMasteryIII'}
 
 STAT_FIELDS = (
     ('damage_dealt', 'damageDealt'),
@@ -153,6 +156,19 @@ def normalize_shots(shots):
     return result or None
 
 
+def extract_achievements(vehicle, name_of):
+    names = []
+    mastery = MASTERY_BADGES.get(_int(vehicle.get('markOfMastery')))
+    if mastery is not None:
+        names.append(mastery)
+    ids = vehicle.get('achievements')
+    for record_id in ids if isinstance(ids, (list, tuple)) else ():
+        name = name_of(record_id) if is_int(record_id) else None
+        if isinstance(name, string_types) and 0 < len(name) <= MAX_ACHIEVEMENT_NAME and name not in names:
+            names.append(to_text(name))
+    return names[:MAX_ACHIEVEMENTS]
+
+
 def build_battle_event(results, extras=None):
     extras = extras or {}
     if not isinstance(results, dict):
@@ -200,6 +216,7 @@ def build_battle_event(results, extras=None):
         'loadout': normalize_loadout(extras.get('loadout'), _int(common.get('arenaTypeID'))),
         'platoon': extract_platoon(results, _int(avatar.get('accountDBID'), None)),
         'shots': normalize_shots(extras.get('shots')),
+        'achievements': extract_achievements(vehicle, extras.get('achievement_name') or (lambda record_id: None)),
     }
     return event
 
@@ -240,6 +257,15 @@ def build_queue_event(queue_type, wait_s, outcome, occurred_at, tank_id=None):
         'queue_type': _int(queue_type),
         'wait_s': round(max(0.0, float(wait_s)), 1),
         'outcome': outcome,
+        'tank_id': tank_id if is_int(tank_id) else None,
+    }
+
+
+def build_battle_start_event(occurred_at, tank_id=None):
+    return {
+        'type': 'battle_start',
+        'event_id': new_event_id(),
+        'occurred_at': int(occurred_at),
         'tank_id': tank_id if is_int(tank_id) else None,
     }
 

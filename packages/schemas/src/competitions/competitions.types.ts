@@ -29,6 +29,7 @@ export type CompetitionTeam = z.infer<typeof competitionTeamSchema>;
 export type CompetitionSummary = z.infer<typeof competitionSummarySchema>;
 export type Competition = z.infer<typeof competitionSchema>;
 export type CompetitionsQuery = z.infer<typeof competitionsQuerySchema>;
+export type CompetitionsQueryInput = z.input<typeof competitionsQuerySchema>;
 export type CompetitionPage = z.infer<typeof competitionPageSchema>;
 export type CompetitionAccessQuery = z.infer<typeof competitionAccessQuerySchema>;
 export type CreateCompetitionInput = z.input<typeof createCompetitionSchema>;

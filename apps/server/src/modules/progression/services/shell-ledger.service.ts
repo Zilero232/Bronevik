@@ -70,7 +70,7 @@ export class ShellLedgerService {
     ]);
 
     const totalEarned = earned._sum.amount ?? 0;
-    const totalSpent = -(spent._sum.amount ?? 0);
+    const totalSpent = Math.abs(spent._sum.amount ?? 0);
 
     return {
       balance: Math.max(0, totalEarned - totalSpent),

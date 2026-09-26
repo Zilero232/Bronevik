@@ -2,11 +2,13 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Card, CardHeader, DataTable, EmptyState, ErrorState } from '@/ui-kit';
+import { TankShowcaseCard, WinRateCell } from '@/entities/tank/tank';
+import { Card, CardHeader, DataTable, EmptyState, ErrorState, SectionHeader } from '@/ui-kit';
 
 import type { MissionTanksProps } from './MissionTanks.types';
 
 import { useMissionTanks } from '../../../model/hooks';
+import { MetricCell } from './components';
 
 import s from './MissionTanks.module.scss';
 
@@ -16,6 +18,7 @@ export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
     columns,
     garageColumns,
     tanks,
+    showcase,
     isPending,
     isError,
     isRetrying,
@@ -30,6 +33,24 @@ export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
 
   return (
     <div className={s.root}>
+      {showcase.length > 0 && (
+        <section className={s.showcase}>
+          <SectionHeader as='h3' title={t('tanks.showcaseTitle')} variant='display' />
+          <ul className={s.cards}>
+            {showcase.map((row) => (
+              <li key={row.vehicle.tankId}>
+                <TankShowcaseCard
+                  figures={[
+                    { id: 'metric', label: t(`metric.${metric}`), value: <MetricCell metric={metric} value={row.value} /> },
+                    { id: 'winRate', label: t('tanks.winRate'), value: <WinRateCell value={row.winRate} /> }
+                  ]}
+                  vehicle={row.vehicle}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <Card padding='none'>
         <CardHeader
           meta={

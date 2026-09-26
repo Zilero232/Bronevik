@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
-import { streamerRouteName } from '@/entities/streamer/streamer';
+import { streamerRouteName } from '@/entities/streamer/streamer/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';

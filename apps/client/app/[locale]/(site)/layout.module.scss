@@ -1,9 +1,19 @@
+@use '@/shared/styles/mixins' as *;
+
 .root {
   display: flex;
   min-height: 100dvh;
   flex-direction: column;
 }
 
+.skip {
+  @include skip-link;
+}
+
 .main {
   flex: 1;
+
+  &:focus {
+    outline: none;
+  }
 }

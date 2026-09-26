@@ -6,7 +6,7 @@
   padding-bottom: var(--space-8);
 
   [id] {
-    scroll-margin-top: calc(var(--header-height) + 64px);
+    scroll-margin-top: calc(var(--header-offset) + var(--subnav-height));
   }
 
   @include below(md) {

@@ -1,0 +1,34 @@
+model MapRotationAggregate {
+  arenaId String @map("arena_id")
+  tier    Int    @db.SmallInt
+  mode    String
+
+  battles       Int
+  share         Float
+  modBattles    Int   @default(0) @map("mod_battles")
+  replayBattles Int   @default(0) @map("replay_battles")
+  windowDays    Int   @map("window_days")
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@id([arenaId, tier, mode])
+  @@index([tier, mode, share(sort: Desc)])
+  @@map("map_rotation_aggregate")
+}
+
+model QueueTimeAggregate {
+  tier Int    @db.SmallInt
+  hour Int    @db.SmallInt
+  mode String
+
+  samples    Int
+  avgSec     Float @map("avg_sec")
+  medianSec  Float @map("median_sec")
+  p90Sec     Float @map("p90_sec")
+  windowDays Int   @map("window_days")
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@id([tier, hour, mode])
+  @@map("queue_time_aggregate")
+}

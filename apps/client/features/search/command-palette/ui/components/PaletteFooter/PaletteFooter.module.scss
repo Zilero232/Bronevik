@@ -15,6 +15,10 @@
   color: var(--color-text-dim);
   font-size: var(--text-xs);
   gap: var(--space-1);
+
+  @include coarse {
+    display: none;
+  }
 }
 
 .brand {

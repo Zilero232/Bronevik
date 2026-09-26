@@ -11,7 +11,7 @@ import { createOtmetkiClient, getPlayer, getTierList, listPlayerTanks } from '@o
 
 const client = createOtmetkiClient({
   apiKey: process.env.OTMETKI_API_KEY!,
-  baseUrl: 'https://api.otmetki.app'
+  baseUrl: 'https://api.triotmetki.ru'
 });
 
 const { data: player } = await getPlayer({ client, path: { idOrNick: 'Tanker' }, throwOnError: true });

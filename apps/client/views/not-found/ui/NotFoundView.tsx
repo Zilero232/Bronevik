@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 
+import { CommandPaletteTrigger } from '@/features/search/command-palette';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, EmptyState } from '@/ui-kit';
@@ -13,9 +14,12 @@ export const NotFoundView = () => {
     <section className={s.root}>
       <EmptyState
         action={
-          <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.home}>
-            {t('home')}
-          </Link>
+          <div className={s.actions}>
+            <CommandPaletteTrigger />
+            <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.home}>
+              {t('home')}
+            </Link>
+          </div>
         }
         description={t('body')}
         title={t('title')}

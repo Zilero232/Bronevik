@@ -48,6 +48,5 @@ export const ECONOMY = {
 
 export const BATTLE_ROWS = {
   moeMinTier: 5,
-  platoonChance: 0.14,
-  queueSec: [4, 95]
+  platoonChance: 0.14
 } as const;

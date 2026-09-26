@@ -9,12 +9,21 @@ import type { ProgressBarProps } from './ProgressBar.types';
 
 import s from './ProgressBar.module.scss';
 
-export const ProgressBar = ({ value, max = 100, label, valueLabel, tone = 'accent', size = 'md', className }: ProgressBarProps) => {
+export const ProgressBar = ({
+  value,
+  max = 100,
+  label,
+  'aria-label': ariaLabel,
+  valueLabel,
+  tone = 'accent',
+  size = 'md',
+  className
+}: ProgressBarProps) => {
   const locale = useLocale();
-  const ratio = clamp(value / max, { min: 0, max: 1 });
+  const ratio = max > 0 && Number.isFinite(value) ? clamp(value / max, { min: 0, max: 1 }) : 0;
 
   return (
-    <Progress.Root className={clsx(s.root, s[size], className)} data-tone={tone} locale={locale} max={max} value={value}>
+    <Progress.Root aria-label={ariaLabel} className={clsx(s.root, s[size], className)} data-tone={tone} locale={locale} max={max} value={value}>
       {(label || valueLabel) && (
         <div className={s.head}>
           {label && <Progress.Label className={s.label}>{label}</Progress.Label>}

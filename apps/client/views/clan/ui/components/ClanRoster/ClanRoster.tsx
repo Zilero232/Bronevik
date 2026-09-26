@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/shared/constants';
 import { DataTable, EmptyState } from '@/ui-kit';
 
 import type { ClanRosterProps } from './ClanRoster.types';
@@ -32,6 +33,7 @@ export const ClanRoster = ({ members, now }: ClanRosterProps) => {
         data={rows}
         emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
         getRowId={({ accountId }) => String(accountId)}
+        getRowLink={({ nickname }) => ({ href: ROUTES.players.profile(nickname), label: nickname })}
         summary={t('shown', { shown: rows.length, total })}
       />
     </div>

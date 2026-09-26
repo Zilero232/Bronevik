@@ -11,6 +11,7 @@
 
 .chip {
   @include reset-button;
+  @include touch-target;
 
   display: inline-flex;
   align-items: center;

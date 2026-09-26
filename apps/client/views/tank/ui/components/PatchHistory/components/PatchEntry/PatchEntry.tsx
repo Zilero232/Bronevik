@@ -19,7 +19,7 @@ export const PatchEntry = ({ entry }: PatchEntryProps) => {
   const { version, title, date, verdict, changes } = entry;
 
   return (
-    <li className={s.root} data-verdict={verdict}>
+    <div className={s.root} data-verdict={verdict}>
       <header className={s.head}>
         <Badge tone={VERDICT_TONES[verdict]}>{version}</Badge>
         <span className={s.verdict}>{t(`verdicts.${verdict}`)}</span>
@@ -39,6 +39,6 @@ export const PatchEntry = ({ entry }: PatchEntryProps) => {
       ) : (
         <p className={s.note}>{t(verdict === 'new' ? 'firstSeen' : 'noSpecChanges')}</p>
       )}
-    </li>
+    </div>
   );
 };

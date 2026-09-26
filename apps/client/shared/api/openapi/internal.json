@@ -6610,6 +6610,44 @@
         "tags": ["telegram"]
       }
     },
+    "/discord/status": {
+      "get": {
+        "operationId": "DiscordController_status",
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscordStatusDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["discord"]
+      }
+    },
+    "/vk/status": {
+      "get": {
+        "operationId": "VkController_status",
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VkStatusDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["vk"]
+      }
+    },
     "/billing/plans": {
       "get": {
         "operationId": "BillingController_plans",
@@ -7571,6 +7609,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ConnectUrlDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["streamers"]
+      }
+    },
+    "/streamers/me/integrations/twitch/predictions": {
+      "put": {
+        "operationId": "StreamersController_setPredictions",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePredictionsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationListDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["streamers"]
+      }
+    },
+    "/streamers/twitch-panel/{channelId}": {
+      "get": {
+        "operationId": "StreamersController_twitchPanel",
+        "parameters": [
+          {
+            "name": "channelId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^d{1,20}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwitchPanelDto_Output"
                 }
               }
             }
@@ -12428,6 +12524,546 @@
         },
         "tags": ["pulse"]
       }
+    },
+    "/best-battles": {
+      "get": {
+        "operationId": "BestBattlesController_list",
+        "parameters": [
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "week",
+              "type": "string",
+              "enum": ["day", "week", "month"]
+            }
+          },
+          {
+            "name": "metric",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "damage",
+              "type": "string",
+              "enum": ["damage", "assisted", "spotted", "frags", "xp", "blocked"]
+            }
+          },
+          {
+            "name": "tankId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "arenaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 64,
+              "type": "string"
+            }
+          },
+          {
+            "name": "medal",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 64,
+              "type": "string"
+            }
+          },
+          {
+            "name": "tier",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 11,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 25,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d{1,6}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BestBattlesPageDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["best-battles"]
+      }
+    },
+    "/best-battles/facets": {
+      "get": {
+        "operationId": "BestBattlesController_facetsOf",
+        "parameters": [
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "week",
+              "type": "string",
+              "enum": ["day", "week", "month"]
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BestBattlesFacetsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["best-battles"]
+      }
+    },
+    "/honest-rng": {
+      "get": {
+        "operationId": "HonestRngController_view",
+        "parameters": [
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "d30",
+              "type": "string",
+              "enum": ["d7", "d30", "all"]
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HonestRngDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["honest-rng"]
+      }
+    },
+    "/honest-rng/me": {
+      "get": {
+        "operationId": "HonestRngController_mine",
+        "parameters": [
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "d30",
+              "type": "string",
+              "enum": ["d7", "d30", "all"]
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HonestRngMineDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["honest-rng"]
+      }
+    },
+    "/map-stats/rotation": {
+      "get": {
+        "operationId": "MapStatsController_rotation",
+        "parameters": [
+          {
+            "name": "tier",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 11,
+              "default": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "mode",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "random",
+              "type": "string",
+              "enum": ["random", "onslaught", "frontline", "ranked", "steelHunter"]
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapRotationDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["map-stats"]
+      }
+    },
+    "/map-stats/queue": {
+      "get": {
+        "operationId": "MapStatsController_queue",
+        "parameters": [
+          {
+            "name": "tier",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 11,
+              "default": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "mode",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "random",
+              "type": "string",
+              "enum": ["random", "onslaught", "frontline", "ranked", "steelHunter"]
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapQueueDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["map-stats"]
+      }
+    },
+    "/tank-math/{tankId}": {
+      "get": {
+        "operationId": "TankMathController_get",
+        "parameters": [
+          {
+            "name": "tankId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankMathDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["tank-math"]
+      }
+    },
+    "/achievements": {
+      "get": {
+        "operationId": "AchievementsRarityController_list",
+        "parameters": [
+          {
+            "name": "section",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 32,
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "rarity",
+              "type": "string",
+              "enum": ["rarity", "common", "points", "order"]
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AchievementsCatalogDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["achievements"]
+      }
+    },
+    "/achievements/tanks": {
+      "get": {
+        "operationId": "AchievementsRarityController_tankRarity",
+        "parameters": [
+          {
+            "name": "tier",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 11,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "rare",
+              "type": "string",
+              "enum": ["rare", "common"]
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankRarityDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["achievements"]
+      }
+    },
+    "/achievements/leaderboard": {
+      "get": {
+        "operationId": "AchievementsRarityController_leaderboard",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "default": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectorsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["achievements"]
+      }
+    },
+    "/achievements/players/{accountId}": {
+      "get": {
+        "operationId": "AchievementsRarityController_player",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerCollectionDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["achievements"]
+      }
+    },
+    "/supertest": {
+      "get": {
+        "operationId": "SupertestController_list",
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupertestListDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["supertest"]
+      }
+    },
+    "/supertest/mine": {
+      "get": {
+        "operationId": "SupertestController_mine",
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupertestMineDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["supertest"]
+      }
+    },
+    "/supertest/{id}": {
+      "get": {
+        "operationId": "SupertestController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupertestAnnouncementDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["supertest"]
+      }
     }
   },
   "info": {
@@ -12952,6 +13588,9 @@
                       "name": {
                         "type": "string"
                       },
+                      "color": {
+                        "type": ["string", "null"]
+                      },
                       "role": {
                         "type": "string"
                       },
@@ -12979,7 +13618,7 @@
                         ]
                       }
                     },
-                    "required": ["clanId", "tag", "name", "role", "emblem", "joinedAt"],
+                    "required": ["clanId", "tag", "name", "color", "role", "emblem", "joinedAt"],
                     "additionalProperties": false
                   },
                   {
@@ -26795,6 +27434,9 @@
                             "name": {
                               "type": "string"
                             },
+                            "color": {
+                              "type": ["string", "null"]
+                            },
                             "role": {
                               "type": "string"
                             },
@@ -26822,7 +27464,7 @@
                               ]
                             }
                           },
-                          "required": ["clanId", "tag", "name", "role", "emblem", "joinedAt"],
+                          "required": ["clanId", "tag", "name", "color", "role", "emblem", "joinedAt"],
                           "additionalProperties": false
                         },
                         {
@@ -32118,7 +32760,9 @@
                 "competition_finished",
                 "first_win_available",
                 "replay_overflow",
-                "streamer_live"
+                "streamer_live",
+                "tank_level_up",
+                "tank_challenge_done"
               ],
               "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
             }
@@ -32190,7 +32834,9 @@
                 "competition_finished",
                 "first_win_available",
                 "replay_overflow",
-                "streamer_live"
+                "streamer_live",
+                "tank_level_up",
+                "tank_challenge_done"
               ],
               "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
             }
@@ -32260,7 +32906,9 @@
                 "competition_finished",
                 "first_win_available",
                 "replay_overflow",
-                "streamer_live"
+                "streamer_live",
+                "tank_level_up",
+                "tank_challenge_done"
               ],
               "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
             }
@@ -34015,7 +34663,9 @@
               "PROMO_CHECKOUT_ONLY",
               "PROMO_REDEEM_ONLY",
               "REPLAY_INVALID",
-              "REPLAY_DUPLICATE"
+              "REPLAY_DUPLICATE",
+              "STREAMER_SLUG_TAKEN",
+              "STREAMER_CHANNEL_TAKEN"
             ]
           },
           "issues": {
@@ -34119,6 +34769,9 @@
                       "name": {
                         "type": "string"
                       },
+                      "color": {
+                        "type": ["string", "null"]
+                      },
                       "role": {
                         "type": "string"
                       },
@@ -34146,7 +34799,7 @@
                         ]
                       }
                     },
-                    "required": ["clanId", "tag", "name", "role", "emblem", "joinedAt"],
+                    "required": ["clanId", "tag", "name", "color", "role", "emblem", "joinedAt"],
                     "additionalProperties": false
                   },
                   {
@@ -41234,7 +41887,9 @@
                     "competition_finished",
                     "first_win_available",
                     "replay_overflow",
-                    "streamer_live"
+                    "streamer_live",
+                    "tank_level_up",
+                    "tank_challenge_done"
                   ],
                   "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
                 },
@@ -41435,6 +42090,65 @@
           }
         },
         "required": ["token"],
+        "additionalProperties": false
+      },
+      "DiscordStatusDto_Output": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "linkEnabled": {
+            "type": "boolean"
+          },
+          "inviteUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["enabled", "linkEnabled", "inviteUrl"],
+        "additionalProperties": false
+      },
+      "VkStatusDto_Output": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "linkEnabled": {
+            "type": "boolean"
+          },
+          "botUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "miniAppUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["enabled", "linkEnabled", "botUrl", "miniAppUrl"],
         "additionalProperties": false
       },
       "PlansDto_Output": {
@@ -46816,9 +47530,15 @@
               "type": "string",
               "format": "date-time",
               "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+            },
+            "predictions": {
+              "type": "boolean"
+            },
+            "canPredict": {
+              "type": "boolean"
             }
           },
-          "required": ["provider", "externalId", "login", "connectedAt"],
+          "required": ["provider", "externalId", "login", "connectedAt", "predictions", "canPredict"],
           "additionalProperties": false
         }
       },
@@ -46831,6 +47551,125 @@
           }
         },
         "required": ["url"],
+        "additionalProperties": false
+      },
+      "UpdatePredictionsDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": ["enabled"]
+      },
+      "TwitchPanelDto_Output": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "profileUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "session": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "battles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "wins": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "avgDamage": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "wn8": {
+                    "type": ["number", "null"]
+                  },
+                  "startedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  "isOpen": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["battles", "wins", "avgDamage", "wn8", "startedAt", "isOpen"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "marks": {
+            "type": "object",
+            "properties": {
+              "moe3": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "moe2": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "moe1": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "closest": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "tankName": {
+                      "type": "string"
+                    },
+                    "marks": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 3
+                    },
+                    "percent": {
+                      "type": "number"
+                    }
+                  },
+                  "required": ["tankName", "marks", "percent"],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": ["moe3", "moe2", "moe1", "closest"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["nickname", "profileUrl", "session", "marks"],
         "additionalProperties": false
       },
       "SettingsHistoryDto_Output": {
@@ -58490,6 +59329,3051 @@
           }
         },
         "required": ["timezone", "since", "activePlayers", "trackedPlayers", "heatmap", "bestHours", "series", "computedAt"],
+        "additionalProperties": false
+      },
+      "BestBattlesPageDto_Output": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": ["day", "week", "month"]
+          },
+          "metric": {
+            "type": "string",
+            "enum": ["damage", "assisted", "spotted", "frags", "xp", "blocked"]
+          },
+          "since": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "rank": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "source": {
+                  "type": "string",
+                  "enum": ["mod", "replay"]
+                },
+                "accountId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "nickname": {
+                  "type": "string"
+                },
+                "vehicle": {
+                  "type": "object",
+                  "properties": {
+                    "tankId": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "shortName": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "nation": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 32
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                    },
+                    "tier": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 11
+                    },
+                    "isPremium": {
+                      "type": "boolean"
+                    },
+                    "isCollectible": {
+                      "type": "boolean"
+                    },
+                    "images": {
+                      "type": "object",
+                      "properties": {
+                        "small": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "contour": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["small", "contour", "big"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "additionalProperties": false
+                },
+                "arena": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "arenaId": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["arenaId", "name"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "result": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": ["win", "loss", "draw"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "damage": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "assisted": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "spotted": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "frags": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "xp": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "blocked": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "medals": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "image": {
+                        "type": ["string", "null"]
+                      }
+                    },
+                    "required": ["name", "title", "image"],
+                    "additionalProperties": false
+                  }
+                },
+                "playedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "replayId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "key",
+                "rank",
+                "source",
+                "accountId",
+                "nickname",
+                "vehicle",
+                "arena",
+                "result",
+                "damage",
+                "assisted",
+                "spotted",
+                "frags",
+                "xp",
+                "blocked",
+                "medals",
+                "playedAt",
+                "replayId"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["period", "metric", "since", "items", "nextCursor"],
+        "additionalProperties": false
+      },
+      "BestBattlesFacetsDto_Output": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": ["day", "week", "month"]
+          },
+          "since": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "battles": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "topDamage": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "medals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": ["string", "null"]
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": ["name", "title", "image", "battles"],
+              "additionalProperties": false
+            }
+          },
+          "tanks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "vehicle": {
+                  "type": "object",
+                  "properties": {
+                    "tankId": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "shortName": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "nation": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 32
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                    },
+                    "tier": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 11
+                    },
+                    "isPremium": {
+                      "type": "boolean"
+                    },
+                    "isCollectible": {
+                      "type": "boolean"
+                    },
+                    "images": {
+                      "type": "object",
+                      "properties": {
+                        "small": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "contour": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["small", "contour", "big"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "additionalProperties": false
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": ["vehicle", "battles"],
+              "additionalProperties": false
+            }
+          },
+          "arenas": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "arenaId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": ["arenaId", "name", "battles"],
+              "additionalProperties": false
+            }
+          },
+          "computedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          }
+        },
+        "required": ["period", "since", "battles", "topDamage", "medals", "tanks", "arenas", "computedAt"],
+        "additionalProperties": false
+      },
+      "HonestRngDto_Output": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": ["d7", "d30", "all"]
+          },
+          "spread": {
+            "type": "number"
+          },
+          "server": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "battles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "players": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "shots": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "meanRoll": {
+                    "type": ["number", "null"]
+                  },
+                  "withinSpread": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "Percent, 0–100"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "buckets": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "from": {
+                          "type": "number"
+                        },
+                        "to": {
+                          "type": "number"
+                        },
+                        "shots": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "share": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 100,
+                              "description": "Percent, 0–100"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["from", "to", "shots", "share"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "hitRate": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "Percent, 0–100"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "penRate": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "Percent, 0–100"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": ["battles", "players", "shots", "meanRoll", "withinSpread", "buckets", "hitRate", "penRate"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "theory": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "number"
+                },
+                "to": {
+                  "type": "number"
+                },
+                "shots": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "share": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": ["from", "to", "shots", "share"],
+              "additionalProperties": false
+            }
+          },
+          "tiers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "players": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "shots": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "meanRoll": {
+                  "type": ["number", "null"]
+                },
+                "withinSpread": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "buckets": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "number"
+                      },
+                      "to": {
+                        "type": "number"
+                      },
+                      "shots": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "share": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 100,
+                            "description": "Percent, 0–100"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["from", "to", "shots", "share"],
+                    "additionalProperties": false
+                  }
+                },
+                "hitRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "penRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "tier": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 11
+                }
+              },
+              "required": ["battles", "players", "shots", "meanRoll", "withinSpread", "buckets", "hitRate", "penRate", "tier"],
+              "additionalProperties": false
+            }
+          },
+          "shells": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "players": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "shots": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "meanRoll": {
+                  "type": ["number", "null"]
+                },
+                "withinSpread": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "buckets": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "number"
+                      },
+                      "to": {
+                        "type": "number"
+                      },
+                      "shots": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "share": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 100,
+                            "description": "Percent, 0–100"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["from", "to", "shots", "share"],
+                    "additionalProperties": false
+                  }
+                },
+                "hitRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "penRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "shell": {
+                  "type": "string"
+                }
+              },
+              "required": ["battles", "players", "shots", "meanRoll", "withinSpread", "buckets", "hitRate", "penRate", "shell"],
+              "additionalProperties": false
+            }
+          },
+          "computedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["period", "spread", "server", "theory", "tiers", "shells", "computedAt"],
+        "additionalProperties": false
+      },
+      "HonestRngMineDto_Output": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": ["d7", "d30", "all"]
+          },
+          "accountId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "battles": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "players": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "shots": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "meanRoll": {
+                "type": ["number", "null"]
+              },
+              "withinSpread": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "description": "Percent, 0–100"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "buckets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "number"
+                    },
+                    "to": {
+                      "type": "number"
+                    },
+                    "shots": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "share": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100,
+                          "description": "Percent, 0–100"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": ["from", "to", "shots", "share"],
+                  "additionalProperties": false
+                }
+              },
+              "hitRate": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "description": "Percent, 0–100"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "penRate": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "description": "Percent, 0–100"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": ["battles", "players", "shots", "meanRoll", "withinSpread", "buckets", "hitRate", "penRate"],
+            "additionalProperties": false
+          },
+          "luck": {
+            "type": "string",
+            "enum": ["lucky", "even", "unlucky", "unknown"]
+          },
+          "serverMeanRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "deltaVsServer": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["period", "accountId", "summary", "luck", "serverMeanRoll", "deltaVsServer"],
+        "additionalProperties": false
+      },
+      "MapRotationDto_Output": {
+        "type": "object",
+        "properties": {
+          "tier": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 11
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["random", "onslaught", "frontline", "ranked", "steelHunter"]
+          },
+          "windowDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "battles": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "arenaId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": ["string", "null"]
+                },
+                "image": {
+                  "type": ["string", "null"]
+                },
+                "camouflageType": {
+                  "type": ["string", "null"]
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "share": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Percent, 0–100"
+                },
+                "modBattles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "replayBattles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": ["arenaId", "name", "slug", "image", "camouflageType", "battles", "share", "modBattles", "replayBattles"],
+              "additionalProperties": false
+            }
+          },
+          "computedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["tier", "mode", "windowDays", "battles", "rows", "computedAt"],
+        "additionalProperties": false
+      },
+      "MapQueueDto_Output": {
+        "type": "object",
+        "properties": {
+          "tier": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 11
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["random", "onslaught", "frontline", "ranked", "steelHunter"]
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "windowDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "minSamples": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tier": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 11
+                },
+                "hour": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 23
+                },
+                "samples": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "avgSec": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "medianSec": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "p90Sec": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": ["tier", "hour", "samples", "avgSec", "medianSec", "p90Sec"],
+              "additionalProperties": false
+            }
+          },
+          "now": {
+            "type": "object",
+            "properties": {
+              "hour": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 23
+              },
+              "selected": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "tier": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 11
+                      },
+                      "hour": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 23
+                      },
+                      "samples": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "avgSec": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "medianSec": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "p90Sec": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    },
+                    "required": ["tier", "hour", "samples", "avgSec", "medianSec", "p90Sec"],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "fastest": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "tier": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 11
+                      },
+                      "hour": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 23
+                      },
+                      "samples": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "avgSec": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "medianSec": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "p90Sec": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    },
+                    "required": ["tier", "hour", "samples", "avgSec", "medianSec", "p90Sec"],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "tiers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "tier": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 11
+                    },
+                    "hour": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 23
+                    },
+                    "samples": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "avgSec": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "medianSec": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "p90Sec": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "required": ["tier", "hour", "samples", "avgSec", "medianSec", "p90Sec"],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": ["hour", "selected", "fastest", "tiers"],
+            "additionalProperties": false
+          },
+          "computedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["tier", "mode", "timezone", "windowDays", "minSamples", "cells", "now", "computedAt"],
+        "additionalProperties": false
+      },
+      "TankMathDto_Output": {
+        "type": "object",
+        "properties": {
+          "tankId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "isWheeled": {
+            "type": "boolean"
+          },
+          "camoSkillRate": {
+            "type": "number"
+          },
+          "stock": {
+            "type": "object",
+            "properties": {
+              "modules": {
+                "type": "object",
+                "properties": {
+                  "chassis": {
+                    "type": "string"
+                  },
+                  "turret": {
+                    "type": "string"
+                  },
+                  "gun": {
+                    "type": "string"
+                  },
+                  "engine": {
+                    "type": "string"
+                  },
+                  "radio": {
+                    "type": "string"
+                  }
+                },
+                "required": ["chassis", "turret", "gun", "engine", "radio"],
+                "additionalProperties": false
+              },
+              "handling": {
+                "type": "object",
+                "properties": {
+                  "aimingTime": {
+                    "type": "number"
+                  },
+                  "dispersion": {
+                    "type": "number"
+                  },
+                  "dispersionMovement": {
+                    "type": "number"
+                  },
+                  "dispersionHullRotation": {
+                    "type": "number"
+                  },
+                  "dispersionTurretRotation": {
+                    "type": "number"
+                  },
+                  "dispersionAfterShot": {
+                    "type": "number"
+                  },
+                  "speedForward": {
+                    "type": "number"
+                  },
+                  "hullTraverse": {
+                    "type": "number"
+                  },
+                  "turretTraverse": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "aimingTime",
+                  "dispersion",
+                  "dispersionMovement",
+                  "dispersionHullRotation",
+                  "dispersionTurretRotation",
+                  "dispersionAfterShot",
+                  "speedForward",
+                  "hullTraverse",
+                  "turretTraverse"
+                ],
+                "additionalProperties": false
+              },
+              "shells": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "shell": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "caliber": {
+                      "type": ["number", "null"]
+                    },
+                    "isPremium": {
+                      "type": "boolean"
+                    },
+                    "damage": {
+                      "type": "number"
+                    },
+                    "speed": {
+                      "type": "number"
+                    },
+                    "gravity": {
+                      "type": "number"
+                    },
+                    "maxDistance": {
+                      "type": "number"
+                    },
+                    "penetration100m": {
+                      "type": "number"
+                    },
+                    "penetration500m": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "shell",
+                    "kind",
+                    "caliber",
+                    "isPremium",
+                    "damage",
+                    "speed",
+                    "gravity",
+                    "maxDistance",
+                    "penetration100m",
+                    "penetration500m"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "vision": {
+                "type": "object",
+                "properties": {
+                  "baseViewRange": {
+                    "type": "number"
+                  },
+                  "viewRange": {
+                    "type": "number"
+                  }
+                },
+                "required": ["baseViewRange", "viewRange"],
+                "additionalProperties": false
+              },
+              "camouflage": {
+                "type": "object",
+                "properties": {
+                  "still": {
+                    "type": "number"
+                  },
+                  "moving": {
+                    "type": "number"
+                  },
+                  "camouflageBonus": {
+                    "type": "number"
+                  },
+                  "atShot": {
+                    "type": "number"
+                  },
+                  "camoNet": {
+                    "type": "number"
+                  }
+                },
+                "required": ["still", "moving", "camouflageBonus", "atShot", "camoNet"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["modules", "handling", "shells", "vision", "camouflage"],
+            "additionalProperties": false
+          },
+          "top": {
+            "type": "object",
+            "properties": {
+              "modules": {
+                "type": "object",
+                "properties": {
+                  "chassis": {
+                    "type": "string"
+                  },
+                  "turret": {
+                    "type": "string"
+                  },
+                  "gun": {
+                    "type": "string"
+                  },
+                  "engine": {
+                    "type": "string"
+                  },
+                  "radio": {
+                    "type": "string"
+                  }
+                },
+                "required": ["chassis", "turret", "gun", "engine", "radio"],
+                "additionalProperties": false
+              },
+              "handling": {
+                "type": "object",
+                "properties": {
+                  "aimingTime": {
+                    "type": "number"
+                  },
+                  "dispersion": {
+                    "type": "number"
+                  },
+                  "dispersionMovement": {
+                    "type": "number"
+                  },
+                  "dispersionHullRotation": {
+                    "type": "number"
+                  },
+                  "dispersionTurretRotation": {
+                    "type": "number"
+                  },
+                  "dispersionAfterShot": {
+                    "type": "number"
+                  },
+                  "speedForward": {
+                    "type": "number"
+                  },
+                  "hullTraverse": {
+                    "type": "number"
+                  },
+                  "turretTraverse": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "aimingTime",
+                  "dispersion",
+                  "dispersionMovement",
+                  "dispersionHullRotation",
+                  "dispersionTurretRotation",
+                  "dispersionAfterShot",
+                  "speedForward",
+                  "hullTraverse",
+                  "turretTraverse"
+                ],
+                "additionalProperties": false
+              },
+              "shells": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "shell": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "caliber": {
+                      "type": ["number", "null"]
+                    },
+                    "isPremium": {
+                      "type": "boolean"
+                    },
+                    "damage": {
+                      "type": "number"
+                    },
+                    "speed": {
+                      "type": "number"
+                    },
+                    "gravity": {
+                      "type": "number"
+                    },
+                    "maxDistance": {
+                      "type": "number"
+                    },
+                    "penetration100m": {
+                      "type": "number"
+                    },
+                    "penetration500m": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "shell",
+                    "kind",
+                    "caliber",
+                    "isPremium",
+                    "damage",
+                    "speed",
+                    "gravity",
+                    "maxDistance",
+                    "penetration100m",
+                    "penetration500m"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "vision": {
+                "type": "object",
+                "properties": {
+                  "baseViewRange": {
+                    "type": "number"
+                  },
+                  "viewRange": {
+                    "type": "number"
+                  }
+                },
+                "required": ["baseViewRange", "viewRange"],
+                "additionalProperties": false
+              },
+              "camouflage": {
+                "type": "object",
+                "properties": {
+                  "still": {
+                    "type": "number"
+                  },
+                  "moving": {
+                    "type": "number"
+                  },
+                  "camouflageBonus": {
+                    "type": "number"
+                  },
+                  "atShot": {
+                    "type": "number"
+                  },
+                  "camoNet": {
+                    "type": "number"
+                  }
+                },
+                "required": ["still", "moving", "camouflageBonus", "atShot", "camoNet"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["modules", "handling", "shells", "vision", "camouflage"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["tankId", "isWheeled", "camoSkillRate", "stock", "top"],
+        "additionalProperties": false
+      },
+      "AchievementsCatalogDto_Output": {
+        "type": "object",
+        "properties": {
+          "sample": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "catalogSize": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rarest": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": ["string", "null"]
+                  },
+                  "section": {
+                    "type": ["string", "null"]
+                  },
+                  "image": {
+                    "type": ["string", "null"]
+                  },
+                  "holders": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "share": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "Percent, 0–100"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "points": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "tier": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": ["legendary", "epic", "rare", "uncommon", "common"]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": ["name", "title", "description", "section", "image", "holders", "share", "points", "tier"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "computedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": ["string", "null"]
+                },
+                "section": {
+                  "type": ["string", "null"]
+                },
+                "image": {
+                  "type": ["string", "null"]
+                },
+                "holders": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "share": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "points": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "tier": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": ["legendary", "epic", "rare", "uncommon", "common"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": ["name", "title", "description", "section", "image", "holders", "share", "points", "tier"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["sample", "catalogSize", "sections", "rarest", "computedAt", "items"],
+        "additionalProperties": false
+      },
+      "TankRarityDto_Output": {
+        "type": "object",
+        "properties": {
+          "sample": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "computedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "vehicle": {
+                  "type": "object",
+                  "properties": {
+                    "tankId": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "shortName": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "nation": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 32
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                    },
+                    "tier": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 11
+                    },
+                    "isPremium": {
+                      "type": "boolean"
+                    },
+                    "isCollectible": {
+                      "type": "boolean"
+                    },
+                    "images": {
+                      "type": "object",
+                      "properties": {
+                        "small": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "contour": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["small", "contour", "big"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                  "additionalProperties": false
+                },
+                "owners": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "share": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Percent, 0–100"
+                },
+                "tier": {
+                  "type": "string",
+                  "enum": ["legendary", "epic", "rare", "uncommon", "common"]
+                }
+              },
+              "required": ["vehicle", "owners", "share", "tier"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["sample", "computedAt", "items"],
+        "additionalProperties": false
+      },
+      "CollectorsDto_Output": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "rank": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "accountId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "nickname": {
+                  "type": "string"
+                },
+                "clanTag": {
+                  "type": ["string", "null"]
+                },
+                "held": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "points": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "completion": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Percent, 0–100"
+                }
+              },
+              "required": ["rank", "accountId", "nickname", "clanTag", "held", "points", "completion"],
+              "additionalProperties": false
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": ["items", "total", "limit", "offset"],
+        "additionalProperties": false
+      },
+      "PlayerCollectionDto_Output": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "fetchedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "held": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "points": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "completion": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Percent, 0–100"
+          },
+          "obtainable": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "topPercent": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Percent, 0–100"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sample": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "rarest": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": ["string", "null"]
+                },
+                "section": {
+                  "type": ["string", "null"]
+                },
+                "image": {
+                  "type": ["string", "null"]
+                },
+                "holders": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "share": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "points": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "tier": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": ["legendary", "epic", "rare", "uncommon", "common"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": ["name", "title", "description", "section", "image", "holders", "share", "points", "tier", "count"],
+              "additionalProperties": false
+            }
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": ["string", "null"]
+                },
+                "best": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "threshold": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "progress": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Percent, 0–100"
+                },
+                "achieved": {
+                  "type": "boolean"
+                }
+              },
+              "required": ["name", "title", "image", "best", "threshold", "progress", "achieved"],
+              "additionalProperties": false
+            }
+          },
+          "showcase": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": ["string", "null"]
+                    },
+                    "section": {
+                      "type": ["string", "null"]
+                    },
+                    "image": {
+                      "type": ["string", "null"]
+                    },
+                    "holders": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "share": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 100,
+                          "description": "Percent, 0–100"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "points": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "tier": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": ["legendary", "epic", "rare", "uncommon", "common"]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "count": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": ["name", "title", "description", "section", "image", "holders", "share", "points", "tier", "count"],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "viewerIsOwner": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "accountId",
+          "nickname",
+          "fetchedAt",
+          "held",
+          "points",
+          "completion",
+          "obtainable",
+          "rank",
+          "topPercent",
+          "sample",
+          "rarest",
+          "series",
+          "showcase",
+          "viewerIsOwner"
+        ],
+        "additionalProperties": false
+      },
+      "SupertestListDto_Output": {
+        "type": "object",
+        "properties": {
+          "announcements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": ["string", "null"]
+                },
+                "image": {
+                  "type": ["string", "null"]
+                },
+                "source": {
+                  "type": "string"
+                },
+                "isOfficial": {
+                  "type": "boolean",
+                  "description": "True for tanki.su announcements; false for development data"
+                },
+                "publishedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "parsedAt": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "tanks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string"
+                      },
+                      "tankId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "vehicle": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "tankId": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "shortName": {
+                                "type": "string"
+                              },
+                              "slug": {
+                                "type": "string"
+                              },
+                              "nation": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 32
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                              },
+                              "tier": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 11
+                              },
+                              "isPremium": {
+                                "type": "boolean"
+                              },
+                              "isCollectible": {
+                                "type": "boolean"
+                              },
+                              "images": {
+                                "type": "object",
+                                "properties": {
+                                  "small": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "contour": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "big": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": ["small", "contour", "big"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "isNewVehicle": {
+                        "type": "boolean"
+                      },
+                      "verdict": {
+                        "type": "string",
+                        "enum": ["buff", "nerf", "neutral"],
+                        "description": "buff when buffs outnumber nerfs, nerf when the reverse, neutral otherwise"
+                      },
+                      "changes": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            "param": {
+                              "description": "Normalised characteristic key (reloadTime, aimingTime, dispersion, shellDamage, shellPenetration, maxHealth, viewRange, …); null when the line names no known one",
+                              "type": ["string", "null"]
+                            },
+                            "label": {
+                              "type": "string",
+                              "description": "The characteristic as the announcement names it"
+                            },
+                            "from": {
+                              "description": "Value before the change as announced; null for a new vehicle or when only the new value is given",
+                              "type": ["number", "null"]
+                            },
+                            "to": {
+                              "description": "Value on the supertest; null for a worded change without numbers",
+                              "type": ["number", "null"]
+                            },
+                            "live": {
+                              "description": "Value of the top configuration in the current game data at the time the announcement was parsed",
+                              "type": ["number", "null"]
+                            },
+                            "delta": {
+                              "description": "to minus from, or minus live when the announcement gives only the new value",
+                              "type": ["number", "null"]
+                            },
+                            "unit": {
+                              "type": ["string", "null"]
+                            },
+                            "raw": {
+                              "type": "string",
+                              "description": "The source line"
+                            },
+                            "verdict": {
+                              "type": "string",
+                              "enum": ["buff", "nerf", "neutral"],
+                              "description": "buff: better than before for the player (lower is better for reload, aim time, dispersion and weight); nerf: worse; neutral: unchanged or unknown"
+                            }
+                          },
+                          "required": ["id", "param", "label", "from", "to", "live", "delta", "unit", "raw", "verdict"],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": ["key", "tankId", "name", "vehicle", "isNewVehicle", "verdict", "changes"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["id", "url", "title", "summary", "image", "source", "isOfficial", "publishedAt", "parsedAt", "tanks"],
+              "additionalProperties": false
+            }
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "announcements": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "tanks": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "buffs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "nerfs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": ["announcements", "tanks", "buffs", "nerfs"],
+            "additionalProperties": false
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["announcements", "totals", "updatedAt"],
+        "additionalProperties": false
+      },
+      "SupertestMineDto_Output": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "announcements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": ["string", "null"]
+                },
+                "image": {
+                  "type": ["string", "null"]
+                },
+                "source": {
+                  "type": "string"
+                },
+                "isOfficial": {
+                  "type": "boolean",
+                  "description": "True for tanki.su announcements; false for development data"
+                },
+                "publishedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "parsedAt": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "tanks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string"
+                      },
+                      "tankId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "vehicle": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "tankId": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "shortName": {
+                                "type": "string"
+                              },
+                              "slug": {
+                                "type": "string"
+                              },
+                              "nation": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 32
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                              },
+                              "tier": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 11
+                              },
+                              "isPremium": {
+                                "type": "boolean"
+                              },
+                              "isCollectible": {
+                                "type": "boolean"
+                              },
+                              "images": {
+                                "type": "object",
+                                "properties": {
+                                  "small": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "contour": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "big": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": ["small", "contour", "big"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "isNewVehicle": {
+                        "type": "boolean"
+                      },
+                      "verdict": {
+                        "type": "string",
+                        "enum": ["buff", "nerf", "neutral"],
+                        "description": "buff when buffs outnumber nerfs, nerf when the reverse, neutral otherwise"
+                      },
+                      "changes": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            "param": {
+                              "description": "Normalised characteristic key (reloadTime, aimingTime, dispersion, shellDamage, shellPenetration, maxHealth, viewRange, …); null when the line names no known one",
+                              "type": ["string", "null"]
+                            },
+                            "label": {
+                              "type": "string",
+                              "description": "The characteristic as the announcement names it"
+                            },
+                            "from": {
+                              "description": "Value before the change as announced; null for a new vehicle or when only the new value is given",
+                              "type": ["number", "null"]
+                            },
+                            "to": {
+                              "description": "Value on the supertest; null for a worded change without numbers",
+                              "type": ["number", "null"]
+                            },
+                            "live": {
+                              "description": "Value of the top configuration in the current game data at the time the announcement was parsed",
+                              "type": ["number", "null"]
+                            },
+                            "delta": {
+                              "description": "to minus from, or minus live when the announcement gives only the new value",
+                              "type": ["number", "null"]
+                            },
+                            "unit": {
+                              "type": ["string", "null"]
+                            },
+                            "raw": {
+                              "type": "string",
+                              "description": "The source line"
+                            },
+                            "verdict": {
+                              "type": "string",
+                              "enum": ["buff", "nerf", "neutral"],
+                              "description": "buff: better than before for the player (lower is better for reload, aim time, dispersion and weight); nerf: worse; neutral: unchanged or unknown"
+                            }
+                          },
+                          "required": ["id", "param", "label", "from", "to", "live", "delta", "unit", "raw", "verdict"],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": ["key", "tankId", "name", "vehicle", "isNewVehicle", "verdict", "changes"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["id", "url", "title", "summary", "image", "source", "isOfficial", "publishedAt", "parsedAt", "tanks"],
+              "additionalProperties": false
+            },
+            "description": "Announcements narrowed to the tanks the account has played"
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "announcements": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "tanks": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "buffs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "nerfs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": ["announcements", "tanks", "buffs", "nerfs"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["accountId", "announcements", "totals"],
+        "additionalProperties": false
+      },
+      "SupertestAnnouncementDto_Output": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "image": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "isOfficial": {
+            "type": "boolean",
+            "description": "True for tanki.su announcements; false for development data"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "parsedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tanks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "tankId": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "vehicle": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "tankId": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "shortName": {
+                          "type": "string"
+                        },
+                        "slug": {
+                          "type": "string"
+                        },
+                        "nation": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 32
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                        },
+                        "tier": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 11
+                        },
+                        "isPremium": {
+                          "type": "boolean"
+                        },
+                        "isCollectible": {
+                          "type": "boolean"
+                        },
+                        "images": {
+                          "type": "object",
+                          "properties": {
+                            "small": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "contour": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "big": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": ["small", "contour", "big"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "isNewVehicle": {
+                  "type": "boolean"
+                },
+                "verdict": {
+                  "type": "string",
+                  "enum": ["buff", "nerf", "neutral"],
+                  "description": "buff when buffs outnumber nerfs, nerf when the reverse, neutral otherwise"
+                },
+                "changes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "param": {
+                        "description": "Normalised characteristic key (reloadTime, aimingTime, dispersion, shellDamage, shellPenetration, maxHealth, viewRange, …); null when the line names no known one",
+                        "type": ["string", "null"]
+                      },
+                      "label": {
+                        "type": "string",
+                        "description": "The characteristic as the announcement names it"
+                      },
+                      "from": {
+                        "description": "Value before the change as announced; null for a new vehicle or when only the new value is given",
+                        "type": ["number", "null"]
+                      },
+                      "to": {
+                        "description": "Value on the supertest; null for a worded change without numbers",
+                        "type": ["number", "null"]
+                      },
+                      "live": {
+                        "description": "Value of the top configuration in the current game data at the time the announcement was parsed",
+                        "type": ["number", "null"]
+                      },
+                      "delta": {
+                        "description": "to minus from, or minus live when the announcement gives only the new value",
+                        "type": ["number", "null"]
+                      },
+                      "unit": {
+                        "type": ["string", "null"]
+                      },
+                      "raw": {
+                        "type": "string",
+                        "description": "The source line"
+                      },
+                      "verdict": {
+                        "type": "string",
+                        "enum": ["buff", "nerf", "neutral"],
+                        "description": "buff: better than before for the player (lower is better for reload, aim time, dispersion and weight); nerf: worse; neutral: unchanged or unknown"
+                      }
+                    },
+                    "required": ["id", "param", "label", "from", "to", "live", "delta", "unit", "raw", "verdict"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["key", "tankId", "name", "vehicle", "isNewVehicle", "verdict", "changes"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["id", "url", "title", "summary", "image", "source", "isOfficial", "publishedAt", "parsedAt", "tanks"],
         "additionalProperties": false
       }
     }

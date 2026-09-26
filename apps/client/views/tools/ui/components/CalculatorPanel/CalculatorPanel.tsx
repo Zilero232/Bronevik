@@ -2,6 +2,8 @@
 
 import { match } from 'ts-pattern';
 
+import { TankMathTool } from '@/widgets/tank/tank-math';
+
 import { TOOLS_LAYOUT } from '../../../config';
 import { useActiveCalculator } from '../../../model/hooks';
 import { BattlePassCalculator } from '../BattlePassCalculator';
@@ -27,6 +29,7 @@ export const CalculatorPanel = () => {
         .with('gold', () => <GoldCalculator />)
         .with('pass', () => <BattlePassCalculator />)
         .with('frontline', () => <FrontlineCalculator />)
+        .with('math', () => <TankMathTool />)
         .exhaustive()}
     </section>
   );

@@ -109,3 +109,17 @@ streamer-live-title = { $name } в эфире
 streamer-live-body = Трансляция началась: { $platform }
 streamer-live-tank-title = { $name } в эфире на { $tankName }
 streamer-live-tank-body = Трансляция на { $tankName }: { $platform }
+
+tank-level-up-title = { $tankName }: уровень { $level }
+tank-level-up-body = Новый уровень танка — { $level }. Начислено { $shells } { $shells ->
+        [one] гильза
+        [few] гильзы
+       *[many] гильз
+    }
+
+tank-challenge-done-title = Челлендж недели выполнен
+tank-challenge-done-body = { $tankName }: задание недели выполнено. Начислено { $shells } { $shells ->
+        [one] гильза
+        [few] гильзы
+       *[many] гильз
+    }

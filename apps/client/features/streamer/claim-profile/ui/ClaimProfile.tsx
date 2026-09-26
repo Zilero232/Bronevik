@@ -4,6 +4,7 @@ import { ArrowRight, LogIn } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
+import { useLoginHref } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, Card, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
@@ -17,6 +18,7 @@ import { ClaimStatus, CodeProof, ManualProof, OauthProof } from './components';
 import s from './ClaimProfile.module.scss';
 
 export const ClaimProfile = ({ slug }: ClaimProfileProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('streamersDirectory.claim');
   const claim = useClaimProfile(slug);
 
@@ -26,7 +28,7 @@ export const ClaimProfile = ({ slug }: ClaimProfileProps) => {
       <Card>
         <EmptyState
           action={
-            <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.auth.login}>
+            <Link className={buttonVariants({ size: 'sm' })} href={loginHref}>
               <LogIn size={CLAIM_PROFILE.iconSize} />
               {t('signIn.action')}
             </Link>

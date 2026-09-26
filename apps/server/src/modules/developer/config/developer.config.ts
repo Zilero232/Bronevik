@@ -41,7 +41,7 @@ export const WEBHOOK_DELIVERY = {
   responseBodyMaxLength: 1_000,
   secretBytes: 32,
   blockedResponse: 'refused: the webhook host resolves to a non-public address',
-  userAgent: 'Otmetki-Webhooks/1.0 (+https://otmetki.app)',
+  userAgent: 'Otmetki-Webhooks/1.0 (+https://triotmetki.ru)',
   deliveriesShown: 50
 } as const;
 

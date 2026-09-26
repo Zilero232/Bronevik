@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "title": "Honest RNG — real damage rolls",
+    "description": "How damage really rolls in Mir Tankov: the distribution of shots by players with the mod against the theoretical ±25%."
+  },
+  "head": {
+    "home": "Home",
+    "title": "Honest RNG",
+    "lead": "Real per-shot damage rolls from players with the mod against the theoretical ±25%.",
+    "shots": "Shots sampled",
+    "meanRoll": "Mean roll",
+    "within": "Within ±25%"
+  },
+  "period": {
+    "label": "Period",
+    "d7": "7 days",
+    "d30": "30 days",
+    "all": "All time"
+  },
+  "server": {
+    "title": "Server damage distribution",
+    "meta": "Share of penetrations by deviation from nominal damage",
+    "fact": "Actual",
+    "theory": "Theory"
+  },
+  "breakdown": {
+    "tiers": "By vehicle tier",
+    "shells": "By shell type"
+  },
+  "columns": {
+    "tier": "Tier",
+    "shell": "Shell",
+    "shots": "Shots",
+    "meanRoll": "Mean roll",
+    "within": "Within ±25%",
+    "empty": "No data yet"
+  },
+  "shells": {
+    "armor_piercing": "AP",
+    "armor_piercing_cr": "APCR",
+    "hollow_charge": "HEAT",
+    "high_explosive": "HE",
+    "unknown": "Unknown"
+  },
+  "empty": {
+    "title": "No shots yet",
+    "description": "The damage distribution appears once players with the mod play some battles."
+  },
+  "error": {
+    "title": "Could not load the statistics",
+    "description": "The statistics server did not answer. Try again."
+  },
+  "mine": {
+    "title": "Your RNG",
+    "series": "You",
+    "shots": "Your shots",
+    "meanRoll": "Your mean roll",
+    "vsServer": "Versus server",
+    "vsServerHint": "Your mean roll minus the server mean",
+    "verdict": "Verdict",
+    "chartTitle": "Your damage distribution",
+    "luck": {
+      "lucky": "Lucky",
+      "even": "Like everyone",
+      "unlucky": "Unlucky",
+      "unknown": "Not enough data"
+    },
+    "guestTitle": "See your own RNG",
+    "guestText": "Sign in with Lesta ID and install the mod — we will measure the rolls of your shots.",
+    "signIn": "Sign in",
+    "noAccountTitle": "Link your account",
+    "noAccountText": "Link your Mir Tankov account to measure your RNG.",
+    "link": "Link",
+    "emptyTitle": "No shots of yours",
+    "emptyText": "Play a few battles with the mod installed — the data arrives automatically.",
+    "errorTitle": "Could not load your RNG",
+    "errorText": "Try again a bit later.",
+    "plusTitle": "Shot-by-shot breakdown",
+    "plusText": "Shot history, penetration by distance and a review of every battle are in Plus analytics.",
+    "plusAction": "Open analytics"
+  },
+  "method": {
+    "title": "How we count",
+    "data": "We only use your own shots from the mod: damage on penetration and the shell's nominal damage. Killing shots and HE are excluded — their damage is capped or depends on armour.",
+    "theory": "The theoretical curve is a normal distribution truncated at ±25% of nominal. The mean roll is how far total damage sits above or below nominal.",
+    "fairPlay": "The mod reads nothing about enemies: only the results of your own battles."
+  }
+}

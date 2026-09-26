@@ -20,7 +20,13 @@ export class ClanHistoryService {
     let rows = 0;
 
     for (const { accountId } of known) {
-      const entries = (histories[String(accountId)] ?? []).filter((entry) => entry.left_at);
+      const history = histories[String(accountId)];
+
+      if (!history) {
+        continue;
+      }
+
+      const entries = history.filter((entry) => entry.left_at);
 
       await this.prisma.$transaction([
         this.prisma.playerClanHistory.deleteMany({ where: { accountId, leftAt: { not: null } } }),

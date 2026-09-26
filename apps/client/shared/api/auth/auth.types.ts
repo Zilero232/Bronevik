@@ -3,7 +3,9 @@ export type TelegramWidgetConfig = {
   enabled: boolean;
 };
 
-export type TelegramWebAppSession = {
+export type MiniAppSession = {
   token: string;
   user: { id: string; name: string };
 };
+
+export type TelegramWebAppSession = MiniAppSession;

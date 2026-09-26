@@ -13,5 +13,6 @@ export {
   removeOverlay,
   saveMyStreamerSettings,
   saveStreamerProfile,
+  setTwitchPredictions,
   updateOverlay
 } from './streamers';

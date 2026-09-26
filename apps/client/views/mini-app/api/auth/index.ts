@@ -1,1 +1,1 @@
-export { signInWithMiniApp } from './auth';
+export { signInWithMiniApp, signInWithVkMiniApp } from './auth';

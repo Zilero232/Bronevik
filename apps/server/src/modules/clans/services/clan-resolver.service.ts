@@ -5,7 +5,7 @@ import type { ClanInfo, LestaClient } from '../../../lib/lesta';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { clanInfoFields, clanRoleToDb, fromUnixSeconds } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
-import { CollectorProducerService } from '../../collector';
+import { CollectorProducerService, PurgeGuardService } from '../../collector';
 import { CLAN_PAGE } from '../config';
 
 @Injectable()
@@ -13,6 +13,7 @@ export class ClanResolverService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly collector: CollectorProducerService,
+    private readonly purgeGuard: PurgeGuardService,
     @Inject(LESTA_CLIENT) private readonly lesta: LestaClient
   ) {}
 
@@ -61,7 +62,8 @@ export class ClanResolverService {
 
   private async store(info: ClanInfo): Promise<void> {
     const clanId = BigInt(info.clan_id);
-    const members = info.members ?? [];
+    const blocked = await this.purgeGuard.blocked((info.members ?? []).map((member) => member.account_id));
+    const members = (info.members ?? []).filter((member) => !blocked.has(member.account_id));
 
     const data = {
       ...clanInfoFields(info),

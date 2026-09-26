@@ -154,6 +154,12 @@ export class CompetitionService {
   }
 
   async leave({ id, userId }: CompetitionOwnedInput): Promise<CompetitionView> {
+    const competition = await this.prisma.competition.findUnique({ where: { id }, select: { startsAt: true, endsAt: true } });
+
+    if (competition && competitionStatus({ startsAt: competition.startsAt, endsAt: competition.endsAt, now: new Date() }) === 'finished') {
+      throw new AppConflictException('CONFLICT', 'The competition is over');
+    }
+
     const entries = await this.prisma.competitionEntry.findMany({ where: { competitionId: id, userId }, select: { teamId: true } });
 
     if (entries.length === 0) {

@@ -1,3 +1,5 @@
+import type { ClanMemberEvent } from '@otmetki/schemas';
+
 import type { ClanRole } from '../../../../../../generated';
 
 type StoredMember = {
@@ -34,10 +36,4 @@ export type ClanMemberEventsInput = {
   now: Date;
 };
 
-export type RosterChange = {
-  accountId: number;
-  type: 'joined' | 'kicked' | 'left' | 'role_changed';
-  oldRole: string | null;
-  newRole: string | null;
-  occurredAt: string;
-};
+export type RosterChange = Omit<ClanMemberEvent, 'nickname'>;

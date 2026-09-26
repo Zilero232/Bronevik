@@ -8,7 +8,7 @@ body {
 }
 
 html {
-  scroll-padding-top: calc(var(--header-height) + var(--space-4));
+  scroll-padding-top: calc(var(--header-offset) + var(--space-4));
 }
 
 body {

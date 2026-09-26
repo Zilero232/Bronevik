@@ -1,0 +1,1 @@
+export { IconFilterGlyph } from './IconFilterGlyph';

@@ -5,7 +5,7 @@ import type { MiniAppModeInput } from '../mini-app-mode.types';
 import { resolveMiniAppMode } from '../mini-app-mode';
 
 const BROWSER_GUEST: MiniAppModeInput = { env: 'browser', signInStatus: 'idle', hasSession: false, isSessionPending: false };
-const TELEGRAM: MiniAppModeInput = { ...BROWSER_GUEST, env: 'telegram' };
+const TELEGRAM: MiniAppModeInput = { ...BROWSER_GUEST, env: 'inside' };
 
 describe('resolveMiniAppMode', () => {
   it('waits while the environment is still being detected, whatever else is known', () => {

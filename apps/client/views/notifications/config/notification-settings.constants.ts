@@ -12,7 +12,7 @@ export const NOTIFICATION_CHANNELS = [
 
 export const EVENT_GROUPS = {
   marks: ['moe_gained', 'moe_threshold_dropped', 'mastery_gained'],
-  battles: ['session_finished', 'goal_reached', 'badge_awarded', 'first_win_available'],
+  battles: ['session_finished', 'goal_reached', 'badge_awarded', 'first_win_available', 'tank_level_up', 'tank_challenge_done'],
   clan: ['clan_roster_changed', 'clan_event_reminder', 'clan_weekly_report'],
   offers: ['bonus_code', 'premium_offer', 'tank_changed', 'tank_returned'],
   community: ['watchlist_digest', 'competition_finished', 'streamer_live'],

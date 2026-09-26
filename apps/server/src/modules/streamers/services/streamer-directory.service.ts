@@ -1,11 +1,14 @@
 import type { StreamerCard, StreamerDirectory } from '@otmetki/schemas';
 
 import { Inject, Injectable } from '@nestjs/common';
+import { streamerCardSchema } from '@otmetki/schemas';
 import { Redis } from 'ioredis';
+import { z } from 'zod';
 
 import type { Prisma } from '../../../../generated';
 import type { StreamerDirectoryQueryView } from '../streamers.types';
 
+import { parseJsonText } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
 import { PROFILE_CARD_INCLUDE, STREAMERS } from '../config';
 import { StreamerCardsService } from './streamer-cards.service';
@@ -50,7 +53,11 @@ export class StreamerDirectoryService {
     const cached = await this.redis.get(key);
 
     if (cached) {
-      return JSON.parse(cached) as StreamerCard[];
+      const parsed = z.array(streamerCardSchema).safeParse(parseJsonText(cached));
+
+      if (parsed.success) {
+        return parsed.data;
+      }
     }
 
     const profiles = await this.prisma.streamerProfile.findMany({

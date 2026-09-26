@@ -14,7 +14,7 @@ import { DetailsCell, DetailsHeaderCell, SweatCell, TankLinkCell, ThresholdCell 
 
 const column = createColumnHelper<MoeRow>();
 
-export const useMarksColumns = (): ColumnDef<MoeRow, never>[] => {
+export const useMarksColumns = (onSelect: (row: MoeRow) => void): ColumnDef<MoeRow, never>[] => {
   const t = useTranslations('marks.table.columns');
 
   return [
@@ -28,14 +28,14 @@ export const useMarksColumns = (): ColumnDef<MoeRow, never>[] => {
       id: 'tier',
       header: t('tier'),
       cell: ({ row }) => <TierCell isTopAccented={false} tier={row.original.vehicle.tier} />,
-      meta: { align: 'center' }
+      meta: { align: 'center', hideBelow: 'sm' }
     }),
     ...DRAWER_THRESHOLDS.map(({ key, marks }) =>
       column.accessor((row) => row.moe?.[key] ?? 0, {
         id: key,
         header: t(`thresholds.${key}`),
         cell: ({ row }) => <ThresholdCell isKey={key === 'p95'} marks={marks} value={row.original.moe?.[key] ?? null} />,
-        meta: NUMERIC_COLUMN
+        meta: key === 'p95' ? NUMERIC_COLUMN : { ...NUMERIC_COLUMN, hideBelow: key === 'p100' ? 'lg' : 'md' }
       })
     ),
     column.accessor((row) => row.trend.p95Delta30d ?? 0, {
@@ -48,12 +48,12 @@ export const useMarksColumns = (): ColumnDef<MoeRow, never>[] => {
       id: 'sweat',
       header: t('sweat'),
       cell: ({ row }) => <SweatCell sweat={row.original.sweat} />,
-      meta: { align: 'center' }
+      meta: { align: 'center', hideBelow: 'lg' }
     }),
     column.display({
       id: 'details',
       header: () => <DetailsHeaderCell />,
-      cell: ({ row }) => <DetailsCell tank={row.original.vehicle.name} />,
+      cell: ({ row }) => <DetailsCell tank={row.original.vehicle.name} onClick={() => onSelect(row.original)} />,
       meta: { align: 'end' }
     })
   ];

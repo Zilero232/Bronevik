@@ -12,7 +12,7 @@ import s from './BattlesTab.module.scss';
 
 export const BattlesTab = () => {
   const t = useTranslations('analytics.battles');
-  const { items, total, columns, isPending, isError, isNoAccount, isRetrying, hasNextPage, isFetchingNextPage, loadMore, retry, openBattle } =
+  const { items, total, columns, isPending, isError, isNoAccount, isRetrying, hasNextPage, isFetchingNextPage, loadMore, retry, battleLink } =
     useMyBattles();
 
   return (
@@ -36,8 +36,8 @@ export const BattlesTab = () => {
         data={items}
         density='media'
         getRowId={(row) => row.id}
+        getRowLink={battleLink}
         isLoading={isPending}
-        onRowClick={(row) => openBattle(row.id)}
       />
     </Card>
   );

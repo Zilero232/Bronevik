@@ -1,4 +1,4 @@
-import type { CohortFilter, ServerStatsPeriod, StatsMode } from '../../../../../../generated';
+import type { ServerStatsPeriod, StatsMode, TankServerStats } from '../../../../../../generated';
 
 export type DailyStatsRow = {
   tankId: number;
@@ -31,24 +31,4 @@ export type BuildServerStatsInput = {
   period: ServerStatsPeriod;
 };
 
-export type ServerStatsRow = {
-  tankId: number;
-  mode: StatsMode;
-  period: ServerStatsPeriod;
-  cohort: CohortFilter;
-  battles: number;
-  players: number;
-  samples: number;
-  winRate: number;
-  playerWinRate: number;
-  winRateDiff: number;
-  avgDamage: number;
-  avgFrags: number;
-  avgSpotted: number;
-  avgXp: number;
-  avgBlocked: number;
-  survivalRate: number;
-  accuracy: number;
-  popularityRank: number | null;
-  tierListRank: string | null;
-};
+export type ServerStatsRow = Omit<TankServerStats, 'computedAt'>;

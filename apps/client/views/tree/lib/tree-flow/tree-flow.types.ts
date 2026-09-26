@@ -13,7 +13,6 @@ export type NodeStateInput = {
 export type TankNodeData = {
   node: TechTreeNode;
   state: TreeElementState;
-  onSelect: (tankId: number) => void;
 };
 
 export type TankFlowNode = Node<TankNodeData, 'tank'>;
@@ -29,5 +28,4 @@ export type TreeFlowInput = {
   tree: TechTree;
   layout: TreeLayout;
   path: number[];
-  onSelect: (tankId: number) => void;
 };

@@ -8,7 +8,8 @@ export const shotsSchema = z
       shellId: z.number().int().positive(),
       kind: z.string(),
       isPremium: z.boolean().catch(false),
-      defaultPortion: z.number().catch(0)
+      defaultPortion: z.number().catch(0),
+      damage: z.object({ armor: z.number().positive() }).nullable().catch(null)
     })
   )
   .catch([]);

@@ -1,0 +1,1 @@
+export { RngHistogram } from './RngHistogram';

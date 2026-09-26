@@ -1,7 +1,7 @@
 export const CORS = {
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   publicMethods: ['GET', 'HEAD', 'OPTIONS'],
-  publicPaths: [/^\/v1(?:\/|$)/u, /^\/overlays\/[^/]+(?:\/stream)?$/u],
+  publicPaths: [/^\/v1(?:\/|$)/u, /^\/overlays\/[^/]+(?:\/stream)?$/u, /^\/streamers\/twitch-panel\/\d+$/u],
   exposedHeaders: [
     'set-auth-token',
     'retry-after',

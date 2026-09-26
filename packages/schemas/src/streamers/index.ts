@@ -1,4 +1,4 @@
-export { OVERLAY_THEMES, STREAMER_DIRECTORY, STREAMER_PLATFORMS, STREAMER_PROFILE } from './streamers.constants';
+export { CHANNEL_HOSTS, OVERLAY_THEMES, STREAMER_DIRECTORY, STREAMER_PLATFORMS, STREAMER_PROFILE } from './streamers.constants';
 export {
   activateChallengeSchema,
   adminClaimListSchema,
@@ -51,7 +51,10 @@ export {
   streamerProviderSchema,
   streamerSlugSchema,
   streamerVideoSchema,
+  twitchChannelParamsSchema,
+  twitchPanelSchema,
   updateOverlaySchema,
+  updatePredictionsSchema,
   upsertStreamerProfileSchema
 } from './streamers.schemas';
 export type {
@@ -84,6 +87,7 @@ export type {
   StreamerClaim,
   StreamerDirectory,
   StreamerDirectoryQuery,
+  StreamerDirectoryQueryInput,
   StreamerFollow,
   StreamerIntegration,
   StreamerInvitation,
@@ -93,6 +97,8 @@ export type {
   StreamerProfileKind,
   StreamerProvider,
   StreamerVideo,
+  TwitchPanel,
   UpdateOverlayInput,
+  UpdatePredictionsInput,
   UpsertStreamerProfileInput
 } from './streamers.types';

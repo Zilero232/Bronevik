@@ -8,10 +8,10 @@ import type {
   CrewRoleRow,
   CrewSkillRow,
   EntryRow,
+  ImportedVehicleSummary,
   ImportPlan,
   ProfileRow,
-  TryLoadoutInput,
-  VehicleSummary
+  TryLoadoutInput
 } from '../importer.types';
 
 import { errorMessage, slugify } from '../../../../../common/lib';
@@ -36,7 +36,7 @@ export const createImportPlan = ({ data }: CreateImportPlanInput): ImportPlan =>
   const warnings = [...data.warnings];
   const version = data.version ?? data.revision.sha;
   const profiles: ProfileRow[] = [];
-  const summaries = new Map<number, VehicleSummary>();
+  const summaries = new Map<number, ImportedVehicleSummary>();
 
   for (const vehicle of data.vehicles) {
     const stock = tryLoadout({ vehicle, preset: 'stock', warnings });

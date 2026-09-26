@@ -1,12 +1,6 @@
-export type LearningCurveRow = {
-  bucket: number;
-  battles: number;
-  players: number;
-  wins: number;
-  damage: bigint;
-  windowDays: number;
-  computedAt: Date;
-};
+import type { TankLearningCurve } from '../../../../../generated';
+
+export type LearningCurveRow = Omit<TankLearningCurve, 'tankId'>;
 
 export type ToTankLearningInput = {
   tankId: number;

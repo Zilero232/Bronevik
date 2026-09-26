@@ -1,3 +1,5 @@
+import type { MissionPlanStep } from '@otmetki/schemas';
+
 export type PlanMission = {
   questId: number;
   chainId: number;
@@ -24,14 +26,7 @@ export type PlanOperationInput = {
   coverage?: ReadonlyMap<number, number>;
 };
 
-export type PlannedStep = {
-  questId: number;
-  chainId: number;
-  branchKey: string;
-  title: string;
-  shortTitle: string | null;
-  withHonors: boolean;
-};
+export type PlannedStep = Omit<MissionPlanStep, 'tank'>;
 
 export type ToStepInput = {
   branch: PlanBranch;

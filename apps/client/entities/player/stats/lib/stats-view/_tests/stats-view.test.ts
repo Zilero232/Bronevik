@@ -1,6 +1,7 @@
+import { ratingTier } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
-import { periodStats, signed, winRateTone } from '..';
+import { periodStats, scaledRating, winRateTone } from '..';
 
 const BLOCK = {
   battles: 100,
@@ -43,16 +44,16 @@ describe('periodStats', () => {
   });
 });
 
-describe('signed', () => {
-  it('prefixes a gain with a plus', () => {
-    expect(signed({ value: 12 })).toBe('+12');
+describe('scaledRating', () => {
+  it('keeps an empty value without a tier', () => {
+    expect(scaledRating({ scale: 'wn8', value: null })).toEqual({ value: null, tier: null });
   });
 
-  it('keeps the minus of a loss', () => {
-    expect(signed({ value: -1.234, digits: 1 })).toBe('-1.2');
+  it('derives the tier from the scale', () => {
+    expect(scaledRating({ scale: 'wn8', value: 5_000 })).toEqual({ value: 5_000, tier: ratingTier({ scale: 'wn8', value: 5_000 }) });
   });
 
-  it('leaves a missing delta missing', () => {
-    expect(signed({ value: undefined })).toBeUndefined();
+  it('gives a zero rating a tier instead of treating it as empty', () => {
+    expect(scaledRating({ scale: 'wn8', value: 0 }).tier).not.toBeNull();
   });
 });

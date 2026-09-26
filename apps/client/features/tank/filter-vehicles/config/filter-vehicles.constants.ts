@@ -8,8 +8,6 @@ export const PREMIUM_FILTERS = ['all', 'regular', 'premium'] as const;
 export const PREMIUM_VALUE = { all: undefined, regular: false, premium: true } as const;
 
 export const VEHICLE_FILTER_ICON = {
-  class: 16,
-  nation: 16,
   reset: 14
 } as const;
 

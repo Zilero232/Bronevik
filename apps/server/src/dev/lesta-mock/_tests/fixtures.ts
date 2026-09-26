@@ -39,9 +39,9 @@ const vehicleRow = (tankId: number, nation: string, type: keyof typeof TYPES, ti
   hull_hp: HP[type] * (tier / 10) * 0.8,
   turret_hp: HP[type] * (tier / 10) * 0.2,
   shots: [
-    { shellId: tankId * 10 + 1, kind: 'ARMOR_PIERCING', isPremium: false, defaultPortion: 0.7 },
-    { shellId: tankId * 10 + 2, kind: 'ARMOR_PIERCING_CR', isPremium: true, defaultPortion: 0 },
-    { shellId: tankId * 10 + 3, kind: 'HIGH_EXPLOSIVE', isPremium: false, defaultPortion: 0.3 }
+    { shellId: tankId * 10 + 1, kind: 'ARMOR_PIERCING', isPremium: false, defaultPortion: 0.7, damage: { armor: 90 + tier * 36 } },
+    { shellId: tankId * 10 + 2, kind: 'ARMOR_PIERCING_CR', isPremium: true, defaultPortion: 0, damage: { armor: 90 + tier * 36 } },
+    { shellId: tankId * 10 + 3, kind: 'HIGH_EXPLOSIVE', isPremium: false, defaultPortion: 0.3, damage: { armor: 120 + tier * 45 } }
   ],
   max_ammo: 50,
   modules_tree: []

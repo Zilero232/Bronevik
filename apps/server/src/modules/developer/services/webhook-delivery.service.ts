@@ -6,9 +6,10 @@ import type { DeliverInput, FailDeliveryInput } from '../developer.types';
 import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { WEBHOOK_DELIVERY } from '../config';
-import { postWebhook, publicAddressOf, webhookHeaders, WebhookResponseError } from '../lib';
+import { publicAddressOf, webhookHeaders, WebhookResponseError } from '../lib';
 import { webhookEventFromDb } from '../mappers';
 import { HostLookupService } from './host-lookup.service';
+import { WebhookPosterService } from './webhook-poster.service';
 
 @Injectable()
 export class WebhookDeliveryService {
@@ -16,7 +17,8 @@ export class WebhookDeliveryService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly hosts: HostLookupService
+    private readonly hosts: HostLookupService,
+    private readonly poster: WebhookPosterService
   ) {}
 
   async deliver({ deliveryId, attempt, isFinal }: DeliverInput): Promise<'delivered' | 'skipped'> {
@@ -45,7 +47,7 @@ export class WebhookDeliveryService {
     }
 
     try {
-      const response = await postWebhook({
+      const response = await this.poster.post({
         url: delivery.endpoint.url,
         address,
         body,

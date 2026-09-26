@@ -1,4 +1,4 @@
-import { FEATURES, TIME } from '../../../config';
+import { TIME } from '../../../config';
 
 export const PULSE_QUEUE = {
   name: 'pulse',
@@ -6,7 +6,7 @@ export const PULSE_QUEUE = {
 } as const;
 
 export const PULSE_SCHEDULES = [
-  { id: 'pulse-sample', queue: PULSE_QUEUE.name, name: PULSE_QUEUE.jobs.sample, repeat: { pattern: '*/15 * * * *' }, enabled: FEATURES.pulse }
+  { id: 'pulse-sample', queue: PULSE_QUEUE.name, name: PULSE_QUEUE.jobs.sample, repeat: { pattern: '*/15 * * * *' } }
 ] as const;
 
 export const PULSE = {

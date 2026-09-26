@@ -1,10 +1,10 @@
-import type { ImageUrlInput, VehicleImageInput, VehicleImages } from './static.types';
+import type { ImageUrlInput, LestaVehicleImages, VehicleImageInput } from './static.types';
 
 import { LESTA_STATIC } from './static.constants';
 
 const imageUrl = ({ path, file }: ImageUrlInput) => `${LESTA_STATIC.encyclopediaUrl}/${path}/${file}.png`;
 
-export const vehicleImages = ({ nation, tag }: VehicleImageInput): VehicleImages => {
+export const vehicleImages = ({ nation, tag }: VehicleImageInput): LestaVehicleImages => {
   const file = `${nation}-${tag}`;
   const { vehicleImagePath } = LESTA_STATIC;
 

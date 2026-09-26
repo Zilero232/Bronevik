@@ -20,9 +20,9 @@ export const QUERY_KEYS = {
   modes: {
     hub: ['modes', 'hub'] as const,
     meta: (params: object) => ['modes', 'meta', params] as const,
-    mine: (days: number) => ['modes', 'me', days] as const
+    mine: (days: number) => ['me', 'modes', days] as const
   },
-  watchlist: (period: string) => ['watchlist', period] as const,
+  watchlist: (period: string) => ['me', 'watchlist', period] as const,
   competitions: {
     list: (params: object) => ['competitions', 'list', params] as const,
     detail: (params: object) => ['competitions', 'detail', params] as const
@@ -38,8 +38,8 @@ export const QUERY_KEYS = {
     armor: (idOrSlug: string) => ['tanks', 'armor', idOrSlug] as const,
     economy: (params: object) => ['tanks', 'economy', params] as const,
     tankEconomy: (tankId: number) => ['tanks', tankId, 'economy'] as const,
-    myEconomy: (days: number) => ['tanks', 'economy', 'me', days] as const,
-    myLearning: (tankId: number) => ['tanks', tankId, 'learning-curve', 'me'] as const
+    myEconomy: (days: number) => ['me', 'tanks', 'economy', days] as const,
+    myLearning: (tankId: number) => ['me', 'tanks', tankId, 'learning-curve'] as const
   },
   marks: {
     list: (params: object) => ['marks', 'list', params] as const,
@@ -77,6 +77,7 @@ export const QUERY_KEYS = {
     list: ['maps', 'list'] as const,
     detail: (id: string) => ['maps', 'detail', id] as const
   },
+  userScoped: [['me'], ['replays', 'mine'], ['tactics', 'board'], ['coaching', 'orders'], ['streamers', 'claim']] as const,
   auth: {
     session: ['auth', 'session'] as const,
     telegramWidget: ['auth', 'telegram-widget'] as const
@@ -137,7 +138,7 @@ export const QUERY_KEYS = {
     spec: ['developer', 'openapi'] as const
   },
   social: {
-    follows: ['social', 'follows'] as const
+    follows: ['me', 'social', 'follows'] as const
   },
   notifications: {
     pushKey: ['notifications', 'push-key'] as const
@@ -152,7 +153,7 @@ export const QUERY_KEYS = {
   },
   tactics: {
     all: ['tactics'] as const,
-    mine: ['tactics', 'mine'] as const,
+    mine: ['me', 'tactics'] as const,
     board: (params: object) => ['tactics', 'board', params] as const
   },
   guides: {
@@ -194,5 +195,36 @@ export const QUERY_KEYS = {
     settingsCompare: (slugs: readonly string[]) => ['streamers', 'settings-compare', ...slugs] as const,
     settingsAggregates: (cohort: string) => ['streamers', 'settings-aggregates', cohort] as const,
     claim: (slug: string) => ['streamers', 'claim', slug.toLowerCase()] as const
+  },
+  bestBattles: {
+    all: ['best-battles'] as const,
+    list: (params: object) => ['best-battles', 'list', params] as const,
+    facets: (period: string) => ['best-battles', 'facets', period] as const
+  },
+  honestRng: {
+    all: ['honest-rng'] as const,
+    server: (params: object) => ['honest-rng', 'server', params] as const,
+    mine: (params: object) => ['honest-rng', 'mine', params] as const
+  },
+  mapStats: {
+    all: ['map-stats'] as const,
+    rotation: (params: object) => ['map-stats', 'rotation', params] as const,
+    queue: (params: object) => ['map-stats', 'queue', params] as const
+  },
+  tankMath: {
+    detail: (tankId: number) => ['tank-math', tankId] as const
+  },
+  achievementsRarity: {
+    all: ['achievements-rarity'] as const,
+    catalog: (params: object) => ['achievements-rarity', 'catalog', params] as const,
+    tanks: (params: object) => ['achievements-rarity', 'tanks', params] as const,
+    leaderboard: (params: object) => ['achievements-rarity', 'leaderboard', params] as const,
+    player: (accountId: number) => ['achievements-rarity', 'player', accountId] as const
+  },
+  supertest: {
+    all: ['supertest'] as const,
+    list: (params: object) => ['supertest', 'list', params] as const,
+    detail: (id: string) => ['supertest', 'detail', id] as const,
+    mine: ['supertest', 'mine'] as const
   }
 } as const;

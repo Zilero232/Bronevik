@@ -211,9 +211,16 @@
   border-radius: var(--radius-sm);
   color: var(--color-text-muted);
 
-  &:hover {
-    background-color: var(--color-surface-hover);
-    color: var(--color-text);
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  @media (pointer: coarse) {
+    min-width: 40px;
+    min-height: 40px;
   }
 }
 
@@ -246,6 +253,27 @@
   margin: -1px;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+@mixin skip-link {
+  @include sr-only;
+
+  &:focus-visible {
+    position: fixed;
+    z-index: var(--z-toast);
+    top: var(--space-2);
+    left: var(--space-2);
+    width: auto;
+    height: auto;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    margin: 0;
+    background: var(--color-surface-raised);
+    clip-path: none;
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    white-space: normal;
+  }
 }
 
 @mixin class-tint($var: --class) {
@@ -342,4 +370,31 @@
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.05;
+}
+
+@mixin coarse {
+  @media (pointer: coarse) {
+    @content;
+  }
+}
+
+@mixin hover {
+  @media (hover: hover) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+@mixin touch-target($size: 40px) {
+  @media (pointer: coarse) {
+    min-width: $size;
+    min-height: $size;
+  }
+}
+
+@mixin touch-input {
+  @media (pointer: coarse) {
+    font-size: max(16px, 1rem);
+  }
 }

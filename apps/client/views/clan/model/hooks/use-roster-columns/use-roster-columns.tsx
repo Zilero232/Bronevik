@@ -29,24 +29,26 @@ export const useRosterColumns = (): ColumnDef<RosterRow, never>[] => {
     column.accessor((row) => clanRoleSchema.options.indexOf(row.role), {
       id: 'role',
       header: t('columns.role'),
-      cell: (info) => <RoleCell role={info.row.original.role} />
+      cell: (info) => <RoleCell role={info.row.original.role} />,
+      meta: { hideBelow: 'sm' }
     }),
     column.accessor((row) => row.daysInClan ?? -1, {
       id: 'daysInClan',
       header: t('columns.daysInClan'),
       cell: (info) => (info.getValue() < 0 ? '—' : format.number(info.getValue())),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'lg' }
     }),
     column.accessor((row) => row.inactiveDays ?? Number.MAX_SAFE_INTEGER, {
       id: 'lastBattle',
       header: t('columns.lastBattle'),
-      cell: (info) => <ActivityCell inactiveDays={info.row.original.inactiveDays} status={info.row.original.status} />
+      cell: (info) => <ActivityCell inactiveDays={info.row.original.inactiveDays} status={info.row.original.status} />,
+      meta: { hideBelow: 'md' }
     }),
     column.accessor((row) => row.battles ?? 0, {
       id: 'battles',
       header: t('columns.battles'),
       cell: (info) => format.number(info.getValue()),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'md' }
     }),
     column.accessor((row) => row.winRate ?? 0, {
       id: 'winRate',
@@ -64,7 +66,7 @@ export const useRosterColumns = (): ColumnDef<RosterRow, never>[] => {
       id: 'recentWn8',
       header: t('columns.recentWn8'),
       cell: (info) => <RatingValue rating={info.row.original.recentWn8} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'lg' }
     })
   ];
 };

@@ -14,7 +14,9 @@ export const TRACKING = {
   },
   lesta: {
     accountExtra: ['statistics.random'],
-    tankExtra: ['random']
+    tankExtra: ['random'],
+    marksFields: ['tank_id', 'achievements'],
+    marksAchievement: 'marksOnGun'
   },
   ratingsDebounceMs: 30_000,
   seed: {

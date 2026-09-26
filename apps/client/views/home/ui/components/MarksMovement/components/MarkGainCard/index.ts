@@ -1,1 +1,0 @@
-export { MarkGainCard } from './MarkGainCard';

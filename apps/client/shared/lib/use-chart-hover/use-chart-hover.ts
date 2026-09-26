@@ -25,7 +25,11 @@ export const useChartHover = ({ count, toIndex, toPosition }: UseChartHoverInput
     setHover({ index, left: left + CHART.margin.left, top: top + CHART.margin.top });
   };
 
-  const onPointerLeave = () => setHover(null);
+  const onPointerLeave = (event: PointerEvent<SVGRectElement>) => {
+    if (event.pointerType !== 'touch') {
+      setHover(null);
+    }
+  };
 
   return { hover, onPointerMove, onPointerLeave };
 };

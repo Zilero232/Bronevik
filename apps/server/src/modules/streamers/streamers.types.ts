@@ -1,13 +1,12 @@
 import type { DonationAlertsDonationEvent, EventsListener } from '@donation-alerts/events';
 import type { RawBodyRequest } from '@nestjs/common';
 import type {
+  ClaimMethod,
   CreateApplyRequestInput,
   CreateChallengeInput,
   createOverlaySchema,
   ModSettingsExport,
-  OverlayConfig,
   overlayDataSchema,
-  OverlayKind,
   previewOverlaySchema,
   SettingsGroupKey,
   SettingsSource,
@@ -17,6 +16,7 @@ import type {
   streamerIntegrationSchema,
   streamerProfileSchema,
   updateOverlaySchema,
+  UpdatePredictionsInput,
   upsertStreamerProfileSchema
 } from '@otmetki/schemas';
 import type { ChatClient } from '@twurple/chat';
@@ -26,6 +26,7 @@ import type { z, ZodType } from 'zod';
 import type {
   Challenge,
   Overlay,
+  SettingsApplyRequest,
   StreamerChannel,
   StreamerClaim as StreamerClaimRow,
   StreamerInvitation,
@@ -129,12 +130,8 @@ export type StoreTokenInput = StoredToken & {
   externalId: string;
 };
 
-export type BuildOverlayDataInput = {
-  userId: string;
+export type BuildOverlayDataInput = Omit<CreateOverlayInput, 'accountId'> & {
   accountId: bigint | null;
-  kind: OverlayKind;
-  name: string;
-  config: OverlayConfig;
 };
 
 export type OverlayMoeInput = {
@@ -200,13 +197,6 @@ export type CachedToken = {
   expiresAt: number;
 };
 
-export type PlatformVideo = {
-  id: string;
-  title: string;
-  url: string;
-  publishedAt: string;
-};
-
 export type ProfileWithChannels = StreamerProfile & {
   channels: StreamerChannel[];
   settings: { profileId: string } | null;
@@ -226,7 +216,7 @@ export type ReplaceChannelsInput = {
 export type StartClaimRequest = {
   userId: string;
   slug: string;
-  method: 'bio_code' | 'manual' | 'oauth';
+  method: ClaimMethod;
   platform?: StreamerPlatform;
   evidence?: string;
 };
@@ -288,12 +278,6 @@ export type CompleteClaimInput = {
   moderatorId: string | null;
 };
 
-export type EditorialInput = {
-  slug: string;
-  displayName: string;
-  channels: readonly ChannelInput[];
-};
-
 export type StreamerDirectoryQueryView = z.infer<typeof streamerDirectoryQuerySchema>;
 
 export type SaveMySettingsInput = Omit<SaveSettingsRequest, 'profileId' | 'userId'> & { userId: string };
@@ -303,13 +287,8 @@ export type SetAnonymousInput = {
   anonymousStats: boolean;
 };
 
-export type ApplyViewInput = {
-  id: string;
+export type ApplyViewInput = Pick<SettingsApplyRequest, 'appliedAt' | 'createdAt' | 'groups' | 'id' | 'status'> & {
   slug: string;
-  groups: string[];
-  status: string;
-  createdAt: Date;
-  appliedAt: Date | null;
 };
 
 export type ClaimTarget = { profile: null; invitation: StreamerInvitation } | { profile: StreamerProfile; invitation: null };
@@ -324,4 +303,23 @@ export type SignedModInput<T> = {
 export type SignedModResult<T> = {
   device: AuthenticatedDevice;
   body: T;
+};
+
+export type SetPredictionsInput = UpdatePredictionsInput & {
+  userId: string;
+};
+
+export type OpenPredictionInput = {
+  accountId: bigint;
+  tankId: number;
+};
+
+export type SettlePredictionInput = {
+  userId: string;
+  now: Date;
+};
+
+export type PredictionThresholdInput = {
+  accountId: bigint;
+  tankId: number;
 };

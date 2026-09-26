@@ -1,17 +1,8 @@
-export type MoeThresholdRow = {
-  tankId: number;
-  p65: number;
-  p85: number;
-  p95: number;
-};
+import type { MasteryThreshold, MoeThreshold } from '../../../../../../generated';
 
-export type MasteryThresholdRow = {
-  tankId: number;
-  class3: number;
-  class2: number;
-  class1: number;
-  master: number;
-};
+export type MoeThresholdRow = Pick<MoeThreshold, 'p65' | 'p85' | 'p95' | 'tankId'>;
+
+export type MasteryThresholdRow = Pick<MasteryThreshold, 'class1' | 'class2' | 'class3' | 'master' | 'tankId'>;
 
 export type ExpectedValuesDateInput = {
   header: Record<string, unknown>;

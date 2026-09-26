@@ -1,7 +1,7 @@
 import { ExternalLink } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { Badge, EmptyState } from '@/ui-kit';
+import { Badge, EmptyState, Timeline } from '@/ui-kit';
 
 import type { EventTimelineProps } from './EventTimeline.types';
 
@@ -22,14 +22,14 @@ export const EventTimeline = ({ weeks, emptyTitle }: EventTimelineProps) => {
       {weeks.map(({ week, entries }) => (
         <section key={week} className={s.week}>
           <h3 className={s.weekTitle}>{t('timeline.week', { date: format.dateTime(new Date(week), { day: 'numeric', month: 'long' }) })}</h3>
-          <ol className={s.list}>
-            {entries.map(({ event, href, days }) => (
-              <li key={event.id} className={s.node} data-kind={event.kind}>
-                <time className={s.date} dateTime={event.startsAt}>
-                  {format.dateTime(new Date(event.startsAt), { day: 'numeric', month: 'short' })}
-                </time>
-                <span aria-hidden className={s.dot} />
-                <div className={s.card}>
+          <Timeline
+            items={entries.map(({ event, href, days }) => ({
+              id: event.id,
+              tone: EVENTS.kindTone[event.kind],
+              date: format.dateTime(new Date(event.startsAt), { day: 'numeric', month: 'short' }),
+              dateTime: event.startsAt,
+              content: (
+                <>
                   <div className={s.head}>
                     <Badge tone={EVENTS.kindTone[event.kind]}>{t(`kinds.${event.kind}`)}</Badge>
                     {days !== null && <span className={s.countdown}>{t('countdown.upcoming', { days })}</span>}
@@ -43,10 +43,11 @@ export const EventTimeline = ({ weeks, emptyTitle }: EventTimelineProps) => {
                     <span className={s.title}>{event.title}</span>
                   )}
                   {event.description && <p className={s.description}>{event.description}</p>}
-                </div>
-              </li>
-            ))}
-          </ol>
+                </>
+              )
+            }))}
+            variant='card'
+          />
         </section>
       ))}
     </div>

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Badge, BarChart, EmptyState, ErrorState, LineChart, Skeleton } from '@/ui-kit';
+import { Badge, BarChart, DeltaValue, EmptyState, ErrorState, LineChart, Skeleton } from '@/ui-kit';
 
 import type { HistoryChartProps } from './HistoryChart.types';
 
@@ -13,7 +13,7 @@ import s from './HistoryChart.module.scss';
 
 export const HistoryChart = ({ metric, series, isLoading, isError, isRetrying, onRetry }: HistoryChartProps) => {
   const t = useTranslations('profile.charts');
-  const { summary, change, isBar, formatValue, labels, chartSeries, markers } = useHistoryChart({ metric, series });
+  const { summary, changeFormat, isBar, formatValue, labels, chartSeries, markers } = useHistoryChart({ metric, series });
 
   if (isError) {
     return <ErrorState isRetrying={isRetrying} onRetry={onRetry} />;
@@ -36,9 +36,11 @@ export const HistoryChart = ({ metric, series, isLoading, isError, isRetrying, o
             <dd>{formatValue(summary[key])}</dd>
           </div>
         ))}
-        <div className={s.stat} data-trend={summary.change >= 0 ? 'up' : 'down'}>
+        <div className={s.stat}>
           <dt>{t('summary.change')}</dt>
-          <dd>{change}</dd>
+          <dd>
+            <DeltaValue isSameShown className={s.change} format={changeFormat} value={summary.change} />
+          </dd>
         </div>
       </dl>
       {isBar ? (

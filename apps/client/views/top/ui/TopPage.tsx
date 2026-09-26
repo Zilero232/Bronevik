@@ -6,7 +6,7 @@ import { MasteryIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Card, DataSourceNote, ErrorState, PageHero, Tabs } from '@/ui-kit';
+import { ActionStrip, Card, DataSourceNote, ErrorState, PageHero, Tabs } from '@/ui-kit';
 
 import { TOP_SCOPES } from '../config';
 import { useTop } from '../model/hooks';
@@ -26,15 +26,16 @@ export const TopPage = () => {
         lead={t('description')}
         title={t('title')}
       />
-      <div className={s.strip}>
-        <div className={s.stripInner}>
+      <ActionStrip
+        start={
           <Tabs<LeaderboardScope>
             items={TOP_SCOPES.map((value) => ({ value, label: t(`scopes.${value}`) }))}
             value={state.scope}
             onValueChange={(scope) => update({ scope })}
           />
-        </div>
-      </div>
+        }
+        align='bottom'
+      />
       <div className={s.content}>
         {!isError && podium.length > 0 && (
           <div className={s.board} data-refreshing={isRefreshing}>

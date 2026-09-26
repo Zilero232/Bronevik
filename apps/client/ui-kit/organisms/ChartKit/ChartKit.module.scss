@@ -59,6 +59,7 @@
 .hitbox {
   cursor: crosshair;
   fill: transparent;
+  touch-action: pan-y;
 }
 
 .tooltip {

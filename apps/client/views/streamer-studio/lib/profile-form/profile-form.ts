@@ -1,13 +1,13 @@
 import type { StreamerPlatform } from '@otmetki/schemas';
 
-import { apiErrorSchema, STREAMER_PLATFORMS } from '@otmetki/schemas';
+import { apiErrorSchema, CHANNEL_HOSTS, STREAMER_PLATFORMS } from '@otmetki/schemas';
 import { fromKeys } from 'remeda';
 
 import type { StreamerProfile, UpsertStreamerProfileInput } from '@/entities/streamer/streamer';
 
 import type { ChannelHostInput, ProfileFormOutput, ProfileFormValues } from './profile-form.types';
 
-import { CHANNEL_HOSTS, PROFILE_FORM } from '../../config';
+import { PROFILE_FORM } from '../../config';
 
 export const isChannelHost = ({ platform, url }: ChannelHostInput): boolean => {
   if (!URL.canParse(url)) {

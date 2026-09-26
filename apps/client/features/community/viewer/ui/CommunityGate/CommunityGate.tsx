@@ -3,6 +3,7 @@
 import { clsx } from 'clsx';
 import { useTranslations } from 'next-intl';
 
+import { useLoginHref } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, Skeleton } from '@/ui-kit';
@@ -14,6 +15,7 @@ import { useCommunityViewer } from '../../model/hooks';
 import s from './CommunityGate.module.scss';
 
 export const CommunityGate = ({ children, requiresLesta = true, className }: CommunityGateProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('community.gate');
   const { isPending, isSignedIn, hasLesta } = useCommunityViewer();
 
@@ -25,7 +27,7 @@ export const CommunityGate = ({ children, requiresLesta = true, className }: Com
     return (
       <div className={clsx(s.root, className)}>
         <span className={s.hint}>{t('signInHint')}</span>
-        <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.auth.login}>
+        <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={loginHref}>
           {t('signIn')}
         </Link>
       </div>

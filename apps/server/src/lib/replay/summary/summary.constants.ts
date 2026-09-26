@@ -9,5 +9,6 @@ export const REPLAY_PATTERN = {
 } as const;
 
 export const VEHICLE_RESULT = {
-  aliveDeathReason: -1
+  aliveDeathReason: -1,
+  masteryRange: { min: 0, max: 4 }
 } as const;

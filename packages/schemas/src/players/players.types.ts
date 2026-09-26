@@ -4,6 +4,7 @@ import type {
   activityDaySchema,
   activityQuerySchema,
   activitySchema,
+  groupInsightSchema,
   insightsPeriodSchema,
   insightsQuerySchema,
   insightTipCodeSchema,
@@ -29,6 +30,7 @@ import type {
   popularPlayersSchema,
   recentPeriodsSchema,
   recentPeriodStatsSchema,
+  tankInsightSchema,
   timeSeriesGranularitySchema,
   timeSeriesMarkerSchema,
   timeSeriesMetricSchema,
@@ -40,6 +42,8 @@ import type {
 export type ActivityDay = z.infer<typeof activityDaySchema>;
 export type ActivityQuery = z.infer<typeof activityQuerySchema>;
 export type PlayerActivity = z.infer<typeof activitySchema>;
+export type GroupInsight = z.infer<typeof groupInsightSchema>;
+export type TankInsight = z.infer<typeof tankInsightSchema>;
 export type InsightsPeriod = z.infer<typeof insightsPeriodSchema>;
 export type InsightsQuery = z.infer<typeof insightsQuerySchema>;
 export type InsightTipCode = z.infer<typeof insightTipCodeSchema>;

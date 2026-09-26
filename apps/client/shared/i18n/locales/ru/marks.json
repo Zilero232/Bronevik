@@ -94,8 +94,7 @@
     "notFoundDescription": "Проверьте ник или введите ID аккаунта.",
     "noMarks": "Все отметки уже взяты",
     "noMarksHint": "На каждом танке три отметки или нет данных о проценте.",
-    "playerFor": "Игрок: {nickname}",
-    "toMark": "{percent} % → {mark} %"
+    "playerFor": "Игрок: {nickname}"
   },
   "forecast": {
     "title": "Прогноз",

@@ -46,6 +46,7 @@ export type {
   TankEconomyFigures,
   TankEconomyPage,
   TankEconomyQuery,
+  TankEconomyQueryInput,
   TankEconomyRow,
   TankEconomySortField,
   TankLearning,
@@ -85,24 +86,29 @@ export {
 export type {
   TankDetail,
   TankDetailQuery,
+  TankDetailQueryInput,
   TankPatch,
   TankPatchChange,
   TankPatches,
   TankPatchVerdict,
   TankServerStatsQuery,
+  TankServerStatsQueryInput,
   TankServerStatsRow,
   TankServerStatsSortField,
   TankStatsPage,
   TankTrend,
   TankTrendPoint,
   TankTrendQuery,
+  TankTrendQueryInput,
   TierList,
   TierListEntry,
   TierListQuery,
+  TierListQueryInput,
   TierListRank,
   TopPlayers,
   TopPlayersMetric,
-  TopPlayersQuery
+  TopPlayersQuery,
+  TopPlayersQueryInput
 } from './tanks.types';
 export { VEHICLE_SOURCE, VEHICLE_SOURCE_KINDS } from './vehicle-sources.constants';
 export {

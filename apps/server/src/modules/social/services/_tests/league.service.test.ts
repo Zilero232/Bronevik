@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Player, PlaySession } from '../../../../../generated';
@@ -82,6 +82,10 @@ const createService = () => {
   return { service: new LeagueService(prisma, follows, events), prisma, follows, events };
 };
 
+afterEach(() => {
+  vi.useRealTimers();
+});
+
 describe('LeagueService.league', () => {
   it('ranks the circle by average damage over all their sessions of the week', async () => {
     const { service } = createService();
@@ -134,9 +138,63 @@ describe('LeagueService.league', () => {
     expect(entries[0]).toEqual(expect.objectContaining({ accountId: 3, value: 2 }));
   });
 
+  it('weights WN8 by the battles of each session when they differ', async () => {
+    const { service, prisma } = createService();
+
+    prisma.playSession.findMany.mockResolvedValue([
+      session({ accountId: 1n, battles, damageDealt: 0, wn8: 1_000 }),
+      session({ accountId: 1n, battles: battles * 3, damageDealt: 1, wn8: 3_000 })
+    ]);
+
+    const { entries } = await service.league({ userId: 'u1', metric: 'wn8', week });
+
+    expect(entries.find((entry) => entry.accountId === 1)?.value).toBe((1_000 + 3_000 * 3) / 4);
+  });
+
+  it('gives no value to an account one battle short of the minimum', async () => {
+    const { service, prisma } = createService();
+
+    prisma.playSession.findMany.mockResolvedValue([
+      session({ accountId: 1n, battles: LEAGUE.minBattles - 1, damageDealt: 99_999, wn8: 5_000 }),
+      session({ accountId: 2n, battles: LEAGUE.minBattles, damageDealt: LEAGUE.minBattles, wn8: 500 })
+    ]);
+
+    const { entries } = await service.league({ userId: 'u1', metric: 'damage', week });
+
+    expect(entries.find((entry) => entry.accountId === 1)).toMatchObject({ battles: LEAGUE.minBattles - 1, value: null });
+    expect(entries.find((entry) => entry.accountId === 2)?.value).toBe(1);
+  });
+
+  it('shows no nickname for an account without a player row', async () => {
+    const { service } = createService();
+
+    const { entries } = await service.league({ userId: 'u1', metric: 'battles', week });
+
+    expect(entries.find((entry) => entry.accountId === 3)?.nickname).toBeNull();
+    expect(entries.find((entry) => entry.accountId === 2)?.nickname).toBe('Friend');
+  });
+
   it('starts the week on the Monday of the requested date', async () => {
     const { service } = createService();
 
     expect((await service.league({ userId: 'u1', metric: 'battles', week: '2026-09-17' })).weekStart).toBe(week);
+  });
+
+  it.each([
+    ['a Sunday', '2026-09-20', week],
+    ['a Monday', '2026-09-21', '2026-09-21']
+  ])('puts %s into the week that starts on the right Monday', async (_, requested, expected) => {
+    const { service } = createService();
+
+    expect((await service.league({ userId: 'u1', metric: 'battles', week: requested })).weekStart).toBe(expected);
+  });
+
+  it('uses the current week when none is requested', async () => {
+    const { service } = createService();
+
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-09-17T12:00:00Z'));
+
+    expect((await service.league({ userId: 'u1', metric: 'battles', week: undefined })).weekStart).toBe(week);
   });
 });

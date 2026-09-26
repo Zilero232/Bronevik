@@ -302,7 +302,38 @@ export const streamerIntegrationSchema = z.object({
   provider: streamerProviderSchema,
   externalId: z.string(),
   login: z.string().nullable(),
-  connectedAt: isoDateTimeSchema
+  connectedAt: isoDateTimeSchema,
+  predictions: z.boolean(),
+  canPredict: z.boolean()
+});
+
+export const updatePredictionsSchema = z.object({
+  enabled: z.boolean()
+});
+
+export const twitchChannelParamsSchema = z.object({
+  channelId: z.string().regex(/^d{1,20}$/)
+});
+
+export const twitchPanelSchema = z.object({
+  nickname: z.string().nullable(),
+  profileUrl: z.url().nullable(),
+  session: z
+    .object({
+      battles: z.number().int().nonnegative(),
+      wins: z.number().int().nonnegative(),
+      avgDamage: z.number().nonnegative(),
+      wn8: z.number().nullable(),
+      startedAt: isoDateTimeSchema,
+      isOpen: z.boolean()
+    })
+    .nullable(),
+  marks: z.object({
+    moe3: z.number().int().nonnegative(),
+    moe2: z.number().int().nonnegative(),
+    moe1: z.number().int().nonnegative(),
+    closest: z.array(z.object({ tankName: z.string(), marks: z.number().int().min(0).max(3), percent: z.number() }))
+  })
 });
 
 export const integrationListSchema = z.array(streamerIntegrationSchema);

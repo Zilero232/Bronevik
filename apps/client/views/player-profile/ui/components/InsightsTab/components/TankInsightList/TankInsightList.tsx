@@ -2,9 +2,9 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { signed } from '@/entities/player/stats';
 import { TankCell } from '@/entities/tank/tank';
 import { percentText } from '@/shared/lib';
+import { DeltaValue } from '@/ui-kit';
 
 import type { TankInsightListProps } from './TankInsightList.types';
 
@@ -24,7 +24,7 @@ export const TankInsightList = ({ kind, tanks }: TankInsightListProps) => {
             <span className={s.meta}>
               {percentText({ format, value: winRate })} · {t('battles', { count: battles })}
             </span>
-            <span className={s.delta}>{t('deltaPp', { value: signed({ value: winRateDelta ?? 0, digits: 1 }) ?? '0' })}</span>
+            <DeltaValue isSameShown className={s.delta} format={{ maximumFractionDigits: 1 }} suffix={t('ppSuffix')} value={winRateDelta ?? 0} />
             {damageRatio !== null && <span className={s.ratio}>{t('damageRatio', { value: Math.round(damageRatio * 100) })}</span>}
           </li>
         ))}

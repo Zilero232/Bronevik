@@ -33,6 +33,7 @@ export type {
   MissionCampaigns,
   MissionCondition,
   MissionGarage,
+  MissionGarageState,
   MissionGarageTank,
   MissionMetric,
   MissionOperation,

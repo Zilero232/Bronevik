@@ -7,7 +7,7 @@ import type {
 } from '@otmetki/schemas';
 import type { z } from 'zod';
 
-import type { BonusCodeStatus } from '../../../generated';
+import type { BonusCode, BonusCodeStatus } from '../../../generated';
 import type { ListingItem } from '../../lib/scrape';
 import type { offerArchiveSchema, offerPageSchema, offersQuerySchema } from './dto/shop.schemas';
 import type { NamedVehicle, OfferDetail } from './lib';
@@ -18,13 +18,7 @@ export type OfferArchive = z.infer<typeof offerArchiveSchema>;
 export type NewsQuery = z.output<typeof newsQuerySchema>;
 export type NewsPage = z.infer<typeof newsPageSchema>;
 
-export type DiscoverBonusCodeInput = {
-  code: string;
-  title: string | null;
-  source: string;
-  sourceUrl: string | null;
-  expiresAt: Date | null;
-};
+export type DiscoverBonusCodeInput = Pick<BonusCode, 'code' | 'expiresAt' | 'source' | 'sourceUrl' | 'title'>;
 
 export type ReportBonusCodeInput = {
   userId: string;

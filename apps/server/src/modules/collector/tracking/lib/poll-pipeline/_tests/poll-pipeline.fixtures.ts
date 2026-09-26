@@ -60,7 +60,7 @@ export const tankStats = ({ tankId, battles, accountId = 1 }: TankStatInput): Ta
   random: block(battles)
 });
 
-export const createFakeLesta = ({ infos, tanks, stats, failStatsFor = [] }: FakeLestaInput) => {
+export const createFakeLesta = ({ infos, tanks, stats, marks = {}, failStatsFor = [] }: FakeLestaInput) => {
   const lesta = {
     accountInfo: vi.fn<PollLestaPort['accountInfo']>(async (ids) => Object.fromEntries(ids.map((id) => [String(id), infos[id] ?? null]))),
     accountTanks: vi.fn<PollLestaPort['accountTanks']>(async (ids) => Object.fromEntries(ids.map((id) => [String(id), tanks[id] ?? null]))),
@@ -70,7 +70,13 @@ export const createFakeLesta = ({ infos, tanks, stats, failStatsFor = [] }: Fake
       }
 
       return (stats[accountId] ?? []).filter((stat) => tankIds.includes(stat.tank_id));
-    })
+    }),
+    tankMarks: vi.fn<PollLestaPort['tankMarks']>(
+      async ({ accountId, tankIds }) =>
+        new Map(
+          Object.entries(marks[accountId] ?? {}).flatMap(([tankId, value]) => (tankIds.includes(Number(tankId)) ? [[Number(tankId), value]] : []))
+        )
+    )
   } satisfies PollLestaPort;
 
   return lesta;

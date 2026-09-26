@@ -1,0 +1,246 @@
+import { catalogCosmetics, OVERLAY_THEMES, seasonalCosmeticCode } from '@otmetki/schemas';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mock, mockDeep } from 'vitest-mock-extended';
+
+import type { CosmeticOwnership, ProfileCosmetics, Subscription, UserLestaAccount } from '../../../../../generated';
+import type { PrismaService } from '../../../../core';
+
+import { AppForbiddenException } from '../../../../common/exceptions';
+import { EntitlementsService } from '../../../billing';
+import { NO_COSMETICS } from '../../config';
+import { CosmeticsService } from '../cosmetics.service';
+import { ShellLedgerService } from '../shell-ledger.service';
+
+const now = new Date('2026-09-26T10:00:00Z');
+const shopBadge = catalogCosmetics().find((item) => item.slot === 'badge' && item.source === 'shop');
+const plusBadge = catalogCosmetics().find((item) => item.slot === 'badge' && item.source === 'plus');
+const defaultBanner = catalogCosmetics().find((item) => item.slot === 'banner' && item.source === 'default');
+const shopTheme = OVERLAY_THEMES.premium.find((theme) =>
+  catalogCosmetics().some((item) => item.code === `overlay-${theme}` && item.source === 'shop')
+);
+
+const seasonBadge = seasonalCosmeticCode({ season: '2026-q3', slot: 'badge', grade: 'gold' });
+
+const owned = (userId: string, code: string) => Object.assign(mock<CosmeticOwnership>(), { userId, code, acquiredAt: now });
+
+const equipped = (userId: string, fields: Partial<Pick<ProfileCosmetics, 'badge' | 'banner' | 'frame'>>) =>
+  Object.assign(mock<ProfileCosmetics>(), { userId, badge: null, frame: null, banner: null, ...fields });
+
+const setup = ({ isPlus = false, codes = [] }: { isPlus?: boolean; codes?: string[] } = {}) => {
+  const prisma = mockDeep<PrismaService>();
+  const entitlements = mock<EntitlementsService>();
+  const ledger = mock<ShellLedgerService>();
+
+  entitlements.isPlus.mockResolvedValue(isPlus);
+  ledger.balance.mockResolvedValue(0);
+  prisma.cosmeticOwnership.findMany.mockResolvedValue(codes.map((code) => owned('u', code)));
+  prisma.cosmeticOwnership.count.mockResolvedValue(codes.length);
+  prisma.profileCosmetics.findUnique.mockResolvedValue(null);
+  prisma.cosmeticOwnership.findUnique.mockResolvedValue(null);
+  prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
+
+  return { prisma, entitlements, ledger, service: new CosmeticsService(prisma, entitlements, ledger) };
+};
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(now);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+describe('CosmeticsService.inventory', () => {
+  it('treats default items as owned and nothing else for a new free user', async () => {
+    const { service } = setup();
+
+    const inventory = await service.inventory('u');
+
+    expect(inventory.equipped).toEqual(NO_COSMETICS);
+    expect(inventory.items.filter((item) => item.isOwned).every((item) => item.source === 'default')).toBe(true);
+    expect(inventory.items.find((item) => item.code === plusBadge?.code)?.isUsable).toBe(false);
+  });
+
+  it('lets Plus members use Plus items without owning them', async () => {
+    const { service } = setup({ isPlus: true });
+
+    const item = (await service.inventory('u')).items.find((entry) => entry.code === plusBadge?.code);
+
+    expect(item).toMatchObject({ isOwned: false, isUsable: true });
+  });
+
+  it('adds owned seasonal rewards to the catalog', async () => {
+    const { service } = setup({ codes: [seasonBadge] });
+
+    const item = (await service.inventory('u')).items.find((entry) => entry.code === seasonBadge);
+
+    expect(item).toMatchObject({ source: 'season', isOwned: true, isUsable: true, acquiredAt: now.toISOString() });
+  });
+});
+
+describe('CosmeticsService.purchase', () => {
+  it('rejects an unknown cosmetic', async () => {
+    const { service } = setup();
+
+    await expect(service.purchase({ userId: 'u', code: 'no-such-item' })).rejects.toMatchObject({ status: 404 });
+  });
+
+  it('rejects items that are not sold', async () => {
+    const { ledger, service } = setup();
+
+    await expect(service.purchase({ userId: 'u', code: plusBadge?.code ?? '' })).rejects.toMatchObject({ status: 400 });
+    await expect(service.purchase({ userId: 'u', code: defaultBanner?.code ?? '' })).rejects.toMatchObject({ status: 400 });
+    expect(ledger.spend).not.toHaveBeenCalled();
+  });
+
+  it('checks the cosmetics feature before spending', async () => {
+    const { entitlements, ledger, service } = setup();
+
+    entitlements.assertFeature.mockRejectedValue(new AppForbiddenException('SUBSCRIPTION_REQUIRED', 'Plus'));
+
+    await expect(service.purchase({ userId: 'u', code: shopBadge?.code ?? '' })).rejects.toMatchObject({ status: 403 });
+    expect(ledger.spend).not.toHaveBeenCalled();
+  });
+
+  it('refuses to sell an item twice', async () => {
+    const { prisma, ledger, service } = setup();
+
+    prisma.cosmeticOwnership.findUnique.mockResolvedValue(owned('u', shopBadge?.code ?? ''));
+
+    await expect(service.purchase({ userId: 'u', code: shopBadge?.code ?? '' })).rejects.toMatchObject({ status: 409 });
+    expect(ledger.spend).not.toHaveBeenCalled();
+  });
+
+  it('spends the item price and records the purchase', async () => {
+    const { prisma, ledger, service } = setup();
+
+    await service.purchase({ userId: 'u', code: shopBadge?.code ?? '' });
+
+    expect(ledger.spend).toHaveBeenCalledWith(expect.objectContaining({ userId: 'u', amount: shopBadge?.price }));
+    expect(prisma.cosmeticOwnership.create).toHaveBeenCalledWith({ data: expect.objectContaining({ code: shopBadge?.code, grant: 'purchase' }) });
+  });
+
+  it('records nothing when the balance is too low', async () => {
+    const { prisma, ledger, service } = setup();
+
+    ledger.spend.mockRejectedValue(new Error('Not enough shells'));
+
+    await expect(service.purchase({ userId: 'u', code: shopBadge?.code ?? '' })).rejects.toThrow('Not enough shells');
+    expect(prisma.cosmeticOwnership.create).not.toHaveBeenCalled();
+  });
+});
+
+describe('CosmeticsService.equip', () => {
+  it('rejects an item in the wrong slot', async () => {
+    const { service } = setup();
+
+    await expect(service.equip({ userId: 'u', frame: shopBadge?.code })).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('asks for Plus when equipping a Plus item without it', async () => {
+    const { prisma, service } = setup();
+
+    await expect(service.equip({ userId: 'u', badge: plusBadge?.code })).rejects.toMatchObject({
+      status: 403,
+      response: expect.objectContaining({ code: 'SUBSCRIPTION_REQUIRED' })
+    });
+
+    expect(prisma.profileCosmetics.upsert).not.toHaveBeenCalled();
+  });
+
+  it('refuses a shop item the user does not own', async () => {
+    const { service } = setup({ isPlus: true });
+
+    await expect(service.equip({ userId: 'u', badge: shopBadge?.code })).rejects.toMatchObject({
+      status: 403,
+      response: expect.objectContaining({ code: 'FORBIDDEN' })
+    });
+  });
+
+  it('equips owned items and clears slots set to null', async () => {
+    const { prisma, service } = setup({ codes: [shopBadge?.code ?? ''] });
+
+    await service.equip({ userId: 'u', badge: shopBadge?.code, banner: null });
+
+    expect(prisma.profileCosmetics.upsert).toHaveBeenCalledWith(expect.objectContaining({ update: { badge: shopBadge?.code, banner: null } }));
+  });
+});
+
+describe('CosmeticsService.profiles', () => {
+  const setupProfiles = ({ plusUsers }: { plusUsers: string[] }) => {
+    const context = setup();
+
+    context.prisma.userLestaAccount.findMany.mockResolvedValue([
+      Object.assign(mock<UserLestaAccount>(), { accountId: 1n, userId: 'u' }),
+      Object.assign(mock<UserLestaAccount>(), { accountId: 2n, userId: 'v' })
+    ]);
+
+    context.prisma.profileCosmetics.findMany.mockResolvedValue([
+      equipped('u', { badge: plusBadge?.code ?? null, banner: defaultBanner?.code ?? null })
+    ]);
+
+    context.prisma.cosmeticOwnership.findMany.mockResolvedValue([]);
+    context.prisma.subscription.findMany.mockResolvedValue(plusUsers.map((userId) => Object.assign(mock<Subscription>(), { userId })));
+
+    return context;
+  };
+
+  it('skips accounts whose owner equipped nothing', async () => {
+    const { service } = setupProfiles({ plusUsers: ['u'] });
+
+    expect((await service.profiles([1, 2, 2])).map((profile) => profile.accountId)).toEqual([1]);
+  });
+
+  it('hides Plus items once the subscription lapsed but keeps default ones', async () => {
+    const { service } = setupProfiles({ plusUsers: [] });
+
+    const [profile] = await service.profiles([1]);
+
+    expect(profile).toMatchObject({ badge: null, banner: defaultBanner?.code });
+  });
+
+  it('falls back to no cosmetics for a single unknown profile', async () => {
+    const { prisma, service } = setup();
+
+    prisma.userLestaAccount.findMany.mockResolvedValue([]);
+    prisma.profileCosmetics.findMany.mockResolvedValue([]);
+    prisma.subscription.findMany.mockResolvedValue([]);
+
+    expect(await service.profile(5)).toEqual({ accountId: 5, ...NO_COSMETICS });
+  });
+});
+
+describe('CosmeticsService overlay themes', () => {
+  it('allows standard themes without any check', async () => {
+    const { entitlements, service } = setup();
+
+    await service.assertOverlayTheme({ userId: 'u', theme: OVERLAY_THEMES.standard[0] });
+
+    expect(entitlements.assertFeature).not.toHaveBeenCalled();
+  });
+
+  it('refuses a premium theme bought by nobody', async () => {
+    const { service } = setup({ isPlus: true });
+
+    await expect(service.assertOverlayTheme({ userId: 'u', theme: shopTheme ?? OVERLAY_THEMES.fallback })).rejects.toMatchObject({ status: 403 });
+  });
+
+  it('accepts an owned premium theme for Plus members', async () => {
+    const { service } = setup({ isPlus: true, codes: [`overlay-${shopTheme}`] });
+
+    await expect(service.assertOverlayTheme({ userId: 'u', theme: shopTheme ?? OVERLAY_THEMES.fallback })).resolves.toBeUndefined();
+  });
+
+  it('shows the fallback theme when an owned premium theme lost Plus', async () => {
+    const { service } = setup({ isPlus: false, codes: [`overlay-${shopTheme}`] });
+
+    expect(await service.effectiveOverlayTheme({ userId: 'u', theme: shopTheme ?? OVERLAY_THEMES.fallback })).toBe(OVERLAY_THEMES.fallback);
+  });
+
+  it('keeps a standard theme as is', async () => {
+    const { service } = setup();
+
+    expect(await service.effectiveOverlayTheme({ userId: 'u', theme: OVERLAY_THEMES.standard[1] })).toBe(OVERLAY_THEMES.standard[1]);
+  });
+});

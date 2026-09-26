@@ -1,10 +1,15 @@
+import type { StreamerVideo } from '@otmetki/schemas';
+
 import { Inject, Injectable } from '@nestjs/common';
+import { streamerVideoSchema } from '@otmetki/schemas';
 import { Redis } from 'ioredis';
+import { z } from 'zod';
 
 import type { StreamerProfile } from '../../../../generated';
-import type { PlatformVideo, ReplaceChannelsInput, StreamerProfileView, UpsertProfileInput } from '../streamers.types';
+import type { ReplaceChannelsInput, StreamerProfileView, UpsertProfileInput } from '../streamers.types';
 
 import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
+import { parseJsonText } from '../../../common/lib';
 import { isUniqueViolation, PrismaService, REDIS } from '../../../core';
 import { STREAMERS } from '../config';
 import { parseChannel } from '../lib';
@@ -60,25 +65,23 @@ export class StreamerProfileService {
       ...(bio === undefined ? {} : { bio })
     };
 
-    try {
-      const profile = await this.prisma.streamerProfile.upsert({
+    const profile = await this.prisma.streamerProfile
+      .upsert({
         where: { userId },
         create: { userId, kind: 'claimed', ...data },
         update: data
+      })
+      .catch((error: unknown) => {
+        throw isUniqueViolation(error) ? new AppConflictException('STREAMER_SLUG_TAKEN', `The slug ${slug} is taken`) : error;
       });
 
-      if (channels) {
-        await this.replaceChannels({ profileId: profile.id, channels });
-      }
-
-      return this.toView(profile);
-    } catch (error) {
-      if (isUniqueViolation(error)) {
-        throw new AppConflictException('CONFLICT', `The slug ${slug} or a channel is taken`);
-      }
-
-      throw error;
+    if (channels) {
+      await this.replaceChannels({ profileId: profile.id, channels }).catch((error: unknown) => {
+        throw isUniqueViolation(error) ? new AppConflictException('STREAMER_CHANNEL_TAKEN', 'A channel belongs to another streamer') : error;
+      });
     }
+
+    return this.toView(profile);
   }
 
   async replaceChannels({ profileId, channels }: ReplaceChannelsInput): Promise<void> {
@@ -135,12 +138,16 @@ export class StreamerProfileService {
     };
   }
 
-  private async videos(channelId: string): Promise<PlatformVideo[]> {
+  private async videos(channelId: string): Promise<StreamerVideo[]> {
     const key = `${STREAMERS.cachePrefix}videos:${channelId}`;
     const cached = await this.redis.get(key);
 
     if (cached) {
-      return JSON.parse(cached) as PlatformVideo[];
+      const parsed = z.array(streamerVideoSchema).safeParse(parseJsonText(cached));
+
+      if (parsed.success) {
+        return parsed.data;
+      }
     }
 
     const videos = await this.platforms.youtubeVideos(channelId);

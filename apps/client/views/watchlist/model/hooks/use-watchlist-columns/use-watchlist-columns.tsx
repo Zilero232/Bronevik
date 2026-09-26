@@ -31,12 +31,13 @@ export const useWatchlistColumns = ({ isRemoving, onRemove }: UseWatchlistColumn
     column.accessor((row) => (row.lastBattleAt ? new Date(row.lastBattleAt).getTime() : 0), {
       id: 'lastBattle',
       header: t('columns.lastBattle'),
-      cell: (info) => <RelativeTime fallback={t('never')} value={info.row.original.lastBattleAt} />
+      cell: (info) => <RelativeTime fallback={t('never')} value={info.row.original.lastBattleAt} />,
+      meta: { hideBelow: 'md' }
     }),
     column.accessor('battles', {
       header: t('columns.battles'),
       cell: (info) => format.number(info.getValue()),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
     }),
     column.accessor((row) => row.winRate ?? -1, {
       id: 'winRate',
@@ -48,18 +49,18 @@ export const useWatchlistColumns = ({ isRemoving, onRemove }: UseWatchlistColumn
       id: 'avgDamage',
       header: t('columns.avgDamage'),
       cell: (info) => (info.row.original.avgDamage === null ? '—' : format.number(info.row.original.avgDamage, { maximumFractionDigits: 0 })),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'lg' }
     }),
     column.accessor((row) => row.wn8 ?? -1, {
       id: 'wn8',
       header: t('columns.wn8'),
       cell: (info) => <RatingValue rating={scaledRating({ scale: 'wn8', value: info.row.original.wn8 })} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'md' }
     }),
     column.accessor('marksGained', {
       header: t('columns.marks'),
       cell: (info) => <MarksCell value={info.getValue()} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'lg' }
     }),
     column.display({
       id: 'remove',

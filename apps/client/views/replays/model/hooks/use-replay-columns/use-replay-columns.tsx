@@ -63,30 +63,31 @@ export const useReplayColumns = (): ColumnDef<Replay, never>[] => {
       header: t('columns.assist'),
       enableSorting: false,
       cell: (info) => numberOrDash(info.getValue()),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'md' }
     }),
     column.accessor('frags', {
       header: t('columns.frags'),
       enableSorting: false,
       cell: (info) => numberOrDash(info.getValue()),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
     }),
     column.accessor('xp', {
       header: t('columns.xp'),
       enableSorting: false,
       cell: (info) => numberOrDash(info.getValue()),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'lg' }
     }),
     column.display({
       id: 'owner',
       header: t('columns.owner'),
-      cell: ({ row: { original } }) => <ReplayOwnerCell clanTag={original.owner?.clanTag ?? null} nickname={original.owner?.nickname ?? null} />
+      cell: ({ row: { original } }) => <ReplayOwnerCell clanTag={original.owner?.clanTag ?? null} nickname={original.owner?.nickname ?? null} />,
+      meta: { hideBelow: 'lg' }
     }),
     column.accessor('playedAt', {
       header: t('columns.playedAt'),
       enableSorting: false,
       cell: ({ row: { original } }) => <RelativeTime value={original.playedAt ?? original.createdAt} />,
-      meta: { align: 'end' }
+      meta: { align: 'end', hideBelow: 'sm' }
     })
   ];
 };

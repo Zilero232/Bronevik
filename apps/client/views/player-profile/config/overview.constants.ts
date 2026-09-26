@@ -6,7 +6,6 @@ export const OVERVIEW = {
   highlightDays: 30,
   highlightGranularity: 'day',
   marksRing: { size: 132, thickness: 8 },
-  closestRing: { size: 64, thickness: 6 },
   listSkeletonHeight: 180,
   heatmapSkeletonHeight: 140,
   stripSkeletonHeight: 220,

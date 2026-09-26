@@ -1,6 +1,6 @@
 import type { FinalStats } from '@otmetki/gamedata';
 
-import type { ProfileStats, SummarizeVehicleInput, VehicleSummary } from './importer.types';
+import type { ImportedVehicleSummary, ProfileStats, SummarizeVehicleInput } from './importer.types';
 
 export const profileStats = ({
   crew: _crew,
@@ -10,8 +10,8 @@ export const profileStats = ({
   ...stats
 }: FinalStats): ProfileStats => stats;
 
-export const summarizeVehicle = ({ vehicle, stock, top }: SummarizeVehicleInput): VehicleSummary => {
-  const guns: VehicleSummary['guns'] = {};
+export const summarizeVehicle = ({ vehicle, stock, top }: SummarizeVehicleInput): ImportedVehicleSummary => {
+  const guns: ImportedVehicleSummary['guns'] = {};
 
   for (const turret of vehicle.turrets) {
     for (const gun of turret.guns) {

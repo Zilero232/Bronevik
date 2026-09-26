@@ -1,14 +1,18 @@
-import { PLUS_LIMITS } from '@otmetki/schemas';
+import { PLUS_LIMITS, PLUS_TRIAL } from '@otmetki/schemas';
 import { addDays } from 'date-fns';
-import { describe, expect, it } from 'vitest';
+import { Subject } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Subscription, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { EntitlementChange } from '../../billing.types';
 import type { EntitlementsBusService } from '../entitlements-bus.service';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { EntitlementsService } from '../entitlements.service';
+
+const NOW = new Date('2026-09-26T12:00:00Z');
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
@@ -17,12 +21,24 @@ const createService = () => {
   prisma.referral.count.mockResolvedValue(0);
   prisma.plusTrial.count.mockResolvedValue(0);
 
+  const changes = new Subject<EntitlementChange>();
   const bus = mock<EntitlementsBusService>();
 
-  return { service: new EntitlementsService(prisma, bus), prisma, bus };
+  Object.defineProperty(bus, 'changes$', { value: changes.asObservable() });
+
+  return { service: new EntitlementsService(prisma, bus), prisma, bus, changes };
 };
 
-const running = (status: Subscription['status']) => mock<Subscription>({ status, currentPeriodEnd: addDays(new Date(), 5), trialStartedAt: null });
+const running = (status: Subscription['status']) => mock<Subscription>({ status, currentPeriodEnd: addDays(NOW, 5), trialStartedAt: null });
+
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(NOW);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('EntitlementsService.plusState', () => {
   it('reads the subscription once within the cache window', async () => {
@@ -62,7 +78,74 @@ describe('EntitlementsService.plusState', () => {
     prisma.subscription.findUnique.mockResolvedValue(null);
     prisma.referral.count.mockResolvedValue(1);
 
-    expect((await service.refresh('u1')).trialDays).toBe(14);
+    expect((await service.refresh('u1')).trialDays).toBe(PLUS_TRIAL.referralDays);
+  });
+
+  it('gives a user who was not referred the standard trial', async () => {
+    const { service, prisma } = createService();
+
+    prisma.subscription.findUnique.mockResolvedValue(null);
+
+    expect((await service.refresh('u1')).trialDays).toBe(PLUS_TRIAL.days);
+  });
+
+  it('drops the cached state when another process changes it', async () => {
+    const { service, prisma, changes } = createService();
+
+    prisma.subscription.findUnique.mockResolvedValueOnce(running('active')).mockResolvedValueOnce(null);
+    service.onModuleInit();
+
+    expect((await service.plusState('u1')).state).toBe('active');
+    changes.next({ userId: 'u1', isLocal: false });
+    expect((await service.plusState('u1')).state).toBe('none');
+  });
+
+  it('keeps the cached state for a change this process already applied', async () => {
+    const { service, prisma, changes } = createService();
+
+    prisma.subscription.findUnique.mockResolvedValue(running('active'));
+    service.onModuleInit();
+
+    await service.plusState('u1');
+    changes.next({ userId: 'u1', isLocal: true });
+    await service.plusState('u1');
+
+    expect(prisma.subscription.findUnique).toHaveBeenCalledTimes(1);
+  });
+
+  it('stops listening to the bus on shutdown', async () => {
+    const { service, prisma, changes } = createService();
+
+    prisma.subscription.findUnique.mockResolvedValue(running('active'));
+    service.onModuleInit();
+    service.onModuleDestroy();
+
+    await service.plusState('u1');
+    changes.next({ userId: 'u1', isLocal: false });
+    await service.plusState('u1');
+
+    expect(prisma.subscription.findUnique).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('EntitlementsService.assertFeature', () => {
+  it('lets a subscriber use a Plus feature', async () => {
+    const { service, prisma } = createService();
+
+    prisma.subscription.findUnique.mockResolvedValue(running('active'));
+
+    await expect(service.assertFeature({ userId: 'u1', feature: 'history' })).resolves.toBeUndefined();
+  });
+
+  it('asks a free user to subscribe, naming the feature', async () => {
+    const { service, prisma } = createService();
+
+    prisma.subscription.findUnique.mockResolvedValue(null);
+
+    await expect(service.assertFeature({ userId: 'u1', feature: 'history' })).rejects.toMatchObject({
+      status: 403,
+      response: { code: 'SUBSCRIPTION_REQUIRED', details: { feature: 'history' } }
+    });
   });
 });
 
@@ -75,7 +158,18 @@ describe('EntitlementsService.assertWithinLimit', () => {
     const failure = service.assertWithinLimit({ userId: 'u1', key: 'goals', count: PLUS_LIMITS.goals.free });
 
     await expect(failure).rejects.toBeInstanceOf(AppForbiddenException);
-    await expect(failure).rejects.toMatchObject({ response: { code: 'SUBSCRIPTION_REQUIRED', details: { limitKey: 'goals', limit: 3 } } });
+
+    await expect(failure).rejects.toMatchObject({
+      response: { code: 'SUBSCRIPTION_REQUIRED', details: { limitKey: 'goals', limit: PLUS_LIMITS.goals.free } }
+    });
+  });
+
+  it('lets a free user reach one below the free limit', async () => {
+    const { service, prisma } = createService();
+
+    prisma.subscription.findUnique.mockResolvedValue(null);
+
+    await expect(service.assertWithinLimit({ userId: 'u1', key: 'goals', count: PLUS_LIMITS.goals.free - 1 })).resolves.toBeUndefined();
   });
 
   it('lets a subscriber past the free limit up to the plus limit', async () => {

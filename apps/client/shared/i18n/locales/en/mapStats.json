@@ -1,0 +1,66 @@
+{
+  "tabs": {
+    "label": "Map sections",
+    "catalog": "Catalog",
+    "rotation": "Rotation and queue"
+  },
+  "filters": {
+    "tier": "Vehicle tier",
+    "mode": "Mode",
+    "allTiers": "All tiers",
+    "allShort": "All",
+    "tierItem": "Tier {tier}"
+  },
+  "modes": {
+    "random": "Random battles",
+    "onslaught": "Onslaught",
+    "frontline": "Frontline",
+    "ranked": "Ranked battles",
+    "steelHunter": "Steel Hunter"
+  },
+  "figures": {
+    "battles": "Battles sampled",
+    "battlesHint": "Last {days} days from the mod and replays",
+    "maps": "Maps in rotation",
+    "waitNow": "Queue now",
+    "waitNowHint": "Median at {hour}:00, {timezone}",
+    "fastest": "Fastest",
+    "fastestHint": "Median {wait}",
+    "hour": "at {hour}:00"
+  },
+  "rotation": {
+    "title": "Map frequency",
+    "meta": "{days} days · share of battles",
+    "battles": "{count, plural, one {# battle} other {# battles}}",
+    "empty": "No battles at this tier yet",
+    "emptyDescription": "The rotation shows up once players with the mod or uploaded replays play here.",
+    "errorTitle": "The rotation did not load",
+    "errorDescription": "The server is not responding."
+  },
+  "queue": {
+    "title": "Queue time",
+    "meta": "Median by hour · {days} days · {timezone}",
+    "caption": "Median wait for a battle by vehicle tier and hour",
+    "cell": "Tier {tier}, {hour}:00 — median {median}, 90% within {p90}, {samples} battles",
+    "noData": "{hour}:00 — not enough data",
+    "legendFast": "Fast · {wait}",
+    "legendSlow": "Slow · {wait}",
+    "empty": "Not enough queue data yet",
+    "emptyDescription": "The mod reports the wait — the table fills in as battles come in.",
+    "errorTitle": "Queue time did not load",
+    "errorDescription": "The server is not responding."
+  },
+  "now": {
+    "title": "Queue now",
+    "meta": "{hour}:00 · {timezone}",
+    "more": "Rotation and queue",
+    "overall": "Median wait, all tiers",
+    "fastest": "Fastest at {hour}:00 — {wait}",
+    "secondsSuffix": " s",
+    "topMaps": "Most frequent maps",
+    "empty": "Not enough queue data yet",
+    "emptyDescription": "The mod reports queue times and maps.",
+    "errorTitle": "The queue did not load",
+    "errorDescription": "The server is not responding."
+  }
+}

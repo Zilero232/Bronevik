@@ -128,6 +128,19 @@ export const notificationSchema = z.discriminatedUnion('event', [
     teamName: z.string(),
     rank: z.number().int().positive(),
     teams: z.number().int().positive()
+  }),
+  z.object({
+    event: z.literal('tankLevelUp'),
+    tankId,
+    tankName: z.string(),
+    level: z.number().int().positive(),
+    shells: z.number().int().nonnegative()
+  }),
+  z.object({
+    event: z.literal('tankChallengeDone'),
+    tankId,
+    tankName: z.string(),
+    shells: z.number().int().nonnegative()
   })
 ]);
 

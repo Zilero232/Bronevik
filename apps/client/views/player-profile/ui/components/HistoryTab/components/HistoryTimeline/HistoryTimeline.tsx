@@ -2,6 +2,8 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { Timeline } from '@/ui-kit';
+
 import type { HistoryTimelineProps } from './HistoryTimeline.types';
 
 import { HISTORY } from '../../../../../config';
@@ -17,17 +19,22 @@ export const HistoryTimeline = ({ entries }: HistoryTimelineProps) => {
   }
 
   return (
-    <ol className={s.root}>
-      {entries.map(({ kind, value, from, to }) => (
-        <li key={`${kind}-${value}-${from}`} className={s.entry} data-current={to === null}>
-          <span className={s.value}>{value}</span>
-          <span className={s.range}>
-            {from ? format.dateTime(new Date(from), HISTORY.date) : t('unknown')}
-            {' — '}
-            {to ? format.dateTime(new Date(to), HISTORY.date) : t('now')}
+    <Timeline
+      items={entries.map(({ kind, value, from, to }) => ({
+        id: `${kind}-${value}-${from}`,
+        tone: to === null ? 'accent' : 'neutral',
+        isCurrent: to === null,
+        content: (
+          <span className={s.entry}>
+            <span className={s.value}>{value}</span>
+            <span className={s.range}>
+              {from ? format.dateTime(new Date(from), HISTORY.date) : t('unknown')}
+              {' — '}
+              {to ? format.dateTime(new Date(to), HISTORY.date) : t('now')}
+            </span>
           </span>
-        </li>
-      ))}
-    </ol>
+        )
+      }))}
+    />
   );
 };

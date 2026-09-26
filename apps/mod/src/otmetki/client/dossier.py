@@ -3,6 +3,11 @@ from __future__ import absolute_import
 from CurrentVehicle import g_currentVehicle
 from dossiers2.ui.achievements import ACHIEVEMENT_BLOCK
 
+try:
+    from dossiers2.custom.records import DB_ID_TO_RECORD
+except ImportError:
+    DB_ID_TO_RECORD = {}
+
 from ..moe import MIN_TIER
 
 
@@ -40,3 +45,10 @@ def current_vehicle_moe():
 def current_vehicle_id():
     item = g_currentVehicle.item
     return item.intCD if item is not None else None
+
+
+def achievement_name(record_id):
+    record = DB_ID_TO_RECORD.get(record_id)
+    if not isinstance(record, (list, tuple)) or len(record) < 2:
+        return None
+    return record[1]

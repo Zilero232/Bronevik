@@ -1,12 +1,12 @@
 'use client';
 
-import type { Nation, TankClass } from '@otmetki/icons';
+import type { Nation } from '@otmetki/icons';
 
-import { NATION_ICONS, NATIONS, TANK_CLASS_ICONS, TANK_CLASSES, TIERS, toRoman } from '@otmetki/icons';
+import { NATION_ICONS, NATIONS, TANK_CLASSES, TIERS } from '@otmetki/icons';
 import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button, Input, SegmentedControl, Select, ToggleChips } from '@/ui-kit';
+import { Button, IconFilter, Input, SegmentedControl, Select } from '@/ui-kit';
 
 import type { PremiumFilter } from '../../../../../lib/tanks-filter';
 import type { TanksFiltersProps } from './TanksFilters.types';
@@ -32,24 +32,8 @@ export const TanksFilters = ({ filters, total }: TanksFiltersProps) => {
         wrapperClassName={s.search}
         onChange={(event) => update({ query: event.target.value })}
       />
-      <ToggleChips
-        aria-label={t('tiersLabel')}
-        options={TIERS.map((tier) => ({ value: String(tier), label: toRoman(tier) }))}
-        size='sm'
-        value={filter.tiers.map(String)}
-        onChange={setTiers}
-      />
-      <ToggleChips<TankClass>
-        options={TANK_CLASSES.map((type) => {
-          const Icon = TANK_CLASS_ICONS[type];
-
-          return { value: type, label: <Icon size={16} />, title: tGame(`classes.${type}`) };
-        })}
-        aria-label={t('typesLabel')}
-        size='sm'
-        value={filter.types}
-        onChange={setTypes}
-      />
+      <IconFilter aria-label={t('tiersLabel')} kind='tier' options={TIERS} size='sm' value={filter.tiers} onChange={setTiers} />
+      <IconFilter aria-label={t('typesLabel')} kind='class' options={TANK_CLASSES} size='sm' value={filter.types} onChange={setTypes} />
       <Select<'all' | Nation>
         items={[
           { value: 'all', label: t('allNations') },

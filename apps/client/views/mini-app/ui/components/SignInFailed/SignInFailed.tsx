@@ -6,8 +6,10 @@ import { ErrorState } from '@/ui-kit';
 
 import type { SignInFailedProps } from './SignInFailed.types';
 
-export const SignInFailed = ({ isRetrying, onRetry }: SignInFailedProps) => {
+export const SignInFailed = ({ isRetrying, platform, onRetry }: SignInFailedProps) => {
   const t = useTranslations('tg.failed');
 
-  return <ErrorState description={t('description')} isRetrying={isRetrying} title={t('title')} onRetry={onRetry} />;
+  return (
+    <ErrorState description={t(platform === 'vk' ? 'vkDescription' : 'description')} isRetrying={isRetrying} title={t('title')} onRetry={onRetry} />
+  );
 };

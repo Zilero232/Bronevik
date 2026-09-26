@@ -8,13 +8,15 @@ import {
   HostLookupService,
   SessionCloseService,
   WebhookDeliveryService,
-  WebhookEndpointsService
+  WebhookEndpointsService,
+  WebhookPosterService
 } from './services';
 
 @Module({
   imports: [BillingCoreModule],
   providers: [
     HostLookupService,
+    WebhookPosterService,
     ApiTierService,
     WebhookEndpointsService,
     ApiTierSyncService,

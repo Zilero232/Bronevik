@@ -1,4 +1,3 @@
-import type { OverlayKind } from '@otmetki/schemas';
 import type { LucideIcon } from 'lucide-react';
 
 import { MessageSquareText, MonitorPlay, Swords, UserRound } from 'lucide-react';
@@ -21,5 +20,3 @@ export const TOOL_CARDS = [
 ] as const satisfies readonly { key: string; icon: LucideIcon }[];
 
 export type ToolKey = (typeof TOOL_CARDS)[number]['key'];
-
-export const MONITOR_WIDGETS = ['session', 'wn8', 'moe', 'damage', 'win_rate', 'challenge'] as const satisfies readonly OverlayKind[];

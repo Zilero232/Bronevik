@@ -4,7 +4,7 @@ import { LogIn } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { ROUTES } from '@/shared/constants';
+import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
@@ -17,6 +17,7 @@ import { AccountNav } from './components';
 import s from './AccountShell.module.scss';
 
 export const AccountShell = ({ children }: AccountShellProps) => {
+  const loginHref = useLoginHref();
   const t = useTranslations('me');
   const { state, isRetrying, retry } = useAccountShell();
 
@@ -34,7 +35,7 @@ export const AccountShell = ({ children }: AccountShellProps) => {
         .with({ isSignedIn: false }, () => (
           <EmptyState
             action={
-              <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={ROUTES.auth.login}>
+              <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={loginHref}>
                 <LogIn size={14} />
                 {t('signIn')}
               </Link>

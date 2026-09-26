@@ -2,16 +2,19 @@ import type { Key, ReactNode } from 'react';
 
 export type PagedListLayout = 'grid' | 'rows';
 
-export type PagedListProps<TItem> = {
+export type QueryStatusProps = {
+  isPending: boolean;
+  isError: boolean;
+  isRetrying?: boolean;
+  onRetry: () => void;
+};
+
+export type PagedListProps<TItem> = QueryStatusProps & {
   items: readonly TItem[];
   getKey: (item: TItem) => Key;
   renderItem: (item: TItem) => ReactNode;
   empty: ReactNode;
-  isPending: boolean;
-  isError: boolean;
-  onRetry: () => void;
   onLoadMore: () => void;
-  isRetrying?: boolean;
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   errorTitle?: ReactNode;

@@ -1,0 +1,117 @@
+import { subDays } from 'date-fns';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mock, mockDeep } from 'vitest-mock-extended';
+
+import type { AccountSnapshot, Player, TankProgress, UserLestaAccount } from '../../../../../generated';
+import type { PrismaService } from '../../../../core';
+
+import { DATA_EXPORT } from '../../config';
+import { DataExportService } from '../data-export.service';
+
+const NOW = new Date('2026-09-26T12:00:00.000Z');
+
+const player = (accountId: bigint): Player => mock<Player>({ accountId, nickname: `p${accountId}`, createdAt: null, lastBattleAt: null });
+
+const createService = (linked: bigint[]) => {
+  const prisma = mockDeep<PrismaService>();
+
+  prisma.userLestaAccount.findMany.mockResolvedValue(linked.map((accountId) => mock<UserLestaAccount>({ accountId })));
+  prisma.player.findMany.mockResolvedValue(linked.map(player));
+  prisma.playerTank.findMany.mockResolvedValue([]);
+  prisma.accountSnapshot.findMany.mockResolvedValue([]);
+  prisma.playSession.findMany.mockResolvedValue([]);
+  prisma.battle.findMany.mockResolvedValue([]);
+  prisma.tankProgress.findMany.mockResolvedValue([]);
+
+  return { service: new DataExportService(prisma), prisma };
+};
+
+const accountFilter = { accountId: { in: [7n, 8n] } };
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(NOW);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+describe('DataExportService.raw', () => {
+  it('reads only the accounts linked to the requesting user', async () => {
+    const { service, prisma } = createService([7n, 8n]);
+
+    await service.raw('user');
+
+    expect(prisma.userLestaAccount.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user' } }));
+    expect(prisma.player.findMany.mock.calls[0]?.[0]?.where).toEqual(accountFilter);
+    expect(prisma.playerTank.findMany.mock.calls[0]?.[0]?.where).toEqual(accountFilter);
+    expect(prisma.accountSnapshot.findMany.mock.calls[0]?.[0]?.where).toMatchObject(accountFilter);
+  });
+
+  it('exports an account without a snapshot with empty overall stats', async () => {
+    const { service, prisma } = createService([7n, 8n]);
+
+    prisma.accountSnapshot.findMany.mockResolvedValue([
+      mock<AccountSnapshot>({
+        accountId: 7n,
+        capturedAt: NOW,
+        damageDealt: 10n,
+        damageReceived: 5n,
+        xp: 3n,
+        battles: 1,
+        wins: 1,
+        losses: 0,
+        draws: 0,
+        frags: 0,
+        spotted: 0,
+        survived: 1,
+        hits: 0,
+        shots: 0,
+        capturePoints: 0,
+        droppedCapturePoints: 0,
+        globalRating: null
+      })
+    ]);
+
+    const { accounts, generatedAt } = await service.raw('user');
+
+    expect(generatedAt).toBe(NOW.toISOString());
+    expect(accounts.map((account) => account.overall?.damageDealt ?? null)).toEqual([10, null]);
+  });
+
+  it('exports nothing for a user without linked accounts', async () => {
+    const { service } = createService([]);
+
+    await expect(service.raw('user')).resolves.toMatchObject({ accounts: [], tanks: [] });
+  });
+});
+
+describe('DataExportService.analytics', () => {
+  it('limits sessions to the export window and battles to the export cap of the user’s accounts', async () => {
+    const { service, prisma } = createService([7n, 8n]);
+
+    await service.analytics('user');
+
+    expect(prisma.playSession.findMany.mock.calls[0]?.[0]?.where).toEqual({
+      ...accountFilter,
+      startedAt: { gte: subDays(NOW, DATA_EXPORT.sessionDays) }
+    });
+
+    expect(prisma.battle.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: accountFilter, take: DATA_EXPORT.maxBattles }));
+  });
+
+  it('derives the tank level from its progression XP', async () => {
+    const { service, prisma } = createService([7n]);
+
+    prisma.tankProgress.findMany.mockResolvedValue([
+      mock<TankProgress>({ accountId: 7n, tankId: 1, xp: 0, battles: 0 }),
+      mock<TankProgress>({ accountId: 7n, tankId: 2, xp: 1_000_000, battles: 500 })
+    ]);
+
+    const { tankProgress } = await service.analytics('user');
+
+    expect(tankProgress[0]?.level).toBeLessThanOrEqual(tankProgress[1]?.level ?? 0);
+    expect(tankProgress[1]?.level).toBeGreaterThan(tankProgress[0]?.level ?? 0);
+  });
+});

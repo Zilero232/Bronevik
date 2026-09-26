@@ -19,6 +19,7 @@ export type FakeLestaInput = {
   infos: Record<number, AccountInfo>;
   tanks: Record<number, AccountTank[]>;
   stats: Record<number, TankStats[]>;
+  marks?: Record<number, Record<number, number>>;
   failStatsFor?: number[];
 };
 

@@ -1,18 +1,11 @@
-import type { MarkCount } from '@otmetki/icons';
-import type { PlayerMarkRow, VehicleSummary } from '@otmetki/schemas';
+import type { PlayerMarkRow } from '@otmetki/schemas';
 
 export type ClosestMarksInput = {
   items: readonly PlayerMarkRow[];
   limit?: number;
 };
 
-export type ClosestMark = {
-  vehicle: VehicleSummary;
-  marks: number;
+export type ClosestMark = Pick<PlayerMarkRow, 'vehicle'> & {
   percent: number;
-  nextMark: number;
-  nextMarks: MarkCount;
-  gap: number;
   damageToNext: number;
-  progress: number;
 };

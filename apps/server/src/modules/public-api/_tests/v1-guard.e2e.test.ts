@@ -7,7 +7,7 @@ import { API_KEY, API_TIER_LIMITS } from '@otmetki/schemas';
 import RedisMock from 'ioredis-mock';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import { AppTooManyRequestsException, AppUnauthorizedException } from '../../../common/exceptions';
@@ -24,6 +24,7 @@ import { V1LeaderboardsController } from '../v1-leaderboards.controller';
 const VALID_KEY = 'otm_valid';
 const EXHAUSTED_KEY = 'otm_exhausted';
 const QUOTA_RETRY_SEC = 3_600;
+const NOW = new Date('2026-09-26T12:00:00Z');
 const leaderboard = { scope: 'players', metric: 'wn8', period: '30d', total: 0, minBattles: 50, entries: [] };
 
 const keys = mock<ApiKeysService>();
@@ -69,6 +70,15 @@ describe('/v1 behind the API key guard', () => {
     await app.init();
   });
 
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -85,6 +95,7 @@ describe('/v1 behind the API key guard', () => {
     const response = await request(app.getHttpServer()).get('/v1/leaderboards').set(API_KEY.header, 'otm_other');
 
     expect(response.status).toBe(401);
+    expect(response.body.code).toBe('API_KEY_INVALID');
   });
 
   it('serves a valid key and reports the remaining budget', async () => {
@@ -94,27 +105,25 @@ describe('/v1 behind the API key guard', () => {
     expect(response.body.minBattles).toBe(leaderboard.minBattles);
     expect(Number(response.headers[API_RATE_LIMIT.headers.limit.toLowerCase()])).toBe(API_TIER_LIMITS.free.requestsPerSecond);
     expect(Number(response.headers[API_RATE_LIMIT.headers.dailyRemaining.toLowerCase()])).toBe(7);
+    expect(usage.record).toHaveBeenCalledTimes(1);
     expect(usage.record).toHaveBeenCalledWith(expect.objectContaining({ keyId: 'key', endpoint: 'GET /v1/leaderboards', failed: false }));
   });
 
-  it('throttles past the tier rate with 429 and Retry-After', async () => {
-    const statuses: number[] = [];
-    let throttled: request.Response | null = null;
+  it('serves the tier rate within one second and throttles the next request with 429 and Retry-After', async () => {
+    const { requestsPerSecond } = API_TIER_LIMITS.free;
+    const responses: request.Response[] = [];
 
-    for (let attempt = 0; attempt <= API_TIER_LIMITS.free.requestsPerSecond; attempt += 1) {
-      const response = await request(app.getHttpServer()).get('/v1/leaderboards?limit=5').set(API_KEY.header, VALID_KEY);
-
-      statuses.push(response.status);
-
-      if (response.status === 429) {
-        throttled = response;
-      }
+    for (let attempt = 0; attempt <= requestsPerSecond; attempt += 1) {
+      responses.push(await request(app.getHttpServer()).get('/v1/leaderboards?limit=5').set(API_KEY.header, VALID_KEY));
     }
 
-    expect(statuses).toContain(429);
+    const throttled = responses.at(-1);
+
+    expect(responses.map((response) => response.status)).toEqual([...Array.from({ length: requestsPerSecond }).fill(200), 429]);
     expect(throttled?.body.code).toBe('RATE_LIMITED');
-    expect(Number(throttled?.headers['retry-after'])).toBeGreaterThan(0);
-    expect(usage.recordThrottled).toHaveBeenCalled();
+    expect(Number(throttled?.headers['retry-after'])).toBe(API_RATE_LIMIT.secondWindow);
+    expect(usage.record).toHaveBeenCalledTimes(requestsPerSecond);
+    expect(usage.recordThrottled).toHaveBeenCalledTimes(1);
   });
 
   it('answers 429 with the time until the daily quota refills', async () => {

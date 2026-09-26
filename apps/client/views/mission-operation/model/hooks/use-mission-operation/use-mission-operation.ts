@@ -12,7 +12,10 @@ import { useAuthSession } from '@/entities/auth/session';
 import { getMissionOperation, getMissionProgress } from '@/entities/mission/mission';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import type { OperationColumn } from './use-mission-operation.types';
+
 import { updateMissionProgress } from '../../../api';
+import { doneCount, missionNodes } from '../../../lib/mission-nodes';
 import { useBranchLabel } from '../use-branch-label';
 
 export const useMissionOperation = () => {
@@ -21,7 +24,6 @@ export const useMissionOperation = () => {
   const queryClient = useQueryClient();
   const { data: session } = useAuthSession();
   const branchLabel = useBranchLabel();
-  const [chainId, setChainId] = useState<number | null>(null);
   const [questId, setQuestId] = useState<number | null>(null);
 
   const campaign = Number(params.campaign);
@@ -54,31 +56,32 @@ export const useMissionOperation = () => {
   });
 
   const items = new Map((progress.data?.items ?? []).map((item) => [item.questId, item]));
-  const branches = detail.data?.branches ?? [];
-  const branch = branches.find((entry) => entry.chainId === chainId) ?? branches[0] ?? null;
-  const missions = branch?.missions ?? [];
-  const mission =
-    missions.find((entry) => entry.questId === questId) ?? missions.find((entry) => !items.get(entry.questId)?.done) ?? missions[0] ?? null;
+  const isTracked = isSignedIn && progress.isSuccess;
 
-  const questIds = branches.flatMap((entry) => entry.missions.map((item) => item.questId));
+  const columns = (detail.data?.branches ?? []).map((branch): OperationColumn => {
+    const nodes = missionNodes({ missions: branch.missions, progress: items, isTracked });
+
+    return { branch, label: branchLabel(branch.key), nodes, done: doneCount(nodes) };
+  });
+
+  const allNodes = columns.flatMap((column) => column.nodes);
+  const selected =
+    allNodes.find((node) => node.mission.questId === questId) ?? allNodes.find((node) => node.state === 'current') ?? allNodes[0] ?? null;
+
   const totals = {
-    done: questIds.filter((id) => items.get(id)?.done).length,
-    honors: questIds.filter((id) => items.get(id)?.honors).length
+    done: allNodes.filter((node) => node.state === 'done' || node.state === 'honors').length,
+    honors: allNodes.filter((node) => node.state === 'honors').length
   };
 
   return {
     detail,
-    branch,
-    branchLabel,
-    mission,
+    columns,
+    mission: selected?.mission ?? null,
     totals,
     isSignedIn,
+    isTracked,
     isSaving: save.isPending,
     progressOf: (id: number) => items.get(id) ?? null,
-    selectBranch: (value: string) => {
-      setChainId(Number(value));
-      setQuestId(null);
-    },
     selectMission: setQuestId,
     setProgress: (input: UpdateMissionProgressInput) => save.mutate(input)
   };

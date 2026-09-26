@@ -1,7 +1,8 @@
 import type { Equipment, FinalStats, ModuleBase, ModulePreset, OptionalDevice, VehicleFilter, VehicleSpec } from '@otmetki/gamedata';
+import type { ModuleSlot } from '@otmetki/schemas';
 
-import type { ModuleType, PrismaClient, ProvisionType, VehicleType } from '../../../../../generated';
-import type { VehicleImages } from '../../../../lib/lesta';
+import type { Arena, CrewRole, CrewSkill, GameDataEntry, Module, PrismaClient, Provision, Vehicle, VehicleProfile } from '../../../../../generated';
+import type { LestaVehicleImages } from '../../../../lib/lesta';
 import type { GameData } from '../game-data';
 import type { SourceRevision } from '../source';
 
@@ -26,7 +27,7 @@ export type CollectChangesInput = DiffInput & {
 
 export type ProfileStats = Omit<FinalStats, 'crew' | 'factors' | 'staticAttributes' | 'terrainResistance'>;
 
-export type VehicleSummary = {
+export type ImportedVehicleSummary = {
   tier: number;
   type: string;
   isPremium: boolean;
@@ -43,26 +44,18 @@ export type VehicleSummary = {
   speed: { forward: number; backward: number };
 };
 
-export type VehicleRow = {
-  tankId: number;
+export type VehicleRow = Pick<
+  Vehicle,
+  'isCollectible' | 'isPremium' | 'isWheeled' | 'name' | 'nation' | 'prevTankIds' | 'shortName' | 'slug' | 'tankId' | 'tier' | 'type'
+> & {
   tag: string;
-  name: string;
-  shortName: string;
-  slug: string;
-  nation: string;
-  type: VehicleType;
-  tier: number;
-  isPremium: boolean;
-  isCollectible: boolean;
-  isWheeled: boolean;
-  images: VehicleImages;
+  images: LestaVehicleImages;
   priceCredit?: number;
   priceGold?: number;
   specs: VehicleSpec;
   crew: VehicleSpec['crew'];
   modulesTree: ModuleTreeNode[];
   nextTanks: NextTank[];
-  prevTankIds: number[];
 };
 
 export type ModuleTreeNode = {
@@ -79,67 +72,39 @@ export type NextTank = {
   xp?: number;
 };
 
-export type ProfileRow = {
-  tankId: number;
-  profileId: string;
-  isDefault: boolean;
-  moduleIds: number[];
+export type ProfileRow = Pick<VehicleProfile, 'isDefault' | 'moduleIds' | 'profileId' | 'tankId'> & {
   data: ProfileStats;
 };
 
-export type ModuleRow = {
-  moduleId: number;
-  name: string;
-  type: ModuleType;
-  nation: string;
-  tier: number;
+export type ModuleRow = Pick<Module, 'moduleId' | 'name' | 'nation' | 'tankIds' | 'tier' | 'type'> & {
   priceCredit?: number;
   weight?: number;
-  tankIds: number[];
   data: Record<string, unknown>;
 };
 
-export type ProvisionRow = {
-  provisionId: number;
-  name: string;
+export type ProvisionRow = Pick<Provision, 'name' | 'provisionId' | 'tankIds' | 'type'> & {
   tag: string;
-  type: ProvisionType;
   description?: string;
   priceCredit?: number;
   priceGold?: number;
-  tankIds: number[];
   data: Record<string, unknown>;
 };
 
-export type CrewRoleRow = {
-  role: string;
-  name: string;
-  skills: string[];
-};
+export type CrewRoleRow = Pick<CrewRole, 'name' | 'role' | 'skills'>;
 
-export type CrewSkillRow = {
-  skill: string;
-  name: string;
+export type CrewSkillRow = Pick<CrewSkill, 'isCommon' | 'name' | 'roles' | 'skill'> & {
   type?: string;
-  roles: string[];
-  isCommon: boolean;
   data: Record<string, unknown>;
 };
 
-export type ArenaRow = {
-  arenaId: string;
-  name: string;
-  slug: string;
+export type ArenaRow = Pick<Arena, 'arenaId' | 'modes' | 'name' | 'slug'> & {
   camouflageType?: string;
   sizeMeters: number;
-  modes: string[];
   image: string;
   data: Record<string, unknown>;
 };
 
-export type EntryRow = {
-  kind: string;
-  key: string;
+export type EntryRow = Pick<GameDataEntry, 'key' | 'kind'> & {
   data: unknown;
 };
 
@@ -155,7 +120,7 @@ export type ImportPlan = {
   crewSkills: CrewSkillRow[];
   arenas: ArenaRow[];
   entries: EntryRow[];
-  summaries: Map<number, VehicleSummary>;
+  summaries: Map<number, ImportedVehicleSummary>;
   warnings: string[];
 };
 
@@ -193,10 +158,8 @@ export type ImportCounts = {
   changedVehicles: number;
 };
 
-type ModuleKind = 'chassis' | 'engine' | 'gun' | 'radio' | 'turret';
-
 export type VehicleModule = {
-  kind: ModuleKind;
+  kind: ModuleSlot;
   module: ModuleBase;
 };
 

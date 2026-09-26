@@ -1,3 +1,4 @@
+import { subHours } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -7,6 +8,8 @@ import type { ClanAccessService } from '../clan-access.service';
 
 import { ClanEventRemindersService } from '../clan-event-reminders.service';
 import { clanEvent, clanId, startsAt } from './clan-events.fixtures';
+
+const NOW = subHours(startsAt, 1);
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
@@ -30,7 +33,7 @@ describe('ClanEventRemindersService.sendReminders', () => {
     prisma.clanEvent.findMany.mockResolvedValue(due);
     prisma.clanEvent.updateMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
 
-    await service.sendReminders(startsAt);
+    await service.sendReminders(NOW);
 
     expect(notifications.notifyMany).toHaveBeenCalledTimes(1);
 
@@ -47,7 +50,7 @@ describe('ClanEventRemindersService.sendReminders', () => {
     prisma.clanEvent.findMany.mockResolvedValue(due);
     prisma.clanEvent.updateMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
 
-    expect(await service.sendReminders(startsAt)).toBe(1);
+    expect(await service.sendReminders(NOW)).toBe(1);
   });
 
   it('claims an event only while it has not been reminded yet', async () => {
@@ -56,8 +59,18 @@ describe('ClanEventRemindersService.sendReminders', () => {
     prisma.clanEvent.findMany.mockResolvedValue(due.slice(0, 1));
     prisma.clanEvent.updateMany.mockResolvedValue({ count: 1 });
 
-    await service.sendReminders(startsAt);
+    await service.sendReminders(NOW);
 
-    expect(prisma.clanEvent.updateMany).toHaveBeenCalledWith({ where: { id: 'e1', remindedAt: null }, data: { remindedAt: startsAt } });
+    expect(prisma.clanEvent.updateMany).toHaveBeenCalledWith({ where: { id: 'e1', remindedAt: null }, data: { remindedAt: NOW } });
+  });
+
+  it('sends nothing when no reminder is due', async () => {
+    const { service, prisma, notifications } = createService();
+
+    prisma.clanEvent.findMany.mockResolvedValue([]);
+
+    expect(await service.sendReminders(NOW)).toBe(0);
+    expect(prisma.clanEvent.updateMany).not.toHaveBeenCalled();
+    expect(notifications.notifyMany).not.toHaveBeenCalled();
   });
 });

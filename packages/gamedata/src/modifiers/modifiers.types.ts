@@ -1,4 +1,6 @@
-export type ModifierOp = 'add' | 'mul';
+import type { MODIFIER_OPS } from './modifiers.constants';
+
+export type ModifierOp = (typeof MODIFIER_OPS)[number];
 
 export type ModifierCondition = 'active' | 'still' | 'tracked' | 'wheeled';
 

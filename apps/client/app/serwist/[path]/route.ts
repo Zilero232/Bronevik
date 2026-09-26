@@ -1,7 +1,7 @@
 import { createSerwistRoute } from '@serwist/turbopack';
 import { extname } from 'node:path';
 
-import { PWA_ICONS } from '@/shared/config';
+import { PWA_ICONS, PWA_PRECACHE } from '@/shared/config';
 
 const REVISION = `${process.env.NEXT_PUBLIC_APP_VERSION ?? '0.0.0'}-${Date.now()}`;
 
@@ -13,6 +13,7 @@ const CONTENT_TYPES: Record<string, string> = {
 const serwist = createSerwistRoute({
   swSrc: 'app/sw.ts',
   useNativeEsbuild: true,
+  globPatterns: [...PWA_PRECACHE.globPatterns],
   additionalPrecacheEntries: ['/manifest.webmanifest', ...PWA_ICONS.map(({ src }) => src)].map((url) => ({ url, revision: REVISION }))
 });
 

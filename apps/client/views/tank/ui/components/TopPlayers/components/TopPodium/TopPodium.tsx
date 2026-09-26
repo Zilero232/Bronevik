@@ -4,34 +4,28 @@ import { useTranslations } from 'next-intl';
 
 import { PlayerIdentity } from '@/entities/player/player';
 import { ROUTES } from '@/shared/constants';
-import { Link } from '@/shared/i18n/navigation';
+import { Podium, PodiumCard } from '@/ui-kit';
 
 import type { TopPodiumProps } from './TopPodium.types';
-
-import s from './TopPodium.module.scss';
 
 export const TopPodium = ({ rows, metricLabel }: TopPodiumProps) => {
   const t = useTranslations('tank.players');
 
   return (
-    <ol aria-label={t('podiumLabel')} className={s.root}>
+    <Podium aria-label={t('podiumLabel')}>
       {rows.map((row) => (
-        <li key={row.key} className={s.item} data-rank={row.rank}>
-          <Link className={s.card} href={ROUTES.players.profile(row.player.nickname)}>
-            <span className={s.rank}>{row.rank}</span>
-            <span className={s.player}>
-              <PlayerIdentity player={row.player} />
-            </span>
-            <span className={s.metric} data-tone={row.tone}>
-              {row.value}
-            </span>
-            <span className={s.meta}>
-              <span>{metricLabel}</span>
-              <span>{t('battles', { battles: row.battles })}</span>
-            </span>
-          </Link>
-        </li>
+        <PodiumCard
+          key={row.key}
+          href={ROUTES.players.profile(row.player.nickname)}
+          meta={t('battles', { battles: row.battles })}
+          metricLabel={metricLabel}
+          name={<PlayerIdentity player={row.player} />}
+          rank={row.rank}
+          rankLabel={t('rank', { rank: row.rank })}
+          tone={row.tone}
+          value={row.value}
+        />
       ))}
-    </ol>
+    </Podium>
   );
 };

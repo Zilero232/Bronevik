@@ -1,4 +1,4 @@
-import type { vehicleFilterSchema, VehicleSummary } from '@otmetki/schemas';
+import type { MoeHistoryQuery, vehicleFilterSchema, VehicleSummary } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { MasteryThreshold, MoeThreshold, Prisma, ThresholdSource, VehicleType } from '../../../generated';
@@ -22,8 +22,7 @@ export type ThresholdsAsOfInput = {
   source?: ThresholdSource;
 };
 
-export type MoeHistoryInput = {
-  tankId: number;
+export type MoeHistoryInput = Omit<MoeHistoryQuery, 'from' | 'source' | 'to'> & {
   from?: Date;
   to?: Date;
   source?: ThresholdSource;

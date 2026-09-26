@@ -31,6 +31,11 @@ export class MasteryThresholdsSyncService {
     });
 
     const rows = masteryThresholdRows(distribution);
+
+    if (rows.length === 0) {
+      return { vehicles: 0 };
+    }
+
     const date = startOfDay(new Date(), { in: utc });
 
     await this.prisma.$transaction([

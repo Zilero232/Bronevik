@@ -1,8 +1,10 @@
+import type { CheckoutResult } from '@otmetki/schemas';
+
 import { Injectable } from '@nestjs/common';
 import { PLUS } from '@otmetki/schemas';
 import { randomUUID } from 'node:crypto';
 
-import type { CheckoutInput, CheckoutResult } from '../billing.types';
+import type { CheckoutInput } from '../billing.types';
 
 import { AppBadRequestException, AppForbiddenException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';

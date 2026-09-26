@@ -1,3 +1,9 @@
 .render {
   max-width: 160px;
 }
+
+.ringValue {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}

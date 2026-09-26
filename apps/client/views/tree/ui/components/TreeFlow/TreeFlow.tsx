@@ -2,10 +2,10 @@
 
 import { ReactFlow, ViewportPortal } from '@xyflow/react';
 
-import type { TreeFlowProps } from './TreeFlow.types';
-
 import { TREE_FLOW_TYPES, TREE_VIEW } from '../../../config';
 import { toFlowElements } from '../../../lib/tree-flow';
+import { useTree } from '../../../model/context';
+import { usePathSelection } from '../../../model/hooks';
 import { TierRuler } from '../TierRuler';
 import { TreeControls } from '../TreeControls';
 
@@ -13,8 +13,11 @@ import s from './TreeFlow.module.scss';
 
 import '@xyflow/react/dist/base.css';
 
-export const TreeFlow = ({ tree, layout, path, onSelect }: TreeFlowProps) => {
-  const { nodes, edges } = toFlowElements({ tree, layout, path, onSelect });
+export const TreeFlow = () => {
+  const { tree, layout } = useTree();
+  const { path, onClear } = usePathSelection();
+
+  const { nodes, edges } = toFlowElements({ tree, layout, path });
 
   return (
     <ReactFlow
@@ -33,7 +36,7 @@ export const TreeFlow = ({ tree, layout, path, onSelect }: TreeFlowProps) => {
       nodeTypes={TREE_FLOW_TYPES.nodes}
       preventScrolling={false}
       zoomOnScroll={false}
-      onPaneClick={() => onSelect(null)}
+      onPaneClick={onClear}
     >
       <ViewportPortal>
         <TierRuler height={layout.height} tiers={layout.tiers} />

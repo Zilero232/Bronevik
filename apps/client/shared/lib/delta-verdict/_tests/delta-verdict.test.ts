@@ -16,4 +16,15 @@ describe('deltaVerdict', () => {
   it('calls no change the same', () => {
     expect(deltaVerdict({ value: 0 })).toBe('same');
   });
+
+  it('judges the value as displayed, so a delta that rounds to zero is the same', () => {
+    expect(deltaVerdict({ value: 0.001, digits: 2 })).toBe('same');
+    expect(deltaVerdict({ value: -0.004, digits: 2 })).toBe('same');
+    expect(deltaVerdict({ value: 0.006, digits: 2 })).toBe('better');
+  });
+
+  it('never colours a missing or infinite value', () => {
+    expect(deltaVerdict({ value: Number.NaN })).toBe('same');
+    expect(deltaVerdict({ value: Number.POSITIVE_INFINITY })).toBe('same');
+  });
 });

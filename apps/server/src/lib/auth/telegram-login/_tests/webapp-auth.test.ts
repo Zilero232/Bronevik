@@ -1,10 +1,13 @@
 import { sign } from '@telegram-apps/init-data-node';
-import { describe, expect, it } from 'vitest';
+import { subSeconds } from 'date-fns';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { verifyWebAppInitData } from '../webapp-auth';
 import { WEBAPP_AUTH } from '../webapp-auth.constants';
 
 const botToken = '123456:TEST-token';
+
+const NOW = new Date('2026-09-26T12:00:00Z');
 
 type SignedInput = {
   token?: string;
@@ -14,9 +17,18 @@ type SignedInput = {
 
 const defaultUser = { id: 42, first_name: 'Ivan', username: 'ivan', language_code: 'ru' };
 
-const signed = ({ token = botToken, authDate = new Date(), user = defaultUser }: SignedInput = {}) => sign({ user, query_id: 'q' }, token, authDate);
+const signed = ({ token = botToken, authDate = NOW, user = defaultUser }: SignedInput = {}) => sign({ user, query_id: 'q' }, token, authDate);
 
 describe('verifyWebAppInitData', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('accepts init data signed with our bot token', () => {
     expect(verifyWebAppInitData({ initData: signed(), botToken })).toEqual({
       telegramId: 42n,
@@ -36,8 +48,14 @@ describe('verifyWebAppInitData', () => {
     expect(verifyWebAppInitData({ initData, botToken })).toBeNull();
   });
 
-  it('rejects init data older than the allowed age', () => {
-    const authDate = new Date(Date.now() - (WEBAPP_AUTH.maxAgeSeconds + 60) * 1000);
+  it('accepts init data exactly at the allowed age', () => {
+    const authDate = subSeconds(NOW, WEBAPP_AUTH.maxAgeSeconds);
+
+    expect(verifyWebAppInitData({ initData: signed({ authDate }), botToken })).toMatchObject({ telegramId: 42n });
+  });
+
+  it('rejects init data one second older than the allowed age', () => {
+    const authDate = subSeconds(NOW, WEBAPP_AUTH.maxAgeSeconds + 1);
 
     expect(verifyWebAppInitData({ initData: signed({ authDate }), botToken })).toBeNull();
   });

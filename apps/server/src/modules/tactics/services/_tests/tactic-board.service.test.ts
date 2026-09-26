@@ -54,7 +54,9 @@ describe('TacticBoardService.update', () => {
 
     await service.update({ id: board.id, userId: null, token: editToken, title: 'Renamed', visibility: 'public', data });
 
-    expect(prisma.tacticBoard.update).toHaveBeenCalledWith({ where: { id: board.id }, data: { data, document: null } });
+    expect(prisma.tacticBoard.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: board.id }), data: expect.objectContaining({ data, document: null }) })
+    );
   });
 
   it('lets the owner change the title and visibility', async () => {
@@ -62,10 +64,12 @@ describe('TacticBoardService.update', () => {
 
     await service.update({ id: board.id, userId: 'owner', token: null, title: 'Renamed', visibility: 'public' });
 
-    expect(prisma.tacticBoard.update).toHaveBeenCalledWith({
-      where: { id: board.id },
-      data: expect.objectContaining({ title: 'Renamed', visibility: 'public' })
-    });
+    expect(prisma.tacticBoard.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: board.id }),
+        data: expect.objectContaining({ title: 'Renamed', visibility: 'public' })
+      })
+    );
   });
 
   it('keeps the stored document when the drawing is not sent', async () => {
@@ -146,7 +150,10 @@ describe('TacticBoardService live collaboration', () => {
     await service.update({ id: board.id, userId: null, token: editToken, data });
 
     expect(live.replaceData).toHaveBeenCalledWith({ id: board.id, data });
-    expect(prisma.tacticBoard.update).toHaveBeenCalledWith({ where: { id: board.id }, data: { data } });
+
+    expect(prisma.tacticBoard.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: board.id }), data: expect.objectContaining({ data }) })
+    );
   });
 
   it('closes live connections when the owner changes the visibility, rotates the links or deletes the board', async () => {

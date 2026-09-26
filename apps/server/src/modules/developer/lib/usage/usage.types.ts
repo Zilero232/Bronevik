@@ -1,9 +1,7 @@
-export type UsageRow = {
+import type { ApiUsageDaily } from '../../../../../generated';
+
+export type UsageRow = Pick<ApiUsageDaily, 'endpoint' | 'errors' | 'requests' | 'throttled'> & {
   day: string;
-  endpoint: string;
-  requests: number;
-  errors: number;
-  throttled: number;
   latencyMsTotal: number;
 };
 

@@ -4,6 +4,7 @@ import type { EconomyAccount } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/shared/constants';
 import { Button, DataTable, EmptyState, ErrorState, SegmentedControl, Switch } from '@/ui-kit';
 
 import { TANKS_ECONOMY, TANKS_VIEW } from '../../../config';
@@ -27,7 +28,6 @@ export const EconomyTable = () => {
     isFiltered,
     onReset,
     onRetry,
-    onRowClick,
     onAccountChange,
     onReserveChange,
     onClanPayoutChange
@@ -68,10 +68,10 @@ export const EconomyTable = () => {
           columns={columns}
           data={rows}
           getRowId={(row) => String(row.vehicle.tankId)}
+          getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
           initialSorting={[{ id: 'credits', desc: true }]}
           isLoading={isLoading}
           rowHeight={TANKS_VIEW.rowHeight}
-          onRowClick={onRowClick}
         />
       )}
       <p className={s.note}>{t('note')}</p>

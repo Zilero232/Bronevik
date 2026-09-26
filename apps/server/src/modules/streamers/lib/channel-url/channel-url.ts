@@ -1,6 +1,6 @@
-import type { HandleOfInput, ParseChannelInput, ParsedChannel } from './channel-url.types';
+import { CHANNEL_HOSTS } from '@otmetki/schemas';
 
-import { CHANNEL_HOSTS } from '../../config';
+import type { HandleOfInput, ParseChannelInput, ParsedChannel } from './channel-url.types';
 
 const HANDLE = /^[\w.@-]{2,64}$/u;
 

@@ -2,7 +2,7 @@ import type { NotificationChannel, NotificationEvent } from '../../../../generat
 
 export const NOTIFICATION_DEFAULTS = {
   channels: ['site'],
-  events: ['moeGained', 'moeThresholdDropped', 'sessionFinished', 'goalReached', 'replayOverflow'],
+  events: ['moeGained', 'moeThresholdDropped', 'sessionFinished', 'goalReached', 'replayOverflow', 'tankLevelUp', 'tankChallengeDone'],
   sessionReport: true,
   weeklyDigest: false
 } as const;
@@ -13,7 +13,7 @@ export const NOTIFICATION_ROUTING: Readonly<Record<'digestChannels' | 'eventChan
   quietChannels: ['telegram', 'webPush']
 };
 
-export const NOTIFICATION_ALWAYS_IN_INBOX: readonly NotificationEvent[] = ['replayOverflow'];
+export const NOTIFICATION_ALWAYS_IN_INBOX: readonly NotificationEvent[] = ['replayOverflow', 'tankLevelUp', 'tankChallengeDone'];
 
 export const NOTIFICATION_SELF_OPTED: readonly NotificationEvent[] = ['watchlistDigest', 'competitionFinished', 'streamerLive'];
 

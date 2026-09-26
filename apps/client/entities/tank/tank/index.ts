@@ -25,7 +25,6 @@ export type {
   TankTrendInput,
   TierListInput
 } from './api';
-export { tankRouteName, topTankSlugs } from './api';
 export { economyView } from './api';
 export type { EconomyView } from './api';
 export { DIFFICULTY_TONE, ECONOMY_VIEW, KEY_SPECS, STATUS_TONE, SWEAT_TONE, TANK_SPEC_GROUPS, TANK_SPEC_KEYS, TANK_SPECS } from './config';
@@ -39,8 +38,6 @@ export { useSpecFormat } from './model/hooks';
 export type { TankIdentityData, TankSpecs } from './model/tank.types';
 export { LearningBadge } from './ui/LearningBadge';
 export type { LearningBadgeProps } from './ui/LearningBadge';
-export { RankCell } from './ui/RankCell';
-export type { RankCellProps } from './ui/RankCell';
 export { SweatBadge } from './ui/SweatBadge';
 export type { SweatBadgeProps } from './ui/SweatBadge';
 export { TankCard } from './ui/TankCard';
@@ -67,7 +64,5 @@ export { TierCell } from './ui/TierCell';
 export type { TierCellProps } from './ui/TierCell';
 export { WinRateCell } from './ui/WinRateCell';
 export type { WinRateCellProps } from './ui/WinRateCell';
-export { WrDiffCell } from './ui/WrDiffCell';
-export type { WrDiffCellProps } from './ui/WrDiffCell';
 export { TankImage } from '@/ui-kit';
 export type { TankImageProps, TankImageSize } from '@/ui-kit';

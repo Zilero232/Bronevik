@@ -6,6 +6,7 @@ import { DataTable, EmptyState } from '@/ui-kit';
 
 import type { TopTableProps } from './TopTable.types';
 
+import { entrantLink } from '../../../lib/entrant-link';
 import { useTopColumns } from '../../../model/hooks';
 
 export const TopTable = ({ entries, filter, tank, isLoading, summary }: TopTableProps) => {
@@ -19,6 +20,7 @@ export const TopTable = ({ entries, filter, tank, isLoading, summary }: TopTable
       density={tank ? 'media' : 'default'}
       emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
       getRowId={(row) => `${row.rank}-${row.name}`}
+      getRowLink={entrantLink}
       isLoading={isLoading}
       summary={summary}
     />

@@ -18,6 +18,10 @@
     cursor: default;
   }
 
+  &[data-editable='false'] {
+    touch-action: pan-y;
+  }
+
   &[data-tool='text'] {
     cursor: text;
   }

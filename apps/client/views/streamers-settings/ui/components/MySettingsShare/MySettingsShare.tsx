@@ -1,6 +1,6 @@
 'use client';
 
-import { GitCompareArrows, Trash2 } from 'lucide-react';
+import { Download, GitCompareArrows, Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
@@ -35,6 +35,10 @@ export const MySettingsShare = () => {
             <li>{t('steps.hangar')}</li>
             <li>{t('steps.target')}</li>
           </ol>
+          <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className: s.install })} href={ROUTES.mod}>
+            <Download size={STREAMERS_SETTINGS_PAGE.iconSize} />
+            {t('installMod')}
+          </Link>
         </>
       )}
       {share && (

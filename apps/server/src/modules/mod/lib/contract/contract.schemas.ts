@@ -1,7 +1,7 @@
 import { modBattleLoadoutSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { BIND_CODE, MOD_PLATOON, MOD_SHOTS } from '../../config';
+import { BIND_CODE, MOD_ACHIEVEMENTS, MOD_PLATOON, MOD_SHOTS } from '../../config';
 
 const id = z
   .string()
@@ -111,7 +111,8 @@ export const battleResultEventSchema = z.strictObject({
   session_id: z.string().max(64).nullable(),
   loadout: modBattleLoadoutSchema.nullable().optional(),
   platoon: platoonSchema.nullable().optional(),
-  shots: z.array(modShotSchema).max(MOD_SHOTS.maxPerBattle).nullable().optional()
+  shots: z.array(modShotSchema).max(MOD_SHOTS.maxPerBattle).nullable().optional(),
+  achievements: z.array(z.string().min(1).max(MOD_ACHIEVEMENTS.maxNameLength)).max(MOD_ACHIEVEMENTS.maxPerBattle).nullable().optional()
 });
 
 const moeSnapshotEventSchema = z.strictObject({
@@ -134,6 +135,13 @@ const moeDistributionEventSchema = z.strictObject({
   damage_better_than_n_percent: z.array(z.number().int()).max(200)
 });
 
+const battleStartEventSchema = z.strictObject({
+  type: z.literal('battle_start'),
+  event_id: id,
+  occurred_at: unixTime,
+  tank_id: tankId.nullable()
+});
+
 const queueEventSchema = z.strictObject({
   type: z.literal('queue'),
   event_id: id,
@@ -148,7 +156,8 @@ export const ingestEventSchema = z.discriminatedUnion('type', [
   battleResultEventSchema,
   moeSnapshotEventSchema,
   moeDistributionEventSchema,
-  queueEventSchema
+  queueEventSchema,
+  battleStartEventSchema
 ]);
 
 export const ingestBatchSchema = z.strictObject({

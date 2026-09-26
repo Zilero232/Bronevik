@@ -3,25 +3,6 @@ import { z } from 'zod';
 
 import { LEAGUE, WRAPPED } from '../config';
 
-const followKindSchema = z.enum(['player', 'clan', 'tank']);
-
-export const followSchema = z.object({
-  id: uuidSchema,
-  kind: followKindSchema,
-  targetId: z.number().int().positive(),
-  label: z.string().nullable(),
-  createdAt: isoDateTimeSchema
-});
-
-export const followListSchema = z.array(followSchema);
-
-export const createFollowSchema = z.object({
-  kind: followKindSchema,
-  targetId: z.number().int().positive()
-});
-
-export const followParamsSchema = z.object({ id: uuidSchema });
-
 export const feedItemSchema = z.object({
   kind: z.enum(['mark', 'mastery', 'record', 'badge']),
   accountId: accountIdSchema,

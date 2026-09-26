@@ -19,5 +19,12 @@ export const FRAMEABLE_HEADER_RULES = [
   // Stream overlays are previewed inside the streamer dashboard.
   ...localized('/overlay/:path*').map((source) => ({ source, headers: frameable("'self'") })),
   // Telegram Web (web.telegram.org) opens the Mini App in an iframe.
-  ...localized('/tg/:path*').map((source) => ({ source, headers: frameable("'self' https://web.telegram.org") }))
+  ...localized('/tg/:path*').map((source) => ({ source, headers: frameable("'self' https://web.telegram.org") })),
+  // VK web opens the Mini App in an iframe on vk.com / vk.ru.
+  ...localized('/vk/:path*').map((source) => ({
+    source,
+    headers: frameable("'self' https://vk.com https://*.vk.com https://vk.ru https://*.vk.ru")
+  })),
+  // The Twitch panel extension renders inside twitch.tv (hosted test) or the ext-twitch.tv CDN frame.
+  { source: '/twitch-panel', headers: frameable("'self' https://*.twitch.tv https://*.ext-twitch.tv") }
 ];

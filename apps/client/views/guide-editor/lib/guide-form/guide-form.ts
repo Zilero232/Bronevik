@@ -1,4 +1,4 @@
-import type { CreateGuide } from '@/entities/guide/guide';
+import type { CreateGuide, UpdateGuide } from '@/entities/guide/guide';
 
 import type { GuideFormLocale, GuideFormOutput, GuideFormValues, ToGuideFormValuesInput } from './guide-form.types';
 
@@ -25,4 +25,13 @@ export const toGuideInput = ({ kind, tankId, arenaId, locale, title, body }: Gui
   body,
   ...(kind === 'tank' && tankId !== undefined ? { tankId } : {}),
   ...(kind === 'map' && arenaId !== undefined ? { arenaId } : {})
+});
+
+export const toGuideUpdateInput = ({ kind, tankId, arenaId, locale, title, body }: GuideFormOutput): UpdateGuide => ({
+  kind,
+  locale,
+  title,
+  body,
+  tankId: kind === 'tank' ? (tankId ?? null) : null,
+  arenaId: kind === 'map' ? (arenaId ?? null) : null
 });

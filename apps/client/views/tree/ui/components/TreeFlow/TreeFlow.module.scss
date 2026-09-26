@@ -11,6 +11,10 @@
   &:active {
     cursor: grabbing;
   }
+
+  @include coarse {
+    touch-action: pan-y;
+  }
 }
 
 .root :global(.react-flow__attribution) {

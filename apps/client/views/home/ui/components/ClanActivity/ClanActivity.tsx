@@ -3,10 +3,9 @@
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Card, DataTable, EmptyState, ErrorState } from '@/ui-kit';
+import { Card, DataTable, EmptyState, ErrorState, SectionHeader } from '@/ui-kit';
 
 import { useClanActivity, useClanActivityColumns } from '../../../model/hooks';
-import { SectionTitle } from '../SectionTitle';
 
 import s from './ClanActivity.module.scss';
 
@@ -17,7 +16,7 @@ export const ClanActivity = () => {
 
   return (
     <section aria-labelledby='home-clans' className={s.root}>
-      <SectionTitle id='home-clans' meta={t('period')} more={{ href: ROUTES.clans.list, label: t('all') }} title={t('title')} />
+      <SectionHeader id='home-clans' meta={t('period')} more={{ href: ROUTES.clans.list, label: t('all') }} title={t('title')} variant='display' />
       <Card padding='none'>
         {isError ? (
           <ErrorState isCompact onRetry={retry} />

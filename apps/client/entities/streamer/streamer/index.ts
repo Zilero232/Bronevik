@@ -16,4 +16,3 @@ export type {
   UpdateOverlayInput,
   UpsertStreamerProfileInput
 } from './api';
-export { streamerRouteName } from './api';

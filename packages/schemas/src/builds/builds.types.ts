@@ -21,6 +21,7 @@ import type {
   loadoutResultSchema,
   modifierEffectSchema,
   moduleOptionSchema,
+  moduleSlotSchema,
   popularBuildSchema,
   popularBuildsQuerySchema,
   popularBuildsSchema,
@@ -65,5 +66,7 @@ export type RecommendedBuild = z.infer<typeof recommendedBuildSchema>;
 export type BuildHistoryEntry = z.infer<typeof buildHistoryEntrySchema>;
 export type BuildHistory = z.infer<typeof buildHistorySchema>;
 export type BuildsCatalogQuery = z.infer<typeof buildsCatalogQuerySchema>;
+export type BuildsCatalogQueryInput = z.input<typeof buildsCatalogQuerySchema>;
 export type BuildsCatalogEntry = z.infer<typeof buildsCatalogEntrySchema>;
 export type BuildsCatalog = z.infer<typeof buildsCatalogSchema>;
+export type ModuleSlot = z.infer<typeof moduleSlotSchema>;

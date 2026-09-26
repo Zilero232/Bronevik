@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 
-import type { MarksGainRow, PlayerActivity, PlayerActivityInput, SessionSumRow } from '../watchlist.types';
+import type { MarksGainRow, PlayerActivityInput, PlayerActivityRow, SessionSumRow } from '../watchlist.types';
 
 import { PrismaService } from '../../../core';
 import { WATCHLIST_DIGEST_RUN } from '../config';
@@ -10,7 +10,7 @@ import { WATCHLIST_DIGEST_RUN } from '../config';
 export class WatchlistActivityService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async activity({ accountIds, since }: PlayerActivityInput): Promise<Map<bigint, PlayerActivity>> {
+  async activity({ accountIds, since }: PlayerActivityInput): Promise<Map<bigint, PlayerActivityRow>> {
     if (accountIds.length === 0) {
       return new Map();
     }

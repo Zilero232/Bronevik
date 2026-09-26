@@ -1,7 +1,8 @@
 import type { Queue } from 'bullmq';
 
+import { differenceInMilliseconds } from 'date-fns';
 import RedisMock from 'ioredis-mock';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Notification, NotificationSettings, User } from '../../../../../generated';
@@ -13,7 +14,18 @@ import type { DeliverJob } from '../../notifications.types';
 import type { EmailService } from '../email.service';
 import type { WebPushService } from '../web-push.service';
 
+import { Prisma } from '../../../../../generated';
+import { PRISMA_CODE } from '../../../../core/prisma/prisma.constants';
+import { WEEKLY_DIGEST } from '../../config';
 import { DeliveryService } from '../delivery.service';
+
+const NOW = new Date('2026-09-26T23:30:00Z');
+
+const QUIET_START = 23;
+
+const QUIET_END = 1;
+
+const QUIET_WINDOW_END = new Date('2026-09-27T01:00:00Z');
 
 const job: DeliverJob = {
   userId: 'u1',
@@ -54,16 +66,26 @@ const createService = () => {
   const email = mock<EmailService>();
   const queue = mock<Queue<DeliverPayload>>();
 
-  config.get.mockReturnValue('https://otmetki.app');
+  config.get.mockReturnValue('https://triotmetki.ru');
   prisma.notification.findUnique.mockResolvedValue(null);
   prisma.notification.create.mockResolvedValue(mock<Notification>({ id: 'n1' }));
 
-  const service = new DeliveryService(prisma, config, telegram, webPush, email, new RedisMock(), queue);
+  const redis = new RedisMock();
+  const service = new DeliveryService(prisma, config, telegram, webPush, email, redis, queue);
 
-  return { service, prisma, telegram, email, queue };
+  return { service, prisma, telegram, email, queue, redis };
 };
 
 describe('DeliveryService.deliver', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('stores a site notification and sends telegram when both are enabled', async () => {
     const { service, prisma, telegram } = createService();
 
@@ -107,12 +129,11 @@ describe('DeliveryService.deliver', () => {
     expect(prisma.notification.update).toHaveBeenCalledWith(expect.objectContaining({ data: { failedAt: expect.any(Date) } }));
   });
 
-  it('defers telegram to the end of quiet hours but fills the inbox at once', async () => {
+  it('defers telegram to the end of a quiet window crossing midnight but fills the inbox at once', async () => {
     const { service, prisma, telegram, queue } = createService();
-    const hour = new Date().getUTCHours();
 
     prisma.user.findUnique.mockResolvedValue(
-      recipient({ notificationSettings: settings({ quietHoursStart: hour, quietHoursEnd: (hour + 2) % 24 }) })
+      recipient({ notificationSettings: settings({ quietHoursStart: QUIET_START, quietHoursEnd: QUIET_END }) })
     );
 
     expect(await service.deliver(job)).toBe(1);
@@ -121,8 +142,68 @@ describe('DeliveryService.deliver', () => {
     expect(queue.add).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({ onlyChannels: ['telegram'] }),
-      expect.objectContaining({ delay: expect.any(Number) })
+      expect.objectContaining({ delay: differenceInMilliseconds(QUIET_WINDOW_END, NOW) })
     );
+  });
+
+  it('delivers at once when the current hour equals the end of quiet hours', async () => {
+    const { service, prisma, telegram, queue } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(
+      recipient({ notificationSettings: settings({ quietHoursStart: NOW.getUTCHours() - 2, quietHoursEnd: NOW.getUTCHours() }) })
+    );
+
+    expect(await service.deliver(job)).toBe(2);
+    expect(telegram.sendNotification).toHaveBeenCalledTimes(1);
+    expect(queue.add).not.toHaveBeenCalled();
+  });
+
+  it('sends only the requested channels of a deferred job, ignoring quiet hours', async () => {
+    const { service, prisma, telegram, queue } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(
+      recipient({ notificationSettings: settings({ quietHoursStart: QUIET_START, quietHoursEnd: QUIET_END }) })
+    );
+
+    expect(await service.deliver({ ...job, onlyChannels: ['telegram'] })).toBe(1);
+    expect(telegram.sendNotification).toHaveBeenCalledTimes(1);
+    expect(prisma.notification.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ channel: 'telegram' }) }));
+    expect(queue.add).not.toHaveBeenCalled();
+  });
+
+  it('skips a channel another worker created concurrently', async () => {
+    const { service, prisma, telegram } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(recipient({}));
+
+    prisma.notification.create.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('duplicate', { code: PRISMA_CODE.uniqueViolation, clientVersion: 'test' })
+    );
+
+    expect(await service.deliver(job)).toBe(2);
+    expect(telegram.sendNotification).not.toHaveBeenCalled();
+    expect(prisma.notification.update).not.toHaveBeenCalled();
+  });
+
+  it('rethrows a create failure that is not a unique violation', async () => {
+    const { service, prisma } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(recipient({}));
+    prisma.notification.create.mockRejectedValue(new Error('db down'));
+
+    await expect(service.deliver(job)).rejects.toThrow(/2 of 2/u);
+  });
+
+  it('reuses the unsent row of a failed attempt instead of creating another', async () => {
+    const { service, prisma, telegram } = createService();
+
+    prisma.user.findUnique.mockResolvedValue(recipient({}));
+    prisma.notification.findUnique.mockResolvedValue(mock<Notification>({ id: 'failed-row', sentAt: null }));
+
+    expect(await service.deliver(job)).toBe(2);
+    expect(prisma.notification.create).not.toHaveBeenCalled();
+    expect(telegram.sendNotification).toHaveBeenCalledTimes(1);
+    expect(prisma.notification.update).toHaveBeenCalledWith({ where: { id: 'failed-row' }, data: { sentAt: NOW, failedAt: null } });
   });
 
   it('delivers nothing to a deleted user', async () => {
@@ -147,6 +228,19 @@ describe('DeliveryService.deliverDigest', () => {
     expect(await service.deliverDigest(digest)).toBe(0);
     expect(email.sendDigest).toHaveBeenCalledTimes(1);
     expect(telegram.sendNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends nothing and claims no week when no digest channel is reachable', async () => {
+    const { service, prisma, email, redis } = createService();
+
+    email.canReach.mockReturnValue(false);
+    prisma.user.findUnique.mockResolvedValue(recipient({ telegramId: null }));
+
+    const unreachable = { ...digest, weekKey: '2026-W41' };
+
+    expect(await service.deliverDigest(unreachable)).toBe(0);
+    expect(email.sendDigest).not.toHaveBeenCalled();
+    expect(await redis.exists(`${WEEKLY_DIGEST.dedupePrefix}${unreachable.userId}:${unreachable.weekKey}`)).toBe(0);
   });
 
   it('releases the week when sending fails so a retry can send it', async () => {

@@ -1,14 +1,9 @@
-type MarkThresholds = {
-  p65: number;
-  p85: number;
-  p95: number;
-  p100: number | null;
-};
+import type { MoeThresholdValues } from '@otmetki/schemas';
 
 export type NextMarkInput = {
   percent: number | null;
   marksOnGun: number | null;
-  thresholds: MarkThresholds | null;
+  thresholds: MoeThresholdValues | null;
   movingDamage: number | null;
 };
 
@@ -18,7 +13,7 @@ export type NextMark = {
 };
 
 export type ThresholdForInput = {
-  thresholds: MarkThresholds;
+  thresholds: MoeThresholdValues;
   percent: number;
 };
 

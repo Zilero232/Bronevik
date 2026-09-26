@@ -3,7 +3,6 @@ export { parsePersonalMissions } from './personal-missions';
 export { PERSONAL_MISSION_FILES } from './personal-missions.constants';
 export type {
   PersonalBranch,
-  PersonalBranchKind,
   PersonalCampaign,
   PersonalMission,
   PersonalMissionCondition,

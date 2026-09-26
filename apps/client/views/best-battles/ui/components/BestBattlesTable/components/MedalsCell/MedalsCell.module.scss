@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.more {
+  @include numeric(var(--text-xs));
+
+  color: var(--color-text-muted);
+}
+
+.empty {
+  color: var(--color-text-dim);
+}

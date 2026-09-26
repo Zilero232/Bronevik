@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
-import { mapRouteName, mapSlugs } from '@/entities/map/map';
+import { mapRouteName, mapSlugs } from '@/entities/map/map/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';

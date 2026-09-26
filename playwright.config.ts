@@ -4,6 +4,8 @@ const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
 export default defineConfig({
   testDir: './e2e',
+  // The screenshot tour has its own config (playwright.screens.config.ts, `bun run e2e:screens`).
+  testIgnore: /screens\.(?:setup|spec|teardown)\.ts$/,
   outputDir: './e2e/.results',
 
   fullyParallel: true,

@@ -7,7 +7,7 @@ import { buttonVariants, IconButton } from '@/ui-kit';
 
 import type { ViewerToolbarProps } from './ViewerToolbar.types';
 
-import { VIEW_PRESETS } from '../../../config/armor-viewer.config';
+import { VIEW_PRESETS } from '../../../config';
 
 import s from './ViewerToolbar.module.scss';
 

@@ -1,5 +1,7 @@
 'use client';
 
+import type { QueryFunctionContext } from '@tanstack/react-query';
+
 import { keepPreviousData, useQueries, useQuery } from '@tanstack/react-query';
 
 import { compareTanks, getTank } from '@/shared/api/tanks';
@@ -31,7 +33,7 @@ export const useComparison = () => {
   const details = useQueries({
     queries: ids.map((id) => ({
       queryKey: QUERY_KEYS.tanks.detail({ idOrSlug: String(id), period, mode }),
-      queryFn: ({ signal }: { signal: AbortSignal }) => getTank({ idOrSlug: String(id), period, mode, signal }),
+      queryFn: ({ signal }: QueryFunctionContext) => getTank({ idOrSlug: String(id), period, mode, signal }),
       staleTime: staleMs
     }))
   });

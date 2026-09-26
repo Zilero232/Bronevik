@@ -17,3 +17,9 @@ export type UsageTotals = Pick<ApiUsagePoint, 'errors' | 'requests' | 'throttled
 };
 
 export type QuotaTone = 'accent' | 'average' | 'bad';
+
+export type TopEndpointShare = {
+  endpoint: string;
+  requests: number;
+  share: number;
+};

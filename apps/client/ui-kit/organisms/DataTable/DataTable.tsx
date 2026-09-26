@@ -1,10 +1,9 @@
 'use client';
 
-import type { SortingState } from '@tanstack/react-table';
-
 import { getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { clsx } from 'clsx';
-import { useState } from 'react';
+
+import { useDataTableState } from '@/shared/lib';
 
 import type { DataTableProps } from './DataTable.types';
 
@@ -32,8 +31,7 @@ export const DataTable = <T,>({
 }: DataTableProps<T>) => {
   'use no memo';
 
-  const [scrollNode, setScrollNode] = useState<HTMLDivElement | null>(null);
-  const [sorting, setSorting] = useState<SortingState>(initialSorting);
+  const { scrollNode, setScrollNode, sorting, setSorting } = useDataTableState({ initialSorting });
 
   const table = useReactTable({
     data,

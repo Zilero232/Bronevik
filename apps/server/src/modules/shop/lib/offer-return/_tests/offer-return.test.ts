@@ -1,9 +1,9 @@
+import { millisecondsInDay } from 'date-fns/constants';
 import { describe, expect, it } from 'vitest';
 
-import { OFFER_RETURN } from '../../../config';
 import { returnEstimate } from '../offer-return';
 
-const day = (value: number) => new Date(Date.UTC(2026, 0, 1) + value * OFFER_RETURN.dayMs);
+const day = (value: number) => new Date(Date.UTC(2026, 0, 1) + value * millisecondsInDay);
 
 describe('returnEstimate', () => {
   it('has no forecast without history', () => {

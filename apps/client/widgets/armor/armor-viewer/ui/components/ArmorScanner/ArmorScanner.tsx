@@ -13,7 +13,6 @@ export const ArmorScanner = () => {
 
   return (
     <div aria-busy className={s.root} role='status'>
-      <span aria-hidden className={s.grid} />
       <span aria-hidden className={s.reticle} />
       {!reducedMotion && <motion.span aria-hidden className={s.sweep} {...SCANNER_SWEEP} />}
       <span className={s.label}>{t('loading')}</span>

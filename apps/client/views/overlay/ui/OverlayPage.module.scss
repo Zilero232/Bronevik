@@ -11,7 +11,7 @@
 }
 
 .notice {
-  @include hud-label;
+  @include label;
 
   color: var(--color-text-muted);
   text-shadow: 0 1px 2px var(--shade-35);

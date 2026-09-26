@@ -1,6 +1,6 @@
 import { flexRender } from '@tanstack/react-table';
 
-import type { DataTableHeadProps } from '../../DataTable.types';
+import type { DataTableHeadProps } from './DataTableHead.types';
 
 import { DATA_TABLE } from '../../DataTable.constants';
 

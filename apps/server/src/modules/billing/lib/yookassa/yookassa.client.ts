@@ -4,7 +4,7 @@ import { AppBadRequestException } from '../../../../common/exceptions';
 import { errorMessage } from '../../../../common/lib';
 import { http } from '../../../../lib/http';
 import { YOOKASSA } from '../../config';
-import { toAmount } from './yookassa.helpers';
+import { toAmount } from './yookassa';
 import { yookassaPaymentSchema } from './yookassa.schemas';
 
 export class YooKassaClient {

@@ -17,7 +17,6 @@ export const NotFoundView = () => {
             {t('home')}
           </Link>
         }
-        code={t('code')}
         description={t('body')}
         title={t('title')}
       />

@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 
 import type { AnimatedMasteryProps } from './animated.types';
 
-import { MASTERY_EMBLEM, MASTERY_FILL_OPACITY, MASTERY_GLOW, MASTERY_SHIELD, MASTERY_TINTS } from '../icons/mastery';
+import { MASTERY, MASTERY_EMBLEM, MASTERY_TINTS } from '../icons/mastery.shapes';
 import { IconBase } from '../lib';
 import { ACCENT, DRAW, ICON_EASE, STAR_STYLE } from './animated.constants';
 
@@ -17,14 +17,14 @@ export const AnimatedMastery = ({ level, tinted = false, color, style, ...props 
     <IconBase
       color={tint ?? color}
       name={`mastery-${level}-animated`}
-      style={tinted && level === 'master' ? { filter: MASTERY_GLOW, ...style } : style}
+      style={tinted && level === 'master' ? { filter: MASTERY.glow, ...style } : style}
       {...props}
     >
       <motion.path
         animate='visible'
-        d={MASTERY_SHIELD}
+        d={MASTERY.shield}
         fill={tint}
-        fillOpacity={tint ? MASTERY_FILL_OPACITY : undefined}
+        fillOpacity={tint ? MASTERY.fillOpacity : undefined}
         initial={initial}
         transition={{ duration: 0.9, ease: ICON_EASE }}
         variants={DRAW}

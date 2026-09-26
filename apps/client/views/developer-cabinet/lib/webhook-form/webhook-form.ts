@@ -4,7 +4,7 @@ import { unique } from 'remeda';
 
 import type { WebhookFormError, WebhookFormValues, WebhookIdFields } from './webhook-form.types';
 
-import { WEBHOOK_FORM } from './webhook-form.constants';
+import { WEBHOOK_FORM } from '../../config';
 
 export const parseIdList = (text: string): number[] | null => {
   const ids = text.split(WEBHOOK_FORM.separator).filter(Boolean).map(Number);

@@ -1,0 +1,13 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(2px);
+
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.message {
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+}

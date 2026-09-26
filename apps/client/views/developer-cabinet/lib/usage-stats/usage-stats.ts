@@ -1,10 +1,10 @@
-import type { ApiUsagePoint } from '@bronevik/schemas';
+import type { ApiUsage, ApiUsagePoint } from '@bronevik/schemas';
 
 import { clamp, sumBy } from 'remeda';
 
-import type { QuotaShareInput, QuotaTone, UsageSeries, UsageTotals } from './usage-stats.types';
+import type { QuotaShareInput, QuotaTone, TopEndpointShare, UsageSeries, UsageTotals } from './usage-stats.types';
 
-import { USAGE_STATS } from './usage-stats.constants';
+import { USAGE, USAGE_STATS } from '../../config';
 
 export const usageSeries = (history: ApiUsagePoint[]): UsageSeries => ({
   days: history.map(({ day }) => day),
@@ -28,4 +28,11 @@ export const quotaTone = (share: number): QuotaTone => {
   }
 
   return share >= USAGE_STATS.warnShare ? 'average' : 'accent';
+};
+
+export const topEndpointShares = (endpoints: ApiUsage['topEndpoints']): TopEndpointShare[] => {
+  const top = endpoints.slice(0, USAGE.topEndpoints);
+  const peak = Math.max(0, ...top.map(({ requests }) => requests));
+
+  return top.map(({ endpoint, requests }) => ({ endpoint, requests, share: quotaShare({ used: requests, limit: peak }) }));
 };

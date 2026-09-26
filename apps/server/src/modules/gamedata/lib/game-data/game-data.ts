@@ -10,7 +10,7 @@ import { parseCrew } from '../parsers/crew';
 import { parseEquipments } from '../parsers/equipment';
 import { parseOptionalDevices } from '../parsers/optional-devices';
 import { parsePostProgression } from '../parsers/post-progression';
-import { COMPONENT_FILES, emptyComponents, parseSharedComponents, parseShells, parseVehicle, SHELLS_FILE } from '../parsers/vehicle';
+import { COMPONENT_FILES, emptyComponents, parseSharedComponents, parseShells, parseVehicle, SHELLS } from '../parsers/vehicle';
 import { isRegularVehicle, parseVehicleList } from '../parsers/vehicle-list';
 import { GAME_PATHS } from '../source';
 
@@ -48,7 +48,7 @@ const readNation = async ({ reader, nation, includeVehicle, vehicleLimit }: Read
 
   const [components, shellsXml] = await Promise.all([
     readComponents({ reader, nation }),
-    reader.read(`${GAME_PATHS.vehicles}/${nation}/components/${SHELLS_FILE}`)
+    reader.read(`${GAME_PATHS.vehicles}/${nation}/components/${SHELLS.file}`)
   ]);
 
   const shells = shellsXml ? parseShells({ xml: shellsXml, nation }) : {};

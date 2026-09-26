@@ -2,27 +2,14 @@
 
 .root {
   @include stack(var(--space-5));
-  @include corner-brackets(22px, var(--color-border-strong));
 
   position: relative;
   overflow: hidden;
   padding: var(--space-8) var(--space-7);
 
-  &[data-live='true'] {
-    @include corner-brackets(22px, var(--color-enemy));
-  }
-
   @include below(md) {
     padding: var(--space-6) var(--space-4);
   }
-}
-
-.scanlines {
-  position: absolute;
-  background: repeating-linear-gradient(180deg, var(--grid-line) 0 1px, transparent 1px 4px);
-  inset: 0;
-  mask-image: radial-gradient(ellipse 80% 90% at 30% 40%, #000 30%, transparent 85%);
-  pointer-events: none;
 }
 
 .top {
@@ -33,7 +20,7 @@
 }
 
 .eyebrow {
-  @include hud-label;
+  @include label;
 
   color: var(--color-accent);
 }
@@ -51,7 +38,7 @@
 }
 
 .title {
-  @include display(var(--text-4xl));
+  @include heading(var(--text-3xl));
 
   font-stretch: 75%;
   font-weight: 800;

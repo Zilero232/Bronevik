@@ -1,7 +1,7 @@
 import type { ArmorGeometry, ArmorShell } from '@bronevik/gamedata';
 import type { ArmorModelResponse } from '@bronevik/schemas';
 
-import type { ARMOR_FACE_CLASSES } from '../config/armor-palette';
+import type { ARMOR_FACE_CLASSES } from '../config';
 
 export type ArmorFaceClass = (typeof ARMOR_FACE_CLASSES)[number];
 

@@ -9,7 +9,7 @@
 }
 
 .title {
-  @include hud-label;
+  @include label;
 
   color: var(--color-text);
 }
@@ -19,7 +19,7 @@
 }
 
 .label {
-  @include hud-label;
+  @include label;
 }
 
 .error {

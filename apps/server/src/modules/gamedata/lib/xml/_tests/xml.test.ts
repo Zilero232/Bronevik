@@ -51,7 +51,7 @@ describe('parseXml', () => {
   it('separates a script class name from its parameters', () => {
     expect(scriptName(vehicle?.script)).toBe('Fuel');
     expect(scalars(vehicle?.script)).toEqual({ enginePowerFactor: 1.05 });
-    expect(num(get(vehicle, 'script/enginePowerFactor'))).toBe(1.05);
+    expect(num(get({ value: vehicle, path: 'script/enginePowerFactor' }))).toBe(1.05);
   });
 
   it('turns localization keys into readable fallbacks', () => {
@@ -61,7 +61,7 @@ describe('parseXml', () => {
   });
 
   it('merges a local override over a shared definition', () => {
-    const merged = mergeNodes({ id: '14', reloadTime: '14.74', '#text': 'shared' }, { reloadTime: '12.3', '#text': 'shared' });
+    const merged = mergeNodes({ base: { id: '14', reloadTime: '14.74', '#text': 'shared' }, override: { reloadTime: '12.3', '#text': 'shared' } });
 
     expect(merged).toEqual({ id: '14', reloadTime: '12.3' });
   });

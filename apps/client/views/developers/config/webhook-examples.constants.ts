@@ -1,6 +1,6 @@
 import type { WebhookEvent, WebhookPayload } from '@bronevik/schemas';
 
-export const WEBHOOK_EXAMPLES: Record<WebhookEvent, WebhookPayload> = {
+export const WEBHOOK_EXAMPLES = {
   'mark.gained': {
     id: '6f1c2a4e-8d3b-4c7a-9e21-3b5f0d8a7c10',
     event: 'mark.gained',
@@ -38,4 +38,4 @@ export const WEBHOOK_EXAMPLES: Record<WebhookEvent, WebhookPayload> = {
       ]
     }
   }
-};
+} as const satisfies Record<WebhookEvent, WebhookPayload>;

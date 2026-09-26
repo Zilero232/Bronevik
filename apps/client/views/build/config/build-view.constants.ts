@@ -1,3 +1,4 @@
+import { minutesToMilliseconds } from 'date-fns';
 import { createParser } from 'nuqs';
 
 import { BUILD_URL, parseLoadout, serializeLoadout } from '@/entities/tank/build';
@@ -11,10 +12,10 @@ const loadoutParser = createParser({
 export const LOADOUT_PARSERS = {
   [BUILD_URL.primary]: loadoutParser,
   [BUILD_URL.compare]: loadoutParser
-};
+} as const;
 
 export const BUILD_VIEW = {
-  staleMs: 5 * 60 * 1000,
+  staleMs: minutesToMilliseconds(5),
   maxSkillsPerRole: 3,
   summaryKeys: ['damagePerMinute', 'reloadTime', 'aimingTime', 'viewRange'],
   sides: ['a', 'b'],

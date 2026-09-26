@@ -1,0 +1,1 @@
+export { IconGroupRows } from './IconGroupRows';

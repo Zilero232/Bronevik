@@ -17,14 +17,14 @@ export const OG_COLORS = {
   steel: '#7aa5cc'
 } as const;
 
-export const OG_TONES: Record<RatingTone, string> = {
+export const OG_TONES = {
   bad: '#e5484d',
   below: '#ff8b3d',
   average: '#f2c94c',
   good: '#4cc36b',
   great: '#3fa9f5',
   unicum: '#b16cff'
-};
+} as const satisfies Record<RatingTone, string>;
 
 export const OG_FONTS = {
   display: 'Tektur',

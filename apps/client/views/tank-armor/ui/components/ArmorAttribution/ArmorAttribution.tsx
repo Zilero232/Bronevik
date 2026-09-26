@@ -6,7 +6,7 @@ import { EXTERNAL_LINKS } from '@/shared/config';
 
 import type { ArmorAttributionProps } from './ArmorAttribution.types';
 
-import { ARMOR_SOURCE } from '../../../config/tank-armor.config';
+import { ARMOR_SOURCE } from '../../../config';
 
 import s from './ArmorAttribution.module.scss';
 

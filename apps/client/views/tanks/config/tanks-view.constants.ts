@@ -18,4 +18,4 @@ export const TANKS_QUERY_PARSERS = {
   cohort: parseAsStringLiteral(skillCohortSchema.options).withDefault('all'),
   view: parseAsStringLiteral(TANKS_VIEWS).withDefault('table'),
   tier: parseAsInteger.withDefault(TANKS_VIEW.defaultTier)
-};
+} as const;

@@ -11,12 +11,14 @@ export const groupInboxByDay = (items: InboxItem[]): InboxDay[] =>
     const date = parseISO(item.createdAt);
     const key = format(date, DAY_KEY);
     const last = days.at(-1);
+    const unread = item.readAt === null ? 1 : 0;
 
     if (last?.key === key) {
       last.items.push(item);
+      last.unread += unread;
 
       return days;
     }
 
-    return [...days, { key, date, items: [item] }];
+    return [...days, { key, date, items: [item], unread }];
   }, []);

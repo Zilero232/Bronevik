@@ -1,1 +1,1 @@
-export { BUILD_URL, LOADOUT_CODE } from './build-url.config';
+export { BUILD_URL, LOADOUT_CODE } from './build-url.constants';

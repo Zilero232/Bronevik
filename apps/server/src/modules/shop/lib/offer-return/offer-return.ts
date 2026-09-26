@@ -1,3 +1,5 @@
+import { addMilliseconds } from 'date-fns';
+import { millisecondsInDay } from 'date-fns/constants';
 import { identity, sortBy, unique } from 'remeda';
 
 import type { ReturnEstimate } from './offer-return.types';
@@ -29,7 +31,7 @@ export const returnEstimate = (appearances: readonly Date[]): ReturnEstimate => 
   return {
     timesSeen: times.length,
     lastSeenAt: new Date(last),
-    medianIntervalDays: Math.round((interval / OFFER_RETURN.dayMs) * 10) / 10,
-    nextExpectedAt: new Date(last + interval)
+    medianIntervalDays: Math.round((interval / millisecondsInDay) * 10) / 10,
+    nextExpectedAt: addMilliseconds(last, interval)
   };
 };

@@ -18,13 +18,13 @@
 }
 
 .eyebrow {
-  @include hud-label;
+  @include label;
 
   color: var(--color-accent);
 }
 
 .title {
-  @include display(var(--text-3xl));
+  @include heading(var(--text-3xl));
 
   font-stretch: 75%;
 }
@@ -35,21 +35,25 @@
 }
 
 .tag {
-  @include riveted-plate(var(--chamfer-lg), var(--color-border-strong), var(--color-surface-raised));
-  @include stack(var(--space-3));
-
+  position: relative;
   padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+
+  @include stack(var(--space-3));
 }
 
 .tagLabel {
-  @include hud-label;
+  @include label;
 }
 
 .plan {
-  @include stencil;
-
   color: var(--color-accent);
+  font-family: var(--font-display);
   font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
   line-height: 1;
 }
 
@@ -68,7 +72,7 @@
 }
 
 .readoutLabel {
-  @include hud-label;
+  @include label;
 }
 
 .readoutValue {

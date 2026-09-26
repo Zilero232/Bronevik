@@ -29,3 +29,8 @@ export type SessionOgDateInput = {
   startedAt: string;
   locale: Locale;
 };
+
+export type OrDashInput = {
+  value: number | null;
+  render: (known: number) => string;
+};

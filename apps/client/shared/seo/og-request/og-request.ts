@@ -4,7 +4,7 @@ import { resolveLocale } from '@/shared/i18n';
 
 import type { OgPlayerRequest, OgPlayerRequestInput } from './og-request.types';
 
-import { OG_REQUEST } from './og-request.constants';
+import { OG_CACHE, OG_REQUEST } from './og-request.constants';
 
 export const parseOgPlayerRequest = ({ id, locale }: OgPlayerRequestInput): OgPlayerRequest | null => {
   if (!OG_REQUEST.digits.test(id)) {
@@ -15,3 +15,5 @@ export const parseOgPlayerRequest = ({ id, locale }: OgPlayerRequestInput): OgPl
 
   return parsed.success ? { accountId: parsed.data, locale: resolveLocale(locale ?? undefined) } : null;
 };
+
+export const ogNotFound = () => new Response(null, { status: 404, headers: { 'Cache-Control': OG_CACHE.missing } });

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import type { UseViewerActionsInput } from './use-viewer-actions.types';
 
-import { ARMOR_CANVAS } from '../../../config/armor-viewer.config';
+import { ARMOR_CANVAS } from '../../../config';
 
 export const useViewerActions = ({ slug, handles }: UseViewerActionsInput) => {
   const t = useTranslations('armor.controls');

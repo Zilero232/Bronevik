@@ -23,7 +23,7 @@ export const UsageCharts = ({ history }: UsageChartsProps) => {
   return (
     <div className={s.root}>
       <Card className={s.card}>
-        <CardHeader eyebrow={t('requestsEyebrow')} title={t('requestsTotal', { total: format.number(totals.requests) })} />
+        <CardHeader title={t('requestsTotal', { total: format.number(totals.requests) })} />
         <AreaChart
           ariaLabel={t('requests')}
           formatValue={formatValue}
@@ -33,10 +33,7 @@ export const UsageCharts = ({ history }: UsageChartsProps) => {
         />
       </Card>
       <Card className={s.card}>
-        <CardHeader
-          eyebrow={t('errorsEyebrow')}
-          title={t('errorsTotal', { rate: format.number(totals.errorRate, { style: 'percent', maximumFractionDigits: 2 }) })}
-        />
+        <CardHeader title={t('errorsTotal', { rate: format.number(totals.errorRate, { style: 'percent', maximumFractionDigits: 2 }) })} />
         <BarChart
           series={[
             { id: 'errors', label: t('errors'), values: errors, tone: 'bad' },

@@ -1,0 +1,13 @@
+.root {
+  min-width: 0;
+}
+
+.header {
+  padding: var(--space-5) var(--space-5) var(--space-3);
+}
+
+.empty {
+  padding: var(--space-5);
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+}

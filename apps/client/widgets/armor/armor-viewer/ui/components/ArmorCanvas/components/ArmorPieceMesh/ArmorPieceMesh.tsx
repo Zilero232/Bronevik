@@ -1,22 +1,22 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-
-import { buildPieceBuffers } from '@/entities/armor/armor-model';
-
 import type { ArmorPieceMeshProps } from './ArmorPieceMesh.types';
 
-import { toBufferGeometry } from './ArmorPieceMesh.helpers';
+import { useArmorPieceGeometry } from '../../../../../model/hooks';
 
 export const ArmorPieceMesh = ({ part, material, onPointerMove, onPointerOut }: ArmorPieceMeshProps) => {
   'use no memo';
 
-  const { piece, plates, position } = part;
-  const geometry = useMemo(() => toBufferGeometry(buildPieceBuffers({ piece, plates })), [piece, plates]);
-
-  useEffect(() => () => geometry.dispose(), [geometry]);
+  const geometry = useArmorPieceGeometry({ piece: part.piece, plates: part.plates });
 
   return (
-    <mesh geometry={geometry} material={material} name={piece.name} position={position} onPointerMove={onPointerMove} onPointerOut={onPointerOut} />
+    <mesh
+      geometry={geometry}
+      material={material}
+      name={part.piece.name}
+      position={part.position}
+      onPointerMove={onPointerMove}
+      onPointerOut={onPointerOut}
+    />
   );
 };

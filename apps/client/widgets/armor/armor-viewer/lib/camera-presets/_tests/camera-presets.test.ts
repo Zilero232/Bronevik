@@ -2,7 +2,7 @@ import type { Vec3 } from '@bronevik/gamedata';
 
 import { describe, expect, it } from 'vitest';
 
-import { ARMOR_CAMERA, VIEW_PRESETS } from '../../../config/armor-viewer.config';
+import { ARMOR_CAMERA, VIEW_PRESETS } from '../../../config';
 import { orbitStep, presetPosition } from '../camera-presets';
 
 const center: Vec3 = [0, 1, 0];

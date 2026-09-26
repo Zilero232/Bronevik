@@ -21,7 +21,7 @@
 }
 
 .status {
-  @include hud-label;
+  @include label;
 
   font-size: 0.62em;
 
@@ -41,7 +41,7 @@
 }
 
 .meta {
-  @include hud-label;
+  @include label;
 
   font-size: 0.6em;
 }

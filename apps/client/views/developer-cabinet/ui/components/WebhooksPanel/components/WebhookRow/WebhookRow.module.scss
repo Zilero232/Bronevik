@@ -1,16 +1,21 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md));
-
+  position: relative;
   display: grid;
   align-items: center;
   padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
   gap: var(--space-4);
   grid-template-columns: minmax(0, 1fr) auto;
 
   &[data-status='disabled'] {
-    @include plate(var(--chamfer-md), color-mix(in srgb, var(--color-danger) 55%, var(--color-border)));
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--color-danger) 55%, var(--color-border));
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
   }
 
   @include below(3xl) {
@@ -54,7 +59,7 @@
 }
 
 .filter {
-  @include hud-label;
+  @include label;
 }
 
 .failures {

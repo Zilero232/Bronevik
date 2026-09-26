@@ -1,11 +1,9 @@
 'use client';
 
 import { LogOut } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
 import { useSignOut } from '@/entities/auth/session';
-import { STAGGER, STAGGER_ITEM } from '@/shared/lib';
 import { Avatar, Button } from '@/ui-kit';
 
 import type { MeDashboardProps } from './MeDashboard.types';
@@ -23,8 +21,8 @@ export const MeDashboard = ({ name }: MeDashboardProps) => {
   const signOut = useSignOut();
 
   return (
-    <motion.div animate='visible' className={s.root} initial='hidden' variants={STAGGER}>
-      <motion.header className={s.header} variants={STAGGER_ITEM}>
+    <div className={s.root}>
+      <header className={s.header}>
         <Avatar name={name} size='lg' />
         <div className={s.greeting}>
           <span className={s.eyebrow}>{t('eyebrow')}</span>
@@ -34,24 +32,24 @@ export const MeDashboard = ({ name }: MeDashboardProps) => {
           <LogOut size={15} />
           {t('signOut')}
         </Button>
-      </motion.header>
+      </header>
       <div className={s.grid}>
-        <motion.div className={s.wide} variants={STAGGER_ITEM}>
+        <div className={s.wide}>
           <GoalsCard />
-        </motion.div>
-        <motion.div variants={STAGGER_ITEM}>
+        </div>
+        <div>
           <FavoritesCard />
-        </motion.div>
-        <motion.div variants={STAGGER_ITEM}>
+        </div>
+        <div>
           <LinkedAccountsCard />
-        </motion.div>
-        <motion.div variants={STAGGER_ITEM}>
+        </div>
+        <div>
           <ModBindCard />
-        </motion.div>
-        <motion.div variants={STAGGER_ITEM}>
+        </div>
+        <div>
           <NotificationsCard />
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

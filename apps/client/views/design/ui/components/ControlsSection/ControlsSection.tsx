@@ -1,30 +1,26 @@
 'use client';
 
-import type { RecentPeriod } from '@bronevik/schemas';
-
 import { CrosshairIcon, HeavyTankIcon, NATION_ICONS, NATIONS } from '@bronevik/icons';
-import { useBoolean } from '@siberiacancode/reactuse';
 import { Bell, Crosshair, Search, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 
 import { PeriodSwitcher } from '@/features/stats/select-period';
 import { Avatar, Badge, Button, IconButton, Input, Kbd, Select, Switch, Tabs } from '@/ui-kit';
 
 import { AVATAR_SPECIMENS } from '../../../config';
-import { DesignBlock, DesignRow } from '../DesignBlock';
+import { useControlsSection } from '../../../model/hooks';
+import { DesignBlock } from '../DesignBlock';
+import { DesignRow } from '../DesignRow';
 
 import s from './ControlsSection.module.scss';
 
 export const ControlsSection = () => {
   const t = useTranslations('design.controls');
   const tGame = useTranslations('game');
-  const [period, setPeriod] = useState<RecentPeriod>('7d');
-  const [nation, setNation] = useState<(typeof NATIONS)[number]>('ussr');
-  const [isOn, toggleOn] = useBoolean(true);
+  const { period, setPeriod, nation, setNation, isOn, toggleOn } = useControlsSection();
 
   return (
-    <DesignBlock eyebrow='04' id='controls' title={t('title')}>
+    <DesignBlock id='controls' title={t('title')}>
       <DesignRow label={t('buttons')}>
         <Button>{t('primary')}</Button>
         <Button variant='secondary'>{t('secondary')}</Button>
@@ -52,7 +48,7 @@ export const ControlsSection = () => {
         </IconButton>
       </DesignRow>
       <DesignRow label={t('badges')}>
-        {(['neutral', 'accent', 'steel', 'success', 'warning', 'danger', 'solid'] as const).map((tone) => (
+        {(['neutral', 'accent', 'steel', 'success', 'warning', 'danger'] as const).map((tone) => (
           <Badge key={tone} tone={tone}>
             {tone}
           </Badge>

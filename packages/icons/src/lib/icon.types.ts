@@ -47,6 +47,11 @@ export type RhombusBandsInput = {
   gap: number;
 };
 
+export type RhombusPointInput = Omit<RhombusBandsInput, 'bands' | 'gap'> & {
+  s: number;
+  t: number;
+};
+
 export type LaurelInput = {
   cx: number;
   cy: number;
@@ -56,6 +61,14 @@ export type LaurelInput = {
 
 export type LaurelBranchInput = Omit<LaurelInput, 'leaves'> & {
   flip: -1 | 1;
+};
+
+export type LaurelPointInput = LaurelBranchInput & {
+  angle: number;
+};
+
+export type LaurelSideInput = LaurelBranchInput & {
+  leaves: number;
 };
 
 export type LeafInput = LaurelBranchInput & {

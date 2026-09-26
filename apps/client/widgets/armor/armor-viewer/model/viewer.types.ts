@@ -1,4 +1,5 @@
-import type { RefObject } from 'react';
+import type { OrbitControls } from '@react-three/drei';
+import type { ComponentRef, RefObject } from 'react';
 
 import type { CameraPresetKey } from '../lib/camera-presets';
 
@@ -19,3 +20,5 @@ export type ViewerHandles = {
 };
 
 export type ViewerHandlesRef = RefObject<ViewerHandles | null>;
+
+export type OrbitControlsRef = RefObject<ComponentRef<typeof OrbitControls> | null>;

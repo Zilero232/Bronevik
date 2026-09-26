@@ -25,3 +25,8 @@ export type FormatOverlayValueInput = {
   kind: OverlayValueKind;
   locale: string;
 };
+
+export type OverlayToneInput = {
+  scale: 'winRate' | 'wn8';
+  value: number | null;
+};

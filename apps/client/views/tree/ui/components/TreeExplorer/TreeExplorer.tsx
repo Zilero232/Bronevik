@@ -5,14 +5,13 @@ import { match, P } from 'ts-pattern';
 
 import { EmptyState, ErrorState } from '@/ui-kit';
 
-import { useTechTree, useTreeParams } from '../../../model/hooks';
+import { useTreeExplorer } from '../../../model/hooks';
 import { TreeSkeleton } from '../TreeSkeleton';
 import { TreeWorkspace } from '../TreeWorkspace';
 
 export const TreeExplorer = () => {
   const t = useTranslations('tree.states');
-  const { nation } = useTreeParams();
-  const { tree, premiums, layout, isLoading, isFetching, isError, isEmpty, refetch } = useTechTree(nation);
+  const { tree, premiums, layout, isLoading, isFetching, isError, isEmpty, refetch } = useTreeExplorer();
 
   return match({ tree, layout, isLoading, isError, isEmpty })
     .with({ isLoading: true }, () => <TreeSkeleton />)

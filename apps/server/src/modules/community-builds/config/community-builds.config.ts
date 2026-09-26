@@ -8,4 +8,11 @@ export const BUILD_SHARE = {
 
 export const BUILD_INCLUDE = { author: { select: AUTHOR_SELECT }, gameVersion: { select: { version: true } } } as const;
 
-export const EMPTY_LOADOUT: Loadout = { equipment: [], consumables: [], directives: [], ammo: [], crewSkills: {}, fieldModifications: [] };
+export const EMPTY_LOADOUT = {
+  equipment: [],
+  consumables: [],
+  directives: [],
+  ammo: [],
+  crewSkills: {},
+  fieldModifications: []
+} as const satisfies Loadout;

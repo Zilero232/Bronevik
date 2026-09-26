@@ -8,4 +8,4 @@ export const TREE_DEFAULTS = {
 export const TREE_PARAMS = {
   nation: parseAsStringLiteral(NATIONS).withDefault(TREE_DEFAULTS.nation),
   tank: parseAsInteger
-};
+} as const;

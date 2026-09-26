@@ -1,4 +1,4 @@
-import type { WebhookEditorState } from '../../WebhooksPanel.types';
+import type { WebhookEditorState } from '../../../../../model/hooks';
 
 export type WebhookFormDialogProps = {
   editor: WebhookEditorState;

@@ -1,11 +1,11 @@
 import type { ConnectableProvider, StreamerProvider } from '@/shared/api/streamers';
 
-export const CONNECTABLE_PROVIDERS: readonly { provider: StreamerProvider; path: ConnectableProvider }[] = [
+export const CONNECTABLE_PROVIDERS = [
   { provider: 'donationAlerts', path: 'donation-alerts' },
   { provider: 'twitch', path: 'twitch' }
-];
+] as const satisfies readonly { provider: StreamerProvider; path: ConnectableProvider }[];
 
-export const UPCOMING_PROVIDERS: readonly StreamerProvider[] = ['vkPlayLive', 'youtube'];
+export const UPCOMING_PROVIDERS = ['vkPlayLive', 'youtube'] as const satisfies readonly StreamerProvider[];
 
 export const INTEGRATION_BADGE = {
   on: { tone: 'success', label: 'connected' },

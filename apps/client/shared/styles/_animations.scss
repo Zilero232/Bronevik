@@ -16,10 +16,6 @@
   }
 }
 
-@mixin scanner($duration: 0) {
-  animation: none;
-}
-
 @keyframes bronevik-spin {
   to {
     transform: rotate(360deg);

@@ -6,6 +6,5 @@ export type EmptyStateProps = {
   icon?: ReactNode;
   action?: ReactNode;
   isCompact?: boolean;
-  code?: ReactNode;
   className?: string;
 };

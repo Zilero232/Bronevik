@@ -2,7 +2,6 @@ export {
   AnimatedNumber,
   Avatar,
   Badge,
-  Burst,
   Button,
   buttonVariants,
   ClassIcon,
@@ -25,7 +24,6 @@ export type {
   AvatarProps,
   BadgeProps,
   BadgeTone,
-  BurstProps,
   ButtonProps,
   ButtonVariantProps,
   ClassIconProps,
@@ -76,7 +74,6 @@ export {
   Select,
   ServiceStatus,
   Sparkline,
-  StatTile,
   Tabs,
   ToggleChips,
   Tooltip,
@@ -107,14 +104,13 @@ export type {
   ServiceStatusProps,
   ServiceStatusValue,
   SparklineProps,
-  StatTileProps,
   TabItem,
   TabsProps,
   ToggleChip,
   ToggleChipsProps,
   TooltipProps
 } from './molecules';
-export { AppToaster, AreaChart, BarChart, CalendarHeatmap, DataTable, LineChart, PageHeader, PageHero } from './organisms';
+export { AppToaster, AreaChart, BarChart, CalendarHeatmap, DataTable, LineChart, PageHeader } from './organisms';
 export type {
   AreaChartProps,
   BarChartProps,
@@ -125,6 +121,5 @@ export type {
   HeatmapDay,
   LineChartProps,
   PageBreadcrumb,
-  PageHeaderProps,
-  PageHeroProps
+  PageHeaderProps
 } from './organisms';

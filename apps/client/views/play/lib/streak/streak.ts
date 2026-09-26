@@ -2,7 +2,7 @@ import type { ActiveStreakInput, GuessStreak, RecordResultInput } from './streak
 
 import { previousDay } from '../daily-puzzle';
 
-export const EMPTY_STREAK: GuessStreak = { current: 0, best: 0, played: 0, wins: 0, lastDay: null };
+export const EMPTY_STREAK = { current: 0, best: 0, played: 0, wins: 0, lastDay: null } as const satisfies GuessStreak;
 
 export const recordResult = ({ streak, day, isWon }: RecordResultInput): GuessStreak => {
   if (streak.lastDay === day) {

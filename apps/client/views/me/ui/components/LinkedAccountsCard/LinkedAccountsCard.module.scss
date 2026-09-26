@@ -19,7 +19,7 @@
 }
 
 .provider {
-  @include hud-label;
+  @include label;
 
   display: inline-flex;
   min-width: 88px;

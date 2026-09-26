@@ -15,18 +15,18 @@
 }
 
 .meta {
-  @include hud-label;
+  @include label;
 }
 
 .display {
-  @include display(var(--text-4xl));
+  @include heading(var(--text-3xl));
 
   font-stretch: 75%;
   font-weight: 800;
 }
 
 .heading {
-  @include display(var(--text-2xl));
+  @include heading(var(--text-2xl));
 }
 
 .body {
@@ -36,7 +36,7 @@
 }
 
 .mono {
-  @include hud-label;
+  @include label;
 
   color: var(--color-steel);
   font-size: var(--text-sm);

@@ -10,12 +10,14 @@
   gap: var(--space-4);
 
   &:after {
-    @include camo-divider;
-
     position: absolute;
     right: 0;
     bottom: 0;
     left: 0;
+    display: block;
+    height: 1px;
+    background: var(--color-border);
+    content: '';
   }
 }
 
@@ -24,13 +26,13 @@
 }
 
 .eyebrow {
-  @include hud-label;
+  @include label;
 
   color: var(--color-accent);
 }
 
 .title {
-  @include display(var(--text-xl));
+  @include heading(var(--text-xl));
 }
 
 .controls {

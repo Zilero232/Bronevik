@@ -1,0 +1,82 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --verdict: var(--color-text-dim);
+
+  position: relative;
+  min-width: 220px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--verdict);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-size: var(--text-xs);
+
+  &[data-verdict='pen'] {
+    --verdict: var(--color-success);
+  }
+
+  &[data-verdict='chance'] {
+    --verdict: var(--color-warning);
+  }
+
+  &[data-verdict='noPen'],
+  &[data-verdict='ricochet'] {
+    --verdict: var(--color-danger);
+  }
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 var(--space-2);
+  gap: var(--space-3);
+}
+
+.piece {
+  @include label;
+}
+
+.plate {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+.rows {
+  display: grid;
+  margin: 0;
+  gap: var(--space-1);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  dt {
+    color: var(--color-text-dim);
+  }
+
+  dd {
+    margin: 0;
+
+    @include numeric;
+  }
+}
+
+.verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: var(--space-2) 0 0;
+  color: var(--verdict);
+  gap: var(--space-2);
+
+  @include heading(var(--text-md));
+}
+
+.flag {
+  color: var(--color-text-dim);
+
+  @include label;
+}

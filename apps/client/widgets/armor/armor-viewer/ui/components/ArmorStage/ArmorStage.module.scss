@@ -4,11 +4,7 @@
   position: relative;
   min-height: 420px;
   flex: 1;
-  background:
-    radial-gradient(ellipse at 50% 60%, var(--color-surface-hover), transparent 70%),
-    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 48px 48px,
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 48px 48px,
-    var(--color-bg-deep);
+  background: radial-gradient(ellipse at 50% 60%, var(--color-surface-hover), transparent 70%), var(--color-bg-deep);
 
   @include below(md) {
     min-height: 340px;
@@ -20,8 +16,6 @@
   z-index: 1;
   inset: var(--space-3);
   pointer-events: none;
-
-  @include corner-brackets(16px, var(--color-steel));
 }
 
 .hint {
@@ -32,7 +26,7 @@
   margin: 0;
   pointer-events: none;
 
-  @include hud-label;
+  @include label;
 
   @include below(md) {
     display: none;

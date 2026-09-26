@@ -2,6 +2,7 @@ import type { Prisma } from '../../../../../../generated';
 import type { BattleStatsBlock } from '../../../../../lib/lesta';
 import type {
   AccountSnapshotRowInput,
+  BlockedTotalInput,
   BlockFields,
   BlockSource,
   ModeBlock,
@@ -101,7 +102,7 @@ export const tankSnapshotRow = ({
   maxXp: stats.max_xp ?? null
 });
 
-const blockedTotal = (row: { avgDamageBlocked: number; battles: number }): number => row.avgDamageBlocked * row.battles;
+const blockedTotal = (row: BlockedTotalInput): number => row.avgDamageBlocked * row.battles;
 
 export const buildTankDelta = ({ previous, current, cohort, accountWinRate, tier }: TankDeltaInput): Prisma.TankBattleDeltaCreateManyInput | null => {
   if (!previous || current.battles <= previous.battles) {

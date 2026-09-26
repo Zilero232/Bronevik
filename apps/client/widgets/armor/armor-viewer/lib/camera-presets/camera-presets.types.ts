@@ -1,6 +1,6 @@
 import type { Vec3 } from '@bronevik/gamedata';
 
-import type { PRESET_DIRECTIONS } from '../../config/armor-viewer.config';
+import type { PRESET_DIRECTIONS } from '../../config';
 import type { ModelBounds } from '../scene-parts';
 
 export type CameraPresetKey = keyof typeof PRESET_DIRECTIONS;

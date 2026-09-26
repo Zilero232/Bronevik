@@ -1,1 +1,1 @@
-export { INBOX_BELL } from './inbox-bell.config';
+export { INBOX_BELL } from './inbox-bell.constants';

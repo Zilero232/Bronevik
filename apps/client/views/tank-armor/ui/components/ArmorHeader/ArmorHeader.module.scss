@@ -6,10 +6,12 @@
   justify-items: start;
 
   &:after {
+    display: block;
     width: 100%;
+    height: 1px;
     margin-top: var(--space-3);
-
-    @include camo-divider;
+    background: var(--color-border);
+    content: '';
   }
 }
 
@@ -17,13 +19,13 @@
   margin: var(--space-3) 0 0;
   color: var(--color-accent);
 
-  @include hud-label;
+  @include label;
 }
 
 .title {
   margin: 0;
 
-  @include display(var(--text-4xl));
+  @include heading(var(--text-3xl));
 
   @include below(md) {
     font-size: var(--text-3xl);

@@ -7,6 +7,7 @@ export const COMPONENT_FILES = {
   radios: 'radios.xml'
 } as const;
 
-export const SHELLS_FILE = 'shells.xml';
-
-export const PREMIUM_SHELL_ICON_SUFFIX = '_premium';
+export const SHELLS = {
+  file: 'shells.xml',
+  premiumIconSuffix: '_premium'
+} as const;

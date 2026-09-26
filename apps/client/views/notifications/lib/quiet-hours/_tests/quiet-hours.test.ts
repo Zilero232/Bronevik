@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { crossesMidnight, dialPoint, formatHour, isQuietHour, QUIET_DIAL, quietArcPath, quietHourList, quietSpan } from '..';
+import { crossesMidnight, dayHours, dialPoint, formatHour, isQuietHour, quietArcPath, quietHourList, quietSpan } from '..';
+import { QUIET_HOURS } from '../../../config';
 
 const NIGHT = { start: 23, end: 7 } as const;
 const DAY = { start: 9, end: 18 } as const;
-const HOURS = Array.from({ length: QUIET_DIAL.hours }, (_, hour) => hour);
+const HOURS = dayHours();
 
 describe('quietSpan', () => {
   it('counts the silent hours across midnight', () => {
-    expect(quietSpan(NIGHT)).toBe(QUIET_DIAL.hours - NIGHT.start + NIGHT.end);
+    expect(quietSpan(NIGHT)).toBe(QUIET_HOURS.hoursInDay - NIGHT.start + NIGHT.end);
   });
 
   it('counts the silent hours inside one day', () => {
@@ -16,7 +17,7 @@ describe('quietSpan', () => {
   });
 
   it('adds up with the opposite range to a full day', () => {
-    expect(quietSpan(NIGHT) + quietSpan({ start: NIGHT.end, end: NIGHT.start })).toBe(QUIET_DIAL.hours);
+    expect(quietSpan(NIGHT) + quietSpan({ start: NIGHT.end, end: NIGHT.start })).toBe(QUIET_HOURS.hoursInDay);
   });
 });
 
@@ -62,11 +63,11 @@ describe('crossesMidnight', () => {
 describe('dialPoint', () => {
   it('puts midnight at the top and noon at the bottom of the dial', () => {
     expect(dialPoint({ hour: 0, center: 50, radius: 40 })).toEqual({ x: 50, y: 10 });
-    expect(dialPoint({ hour: QUIET_DIAL.hours / 2, center: 50, radius: 40 })).toEqual({ x: 50, y: 90 });
+    expect(dialPoint({ hour: QUIET_HOURS.hoursInDay / 2, center: 50, radius: 40 })).toEqual({ x: 50, y: 90 });
   });
 
   it('turns clockwise', () => {
-    expect(dialPoint({ hour: QUIET_DIAL.hours / 4, center: 50, radius: 40 }).x).toBeGreaterThan(50);
+    expect(dialPoint({ hour: QUIET_HOURS.hoursInDay / 4, center: 50, radius: 40 }).x).toBeGreaterThan(50);
   });
 });
 
@@ -83,5 +84,15 @@ describe('formatHour', () => {
   it('pads single-digit hours so the clock reads evenly', () => {
     expect(formatHour(7)).toBe('07:00');
     expect(formatHour(23)).toBe('23:00');
+  });
+});
+
+describe('dayHours', () => {
+  it('lists every hour of the day once, from midnight', () => {
+    const hours = dayHours();
+
+    expect(hours).toHaveLength(QUIET_HOURS.hoursInDay);
+    expect(new Set(hours).size).toBe(hours.length);
+    expect(hours[0]).toBe(0);
   });
 });

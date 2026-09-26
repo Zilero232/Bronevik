@@ -1,12 +1,10 @@
 'use client';
 
-import { Info, Sparkles } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 import {
-  Burst,
   Button,
   Dialog,
   DialogClose,
@@ -22,14 +20,14 @@ import {
   Tooltip
 } from '@/ui-kit';
 
-import { DesignBlock, DesignRow } from '../DesignBlock';
+import { DesignBlock } from '../DesignBlock';
+import { DesignRow } from '../DesignRow';
 
 export const OverlaysSection = () => {
   const t = useTranslations('design.overlays');
-  const [burst, setBurst] = useState(0);
 
   return (
-    <DesignBlock eyebrow='05' id='overlays' title={t('title')}>
+    <DesignBlock id='overlays' title={t('title')}>
       <DesignRow label={t('tooltip')}>
         <Tooltip content={t('tooltipBody')}>
           <IconButton aria-label={t('tooltip')} variant='outline'>
@@ -71,14 +69,6 @@ export const OverlaysSection = () => {
         <Button size='sm' variant='secondary' onClick={() => toast(t('toastInfo'))}>
           {t('toastKinds.info')}
         </Button>
-      </DesignRow>
-      <DesignRow label={t('burst')}>
-        <Burst trigger={burst}>
-          <Button onClick={() => setBurst((current) => current + 1)}>
-            <Sparkles size={16} />
-            {t('celebrate')}
-          </Button>
-        </Burst>
       </DesignRow>
     </DesignBlock>
   );

@@ -42,7 +42,7 @@ const deviceKind = ({ name, tags }: DeviceKindInput): OptionalDeviceKind => {
 };
 
 const specialModifier = ({ script, param, attribute, op, condition }: SpecialModifierInput): Modifier[] => {
-  const values = nums(script[param] ?? get(script, `overridableFactors/${param}`));
+  const values = nums(script[param] ?? get({ value: script, path: `overridableFactors/${param}` }));
 
   if (values.length === 0) {
     return [];
@@ -128,13 +128,13 @@ export const parseOptionalDevices = (xml: string): OptionalDevice[] =>
         groupName: text(value.groupName),
         tags,
         categories: words(value.categories),
-        incompatibleTags: words(get(value, 'incompatibleTags/installed')),
+        incompatibleTags: words(get({ value, path: 'incompatibleTags/installed' })),
         price: price(value.price),
         removable: bool(value.removable) ?? true,
         vehicleFilter: parseVehicleFilter(value.vehicleFilter),
         modifiers: scriptModifiers({ script, kind: baseScript(scriptClass) }),
         params: scriptParams(script),
-        upgradedDevice: text(get(script, 'upgradeInfo/upgradedDevice'))
+        upgradedDevice: text(get({ value: script, path: 'upgradeInfo/upgradedDevice' }))
       }
     ];
   });

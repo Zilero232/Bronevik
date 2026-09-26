@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 import { clsx } from 'clsx';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
@@ -20,7 +18,7 @@ export const viewport = defaultViewport;
 
 export const generateStaticParams = () => routing.locales.map((locale) => ({ locale }));
 
-const LocaleLayout = async ({ children }: { children: ReactNode }) => {
+const LocaleLayout = async ({ children }: LayoutProps<'/[locale]'>) => {
   const locale = await rootParams.locale();
 
   if (!hasLocale(routing.locales, locale)) {

@@ -2,13 +2,14 @@ import type { BetterAuthPlugin } from 'better-auth';
 
 import { createAuthEndpoint, getSessionFromCtx, sessionMiddleware } from 'better-auth/api';
 import { deleteSessionCookie, setSessionCookie } from 'better-auth/cookies';
+import { addMilliseconds, addSeconds, getUnixTime } from 'date-fns';
 import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
 
 import type { LestaIdOptions, LestaIdState } from './lesta-id.types';
 
 import { AUTH_PROVIDER } from '../auth.constants';
-import { placeholderEmail } from '../auth.helpers';
+import { placeholderEmail } from '../placeholder-email';
 import { LESTA_ID, LESTA_ID_ERROR } from './lesta-id.constants';
 import { safeCallbackUrl, verifyLestaLogin, withError } from './lesta-id.verify';
 
@@ -38,7 +39,7 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
           await ctx.context.internalAdapter.createVerificationValue({
             identifier: `${LESTA_ID.statePrefix}${state}`,
             value: JSON.stringify(value),
-            expiresAt: new Date(Date.now() + LESTA_ID.stateTtlMs)
+            expiresAt: addMilliseconds(new Date(), LESTA_ID.stateTtlMs)
           });
 
           const redirectUri = new URL(LESTA_ID.callbackPath, apiUrl);
@@ -47,7 +48,7 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
 
           const loginUrl = lesta.auth.loginUrl({
             redirectUri: redirectUri.toString(),
-            expiresAt: Math.floor(Date.now() / 1000) + LESTA_ID.tokenTtlSeconds
+            expiresAt: getUnixTime(addSeconds(new Date(), LESTA_ID.tokenTtlSeconds))
           });
 
           throw ctx.redirect(loginUrl);

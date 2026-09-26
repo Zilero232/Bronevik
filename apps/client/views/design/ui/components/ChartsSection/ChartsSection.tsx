@@ -16,7 +16,7 @@ export const ChartsSection = () => {
   const labels = CHART_SPECIMENS.lineA.map((_, index) => t('point', { point: index + 1 }));
 
   return (
-    <DesignBlock eyebrow='07' id='charts' title={t('title')}>
+    <DesignBlock id='charts' title={t('title')}>
       <div className={s.grid}>
         <figure className={s.figure}>
           <figcaption className={s.caption}>{t('line')}</figcaption>

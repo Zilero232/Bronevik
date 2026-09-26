@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react';
 
-export type CardVariant = 'flat' | 'panel' | 'plate' | 'riveted' | 'sunken' | 'well';
+export type CardVariant = 'panel' | 'well';
 
 export type CardProps = ComponentProps<'div'> & {
   variant?: CardVariant;
@@ -10,7 +10,6 @@ export type CardProps = ComponentProps<'div'> & {
 
 export type CardHeaderProps = Omit<ComponentProps<'div'>, 'title'> & {
   title?: ReactNode;
-  eyebrow?: ReactNode;
   meta?: ReactNode;
   tabs?: ReactNode;
   action?: ReactNode;

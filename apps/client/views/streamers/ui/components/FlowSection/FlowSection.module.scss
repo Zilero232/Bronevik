@@ -27,7 +27,7 @@
   right: 8%;
   left: 8%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-accent) 12%, var(--color-accent-hot) 50%, var(--color-accent) 88%, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-accent) 12%, var(--color-accent-hover) 50%, var(--color-accent) 88%, transparent);
   box-shadow: 0 0 14px var(--color-accent);
   transform-origin: left center;
 
@@ -37,15 +37,17 @@
 }
 
 .step {
-  @include plate(var(--chamfer-md));
-  @include stack(var(--space-3));
-
   position: relative;
   padding: var(--space-6) var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+
+  @include stack(var(--space-3));
 }
 
 .index {
-  @include display(var(--text-2xl));
+  @include heading(var(--text-2xl));
 
   display: inline-grid;
   width: 52px;
@@ -58,7 +60,7 @@
 }
 
 .title {
-  @include display(var(--text-lg));
+  @include heading(var(--text-lg));
 }
 
 .text {

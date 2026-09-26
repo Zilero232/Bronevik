@@ -1,0 +1,22 @@
+.surface {
+  width: 220px;
+  min-height: 96px;
+  justify-content: flex-end;
+}
+
+.divider {
+  width: 320px;
+
+  &:before {
+    display: block;
+    height: 1px;
+    background: var(--color-border);
+    content: '';
+  }
+}
+
+.name {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+}

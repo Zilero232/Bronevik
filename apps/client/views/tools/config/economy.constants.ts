@@ -1,14 +1,6 @@
 import { ShellApIcon, ShellHeatIcon, ShellHeIcon } from '@bronevik/icons';
 
-export type EconomyTier = {
-  base: number;
-  perDamage: number;
-  perSpotting: number;
-  repair: number;
-  ap: number;
-  heat: number;
-  he: number;
-};
+import type { EconomyTier } from './economy.types';
 
 export const ECONOMY_TIERS: Readonly<Record<number, EconomyTier>> = {
   1: { base: 1_800, perDamage: 3, perSpotting: 2, repair: 60, ap: 10, heat: 280, he: 8 },

@@ -9,7 +9,7 @@ export const COMPARE_LIMIT = {
 
 export const COMPARE_PERIODS = ['overall', '24h', '7d', '30d', '60d', '1000'] as const satisfies readonly RatingPeriod[];
 
-export const COMPARE_METRICS: readonly CompareMetric[] = [
+export const COMPARE_METRICS = [
   { key: 'battles', direction: 'higher', format: 'integer', pick: ({ stats }) => stats?.battles ?? null },
   { key: 'winRate', direction: 'higher', format: 'percent', pick: ({ stats }) => stats?.winRate ?? null },
   { key: 'avgDamage', direction: 'higher', format: 'integer', pick: ({ stats }) => stats?.avgDamage ?? null },
@@ -24,4 +24,4 @@ export const COMPARE_METRICS: readonly CompareMetric[] = [
   { key: 'avgTier', direction: 'none', format: 'decimal2', pick: ({ stats }) => stats?.avgTier ?? null },
   { key: 'moe3', direction: 'higher', format: 'integer', pick: ({ marks }) => marks.moe3 },
   { key: 'mastery', direction: 'higher', format: 'integer', pick: ({ marks }) => marks.mastery }
-];
+] as const satisfies readonly CompareMetric[];

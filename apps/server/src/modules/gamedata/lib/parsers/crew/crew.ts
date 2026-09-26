@@ -22,7 +22,7 @@ export const parsePerks = (xml: string): Map<number, Record<string, number>> => 
 
     const args: Record<string, number> = {};
 
-    for (const arg of nodes(get(perk, 'defaultBlockSettings/arg'))) {
+    for (const arg of nodes(get({ value: perk, path: 'defaultBlockSettings/arg' }))) {
       const name = text(arg.argId);
       const value = num(arg.value);
 
@@ -40,7 +40,7 @@ export const parsePerks = (xml: string): Map<number, Record<string, number>> => 
 const collectParams = ({ skill, perkArgs }: CollectParamsInput): SkillParam[] => {
   const params = new Map<string, SkillParam>();
 
-  for (const arg of nodes(get(skill, `${SKILL_NODE_KEYS.ui}/descr/arg`))) {
+  for (const arg of nodes(get({ value: skill, path: `${SKILL_NODE_KEYS.ui}/descr/arg` }))) {
     const name = text(arg.paramName);
     const perLevel = num(arg.value);
 
@@ -49,7 +49,7 @@ const collectParams = ({ skill, perkArgs }: CollectParamsInput): SkillParam[] =>
     }
   }
 
-  for (const param of nodes(get(skill, `${SKILL_NODE_KEYS.ui}/params/param`))) {
+  for (const param of nodes(get({ value: skill, path: `${SKILL_NODE_KEYS.ui}/params/param` }))) {
     const name = text(param.name);
     const perLevel = num(param.value);
 
@@ -88,7 +88,7 @@ export const parseCrew = ({ tankmenXml, perksXml }: ParseCrewInput): CrewData =>
         role,
         roles: role === 'common' ? [...CREW_ROLES] : [role],
         isCommon: role === 'common',
-        typeName: text(get(value, `${SKILL_NODE_KEYS.ui}/typeName`)),
+        typeName: text(get({ value, path: `${SKILL_NODE_KEYS.ui}/typeName` })),
         vsePerk,
         singleOnVehicle: words(value[SKILL_NODE_KEYS.tags]).includes(SINGLE_ON_VEHICLE_TAG),
         params: collectParams({ skill: value, perkArgs: vsePerk === undefined ? undefined : perks.get(vsePerk) }),

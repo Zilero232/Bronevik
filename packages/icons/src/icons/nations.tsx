@@ -1,14 +1,14 @@
 import type { SVGProps } from 'react';
 
 import type { Nation } from '../registry';
-import type { FlagLayer, NationIconProps, NationPalette } from './icons.types';
+import type { FlagLayerProps, FlagLayersProps, NationIconProps } from './icons.types';
 
 import { IconBase } from '../lib';
 import { FLAG_FRAME, FLAG_VIEWBOX, NATION_FLAGS } from './nations.shapes';
 
 const FRAME_OPACITY = 0.3;
 
-const Layer = ({ layer, mode }: { layer: FlagLayer; mode: NationPalette }) => {
+const Layer = ({ layer, mode }: FlagLayerProps) => {
   const paint = mode === 'color' ? layer.color : 'currentColor';
   const opacity = mode === 'color' ? undefined : layer.mono;
 
@@ -19,7 +19,7 @@ const Layer = ({ layer, mode }: { layer: FlagLayer; mode: NationPalette }) => {
   return <path d={layer.d} fill={paint} fillOpacity={opacity} fillRule={layer.evenOdd ? 'evenodd' : undefined} stroke='none' />;
 };
 
-const FlagLayers = ({ nation, mode }: { nation: Nation; mode: NationPalette }) =>
+const FlagLayers = ({ nation, mode }: FlagLayersProps) =>
   NATION_FLAGS[nation]
     .filter((layer) => mode === 'color' || layer.mono > 0)
     .map((layer) => <Layer key={`${layer.color}${layer.d}`} layer={layer} mode={mode} />);

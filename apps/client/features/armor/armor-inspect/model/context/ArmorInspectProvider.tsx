@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import type { ArmorInspectProviderProps, ArmorLayerKey } from './armor-inspect-context.types';
 
-import { ARMOR_INSPECT, ARMOR_LAYERS } from '../../config/armor-inspect.config';
+import { ARMOR_INSPECT, ARMOR_LAYERS } from '../../config';
 import { resolveSelection } from '../../lib/select-modules';
 import { pickShell, resolveShell } from '../../lib/shell-options';
 import { ArmorInspectContext } from './armor-inspect-context';

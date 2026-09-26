@@ -13,6 +13,7 @@ import { unique } from 'remeda';
 
 import type {
   GunModuleInput,
+  IsOneOfInput,
   JoinArmorModelInput,
   JoinedArmorModel,
   PiecePlatesInput,
@@ -24,7 +25,7 @@ import type {
 
 import { ARMOR_JOIN, DEFAULT_PIECES } from './join.constants';
 
-const isOneOf = (values: readonly string[], value: string): boolean => values.includes(value);
+const isOneOf = ({ values, value }: IsOneOfInput): boolean => values.includes(value);
 
 export const weldVertices = ({ positions, indices }: WeldInput): WeldedMesh => {
   const ids = new Map<string, number>();
@@ -100,7 +101,7 @@ export const joinArmorModel = ({ spec, collision, shellNames }: JoinArmorModelIn
     const mirrorSpaced = collision.spaced[piece] ?? [];
 
     return plates.map((name) => {
-      const isModule = isOneOf(ARMOR_JOIN.modulePlates, name);
+      const isModule = isOneOf({ values: ARMOR_JOIN.modulePlates, value: name });
       const own = armor[name];
       const mirror = mirrorArmor[name];
       const isSpaced = spaced.includes(name);
@@ -121,7 +122,7 @@ export const joinArmorModel = ({ spec, collision, shellNames }: JoinArmorModelIn
 
       const flags: ArmorFlag[] = [
         ...(isSpaced ? (['spaced'] as const) : []),
-        ...(kind === 'chassis' || isOneOf(ARMOR_JOIN.trackPlates, name) ? (['track'] as const) : []),
+        ...(kind === 'chassis' || isOneOf({ values: ARMOR_JOIN.trackPlates, value: name }) ? (['track'] as const) : []),
         ...(kind === 'gun' ? (['gun'] as const) : []),
         ...(isModule ? (['module'] as const) : []),
         ...(thickness <= 0 && !isModule ? (['hollow'] as const) : [])

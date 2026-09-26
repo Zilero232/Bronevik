@@ -7,7 +7,7 @@ import { RangeSlider, SegmentedControl } from '@/ui-kit';
 
 import type { RandomnessKey } from './ShellControls.types';
 
-import { ARMOR_INSPECT, SHELL_KIND_KEYS } from '../../../config/armor-inspect.config';
+import { ARMOR_INSPECT, SHELL_KIND_KEYS } from '../../../config';
 import { useArmorInspect } from '../../../model/context';
 
 import s from './ShellControls.module.scss';

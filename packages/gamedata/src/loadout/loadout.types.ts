@@ -171,3 +171,8 @@ export type RateOfFireInput = {
   autoreload?: number[];
   dualGun?: number[];
 };
+
+export type RoundInput = {
+  value: number;
+  digits?: number;
+};

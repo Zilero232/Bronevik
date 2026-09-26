@@ -7,8 +7,6 @@
 }
 
 .screen {
-  @include corner-brackets(22px, var(--color-enemy));
-
   position: relative;
   display: flex;
   overflow: hidden;
@@ -29,9 +27,7 @@
   z-index: -2;
   background:
     radial-gradient(ellipse 60% 45% at 70% 30%, var(--color-accent-soft), transparent 70%),
-    radial-gradient(ellipse 80% 60% at 20% 100%, var(--color-steel-soft), transparent 70%),
-    repeating-linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px 48px),
-    repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 48px), var(--color-bg-deep);
+    radial-gradient(ellipse 80% 60% at 20% 100%, var(--color-steel-soft), transparent 70%), var(--color-bg-deep);
   inset: 1px;
 }
 
@@ -60,7 +56,7 @@
 }
 
 .rec {
-  @include hud-label;
+  @include label;
 
   display: inline-flex;
   align-items: center;
@@ -98,7 +94,7 @@
 }
 
 .widgetLabel {
-  @include hud-label;
+  @include label;
 
   color: var(--color-text-muted);
 }
@@ -110,7 +106,7 @@
 }
 
 .caption {
-  @include hud-label;
+  @include label;
 
   color: var(--color-text-dim);
   text-align: right;

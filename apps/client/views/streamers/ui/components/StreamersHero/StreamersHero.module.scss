@@ -3,7 +3,7 @@
 .root {
   position: relative;
   overflow: hidden;
-  padding-block: var(--space-10) var(--space-9);
+  padding-block: var(--space-9) var(--space-9);
 
   @include below(xl) {
     padding-top: var(--space-8);
@@ -12,9 +12,7 @@
 
 .backdrop {
   position: absolute;
-  background:
-    radial-gradient(circle at 78% 42%, color-mix(in srgb, var(--color-enemy) 14%, transparent), transparent 42%),
-    repeating-linear-gradient(180deg, var(--grid-line) 0 1px, transparent 1px 6px);
+  background: radial-gradient(circle at 78% 42%, color-mix(in srgb, var(--color-enemy) 14%, transparent), transparent 42%);
   inset: 0;
   mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
   pointer-events: none;
@@ -46,13 +44,13 @@
 }
 
 .eyebrow {
-  @include hud-label;
+  @include label;
 
   color: var(--color-accent);
 }
 
 .title {
-  @include display(var(--text-4xl));
+  @include heading(var(--text-3xl));
 
   max-width: 13ch;
   font-stretch: 75%;
@@ -61,7 +59,7 @@
 }
 
 .hot {
-  background: linear-gradient(95deg, var(--color-accent-hot), var(--color-accent) 45%, var(--color-enemy));
+  background: linear-gradient(95deg, var(--color-accent-hover), var(--color-accent) 45%, var(--color-enemy));
   background-clip: text;
   color: transparent;
 }

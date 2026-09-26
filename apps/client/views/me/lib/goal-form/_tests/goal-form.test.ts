@@ -1,22 +1,18 @@
 import { createGoalSchema, goalMetricSchema } from '@bronevik/schemas';
+import { differenceInCalendarDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import { GOAL_METRICS } from '../../../config';
-import { goalFormSchema, isPercentMetric } from '../goal-form';
+import { GOAL_FORM, GOAL_METRICS } from '../../../config';
+import { goalFormSchema, isPercentMetric, toGoalInput } from '../goal-form';
 
-const BASE = { accountId: 1, endsAt: '2026-10-01T00:00:00Z' };
+const BASE = { duration: GOAL_FORM.defaultValues.duration };
+const NOW = new Date('2026-09-01T00:00:00Z');
 
 describe('goalFormSchema', () => {
   it('reads the target typed into the form as a number', () => {
     const parsed = goalFormSchema.parse({ ...BASE, metric: 'wn8', target: '3600' });
 
     expect(parsed.target).toBe(3_600);
-  });
-
-  it('produces a body the API accepts', () => {
-    const parsed = goalFormSchema.parse({ ...BASE, metric: 'battles', target: '500' });
-
-    expect(createGoalSchema.safeParse(parsed).success).toBe(true);
   });
 
   it('rejects an empty or non-positive target', () => {
@@ -29,6 +25,31 @@ describe('goalFormSchema', () => {
 
     goalMetricSchema.options.forEach((metric) => {
       expect(goalFormSchema.safeParse({ ...BASE, metric, target: above }).success).toBe(!isPercentMetric(metric));
+    });
+  });
+
+  it('accepts only the offered durations', () => {
+    GOAL_FORM.durations.forEach((duration) => {
+      expect(goalFormSchema.safeParse({ metric: 'wn8', target: '1', duration }).success).toBe(true);
+    });
+
+    expect(goalFormSchema.safeParse({ metric: 'wn8', target: '1', duration: '1000' }).success).toBe(false);
+  });
+});
+
+describe('toGoalInput', () => {
+  it('produces a body the API accepts', () => {
+    const values = goalFormSchema.parse({ ...BASE, metric: 'battles', target: '500' });
+
+    expect(createGoalSchema.safeParse(toGoalInput({ values, accountId: 1, now: NOW })).success).toBe(true);
+  });
+
+  it('ends the goal the chosen number of days from now', () => {
+    GOAL_FORM.durations.forEach((duration) => {
+      const values = goalFormSchema.parse({ metric: 'wn8', target: '1', duration });
+      const { endsAt } = toGoalInput({ values, accountId: 1, now: NOW });
+
+      expect(differenceInCalendarDays(new Date(endsAt), NOW)).toBe(Number(duration));
     });
   });
 });

@@ -4,41 +4,18 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
-import { getMap, listMaps } from '@/shared/api/maps';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
-import { createPageMetadata } from '@/shared/seo';
+import { createPageMetadata, mapRouteName, mapSlugs, ROUTE_STATIC_PARAMS } from '@/shared/seo';
 import { MapPage } from '@/views/map';
 
-const nameOf = async (value: string) => {
-  'use cache';
-
-  try {
-    return (await getMap({ idOrSlug: value })).name;
-  } catch {
-    return decodeURIComponent(value);
-  }
-};
-
-const STATIC_PARAMS = { limit: 20, fallback: [{ id: '01-karelia' }] } as const;
-
-export const generateStaticParams = async () => {
-  'use cache';
-
-  try {
-    const params = (await listMaps({})).map(({ slug }) => ({ id: slug }));
-
-    return params.length > 0 ? params : [...STATIC_PARAMS.fallback];
-  } catch {
-    return [...STATIC_PARAMS.fallback];
-  }
-};
+export const generateStaticParams = async () => (await mapSlugs({ fallback: ROUTE_STATIC_PARAMS.fallback.map })).map((id) => ({ id }));
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/maps/[id]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
   const { id } = await params;
   const t = await getTranslations({ locale, namespace: 'maps.mapMeta' });
-  const name = await nameOf(id);
+  const name = await mapRouteName(id);
 
   return createPageMetadata({
     title: t('title', { name }),

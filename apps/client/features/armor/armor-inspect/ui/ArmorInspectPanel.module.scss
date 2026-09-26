@@ -1,12 +1,18 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  position: relative;
   padding: var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
 
-  @include riveted-plate(var(--chamfer-md));
   @include stack(var(--space-5));
 }
 
 .divider {
-  @include camo-divider;
+  display: block;
+  height: 1px;
+  background: var(--color-border);
+  content: '';
 }

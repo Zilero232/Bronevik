@@ -52,8 +52,3 @@
   --badge-bg: color-mix(in srgb, var(--color-danger) 12%, transparent);
   --badge-fg: var(--color-danger);
 }
-
-.solid {
-  --badge-bg: var(--color-accent-soft);
-  --badge-fg: var(--color-accent);
-}

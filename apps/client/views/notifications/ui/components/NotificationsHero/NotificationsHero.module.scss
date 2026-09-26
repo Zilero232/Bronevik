@@ -1,11 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
 .signal {
-  @include riveted-plate(var(--chamfer-lg));
-
+  position: relative;
   display: grid;
   align-items: end;
   padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
   gap: var(--space-3) var(--space-5);
   grid-template-areas:
     'bars readout'
@@ -32,7 +34,7 @@
   }
 
   .signal[data-live='true'] & {
-    animation: signal-pulse 1.6s var(--ease-in-out) infinite;
+    animation: signal-pulse 1.6s var(--ease-out) infinite;
     background-color: var(--color-accent);
     box-shadow: 0 0 10px var(--color-accent-soft);
 
@@ -55,10 +57,11 @@
 }
 
 .value {
-  @include stencil;
-
   color: var(--color-text);
+  font-family: var(--font-display);
   font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
   line-height: 0.9;
 
   .signal[data-live='true'] & {
@@ -67,7 +70,7 @@
 }
 
 .label {
-  @include hud-label;
+  @include label;
 }
 
 .hint {

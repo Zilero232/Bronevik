@@ -2,7 +2,7 @@ import type { Price } from '@bronevik/gamedata';
 
 import { XMLParser } from 'fast-xml-parser';
 
-import type { IdentifiedNode, XmlNode, XmlValue } from './xml.types';
+import type { IdentifiedNode, MergeNodesInput, XmlGetInput, XmlNode, XmlValue } from './xml.types';
 
 import { oneOf } from '../guards';
 import { CURRENCIES, XML } from './xml.constants';
@@ -48,7 +48,7 @@ export const node = (value: XmlValue | undefined): XmlNode | undefined => {
   return isXmlNode(single) ? single : undefined;
 };
 
-export const get = (value: XmlValue | undefined, path: string): XmlValue | undefined => {
+export const get = ({ value, path }: XmlGetInput): XmlValue | undefined => {
   let current = value;
 
   for (const key of path.split('/')) {
@@ -196,7 +196,7 @@ export const scriptName = (value: XmlValue | undefined): string | undefined => {
   return raw ? raw.split(/\s+/)[0] : undefined;
 };
 
-export const mergeNodes = (base: XmlNode | undefined, override: XmlNode | undefined): XmlNode => {
+export const mergeNodes = ({ base, override }: MergeNodesInput): XmlNode => {
   const merged: XmlNode = {};
 
   for (const [key, value] of [...Object.entries(base ?? {}), ...Object.entries(override ?? {})]) {

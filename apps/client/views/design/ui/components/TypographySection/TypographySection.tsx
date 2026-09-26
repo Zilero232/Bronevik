@@ -9,7 +9,7 @@ export const TypographySection = () => {
   const t = useTranslations('design.type');
 
   return (
-    <DesignBlock eyebrow='02' id='type' title={t('title')}>
+    <DesignBlock id='type' title={t('title')}>
       {TYPE_SAMPLES.map((sample) => (
         <div key={sample.key} className={s.row}>
           <span className={s.meta}>{t(`${sample.key}.meta`)}</span>

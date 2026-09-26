@@ -20,7 +20,7 @@ export const DesignPage = () => {
 
   return (
     <div className={s.root}>
-      <SectionHeader description={t('description')} eyebrow={t('eyebrow')} index='// SYS' title={t('title')} />
+      <SectionHeader description={t('description')} title={t('title')} />
       <div className={s.sections}>
         <ColorsSection />
         <TypographySection />

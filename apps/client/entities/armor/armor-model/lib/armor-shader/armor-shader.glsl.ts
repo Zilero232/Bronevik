@@ -1,4 +1,5 @@
-export const ARMOR_VERTEX_SHADER = /* glsl */ `
+export const ARMOR_SHADER = {
+  vertex: `
 attribute float aThickness;
 attribute float aFlags;
 
@@ -17,9 +18,8 @@ void main() {
 
   gl_Position = projectionMatrix * viewMatrix * world;
 }
-`;
-
-export const ARMOR_FRAGMENT_SHADER = /* glsl */ `
+`,
+  fragment: `
 uniform float uPenetration;
 uniform float uCaliber;
 uniform float uNormalization;
@@ -88,4 +88,5 @@ void main() {
 
   gl_FragColor = vec4(color * (uAmbient + uDiffuse * cosine), 1.0);
 }
-`;
+`
+} as const;

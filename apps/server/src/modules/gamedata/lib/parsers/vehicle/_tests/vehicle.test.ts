@@ -4,7 +4,7 @@ import { loadIs, readFixture, VEHICLE_FIXTURES } from '../../../_tests/fixtures'
 import { makeCompactDescr, nationId } from '../../../ids';
 import { get, num, parseXml } from '../../../xml';
 import { parseShells } from '../shells';
-import { parseCollisionPiece, parseSpacedArmor } from '../vehicle.helpers';
+import { parseCollisionPiece, parseSpacedArmor } from '../vehicle-parts';
 
 const vehicleXml = parseXml(readFixture(VEHICLE_FIXTURES.vehicle));
 const sharedGuns = parseXml(readFixture(VEHICLE_FIXTURES.components.guns));
@@ -35,7 +35,7 @@ describe('parseVehicle', () => {
   it('reads crew, speed limits and hull armor', () => {
     expect(vehicle.crew.map((member) => member.role)).toEqual(['commander', 'gunner', 'driver', 'loader']);
     expect(vehicle.crew[0].extraRoles).toEqual(['radioman']);
-    expect(vehicle.speedLimits.forward).toBe(num(get(vehicleXml, 'speedLimits/forward')));
+    expect(vehicle.speedLimits.forward).toBe(num(get({ value: vehicleXml, path: 'speedLimits/forward' })));
 
     expect(vehicle.hull.primaryArmor).toEqual([vehicle.hull.armor.armor_1, vehicle.hull.armor.armor_7, vehicle.hull.armor.armor_4]);
 
@@ -53,14 +53,14 @@ describe('parseVehicle', () => {
   });
 
   it('merges vehicle-level gun overrides over the shared gun definition', () => {
-    const sharedId = num(get(sharedGuns, `shared/${TOP_GUN}/id`));
-    const localReload = num(get(vehicleXml, `turrets0/IS-122/guns/${TOP_GUN}/reloadTime`));
-    const sharedReload = num(get(sharedGuns, `shared/${TOP_GUN}/reloadTime`));
+    const sharedId = num(get({ value: sharedGuns, path: `shared/${TOP_GUN}/id` }));
+    const localReload = num(get({ value: vehicleXml, path: `turrets0/IS-122/guns/${TOP_GUN}/reloadTime` }));
+    const sharedReload = num(get({ value: sharedGuns, path: `shared/${TOP_GUN}/reloadTime` }));
 
     expect(gun?.id).toBe(sharedId);
     expect(localReload).not.toBe(sharedReload);
     expect(gun?.reloadTime).toBe(localReload);
-    expect(gun?.weight).toBe(num(get(sharedGuns, `shared/${TOP_GUN}/weight`)));
+    expect(gun?.weight).toBe(num(get({ value: sharedGuns, path: `shared/${TOP_GUN}/weight` })));
   });
 
   it('resolves shots against the nation shells and reads pitch limits', () => {

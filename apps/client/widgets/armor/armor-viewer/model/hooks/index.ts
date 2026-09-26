@@ -1,3 +1,14 @@
+export { useArmorCanvas } from './use-armor-canvas';
+export type { UseArmorCanvasInput } from './use-armor-canvas';
 export { useArmorHover } from './use-armor-hover';
-export type { ArmorHover, ArmorHoverEvent } from './use-armor-hover';
+export type { ArmorHover, ArmorHoverEvent, UseArmorHoverInput } from './use-armor-hover';
+export { useArmorPieceGeometry } from './use-armor-piece-geometry';
+export type { UseArmorPieceGeometryInput } from './use-armor-piece-geometry';
+export { useArmorScene } from './use-armor-scene';
+export type { UseArmorSceneInput } from './use-armor-scene';
+export { useArmorViewer } from './use-armor-viewer';
+export type { UseArmorViewerInput } from './use-armor-viewer';
+export { useCameraBridge } from './use-camera-bridge';
+export type { UseCameraBridgeInput } from './use-camera-bridge';
 export { useViewerActions } from './use-viewer-actions';
+export type { UseViewerActionsInput } from './use-viewer-actions';

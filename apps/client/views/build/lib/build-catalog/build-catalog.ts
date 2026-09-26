@@ -13,7 +13,7 @@ import type {
   ToModuleInput
 } from './build-catalog.types';
 
-import { BUILD_CATEGORIES, COMMON_ROLE, CREW_ROLE_ORDER, PREMIUM_CURRENCY } from './build-catalog.constants';
+import { BUILD_CATALOG, BUILD_CATEGORIES, CREW_ROLE_ORDER } from './build-catalog.constants';
 
 const CATEGORIES: ReadonlySet<string> = new Set(BUILD_CATEGORIES);
 
@@ -34,14 +34,14 @@ export const toBuildItem = ({ id, tag, name, image, categories, price }: Provisi
   name: gameLabel(name),
   image,
   category: categories.find(isCategory) ?? null,
-  isPremium: price?.currency === PREMIUM_CURRENCY
+  isPremium: price?.currency === BUILD_CATALOG.premiumCurrency
 });
 
 const crewRolesOf = ({ crew, crewSkills }: BuildOptions): BuildCrewRole[] => {
   const present = new Set(crew.flatMap(({ role, extraRoles }) => [role, ...extraRoles]));
   const roles: BuildCrewRole[] = CREW_ROLE_ORDER.filter((role) => present.has(role));
 
-  return crewSkills.some(({ isCommon }) => isCommon) ? [COMMON_ROLE, ...roles] : roles;
+  return crewSkills.some(({ isCommon }) => isCommon) ? [BUILD_CATALOG.commonRole, ...roles] : roles;
 };
 
 export const buildCatalog = (options: BuildOptions): BuildCatalog => ({
@@ -71,4 +71,6 @@ export const buildCatalog = (options: BuildOptions): BuildCatalog => ({
 });
 
 export const skillsOfRole = ({ skills, role }: SkillsOfRoleInput): BuildSkill[] =>
-  role === COMMON_ROLE ? skills.filter(({ isCommon }) => isCommon) : skills.filter(({ isCommon, roles }) => !isCommon && roles.includes(role));
+  role === BUILD_CATALOG.commonRole
+    ? skills.filter(({ isCommon }) => isCommon)
+    : skills.filter(({ isCommon, roles }) => !isCommon && roles.includes(role));

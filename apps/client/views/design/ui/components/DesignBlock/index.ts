@@ -1,2 +1,2 @@
-export { DesignBlock, DesignRow } from './DesignBlock';
-export type { DesignBlockProps, DesignRowProps } from './DesignBlock.types';
+export { DesignBlock } from './DesignBlock';
+export type { DesignBlockProps } from './DesignBlock.types';

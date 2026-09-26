@@ -6,6 +6,7 @@ import type {
   FinalStats,
   LoadoutInput,
   RateOfFireInput,
+  RoundInput,
   ShellStats
 } from './loadout.types';
 
@@ -16,7 +17,7 @@ import { resolveModules } from './modules';
 
 const PHYSICS_PREFIX = 'physics/';
 
-const round = (value: number, digits = 3): number => {
+const round = ({ value, digits = 3 }: RoundInput): number => {
   const scale = 10 ** digits;
 
   return Math.round(value * scale) / scale;
@@ -158,9 +159,9 @@ export const calculateLoadout = (input: LoadoutInput): FinalStats => {
   const terrainResistance: [number, number, number] = [driverResistance, driverResistance, driverResistance];
   const reloadFactor = misc.gunReloadTimeFactor * factors['gun/reloadTime'];
   const reload = gun.reloadTime * reloadFactor;
-  const clip = gun.clip ? { count: gun.clip.count, interval: gun.clip.interval, reloadTime: round(reload) } : undefined;
-  const autoreloadTimes = gun.autoreload?.reloadTimes.map((time) => round(time * reloadFactor));
-  const dualGunReloadTimes = gun.dualGun?.reloadTimes.map((time) => round(time * reloadFactor));
+  const clip = gun.clip ? { count: gun.clip.count, interval: gun.clip.interval, reloadTime: round({ value: reload }) } : undefined;
+  const autoreloadTimes = gun.autoreload?.reloadTimes.map((time) => round({ value: time * reloadFactor }));
+  const dualGunReloadTimes = gun.dualGun?.reloadTimes.map((time) => round({ value: time * reloadFactor }));
   const shotsPerMinute = rateOfFire({ reload, clip, autoreload: autoreloadTimes, dualGun: dualGunReloadTimes });
   const additive = misc.additiveShotDispersionFactor * factors.additiveShotDispersionFactor;
 
@@ -189,47 +190,55 @@ export const calculateLoadout = (input: LoadoutInput): FinalStats => {
     damage: shot.damage?.armor ?? 0,
     penetration100m: shot.piercingPower.at100m,
     penetration500m: shot.piercingPower.at500m,
-    damagePerMinute: round((shot.damage?.armor ?? 0) * shotsPerMinute, 0)
+    damagePerMinute: round({ value: (shot.damage?.armor ?? 0) * shotsPerMinute, digits: 0 })
   }));
 
   return {
     modules: { chassis: chassis.name, turret: turret.name, gun: gun.name, engine: engine.name, radio: radio.name, fuelTank: fuelTank?.name },
     moduleIds: [chassis.moduleId, turret.moduleId, gun.moduleId, engine.moduleId, radio.moduleId].filter((id) => id >= 0),
     maxHealth: Math.round((vehicle.hull.maxHealth + (turret.maxHealth ?? 0)) * misc.healthFactor),
-    weight: round(weight),
-    enginePower: round(enginePower, 1),
-    powerToWeight: round(weight > 0 ? enginePower / weight : 0, 2),
-    speedForward: round(vehicle.speedLimits.forward + misc.forwardMaxSpeedKMHTerm, 2),
-    speedBackward: round(vehicle.speedLimits.backward + misc.backwardMaxSpeedKMHTerm, 2),
-    hullTraverse: round(
-      (chassis.rotationSpeed *
-        Math.max(misc.onMoveRotationSpeedFactor, misc.onStillRotationSpeedFactor) *
-        factors['vehicle/rotationSpeed'] *
-        skill(SKILL_EFFECT.virtuoso)) /
+    weight: round({ value: weight }),
+    enginePower: round({ value: enginePower, digits: 1 }),
+    powerToWeight: round({ value: weight > 0 ? enginePower / weight : 0, digits: 2 }),
+    speedForward: round({ value: vehicle.speedLimits.forward + misc.forwardMaxSpeedKMHTerm, digits: 2 }),
+    speedBackward: round({ value: vehicle.speedLimits.backward + misc.backwardMaxSpeedKMHTerm, digits: 2 }),
+    hullTraverse: round({
+      value:
+        (chassis.rotationSpeed *
+          Math.max(misc.onMoveRotationSpeedFactor, misc.onStillRotationSpeedFactor) *
+          factors['vehicle/rotationSpeed'] *
+          skill(SKILL_EFFECT.virtuoso)) /
         driverResistance,
-      2
-    ),
-    turretTraverse: round(turret.rotationSpeed * factors['turret/rotationSpeed'] * misc.turretRotationSpeed, 2),
-    viewRange: round(Math.min(viewRange, VISION.maxRadius), 1),
-    viewRangeUncapped: round(viewRange, 1),
-    radioRange: round(radio.distance * factors['radio/distance'] * skill(SKILL_EFFECT.inventor), 1),
-    reloadTime: round(reload),
-    rateOfFire: round(shotsPerMinute, 2),
+      digits: 2
+    }),
+    turretTraverse: round({ value: turret.rotationSpeed * factors['turret/rotationSpeed'] * misc.turretRotationSpeed, digits: 2 }),
+    viewRange: round({ value: Math.min(viewRange, VISION.maxRadius), digits: 1 }),
+    viewRangeUncapped: round({ value: viewRange, digits: 1 }),
+    radioRange: round({ value: radio.distance * factors['radio/distance'] * skill(SKILL_EFFECT.inventor), digits: 1 }),
+    reloadTime: round({ value: reload }),
+    rateOfFire: round({ value: shotsPerMinute, digits: 2 }),
     clip,
     autoreloadTimes,
     dualGunReloadTimes,
-    aimingTime: round(gun.aimingTime * misc.gunAimingTimeFactor * factors['gun/aimingTime']),
-    dispersion: round((gun.shotDispersionRadius * misc.multShotDispersionFactor * factors.multShotDispersionFactor) / crew.factors.gunner, 4),
-    dispersionMovement: round(
-      chassis.shotDispersionFactors.movement * misc['chassis/shotDispersionFactors/movement'] * additive * skill(SKILL_EFFECT.smoothDriving),
-      4
-    ),
-    dispersionHullRotation: round(chassis.shotDispersionFactors.rotation * misc['chassis/shotDispersionFactors/rotation'] * additive, 4),
-    dispersionTurretRotation: round(
-      gun.shotDispersionFactors.turretRotation * misc['gun/shotDispersionFactors/turretRotation'] * additive * skill(SKILL_EFFECT.smoothTurret),
-      4
-    ),
-    dispersionAfterShot: round(gun.shotDispersionFactors.afterShot * misc['gun/shotDispersionFactors/afterShot'], 4),
+    aimingTime: round({ value: gun.aimingTime * misc.gunAimingTimeFactor * factors['gun/aimingTime'] }),
+    dispersion: round({
+      value: (gun.shotDispersionRadius * misc.multShotDispersionFactor * factors.multShotDispersionFactor) / crew.factors.gunner,
+      digits: 4
+    }),
+    dispersionMovement: round({
+      value: chassis.shotDispersionFactors.movement * misc['chassis/shotDispersionFactors/movement'] * additive * skill(SKILL_EFFECT.smoothDriving),
+      digits: 4
+    }),
+    dispersionHullRotation: round({
+      value: chassis.shotDispersionFactors.rotation * misc['chassis/shotDispersionFactors/rotation'] * additive,
+      digits: 4
+    }),
+    dispersionTurretRotation: round({
+      value:
+        gun.shotDispersionFactors.turretRotation * misc['gun/shotDispersionFactors/turretRotation'] * additive * skill(SKILL_EFFECT.smoothTurret),
+      digits: 4
+    }),
+    dispersionAfterShot: round({ value: gun.shotDispersionFactors.afterShot * misc['gun/shotDispersionFactors/afterShot'], digits: 4 }),
     elevation: gun.pitchLimits?.elevation,
     depression: gun.pitchLimits?.depression,
     shells,

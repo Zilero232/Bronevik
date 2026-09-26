@@ -4,7 +4,7 @@
   @include shell;
   @include stack(var(--space-8));
 
-  padding-block: var(--space-9) var(--space-11);
+  padding-block: var(--space-9) var(--space-9);
 
   @include below(xl) {
     padding-top: var(--space-7);

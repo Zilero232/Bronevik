@@ -1,4 +1,5 @@
 import { load } from 'cheerio';
+import { secondsToMilliseconds } from 'date-fns';
 import { setTimeout } from 'node:timers/promises';
 import robotsParser from 'robots-parser';
 
@@ -11,7 +12,7 @@ const robotsFor = async (origin: string): Promise<RobotsPolicy> => {
   const url = `${origin}/robots.txt`;
 
   try {
-    const text = await http.get(url, { timeout: SCRAPE.timeoutSecs * 1000 }).text();
+    const text = await http.get(url, { timeout: secondsToMilliseconds(SCRAPE.timeoutSecs) }).text();
     const robots = robotsParser(url, text);
 
     return {
@@ -38,7 +39,7 @@ export const crawlPages = async ({ urls, delaySecs = SCRAPE.delaySecs }: CrawlPa
       continue;
     }
 
-    const gapMs = Math.max(delaySecs, policy.delaySecs) * 1000;
+    const gapMs = secondsToMilliseconds(Math.max(delaySecs, policy.delaySecs));
     const since = Date.now() - (lastHit.get(origin) ?? 0);
 
     if (since < gapMs) {
@@ -48,7 +49,7 @@ export const crawlPages = async ({ urls, delaySecs = SCRAPE.delaySecs }: CrawlPa
     lastHit.set(origin, Date.now());
 
     try {
-      const html = await http.get(url, { timeout: SCRAPE.timeoutSecs * 1000, headers: { accept: SCRAPE.accept } }).text();
+      const html = await http.get(url, { timeout: secondsToMilliseconds(SCRAPE.timeoutSecs), headers: { accept: SCRAPE.accept } }).text();
 
       pages.push({ url, $: load(html) });
     } catch {

@@ -1,4 +1,4 @@
-import type { DataTableSkeletonProps } from '../../DataTable.types';
+import type { DataTableSkeletonProps } from './DataTableSkeleton.types';
 
 import { Skeleton } from '../../../../atoms';
 import { DATA_TABLE_SKELETON } from './DataTableSkeleton.constants';

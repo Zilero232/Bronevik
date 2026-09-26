@@ -2,10 +2,10 @@
 
 import { useVirtualizer } from '@tanstack/react-virtual';
 
-import type { DataTableVirtualRowsProps } from '../../DataTable.types';
+import type { DataTableVirtualRowsProps } from './DataTableVirtualRows.types';
 
 import { DATA_TABLE } from '../../DataTable.constants';
-import { DataTableCells } from '../DataTableRows';
+import { DataTableCells } from '../DataTableCells';
 
 import s from '../../DataTable.module.scss';
 

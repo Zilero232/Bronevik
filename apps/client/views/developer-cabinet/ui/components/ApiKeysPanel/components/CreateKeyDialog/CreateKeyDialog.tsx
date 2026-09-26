@@ -1,28 +1,18 @@
 'use client';
 
-import type { CreatedApiKey } from '@bronevik/schemas';
-
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/ui-kit';
 
 import type { CreateKeyDialogProps } from './CreateKeyDialog.types';
 
+import { useCreateKeyDialog } from '../../../../../model/hooks';
 import { SecretReveal } from '../../../SecretReveal';
 import { CreateKeyForm } from '../CreateKeyForm';
 
 export const CreateKeyDialog = ({ open, onOpenChange }: CreateKeyDialogProps) => {
   const t = useTranslations('developer.createKey');
-  const [created, setCreated] = useState<CreatedApiKey | null>(null);
-
-  const onChange = (next: boolean) => {
-    onOpenChange(next);
-
-    if (!next) {
-      setCreated(null);
-    }
-  };
+  const { created, setCreated, onChange, onDone } = useCreateKeyDialog({ onOpenChange });
 
   return (
     <Dialog disablePointerDismissal={created !== null} open={open} onOpenChange={onChange}>
@@ -35,7 +25,7 @@ export const CreateKeyDialog = ({ open, onOpenChange }: CreateKeyDialogProps) =>
           <>
             <SecretReveal kind='key' secret={created.secret} />
             <DialogFooter>
-              <Button onClick={() => onChange(false)}>{t('done')}</Button>
+              <Button onClick={onDone}>{t('done')}</Button>
             </DialogFooter>
           </>
         ) : (

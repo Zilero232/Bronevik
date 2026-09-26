@@ -1,58 +1,32 @@
 'use client';
 
-import type { ComponentRef, CSSProperties, KeyboardEvent } from 'react';
-
 import { AdaptiveDpr, OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useReducedMotion } from 'motion/react';
 import { useTranslations } from 'next-intl';
-import { useMemo, useRef } from 'react';
 
-import { armorShaderValues } from '@/entities/armor/armor-model';
-import { ARMOR_LAYERS, HitReadout, useArmorInspect } from '@/features/armor/armor-inspect';
+import { HitReadout } from '@/features/armor/armor-inspect';
 
 import type { ArmorCanvasProps } from './ArmorCanvas.types';
 
-import { ARMOR_CAMERA, ARMOR_CANVAS, NO_SHELL, ORBIT_KEYS } from '../../../config/armor-viewer.config';
-import { presetPosition } from '../../../lib/camera-presets';
-import { modelBounds, sceneParts } from '../../../lib/scene-parts';
-import { useArmorHover } from '../../../model/hooks';
+import { ARMOR_CAMERA, ARMOR_CANVAS } from '../../../config';
+import { useArmorCanvas } from '../../../model/hooks';
 import { ArmorScene, CameraBridge } from './components';
 
 import s from './ArmorCanvas.module.scss';
 
 export const ArmorCanvas = ({ geometry, command, handles, onPreset }: ArmorCanvasProps) => {
   const t = useTranslations('armor.controls');
-  const { modules, turret, gun, layers, shellState = NO_SHELL } = useArmorInspect();
-  const reducedMotion = useReducedMotion() ?? false;
-  const hideSpaced = !layers.includes('spaced');
-  const { hover, onHover, onLeave } = useArmorHover({ shellState, hideSpaced });
-  const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
-  const bounds = useMemo(() => modelBounds(sceneParts({ geometry, modules, turret, gun, layers: ARMOR_LAYERS })), [geometry, modules, turret, gun]);
-
-  const parts = sceneParts({ geometry, modules, turret, gun, layers });
-
-  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Home') {
-      event.preventDefault();
-      onPreset('front');
-
-      return;
-    }
-
-    const step = ORBIT_KEYS[event.key];
-
-    if (step) {
-      event.preventDefault();
-      handles.current?.orbit(step);
-    }
-  };
+  const { hover, onHover, onLeave, controlsRef, bounds, parts, shader, initialPosition, reducedMotion, onKeyDown } = useArmorCanvas({
+    geometry,
+    handles,
+    onPreset
+  });
 
   return (
     <div className={s.root}>
       <Canvas
         aria-label={t('canvas')}
-        camera={{ fov: ARMOR_CAMERA.fov, near: ARMOR_CAMERA.near, far: ARMOR_CAMERA.far, position: presetPosition({ preset: 'initial', ...bounds }) }}
+        camera={{ fov: ARMOR_CAMERA.fov, near: ARMOR_CAMERA.near, far: ARMOR_CAMERA.far, position: initialPosition }}
         className={s.canvas}
         dpr={[...ARMOR_CANVAS.dpr]}
         frameloop='demand'
@@ -62,7 +36,7 @@ export const ArmorCanvas = ({ geometry, command, handles, onPreset }: ArmorCanva
         onPointerLeave={onLeave}
       >
         <AdaptiveDpr pixelated />
-        <ArmorScene parts={parts} shader={armorShaderValues({ ...shellState, hideSpaced })} onHover={onHover} onLeave={onLeave} />
+        <ArmorScene parts={parts} shader={shader} onHover={onHover} onLeave={onLeave} />
         <OrbitControls
           makeDefault
           ref={controlsRef}
@@ -73,7 +47,7 @@ export const ArmorCanvas = ({ geometry, command, handles, onPreset }: ArmorCanva
         <CameraBridge bounds={bounds} command={command} controlsRef={controlsRef} handles={handles} reducedMotion={reducedMotion} />
       </Canvas>
       {hover && (
-        <div className={s.tooltip} data-flip={hover.flip} style={{ '--x': `${hover.x}px`, '--y': `${hover.y}px` } as CSSProperties}>
+        <div className={s.tooltip} data-flip={hover.flip} style={{ '--x': `${hover.x}px`, '--y': `${hover.y}px` }}>
           <HitReadout pieceKind={hover.kind} report={hover.report} />
         </div>
       )}

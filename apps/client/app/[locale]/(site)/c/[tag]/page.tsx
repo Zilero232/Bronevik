@@ -4,43 +4,18 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
-import { getClan, listClans } from '@/shared/api/clans';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
-import { createPageMetadata } from '@/shared/seo';
+import { clanRouteName, createPageMetadata, ROUTE_STATIC_PARAMS, topClanTags } from '@/shared/seo';
 import { ClanPage } from '@/views/clan';
 
-const nameOf = async (value: string) => {
-  'use cache';
-
-  try {
-    const { clan } = await getClan({ idOrTag: value });
-
-    return `[${clan.tag}] ${clan.name}`;
-  } catch {
-    return decodeURIComponent(value);
-  }
-};
-
-const STATIC_PARAMS = { limit: 20, fallback: [{ tag: 'KOPTE' }] } as const;
-
-export const generateStaticParams = async () => {
-  'use cache';
-
-  try {
-    const params = (await listClans({ limit: STATIC_PARAMS.limit })).items.map(({ clan }) => ({ tag: clan.tag }));
-
-    return params.length > 0 ? params : [...STATIC_PARAMS.fallback];
-  } catch {
-    return [...STATIC_PARAMS.fallback];
-  }
-};
+export const generateStaticParams = async () => (await topClanTags({ fallback: ROUTE_STATIC_PARAMS.fallback.clan })).map((tag) => ({ tag }));
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/c/[tag]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
   const { tag } = await params;
   const t = await getTranslations({ locale, namespace: 'clans.clanMeta' });
-  const name = await nameOf(tag);
+  const name = await clanRouteName(tag);
 
   return createPageMetadata({
     title: t('title', { name }),

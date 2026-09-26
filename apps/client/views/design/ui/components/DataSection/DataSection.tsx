@@ -5,10 +5,11 @@ import { Dices } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { AnimatedNumber, Button, EmptyState, ProgressBar, ProgressRing, Skeleton, Sparkline, StatTile } from '@/ui-kit';
+import { AnimatedNumber, Button, EmptyState, KeyFigure, ProgressBar, ProgressRing, Skeleton, Sparkline } from '@/ui-kit';
 
 import { SPARKLINE_SPECIMEN } from '../../../config';
-import { DesignBlock, DesignRow } from '../DesignBlock';
+import { DesignBlock } from '../DesignBlock';
+import { DesignRow } from '../DesignRow';
 
 import s from './DataSection.module.scss';
 
@@ -17,9 +18,10 @@ export const DataSection = () => {
   const [value, setValue] = useState(48_211);
 
   return (
-    <DesignBlock eyebrow='06' id='data' title={t('title')}>
+    <DesignBlock id='data' title={t('title')}>
       <div className={s.tiles}>
-        <StatTile
+        <KeyFigure
+          isFramed
           delta={2.4}
           deltaLabel='+2.4%'
           icon={<RandomBattleIcon size={18} />}
@@ -27,9 +29,9 @@ export const DataSection = () => {
           trend={[...SPARKLINE_SPECIMEN]}
           value={value}
         />
-        <StatTile format={{ maximumFractionDigits: 2 }} label={t('winRate')} suffix='%' tone='great' value={64.82} />
-        <StatTile delta={-1.1} deltaLabel='−1.1%' label={t('damage')} tone='steel' value={3184} />
-        <StatTile hint={t('marksHint')} icon={<Mark3Icon size={18} />} label={t('marks')} tone='unicum' value={212} />
+        <KeyFigure isFramed format={{ maximumFractionDigits: 2 }} label={t('winRate')} suffix='%' tone='great' value={64.82} />
+        <KeyFigure isFramed delta={-1.1} deltaLabel='−1.1%' label={t('damage')} tone='steel' value={3184} />
+        <KeyFigure isFramed hint={t('marksHint')} icon={<Mark3Icon size={18} />} label={t('marks')} tone='unicum' value={212} />
       </div>
       <DesignRow label={t('number')}>
         <span className={s.big}>
@@ -69,7 +71,7 @@ export const DataSection = () => {
         </span>
         <Skeleton height={64} shape='block' width={180} />
       </DesignRow>
-      <EmptyState code={t('emptyCode')} description={t('emptyBody')} title={t('emptyTitle')} />
+      <EmptyState description={t('emptyBody')} title={t('emptyTitle')} />
     </DesignBlock>
   );
 };

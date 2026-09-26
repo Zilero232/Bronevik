@@ -2,8 +2,8 @@ import { createApiKeySchema } from '@bronevik/schemas';
 import { differenceInCalendarDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
+import { KEY_EXPIRY } from '../../../config';
 import { expiryToIso, toCreateApiKeyInput } from '../key-form';
-import { KEY_EXPIRY } from '../key-form.constants';
 import { createKeyFormSchema } from '../key-form.schemas';
 
 const NOW = new Date('2026-09-25T12:00:00.000Z');

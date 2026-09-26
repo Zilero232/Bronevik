@@ -15,7 +15,7 @@ import {
   resolveModule,
   resolvePrimaryArmor,
   sharedRecord
-} from './vehicle.helpers';
+} from './vehicle-parts';
 
 export const parseSharedComponents = (xml: string): Record<string, XmlNode> => sharedRecord(parseXml(xml));
 
@@ -180,7 +180,7 @@ export const parseVehicle = ({ xml, entry, components, shells }: ParseVehicleInp
       maxHealth: num(hull.maxHealth) ?? 0,
       armor: hullArmor,
       primaryArmor: resolvePrimaryArmor({ armor: hullArmor, value: hull.primaryArmor }),
-      ammoBayHealth: num(get(hull, 'ammoBayHealth/maxHealth')),
+      ammoBayHealth: num(get({ value: hull, path: 'ammoBayHealth/maxHealth' })),
       ...armorExtras({ armor: hull.armor, hitTester: hull.hitTester })
     },
     chassis: parseModules({

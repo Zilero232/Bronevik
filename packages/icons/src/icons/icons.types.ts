@@ -2,6 +2,7 @@ import type { VehicleType } from '@bronevik/schemas';
 import type { ComponentType } from 'react';
 
 import type { IconProps, Tier } from '../lib';
+import type { Nation } from '../registry';
 
 export type TankClassKind = 'assaultSPG' | VehicleType;
 
@@ -53,4 +54,21 @@ export type FlagLayer = {
   mono: number;
   evenOdd?: boolean;
   strokeWidth?: number;
+};
+
+export type RectInput = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export type FlagLayerProps = {
+  layer: FlagLayer;
+  mode: NationPalette;
+};
+
+export type FlagLayersProps = {
+  nation: Nation;
+  mode: NationPalette;
 };

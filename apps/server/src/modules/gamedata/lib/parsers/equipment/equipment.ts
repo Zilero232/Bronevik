@@ -154,7 +154,7 @@ export const parseEquipments = (xml: string): Equipment[] =>
         equipmentType,
         script: scriptClass,
         tags,
-        incompatibleTags: words(get(value, 'incompatibleTags/installed')),
+        incompatibleTags: words(get({ value, path: 'incompatibleTags/installed' })),
         price: price(value.price),
         notInShop: bool(value.notInShop) ?? false,
         vehicleFilter: parseVehicleFilter(value.vehicleFilter),

@@ -1,0 +1,17 @@
+.root {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.method {
+  color: var(--color-steel);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+}
+
+.path {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}

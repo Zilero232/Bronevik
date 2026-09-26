@@ -15,8 +15,6 @@
   background: var(--color-surface-sunken);
   gap: var(--space-3);
 
-  @include chamfer-path(var(--chamfer-sm));
-
   &[data-status='subscribed'] {
     --led: var(--color-success);
   }
@@ -53,7 +51,7 @@
 }
 
 .label {
-  @include display(var(--text-sm));
+  @include heading(var(--text-sm));
 }
 
 .hint {

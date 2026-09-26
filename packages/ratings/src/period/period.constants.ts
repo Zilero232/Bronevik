@@ -13,7 +13,7 @@ export const PERIOD_WINDOWS = {
 
 export const OPTIONAL_TOTAL_KEYS = ['losses', 'xp', 'survivedBattles', 'damageReceived', 'hits', 'shots'] as const;
 
-export const EMPTY_TOTALS: BattleTotals = {
+export const EMPTY_TOTALS = {
   battles: 0,
   wins: 0,
   damageDealt: 0,
@@ -21,4 +21,4 @@ export const EMPTY_TOTALS: BattleTotals = {
   spotted: 0,
   capturePoints: 0,
   droppedCapturePoints: 0
-};
+} as const satisfies BattleTotals;

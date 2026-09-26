@@ -11,7 +11,7 @@ export const OVERLAY_EDITOR = {
 
 export const OBS_STEPS = ['source', 'url', 'size', 'transparent'] as const;
 
-export const KIND_PRESETS: Record<OverlayKind, readonly OverlayMetric[]> = {
+export const KIND_PRESETS = {
   session: ['battles', 'winRate', 'avgDamage', 'wn8'],
   wn8: ['wn8', 'battles', 'winRate'],
   moe: ['moePercent', 'lastBattle'],
@@ -20,10 +20,10 @@ export const KIND_PRESETS: Record<OverlayKind, readonly OverlayMetric[]> = {
   win_streak: ['winStreak', 'winRate'],
   challenge: ['battles'],
   custom: ['battles', 'winRate']
-};
+} as const satisfies Record<OverlayKind, readonly OverlayMetric[]>;
 
-export const OBS_SIZE: Record<OverlayConfig['layout'], { width: number; height: number }> = {
+export const OBS_SIZE = {
   row: { width: 1280, height: 160 },
   column: { width: 360, height: 720 },
   grid: { width: 640, height: 360 }
-};
+} as const satisfies Record<OverlayConfig['layout'], { width: number; height: number }>;

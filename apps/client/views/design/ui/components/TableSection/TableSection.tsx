@@ -33,14 +33,9 @@ export const TableSection = () => {
   );
 
   return (
-    <DesignBlock action={switcher} eyebrow='08' id='table' title={t('title')}>
+    <DesignBlock action={switcher} id='table' title={t('title')}>
       {mode === 'live' && isError ? (
-        <EmptyState
-          action={<Button onClick={() => refetch()}>{t('retry')}</Button>}
-          code='ERR'
-          description={t('errorBody')}
-          title={t('errorTitle')}
-        />
+        <EmptyState action={<Button onClick={() => refetch()}>{t('retry')}</Button>} description={t('errorBody')} title={t('errorTitle')} />
       ) : (
         <DataTable
           key={mode}

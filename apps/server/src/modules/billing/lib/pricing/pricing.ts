@@ -1,10 +1,12 @@
+import { clamp } from 'remeda';
+
 import type { DescribePlanInput, PlanPriceInput, PlusPlan } from './pricing.types';
 
 import { PAYMENT_DESCRIPTION, PLUS_PLANS, PRICING } from '../../config';
 
 export const planPrice = ({ plan, discountPercent }: PlanPriceInput): number => {
   const base = PLUS_PLANS[plan].priceRub;
-  const discount = Math.min(Math.max(discountPercent ?? 0, 0), 100);
+  const discount = clamp(discountPercent ?? 0, { min: 0, max: 100 });
 
   return Math.max(PRICING.minPriceRub, Math.round(base * (100 - discount)) / 100);
 };

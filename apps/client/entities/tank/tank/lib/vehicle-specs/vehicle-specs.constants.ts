@@ -10,7 +10,7 @@ export const SPEC_PATH: Partial<Record<TankSpecKey, string>> = {
 
 export const SPEC_PROFILES: ReadonlySet<string> = new Set(['stock', 'top']);
 
-export const SPEC_READERS: Record<TankSpecKey, (stats: VehicleStats) => number | null> = {
+export const SPEC_READERS = {
   shellDamage: ({ shell }) => shell?.damage ?? null,
   shellPenetration: ({ shell }) => shell?.penetration100m ?? null,
   damagePerMinute: ({ shell }) => shell?.damagePerMinute ?? null,
@@ -30,4 +30,4 @@ export const SPEC_READERS: Record<TankSpecKey, (stats: VehicleStats) => number |
   turretTraverse: ({ turretTraverse }) => turretTraverse,
   viewRange: ({ viewRange }) => viewRange,
   radioRange: ({ radioRange }) => radioRange
-};
+} as const satisfies Record<TankSpecKey, (stats: VehicleStats) => number | null>;

@@ -37,8 +37,6 @@ export { ServiceStatus } from './ServiceStatus';
 export type { ServiceStatusProps, ServiceStatusValue } from './ServiceStatus';
 export { Sparkline } from './Sparkline';
 export type { SparklineProps } from './Sparkline';
-export { StatTile } from './StatTile';
-export type { StatTileProps } from './StatTile';
 export { Tabs } from './Tabs';
 export type { TabItem, TabsProps } from './Tabs';
 export { ToggleChips } from './ToggleChips';

@@ -1,7 +1,17 @@
 @use '@/shared/styles/mixins' as *;
 
 .tiles {
-  @include tile-grid;
+  display: grid;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  @include below(3xl) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .big {

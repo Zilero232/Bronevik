@@ -41,7 +41,7 @@
 }
 
 .meta {
-  @include hud-label;
+  @include label;
 
   font-size: var(--text-2xs);
 }

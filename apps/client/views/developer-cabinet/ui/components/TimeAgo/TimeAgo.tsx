@@ -4,11 +4,11 @@ import { useFormatter, useNow } from 'next-intl';
 
 import type { TimeAgoProps } from './TimeAgo.types';
 
-const MINUTE_MS = 60_000;
+import { TIME_AGO } from '../../../config';
 
 export const TimeAgo = ({ value, fallback = '—', className }: TimeAgoProps) => {
   const format = useFormatter();
-  const now = useNow({ updateInterval: MINUTE_MS });
+  const now = useNow({ updateInterval: TIME_AGO.updateIntervalMs });
 
   if (value === null) {
     return <span className={className}>{fallback}</span>;

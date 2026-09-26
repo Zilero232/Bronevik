@@ -1,44 +1,30 @@
 'use client';
 
 import { Activity } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { match, P } from 'ts-pattern';
 
-import { STAGGER_ITEM } from '@/shared/lib';
 import { EmptyState, ErrorState, SectionHeader, SegmentedControl, Select, Skeleton } from '@/ui-kit';
 
-import type { UsagePeriod } from './UsagePanel.types';
+import type { UsagePeriod } from '../../../model/hooks';
 
 import { USAGE } from '../../../config';
-import { useApiKeys, useApiKeyUsage } from '../../../model/hooks';
-import { ErrorLog, TopEndpoints, UsageCharts, UsageToday } from './components';
+import { useUsagePanel } from '../../../model/hooks';
+import { ErrorLog } from '../ErrorLog';
+import { TopEndpoints, UsageCharts, UsageToday } from './components';
 
 import s from './UsagePanel.module.scss';
 
 export const UsagePanel = () => {
   const t = useTranslations('developer.usage');
-  const keysQuery = useApiKeys();
-  const [keyId, setKeyId] = useState('');
-  const [period, setPeriod] = useState<UsagePeriod>(USAGE.initialPeriod);
-
-  const keys = keysQuery.data;
-  const selectedId = keys?.some(({ id }) => id === keyId) ? keyId : (keys?.[0]?.id ?? '');
-  const usageQuery = useApiKeyUsage({ id: selectedId, days: Number(period) });
+  const { keyItems, selectedId, setKeyId, period, setPeriod, usage, isStale, isFailed, isRetrying, onRetry } = useUsagePanel();
 
   return (
-    <motion.section className={s.root} id='usage' variants={STAGGER_ITEM}>
-      <SectionHeader description={t('description')} eyebrow={t('eyebrow')} index='02' title={t('title')} />
-      {keys && keys.length > 0 && (
+    <section className={s.root} id='usage'>
+      <SectionHeader description={t('description')} title={t('title')} />
+      {keyItems.length > 0 && (
         <div className={s.toolbar}>
-          <Select
-            className={s.key}
-            items={keys.map(({ id, name }) => ({ value: id, label: name }))}
-            label={t('key')}
-            value={selectedId}
-            onValueChange={setKeyId}
-          />
+          <Select className={s.key} items={keyItems} label={t('key')} value={selectedId} onValueChange={setKeyId} />
           <SegmentedControl<UsagePeriod>
             aria-label={t('period')}
             options={USAGE.periods.map((value) => ({ value, label: t('days', { count: Number(value) }) }))}
@@ -48,16 +34,11 @@ export const UsagePanel = () => {
           />
         </div>
       )}
-      {match({ selectedId, usage: usageQuery.data, isFailed: keysQuery.isError || usageQuery.isError })
-        .with({ isFailed: true }, () => (
-          <ErrorState
-            isRetrying={keysQuery.isFetching || usageQuery.isFetching}
-            onRetry={() => void (keysQuery.isError ? keysQuery.refetch() : usageQuery.refetch())}
-          />
-        ))
+      {match({ selectedId, usage, isFailed })
+        .with({ isFailed: true }, () => <ErrorState isRetrying={isRetrying} onRetry={onRetry} />)
         .with({ selectedId: '' }, () => <EmptyState description={t('noKeysHint')} icon={<Activity size={22} />} title={t('noKeys')} />)
         .with({ usage: P.nonNullable }, ({ usage: loaded }) => (
-          <div className={s.body} data-stale={usageQuery.isPlaceholderData}>
+          <div className={s.body} data-stale={isStale}>
             <UsageToday usage={loaded} />
             <UsageCharts history={loaded.history} />
             <div className={s.split}>
@@ -69,6 +50,6 @@ export const UsagePanel = () => {
         .otherwise(() => (
           <Skeleton height={320} shape='block' />
         ))}
-    </motion.section>
+    </section>
   );
 };

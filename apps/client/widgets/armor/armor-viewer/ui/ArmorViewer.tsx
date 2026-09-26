@@ -1,26 +1,16 @@
 'use client';
 
-import { useFullscreen } from '@siberiacancode/reactuse';
-import { useRef, useState } from 'react';
-
 import { ArmorInspectPanel, ArmorInspectProvider } from '@/features/armor/armor-inspect';
 
-import type { CameraPresetKey } from '../lib/camera-presets';
-import type { ViewCommand, ViewerHandles } from '../model/viewer.types';
 import type { ArmorViewerProps } from './ArmorViewer.types';
 
-import { useViewerActions } from '../model/hooks';
+import { useArmorViewer } from '../model/hooks/use-armor-viewer';
 import { ArmorStage, ViewerToolbar } from './components';
 
 import s from './ArmorViewer.module.scss';
 
 export const ArmorViewer = ({ model, slug }: ArmorViewerProps) => {
-  const { ref, value: isFullscreen, toggle } = useFullscreen<HTMLDivElement>();
-  const [command, setCommand] = useState<ViewCommand>({ preset: 'initial', nonce: 0 });
-  const handlesRef = useRef<ViewerHandles>(null);
-  const { screenshot, share } = useViewerActions({ slug, handles: handlesRef });
-
-  const onPreset = (preset: CameraPresetKey) => setCommand(({ nonce }) => ({ preset, nonce: nonce + 1 }));
+  const { ref, isFullscreen, toggle, command, handlesRef, onPreset, screenshot, share } = useArmorViewer({ slug });
 
   return (
     <ArmorInspectProvider modules={model.response.modules}>

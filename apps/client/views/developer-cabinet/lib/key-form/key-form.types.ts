@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { KEY_EXPIRY } from './key-form.constants';
+import type { KEY_EXPIRY } from '../../config';
 import type { createKeyFormSchema } from './key-form.schemas';
 
 export type KeyExpiry = (typeof KEY_EXPIRY.options)[number];

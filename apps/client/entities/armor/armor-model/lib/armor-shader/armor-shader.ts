@@ -2,9 +2,7 @@ import { PENETRATION, SHELL_RULES } from '@bronevik/gamedata';
 
 import type { ArmorShaderInput, ArmorShaderValues } from './armor-shader.types';
 
-import { ARMOR_SHADING } from '../../config/armor-palette';
-
-const NEVER_RICOCHETS = 1000;
+import { ARMOR_SHADING } from '../../config';
 
 export const armorShaderValues = ({ shell, randomness, hideSpaced }: ArmorShaderInput): ArmorShaderValues => {
   const rules = SHELL_RULES[shell.kind];
@@ -13,7 +11,7 @@ export const armorShaderValues = ({ shell, randomness, hideSpaced }: ArmorShader
     uPenetration: shell.penetration,
     uCaliber: shell.caliber,
     uNormalization: rules.normalization,
-    uRicochet: rules.ricochetAngle ?? NEVER_RICOCHETS,
+    uRicochet: rules.ricochetAngle ?? ARMOR_SHADING.neverRicochets,
     uRandomness: randomness,
     uCaliberRules: rules.caliberRules ? 1 : 0,
     uHighExplosive: rules.ricochetAngle === null ? 1 : 0,

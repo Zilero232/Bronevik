@@ -12,9 +12,11 @@
 }
 
 .list {
-  @include plate(var(--chamfer-md));
-
+  position: relative;
   padding: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
   margin: 0;
+  background: var(--color-surface);
   list-style: none;
 }

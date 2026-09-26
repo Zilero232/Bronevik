@@ -2,7 +2,7 @@ import type { Vec3 } from '@bronevik/gamedata';
 
 import type { OrbitStepInput, PresetPositionInput } from './camera-presets.types';
 
-import { ARMOR_CAMERA, PRESET_DIRECTIONS } from '../../config/armor-viewer.config';
+import { ARMOR_CAMERA, PRESET_DIRECTIONS } from '../../config';
 
 export const presetPosition = ({ preset, center, radius }: PresetPositionInput): Vec3 => {
   const [x, y, z] = PRESET_DIRECTIONS[preset];

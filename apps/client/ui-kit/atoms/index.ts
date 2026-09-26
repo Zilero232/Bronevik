@@ -4,8 +4,6 @@ export { Avatar } from './Avatar';
 export type { AvatarProps } from './Avatar';
 export { Badge } from './Badge';
 export type { BadgeProps, BadgeTone } from './Badge';
-export { Burst } from './Burst';
-export type { BurstProps } from './Burst';
 export { Button, buttonVariants } from './Button';
 export type { ButtonProps, ButtonVariantProps } from './Button';
 export { ClassIcon } from './ClassIcon';

@@ -49,28 +49,28 @@ export const GAME_MODES = ['random', 'ranked', 'onslaught', 'frontline', 'strong
 
 export type GameMode = (typeof GAME_MODES)[number];
 
-export const TANK_CLASS_ICONS: Record<VehicleType, TankClassIconComponent> = {
+export const TANK_CLASS_ICONS = {
   lightTank: LightTankIcon,
   mediumTank: MediumTankIcon,
   heavyTank: HeavyTankIcon,
   'AT-SPG': TankDestroyerIcon,
   SPG: SpgIcon
-};
+} as const satisfies Record<VehicleType, TankClassIconComponent>;
 
-export const TANK_CLASS_KIND_ICONS: Record<TankClassKind, TankClassIconComponent> = {
+export const TANK_CLASS_KIND_ICONS = {
   ...TANK_CLASS_ICONS,
   assaultSPG: AssaultSpgIcon
-};
+} as const satisfies Record<TankClassKind, TankClassIconComponent>;
 
-export const TANK_CLASS_SILHOUETTES: Record<VehicleType, IconComponent> = {
+export const TANK_CLASS_SILHOUETTES = {
   lightTank: LightTankSilhouetteIcon,
   mediumTank: MediumTankSilhouetteIcon,
   heavyTank: HeavyTankSilhouetteIcon,
   'AT-SPG': TankDestroyerSilhouetteIcon,
   SPG: SpgSilhouetteIcon
-};
+} as const satisfies Record<VehicleType, IconComponent>;
 
-export const NATION_ICONS: Record<Nation, NationIconComponent> = {
+export const NATION_ICONS = {
   ussr: UssrIcon,
   germany: GermanyIcon,
   usa: UsaIcon,
@@ -83,9 +83,9 @@ export const NATION_ICONS: Record<Nation, NationIconComponent> = {
   poland: PolandIcon,
   italy: ItalyIcon,
   intunion: IntUnionIcon
-};
+} as const satisfies Record<Nation, NationIconComponent>;
 
-export const GAME_MODE_ICONS: Record<GameMode, IconComponent> = {
+export const GAME_MODE_ICONS = {
   random: RandomBattleIcon,
   ranked: RankedBattleIcon,
   onslaught: OnslaughtIcon,
@@ -93,7 +93,7 @@ export const GAME_MODE_ICONS: Record<GameMode, IconComponent> = {
   stronghold: StrongholdIcon,
   globalmap: GlobalMapIcon,
   training: TrainingIcon
-};
+} as const satisfies Record<GameMode, IconComponent>;
 
 export const ICONS = {
   'bronevik-logo': BronevikLogoIcon,

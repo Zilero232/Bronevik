@@ -1,5 +1,5 @@
-export { ARMOR_FACE_CLASSES, ARMOR_PALETTE } from './config/armor-palette';
-export { ARMOR_FRAGMENT_SHADER, ARMOR_VERTEX_SHADER, armorShaderValues } from './lib/armor-shader';
+export { ARMOR_FACE_CLASSES, ARMOR_PALETTE } from './config';
+export { ARMOR_SHADER, armorShaderValues } from './lib/armor-shader';
 export type { ArmorShaderInput, ArmorShaderValues } from './lib/armor-shader';
 export { buildPieceBuffers } from './lib/build-buffers';
 export type { PieceBuffers } from './lib/build-buffers';

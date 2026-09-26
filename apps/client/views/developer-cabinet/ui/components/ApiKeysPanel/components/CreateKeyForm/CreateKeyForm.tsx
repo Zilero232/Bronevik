@@ -1,50 +1,24 @@
 'use client';
 
 import { API_KEY } from '@bronevik/schemas';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { KeyRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
-import { createApiKey } from '@/shared/api/developer';
-import { QUERY_KEYS } from '@/shared/constants';
 import { Button, buttonVariants, DialogClose, DialogFooter, Input, Select } from '@/ui-kit';
 
-import type { CreateKeyFormValues, KeyExpiry } from '../../../../../lib/key-form';
+import type { KeyExpiry } from '../../../../../lib/key-form';
 import type { CreateKeyFormProps } from './CreateKeyForm.types';
 
-import { createKeyFormSchema, KEY_EXPIRY, toCreateApiKeyInput } from '../../../../../lib/key-form';
-import { useDeveloperMutation } from '../../../../../model/hooks';
+import { KEY_EXPIRY } from '../../../../../config';
+import { useCreateKeyForm } from '../../../../../model/hooks';
 import { FormField } from '../../../FormField';
 
 import s from './CreateKeyForm.module.scss';
 
-const DEFAULT_VALUES: CreateKeyFormValues = { name: '', expiry: KEY_EXPIRY.initial };
-
 export const CreateKeyForm = ({ onCreated }: CreateKeyFormProps) => {
   const t = useTranslations('developer.createKey');
-  const create = useDeveloperMutation({
-    mutationFn: createApiKey,
-    invalidates: [QUERY_KEYS.me.developer.keys],
-    successKey: 'keyCreated',
-    isErrorToasted: false
-  });
-
-  const {
-    control,
-    formState: { errors, isSubmitting },
-    handleSubmit,
-    register,
-    setError
-  } = useForm<CreateKeyFormValues>({ resolver: zodResolver(createKeyFormSchema), defaultValues: DEFAULT_VALUES });
-
-  const onSubmit = handleSubmit(async (values) => {
-    try {
-      onCreated(await create.mutateAsync(toCreateApiKeyInput({ ...values, now: new Date() })));
-    } catch {
-      setError('root.server', { message: 'server' });
-    }
-  });
+  const { control, errors, isSubmitting, register, onSubmit } = useCreateKeyForm({ onCreated });
 
   return (
     <form noValidate className={s.root} onSubmit={onSubmit}>

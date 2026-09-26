@@ -31,12 +31,12 @@ export const WEBHOOK_EVENT_TO_DB = {
   'clan.member_changed': 'clanRosterChanged'
 } as const satisfies Record<WebhookEvent, DbWebhookEvent>;
 
-export const WEBHOOK_EVENT_FROM_DB: Record<DbWebhookEvent, WebhookEvent | null> = {
+export const WEBHOOK_EVENT_FROM_DB = {
   moeGained: 'mark.gained',
   sessionFinished: 'session.ended',
   clanRosterChanged: 'clan.member_changed',
   moeThresholdDropped: null
-};
+} as const satisfies Record<DbWebhookEvent, WebhookEvent | null>;
 
 export const WEBHOOK_DELIVERY = {
   maxAttempts: 6,

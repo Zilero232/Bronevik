@@ -1,17 +1,21 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md));
-  @include stack(var(--space-3));
-
   position: relative;
   overflow: hidden;
   padding: var(--space-6) var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+
+  @include stack(var(--space-3));
 
   &[data-tool='challenges'] {
-    @include riveted-plate(var(--chamfer-lg), color-mix(in srgb, var(--color-accent) 55%, var(--color-border)));
-
+    position: relative;
     padding: var(--space-8) var(--space-7);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
     grid-row: span 2;
 
     @include below(md) {
@@ -32,7 +36,7 @@
 }
 
 .title {
-  @include display(var(--text-xl));
+  @include heading(var(--text-xl));
 
   [data-tool='challenges'] > & {
     font-size: var(--text-3xl);
@@ -44,14 +48,15 @@
 }
 
 .stamp {
-  @include stencil;
-
   align-self: flex-start;
   padding: var(--space-2) var(--space-4);
   border: 2px solid var(--color-ally);
   margin-top: auto;
   color: var(--color-ally);
+  font-family: var(--font-display);
   font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
   rotate: -6deg;
   text-transform: uppercase;
 }
@@ -66,7 +71,7 @@
 }
 
 .chip {
-  @include hud-label;
+  @include label;
 
   padding: var(--space-1) var(--space-3);
   border: 1px solid var(--color-border-strong);

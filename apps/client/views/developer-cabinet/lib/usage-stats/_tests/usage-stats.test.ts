@@ -2,8 +2,8 @@ import type { ApiUsagePoint } from '@bronevik/schemas';
 
 import { describe, expect, it } from 'vitest';
 
-import { quotaShare, quotaTone, usageSeries, usageTotals } from '../usage-stats';
-import { USAGE_STATS } from '../usage-stats.constants';
+import { USAGE, USAGE_STATS } from '../../../config';
+import { quotaShare, quotaTone, topEndpointShares, usageSeries, usageTotals } from '../usage-stats';
 
 const point = (day: string, requests: number, errors: number): ApiUsagePoint => ({
   day,
@@ -56,5 +56,24 @@ describe('quotaTone', () => {
     expect(quotaTone(USAGE_STATS.warnShare)).toBe('average');
     expect(quotaTone(USAGE_STATS.dangerShare)).toBe('bad');
     expect(quotaTone(1)).toBe('bad');
+  });
+});
+
+describe('topEndpointShares', () => {
+  const endpoints = Array.from({ length: USAGE.topEndpoints + 2 }, (_, index) => ({ endpoint: `/v1/e${index}`, requests: 100 - index * 10 }));
+
+  it('keeps only the configured number of endpoints', () => {
+    expect(topEndpointShares(endpoints)).toHaveLength(USAGE.topEndpoints);
+  });
+
+  it('scales every bar against the busiest endpoint', () => {
+    const [first, second] = topEndpointShares(endpoints);
+
+    expect(first?.share).toBe(1);
+    expect(second?.share).toBeCloseTo((second?.requests ?? 0) / (first?.requests ?? 1));
+  });
+
+  it('returns nothing for an empty list', () => {
+    expect(topEndpointShares([])).toEqual([]);
   });
 });

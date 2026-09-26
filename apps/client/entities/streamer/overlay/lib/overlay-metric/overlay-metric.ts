@@ -2,11 +2,11 @@ import { match } from 'ts-pattern';
 
 import { ratingTone } from '@/shared/lib';
 
-import type { FormatOverlayValueInput, OverlayMetricReading, ReadOverlayMetricInput } from './overlay-metric.types';
+import type { FormatOverlayValueInput, OverlayMetricReading, OverlayToneInput, ReadOverlayMetricInput } from './overlay-metric.types';
 
 import { OVERLAY_VALUE } from './overlay-metric.constants';
 
-const toneOf = ({ scale, value }: { scale: 'winRate' | 'wn8'; value: number | null }) => (value === null ? null : ratingTone({ scale, value }));
+const toneOf = ({ scale, value }: OverlayToneInput) => (value === null ? null : ratingTone({ scale, value }));
 
 export const readOverlayMetric = ({ data, metric }: ReadOverlayMetricInput): OverlayMetricReading => {
   const { session, moe } = data;

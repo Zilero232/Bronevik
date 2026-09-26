@@ -21,7 +21,7 @@ export const CHALLENGE_SCOPES = ['any', 'tank', 'type', 'tier'] as const;
 
 export type ChallengeScope = (typeof CHALLENGE_SCOPES)[number];
 
-export const CHALLENGE_STATUS_TONE: Record<ChallengeStatus, BadgeTone> = {
+export const CHALLENGE_STATUS_TONE = {
   pending: 'warning',
   active: 'accent',
   succeeded: 'success',
@@ -29,7 +29,7 @@ export const CHALLENGE_STATUS_TONE: Record<ChallengeStatus, BadgeTone> = {
   cancelled: 'neutral',
   expired: 'neutral',
   refunded: 'steel'
-};
+} as const satisfies Record<ChallengeStatus, BadgeTone>;
 
 export const CHALLENGE_TIERS = [5, 6, 7, 8, 9, 10, 11] as const;
 

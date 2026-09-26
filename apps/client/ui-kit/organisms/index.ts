@@ -12,5 +12,3 @@ export { LineChart } from './LineChart';
 export type { LineChartProps } from './LineChart';
 export { PageHeader } from './PageHeader';
 export type { PageBreadcrumb, PageHeaderProps } from './PageHeader';
-export { PageHero } from './PageHero';
-export type { PageHeroProps } from './PageHero';

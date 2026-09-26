@@ -6,7 +6,7 @@ import { ToggleChips } from '@/ui-kit';
 
 import type { ArmorLayerKey } from '../../../model/context';
 
-import { ARMOR_LAYERS } from '../../../config/armor-inspect.config';
+import { ARMOR_LAYERS } from '../../../config';
 import { useArmorInspect } from '../../../model/context';
 
 import s from './LayerToggles.module.scss';

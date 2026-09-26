@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import type { ArmorShellState } from '@/entities/armor/armor-model';
 
-import type { ARMOR_LAYERS } from '../../config/armor-inspect.config';
+import type { ARMOR_LAYERS } from '../../config';
 
 export type ArmorLayerKey = (typeof ARMOR_LAYERS)[number];
 

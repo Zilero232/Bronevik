@@ -1,3 +1,4 @@
+import { fromUnixTime } from 'date-fns';
 import { isObjectType } from 'remeda';
 
 import type { LestaIdentity, SafeCallbackUrlInput, VerifyLestaLoginInput, WithErrorInput } from './lesta-id.types';
@@ -23,7 +24,7 @@ export const verifyLestaLogin = async ({ login, lesta }: VerifyLestaLoginInput):
       accountId: login.accountId,
       nickname: info.nickname ?? login.nickname,
       accessToken: login.accessToken,
-      expiresAt: new Date(login.expiresAt * 1000)
+      expiresAt: fromUnixTime(login.expiresAt)
     };
   } catch (error) {
     if (error instanceof LestaApiError && error.code === LESTA_ERROR_CODE.invalidAccessToken) {

@@ -50,7 +50,6 @@ export const BONUS_CODE = {
 
 export const OFFER_RETURN = {
   minOccurrences: 2,
-  dayMs: 86_400_000,
   archiveLimit: 100
 } as const;
 

@@ -15,7 +15,7 @@ export const parseFeedMessage = (payload: string): OverlayData | null => {
   }
 };
 
-export const INITIAL_FEED_STATE: FeedState = { transport: 'stream', data: null };
+export const INITIAL_FEED_STATE = { transport: 'stream', data: null } as const satisfies FeedState;
 
 export const feedReducer = (state: FeedState, event: FeedEvent): FeedState =>
   match(event)

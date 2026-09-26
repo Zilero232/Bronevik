@@ -7,7 +7,7 @@ import { z } from 'zod';
 import type { SignInTelegramInput, TelegramLoginOptions } from './telegram-login.types';
 
 import { AUTH_PROVIDER } from '../auth.constants';
-import { placeholderEmail } from '../auth.helpers';
+import { placeholderEmail } from '../placeholder-email';
 import { verifyWebAppInitData } from './webapp-auth';
 import { WEBAPP_AUTH } from './webapp-auth.constants';
 import { verifyWidgetPayload, widgetIdentity } from './widget-auth';

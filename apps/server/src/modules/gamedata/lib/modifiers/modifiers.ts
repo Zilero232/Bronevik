@@ -24,7 +24,7 @@ export const parseModifierBlock = (value: XmlValue | undefined): Modifier[] =>
   });
 
 export const parseFactorBlock = (value: XmlValue | undefined): Modifier[] =>
-  nodes(get(value, 'factor')).flatMap((factor) => {
+  nodes(get({ value, path: 'factor' })).flatMap((factor) => {
     const attribute = text(factor.attribute);
     const op = text(factor.type) ?? 'mul';
     const levels = nums(factor.valueByLevel);
@@ -43,7 +43,7 @@ export const parseFactorBlock = (value: XmlValue | undefined): Modifier[] =>
   });
 
 export const parseDeviceTagFilter = (value: XmlValue | undefined): DeviceTagFilter | undefined => {
-  const tags = node(get(value, 'tags'));
+  const tags = node(get({ value, path: 'tags' }));
 
   if (!tags) {
     return undefined;

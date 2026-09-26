@@ -7,3 +7,13 @@ export type IdentifiedNode = {
   id: number;
   value: XmlNode;
 };
+
+export type XmlGetInput = {
+  value: XmlValue | undefined;
+  path: string;
+};
+
+export type MergeNodesInput = {
+  base: XmlNode | undefined;
+  override: XmlNode | undefined;
+};

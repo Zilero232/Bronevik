@@ -52,7 +52,7 @@
 }
 
 .unit {
-  @include hud-label;
+  @include label;
 }
 
 .delta {

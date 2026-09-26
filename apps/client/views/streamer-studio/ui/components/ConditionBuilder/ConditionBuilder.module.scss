@@ -9,7 +9,7 @@
 }
 
 .legend {
-  @include hud-label;
+  @include label;
 
   width: 100%;
   float: left;

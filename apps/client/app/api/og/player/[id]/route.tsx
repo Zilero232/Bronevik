@@ -6,17 +6,15 @@ import { getPlayer } from '@/shared/api/players';
 import { isNotFoundError } from '@/shared/api/source';
 import { SITE } from '@/shared/config/site';
 import { loadOgFonts, OG_SIZE } from '@/shared/seo/og';
-import { OG_CACHE, OG_REQUEST, parseOgPlayerRequest } from '@/shared/seo/og-request';
+import { OG_CACHE, OG_REQUEST, ogNotFound, parseOgPlayerRequest } from '@/shared/seo/og-request';
 import { FallbackOgCard, ogLabels, PlayerOgCard } from '@/views/player-og';
-
-const notFound = () => new Response(null, { status: 404, headers: { 'Cache-Control': OG_CACHE.missing } });
 
 export const GET = async (request: NextRequest, { params }: RouteContext<'/api/og/player/[id]'>) => {
   const { id } = await params;
   const parsed = parseOgPlayerRequest({ id, locale: request.nextUrl.searchParams.get(OG_REQUEST.localeParam) });
 
   if (!parsed) {
-    return notFound();
+    return ogNotFound();
   }
 
   const { accountId, locale } = parsed;
@@ -34,7 +32,7 @@ export const GET = async (request: NextRequest, { params }: RouteContext<'/api/o
     });
   } catch (error) {
     if (isNotFoundError(error)) {
-      return notFound();
+      return ogNotFound();
     }
 
     return new ImageResponse(<FallbackOgCard host={host} labels={labels} />, { ...OG_SIZE, fonts, headers: { 'Cache-Control': OG_CACHE.missing } });

@@ -25,14 +25,14 @@ const parseTrees = (xml: string): ProgressionTree[] =>
         name,
         id: num(value.id) ?? 0,
         rootStep: num(value.rootStep) ?? 1,
-        steps: nodes(get(value, 'steps/step')).map((step) => ({
+        steps: nodes(get({ value, path: 'steps/step' })).map((step) => ({
           id: num(step.id) ?? 0,
           level: num(step.level) ?? 0,
           priceKey: text(step.price),
-          action: { type: text(get(step, 'action/type')) ?? '', value: text(get(step, 'action/value')) ?? '' },
+          action: { type: text(get({ value: step, path: 'action/type' })) ?? '', value: text(get({ value: step, path: 'action/value' })) ?? '' },
           unlocks: nums(step.unlocks),
-          minVehicleLevel: num(get(step, 'vehicleFilter/include/vehicle/minLevel')),
-          maxVehicleLevel: num(get(step, 'vehicleFilter/include/vehicle/maxLevel'))
+          minVehicleLevel: num(get({ value: step, path: 'vehicleFilter/include/vehicle/minLevel' })),
+          maxVehicleLevel: num(get({ value: step, path: 'vehicleFilter/include/vehicle/maxLevel' }))
         }))
       }
     ];
@@ -60,14 +60,14 @@ const parseModifications = (xml: string): FieldModification[] =>
 
 const parsePairs = (xml: string): ModificationPair[] =>
   entries(parseXml(xml)).flatMap(([name, value]) => {
-    const firstName = text(get(value, 'first/name'));
-    const secondName = text(get(value, 'second/name'));
+    const firstName = text(get({ value, path: 'first/name' }));
+    const secondName = text(get({ value, path: 'second/name' }));
 
     if (!isXmlNode(value) || !firstName || !secondName) {
       return [];
     }
 
-    return [{ name, id: num(value.id) ?? 0, first: firstName, second: secondName, priceKey: text(get(value, 'first/price')) }];
+    return [{ name, id: num(value.id) ?? 0, first: firstName, second: secondName, priceKey: text(get({ value, path: 'first/price' })) }];
   });
 
 const parseFeatures = (xml: string): ProgressionFeature[] =>

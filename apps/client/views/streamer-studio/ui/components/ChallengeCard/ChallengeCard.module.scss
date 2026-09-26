@@ -59,7 +59,7 @@
   @include stack(2px);
 
   dt {
-    @include hud-label;
+    @include label;
   }
 
   dd {

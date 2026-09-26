@@ -9,7 +9,7 @@ import { isNotFoundError } from '@/shared/api/source';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { ratingTone, toneOfTier } from '@/shared/lib';
-import { buttonVariants, ErrorState, SectionHeader, Skeleton, StatTile } from '@/ui-kit';
+import { buttonVariants, ErrorState, KeyFigure, SectionHeader, Skeleton } from '@/ui-kit';
 
 import type { StreamerStatsProps } from './StreamerStats.types';
 
@@ -32,16 +32,17 @@ export const StreamerStats = ({ accountId }: StreamerStatsProps) => {
           return (
             <>
               <div className={s.grid}>
-                <StatTile label={t('battles')} tone='steel' value={battles} />
-                <StatTile
+                <KeyFigure isFramed label={t('battles')} tone='steel' value={battles} />
+                <KeyFigure
+                  isFramed
                   format={STREAMER_PAGE.percentFormat}
                   label={t('winRate')}
                   suffix='%'
                   tone={winRate === null ? 'accent' : ratingTone({ scale: 'winRate', value: winRate })}
                   value={winRate ?? 0}
                 />
-                <StatTile label={t('wn8')} tone={wn8Tier ? toneOfTier(wn8Tier) : 'accent'} value={wn8Value ?? 0} />
-                <StatTile label={t('avgDamage')} value={avgDamage ?? 0} />
+                <KeyFigure isFramed label={t('wn8')} tone={wn8Tier ? toneOfTier(wn8Tier) : 'accent'} value={wn8Value ?? 0} />
+                <KeyFigure isFramed label={t('avgDamage')} value={avgDamage ?? 0} />
               </div>
               <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.player(summary.nickname)}>
                 {t('profile')}

@@ -10,13 +10,15 @@ import { isNotFoundError } from '@/shared/api/source';
 import { EmptyState, ErrorState } from '@/ui-kit';
 import { ArmorViewer } from '@/widgets/armor/armor-viewer';
 
+import type { TankArmorParams } from './TankArmorPage.types';
+
 import { ArmorAttribution, ArmorHeader, ArmorLoading } from './components';
 
 import s from './TankArmorPage.module.scss';
 
 export const TankArmorPage = () => {
   const t = useTranslations('armor.states');
-  const { slug } = useParams<{ slug: string }>();
+  const { slug } = useParams<TankArmorParams>();
   const { data: model, isPending, error, isRefetching, refetch } = useArmorModel(slug);
 
   return (
@@ -26,7 +28,7 @@ export const TankArmorPage = () => {
         .with({ model: P.nonNullable }, ({ model: loaded }) => <ArmorViewer model={loaded} slug={slug} />)
         .with({ isPending: true }, () => <ArmorLoading />)
         .with({ error: P.when(isNotFoundError) }, () => (
-          <EmptyState code='404' description={t('emptyDescription')} icon={<Box size={36} strokeWidth={1.5} />} title={t('emptyTitle')} />
+          <EmptyState description={t('emptyDescription')} icon={<Box size={36} strokeWidth={1.5} />} title={t('emptyTitle')} />
         ))
         .otherwise(() => (
           <ErrorState description={t('errorDescription')} isRetrying={isRefetching} title={t('errorTitle')} onRetry={() => void refetch()} />

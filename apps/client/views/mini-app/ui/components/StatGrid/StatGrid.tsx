@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { range } from 'remeda';
 
 import { ratingValueTone, winRateTone } from '@/entities/player/stats';
-import { Skeleton, StatTile } from '@/ui-kit';
+import { KeyFigure, Skeleton } from '@/ui-kit';
 
 import type { StatGridProps } from './StatGrid.types';
 
@@ -27,10 +27,17 @@ export const StatGrid = ({ stats }: StatGridProps) => {
 
   return (
     <div className={s.root}>
-      <StatTile label='WN8' tone={ratingValueTone(stats.wn8)} value={Math.round(stats.wn8.value ?? 0)} />
-      <StatTile format={STAT_GRID.winRateFormat} label={t('winRate')} suffix='%' tone={winRateTone(stats.winRate)} value={stats.winRate ?? 0} />
-      <StatTile label={t('avgDamage')} value={Math.round(stats.avgDamage ?? 0)} />
-      <StatTile label={t('battles')} value={stats.battles} />
+      <KeyFigure isFramed label='WN8' tone={ratingValueTone(stats.wn8)} value={Math.round(stats.wn8.value ?? 0)} />
+      <KeyFigure
+        isFramed
+        format={STAT_GRID.winRateFormat}
+        label={t('winRate')}
+        suffix='%'
+        tone={winRateTone(stats.winRate)}
+        value={stats.winRate ?? 0}
+      />
+      <KeyFigure isFramed label={t('avgDamage')} value={Math.round(stats.avgDamage ?? 0)} />
+      <KeyFigure isFramed label={t('battles')} value={stats.battles} />
     </div>
   );
 };

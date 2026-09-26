@@ -24,4 +24,4 @@ const fontCode = JetBrains_Mono({
   fallback: ['ui-monospace', 'monospace']
 });
 
-export const FONT_VARIABLES = [fontCondensed.variable, fontBody.variable, fontCode.variable];
+export const FONT_VARIABLES = [fontCondensed.variable, fontBody.variable, fontCode.variable] as const;

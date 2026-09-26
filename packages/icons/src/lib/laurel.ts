@@ -1,6 +1,6 @@
 import { round } from 'remeda';
 
-import type { LaurelBranchInput, LaurelInput, LeafInput } from './icon.types';
+import type { LaurelInput, LaurelPointInput, LaurelSideInput, LeafInput } from './icon.types';
 
 const LEAF = {
   length: 3.9,
@@ -15,13 +15,13 @@ const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 const fixed = (value: number) => round(value, 2);
 
-const at = ({ cx, cy, radius, flip }: LaurelBranchInput, angle: number) => ({
+const at = ({ cx, cy, radius, flip, angle }: LaurelPointInput) => ({
   x: cx - flip * radius * Math.sin(angle),
   y: cy + radius * Math.cos(angle)
 });
 
 const leafPath = ({ angle, lean, ...branch }: LeafInput) => {
-  const base = at(branch, angle);
+  const base = at({ ...branch, angle });
   const tangent = { x: -branch.flip * Math.cos(angle), y: -Math.sin(angle) };
   const outward = { x: -branch.flip * Math.sin(angle), y: Math.cos(angle) };
   const dir = {
@@ -36,11 +36,11 @@ const leafPath = ({ angle, lean, ...branch }: LeafInput) => {
   return `M${fixed(base.x)} ${fixed(base.y)}Q${fixed(mid.x + normal.x)} ${fixed(mid.y + normal.y)} ${fixed(tip.x)} ${fixed(tip.y)}Q${fixed(mid.x - normal.x)} ${fixed(mid.y - normal.y)} ${fixed(base.x)} ${fixed(base.y)}Z`;
 };
 
-const branch = ({ leaves, ...input }: LaurelBranchInput & { leaves: number }) => {
+const branch = ({ leaves, ...input }: LaurelSideInput) => {
   const count = Math.max(1, Math.floor(leaves));
   const span = count > 1 ? (LEAF.last - LEAF.first) / (count - 1) : 0;
-  const start = at(input, toRadians(LEAF.stemStart));
-  const end = at(input, toRadians(LEAF.last));
+  const start = at({ ...input, angle: toRadians(LEAF.stemStart) });
+  const end = at({ ...input, angle: toRadians(LEAF.last) });
   const sweep = input.flip === 1 ? 1 : 0;
 
   return {

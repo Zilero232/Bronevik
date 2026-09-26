@@ -1,10 +1,10 @@
 import type { ModuleOption } from '@bronevik/schemas';
 
-import type { BUILD_CATEGORIES, COMMON_ROLE, CREW_ROLE_ORDER } from './build-catalog.constants';
+import type { BUILD_CATALOG, BUILD_CATEGORIES, CREW_ROLE_ORDER } from './build-catalog.constants';
 
 export type BuildCategory = (typeof BUILD_CATEGORIES)[number];
 
-export type BuildCrewRole = (typeof CREW_ROLE_ORDER)[number] | typeof COMMON_ROLE;
+export type BuildCrewRole = (typeof BUILD_CATALOG)['commonRole'] | (typeof CREW_ROLE_ORDER)[number];
 
 export type BuildModuleSlot = 'chassis' | 'engine' | 'gun' | 'radio' | 'turret';
 

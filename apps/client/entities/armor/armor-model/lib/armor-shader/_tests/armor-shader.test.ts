@@ -2,7 +2,7 @@ import { SHELL_KINDS, SHELL_RULES } from '@bronevik/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { armorShaderValues } from '../armor-shader';
-import { ARMOR_FRAGMENT_SHADER, ARMOR_VERTEX_SHADER } from '../armor-shader.glsl';
+import { ARMOR_SHADER } from '../armor-shader.glsl';
 
 const shellOf = (kind: (typeof SHELL_KINDS)[number]) => ({ kind, caliber: 100, penetration: 200 });
 
@@ -24,7 +24,7 @@ describe('armorShaderValues', () => {
   });
 
   it('declares every uniform the fragment shader reads', () => {
-    const declared = [...ARMOR_FRAGMENT_SHADER.matchAll(/uniform float (\w+);/g)].map(([, name]) => name);
+    const declared = [...ARMOR_SHADER.fragment.matchAll(/uniform float (\w+);/g)].map(([, name]) => name);
 
     const provided = Object.keys(armorShaderValues({ shell: shellOf('ARMOR_PIERCING'), randomness: 0, hideSpaced: false }));
 
@@ -39,7 +39,7 @@ describe('armorShaderValues', () => {
   });
 
   it('feeds the per-face attributes the fragment shader colours by', () => {
-    expect(ARMOR_VERTEX_SHADER).toContain('attribute float aThickness');
-    expect(ARMOR_VERTEX_SHADER).toContain('attribute float aFlags');
+    expect(ARMOR_SHADER.vertex).toContain('attribute float aThickness');
+    expect(ARMOR_SHADER.vertex).toContain('attribute float aFlags');
   });
 });

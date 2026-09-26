@@ -1,6 +1,8 @@
+import { minutesToMilliseconds } from 'date-fns';
+
 export const MOE_LIST = {
   pageLimit: 100,
-  historyStaleMs: 10 * 60 * 1000,
+  historyStaleMs: minutesToMilliseconds(10),
   historyChartHeight: 200,
   rowHeight: 44
 } as const;

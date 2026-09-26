@@ -119,12 +119,13 @@ A folder is one concern, not one function. A component folder holds only `Name.t
 
 ```text
 ui-kit/
-├── atoms/       # AnimatedNumber, Avatar, Badge, Burst, Button, IconButton, Input, Kbd,
-│                # ProgressBar, ProgressRing, RatingBadge, Skeleton, Switch
-├── molecules/   # Card, CodeBlock, CopyField, Dialog, Drawer, EmptyState, ErrorState, NumberField,
-│                # Popover, RangeSlider, RetryButton, SectionHeader, SegmentedControl, Select,
-│                # Sparkline, StatTile, Tabs, ToggleChips, Tooltip
-├── organisms/   # AppToaster, AreaChart, BarChart, CalendarHeatmap, ChartKit, DataTable, LineChart, PageHero
+├── atoms/       # AnimatedNumber, Avatar, Badge, Button, ClassIcon, DeltaValue, IconButton, Input, Kbd,
+│                # NationLabel, ProgressBar, ProgressRing, RatingBadge, RelativeTime, Skeleton, Switch,
+│                # TankImage, TierNumeral
+├── molecules/   # Card, CodeBlock, CopyField, DataSourceNote, Dialog, Drawer, EmptyState, ErrorState,
+│                # GameVersionBadge, KeyFigure, KeyFigures, NumberField, Popover, RangeSlider, RetryButton,
+│                # SectionHeader, SegmentedControl, Select, ServiceStatus, Sparkline, Tabs, ToggleChips, Tooltip
+├── organisms/   # AppToaster, AreaChart, BarChart, CalendarHeatmap, ChartKit, DataTable, LineChart, PageHeader
 └── index.ts     # the one barrel the rest of the app imports
 ```
 

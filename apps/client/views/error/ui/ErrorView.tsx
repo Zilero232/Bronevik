@@ -13,7 +13,7 @@ export const ErrorView = ({ reset }: ErrorViewProps) => {
 
   return (
     <section className={s.root}>
-      <EmptyState action={<Button onClick={reset}>{t('retry')}</Button>} code={t('code')} description={t('body')} title={t('title')} />
+      <EmptyState action={<Button onClick={reset}>{t('retry')}</Button>} description={t('body')} title={t('title')} />
     </section>
   );
 };

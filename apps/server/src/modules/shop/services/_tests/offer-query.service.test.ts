@@ -1,3 +1,4 @@
+import { millisecondsInDay } from 'date-fns/constants';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -8,7 +9,7 @@ import { OFFER_RETURN } from '../../config';
 import { OfferQueryService } from '../offer-query.service';
 
 const start = new Date('2026-06-01T00:00:00Z');
-const at = (days: number): Date => new Date(start.getTime() + days * OFFER_RETURN.dayMs);
+const at = (days: number): Date => new Date(start.getTime() + days * millisecondsInDay);
 
 const offerRow = (overrides: Partial<PremiumOffer>): PremiumOffer => ({
   id: 'o1',

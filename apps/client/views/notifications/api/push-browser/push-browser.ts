@@ -6,8 +6,8 @@ import { isBrowser } from '@/shared/lib';
 
 import type { PushBrowserState } from './push-browser.types';
 
+import { PUSH_BROWSER } from '../../config';
 import { urlBase64ToUint8Array } from '../../lib/url-base64';
-import { PUSH_BROWSER } from './push-browser.constants';
 
 const isPushSupported = () => isBrowser() && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 

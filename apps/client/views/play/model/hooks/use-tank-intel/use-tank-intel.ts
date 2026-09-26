@@ -1,6 +1,7 @@
 'use client';
 
 import type { TankDetail, VehicleSummary } from '@bronevik/schemas';
+import type { QueryFunctionContext } from '@tanstack/react-query';
 
 import { useQueries } from '@tanstack/react-query';
 
@@ -13,7 +14,7 @@ export const useTankIntel = (vehicles: VehicleSummary[]) =>
   useQueries({
     queries: vehicles.map(({ slug }) => ({
       queryKey: QUERY_KEYS.tanks.detail({ idOrSlug: slug, scope: 'guess' }),
-      queryFn: ({ signal }: { signal: AbortSignal }) => getTank({ idOrSlug: slug, signal }),
+      queryFn: ({ signal }: QueryFunctionContext) => getTank({ idOrSlug: slug, signal }),
       staleTime: GUESS_TANK.detailStaleMs
     })),
     combine: (results) => new Map(results.flatMap(({ data }): [number, TankDetail][] => (data ? [[data.vehicle.tankId, data]] : [])))

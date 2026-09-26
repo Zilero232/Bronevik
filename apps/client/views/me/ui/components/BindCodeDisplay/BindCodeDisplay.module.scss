@@ -6,7 +6,7 @@
   align-items: center;
   padding: var(--space-5);
   border: 1px solid color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: radial-gradient(ellipse at 50% 0%, var(--color-accent-soft), transparent 70%), var(--color-surface-sunken);
   text-align: center;
 
@@ -18,7 +18,7 @@
 }
 
 .label {
-  @include hud-label;
+  @include label;
 }
 
 .code {
@@ -37,7 +37,7 @@
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
   background-color: var(--color-surface-raised);
-  color: var(--color-accent-hot);
+  color: var(--color-accent-hover);
   font-family: var(--font-mono);
   font-size: var(--text-2xl);
   font-weight: 600;

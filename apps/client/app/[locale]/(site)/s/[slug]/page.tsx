@@ -4,27 +4,16 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
-import { getStreamerBySlug } from '@/shared/api/streamers';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
-import { createPageMetadata } from '@/shared/seo';
+import { createPageMetadata, streamerRouteName } from '@/shared/seo';
 import { StreamerPage } from '@/views/streamer';
-
-const nameOf = async (slug: string) => {
-  'use cache';
-
-  try {
-    return (await getStreamerBySlug(slug)).displayName;
-  } catch {
-    return slug;
-  }
-};
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
   const slug = decodeURIComponent((await params).slug);
   const t = await getTranslations({ locale, namespace: 'streamer.publicMeta' });
-  const name = await nameOf(slug);
+  const name = await streamerRouteName(slug);
 
   return createPageMetadata({
     title: t('title', { name }),

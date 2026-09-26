@@ -23,7 +23,7 @@ export const INTEGRATIONS = {
   failedRedirectPath: '/me/streamer?streamer=failed'
 } as const;
 
-export const NO_SCOPES: readonly string[] = [];
+export const NO_SCOPES = [] as const satisfies readonly string[];
 
 export const PROVIDER_FROM_PATH = {
   'donation-alerts': 'donationAlerts',

@@ -1,3 +1,4 @@
+export { DataTableCells } from './DataTableCells';
 export { DataTableHead } from './DataTableHead';
 export { DataTableRows } from './DataTableRows';
 export { DataTableSkeleton } from './DataTableSkeleton';

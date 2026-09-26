@@ -2,22 +2,21 @@ import { useTranslations } from 'next-intl';
 
 import { RatingPaletteToggle } from '@/features/app/rating-palette';
 import { RatingPatternsToggle } from '@/features/app/rating-patterns';
-import { RATING_TONES, toneThresholds } from '@/shared/lib';
+import { RATING_TONES } from '@/shared/lib';
 import { ProgressBar, RatingBadge } from '@/ui-kit';
 
-import { COLOR_SWATCHES, SPACING_STEPS } from '../../../config';
-import { DesignBlock, DesignRow } from '../DesignBlock';
+import { COLOR_SWATCHES, DESIGN_RATING, SPACING_STEPS } from '../../../config';
+import { DesignBlock } from '../DesignBlock';
+import { DesignRow } from '../DesignRow';
 
 import s from './ColorsSection.module.scss';
-
-const WN8_THRESHOLDS = toneThresholds('wn8');
 
 export const ColorsSection = () => {
   const t = useTranslations('design.colors');
   const tRating = useTranslations('rating');
 
   return (
-    <DesignBlock eyebrow='01' id='colors' title={t('title')}>
+    <DesignBlock id='colors' title={t('title')}>
       {COLOR_SWATCHES.map((group) => (
         <DesignRow key={group.group} label={t(group.group)}>
           {group.tokens.map((token) => (
@@ -30,7 +29,7 @@ export const ColorsSection = () => {
       ))}
       <DesignRow label={t('rating')}>
         {RATING_TONES.map((tone) => (
-          <RatingBadge key={tone} label={tRating(tone)} tone={tone} value={`${WN8_THRESHOLDS[tone] ?? 0}+`} />
+          <RatingBadge key={tone} label={tRating(tone)} tone={tone} value={`${DESIGN_RATING.wn8Thresholds[tone] ?? 0}+`} />
         ))}
       </DesignRow>
       <DesignRow className={s.stack} label={t('patterns')}>

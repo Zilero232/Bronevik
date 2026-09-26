@@ -2,12 +2,10 @@
 
 import { API_KEY } from '@bronevik/schemas';
 import { BookOpen } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { STAGGER_ITEM } from '@/shared/lib';
 import { buttonVariants, Skeleton } from '@/ui-kit';
 
 import { useDeveloperOverview } from '../../../model/hooks';
@@ -29,7 +27,7 @@ export const CabinetHeader = () => {
     ] as const);
 
   return (
-    <motion.header className={s.root} variants={STAGGER_ITEM}>
+    <header className={s.root}>
       <div className={s.copy}>
         <span className={s.eyebrow}>{t('eyebrow')}</span>
         <h1 className={s.title}>{t('title')}</h1>
@@ -53,6 +51,6 @@ export const CabinetHeader = () => {
           ))}
         </dl>
       </div>
-    </motion.header>
+    </header>
   );
 };

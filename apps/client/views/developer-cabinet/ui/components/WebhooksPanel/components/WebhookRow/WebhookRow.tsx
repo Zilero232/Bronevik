@@ -13,8 +13,8 @@ import type { WebhookRowProps } from './WebhookRow.types';
 import { WEBHOOK_STATUS_TONE } from '../../../../../config';
 import { webhookStatus } from '../../../../../lib/webhook-status';
 import { useDeveloperMutation } from '../../../../../model/hooks';
+import { DeliveriesLog } from '../../../DeliveriesLog';
 import { TimeAgo } from '../../../TimeAgo';
-import { DeliveriesLog } from '../DeliveriesLog';
 
 import s from './WebhookRow.module.scss';
 

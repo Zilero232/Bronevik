@@ -22,7 +22,7 @@ features/     # app/{rating-palette,rating-patterns,switch-locale,switch-theme},
 entities/     # app/locale, armor/armor-model, auth/session, map/map, notification/inbox,
               #   player/{player,profile,recent-players,stats}, streamer/{broadcast,overlay}, tank/{build,tank}
 shared/       # project-agnostic: api/ (one folder per resource + http, source) config/ constants/ i18n/ lib/ seo/ styles/
-ui-kit/       # the design system: atoms/ molecules/ organisms/ (ChartKit + charts, DataTable, PageHero, toaster)
+ui-kit/       # the design system: atoms/ molecules/ organisms/ (ChartKit + charts, DataTable, PageHeader, toaster)
 config/       # build-time helpers for next.config.ts — not imported by the app
 ```
 

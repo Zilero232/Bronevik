@@ -1,13 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { match, P } from 'ts-pattern';
 
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/ui-kit';
 
 import type { WebhookFormDialogProps } from './WebhookFormDialog.types';
 
+import { useWebhookFormDialog } from '../../../../../model/hooks';
 import { SecretReveal } from '../../../SecretReveal';
 import { WebhookForm } from '../WebhookForm';
 
@@ -15,19 +15,7 @@ import s from './WebhookFormDialog.module.scss';
 
 export const WebhookFormDialog = ({ editor, onClose }: WebhookFormDialogProps) => {
   const t = useTranslations('developer.webhookForm');
-  const [secret, setSecret] = useState<string | null>(null);
-
-  const phase = match({ secret, editor })
-    .with({ secret: P.string }, () => 'secret' as const)
-    .with({ editor: { mode: 'edit' } }, () => 'edit' as const)
-    .otherwise(() => 'create' as const);
-
-  const onOpenChange = (next: boolean) => {
-    if (!next) {
-      onClose();
-      setSecret(null);
-    }
-  };
+  const { secret, setSecret, phase, onOpenChange, onDone } = useWebhookFormDialog({ editor, onClose });
 
   return (
     <Dialog disablePointerDismissal={phase === 'secret'} open={editor.mode !== 'closed'} onOpenChange={onOpenChange}>
@@ -41,15 +29,15 @@ export const WebhookFormDialog = ({ editor, onClose }: WebhookFormDialogProps) =
             <>
               <SecretReveal kind='webhook' secret={value} />
               <DialogFooter>
-                <Button onClick={() => onOpenChange(false)}>{t('done')}</Button>
+                <Button onClick={onDone}>{t('done')}</Button>
               </DialogFooter>
             </>
           ))
           .with({ editor: { mode: 'edit' } }, ({ editor: { endpoint } }) => (
-            <WebhookForm key={endpoint.id} endpoint={endpoint} onCreated={setSecret} onSaved={() => onOpenChange(false)} />
+            <WebhookForm key={endpoint.id} endpoint={endpoint} onCreated={setSecret} onSaved={onDone} />
           ))
           .otherwise(() => (
-            <WebhookForm endpoint={null} onCreated={setSecret} onSaved={() => onOpenChange(false)} />
+            <WebhookForm endpoint={null} onCreated={setSecret} onSaved={onDone} />
           ))}
       </DialogContent>
     </Dialog>

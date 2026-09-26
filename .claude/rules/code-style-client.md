@@ -155,8 +155,8 @@ Rating colours: `ratingTone({ scale, value })` / `toneOfTier(tier)` from
 
 Fonts: Tektur (`--font-display`, headings and numbers), Onest (`--font-sans`),
 IBM Plex Mono (`--font-mono`, HUD labels), self-hosted via `shared/config/fonts`.
-Before re-declaring a look, check `shared/styles/_mixins.scss` — `plate`,
-`hud-label`, `display`, `numeric`, `popup-surface`, `tone`, `tile-grid`.
+Before re-declaring a look, check `shared/styles/_mixins.scss` — `panel`,
+`well`, `label`, `heading`, `numeric`, `popup-surface`, `tone`, `field-box`.
 
 ## Variants
 

@@ -28,12 +28,7 @@ export const OverlayValue = ({ value, kind, animate, className }: OverlayValuePr
             initial={{ opacity: 0.55, scale: 1 }}
             transition={{ duration: OVERLAY_BOARD.flashSeconds }}
           />
-          <AnimatedNumber
-            duration={OVERLAY_BOARD.countSeconds}
-            format={OVERLAY_VALUE.format[kind]}
-            suffix={OVERLAY_VALUE.suffix[kind]}
-            value={value}
-          />
+          <AnimatedNumber format={OVERLAY_VALUE.format[kind]} suffix={OVERLAY_VALUE.suffix[kind]} value={value} />
         </>
       ) : (
         formatOverlayValue({ value, kind, locale })

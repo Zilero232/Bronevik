@@ -1,17 +1,15 @@
 'use client';
 
 import { ArrowDown, ArrowUp } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 
 import type { GuessCellProps } from './GuessCell.types';
+
+import { useGuessCell } from '../../../model/hooks';
 
 import s from './GuessCell.module.scss';
 
 export const GuessCell = ({ hint, label, text, children }: GuessCellProps) => {
-  const t = useTranslations('play.grid');
-
-  const { verdict, direction } = hint;
-  const summary = [label, text, t(`verdict.${verdict}`), direction && t(`direction.${direction}`)].filter(Boolean).join(', ');
+  const { verdict, direction, summary } = useGuessCell({ hint, label, text });
 
   return (
     <div aria-label={summary} className={s.root} data-verdict={verdict} role='img'>

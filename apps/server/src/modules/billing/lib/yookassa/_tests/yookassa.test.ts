@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { describeCard, toAmount } from '../yookassa.helpers';
+import { describeCard, toAmount } from '../yookassa';
 import { yookassaWebhookSchema } from '../yookassa.schemas';
 
 describe('describeCard', () => {

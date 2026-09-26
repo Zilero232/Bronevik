@@ -71,3 +71,8 @@ export type BlockFields = {
   stunAssistedDamage: number;
   stunNumber: number;
 };
+
+export type BlockedTotalInput = {
+  avgDamageBlocked: number;
+  battles: number;
+};

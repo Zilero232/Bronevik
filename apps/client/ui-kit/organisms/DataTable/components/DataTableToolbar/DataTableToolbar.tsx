@@ -1,4 +1,4 @@
-import type { DataTableToolbarProps } from '../../DataTable.types';
+import type { DataTableToolbarProps } from './DataTableToolbar.types';
 
 import s from '../../DataTable.module.scss';
 

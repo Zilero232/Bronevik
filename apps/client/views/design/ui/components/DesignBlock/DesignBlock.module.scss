@@ -11,28 +11,3 @@
 .body {
   @include stack(var(--space-6));
 }
-
-.row {
-  display: grid;
-  align-items: start;
-  gap: var(--space-4);
-  grid-template-columns: 160px minmax(0, 1fr);
-
-  @include below(xl) {
-    gap: var(--space-2);
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.label {
-  @include hud-label;
-
-  padding-top: 8px;
-}
-
-.items {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-}

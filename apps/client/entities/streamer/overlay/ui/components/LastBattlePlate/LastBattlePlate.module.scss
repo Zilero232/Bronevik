@@ -17,7 +17,7 @@
 }
 
 .result {
-  @include display(0.95em);
+  @include heading(0.95em);
 
   color: var(--result);
 }

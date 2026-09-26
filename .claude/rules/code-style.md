@@ -128,8 +128,7 @@ export const SEARCH_REQUEST = {
 ```
 
 A `config/` folder holds one file per concern — `player-lookup.constants.ts`,
-`player-stats.constants.ts` in the client (existing `*.config.ts` files are the
-older name; the server keeps `*.config.ts`) — not one `<module>.config.ts` that accumulates
+`player-stats.constants.ts` in the client (the server keeps `*.config.ts`) — not one `<module>.config.ts` that accumulates
 everything the module ever needed. The barrel re-exports them, so a call site
 still imports from `../config` and never learns the file names.
 

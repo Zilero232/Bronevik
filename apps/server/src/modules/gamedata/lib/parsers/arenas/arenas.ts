@@ -49,8 +49,8 @@ export const isBattleArena = (arenaId: string): boolean => !NON_BATTLE_ARENA.tes
 
 export const parseArena = ({ xml, arenaId, numericId }: ParseArenaInput): Arena | undefined => {
   const root = parseXml(xml);
-  const bottomLeft = toPoint(get(root, 'boundingBox/bottomLeft'));
-  const upperRight = toPoint(get(root, 'boundingBox/upperRight'));
+  const bottomLeft = toPoint(get({ value: root, path: 'boundingBox/bottomLeft' }));
+  const upperRight = toPoint(get({ value: root, path: 'boundingBox/upperRight' }));
 
   if (!bottomLeft || !upperRight) {
     return undefined;

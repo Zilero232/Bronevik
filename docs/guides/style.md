@@ -869,7 +869,7 @@ stay in tests.
 ## 12. Global styles and SCSS
 
 - **Design tokens** are CSS variables in `shared/styles/_tokens.scss`, pulled in once by
-  `app/globals.scss` — type scale, spacing, radii, chamfers, durations, easings, z-index,
+  `app/globals.scss` — type scale, spacing, radii, durations, easings, z-index,
   safe-area insets, colours, elevations and the rating palette. `shared/styles/` also
   holds `_animations.scss`, `_breakpoints.scss` and `_mixins.scss`.
 - **Two themes, dark and light.** Theme-independent tokens sit on `:root`; the dark palette
@@ -887,10 +887,10 @@ stay in tests.
   `bad`, `below`, `average`, `good`, `great`, `unicum` — through `ratingTone({ scale, value })`
   or `toneOfTier(tier)`. A component sets `data-tone={tone}` and its SCSS uses
   `@include tone`, which resolves `--tone` to `var(--rating-<tone>)` (`ProgressBar`,
-  `ProgressRing`, `StatTile`, `Sparkline`, the charts). Reuse that mapping rather than re-deriving one.
+  `ProgressRing`, `KeyFigure`, `Sparkline`, the charts). Reuse that mapping rather than re-deriving one.
 - **Mixins** (`@use '@/shared/styles/mixins' as *`) carry the shared visual language:
-  `plate` / `chamfer-path` (the chamfered armour panels), `hud-label`, `display`,
-  `numeric`, `popup-surface`, `popup-motion`, `tone`, `tile-grid`, `icon-button`,
+  `panel` / `well` (bordered surfaces), `label`, `heading`, `numeric`, `field-box`,
+  `popup-surface`, `popup-motion`, `tone`, `data-list-row`, `icon-button`,
   `focus-ring`, `reset-button`, `shell`. Reach for one before re-declaring its rules. The
   `@/` import works because `next.config.ts` sets `sassOptions.loadPaths` to the client
   root and aliases `@` for Turbopack.

@@ -46,7 +46,7 @@
   }
 
   &[data-quiet='true'] {
-    stroke: var(--color-accent-hot);
+    stroke: var(--color-accent-hover);
   }
 }
 
@@ -82,10 +82,11 @@
 }
 
 .span {
-  @include stencil;
-
   color: var(--color-accent);
+  font-family: var(--font-display);
   font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
   line-height: 1;
 }
 
@@ -97,14 +98,12 @@
 }
 
 .badge {
-  @include hud-label;
+  @include label;
 
   align-self: flex-start;
   padding: 2px 6px;
   background-color: var(--color-steel-soft);
   color: var(--color-steel);
-
-  @include chamfer-path(4px);
 }
 
 .now {

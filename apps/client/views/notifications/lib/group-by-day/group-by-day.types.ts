@@ -4,4 +4,5 @@ export type InboxDay = {
   key: string;
   date: Date;
   items: InboxItem[];
+  unread: number;
 };

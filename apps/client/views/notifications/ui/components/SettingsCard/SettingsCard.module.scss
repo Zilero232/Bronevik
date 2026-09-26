@@ -1,11 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include plate(var(--chamfer-md));
-  @include stack(var(--space-4));
-
+  position: relative;
   padding: var(--space-5);
-  box-shadow: var(--elevation-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+
+  @include stack(var(--space-4));
 
   @include below(md) {
     padding: var(--space-4);
@@ -23,8 +25,6 @@
   padding: 8px;
   background-color: var(--color-accent-soft);
   color: var(--color-accent);
-
-  @include chamfer-path(var(--chamfer-sm));
 }
 
 .text {
@@ -35,11 +35,11 @@
 }
 
 .eyebrow {
-  @include hud-label;
+  @include label;
 }
 
 .title {
-  @include display(var(--text-lg));
+  @include heading(var(--text-lg));
 }
 
 .description {

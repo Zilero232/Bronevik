@@ -1,5 +1,3 @@
-import type { ShaderMaterial } from 'three';
-
 import type { ArmorShaderValues } from '@/entities/armor/armor-model';
 
 import type { ScenePart } from '../../../../../lib/scene-parts';
@@ -10,9 +8,4 @@ export type ArmorSceneProps = {
   shader: ArmorShaderValues;
   onHover: (hover: ArmorHoverEvent) => void;
   onLeave: () => void;
-};
-
-export type ApplyShaderValuesInput = {
-  material: ShaderMaterial;
-  values: ArmorShaderValues;
 };

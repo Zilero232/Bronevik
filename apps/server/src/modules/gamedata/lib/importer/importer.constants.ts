@@ -4,13 +4,13 @@ import type { ModuleType, ProvisionType, VehicleType } from '../../../../../gene
 
 export const DIFF_KEYS = ['name', 'shell', 'tag'] as const;
 
-export const VEHICLE_TYPE: Record<VehicleClass, VehicleType> = {
+export const VEHICLE_TYPE = {
   lightTank: 'lightTank',
   mediumTank: 'mediumTank',
   heavyTank: 'heavyTank',
   'AT-SPG': 'atSpg',
   SPG: 'spg'
-};
+} as const satisfies Record<VehicleClass, VehicleType>;
 
 export const MODULE_TYPE = {
   chassis: 'vehicleChassis',

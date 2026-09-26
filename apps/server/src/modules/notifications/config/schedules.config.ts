@@ -2,7 +2,7 @@ import type { JobSchedule } from '../lib';
 
 import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../contracts';
 
-export const NOTIFICATION_SCHEDULES: readonly JobSchedule[] = [
+export const NOTIFICATION_SCHEDULES = [
   { id: 'notifications-marks-watch', queue: NOTIFICATIONS_QUEUE.events, name: NOTIFICATIONS_JOB.events.marksWatch, repeat: { every: 60_000 } },
   {
     id: 'notifications-session-reports',
@@ -22,4 +22,4 @@ export const NOTIFICATION_SCHEDULES: readonly JobSchedule[] = [
     name: NOTIFICATIONS_JOB.events.weeklyDigest,
     repeat: { pattern: '0 10 * * 1' }
   }
-];
+] as const satisfies readonly JobSchedule[];

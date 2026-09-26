@@ -9,7 +9,7 @@
 }
 
 .legend {
-  @include hud-label;
+  @include label;
 
   margin-bottom: var(--space-2);
 }

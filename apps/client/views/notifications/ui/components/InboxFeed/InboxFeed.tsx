@@ -1,10 +1,7 @@
 'use client';
 
-import type { InboxItem } from '@bronevik/schemas';
-
 import { useTranslations } from 'next-intl';
 
-import { useMarkInboxRead } from '@/entities/notification/inbox';
 import { Button, Card } from '@/ui-kit';
 
 import { useInboxFeed } from '../../../model/hooks';
@@ -15,20 +12,26 @@ import s from './InboxFeed.module.scss';
 
 export const InboxFeed = () => {
   const t = useTranslations('notifications.feed');
-  const { filter, days, unread, isEmpty, isPending, isError, isRetrying, hasNextPage, isFetchingNextPage, setFilter, loadMore, retry } =
-    useInboxFeed();
-
-  const markRead = useMarkInboxRead();
-
-  const onSelect = ({ id, readAt }: InboxItem) => {
-    if (readAt === null) {
-      markRead.mutate({ ids: [id] });
-    }
-  };
+  const {
+    filter,
+    days,
+    unread,
+    isEmpty,
+    isPending,
+    isError,
+    isRetrying,
+    hasNextPage,
+    isFetchingNextPage,
+    setFilter,
+    onSelect,
+    onMarkAll,
+    onRetry,
+    onLoadMore
+  } = useInboxFeed();
 
   return (
     <Card className={s.root} padding='none'>
-      <InboxFeedHeader filter={filter} unread={unread} onFilterChange={setFilter} onMarkAll={() => markRead.mutate({})} />
+      <InboxFeedHeader filter={filter} unread={unread} onFilterChange={setFilter} onMarkAll={onMarkAll} />
       <InboxFeedBody
         days={days}
         filter={filter}
@@ -36,12 +39,12 @@ export const InboxFeed = () => {
         isError={isError}
         isPending={isPending}
         isRetrying={isRetrying}
-        onRetry={() => void retry()}
+        onRetry={onRetry}
         onSelect={onSelect}
       />
       {hasNextPage && (
         <div className={s.more}>
-          <Button disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={() => void loadMore()}>
+          <Button disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={onLoadMore}>
             {t('loadMore')}
           </Button>
         </div>

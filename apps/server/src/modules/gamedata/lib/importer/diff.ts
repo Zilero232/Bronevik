@@ -1,4 +1,4 @@
-import type { CollectChangesInput, DiffInput, SpecChange, SpecPrimitive } from './importer.types';
+import type { CollectChangesInput, DiffInput, KeyOfInput, SpecChange, SpecPrimitive } from './importer.types';
 
 import { DIFF_KEYS } from './importer.constants';
 
@@ -7,7 +7,7 @@ const isPrimitive = (value: unknown): value is SpecPrimitive =>
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
-const keyOf = (item: unknown, index: number): string => {
+const keyOf = ({ item, index }: KeyOfInput): string => {
   if (isRecord(item)) {
     const key = DIFF_KEYS.find((candidate) => typeof item[candidate] === 'string');
 
@@ -21,7 +21,7 @@ const keyOf = (item: unknown, index: number): string => {
 
 const toRecord = (value: unknown): Record<string, unknown> => {
   if (Array.isArray(value)) {
-    return Object.fromEntries(value.map((item, index) => [keyOf(item, index), item]));
+    return Object.fromEntries(value.map((item, index) => [keyOf({ item, index }), item]));
   }
 
   return isRecord(value) ? value : {};

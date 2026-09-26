@@ -3,7 +3,7 @@
 import { AlertTriangle, Gauge, Send, Timer } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { ProgressBar, StatTile } from '@/ui-kit';
+import { KeyFigure, ProgressBar } from '@/ui-kit';
 
 import type { UsageTodayProps } from './UsageToday.types';
 
@@ -23,8 +23,9 @@ export const UsageToday = ({ usage }: UsageTodayProps) => {
   return (
     <div className={s.root}>
       <div className={s.tiles}>
-        <StatTile icon={<Send size={16} />} label={t('requests')} tone='accent' trend={requests} value={today.requests} />
-        <StatTile
+        <KeyFigure isFramed icon={<Send size={16} />} label={t('requests')} tone='accent' trend={requests} value={today.requests} />
+        <KeyFigure
+          isFramed
           hint={t('errorRate', { rate: format.number(errorShare, { style: 'percent', maximumFractionDigits: 1 }) })}
           icon={<AlertTriangle size={16} />}
           label={t('errors')}
@@ -32,8 +33,8 @@ export const UsageToday = ({ usage }: UsageTodayProps) => {
           trend={errors}
           value={today.errors}
         />
-        <StatTile hint={t('throttledHint')} icon={<Gauge size={16} />} label={t('throttled')} tone='average' value={today.throttled} />
-        <StatTile icon={<Timer size={16} />} label={t('latency')} suffix={t('ms')} tone='steel' value={today.avgLatencyMs ?? 0} />
+        <KeyFigure isFramed hint={t('throttledHint')} icon={<Gauge size={16} />} label={t('throttled')} tone='average' value={today.throttled} />
+        <KeyFigure isFramed icon={<Timer size={16} />} label={t('latency')} suffix={t('ms')} tone='steel' value={today.avgLatencyMs ?? 0} />
       </div>
       <ProgressBar
         label={t('quota')}

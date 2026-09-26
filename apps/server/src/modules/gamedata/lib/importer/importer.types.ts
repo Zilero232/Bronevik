@@ -240,3 +240,8 @@ export type PlanWriteInput = {
 export type CatalogCounts = Omit<ImportCounts, 'changedVehicles' | 'entries' | 'gameVersionId' | 'specHistory'>;
 
 export type SpecHistoryCounts = Pick<ImportCounts, 'changedVehicles' | 'specHistory'>;
+
+export type KeyOfInput = {
+  item: unknown;
+  index: number;
+};

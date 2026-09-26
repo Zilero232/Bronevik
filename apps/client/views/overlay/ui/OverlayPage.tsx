@@ -1,22 +1,18 @@
 'use client';
 
-import { overlayPublicIdSchema } from '@bronevik/schemas';
 import { useTranslations } from 'next-intl';
 import { match, P } from 'ts-pattern';
 
 import type { OverlayPageProps } from './OverlayPage.types';
 
-import { useOverlayFeed, usePreviewPatch } from '../model/hooks';
+import { useOverlayPage } from '../model/hooks';
 import { OverlayStage } from './components';
 
 import s from './OverlayPage.module.scss';
 
 export const OverlayPage = ({ publicId }: OverlayPageProps) => {
   const t = useTranslations('overlay');
-  const patch = usePreviewPatch();
-  const { data, isError } = useOverlayFeed({ publicId, isEnabled: overlayPublicIdSchema.safeParse(publicId).success });
-
-  const isValid = overlayPublicIdSchema.safeParse(publicId).success;
+  const { patch, data, isError, isValid } = useOverlayPage({ publicId });
 
   return (
     <div className={s.root}>

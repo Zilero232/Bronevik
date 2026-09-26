@@ -4,7 +4,7 @@ import type { ParseShellsInput } from './vehicle.types';
 
 import { makeCompactDescr, nationId } from '../../ids';
 import { bool, entries, get, isXmlNode, localizationFallback, localizationKey, num, parseXml, price, text } from '../../xml';
-import { PREMIUM_SHELL_ICON_SUFFIX } from './vehicle.constants';
+import { SHELLS } from './vehicle.constants';
 
 export const parseShells = ({ xml, nation }: ParseShellsInput): Record<string, Shell> => {
   const nationIndex = nationId(nation);
@@ -34,13 +34,13 @@ export const parseShells = ({ xml, nation }: ParseShellsInput): Record<string, S
       kind,
       caliber: num(value.caliber) ?? 0,
       damage: {
-        armor: num(get(value, 'damage/armor')) ?? 0,
-        devices: num(get(value, 'damage/devices')) ?? 0
+        armor: num(get({ value, path: 'damage/armor' })) ?? 0,
+        devices: num(get({ value, path: 'damage/devices' })) ?? 0
       },
       explosionRadius: num(value.explosionRadius),
       mechanics: text(value.mechanics),
       icon,
-      isPremium: (icon?.endsWith(PREMIUM_SHELL_ICON_SUFFIX) ?? false) || (bool(value.improved) ?? false),
+      isPremium: (icon?.endsWith(SHELLS.premiumIconSuffix) ?? false) || (bool(value.improved) ?? false),
       isTracer: bool(value.isTracer) ?? false,
       price: price(value.price)
     };

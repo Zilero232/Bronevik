@@ -1,30 +1,24 @@
 'use client';
 
-import { RadioTower } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { AnimatedNumber, PageHero, Skeleton } from '@/ui-kit';
+import { AnimatedNumber, PageHeader, Skeleton } from '@/ui-kit';
 
-import { useInboxFeedQuery } from '../../../model/hooks';
+import { useNotificationsHero } from '../../../model/hooks';
 
 import s from './NotificationsHero.module.scss';
 
-const SIGNAL_BARS = 5;
-
 export const NotificationsHero = () => {
   const t = useTranslations('notifications.hero');
-  const { data, isError } = useInboxFeedQuery();
-
-  const unread = data?.pages[0]?.unread;
-  const isLive = (unread ?? 0) > 0;
+  const { unread, isLive, isError, bars } = useNotificationsHero();
 
   return (
-    <PageHero
+    <PageHeader
       aside={
         <div className={s.signal} data-live={isLive}>
           <span aria-hidden className={s.bars}>
-            {Array.from({ length: SIGNAL_BARS }, (_, index) => (
-              <span key={index} className={s.bar} />
+            {bars.map((bar) => (
+              <span key={bar} className={s.bar} />
             ))}
           </span>
           <span className={s.readout}>
@@ -38,10 +32,7 @@ export const NotificationsHero = () => {
         </div>
       }
       description={t('description')}
-      eyebrow={t('eyebrow')}
-      index='// 02'
       title={t('title')}
-      watermark={<RadioTower size={220} strokeWidth={0.5} />}
     />
   );
 };

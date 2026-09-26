@@ -3,12 +3,11 @@
 import { Star, Trash2, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { getFavorites, removeFavorite } from '@/shared/api/me';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Badge, IconButton, Skeleton } from '@/ui-kit';
 
-import { useMeMutation, useMeSection } from '../../../model/hooks';
+import { useFavoritesCard } from '../../../model/hooks';
 import { MeCard } from '../MeCard';
 import { SectionError } from '../SectionError';
 
@@ -16,13 +15,12 @@ import s from './FavoritesCard.module.scss';
 
 export const FavoritesCard = () => {
   const t = useTranslations('me.favorites');
-  const { data: favorites, isPending, isError, isFetching, refetch } = useMeSection({ section: 'favorites', fetcher: getFavorites });
-  const remove = useMeMutation({ section: 'favorites', mutationFn: removeFavorite, successKey: 'favoriteRemoved' });
+  const { favorites, isPending, isError, isRetrying, isRemoving, onRetry, onRemove } = useFavoritesCard();
 
   return (
     <MeCard description={t('description')} icon={<Star size={18} />} title={t('title')}>
       {isPending && <Skeleton height={160} shape='block' />}
-      {isError && <SectionError isRetrying={isFetching} onRetry={() => void refetch()} />}
+      {isError && <SectionError isRetrying={isRetrying} onRetry={onRetry} />}
       {favorites?.length === 0 && <p className={s.empty}>{t('empty')}</p>}
       <ul className={s.list}>
         {favorites?.map(({ id, kind, title, label, isOwn, targetId }) => (
@@ -37,7 +35,7 @@ export const FavoritesCard = () => {
             )}
             {label && <span className={s.label}>{label}</span>}
             {isOwn && <Badge tone='accent'>{t('own')}</Badge>}
-            <IconButton aria-label={t('remove')} disabled={remove.isPending} size='sm' onClick={() => remove.mutate(id)}>
+            <IconButton aria-label={t('remove')} disabled={isRemoving} size='sm' onClick={() => onRemove(id)}>
               <Trash2 size={14} />
             </IconButton>
           </li>

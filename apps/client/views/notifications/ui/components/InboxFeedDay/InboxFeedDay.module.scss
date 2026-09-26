@@ -13,21 +13,23 @@
   padding-inline: var(--space-2);
 
   &:after {
-    @include camo-divider;
-
+    display: block;
+    height: 1px;
     flex: 1;
     order: 1;
+    background: var(--color-border);
+    content: '';
   }
 }
 
 .label {
-  @include display(var(--text-sm));
+  @include heading(var(--text-sm));
 
   color: var(--color-text);
 }
 
 .count {
-  @include hud-label;
+  @include label;
 
   order: 2;
 }

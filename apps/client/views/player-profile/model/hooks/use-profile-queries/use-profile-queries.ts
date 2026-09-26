@@ -1,6 +1,6 @@
 'use client';
 
-import type { InsightsPeriod, TimeSeriesGranularity, TimeSeriesMetric } from '@bronevik/schemas';
+import type { InsightsPeriod } from '@bronevik/schemas';
 
 import type { PlayerTanksFilter } from '@/shared/api/players';
 
@@ -16,12 +16,14 @@ import {
   PLAYERS_REQUEST
 } from '@/shared/api/players';
 
+import type { UsePlayerHistoryInput } from './use-profile-queries.types';
+
 import { useProfileSection } from '../use-profile-section';
 
 export const usePlayerTanks = (filter: PlayerTanksFilter = {}) =>
   useProfileSection({ section: 'tanks', params: filter, fetcher: (input) => getPlayerTanks({ ...input, filter }) });
 
-export const usePlayerHistory = ({ metric, granularity }: { metric: TimeSeriesMetric; granularity: TimeSeriesGranularity }) =>
+export const usePlayerHistory = ({ metric, granularity }: UsePlayerHistoryInput) =>
   useProfileSection({ section: 'history', params: { metric, granularity }, fetcher: (input) => getPlayerHistory({ ...input, metric, granularity }) });
 
 export const usePlayerActivity = () =>

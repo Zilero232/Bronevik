@@ -1,13 +1,10 @@
-import type { ComponentType } from 'react';
-
 import { GlobalMapIcon, HeavyTankIcon, Mark3Icon, RadioIcon, StrongholdIcon, TrainingIcon } from '@bronevik/icons';
 import { Code2, Trophy, Users } from 'lucide-react';
 
 import type { SiteNavKey } from './site-nav';
+import type { SiteNavIcon } from './site-nav.types';
 
-export type SiteNavIcon = ComponentType<{ size?: number | string; strokeWidth?: number | string; className?: string }>;
-
-export const SITE_NAV_ICONS: Record<SiteNavKey, SiteNavIcon> = {
+export const SITE_NAV_ICONS = {
   players: Users,
   tanks: HeavyTankIcon,
   marks: Mark3Icon,
@@ -17,4 +14,4 @@ export const SITE_NAV_ICONS: Record<SiteNavKey, SiteNavIcon> = {
   tools: TrainingIcon,
   streamers: RadioIcon,
   developers: Code2
-};
+} as const satisfies Record<SiteNavKey, SiteNavIcon>;

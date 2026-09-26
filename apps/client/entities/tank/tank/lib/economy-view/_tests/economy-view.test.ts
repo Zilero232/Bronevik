@@ -31,6 +31,24 @@ describe('economyView', () => {
     expect((boosted?.net ?? 0) - (plain?.net ?? 0)).toBe(bonus);
   });
 
+  it('adds the clan payout bonus to base credits, on top of the reserve', () => {
+    const plain = economyView({ economy: ECONOMY, account: 'premium', withReserve: false });
+    const clan = economyView({ economy: ECONOMY, account: 'premium', withReserve: false, withClanPayout: true });
+    const both = economyView({ economy: ECONOMY, account: 'premium', withReserve: true, withClanPayout: true });
+    const base = FIGURES.creditsBase ?? 0;
+
+    expect((clan?.credits ?? 0) - (plain?.credits ?? 0)).toBe(Math.round(base * ECONOMY_VIEW.clanPayoutBonus));
+    expect((clan?.net ?? 0) - (plain?.net ?? 0)).toBe(Math.round(base * ECONOMY_VIEW.clanPayoutBonus));
+    expect((both?.credits ?? 0) - (plain?.credits ?? 0)).toBe(Math.round(base * (ECONOMY_VIEW.reserveBonus + ECONOMY_VIEW.clanPayoutBonus)));
+    expect(clan?.costs).toBe(plain?.costs);
+  });
+
+  it('adds no bonus when base credits are unknown', () => {
+    const economy = { ...ECONOMY, premium: { ...FIGURES, creditsBase: null } };
+
+    expect(economyView({ economy, account: 'premium', withReserve: true, withClanPayout: true })?.credits).toBe(FIGURES.credits);
+  });
+
   it('sums the three costs and leaves the total unknown when one is missing', () => {
     expect(economyView({ economy: ECONOMY, account: 'premium', withReserve: false })?.costs).toBe(9_500);
     expect(economyView({ economy: { ...ECONOMY, premium: { ...FIGURES, ammo: null } }, account: 'premium', withReserve: false })?.costs).toBeNull();

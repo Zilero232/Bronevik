@@ -28,3 +28,14 @@
     color: var(--color-text);
   }
 }
+
+.list[data-accent='true'] {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+
+  [aria-current='page'] {
+    color: var(--color-accent);
+  }
+}

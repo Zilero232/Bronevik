@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { TacticBoard } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
 import { TACTICS } from '../../config';
+import { BoardLiveService } from '../board-live.service';
 import { TacticBoardService } from '../tactic-board.service';
 
 const shareToken = 'share-token-0000000000000000000000';
@@ -33,7 +34,11 @@ const createService = (row: TacticBoard | null = board) => {
   prisma.tacticBoard.findUnique.mockResolvedValue(row);
   prisma.tacticBoard.update.mockResolvedValue(board);
 
-  return { service: new TacticBoardService(prisma), prisma };
+  const live = mock<BoardLiveService>();
+
+  live.replaceData.mockReturnValue(false);
+
+  return { service: new TacticBoardService(prisma, live), prisma, live };
 };
 
 describe('TacticBoardService.update', () => {
@@ -129,5 +134,39 @@ describe('TacticBoardService.create', () => {
     prisma.tacticBoard.create.mockResolvedValue(board);
 
     expect((await service.create({ userId: 'owner', title: 'Board', visibility: 'unlisted', data })).role).toBe('owner');
+  });
+});
+
+describe('TacticBoardService live collaboration', () => {
+  it('applies a REST drawing through the live document instead of dropping it', async () => {
+    const { service, prisma, live } = createService();
+
+    live.replaceData.mockReturnValue(true);
+
+    await service.update({ id: board.id, userId: null, token: editToken, data });
+
+    expect(live.replaceData).toHaveBeenCalledWith({ id: board.id, data });
+    expect(prisma.tacticBoard.update).toHaveBeenCalledWith({ where: { id: board.id }, data: { data } });
+  });
+
+  it('closes live connections when the owner changes the visibility, rotates the links or deletes the board', async () => {
+    const { service, prisma, live } = createService();
+
+    prisma.tacticBoard.updateMany.mockResolvedValue({ count: 1 });
+    prisma.tacticBoard.deleteMany.mockResolvedValue({ count: 1 });
+
+    await service.update({ id: board.id, userId: 'owner', token: null, visibility: 'private' });
+    await service.rotateTokens({ id: board.id, userId: 'owner' });
+    await service.remove({ id: board.id, userId: 'owner' });
+
+    expect(live.close).toHaveBeenCalledTimes(3);
+  });
+
+  it('keeps live connections when the visibility stays the same', async () => {
+    const { service, live } = createService();
+
+    await service.update({ id: board.id, userId: 'owner', token: null, visibility: board.visibility, title: 'Renamed' });
+
+    expect(live.close).not.toHaveBeenCalled();
   });
 });

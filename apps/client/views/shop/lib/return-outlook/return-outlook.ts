@@ -1,19 +1,13 @@
-import type { CalendarDayInput, ReturnOutlook, ReturnOutlookInput } from './return-outlook.types';
+import { daysBetween } from '@/shared/lib';
 
-import { SHOP_CALENDAR } from '../../config';
-
-const calendarDay = ({ date, timeZone }: CalendarDayInput): number => {
-  const isoDate = new Intl.DateTimeFormat(SHOP_CALENDAR.isoLocale, { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
-
-  return Math.round(Date.parse(`${isoDate}${SHOP_CALENDAR.midnightSuffix}`) / SHOP_CALENDAR.msPerDay);
-};
+import type { ReturnOutlook, ReturnOutlookInput } from './return-outlook.types';
 
 export const returnOutlook = ({ nextExpectedAt, now, soonDays, timeZone }: ReturnOutlookInput): ReturnOutlook => {
   if (nextExpectedAt === null) {
     return { state: 'unknown', days: null };
   }
 
-  const days = calendarDay({ date: new Date(nextExpectedAt), timeZone }) - calendarDay({ date: now, timeZone });
+  const days = daysBetween({ from: now, to: nextExpectedAt, timeZone });
 
   if (days < 0) {
     return { state: 'overdue', days: -days };

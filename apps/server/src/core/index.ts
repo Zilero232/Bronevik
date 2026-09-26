@@ -1,7 +1,16 @@
 export { bulkRequestsPerSecond, LESTA_CLIENT, LESTA_CLIENTS, LESTA_OUTCOME_RECORDER, LestaModule } from './lesta';
 export type { LestaClients, LestaOutcomeRecorder, RecordLestaInput } from './lesta';
 export { AppLoggerModule, LOGGER } from './logger';
-export { HYPERTABLE, isPrismaRequestError, isTransactionConflict, isUniqueViolation, PrismaModule, PrismaService } from './prisma';
+export {
+  HYPERTABLE,
+  isPrismaRequestError,
+  isTransactionConflict,
+  isUniqueViolation,
+  LIMIT_LOCK_SCOPE,
+  lockedTransaction,
+  PrismaModule,
+  PrismaService
+} from './prisma';
 export { QueuesModule } from './queues';
 export { REDIS, RedisModule } from './redis';
 export { createObjectStorage, LocalDiskStorage, ObjectStorage, ObjectStorageModule } from './storage';

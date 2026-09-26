@@ -1,11 +1,19 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import { AllowAnonymous, OptionalAuth } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { CurrentUserId } from '../../common/decorators';
+import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { IdParamsDto, SlugParamsDto } from '../community-core';
-import { CreateTournamentDto, RegisterTournamentDto, ReportMatchDto, TournamentDto, TournamentPageDto, TournamentsQueryDto } from './dto';
+import {
+  CreateTournamentDto,
+  RegisterTournamentDto,
+  ReportMatchDto,
+  TournamentDto,
+  TournamentPageDto,
+  TournamentsQueryDto,
+  WithdrawTournamentDto
+} from './dto';
 import { TournamentService } from './services';
 
 @ApiTags('community')
@@ -20,11 +28,11 @@ export class TournamentsController {
     return this.tournaments.list(query);
   }
 
-  @AllowAnonymous()
+  @OptionalAuth()
   @Get(':slug')
   @ZodResponse({ type: TournamentDto })
-  get(@Param() { slug }: SlugParamsDto) {
-    return this.tournaments.get(slug);
+  get(@Param() { slug }: SlugParamsDto, @OptionalUserId() viewerUserId: string | null) {
+    return this.tournaments.get({ slug, viewerUserId });
   }
 
   @Post()
@@ -45,6 +53,13 @@ export class TournamentsController {
   @ZodResponse({ type: TournamentDto })
   register(@CurrentUserId() userId: string, @Param() { id }: IdParamsDto, @Body() body: RegisterTournamentDto) {
     return this.tournaments.register({ ...body, id, userId });
+  }
+
+  @Post(':id/withdraw')
+  @HttpCode(HttpStatus.OK)
+  @ZodResponse({ type: TournamentDto })
+  withdraw(@CurrentUserId() userId: string, @Param() { id }: IdParamsDto, @Body() body: WithdrawTournamentDto) {
+    return this.tournaments.withdraw({ ...body, id, userId });
   }
 
   @Post(':id/start')

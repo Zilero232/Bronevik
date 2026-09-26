@@ -18,6 +18,7 @@
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@dagrejs/dagre": "^3.1.1",
+    "@date-fns/tz": "catalog:",
     "@hocuspocus/provider": "4.7.0",
     "@hookform/resolvers": "^5.9.1",
     "@number-flow/react": "^0.6.2",
@@ -46,6 +47,7 @@
     "@xyflow/react": "^12.12.0",
     "axios": "^1.20.0",
     "better-auth": "catalog:",
+    "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -75,6 +77,7 @@
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^26.6.2",
     "@types/react": "catalog:",
     "@types/react-dom": "^19.3.0",

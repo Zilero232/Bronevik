@@ -20,7 +20,7 @@ export class BonusCodeService {
   async list({ status }: ListBonusCodesInput): Promise<BonusCodeView[]> {
     const rows = await this.prisma.bonusCode.findMany({
       where: status ? { status } : {},
-      orderBy: { discoveredAt: 'desc' },
+      orderBy: [{ discoveredAt: 'desc' }, { code: 'asc' }],
       take: 200
     });
 

@@ -6,7 +6,7 @@ import { API_KEY } from '@otmetki/schemas';
 import { useBoolean } from '@siberiacancode/reactuse';
 import { useState } from 'react';
 
-import { revokeApiKey } from '@/shared/api/developer';
+import { revokeApiKey } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { useApiKeys } from '../use-api-keys';

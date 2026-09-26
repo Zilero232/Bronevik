@@ -7,4 +7,5 @@ export { accountEconomy, toTankEconomy } from './tank-economy';
 export type { EconomyBattle } from './tank-economy';
 export { toTrendPoints } from './tank-trend';
 export { rankTierList } from './tier-list';
+export { rewardMissions, toVehicleSourceView } from './vehicle-sources';
 export { matchesTraits, readSpecTraits, researchXp, tankSources, toTankTraits } from './vehicle-traits';

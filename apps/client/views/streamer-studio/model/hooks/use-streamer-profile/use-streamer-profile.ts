@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { getLinkedAccounts } from '@/shared/api/me';
+import { getLinkedAccounts } from '@/entities/auth/session';
 import { isNotFoundError } from '@/shared/api/source';
 import { getMyStreamerProfile, saveStreamerProfile } from '@/shared/api/streamers';
 import { QUERY_KEYS } from '@/shared/constants';

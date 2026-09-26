@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import type { TacticIcon, TacticIconKind, TacticLayer, TacticStroke } from '@/shared/api/tactics';
+import type { TacticIcon, TacticIconKind, TacticLayer, TacticStroke } from '@/entities/tactic/board';
 
 import type { BoardTeam, BoardTool } from '../../../config';
 import type { BoardPoint } from '../../../lib/board-geometry';

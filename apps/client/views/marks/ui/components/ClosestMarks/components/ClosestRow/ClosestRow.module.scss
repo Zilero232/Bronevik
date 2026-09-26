@@ -1,9 +1,38 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include data-list-row;
+  @include media-card;
 
-  justify-content: space-between;
+  --mark: var(--tier-mid);
+
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  padding: var(--space-4);
+  border-left: 3px solid var(--mark);
+  gap: var(--space-4);
+
+  &[data-marks='2'] {
+    --mark: var(--tier-high);
+  }
+
+  &[data-marks='3'] {
+    --mark: var(--color-accent);
+  }
+}
+
+.ring.ring[data-tone] {
+  --tone: var(--mark);
+}
+
+.glyph {
+  color: var(--mark);
+}
+
+.info {
+  @include stack(var(--space-1));
+
+  min-width: 0;
 }
 
 .tank {
@@ -13,7 +42,7 @@
   text-decoration: none;
 
   &:hover {
-    color: var(--color-text);
+    color: var(--color-accent-hover);
   }
 
   &:focus-visible {
@@ -21,20 +50,14 @@
   }
 }
 
-.figures {
-  display: flex;
-  flex: none;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
 .damage {
-  @include numeric;
+  @include numeric(var(--num-md));
 
-  font-weight: 600;
+  color: var(--color-text);
+  font-weight: 700;
 }
 
 .percent {
-  color: var(--color-text-dim);
-  font-size: var(--text-2xs);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
 }

@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 
 import { ImageResponse } from 'next/og';
 
-import { getPlayer } from '@/shared/api/players';
+import { getPlayer } from '@/entities/player/profile';
 import { isNotFoundError } from '@/shared/api/source';
 import { SITE } from '@/shared/config/site';
 import { loadOgFonts, OG_SIZE } from '@/shared/seo/og';

@@ -5,6 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Subscription, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { EntitlementsBusService } from '../entitlements-bus.service';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { EntitlementsService } from '../entitlements.service';
@@ -16,7 +17,9 @@ const createService = () => {
   prisma.referral.count.mockResolvedValue(0);
   prisma.plusTrial.count.mockResolvedValue(0);
 
-  return { service: new EntitlementsService(prisma), prisma };
+  const bus = mock<EntitlementsBusService>();
+
+  return { service: new EntitlementsService(prisma, bus), prisma, bus };
 };
 
 const running = (status: Subscription['status']) => mock<Subscription>({ status, currentPeriodEnd: addDays(new Date(), 5), trialStartedAt: null });
@@ -100,5 +103,15 @@ describe('EntitlementsService.syncTracking', () => {
 
     expect(prisma.player.updateMany.mock.calls[0]?.[0].data).toHaveProperty('nextPollAt');
     expect(prisma.player.updateMany.mock.calls[1]?.[0].data).not.toHaveProperty('nextPollAt');
+  });
+});
+
+describe('EntitlementsService.invalidate', () => {
+  it('broadcasts the change so other processes drop their cached state', () => {
+    const { service, bus } = createService();
+
+    service.invalidate('u1');
+
+    expect(bus.publish).toHaveBeenCalledWith('u1');
   });
 });

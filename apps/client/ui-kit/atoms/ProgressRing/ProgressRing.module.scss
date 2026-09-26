@@ -1,5 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
+@keyframes ring-fill {
+  from {
+    stroke-dasharray: 0 1;
+  }
+}
+
 .root {
   position: relative;
   display: inline-grid;
@@ -7,6 +13,22 @@
   place-items: center;
 
   @include tone;
+
+  &[data-marks='0'] {
+    --tone: var(--tier-low);
+  }
+
+  &[data-marks='1'] {
+    --tone: var(--tier-mid);
+  }
+
+  &[data-marks='2'] {
+    --tone: var(--tier-high);
+  }
+
+  &[data-marks='3'] {
+    --tone: var(--color-accent);
+  }
 }
 
 .svg {
@@ -16,13 +38,23 @@
 
 .track {
   fill: none;
-  stroke: var(--color-surface-sunken);
+  stroke: var(--color-border);
 }
 
 .indicator {
   fill: none;
   stroke: var(--tone);
   stroke-linecap: butt;
+
+  .root[data-reveal='true'] & {
+    animation: ring-fill 0.6s var(--ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .root[data-reveal='true'] & {
+      animation: none;
+    }
+  }
 }
 
 .content {

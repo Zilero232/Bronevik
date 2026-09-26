@@ -35,6 +35,7 @@ const createService = () => {
   const tiers = mock<ApiTierService>();
 
   tiers.tierFor.mockResolvedValue('free');
+  prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
   return { service: new WebhookEndpointsService(prisma, tiers, { resolve: lookup }), prisma };
 };

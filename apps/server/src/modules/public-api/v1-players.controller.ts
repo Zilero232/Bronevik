@@ -5,6 +5,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import {
+  HISTORY_WINDOW,
   PlayerHistoryService,
   PlayerMarksService,
   PlayerResolverService,
@@ -73,7 +74,7 @@ export class V1PlayersController {
   @ApiOperation({ operationId: 'getPlayerHistory', summary: 'A metric over time' })
   @ZodResponse({ type: V1TimeSeriesDto, status: HttpStatus.OK })
   async playerHistory(@Param() { id }: V1PlayerParamsDto, @Query() query: V1TimeSeriesQueryDto) {
-    return this.history.series({ accountId: await this.resolver.ensure(BigInt(id)), query });
+    return this.history.series({ accountId: await this.resolver.ensure(BigInt(id)), query, policy: HISTORY_WINDOW.publicApi });
   }
 
   @Get(':id/marks')

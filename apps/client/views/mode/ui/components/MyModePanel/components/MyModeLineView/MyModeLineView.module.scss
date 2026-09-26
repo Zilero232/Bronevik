@@ -1,0 +1,28 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  @include data-list-row;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.tank {
+  min-width: 0;
+}
+
+.value {
+  @include numeric;
+
+  color: var(--color-text-muted);
+}

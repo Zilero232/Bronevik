@@ -2,6 +2,10 @@ import { REQUIREMENTS_FORM } from '@/features/community/stat-requirements';
 
 import type { TournamentFormValues } from '../lib/tournament-form';
 
+export const TOURNAMENT_TABS = ['bracket', 'points'] as const;
+
+export type TournamentTab = (typeof TOURNAMENT_TABS)[number];
+
 export const TOURNAMENT_FILTERS = ['all', 'registration', 'running', 'finished', 'cancelled'] as const;
 
 export const TOURNAMENT_LIST = {

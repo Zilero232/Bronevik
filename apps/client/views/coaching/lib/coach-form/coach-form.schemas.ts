@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { zUpsertCoach } from '@/shared/api/coaching';
+import { zUpsertCoach } from '@/entities/coaching/coach';
 
 import { COACH_FORM } from '../../config';
 

@@ -32,29 +32,263 @@ enum StreamerProvider {
   @@map("streamer_provider")
 }
 
+enum StreamerProfileKind {
+  claimed
+  editorial
+
+  @@map("streamer_profile_kind")
+}
+
+enum StreamerPlatform {
+  twitch
+  vkVideoLive @map("vk_video_live")
+  youtube
+  trovo
+  telegram
+  boosty
+  vk
+
+  @@map("streamer_platform")
+}
+
+enum StreamerInvitationStatus {
+  pending
+  sent
+  accepted
+  declined
+
+  @@map("streamer_invitation_status")
+}
+
 model StreamerProfile {
-  userId String @id @map("user_id")
+  id String @id @default(dbgenerated("gen_random_uuid()"))
 
-  slug        String  @unique
-  displayName String  @map("display_name")
-  accountId   BigInt? @map("account_id")
-  bio         String?
-  avatar      String?
-  links       Json?
-  schedule    Json?
+  userId           String?             @unique @map("user_id")
+  kind             StreamerProfileKind @default(claimed)
+  slug             String              @unique
+  displayName      String              @map("display_name")
+  accountId        BigInt?             @map("account_id")
+  accountSourceUrl String?             @map("account_source_url")
+  bio              String?
+  avatar           String?
+  links            Json?
+  schedule         Json?
 
-  isLive        Boolean   @default(false) @map("is_live")
-  liveTankId    Int?      @map("live_tank_id")
-  liveCheckedAt DateTime? @map("live_checked_at") @db.Timestamptz(3)
+  isLive        Boolean           @default(false) @map("is_live")
+  liveTankId    Int?              @map("live_tank_id")
+  liveViewers   Int?              @map("live_viewers")
+  livePlatform  StreamerPlatform? @map("live_platform")
+  liveStartedAt DateTime?         @map("live_started_at") @db.Timestamptz(3)
+  liveCheckedAt DateTime?         @map("live_checked_at") @db.Timestamptz(3)
+  hiddenAt      DateTime?         @map("hidden_at") @db.Timestamptz(3)
+  mergedIntoId  String?           @map("merged_into_id")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User?                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channels StreamerChannel[]
+  settings StreamerSettings?
+  versions StreamerSettingsVersion[]
+  claims   StreamerClaim[]
+  follows  StreamerFollow[]
+  applies  SettingsApplyRequest[]
 
+  @@index([kind, isLive])
   @@index([isLive])
   @@index([accountId])
   @@map("streamer_profile")
+}
+
+model StreamerChannel {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  profileId  String           @map("profile_id")
+  platform   StreamerPlatform
+  handle     String
+  url        String
+  externalId String?          @map("external_id")
+  verifiedAt DateTime?        @map("verified_at") @db.Timestamptz(3)
+  sourceUrl  String?          @map("source_url")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  profile StreamerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([platform, handle])
+  @@index([profileId])
+  @@map("streamer_channel")
+}
+
+model StreamerClaim {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  profileId    String?      @map("profile_id")
+  invitationId String?      @map("invitation_id")
+  userId       String       @map("user_id")
+  method       String
+  platform     String?
+  code         String?
+  status       ReportStatus @default(open)
+  evidence     String?
+  resolvedBy   String?      @map("resolved_by")
+
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz(3)
+
+  profile    StreamerProfile?    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  invitation StreamerInvitation? @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([userId])
+  @@map("streamer_claim")
+}
+
+model StreamerInvitation {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  slug        String                   @unique
+  displayName String                   @map("display_name")
+  channels    Json
+  sourceUrl   String?                  @map("source_url")
+  status      StreamerInvitationStatus @default(pending)
+  sentAt      DateTime?                @map("sent_at") @db.Timestamptz(3)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  claims StreamerClaim[]
+
+  @@map("streamer_invitation")
+}
+
+model StreamerRemovalRequest {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  profileId String       @map("profile_id")
+  contact   String
+  reason    String?
+  status    ReportStatus @default(open)
+
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz(3)
+
+  @@index([status])
+  @@map("streamer_removal_request")
+}
+
+model StreamerSettings {
+  profileId String @id @map("profile_id")
+
+  data Json
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  profile StreamerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("streamer_settings")
+}
+
+model StreamerSettingsVersion {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  profileId     String   @map("profile_id")
+  data          Json
+  source        String
+  changedGroups String[] @map("changed_groups")
+  createdBy     String?  @map("created_by")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  profile StreamerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, createdAt(sort: Desc)])
+  @@map("streamer_settings_version")
+}
+
+model PlayerSettingsShare {
+  userId String @id @map("user_id")
+
+  accountId      BigInt? @map("account_id")
+  data           Json
+  anonymousStats Boolean @default(false) @map("anonymous_stats")
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([anonymousStats])
+  @@map("player_settings_share")
+}
+
+model SettingsApplyRequest {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId    String   @map("user_id")
+  deviceId  String?  @map("device_id")
+  profileId String   @map("profile_id")
+  groups    String[]
+  data      Json
+  status    String   @default("pending")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  appliedAt DateTime? @map("applied_at") @db.Timestamptz(3)
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile StreamerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("settings_apply_request")
+}
+
+model ModReference {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  kind                 String
+  name                 String
+  author               String
+  officialUrl          String           @map("official_url")
+  onMost               Boolean          @default(false) @map("on_most")
+  fairPlay             ModerationStatus @default(pending) @map("fair_play")
+  checkedGameVersionId Int?             @map("checked_game_version_id")
+  checkedAt            DateTime?        @map("checked_at") @db.Timestamptz(3)
+  notes                String?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([fairPlay])
+  @@map("mod_reference")
+}
+
+model StreamerFollow {
+  userId    String @map("user_id")
+  profileId String @map("profile_id")
+
+  tankId       Int?     @map("tank_id")
+  lastAlertKey String?  @map("last_alert_key")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile StreamerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@id([userId, profileId])
+  @@index([profileId])
+  @@map("streamer_follow")
+}
+
+model SettingsAggregate {
+  cohort String
+  field  String
+  bucket String
+
+  count        Int
+  contributors Int
+  median       Float?
+  computedAt   DateTime @map("computed_at") @db.Timestamptz(3)
+
+  @@id([cohort, field, bucket])
+  @@map("settings_aggregate")
 }
 
 model StreamerIntegration {

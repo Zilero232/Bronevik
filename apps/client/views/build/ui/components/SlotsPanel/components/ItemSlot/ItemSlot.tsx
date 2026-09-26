@@ -27,7 +27,7 @@ export const ItemSlot = ({ item, index, onOpen, onClear }: ItemSlotProps) => {
       >
         {item ? (
           <>
-            <GameIcon className={s.icon} size={BUILD_VIEW.iconSize.slot} src={item.image} />
+            <GameIcon className={s.icon} kind={item.kind} size={BUILD_VIEW.iconSize.slot} src={item.image} />
             <span className={s.content}>
               <span className={s.name}>{item.name}</span>
               {category && <span className={s.category}>{t(`categories.${category}`)}</span>}

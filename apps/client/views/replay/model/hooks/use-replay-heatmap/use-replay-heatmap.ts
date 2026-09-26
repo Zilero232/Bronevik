@@ -3,9 +3,9 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import type { Replay } from '@/shared/api/replays';
+import type { Replay } from '@/entities/replay/replay';
 
-import { getHeatmap } from '@/shared/api/replays';
+import { getHeatmap } from '@/entities/replay/replay';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { HeatmapModeChoice, HeatmapScope } from './use-replay-heatmap.types';

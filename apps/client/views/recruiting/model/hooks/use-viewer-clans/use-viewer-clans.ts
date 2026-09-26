@@ -5,7 +5,7 @@ import type { QueryFunctionContext } from '@tanstack/react-query';
 import { useQueries } from '@tanstack/react-query';
 
 import { useCommunityViewer } from '@/features/community/viewer';
-import { getPlayer } from '@/shared/api/players';
+import { getPlayer } from '@/entities/player/profile';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ViewerClanMembership } from '../../../lib/clan-officer';

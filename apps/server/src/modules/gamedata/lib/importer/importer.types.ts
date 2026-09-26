@@ -1,6 +1,7 @@
 import type { Equipment, FinalStats, ModuleBase, ModulePreset, OptionalDevice, VehicleFilter, VehicleSpec } from '@otmetki/gamedata';
 
 import type { ModuleType, PrismaClient, ProvisionType, VehicleType } from '../../../../../generated';
+import type { VehicleImages } from '../../../../lib/lesta';
 import type { GameData } from '../game-data';
 import type { SourceRevision } from '../source';
 
@@ -54,6 +55,7 @@ export type VehicleRow = {
   isPremium: boolean;
   isCollectible: boolean;
   isWheeled: boolean;
+  images: VehicleImages;
   priceCredit?: number;
   priceGold?: number;
   specs: VehicleSpec;
@@ -103,7 +105,6 @@ export type ProvisionRow = {
   tag: string;
   type: ProvisionType;
   description?: string;
-  image?: string;
   priceCredit?: number;
   priceGold?: number;
   tankIds: number[];

@@ -5,6 +5,7 @@ import { Redis } from 'ioredis';
 import type { ActivityRow } from '../lib/pulse-grid';
 import type { PulseView } from '../pulse.types';
 
+import { parseJsonText } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
 import { PULSE } from '../config';
 import { pulseSchema } from '../dto';
@@ -19,7 +20,7 @@ export class PulseService {
 
   async view(now: Date): Promise<PulseView> {
     const cached = await this.redis.get(PULSE.cacheKey);
-    const parsed = cached ? pulseSchema.safeParse(JSON.parse(cached)) : null;
+    const parsed = cached ? pulseSchema.safeParse(parseJsonText(cached)) : null;
 
     if (parsed?.success) {
       return parsed.data;

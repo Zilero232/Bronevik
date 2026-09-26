@@ -1,0 +1,1 @@
+export { HeroArt } from './HeroArt';

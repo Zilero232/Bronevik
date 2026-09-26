@@ -17,9 +17,10 @@ src/
 ├── core/        # prisma (factory, timescale, error guards), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (S3 / local-disk object storage), webhooks
 ├── common/      # exceptions, filters, decorators, cache, schedules (job schedulers), shared pure helpers in lib/
 ├── lib/         # lesta (Lesta API client), replay (.mtreplay parser, NOTICE), http (ky), auth (better-auth), scrape (robots-aware cheerio crawl, tanki.su listings)
+├── dev/         # lesta-mock: the generated Lesta API served in development while there is no key (see Lesta API mock)
 └── modules/
 prisma/          # base.prisma, schema/*.prisma, sql/timescale/ (no migrations before production — see Prisma)
-scripts/         # timescale.ts (db:timescale, --extensions before db push), gamedata-import.ts, openapi-export.ts
+scripts/         # timescale.ts (db:timescale, --extensions before db push), gamedata-import.ts, openapi-export.ts, dev-seed.ts (dev:seed)
 generated/       # Prisma client (gitignored)
 ```
 
@@ -80,8 +81,19 @@ Server-side copy is Fluent .ftl through @grammyjs/i18n: the bot, notifications (
 - **Queue contracts live once**, in `modules/collector/contracts`. Processors parse every payload with its schema; the API enqueues through `CollectorProducerService`.
 - **Every processor wraps its work in `MetricsService.track({ job, run })`**, which counts the job and attributes the Lesta calls made inside it to the job's queue.
 - **Lesta goes through `core/lesta`**: `priority` for tier A and the API, `bulk` for sweeps, sharing one Redis bucket (`LESTA_RPS`) with the bulk lane capped at `1 - LESTA.tierAReserve`. The breaker (`metrics/circuit-breaker.service.ts`, cockatiel `SamplingBreaker`) only observes outcomes; while it is open the sweep worker pauses and sweep batches are delayed.
-- **Schedules** are `modules/collector/schedules/config`, switched by `FEATURES` and off under `NODE_ENV=test`. Without `LESTA_APPLICATION_ID` the worker starts degraded: it logs a warning, loads no tracking or clan processors and registers no Lesta schedule.
+- **Schedules** are `modules/collector/schedules/config`, switched by `FEATURES` and off under `NODE_ENV=test`. Without `LESTA_APPLICATION_ID` (and with the mock off) the worker starts degraded: it logs a warning, loads no tracking or clan processors and registers no Lesta schedule. `realLestaOnly` schedules (the nightly encyclopedia sync, which would overwrite the imported game data) stay off while the mock is on.
 - Data retention is a Lesta term: the purge jobs and the Timescale policies (`config/timescale.constants.ts`) are not optional.
+
+## Lesta API mock
+
+Until the Lesta key exists, development runs against a generated Lesta API (`src/dev/lesta-mock`). No client-side mocks.
+
+- **Switch**: `validateEnv` resolves `LESTA_MOCK` (`auto` default, `on`, `off`). The mock is on when `LESTA_APPLICATION_ID` is empty and `NODE_ENV` is `development` (or `LESTA_MOCK=on` outside production); it then sets `LESTA_APPLICATION_ID` to `LESTA_MOCK.applicationId`, so every `hasLesta` check passes. With a real key, or in production, it is off and nothing below runs.
+- **Transport**: `main.ts` and `worker.ts` call `startLestaMock` before Nest boots. It loads the catalog from the database (vehicles with their HP, shells and crew, XVM expected values, modules, provisions, arenas, crew skills), builds the world and installs an MSW `setupServer` on `${API_URL}/dev/lesta/*`; `core/lesta` points both clients' `baseUrl` there. The real client, zod schemas, batching, retries, Redis rate limiter and collector run unchanged. Real `api.tanki.su/wot|wgn` calls are answered with a 503 and logged as errors; static images pass through.
+- **Lesta ID**: the login redirect lands on `GET /dev/lesta/wot/auth/login/` (mounted by `main.ts`), a dev page to sign in as any generated player; the token it issues is accepted by `account/info` (`private`), `auth/prolongate` and `auth/logout`.
+- **World** (`lib/world`, `lib/garage`, `lib/simulation`): seeded and deterministic — ~12k players (RU id range, creation 2010–2025, chronotypes, activity), ~260 clans with officers, academies, joins and leaves over time. Stats are derived from `(seed, account, time)`: a career aggregate at the anchor (2025-09-01) plus a per-battle simulation of every evening session since then, so snapshots, deltas, sessions, marks (EMA of combined damage), mastery (xp percentiles) and clan ELO keep moving. A per-player checkpoint LRU keeps requests cheap.
+- **Endpoints**: every method in `lib/responses/dispatch.ts` (`MOCK_ROUTES`); anything else returns `METHOD_NOT_FOUND`. `fields`, `extra`, id-list limits and Lesta error codes behave like the real API.
+- **Seed**: `bun run dev:seed` (`scripts/dev-seed.ts`) enrols a sample (top players, a random mix, some lapsed), replays 90 days through `runPollPipeline` with a simulated clock, syncs clans and their daily ELO snapshots, writes mod-style `Battle` rows (loadouts from the real provisions and shells, economy, MoE) through `toBattleData`, and runs the aggregate jobs. Rerunning skips accounts that already have history; `--reset` deletes the generated players and clans first.
 
 ## Prisma
 

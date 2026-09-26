@@ -26,7 +26,7 @@ export const BuildHead = () => {
         actions={
           <>
             <TankPicker className={s.picker} label={t('picker')} value={vehicle} onChange={onPick} />
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.tank(vehicle.slug)}>
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.tanks.detail(vehicle.slug)}>
               {t('toTank')}
             </Link>
             <Button size='sm' variant='secondary' onClick={onShare}>

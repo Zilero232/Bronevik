@@ -1,4 +1,5 @@
 export { ApiKeysService } from './api-keys.service';
+export { ApiTierSyncService } from './api-tier-sync.service';
 export { ApiTierService } from './api-tier.service';
 export { ApiUsageReportService } from './api-usage-report.service';
 export { HostLookupService } from './host-lookup.service';

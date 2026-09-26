@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getTelegramStatus } from '@/shared/api/telegram';
+import { getTelegramStatus } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { TELEGRAM_LINK } from '../../../config';

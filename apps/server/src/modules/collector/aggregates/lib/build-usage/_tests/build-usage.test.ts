@@ -26,7 +26,9 @@ const sample = (overrides: Partial<UsageSample> & Pick<UsageSample, 'accountId'>
 describe('modeOfBonusType', () => {
   it('maps the arena bonus types to our modes and ignores the rest', () => {
     expect(modeOfBonusType('1')).toBe('random');
+    expect(modeOfBonusType('24')).toBe('random');
     expect(modeOfBonusType('43')).toBe('onslaught');
+    expect(modeOfBonusType('29')).toBeNull();
     expect(modeOfBonusType('2')).toBeNull();
     expect(bonusTypesOf('frontline')).toEqual(['27']);
   });

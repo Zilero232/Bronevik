@@ -1,4 +1,4 @@
-import { DEVELOPER_PATHS } from '@/shared/api/developer';
+import { DEVELOPER_PATHS } from '@/entities/developer/developer';
 import { env } from '@/shared/config';
 
 import { apiUrl, apiVersion } from '../lib/api-url';

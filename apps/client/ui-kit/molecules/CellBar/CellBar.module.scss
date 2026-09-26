@@ -1,0 +1,30 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  min-width: 56px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+
+  @include tone;
+}
+
+.value {
+  line-height: 1;
+}
+
+.track {
+  display: block;
+  overflow: hidden;
+  height: 4px;
+  border-radius: 1px;
+  background-color: var(--color-border);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background-color: var(--tone);
+  transform-origin: left center;
+}

@@ -8,7 +8,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { createReport } from '@/shared/api/moderation';
+import { createReport } from '../../../api';
 
 import type { ReportFormOutput, ReportFormValues, ReportTarget } from '../../../lib/report-form';
 

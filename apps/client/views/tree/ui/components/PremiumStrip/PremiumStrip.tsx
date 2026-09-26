@@ -21,7 +21,7 @@ export const PremiumStrip = ({ premiums }: PremiumStripProps) => {
         <ul className={s.grid}>
           {premiums.map(({ vehicle }) => (
             <li key={vehicle.tankId}>
-              <Link className={s.slot} href={ROUTES.tank(vehicle.slug)}>
+              <Link className={s.slot} href={ROUTES.tanks.detail(vehicle.slug)}>
                 <TankImage isDecorative className={s.render} size='big' tank={vehicleIdentity(vehicle)} />
                 <TankIdentity tank={vehicleIdentity(vehicle)} withNation={false} />
               </Link>

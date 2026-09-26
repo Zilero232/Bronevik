@@ -1,0 +1,564 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://otmetki.app/contract/mod/settings.schema.json",
+  "title": "Three Marks mod streamer settings export and apply",
+  "description": "Hangar-only. Every request is signed exactly like /mod/ingest (X-Otmetki-Device + X-Otmetki-Signature over the raw body). POST /mod/settings body #/definitions/export -> 204. POST /mod/settings/apply/poll body #/definitions/deviceRequest -> 200 #/definitions/pollResponse. POST /mod/settings/apply/<id>/result body #/definitions/result -> 204. Only standard client settings from a whitelist are sent: never login/account keys, hardware or mods. The mod applies a request only after the player confirms it in the hangar; resolution, refresh rate, window mode and sensitivity are left out unless the player opts in. Mirrors packages/schemas/src/streamer-settings (modSettingsExportSchema, modApplyListSchema, modApplyResultSchema).",
+  "definitions": {
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "display": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resolution": {
+              "type": "string",
+              "pattern": "^\\d{3,5}x\\d{3,5}$"
+            },
+            "refreshRate": {
+              "type": "integer",
+              "minimum": 30,
+              "maximum": 540
+            },
+            "windowMode": {
+              "enum": [
+                "fullscreen",
+                "borderless",
+                "windowed"
+              ]
+            },
+            "client": {
+              "enum": [
+                "sd",
+                "hd"
+              ]
+            },
+            "preset": {
+              "enum": [
+                "minimum",
+                "low",
+                "medium",
+                "high",
+                "maximum",
+                "ultra",
+                "custom"
+              ]
+            },
+            "overrides": {
+              "type": "object",
+              "propertyNames": {
+                "enum": [
+                  "effects",
+                  "vegetation",
+                  "shadows",
+                  "terrain",
+                  "water",
+                  "lighting",
+                  "textures",
+                  "motionBlur",
+                  "tessellation",
+                  "antialiasing",
+                  "decals",
+                  "postProcessing"
+                ]
+              },
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              }
+            },
+            "fpsCap": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "vsync": {
+              "type": "boolean"
+            },
+            "tripleBuffering": {
+              "type": "boolean"
+            }
+          }
+        },
+        "camera": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "fov": {
+              "type": "integer",
+              "minimum": 70,
+              "maximum": 120
+            },
+            "dynamicFov": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "integer",
+                "minimum": 70,
+                "maximum": 120
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "postMortem": {
+              "type": "boolean"
+            },
+            "sniperDynamicCamera": {
+              "type": "boolean"
+            },
+            "horizontalStabilisation": {
+              "type": "boolean"
+            }
+          }
+        },
+        "controls": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sensitivity": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "arcade": {
+                  "type": "number",
+                  "minimum": 0.01,
+                  "maximum": 3
+                },
+                "sniper": {
+                  "type": "number",
+                  "minimum": 0.01,
+                  "maximum": 3
+                },
+                "artillery": {
+                  "type": "number",
+                  "minimum": 0.01,
+                  "maximum": 3
+                }
+              }
+            },
+            "invert": {
+              "type": "boolean"
+            }
+          }
+        },
+        "zoom": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "steps": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "x2",
+                  "x4",
+                  "x8",
+                  "x16",
+                  "x25"
+                ]
+              }
+            }
+          }
+        },
+        "sight": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "arcade": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "reticle": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "gunMarker": {
+                  "enum": [
+                    "server",
+                    "client"
+                  ]
+                },
+                "colour": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              }
+            },
+            "sniper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "reticle": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "gunMarker": {
+                  "enum": [
+                    "server",
+                    "client"
+                  ]
+                },
+                "colour": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              }
+            }
+          }
+        },
+        "markers": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enemy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "base": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "enum": [
+                      "icon",
+                      "tier",
+                      "vehicleName",
+                      "playerName",
+                      "hpBar",
+                      "hpValue",
+                      "damage"
+                    ]
+                  }
+                },
+                "alt": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "enum": [
+                      "icon",
+                      "tier",
+                      "vehicleName",
+                      "playerName",
+                      "hpBar",
+                      "hpValue",
+                      "damage"
+                    ]
+                  }
+                }
+              }
+            },
+            "ally": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "base": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "enum": [
+                      "icon",
+                      "tier",
+                      "vehicleName",
+                      "playerName",
+                      "hpBar",
+                      "hpValue",
+                      "damage"
+                    ]
+                  }
+                },
+                "alt": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "enum": [
+                      "icon",
+                      "tier",
+                      "vehicleName",
+                      "playerName",
+                      "hpBar",
+                      "hpValue",
+                      "damage"
+                    ]
+                  }
+                }
+              }
+            },
+            "destroyed": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "base": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "enum": [
+                      "icon",
+                      "tier",
+                      "vehicleName",
+                      "playerName",
+                      "hpBar",
+                      "hpValue",
+                      "damage"
+                    ]
+                  }
+                },
+                "alt": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "enum": [
+                      "icon",
+                      "tier",
+                      "vehicleName",
+                      "playerName",
+                      "hpBar",
+                      "hpValue",
+                      "damage"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "minimap": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "size": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "transparency": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "viewRangeCircles": {
+              "type": "boolean"
+            },
+            "drawRangeCircle": {
+              "type": "boolean"
+            },
+            "spgFireSector": {
+              "type": "boolean"
+            }
+          }
+        },
+        "sound": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "master": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "music": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "effects": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "voice": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "sixthSenseSound": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "voicePack": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        },
+        "battleUi": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "damagePanel": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "damageLog": {
+              "type": "boolean"
+            },
+            "efficiencyRibbons": {
+              "type": "boolean"
+            },
+            "sixthSenseIcon": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        }
+      }
+    },
+    "export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "device_id",
+        "account_id",
+        "mod_version",
+        "target",
+        "anonymous_stats",
+        "settings"
+      ],
+      "properties": {
+        "device_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "account_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mod_version": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "target": {
+          "enum": [
+            "profile",
+            "private"
+          ]
+        },
+        "anonymous_stats": {
+          "type": "boolean"
+        },
+        "settings": {
+          "$ref": "#/definitions/settings"
+        }
+      }
+    },
+    "deviceRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "device_id",
+        "account_id"
+      ],
+      "properties": {
+        "device_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "account_id": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "pollResponse": {
+      "type": "object",
+      "required": [
+        "requests"
+      ],
+      "properties": {
+        "requests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "profile_slug",
+              "groups",
+              "settings"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "profile_slug": {
+                "type": "string"
+              },
+              "groups": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "enum": [
+                    "display",
+                    "camera",
+                    "controls",
+                    "zoom",
+                    "sight",
+                    "markers",
+                    "minimap",
+                    "sound",
+                    "battleUi"
+                  ]
+                }
+              },
+              "settings": {
+                "$ref": "#/definitions/settings"
+              }
+            }
+          }
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "device_id",
+        "account_id",
+        "status"
+      ],
+      "properties": {
+        "device_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "account_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "enum": [
+            "applied",
+            "rejected"
+          ]
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/definitions/export"
+    },
+    {
+      "$ref": "#/definitions/deviceRequest"
+    },
+    {
+      "$ref": "#/definitions/pollResponse"
+    },
+    {
+      "$ref": "#/definitions/result"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --clan: var(--color-border-strong);
+
+  min-width: 0;
+}
+
+.media {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: var(--space-7);
+  background: radial-gradient(circle at 78% 50%, color-mix(in srgb, var(--clan) 38%, transparent) 0%, transparent 55%), var(--color-band);
+}
+
+.emblem {
+  flex: none;
+}
+
+.rank {
+  @include label;
+
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
+
+  .root[data-rank='1'] & {
+    color: var(--color-mastery-gold);
+  }
+
+  .root[data-rank='2'] & {
+    color: var(--color-mastery-silver);
+  }
+
+  .root[data-rank='3'] & {
+    color: var(--color-mastery-bronze);
+  }
+}

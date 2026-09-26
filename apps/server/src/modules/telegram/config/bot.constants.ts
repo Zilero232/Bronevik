@@ -17,7 +17,7 @@ export const BOT_API = {
   maxDelaySeconds: 30
 } as const;
 
-export const BOT_COMMANDS = ['me', 'session', 'marks', 'clan', 'tank', 'top', 'lbz', 'settings', 'login', 'help'] as const;
+export const BOT_COMMANDS = ['me', 'session', 'marks', 'clan', 'tank', 'top', 'lbz', 'next', 'settings', 'login', 'help'] as const;
 
 export const BOT_TEXT_LIMITS = {
   topSize: 10,

@@ -89,13 +89,16 @@ export class GuideService {
   }
 
   async update({ id, userId, ...changes }: UpdateGuideRequest): Promise<GuideView> {
-    const guide = await this.prisma.guide.findFirst({ where: { id, authorUserId: userId }, select: { slug: true } });
+    const guide = await this.prisma.guide.findFirst({ where: { id, authorUserId: userId }, select: { slug: true, kind: true } });
 
     if (!guide) {
       throw new AppNotFoundException('NOT_FOUND', `No guide ${id} of yours`);
     }
 
-    await this.prisma.guide.update({ where: { id }, data: { ...changes, status: 'pending' } });
+    const isKindChanged = changes.kind !== undefined && changes.kind !== guide.kind;
+    const subject = isKindChanged ? { tankId: changes.tankId ?? null, arenaId: changes.arenaId ?? null } : {};
+
+    await this.prisma.guide.update({ where: { id }, data: { ...changes, ...subject, status: 'pending' } });
 
     return this.bySlug({ slug: guide.slug, viewerUserId: userId });
   }

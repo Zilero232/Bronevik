@@ -4,11 +4,12 @@ import { CircleOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { DataSourceNote, EmptyState, ErrorState, PageHeader } from '@/ui-kit';
+import { DataSourceNote, EmptyState, ErrorState, Legend, PageHeader } from '@/ui-kit';
 
+import { GUESS_LEGEND } from '../config';
 import { GuessGameContext } from '../model/context';
 import { useGuessGameState } from '../model/hooks';
-import { GuessArena, GuessLegend, GuessSkeleton } from './components';
+import { GuessArena, GuessSkeleton } from './components';
 
 import s from './GuessTankPage.module.scss';
 
@@ -19,7 +20,10 @@ export const GuessTankPage = () => {
   return (
     <div className={s.root}>
       <PageHeader description={t('head.description')} title={t('head.title')}>
-        <GuessLegend />
+        <Legend
+          aria-label={t('head.legendLabel')}
+          items={GUESS_LEGEND.map(({ verdict, tone }) => ({ key: verdict, tone, label: t(`head.legend.${verdict}`) }))}
+        />
       </PageHeader>
       {match(state)
         .with({ kind: 'loading' }, () => <GuessSkeleton />)

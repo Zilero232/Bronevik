@@ -3,6 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ClanEmblem } from '@/entities/clan/clan';
+import { CosmeticBadge } from '@/entities/player/cosmetics';
 import { clanLabel } from '@/entities/player/player';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
@@ -12,24 +13,26 @@ import type { HeaderIdentityProps } from './HeaderIdentity.types';
 
 import s from './HeaderIdentity.module.scss';
 
-export const HeaderIdentity = ({ summary }: HeaderIdentityProps) => {
+export const HeaderIdentity = ({ summary, badge }: HeaderIdentityProps) => {
   const t = useTranslations('profile.header');
   const format = useFormatter();
 
-  const { nickname, clan, createdAt, lastBattleAt } = summary;
+  const { clan, createdAt, lastBattleAt } = summary;
 
   return (
     <div className={s.root}>
-      <h1 className={s.nickname}>{nickname}</h1>
-      {clan ? (
-        <Link className={s.clan} href={ROUTES.clan(clan.tag)}>
-          <ClanEmblem size='sm' src={clan.emblem} tag={clan.tag} />
-          <span className={s.tag}>{clanLabel({ tag: clan.tag })}</span>
-          <span className={s.clanName}>{clan.name}</span>
-        </Link>
-      ) : (
-        <span className={s.muted}>{t('noClan')}</span>
-      )}
+      <div className={s.title}>
+        {clan ? (
+          <Link className={s.clan} href={ROUTES.clans.detail(clan.tag)}>
+            <ClanEmblem size='xs' src={clan.emblem} tag={clan.tag} />
+            <span className={s.tag}>{clanLabel({ tag: clan.tag })}</span>
+            <span className={s.clanName}>{clan.name}</span>
+          </Link>
+        ) : (
+          <span className={s.muted}>{t('noClan')}</span>
+        )}
+        {badge && <CosmeticBadge code={badge} />}
+      </div>
       <p className={s.meta}>
         {createdAt && <span>{t('since', { year: format.dateTime(new Date(createdAt), { year: 'numeric' }) })}</span>}
         {lastBattleAt && (

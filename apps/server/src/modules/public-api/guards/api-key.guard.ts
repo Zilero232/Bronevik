@@ -37,10 +37,12 @@ export class ApiKeyGuard implements CanActivate {
       response.setHeader(API_RATE_LIMIT.headers.dailyRemaining, key.dailyRemaining);
       request.apiKey = key;
 
-      const second = await this.limits.consume(key);
+      const { second, day } = await this.limits.consume(key);
 
       response.setHeader(API_RATE_LIMIT.headers.limit, second.limit);
       response.setHeader(API_RATE_LIMIT.headers.remaining, second.remaining);
+      response.setHeader(API_RATE_LIMIT.headers.dailyLimit, Math.min(key.dailyLimit, day.limit));
+      response.setHeader(API_RATE_LIMIT.headers.dailyRemaining, Math.min(key.dailyRemaining, day.remaining));
     } catch (error) {
       if (error instanceof AppTooManyRequestsException) {
         if (request.apiKey) {

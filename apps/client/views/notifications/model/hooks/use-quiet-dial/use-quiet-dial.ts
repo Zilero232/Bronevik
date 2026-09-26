@@ -1,7 +1,8 @@
 'use client';
 
 import { minutesInHour } from 'date-fns/constants';
-import { useNow } from 'next-intl';
+
+import { useClientNow } from '@/shared/lib';
 
 import type { QuietHours } from '../../../lib/quiet-hours';
 
@@ -9,7 +10,7 @@ import { QUIET_HOURS } from '../../../config';
 import { crossesMidnight, dayHours, dialPoint, formatHour, isQuietHour, quietArcPath, quietSpan } from '../../../lib/quiet-hours';
 
 export const useQuietDial = (range: QuietHours) => {
-  const now = useNow({ updateInterval: QUIET_HOURS.nowTickMs });
+  const now = useClientNow({ updateInterval: QUIET_HOURS.nowTickMs });
 
   const { dial } = QUIET_HOURS;
   const { center, arcRadius, tickOuter, tickInner, majorTickInner, labelRadius, needleInset } = dial;
@@ -22,10 +23,10 @@ export const useQuietDial = (range: QuietHours) => {
     span,
     start: formatHour(range.start),
     end: formatHour(range.end),
-    isQuietNow: span > 0 && isQuietHour({ hour: now.getHours(), range }),
+    isQuietNow: now !== null && span > 0 && isQuietHour({ hour: now.getHours(), range }),
     isCrossingMidnight: crossesMidnight(range),
     arc: quietArcPath({ range, center, radius: arcRadius }),
-    needle: dialPoint({ hour: now.getHours() + now.getMinutes() / minutesInHour, center, radius: labelRadius - needleInset }),
+    needle: now && dialPoint({ hour: now.getHours() + now.getMinutes() / minutesInHour, center, radius: labelRadius - needleInset }),
     ticks: hours.map((hour) => ({
       hour,
       isMajor: isMajor(hour),

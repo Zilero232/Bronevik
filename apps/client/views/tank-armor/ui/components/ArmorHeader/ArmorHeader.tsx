@@ -16,7 +16,7 @@ export const ArmorHeader = ({ slug, name, version }: ArmorHeaderProps) => {
 
   return (
     <header className={s.root}>
-      <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={ROUTES.tank(slug)}>
+      <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={ROUTES.tanks.detail(slug)}>
         <ArrowLeft aria-hidden size={16} />
         {t('back')}
       </Link>

@@ -28,10 +28,11 @@ const toModule = ({ option, slot, turretId }: ToModuleInput): BuildModule => ({
   turretId: turretId ?? null
 });
 
-export const toBuildItem = ({ id, tag, name, image, categories, price }: ProvisionOption): BuildItem => ({
+export const toBuildItem = ({ id, tag, name, kind, image, categories, price }: ProvisionOption): BuildItem => ({
   id,
   tag,
   name: gameLabel(name),
+  kind,
   image,
   category: categories.find(isCategory) ?? null,
   isPremium: price?.currency === BUILD_CATALOG.premiumCurrency

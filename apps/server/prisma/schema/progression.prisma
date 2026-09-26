@@ -1,0 +1,121 @@
+enum ShellReason {
+  challenge
+  level
+  season
+  purchase
+
+  @@map("shell_reason")
+}
+
+enum CosmeticGrant {
+  purchase
+  season
+
+  @@map("cosmetic_grant")
+}
+
+model TankProgress {
+  accountId BigInt @map("account_id")
+  tankId    Int    @map("tank_id")
+
+  xp      Int @default(0)
+  level   Int @default(1) @db.SmallInt
+  battles Int @default(0)
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@id([accountId, tankId])
+  @@index([accountId, xp(sort: Desc)])
+  @@map("tank_progress")
+}
+
+model ProgressionCursor {
+  accountId BigInt @id @map("account_id")
+
+  processedUntil DateTime @map("processed_until") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@map("progression_cursor")
+}
+
+model TankChallengeProgress {
+  accountId BigInt   @map("account_id")
+  tankId    Int      @map("tank_id")
+  weekStart DateTime @map("week_start") @db.Date
+  code      String
+
+  metric      String
+  threshold   Float?
+  progress    Float
+  target      Float
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@id([accountId, tankId, weekStart, code])
+  @@index([accountId, weekStart])
+  @@map("tank_challenge_progress")
+}
+
+model ShellLedgerEntry {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  userId  String      @map("user_id")
+  amount  Int
+  reason  ShellReason
+  key     String      @unique
+  context Json?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("shell_ledger_entry")
+}
+
+model SeasonProgress {
+  userId String @map("user_id")
+  season String
+
+  points Int @default(0)
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, season])
+  @@index([season, points(sort: Desc)])
+  @@map("season_progress")
+}
+
+model CosmeticOwnership {
+  userId String @map("user_id")
+  code   String
+
+  grant      CosmeticGrant
+  acquiredAt DateTime      @default(now()) @map("acquired_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, code])
+  @@map("cosmetic_ownership")
+}
+
+model ProfileCosmetics {
+  userId String @id @map("user_id")
+
+  badge  String?
+  frame  String?
+  banner String?
+
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profile_cosmetics")
+}

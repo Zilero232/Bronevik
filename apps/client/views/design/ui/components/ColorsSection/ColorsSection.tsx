@@ -22,7 +22,7 @@ export const ColorsSection = () => {
           {group.tokens.map((token) => (
             <span key={token} className={s.swatch}>
               <span className={s.chip} style={{ background: `var(${token})` }} />
-              <code className={s.token}>{token.replace('--color-', '')}</code>
+              <code className={s.token}>{token.replace('--color-', '').replace('--', '')}</code>
             </span>
           ))}
         </DesignRow>

@@ -26,7 +26,7 @@ export const TacticBoardPage = ({ id }: TacticBoardPageProps) => {
         .with({ isNotFound: true }, () => (
           <EmptyState
             action={
-              <Link className={buttonVariants({ size: 'sm', variant: 'secondary' })} href={ROUTES.tactics}>
+              <Link className={buttonVariants({ size: 'sm', variant: 'secondary' })} href={ROUTES.tactics.list}>
                 {t('backToList')}
               </Link>
             }

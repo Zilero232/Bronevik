@@ -34,7 +34,7 @@ export const AccountShell = ({ children }: AccountShellProps) => {
         .with({ isSignedIn: false }, () => (
           <EmptyState
             action={
-              <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={ROUTES.login}>
+              <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={ROUTES.auth.login}>
                 <LogIn size={14} />
                 {t('signIn')}
               </Link>
@@ -44,10 +44,10 @@ export const AccountShell = ({ children }: AccountShellProps) => {
           />
         ))
         .otherwise(() => (
-          <>
+          <div className={s.layout}>
             <AccountNav />
-            {children}
-          </>
+            <div className={s.content}>{children}</div>
+          </div>
         ))}
     </div>
   );

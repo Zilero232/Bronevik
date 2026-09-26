@@ -1,7 +1,7 @@
 import { moeDamageForPercent } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
-import type { PlayerMarkRow } from '@/shared/api/players';
+import type { PlayerMarkRow } from '@/entities/player/profile';
 
 import { projectMarks } from '../marks-projection';
 

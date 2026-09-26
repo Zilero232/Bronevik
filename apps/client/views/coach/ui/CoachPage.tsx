@@ -22,7 +22,7 @@ export const CoachPage = ({ userId }: CoachPageProps) => {
       <div className={s.root}>
         <EmptyState
           action={
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.coaching}>
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.coaching.list}>
               {t('coach.back')}
             </Link>
           }
@@ -59,7 +59,7 @@ export const CoachPage = ({ userId }: CoachPageProps) => {
             {coach.name}
           </span>
         }
-        breadcrumbs={[{ label: t('head.title'), href: ROUTES.coaching }, { label: coach.name }]}
+        breadcrumbs={[{ label: t('head.title'), href: ROUTES.coaching.list }, { label: coach.name }]}
         description={coach.headline}
         meta={!coach.isActive && <Badge tone='neutral'>{t('coach.inactive')}</Badge>}
       />

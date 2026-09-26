@@ -4,7 +4,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { match } from 'ts-pattern';
 
 import { useCommunityViewer } from '@/features/community/viewer';
-import { listMyReplays, listReplays } from '@/shared/api/replays';
+import { listMyReplays, listReplays } from '@/entities/replay/replay';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { REPLAY_LIST } from '../../../config';

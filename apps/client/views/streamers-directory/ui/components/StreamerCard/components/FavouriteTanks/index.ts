@@ -1,0 +1,1 @@
+export { FavouriteTanks } from './FavouriteTanks';

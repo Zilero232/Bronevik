@@ -1,0 +1,94 @@
+enum CompetitionVisibility {
+  public
+  private
+
+  @@map("competition_visibility")
+}
+
+enum CompetitionMode {
+  random
+  onslaught
+  frontline
+  ranked
+  steelHunter @map("steel_hunter")
+
+  @@map("competition_mode")
+}
+
+enum CompetitionSource {
+  mod
+  snapshots
+  none
+
+  @@map("competition_source")
+}
+
+model Competition {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  slug             String                @unique
+  ownerUserId      String                @map("owner_user_id")
+  title            String
+  description      String?
+  visibility       CompetitionVisibility @default(public)
+  mode             CompetitionMode       @default(random)
+  battlesPerPlayer Int                   @map("battles_per_player") @db.SmallInt
+  minTier          Int?                  @map("min_tier") @db.SmallInt
+  scoring          Json
+  inviteCode       String?               @unique @map("invite_code")
+
+  startsAt   DateTime  @map("starts_at") @db.Timestamptz(3)
+  endsAt     DateTime  @map("ends_at") @db.Timestamptz(3)
+  scoredAt   DateTime? @map("scored_at") @db.Timestamptz(3)
+  finishedAt DateTime? @map("finished_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  owner   User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  teams   CompetitionTeam[]
+  entries CompetitionEntry[]
+
+  @@index([visibility, startsAt(sort: Desc)])
+  @@index([endsAt, finishedAt])
+  @@index([ownerUserId])
+  @@map("competition")
+}
+
+model CompetitionTeam {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  competitionId String @map("competition_id")
+  name          String
+  score         Float  @default(0)
+  battles       Int    @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  competition Competition        @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  entries     CompetitionEntry[]
+
+  @@unique([competitionId, name])
+  @@map("competition_team")
+}
+
+model CompetitionEntry {
+  competitionId String @map("competition_id")
+  accountId     BigInt @map("account_id")
+
+  teamId  String            @map("team_id")
+  userId  String            @map("user_id")
+  score   Float             @default(0)
+  battles Int               @default(0)
+  source  CompetitionSource @default(none)
+
+  joinedAt  DateTime @default(now()) @map("joined_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  competition Competition     @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  team        CompetitionTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([competitionId, accountId])
+  @@index([teamId])
+  @@index([userId])
+  @@map("competition_entry")
+}

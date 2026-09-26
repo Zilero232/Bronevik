@@ -24,3 +24,23 @@
   color: var(--color-success);
   font-size: var(--text-2xs);
 }
+
+.root[data-hero='true'] {
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: var(--space-1);
+
+  .value {
+    font-size: var(--num-hero);
+    font-weight: 700;
+    line-height: 1;
+
+    @include below(md) {
+      font-size: var(--num-xl);
+    }
+  }
+
+  .delta {
+    font-size: var(--text-xs);
+  }
+}

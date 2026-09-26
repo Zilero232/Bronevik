@@ -1,0 +1,29 @@
+@use '@/shared/styles/mixins' as *;
+
+.body {
+  @include stack(var(--space-3));
+
+  padding: var(--space-3);
+}
+
+.steps {
+  @include stack(var(--space-2));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.step {
+  min-width: 0;
+}
+
+.advice {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+
+  &[data-alert='true'] {
+    color: var(--color-warning);
+  }
+}

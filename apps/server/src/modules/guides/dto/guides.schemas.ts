@@ -48,7 +48,10 @@ const guideFieldsSchema = z.object({
 
 export const createGuideSchema = guideFieldsSchema.extend({ locale: guideLocaleSchema.default('ru') });
 
-export const updateGuideSchema = guideFieldsSchema.partial();
+export const updateGuideSchema = guideFieldsSchema.partial().extend({
+  tankId: tankIdSchema.nullable().optional(),
+  arenaId: arenaIdSchema.nullable().optional()
+});
 
 export const guideAuthorSchema = z.object({ author: authorSchema, guides: countSchema, likes: countSchema });
 

@@ -35,11 +35,12 @@
 }
 
 .contour {
-  width: 60px;
+  min-width: 60px;
   height: 24px;
 
   .image {
     width: auto;
+    max-width: none;
     height: 23px;
     filter: var(--contour-filter);
   }

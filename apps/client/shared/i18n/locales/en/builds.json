@@ -140,5 +140,75 @@
     "missing": "Not enough data for a recommended build yet: {battles} of {min} battles.",
     "error": "Could not load the recommended build.",
     "dismiss": "Dismiss"
+  },
+  "showcase": {
+    "tabs": {
+      "showcase": "How to build",
+      "editor": "Constructor",
+      "label": "Build page mode"
+    },
+    "eyebrow": "How to build the tank",
+    "source": {
+      "label": "Build source",
+      "top10": "Advice: top 10%",
+      "all": "What players use",
+      "top1": "Top 1%",
+      "or": "or",
+      "plus": "Available with Plus"
+    },
+    "sample": "based on {battles, plural, one {# battle} other {# battles}} over {days} days",
+    "version": "update {version}",
+    "notEnough": "Not enough data for this sample yet: {battles} of {min} battles. Options are shown without a recommendation.",
+    "error": "Could not load the build",
+    "compare": {
+      "winRate": "Win rate with the build",
+      "avgDamage": "Avg damage with the build",
+      "vs": "vs “{other}”",
+      "points": "pp"
+    },
+    "stats": {
+      "title": "Stats for the last 30 days",
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "avgFrags": "Avg frags",
+      "avgSpotted": "Avg spotted",
+      "avgBlocked": "Avg blocked",
+      "accuracy": "Accuracy",
+      "master": "Ace Tanker",
+      "xp": "XP",
+      "threeMarks": "3 marks",
+      "empty": "No stats for this tank in the last 30 days"
+    },
+    "fieldMods": {
+      "title": "Field modification",
+      "picked": "Picked most"
+    },
+    "crew": {
+      "title": "Crew",
+      "empty": "No crew skill data yet"
+    },
+    "equipment": {
+      "title": "Equipment",
+      "primary": "Main set",
+      "alternative": "Alternative set",
+      "directive": "Directive",
+      "empty": "No equipment data yet",
+      "categories": {
+        "standard": "Standard",
+        "trophy": "Trophy",
+        "deluxe": "Bond",
+        "modernized": "Experimental"
+      }
+    },
+    "supplies": {
+      "title": "Consumables and shells",
+      "consumables": "Consumables",
+      "shells": "Ammo",
+      "premium": "prem."
+    },
+    "actions": {
+      "openEditor": "Open in the constructor",
+      "share": "Share"
+    }
   }
 }

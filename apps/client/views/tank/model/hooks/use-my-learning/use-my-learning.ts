@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { isNotFoundError } from '@/shared/api/source';
-import { getMyTankLearning } from '@/shared/api/tanks';
+import { getMyTankLearning } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { bucketLabel } from '../../../lib';

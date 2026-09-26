@@ -44,6 +44,7 @@ apps/mod/
     queue_timer.py          matchmaking queue timing
     sender.py               signs and posts batches through an injected transport
     session.py              session aggregation (idle gap, random battles only)
+    settings_share.py       streamer settings: whitelist export, apply diff, backup/restore, /mod/settings payloads
     settings_template.py    ModsSettingsAPI template
     signing.py              HMAC-SHA256 signature headers
     storage.py              atomic JSON files
@@ -119,6 +120,7 @@ The API team implements the full contract in [contract/](contract):
 - [contract/ingest.schema.json](contract/ingest.schema.json)
 - [contract/bind.schema.json](contract/bind.schema.json)
 - [contract/moe-thresholds.schema.json](contract/moe-thresholds.schema.json)
+- [contract/settings.schema.json](contract/settings.schema.json)
 - the example [contract/examples/ingest.example.json](contract/examples/ingest.example.json)
 
 The test suite validates the example and the builder output against the schema when `jsonschema` is installed.
@@ -135,6 +137,8 @@ The test suite validates the example and the builder output against the schema w
   - `moe{marks_on_gun, damage_rating (%×100), moving_avg_damage}` after the battle. This is the raw data point for our own RU thresholds;
   - `queue_time_s`, `session_id`;
   - `loadout` (optional, null when unknown): the own vehicle's `optional_devices`, `consumables`, `directives` (intCD per slot, null for empty), `shells[{shell_id, count}]`, `field_modifications[]`, `crew[{role, skills[] in learning order}]`, `gameplay_id` (`arena_type_id >> 16`). It feeds the site's recommended builds.
+  - `platoon` (optional, null when solo): `{size, mates[]}` — the own platoon after the battle, mates are the account ids with the own `prebattleID` on the own team. Feeds the site's platoon chemistry.
+  - `shots` (optional, null when off or none): own shots that damaged an enemy, from the player feedback events — `damage`, `nominal` (armour damage of the own shell), `shell`, `outcome`, `distance_m` (null: the mod reads no enemy positions), `fatal`. Feeds «Честный рандом».
 - **`moe_snapshot`:** `tank_id`, `damage_rating`, `moving_avg_damage`, `marks_on_gun`, `battles`.
 - **`moe_distribution`:** `tank_id`, `battle_count`, `damage_better_than_n_percent[]` (the raw client answer).
 - **`queue`:** `queue_type`, `wait_s`, `outcome` (arena / dequeued), `tank_id`.
@@ -143,6 +147,16 @@ The test suite validates the example and the builder output against the schema w
   - check that the device belongs to `account_id`;
   - deduplicate by `event_id`;
   - on bind, reject an `account_id` that differs from the Lesta ID linked to the site user.
+
+## Streamer settings (hangar only)
+
+Spec: [streamer-settings §3.5](../../docs/superpowers/specs/2026-09-26-streamer-settings.md). Switch: `share_settings` (on by default; does nothing until the mod is bound). Client glue: `client/settings_core.py`.
+
+- **Whitelist.** The glue reads standard client settings through the settings core (`dependency.instance(ISettingsCore)`) into flat keys (`fov`, `sniperSens`, `zoomSteps`, …, see `settings_share.FIELDS`). `build_export` keeps only those keys with valid values and nests them into the contract groups `display` … `battleUi`. Login/account keys, hardware and mods are never sent.
+- **Export.** Set `"settings_action": "export"` in `config.json` and open the hangar. The mod posts `POST /mod/settings` `{device_id, account_id, mod_version, target, anonymous_stats, settings}`. `settings_target` is `private` (default) or `profile`; `settings_anonymous_stats` is off by default.
+- **Apply.** Every 2 minutes in the hangar the mod polls `POST /mod/settings/apply/poll`. For a request it shows a yes/no dialog with the diff. Resolution, refresh rate, window mode and sensitivity are left out unless `settings_include_resolution` / `settings_include_sensitivity` are on. On confirm it writes the player's current values of the touched keys to `settings_backup_<account_id>.json`, applies the diff and posts `…/apply/<id>/result` `{status: applied}`; on cancel `rejected`. Without a dialog API the request stays pending; nothing is applied automatically. A second apply keeps the first backup.
+- **Restore («Вернуть мои»).** `"settings_action": "restore"` writes the backup back and deletes it.
+- It never installs or configures third-party mods. All three requests are signed like `/mod/ingest`.
 
 ## Build
 
@@ -193,16 +207,16 @@ Optional checks:
 
 `mods/configs/otmetki/config.json` (created on first start):
 
-| Key                                                                                                       | Default                   | Meaning                                                                                                                                                |
-| --------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `enabled`                                                                                                 | `true`                    | Master switch                                                                                                                                          |
-| `server_url`                                                                                              | `https://api.otmetki.app` | API base. Must be https, or http://localhost / http://127.0.0.1 for development. **The domain is a placeholder until the domain decision (spec §12).** |
-| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times`, `send_loadouts` | `true`                    | Per-feature data switches                                                                                                                              |
-| `battle_moe_panel`, `hangar_session_panel`                                                                | `true`                    | UI switches                                                                                                                                            |
-| `session_idle_minutes`                                                                                    | `60`                      | New session after this idle gap (10–1440)                                                                                                              |
-| `flush_interval_seconds`                                                                                  | `15`                      | Send interval (5–600)                                                                                                                                  |
-| `bind_code`                                                                                               | `""`                      | Fallback binding without ModsSettingsAPI; cleared after use                                                                                            |
-| `language`                                                                                                | `auto`                    | `ru`, `en` or `auto` (client language)                                                                                                                 |
+| Key                                                                                                                     | Default                   | Meaning                                                                                                                                                |
+| ----------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `enabled`                                                                                                               | `true`                    | Master switch                                                                                                                                          |
+| `server_url`                                                                                                            | `https://api.otmetki.app` | API base. Must be https, or http://localhost / http://127.0.0.1 for development. **The domain is a placeholder until the domain decision (spec §12).** |
+| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times`, `send_loadouts`, `send_shots` | `true`                    | Per-feature data switches                                                                                                                              |
+| `battle_moe_panel`, `hangar_session_panel`                                                                              | `true`                    | UI switches                                                                                                                                            |
+| `session_idle_minutes`                                                                                                  | `60`                      | New session after this idle gap (10–1440)                                                                                                              |
+| `flush_interval_seconds`                                                                                                | `15`                      | Send interval (5–600)                                                                                                                                  |
+| `bind_code`                                                                                                             | `""`                      | Fallback binding without ModsSettingsAPI; cleared after use                                                                                            |
+| `language`                                                                                                              | `auto`                    | `ru`, `en` or `auto` (client language)                                                                                                                 |
 
 The device secret is stored in plain text in `credentials.json`, as other mods store tokens. It is scoped to one device and one account, and the user can revoke it on the site.
 
@@ -253,7 +267,9 @@ Check МОСТ's current submission rules before the first upload. This README d
 - the ModsSettingsAPI `TextInput` button callback payload;
 - `.py`-only packages loading from `.wotmod`;
 - `vehicleTypeDescriptor.type.compactDescr` on the avatar;
-- `ArenaType.g_cache[...].geometryName`.
+- `ArenaType.g_cache[...].geometryName`;
+- the settings core on Lesta 1.45: `skeletons.account_helpers.settings_core.ISettingsCore`, `getSetting` / `applySettings` / `confirmChanges` / `applyStorages`, the setting names in `client/settings_core.CORE_NAMES` and their value scales (sensitivity, volume);
+- the confirm dialog (`DialogsInterface.showDialog` + `SimpleDialogMeta` / `I18nConfirmDialogButtons`).
 
 ### Live-client smoke checklist
 

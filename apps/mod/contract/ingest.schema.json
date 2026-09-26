@@ -7,36 +7,85 @@
   "additionalProperties": false,
   "required": ["schema_version", "batch_id", "device_id", "account_id", "realm", "mod_version", "client_version", "sent_at", "events"],
   "properties": {
-    "schema_version": { "const": 1 },
+    "schema_version": {
+      "const": 1
+    },
     "batch_id": {
       "$ref": "#/definitions/id",
       "description": "Random per HTTP attempt; a retried batch gets a new batch_id, deduplicate by event_id."
     },
-    "device_id": { "type": "string", "minLength": 1, "maxLength": 64, "description": "Must equal the X-Otmetki-Device header." },
-    "account_id": { "$ref": "#/definitions/accountId", "description": "Must equal the account the device was bound to." },
-    "realm": { "const": "RU" },
-    "mod_version": { "type": "string", "maxLength": 32 },
-    "client_version": { "type": "string", "maxLength": 64 },
-    "sent_at": { "$ref": "#/definitions/unixTime" },
+    "device_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Must equal the X-Otmetki-Device header."
+    },
+    "account_id": {
+      "$ref": "#/definitions/accountId",
+      "description": "Must equal the account the device was bound to."
+    },
+    "realm": {
+      "const": "RU"
+    },
+    "mod_version": {
+      "type": "string",
+      "maxLength": 32
+    },
+    "client_version": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "sent_at": {
+      "$ref": "#/definitions/unixTime"
+    },
     "events": {
       "type": "array",
       "minItems": 1,
       "maxItems": 50,
-      "items": { "$ref": "#/definitions/event" }
+      "items": {
+        "$ref": "#/definitions/event"
+      }
     }
   },
   "definitions": {
-    "id": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9:_-]+$" },
-    "accountId": { "type": "integer", "minimum": 1 },
-    "tankId": { "type": "integer", "minimum": 1, "description": "Vehicle compact descriptor (intCD), identical to tank_id in the Lesta API." },
-    "unixTime": { "type": "integer", "minimum": 0, "description": "Seconds since the Unix epoch, client clock." },
-    "count": { "type": "integer", "minimum": 0 },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9:_-]+$"
+    },
+    "accountId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tankId": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Vehicle compact descriptor (intCD), identical to tank_id in the Lesta API."
+    },
+    "unixTime": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Seconds since the Unix epoch, client clock."
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
     "event": {
       "oneOf": [
-        { "$ref": "#/definitions/battleResult" },
-        { "$ref": "#/definitions/moeSnapshot" },
-        { "$ref": "#/definitions/moeDistribution" },
-        { "$ref": "#/definitions/queue" }
+        {
+          "$ref": "#/definitions/battleResult"
+        },
+        {
+          "$ref": "#/definitions/moeSnapshot"
+        },
+        {
+          "$ref": "#/definitions/moeDistribution"
+        },
+        {
+          "$ref": "#/definitions/queue"
+        }
       ]
     },
     "battleResult": {
@@ -65,32 +114,78 @@
         "session_id"
       ],
       "properties": {
-        "type": { "const": "battle_result" },
-        "event_id": { "type": "string", "pattern": "^battle:[0-9]+$" },
-        "occurred_at": { "$ref": "#/definitions/unixTime" },
+        "type": {
+          "const": "battle_result"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^battle:[0-9]+$"
+        },
+        "occurred_at": {
+          "$ref": "#/definitions/unixTime"
+        },
         "arena_unique_id": {
           "type": "string",
           "pattern": "^[0-9]+$",
           "description": "64-bit arena id as a decimal string (exceeds JS safe integer range)."
         },
-        "arena_type_id": { "$ref": "#/definitions/count", "description": "Low 16 bits = map geometry id, high bits = gameplay type." },
-        "map_name": { "type": ["string", "null"], "maxLength": 64, "description": "Client geometry name, e.g. 05_prohorovka." },
-        "bonus_type": { "$ref": "#/definitions/count", "description": "constants.ARENA_BONUS_TYPE: 1 = random (REGULAR), 22 = ranked, ..." },
-        "gui_type": { "$ref": "#/definitions/count" },
-        "arena_created_at": { "$ref": "#/definitions/unixTime" },
-        "duration_s": { "$ref": "#/definitions/count" },
-        "finish_reason": { "$ref": "#/definitions/count" },
-        "winner_team": { "type": "integer", "minimum": 0, "maximum": 2, "description": "0 = draw." },
-        "team": { "type": "integer", "minimum": 0, "maximum": 2 },
-        "result": { "enum": ["win", "loss", "draw"] },
+        "arena_type_id": {
+          "$ref": "#/definitions/count",
+          "description": "Low 16 bits = map geometry id, high bits = gameplay type."
+        },
+        "map_name": {
+          "type": ["string", "null"],
+          "maxLength": 64,
+          "description": "Client geometry name, e.g. 05_prohorovka."
+        },
+        "bonus_type": {
+          "$ref": "#/definitions/count",
+          "description": "constants.ARENA_BONUS_TYPE: 1 = random (REGULAR), 22 = ranked, ..."
+        },
+        "gui_type": {
+          "$ref": "#/definitions/count"
+        },
+        "arena_created_at": {
+          "$ref": "#/definitions/unixTime"
+        },
+        "duration_s": {
+          "$ref": "#/definitions/count"
+        },
+        "finish_reason": {
+          "$ref": "#/definitions/count"
+        },
+        "winner_team": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0 = draw."
+        },
+        "team": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "result": {
+          "enum": ["win", "loss", "draw"]
+        },
         "vehicle": {
           "type": "object",
           "additionalProperties": false,
           "required": ["tank_id", "name", "tier"],
           "properties": {
-            "tank_id": { "$ref": "#/definitions/tankId" },
-            "name": { "type": ["string", "null"], "maxLength": 128, "description": "Client vehicle name, e.g. ussr:R04_T-34." },
-            "tier": { "type": ["integer", "null"], "minimum": 1, "maximum": 11 }
+            "tank_id": {
+              "$ref": "#/definitions/tankId"
+            },
+            "name": {
+              "type": ["string", "null"],
+              "maxLength": 128,
+              "description": "Client vehicle name, e.g. ussr:R04_T-34."
+            },
+            "tier": {
+              "type": ["integer", "null"],
+              "minimum": 1,
+              "maximum": 11
+            }
           }
         },
         "stats": {
@@ -122,44 +217,130 @@
             "is_premium"
           ],
           "properties": {
-            "damage_dealt": { "$ref": "#/definitions/count" },
-            "damage_assisted_radio": { "$ref": "#/definitions/count" },
-            "damage_assisted_track": { "$ref": "#/definitions/count" },
-            "damage_assisted_stun": { "$ref": "#/definitions/count" },
-            "damage_blocked": { "$ref": "#/definitions/count" },
-            "spotted": { "$ref": "#/definitions/count" },
-            "frags": { "$ref": "#/definitions/count" },
-            "damaged": { "$ref": "#/definitions/count" },
-            "shots": { "$ref": "#/definitions/count" },
-            "direct_hits": { "$ref": "#/definitions/count" },
-            "direct_enemy_hits": { "$ref": "#/definitions/count" },
-            "piercings": { "$ref": "#/definitions/count" },
-            "piercing_enemy_hits": { "$ref": "#/definitions/count" },
-            "xp": { "$ref": "#/definitions/count" },
-            "original_xp": { "$ref": "#/definitions/count" },
-            "credits": { "type": "integer" },
-            "original_credits": { "type": "integer" },
-            "subtotal_credits": { "type": "integer" },
-            "factual_credits": { "type": "integer" },
-            "life_time_s": { "$ref": "#/definitions/count" },
-            "is_alive": { "type": "boolean" },
-            "death_reason": { "type": "integer", "minimum": -1, "description": "-1 = survived." },
-            "is_premium": { "type": "boolean" },
-            "free_xp": { "$ref": "#/definitions/count" },
-            "repair_cost": { "$ref": "#/definitions/count" },
-            "ammo_cost": { "$ref": "#/definitions/count" },
-            "consumables_cost": { "$ref": "#/definitions/count" }
+            "damage_dealt": {
+              "$ref": "#/definitions/count"
+            },
+            "damage_assisted_radio": {
+              "$ref": "#/definitions/count"
+            },
+            "damage_assisted_track": {
+              "$ref": "#/definitions/count"
+            },
+            "damage_assisted_stun": {
+              "$ref": "#/definitions/count"
+            },
+            "damage_blocked": {
+              "$ref": "#/definitions/count"
+            },
+            "spotted": {
+              "$ref": "#/definitions/count"
+            },
+            "frags": {
+              "$ref": "#/definitions/count"
+            },
+            "damaged": {
+              "$ref": "#/definitions/count"
+            },
+            "shots": {
+              "$ref": "#/definitions/count"
+            },
+            "direct_hits": {
+              "$ref": "#/definitions/count"
+            },
+            "direct_enemy_hits": {
+              "$ref": "#/definitions/count"
+            },
+            "piercings": {
+              "$ref": "#/definitions/count"
+            },
+            "piercing_enemy_hits": {
+              "$ref": "#/definitions/count"
+            },
+            "xp": {
+              "$ref": "#/definitions/count"
+            },
+            "original_xp": {
+              "$ref": "#/definitions/count"
+            },
+            "credits": {
+              "type": "integer"
+            },
+            "original_credits": {
+              "type": "integer"
+            },
+            "subtotal_credits": {
+              "type": "integer"
+            },
+            "factual_credits": {
+              "type": "integer"
+            },
+            "life_time_s": {
+              "$ref": "#/definitions/count"
+            },
+            "is_alive": {
+              "type": "boolean"
+            },
+            "death_reason": {
+              "type": "integer",
+              "minimum": -1,
+              "description": "-1 = survived."
+            },
+            "is_premium": {
+              "type": "boolean"
+            },
+            "free_xp": {
+              "$ref": "#/definitions/count"
+            },
+            "repair_cost": {
+              "$ref": "#/definitions/count"
+            },
+            "ammo_cost": {
+              "$ref": "#/definitions/count"
+            },
+            "consumables_cost": {
+              "$ref": "#/definitions/count"
+            }
           }
         },
         "moe": {
           "description": "Post-battle marks-of-excellence state of this vehicle (tier 5+), null otherwise. damage_rating is percent * 100 (8512 = 85.12%). The (damage_rating, moving_avg_damage) pair is the raw data point for our own RU MoE thresholds.",
-          "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/moeValues" }]
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/moeValues"
+            }
+          ]
         },
-        "queue_time_s": { "type": ["number", "null"], "minimum": 0 },
-        "session_id": { "type": ["string", "null"], "maxLength": 64 },
+        "queue_time_s": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "session_id": {
+          "type": ["string", "null"],
+          "maxLength": 64
+        },
         "loadout": {
           "description": "Optional. The loadout of the player's own vehicle in this battle, read in the hangar when the player joins the queue. Absent or null when it could not be read.",
-          "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/battleLoadout" }]
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/battleLoadout"
+            }
+          ]
+        },
+        "platoon": {
+          "$ref": "#/definitions/battlePlatoon"
+        },
+        "shots": {
+          "type": ["array", "null"],
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/definitions/battleShot"
+          }
         }
       }
     },
@@ -169,9 +350,30 @@
       "additionalProperties": false,
       "required": ["optional_devices", "consumables", "directives", "shells", "field_modifications", "crew", "gameplay_id"],
       "properties": {
-        "optional_devices": { "type": "array", "maxItems": 4, "items": { "type": ["integer", "null"], "minimum": 1 } },
-        "consumables": { "type": "array", "maxItems": 4, "items": { "type": ["integer", "null"], "minimum": 1 } },
-        "directives": { "type": "array", "maxItems": 3, "items": { "type": ["integer", "null"], "minimum": 1 } },
+        "optional_devices": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": ["integer", "null"],
+            "minimum": 1
+          }
+        },
+        "consumables": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": ["integer", "null"],
+            "minimum": 1
+          }
+        },
+        "directives": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": ["integer", "null"],
+            "minimum": 1
+          }
+        },
         "shells": {
           "type": "array",
           "maxItems": 4,
@@ -180,12 +382,25 @@
             "additionalProperties": false,
             "required": ["shell_id", "count"],
             "properties": {
-              "shell_id": { "type": "integer", "minimum": 1 },
-              "count": { "type": "integer", "minimum": 0, "maximum": 1000 }
+              "shell_id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              }
             }
           }
         },
-        "field_modifications": { "type": "array", "maxItems": 32, "items": { "$ref": "#/definitions/gameTag" } },
+        "field_modifications": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/definitions/gameTag"
+          }
+        },
         "crew": {
           "type": "array",
           "maxItems": 8,
@@ -194,23 +409,50 @@
             "additionalProperties": false,
             "required": ["role", "skills"],
             "properties": {
-              "role": { "$ref": "#/definitions/gameTag" },
-              "skills": { "type": "array", "maxItems": 12, "items": { "$ref": "#/definitions/gameTag" } }
+              "role": {
+                "$ref": "#/definitions/gameTag"
+              },
+              "skills": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "$ref": "#/definitions/gameTag"
+                }
+              }
             }
           }
         },
-        "gameplay_id": { "type": ["integer", "null"], "minimum": 0, "maximum": 1023 }
+        "gameplay_id": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 1023
+        }
       }
     },
-    "gameTag": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9_.-]+$" },
+    "gameTag": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
     "moeValues": {
       "type": "object",
       "additionalProperties": false,
       "required": ["marks_on_gun", "damage_rating", "moving_avg_damage"],
       "properties": {
-        "marks_on_gun": { "type": "integer", "minimum": 0, "maximum": 3 },
-        "damage_rating": { "type": "integer", "minimum": 0, "maximum": 10000 },
-        "moving_avg_damage": { "$ref": "#/definitions/count" }
+        "marks_on_gun": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "damage_rating": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "moving_avg_damage": {
+          "$ref": "#/definitions/count"
+        }
       }
     },
     "moeSnapshot": {
@@ -219,14 +461,35 @@
       "additionalProperties": false,
       "required": ["type", "event_id", "occurred_at", "tank_id", "damage_rating", "moving_avg_damage", "marks_on_gun", "battles"],
       "properties": {
-        "type": { "const": "moe_snapshot" },
-        "event_id": { "$ref": "#/definitions/id" },
-        "occurred_at": { "$ref": "#/definitions/unixTime" },
-        "tank_id": { "$ref": "#/definitions/tankId" },
-        "damage_rating": { "type": "integer", "minimum": 0, "maximum": 10000 },
-        "moving_avg_damage": { "$ref": "#/definitions/count" },
-        "marks_on_gun": { "type": "integer", "minimum": 0, "maximum": 3 },
-        "battles": { "type": ["integer", "null"], "minimum": 0 }
+        "type": {
+          "const": "moe_snapshot"
+        },
+        "event_id": {
+          "$ref": "#/definitions/id"
+        },
+        "occurred_at": {
+          "$ref": "#/definitions/unixTime"
+        },
+        "tank_id": {
+          "$ref": "#/definitions/tankId"
+        },
+        "damage_rating": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "moving_avg_damage": {
+          "$ref": "#/definitions/count"
+        },
+        "marks_on_gun": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "battles": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
       }
     },
     "moeDistribution": {
@@ -235,12 +498,28 @@
       "additionalProperties": false,
       "required": ["type", "event_id", "occurred_at", "tank_id", "battle_count", "damage_better_than_n_percent"],
       "properties": {
-        "type": { "const": "moe_distribution" },
-        "event_id": { "$ref": "#/definitions/id" },
-        "occurred_at": { "$ref": "#/definitions/unixTime" },
-        "tank_id": { "$ref": "#/definitions/tankId" },
-        "battle_count": { "$ref": "#/definitions/count" },
-        "damage_better_than_n_percent": { "type": "array", "maxItems": 200, "items": { "type": "integer" } }
+        "type": {
+          "const": "moe_distribution"
+        },
+        "event_id": {
+          "$ref": "#/definitions/id"
+        },
+        "occurred_at": {
+          "$ref": "#/definitions/unixTime"
+        },
+        "tank_id": {
+          "$ref": "#/definitions/tankId"
+        },
+        "battle_count": {
+          "$ref": "#/definitions/count"
+        },
+        "damage_better_than_n_percent": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "integer"
+          }
+        }
       }
     },
     "queue": {
@@ -249,13 +528,37 @@
       "additionalProperties": false,
       "required": ["type", "event_id", "occurred_at", "queue_type", "wait_s", "outcome", "tank_id"],
       "properties": {
-        "type": { "const": "queue" },
-        "event_id": { "$ref": "#/definitions/id" },
-        "occurred_at": { "$ref": "#/definitions/unixTime" },
-        "queue_type": { "$ref": "#/definitions/count", "description": "constants.QUEUE_TYPE." },
-        "wait_s": { "type": "number", "minimum": 0, "maximum": 1800 },
-        "outcome": { "enum": ["arena", "dequeued"] },
-        "tank_id": { "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/tankId" }] }
+        "type": {
+          "const": "queue"
+        },
+        "event_id": {
+          "$ref": "#/definitions/id"
+        },
+        "occurred_at": {
+          "$ref": "#/definitions/unixTime"
+        },
+        "queue_type": {
+          "$ref": "#/definitions/count",
+          "description": "constants.QUEUE_TYPE."
+        },
+        "wait_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1800
+        },
+        "outcome": {
+          "enum": ["arena", "dequeued"]
+        },
+        "tank_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/tankId"
+            }
+          ]
+        }
       }
     },
     "ingestResponse": {
@@ -263,15 +566,25 @@
       "description": "200 response body of POST /mod/ingest. session is optional: when present and session_id matches the mod's current session, the hangar panel shows the server-computed WN8.",
       "required": ["accepted"],
       "properties": {
-        "accepted": { "$ref": "#/definitions/count" },
-        "duplicates": { "$ref": "#/definitions/count" },
+        "accepted": {
+          "$ref": "#/definitions/count"
+        },
+        "duplicates": {
+          "$ref": "#/definitions/count"
+        },
         "session": {
           "type": "object",
           "required": ["session_id", "wn8"],
           "properties": {
-            "session_id": { "type": "string" },
-            "wn8": { "type": ["number", "null"] },
-            "battles": { "$ref": "#/definitions/count" }
+            "session_id": {
+              "type": "string"
+            },
+            "wn8": {
+              "type": ["number", "null"]
+            },
+            "battles": {
+              "$ref": "#/definitions/count"
+            }
           }
         }
       }
@@ -283,7 +596,61 @@
         "error": {
           "enum": ["bad_signature", "unknown_device", "device_revoked", "account_mismatch", "invalid_payload", "too_large", "rate_limited"]
         },
-        "message": { "type": "string" }
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "battlePlatoon": {
+      "type": ["object", "null"],
+      "description": "Own platoon after the battle: its size and the account ids of the platoon mates (same prebattleID on the own team). Never other players.",
+      "additionalProperties": false,
+      "required": ["size", "mates"],
+      "properties": {
+        "size": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 3
+        },
+        "mates": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/definitions/accountId"
+          }
+        }
+      }
+    },
+    "battleShot": {
+      "type": "object",
+      "description": "One own shot that hit an enemy, from the player feedback events: damage dealt, the nominal damage of the own shell, shell kind, outcome, distance (null when unknown) and whether it destroyed the target (overkill caps the roll).",
+      "additionalProperties": false,
+      "required": ["damage", "nominal", "shell", "outcome", "distance_m", "fatal"],
+      "properties": {
+        "damage": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "nominal": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "shell": {
+          "enum": ["armor_piercing", "armor_piercing_cr", "hollow_charge", "high_explosive", "unknown"]
+        },
+        "outcome": {
+          "enum": ["damage", "no_damage", "miss"]
+        },
+        "distance_m": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 1500
+        },
+        "fatal": {
+          "type": "boolean"
+        }
       }
     }
   }

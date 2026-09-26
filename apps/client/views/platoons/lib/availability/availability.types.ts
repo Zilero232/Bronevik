@@ -3,7 +3,7 @@ export type AvailabilityState = 'anytime' | 'ended' | 'later' | 'now';
 export type AvailabilityInput = {
   from: string | null;
   until: string | null;
-  now: Date;
+  now: Date | null;
 };
 
 export type AvailabilityWindow = {
@@ -15,5 +15,5 @@ export type AvailabilityWindow = {
 export type AvailabilityBounds = {
   from: Date | null;
   until: Date | null;
-  now: Date;
+  now: Date | null;
 };

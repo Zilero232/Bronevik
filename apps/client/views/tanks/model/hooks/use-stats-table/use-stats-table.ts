@@ -8,15 +8,22 @@ import { useRouter } from '@/shared/i18n/navigation';
 
 import { useTankColumns } from '../use-tank-columns';
 import { useTankStats } from '../use-tank-stats';
+import { useTanksState } from '../use-tanks-state';
 
 export const useStatsTable = () => {
   const router = useRouter();
   const { data, isLoading, isError, isFetching, refetch } = useTankStats();
+  const [{ statuses, roles, difficulties }, setState] = useTanksState();
   const { reset, isActive } = useVehicleFilters();
   const columns = useTankColumns();
 
   const onRowClick = (row: TankServerStatsRow) => {
-    router.push(ROUTES.tank(row.vehicle.slug));
+    router.push(ROUTES.tanks.detail(row.vehicle.slug));
+  };
+
+  const onReset = () => {
+    void reset();
+    void setState({ statuses: null, roles: null, difficulties: null });
   };
 
   const onRetry = () => {
@@ -30,8 +37,8 @@ export const useStatsTable = () => {
     isLoading,
     isError,
     isFetching,
-    isFiltered: isActive,
-    onReset: reset,
+    isFiltered: isActive || statuses.length > 0 || roles.length > 0 || difficulties.length > 0,
+    onReset,
     onRetry,
     onRowClick
   };

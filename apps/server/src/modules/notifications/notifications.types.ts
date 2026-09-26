@@ -63,6 +63,7 @@ export type DeliverToInput = {
   rendered: RenderedNotification;
   telegramId: bigint | null;
   locale: NotificationLocale;
+  email: string;
 };
 
 export type ChannelSendInput = Omit<DeliverToInput, 'dedupeKey' | 'notification'>;
@@ -72,6 +73,12 @@ export type WebPushInput = {
   title: string;
   body: string;
   url: string;
+};
+
+export type NotificationEmailInput = {
+  to: string;
+  locale: NotificationLocale;
+  rendered: RenderedNotification;
 };
 
 export type DigestEmailInput = {
@@ -127,4 +134,10 @@ export type DigestOfInput = {
 export type InboxPage = {
   items: InboxItem[];
   unread: number;
+};
+
+export type FirstWinRemindInput = {
+  userId: string;
+  now: Date;
+  resetAt: Date;
 };

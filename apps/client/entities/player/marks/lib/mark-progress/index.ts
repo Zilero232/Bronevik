@@ -1,3 +1,3 @@
-export { markCountAt, markProgress } from './mark-progress';
+export { markCountAt, markProgress, markRing } from './mark-progress';
 
-export type { MarkProgressInput } from './mark-progress.types';
+export type { MarkLevel, MarkProgressInput, MarkRing } from './mark-progress.types';

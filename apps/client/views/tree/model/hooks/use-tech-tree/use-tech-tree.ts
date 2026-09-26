@@ -3,7 +3,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { isNotFoundError } from '@/shared/api/source';
-import { getTechTree } from '@/shared/api/tree';
+import { getTechTree } from '@/entities/tank/tree';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { layoutTree } from '../../../lib/tree-layout';

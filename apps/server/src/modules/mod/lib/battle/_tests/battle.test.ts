@@ -56,6 +56,33 @@ describe('toBattleData', () => {
     expect(without.moePercentDelta).toBeNull();
   });
 
+  it('stores platoon mates as bigints, a solo battle as size one and an old mod as unknown', () => {
+    const platoon = { size: 2, mates: [42] };
+    const inPlatoon = toBattleData({ event: { ...battle, platoon }, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
+    const solo = toBattleData({ event: { ...battle, platoon: null }, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
+
+    expect(inPlatoon.platoonSize).toBe(platoon.size);
+    expect(inPlatoon.platoonMates).toEqual(platoon.mates.map((mate) => BigInt(mate)));
+    const { platoon: _platoon, ...legacy } = battle;
+    const unknown = toBattleData({ event: legacy, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
+
+    expect(solo.platoonSize).toBe(BATTLE.soloPlatoonSize);
+    expect(solo.platoonMates).toEqual([]);
+    expect(unknown.platoonSize).toBeNull();
+  });
+
+  it('stores own shots in the camelCase shape and leaves an empty list out', () => {
+    const shot = { damage: 400, nominal: 390, shell: 'armor_piercing', outcome: 'damage', distance_m: 180, fatal: false } as const;
+    const withShots = toBattleData({ event: { ...battle, shots: [shot] }, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
+    const without = toBattleData({ event: { ...battle, shots: [] }, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
+
+    expect(withShots.shots).toEqual([
+      { damage: shot.damage, nominal: shot.nominal, shell: shot.shell, outcome: shot.outcome, distance: shot.distance_m, fatal: shot.fatal }
+    ]);
+
+    expect(without.shots).toBeUndefined();
+  });
+
   it('stores missing economy costs as null rather than zero', () => {
     const { repair_cost: _repair, ammo_cost: _ammo, consumables_cost: _consumables, free_xp: _freeXp, ...stats } = battle.stats;
     const data = toBattleData({ event: { ...battle, stats }, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });

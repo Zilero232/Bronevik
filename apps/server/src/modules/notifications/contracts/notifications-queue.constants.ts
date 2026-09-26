@@ -9,6 +9,7 @@ export const NOTIFICATIONS_JOB = {
     marksWatch: 'marks-watch',
     sessionReports: 'session-reports',
     thresholdDrops: 'threshold-drops',
-    weeklyDigest: 'weekly-digest'
+    weeklyDigest: 'weekly-digest',
+    firstWinReminders: 'first-win-reminders'
   }
 } as const;

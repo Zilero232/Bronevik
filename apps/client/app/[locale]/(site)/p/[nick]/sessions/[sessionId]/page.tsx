@@ -18,7 +18,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]
   return createPageMetadata({
     title: t('title', { nickname }),
     description: t('description', { nickname }),
-    path: ROUTES.playerSession({ nickname, sessionId }),
+    path: ROUTES.players.session({ nickname, sessionId }),
     locale
   });
 };

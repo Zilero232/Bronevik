@@ -1,5 +1,6 @@
 import type {
   AccountEconomyQuery,
+  CreateVehicleSourceInput,
   TankDetailQuery,
   TankEconomyQuery,
   TankServerStatsQuery,
@@ -68,4 +69,9 @@ export type AccountEconomyLookup = {
 export type AccountLearningLookup = {
   accountId: bigint;
   tankId: number;
+};
+
+export type CreateVehicleSourceRequest = {
+  userId: string;
+  input: CreateVehicleSourceInput;
 };

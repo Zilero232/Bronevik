@@ -1,7 +1,7 @@
 import type { MapSummary } from '@otmetki/schemas';
 import type { z } from 'zod';
 
-import type { TacticBoard } from '@/shared/api/tactics';
+import type { TacticBoard } from '@/entities/tactic/board';
 
 import type { boardSettingsSchema } from './board-settings';
 

@@ -1,4 +1,4 @@
-import type { TacticBoardRole } from '@/shared/api/tactics';
+import type { TacticBoardRole } from '@/entities/tactic/board';
 
 import type { useBoardDocument } from '../use-board-document';
 

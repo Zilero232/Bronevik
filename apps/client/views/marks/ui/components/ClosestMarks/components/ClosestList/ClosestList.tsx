@@ -22,7 +22,7 @@ export const ClosestList = ({ player }: ClosestListProps) => {
     .with({ isLoading: true }, () => (
       <div aria-busy className={s.list}>
         {PLAYER_LOOKUP.skeletonRows.map((row) => (
-          <Skeleton key={row} height={36} width='100%' />
+          <Skeleton key={row} height={112} width='100%' />
         ))}
       </div>
     ))

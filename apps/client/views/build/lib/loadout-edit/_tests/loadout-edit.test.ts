@@ -19,7 +19,15 @@ import {
   toggleSkill
 } from '..';
 
-const item = (id: number) => ({ id, tag: `mod_${id}`, name: `mod ${id}`, image: null, category: null, isPremium: false });
+const item = (id: number) => ({
+  id,
+  tag: `mod_${id}`,
+  name: `mod ${id}`,
+  kind: 'optionalDevice' as const,
+  image: null,
+  category: null,
+  isPremium: false
+});
 
 const FIELD_MODS: BuildFieldStep[] = [
   { key: 'mod_1|mod_2', level: 1, options: [item(1), item(2)] },

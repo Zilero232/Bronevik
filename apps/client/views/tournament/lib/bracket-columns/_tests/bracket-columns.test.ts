@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TournamentBracket, TournamentParticipant } from '@/shared/api/tournaments';
+import type { TournamentBracket, TournamentParticipant } from '@/entities/tournament/tournament';
 
 import { bracketColumns, championOf, participantLabel, roundName } from '../bracket-columns';
 

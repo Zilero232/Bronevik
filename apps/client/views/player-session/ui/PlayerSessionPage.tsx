@@ -22,8 +22,8 @@ export const PlayerSessionPage = ({ nickname, sessionId }: PlayerSessionPageProp
     <div className={s.root}>
       <PageHeader
         breadcrumbs={[
-          { label: tPlayers('title'), href: ROUTES.players },
-          { label: nickname, href: ROUTES.player(nickname) }
+          { label: tPlayers('title'), href: ROUTES.players.list },
+          { label: nickname, href: ROUTES.players.profile(nickname) }
         ]}
         title={t('meta.title', { nickname })}
       />

@@ -1,4 +1,4 @@
-import type { CommentTarget } from '@/shared/api/comments';
+import type { CommentTarget } from '../api';
 
 export type CommentsThreadProps = {
   target: CommentTarget;

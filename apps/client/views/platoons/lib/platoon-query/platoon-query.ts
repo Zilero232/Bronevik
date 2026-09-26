@@ -1,29 +1,23 @@
-import { isValid } from 'date-fns';
+import type { PlatoonListQuery } from '../../api';
 
-import type { PlatoonListQuery } from '@/shared/api/platoons';
+import { zonedInputToIso } from '@/shared/lib';
 
 import type { NextSingleTierInput, PlatoonFilters, PlatoonMode } from './platoon-query.types';
 
 import { PLATOON_MODES } from '../../config';
 
-export const localToIso = (value: string | null | undefined): string | undefined => {
-  if (!value) {
-    return undefined;
-  }
+export const toPlatoonQuery = ({ tier, mode, voice, minWn8, maxWn8, at }: PlatoonFilters): PlatoonListQuery => {
+  const availableAt = zonedInputToIso({ value: at });
 
-  const date = new Date(value);
-
-  return isValid(date) ? date.toISOString() : undefined;
+  return {
+    ...(tier === null ? {} : { tier }),
+    ...(mode ? { mode } : {}),
+    ...(voice === 'any' ? {} : { hasVoice: voice === 'yes' ? 'true' : 'false' }),
+    ...(minWn8 === null ? {} : { minWn8 }),
+    ...(maxWn8 === null ? {} : { maxWn8 }),
+    ...(availableAt ? { availableAt } : {})
+  };
 };
-
-export const toPlatoonQuery = ({ tier, mode, voice, minWn8, maxWn8, at }: PlatoonFilters): PlatoonListQuery => ({
-  ...(tier === null ? {} : { tier }),
-  ...(mode ? { mode } : {}),
-  ...(voice === 'any' ? {} : { hasVoice: voice === 'yes' ? 'true' : 'false' }),
-  ...(minWn8 === null ? {} : { minWn8 }),
-  ...(maxWn8 === null ? {} : { maxWn8 }),
-  ...(localToIso(at) ? { availableAt: localToIso(at) } : {})
-});
 
 export const hasActiveFilters = ({ tier, mode, voice, minWn8, maxWn8, at }: PlatoonFilters): boolean =>
   tier !== null || Boolean(mode) || voice !== 'any' || minWn8 !== null || maxWn8 !== null || Boolean(at);

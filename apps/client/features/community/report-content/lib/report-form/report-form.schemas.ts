@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { zCreateReport } from '@/shared/api/moderation';
+import { zCreateReport } from '../../api';
 
 export const reportFormSchema = z.object({
   reason: zCreateReport.shape.reason,

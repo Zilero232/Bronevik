@@ -1,4 +1,4 @@
-import type { TacticStroke } from '@/shared/api/tactics';
+import type { TacticStroke } from '@/entities/tactic/board';
 
 import type { IconAppearance, IconAppearanceInput, StrokeGeometry } from './shape-geometry.types';
 

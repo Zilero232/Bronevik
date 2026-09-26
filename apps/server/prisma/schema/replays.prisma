@@ -71,6 +71,8 @@ model Replay {
   @@index([playerAccountIds], type: Gin)
   @@index([battleId])
   @@index([gameplayMode, playedAt(sort: Desc)])
+  @@index([battleType, playedAt(sort: Desc)])
+  @@index([visibility, status, playedAt(sort: Desc)])
   @@map("replay")
 }
 

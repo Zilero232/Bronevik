@@ -51,6 +51,12 @@ clan-weekly-report-body = Events: { $events }, attendance { $attendance ->
 badge-awarded-title = New badge!
 badge-awarded-body = "{ $title }" earned
 
+replay-overflow-title = { $daysLeft ->
+    [1] Extra replays will be deleted tomorrow
+   *[other] Extra replays will be deleted in { $daysLeft } days
+}
+replay-overflow-body = You have { $stored } replays and the free plan keeps { $keep }. On { $deleteAt } we keep the { $keep } newest and delete the rest. Get Plus to keep them all.
+
 digest-title = Your week on Three Marks
 digest-body = { $battles } { $battles ->
         [one] battle
@@ -60,3 +66,41 @@ digest-body = { $battles } { $battles ->
        *[other] sessions
     }, { NUMBER($winRate, minimumFractionDigits: 1, maximumFractionDigits: 1) }% wins, { NUMBER($avgDamage, maximumFractionDigits: 0) } average damage, new marks: { $marksGained }
 digest-empty = No battles this week. See you in the game!
+
+first-win-available-title = First win of the day
+first-win-available-body = { $nickname }: the first-win bonus is still available on { $available } { $available ->
+        [one] tank
+       *[other] tanks
+    }
+
+watchlist-digest-title = Your watchlist digest
+watchlist-digest-body = { $players } { $players ->
+        [one] player
+       *[other] players
+    } played { $battles } { $battles ->
+        [one] battle
+       *[other] battles
+    }, new marks: { $marks }. { $leader ->
+        [none] {""}
+       *[other] Most active: { $leader } with { $leaderBattles } { $leaderBattles ->
+            [one] battle
+           *[other] battles
+        } at { NUMBER($leaderWinRate, maximumFractionDigits: 1) }% wins
+    }
+
+tank-returned-title = Tank is back in the shop
+tank-returned-body = { $tankName } is on sale again{ $absentDays ->
+        [none] {""}
+       *[other] {" "}after { $absentDays } days away
+    }{ $discount ->
+        [none] {""}
+       *[other] , { NUMBER($discount, maximumFractionDigits: 0) }% off
+    }
+
+competition-finished-title = Competition finished
+competition-finished-body = “{ $title }”: team “{ $teamName }” placed { $rank } of { $teams }
+
+streamer-live-title = { $name } is live
+streamer-live-body = The stream has started: { $platform }
+streamer-live-tank-title = { $name } is live on { $tankName }
+streamer-live-tank-body = Streaming { $tankName }: { $platform }

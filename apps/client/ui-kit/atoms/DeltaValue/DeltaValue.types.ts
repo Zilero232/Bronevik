@@ -5,6 +5,7 @@ export type DeltaValueProps = {
   value: number;
   verdict?: DeltaVerdict;
   isLowerBetter?: boolean;
+  isSameShown?: boolean;
   format?: Intl.NumberFormatOptions | NumberFormatName;
   suffix?: string;
   className?: string;

@@ -6,7 +6,7 @@ import type { UploadedReplay, UploadFromModInput, UploadReplayInput } from '../r
 
 import { AppBadRequestException, AppConflictException } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
-import { isUniqueViolation, ObjectStorage, PrismaService } from '../../../core';
+import { isUniqueViolation, LIMIT_LOCK_SCOPE, lockedTransaction, ObjectStorage, PrismaService } from '../../../core';
 import { parseReplay } from '../../../lib/replay';
 import { EntitlementsService } from '../../billing';
 import { ModDeviceService } from '../../mod';
@@ -50,31 +50,40 @@ export class ReplayUploadService {
     const existing = await this.prisma.replay.findUnique({ where: { sha256 }, select: { id: true } });
 
     if (existing) {
-      throw new AppConflictException('REPLAY_DUPLICATE', `This replay is already uploaded as ${existing.id}`);
-    }
-
-    if (uploaderUserId) {
-      const stored = await this.prisma.replay.count({ where: { uploaderUserId } });
-
-      await this.entitlements.assertWithinLimit({ userId: uploaderUserId, key: 'storedReplays', count: stored });
+      throw new AppConflictException('REPLAY_DUPLICATE', 'This replay is already uploaded');
     }
 
     const storageKey = replayStorageKey({ sha256, extension });
+    const data = { storageKey, sha256, fileName: file.originalname.slice(0, 255), fileSize: file.size, uploaderUserId, deviceId, visibility };
 
-    await this.storage.put({ key: storageKey, body: bytes, contentType: REPLAY_UPLOAD.contentType });
+    const replay = await lockedTransaction({
+      prisma: this.prisma,
+      scope: LIMIT_LOCK_SCOPE.replays,
+      key: uploaderUserId ?? sha256,
+      run: async (tx) => {
+        if (uploaderUserId) {
+          const stored = await tx.replay.count({ where: { uploaderUserId } });
 
-    const replay = await this.prisma.replay
-      .create({
-        data: { storageKey, sha256, fileName: file.originalname.slice(0, 255), fileSize: file.size, uploaderUserId, deviceId, visibility },
-        select: { id: true, status: true }
-      })
-      .catch((error: unknown) => {
-        if (isUniqueViolation(error)) {
-          throw new AppConflictException('REPLAY_DUPLICATE', 'This replay is already uploaded');
+          await this.entitlements.assertWithinLimit({ userId: uploaderUserId, key: 'storedReplays', count: stored });
         }
 
-        throw error;
-      });
+        return tx.replay.create({ data, select: { id: true, status: true } });
+      }
+    }).catch((error: unknown) => {
+      if (isUniqueViolation(error)) {
+        throw new AppConflictException('REPLAY_DUPLICATE', 'This replay is already uploaded');
+      }
+
+      throw error;
+    });
+
+    try {
+      await this.storage.put({ key: storageKey, body: bytes, contentType: REPLAY_UPLOAD.contentType });
+    } catch (error) {
+      await this.prisma.replay.delete({ where: { id: replay.id } }).catch(() => undefined);
+
+      throw error;
+    }
 
     await this.queue.add(
       REPLAYS_QUEUE.jobs.parse,

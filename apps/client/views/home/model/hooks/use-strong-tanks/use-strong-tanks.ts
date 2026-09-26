@@ -3,7 +3,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { listTankStats } from '@/shared/api/tanks';
+import { listTankStats } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { StrongTier } from './use-strong-tanks.types';
@@ -23,5 +23,13 @@ export const useStrongTanks = () => {
 
   const rows = data?.items ?? [];
 
-  return { tier, setTier, rows, updatedAt: rows[0]?.computedAt ?? null, isPending, isError, retry: () => void refetch() };
+  return {
+    tier,
+    setTier,
+    cards: rows.slice(0, HOME.strongTanks.cards),
+    updatedAt: rows[0]?.computedAt ?? null,
+    isPending,
+    isError,
+    retry: () => void refetch()
+  };
 };

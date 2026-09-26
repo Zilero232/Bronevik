@@ -7,6 +7,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PremiumOffer, Vehicle } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { EntitlementsService } from '../../../billing';
 import type { NotificationService } from '../../../notifications';
 import type { BonusCodeService } from '../bonus-code.service';
 
@@ -41,13 +42,14 @@ const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const notifications = mock<NotificationService>();
   const bonusCodes = mock<BonusCodeService>();
+  const entitlements = mock<EntitlementsService>();
 
-  prisma.premiumOffer.findMany.mockResolvedValue([mock<PremiumOffer>({ url: knownItem?.url ?? null })]);
+  prisma.premiumOffer.findMany.mockResolvedValueOnce([mock<PremiumOffer>({ url: knownItem?.url ?? null })]).mockResolvedValue([]);
   prisma.premiumOffer.create.mockResolvedValue(mock<PremiumOffer>({ id: 'offer-1' }));
   prisma.vehicle.findMany.mockResolvedValue([defender, unmentioned]);
   notifications.tankDiscounted.mockResolvedValue(1);
 
-  return { service: new OfferScrapeService(prisma, notifications, bonusCodes), prisma, notifications, bonusCodes };
+  return { service: new OfferScrapeService(prisma, notifications, bonusCodes, entitlements), prisma, notifications, bonusCodes, entitlements };
 };
 
 beforeEach(() => {
@@ -94,6 +96,38 @@ describe('OfferScrapeService.run', () => {
     });
 
     expect(summary.notified).toBe(1);
+  });
+
+  it('tells the Plus followers that a tank is back after a long absence', async () => {
+    const { service, prisma, notifications, entitlements } = createService();
+
+    prisma.premiumOffer.findMany
+      .mockReset()
+      .mockResolvedValueOnce([mock<PremiumOffer>({ url: knownItem?.url ?? null })])
+      .mockResolvedValue([mock<PremiumOffer>({ endsAt: new Date('2026-06-01T00:00:00Z'), lastSeenAt: new Date('2026-05-30T00:00:00Z') })]);
+
+    prisma.follow.findMany.mockResolvedValue([mock({ userId: 'plus' }), mock({ userId: 'free' })]);
+    entitlements.isPlus.mockImplementation(async (userId) => userId === 'plus');
+    notifications.notifyMany.mockResolvedValue(1);
+
+    await service.run(now);
+
+    expect(notifications.notifyMany).toHaveBeenCalledWith(
+      expect.objectContaining({ userIds: ['plus'], notification: expect.objectContaining({ event: 'tankReturned', tankId: defender.tankId }) })
+    );
+  });
+
+  it('stays quiet about a tank that was on sale a few days ago', async () => {
+    const { service, prisma, notifications } = createService();
+
+    prisma.premiumOffer.findMany
+      .mockReset()
+      .mockResolvedValueOnce([mock<PremiumOffer>({ url: knownItem?.url ?? null })])
+      .mockResolvedValue([mock<PremiumOffer>({ endsAt: new Date('2026-09-20T00:00:00Z'), lastSeenAt: new Date('2026-09-20T00:00:00Z') })]);
+
+    await service.run(now);
+
+    expect(notifications.notifyMany).not.toHaveBeenCalled();
   });
 
   it('discovers the bonus codes printed on the offer page', async () => {

@@ -8,17 +8,19 @@ import { VehicleCatalogService } from '../../reference';
 import { TANK_OBTAIN } from '../config';
 import { researchXp, tankSources } from '../lib';
 import { TankTraitsService } from './tank-traits.service';
+import { VehicleSourcesService } from './vehicle-sources.service';
 
 @Injectable()
 export class TankObtainService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly traits: TankTraitsService
+    private readonly traits: TankTraitsService,
+    private readonly sources: VehicleSourcesService
   ) {}
 
   async obtain(tankId: number): Promise<TankObtain> {
-    const [entry, vehicle, offers, total, news] = await Promise.all([
+    const [entry, vehicle, offers, total, news, missions, editorial] = await Promise.all([
       this.traits.of(tankId),
       this.prisma.vehicle.findUnique({ where: { tankId }, select: { priceCredit: true, priceGold: true, prevTankIds: true } }),
       this.prisma.premiumOffer.findMany({ where: { tankIds: { has: tankId } }, orderBy: { lastSeenAt: 'desc' }, take: TANK_OBTAIN.offersLimit }),
@@ -28,7 +30,9 @@ export class TankObtainService {
         orderBy: { publishedAt: 'desc' },
         take: TANK_OBTAIN.newsLimit,
         select: { title: true, url: true, publishedAt: true }
-      })
+      }),
+      this.sources.missionsFor(tankId),
+      this.sources.forTank(tankId)
     ]);
 
     const parents = vehicle?.prevTankIds.length
@@ -64,7 +68,9 @@ export class TankObtainService {
       },
       news: news.flatMap((item) =>
         URL.canParse(item.url) ? [{ title: item.title, url: item.url, publishedAt: item.publishedAt.toISOString() }] : []
-      )
+      ),
+      missions,
+      editorial
     };
   }
 }

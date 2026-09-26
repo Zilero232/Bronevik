@@ -22,7 +22,7 @@ export const StudioHeader = () => {
         <p className={s.lead}>{t('lead')}</p>
       </div>
       {profile && (
-        <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.streamer(profile.slug)}>
+        <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.streamers.profile(profile.slug)}>
           <ExternalLink size={14} />
           {t('openPublic')}
         </Link>

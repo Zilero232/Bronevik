@@ -6,9 +6,10 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { RatingValue } from '@/entities/player/stats';
 import { WinRateCell } from '@/entities/tank/tank';
 
-import { ClanCell, Wn8Cell } from '../../../ui/components/ClanRating/components';
+import { ActivityCell, ClanCell } from '../../../ui/components/ClanRating/components';
 
 const column = createColumnHelper<ClanListItem>();
 
@@ -37,16 +38,13 @@ export const useClanColumns = (): ColumnDef<ClanListItem, never>[] => {
     column.accessor('clan.membersCount', {
       header: t('columns.members'),
       enableSorting: false,
-      cell: ({ row: { original } }) =>
-        original.activeMembers7d === null
-          ? format.number(original.clan.membersCount)
-          : t('active', { active: original.activeMembers7d, total: original.clan.membersCount }),
+      cell: ({ row: { original } }) => <ActivityCell item={original} />,
       meta: { align: 'end', isNumeric: true }
     }),
     column.accessor('avgWn8', {
       header: t('columns.wn8'),
       enableSorting: false,
-      cell: (info) => <Wn8Cell value={info.getValue()} />,
+      cell: (info) => <RatingValue rating={info.getValue()} />,
       meta: { align: 'end', isNumeric: true }
     }),
     column.accessor('avgWinRate', {

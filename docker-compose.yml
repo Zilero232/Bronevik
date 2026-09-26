@@ -26,8 +26,8 @@ x-healthcheck: &healthcheck
 
 x-backend-env: &backend-env
   NODE_ENV: production
-  DATABASE_URL: postgresql://${POSTGRES_USER:-bronevik}:${POSTGRES_PASSWORD:-bronevik}@postgres:5432/${POSTGRES_DB:-bronevik}
-  DIRECT_URL: postgresql://${POSTGRES_USER:-bronevik}:${POSTGRES_PASSWORD:-bronevik}@postgres:5432/${POSTGRES_DB:-bronevik}
+  DATABASE_URL: postgresql://${POSTGRES_USER:-otmetki}:${POSTGRES_PASSWORD:-otmetki}@postgres:5432/${POSTGRES_DB:-otmetki}
+  DIRECT_URL: postgresql://${POSTGRES_USER:-otmetki}:${POSTGRES_PASSWORD:-otmetki}@postgres:5432/${POSTGRES_DB:-otmetki}
   REDIS_URL: redis://redis:6379
 
 services:
@@ -121,9 +121,9 @@ services:
     container_name: otmetki-postgres
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-bronevik}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bronevik}
-      POSTGRES_DB: ${POSTGRES_DB:-bronevik}
+      POSTGRES_USER: ${POSTGRES_USER:-otmetki}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-otmetki}
+      POSTGRES_DB: ${POSTGRES_DB:-otmetki}
     ports:
       # Loopback only: Docker's rules sit ahead of UFW, so a published port
       # would face the internet. Reach it over an ssh tunnel.

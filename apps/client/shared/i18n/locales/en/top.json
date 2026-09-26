@@ -40,5 +40,13 @@
     "player": "Player",
     "battles": "Battles",
     "tank": "Tank"
+  },
+  "hero": {
+    "home": "Home"
+  },
+  "podium": {
+    "title": "Top three",
+    "place": "Place {rank}",
+    "battles": "{count, plural, one {# battle} other {# battles}}"
   }
 }

@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { useFormatter } from 'next-intl';
+import { match, P } from 'ts-pattern';
 
 import type { KeyFigureProps } from './KeyFigure.types';
 
@@ -22,14 +23,21 @@ export const KeyFigure = ({
   tone = 'accent',
   size = 'md',
   isFramed = false,
+  variant = 'plain',
   className
 }: KeyFigureProps) => {
   const format = useFormatter();
 
   return (
-    <div className={clsx(s.root, s[size], isFramed && s.framed, className)} data-tone={tone}>
+    <div className={clsx(s.root, s[size], s[variant], isFramed && s.framed, className)} data-tone={tone}>
       <span className={s.label}>{label}</span>
-      <span className={s.value}>{value === null ? '—' : `${prefix ?? ''}${format.number(value, numberFormat)}${suffix ?? ''}`}</span>
+      <span className={s.value}>
+        {match(value)
+          .with(P.nullish, () => '—')
+          .with(P.number, (known) => `${prefix ?? ''}${format.number(known, numberFormat)}${suffix ?? ''}`)
+          .with(P.string, (known) => `${prefix ?? ''}${known}${suffix ?? ''}`)
+          .otherwise((node) => node)}
+      </span>
       {(delta !== undefined || hint || trend) && (
         <span className={s.foot}>
           {deltaLabel && <span className={s.deltaLabel}>{deltaLabel}</span>}

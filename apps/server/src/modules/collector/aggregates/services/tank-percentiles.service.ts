@@ -7,7 +7,7 @@ import type { PercentileRow } from '../aggregates.types';
 
 import { toJsonValue } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
-import { BRONYA_REFERENCE, bronyaReferencePayload } from '../lib/bronya-reference';
+import { BRONYA_REFERENCE, bronyaReferencePayload } from '../../../reference';
 import { ReferenceTablesService } from './reference-tables.service';
 
 @Injectable()

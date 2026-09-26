@@ -1,25 +1,45 @@
 import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
+import { ModModule } from '../mod';
+import { ProgressionCoreModule } from '../progression';
+import { AdminStreamersController } from './admin-streamers.controller';
+import { ModSettingsController } from './mod-settings.controller';
 import { OverlaysController } from './overlays.controller';
 import {
   ChallengeService,
   IntegrationsService,
   IntegrationStoreService,
+  LivePlatformsService,
   OAuthStateService,
   OverlayDataService,
   OverlayPublisherService,
   OverlayService,
   OverlayStreamService,
-  StreamerProfileService
+  SettingsAggregateService,
+  SettingsShareService,
+  StreamerCardsService,
+  StreamerClaimService,
+  StreamerDirectoryService,
+  StreamerFollowService,
+  StreamerProfileService,
+  StreamerSettingsService
 } from './services';
 import { StreamersController } from './streamers.controller';
 
 @Module({
-  imports: [BillingCoreModule],
-  controllers: [OverlaysController, StreamersController],
+  imports: [BillingCoreModule, ProgressionCoreModule, ModModule],
+  controllers: [OverlaysController, StreamersController, AdminStreamersController, ModSettingsController],
   providers: [
     StreamerProfileService,
+    StreamerCardsService,
+    StreamerDirectoryService,
+    StreamerClaimService,
+    StreamerSettingsService,
+    StreamerFollowService,
+    SettingsAggregateService,
+    SettingsShareService,
+    LivePlatformsService,
     OverlayService,
     OverlayDataService,
     OverlayPublisherService,

@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getTankTrend } from '@/shared/api/tanks';
+import { getTankTrend } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { TANK_PAGE } from '../../../config';

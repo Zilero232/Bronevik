@@ -8,6 +8,7 @@ import type {
   AccountRatingsService,
   BuildUsageService,
   LearningCurveService,
+  ModeMetaService,
   ServerStatsService,
   TankEconomyService,
   TankPercentilesService,
@@ -25,6 +26,7 @@ const createProcessor = () => {
   const economy = mock<TankEconomyService>();
   const learning = mock<LearningCurveService>();
   const buildUsage = mock<BuildUsageService>();
+  const modeMeta = mock<ModeMetaService>();
   const metrics = mock<MetricsService>();
 
   metrics.track.mockImplementation(({ run }) => run());
@@ -35,7 +37,7 @@ const createProcessor = () => {
     economy,
     learning,
     metrics,
-    processor: new AggregateProcessor(accountRatings, serverStats, percentiles, maintenance, economy, learning, buildUsage, metrics)
+    processor: new AggregateProcessor(accountRatings, serverStats, percentiles, maintenance, economy, learning, buildUsage, modeMeta, metrics)
   };
 };
 

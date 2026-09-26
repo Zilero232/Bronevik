@@ -12,6 +12,7 @@
       "packages/*"
     ],
     "catalog": {
+      "@date-fns/tz": "^1.5.0",
       "@types/bun": "^1.4.2",
       "@types/react": "^19.3.0",
       "better-auth": "^1.7.5",
@@ -43,6 +44,7 @@
     "dev:client": "bun --filter @otmetki/client dev",
     "dev:infra": "docker compose -f docker-compose.dev.yml up -d --wait",
     "dev:infra:down": "docker compose -f docker-compose.dev.yml down",
+    "dev:seed": "bun --filter @otmetki/server dev:seed",
     "dev:server": "bun --filter @otmetki/server dev",
     "dev:worker": "bun --filter @otmetki/server dev:worker",
     "fix": "bun run lint:fix && bun run format && bun run lint:css:fix && bun run format:prisma",
@@ -54,6 +56,7 @@
     "lint:css": "stylelint \"apps/client/**/*.scss\"",
     "lint:css:fix": "stylelint \"apps/client/**/*.scss\" --fix",
     "lint:dupes": "jscpd",
+    "lint:encoding": "node scripts/check-utf8.mjs",
     "lint:fix": "eslint . --fix",
     "lint:unused": "knip",
     "prepare": "husky",
@@ -64,7 +67,7 @@
     "test:mod": "python -m unittest discover apps/mod/tests",
     "test:watch": "vitest",
     "typecheck": "bun --filter '*' typecheck",
-    "verify": "bun run typecheck && bun run lint && bun run format:check && bun run lint:css"
+    "verify": "bun run typecheck && bun run lint && bun run lint:encoding && bun run format:check && bun run lint:css"
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [

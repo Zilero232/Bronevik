@@ -7,9 +7,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
 import { TankCell } from '@/entities/tank/tank';
-
-import { DeltaCell } from '../../../ui/components/DeltaCell';
-import { NumberCell } from '../../../ui/components/NumberCell';
+import { DeltaCell, NumberCell } from '@/ui-kit';
 
 const column = createColumnHelper<MoeRow>();
 

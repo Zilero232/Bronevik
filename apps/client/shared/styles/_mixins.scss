@@ -147,6 +147,28 @@
   }
 }
 
+@mixin cosmetic-tone($var: --cosmetic, $attr: data-cosmetic) {
+  #{$var}: var(--color-border-strong);
+
+  $sources: (
+    'steel': var(--color-steel),
+    'olive': var(--color-success),
+    'plus': var(--color-premium),
+    'ember': var(--color-accent),
+    'arctic': var(--rating-great),
+    'night': var(--rating-unicum),
+    'bronze': var(--color-mastery-bronze),
+    'silver': var(--color-mastery-silver),
+    'gold': var(--color-mastery-gold)
+  );
+
+  @each $name, $value in $sources {
+    &[#{$attr}='#{$name}'] {
+      #{$var}: #{$value};
+    }
+  }
+}
+
 @mixin rating-tier($var: --tone) {
   @each $tier,
     $token
@@ -224,4 +246,100 @@
   margin: -1px;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+@mixin class-tint($var: --class) {
+  #{$var}: var(--color-border-strong);
+
+  @each $class, $token in (lightTank: lt, mediumTank: mt, heavyTank: ht, 'AT-SPG': td, SPG: spg, assaultSPG: aspg) {
+    &[data-class='#{$class}'] {
+      #{$var}: var(--class-#{$token});
+    }
+  }
+}
+
+@mixin tier-tint($var: --tier) {
+  #{$var}: var(--tier-low);
+
+  &[data-tier-band='mid'] {
+    #{$var}: var(--tier-mid);
+  }
+
+  &[data-tier-band='high'] {
+    #{$var}: var(--tier-high);
+  }
+
+  &[data-tier-band='top'] {
+    #{$var}: var(--tier-top);
+  }
+}
+
+@mixin equip-tint($var: --equip) {
+  #{$var}: var(--equip-standard);
+
+  @each $kind, $token in (standard: standard, trophy: trophy, deluxe: bonds, modernized: experimental, consumable: consumable, directive: directive) {
+    &[data-kind='#{$kind}'] {
+      #{$var}: var(--equip-#{$token});
+    }
+  }
+}
+
+@mixin equip-tile-surface($var: --equip) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(#{$var}) 70%, #000) 0%, var(--tile-floor) 85%);
+}
+
+@mixin band($tone: deep) {
+  color: var(--color-text);
+  padding-block: var(--band-padding);
+
+  @if $tone == raised {
+    background-color: var(--color-band-raised);
+    border-block: 1px solid var(--color-border);
+  } @else {
+    background-color: var(--color-band);
+  }
+
+  @include below(lg) {
+    padding-block: 28px;
+  }
+}
+
+@mixin lift-hover {
+  transition:
+    transform var(--duration-lift) var(--ease-out),
+    box-shadow var(--duration-lift) var(--ease-out);
+
+  &:hover {
+    box-shadow: var(--elev-2);
+    transform: translateY(-3px);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:active {
+      transform: none;
+    }
+  }
+}
+
+@mixin media-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--surface-sheen), var(--color-surface);
+  box-shadow: var(--elev-1);
+}
+
+@mixin display($size: var(--display-lg)) {
+  font-family: var(--font-display);
+  font-size: $size;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.05;
 }

@@ -7,14 +7,17 @@ import { BillingWorkerModule } from './modules/billing';
 import { ClanWorkspaceWorkerModule } from './modules/clan-workspace';
 import { CollectorModule } from './modules/collector';
 import { CommunityMaintenanceWorkerModule } from './modules/community-maintenance';
+import { CompetitionsWorkerModule } from './modules/competitions';
 import { DeveloperEventsModule, DeveloperWorkerModule } from './modules/developer';
 import { EventsWorkerModule } from './modules/events';
 import { NotificationsWorkerModule } from './modules/notifications';
+import { ProgressionWorkerModule } from './modules/progression';
 import { PulseWorkerModule } from './modules/pulse';
 import { ReplaysWorkerModule } from './modules/replays';
 import { ShopWorkerModule } from './modules/shop';
 import { SocialWorkerModule } from './modules/social';
 import { StreamersWorkerModule } from './modules/streamers';
+import { WatchlistWorkerModule } from './modules/watchlist';
 
 const env = validateEnv(process.env);
 
@@ -39,6 +42,9 @@ const env = validateEnv(process.env);
     CommunityMaintenanceWorkerModule,
     ClanWorkspaceWorkerModule,
     SocialWorkerModule,
+    WatchlistWorkerModule,
+    CompetitionsWorkerModule,
+    ProgressionWorkerModule,
     PulseWorkerModule
   ]
 })

@@ -25,7 +25,7 @@ export const ProfileIdentityFields = () => {
         <Input icon={<AtSign size={14} />} id={`${id}-slug`} isInvalid={Boolean(slugError)} spellCheck={false} {...register('slug')} />
         <p className={s.preview}>
           <span className={s.origin}>{SITE.url}</span>
-          <span className={s.path}>{ROUTES.streamer(slug || t('slugPlaceholder'))}</span>
+          <span className={s.path}>{ROUTES.streamers.profile(slug || t('slugPlaceholder'))}</span>
         </p>
       </FormField>
       <FormField error={hasDisplayNameError && t('errors.displayName')} htmlFor={`${id}-name`} label={t('displayName')}>

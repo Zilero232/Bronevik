@@ -48,14 +48,22 @@
     "tank_changed": "Изменения ТТХ",
     "goal_reached": "Цель выполнена",
     "badge_awarded": "Новый бейдж",
-    "challenge_resolved": "Челлендж стримера"
+    "challenge_resolved": "Челлендж стримера",
+    "first_win_available": "Первая победа дня доступна",
+    "replay_overflow": "Реплеи сверх бесплатной квоты",
+    "watchlist_digest": "Сводка по отслеживаемым игрокам",
+    "tank_returned": "Танк вернулся в магазин",
+    "competition_finished": "Итоги состязания",
+    "streamer_live": "Стример в эфире"
   },
   "eventGroups": {
     "marks": "Отметки и классность",
     "battles": "Бои и прогресс",
     "clan": "Клан",
     "offers": "Магазин и патчи",
-    "streams": "Стримы"
+    "streams": "Стримы",
+    "account": "Аккаунт и хранилище",
+    "community": "Слежка и состязания"
   },
   "settings": {
     "error": "Настройки не загрузились. Попробуйте обновить страницу.",

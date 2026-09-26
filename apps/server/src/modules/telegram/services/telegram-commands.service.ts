@@ -12,6 +12,7 @@ import { TelegramLinkService } from './telegram-link.service';
 import { TelegramLookupCommandsService } from './telegram-lookup-commands.service';
 import { TelegramMissionCommandsService } from './telegram-mission-commands.service';
 import { TelegramPlayerCommandsService } from './telegram-player-commands.service';
+import { TelegramPlaylistCommandsService } from './telegram-playlist-commands.service';
 
 @Injectable()
 export class TelegramCommandsService {
@@ -22,6 +23,7 @@ export class TelegramCommandsService {
     private readonly players: TelegramPlayerCommandsService,
     private readonly lookups: TelegramLookupCommandsService,
     private readonly missions: TelegramMissionCommandsService,
+    private readonly playlists: TelegramPlaylistCommandsService,
     private readonly links: TelegramLinkService,
     private readonly identity: TelegramIdentityService
   ) {}
@@ -35,6 +37,7 @@ export class TelegramCommandsService {
       { command: 'tank', run: (ctx) => this.lookups.tank(ctx) },
       { command: 'top', run: (ctx) => this.lookups.top(ctx) },
       { command: 'lbz', run: (ctx) => this.missions.lbz(ctx) },
+      { command: 'next', run: (ctx) => this.playlists.next(ctx) },
       { command: 'login', run: (ctx) => this.login(ctx) },
       { command: 'help', run: (ctx) => this.help(ctx) }
     ];

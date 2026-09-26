@@ -1,0 +1,132 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include media-card;
+  @include lift-hover;
+
+  --kind: var(--color-accent);
+
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 200px minmax(0, 1fr);
+
+  &[data-kind='sale'] {
+    --kind: var(--color-success);
+  }
+
+  &[data-kind='marathon'],
+  &[data-kind='battle_pass'] {
+    --kind: var(--color-premium);
+  }
+
+  &[data-kind='front_line'],
+  &[data-kind='onslaught'] {
+    --kind: var(--color-danger);
+  }
+
+  &[data-kind='ranked'] {
+    --kind: var(--color-warning);
+  }
+
+  &[data-kind='personal_missions'] {
+    --kind: var(--color-steel);
+  }
+
+  @include below(md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.media {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-height: 160px;
+  background: radial-gradient(circle at 40% 50%, color-mix(in srgb, var(--kind) 30%, transparent), transparent 70%), var(--color-surface-sunken);
+  color: var(--kind);
+  place-items: center;
+}
+
+.glyph {
+  opacity: 0.35;
+  transform: rotate(-8deg);
+}
+
+.plate {
+  position: absolute;
+  bottom: var(--space-4);
+  left: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.body {
+  @include stack(var(--space-3));
+
+  min-width: 0;
+  padding: var(--space-5) var(--space-6);
+}
+
+.title {
+  @include display(var(--text-2xl));
+
+  margin: 0;
+}
+
+.link {
+  display: inline-flex;
+  align-items: baseline;
+  color: inherit;
+  gap: var(--space-2);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: auto;
+  gap: var(--space-4);
+}
+
+.countdown {
+  @include stack(var(--space-1));
+
+  margin: 0;
+}
+
+.countdownLabel {
+  @include label;
+}
+
+.countdownValue {
+  @include numeric(var(--num-lg));
+
+  font-weight: 700;
+}
+
+.progress {
+  width: 180px;
+}

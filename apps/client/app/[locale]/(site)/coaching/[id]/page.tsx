@@ -14,7 +14,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/coaching
   const id = decodeURIComponent((await params).id);
   const t = await getTranslations({ locale, namespace: 'coaching.coachMeta' });
 
-  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.coach(id), locale, index: true, follow: true });
+  return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.coaching.coach(id), locale, index: true, follow: true });
 };
 
 const CoachRoute = async ({ params }: Pick<PageProps<'/[locale]/coaching/[id]'>, 'params'>) => {

@@ -8,6 +8,7 @@ import { Avatar, Button } from '@/ui-kit';
 
 import type { MeDashboardProps } from './MeDashboard.types';
 
+import { DataExportCard } from '../DataExportCard';
 import { FavoritesCard } from '../FavoritesCard';
 import { GoalsCard } from '../GoalsCard';
 import { LinkedAccountsCard } from '../LinkedAccountsCard';
@@ -48,6 +49,9 @@ export const MeDashboard = ({ name }: MeDashboardProps) => {
         </div>
         <div>
           <NotificationsCard />
+        </div>
+        <div>
+          <DataExportCard />
         </div>
       </div>
     </div>

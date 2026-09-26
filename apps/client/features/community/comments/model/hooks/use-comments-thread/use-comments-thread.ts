@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { listComments } from '@/shared/api/comments';
+import { listComments } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { CommentThreadTarget } from '../../../lib/comment-form';

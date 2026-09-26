@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getClanStronghold } from '@/shared/api/clans';
+import { getClanStronghold } from '@/entities/clan/clan';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useClanStronghold = (clanId: number) =>

@@ -1,7 +1,7 @@
 import { modBattleLoadoutSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { BIND_CODE } from '../../config';
+import { BIND_CODE, MOD_PLATOON, MOD_SHOTS } from '../../config';
 
 const id = z
   .string()
@@ -41,6 +41,20 @@ const moeValuesSchema = z.strictObject({
   marks_on_gun: marksOnGun,
   damage_rating: damageRating,
   moving_avg_damage: count
+});
+
+export const modShotSchema = z.strictObject({
+  damage: z.number().int().min(0).max(MOD_SHOTS.maxDamage),
+  nominal: z.number().int().min(1).max(MOD_SHOTS.maxDamage).nullable(),
+  shell: z.enum(MOD_SHOTS.shells),
+  outcome: z.enum(MOD_SHOTS.outcomes),
+  distance_m: z.number().int().min(0).max(MOD_SHOTS.maxDistanceM).nullable(),
+  fatal: z.boolean()
+});
+
+const platoonSchema = z.strictObject({
+  size: z.number().int().min(MOD_PLATOON.minSize).max(MOD_PLATOON.maxSize),
+  mates: z.array(accountId).max(MOD_PLATOON.maxSize - 1)
 });
 
 export const battleResultEventSchema = z.strictObject({
@@ -95,7 +109,9 @@ export const battleResultEventSchema = z.strictObject({
   moe: moeValuesSchema.nullable(),
   queue_time_s: z.number().min(0).nullable(),
   session_id: z.string().max(64).nullable(),
-  loadout: modBattleLoadoutSchema.nullable().optional()
+  loadout: modBattleLoadoutSchema.nullable().optional(),
+  platoon: platoonSchema.nullable().optional(),
+  shots: z.array(modShotSchema).max(MOD_SHOTS.maxPerBattle).nullable().optional()
 });
 
 const moeSnapshotEventSchema = z.strictObject({

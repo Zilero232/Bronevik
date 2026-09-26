@@ -8,6 +8,7 @@ export default defineConfig({
     name: 'server',
     isolate: false,
     environment: 'node',
+    server: { deps: { inline: ['vitest-mock-extended'] } },
     include: ['src/**/_tests/**/*.test.ts'],
     setupFiles: ['./vitest.setup.ts'],
     env: {

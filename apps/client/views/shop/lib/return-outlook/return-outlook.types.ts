@@ -9,10 +9,5 @@ export type ReturnOutlookInput = {
   nextExpectedAt: string | null;
   now: Date;
   soonDays: number;
-  timeZone: string;
-};
-
-export type CalendarDayInput = {
-  date: Date;
-  timeZone: string;
+  timeZone?: string;
 };

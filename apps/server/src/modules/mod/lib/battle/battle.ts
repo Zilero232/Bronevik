@@ -2,9 +2,11 @@ import { fromUnixTime, secondsToMilliseconds } from 'date-fns';
 import { createHash } from 'node:crypto';
 
 import type { Prisma } from '../../../../../generated';
+import type { BattleResultEvent } from '../contract';
 import type { BattleDataInput, SessionIncrement, SessionUuidInput } from './battle.types';
 
 import { toStoredLoadout } from '../loadout';
+import { toStoredShot } from '../shots';
 import { BATTLE } from './battle.constants';
 
 export const sessionUuid = ({ accountId, sessionId }: SessionUuidInput): string => {
@@ -12,6 +14,14 @@ export const sessionUuid = ({ accountId, sessionId }: SessionUuidInput): string 
   const variant = ((Number.parseInt(hex.charAt(16), 16) & 0x3) | 0x8).toString(16);
 
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-8${hex.slice(13, 16)}-${variant}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
+};
+
+export const platoonSizeOf = (platoon: BattleResultEvent['platoon']): number | null => {
+  if (platoon === undefined) {
+    return null;
+  }
+
+  return platoon?.size ?? BATTLE.soloPlatoonSize;
 };
 
 export const moePercent = (damageRating: number): number => damageRating / BATTLE.damageRatingScale;
@@ -52,6 +62,10 @@ export const toBattleData = ({ event, accountId, deviceId, sessionId, previousMo
     shotsFired: stats.shots,
     shotsHit: stats.direct_enemy_hits,
     shotsPierced: stats.piercing_enemy_hits,
+    shots: event.shots && event.shots.length > 0 ? event.shots.map(toStoredShot) : undefined,
+    moeMovingAvg: moe?.moving_avg_damage ?? null,
+    platoonSize: platoonSizeOf(event.platoon),
+    platoonMates: event.platoon ? event.platoon.mates.map((mate) => BigInt(mate)) : [],
     moePercent: percent,
     moePercentDelta: percent !== null && previousMoePercent !== null ? percent - previousMoePercent : null,
     marksOnGun: moe?.marks_on_gun ?? null,

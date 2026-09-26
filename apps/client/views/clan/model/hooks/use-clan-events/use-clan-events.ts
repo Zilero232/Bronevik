@@ -2,7 +2,7 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { listClanEvents } from '@/shared/api/clans';
+import { listClanEvents } from '@/entities/clan/clan';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { CLAN_EVENTS } from '../../../config';

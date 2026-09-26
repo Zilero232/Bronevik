@@ -1,4 +1,4 @@
-import type { MeSection } from '@/shared/constants/query-keys.types';
+import type { MeSection } from '@/shared/constants';
 
 export type MeToastKey = 'deviceRevoked' | 'favoriteRemoved' | 'goalAdded' | 'goalRemoved';
 

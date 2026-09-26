@@ -1,0 +1,130 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include media-card;
+  @include lift-hover;
+  @include class-tint;
+  @include nation-tint;
+  @include tier-tint;
+
+  display: grid;
+  overflow: visible;
+  min-width: 0;
+  padding-top: var(--space-4);
+  border-left: 3px solid var(--class);
+  margin-top: var(--space-4);
+  color: var(--color-text);
+  grid-template-rows: 120px auto auto;
+  text-decoration: none;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  margin-top: calc(-1 * var(--space-6));
+  place-items: center;
+
+  &:before {
+    position: absolute;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--nation) 30%, transparent), transparent);
+    content: '';
+    inset: var(--space-4) var(--space-3) 0;
+  }
+}
+
+.render {
+  position: relative;
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+  transition: transform var(--duration-lift) var(--ease-out);
+
+  .root:hover & {
+    transform: scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    .root:hover & {
+      transform: none;
+    }
+  }
+}
+
+.tier {
+  @include numeric(var(--text-xs));
+
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  display: grid;
+  width: 30px;
+  height: 26px;
+  background-color: var(--tier);
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  color: var(--color-accent-contrast);
+  font-weight: 700;
+  place-items: center;
+}
+
+.body {
+  @include stack(var(--space-1));
+
+  padding: var(--space-3) var(--space-4) 0;
+}
+
+.name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .root[data-premium] & {
+    color: var(--color-premium);
+  }
+}
+
+.kind {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-2);
+
+  > svg {
+    color: var(--class);
+  }
+}
+
+.figures {
+  display: grid;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.figure {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.label {
+  @include label;
+
+  font-size: var(--text-2xs);
+}
+
+.value {
+  @include numeric(var(--text-md));
+
+  font-weight: 700;
+}

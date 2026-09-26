@@ -1,0 +1,1 @@
+export { ConnectBand } from './ConnectBand';

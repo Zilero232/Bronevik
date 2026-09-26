@@ -20,6 +20,12 @@ enum NotificationEvent {
   goalReached         @map("goal_reached")
   badgeAwarded        @map("badge_awarded")
   challengeResolved   @map("challenge_resolved")
+  watchlistDigest     @map("watchlist_digest")
+  tankReturned        @map("tank_returned")
+  competitionFinished @map("competition_finished")
+  firstWinAvailable   @map("first_win_available")
+  replayOverflow      @map("replay_overflow")
+  streamerLive        @map("streamer_live")
 
   @@map("notification_event")
 }

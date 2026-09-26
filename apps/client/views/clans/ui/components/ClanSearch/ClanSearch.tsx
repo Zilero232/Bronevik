@@ -43,7 +43,7 @@ export const ClanSearch = () => {
             <ul className={s.results}>
               {results.map(({ clanId, tag, name, emblem, color, membersCount }) => (
                 <li key={clanId} className={s.item}>
-                  <Link className={s.result} href={ROUTES.clan(tag)}>
+                  <Link className={s.result} href={ROUTES.clans.detail(tag)}>
                     <ClanEmblem color={color} size='xs' src={emblem} tag={tag} />
                     <span className={s.tag}>[{tag}]</span>
                     <span className={s.name}>{name}</span>

@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getMyEconomy } from '@/shared/api/tanks';
+import { getMyEconomy } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { TANKS_ECONOMY } from '../../../config';

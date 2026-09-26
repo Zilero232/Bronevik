@@ -1,9 +1,7 @@
-.more {
-  color: var(--color-steel);
-  font-size: var(--text-sm);
-  text-decoration: none;
+@use '@/shared/styles/mixins' as *;
 
-  &:hover {
-    color: var(--color-text);
-  }
+.root {
+  @include stack(var(--space-5));
+
+  min-width: 0;
 }

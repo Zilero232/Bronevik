@@ -1,19 +1,25 @@
 'use client';
 
+import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { LiveLamp } from '@/entities/streamer/broadcast';
-import { Avatar } from '@/ui-kit';
+import { ROUTES } from '@/shared/constants';
+import { Link } from '@/shared/i18n/navigation';
+import { Avatar, buttonVariants } from '@/ui-kit';
 
 import type { StreamerHeroProps } from './StreamerHero.types';
 
-import { StreamerLinks } from '../StreamerLinks';
+import { STREAMER_PAGE } from '../../../config';
+import { FollowPanel } from '../FollowPanel';
+import { StreamerChannels } from '../StreamerChannels';
 
 import s from './StreamerHero.module.scss';
 
-export const StreamerHero = ({ profile }: StreamerHeroProps) => {
+export const StreamerHero = ({ profile, channels }: StreamerHeroProps) => {
   const t = useTranslations('streamer.page');
-  const { displayName, slug, bio, links, isLive } = profile;
+  const tPublic = useTranslations('streamersDirectory.public');
+  const { displayName, slug, bio, isLive, followers, hasSettings } = profile;
 
   return (
     <section className={s.root} data-live={isLive}>
@@ -26,11 +32,19 @@ export const StreamerHero = ({ profile }: StreamerHeroProps) => {
         <div className={s.names}>
           <h1 className={s.title}>{displayName}</h1>
           <span className={s.slug}>@{slug}</span>
+          <span className={s.followers}>{tPublic('followers', { count: followers })}</span>
         </div>
       </div>
       {bio && <p className={s.bio}>{bio}</p>}
-      <div>
-        <StreamerLinks links={links} />
+      <StreamerChannels channels={channels} />
+      <div className={s.actions}>
+        <FollowPanel slug={slug} />
+        {hasSettings && (
+          <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.streamers.settings.profile(slug)}>
+            <SlidersHorizontal size={STREAMER_PAGE.iconSize} />
+            {tPublic('settings')}
+          </Link>
+        )}
       </div>
     </section>
   );

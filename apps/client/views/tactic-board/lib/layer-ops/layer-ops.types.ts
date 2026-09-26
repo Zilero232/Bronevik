@@ -1,4 +1,4 @@
-import type { TacticIcon, TacticLayer, TacticStroke } from '@/shared/api/tactics';
+import type { TacticIcon, TacticLayer, TacticStroke } from '@/entities/tactic/board';
 
 export type CreateLayerInput = {
   id: string;

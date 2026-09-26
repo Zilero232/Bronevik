@@ -11,6 +11,6 @@ export const useCompleteSignIn = () => {
 
   return async () => {
     await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.auth.session });
-    router.push(ROUTES.me);
+    router.push(ROUTES.account.overview);
   };
 };

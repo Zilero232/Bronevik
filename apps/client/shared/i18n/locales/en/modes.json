@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "title": "Modes: Onslaught, Front Line, Ranked Battles, Steel Hunter",
+    "description": "Special-mode meta for Mir Tankov: best tanks, seasons, battles and players from our 30-day data."
+  },
+  "modeMeta": {
+    "title": "{name}: meta and best tanks",
+    "description": "{name} in Mir Tankov: an S–D tank tier list with win rate, average damage and XP over 30 days of battles."
+  },
+  "names": {
+    "onslaught": "Onslaught",
+    "frontline": "Front Line",
+    "ranked": "Ranked Battles",
+    "steelHunter": "Steel Hunter"
+  },
+  "blurbs": {
+    "onslaught": "Competitive 7v7 mode with a rating and seasons.",
+    "frontline": "Large 30v30 battles with general levels and combat reserves.",
+    "ranked": "Seasonal battles for chevrons and ranks.",
+    "steelHunter": "Battle royale: survive on the map and upgrade your vehicle as the battle goes on."
+  },
+  "hub": {
+    "title": "Modes",
+    "description": "Special modes in one place: the current season, battle volume and the vehicles that win more often right now.",
+    "open": "Meta",
+    "leaders": "Mode leaders",
+    "emptyTitle": "No data yet",
+    "emptyDescription": "Our data has no battles in this mode over the last 30 days.",
+    "errorTitle": "Could not load modes",
+    "errorDescription": "The stats server did not respond. Try again."
+  },
+  "figures": {
+    "battles": "Battles",
+    "players": "Players",
+    "tanks": "Tanks",
+    "winRate": "Average win rate"
+  },
+  "rank": {
+    "hint": "Rank {rank}: how much more often the tank wins than the mode average",
+    "none": "Too few battles for a rank"
+  },
+  "season": {
+    "current": "Season",
+    "upcoming": "Next season",
+    "past": "Past season",
+    "since": "from {date}"
+  },
+  "source": {
+    "text": "Data: battles of players using our mod and uploaded replays over the last {days, plural, one {# day} other {# days}}. Battles outside this sample are not counted.",
+    "updated": "Updated"
+  },
+  "table": {
+    "caption": "Mode tanks: {count, plural, one {# tank} other {# tanks}}",
+    "view": "View",
+    "views": {
+      "table": "Table",
+      "ranks": "By rank"
+    },
+    "rank": "Rank",
+    "tank": "Tank",
+    "battles": "Battles",
+    "players": "Players",
+    "winRate": "Win rate",
+    "avgDamage": "Damage",
+    "avgXp": "XP",
+    "avgFrags": "Frags",
+    "survival": "Survival",
+    "unranked": "Unranked",
+    "rankNote": "Rank shows how far the tank’s win rate is above the mode average, adjusted for sample size. A tank is ranked from {battles, plural, one {# battle} other {# battles}}.",
+    "emptyTitle": "No stats yet",
+    "emptyDescription": "No tank in this mode has reached {battles, plural, one {# battle} other {# battles}} in our data yet.",
+    "filteredEmptyTitle": "No tanks match these filters",
+    "resetFilters": "Reset filters",
+    "errorTitle": "Could not load the mode meta",
+    "errorDescription": "The stats server did not respond. Try again."
+  },
+  "mine": {
+    "title": "My stats in this mode",
+    "period": "over {days, plural, one {# day} other {# days}}",
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
+    "avgXp": "Avg XP",
+    "avgFrags": "Frags",
+    "survival": "Survival",
+    "lastBattle": "Last battle",
+    "tankLine": "{battles, plural, one {# battle} other {# battles}} · damage {damage}",
+    "signedOutTitle": "Sign in to see your battles",
+    "signedOutText": "Personal mode stats are available after you sign in and link a Lesta account.",
+    "loginAction": "Sign in",
+    "noAccountTitle": "No Lesta account linked",
+    "noAccountText": "Link your account through Lesta ID in your account settings to see your mode stats.",
+    "linkAction": "Link account",
+    "emptyTitle": "No battles in this mode",
+    "emptyText": "We have not seen your battles in this mode over the last {days, plural, one {# day} other {# days}}."
+  }
+}

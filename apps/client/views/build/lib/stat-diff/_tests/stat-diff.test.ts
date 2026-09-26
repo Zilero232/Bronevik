@@ -61,6 +61,18 @@ describe('buildStatGroups', () => {
     expect([row?.diff, row?.diffVerdict, row?.winner]).toEqual([8.5 - 9, 'better', 'b']);
   });
 
+  it('colours each side against the other build, respecting lower-is-better stats', () => {
+    const row = rowOf(buildStatGroups({ base: BASE, a: { ...BASE, reloadTime: 9 }, b: { ...BASE, reloadTime: 8.5 } }), 'reloadTime');
+
+    expect([row?.sideVerdictA, row?.sideVerdictB]).toEqual(['worse', 'better']);
+  });
+
+  it('marks both sides the same when the builds are equal', () => {
+    const row = rowOf(buildStatGroups({ base: BASE, a: BASE, b: BASE }), 'reloadTime');
+
+    expect([row?.diff, row?.sideVerdictA, row?.sideVerdictB]).toEqual([0, 'same', 'same']);
+  });
+
   it('crowns no one when both builds are equal', () => {
     const row = rowOf(buildStatGroups({ base: BASE, a: BASE, b: BASE }), 'shellDamage');
 

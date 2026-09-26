@@ -1,8 +1,13 @@
 import type { CatalogCounts, PlanWriteInput } from '../importer.types';
 
+import { Prisma } from '../../../../../../generated';
 import { inBatches, toStoredJson } from './batches';
 
 export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameVersionId'>): Promise<CatalogCounts> => {
+  const withImages = new Set(
+    (await prisma.vehicle.findMany({ where: { NOT: { images: { equals: Prisma.AnyNull } } }, select: { tankId: true } })).map(({ tankId }) => tankId)
+  );
+
   const vehicles = await inBatches({
     items: plan.vehicles,
     run: (batch) =>
@@ -27,8 +32,8 @@ export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameV
 
           return prisma.vehicle.upsert({
             where: { tankId: row.tankId },
-            create: { tankId: row.tankId, name: row.name, shortName: row.shortName, slug: row.slug, ...game },
-            update: game
+            create: { tankId: row.tankId, name: row.name, shortName: row.shortName, slug: row.slug, images: row.images, ...game },
+            update: withImages.has(row.tankId) ? game : { ...game, images: row.images }
           });
         })
       )
@@ -83,7 +88,6 @@ export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameV
           const fields = {
             tag: row.tag,
             type: row.type,
-            image: row.image ?? null,
             priceCredit: row.priceCredit ?? null,
             priceGold: row.priceGold ?? null,
             tankIds: row.tankIds,
@@ -98,6 +102,8 @@ export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameV
         })
       )
   });
+
+  await prisma.provision.updateMany({ where: { image: { not: null }, NOT: { image: { startsWith: 'http' } } }, data: { image: null } });
 
   const crewRoles = await inBatches({
     items: plan.crewRoles,

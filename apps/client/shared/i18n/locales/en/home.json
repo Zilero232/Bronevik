@@ -3,22 +3,26 @@
     "title": "Mir Tankov statistics — Three Marks",
     "description": "Mir Tankov players, tanks, marks of excellence, leaderboards and clans from the Lesta Games API."
   },
-  "head": {
-    "title": "Mir Tankov statistics",
+  "hero": {
+    "title": "Mir Tankov stats and tools",
     "description": "Players, tanks, marks and clans from the Lesta Games API",
-    "recent": "Recently viewed"
-  },
-  "status": {
-    "title": "Server",
-    "versionNumber": "Game version",
-    "version": "Update released",
-    "online": "Server online",
-    "activeEstimate": "Active players, last hour",
-    "estimateHint": "Our estimate from tracked players, not the server online count",
+    "recent": "Recently viewed",
+    "figures": "Server now",
     "tracked": "Tracked players",
-    "activity": "Activity over 24 hours",
-    "unknown": "no data",
+    "online": "Server online",
+    "activeEstimate": "Active, last hour",
+    "estimateHint": "Our estimate from tracked players",
+    "version": "Game version",
     "pulse": "Server pulse"
+  },
+  "actions": {
+    "label": "Quick sections",
+    "marks": "Marks",
+    "builds": "Builds",
+    "missions": "Missions",
+    "codes": "Codes",
+    "tournaments": "Tournaments",
+    "cta": "Tools"
   },
   "garage": {
     "title": "Popular vehicles",
@@ -27,28 +31,46 @@
     "empty": "No battle data for this week"
   },
   "strongTanks": {
-    "title": "Strongest tanks",
+    "title": "Strongest tanks of the week",
     "all": "All tanks",
-    "empty": "No tanks with enough battles"
+    "empty": "No tanks with enough battles",
+    "tier": "Tier",
+    "period": "last 7 days",
+    "winRate": "Win rate",
+    "damage": "Damage",
+    "battles": "Battles"
   },
   "topPlayers": {
-    "title": "Best players this week",
+    "title": "Top players",
     "all": "All leaderboards",
-    "empty": "No players with enough battles"
+    "empty": "No players with enough battles",
+    "metric": "Metric",
+    "period": "last 7 days",
+    "rank": "Rank",
+    "battles": "{count, plural, one {# battle} other {# battles}}"
   },
   "marks": {
-    "title": "Marks: threshold movement",
+    "title": "Marks movement",
     "period": "last 30 days",
     "all": "All thresholds",
-    "empty": "No mark thresholds yet"
+    "empty": "No mark thresholds yet",
+    "leaders": "Biggest gains",
+    "threeMarks": "3 marks",
+    "oneMark": "1 mark",
+    "twoMarks": "2 marks"
   },
   "news": {
-    "title": "Game news",
+    "title": "News and events",
     "empty": "No news yet",
-    "all": "All news"
+    "all": "All news",
+    "kinds": {
+      "news": "News",
+      "patch_notes": "Patch",
+      "dev_blog": "Dev blog"
+    }
   },
   "clans": {
-    "title": "Clans: activity",
+    "title": "Clan activity",
     "period": "this week",
     "all": "All clans",
     "empty": "No clan data"
@@ -68,5 +90,16 @@
     "activeMembers": "Active",
     "members": "Members",
     "stronghold": "Stronghold"
+  },
+  "community": {
+    "title": "For streamers and clans",
+    "streamers": {
+      "title": "Streamers",
+      "description": "Overlays and widgets for your stream"
+    },
+    "clans": {
+      "title": "Clans",
+      "description": "Rosters, activity and strongholds"
+    }
   }
 }

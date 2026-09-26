@@ -4,10 +4,16 @@ import { DataTableCells } from '../DataTableCells';
 
 import s from '../../DataTable.module.scss';
 
-export const DataTableRows = <T,>({ rows, onRowClick }: DataTableRowsProps<T>) => (
+export const DataTableRows = <T,>({ rows, onRowClick, rowTint }: DataTableRowsProps<T>) => (
   <tbody>
     {rows.map((row) => (
-      <tr key={row.id} className={s.row} data-clickable={Boolean(onRowClick)} onClick={onRowClick ? () => onRowClick(row.original) : undefined}>
+      <tr
+        key={row.id}
+        className={s.row}
+        data-clickable={Boolean(onRowClick)}
+        data-tint={rowTint?.(row.original) ?? undefined}
+        onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+      >
         <DataTableCells row={row} />
       </tr>
     ))}

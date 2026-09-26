@@ -16,7 +16,7 @@ export const UploadOutcome = ({ phase, uploadedId, uploadError, parseError, onRe
   if (phase === 'parsed' && uploadedId) {
     return (
       <div className={s.root}>
-        <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.replay(uploadedId)}>
+        <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.replays.detail(uploadedId)}>
           {t('open')}
         </Link>
         <Button size='sm' variant='ghost' onClick={onReset}>
@@ -36,7 +36,7 @@ export const UploadOutcome = ({ phase, uploadedId, uploadError, parseError, onRe
         {parseError ? t('parseFailed') : t(`errors.${uploadError ?? 'unknown'}`)}
       </p>
       {parseError && uploadedId && (
-        <Link className={buttonVariants({ size: 'sm', variant: 'secondary' })} href={ROUTES.replay(uploadedId)}>
+        <Link className={buttonVariants({ size: 'sm', variant: 'secondary' })} href={ROUTES.replays.detail(uploadedId)}>
           {t('open')}
         </Link>
       )}

@@ -7,6 +7,7 @@ import { useActiveCalculator } from '../../../model/hooks';
 import { BattlePassCalculator } from '../BattlePassCalculator';
 import { CrewCalculator } from '../CrewCalculator';
 import { EconomyCalculator } from '../EconomyCalculator';
+import { FrontlineCalculator } from '../FrontlineCalculator';
 import { GoldCalculator } from '../GoldCalculator';
 import { MoeCalculator } from '../MoeCalculator';
 import { ResearchCalculator } from '../ResearchCalculator';
@@ -25,6 +26,7 @@ export const CalculatorPanel = () => {
         .with('economy', () => <EconomyCalculator />)
         .with('gold', () => <GoldCalculator />)
         .with('pass', () => <BattlePassCalculator />)
+        .with('frontline', () => <FrontlineCalculator />)
         .exhaustive()}
     </section>
   );

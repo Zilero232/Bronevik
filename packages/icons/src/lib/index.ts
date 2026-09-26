@@ -1,5 +1,5 @@
 export { createIcon } from './create-icon';
-export { ICON_DEFAULTS } from './icon.constants';
+export { ICON_DEFAULTS } from './icon';
 export type {
   CreateIconInput,
   GlyphPathInput,
@@ -10,7 +10,7 @@ export type {
   ResolveStrokeInput,
   RhombusBandsInput,
   StarPathInput
-} from './icon.types';
+} from './icon';
 export { IconBase } from './IconBase';
 export { laurelBranches } from './laurel';
 export { resolveStroke } from './resolve-stroke';

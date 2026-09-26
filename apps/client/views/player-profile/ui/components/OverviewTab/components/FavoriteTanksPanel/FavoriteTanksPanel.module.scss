@@ -1,43 +1,88 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  grid-column: 1 / -1;
+  @include stack(var(--space-3));
 }
 
-.strip {
+.title {
+  @include heading(var(--text-2xl));
+}
+
+.grid {
   display: grid;
   padding: 0;
   margin: 0;
-  gap: var(--gap-panel);
-  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   list-style: none;
 }
 
-.slot {
-  @include stack(var(--space-3));
+.card {
+  @include media-card;
   @include nation-tint;
-  @include well;
+  @include class-tint;
+  @include lift-hover;
+  @include stack(var(--space-3));
 
-  padding: var(--space-3);
-  border-left: 2px solid var(--nation);
-}
-
-.link {
-  @include stack(var(--space-2));
-
+  height: 100%;
+  padding: var(--space-3) var(--space-4) var(--space-4) calc(var(--space-4) + 3px);
   color: var(--color-text);
+
+  &:before {
+    position: absolute;
+    width: 3px;
+    background-color: var(--class);
+    content: '';
+    inset: 0 auto 0 0;
+  }
 
   &:hover .name {
     color: var(--color-accent);
   }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  min-height: 112px;
+  margin-top: calc(var(--space-3) * -1);
+  background: radial-gradient(160px 90px at 50% 60%, color-mix(in srgb, var(--nation) 45%, transparent), transparent 75%);
+  margin-inline: calc(var(--space-4) * -1);
+  place-items: center;
+}
+
+.tier {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-3);
 }
 
 .image {
-  align-self: center;
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform var(--duration-lift) var(--ease-out);
+
+    .card:hover & {
+      transform: scale(1.04);
+    }
+  }
 }
 
 .name {
-  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  transition: color var(--duration-fast) ease;
+  white-space: nowrap;
+
+  &[data-premium] {
+    color: var(--color-premium);
+  }
 }
 
 .stats {
@@ -56,4 +101,8 @@
     margin: 0;
     font-weight: 600;
   }
+}
+
+.awards {
+  margin-top: auto;
 }

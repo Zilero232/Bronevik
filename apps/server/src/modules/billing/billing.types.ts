@@ -96,3 +96,13 @@ export type AssertWithinLimitInput = LimitInput & {
 export type PlusRequest = {
   session?: { user: { id: string } } | null;
 };
+
+export type EntitlementChange = {
+  userId: string;
+  isLocal: boolean;
+};
+
+export type EntitlementMessageInput = {
+  channel: string;
+  message: string;
+};

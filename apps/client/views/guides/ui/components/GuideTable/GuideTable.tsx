@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { Button, Card, CardHeader, DataTable, EmptyState, ErrorState } from '@/ui-kit';
 
@@ -11,13 +12,14 @@ import s from './GuideTable.module.scss';
 
 export const GuideTable = () => {
   const t = useTranslations('guides.list');
+  const titleId = useId();
   const { items, total, page, pages, hasPrev, hasNext, prev, next, hasFilters, reset, isPending, isError, isRetrying, retry } = useGuideCatalog();
 
   const columns = useGuideColumns();
 
   return (
-    <Card aria-labelledby='guides-title' className={s.root} padding='none'>
-      <CardHeader meta={total > 0 ? t('total', { total }) : undefined} title={<span id='guides-title'>{t('tableTitle')}</span>} />
+    <Card aria-labelledby={titleId} className={s.root} padding='none'>
+      <CardHeader meta={total > 0 ? t('total', { total }) : undefined} title={<span id={titleId}>{t('tableTitle')}</span>} />
       {isError ? (
         <ErrorState isCompact description={t('errorDescription')} isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />
       ) : (

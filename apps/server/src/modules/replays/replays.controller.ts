@@ -12,6 +12,7 @@ import {
   Query,
   StreamableFile,
   UploadedFile,
+  UseGuards,
   UseInterceptors
 } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -40,6 +41,7 @@ import {
   UploadedReplayDto,
   UploadReplayDto
 } from './dto';
+import { ModDeviceGuard } from './guards';
 import { HeatmapService, ReplayOwnerService, ReplayQueryService, ReplayUploadService } from './services';
 
 @ApiTags('replays')
@@ -64,6 +66,7 @@ export class ReplaysController {
   @AllowAnonymous()
   @Post('mod')
   @Throttle({ default: REPLAY_UPLOAD.modThrottle })
+  @UseGuards(ModDeviceGuard)
   @UseInterceptors(replayFileInterceptor)
   @ApiConsumes('multipart/form-data')
   @ZodResponse({ type: UploadedReplayDto, status: HttpStatus.CREATED })

@@ -1,4 +1,4 @@
-import type { ReportMatchInput } from '@/shared/api/tournaments';
+import type { ReportMatchInput } from '@/entities/tournament/tournament';
 
 import type { BracketMatchView } from '../../../../../lib/bracket-columns';
 

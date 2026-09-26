@@ -22,18 +22,21 @@ export const isPublicWebhookUrl = (value: string): boolean => {
   return !ipaddr.isValid(host) || isPublicAddress(host);
 };
 
-export const resolvesPublicly = async ({ url, lookup }: ResolvesPubliclyInput): Promise<boolean> => {
+export const publicAddressOf = async ({ url, lookup }: ResolvesPubliclyInput): Promise<string | null> => {
   if (!isPublicWebhookUrl(url)) {
-    return false;
+    return null;
   }
 
   const host = hostOf(url);
 
   if (ipaddr.isValid(host)) {
-    return true;
+    return host;
   }
 
   const addresses = await lookup(host).catch(() => []);
+  const [first] = addresses;
 
-  return addresses.length > 0 && addresses.every(({ address }) => isPublicAddress(address));
+  return first && addresses.every(({ address }) => isPublicAddress(address)) ? first.address : null;
 };
+
+export const resolvesPublicly = async (input: ResolvesPubliclyInput): Promise<boolean> => (await publicAddressOf(input)) !== null;

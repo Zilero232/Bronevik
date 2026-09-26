@@ -1,6 +1,7 @@
 export { MyTankInsightsService } from './my-tank-insights.service';
 export { TankArmorService } from './tank-armor.service';
 export { TankDetailService } from './tank-detail.service';
+export { TankDifficultyService } from './tank-difficulty.service';
 export { TankEconomyReportService } from './tank-economy-report.service';
 export { TankLearningService } from './tank-learning.service';
 export { TankObtainService } from './tank-obtain.service';
@@ -11,3 +12,4 @@ export { TankTrendService } from './tank-trend.service';
 export { TierListService } from './tier-list.service';
 export { TopPlayersService } from './top-players.service';
 export { VehicleListService } from './vehicle-list.service';
+export { VehicleSourcesService } from './vehicle-sources.service';

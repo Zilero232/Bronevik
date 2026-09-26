@@ -1,0 +1,67 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  overflow: hidden;
+  background: var(--page-glow), var(--color-band);
+  color: var(--color-text);
+  isolation: isolate;
+}
+
+.scrim {
+  position: absolute;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, transparent calc(100% - 48px), var(--color-bg) 100%),
+    linear-gradient(90deg, rgb(14 14 16 / 92%) 0%, rgb(14 14 16 / 70%) 45%, rgb(14 14 16 / 20%) 100%);
+  inset: 0;
+  pointer-events: none;
+}
+
+.content {
+  @include shell;
+
+  position: relative;
+  z-index: 2;
+  display: grid;
+  align-items: center;
+  gap: var(--space-8);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  padding-block: var(--space-9) calc(var(--space-9) + var(--space-5));
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: var(--space-8);
+  }
+}
+
+.main {
+  @include stack(var(--space-5));
+
+  min-width: 0;
+}
+
+.title {
+  @include display;
+
+  max-width: 18ch;
+  margin: 0;
+  text-wrap: balance;
+
+  @include below(md) {
+    font-size: 2rem;
+  }
+}
+
+.lead {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.search {
+  @include stack(var(--space-3));
+
+  max-width: 640px;
+}

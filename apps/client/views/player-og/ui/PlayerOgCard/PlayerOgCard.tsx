@@ -1,11 +1,9 @@
 import { clanLabel } from '@/entities/player/player';
-import { OG_COLORS, OG_FONTS } from '@/shared/seo/og';
+import { OG_COLORS, OG_FONTS, OgFrame, OgMetrics } from '@/shared/seo/og';
 
 import type { PlayerOgCardProps } from './PlayerOgCard.types';
 
 import { playerOgMetrics } from '../../lib';
-import { OgFrame } from '../OgFrame';
-import { OgMetrics } from '../OgMetrics';
 
 export const PlayerOgCard = ({ profile: { summary }, labels, locale, host }: PlayerOgCardProps) => (
   <OgFrame

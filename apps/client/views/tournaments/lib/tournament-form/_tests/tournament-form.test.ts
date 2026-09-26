@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { zCreateTournament } from '@/shared/api/tournaments';
+import { zCreateTournament } from '@/entities/tournament/tournament';
 
 import { toCreateTournament, tournamentFormSchema } from '..';
 import { TOURNAMENT_FORM_DEFAULTS } from '../../../config';
@@ -20,8 +20,8 @@ describe('toCreateTournament', () => {
     expect(zCreateTournament.safeParse(toCreateTournament(tournamentFormSchema.parse(VALID))).success).toBe(true);
   });
 
-  it('sends the start as an ISO instant of the local time', () => {
-    expect(toCreateTournament(tournamentFormSchema.parse(VALID)).startsAt).toBe(new Date('2026-10-10T18:00').toISOString());
+  it('sends the start as an ISO instant of the Moscow wall time', () => {
+    expect(toCreateTournament(tournamentFormSchema.parse(VALID)).startsAt).toBe('2026-10-10T15:00:00.000Z');
   });
 
   it('omits the empty description and registration deadline', () => {

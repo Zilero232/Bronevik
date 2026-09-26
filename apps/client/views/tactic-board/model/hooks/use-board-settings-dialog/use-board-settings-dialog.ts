@@ -15,7 +15,7 @@ export const useBoardSettingsDialog = ({ board, token }: UseUpdateBoardInput) =>
   const update = useUpdateBoard({ board, token });
 
   const onSubmit = async (payload: BoardSettingsPayload) => {
-    await update.mutateAsync(payload);
+    await update.mutateAsync({ ...payload, arenaId: payload.arenaId ?? null, mode: payload.mode ?? null });
     setIsOpen(false);
   };
 

@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { Coach } from '@/shared/api/coaching';
+import type { Coach } from '@/entities/coaching/coach';
 
 import type { coachFormSchema } from './coach-form.schemas';
 

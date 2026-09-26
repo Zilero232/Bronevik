@@ -1,4 +1,4 @@
-import type { CreateReport } from '@/shared/api/moderation';
+import type { CreateReport } from '../../api';
 
 import type { ToCreateReportInput } from './report-form.types';
 

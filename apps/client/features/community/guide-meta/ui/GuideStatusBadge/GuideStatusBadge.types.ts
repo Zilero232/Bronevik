@@ -1,4 +1,4 @@
-import type { GuideStatus } from '@/shared/api/guides';
+import type { GuideStatus } from '@/entities/guide/guide';
 
 export type GuideStatusBadgeProps = {
   status: GuideStatus;

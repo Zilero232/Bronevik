@@ -15,6 +15,12 @@ describe('ClanEmblem', () => {
     expect(image.getAttribute('width')).toBe('64');
   });
 
+  it('renders the header size without scaling', () => {
+    render(<ClanEmblem size='lg' src={SRC} tag='KOPM' />);
+
+    expect(screen.getByRole('img', { name: 'KOPM' }).getAttribute('width')).toBe('96');
+  });
+
   it('falls back to the tag letters without an emblem or when it fails', () => {
     const { container, rerender } = render(<ClanEmblem src={null} tag='KOPM' />);
 

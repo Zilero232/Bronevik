@@ -1,4 +1,4 @@
-import type { TacticIconKind } from '@/shared/api/tactics';
+import type { TacticIconKind } from '@/entities/tactic/board';
 
 export const BOARD = {
   size: 1000,

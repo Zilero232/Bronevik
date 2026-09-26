@@ -12,7 +12,7 @@ export const TopPlayerRow = ({ row }: TopPlayerRowProps) => (
       {row.rank}
     </td>
     <td className={s.player}>
-      <Link className={s.link} href={ROUTES.player(row.player.nickname)}>
+      <Link className={s.link} href={ROUTES.players.profile(row.player.nickname)}>
         <PlayerIdentity player={row.player} />
       </Link>
     </td>

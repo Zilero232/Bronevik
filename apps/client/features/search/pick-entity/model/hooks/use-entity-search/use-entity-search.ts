@@ -6,7 +6,7 @@ import { SEARCH } from '@otmetki/schemas';
 import { useDebounceValue } from '@siberiacancode/reactuse';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-import { search, SEARCH_REQUEST } from '@/shared/api';
+import { search, SEARCH_REQUEST } from '@/entities/search/search';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { PickableKind, PickableResult, UseEntitySearchInput } from './use-entity-search.types';

@@ -1,0 +1,7 @@
+@use '@/shared/styles/mixins' as *;
+
+.note {
+  @include source-line;
+
+  margin: 0;
+}

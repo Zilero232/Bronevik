@@ -5,6 +5,7 @@ import { unique } from 'remeda';
 import type { ModuleTreeNode, NextTank, VehicleRow } from '../importer.types';
 
 import { slugify } from '../../../../../common/lib';
+import { vehicleImages } from '../../../../../lib/lesta';
 import { MODULE_TYPE, VEHICLE_TYPE } from '../importer.constants';
 import { prices, vehicleModules } from './vehicle-modules';
 
@@ -59,6 +60,7 @@ export const buildVehicleRows = (vehicles: VehicleSpec[]): VehicleRow[] => {
       isPremium: vehicle.isPremium,
       isCollectible: vehicle.isCollectible,
       isWheeled: vehicle.isWheeled,
+      images: vehicleImages({ nation: vehicle.nation, tag: vehicle.tag }),
       ...prices(vehicle.price),
       specs: vehicle,
       crew: vehicle.crew,

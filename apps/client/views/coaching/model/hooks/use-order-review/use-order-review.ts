@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import type { CoachingOrder } from '@/shared/api/coaching';
+import type { CoachingOrder } from '@/entities/coaching/coach';
 
-import { reviewCoachingOrder } from '@/shared/api/coaching';
+import { reviewCoachingOrder } from '../../../api';
 
 import { COACHING_ORDERS } from '../../../config';
 import { useOrderMutation } from '../use-order-mutation';

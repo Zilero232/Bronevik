@@ -22,3 +22,4 @@ export {
   VehicleCatalogDto,
   VehicleFilterDto
 } from './tanks.dto';
+export { CreateVehicleSourceDto, VehicleSourceDto, VehicleSourceIdParamsDto } from './vehicle-sources.dto';

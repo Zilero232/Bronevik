@@ -40,5 +40,13 @@
     "player": "Игрок",
     "battles": "Бои",
     "tank": "Танк"
+  },
+  "hero": {
+    "home": "Главная"
+  },
+  "podium": {
+    "title": "Тройка лидеров",
+    "place": "{rank} место",
+    "battles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}"
   }
 }

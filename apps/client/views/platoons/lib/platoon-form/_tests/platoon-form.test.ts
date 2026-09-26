@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { zCreatePlatoon } from '@/shared/api/platoons';
+import { zCreatePlatoon } from '../../../api';
 
 import { platoonFormSchema, toCreatePlatoon } from '..';
 import { PLATOON_FORM_DEFAULTS } from '../../../config';

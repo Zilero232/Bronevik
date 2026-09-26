@@ -62,7 +62,7 @@ export const CoachRequestForm = ({ coach }: CoachRequestFormProps) => {
                 {t('submit')}
               </Button>
               <p className={s.note}>
-                {t('free')} <Link href={`${ROUTES.coaching}#orders`}>{t('myRequests')}</Link>
+                {t('free')} <Link href={`${ROUTES.coaching.list}#orders`}>{t('myRequests')}</Link>
               </p>
             </form>
           </CommunityGate>

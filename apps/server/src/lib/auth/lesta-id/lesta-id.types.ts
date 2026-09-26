@@ -36,7 +36,7 @@ export type LinkLestaAccountInput = LestaIdentity & {
 
 export type LestaAccountStore = {
   findUserId: (accountId: number) => Promise<string | null>;
-  link: (input: LinkLestaAccountInput) => Promise<void>;
+  link: (input: LinkLestaAccountInput) => Promise<boolean>;
   revokeTokens: (userId: string) => Promise<void>;
 };
 

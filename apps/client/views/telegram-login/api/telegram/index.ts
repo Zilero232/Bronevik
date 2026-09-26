@@ -1,0 +1,1 @@
+export { redeemTelegramWebLogin } from './telegram';

@@ -25,6 +25,10 @@ describe('availabilityWindow', () => {
     expect(availabilityWindow({ from: '2026-09-26T18:00:00Z', until: null, now: NOW }).state).toBe('now');
   });
 
+  it('treats a bounded window as open until the clock is known', () => {
+    expect(availabilityWindow({ from: '2026-09-26T19:00:00Z', until: '2026-09-26T17:59:00Z', now: null }).state).toBe('now');
+  });
+
   it('returns parsed bounds for display', () => {
     expect(availabilityWindow({ from: '2026-09-26T19:00:00Z', until: null, now: NOW }).from?.toISOString()).toBe('2026-09-26T19:00:00.000Z');
   });

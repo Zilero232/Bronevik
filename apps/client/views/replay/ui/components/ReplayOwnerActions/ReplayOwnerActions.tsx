@@ -4,7 +4,7 @@ import { useBoolean } from '@siberiacancode/reactuse';
 import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { ReplayVisibility } from '@/shared/api/replays';
+import type { ReplayVisibility } from '@/entities/replay/replay';
 
 import {
   Button,

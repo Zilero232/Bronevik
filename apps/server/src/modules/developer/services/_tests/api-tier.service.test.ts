@@ -4,7 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { ApiKey } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { EntitlementsService } from '../../../billing';
+import type { EntitlementsBusService, EntitlementsService } from '../../../billing';
 
 import { API_TIERS } from '../../config';
 import { ApiTierService } from '../api-tier.service';
@@ -19,7 +19,7 @@ const createService = ({ communityKeys, isPlus }: { communityKeys: number; isPlu
 
   entitlements.isPlus.mockResolvedValue(isPlus);
 
-  return { service: new ApiTierService(prisma, entitlements), entitlements };
+  return { service: new ApiTierService(prisma, entitlements, mock<EntitlementsBusService>()), entitlements };
 };
 
 describe('ApiTierService.tierFor', () => {
@@ -44,6 +44,16 @@ describe('ApiTierService.cachedTierFor', () => {
     await service.cachedTierFor('user');
 
     expect(entitlements.isPlus).toHaveBeenCalledTimes(1);
+  });
+
+  it('looks the tier up again once billing reports a change', async () => {
+    const { service, entitlements } = createService({ communityKeys: 0, isPlus: false });
+
+    await service.cachedTierFor('user');
+    service.forget('user');
+    await service.cachedTierFor('user');
+
+    expect(entitlements.isPlus).toHaveBeenCalledTimes(2);
   });
 });
 

@@ -17,13 +17,13 @@ export const GarageActions = () => {
 
   return (
     <nav aria-label={t('actionsLabel')} className={s.root}>
-      <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={ROUTES.tankArmor(slug)}>
+      <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={ROUTES.tanks.armor(slug)}>
         {tArmor('link')}
       </Link>
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.build(slug)}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.builds.detail(slug)}>
         {t('build')}
       </Link>
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={`${ROUTES.compareTanks}?ids=${tankId}`}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={`${ROUTES.tanks.compare}?ids=${tankId}`}>
         {t('compare')}
       </Link>
     </nav>

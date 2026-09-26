@@ -10,7 +10,8 @@
     "updated": "Updated",
     "updatedUnknown": "no data",
     "window": "Window",
-    "windowValue": "EMA · 100 battles"
+    "windowValue": "EMA · 100 battles",
+    "home": "Home"
   },
   "table": {
     "title": "Thresholds for every tank",
@@ -100,5 +101,11 @@
     "title": "Forecast",
     "description": "How many battles to a mark at your average combined damage.",
     "action": "Open the calculator"
+  },
+  "progress": {
+    "label": "Progress to the next mark",
+    "done": "Three marks earned",
+    "next": "Heading for mark {mark}",
+    "toNext": "Mark {mark} at {damage} avg damage"
   }
 }

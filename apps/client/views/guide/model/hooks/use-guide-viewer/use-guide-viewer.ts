@@ -1,6 +1,6 @@
 'use client';
 
-import type { Guide } from '@/shared/api/guides';
+import type { Guide } from '@/entities/guide/guide';
 
 import { useAuthSession } from '@/entities/auth/session';
 

@@ -1,4 +1,4 @@
-import type { TournamentBracket, TournamentParticipant } from '@/shared/api/tournaments';
+import type { TournamentBracket, TournamentParticipant } from '@/entities/tournament/tournament';
 
 export type BracketRoundName = 'final' | 'quarterfinal' | 'round' | 'semifinal';
 

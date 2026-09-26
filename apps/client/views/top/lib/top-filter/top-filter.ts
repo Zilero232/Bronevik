@@ -1,6 +1,6 @@
 import type { RatingKind } from '@otmetki/schemas';
 
-import type { LeaderboardFilter } from '@/shared/api/leaderboards';
+import type { LeaderboardFilter } from '@/entities/player/leaderboard';
 
 import type { MetricForInput, TopFilterState } from './top-filter.types';
 

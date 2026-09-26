@@ -22,7 +22,7 @@ export class ReplayOwnerService {
 
     const replay = await this.prisma.replay.update({ where: { id }, data: { visibility } });
 
-    return toReplayView({ replay, apiUrl: this.config.get('API_URL') });
+    return toReplayView({ replay, viewerUserId: userId, apiUrl: this.config.get('API_URL') });
   }
 
   async remove({ id, userId }: OwnReplayInput): Promise<void> {

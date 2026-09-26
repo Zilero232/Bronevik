@@ -1,4 +1,4 @@
-import type { Guide } from '@/shared/api/guides';
+import type { Guide } from '@/entities/guide/guide';
 
 export type GuideMetaProps = {
   guide: Guide;

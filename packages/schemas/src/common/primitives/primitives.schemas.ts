@@ -21,3 +21,6 @@ export const ratioSchema = z.number().min(0).max(1).describe('Fraction, 0–1');
 export const percentSchema = z.number().min(0).max(100).describe('Percent, 0–100');
 export const percentDeltaSchema = z.number().min(-100).max(100).describe('Percentage points, −100…100');
 export const countSchema = z.number().int().nonnegative();
+
+export const httpUrlSchema = z.url({ protocol: /^https?$/, hostname: z.regexes.domain }).max(2048);
+export const httpsUrlSchema = z.url({ protocol: /^https$/, hostname: z.regexes.domain }).max(2048);

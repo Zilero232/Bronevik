@@ -1,4 +1,4 @@
-import type { PlatoonPost } from '@/shared/api/platoons';
+import type { PlatoonPost } from '../../../../../api';
 
 export type PlatoonCardProps = {
   post: PlatoonPost;

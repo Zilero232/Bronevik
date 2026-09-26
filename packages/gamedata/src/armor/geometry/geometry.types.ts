@@ -1,4 +1,4 @@
-import type { ArmorGroup, ArmorMounts, ArmorPieceKind, Vec3 } from '../model/armor-model.types';
+import type { ArmorGroup, ArmorMounts, ArmorPieceKind, Vec3 } from '../armor-model/armor-model.types';
 
 export type PackedPieceHeader = {
   name: string;

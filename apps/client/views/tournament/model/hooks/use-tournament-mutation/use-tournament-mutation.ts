@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { Tournament } from '@/shared/api/tournaments';
+import type { Tournament } from '@/entities/tournament/tournament';
 
 import { communityErrorKind } from '@/features/community/api-error';
 import { QUERY_KEYS } from '@/shared/constants';
@@ -20,7 +20,7 @@ export const useTournamentMutation = <TInput>({ mutationFn, successKey }: UseTou
     onSuccess: async (tournament: Tournament) => {
       queryClient.setQueryData(QUERY_KEYS.tournaments.detail(tournament.slug), tournament);
       toast.success(t(`toast.${successKey}`));
-      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tournaments.all });
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tournaments.lists });
     },
     onError: (error) => toast.error(t(`errors.${communityErrorKind(error)}`))
   });

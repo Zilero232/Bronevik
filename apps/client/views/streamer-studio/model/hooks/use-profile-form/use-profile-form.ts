@@ -11,7 +11,7 @@ import type { StreamerProfile } from '@/shared/api/streamers';
 import type { ProfileFormOutput, ProfileFormValues } from '../../../lib/profile-form';
 
 import { PROFILE_FORM } from '../../../config';
-import { profileFormSchema, toProfileFormValues, toProfileInput } from '../../../lib/profile-form';
+import { profileFormSchema, rejectedPlatform, toProfileFormValues, toProfileInput } from '../../../lib/profile-form';
 import { useSaveStreamerProfile } from '../use-streamer-profile';
 
 export const useProfileForm = (profile: StreamerProfile | null) => {
@@ -26,6 +26,15 @@ export const useProfileForm = (profile: StreamerProfile | null) => {
   const onError = (error: Error) => {
     if (isAxiosError(error) && error.response?.status === PROFILE_FORM.slugTakenStatus) {
       form.setError('slug', { type: 'server', message: 'slugTaken' });
+
+      return;
+    }
+
+    const platform = isAxiosError(error) ? rejectedPlatform(error.response?.data) : null;
+
+    if (platform) {
+      form.setError(`channels.${platform}`, { type: 'server', message: 'link' }, { shouldFocus: true });
+      toast.error(t('channelInvalid'));
 
       return;
     }

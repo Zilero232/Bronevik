@@ -11,9 +11,9 @@ import { Button, buttonVariants } from '@/ui-kit';
 import type { ProfileFormProps } from './ProfileForm.types';
 
 import { useProfileForm } from '../../../model/hooks';
+import { ChannelsFields } from '../ChannelsFields';
 import { ProfileAccountField } from '../ProfileAccountField';
 import { ProfileIdentityFields } from '../ProfileIdentityFields';
-import { ProfileLinksFields } from '../ProfileLinksFields';
 
 import s from './ProfileForm.module.scss';
 
@@ -29,7 +29,7 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
           <ProfileIdentityFields />
           <div className={s.side}>
             <ProfileAccountField />
-            <ProfileLinksFields />
+            <ChannelsFields channels={profile?.channels ?? []} />
           </div>
         </div>
         <footer className={s.footer}>
@@ -37,7 +37,7 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
             {t('save')}
           </Button>
           {profile && (
-            <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.streamer(profile.slug)}>
+            <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.streamers.profile(profile.slug)}>
               <ExternalLink size={14} />
               {t('publicLink')}
             </Link>

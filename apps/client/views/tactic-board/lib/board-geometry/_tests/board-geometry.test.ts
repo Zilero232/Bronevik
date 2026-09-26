@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TacticStroke } from '@/shared/api/tactics';
+import type { TacticStroke } from '@/entities/tactic/board';
 
 import { BOARD, BOARD_LIMITS } from '../../../config';
 import { appendPenPoint, circleOf, clampPoint, dragShapePoints, fitScale, isDrawnStroke, rectBox, translatePoints } from '../board-geometry';

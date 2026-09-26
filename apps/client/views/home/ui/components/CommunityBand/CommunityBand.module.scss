@@ -1,0 +1,56 @@
+@use '@/shared/styles/mixins' as *;
+
+.inner {
+  @include stack(var(--space-5));
+}
+
+.title {
+  @include display(var(--display-md));
+
+  margin: 0;
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+
+  @include below(md) {
+    font-size: var(--text-2xl);
+  }
+}
+
+.grid {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.item {
+  display: grid;
+  min-width: 0;
+}
+
+.media {
+  --art: var(--color-accent);
+
+  position: absolute;
+  background: radial-gradient(circle at 70% 45%, color-mix(in srgb, var(--art) 18%, transparent), transparent 60%), var(--color-band);
+  inset: 0;
+
+  &[data-kind='clans'] {
+    --art: var(--color-steel);
+  }
+}
+
+.emblem {
+  position: absolute;
+  top: 50%;
+  right: var(--space-8);
+  color: var(--art);
+  opacity: 0.16;
+  transform: translateY(-50%) rotate(-8deg);
+}

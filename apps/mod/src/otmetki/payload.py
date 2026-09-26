@@ -2,9 +2,11 @@ import uuid
 
 from .compat import is_int, is_number, string_types, to_text
 from .loadout import normalize_loadout
+from .shots import MAX_SHOTS
 from .version import SCHEMA_VERSION
 
 REALM = 'RU'
+MAX_PLATOON_MATES = 2
 
 STAT_FIELDS = (
     ('damage_dealt', 'damageDealt'),
@@ -112,6 +114,45 @@ def extract_moe(vehicle):
     }
 
 
+def _player_key(value):
+    if is_int(value):
+        return value
+    if isinstance(value, string_types) and value.isdigit():
+        return int(value)
+    return None
+
+
+def extract_platoon(results, account_id):
+    players = results.get('players')
+    if not isinstance(players, dict) or not is_int(account_id):
+        return None
+    by_id = {}
+    for key, value in players.items():
+        player_id = _player_key(key)
+        if player_id is not None and isinstance(value, dict):
+            by_id[player_id] = value
+    own = by_id.get(account_id)
+    if own is None:
+        return None
+    prebattle = own.get('prebattleID')
+    if not is_int(prebattle) or prebattle <= 0:
+        return None
+    mates = sorted(
+        player_id for player_id, player in by_id.items()
+        if player_id != account_id and player.get('prebattleID') == prebattle and player.get('team') == own.get('team')
+    )[:MAX_PLATOON_MATES]
+    if not mates:
+        return None
+    return {'size': len(mates) + 1, 'mates': mates}
+
+
+def normalize_shots(shots):
+    if not isinstance(shots, (list, tuple)):
+        return None
+    result = [shot for shot in shots if isinstance(shot, dict)][:MAX_SHOTS]
+    return result or None
+
+
 def build_battle_event(results, extras=None):
     extras = extras or {}
     if not isinstance(results, dict):
@@ -157,6 +198,8 @@ def build_battle_event(results, extras=None):
         'queue_time_s': extras.get('queue_time_s'),
         'session_id': extras.get('session_id'),
         'loadout': normalize_loadout(extras.get('loadout'), _int(common.get('arenaTypeID'))),
+        'platoon': extract_platoon(results, _int(avatar.get('accountDBID'), None)),
+        'shots': normalize_shots(extras.get('shots')),
     }
     return event
 

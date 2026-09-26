@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react';
 
-export type CardVariant = 'panel' | 'well';
+export type CardVariant = 'band' | 'media' | 'panel' | 'well';
 
 export type CardProps = ComponentProps<'div'> & {
   variant?: CardVariant;

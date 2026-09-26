@@ -11,21 +11,24 @@ import { Button, EmptyState, Skeleton } from '@/ui-kit';
 import type { StreamerPageProps } from './StreamerPage.types';
 
 import { useStreamerPage } from '../model/hooks';
-import { StreamerHero, StreamerStats } from './components';
+import { ClaimBanner, LatestVideos, LiveBlock, StreamerHero, StreamerStats } from './components';
 
 import s from './StreamerPage.module.scss';
 
 export const StreamerPage = ({ slug }: StreamerPageProps) => {
   const t = useTranslations('streamer.page');
-  const { data: profile, isPending, error, refetch } = useStreamerPage(slug);
+  const { data: profile, channels, isPending, error, refetch } = useStreamerPage(slug);
 
   return (
     <div className={s.root}>
       {match({ profile, isPending, error })
         .with({ profile: P.nonNullable }, ({ profile: loaded }) => (
           <>
-            <StreamerHero profile={loaded} />
+            <StreamerHero channels={channels} profile={loaded} />
+            {loaded.kind === 'editorial' && <ClaimBanner slug={loaded.slug} />}
+            {loaded.live && <LiveBlock channels={channels} live={loaded.live} />}
             {loaded.accountId !== null && <StreamerStats accountId={loaded.accountId} />}
+            {loaded.latestVideos.length > 0 && <LatestVideos videos={loaded.latestVideos} />}
           </>
         ))
         .with({ isPending: true }, () => (

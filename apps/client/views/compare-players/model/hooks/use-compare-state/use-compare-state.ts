@@ -19,7 +19,7 @@ export const useCompareState = () => {
   const ids = parseCompareIds(searchParams.get('ids'));
 
   const replace = (next: number[]) =>
-    router.replace({ pathname: ROUTES.comparePlayers, query: next.length > 0 ? { ids: next.join(',') } : {} }, { scroll: false });
+    router.replace({ pathname: ROUTES.players.compare, query: next.length > 0 ? { ids: next.join(',') } : {} }, { scroll: false });
 
   return {
     ids,

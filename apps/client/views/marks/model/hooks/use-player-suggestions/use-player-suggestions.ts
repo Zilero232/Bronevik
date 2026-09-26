@@ -5,7 +5,7 @@ import type { PlayerSearchResult } from '@otmetki/schemas';
 import { useDebounceValue } from '@siberiacancode/reactuse';
 import { useQuery } from '@tanstack/react-query';
 
-import { search } from '@/shared/api';
+import { search } from '@/entities/search/search';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { PLAYER_LOOKUP } from '../../../config';

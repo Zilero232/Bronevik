@@ -17,5 +17,10 @@ export const FEATURES = {
   pulse: true,
   tankEconomy: true,
   learningCurve: true,
-  buildUsage: true
+  buildUsage: true,
+  modeMeta: true,
+  watchlistDigest: true,
+  competitions: true,
+  progression: true,
+  replayOverflowCleanup: true
 } as const;

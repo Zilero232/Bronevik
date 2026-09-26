@@ -23,7 +23,7 @@ export const FieldModStep = ({ step }: FieldModStepProps) => {
       <div className={s.options}>
         {step.options.map(({ id, tag, name, image }, index) => (
           <button key={id} aria-pressed={chosen === index} className={s.option} type='button' onClick={onChoose(tag)}>
-            <GameIcon size={BUILD_VIEW.iconSize.gear} src={image} />
+            <GameIcon kind='fieldModification' size={BUILD_VIEW.iconSize.gear} src={image} />
             <span className={s.name}>{name}</span>
           </button>
         ))}

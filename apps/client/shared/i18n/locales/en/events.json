@@ -5,7 +5,9 @@
   },
   "head": {
     "title": "Events",
-    "description": "Battle pass, Front Line, Onslaught, ranked battles, marathons and drops — from tanki.su news"
+    "description": "Battle pass, Front Line, Onslaught, ranked battles, marathons and drops — from tanki.su news",
+    "home": "Home",
+    "nowFigure": "Running now"
   },
   "filters": {
     "label": "Event type"
@@ -25,7 +27,8 @@
   "groups": {
     "current": "On now",
     "upcoming": "Coming up",
-    "past": "Past"
+    "past": "Past",
+    "alsoRunning": "Also running"
   },
   "empty": {
     "current": "Nothing is on right now",
@@ -43,10 +46,25 @@
     "title": "Calendar",
     "hint": "Subscribe in Google, Apple or Outlook — events update on their own.",
     "subscribe": "Subscribe",
-    "url": "iCal link"
+    "url": "iCal link",
+    "subscribeIcs": "Subscribe (.ics)"
   },
   "error": {
     "title": "Could not load the events",
     "description": "The server did not respond. Try again."
+  },
+  "drops": {
+    "title": "Active drops",
+    "empty": "No drops right now — we watch the tanki.su news",
+    "errorTitle": "Could not load drops",
+    "errorDescription": "The server did not respond. Try again."
+  },
+  "now": {
+    "endsIn": "Ends in",
+    "left": "{days}d {hours}h {minutes}m",
+    "since": "Running since"
+  },
+  "timeline": {
+    "week": "Week of {date}"
   }
 }

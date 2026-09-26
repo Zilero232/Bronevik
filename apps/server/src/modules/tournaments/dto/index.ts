@@ -1,1 +1,9 @@
-export { CreateTournamentDto, RegisterTournamentDto, ReportMatchDto, TournamentDto, TournamentPageDto, TournamentsQueryDto } from './tournaments.dto';
+export {
+  CreateTournamentDto,
+  RegisterTournamentDto,
+  ReportMatchDto,
+  TournamentDto,
+  TournamentPageDto,
+  TournamentsQueryDto,
+  WithdrawTournamentDto
+} from './tournaments.dto';

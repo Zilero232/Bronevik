@@ -21,3 +21,11 @@ export const readRecord = (value: unknown): Record<string, unknown> => {
 
   return parsed.success ? parsed.data : {};
 };
+
+export const parseJsonText = (text: string): unknown => {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+};

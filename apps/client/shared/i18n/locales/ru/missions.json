@@ -20,7 +20,10 @@
     "emptyTitle": "Задачи ещё не загружены",
     "emptyDescription": "ЛБЗ появятся после следующего импорта игровых данных.",
     "errorTitle": "Не удалось загрузить ЛБЗ",
-    "errorDescription": "Сервер не ответил. Попробуйте ещё раз."
+    "errorDescription": "Сервер не ответил. Попробуйте ещё раз.",
+    "home": "Главная",
+    "operationsFigure": "Операций",
+    "plateProgress": "{done}/{total} задач{honors, plural, =0 {} other { · с отличием: #}}"
   },
   "operation": {
     "missions": "Задач",

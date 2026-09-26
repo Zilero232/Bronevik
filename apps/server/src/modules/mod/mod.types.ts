@@ -17,9 +17,12 @@ export type IngestInput = {
   batch: IngestBatch;
 };
 
-export type AuthenticateInput = {
+export type IdentifyDeviceInput = {
   deviceId: string | undefined;
   signature: string | undefined;
+};
+
+export type AuthenticateInput = IdentifyDeviceInput & {
   rawBody: Buffer | undefined;
 };
 

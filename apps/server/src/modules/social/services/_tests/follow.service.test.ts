@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Follow, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { EntitlementsService } from '../../../billing';
 
-import { AppConflictException, AppNotFoundException } from '../../../../common/exceptions';
+import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
 import { FEED } from '../../config';
 import { FollowService } from '../follow.service';
 
@@ -33,11 +34,12 @@ const link = (accountId: bigint): UserLestaAccount => ({
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
+  const entitlements = mock<EntitlementsService>();
 
   prisma.follow.findMany.mockResolvedValue([]);
   prisma.player.findMany.mockResolvedValue([]);
 
-  return { service: new FollowService(prisma), prisma };
+  return { service: new FollowService(prisma, entitlements), prisma, entitlements };
 };
 
 describe('FollowService.create', () => {
@@ -60,6 +62,51 @@ describe('FollowService.create', () => {
     expect(prisma.follow.upsert).toHaveBeenCalledWith(
       expect.objectContaining({ where: { userId_kind_targetId: { userId: 'u1', kind: 'player', targetId: 7n } } })
     );
+  });
+
+  it('checks the watched-tanks limit against the tanks already watched', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    prisma.follow.count.mockResolvedValueOnce(20).mockResolvedValueOnce(9);
+    prisma.follow.findUnique.mockResolvedValue(null);
+
+    await service.create({ userId: 'u1', kind: 'tank', targetId: 7 });
+
+    expect(entitlements.assertWithinLimit).toHaveBeenCalledWith({ userId: 'u1', key: 'watchedTanks', count: 9 });
+  });
+
+  it('refuses a new watched tank over the limit', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    prisma.follow.count.mockResolvedValue(10);
+    prisma.follow.findUnique.mockResolvedValue(null);
+    entitlements.assertWithinLimit.mockRejectedValue(
+      new AppForbiddenException('SUBSCRIPTION_REQUIRED', 'limit', { limitKey: 'watchedTanks', limit: 10 })
+    );
+
+    await expect(service.create({ userId: 'u1', kind: 'tank', targetId: 7 })).rejects.toBeInstanceOf(AppForbiddenException);
+    expect(prisma.follow.upsert).not.toHaveBeenCalled();
+  });
+
+  it('keeps an already watched tank without a limit check', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    prisma.follow.count.mockResolvedValue(400);
+    prisma.follow.findUnique.mockResolvedValue({ ...follow(7n), kind: 'tank' });
+
+    await service.create({ userId: 'u1', kind: 'tank', targetId: 7 });
+
+    expect(entitlements.assertWithinLimit).not.toHaveBeenCalled();
+  });
+
+  it('does not count player follows against the watched-tanks limit', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    prisma.follow.count.mockResolvedValue(3);
+
+    await service.create({ userId: 'u1', kind: 'player', targetId: 7 });
+
+    expect(entitlements.assertWithinLimit).not.toHaveBeenCalled();
   });
 });
 

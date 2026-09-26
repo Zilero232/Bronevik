@@ -1,7 +1,7 @@
 import type { LoggerService } from '@nestjs/common';
 
 import type { PrismaClient } from '../../../generated';
-import type { Env } from '../../config/env.schema';
+import type { Env } from '../../config/env';
 import type { LestaClient } from '../lesta';
 import type { createAuth } from './auth';
 import type { LestaAccountStore } from './lesta-id';

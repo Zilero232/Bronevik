@@ -13,3 +13,17 @@ export const PRISMA_CODE = {
   notFound: 'P2025',
   transactionConflict: 'P2034'
 } as const;
+
+export const PRISMA_LOCK = {
+  timeoutMs: 15_000,
+  maxWaitMs: 5_000
+} as const;
+
+export const LIMIT_LOCK_SCOPE = {
+  apiKeys: 'limit:api-keys',
+  webhooks: 'limit:webhooks',
+  overlays: 'limit:overlays',
+  goals: 'limit:goals',
+  replays: 'limit:replays',
+  linkedAccounts: 'limit:linked-accounts'
+} as const;

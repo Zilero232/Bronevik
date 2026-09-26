@@ -1,21 +1,19 @@
-import { addDays, differenceInCalendarDays, differenceInSeconds, format, parseISO, subDays } from 'date-fns';
+import { differenceInSeconds } from 'date-fns';
 import { sortBy } from 'remeda';
 
-import { seededRandom } from '@/shared/lib';
+import { dayKey, daysBetween, nextDayStart, seededRandom, shiftDay } from '@/shared/lib';
 
 import type { PickDailyTankInput } from './daily-puzzle.types';
 
 import { GUESS_TANK } from '../../config';
 
-const DAY_FORMAT = 'yyyy-MM-dd';
+export const puzzleDay = (now: Date) => dayKey({ date: now });
 
-export const puzzleDay = (now: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: GUESS_TANK.timeZone }).format(now);
+export const previousDay = (day: string) => shiftDay({ day, amount: -1 });
 
-export const previousDay = (day: string) => format(subDays(parseISO(day), 1), DAY_FORMAT);
+export const puzzleNumber = (day: string) => daysBetween({ from: GUESS_TANK.epoch, to: day }) + 1;
 
-export const puzzleNumber = (day: string) => differenceInCalendarDays(parseISO(day), parseISO(GUESS_TANK.epoch)) + 1;
-
-export const nextPuzzleAt = (now: Date) => addDays(parseISO(`${puzzleDay(now)}T00:00:00${GUESS_TANK.utcOffset}`), 1);
+export const nextPuzzleAt = (now: Date) => nextDayStart({ date: now });
 
 export const secondsUntilNextPuzzle = (now: Date) => differenceInSeconds(nextPuzzleAt(now), now, { roundingMethod: 'ceil' });
 

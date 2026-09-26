@@ -1,0 +1,76 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.level {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.levelValue {
+  @include heading(var(--text-xl));
+}
+
+.points {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.rewards {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  list-style: none;
+}
+
+.reward {
+  @include well;
+
+  display: grid;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+
+  &[data-claimed='true'] {
+    border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+    color: var(--color-text);
+  }
+}
+
+.rewardLevel {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.rewardName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rewardState {
+  display: inline-flex;
+  color: var(--color-text-dim);
+
+  [data-claimed='true'] & {
+    color: var(--color-accent);
+  }
+}

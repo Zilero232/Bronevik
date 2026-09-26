@@ -80,6 +80,19 @@ describe('GuideService.update', () => {
     expect(prisma.guide.update).toHaveBeenCalledWith({ where: { id: guide.id }, data: { title: 'Heavy brawling 2', status: 'pending' } });
   });
 
+  it('drops the old tank and map when the guide changes its kind', async () => {
+    const { service, prisma } = createService();
+
+    prisma.guide.findFirst.mockResolvedValue(mock<Guide>({ slug: guide.slug, kind: 'tank' }));
+
+    await service.update({ id: guide.id, userId: 'author', kind: 'map', arenaId: '14_siegfried_line' });
+
+    expect(prisma.guide.update).toHaveBeenCalledWith({
+      where: { id: guide.id },
+      data: { kind: 'map', tankId: null, arenaId: '14_siegfried_line', status: 'pending' }
+    });
+  });
+
   it('refuses a guide of another user', async () => {
     const { service, prisma } = createService();
 

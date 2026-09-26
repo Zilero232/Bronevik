@@ -11,6 +11,7 @@ import { AppNotFoundException } from '../../../common/exceptions';
 import { readRecord, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
+import { CosmeticsService } from '../../progression';
 import { VehicleCatalogService } from '../../reference';
 import { OVERLAY, OVERLAY_KIND_FROM_DB } from '../config';
 import { winStreak } from '../lib';
@@ -21,6 +22,7 @@ export class OverlayDataService {
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
     private readonly entitlements: EntitlementsService,
+    private readonly cosmetics: CosmeticsService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache
   ) {}
 
@@ -54,7 +56,8 @@ export class OverlayDataService {
   }
 
   async compute(overlay: Overlay): Promise<OverlayData> {
-    const config = overlayConfigSchema.parse(overlay.config);
+    const stored = overlayConfigSchema.parse(overlay.config);
+    const config = { ...stored, theme: await this.cosmetics.effectiveOverlayTheme({ userId: overlay.userId, theme: stored.theme }) };
     const kind = OVERLAY_KIND_FROM_DB[overlay.kind];
 
     if (await this.isPaused(overlay)) {

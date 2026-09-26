@@ -9,7 +9,8 @@ import type {
   reportMatchSchema,
   tournamentPageSchema,
   tournamentSchema,
-  tournamentsQuerySchema
+  tournamentsQuerySchema,
+  withdrawTournamentSchema
 } from './dto/tournaments.schemas';
 import type { TournamentWithParticipants } from './lib';
 
@@ -18,6 +19,7 @@ export type TournamentsQuery = z.output<typeof tournamentsQuerySchema>;
 export type TournamentPage = z.infer<typeof tournamentPageSchema>;
 export type CreateTournamentRequest = z.output<typeof createTournamentSchema> & Owned;
 export type RegisterTournamentRequest = z.output<typeof registerTournamentSchema> & OwnedById;
+export type WithdrawTournamentRequest = z.output<typeof withdrawTournamentSchema> & OwnedById;
 export type ReportMatchRequest = z.output<typeof reportMatchSchema> & OwnedById;
 
 export type TournamentMove = OwnedById & {
@@ -32,4 +34,9 @@ export type OrganizedInput = OwnedById & {
 export type TournamentViewWith = {
   tournament: TournamentWithParticipants;
   nicknames: NamesById;
+};
+
+export type ViewTournamentInput = {
+  slug: string;
+  viewerUserId: string | null;
 };

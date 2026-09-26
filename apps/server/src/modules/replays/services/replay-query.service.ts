@@ -3,7 +3,16 @@ import type { ReplaySummary as ReplayView } from '@otmetki/schemas';
 import { Injectable } from '@nestjs/common';
 
 import type { Replay } from '../../../../generated';
-import type { BestOfWeek, MineInput, ReplayFile, ReplayPage, ReplaySearchQuery, ReplayTracks, ViewReplayInput } from '../replays.types';
+import type {
+  BestOfWeek,
+  MineInput,
+  ReplayFile,
+  ReplayPage,
+  ReplaySearchQuery,
+  ReplayTracks,
+  ReplayViewInput,
+  ViewReplayInput
+} from '../replays.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { toIsoDate, weekWindow } from '../../../common/lib';
@@ -25,12 +34,12 @@ export class ReplayQueryService {
     const replay = await this.visible({ id, viewerUserId });
 
     if (replay.status !== 'parsed') {
-      return this.view(replay);
+      return this.view({ replay, viewerUserId });
     }
 
     await this.prisma.replay.updateMany({ where: { id }, data: { views: { increment: 1 } } });
 
-    return this.view({ ...replay, views: replay.views + 1 });
+    return this.view({ replay: { ...replay, views: replay.views + 1 }, viewerUserId });
   }
 
   async search(query: ReplaySearchQuery): Promise<ReplayPage> {
@@ -49,7 +58,7 @@ export class ReplayQueryService {
       this.prisma.replay.count({ where })
     ]);
 
-    return { items: rows.map((row) => this.view(row)), total, limit: query.limit, offset: query.offset };
+    return { items: rows.map((row) => this.view({ replay: row })), total, limit: query.limit, offset: query.offset };
   }
 
   async mine({ userId, limit, offset }: MineInput): Promise<ReplayPage> {
@@ -59,7 +68,7 @@ export class ReplayQueryService {
       this.prisma.replay.count({ where })
     ]);
 
-    return { items: rows.map((row) => this.view(row)), total, limit, offset };
+    return { items: rows.map((row) => this.view({ replay: row, viewerUserId: userId })), total, limit, offset };
   }
 
   async bestOfWeek(week: string | undefined): Promise<BestOfWeek> {
@@ -80,7 +89,7 @@ export class ReplayQueryService {
             take: BEST_OF_WEEK.size
           });
 
-    return { weekStart: toIsoDate(start) ?? '', items: rows.map((row) => this.view(row)) };
+    return { weekStart: toIsoDate(start) ?? '', items: rows.map((row) => this.view({ replay: row })) };
   }
 
   async file({ id, viewerUserId }: ViewReplayInput): Promise<ReplayFile> {
@@ -112,7 +121,7 @@ export class ReplayQueryService {
     return replay;
   }
 
-  private view(replay: Replay): ReplayView {
-    return toReplayView({ replay, apiUrl: this.config.get('API_URL') });
+  private view({ replay, viewerUserId }: ReplayViewInput): ReplayView {
+    return toReplayView({ replay, viewerUserId, apiUrl: this.config.get('API_URL') });
   }
 }

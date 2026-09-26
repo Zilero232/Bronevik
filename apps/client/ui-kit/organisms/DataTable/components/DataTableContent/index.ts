@@ -1,0 +1,1 @@
+export { DataTableContent } from './DataTableContent';

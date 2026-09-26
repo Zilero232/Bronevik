@@ -2,7 +2,7 @@ import type { Plans } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 
-import { planPricing } from '../plan-pricing';
+import { cheapestMonthly, planPricing, recommendedPlan } from '../plan-pricing';
 
 const MONTHLY = { plan: 'monthly', months: 1, priceRub: 199 } as const;
 
@@ -55,5 +55,23 @@ describe('planPricing with the quarterly plan', () => {
 
     expect(quarterly?.savingRub).toBe(68);
     expect(quarterly?.savingPercent).toBe(11);
+  });
+});
+
+describe('recommendedPlan', () => {
+  it('recommends the plan with the biggest saving', () => {
+    expect(recommendedPlan(planPricing(OFFERS))).toBe('yearly');
+  });
+
+  it('recommends nothing when no plan saves money', () => {
+    expect(recommendedPlan(planPricing([MONTHLY]))).toBeNull();
+    expect(recommendedPlan([])).toBeNull();
+  });
+});
+
+describe('cheapestMonthly', () => {
+  it('returns the lowest per-month price', () => {
+    expect(cheapestMonthly(planPricing(OFFERS))).toBeCloseTo(YEARLY.priceRub / YEARLY.months, 1);
+    expect(cheapestMonthly([])).toBeNull();
   });
 });

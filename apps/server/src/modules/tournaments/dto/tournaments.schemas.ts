@@ -56,7 +56,8 @@ export const createTournamentSchema = z.object({
   requirements: statRequirementsSchema.default({}),
   maxParticipants: z.number().int().min(TOURNAMENT.minParticipants).max(TOURNAMENT.maxParticipants).default(64),
   registrationEndsAt: isoDateTimeSchema.optional(),
-  startsAt: isoDateTimeSchema
+  startsAt: isoDateTimeSchema,
+  openRegistration: z.boolean().default(false)
 });
 
 export const registerTournamentSchema = z.object({
@@ -68,4 +69,8 @@ export const reportMatchSchema = z.object({
   round: z.number().int().nonnegative(),
   index: z.number().int().nonnegative(),
   winner: accountIdSchema
+});
+
+export const withdrawTournamentSchema = z.object({
+  accountId: accountIdSchema.optional()
 });

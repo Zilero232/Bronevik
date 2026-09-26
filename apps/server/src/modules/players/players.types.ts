@@ -2,6 +2,7 @@ import type { InsightsPeriod, PlayerTanksQuery, Playtime, PopularPlayersQuery, T
 
 import type { AccountRating, AccountSnapshot, Battle } from '../../../generated';
 import type { AccountInfo } from '../../lib/lesta';
+import type { HistoryWindowPolicy } from './lib';
 
 export type LestaPlayerInfo = AccountInfo;
 
@@ -30,6 +31,12 @@ export type LatestTankSnapshot = {
 export type HistoryInput = {
   accountId: bigint;
   query: TimeSeriesQuery;
+  policy: HistoryWindowPolicy;
+};
+
+export type HistoryPolicyInput = {
+  accountId: bigint;
+  viewerUserId: string | null;
 };
 
 export type ActivityInput = {

@@ -29,7 +29,8 @@ export const JOB = {
     tierMaintenance: 'tier-maintenance',
     tankEconomy: 'tank-economy',
     learningCurve: 'learning-curve',
-    buildUsage: 'build-usage'
+    buildUsage: 'build-usage',
+    modeMeta: 'mode-meta'
   },
   news: { rss: 'rss' },
   purge: { dispatch: 'dispatch', account: 'account' },

@@ -1,0 +1,61 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: center;
+  padding: var(--space-2);
+  background: var(--color-surface-sunken);
+  gap: var(--space-2) var(--space-3);
+  grid-template-areas: 'index tank reasons facts';
+  grid-template-columns: 20px minmax(0, 1.4fr) minmax(0, 1fr) auto;
+
+  @include below(xl) {
+    grid-template-areas:
+      'index tank facts'
+      'index reasons reasons';
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+  }
+}
+
+.index {
+  @include numeric;
+
+  color: var(--color-text-dim);
+  grid-area: index;
+}
+
+.tank {
+  min-width: 0;
+  grid-area: tank;
+}
+
+.reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  grid-area: reasons;
+}
+
+.facts {
+  display: flex;
+  margin: 0;
+  gap: var(--space-3);
+  grid-area: facts;
+}
+
+.fact {
+  @include stack(0);
+
+  align-items: flex-end;
+
+  dt {
+    @include label;
+  }
+
+  dd {
+    @include numeric;
+
+    margin: 0;
+    color: var(--color-text);
+  }
+}

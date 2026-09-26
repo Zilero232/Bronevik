@@ -1,9 +1,9 @@
 import * as Y from 'yjs';
 import { z } from 'zod';
 
-import type { TacticLayer } from '@/shared/api/tactics';
+import type { TacticLayer } from '@/entities/tactic/board';
 
-import { zTacticBoard } from '@/shared/api/tactics';
+import { zTacticBoard } from '@/entities/tactic/board';
 
 import type { DeleteLayerInput, LayerIndicesInput, MergeByIdInput, WriteLayerInput } from './board-document.types';
 

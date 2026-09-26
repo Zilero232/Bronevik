@@ -31,7 +31,7 @@ export const CheckoutAction = ({
       {match({ isPending, isSignedIn, isPlus })
         .with({ isPending: true }, () => <Skeleton height={40} shape='block' width={220} />)
         .with({ isSignedIn: false }, () => (
-          <Link className={buttonVariants()} href={ROUTES.login}>
+          <Link className={buttonVariants()} href={ROUTES.auth.login}>
             {t('checkout.action.signIn')}
           </Link>
         ))

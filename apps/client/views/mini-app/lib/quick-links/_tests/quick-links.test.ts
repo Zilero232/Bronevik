@@ -11,7 +11,7 @@ describe('quickLinkTargets', () => {
   });
 
   it('points the profile link at the player it was built for', () => {
-    expect(quickLinkTargets('Some Player').find(({ key }) => key === 'profile')?.href).toBe(ROUTES.player('Some Player'));
+    expect(quickLinkTargets('Some Player').find(({ key }) => key === 'profile')?.href).toBe(ROUTES.players.profile('Some Player'));
   });
 
   it('gives every link a distinct destination', () => {

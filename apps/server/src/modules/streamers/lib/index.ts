@@ -1,9 +1,15 @@
 export { evaluateChallenge } from './challenge-evaluator';
 export type { ChallengeVerdict, EvaluatedBattle } from './challenge-evaluator';
+export { parseChannel } from './channel-url';
+export type { ParsedChannel } from './channel-url';
 export { parseChatCommand } from './chat-command';
 export type { ChatCommand } from './chat-command';
 export { chatText, chatValue } from './chat-copy';
 export type { ChatMessage, ChatValues } from './chat-copy';
+export { bioHasCode, newClaimCode } from './claim-code';
 export { matchDonation } from './donation-match';
+export { mergeLiveStatus, wentLive } from './live-status';
+export type { LiveStream } from './live-status';
 export { winStreak } from './overlay-data';
 export { pausedOverlayIds } from './overlay-pause';
+export { aggregateCohort } from './settings-aggregate';

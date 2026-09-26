@@ -21,5 +21,11 @@ export const NOTIFICATION_SCHEDULES = [
     queue: NOTIFICATIONS_QUEUE.events,
     name: NOTIFICATIONS_JOB.events.weeklyDigest,
     repeat: { pattern: '0 10 * * 1' }
+  },
+  {
+    id: 'notifications-first-win-reminders',
+    queue: NOTIFICATIONS_QUEUE.events,
+    name: NOTIFICATIONS_JOB.events.firstWinReminders,
+    repeat: { pattern: '0 18 * * *' }
   }
 ] as const satisfies readonly JobSchedule[];

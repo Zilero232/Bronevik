@@ -1,0 +1,63 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-1));
+}
+
+.title {
+  @include label;
+
+  margin: 0;
+}
+
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  @include stack(var(--space-1));
+
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  padding-block: var(--space-2);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.link,
+.name {
+  min-width: 0;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.dates {
+  @include numeric;
+
+  margin-left: auto;
+  color: var(--color-text-muted);
+}
+
+.meta {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  white-space: pre-line;
+}

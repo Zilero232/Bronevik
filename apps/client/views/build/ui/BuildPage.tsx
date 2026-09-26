@@ -10,7 +10,7 @@ import { ResourceMissing } from '@/widgets/resource-missing';
 
 import { BuildProvider } from '../model/context';
 import { useBuildData } from '../model/hooks';
-import { BuildSkeleton, BuildWorkspace } from './components';
+import { BuildScreen, BuildSkeleton } from './components';
 
 import s from './BuildPage.module.scss';
 
@@ -25,13 +25,13 @@ export const BuildPage = () => {
       {match({ vehicle, options, isPending, error })
         .with({ vehicle: P.nonNullable, options: P.nonNullable }, ({ vehicle: loadedVehicle, options: loadedOptions }) => (
           <BuildProvider key={loadedVehicle.tankId} options={loadedOptions} vehicle={loadedVehicle}>
-            <BuildWorkspace />
+            <BuildScreen />
           </BuildProvider>
         ))
         .with({ isPending: true }, () => <BuildSkeleton />)
         .with({ error: P.when(isNotFoundError) }, () => (
           <ResourceMissing
-            back={{ href: ROUTES.tanks, label: t('back') }}
+            back={{ href: ROUTES.tanks.list, label: t('back') }}
             description={t('notFoundDescription', { slug })}
             reason='notFound'
             title={t('notFoundTitle')}
@@ -39,7 +39,7 @@ export const BuildPage = () => {
         ))
         .otherwise(() => (
           <ResourceMissing
-            back={{ href: ROUTES.tanks, label: t('back') }}
+            back={{ href: ROUTES.tanks.list, label: t('back') }}
             description={t('errorDescription')}
             isRetrying={isRetrying}
             reason='error'

@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-weight: 600;
+
+  &[data-sign='1'] {
+    color: var(--color-success);
+  }
+
+  &[data-sign='-1'] {
+    color: var(--color-danger);
+  }
+}

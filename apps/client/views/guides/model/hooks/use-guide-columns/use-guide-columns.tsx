@@ -5,7 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { Guide } from '@/shared/api/guides';
+import type { Guide } from '@/entities/guide/guide';
 
 import { GuideSubject } from '@/features/community/guide-meta';
 import { RelativeTime } from '@/ui-kit';

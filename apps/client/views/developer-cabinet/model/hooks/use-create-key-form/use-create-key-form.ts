@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { createApiKey } from '@/shared/api/developer';
+import { createApiKey } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { CreateKeyFormValues } from '../../../lib/key-form';

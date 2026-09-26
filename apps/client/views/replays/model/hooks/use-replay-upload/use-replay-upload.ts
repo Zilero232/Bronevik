@@ -7,7 +7,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { match, P } from 'ts-pattern';
 
-import { getReplay, uploadReplay } from '@/shared/api/replays';
+import { getReplay } from '@/entities/replay/replay';
+import { uploadReplay } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ReplayFileProblem } from '../../../lib/upload-validation';

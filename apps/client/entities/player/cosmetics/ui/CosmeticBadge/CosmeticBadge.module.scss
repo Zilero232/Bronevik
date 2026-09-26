@@ -1,0 +1,36 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include cosmetic-tone;
+
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border: 1px solid color-mix(in srgb, var(--cosmetic) 55%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--cosmetic) 14%, transparent);
+  color: var(--cosmetic);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  gap: var(--space-1);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.compact {
+  padding: 2px;
+}
+
+.name {
+  color: var(--color-text);
+}
+
+.hidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

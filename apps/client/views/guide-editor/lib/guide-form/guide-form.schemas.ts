@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { zCreateGuide, zUpdateGuide } from '@/shared/api/guides';
+import { zCreateGuide, zUpdateGuide } from '@/entities/guide/guide';
 
 export const guideFormSchema = zCreateGuide
   .extend({

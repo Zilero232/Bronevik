@@ -36,7 +36,6 @@
   "board": {
     "title": "Posts",
     "count": "{total, plural, one {# post} other {# posts}}",
-    "more": "Show more",
     "reset": "Reset filters",
     "emptyTitle": "No posts",
     "emptyDescription": "Nobody is looking for a platoon right now. Post yours — it stays up for a few hours.",

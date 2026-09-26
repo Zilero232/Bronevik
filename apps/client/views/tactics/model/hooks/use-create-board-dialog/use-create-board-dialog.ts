@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import type { BoardSettingsPayload } from '@/features/community/tactic-board-settings';
 
 import { toBoardSettingsValues } from '@/features/community/tactic-board-settings';
-import { createTacticBoard } from '@/shared/api/tactics';
+import { createTacticBoard } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
@@ -23,7 +23,7 @@ export const useCreateBoardDialog = () => {
       toast.success(t('created'));
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tactics.mine });
       setIsOpen(false);
-      router.push(ROUTES.tacticBoard(board.id));
+      router.push(ROUTES.tactics.board(board.id));
     }
   });
 

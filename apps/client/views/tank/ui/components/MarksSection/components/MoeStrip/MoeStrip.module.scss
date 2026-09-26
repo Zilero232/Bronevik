@@ -6,8 +6,9 @@
 
 .strip {
   display: grid;
-  padding: 0;
+  padding: var(--space-4);
   margin: 0;
+  gap: var(--space-3);
   grid-template-columns: repeat(4, minmax(0, 1fr));
   list-style: none;
 
@@ -18,20 +19,27 @@
 
 .plate {
   @include stack(var(--space-2));
+  @include media-card;
+
+  --mark: var(--tier-mid);
 
   min-width: 0;
   padding: var(--space-4);
-  border-left: 1px solid var(--color-border);
+  border-top: 3px solid var(--mark);
 
-  &:first-child {
-    border-left: none;
+  &[data-marks='2'] {
+    --mark: var(--tier-high);
+  }
+
+  &[data-marks='3'] {
+    --mark: var(--color-accent);
   }
 }
 
 .head {
   display: flex;
   align-items: center;
-  color: var(--color-steel);
+  color: var(--mark);
   gap: var(--space-2);
 }
 

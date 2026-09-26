@@ -1,2 +1,2 @@
 export { TierNumeral } from './TierNumeral';
-export type { TierNumeralProps } from './TierNumeral.types';
+export type { TierNumeralProps, TierNumeralVariant } from './TierNumeral.types';

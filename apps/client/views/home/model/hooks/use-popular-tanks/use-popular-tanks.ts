@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { listTankStats } from '@/shared/api/tanks';
+import { listTankStats } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { HOME } from '../../../config';

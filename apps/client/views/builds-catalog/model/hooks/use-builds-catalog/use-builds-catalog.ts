@@ -3,16 +3,16 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
-import { listBuildsCatalog } from '@/shared/api/builds';
+import { listBuildsCatalog } from '@/entities/tank/build';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { useCatalogState } from '../use-catalog-state';
 
 export const useBuildsCatalog = () => {
-  const [{ mode }] = useCatalogState();
+  const [{ mode, difficulties }] = useCatalogState();
   const { query } = useVehicleFilters();
 
-  const params = { mode, tiers: query.tiers, types: query.types, nations: query.nations };
+  const params = { mode, tiers: query.tiers, types: query.types, nations: query.nations, difficulties };
 
   return useQuery({
     queryKey: QUERY_KEYS.builds.catalog(params),

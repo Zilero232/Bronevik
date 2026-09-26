@@ -1,4 +1,4 @@
-import type { Coach } from '@/shared/api/coaching';
+import type { Coach } from '@/entities/coaching/coach';
 
 export type CoachSummaryProps = {
   coach: Coach;

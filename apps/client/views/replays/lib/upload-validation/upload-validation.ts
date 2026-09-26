@@ -1,4 +1,4 @@
-import type { ReplayStatus } from '@/shared/api/replays';
+import type { ReplayStatus } from '@/entities/replay/replay';
 
 import type { ReplayFileProblem, ValidateReplayFileInput } from './upload-validation.types';
 

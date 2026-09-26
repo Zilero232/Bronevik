@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { Card, CardBody, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
@@ -13,6 +14,7 @@ import s from './ReplayHeatmap.module.scss';
 
 export const ReplayHeatmap = ({ replay }: ReplayHeatmapProps) => {
   const t = useTranslations('replays.heatmap');
+  const titleId = useId();
   const format = useFormatter();
   const {
     hasArena,
@@ -33,8 +35,8 @@ export const ReplayHeatmap = ({ replay }: ReplayHeatmapProps) => {
   } = useReplayHeatmap(replay);
 
   return (
-    <Card aria-labelledby='replay-heatmap-title' padding='none'>
-      <CardHeader meta={replay.mapName ?? replay.arenaId} title={<span id='replay-heatmap-title'>{t('title')}</span>} />
+    <Card aria-labelledby={titleId} padding='none'>
+      <CardHeader meta={replay.mapName ?? replay.arenaId} title={<span id={titleId}>{t('title')}</span>} />
       <CardBody className={s.body}>
         {!hasArena && <EmptyState isCompact description={t('noArenaDescription')} title={t('noArenaTitle')} />}
         {hasArena && (

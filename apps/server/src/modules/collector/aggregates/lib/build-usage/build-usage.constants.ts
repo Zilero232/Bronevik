@@ -1,10 +1,12 @@
 import type { BuildMode } from '@otmetki/schemas';
 
+import { GAME_MODE_BONUS_TYPES } from '../../../../../common/lib';
+
 export const BUILD_MODE_BONUS_TYPES = {
-  random: [1],
-  ranked: [22],
-  frontline: [27],
-  onslaught: [43]
+  random: GAME_MODE_BONUS_TYPES.random,
+  ranked: GAME_MODE_BONUS_TYPES.ranked,
+  frontline: GAME_MODE_BONUS_TYPES.frontline,
+  onslaught: GAME_MODE_BONUS_TYPES.onslaught
 } as const satisfies Record<BuildMode, readonly number[]>;
 
 export const BUILD_USAGE_AGGREGATE = {

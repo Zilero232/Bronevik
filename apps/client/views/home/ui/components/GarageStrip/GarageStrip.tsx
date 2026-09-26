@@ -2,13 +2,13 @@
 
 import { useTranslations } from 'next-intl';
 
+import { TankSlot } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
-import { Link } from '@/shared/i18n/navigation';
-import { Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
 import { HOME } from '../../../config';
 import { usePopularTanks } from '../../../model/hooks';
-import { TankSlot } from './components';
+import { SectionTitle } from '../SectionTitle';
 
 import s from './GarageStrip.module.scss';
 
@@ -17,16 +17,8 @@ export const GarageStrip = () => {
   const { rows, isPending, isError, retry } = usePopularTanks();
 
   return (
-    <Card padding='none'>
-      <CardHeader
-        action={
-          <Link className={s.more} href={ROUTES.tanks}>
-            {t('all')}
-          </Link>
-        }
-        meta={t('period')}
-        title={t('title')}
-      />
+    <section aria-labelledby='home-garage' className={s.root}>
+      <SectionTitle id='home-garage' meta={t('period')} more={{ href: ROUTES.tanks.list, label: t('all') }} title={t('title')} />
       {isPending && (
         <div className={s.strip}>
           {Array.from({ length: HOME.garage.skeletons }, (_, index) => (
@@ -45,6 +37,6 @@ export const GarageStrip = () => {
           ))}
         </ul>
       )}
-    </Card>
+    </section>
   );
 };

@@ -20,7 +20,7 @@ export const EventItem = ({ event: { type, nickname, oldRole, newRole, occurredA
       </time>
       <p className={s.text}>
         {nickname ? (
-          <Link className={s.nickname} href={ROUTES.player(nickname)}>
+          <Link className={s.nickname} href={ROUTES.players.profile(nickname)}>
             {nickname}
           </Link>
         ) : (

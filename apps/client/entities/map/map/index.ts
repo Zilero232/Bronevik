@@ -4,3 +4,5 @@ export type { MapCamouflage, MapModeKind } from './lib/map-mode';
 export { useMapLabels } from './model/hooks';
 export { ModeIcon } from './ui/ModeIcon';
 export type { ModeIconProps } from './ui/ModeIcon';
+export { getMap, listMaps } from './api';
+export type { MapDetailInput, MapListInput } from './api';

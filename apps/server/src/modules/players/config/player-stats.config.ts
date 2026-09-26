@@ -1,5 +1,7 @@
 import type { RecentPeriod } from '@otmetki/schemas';
 
+import { PLUS_LIMITS } from '@otmetki/schemas';
+
 export const PLAYER_STATS = {
   snapshotMode: 'random',
   recentPeriods: ['24h', '7d', '30d', '60d', '1000'] satisfies RecentPeriod[],
@@ -8,8 +10,14 @@ export const PLAYER_STATS = {
 } as const;
 
 export const HISTORY = {
-  defaultDays: 90,
+  defaultDays: PLUS_LIMITS.historyDays.free,
   maxDays: 730
+} as const;
+
+export const HISTORY_WINDOW = {
+  free: { limitDays: PLUS_LIMITS.historyDays.free, defaultDays: HISTORY.defaultDays },
+  full: { limitDays: HISTORY.maxDays, defaultDays: HISTORY.maxDays },
+  publicApi: { limitDays: HISTORY.maxDays, defaultDays: HISTORY.defaultDays }
 } as const;
 
 export const PLAYER_MARKS = {

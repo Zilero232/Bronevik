@@ -30,3 +30,8 @@ export type StoreBoardInput = {
 export type CollabContext = {
   boardId: string;
 };
+
+export type ReplaceLiveDataInput = {
+  id: string;
+  data: TacticBoardData;
+};

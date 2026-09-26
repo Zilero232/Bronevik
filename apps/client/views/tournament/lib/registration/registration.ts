@@ -9,7 +9,10 @@ export const registrationState = ({ tournament, now, isRegistered }: Registratio
     return 'notOpen';
   }
 
-  if (tournament.status !== 'registration' || (tournament.registrationEndsAt !== null && new Date(tournament.registrationEndsAt) <= now)) {
+  if (
+    tournament.status !== 'registration' ||
+    (now !== null && tournament.registrationEndsAt !== null && new Date(tournament.registrationEndsAt) <= now)
+  ) {
     return 'closed';
   }
 

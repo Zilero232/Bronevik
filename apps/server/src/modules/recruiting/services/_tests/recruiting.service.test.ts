@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { ClanMember, RecruitingPost } from '../../../../../generated';
+import type { ClanMember, RecruitingPost, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { CommunityAccountsService } from '../../../community-core';
 
@@ -117,5 +117,30 @@ describe('RecruitingService.expire', () => {
       where: { status: 'open', expiresAt: { lte: now } },
       data: { status: 'expired' }
     });
+  });
+});
+
+describe('RecruitingService.close', () => {
+  it('lets another officer of the clan close the clan post', async () => {
+    const { service, prisma } = createService();
+
+    prisma.recruitingPost.findFirst.mockResolvedValue(row);
+    prisma.userLestaAccount.findMany.mockResolvedValue([mock<UserLestaAccount>({ accountId: 9n })]);
+    prisma.clanMember.findMany.mockResolvedValue([member('executiveOfficer')]);
+
+    await service.close({ id: row.id, userId: 'u2' });
+
+    expect(prisma.recruitingPost.updateMany).toHaveBeenCalledWith({ where: { id: row.id, status: 'open' }, data: { status: 'closed' } });
+  });
+
+  it('refuses a clan member who is not an officer', async () => {
+    const { service, prisma } = createService();
+
+    prisma.recruitingPost.findFirst.mockResolvedValue(row);
+    prisma.userLestaAccount.findMany.mockResolvedValue([mock<UserLestaAccount>({ accountId: 9n })]);
+    prisma.clanMember.findMany.mockResolvedValue([member('private')]);
+
+    await expect(service.close({ id: row.id, userId: 'u2' })).rejects.toMatchObject({ response: { code: 'NOT_FOUND' } });
+    expect(prisma.recruitingPost.updateMany).not.toHaveBeenCalled();
   });
 });

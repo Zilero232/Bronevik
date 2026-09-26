@@ -11,7 +11,7 @@ import type { PlayerProfilePageProps } from './PlayerProfilePage.types';
 
 import { ProfileProvider } from '../model/context';
 import { useProfilePage } from '../model/hooks';
-import { ProfileHeader, ProfileSkeleton, ProfileTabs } from './components';
+import { ProfileActionStrip, ProfileHeader, ProfileSkeleton, ProfileTabs } from './components';
 
 import s from './PlayerProfilePage.module.scss';
 
@@ -25,28 +25,39 @@ export const PlayerProfilePage = ({ nickname }: PlayerProfilePageProps) => {
         .with({ profile: P.nonNullable }, ({ profile: loaded }) => (
           <ProfileProvider profile={loaded}>
             <ProfileHeader />
-            <ProfileTabs />
-            <DataSourceNote updatedAt={loaded.summary.updatedAt} />
+            <ProfileActionStrip />
+            <div className={s.body}>
+              <ProfileTabs />
+              <DataSourceNote updatedAt={loaded.summary.updatedAt} />
+            </div>
           </ProfileProvider>
         ))
-        .with({ isPending: true }, () => <ProfileSkeleton />)
+        .with({ isPending: true }, () => (
+          <div className={s.body}>
+            <ProfileSkeleton />
+          </div>
+        ))
         .with({ isNotFound: true }, () => (
-          <ResourceMissing
-            back={{ href: ROUTES.players, label: t('search') }}
-            description={t('notFoundDescription', { nickname })}
-            reason='notFound'
-            title={t('notFoundTitle')}
-          />
+          <div className={s.body}>
+            <ResourceMissing
+              back={{ href: ROUTES.players.list, label: t('search') }}
+              description={t('notFoundDescription', { nickname })}
+              reason='notFound'
+              title={t('notFoundTitle')}
+            />
+          </div>
         ))
         .otherwise(() => (
-          <ResourceMissing
-            back={{ href: ROUTES.players, label: t('search') }}
-            description={t('errorDescription', { nickname })}
-            isRetrying={isRetrying}
-            reason='error'
-            title={t('errorTitle')}
-            onRetry={retry}
-          />
+          <div className={s.body}>
+            <ResourceMissing
+              back={{ href: ROUTES.players.list, label: t('search') }}
+              description={t('errorDescription', { nickname })}
+              isRetrying={isRetrying}
+              reason='error'
+              title={t('errorTitle')}
+              onRetry={retry}
+            />
+          </div>
         ))}
     </div>
   );

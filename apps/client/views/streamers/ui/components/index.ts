@@ -1,4 +1,5 @@
+export { ConnectBand } from './ConnectBand';
 export { FlowSection } from './FlowSection';
 export { StreamersCta } from './StreamersCta';
-export { StreamersHero } from './StreamersHero';
+export { StudioLink } from './StudioLink';
 export { ToolsSection } from './ToolsSection';

@@ -1,0 +1,35 @@
+@use '@/shared/styles/mixins' as *;
+
+.root,
+.result {
+  @include stack(var(--space-5));
+}
+
+.field {
+  @include stack(var(--space-3));
+}
+
+.label {
+  @include label;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--text-xs);
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.notes {
+  @include stack(var(--space-2));
+  @include well;
+
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-7);
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

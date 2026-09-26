@@ -1,3 +1,4 @@
+import analytics from './analytics.json';
 import armor from './armor.json';
 import auth from './auth.json';
 import billing from './billing.json';
@@ -10,6 +11,8 @@ import codes from './codes.json';
 import common from './common.json';
 import community from './community.json';
 import compare from './compare.json';
+import competitions from './competitions.json';
+import cosmetics from './cosmetics.json';
 import design from './design.json';
 import developer from './developer.json';
 import developers from './developers.json';
@@ -24,6 +27,7 @@ import maps from './maps.json';
 import marks from './marks.json';
 import me from './me.json';
 import missions from './missions.json';
+import modes from './modes.json';
 import nav from './nav.json';
 import news from './news.json';
 import notFound from './notFound.json';
@@ -35,6 +39,7 @@ import play from './play.json';
 import players from './players.json';
 import plus from './plus.json';
 import profile from './profile.json';
+import progression from './progression.json';
 import pulse from './pulse.json';
 import rating from './rating.json';
 import recruiting from './recruiting.json';
@@ -42,9 +47,12 @@ import replays from './replays.json';
 import search from './search.json';
 import settings from './settings.json';
 import shop from './shop.json';
+import showcase from './showcase.json';
 import stats from './stats.json';
 import streamer from './streamer.json';
 import streamers from './streamers.json';
+import streamersDirectory from './streamersDirectory.json';
+import streamerSettings from './streamerSettings.json';
 import tactics from './tactics.json';
 import tank from './tank.json';
 import tanks from './tanks.json';
@@ -55,8 +63,10 @@ import tools from './tools.json';
 import top from './top.json';
 import tournaments from './tournaments.json';
 import tree from './tree.json';
+import watchlist from './watchlist.json';
 
 export const ru = {
+  analytics,
   armor,
   auth,
   billing,
@@ -69,6 +79,8 @@ export const ru = {
   common,
   community,
   compare,
+  competitions,
+  cosmetics,
   design,
   developer,
   developers,
@@ -83,6 +95,7 @@ export const ru = {
   marks,
   me,
   missions,
+  modes,
   nav,
   news,
   notFound,
@@ -94,6 +107,7 @@ export const ru = {
   players,
   plus,
   profile,
+  progression,
   pulse,
   rating,
   recruiting,
@@ -101,9 +115,12 @@ export const ru = {
   search,
   settings,
   shop,
+  showcase,
   stats,
   streamer,
   streamers,
+  streamersDirectory,
+  streamerSettings,
   tactics,
   tank,
   tanks,
@@ -113,5 +130,6 @@ export const ru = {
   tools,
   top,
   tournaments,
-  tree
+  tree,
+  watchlist
 };

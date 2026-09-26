@@ -18,7 +18,7 @@ export const PlayerCard = ({ entry, className }: PlayerCardProps) => {
   const { rank, name, clanTag, value, tier, battles, delta } = entry;
 
   return (
-    <Link className={clsx(s.root, className)} href={ROUTES.player(name)}>
+    <Link className={clsx(s.root, className)} href={ROUTES.players.profile(name)}>
       <span className={s.rank}>{rank}</span>
       <PlayerIdentity className={s.identity} player={{ nickname: name, clanTag }} withAvatar={false} />
       <dl className={s.stats}>

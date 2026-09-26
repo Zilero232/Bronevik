@@ -17,11 +17,11 @@ import {
   AppUnauthorizedException
 } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
-import { PrismaService } from '../../../core';
+import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { API_TIERS } from '../config';
-import { keyTierOf, quotaRetryAfterSec, rebasedRemaining, tierQuota, toApiKey, verifyFailureOf } from '../lib';
+import { keyTierOf, quotaRetryAfterSec, tierQuota, toApiKey, verifyFailureOf } from '../lib';
+import { ApiTierSyncService } from './api-tier-sync.service';
 import { ApiTierService } from './api-tier.service';
-import { WebhookEndpointsService } from './webhook-endpoints.service';
 
 @Injectable()
 export class ApiKeysService {
@@ -30,15 +30,12 @@ export class ApiKeysService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly tiers: ApiTierService,
-    private readonly webhooks: WebhookEndpointsService,
+    private readonly tierSync: ApiTierSyncService,
     private readonly auth: AuthService<OtmetkiAuth>
   ) {}
 
   async overview(userId: string): Promise<DeveloperOverview> {
-    const tier = await this.tiers.tierFor(userId);
-
-    await this.applyTier({ userId, tier });
-
+    const tier = await this.tierSync.sync(userId);
     const [keys, webhooks] = await Promise.all([this.list(userId), this.prisma.webhookEndpoint.count({ where: { userId } })]);
 
     return { tier, limits: API_TIERS[tier], keys, webhooks };
@@ -57,16 +54,24 @@ export class ApiKeysService {
       throw new AppBadRequestException('VALIDATION_FAILED', 'expiresAt must be in the future');
     }
 
-    const active = await this.prisma.apiKey.count({ where: { referenceId: userId, enabled: true } });
-
-    if (active >= API_KEY.maxActivePerUser) {
-      throw new AppConflictException('CONFLICT', `At most ${API_KEY.maxActivePerUser} active API keys`);
-    }
-
     const tier = await this.tiers.tierFor(userId);
-    const created = await this.auth.api.createApiKey({ body: { userId, name, expiresIn, ...tierQuota(tier) } });
 
-    return { key: toApiKey(created), secret: created.key };
+    return lockedTransaction({
+      prisma: this.prisma,
+      scope: LIMIT_LOCK_SCOPE.apiKeys,
+      key: userId,
+      run: async (tx) => {
+        const active = await tx.apiKey.count({ where: { referenceId: userId, enabled: true } });
+
+        if (active >= API_KEY.maxActivePerUser) {
+          throw new AppConflictException('CONFLICT', `At most ${API_KEY.maxActivePerUser} active API keys`);
+        }
+
+        const created = await this.auth.api.createApiKey({ body: { userId, name, expiresIn, ...tierQuota(tier) } });
+
+        return { key: toApiKey(created), secret: created.key };
+      }
+    });
   }
 
   async revoke({ userId, id }: OwnedKeyInput): Promise<void> {
@@ -102,30 +107,12 @@ export class ApiKeysService {
     return { id: key.id, userId: key.referenceId, tier, dailyLimit, dailyRemaining: key.remaining ?? dailyLimit };
   }
 
-  async applyTier({ userId, tier }: ApplyTierInput): Promise<void> {
-    const keys = await this.prisma.apiKey.findMany({
-      where: { referenceId: userId, enabled: true },
-      select: { id: true, metadata: true, remaining: true, refillAmount: true }
-    });
-
-    for (const key of keys.filter(({ metadata }) => keyTierOf(metadata) !== tier)) {
-      const { refillAmount, refillInterval, metadata } = tierQuota(tier);
-
-      await this.prisma.apiKey.update({
-        where: { id: key.id },
-        data: { refillAmount, refillInterval, metadata: JSON.stringify(metadata), remaining: rebasedRemaining({ tier, ...key }) }
-      });
-    }
-
-    await this.webhooks.enforceTier({ userId, tier });
-  }
-
   private async reconcile({ userId, tier }: ApplyTierInput): Promise<void> {
     try {
       const current = await this.tiers.cachedTierFor(userId);
 
       if (current !== tier) {
-        await this.applyTier({ userId, tier: current });
+        await this.tierSync.apply({ userId, tier: current });
       }
     } catch (error) {
       this.logger.warn(`API key tier for ${userId} not reconciled: ${errorMessage(error)}`);

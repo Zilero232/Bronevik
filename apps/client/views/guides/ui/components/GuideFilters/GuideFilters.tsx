@@ -3,7 +3,7 @@
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { GuideSort } from '@/shared/api/guides';
+import type { GuideSort } from '@/entities/guide/guide';
 
 import { TankPicker } from '@/features/tank/pick-tank';
 import { Button, SegmentedControl, Select } from '@/ui-kit';
@@ -38,8 +38,8 @@ export const GuideFilters = () => {
     <div className={s.root}>
       <SegmentedControl<GuideKindFilter> aria-label={t('kind')} options={kindOptions} size='sm' value={kind} onChange={setKind} />
       {isTankShown && <TankPicker className={s.picker} placeholder={t('tank')} value={tank} onChange={onTankChange} />}
-      {isMapShown && <Select className={s.picker} items={mapItems} value={map} onValueChange={onMapChange} />}
-      <Select<GuideSort> className={s.sort} items={sortItems} value={sort} onValueChange={setSort} />
+      {isMapShown && <Select aria-label={t('map')} className={s.picker} items={mapItems} value={map} onValueChange={onMapChange} />}
+      <Select<GuideSort> aria-label={t('sort')} className={s.sort} items={sortItems} value={sort} onValueChange={setSort} />
       {hasFilters && (
         <Button size='sm' variant='ghost' onClick={reset}>
           <X size={14} />

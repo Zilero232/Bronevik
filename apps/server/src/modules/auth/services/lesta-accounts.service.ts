@@ -4,7 +4,8 @@ import type { LestaAccountStore, LinkLestaAccountInput } from '../../../lib/auth
 import type { LestaClient } from '../../../lib/lesta';
 
 import { errorMessage } from '../../../common/lib';
-import { LESTA_CLIENT, PrismaService } from '../../../core';
+import { LESTA_CLIENT, LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
+import { EntitlementsService } from '../../billing';
 import { CollectorProducerService } from '../../collector';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class LestaAccountsService implements LestaAccountStore {
   constructor(
     private readonly prisma: PrismaService,
     private readonly collector: CollectorProducerService,
+    private readonly entitlements: EntitlementsService,
     @Inject(LESTA_CLIENT) private readonly lesta: LestaClient
   ) {}
 
@@ -23,32 +25,52 @@ export class LestaAccountsService implements LestaAccountStore {
     return link?.userId ?? null;
   }
 
-  async link({ userId, accountId, nickname, accessToken, expiresAt }: LinkLestaAccountInput): Promise<void> {
+  async link({ userId, accountId, nickname, accessToken, expiresAt }: LinkLestaAccountInput): Promise<boolean> {
     const id = BigInt(accountId);
+    const limit = await this.entitlements.limit({ userId, key: 'linkedAccounts' });
 
-    await this.prisma.$transaction(async (tx) => {
-      await tx.player.upsert({
-        where: { accountId: id },
-        create: { accountId: id, nickname, trackingTier: 'active' },
-        update: { nickname, trackingTier: 'active' }
-      });
+    const isLinked = await lockedTransaction({
+      prisma: this.prisma,
+      scope: LIMIT_LOCK_SCOPE.linkedAccounts,
+      key: userId,
+      run: async (tx) => {
+        const others = await tx.userLestaAccount.count({ where: { userId, NOT: { accountId: id } } });
+        const isKnown = (await tx.userLestaAccount.count({ where: { userId, accountId: id } })) > 0;
 
-      await tx.playerNickname.upsert({
-        where: { accountId_nickname: { accountId: id, nickname } },
-        create: { accountId: id, nickname },
-        update: { lastSeenAt: new Date() }
-      });
+        if (!isKnown && others >= limit) {
+          return false;
+        }
 
-      const hasPrimary = await tx.userLestaAccount.count({ where: { userId, isPrimary: true, NOT: { accountId: id } } });
+        await tx.player.upsert({
+          where: { accountId: id },
+          create: { accountId: id, nickname, trackingTier: 'active' },
+          update: { nickname, trackingTier: 'active' }
+        });
 
-      await tx.userLestaAccount.upsert({
-        where: { accountId: id },
-        create: { userId, accountId: id, accessToken, tokenExpiresAt: expiresAt, isPrimary: hasPrimary === 0 },
-        update: { userId, accessToken, tokenExpiresAt: expiresAt }
-      });
+        await tx.playerNickname.upsert({
+          where: { accountId_nickname: { accountId: id, nickname } },
+          create: { accountId: id, nickname },
+          update: { lastSeenAt: new Date() }
+        });
+
+        const hasPrimary = await tx.userLestaAccount.count({ where: { userId, isPrimary: true, NOT: { accountId: id } } });
+
+        await tx.userLestaAccount.upsert({
+          where: { accountId: id },
+          create: { userId, accountId: id, accessToken, tokenExpiresAt: expiresAt, isPrimary: hasPrimary === 0 },
+          update: { userId, accessToken, tokenExpiresAt: expiresAt }
+        });
+
+        return true;
+      }
     });
 
-    await this.collector.enrol({ accountId, priority: 'high', reason: 'login' });
+    if (isLinked) {
+      this.entitlements.invalidate(userId);
+      await this.collector.enrol({ accountId, priority: 'high', reason: 'login' });
+    }
+
+    return isLinked;
   }
 
   async revokeTokens(userId: string): Promise<void> {

@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata, mapRouteName, mapSlugs, ROUTE_STATIC_PARAMS } from '@/shared/seo';
+import { RequestTime } from '@/shared/seo/request-time';
 import { MapPage } from '@/views/map';
 
 export const generateStaticParams = async () => (await mapSlugs({ fallback: ROUTE_STATIC_PARAMS.fallback.map })).map((id) => ({ id }));
@@ -20,7 +21,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/maps/[id
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
-    path: ROUTES.map(id),
+    path: ROUTES.maps.detail(id),
     locale,
     index: true,
     follow: true
@@ -28,9 +29,14 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/maps/[id
 };
 
 const Page = () => (
-  <Suspense>
-    <MapPage />
-  </Suspense>
+  <>
+    <Suspense>
+      <MapPage />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
 );
 
 export default Page;

@@ -13,7 +13,6 @@
   },
   "board": {
     "count": "{total, plural, one {# post} other {# posts}}",
-    "more": "Show more",
     "emptyTitle": "No posts",
     "empty": {
       "clan_seeks_player": "No clan is recruiting right now. Officers can be the first to post.",

@@ -48,14 +48,22 @@
     "tank_changed": "Stat changes",
     "goal_reached": "Goal reached",
     "badge_awarded": "New badge",
-    "challenge_resolved": "Streamer challenge"
+    "challenge_resolved": "Streamer challenge",
+    "first_win_available": "First win of the day available",
+    "replay_overflow": "Replays over the free quota",
+    "watchlist_digest": "Watched players digest",
+    "tank_returned": "Tank back in the shop",
+    "competition_finished": "Competition results",
+    "streamer_live": "Followed streamer is live"
   },
   "eventGroups": {
     "marks": "Marks and mastery",
     "battles": "Battles and progress",
     "clan": "Clan",
     "offers": "Shop and patches",
-    "streams": "Streams"
+    "streams": "Streams",
+    "account": "Account and storage",
+    "community": "Watchlist and competitions"
   },
   "settings": {
     "error": "Settings failed to load. Try refreshing the page.",

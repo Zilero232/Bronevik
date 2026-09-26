@@ -4,16 +4,16 @@ import { Plus, Webhook } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { Button, EmptyState, ErrorState, SectionHeader, Skeleton } from '@/ui-kit';
+import { Button, ConfirmDialog, EmptyState, ErrorState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { useWebhooksPanel } from '../../../model/hooks';
-import { ConfirmDialog } from '../ConfirmDialog';
 import { WebhookFormDialog, WebhookRow } from './components';
 
 import s from './WebhooksPanel.module.scss';
 
 export const WebhooksPanel = () => {
   const t = useTranslations('developer.webhooks');
+  const tDeveloper = useTranslations('developer');
   const {
     webhooks,
     count,
@@ -61,11 +61,13 @@ export const WebhooksPanel = () => {
         ))}
       <WebhookFormDialog editor={editor} onClose={onCloseEditor} />
       <ConfirmDialog
+        cancelLabel={tDeveloper('cancel')}
         confirmLabel={t('delete')}
         description={t('deleteText', { url: removing?.url ?? '' })}
         isPending={isRemoving}
         open={removing !== null}
         title={t('deleteTitle')}
+        tone='danger'
         onConfirm={onRemove}
         onOpenChange={onRemoveOpenChange}
       />

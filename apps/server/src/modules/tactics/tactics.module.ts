@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 
-import { TacticBoardService, TacticsCollabService } from './services';
+import { BoardLiveService, TacticBoardService, TacticsCollabService } from './services';
 import { TacticsController } from './tactics.controller';
 
 @Module({
   controllers: [TacticsController],
-  providers: [TacticBoardService, TacticsCollabService]
+  providers: [BoardLiveService, TacticBoardService, TacticsCollabService]
 })
 export class TacticsModule {}

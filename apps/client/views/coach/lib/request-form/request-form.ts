@@ -1,4 +1,4 @@
-import type { CreateOrder } from '@/shared/api/coaching';
+import type { CreateOrder } from '@/entities/coaching/coach';
 
 import type { ToCreateOrderInput } from './request-form.types';
 

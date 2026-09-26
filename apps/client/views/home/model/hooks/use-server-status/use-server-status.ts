@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getPulse } from '@/shared/api/pulse';
+import { getPulse } from '@/entities/pulse/pulse';
 import { referenceControllerServersOptions, referenceControllerVersionOptions } from '@/shared/api/query-options';
 import { QUERY_KEYS } from '@/shared/constants';
 

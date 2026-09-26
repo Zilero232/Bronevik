@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   accountIdSchema,
   countSchema,
+  httpUrlSchema,
   isoDateTimeSchema,
   percentDeltaSchema,
   percentSchema,
@@ -11,6 +12,7 @@ import {
 import { listParam, paginatedSchema, paginationQuerySchema, sortQuery } from '../common/query/query.schemas';
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
 import { ECONOMY_ACCOUNTS, LEARNING_DIFFICULTIES, TANK_ECONOMY, TANK_ROLES, TANK_SOURCES, TANK_STATUSES } from './tank-insights.constants';
+import { vehicleSourceMissionSchema, vehicleSourceSchema } from './vehicle-sources.schemas';
 
 export const tankStatusSchema = z.enum(TANK_STATUSES);
 
@@ -23,14 +25,17 @@ export const tankTraitsSchema = z.object({
   role: tankRoleSchema.nullable()
 });
 
+export const learningDifficultySchema = z.enum(LEARNING_DIFFICULTIES);
+
 export const tankTraitsFilterSchema = z.object({
   statuses: listParam(tankStatusSchema).optional(),
-  roles: listParam(tankRoleSchema).optional()
+  roles: listParam(tankRoleSchema).optional(),
+  difficulties: listParam(learningDifficultySchema).optional().describe('Only tanks whose learning curve puts them in one of these difficulties')
 });
 
 export const tankOfferSchema = z.object({
   title: z.string(),
-  url: z.url().nullable(),
+  url: httpUrlSchema.nullable(),
   startsAt: isoDateTimeSchema.nullable(),
   endsAt: isoDateTimeSchema.nullable(),
   lastSeenAt: isoDateTimeSchema,
@@ -41,7 +46,7 @@ export const tankOfferSchema = z.object({
 
 export const tankMentionSchema = z.object({
   title: z.string(),
-  url: z.url(),
+  url: httpUrlSchema,
   publishedAt: isoDateTimeSchema
 });
 
@@ -58,7 +63,9 @@ export const tankObtainSchema = z.object({
   priceGold: countSchema.nullable(),
   researchFrom: z.array(tankResearchStepSchema),
   offers: z.object({ total: countSchema, items: z.array(tankOfferSchema) }),
-  news: z.array(tankMentionSchema)
+  news: z.array(tankMentionSchema),
+  missions: z.array(vehicleSourceMissionSchema).describe('Personal-mission operations and campaigns that award this tank'),
+  editorial: z.array(vehicleSourceSchema).describe('Editorial sources: events, battle pass, bonds, workshop and so on')
 });
 
 export const economyAccountSchema = z.enum(ECONOMY_ACCOUNTS);
@@ -140,8 +147,6 @@ export const accountEconomySchema = z.object({
   }),
   tanks: z.array(accountEconomyTankSchema)
 });
-
-export const learningDifficultySchema = z.enum(LEARNING_DIFFICULTIES);
 
 export const learningBucketSchema = z.object({
   index: z.number().int().nonnegative(),

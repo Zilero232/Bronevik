@@ -8,10 +8,10 @@ import type { SelectProps } from './Select.types';
 
 import s from './Select.module.scss';
 
-export const Select = <T extends string>({ items, value, label, placeholder, className, onValueChange }: SelectProps<T>) => (
+export const Select = <T extends string>({ items, value, label, placeholder, className, 'aria-label': ariaLabel, onValueChange }: SelectProps<T>) => (
   <BaseSelect.Root items={items} value={value} onValueChange={(next) => next !== null && onValueChange(next)}>
     {label && <BaseSelect.Label className={s.label}>{label}</BaseSelect.Label>}
-    <BaseSelect.Trigger className={clsx(s.trigger, className)}>
+    <BaseSelect.Trigger aria-label={ariaLabel} className={clsx(s.trigger, className)}>
       <BaseSelect.Value className={s.value} placeholder={placeholder} />
       <BaseSelect.Icon className={s.icon}>
         <ChevronsUpDown size={15} />

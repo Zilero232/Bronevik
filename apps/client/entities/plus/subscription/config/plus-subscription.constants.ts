@@ -1,6 +1,6 @@
 import type { ApiErrorCode, PlusCountKey } from '@otmetki/schemas';
 
-export const PLUS_COUNT_KEYS: readonly PlusCountKey[] = ['linkedAccounts', 'goals', 'watchedTanks', 'overlays', 'storedReplays'];
+export const PLUS_COUNT_KEYS: readonly PlusCountKey[] = ['linkedAccounts', 'goals', 'watchedTanks', 'overlays', 'storedReplays', 'streamerFollows'];
 
 export const PROMO_REJECTION_CODES: readonly ApiErrorCode[] = [
   'PROMO_INVALID',

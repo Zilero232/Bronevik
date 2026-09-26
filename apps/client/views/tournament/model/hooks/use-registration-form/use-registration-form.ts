@@ -1,13 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNow } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
-import type { RegisterTournamentInput, Tournament } from '@/shared/api/tournaments';
+import type { RegisterTournamentInput, Tournament, WithdrawTournamentInput } from '@/entities/tournament/tournament';
 
 import { chosenAccountId, useCommunityViewer } from '@/features/community/viewer';
-import { registerTournament } from '@/shared/api/tournaments';
+import { registerTournament, withdrawTournament } from '../../../api';
+import { useClientNow } from '@/shared/lib';
 
 import type { RegistrationFormOutput, RegistrationFormValues } from '../../../lib/registration-form';
 
@@ -17,7 +17,7 @@ import { registrationFormSchema } from '../../../lib/registration-form';
 import { useTournamentMutation } from '../use-tournament-mutation';
 
 export const useRegistrationForm = (tournament: Tournament) => {
-  const now = useNow({ updateInterval: TOURNAMENT_PAGE.nowTickMs });
+  const now = useClientNow({ updateInterval: TOURNAMENT_PAGE.nowTickMs });
   const { ownsAccount } = useCommunityViewer();
   const form = useForm<RegistrationFormValues, unknown, RegistrationFormOutput>({
     resolver: zodResolver(registrationFormSchema),
@@ -26,7 +26,9 @@ export const useRegistrationForm = (tournament: Tournament) => {
 
   const register = useTournamentMutation({ mutationFn: (input: RegisterTournamentInput) => registerTournament(input), successKey: 'registered' });
 
-  const isRegistered = tournament.participants.some(({ accountId }) => ownsAccount(accountId));
+  const withdraw = useTournamentMutation({ mutationFn: (input: WithdrawTournamentInput) => withdrawTournament(input), successKey: 'withdrawn' });
+  const entry = tournament.participants.find(({ accountId }) => ownsAccount(accountId));
+  const isRegistered = entry !== undefined;
 
   const onSubmit = form.handleSubmit(({ accountId, teamName }) => {
     const account = chosenAccountId(accountId);
@@ -42,7 +44,13 @@ export const useRegistrationForm = (tournament: Tournament) => {
   return {
     form,
     state: registrationState({ tournament, now, isRegistered }),
-    isPending: register.isPending,
-    onSubmit
+    isPending: register.isPending || withdraw.isPending,
+    canWithdraw: isRegistered && tournament.status === 'registration',
+    onSubmit,
+    onWithdraw: () => {
+      if (entry) {
+        withdraw.mutate({ id: tournament.id, accountId: entry.accountId });
+      }
+    }
   };
 };

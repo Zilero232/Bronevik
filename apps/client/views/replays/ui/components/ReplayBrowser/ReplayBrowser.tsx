@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
@@ -16,6 +17,7 @@ import s from './ReplayBrowser.module.scss';
 
 export const ReplayBrowser = () => {
   const t = useTranslations('replays.list');
+  const titleId = useId();
   const router = useRouter();
   const {
     tab,
@@ -39,7 +41,7 @@ export const ReplayBrowser = () => {
   const columns = useReplayColumns();
 
   return (
-    <Card aria-labelledby='replay-list-title' className={s.root} padding='none'>
+    <Card aria-labelledby={titleId} className={s.root} padding='none'>
       <CardHeader
         tabs={
           isSignedIn && (
@@ -47,7 +49,7 @@ export const ReplayBrowser = () => {
           )
         }
         meta={t('total', { total })}
-        title={<span id='replay-list-title'>{t('title')}</span>}
+        title={<span id={titleId}>{t('title')}</span>}
       />
       {!isMine && <ReplayFilters />}
       {isError && items.length === 0 ? (
@@ -86,7 +88,7 @@ export const ReplayBrowser = () => {
           density='media'
           getRowId={(row) => row.id}
           isLoading={isPending}
-          onRowClick={(row) => router.push(ROUTES.replay(row.id))}
+          onRowClick={(row) => router.push(ROUTES.replays.detail(row.id))}
         />
       )}
     </Card>

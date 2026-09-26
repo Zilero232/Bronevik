@@ -1,0 +1,107 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include media-card;
+  @include lift-hover;
+  @include class-tint;
+
+  display: flex;
+  overflow: visible;
+  min-width: 220px;
+  flex-direction: column;
+  padding: 0 var(--space-4) var(--space-4);
+  margin-top: 12px;
+  box-shadow:
+    inset 3px 0 0 var(--class),
+    var(--elev-1);
+  color: var(--color-text);
+  gap: var(--space-2);
+  text-decoration: none;
+
+  &:hover {
+    box-shadow:
+      inset 3px 0 0 var(--class),
+      var(--elev-2);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  height: 120px;
+  margin: -12px calc(var(--space-4) * -1) 0;
+  place-items: center;
+}
+
+.render {
+  position: relative;
+  width: 240px;
+  transition: transform var(--duration-lift) var(--ease-out);
+
+  .root:hover & {
+    transform: scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    .root:hover & {
+      transform: none;
+    }
+  }
+}
+
+.tier {
+  position: absolute;
+  top: calc(var(--space-3) + 12px);
+  left: var(--space-3);
+}
+
+.name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .root[data-premium='true'] & {
+    color: var(--color-premium);
+  }
+}
+
+.figures {
+  display: flex;
+  justify-content: space-between;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  gap: var(--space-3);
+}
+
+.figure {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.figureLabel {
+  @include label;
+}
+
+.figureValue {
+  @include numeric;
+
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}

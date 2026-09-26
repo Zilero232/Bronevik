@@ -1,6 +1,6 @@
 import type { PoolConfig } from 'pg';
 
-import type { Prisma } from '../../../generated';
+import type { Prisma, PrismaClient } from '../../../generated';
 
 export type CreatePrismaClientInput = {
   url: string;
@@ -9,3 +9,10 @@ export type CreatePrismaClientInput = {
 };
 
 export type CreatePgPoolInput = Pick<CreatePrismaClientInput, 'pool' | 'url'>;
+
+export type LockedTransactionInput<T> = {
+  prisma: Pick<PrismaClient, '$transaction'>;
+  scope: string;
+  key: string;
+  run: (tx: Prisma.TransactionClient) => Promise<T>;
+};

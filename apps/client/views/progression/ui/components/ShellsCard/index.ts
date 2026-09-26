@@ -1,0 +1,1 @@
+export { ShellsCard } from './ShellsCard';

@@ -32,7 +32,7 @@ export const PlayerSlot = ({ accountId, index, onRemove }: PlayerSlotProps) => {
         {!summary && !isError && <Skeleton height={20} width='60%' />}
         {summary && (
           <>
-            <Link className={s.player} href={ROUTES.player(summary.nickname)}>
+            <Link className={s.player} href={ROUTES.players.profile(summary.nickname)}>
               <PlayerIdentity player={{ nickname: summary.nickname, clanTag: summary.clan?.tag ?? null }} />
             </Link>
             <span className={s.figure}>

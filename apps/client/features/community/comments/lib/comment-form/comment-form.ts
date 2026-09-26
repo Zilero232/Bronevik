@@ -1,4 +1,4 @@
-import type { CreateComment } from '@/shared/api/comments';
+import type { CreateComment } from '../../api';
 
 import type { ToCreateCommentInput } from './comment-form.types';
 

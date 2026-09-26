@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ArmorGeometry } from '../../model/armor-model.types';
+import type { ArmorGeometry } from '../../armor-model/armor-model.types';
 
 import { base64ToBytes, bytesToBase64, decodeArmorGeometry, encodeArmorGeometry } from '../geometry';
 import { ARMOR_GEOMETRY_FORMAT } from '../geometry.constants';

@@ -4,10 +4,11 @@ import { Injectable } from '@nestjs/common';
 import { BUILD_USAGE } from '@otmetki/schemas';
 import { sortBy, unique } from 'remeda';
 
-import type { BuildsCatalogInput } from '../builds.types';
+import type { BuildsCatalogInput, CatalogUsageRow } from '../builds.types';
 
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
+import { TankDifficultyService } from '../../tanks';
 import { catalogPicksOf, resolvePicks, toProvisionOption } from '../lib';
 import { BuildDataService } from './build-data.service';
 
@@ -16,21 +17,26 @@ export class BuildsCatalogService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly vehicles: VehicleCatalogService,
-    private readonly data: BuildDataService
+    private readonly data: BuildDataService,
+    private readonly difficulty: TankDifficultyService
   ) {}
 
-  async catalog({ mode, tiers, types, nations }: BuildsCatalogInput): Promise<BuildsCatalog> {
+  async catalog({ mode, tiers, types, nations, difficulties }: BuildsCatalogInput): Promise<BuildsCatalog> {
     const cohort = BUILD_USAGE.catalogCohort;
 
-    const [vehicles, rows] = await Promise.all([
+    const [catalogVehicles, rows, allowed] = await Promise.all([
       this.vehicles.filter({ tiers, types, nations }),
-      this.prisma.buildUsageAggregate.findMany({
-        where: { mode, cohort },
-        orderBy: [{ tankId: 'asc' }, { computedAt: 'desc' }],
-        distinct: ['tankId']
-      })
+      this.prisma.$queryRaw<CatalogUsageRow[]>`
+        SELECT DISTINCT ON (tank_id)
+          tank_id AS "tankId", battles, players, win_rate AS "winRate", avg_damage AS "avgDamage", usage, computed_at AS "computedAt"
+        FROM build_usage_aggregate
+        WHERE mode = ${mode}::build_mode AND cohort = ${cohort}::build_cohort
+        ORDER BY tank_id, computed_at DESC
+      `,
+      difficulties?.length ? this.difficulty.matching(difficulties) : Promise.resolve(null)
     ]);
 
+    const vehicles = allowed ? catalogVehicles.filter((entry) => allowed.has(entry.summary.tankId)) : catalogVehicles;
     const byTank = new Map(rows.map((row) => [row.tankId, { row, picks: catalogPicksOf({ usage: row.usage, battles: row.battles }) }]));
     const ids = unique([...byTank.values()].flatMap(({ picks }) => [...picks.equipment, ...picks.consumables].map((pick) => pick.id)));
     const options = new Map((await this.data.provisionsByIds(ids)).map((provision) => [provision.provisionId, toProvisionOption(provision)]));

@@ -1,0 +1,1 @@
+export { MyBattlesPage } from './MyBattlesPage';

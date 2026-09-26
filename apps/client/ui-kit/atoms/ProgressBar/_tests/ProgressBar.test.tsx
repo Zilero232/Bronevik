@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ProgressBar } from '../ProgressBar';
+
+const LOCALE = 'ru';
+
+vi.mock('next-intl', () => ({ useLocale: () => LOCALE }));
 
 describe('ProgressBar', () => {
   it('reports its value to assistive technology', () => {
@@ -11,6 +15,12 @@ describe('ProgressBar', () => {
 
     expect(bar).toHaveAttribute('aria-valuenow', '50');
     expect(bar).toHaveAttribute('aria-valuemax', '200');
+  });
+
+  it('formats its value text in the app locale rather than the runtime default', () => {
+    render(<ProgressBar label='Отметка' max={200} value={50} />);
+
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuetext', new Intl.NumberFormat(LOCALE, { style: 'percent' }).format(50 / 200));
   });
 
   it('shows the label and the formatted value', () => {

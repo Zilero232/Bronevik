@@ -3,7 +3,7 @@
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
-import { listMoe } from '@/shared/api/marks';
+import { listMoe } from '@/entities/player/marks';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { MOE_LIST } from '../../../config';

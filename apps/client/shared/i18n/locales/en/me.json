@@ -12,11 +12,21 @@
   "tabs": {
     "label": "Dashboard sections",
     "overview": "Overview",
+    "analytics": "Analytics",
+    "battles": "Battles",
     "notifications": "Notifications",
     "billing": "Subscription",
     "telegram": "Telegram",
     "developer": "API",
-    "streamer": "Streaming"
+    "streamer": "Streaming",
+    "progress": "Progress and season",
+    "cosmetics": "Cosmetics",
+    "watchlist": "Watchlist",
+    "groups": {
+      "profile": "My profile",
+      "subscriptions": "Follows and alerts",
+      "account": "Account"
+    }
   },
   "toast": {
     "failed": "Something went wrong. Please try again.",
@@ -47,7 +57,12 @@
     "telegram": "Telegram",
     "notLinked": "not linked",
     "linkLesta": "Link another Lesta ID account",
-    "note": "We never ask for your Lesta password — sign-in goes through the official Lesta ID."
+    "note": "We never ask for your Lesta password — sign-in goes through the official Lesta ID.",
+    "linkErrors": {
+      "lesta_link_limit": "You have reached the limit of linked Lesta accounts for your plan. Plus raises it.",
+      "lesta_account_taken": "This account is already linked to another Three Marks profile.",
+      "other": "Could not link the Lesta account. Please try again."
+    }
   },
   "mod": {
     "title": "Companion mod",
@@ -125,5 +140,18 @@
     "durationLabel": "Deadline",
     "invalid": "Enter a positive number.",
     "add": "Set goal"
+  },
+  "export": {
+    "title": "Data export",
+    "description": "Your own stats as JSON or CSV.",
+    "raw": "Stats",
+    "rawHint": "Raw API data of your accounts — free.",
+    "analytics": "Analytics",
+    "analyticsHint": "Sessions, mod battles and tank levels.",
+    "json": "JSON",
+    "tanksCsv": "Tanks, CSV",
+    "sessionsCsv": "Sessions, CSV",
+    "battlesCsv": "Battles, CSV",
+    "failed": "Couldn't export the data."
   }
 }

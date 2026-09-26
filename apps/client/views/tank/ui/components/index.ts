@@ -5,6 +5,7 @@ export { MarksSection } from './MarksSection';
 export { MasteryPanel } from './MasteryPanel';
 export { ObtainSection } from './ObtainSection';
 export { PatchHistory } from './PatchHistory';
+export { SectionNav } from './SectionNav';
 export { ServerStats } from './ServerStats';
 export { TankGarage } from './TankGarage';
 export { TankSkeleton } from './TankSkeleton';

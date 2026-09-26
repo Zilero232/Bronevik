@@ -5,9 +5,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { Guide } from '@/shared/api/guides';
+import type { Guide } from '@/entities/guide/guide';
 
-import { removeGuide } from '@/shared/api/guides';
+import { removeGuide } from '../../../api';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
@@ -23,7 +23,7 @@ export const useGuideDelete = (guide: Guide) => {
       toast.success(t('deleted'));
       setOpen(false);
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guides.all, refetchType: 'none' });
-      router.replace(ROUTES.guides);
+      router.replace(ROUTES.guides.list);
     },
     onError: () => toast.error(t('deleteFailed'))
   });

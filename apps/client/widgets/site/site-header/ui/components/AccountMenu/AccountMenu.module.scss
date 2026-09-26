@@ -1,0 +1,130 @@
+@use '@/shared/styles/mixins' as *;
+
+.signIn {
+  @include nav-label;
+
+  height: 36px;
+  color: var(--color-accent-contrast);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  transition:
+    background-color var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: none;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include reduced-motion {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.trigger {
+  @include reset-button;
+
+  display: inline-flex;
+  height: 36px;
+  align-items: center;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  gap: var(--space-2);
+
+  &:hover,
+  &[data-popup-open] {
+    background-color: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.chevron {
+  color: var(--color-text-dim);
+  transition: transform var(--duration-base) var(--ease-out);
+
+  .trigger[data-popup-open] & {
+    transform: rotate(180deg);
+  }
+}
+
+.positioner {
+  z-index: var(--z-popover);
+}
+
+.popup {
+  @include popup-surface;
+  @include popup-motion;
+
+  min-width: 232px;
+  padding: var(--space-2);
+  outline: none;
+}
+
+.user {
+  display: block;
+  overflow: hidden;
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.group {
+  padding-top: var(--space-2);
+
+  & + & {
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--space-2);
+  }
+}
+
+.label {
+  @include label;
+
+  display: block;
+  padding: var(--space-2) var(--space-3);
+}
+
+.item {
+  display: flex;
+  height: 32px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  gap: var(--space-3);
+  outline: none;
+  text-decoration: none;
+
+  &[data-highlighted] {
+    background-color: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+
+  &[data-disabled] {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.separator {
+  height: 1px;
+  margin: var(--space-2) 0;
+  background-color: var(--color-border);
+}

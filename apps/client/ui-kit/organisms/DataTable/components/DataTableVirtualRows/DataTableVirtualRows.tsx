@@ -9,7 +9,7 @@ import { DataTableCells } from '../DataTableCells';
 
 import s from '../../DataTable.module.scss';
 
-export const DataTableVirtualRows = <T,>({ rows, scrollElement, rowHeight, columnCount, onRowClick }: DataTableVirtualRowsProps<T>) => {
+export const DataTableVirtualRows = <T,>({ rows, scrollElement, rowHeight, columnCount, onRowClick, rowTint }: DataTableVirtualRowsProps<T>) => {
   'use no memo';
 
   const virtualizer = useVirtualizer({
@@ -38,6 +38,7 @@ export const DataTableVirtualRows = <T,>({ rows, scrollElement, rowHeight, colum
             key={row.id}
             className={s.row}
             data-clickable={Boolean(onRowClick)}
+            data-tint={rowTint?.(row.original) ?? undefined}
             style={{ height: rowHeight }}
             onClick={onRowClick ? () => onRowClick(row.original) : undefined}
           >

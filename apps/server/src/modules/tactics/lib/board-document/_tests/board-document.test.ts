@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as Y from 'yjs';
 
-import { boardIdOf, boardSnapshot, encodeBoard, readBoardData, restoreBoard, seedBoardDocument } from '../board-document';
+import { boardIdOf, boardSnapshot, encodeBoard, readBoardData, replaceBoardLayers, restoreBoard, seedBoardDocument } from '../board-document';
 
 const data = readBoardData({
   layers: [{ id: 'l1', name: 'Plan A', strokes: [{ id: 's1', tool: 'arrow', color: '#f00', width: 3, points: [0, 0, 10, 10] }], icons: [] }]
@@ -19,6 +19,17 @@ describe('seedBoardDocument', () => {
     restoreBoard({ document: copy, state: encodeBoard(document) });
 
     expect(boardSnapshot(copy)).toEqual(data);
+  });
+});
+
+describe('replaceBoardLayers', () => {
+  it('swaps the whole drawing of a live document', () => {
+    const document = new Y.Doc();
+
+    seedBoardDocument({ document, data });
+    replaceBoardLayers({ document, data: { layers: [] } });
+
+    expect(boardSnapshot(document)).toEqual({ layers: [] });
   });
 });
 

@@ -12,7 +12,7 @@ export const ScoreboardPlayerCell = ({ nickname, clanTag, isRecorder, isDestroye
 
   return (
     <span className={s.root} data-destroyed={isDestroyed} data-recorder={isRecorder}>
-      <Link className={s.nickname} href={ROUTES.player(nickname)}>
+      <Link className={s.nickname} href={ROUTES.players.profile(nickname)}>
         {nickname}
       </Link>
       {clanTag && <span className={s.clan}>[{clanTag}]</span>}

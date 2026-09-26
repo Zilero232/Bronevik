@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { listMyTacticBoards } from '@/shared/api/tactics';
+import { listMyTacticBoards } from '@/entities/tactic/board';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useTacticsPage = () => {

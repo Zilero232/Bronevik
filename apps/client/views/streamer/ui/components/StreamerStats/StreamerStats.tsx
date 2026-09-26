@@ -44,7 +44,7 @@ export const StreamerStats = ({ accountId }: StreamerStatsProps) => {
                 <KeyFigure isFramed label={t('wn8')} tone={wn8Tier ? toneOfTier(wn8Tier) : 'accent'} value={wn8Value ?? 0} />
                 <KeyFigure isFramed label={t('avgDamage')} value={avgDamage ?? 0} />
               </div>
-              <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.player(summary.nickname)}>
+              <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.players.profile(summary.nickname)}>
                 {t('profile')}
                 <ArrowRight size={15} />
               </Link>

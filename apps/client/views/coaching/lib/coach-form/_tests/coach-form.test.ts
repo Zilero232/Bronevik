@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { zUpsertCoach } from '@/shared/api/coaching';
+import { zUpsertCoach } from '@/entities/coaching/coach';
 
 import type { CoachProfileFields } from '..';
 

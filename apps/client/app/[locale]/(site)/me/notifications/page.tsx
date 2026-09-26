@@ -6,6 +6,8 @@ import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { NotificationsPage } from '@/views/notifications';
 
+export const instant = false;
+
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
   const t = await getTranslations({ locale, namespace: 'notifications.meta' });

@@ -4,13 +4,14 @@ import { match } from 'ts-pattern';
 
 import { REPLAYS_QUEUE } from '../config';
 import { replayParseJobSchema } from '../dto';
-import { BestOfWeekService, ReplayParseService } from '../services';
+import { BestOfWeekService, ReplayOverflowService, ReplayParseService } from '../services';
 
 @Processor(REPLAYS_QUEUE.name, { concurrency: REPLAYS_QUEUE.concurrency })
 export class ReplaysProcessor extends WorkerHost {
   constructor(
     private readonly parser: ReplayParseService,
-    private readonly bestOfWeek: BestOfWeekService
+    private readonly bestOfWeek: BestOfWeekService,
+    private readonly overflow: ReplayOverflowService
   ) {
     super();
   }
@@ -24,6 +25,7 @@ export class ReplaysProcessor extends WorkerHost {
         })
       )
       .with(REPLAYS_QUEUE.jobs.bestOfWeek, () => this.bestOfWeek.feature(new Date()))
+      .with(REPLAYS_QUEUE.jobs.overflowCleanup, () => this.overflow.run(new Date()))
       .otherwise(() => null);
   }
 }

@@ -4,7 +4,7 @@ import { match } from 'ts-pattern';
 import type { BaselineInput, CreateGoalInput, Goal, OwnedInput, UpdateGoalInput } from '../me.types';
 
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
-import { PrismaService } from '../../../core';
+import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { GOALS } from '../config';
 import { isGoalEndAllowed, toGoal } from '../lib';
@@ -31,30 +31,36 @@ export class GoalsService {
       throw new AppBadRequestException('VALIDATION_FAILED', `A goal must end within ${GOALS.maxDurationDays} days from now`);
     }
 
-    const [link, active] = await Promise.all([
-      this.prisma.userLestaAccount.findUnique({ where: { accountId: account } }),
-      this.prisma.goal.count({ where: { userId, status: 'active' } })
-    ]);
+    const link = await this.prisma.userLestaAccount.findUnique({ where: { accountId: account } });
 
     if (link?.userId !== userId) {
       throw new AppForbiddenException('FORBIDDEN', 'Goals can be set only for your own linked accounts');
     }
 
-    await this.entitlements.assertWithinLimit({ userId, key: 'goals', count: active });
-
     const baseline = await this.baseline({ accountId: account, metric, tankId: tankId ?? null });
 
-    const row = await this.prisma.goal.create({
-      data: {
-        userId,
-        accountId: account,
-        metric,
-        tankId: tankId ?? null,
-        target,
-        baseline: baseline ?? 0,
-        current: baseline,
-        startsAt: now,
-        endsAt: ends
+    const row = await lockedTransaction({
+      prisma: this.prisma,
+      scope: LIMIT_LOCK_SCOPE.goals,
+      key: userId,
+      run: async (tx) => {
+        const active = await tx.goal.count({ where: { userId, status: 'active' } });
+
+        await this.entitlements.assertWithinLimit({ userId, key: 'goals', count: active });
+
+        return tx.goal.create({
+          data: {
+            userId,
+            accountId: account,
+            metric,
+            tankId: tankId ?? null,
+            target,
+            baseline: baseline ?? 0,
+            current: baseline,
+            startsAt: now,
+            endsAt: ends
+          }
+        });
       }
     });
 

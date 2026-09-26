@@ -9,12 +9,13 @@ import { useForm, useWatch } from 'react-hook-form';
 import { sortBy } from 'remeda';
 import { toast } from 'sonner';
 
-import type { CreateGuide, Guide } from '@/shared/api/guides';
+import type { CreateGuide, Guide } from '@/entities/guide/guide';
 
+import { useAuthSession } from '@/entities/auth/session';
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { createGuide, updateGuide } from '@/shared/api/guides';
-import { listMaps } from '@/shared/api/maps';
+import { createGuide, updateGuide } from '../../../api';
+import { listMaps } from '@/entities/map/map';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
@@ -28,6 +29,7 @@ export const useGuideEditorForm = (guide: Guide | null) => {
   const locale = useLocale();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { data: session } = useAuthSession();
   const { data: catalog } = useVehicleCatalog();
   const form = useForm<GuideFormValues, unknown, GuideFormOutput>({
     resolver: zodResolver(guideFormSchema),
@@ -47,8 +49,8 @@ export const useGuideEditorForm = (guide: Guide | null) => {
     onSuccess: (saved) => {
       toast.success(guide ? t('editor.updated') : t('editor.created'));
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guides.all, refetchType: 'none' });
-      queryClient.setQueryData(QUERY_KEYS.guides.detail(saved.slug), saved);
-      router.push(ROUTES.guide(saved.slug));
+      queryClient.setQueryData(QUERY_KEYS.guides.detail({ viewerId: session?.user.id ?? null, slug: saved.slug }), saved);
+      router.push(ROUTES.guides.detail(saved.slug));
     },
     onError: () => toast.error(t('editor.failed'))
   });

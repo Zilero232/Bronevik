@@ -1,4 +1,4 @@
-import type { TournamentStatus } from '@/shared/api/tournaments';
+import type { TournamentStatus } from '@/entities/tournament/tournament';
 import type { BadgeTone } from '@/ui-kit';
 
 export const TOURNAMENT_STATUSES = ['registration', 'running', 'finished', 'cancelled', 'draft'] as const satisfies readonly TournamentStatus[];

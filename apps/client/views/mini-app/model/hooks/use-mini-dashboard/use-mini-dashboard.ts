@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getLinkedAccounts } from '@/shared/api/me';
+import { getLinkedAccounts } from '@/entities/auth/session';
 import { isUnauthorizedError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 

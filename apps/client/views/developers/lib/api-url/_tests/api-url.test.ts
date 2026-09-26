@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { DEVELOPER_PATHS } from '@/shared/api/developer';
+import { DEVELOPER_PATHS } from '@/entities/developer/developer';
 
 import { apiUrl, apiVersion, trimBaseUrl } from '../api-url';
 

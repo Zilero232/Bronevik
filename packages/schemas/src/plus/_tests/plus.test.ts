@@ -14,6 +14,7 @@ describe('plusLimit', () => {
       PLUS_LIMITS.linkedAccounts,
       PLUS_LIMITS.goals,
       PLUS_LIMITS.watchedTanks,
+      PLUS_LIMITS.watchedPlayers,
       PLUS_LIMITS.overlays,
       PLUS_LIMITS.storedReplays
     ]) {

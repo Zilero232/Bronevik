@@ -7,6 +7,8 @@ import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { StreamerStudioPage } from '@/views/streamer-studio';
 
+export const instant = false;
+
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
   const t = await getTranslations({ locale, namespace: 'streamer.meta' });

@@ -6,6 +6,7 @@ import type { BuildSide } from '../../lib/stat-diff';
 
 export type BuildContextValue = {
   vehicle: VehicleSummary;
+  options: BuildOptions;
   catalog: BuildCatalog;
   a: Loadout;
   b: Loadout | null;

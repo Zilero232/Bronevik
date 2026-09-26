@@ -17,10 +17,10 @@ export const ReplayStatusState = ({ replay }: ReplayStatusStateProps) => {
 
   return (
     <>
-      <PageHeader breadcrumbs={[{ label: t('breadcrumb'), href: ROUTES.replays }, { label: t('untitled') }]} title={t('untitled')} />
+      <PageHeader breadcrumbs={[{ label: t('breadcrumb'), href: ROUTES.replays.list }, { label: t('untitled') }]} title={t('untitled')} />
       <EmptyState
         action={
-          <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.replays}>
+          <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.replays.list}>
             {t('backToList')}
           </Link>
         }

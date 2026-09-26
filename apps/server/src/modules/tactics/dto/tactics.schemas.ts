@@ -68,6 +68,9 @@ export const createTacticBoardSchema = tacticBoardFieldsSchema.extend({
   data: tacticBoardDataSchema.default({ layers: [] })
 });
 
-export const updateTacticBoardSchema = tacticBoardFieldsSchema.partial();
+export const updateTacticBoardSchema = tacticBoardFieldsSchema.partial().extend({
+  arenaId: arenaIdSchema.nullable().optional(),
+  mode: z.string().trim().min(1).max(32).nullable().optional()
+});
 
 export const boardTokenQuerySchema = z.object({ token: z.string().trim().min(8).max(64).optional() });

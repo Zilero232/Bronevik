@@ -1,0 +1,60 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.header {
+  @include source-line;
+
+  margin: 0;
+}
+
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+}
+
+.grid {
+  gap: var(--space-2);
+
+  .skeletons,
+  .list {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    @include below(xl) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.rows {
+  .skeletons {
+    @include stack(var(--space-2));
+
+    padding: var(--space-4);
+  }
+
+  .item {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .more {
+    padding: var(--space-3);
+  }
+}

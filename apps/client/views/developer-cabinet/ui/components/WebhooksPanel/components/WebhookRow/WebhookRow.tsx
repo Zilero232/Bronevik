@@ -4,7 +4,7 @@ import { useBoolean } from '@siberiacancode/reactuse';
 import { History, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { updateWebhook } from '@/shared/api/developer';
+import { updateWebhook } from '../../../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 import { Badge, Button, IconButton, Switch } from '@/ui-kit';
 

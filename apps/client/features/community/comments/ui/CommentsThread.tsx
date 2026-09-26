@@ -2,6 +2,7 @@
 
 import { LogIn } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 import { match } from 'ts-pattern';
 
 import { ROUTES } from '@/shared/constants';
@@ -18,17 +19,18 @@ import s from './CommentsThread.module.scss';
 
 export const CommentsThread = ({ target, targetId, className }: CommentsThreadProps) => {
   const t = useTranslations('community.comments');
+  const titleId = useId();
   const { nodes, count, viewerId, isSignedIn, isPending, isError, isRetrying, retry } = useCommentsThread({ target, targetId });
 
   return (
-    <Card aria-labelledby='comments-title' className={className} padding='none'>
-      <CardHeader meta={count > 0 ? t('count', { count }) : undefined} title={<span id='comments-title'>{t('title')}</span>} />
+    <Card aria-labelledby={titleId} className={className} padding='none'>
+      <CardHeader meta={count > 0 ? t('count', { count }) : undefined} title={<span id={titleId}>{t('title')}</span>} />
       <div className={s.body}>
         {isSignedIn ? (
           <CommentComposer thread={{ target, targetId }} />
         ) : (
           <p className={s.signIn}>
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.login}>
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.auth.login}>
               <LogIn size={14} />
               {t('signIn')}
             </Link>

@@ -1,0 +1,32 @@
+enum PlayMode {
+  onslaught
+  frontline
+  ranked
+  steelHunter @map("steel_hunter")
+
+  @@map("play_mode")
+}
+
+model ModeTankAggregate {
+  tankId Int      @map("tank_id")
+  mode   PlayMode
+
+  battles       Int
+  players       Int
+  wins          Int
+  decided       Int
+  winRate       Float? @map("win_rate")
+  avgDamage     Float? @map("avg_damage")
+  avgXp         Float? @map("avg_xp")
+  avgFrags      Float? @map("avg_frags")
+  survivalRate  Float? @map("survival_rate")
+  modBattles    Int    @default(0) @map("mod_battles")
+  replayBattles Int    @default(0) @map("replay_battles")
+  windowDays    Int    @map("window_days")
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  @@id([tankId, mode])
+  @@index([mode, battles(sort: Desc)])
+  @@map("mode_tank_aggregate")
+}

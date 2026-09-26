@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getPaymentHistory } from '@/shared/api/billing';
+import { getPaymentHistory } from '@/entities/plus/subscription';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { usePaymentHistoryColumns } from '../use-payment-history-columns';

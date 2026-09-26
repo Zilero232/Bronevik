@@ -1,22 +1,40 @@
+import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import type { ApiTier, ApiTiers } from '@otmetki/schemas';
+import type { Subscription } from 'rxjs';
 
 import { Injectable } from '@nestjs/common';
 import { apiTierSchema } from '@otmetki/schemas';
 import { LRUCache } from 'lru-cache';
 
 import { PrismaService } from '../../../core';
-import { EntitlementsService } from '../../billing';
+import { EntitlementsBusService, EntitlementsService } from '../../billing';
 import { API_KEY_POLICY, API_TIERS } from '../config';
 import { keyTierOf } from '../lib';
 
 @Injectable()
-export class ApiTierService {
+export class ApiTierService implements OnModuleInit, OnModuleDestroy {
   private readonly cache = new LRUCache<string, ApiTier>({ max: API_KEY_POLICY.tierCacheMaxEntries, ttl: API_KEY_POLICY.tierCacheTtlMs });
+  private subscription: Subscription | null = null;
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly entitlements: EntitlementsService
+    private readonly entitlements: EntitlementsService,
+    private readonly bus: EntitlementsBusService
   ) {}
+
+  onModuleInit(): void {
+    this.subscription = this.bus.changes$.subscribe(({ userId }) => {
+      this.forget(userId);
+    });
+  }
+
+  onModuleDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
+  forget(userId: string): void {
+    this.cache.delete(userId);
+  }
 
   tiers(): ApiTiers {
     return apiTierSchema.options.map((tier) => ({ tier, limits: API_TIERS[tier] }));

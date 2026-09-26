@@ -47,6 +47,16 @@ export type BuildHistoryInput = {
 
 export type BuildsCatalogInput = BuildsCatalogQuery;
 
+export type CatalogUsageRow = {
+  tankId: number;
+  battles: number;
+  players: number;
+  winRate: number | null;
+  avgDamage: number | null;
+  usage: unknown;
+  computedAt: Date;
+};
+
 export type EnsureCohortInput = {
   cohort: BuildCohort;
   viewerUserId: string | null;

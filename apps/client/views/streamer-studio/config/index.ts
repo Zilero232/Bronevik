@@ -12,7 +12,7 @@ export {
 export type { ChallengeScope } from './challenges.constants';
 export { CONNECTABLE_PROVIDERS, INTEGRATION_BADGE, UPCOMING_PROVIDERS } from './integrations.constants';
 export { KIND_PRESETS, OBS_SIZE, OBS_STEPS, OVERLAY_EDITOR } from './overlay-editor.constants';
-export { PROFILE_FORM, PROFILE_LINKS } from './profile.constants';
-export type { ProfileLink } from './profile.constants';
+export { CHANNEL_HOSTS, PROFILE_FORM } from './profile.constants';
+export { SETTINGS_DATE, SETTINGS_FORM } from './settings-form.constants';
 export { STUDIO_CALLBACK, STUDIO_QUERY, STUDIO_TAB_PARSER, STUDIO_TABS } from './studio.constants';
 export type { StudioTab } from './studio.constants';

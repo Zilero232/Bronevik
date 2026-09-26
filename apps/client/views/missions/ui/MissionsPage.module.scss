@@ -1,22 +1,24 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include stack(0);
+
+  padding-bottom: var(--space-8);
+}
+
+.body {
   @include shell;
-  @include stack(var(--space-5));
+  @include stack(var(--gap-section));
 
-  padding-block: var(--space-7) var(--space-8);
-
-  @include below(md) {
-    padding-top: var(--space-5);
-  }
+  padding-top: var(--space-8);
 }
 
 .campaign {
-  @include stack(var(--space-3));
+  @include stack(var(--space-4));
 }
 
 .grid {
   display: grid;
-  gap: var(--space-3);
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }

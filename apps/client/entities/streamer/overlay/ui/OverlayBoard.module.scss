@@ -43,4 +43,43 @@
   &[data-skin='minimal'] {
     --plate-ink-shadow: 0 1px 2px var(--shade-35), 0 0 12px var(--shade-35);
   }
+
+  &[data-skin='armor'] {
+    --plate-fill: linear-gradient(180deg, var(--color-surface-raised), var(--color-bg-deep));
+    --plate-edge: inset 0 0 0 1px var(--color-border-strong), inset 0 2px 0 var(--color-steel), inset 0 -3px 0 var(--color-bg-deep);
+    --plate-clip: polygon(0.8em 0, calc(100% - 0.8em) 0, 100% 0.8em, 100% 100%, 0 100%, 0 0.8em);
+  }
+
+  &[data-skin='hud'] {
+    --plate-fill: repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--color-bg-deep) 78%, transparent) 0 2px,
+      color-mix(in srgb, var(--color-bg-deep) 64%, transparent) 2px 4px
+    );
+    --plate-edge: inset 0 0 0 1px color-mix(in srgb, var(--color-success) 60%, transparent);
+    --plate-ink-shadow: 0 0 6px color-mix(in srgb, var(--color-success) 45%, transparent);
+
+    font-family: var(--font-mono);
+  }
+
+  &[data-skin='brass'] {
+    --plate-fill: linear-gradient(135deg, color-mix(in srgb, var(--color-mastery-gold) 22%, var(--color-bg-deep)), var(--color-bg-deep));
+    --plate-edge: inset 0 0 0 1px var(--color-mastery-gold), inset 0 0 0 3px color-mix(in srgb, var(--color-mastery-gold) 20%, transparent);
+    --plate-clip: polygon(
+      0.5em 0,
+      calc(100% - 0.5em) 0,
+      100% 0.5em,
+      100% calc(100% - 0.5em),
+      calc(100% - 0.5em) 100%,
+      0.5em 100%,
+      0 calc(100% - 0.5em),
+      0 0.5em
+    );
+  }
+
+  &[data-skin='night'] {
+    --plate-fill: linear-gradient(180deg, color-mix(in srgb, var(--rating-unicum) 16%, var(--color-bg-deep)), var(--color-bg-deep));
+    --plate-edge: inset 0 -2px 0 var(--rating-unicum), 0 0 16px -6px var(--rating-unicum);
+    --plate-ink-shadow: 0 0 10px color-mix(in srgb, var(--rating-unicum) 40%, transparent);
+  }
 }

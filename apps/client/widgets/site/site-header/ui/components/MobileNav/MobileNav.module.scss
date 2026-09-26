@@ -1,20 +1,94 @@
 @use '@/shared/styles/mixins' as *;
 
-.list {
+.nav {
   display: flex;
   flex-direction: column;
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+}
+
+.group {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.header {
+  margin: 0;
+}
+
+.trigger {
+  @include reset-button;
+  @include nav-label;
+
+  display: flex;
+  width: 100%;
+  height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-3);
+  color: var(--color-text);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  gap: var(--space-3);
+  text-decoration: none;
+
+  &[data-active='true'] {
+    box-shadow: inset 2px 0 0 var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+
+    outline-offset: -2px;
+  }
+
+  .nav > & {
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.chevron {
+  color: var(--color-text-dim);
+  transition: transform var(--duration-base) var(--ease-out);
+
+  [data-panel-open] > & {
+    transform: rotate(180deg);
+  }
+}
+
+.panel {
+  overflow: hidden;
+  height: var(--accordion-panel-height);
+  transition: height var(--duration-base) var(--ease-out);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    height: 0;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.links {
+  padding: 0 0 var(--space-3);
+  margin: 0;
+  list-style: none;
 }
 
 .link {
   display: flex;
   height: 40px;
   align-items: center;
-  padding: 0 var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-
-  @include nav-label;
-
+  padding: 0 var(--space-3) 0 var(--space-5);
+  color: var(--color-text-muted);
   font-size: var(--text-md);
+  gap: var(--space-3);
+  text-decoration: none;
 
   &:hover,
   &[data-active='true'] {
@@ -31,6 +105,10 @@
   @include stack(var(--space-4));
 
   padding-top: var(--space-5);
+}
+
+.status {
+  padding: 0;
 }
 
 .heading {

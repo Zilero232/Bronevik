@@ -1,11 +1,45 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  align-content: center;
-  border-left: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: rgb(14 14 16 / 60%);
+  gap: var(--space-4) var(--space-6);
+}
 
-  @include below(3xl) {
-    border-top: 1px solid var(--color-border);
-    border-left: none;
+.ring {
+  @include tone;
+
+  flex-shrink: 0;
+}
+
+.ringValue {
+  @include numeric(var(--num-md));
+
+  display: block;
+  color: var(--tone);
+  font-weight: 700;
+  text-align: center;
+}
+
+.ringLabel {
+  @include label;
+
+  display: block;
+  margin-top: 2px;
+  text-align: center;
+}
+
+.figures {
+  display: grid;
+  gap: var(--space-4) var(--space-6);
+  grid-template-columns: repeat(3, auto);
+
+  @include below(sm) {
+    grid-template-columns: repeat(2, auto);
   }
 }

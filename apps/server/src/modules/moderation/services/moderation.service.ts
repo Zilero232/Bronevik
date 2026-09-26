@@ -82,7 +82,12 @@ export class ModerationService {
   }
 
   async pendingGuides(): Promise<GuideView[]> {
-    const rows = await this.prisma.guide.findMany({ where: { status: 'pending' }, orderBy: { updatedAt: 'asc' }, include: GUIDE_INCLUDE });
+    const rows = await this.prisma.guide.findMany({
+      where: { status: 'pending' },
+      orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }],
+      take: MODERATION.pageLimit,
+      include: GUIDE_INCLUDE
+    });
 
     return rows.map((guide) => toGuideView({ guide, author: guide.author, likedByMe: false }));
   }

@@ -1,8 +1,9 @@
 'use client';
 
 import { Monitor, Unplug } from 'lucide-react';
-import { useFormatter, useNow, useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 
+import { useClientNow } from '@/shared/lib';
 import { Button } from '@/ui-kit';
 
 import type { DeviceListProps } from './DeviceList.types';
@@ -12,7 +13,7 @@ import s from './DeviceList.module.scss';
 export const DeviceList = ({ devices, isRevoking, onRevoke }: DeviceListProps) => {
   const t = useTranslations('me.mod');
   const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
+  const now = useClientNow({ updateInterval: 60_000 });
 
   return (
     <section className={s.root}>
@@ -25,7 +26,7 @@ export const DeviceList = ({ devices, isRevoking, onRevoke }: DeviceListProps) =
             <span className={s.text}>
               <span className={s.name}>{name ?? id}</span>
               <span className={s.meta}>
-                {t('deviceMeta', { version: modVersion ?? '—', seen: lastSeenAt ? format.relativeTime(new Date(lastSeenAt), now) : '—' })}
+                {t('deviceMeta', { version: modVersion ?? '—', seen: lastSeenAt && now ? format.relativeTime(new Date(lastSeenAt), now) : '—' })}
               </span>
             </span>
             <Button disabled={isRevoking} size='sm' variant='ghost' onClick={() => onRevoke(id)}>

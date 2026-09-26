@@ -1,0 +1,26 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  flex-direction: column;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &[data-result='win'] {
+    color: var(--color-success);
+  }
+
+  &[data-result='loss'] {
+    color: var(--color-danger);
+  }
+
+  &[data-result='draw'] {
+    color: var(--color-text-muted);
+  }
+}
+
+.fate {
+  color: var(--color-text-dim);
+  font-size: var(--text-2xs);
+  font-weight: 400;
+}

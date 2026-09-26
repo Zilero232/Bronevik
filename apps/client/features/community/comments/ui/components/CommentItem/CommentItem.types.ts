@@ -1,4 +1,4 @@
-import type { Comment } from '@/shared/api/comments';
+import type { Comment } from '../../../api';
 
 import type { CommentThreadTarget } from '../../../lib/comment-form';
 

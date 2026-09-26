@@ -1,2 +1,2 @@
 export { ProgressRing } from './ProgressRing';
-export type { ProgressRingProps } from './ProgressRing.types';
+export type { ProgressRingMarks, ProgressRingProps } from './ProgressRing.types';

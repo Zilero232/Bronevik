@@ -3,10 +3,11 @@
 import { Mic, MicOff } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { TankStrip } from '@/entities/tank/tank';
 import { ContactPlayer } from '@/features/community/contact-player';
 import { PlayerStatsLine } from '@/features/community/player-stats';
 import { Link } from '@/shared/i18n/navigation';
-import { Badge, Button, Card, RelativeTime, TankImage, TierNumeral } from '@/ui-kit';
+import { Badge, Button, Card, RelativeTime, TierNumeral } from '@/ui-kit';
 
 import type { PlatoonCardProps } from './PlatoonCard.types';
 
@@ -60,15 +61,7 @@ export const PlatoonCard = ({ post }: PlatoonCardProps) => {
           </dd>
         </div>
       </dl>
-      {vehicles.length > 0 && (
-        <ul aria-label={t('tanks')} className={s.tanks}>
-          {vehicles.map((vehicle) => (
-            <li key={vehicle.tankId} className={s.tank} title={vehicle.name}>
-              <TankImage size='small' tank={vehicle} />
-            </li>
-          ))}
-        </ul>
-      )}
+      {vehicles.length > 0 && <TankStrip label={t('tanks')} vehicles={vehicles} />}
       {post.message && <p className={s.message}>{post.message}</p>}
       <footer className={s.foot}>
         <ContactPlayer accountId={post.accountId} nickname={post.nickname} />

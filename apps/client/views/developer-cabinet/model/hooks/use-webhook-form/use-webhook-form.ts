@@ -5,7 +5,7 @@ import { WEBHOOK } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
-import { createWebhook, updateWebhook } from '@/shared/api/developer';
+import { createWebhook, updateWebhook } from '../../../api';
 
 import type { WebhookFormValues } from '../../../lib/webhook-form';
 import type { UseWebhookFormInput } from './use-webhook-form.types';

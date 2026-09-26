@@ -1,4 +1,5 @@
 import {
+  analyticsExportSchema,
   createFavoriteSchema,
   createGoalSchema,
   favoriteSchema,
@@ -8,6 +9,7 @@ import {
   linkedAccountsSchema,
   notificationSettingsSchema,
   playerMarksSchema,
+  rawStatsExportSchema,
   updateGoalSchema,
   updateNotificationSettingsSchema
 } from '@otmetki/schemas';
@@ -28,3 +30,5 @@ export class LinkedAccountsDto extends createZodDto(linkedAccountsSchema) {}
 export class NotificationSettingsDto extends createZodDto(notificationSettingsSchema) {}
 export class UpdateNotificationSettingsDto extends createZodDto(updateNotificationSettingsSchema) {}
 export class MyMarksDto extends createZodDto(playerMarksSchema) {}
+export class RawStatsExportDto extends createZodDto(rawStatsExportSchema) {}
+export class AnalyticsExportDto extends createZodDto(analyticsExportSchema) {}

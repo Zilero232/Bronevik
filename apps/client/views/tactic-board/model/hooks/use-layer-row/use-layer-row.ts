@@ -4,7 +4,7 @@ import type { FormEvent } from 'react';
 
 import { useEffect, useRef, useState } from 'react';
 
-import type { TacticLayer } from '@/shared/api/tactics';
+import type { TacticLayer } from '@/entities/tactic/board';
 
 import { useWorkspace } from '../../context';
 

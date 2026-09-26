@@ -5,6 +5,7 @@ cmd-clan = Мой клан
 cmd-tank = Танк: /tank название
 cmd-top = Топ игроков по WN8
 cmd-lbz = Следующие ЛБЗ
+cmd-next = Что сыграть сегодня
 cmd-settings = Уведомления
 cmd-login = Войти на сайт
 cmd-help = Помощь
@@ -28,6 +29,7 @@ help =
     /tank название — пороги отметок танка
     /top — топ игроков по WN8
     /lbz — следующие личные боевые задачи
+    /next — плейлист вечера: на чём сыграть сегодня
     /settings — уведомления
     /login — ссылка для входа на сайт
 
@@ -96,6 +98,7 @@ settings-event-sessionFinished = Итоги сессии
 settings-event-bonusCode = Бонус-коды
 settings-event-premiumOffer = Скидки на танки
 settings-event-challengeResolved = Челленджи
+settings-event-firstWinAvailable = Первая победа дня
 settings-weekly-digest = Недельный дайджест
 settings-on = ✅ { $label }
 settings-off = ▫️ { $label }
@@ -105,3 +108,15 @@ inline-card-description = WN8 { $wn8 } · { $winRate } побед · { $battles 
 notification-open = Открыть
 error-generic = Что-то пошло не так. Попробуйте позже.
 missing = —
+
+next-not-linked = Привяжите Telegram и аккаунт Леста на сайте, чтобы получить плейлист вечера.
+next-no-garage = Состав ангара пока неизвестен: войдите на сайт через Леста ID, чтобы мы увидели ваши танки.
+next-empty = Сегодня подсказок нет — играйте на любимых танках!
+next-header = Плейлист вечера:
+next-line = { $tank }: { $reasons }
+next-reason-closeToMark = близко к отметке ({ $percent }%)
+next-reason-firstWin = первая победа не взята
+next-reason-longUnplayed = давно не играли ({ $days } дн.)
+next-reason-lowWinRate = есть что поправить
+next-reason-mission = подходит под ЛБЗ
+next-plus-hint = С «Плюсом» — { $size } танков и больше причин.

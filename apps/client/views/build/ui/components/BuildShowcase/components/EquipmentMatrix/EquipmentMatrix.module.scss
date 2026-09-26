@@ -1,0 +1,59 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+}
+
+.columns {
+  display: grid;
+  gap: var(--space-7);
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+}
+
+.column {
+  @include stack(var(--space-3));
+  @include equip-tint;
+
+  min-width: 0;
+}
+
+.category {
+  display: flex;
+  align-items: center;
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--equip);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  gap: var(--space-2);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+
+  .column[data-kind='standard'] & {
+    border-left-color: var(--color-text-dim);
+  }
+}
+
+.set {
+  @include stack(var(--space-2));
+}
+
+.setLabel {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.tiles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.divider {
+  width: 1px;
+  height: 40px;
+  margin-inline: var(--space-2);
+  background-color: var(--color-border-strong);
+}

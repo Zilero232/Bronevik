@@ -1,0 +1,1 @@
+export { LestaLinkError } from './LestaLinkError';

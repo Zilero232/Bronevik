@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { RequestTime } from '@/shared/seo/request-time';
 import { MissionOperationPage } from '@/views/mission-operation';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/missions/[campaign]/[operation]'>): Promise<Metadata> => {
@@ -17,7 +18,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/missions
   return createPageMetadata({
     title: t('title', { id: operation }),
     description: t('description'),
-    path: ROUTES.missionOperation({ campaign: Number(campaign), operation: Number(operation) }),
+    path: ROUTES.missions.operation({ campaign: Number(campaign), operation: Number(operation) }),
     locale,
     index: true,
     follow: true
@@ -25,9 +26,14 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/missions
 };
 
 const Page = () => (
-  <Suspense>
-    <MissionOperationPage />
-  </Suspense>
+  <>
+    <Suspense>
+      <MissionOperationPage />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
 );
 
 export default Page;

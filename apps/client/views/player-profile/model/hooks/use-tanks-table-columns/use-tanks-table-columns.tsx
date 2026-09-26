@@ -6,11 +6,10 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { TankAwards } from '@/entities/player/stats';
+import { RatingValue, TankAwards } from '@/entities/player/stats';
 import { TankCell, WinRateCell } from '@/entities/tank/tank';
 import { percentText } from '@/shared/lib';
 
-import { RatingValue } from '../../../ui/components/RatingValue';
 import { RecentCell } from '../../../ui/components/TanksTable/components';
 
 const column = createColumnHelper<PlayerTankRow>();

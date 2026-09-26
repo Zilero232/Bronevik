@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getWebhookDeliveries } from '@/shared/api/developer';
+import { getWebhookDeliveries } from '@/entities/developer/developer';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useWebhookDeliveries = (id: string) =>

@@ -3,7 +3,10 @@
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 
-import { LoginHeader, LoginOptions } from './components';
+import { PageHeader } from '@/ui-kit';
+
+import { LOGIN } from '../config';
+import { LoginOptions } from './components';
 
 import s from './LoginPage.module.scss';
 
@@ -13,8 +16,8 @@ export const LoginPage = () => {
 
   return (
     <div className={s.root}>
-      <LoginHeader description={t('lead')} title={t('title')} />
-      <LoginOptions error={searchParams.get('error')} />
+      <PageHeader description={t('lead')} title={t('title')} />
+      <LoginOptions error={searchParams.get(LOGIN.errorParam)} />
     </div>
   );
 };

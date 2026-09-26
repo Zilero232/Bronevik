@@ -1,4 +1,4 @@
-import type { GuideKind, GuideSort } from '@/shared/api/guides';
+import type { GuideKind, GuideSort } from '@/entities/guide/guide';
 
 export type GuideFilters = {
   kind: GuideKind | null;

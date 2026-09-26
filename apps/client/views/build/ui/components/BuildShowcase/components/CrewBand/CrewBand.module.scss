@@ -1,0 +1,68 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  padding-block: var(--band-padding);
+  background-color: var(--color-band);
+  box-shadow: 0 0 0 100vmax var(--color-band);
+  clip-path: inset(0 -100vmax);
+  color: var(--color-text);
+
+  @include below(lg) {
+    padding-block: 28px;
+  }
+}
+
+.columns {
+  display: grid;
+  gap: var(--space-7);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+  @include below(lg) {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+
+    @include hide-scrollbar;
+  }
+}
+
+.column {
+  @include stack(var(--space-3));
+
+  min-width: 0;
+
+  @include below(lg) {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+  }
+}
+
+.role {
+  display: flex;
+  align-items: center;
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  gap: var(--space-3);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.icon {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  color: var(--color-text);
+  place-items: center;
+}
+
+.skills {
+  @include stack(2px);
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

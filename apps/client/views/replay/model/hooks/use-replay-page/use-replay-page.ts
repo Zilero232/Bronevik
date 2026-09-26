@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getReplay } from '@/shared/api/replays';
+import { getReplay } from '@/entities/replay/replay';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { REPLAY_PAGE } from '../../../config';

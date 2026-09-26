@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { economyView } from '@/entities/tank/tank';
-import { getTankEconomy } from '@/shared/api/tanks';
+import { getTankEconomy } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { EconomyValues } from './use-economy-calculator.types';

@@ -27,7 +27,7 @@ export const QuietDial = ({ range }: QuietDialProps) => {
             {text}
           </text>
         ))}
-        <line className={s.needle} x1={dial.center} x2={needle.x} y1={dial.center} y2={needle.y} />
+        {needle && <line className={s.needle} x1={dial.center} x2={needle.x} y1={dial.center} y2={needle.y} />}
         <circle className={s.hub} cx={dial.center} cy={dial.center} r={4} />
       </svg>
       <figcaption className={s.caption}>

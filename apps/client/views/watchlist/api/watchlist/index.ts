@@ -1,0 +1,1 @@
+export { updateWatchlistSettings } from './watchlist';

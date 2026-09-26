@@ -6,8 +6,20 @@
   color: var(--color-text-muted);
   font-weight: 600;
 
+  &[data-marks='1'] {
+    color: var(--tier-mid);
+  }
+
+  &[data-marks='2'] {
+    color: var(--tier-high);
+  }
+
+  &[data-marks='3'] {
+    color: var(--color-accent);
+  }
+
   &[data-key='true'] {
-    color: var(--color-text);
+    font-weight: 700;
   }
 
   &[data-empty='true'] {

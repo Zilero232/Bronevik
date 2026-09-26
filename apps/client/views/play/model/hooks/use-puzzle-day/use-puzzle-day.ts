@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 
-import { useHydrated } from '@/shared/lib';
+import { useClientNow } from '@/shared/lib';
 
 import { puzzleDay } from '../../../lib/daily-puzzle';
 
 export const usePuzzleDay = () => {
-  const isHydrated = useHydrated();
-  const [now, setNow] = useState(() => new Date());
+  const mountedAt = useClientNow();
+  const [refreshedAt, setRefreshedAt] = useState<Date | null>(null);
 
-  return { day: isHydrated ? puzzleDay(now) : null, refreshDay: () => setNow(new Date()) };
+  const now = refreshedAt ?? mountedAt;
+
+  return { day: now ? puzzleDay(now) : null, refreshDay: () => setRefreshedAt(new Date()) };
 };

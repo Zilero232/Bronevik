@@ -1,4 +1,4 @@
-import type { ReportTargetType } from '@/shared/api/moderation';
+import type { ReportTargetType } from '../api';
 
 export type ReportButtonProps = {
   targetType: ReportTargetType;

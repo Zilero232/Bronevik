@@ -1,4 +1,4 @@
-import type { TacticIcon } from '@/shared/api/tactics';
+import type { TacticIcon } from '@/entities/tactic/board';
 
 import type { CanvasPalette } from '../../config';
 import type { BoardBox, BoardCircle, BoardPoint } from '../board-geometry';

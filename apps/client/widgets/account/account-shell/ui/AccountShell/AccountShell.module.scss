@@ -14,3 +14,19 @@
 .skeleton {
   @include stack(var(--gap-panel));
 }
+
+.layout {
+  display: grid;
+  align-items: start;
+  gap: var(--space-7);
+  grid-template-columns: 220px minmax(0, 1fr);
+
+  @include below(2xl) {
+    gap: var(--space-5);
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.content {
+  min-width: 0;
+}

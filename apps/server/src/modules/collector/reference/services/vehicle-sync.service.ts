@@ -6,6 +6,7 @@ import type { WriteVehicleInput } from '../reference.types';
 
 import { toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
+import { vehicleImages } from '../../../../lib/lesta';
 import { REFERENCE } from '../config';
 import { previousTankIds, specDiff, toVehicleType, vehicleSlugs } from '../lib/encyclopedia';
 
@@ -78,7 +79,6 @@ export class VehicleSyncService {
       isGift: vehicle.is_gift ?? false,
       isWheeled: vehicle.is_wheeled ?? false,
       isActive: true,
-      images: toJsonValue(vehicle.images),
       priceCredit: vehicle.price_credit ?? null,
       priceGold: vehicle.price_gold ?? null,
       specs: toJsonValue(vehicle.default_profile),
@@ -88,7 +88,14 @@ export class VehicleSyncService {
       crew: toJsonValue(vehicle.crew)
     };
 
-    await this.prisma.vehicle.upsert({ where: { tankId: vehicle.tank_id }, create: { tankId: vehicle.tank_id, slug, ...data }, update: data });
+    const derived = vehicle.tag ? vehicleImages({ nation: vehicle.nation, tag: vehicle.tag }) : null;
+    const images = vehicle.images ?? derived;
+
+    await this.prisma.vehicle.upsert({
+      where: { tankId: vehicle.tank_id },
+      create: { tankId: vehicle.tank_id, slug, ...data, images: toJsonValue(images) },
+      update: images ? { ...data, images: toJsonValue(images) } : data
+    });
 
     const profile = vehicle.default_profile;
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as Y from 'yjs';
 
-import type { TacticLayer, TacticStroke } from '@/shared/api/tactics';
+import type { TacticLayer, TacticStroke } from '@/entities/tactic/board';
 
 import { boardLayersOf, createBoardUndo, deleteLayer, readLayers, writeLayer } from '../board-document';
 

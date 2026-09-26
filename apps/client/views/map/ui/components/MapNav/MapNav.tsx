@@ -19,7 +19,7 @@ export const MapNav = ({ arenaId }: MapNavProps) => {
   return (
     <nav aria-label={t('label')} className={s.root}>
       {prev && (
-        <Link className={s.link} data-side='prev' href={ROUTES.map(prev.slug)}>
+        <Link className={s.link} data-side='prev' href={ROUTES.maps.detail(prev.slug)}>
           <ArrowLeft aria-hidden className={s.arrow} size={16} />
           <span className={s.text}>
             <span className={s.hint}>{t('prev')}</span>
@@ -28,7 +28,7 @@ export const MapNav = ({ arenaId }: MapNavProps) => {
         </Link>
       )}
       {next && (
-        <Link className={s.link} data-side='next' href={ROUTES.map(next.slug)}>
+        <Link className={s.link} data-side='next' href={ROUTES.maps.detail(next.slug)}>
           <span className={s.text}>
             <span className={s.hint}>{t('next')}</span>
             <span className={s.name}>{next.name}</span>

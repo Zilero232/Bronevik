@@ -5,8 +5,8 @@ import { Injectable } from '@nestjs/common';
 import type { CachedTables, ReferenceTables } from '../aggregates.types';
 
 import { PrismaService } from '../../../../core';
+import { BRONYA_REFERENCE, parseBronyaReference } from '../../../reference';
 import { AGGREGATES } from '../config';
-import { BRONYA_REFERENCE, parseBronyaReference } from '../lib/bronya-reference';
 
 @Injectable()
 export class ReferenceTablesService {

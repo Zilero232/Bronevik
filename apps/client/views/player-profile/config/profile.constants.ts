@@ -20,5 +20,11 @@ export const PROFILE_SKELETON = {
 
 export const FIGURE_FORMAT = {
   integer: { maximumFractionDigits: 0 },
-  percent: { maximumFractionDigits: 2, minimumFractionDigits: 2 }
+  percent: { maximumFractionDigits: 2, minimumFractionDigits: 2 },
+  decimal: { maximumFractionDigits: 1 }
 } as const satisfies Record<string, Intl.NumberFormatOptions>;
+
+export const PROFILE_HEADER = {
+  seasons: 4,
+  wn8Ring: { size: 104, thickness: 6 }
+} as const;

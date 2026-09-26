@@ -6,11 +6,13 @@ import { clanRoleSchema } from '@otmetki/schemas';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { PlayerNameCell } from '@/entities/player/player';
+import { RatingValue } from '@/entities/player/stats';
 import { WinRateCell } from '@/entities/tank/tank';
 
 import type { RosterRow } from '../../../lib/roster';
 
-import { ActivityCell, NicknameCell, RatingCell, RoleCell } from '../../../ui/components/ClanRoster/components';
+import { ActivityCell, RoleCell } from '../../../ui/components/ClanRoster/components';
 
 const column = createColumnHelper<RosterRow>();
 
@@ -21,7 +23,7 @@ export const useRosterColumns = (): ColumnDef<RosterRow, never>[] => {
   return [
     column.accessor('nickname', {
       header: t('columns.nickname'),
-      cell: (info) => <NicknameCell nickname={info.getValue()} />,
+      cell: (info) => <PlayerNameCell nickname={info.getValue()} withAvatar={false} />,
       meta: { width: '20%' }
     }),
     column.accessor((row) => clanRoleSchema.options.indexOf(row.role), {
@@ -55,13 +57,13 @@ export const useRosterColumns = (): ColumnDef<RosterRow, never>[] => {
     column.accessor((row) => row.wn8.value ?? 0, {
       id: 'wn8',
       header: 'WN8',
-      cell: (info) => <RatingCell rating={info.row.original.wn8} />,
+      cell: (info) => <RatingValue rating={info.row.original.wn8} />,
       meta: { align: 'end', isNumeric: true }
     }),
     column.accessor((row) => row.recentWn8.value ?? 0, {
       id: 'recentWn8',
       header: t('columns.recentWn8'),
-      cell: (info) => <RatingCell rating={info.row.original.recentWn8} />,
+      cell: (info) => <RatingValue rating={info.row.original.recentWn8} />,
       meta: { align: 'end', isNumeric: true }
     })
   ];

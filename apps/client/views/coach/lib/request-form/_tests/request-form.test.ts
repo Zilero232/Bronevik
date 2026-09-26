@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { zCreateOrder } from '@/shared/api/coaching';
+import { zCreateOrder } from '@/entities/coaching/coach';
 
 import { requestFormSchema, toCreateOrder } from '..';
 import { REQUEST_FORM_DEFAULTS } from '../../../config';

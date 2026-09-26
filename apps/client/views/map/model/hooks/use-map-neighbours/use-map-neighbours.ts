@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { listMaps } from '@/shared/api/maps';
+import { listMaps } from '@/entities/map/map';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { mapNeighbours } from '../../../lib/map-neighbours';

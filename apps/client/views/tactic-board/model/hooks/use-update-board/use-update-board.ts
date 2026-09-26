@@ -4,9 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { UpdateTacticBoard } from '@/shared/api/tactics';
+import type { UpdateTacticBoard } from '@/entities/tactic/board';
 
-import { updateTacticBoard } from '@/shared/api/tactics';
+import { updateTacticBoard } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseUpdateBoardInput } from './use-update-board.types';

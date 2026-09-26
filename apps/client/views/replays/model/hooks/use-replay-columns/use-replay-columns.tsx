@@ -5,7 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { Replay } from '@/shared/api/replays';
+import type { Replay } from '@/entities/replay/replay';
 
 import { vehicleIndex } from '@/entities/tank/tank';
 import { ReplayResultBadge, useReplayModeLabel } from '@/features/community/replay-meta';
@@ -38,7 +38,7 @@ export const useReplayColumns = (): ColumnDef<Replay, never>[] => {
       header: t('columns.map'),
       cell: ({ row: { original } }) => (
         <ReplayMapCell
-          href={ROUTES.replay(original.id)}
+          href={ROUTES.replays.detail(original.id)}
           isFailed={original.status === 'failed'}
           mapName={original.mapName ?? original.arenaId ?? t('unknownMap')}
           mode={original.battleType}

@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { getDeveloperOverview } from '@/shared/api/developer';
+import { getDeveloperOverview } from '@/entities/developer/developer';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const useApiTier = () => {

@@ -1,6 +1,6 @@
 import { nicknameSchema } from '@otmetki/schemas';
 
-import type { ReplaySearchQuery } from '@/shared/api/replays';
+import type { ReplaySearchQuery } from '@/entities/replay/replay';
 
 import type { PageWindow, PageWindowInput, ReplayFilters, ToSearchQueryInput } from './replay-query.types';
 

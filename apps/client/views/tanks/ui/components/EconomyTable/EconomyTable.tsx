@@ -19,6 +19,8 @@ export const EconomyTable = () => {
     total,
     account,
     reserve,
+    clanPayout,
+    clanPayoutPercent,
     isLoading,
     isError,
     isFetching,
@@ -27,7 +29,8 @@ export const EconomyTable = () => {
     onRetry,
     onRowClick,
     onAccountChange,
-    onReserveChange
+    onReserveChange,
+    onClanPayoutChange
   } = useEconomyTable();
 
   return (
@@ -41,6 +44,7 @@ export const EconomyTable = () => {
           onChange={onAccountChange}
         />
         <Switch checked={reserve} label={t('reserve')} onCheckedChange={onReserveChange} />
+        <Switch checked={clanPayout} label={t('clanPayout', { percent: clanPayoutPercent })} onCheckedChange={onClanPayoutChange} />
       </div>
       {isError ? (
         <ErrorState description={t('errorDescription')} isRetrying={isFetching} title={t('errorTitle')} onRetry={onRetry} />

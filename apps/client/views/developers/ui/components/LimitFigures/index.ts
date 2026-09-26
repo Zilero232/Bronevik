@@ -1,1 +1,0 @@
-export { LimitFigures } from './LimitFigures';

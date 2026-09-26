@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 
-import { ReferenceModule } from '../reference';
+import { AnalyticsCoreModule } from '../analytics';
+import { ReferenceCoreModule } from '../reference';
 import { TelegramCoreModule } from '../telegram';
 import { NotificationsProducerModule } from './notifications-producer.module';
 import { DeliverProcessor, NotificationEventsProcessor, NotificationSchedulesService } from './processors';
 import {
   DeliveryService,
   EmailService,
+  FirstWinRemindersService,
   MarksWatchService,
   SessionReportsService,
   ThresholdDropsService,
@@ -15,10 +17,11 @@ import {
 } from './services';
 
 @Module({
-  imports: [NotificationsProducerModule, TelegramCoreModule, ReferenceModule],
+  imports: [NotificationsProducerModule, TelegramCoreModule, ReferenceCoreModule, AnalyticsCoreModule],
   providers: [
     DeliveryService,
     EmailService,
+    FirstWinRemindersService,
     WebPushService,
     MarksWatchService,
     SessionReportsService,

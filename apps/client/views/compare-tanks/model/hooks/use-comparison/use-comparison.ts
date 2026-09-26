@@ -4,7 +4,7 @@ import type { QueryFunctionContext } from '@tanstack/react-query';
 
 import { keepPreviousData, useQueries, useQuery } from '@tanstack/react-query';
 
-import { compareTanks, getTank } from '@/shared/api/tanks';
+import { compareTanks, getTank } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { COMPARE_REQUEST } from '../../../config';
@@ -24,7 +24,7 @@ export const useComparison = () => {
     isError,
     refetch
   } = useQuery({
-    queryKey: QUERY_KEYS.compareTanks(ids),
+    queryKey: QUERY_KEYS.compare.tanks(ids),
     queryFn: ({ signal }) => compareTanks({ tankIds: ids, signal }),
     enabled: ids.length > 0,
     placeholderData: keepPreviousData

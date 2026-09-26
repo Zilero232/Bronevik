@@ -44,5 +44,8 @@ export const EVENT_ICS = {
   defaultDuration: { days: 1 },
   timeType: 'utc',
   contentType: 'text/calendar; charset=utf-8',
-  cacheControl: 'public, max-age=1800'
+  cacheControl: 'public, max-age=1800',
+  lineOctets: 75,
+  lineBreak: '\r\n',
+  continuation: ' '
 } as const;

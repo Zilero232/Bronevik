@@ -49,7 +49,15 @@
     "regular": "Tech tree",
     "actionsLabel": "Vehicle actions",
     "build": "Build constructor",
-    "compare": "Compare"
+    "compare": "Compare",
+    "breadcrumbLabel": "Breadcrumbs",
+    "crumbTanks": "Tanks",
+    "crumbTier": "Tier {tier}",
+    "figures": {
+      "winRate": "Win rate",
+      "avgDamage": "Avg damage",
+      "mark3": "3 marks"
+    }
   },
   "params": {
     "title": "Specifications",
@@ -145,7 +153,9 @@
     "caption": "Best players on {name}",
     "player": "Player",
     "battlesColumn": "Battles",
-    "emptyTitle": "The leaderboard is empty"
+    "emptyTitle": "The leaderboard is empty",
+    "podiumLabel": "Top three",
+    "battles": "{battles} battles"
   },
   "builds": {
     "title": "How to build",
@@ -260,6 +270,49 @@
     "xp": "{value} XP",
     "offers": "Shop offers: {count}",
     "news": "Mentioned in news",
+    "missions": {
+      "title": "Personal missions",
+      "campaign": "Campaign “{name}”",
+      "operation": "Operation “{name}”",
+      "campaignReward": "campaign reward",
+      "unnamed": "untitled"
+    },
+    "editorial": {
+      "title": "Where it is given",
+      "event": "Event:",
+      "mission": "Open the personal-mission operation",
+      "since": "from {date}",
+      "until": "until {date}",
+      "kinds": {
+        "personalMissions": "Personal missions",
+        "event": "Event",
+        "battlePass": "Battle pass",
+        "bonds": "Bonds",
+        "workshop": "Workshop",
+        "shop": "Shop",
+        "lootboxes": "Containers",
+        "clanWars": "Clan battles",
+        "other": "Other"
+      }
+    },
+    "returnAlert": {
+      "label": "Tell me when it is back in the shop",
+      "hint": "We will notify you as soon as the tank is on sale again",
+      "signIn": "Sign in to learn when the tank is back in the shop",
+      "enabled": "We will tell you when the tank is back",
+      "disabled": "No longer watching for the tank’s return",
+      "limit": "You have reached the limit of watched tanks",
+      "failed": "Could not save the alert"
+    },
     "note": "From the game files and our shop offer history."
+  },
+  "nav": {
+    "label": "Tank page sections",
+    "overview": "Overview",
+    "stats": "Stats",
+    "marks": "Marks",
+    "builds": "Build",
+    "players": "Players",
+    "patches": "Changes"
   }
 }

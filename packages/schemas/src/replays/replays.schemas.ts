@@ -53,6 +53,7 @@ export const replaySummarySchema = z.object({
   players: z.array(replayPlayerSchema),
   durationSec: countSchema.nullable(),
   views: countSchema,
+  isOwner: z.boolean(),
   downloadUrl: z.url().nullable(),
   createdAt: isoDateTimeSchema
 });

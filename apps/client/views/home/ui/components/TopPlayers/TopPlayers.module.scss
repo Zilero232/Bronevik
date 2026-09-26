@@ -1,19 +1,28 @@
 @use '@/shared/styles/mixins' as *;
 
-.footer {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  gap: var(--space-4);
+.root {
+  @include shell;
+  @include stack(var(--space-5));
 }
 
-.more {
-  color: var(--color-steel);
-  font-size: var(--text-sm);
-  text-decoration: none;
+.podium {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-5);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
 
-  &:hover {
-    color: var(--color-text);
+  @include below(3xl) {
+    grid-template-columns: minmax(0, 1fr);
   }
+}
+
+.place {
+  display: grid;
+  min-width: 0;
+}
+
+.skeleton {
+  border-radius: var(--radius-lg);
 }

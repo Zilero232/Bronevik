@@ -1,4 +1,4 @@
-import type { TournamentStatus } from '@/shared/api/tournaments';
+import type { TournamentStatus } from '@/entities/tournament/tournament';
 
 export type TournamentStatusBadgeProps = {
   status: TournamentStatus;

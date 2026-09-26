@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { PlatoonFilters } from '../platoon-query.types';
 
-import { hasActiveFilters, isPlatoonMode, localToIso, nextSingleTier, toPlatoonQuery, toWn8Bound } from '../platoon-query';
+import { hasActiveFilters, isPlatoonMode, nextSingleTier, toPlatoonQuery, toWn8Bound } from '../platoon-query';
 
 const NONE: PlatoonFilters = { tier: null, mode: null, voice: 'any', minWn8: null, maxWn8: null, at: null };
 
@@ -20,8 +20,8 @@ describe('toPlatoonQuery', () => {
     expect(toPlatoonQuery({ ...NONE, voice: 'no' }).hasVoice).toBe('false');
   });
 
-  it('converts the local availability time to an ISO instant', () => {
-    expect(toPlatoonQuery({ ...NONE, at: '2026-09-26T20:30' }).availableAt).toBe(new Date('2026-09-26T20:30').toISOString());
+  it('converts the Moscow availability time to an ISO instant', () => {
+    expect(toPlatoonQuery({ ...NONE, at: '2026-09-26T20:30' }).availableAt).toBe('2026-09-26T17:30:00.000Z');
   });
 
   it('ignores an unparsable availability time', () => {
@@ -30,13 +30,6 @@ describe('toPlatoonQuery', () => {
 
   it('passes tier and mode through', () => {
     expect(toPlatoonQuery({ ...NONE, tier: 10, mode: 'random' })).toEqual({ tier: 10, mode: 'random' });
-  });
-});
-
-describe('localToIso', () => {
-  it('treats an empty value as unset', () => {
-    expect(localToIso('')).toBeUndefined();
-    expect(localToIso(null)).toBeUndefined();
   });
 });
 

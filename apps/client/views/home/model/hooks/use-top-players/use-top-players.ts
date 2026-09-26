@@ -3,7 +3,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { getLeaderboard } from '@/shared/api/leaderboards';
+import { getLeaderboard } from '@/entities/player/leaderboard';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { TopPlayersMetric } from './use-top-players.types';
@@ -21,5 +21,15 @@ export const useTopPlayers = () => {
     placeholderData: keepPreviousData
   });
 
-  return { metric, setMetric, entries: data?.entries ?? [], isPending, isError, retry: () => void refetch() };
+  const entries = data?.entries ?? [];
+
+  return {
+    metric,
+    setMetric,
+    podium: entries.slice(0, HOME.topPlayers.podium),
+    rest: entries.slice(HOME.topPlayers.podium),
+    isPending,
+    isError,
+    retry: () => void refetch()
+  };
 };

@@ -17,7 +17,7 @@ export const OperationHeader = ({ data, totals }: OperationHeaderProps) => {
   return (
     <PageHeader
       aside={operation.reward && <TankImage isDecorative className={s.render} size='big' tank={vehicleIdentity(operation.reward)} />}
-      breadcrumbs={[{ label: t('hub.title'), href: ROUTES.missions }, { label: campaignName }, { label: operation.name }]}
+      breadcrumbs={[{ label: t('hub.title'), href: ROUTES.missions.hub }, { label: campaignName }, { label: operation.name }]}
       description={operation.description}
       title={operation.name}
     >

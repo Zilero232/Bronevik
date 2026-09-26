@@ -17,7 +17,7 @@ export const TierCard = ({ entry }: TierCardProps) => {
 
   return (
     <li className={s.root}>
-      <Link className={s.link} href={ROUTES.tank(vehicle.slug)} title={vehicle.name}>
+      <Link className={s.link} href={ROUTES.tanks.detail(vehicle.slug)} title={vehicle.name}>
         <TankImage isDecorative size='small' tank={vehicleIdentity(vehicle)} />
         <span className={s.name} data-premium={vehicle.isPremium}>
           {vehicle.shortName}

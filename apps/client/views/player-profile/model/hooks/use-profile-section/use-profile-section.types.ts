@@ -1,4 +1,4 @@
-import type { PlayerSection } from '@/shared/constants/query-keys.types';
+import type { PlayerSection } from '@/shared/constants';
 
 export type SectionFetchInput = {
   accountId: number;

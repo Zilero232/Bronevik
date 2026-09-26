@@ -1,12 +1,13 @@
 import { createFormatter } from 'next-intl';
 
 import type { Locale } from '@/shared/i18n';
+import type { OgMetric } from '@/shared/seo/og';
 
 import { ratingValueTone, winRateTone } from '@/entities/player/stats';
 import { FORMATS, TIME_ZONE } from '@/shared/i18n';
 import { OG_COLORS, OG_TONES } from '@/shared/seo/og';
 
-import type { OgMetric, OrDashInput, PlayerOgMetricsInput, SessionOgDateInput, SessionOgMetricsInput } from './og-metrics.types';
+import type { OrDashInput, PlayerOgMetricsInput, SessionOgDateInput, SessionOgMetricsInput } from './og-metrics.types';
 
 const formatterOf = (locale: Locale) => createFormatter({ locale, formats: FORMATS, timeZone: TIME_ZONE });
 

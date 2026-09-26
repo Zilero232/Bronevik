@@ -18,7 +18,8 @@
       "profile": "Profile",
       "integrations": "Integrations",
       "overlays": "Overlays",
-      "challenges": "Challenges"
+      "challenges": "Challenges",
+      "settings": "Game settings"
     },
     "toast": {
       "saved": "Profile saved",
@@ -30,7 +31,9 @@
       "overlayRemoved": "Overlay deleted",
       "challengeCreated": "Challenge created — waiting for a donation with the code",
       "challengeActivated": "Challenge started",
-      "challengeCancelled": "Challenge cancelled"
+      "challengeCancelled": "Challenge cancelled",
+      "settingsSaved": "Settings saved",
+      "channelInvalid": "The server rejected a channel link — check the address"
     }
   },
   "profile": {
@@ -42,21 +45,6 @@
     "bio": "About",
     "bioPlaceholder": "What you play, when you stream, what chat can expect",
     "bioCount": "{count} of {max}",
-    "links": "Channels and links",
-    "link": {
-      "twitch": "Twitch",
-      "vk": "VK Video Live",
-      "youtube": "YouTube",
-      "telegram": "Telegram",
-      "boosty": "Boosty"
-    },
-    "linkPlaceholder": {
-      "twitch": "https://twitch.tv/…",
-      "vk": "https://live.vkvideo.ru/…",
-      "youtube": "https://youtube.com/@…",
-      "telegram": "https://t.me/…",
-      "boosty": "https://boosty.to/…"
-    },
     "account": "Tanks account",
     "accountNone": "Don't show stats",
     "accountHint": "This account's stats appear on your page and in overlays. Link an account on the Overview tab.",
@@ -67,7 +55,29 @@
       "slugTaken": "That address is taken — pick another one",
       "displayName": "2 to 64 characters",
       "bio": "No longer than {max} characters",
-      "link": "Use a link like https://…"
+      "link": "Use a {platform} channel link like https://…",
+      "host": "This is not a {platform} link"
+    },
+    "channels": "Channels and links",
+    "channelsHint": "One link per platform. Channels confirmed through an integration are marked.",
+    "verified": "verified",
+    "platform": {
+      "twitch": "Twitch",
+      "vkVideoLive": "VK Video Live",
+      "youtube": "YouTube",
+      "trovo": "Trovo",
+      "telegram": "Telegram",
+      "boosty": "Boosty",
+      "vk": "VK"
+    },
+    "channelPlaceholder": {
+      "twitch": "https://twitch.tv/…",
+      "vkVideoLive": "https://live.vkvideo.ru/…",
+      "youtube": "https://youtube.com/@…",
+      "trovo": "https://trovo.live/s/…",
+      "telegram": "https://t.me/…",
+      "boosty": "https://boosty.to/…",
+      "vk": "https://vk.com/…"
     }
   },
   "integrations": {
@@ -112,7 +122,11 @@
       "steel": "Steel",
       "tracer": "Tracer",
       "minimal": "Minimal",
-      "transparent": "Transparent"
+      "transparent": "Transparent",
+      "armor": "Armor",
+      "hud": "HUD",
+      "brass": "Brass",
+      "night": "Night"
     },
     "layout": {
       "row": "Row",
@@ -165,7 +179,9 @@
       }
     },
     "paused": "Paused",
-    "pausedHint": "This overlay is over the free limit and paused: its link shows a neutral placeholder. It runs again with Plus or once you are back to two overlays."
+    "pausedHint": "This overlay is over the free limit and paused: its link shows a neutral placeholder. It runs again with Plus or once you are back to two overlays.",
+    "premiumThemes": "Plus themes",
+    "premiumThemesHint": "Available with Plus; Brass and Night are unlocked with shells in Cosmetics."
   },
   "challenges": {
     "description": "A viewer donates with a code, the mod checks the battle, the result goes to chat and the overlay.",
@@ -321,5 +337,46 @@
     "errorTitle": "Streamer page unavailable",
     "errorDescription": "Couldn't load the data. Please try again.",
     "retry": "Retry"
+  },
+  "settings": {
+    "description": "The client settings you play with: graphics, camera, sensitivity, zoom, sight, markers, sound, hardware and mods. Viewers see them on your settings page.",
+    "updated": "updated {date}",
+    "neverUpdated": "not filled in yet",
+    "applyNote": "Viewers can apply your settings through the mod in the hangar. The mod leaves screen resolution and sensitivity alone unless the viewer turns them on.",
+    "importedNote": "Values from preferences.xml are in the form — review them and save.",
+    "save": "Save settings",
+    "publicLink": "Open the settings page",
+    "unset": "Not set",
+    "range": "{min} to {max}",
+    "errors": {
+      "invalid": "Check this value"
+    },
+    "noProfile": {
+      "title": "Create your profile first",
+      "description": "Settings are published on your streamer page. Fill in the profile — page address and name — and come back here.",
+      "action": "Go to profile"
+    },
+    "mod": {
+      "title": "Import from the game",
+      "description": "The Three Marks mod reads your settings straight from the client and sends them to your profile — no files, no copying.",
+      "steps": {
+        "bind": "Install the mod and bind it in your account.",
+        "share": "In the hangar, open the mod window and press «Share settings».",
+        "target": "Choose «my profile» — the settings show up here marked «from the game via the mod»."
+      },
+      "hint": "The mod never sends your login, tokens or account data.",
+      "bind": "Bind the mod"
+    },
+    "xml": {
+      "title": "Import preferences.xml",
+      "description": "Pick the client settings file. It usually lives here:",
+      "privacy": "The file is read only in your browser and is never uploaded. We take graphics, camera and sensitivity values only; login, tokens and encoded sections are skipped.",
+      "pick": "Choose file",
+      "invalid": "Could not read the file. Pick preferences.xml from the client folder.",
+      "empty": "No known settings found in the file.",
+      "found": "{count, plural, one {Found # value} other {Found # values}}",
+      "apply": "Move into the form",
+      "applied": "Moved into the form: {count}"
+    }
   }
 }

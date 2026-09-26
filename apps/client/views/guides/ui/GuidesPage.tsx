@@ -18,7 +18,7 @@ export const GuidesPage = () => {
     <div className={s.root}>
       <PageHeader
         actions={
-          <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.guideNew}>
+          <Link className={buttonVariants({ size: 'sm' })} href={ROUTES.guides.create}>
             <PenLine size={14} />
             {t('write')}
           </Link>

@@ -1,0 +1,49 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  grid-template-columns: minmax(0, 1fr) auto 220px 140px;
+
+  @include below(xl) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.main {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.title {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-weight: 700;
+  gap: var(--space-2);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.meta {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.date,
+.count {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.count {
+  text-align: right;
+}

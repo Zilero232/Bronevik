@@ -4,6 +4,8 @@ export type { BattlePassValues } from './use-battle-pass-plan';
 export { useCalcState } from './use-calc-state';
 export { useEconomyCalculator } from './use-economy-calculator';
 export type { EconomyValues } from './use-economy-calculator';
+export { useFrontlinePlan } from './use-frontline-plan';
+export type { FrontlineValues } from './use-frontline-plan';
 export { useMoeCalculator } from './use-moe-calculator';
 export type { MoeValues } from './use-moe-calculator';
 export { useMoeProjection } from './use-moe-projection';

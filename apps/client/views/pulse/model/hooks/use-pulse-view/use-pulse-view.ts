@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useFormatter } from 'next-intl';
 
-import { getPulse } from '@/shared/api/pulse';
+import { getPulse } from '@/entities/pulse/pulse';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { PULSE } from '../../../config';

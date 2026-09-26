@@ -2,15 +2,17 @@
 
 import { KeyRound, Send } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
+import { Suspense } from 'react';
 
 import { LestaIdButton } from '@/features/auth/lesta-link';
-import { getLinkedAccounts } from '@/shared/api/me';
+import { getLinkedAccounts } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
 import { Badge, Skeleton } from '@/ui-kit';
 
 import { useMeSection } from '../../../model/hooks';
 import { MeCard } from '../MeCard';
 import { SectionError } from '../SectionError';
+import { LestaLinkError } from './components';
 
 import s from './LinkedAccountsCard.module.scss';
 
@@ -46,7 +48,10 @@ export const LinkedAccountsCard = () => {
           </li>
         </ul>
       )}
-      <LestaIdButton block callbackPath={ROUTES.me} label={t('linkLesta')} variant='secondary' />
+      <Suspense fallback={null}>
+        <LestaLinkError />
+      </Suspense>
+      <LestaIdButton block callbackPath={ROUTES.account.overview} label={t('linkLesta')} variant='secondary' />
       <p className={s.note}>{t('note')}</p>
     </MeCard>
   );

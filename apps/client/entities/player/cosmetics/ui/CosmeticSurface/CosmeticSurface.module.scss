@@ -1,0 +1,22 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include cosmetic-tone(--banner, data-banner);
+
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+
+  &[data-banner] {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--banner) 22%, transparent) 0%, transparent 70%);
+    box-shadow: inset 3px 0 0 var(--banner);
+  }
+
+  &[data-frame] {
+    @include cosmetic-tone(--frame, data-frame);
+
+    border-color: color-mix(in srgb, var(--frame) 70%, transparent);
+    outline: 1px solid color-mix(in srgb, var(--frame) 25%, transparent);
+    outline-offset: 2px;
+  }
+}

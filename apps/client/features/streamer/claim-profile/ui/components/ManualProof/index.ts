@@ -1,0 +1,1 @@
+export { ManualProof } from './ManualProof';

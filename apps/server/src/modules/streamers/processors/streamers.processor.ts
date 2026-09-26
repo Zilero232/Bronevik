@@ -3,11 +3,15 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { STREAMERS_QUEUE } from '../config';
-import { ChallengeFeedService } from '../services';
+import { ChallengeFeedService, LiveStatusService, SettingsAggregateService } from '../services';
 
 @Processor(STREAMERS_QUEUE.name, { concurrency: 1 })
 export class StreamersProcessor extends WorkerHost {
-  constructor(private readonly feed: ChallengeFeedService) {
+  constructor(
+    private readonly feed: ChallengeFeedService,
+    private readonly live: LiveStatusService,
+    private readonly aggregates: SettingsAggregateService
+  ) {
     super();
   }
 
@@ -15,6 +19,8 @@ export class StreamersProcessor extends WorkerHost {
     return match(job.name)
       .with(STREAMERS_QUEUE.jobs.battleFeed, () => this.feed.run())
       .with(STREAMERS_QUEUE.jobs.expireChallenges, () => this.feed.expire())
+      .with(STREAMERS_QUEUE.jobs.livePoll, () => this.live.poll())
+      .with(STREAMERS_QUEUE.jobs.settingsAggregate, () => this.aggregates.compute())
       .otherwise(() => 0);
   }
 }

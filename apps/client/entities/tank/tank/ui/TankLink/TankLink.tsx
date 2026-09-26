@@ -10,7 +10,7 @@ import { TankCell } from '../TankCell';
 import s from './TankLink.module.scss';
 
 export const TankLink = ({ vehicle, image = 'contour', className }: TankLinkProps) => (
-  <Link className={clsx(s.root, className)} href={ROUTES.tank(vehicle.slug)}>
+  <Link className={clsx(s.root, className)} href={ROUTES.tanks.detail(vehicle.slug)}>
     <TankCell image={image} vehicle={vehicle} />
   </Link>
 );

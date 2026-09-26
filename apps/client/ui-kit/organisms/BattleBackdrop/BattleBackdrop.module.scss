@@ -1,0 +1,36 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include nation-tint(--backdrop-nation);
+
+  position: absolute;
+  z-index: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  inset: 0;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  pointer-events: none;
+
+  &[data-tone='accent'] {
+    color: var(--color-accent);
+  }
+
+  &[data-tone='steel'] {
+    color: var(--tier-mid);
+  }
+
+  &[data-tone='brass'] {
+    color: var(--color-premium);
+  }
+
+  &[data-nation] {
+    color: var(--backdrop-nation);
+  }
+}
+
+.layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}

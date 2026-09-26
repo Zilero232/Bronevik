@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
-import { signInWithMiniApp } from '@/shared/api/telegram';
+import { signInWithMiniApp } from '../../../api';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { TelegramLaunch } from '../../../lib/mini-app-mode';

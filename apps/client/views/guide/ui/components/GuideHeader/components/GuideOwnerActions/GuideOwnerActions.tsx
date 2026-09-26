@@ -28,7 +28,7 @@ export const GuideOwnerActions = ({ guide }: GuideOwnerActionsProps) => {
 
   return (
     <>
-      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.guideEdit(guide.slug)}>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.guides.edit(guide.slug)}>
         <Pencil size={14} />
         {t('edit')}
       </Link>

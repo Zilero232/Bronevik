@@ -21,6 +21,10 @@
   .root[data-winner='true'] & {
     color: var(--color-success);
   }
+
+  .root[data-compare='true'][data-verdict='worse'] & {
+    color: color-mix(in srgb, var(--color-danger) 70%, var(--color-text));
+  }
 }
 
 .unit {
@@ -50,6 +54,15 @@
 .fill {
   position: absolute;
   background: var(--verdict);
+
+  .root[data-compare='true'][data-verdict='worse'] & {
+    background: color-mix(in srgb, var(--color-danger) 55%, var(--color-border));
+  }
+
+  .root[data-compare='true'][data-verdict='same'] & {
+    background: var(--color-text-dim);
+  }
+
   inset: 0;
   transform-origin: left center;
 }

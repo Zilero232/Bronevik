@@ -12,6 +12,7 @@ export const CLAN_SORTS = [
 export const CLAN_RATING = {
   defaultSort: 'wn8',
   pageSize: 25,
+  leaders: 3,
   searchLimit: 8,
   searchDebounceMs: 250
 } as const;

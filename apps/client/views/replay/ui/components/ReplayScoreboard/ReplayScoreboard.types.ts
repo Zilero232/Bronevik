@@ -1,4 +1,4 @@
-import type { Replay } from '@/shared/api/replays';
+import type { Replay } from '@/entities/replay/replay';
 
 export type ReplayScoreboardProps = {
   replay: Replay;

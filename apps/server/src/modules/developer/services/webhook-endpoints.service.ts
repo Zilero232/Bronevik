@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import type { ApplyTierInput, CreateEndpointInput, OwnedKeyInput, UpdateEndpointInput } from '../developer.types';
 
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
-import { PrismaService } from '../../../core';
+import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { API_TIERS, WEBHOOK_DELIVERY, WEBHOOK_EVENT_TO_DB } from '../config';
 import { generateWebhookSecret, resolvesPublicly, toWebhookDelivery, toWebhookEndpoint } from '../lib';
 import { ApiTierService } from './api-tier.service';
@@ -28,17 +28,24 @@ export class WebhookEndpointsService {
   async create({ userId, url, events, filter }: CreateEndpointInput): Promise<CreatedWebhookEndpoint> {
     await this.assertPublic(url);
 
-    const [tier, existing] = await Promise.all([this.tiers.tierFor(userId), this.prisma.webhookEndpoint.count({ where: { userId } })]);
+    const tier = await this.tiers.tierFor(userId);
     const limit = API_TIERS[tier].webhooks;
-
-    if (existing >= limit) {
-      throw new AppConflictException('PLAN_LIMIT_REACHED', `The ${tier} tier allows ${limit} webhook endpoint(s)`, { feature: 'apiLimits', limit });
-    }
-
     const secret = generateWebhookSecret();
 
-    const row = await this.prisma.webhookEndpoint.create({
-      data: { userId, url, secret, events: events.map((event) => WEBHOOK_EVENT_TO_DB[event]), filter }
+    const row = await lockedTransaction({
+      prisma: this.prisma,
+      scope: LIMIT_LOCK_SCOPE.webhooks,
+      key: userId,
+      run: async (tx) => {
+        if ((await tx.webhookEndpoint.count({ where: { userId } })) >= limit) {
+          throw new AppConflictException('PLAN_LIMIT_REACHED', `The ${tier} tier allows ${limit} webhook endpoint(s)`, {
+            feature: 'apiLimits',
+            limit
+          });
+        }
+
+        return tx.webhookEndpoint.create({ data: { userId, url, secret, events: events.map((event) => WEBHOOK_EVENT_TO_DB[event]), filter } });
+      }
     });
 
     return { endpoint: toWebhookEndpoint(row), secret };

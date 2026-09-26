@@ -85,6 +85,47 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       values: { title: event.title },
       path: NOTIFICATION_LINKS.badges
     }))
+    .with({ event: 'replayOverflow' }, (event) => ({
+      message: 'replay-overflow',
+      values: { stored: event.stored, keep: event.keep, daysLeft: event.daysLeft, deleteAt: event.deleteAt },
+      path: NOTIFICATION_LINKS.replays
+    }))
+    .with({ event: 'firstWinAvailable' }, (event) => ({
+      message: 'first-win-available',
+      values: { nickname: event.nickname, available: event.available },
+      path: NOTIFICATION_LINKS.analytics
+    }))
+    .with({ event: 'watchlistDigest' }, (event) => ({
+      message: 'watchlist-digest',
+      values: {
+        players: event.activePlayers,
+        battles: event.battles,
+        marks: event.marksGained,
+        leader: event.top[0]?.nickname ?? NOTIFICATION_COPY.missing,
+        leaderBattles: event.top[0]?.battles ?? 0,
+        leaderWinRate: event.top[0]?.winRate ?? 0
+      },
+      path: NOTIFICATION_LINKS.watchlist
+    }))
+    .with({ event: 'tankReturned' }, (event) => ({
+      message: 'tank-returned',
+      values: {
+        tankName: event.tankName,
+        absentDays: event.absentDays ?? NOTIFICATION_COPY.missing,
+        discount: event.discountPercent ?? NOTIFICATION_COPY.missing
+      },
+      path: `${NOTIFICATION_LINKS.tank}/${event.tankId}`
+    }))
+    .with({ event: 'streamerLive' }, (event) => ({
+      message: event.tankName ? 'streamer-live-tank' : 'streamer-live',
+      values: { name: event.displayName, platform: event.platform, tankName: event.tankName ?? NOTIFICATION_COPY.missing },
+      path: `${NOTIFICATION_LINKS.streamer}/${encodeURIComponent(event.slug)}`
+    }))
+    .with({ event: 'competitionFinished' }, (event) => ({
+      message: 'competition-finished',
+      values: { title: event.title, teamName: event.teamName, rank: event.rank, teams: event.teams },
+      path: `${NOTIFICATION_LINKS.competitions}/${encodeURIComponent(event.competitionSlug)}`
+    }))
     .exhaustive();
 
 export const renderNotification = ({ notification, locale, webUrl }: RenderNotificationInput): RenderedNotification => {

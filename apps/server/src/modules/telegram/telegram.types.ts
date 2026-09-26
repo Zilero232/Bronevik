@@ -1,4 +1,5 @@
 import type { I18nFlavor } from '@grammyjs/i18n';
+import type { PlaylistItem, PlaylistReason } from '@otmetki/schemas';
 import type { Context } from 'grammy';
 
 import type { NotificationChannel, NotificationEvent, NotificationSettings, Prisma } from '../../../generated';
@@ -181,4 +182,10 @@ export type ToggleEventInput = {
 export type SaveSettingsInput = {
   userId: string;
   data: Partial<SettingsSnapshot>;
+};
+
+export type PlaylistReasonInput = {
+  ctx: BotContext;
+  item: PlaylistItem;
+  reason: PlaylistReason;
 };

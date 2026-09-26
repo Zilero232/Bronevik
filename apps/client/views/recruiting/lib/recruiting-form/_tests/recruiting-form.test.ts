@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { zCreateRecruiting } from '@/shared/api/recruiting';
+import { zCreateRecruiting } from '../../../api';
 
 import { recruitingFormSchema, toCreateRecruiting } from '..';
 import { RECRUITING_FORM_DEFAULTS } from '../../../config';

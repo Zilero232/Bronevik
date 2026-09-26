@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 
 import { Button, Card, CardHeader, DataTable, EmptyState, ErrorState, Select } from '@/ui-kit';
 
@@ -13,11 +14,12 @@ import s from './ClanRating.module.scss';
 
 export const ClanRating = () => {
   const t = useTranslations('clans.rating');
+  const titleId = useId();
   const { sort, setSort, items, total, isPending, isError, isRetrying, hasNextPage, isFetchingNextPage, loadMore, retry } = useClanRating();
   const columns = useClanColumns();
 
   return (
-    <Card aria-labelledby='clan-rating-title' padding='none'>
+    <Card aria-labelledby={titleId} padding='none'>
       <CardHeader
         action={
           <Select<ClanSort>
@@ -28,7 +30,7 @@ export const ClanRating = () => {
             onValueChange={(next) => void setSort(next)}
           />
         }
-        title={<span id='clan-rating-title'>{t('title')}</span>}
+        title={<span id={titleId}>{t('title')}</span>}
       />
       {isError && items.length === 0 ? (
         <ErrorState isCompact description={t('errorDescription')} isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />

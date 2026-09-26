@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { countSchema, isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
+import { countSchema, httpsUrlSchema, isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { INBOX } from './notifications.constants';
 
 export const notificationChannelSchema = z.enum(['telegram', 'email', 'web_push', 'site']);
@@ -19,7 +19,13 @@ export const notificationEventSchema = z
     'tank_changed',
     'goal_reached',
     'badge_awarded',
-    'challenge_resolved'
+    'challenge_resolved',
+    'watchlist_digest',
+    'tank_returned',
+    'competition_finished',
+    'first_win_available',
+    'replay_overflow',
+    'streamer_live'
   ])
   .describe('Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list');
 
@@ -72,7 +78,7 @@ export const pushKeySchema = z.object({
 });
 
 export const pushSubscriptionSchema = z.object({
-  endpoint: z.url().max(2048),
+  endpoint: httpsUrlSchema,
   keys: z.object({ p256dh: z.string().min(1).max(512), auth: z.string().min(1).max(512) })
 });
 

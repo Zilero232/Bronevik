@@ -1,4 +1,4 @@
-import type { RecruitingPost } from '@/shared/api/recruiting';
+import type { RecruitingPost } from '../../../../../api';
 
 export type RecruitingCardProps = {
   post: RecruitingPost;

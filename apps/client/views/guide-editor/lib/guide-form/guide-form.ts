@@ -1,4 +1,4 @@
-import type { CreateGuide } from '@/shared/api/guides';
+import type { CreateGuide } from '@/entities/guide/guide';
 
 import type { GuideFormLocale, GuideFormOutput, GuideFormValues, ToGuideFormValuesInput } from './guide-form.types';
 

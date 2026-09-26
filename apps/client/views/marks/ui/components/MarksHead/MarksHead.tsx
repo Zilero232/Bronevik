@@ -1,12 +1,12 @@
 'use client';
 
+import { MarkOfExcellenceIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { KeyFigure, KeyFigures, PageHeader } from '@/ui-kit';
+import { ROUTES } from '@/shared/constants';
+import { KeyFigure, PageHero, Skeleton } from '@/ui-kit';
 
 import type { MarksHeadProps } from './MarksHead.types';
-
-import { TextFigure } from './components';
 
 import s from './MarksHead.module.scss';
 
@@ -17,12 +17,18 @@ export const MarksHead = ({ total, updatedAt, isLoading }: MarksHeadProps) => {
   const updated = updatedAt ? format.dateTime(new Date(updatedAt), { dateStyle: 'medium' }) : t('updatedUnknown');
 
   return (
-    <PageHeader description={t('lead', { date: updated })} title={t('title')}>
-      <KeyFigures className={s.figures}>
-        <KeyFigure label={t('tracked')} value={isLoading ? null : total} />
-        <TextFigure isLoading={isLoading} label={t('updated')} value={updated} />
-        <TextFigure label={t('window')} value={t('windowValue')} />
-      </KeyFigures>
-    </PageHeader>
+    <PageHero
+      figures={
+        <>
+          <KeyFigure className={s.figure} label={t('tracked')} size='xl' value={isLoading ? null : total} />
+          <KeyFigure className={s.figure} label={t('updated')} value={isLoading ? <Skeleton height={24} width={96} /> : updated} />
+          <KeyFigure className={s.figure} label={t('window')} value={t('windowValue')} />
+        </>
+      }
+      art={{ kind: 'emblem', glyph: <MarkOfExcellenceIcon marks={3} size={480} /> }}
+      breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t('title') }]}
+      lead={t('lead', { date: updated })}
+      title={t('title')}
+    />
   );
 };

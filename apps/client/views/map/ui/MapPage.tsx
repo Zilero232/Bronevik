@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 
 import { ROUTES } from '@/shared/constants';
+import { useRouteParam } from '@/shared/lib';
 import { DataSourceNote } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
@@ -14,8 +14,7 @@ import s from './MapPage.module.scss';
 
 export const MapPage = () => {
   const t = useTranslations('maps.missing');
-  const { id } = useParams<{ id: string }>();
-  const mapId = decodeURIComponent(id);
+  const mapId = useRouteParam('id');
   const query = useMapDetail(mapId);
 
   return (

@@ -16,6 +16,11 @@ export const STATUS_TO_CODE: Partial<Record<number, ApiErrorCode>> = {
   [HttpStatus.SERVICE_UNAVAILABLE]: 'LESTA_UNAVAILABLE'
 };
 
+export const MOD_REPLY = {
+  pathPrefix: '/mod/',
+  serverTimeHeader: 'x-otmetki-server-time'
+} as const;
+
 export const STATUS_TO_MOD_ERROR: Partial<Record<number, ModErrorCode>> = {
   [HttpStatus.BAD_REQUEST]: 'invalid_payload',
   [HttpStatus.UNAUTHORIZED]: 'unknown_device',

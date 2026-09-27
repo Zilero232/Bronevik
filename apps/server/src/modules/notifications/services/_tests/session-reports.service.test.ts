@@ -46,4 +46,14 @@ describe('SessionReportsService', () => {
     expect(await service.run()).toBe(0);
     expect(notifications.notifyMany).not.toHaveBeenCalled();
   });
+
+  it('reports only live mod sessions, never the api day rollup of the same play', async () => {
+    const { service, prisma } = createService();
+
+    prisma.playSession.updateMany.mockResolvedValue({ count: 1 });
+
+    await service.run();
+
+    expect(prisma.playSession.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ source: 'mod', kind: 'live' });
+  });
 });

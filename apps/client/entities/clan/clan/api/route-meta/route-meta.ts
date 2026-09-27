@@ -1,13 +1,13 @@
 import type { RouteStaticParamsInput } from '@/shared/seo';
 
-import { ROUTE_STATIC_PARAMS, routeEntity, routeSlugs } from '@/shared/seo';
+import { lookupRouteEntity, ROUTE_STATIC_PARAMS, routeEntity, routeSlugs } from '@/shared/seo';
 
 import { getClan, listClans } from '../clans';
 
-export const clanRouteEntity = async (idOrTag: string) => {
+const lookupClan = async (idOrTag: string) => {
   'use cache';
 
-  return routeEntity({
+  return lookupRouteEntity({
     key: idOrTag,
     load: async () => {
       const { clan } = await getClan({ idOrTag });
@@ -16,6 +16,8 @@ export const clanRouteEntity = async (idOrTag: string) => {
     }
   });
 };
+
+export const clanRouteEntity = async (idOrTag: string) => routeEntity({ key: idOrTag, lookup: lookupClan });
 
 export const topClanTags = async ({ fallback, limit = ROUTE_STATIC_PARAMS.limit }: RouteStaticParamsInput) => {
   'use cache';

@@ -1,7 +1,7 @@
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Ip, Param, Post, Req, Res } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
@@ -36,8 +36,8 @@ export class ModController {
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: BindRequestDto })
   @ZodResponse({ type: BindResponseDto })
-  bind(@Body() body: unknown) {
-    return this.binding.bind(body);
+  bind(@Body() body: unknown, @Ip() requester: string) {
+    return this.binding.bind({ body, requester });
   }
 
   @AllowAnonymous()

@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { MyBattlePage } from '@/views/my-battle';
 
@@ -19,7 +20,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/me/battl
   return createPageMetadata({
     title: t('title'),
     description: t('description'),
-    path: ROUTES.account.battle(decodeURIComponent(id)),
+    path: ROUTES.account.battle(decodeRouteParam(id)),
     locale,
     index: false,
     follow: false
@@ -29,7 +30,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/me/battl
 const BattleRoute = async ({ params }: Pick<PageProps<'/[locale]/me/battles/[id]'>, 'params'>) => {
   const { id } = await params;
 
-  return <MyBattlePage id={decodeURIComponent(id)} />;
+  return <MyBattlePage id={decodeRouteParam(id)} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/me/battles/[id]'>) => (

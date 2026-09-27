@@ -60,4 +60,14 @@ describe('SessionCloseService.closeIdle', () => {
 
     expect(webhooks.emit).not.toHaveBeenCalled();
   });
+
+  it('never closes or announces an api day rollup', async () => {
+    const { service, prisma } = createService();
+
+    prisma.playSession.findMany.mockResolvedValue([]);
+
+    await service.closeIdle();
+
+    expect(prisma.playSession.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ kind: 'live' });
+  });
 });

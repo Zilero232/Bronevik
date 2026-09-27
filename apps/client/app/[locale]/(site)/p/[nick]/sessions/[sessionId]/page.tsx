@@ -6,13 +6,14 @@ import { Suspense } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { PlayerSessionPage } from '@/views/player-session';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
   const { nick, sessionId } = await params;
-  const nickname = decodeURIComponent(nick);
+  const nickname = decodeRouteParam(nick);
   const t = await getTranslations({ locale, namespace: 'profile.sessions.meta' });
 
   return createPageMetadata({
@@ -27,7 +28,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]
 const SessionRoute = async ({ params }: Pick<PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>, 'params'>) => {
   const { nick, sessionId } = await params;
 
-  return <PlayerSessionPage nickname={decodeURIComponent(nick)} sessionId={sessionId} />;
+  return <PlayerSessionPage nickname={decodeRouteParam(nick)} sessionId={sessionId} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>) => (

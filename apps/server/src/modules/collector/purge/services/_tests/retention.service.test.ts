@@ -48,4 +48,14 @@ describe('RetentionService.purgeExpired', () => {
 
     expect(statement).toContain("status <> 'pending'");
   });
+
+  it('keeps the latest percentile row of every tank however stale, so the references never empty out', async () => {
+    const { prisma, retention } = createRetention();
+
+    await retention.purgeExpired(now);
+
+    const statement = prisma.$executeRawUnsafe.mock.calls.map(([sql]) => sql).find((sql) => sql.startsWith('DELETE FROM tank_percentile'));
+
+    expect(statement).toMatch(/date < \(SELECT max\(latest\.date\) FROM tank_percentile latest WHERE latest\.tank_id = tank_percentile\.tank_id/u);
+  });
 });

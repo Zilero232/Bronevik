@@ -16,7 +16,7 @@ export class SessionCloseService {
 
   async closeIdle(now = new Date()): Promise<number> {
     const sessions = await this.prisma.playSession.findMany({
-      where: { status: 'open', lastActivityAt: { lt: subMinutes(now, SESSION_CLOSE.idleMinutes) } },
+      where: { kind: 'live', status: 'open', lastActivityAt: { lt: subMinutes(now, SESSION_CLOSE.idleMinutes) } },
       orderBy: { lastActivityAt: 'asc' },
       take: SESSION_CLOSE.batchSize,
       include: { player: { select: { clanId: true, nickname: true } } }

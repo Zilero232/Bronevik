@@ -2,15 +2,17 @@ import type { RouteStaticParamsInput } from '@/shared/seo';
 
 import { streamersControllerList } from '@/shared/api/generated';
 import { fromSdk } from '@/shared/api/source';
-import { ROUTE_STATIC_PARAMS, routeEntity, routeSlugs } from '@/shared/seo';
+import { lookupRouteEntity, ROUTE_STATIC_PARAMS, routeEntity, routeSlugs } from '@/shared/seo';
 
 import { getStreamerBySlug } from '../streamers';
 
-export const streamerRouteEntity = async (slug: string) => {
+const lookupStreamer = async (slug: string) => {
   'use cache';
 
-  return routeEntity({ key: slug, load: async () => (await getStreamerBySlug(slug)).displayName });
+  return lookupRouteEntity({ key: slug, load: async () => (await getStreamerBySlug(slug)).displayName });
 };
+
+export const streamerRouteEntity = async (slug: string) => routeEntity({ key: slug, lookup: lookupStreamer });
 
 export const streamerSlugs = async ({ limit = ROUTE_STATIC_PARAMS.limit }: RouteStaticParamsInput) => {
   'use cache';

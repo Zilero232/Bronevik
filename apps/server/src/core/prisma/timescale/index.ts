@@ -1,2 +1,2 @@
 export { buildTimescaleStatements } from './timescale';
-export { HYPERTABLE } from './timescale.constants';
+export { CONTINUOUS_AGGREGATE_SOURCES, HYPERTABLE } from './timescale.constants';

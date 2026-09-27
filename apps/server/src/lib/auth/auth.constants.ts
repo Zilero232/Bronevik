@@ -30,8 +30,10 @@ export const AUTH_RATE_LIMIT = {
   prefix: 'otmetki:auth:rate:',
   window: 60,
   max: 300,
-  signIn: { window: 60, max: 10 },
-  signInPaths: ['/lesta/*', '/telegram/*', '/vk/*', '/sign-in/*', '/magic-link/*', '/callback/*', '/link-social']
+  callback: { window: 60, max: 60 },
+  callbackPaths: ['/lesta/callback', '/callback/*'],
+  signIn: { window: 60, max: 30 },
+  signInPaths: ['/lesta/*', '/telegram/*', '/vk/*', '/sign-in/*', '/magic-link/*', '/link-social']
 } as const;
 
 export const VK_MINI_APP_AUTH = {

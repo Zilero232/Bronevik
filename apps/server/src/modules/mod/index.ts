@@ -1,4 +1,4 @@
-export { MOD_DEVICE } from './config';
+export { BATTLE_CORROBORATION, MOD_DEVICE } from './config';
 export { readStoredLoadout, sessionIncrement, sessionUuid } from './lib';
 export type { BattleResultEvent, StoredLoadout } from './lib';
 export { toBattleData } from './mappers';

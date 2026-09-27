@@ -1,7 +1,8 @@
 import RedisMock from 'ioredis-mock';
 import { describe, expect, it } from 'vitest';
 
-import { redisRateLimit } from '../rate-limit';
+import { AUTH_RATE_LIMIT } from '../../auth.constants';
+import { authRateLimitRules, redisRateLimit } from '../rate-limit';
 
 const RULE = { window: 60, max: 3 };
 
@@ -36,5 +37,25 @@ describe('redisRateLimit', () => {
     }
 
     await expect(storage.consume('two|/vk/mini-app', RULE)).resolves.toEqual({ allowed: true, retryAfter: null });
+  });
+});
+
+describe('authRateLimitRules', () => {
+  const ruleFor = (path: string) => {
+    const rules = authRateLimitRules();
+    const key = Object.keys(rules).find((pattern) => (pattern.endsWith('/*') ? path.startsWith(pattern.slice(0, -1)) : pattern === path));
+
+    return key ? rules[key] : undefined;
+  };
+
+  it('gives OAuth callbacks their own looser rule ahead of the sign-in wildcards', () => {
+    expect(ruleFor('/lesta/callback')).toEqual(AUTH_RATE_LIMIT.callback);
+    expect(ruleFor('/callback/vk')).toEqual(AUTH_RATE_LIMIT.callback);
+    expect(AUTH_RATE_LIMIT.callback.max).toBeGreaterThanOrEqual(AUTH_RATE_LIMIT.signIn.max);
+  });
+
+  it('keeps the sign-in starts on the sign-in rule', () => {
+    expect(ruleFor('/lesta/start')).toEqual(AUTH_RATE_LIMIT.signIn);
+    expect(ruleFor('/link-social')).toEqual(AUTH_RATE_LIMIT.signIn);
   });
 });

@@ -1,9 +1,11 @@
 import { ImageResponse } from 'next/og';
 
-import { getTank } from '@/entities/tank/tank';
+import { tankOgSource } from '@/entities/tank/tank/server';
 import { SITE } from '@/shared/config/site';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { OG_SIZE } from '@/shared/seo/og';
+import { OG_CACHE } from '@/shared/seo/og-request';
 import { loadOgFonts } from '@/shared/seo/og/server';
 import { EntityOgCard, tankOgCard } from '@/views/entity-og';
 import { FallbackOgCard, ogLabels } from '@/views/player-og';
@@ -21,11 +23,19 @@ const Image = async ({ params }: PageProps<'/[locale]/builds/[tank]'>) => {
   const fonts = await loadOgFonts();
 
   try {
-    const tank = await getTank({ idOrSlug: slug });
+    const tank = await tankOgSource(decodeRouteParam(slug));
 
-    return new ImageResponse(<EntityOgCard {...tankOgCard({ tank, kind: 'build', locale, host })} />, { ...OG_SIZE, fonts });
+    return new ImageResponse(<EntityOgCard {...tankOgCard({ tank, kind: 'build', locale, host })} />, {
+      ...OG_SIZE,
+      fonts,
+      headers: { 'Cache-Control': OG_CACHE.image }
+    });
   } catch {
-    return new ImageResponse(<FallbackOgCard host={host} labels={ogLabels(locale)} />, { ...OG_SIZE, fonts });
+    return new ImageResponse(<FallbackOgCard host={host} labels={ogLabels(locale)} />, {
+      ...OG_SIZE,
+      fonts,
+      headers: { 'Cache-Control': OG_CACHE.missing }
+    });
   }
 };
 

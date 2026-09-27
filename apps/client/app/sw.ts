@@ -7,6 +7,7 @@ import { Serwist } from 'serwist';
 import { z } from 'zod';
 
 import { PWA } from '../shared/config/pwa';
+import { sameOriginCaching } from '../shared/lib/same-origin-caching';
 
 declare global {
   // eslint-disable-next-line ts/consistent-type-definitions -- declaration merging into the worker global scope needs an interface
@@ -58,7 +59,7 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
-  runtimeCaching: defaultCache
+  runtimeCaching: sameOriginCaching(defaultCache)
 });
 
 self.addEventListener('push', (event) => {

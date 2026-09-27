@@ -1,14 +1,16 @@
 import type { RouteStaticParamsInput } from '@/shared/seo';
 
-import { ROUTE_STATIC_PARAMS, routeEntity, routeSlugs } from '@/shared/seo';
+import { lookupRouteEntity, ROUTE_STATIC_PARAMS, routeEntity, routeSlugs } from '@/shared/seo';
 
 import { getTank, listTankStats } from '../tanks';
 
-export const tankRouteEntity = async (idOrSlug: string) => {
+const lookupTank = async (idOrSlug: string) => {
   'use cache';
 
-  return routeEntity({ key: idOrSlug, load: async () => (await getTank({ idOrSlug })).vehicle.name });
+  return lookupRouteEntity({ key: idOrSlug, load: async () => (await getTank({ idOrSlug })).vehicle.name });
 };
+
+export const tankRouteEntity = async (idOrSlug: string) => routeEntity({ key: idOrSlug, lookup: lookupTank });
 
 export const topTankSlugs = async ({ fallback, limit = ROUTE_STATIC_PARAMS.limit }: RouteStaticParamsInput) => {
   'use cache';

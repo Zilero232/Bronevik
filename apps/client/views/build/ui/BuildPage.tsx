@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 
 import { ROUTES } from '@/shared/constants';
+import { useRouteParam } from '@/shared/lib';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { BuildProvider } from '../model/context';
@@ -14,8 +14,7 @@ import s from './BuildPage.module.scss';
 
 export const BuildPage = () => {
   const t = useTranslations('builds.missing');
-  const { tank } = useParams<{ tank: string }>();
-  const slug = decodeURIComponent(tank);
+  const slug = useRouteParam('tank');
   const query = useBuildData(slug);
 
   return (

@@ -54,6 +54,18 @@ describe('PurgeService.purgeAccount', () => {
     expect(prisma.$executeRaw).toHaveBeenCalled();
   });
 
+  it('removes the account id from the honest-rng daily player sets', async () => {
+    const { prisma, purge } = createPurge();
+
+    await purge.purgeAccount({ accountId: 5 });
+
+    const rngUpdates = prisma.$executeRaw.mock.calls.flatMap(([query, ...values]) =>
+      'raw' in query && query.join('').includes('rng_daily') ? [{ sql: query.join('?'), values }] : []
+    );
+
+    expect(rngUpdates).toEqual([{ sql: expect.stringContaining('players = array_remove(players, ?)'), values: [5n, 5n] }]);
+  });
+
   it('marks the request failed and rethrows so the job retries', async () => {
     const { prisma, purge } = createPurge();
 

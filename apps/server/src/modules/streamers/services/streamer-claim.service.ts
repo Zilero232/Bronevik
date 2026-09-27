@@ -239,7 +239,10 @@ export class StreamerClaimService {
   }
 
   private async contested({ target, userId, login }: ContestedClaimInput): Promise<boolean> {
-    const rivals = await this.prisma.streamerClaim.count({ where: { ...this.targetRef(target), userId: { not: userId }, status: 'open' } });
+    const rivals = await this.prisma.streamerClaim.count({
+      where: { ...this.targetRef(target), userId: { not: userId }, status: 'open', method: CLAIM_METHOD_TO_DB.oauth }
+    });
+
     const verifiedElsewhere = await this.prisma.streamerChannel.count({
       where: { platform: 'twitch', handle: login, verifiedAt: { not: null }, ...(target.profile ? { NOT: { profileId: target.profile.id } } : {}) }
     });

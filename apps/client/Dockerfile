@@ -51,6 +51,11 @@ RUN for attempt in 1 2 3; do \
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
+# Salts the service-worker precache revision of the manifest and PWA icons, so
+# a deploy refreshes them even when the package version stays the same.
+ARG GIT_COMMIT_SHA
+ENV GIT_COMMIT_SHA=${GIT_COMMIT_SHA}
+
 # Every workspace package the client imports (directly or through another
 # package) ships TypeScript source that Next compiles in place.
 COPY packages/gamedata ./packages/gamedata

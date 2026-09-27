@@ -6,10 +6,10 @@ import { admin, bearer, customSession, magicLink } from 'better-auth/plugins';
 
 import type { CreateAuthInput } from './auth.types';
 
-import { allowedOrigins, isProduction } from '../../config';
+import { allowedOrigins, isProduction, trustedProxies } from '../../config';
 import { API_KEY_PLUGIN, AUTH_RATE_LIMIT, SESSION } from './auth.constants';
 import { lestaId } from './lesta-id';
-import { redisRateLimit } from './rate-limit';
+import { authRateLimitRules, redisRateLimit } from './rate-limit';
 import { socialProviders } from './social-providers';
 import { telegramLogin } from './telegram-login';
 import { vkMiniApp } from './vk-mini-app';
@@ -29,13 +29,14 @@ export const createAuth = ({ env, prisma, redis, lesta, lestaStore, telegramStor
       user: { delete: { before: async (user) => accountPurge.purgeAccount({ userId: user.id }) } }
     },
     advanced: {
-      database: { generateId: 'uuid' }
+      database: { generateId: 'uuid' },
+      ipAddress: { trustedProxies: trustedProxies(env) }
     },
     rateLimit: {
       enabled: true,
       window: AUTH_RATE_LIMIT.window,
       max: AUTH_RATE_LIMIT.max,
-      customRules: Object.fromEntries(AUTH_RATE_LIMIT.signInPaths.map((path) => [path, AUTH_RATE_LIMIT.signIn])),
+      customRules: authRateLimitRules(),
       customStorage: redisRateLimit({ redis })
     },
     session: {

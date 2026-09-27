@@ -1,7 +1,9 @@
+import type { ExpectedValuesTable } from '@otmetki/ratings';
 import type { Queue } from 'bullmq';
 
 import type { Prisma, TrackingTier } from '../../../../generated';
 import type { LestaClients } from '../../../core';
+import type { GainedMark } from './lib/marks-gain';
 import type { AccountChanges, LatestTankSnapshotsInput } from './lib/poll-pipeline';
 
 export type { PollResult } from './lib/poll-pipeline';
@@ -36,12 +38,15 @@ export type LatestTanksInput = LatestTankSnapshotsInput & {
   tx: Prisma.TransactionClient;
 };
 
-export type WriteAccountChangesInput = AccountChanges & {
+export type AccountStoreInput = {
   tx: Prisma.TransactionClient;
+  expected: ExpectedValuesTable;
+  gained: GainedMark[];
 };
 
-export type RebuildDaySessionInput = {
-  tx: Prisma.TransactionClient;
+export type WriteAccountChangesInput = AccountChanges & AccountStoreInput;
+
+export type RebuildDaySessionInput = Pick<AccountStoreInput, 'expected' | 'tx'> & {
   accountId: bigint;
   at: Date;
 };

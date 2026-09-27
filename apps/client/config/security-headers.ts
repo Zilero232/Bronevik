@@ -86,7 +86,7 @@ export const securityHeaderRules = (input: CspInput) => [
   // The Twitch panel extension renders inside twitch.tv (hosted test) or the ext-twitch.tv CDN frame
   // and loads the extension helper from Twitch's CDN.
   {
-    source: '/twitch-panel',
+    source: '/twitch-panel{/}?',
     headers: frameable({
       ...input,
       ancestors: ["'self'", 'https://*.twitch.tv', 'https://*.ext-twitch.tv'],

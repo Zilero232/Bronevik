@@ -33,6 +33,11 @@ export type AuthenticateInput = {
   rawBody: Buffer | undefined;
 };
 
+export type BindInput = {
+  body: unknown;
+  requester: string;
+};
+
 export type BindCodeInput = BindCodeBody & {
   userId: string;
 };

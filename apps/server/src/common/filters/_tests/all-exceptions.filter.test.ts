@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { Prisma } from '../../../../generated';
 import { LestaHttpError, LestaNetworkError } from '../../../lib/lesta';
 import { AppNotFoundException, ModException } from '../../exceptions';
-import { MOD_CONTRACT_PATHS } from '../all-exceptions.constants';
+import { MOD_CONTRACT_PATHS, MOD_REPLY } from '../all-exceptions.constants';
 import { AllExceptionsFilter } from '../all-exceptions.filter';
 
 const [modPath = ''] = MOD_CONTRACT_PATHS;
@@ -42,7 +42,11 @@ const reply = (exception: unknown, { path = '/players', retryAfter }: { path?: s
 
   new AllExceptionsFilter().catch(exception, host);
 
-  return { status: response.status.mock.calls[0]?.[0], body: response.json.mock.calls[0]?.[0] };
+  return {
+    status: response.status.mock.calls[0]?.[0],
+    body: response.json.mock.calls[0]?.[0],
+    headers: new Map(response.setHeader.mock.calls.map(([name, value]) => [name, value]))
+  };
 };
 
 describe('AllExceptionsFilter on the API', () => {
@@ -132,6 +136,25 @@ describe('AllExceptionsFilter on the mod contract', () => {
 
     expect(status).toBe(HttpStatus.GONE);
     expect(body).toEqual({ error: 'code_expired' });
+  });
+
+  it('tells a mod with a skewed clock the server time so it can re-sign', () => {
+    const { status, headers } = reply(new ModException({ status: HttpStatus.PRECONDITION_REQUIRED, error: 'stale_request' }), { path: modPath });
+
+    expect(status).toBe(HttpStatus.PRECONDITION_REQUIRED);
+    expect(Number(headers.get(MOD_REPLY.serverTimeHeader))).toBeCloseTo(Date.now() / 1000, -1);
+  });
+
+  it('sends the server time on the signed settings routes too', () => {
+    const { headers } = reply(new ModException({ status: HttpStatus.PRECONDITION_REQUIRED, error: 'stale_request' }), {
+      path: '/mod/settings/apply/poll'
+    });
+
+    expect(headers.has(MOD_REPLY.serverTimeHeader)).toBe(true);
+  });
+
+  it('keeps the server time off the site API', () => {
+    expect(reply(new AppNotFoundException('PLAYER_NOT_FOUND', 'No player')).headers.size).toBe(0);
   });
 
   it('translates a regular HTTP error into the mod vocabulary', () => {

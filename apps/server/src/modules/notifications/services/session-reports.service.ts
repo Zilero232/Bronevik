@@ -15,6 +15,8 @@ export class SessionReportsService {
   async run(now = new Date()): Promise<number> {
     const sessions = await this.prisma.playSession.findMany({
       where: {
+        source: 'mod',
+        kind: 'live',
         reportSentAt: null,
         battles: { gt: 0 },
         lastActivityAt: { lt: subMinutes(now, SESSION_REPORT.idleMinutes), gt: subHours(now, SESSION_REPORT.maxAgeHours) }

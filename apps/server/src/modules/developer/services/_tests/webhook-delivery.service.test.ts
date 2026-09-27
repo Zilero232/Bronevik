@@ -104,6 +104,19 @@ describe('WebhookDeliveryService.deliver', () => {
     expect(post).not.toHaveBeenCalled();
   });
 
+  it('closes a pending delivery of a retired event so the redrive stops requeueing it', async () => {
+    const { service, prisma } = createService();
+
+    prisma.webhookDelivery.findUnique.mockResolvedValue({ ...delivery, event: 'moeThresholdDropped' });
+
+    await service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false });
+
+    expect(prisma.webhookDelivery.update).toHaveBeenCalledWith({
+      where: { id: 'delivery' },
+      data: { status: 'failed', responseBody: WEBHOOK_DELIVERY.retiredEventResponse }
+    });
+  });
+
   it('fails a delivery for good when the host now resolves to a private address', async () => {
     const { service, prisma } = createService();
 

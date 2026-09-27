@@ -6,12 +6,13 @@ import { Suspense } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { CompetitionPage } from '@/views/competition';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/competitions/[slug]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
-  const slug = decodeURIComponent((await params).slug);
+  const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'competitions.detailMeta' });
 
   return createPageMetadata({
@@ -27,7 +28,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/competit
 const CompetitionRoute = async ({ params }: Pick<PageProps<'/[locale]/competitions/[slug]'>, 'params'>) => {
   const { slug } = await params;
 
-  return <CompetitionPage slug={decodeURIComponent(slug)} />;
+  return <CompetitionPage slug={decodeRouteParam(slug)} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/competitions/[slug]'>) => (

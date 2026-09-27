@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { allowedOrigins, corsOptionsFor, isPublicCorsPath } from '../cors';
+import { allowedOrigins, corsOptionsFor, guardedOrigins, isPublicCorsPath } from '../cors';
 
 const origins = ['https://triotmetki.ru'];
 
@@ -48,5 +48,17 @@ describe('allowedOrigins', () => {
 
   it('skips a site URL that is not a URL instead of allowing it verbatim', () => {
     expect(allowedOrigins({ WEB_URL: 'not a url', CORS_ORIGINS: 'https://a.test' })).toEqual(['https://a.test']);
+  });
+});
+
+describe('guardedOrigins', () => {
+  const env = { API_URL: 'https://api.triotmetki.ru/', CORS_ORIGINS: '', WEB_URL: 'https://triotmetki.ru' };
+
+  it('lets the API host itself make state changes, so Swagger works for a signed-in developer', () => {
+    expect(guardedOrigins(env)).toEqual(['https://triotmetki.ru', 'https://api.triotmetki.ru']);
+  });
+
+  it('does not open the API host to CORS', () => {
+    expect(allowedOrigins(env)).not.toContain('https://api.triotmetki.ru');
   });
 });

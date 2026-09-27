@@ -1,0 +1,3 @@
+import { runPanelScript } from '.';
+
+runPanelScript();

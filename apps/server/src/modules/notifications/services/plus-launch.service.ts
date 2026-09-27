@@ -18,16 +18,17 @@ export class PlusLaunchService implements OnApplicationBootstrap {
     @Inject(REDIS) private readonly redis: Redis
   ) {}
 
-  async onApplicationBootstrap(): Promise<void> {
-    try {
-      const notified = await this.announce();
-
-      if (notified > 0) {
-        this.logger.log(`Plus checkout is open: notified ${notified} waiting users`);
+  onApplicationBootstrap(): void {
+    void this.announce().then(
+      (notified) => {
+        if (notified > 0) {
+          this.logger.log(`Plus checkout is open: notified ${notified} waiting users`);
+        }
+      },
+      (error: unknown) => {
+        this.logger.warn(`Plus checkout announcement failed: ${errorMessage(error)}`);
       }
-    } catch (error) {
-      this.logger.warn(`Plus checkout announcement failed: ${errorMessage(error)}`);
-    }
+    );
   }
 
   async announce(): Promise<number> {

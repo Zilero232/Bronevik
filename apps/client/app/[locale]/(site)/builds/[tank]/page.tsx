@@ -7,10 +7,11 @@ import { Suspense } from 'react';
 import { tankRouteEntity, topTankSlugs } from '@/entities/tank/tank/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
-import { RouteGuard } from '@/shared/seo/route-guard';
+import { requireRouteEntity } from '@/shared/seo/require-route-entity';
 import { BuildPage } from '@/views/build';
 import { buildPageState } from '@/views/build/server';
 
@@ -18,35 +19,38 @@ export const generateStaticParams = async () => (await topTankSlugs({ fallback: 
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/builds/[tank]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
-  const { tank } = await params;
+  const tank = decodeRouteParam((await params).tank);
   const t = await getTranslations({ locale, namespace: 'builds.meta' });
-  const { name, isFound } = await tankRouteEntity(tank);
+  const { name } = await requireRouteEntity(tankRouteEntity(tank));
 
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
     path: ROUTES.builds.detail(tank),
     locale,
-    index: isFound,
-    follow: isFound,
+    index: true,
+    follow: true,
     hasOwnImage: true
   });
 };
 
-const Page = ({ params }: PageProps<'/[locale]/builds/[tank]'>) => (
-  <>
-    <Suspense>
-      <RouteGuard entity={params.then(({ tank }) => tankRouteEntity(tank))} />
-    </Suspense>
-    <Suspense>
-      <PrefetchBoundary state={params.then(({ tank }) => buildPageState(decodeURIComponent(tank)))}>
-        <BuildPage />
-      </PrefetchBoundary>
-    </Suspense>
-    <Suspense>
-      <RequestTime />
-    </Suspense>
-  </>
-);
+const Page = async ({ params }: PageProps<'/[locale]/builds/[tank]'>) => {
+  const tank = decodeRouteParam((await params).tank);
+
+  await requireRouteEntity(tankRouteEntity(tank));
+
+  return (
+    <>
+      <Suspense>
+        <PrefetchBoundary state={buildPageState(tank)}>
+          <BuildPage />
+        </PrefetchBoundary>
+      </Suspense>
+      <Suspense>
+        <RequestTime />
+      </Suspense>
+    </>
+  );
+};
 
 export default Page;

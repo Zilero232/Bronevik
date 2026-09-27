@@ -7,12 +7,13 @@ import { Suspense } from 'react';
 import { streamerRouteEntity } from '@/entities/streamer/streamer/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { StreamerSettingsPage } from '@/views/streamer-settings';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]/settings'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
-  const slug = decodeURIComponent((await params).slug);
+  const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'streamerSettings.meta.streamer' });
   const { name, isFound } = await streamerRouteEntity(slug);
 
@@ -29,7 +30,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]
 const StreamerSettingsRoute = async ({ params }: Pick<PageProps<'/[locale]/s/[slug]/settings'>, 'params'>) => {
   const { slug } = await params;
 
-  return <StreamerSettingsPage slug={decodeURIComponent(slug)} />;
+  return <StreamerSettingsPage slug={decodeRouteParam(slug)} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/s/[slug]/settings'>) => (

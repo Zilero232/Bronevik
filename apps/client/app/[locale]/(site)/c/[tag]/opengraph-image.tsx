@@ -1,9 +1,11 @@
 import { ImageResponse } from 'next/og';
 
-import { getClan } from '@/entities/clan/clan';
+import { clanOgSource } from '@/entities/clan/clan/server';
 import { SITE } from '@/shared/config/site';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { OG_SIZE } from '@/shared/seo/og';
+import { OG_CACHE } from '@/shared/seo/og-request';
 import { loadOgFonts } from '@/shared/seo/og/server';
 import { clanOgCard, EntityOgCard } from '@/views/entity-og';
 import { FallbackOgCard, ogLabels } from '@/views/player-og';
@@ -21,11 +23,19 @@ const Image = async ({ params }: PageProps<'/[locale]/c/[tag]'>) => {
   const fonts = await loadOgFonts();
 
   try {
-    const page = await getClan({ idOrTag: decodeURIComponent(tag) });
+    const page = await clanOgSource(decodeRouteParam(tag));
 
-    return new ImageResponse(<EntityOgCard {...clanOgCard({ page, locale, host })} />, { ...OG_SIZE, fonts });
+    return new ImageResponse(<EntityOgCard {...clanOgCard({ page, locale, host })} />, {
+      ...OG_SIZE,
+      fonts,
+      headers: { 'Cache-Control': OG_CACHE.image }
+    });
   } catch {
-    return new ImageResponse(<FallbackOgCard host={host} labels={ogLabels(locale)} />, { ...OG_SIZE, fonts });
+    return new ImageResponse(<FallbackOgCard host={host} labels={ogLabels(locale)} />, {
+      ...OG_SIZE,
+      fonts,
+      headers: { 'Cache-Control': OG_CACHE.missing }
+    });
   }
 };
 

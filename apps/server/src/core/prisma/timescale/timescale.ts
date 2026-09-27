@@ -1,8 +1,16 @@
+import { createHash } from 'node:crypto';
 import { sortBy } from 'remeda';
 
-import type { BuildTimescaleStatementsInput, RetentionTarget, TimescaleConfig, TimescaleStatement } from './timescale.types';
+import type {
+  BuildTimescaleStatementsInput,
+  RetentionTarget,
+  StaleAggregate,
+  StaleAggregatesInput,
+  TimescaleConfig,
+  TimescaleStatement
+} from './timescale.types';
 
-import { CONTINUOUS_AGGREGATE, HYPERTABLE, TANK_DAILY_STATS_REFRESH, TIMESCALE_SQL } from './timescale.constants';
+import { CONTINUOUS_AGGREGATE, CONTINUOUS_AGGREGATE_SOURCES, HYPERTABLE, TANK_DAILY_STATS_REFRESH, TIMESCALE_SQL } from './timescale.constants';
 
 const interval = (value: string) => `INTERVAL '${value}'`;
 
@@ -39,9 +47,26 @@ export const buildPolicyStatements = (config: TimescaleConfig): string[] => {
   return [...compression, ...retention, ...refresh];
 };
 
+export const aggregateDefinitionVersion = (sql: string): string =>
+  createHash('sha256').update(sql).digest('hex').slice(0, TIMESCALE_SQL.versionLength);
+
+const staleAggregates = ({ scripts, versions }: StaleAggregatesInput): StaleAggregate[] =>
+  CONTINUOUS_AGGREGATE_SOURCES.flatMap(({ relation, file }) => {
+    const source = scripts.find(({ label }) => label === file);
+    const version = source ? aggregateDefinitionVersion(source.sql) : null;
+
+    return version === null || versions[relation] === version ? [] : [{ relation, version }];
+  });
+
+const stampSql = ({ relation, version }: StaleAggregate): string => `DO $$
+BEGIN
+  EXECUTE format('COMMENT ON %s %I IS %L', CASE (SELECT relkind FROM pg_class WHERE oid = to_regclass('${relation}')) WHEN 'm' THEN 'MATERIALIZED VIEW' ELSE 'VIEW' END, '${relation}', '${version}');
+END $$;`;
+
 export const buildTimescaleStatements = ({
   files,
   config,
+  versions,
   refresh = false,
   extensionsOnly = false
 }: BuildTimescaleStatementsInput): TimescaleStatement[] => {
@@ -50,15 +75,20 @@ export const buildTimescaleStatements = ({
     ({ name }) => name
   ).map(({ name, sql }) => ({ label: name, sql }));
 
+  const stale = staleAggregates({ scripts, versions });
+  const drops = stale.map(({ relation }) => ({ label: TIMESCALE_SQL.dropLabel, sql: `DROP MATERIALIZED VIEW IF EXISTS ${relation} CASCADE;` }));
+
   if (extensionsOnly) {
-    return scripts.filter(({ label }) => label === TIMESCALE_SQL.extensionsFile);
+    return [...scripts.filter(({ label }) => label === TIMESCALE_SQL.extensionsFile), ...drops];
   }
 
+  const stamps = stale.map((aggregate) => ({ label: TIMESCALE_SQL.versionLabel, sql: stampSql(aggregate) }));
   const policies = buildPolicyStatements(config).map((sql) => ({ label: TIMESCALE_SQL.policiesLabel, sql }));
 
-  const backfill = refresh
-    ? [{ label: TIMESCALE_SQL.refreshLabel, sql: `CALL refresh_continuous_aggregate('${CONTINUOUS_AGGREGATE.tankDailyStats}', NULL, NULL);` }]
-    : [];
+  const backfill =
+    refresh || stale.length > 0
+      ? [{ label: TIMESCALE_SQL.refreshLabel, sql: `CALL refresh_continuous_aggregate('${CONTINUOUS_AGGREGATE.tankDailyStats}', NULL, NULL);` }]
+      : [];
 
-  return [...scripts, ...policies, ...backfill];
+  return [...drops, ...scripts, ...stamps, ...policies, ...backfill];
 };

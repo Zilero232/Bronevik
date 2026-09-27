@@ -7,29 +7,31 @@ import { Suspense } from 'react';
 import { streamerRouteEntity } from '@/entities/streamer/streamer/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
+import { requireRouteEntity } from '@/shared/seo/require-route-entity';
 import { StreamerPage } from '@/views/streamer';
 import { streamerPageState } from '@/views/streamer/server';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
-  const slug = decodeURIComponent((await params).slug);
+  const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'streamer.publicMeta' });
-  const { name, isFound } = await streamerRouteEntity(slug);
+  const { name } = await requireRouteEntity(streamerRouteEntity(slug));
 
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
     path: ROUTES.streamers.profile(slug),
     locale,
-    index: isFound,
-    follow: isFound
+    index: true,
+    follow: true
   });
 };
 
 const StreamerRoute = async ({ params }: Pick<PageProps<'/[locale]/s/[slug]'>, 'params'>) => {
-  const slug = decodeURIComponent((await params).slug);
+  const slug = decodeRouteParam((await params).slug);
 
   return (
     <PrefetchBoundary state={streamerPageState(slug)}>

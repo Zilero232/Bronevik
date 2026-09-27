@@ -10,7 +10,7 @@ import re
 
 from .compat import is_int, is_number, string_types, to_text
 from .jsonutil import dumps_bytes
-from .signing import signed_headers
+from .signing import signed_request
 
 SETTINGS_PATH = '/mod/settings'
 POLL_PATH = '/mod/settings/apply/poll'
@@ -361,6 +361,4 @@ def parse_poll_response(data):
 
 def signed_post(transport, url, credentials, payload, user_agent, callback):
     """POST `payload` signed exactly like /mod/ingest."""
-    body = dumps_bytes(payload)
-    headers = signed_headers(credentials.device_id, credentials.secret, body, user_agent, 'POST', url)
-    transport.request('POST', url, headers, body, callback)
+    signed_request(transport, 'POST', url, credentials.device_id, credentials.secret, dumps_bytes(payload), user_agent, callback)

@@ -27,6 +27,12 @@ export const allowedOrigins = (env: Pick<Env, 'CORS_ORIGINS' | 'WEB_URL'>): stri
   return unique([...(web ? [web] : []), ...extra]);
 };
 
+export const guardedOrigins = (env: Pick<Env, 'API_URL' | 'CORS_ORIGINS' | 'WEB_URL'>): string[] => {
+  const api = originOf(env.API_URL);
+
+  return unique([...allowedOrigins(env), ...(api ? [api] : [])]);
+};
+
 export const isPublicCorsPath = (url: string): boolean => {
   const [path = ''] = url.split('?');
 

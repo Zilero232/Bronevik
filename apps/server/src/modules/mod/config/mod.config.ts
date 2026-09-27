@@ -1,10 +1,12 @@
+import { GAME_MODE_BONUS_TYPES } from '../../../common/lib';
+
 export const BIND_CODE = {
   alphabet: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
   length: 10,
   ttlMinutes: 10,
   throttle: { limit: 10, ttl: 60_000 },
   failurePrefix: 'otmetki:mod:bind-failures:',
-  maxFailuresPerAccount: 10,
+  maxFailuresPerRequester: 10,
   failureWindowSeconds: 900
 } as const;
 
@@ -34,7 +36,8 @@ export const MOD_INGEST = {
 } as const;
 
 export const BATTLE_CORROBORATION = {
-  windowHours: 72
+  windowHours: 72,
+  collectorBattleTypes: GAME_MODE_BONUS_TYPES.random.map(String)
 } as const;
 
 export const MOD_SHOTS = {

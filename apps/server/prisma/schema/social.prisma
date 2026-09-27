@@ -132,7 +132,7 @@ model NotificationSettings {
   quietHoursEnd     Int?                  @map("quiet_hours_end") @db.SmallInt
   sessionReport     Boolean               @default(true) @map("session_report")
   weeklyDigest      Boolean               @default(false) @map("weekly_digest")
-  watchlistDigest   WatchlistDigest       @default(daily) @map("watchlist_digest")
+  watchlistDigest   WatchlistDigest       @default(off) @map("watchlist_digest")
   watchlistDigestAt DateTime?             @map("watchlist_digest_at") @db.Timestamptz(3)
 
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)

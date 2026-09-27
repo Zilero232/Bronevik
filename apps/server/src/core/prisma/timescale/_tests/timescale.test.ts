@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { TIMESCALE } from '../../../../config';
-import { buildPolicyStatements, buildTimescaleStatements } from '../timescale';
-import { CONTINUOUS_AGGREGATE, HYPERTABLE, TIMESCALE_SQL } from '../timescale.constants';
+import { aggregateDefinitionVersion, buildPolicyStatements, buildTimescaleStatements } from '../timescale';
+import { CONTINUOUS_AGGREGATE, CONTINUOUS_AGGREGATE_SOURCES, HYPERTABLE, TIMESCALE_SQL } from '../timescale.constants';
 
 const CONFIG = TIMESCALE;
 
@@ -40,7 +40,7 @@ describe('buildTimescaleStatements', () => {
   ];
 
   it('runs the SQL files in name order, then the policies', () => {
-    const statements = buildTimescaleStatements({ files, config: CONFIG });
+    const statements = buildTimescaleStatements({ files, config: CONFIG, versions: {} });
 
     expect(statements.slice(0, 2)).toEqual([
       { label: '001_a.sql', sql: 'A' },
@@ -52,8 +52,8 @@ describe('buildTimescaleStatements', () => {
   });
 
   it('appends the backfill only on refresh', () => {
-    const plain = buildTimescaleStatements({ files, config: CONFIG });
-    const refreshed = buildTimescaleStatements({ files, config: CONFIG, refresh: true });
+    const plain = buildTimescaleStatements({ files, config: CONFIG, versions: {} });
+    const refreshed = buildTimescaleStatements({ files, config: CONFIG, versions: {}, refresh: true });
 
     expect(plain.some(({ label }) => label === TIMESCALE_SQL.refreshLabel)).toBe(false);
 
@@ -67,10 +67,46 @@ describe('buildTimescaleStatements', () => {
     const statements = buildTimescaleStatements({
       files: [...files, { name: TIMESCALE_SQL.extensionsFile, sql: 'EXT' }],
       config: CONFIG,
+      versions: {},
       extensionsOnly: true,
       refresh: true
     });
 
     expect(statements).toEqual([{ label: TIMESCALE_SQL.extensionsFile, sql: 'EXT' }]);
+  });
+});
+
+describe('buildTimescaleStatements continuous aggregate versions', () => {
+  const [source] = CONTINUOUS_AGGREGATE_SOURCES;
+  const aggregateFile = { name: source.file, sql: 'CREATE MATERIALIZED VIEW IF NOT EXISTS v2' };
+  const files = [{ name: TIMESCALE_SQL.extensionsFile, sql: 'EXT' }, aggregateFile];
+  const current = { [source.relation]: aggregateDefinitionVersion(aggregateFile.sql) };
+  const drop = `DROP MATERIALIZED VIEW IF EXISTS ${source.relation} CASCADE;`;
+
+  it('leaves an aggregate whose stored version matches its definition alone', () => {
+    const statements = buildTimescaleStatements({ files, config: CONFIG, versions: current });
+
+    expect(statements.some(({ sql }) => sql === drop)).toBe(false);
+    expect(statements.some(({ label }) => label === TIMESCALE_SQL.refreshLabel)).toBe(false);
+  });
+
+  it('drops a changed aggregate before the schema push so its columns can go', () => {
+    const statements = buildTimescaleStatements({ files, config: CONFIG, versions: { [source.relation]: 'old' }, extensionsOnly: true });
+
+    expect(statements.map(({ sql }) => sql)).toEqual(['EXT', drop]);
+  });
+
+  it('recreates, stamps and backfills an aggregate that is missing or unversioned', () => {
+    const statements = buildTimescaleStatements({ files, config: CONFIG, versions: { [source.relation]: null } });
+    const labels = statements.map(({ label }) => label);
+
+    expect(statements[0]?.sql).toBe(drop);
+    expect(labels.indexOf(TIMESCALE_SQL.versionLabel)).toBeGreaterThan(labels.indexOf(source.file));
+    expect(statements.find(({ label }) => label === TIMESCALE_SQL.versionLabel)?.sql).toContain(current[source.relation]);
+    expect(labels.at(-1)).toBe(TIMESCALE_SQL.refreshLabel);
+  });
+
+  it('changes the version whenever the definition changes', () => {
+    expect(aggregateDefinitionVersion('a')).not.toBe(aggregateDefinitionVersion('b'));
   });
 });

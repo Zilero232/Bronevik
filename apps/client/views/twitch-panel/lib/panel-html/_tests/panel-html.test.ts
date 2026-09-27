@@ -13,6 +13,7 @@ describe('panelHtml', () => {
     const html = panelHtml({ apiUrl: 'https://api.otmetki.app/', locale: 'en', copy: COPY });
 
     expect(html).toContain(TWITCH_PANEL.helperScript);
+    expect(html).toContain(`<script src="${TWITCH_PANEL.panelScript}"></script>`);
     expect(html).toContain('&quot;apiUrl&quot;:&quot;https://api.otmetki.app&quot;');
     expect(html.startsWith('<!doctype html><html lang="en">')).toBe(true);
   });

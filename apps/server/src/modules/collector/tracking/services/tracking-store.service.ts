@@ -4,9 +4,16 @@ import { groupBy } from 'remeda';
 
 import type { Prisma, TrackingTier } from '../../../../../generated';
 import type { TankBaseline } from '../lib/account-diff';
+import type { GainedMark } from '../lib/marks-gain';
 import type { AccountStorePort, MarkSyncedInput, PollStorePort, StoredPlayer, UpsertPlayerInput, WithAccountInput } from '../lib/poll-pipeline';
 import type { SnapshotMode, TankSnapshotRow } from '../lib/snapshots';
-import type { LatestAccountBattlesInput, LatestTanksInput, RebuildDaySessionInput, WriteAccountChangesInput } from '../tracking.types';
+import type {
+  AccountStoreInput,
+  LatestAccountBattlesInput,
+  LatestTanksInput,
+  RebuildDaySessionInput,
+  WriteAccountChangesInput
+} from '../tracking.types';
 
 import { moscowCalendarDate, moscowDayStart } from '../../../../common/lib';
 import { lockedTransaction, PrismaService } from '../../../../core';
@@ -150,19 +157,26 @@ export class TrackingStoreService implements PollStorePort {
   }
 
   async withAccount<T>({ accountId, run }: WithAccountInput<T>): Promise<T> {
-    return lockedTransaction({
+    const expected = await this.expected.all();
+    const gained: GainedMark[] = [];
+
+    const result = await lockedTransaction({
       prisma: this.prisma,
       scope: TRACKING.lock.scope,
       key: String(accountId),
-      run: async (tx) => run(this.accountStore(tx))
+      run: async (tx) => run(this.accountStore({ tx, expected, gained }))
     });
+
+    await this.announce.announceMarks(gained);
+
+    return result;
   }
 
-  accountStore(tx: Prisma.TransactionClient): AccountStorePort {
+  accountStore(input: AccountStoreInput): AccountStorePort {
     return {
-      latestAccountBattles: async (accountId) => this.latestAccountBattles({ tx, accountId }),
-      latestTankSnapshots: async (input) => this.latestTankSnapshots({ tx, ...input }),
-      writeAccountChanges: async (changes) => this.writeAccountChanges({ tx, ...changes })
+      latestAccountBattles: async (accountId) => this.latestAccountBattles({ tx: input.tx, accountId }),
+      latestTankSnapshots: async (latest) => this.latestTankSnapshots({ tx: input.tx, ...latest }),
+      writeAccountChanges: async (changes) => this.writeAccountChanges({ ...input, ...changes })
     };
   }
 
@@ -183,7 +197,16 @@ export class TrackingStoreService implements PollStorePort {
     });
   }
 
-  private async writeAccountChanges({ tx, accountId, accountSnapshots, tankSnapshots, deltas, baseline }: WriteAccountChangesInput): Promise<void> {
+  private async writeAccountChanges({
+    tx,
+    expected,
+    gained,
+    accountId,
+    accountSnapshots,
+    tankSnapshots,
+    deltas,
+    baseline
+  }: WriteAccountChangesInput): Promise<void> {
     const id = BigInt(accountId);
     const marks = snapshotMarks(tankSnapshots);
     const capturedAt = tankSnapshots[0]?.capturedAt;
@@ -215,13 +238,13 @@ export class TrackingStoreService implements PollStorePort {
     const [delta] = deltas;
 
     if (delta) {
-      await this.rebuildDaySession({ tx, accountId: id, at: new Date(delta.capturedAt) });
+      await this.rebuildDaySession({ tx, expected, accountId: id, at: new Date(delta.capturedAt) });
     }
 
-    await this.announce.announceMarks(gainedMarks({ current: marks, previous }));
+    gained.push(...gainedMarks({ current: marks, previous }));
   }
 
-  private async rebuildDaySession({ tx, accountId, at }: RebuildDaySessionInput): Promise<void> {
+  private async rebuildDaySession({ tx, expected, accountId, at }: RebuildDaySessionInput): Promise<void> {
     const from = moscowDayStart(at);
 
     const deltas = await tx.tankBattleDelta.findMany({
@@ -242,7 +265,7 @@ export class TrackingStoreService implements PollStorePort {
       }
     });
 
-    const session = buildDaySession({ accountId, day: moscowCalendarDate(at), deltas, expected: await this.expected.all() });
+    const session = buildDaySession({ accountId, day: moscowCalendarDate(at), deltas, expected });
 
     if (!session) {
       return;

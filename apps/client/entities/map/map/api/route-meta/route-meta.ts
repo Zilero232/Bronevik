@@ -1,14 +1,16 @@
 import type { RouteStaticParamsInput } from '@/shared/seo';
 
-import { routeEntity, routeSlugs } from '@/shared/seo';
+import { lookupRouteEntity, routeEntity, routeSlugs } from '@/shared/seo';
 
 import { getMap, listMaps } from '../maps';
 
-export const mapRouteEntity = async (idOrSlug: string) => {
+const lookupMap = async (idOrSlug: string) => {
   'use cache';
 
-  return routeEntity({ key: idOrSlug, load: async () => (await getMap({ idOrSlug })).name });
+  return lookupRouteEntity({ key: idOrSlug, load: async () => (await getMap({ idOrSlug })).name });
 };
+
+export const mapRouteEntity = async (idOrSlug: string) => routeEntity({ key: idOrSlug, lookup: lookupMap });
 
 export const mapSlugs = async ({ fallback }: RouteStaticParamsInput) => {
   'use cache';

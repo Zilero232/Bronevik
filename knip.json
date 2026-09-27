@@ -8,7 +8,12 @@
   },
   "workspaces": {
     "apps/client": {
-      "entry": ["shared/i18n/request/request.ts", "app/sw.ts"],
+      "entry": [
+        "shared/i18n/request/request.ts",
+        "app/sw.ts",
+        "config/panel-script/build-panel-script.ts",
+        "views/twitch-panel/lib/panel-script/panel-entry.ts"
+      ],
       "project": ["**/*.{ts,tsx,scss}"]
     },
     "apps/server": {

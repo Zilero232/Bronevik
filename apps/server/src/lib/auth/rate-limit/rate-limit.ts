@@ -1,6 +1,12 @@
-import type { RateLimitStorage, RedisRateLimitInput } from './rate-limit.types';
+import type { RateLimitRules, RateLimitStorage, RedisRateLimitInput } from './rate-limit.types';
 
 import { AUTH_RATE_LIMIT } from '../auth.constants';
+
+export const authRateLimitRules = (): RateLimitRules =>
+  Object.fromEntries([
+    ...AUTH_RATE_LIMIT.callbackPaths.map((path) => [path, AUTH_RATE_LIMIT.callback] as const),
+    ...AUTH_RATE_LIMIT.signInPaths.map((path) => [path, AUTH_RATE_LIMIT.signIn] as const)
+  ]);
 
 export const redisRateLimit = ({ redis }: RedisRateLimitInput): RateLimitStorage => ({
   consume: async (key, { window, max }) => {

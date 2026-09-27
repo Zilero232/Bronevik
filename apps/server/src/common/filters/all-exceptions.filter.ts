@@ -9,7 +9,7 @@ import type { ReplyInput } from './all-exceptions.types';
 
 import { isPrismaRequestError } from '../../core';
 import { errorMessage } from '../lib';
-import { MOD_CONTRACT_PATHS, MOD_ERROR_CODES, PRISMA_TO_HTTP } from './all-exceptions.constants';
+import { MOD_CONTRACT_PATHS, MOD_ERROR_CODES, MOD_REPLY, PRISMA_TO_HTTP } from './all-exceptions.constants';
 import { bodyWithField, codeForStatus, isLestaError, middlewareStatus, modErrorForStatus, retryAfterSeconds, zodIssues } from './lib';
 
 @Catch()
@@ -20,6 +20,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const context = host.switchToHttp();
     const request = context.getRequest<Request>();
     const response = context.getResponse<Response>();
+
+    if (request.path.startsWith(MOD_REPLY.pathPrefix)) {
+      response.setHeader(MOD_REPLY.serverTimeHeader, String(Math.floor(Date.now() / 1000)));
+    }
 
     if (MOD_CONTRACT_PATHS.includes(request.path)) {
       this.replyMod({ exception, response });

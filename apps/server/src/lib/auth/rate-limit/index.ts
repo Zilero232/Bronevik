@@ -1,2 +1,2 @@
-export { redisRateLimit } from './rate-limit';
-export type { RateLimitStorage, RedisRateLimitInput } from './rate-limit.types';
+export { authRateLimitRules, redisRateLimit } from './rate-limit';
+export type { RateLimitRules, RateLimitStorage, RedisRateLimitInput } from './rate-limit.types';

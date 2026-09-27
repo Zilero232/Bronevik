@@ -25,6 +25,7 @@ export { RATING_TONES, ratingTone, toneOfTier, toneThresholds } from './rating-t
 export type { RatingTone } from './rating-tone';
 export { ringNotches } from './ring-notches';
 export type { RingNotch, RingNotchesInput } from './ring-notches';
+export { decodeRouteParam } from './route-param';
 export { rowActivation } from './row-activation';
 export type { RowActivationInput } from './row-activation';
 export { isExternalHref, safeHref, safeWebHref } from './safe-href';
@@ -59,6 +60,7 @@ export type { OffsetInfiniteList, OffsetListFetchInput, OffsetListPage, UseOffse
 export { RELATIVE_TIME, useRelativeTime } from './use-relative-time';
 export type { RelativeTimeValue, RelativeTimeView } from './use-relative-time';
 export { useRevealOnce } from './use-reveal-once';
+export { useRouteParam } from './use-route-param';
 export { useScrollToEnd } from './use-scroll-to-end';
 export { useTableVirtualizer } from './use-table-virtualizer';
 export type { UseTableVirtualizerInput } from './use-table-virtualizer';

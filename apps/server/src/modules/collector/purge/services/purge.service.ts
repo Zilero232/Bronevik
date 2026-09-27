@@ -77,6 +77,7 @@ export class PurgeService {
         await tx.competitionEntry.deleteMany({ where: { accountId: id } });
         await tx.replay.updateMany({ where: { accountId: id }, data: { accountId: null } });
         await tx.$executeRaw`UPDATE replay SET player_account_ids = array_remove(player_account_ids, ${id}) WHERE player_account_ids @> ARRAY[${id}]::bigint[]`;
+        await tx.$executeRaw`UPDATE rng_daily SET players = array_remove(players, ${id}) WHERE players @> ARRAY[${id}]::bigint[]`;
         await tx.player.deleteMany({ where: { accountId: id } });
       });
 

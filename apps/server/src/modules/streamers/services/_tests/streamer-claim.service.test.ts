@@ -205,7 +205,21 @@ describe('StreamerClaimService.start', () => {
 });
 
 describe('StreamerClaimService.start contested OAuth claims', () => {
-  it('sends an OAuth claim to moderation while another user has an open claim on the page', async () => {
+  it('lets an OAuth-proven owner through an open unverified code or manual claim by someone else', async () => {
+    const { service, prisma } = createService();
+
+    prisma.streamerIntegration.findUnique.mockResolvedValue(integration('jove'));
+    prisma.streamerClaim.count.mockResolvedValue(0);
+    prisma.streamerChannel.count.mockResolvedValue(0);
+
+    await service.start({ userId: USER, slug: SLUG, method: 'oauth' });
+
+    expect(prisma.streamerClaim.count).toHaveBeenCalledWith({
+      where: expect.objectContaining({ userId: { not: USER }, status: 'open', method: 'oauth' })
+    });
+  });
+
+  it('sends an OAuth claim to moderation while another user has an open OAuth claim on the page', async () => {
     const { service, prisma } = createService();
 
     prisma.streamerIntegration.findUnique.mockResolvedValue(integration('jove'));

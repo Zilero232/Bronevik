@@ -11,8 +11,13 @@ describe('isPlusDigest', () => {
     expect(plus).toEqual([...WATCHLIST.plusDigests]);
   });
 
-  it('keeps the default digest free', () => {
-    expect(isPlusDigest(WATCHLIST.defaultDigest)).toBe(false);
+  it('keeps the default digest off so nobody gets a digest they did not ask for', () => {
+    expect(WATCHLIST.defaultDigest).toBe('off');
+  });
+
+  it('falls back to a free digest that still sends once Plus lapses', () => {
+    expect(isPlusDigest(WATCHLIST.lapsedPlusDigest)).toBe(false);
+    expect(WATCHLIST.lapsedPlusDigest).not.toBe('off');
   });
 
   it('gives every sending interval a period in hours', () => {

@@ -1,5 +1,6 @@
 export const TWITCH_PANEL = {
   helperScript: 'https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js',
+  panelScript: '/twitch-panel.js',
   refreshMs: 60_000,
   copyKeys: [
     'title',

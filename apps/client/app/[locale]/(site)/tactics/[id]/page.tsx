@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { TacticBoardPage } from '@/views/tactic-board';
 
@@ -17,7 +18,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/tactics/
   return createPageMetadata({
     title: t('title'),
     description: t('description'),
-    path: ROUTES.tactics.board(decodeURIComponent(id)),
+    path: ROUTES.tactics.board(decodeRouteParam(id)),
     locale,
     index: false,
     follow: false
@@ -27,7 +28,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/tactics/
 const TacticBoardRoute = async ({ params }: Pick<PageProps<'/[locale]/tactics/[id]'>, 'params'>) => {
   const { id } = await params;
 
-  return <TacticBoardPage id={decodeURIComponent(id)} />;
+  return <TacticBoardPage id={decodeRouteParam(id)} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/tactics/[id]'>) => (

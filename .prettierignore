@@ -3,6 +3,7 @@
 next-env.d.ts
 bun.lock
 **/_tests/fixtures/**/*.html
+apps/client/public/twitch-panel.js
 
 .claude
 docs

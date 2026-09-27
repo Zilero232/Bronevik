@@ -2,7 +2,8 @@ import { Prisma } from '../../../../../generated';
 import { BATTLE_CORROBORATION } from '../../config';
 
 export const corroboratedBattleSql = Prisma.sql`(
-  EXISTS (
+  b.battle_type <> ALL(${BATTLE_CORROBORATION.collectorBattleTypes}::text[])
+  OR EXISTS (
     SELECT 1
     FROM tank_battle_delta corroboration
     WHERE corroboration.account_id = b.account_id

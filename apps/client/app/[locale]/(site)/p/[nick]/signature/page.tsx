@@ -6,13 +6,14 @@ import { Suspense } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { PlayerSignaturePage } from '@/views/player-signature';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]/signature'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
   const { nick } = await params;
-  const nickname = decodeURIComponent(nick);
+  const nickname = decodeRouteParam(nick);
   const t = await getTranslations({ locale, namespace: 'profile.signature.meta' });
 
   return createPageMetadata({
@@ -28,7 +29,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]
 const SignatureRoute = async ({ params }: Pick<PageProps<'/[locale]/p/[nick]/signature'>, 'params'>) => {
   const { nick } = await params;
 
-  return <PlayerSignaturePage nickname={decodeURIComponent(nick)} />;
+  return <PlayerSignaturePage nickname={decodeRouteParam(nick)} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/p/[nick]/signature'>) => (

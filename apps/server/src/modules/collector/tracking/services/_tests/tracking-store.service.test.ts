@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import type { AccountRating, Player, PlayerTank, TankBattleDelta, TankSnapshotLatest } from '../../../../../../generated';
 import type { PrismaService } from '../../../../../core';
+import type { GainedMark } from '../../lib/marks-gain';
 import type { AccountChanges, StoredPlayer } from '../../lib/poll-pipeline';
 import type { TankSnapshotRow } from '../../lib/snapshots';
 
@@ -252,7 +253,7 @@ describe('TrackingStoreService.accountStore latestAccountBattles', () => {
       { mode: 'ranked', battles: 5 }
     ]);
 
-    const battles = await store.accountStore(prisma).latestAccountBattles(1);
+    const battles = await store.accountStore({ tx: prisma, expected: new Map(), gained: [] }).latestAccountBattles(1);
 
     expect(Object.fromEntries(battles)).toEqual({ all: 120, random: 100 });
   });
@@ -278,7 +279,10 @@ describe('TrackingStoreService.accountStore latestTankSnapshots', () => {
 
     prisma.tankSnapshotLatest.findMany.mockResolvedValue([row]);
 
-    expect(await store.accountStore(prisma).latestTankSnapshots({ accountId: 1, tankIds: [10] })).toEqual([row]);
+    expect(await store.accountStore({ tx: prisma, expected: new Map(), gained: [] }).latestTankSnapshots({ accountId: 1, tankIds: [10] })).toEqual([
+      row
+    ]);
+
     expect(prisma.tankSnapshot.findMany).not.toHaveBeenCalled();
   });
 });
@@ -309,6 +313,62 @@ describe('TrackingStoreService.withAccount', () => {
 
     expect(prisma.$executeRaw.mock.calls[0]?.slice(1)).toEqual([TRACKING.lock.scope, '42']);
   });
+
+  it('announces the marks gained inside the transaction only after it commits', async () => {
+    const { prisma, announce, store } = createStore();
+    const committed = vi.fn();
+
+    prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 1n, tankId: 10, marksOnGun: 1 })]);
+
+    prisma.$transaction.mockImplementation(async (run) => {
+      const result = typeof run === 'function' ? await run(prisma) : await Promise.all(run);
+
+      committed();
+
+      return result;
+    });
+
+    announce.announceMarks.mockImplementation(async () => {
+      expect(committed).toHaveBeenCalled();
+    });
+
+    await store.withAccount({
+      accountId: 1,
+      run: async (account) =>
+        account.writeAccountChanges({
+          accountId: 1,
+          accountSnapshots: [],
+          deltas: [],
+          baseline: [],
+          tankSnapshots: [snapshot({ tankId: 10, marksOnGun: 2 })]
+        })
+    });
+
+    expect(announce.announceMarks).toHaveBeenCalledWith([{ accountId: 1n, tankId: 10, marks: 2, previous: 1 }]);
+  });
+
+  it('announces nothing when the account transaction rolls back', async () => {
+    const { prisma, announce, store } = createStore();
+
+    prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 1n, tankId: 10, marksOnGun: 1 })]);
+    prisma.tankBattleDelta.createMany.mockRejectedValue(new Error('timeout'));
+
+    await expect(
+      store.withAccount({
+        accountId: 1,
+        run: async (account) =>
+          account.writeAccountChanges({
+            accountId: 1,
+            accountSnapshots: [],
+            deltas: [],
+            baseline: [],
+            tankSnapshots: [snapshot({ tankId: 10, marksOnGun: 2 })]
+          })
+      })
+    ).rejects.toThrow('timeout');
+
+    expect(announce.announceMarks).not.toHaveBeenCalled();
+  });
 });
 
 describe('TrackingStoreService.accountStore writeAccountChanges', () => {
@@ -316,17 +376,21 @@ describe('TrackingStoreService.accountStore writeAccountChanges', () => {
 
   const write = async (input: Partial<AccountChanges>) => {
     const created = createStore();
+    const gained: GainedMark[] = [];
 
-    await created.store.accountStore(created.prisma).writeAccountChanges({ ...changes, tankSnapshots: [], ...input });
+    await created.store
+      .accountStore({ tx: created.prisma, expected: new Map(), gained })
+      .writeAccountChanges({ ...changes, tankSnapshots: [], ...input });
 
-    return created;
+    return { ...created, gained };
   };
 
   it('does not look up stored marks when no snapshot carries marks', async () => {
-    const { prisma, announce } = await write({ tankSnapshots: [snapshot({ tankId: 10, marksOnGun: null })] });
+    const { prisma, announce, gained } = await write({ tankSnapshots: [snapshot({ tankId: 10, marksOnGun: null })] });
 
     expect(prisma.playerTank.findMany).not.toHaveBeenCalled();
-    expect(announce.announceMarks).toHaveBeenCalledWith([]);
+    expect(gained).toEqual([]);
+    expect(announce.announceMarks).not.toHaveBeenCalled();
   });
 
   it('writes snapshots and deltas idempotently so a retried poll persists them once', async () => {
@@ -337,8 +401,9 @@ describe('TrackingStoreService.accountStore writeAccountChanges', () => {
     }
   });
 
-  it('announces only a real gain over a known value', async () => {
+  it('collects only a real gain over a known value for the post-commit outbox', async () => {
     const created = createStore();
+    const gained: GainedMark[] = [];
 
     created.prisma.playerTank.findMany.mockResolvedValue([
       mock<PlayerTank>({ accountId: 1n, tankId: 10, marksOnGun: 1 }),
@@ -346,7 +411,7 @@ describe('TrackingStoreService.accountStore writeAccountChanges', () => {
       mock<PlayerTank>({ accountId: 1n, tankId: 12, marksOnGun: 3 })
     ]);
 
-    await created.store.accountStore(created.prisma).writeAccountChanges({
+    await created.store.accountStore({ tx: created.prisma, expected: new Map(), gained }).writeAccountChanges({
       ...changes,
       tankSnapshots: [
         snapshot({ tankId: 10, marksOnGun: 1 }),
@@ -356,7 +421,8 @@ describe('TrackingStoreService.accountStore writeAccountChanges', () => {
       ]
     });
 
-    expect(created.announce.announceMarks).toHaveBeenCalledWith([{ accountId: 1n, tankId: 10, marks: 2, previous: 1 }]);
+    expect(gained).toEqual([{ accountId: 1n, tankId: 10, marks: 2, previous: 1 }]);
+    expect(created.announce.announceMarks).not.toHaveBeenCalled();
   });
 
   it('refreshes the latest-snapshot table whenever tank snapshots are written', async () => {
@@ -375,7 +441,9 @@ describe('TrackingStoreService.accountStore writeAccountChanges', () => {
 
     created.prisma.tankBattleDelta.findMany.mockResolvedValue([delta]);
 
-    await created.store.accountStore(created.prisma).writeAccountChanges({ ...changes, tankSnapshots: [], deltas: [delta] });
+    await created.store
+      .accountStore({ tx: created.prisma, expected: new Map(), gained: [] })
+      .writeAccountChanges({ ...changes, tankSnapshots: [], deltas: [delta] });
 
     expect(created.prisma.playSession.upsert.mock.calls[0]?.[0].where).toEqual({
       accountId_source_kind_day: { accountId: 1n, source: 'api', kind: 'day', day: moscowCalendarDate(NOW) }

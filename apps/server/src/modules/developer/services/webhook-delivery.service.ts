@@ -25,7 +25,16 @@ export class WebhookDeliveryService {
     const delivery = await this.prisma.webhookDelivery.findUnique({ where: { id: deliveryId }, include: { endpoint: true } });
     const event = delivery ? webhookEventFromDb(delivery.event) : null;
 
-    if (!delivery || !event || delivery.status === 'succeeded' || !delivery.endpoint.isActive) {
+    if (!delivery || delivery.status === 'succeeded' || !delivery.endpoint.isActive) {
+      return 'skipped';
+    }
+
+    if (!event) {
+      await this.prisma.webhookDelivery.update({
+        where: { id: deliveryId },
+        data: { status: 'failed', responseBody: WEBHOOK_DELIVERY.retiredEventResponse }
+      });
+
       return 'skipped';
     }
 

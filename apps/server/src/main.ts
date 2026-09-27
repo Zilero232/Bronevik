@@ -5,7 +5,7 @@ import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { apiHelmet } from './common/middleware';
-import { allowedOrigins, corsOptionsFor, isLestaMock, isProduction, validateEnv } from './config';
+import { allowedOrigins, corsOptionsFor, expressTrustProxy, isLestaMock, isProduction, validateEnv } from './config';
 import { PublicApiModule } from './modules/public-api';
 import { setupDocs } from './openapi';
 
@@ -19,7 +19,7 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyPa
 
 app.useLogger(app.get(Logger));
 
-app.set('trust proxy', 1);
+app.set('trust proxy', expressTrustProxy(env));
 app.set('json replacer', (_key: string, value: unknown) => (typeof value === 'bigint' ? Number(value) : value));
 
 app.use(apiHelmet);

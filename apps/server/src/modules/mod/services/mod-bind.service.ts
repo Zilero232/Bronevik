@@ -4,7 +4,7 @@ import { Redis } from 'ioredis';
 import { isObjectType, isString } from 'remeda';
 
 import type { BindResponse } from '../lib';
-import type { BindCode, BindCodeInput } from '../mod.types';
+import type { BindCode, BindCodeInput, BindInput } from '../mod.types';
 
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
@@ -45,7 +45,7 @@ export class ModBindService {
     return { code, accountId: link ? Number(link.accountId) : null, expiresAt: expiresAt.toISOString() };
   }
 
-  async bind(body: unknown): Promise<BindResponse> {
+  async bind({ body, requester }: BindInput): Promise<BindResponse> {
     const rawCode = isObjectType(body) && 'code' in body && isString(body.code) ? normalizeBindCode(body.code) : null;
 
     if (rawCode === null || !bindCodePattern.test(rawCode)) {
@@ -60,10 +60,10 @@ export class ModBindService {
 
     const request = parsed.data;
     const accountId = BigInt(request.account_id);
-    const failureKey = `${BIND_CODE.failurePrefix}${request.account_id}`;
+    const failureKey = `${BIND_CODE.failurePrefix}${request.account_id}:${requester}`;
     const failures = Number((await this.redis.get(failureKey)) ?? 0);
 
-    if (failures >= BIND_CODE.maxFailuresPerAccount) {
+    if (failures >= BIND_CODE.maxFailuresPerRequester) {
       throw new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited' });
     }
 

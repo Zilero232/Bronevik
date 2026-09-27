@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { Client } from 'pg';
 
 import { TIMESCALE } from '../src/config/timescale.constants';
-import { buildTimescaleStatements } from '../src/core/prisma/timescale';
+import { buildTimescaleStatements, CONTINUOUS_AGGREGATE_SOURCES } from '../src/core/prisma/timescale';
 
 config({ path: fileURLToPath(new URL('../../../.env', import.meta.url)), quiet: true });
 
@@ -17,13 +17,6 @@ if (!url) {
 
 const sqlDir = fileURLToPath(new URL('../prisma/sql/timescale/', import.meta.url));
 const files = await Promise.all((await readdir(sqlDir)).map(async (name) => ({ name, sql: await readFile(`${sqlDir}${name}`, 'utf8') })));
-const statements = buildTimescaleStatements({
-  files,
-  config: TIMESCALE,
-  refresh: process.argv.includes('--refresh'),
-  extensionsOnly: process.argv.includes('--extensions')
-});
-
 const client = new Client({ connectionString: url });
 
 console.log('→ config', TIMESCALE);
@@ -31,6 +24,19 @@ console.log('→ config', TIMESCALE);
 await client.connect();
 
 try {
+  const { rows } = await client.query<{ relation: string; version: string | null }>(
+    "SELECT relation, obj_description(to_regclass(relation), 'pg_class') AS version FROM unnest($1::text[]) AS relation",
+    [CONTINUOUS_AGGREGATE_SOURCES.map(({ relation }) => relation)]
+  );
+
+  const statements = buildTimescaleStatements({
+    files,
+    config: TIMESCALE,
+    versions: Object.fromEntries(rows.map(({ relation, version }) => [relation, version])),
+    refresh: process.argv.includes('--refresh'),
+    extensionsOnly: process.argv.includes('--extensions')
+  });
+
   for (const { label, sql } of statements) {
     console.log(`→ ${label}`);
     await client.query(sql);

@@ -1,5 +1,7 @@
 import type { TwitchPanel } from '@otmetki/schemas';
 
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { runInThisContext } from 'node:vm';
 import { fromKeys } from 'remeda';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -8,6 +10,8 @@ import type { PanelCopy } from '../../panel-html';
 
 import { TWITCH_PANEL } from '../../../config';
 import { panelHtml } from '../../panel-html';
+
+const PUBLIC_DIR = path.resolve(import.meta.dirname, '../../../../../public');
 
 const COPY: PanelCopy = fromKeys(TWITCH_PANEL.copyKeys, (key) => key);
 
@@ -21,7 +25,8 @@ const PANEL: TwitchPanel = {
 const mount = (html: string) => {
   const page = new DOMParser().parseFromString(html, 'text/html');
   const panel = page.getElementById('panel');
-  const script = [...page.querySelectorAll('script')].at(-1)?.textContent ?? '';
+  const src = [...page.querySelectorAll('script')].at(-1)?.getAttribute('src') ?? '';
+  const script = readFileSync(path.join(PUBLIC_DIR, src), 'utf8');
 
   document.body.replaceChildren(...(panel ? [panel] : []));
 
@@ -35,7 +40,7 @@ afterEach(() => {
 });
 
 describe('panel script', () => {
-  it('runs as a standalone inline script and renders the channel panel', async () => {
+  it('runs the shipped static script and renders the channel panel', async () => {
     vi.useFakeTimers();
     window.history.replaceState(null, '', '/?channel=42');
     const fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify(PANEL)));

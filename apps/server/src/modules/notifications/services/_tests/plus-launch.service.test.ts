@@ -1,6 +1,6 @@
 import { PLUS } from '@otmetki/schemas';
 import RedisMock from 'ioredis-mock';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { NotificationService } from '../notification.service';
@@ -55,5 +55,20 @@ describe('PlusLaunchService.announce', () => {
     await expect(service.announce()).rejects.toThrow('queue down');
     await expect(redis.exists(PLUS_LAUNCH.announcedKey)).resolves.toBe(0);
     await expect(service.announce()).resolves.toBe(3);
+  });
+});
+
+describe('PlusLaunchService.onApplicationBootstrap', () => {
+  it('lets the worker finish booting while the broadcast is still running', async () => {
+    setCheckoutEnabled(true);
+    const { service, notifications } = createService();
+    const { promise, resolve } = Promise.withResolvers<number>();
+
+    notifications.broadcast.mockReturnValue(promise);
+
+    expect(service.onApplicationBootstrap()).toBeUndefined();
+
+    await vi.waitFor(() => expect(notifications.broadcast).toHaveBeenCalled());
+    resolve(3);
   });
 });

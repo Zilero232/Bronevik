@@ -6,12 +6,13 @@ import { Suspense } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { GuidePage } from '@/views/guide';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/guides/[slug]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
-  const slug = decodeURIComponent((await params).slug);
+  const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'guides.detailMeta' });
 
   return createPageMetadata({
@@ -27,7 +28,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/guides/[
 const GuideRoute = async ({ params }: Pick<PageProps<'/[locale]/guides/[slug]'>, 'params'>) => {
   const { slug } = await params;
 
-  return <GuidePage slug={decodeURIComponent(slug)} />;
+  return <GuidePage slug={decodeRouteParam(slug)} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/guides/[slug]'>) => (

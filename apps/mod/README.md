@@ -99,6 +99,7 @@ We chose to write our own code rather than vendor any of these. A mod that has t
    - `X-Otmetki-Device: <device_id>`
    - `X-Otmetki-Timestamp: <unix seconds>` and `X-Otmetki-Nonce: <random hex, new per request>`
    - `X-Otmetki-Signature: sha256=<hex HMAC-SHA256(secret, "v2\nPOST\n<path>\n<timestamp>\n<nonce>\n" + raw body)>`. The server refuses a timestamp more than 5 minutes off (428, retried) and a nonce it has already seen, so a captured request cannot be replayed or pointed at another path.
+   - **Clock skew.** Every error reply on `/mod/*` carries `X-Otmetki-Server-Time: <unix seconds>` (plus the standard `Date`). On a 428 the mod stores `server time − local time` as its clock offset, re-signs the same body with a fresh nonce and retries once right away; every later request (ingest, settings poll, apply result) is signed with the corrected clock. A second 428, or a 428 without a usable time, goes to the normal backoff. The offset lives in memory and is recomputed after a restart.
 
    Only one batch is in flight at a time. Events leave the outbox only after a 2xx or 409 response, so a crash or restart never loses them. Retries use exponential backoff (5 s up to 10 min, ±20% jitter) and honour `Retry-After`. Other responses:
 

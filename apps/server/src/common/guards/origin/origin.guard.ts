@@ -3,7 +3,7 @@ import type { Request } from 'express';
 
 import { Injectable } from '@nestjs/common';
 
-import { allowedOrigins, AppConfigService } from '../../../config';
+import { AppConfigService, guardedOrigins } from '../../../config';
 import { AppForbiddenException } from '../../exceptions';
 import { isCrossOriginStateChange } from '../../lib';
 
@@ -12,7 +12,7 @@ export class OriginGuard implements CanActivate {
   private readonly allowed: string[];
 
   constructor(config: AppConfigService) {
-    this.allowed = allowedOrigins({ CORS_ORIGINS: config.get('CORS_ORIGINS'), WEB_URL: config.get('WEB_URL') });
+    this.allowed = guardedOrigins({ API_URL: config.get('API_URL'), CORS_ORIGINS: config.get('CORS_ORIGINS'), WEB_URL: config.get('WEB_URL') });
   }
 
   canActivate(context: ExecutionContext): boolean {

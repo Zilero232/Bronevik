@@ -16,6 +16,7 @@ const envSchema = z.object({
   API_URL: z.url(),
   WEB_URL: z.url(),
   CORS_ORIGINS: z.string().default(''),
+  TRUSTED_PROXIES: z.string().default(''),
 
   BETTER_AUTH_SECRET: z.string().min(32),
 

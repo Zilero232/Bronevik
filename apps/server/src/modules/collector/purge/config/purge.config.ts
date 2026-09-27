@@ -15,7 +15,13 @@ export const RETENTION = {
     { table: 'api_error_log', column: 'occurred_at', days: 30 },
     { table: 'one_time_code', column: 'expires_at', days: 1 },
     { table: 'notification', column: 'created_at', days: 180 },
-    { table: 'tank_percentile', column: 'date', days: 60 },
+    {
+      table: 'tank_percentile',
+      column: 'date',
+      days: 60,
+      where:
+        'date < (SELECT max(latest.date) FROM tank_percentile latest WHERE latest.tank_id = tank_percentile.tank_id AND latest.distribution = tank_percentile.distribution)'
+    },
     { table: 'build_usage_aggregate', column: 'computed_at', days: 180 },
     { table: 'audit_log', column: 'created_at', days: 365 },
     { table: 'clan_snapshot', column: 'captured_at', days: 365 },

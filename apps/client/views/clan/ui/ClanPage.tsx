@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 
 import { ROUTES } from '@/shared/constants';
+import { useRouteParam } from '@/shared/lib';
 import { DataSourceNote, Tabs } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
@@ -14,8 +14,7 @@ import s from './ClanPage.module.scss';
 
 export const ClanPage = () => {
   const t = useTranslations('clans');
-  const { tag } = useParams<{ tag: string }>();
-  const clanTag = decodeURIComponent(tag);
+  const clanTag = useRouteParam('tag');
   const query = useClanPage(clanTag);
 
   return (

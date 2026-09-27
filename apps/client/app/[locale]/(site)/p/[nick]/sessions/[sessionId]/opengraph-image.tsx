@@ -1,9 +1,11 @@
 import { ImageResponse } from 'next/og';
 
-import { getPlayer, getPlayerSession } from '@/entities/player/profile';
+import { playerSessionOgSource } from '@/entities/player/profile/server';
 import { SITE } from '@/shared/config/site';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { OG_SIZE } from '@/shared/seo/og';
+import { OG_CACHE } from '@/shared/seo/og-request';
 import { loadOgFonts } from '@/shared/seo/og/server';
 import { FallbackOgCard, ogLabels, SessionOgCard } from '@/views/player-og';
 
@@ -20,12 +22,19 @@ const Image = async ({ params }: PageProps<'/[locale]/p/[nick]/sessions/[session
   const fonts = await loadOgFonts();
 
   try {
-    const { summary } = await getPlayer({ idOrNick: decodeURIComponent(nick) });
-    const session = await getPlayerSession({ accountId: summary.accountId, sessionId });
+    const { nickname, session } = await playerSessionOgSource({ idOrNick: decodeRouteParam(nick), sessionId });
 
-    return new ImageResponse(<SessionOgCard labels={labels} locale={locale} nickname={summary.nickname} session={session} />, { ...OG_SIZE, fonts });
+    return new ImageResponse(<SessionOgCard labels={labels} locale={locale} nickname={nickname} session={session} />, {
+      ...OG_SIZE,
+      fonts,
+      headers: { 'Cache-Control': OG_CACHE.image }
+    });
   } catch {
-    return new ImageResponse(<FallbackOgCard host={new URL(SITE.url).host} labels={labels} />, { ...OG_SIZE, fonts });
+    return new ImageResponse(<FallbackOgCard host={new URL(SITE.url).host} labels={labels} />, {
+      ...OG_SIZE,
+      fonts,
+      headers: { 'Cache-Control': OG_CACHE.missing }
+    });
   }
 };
 

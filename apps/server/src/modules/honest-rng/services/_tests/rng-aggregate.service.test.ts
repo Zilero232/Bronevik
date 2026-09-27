@@ -6,6 +6,7 @@ import type { Battle, CollectorState } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { moscowCalendarDate } from '../../../../common/lib';
+import { BATTLE_CORROBORATION } from '../../../mod';
 import { HONEST_RNG_AGGREGATE } from '../../config';
 import { dailyFromTally, emptyTally, foldBattle } from '../../lib';
 import { RngAggregateService } from '../rng-aggregate.service';
@@ -91,5 +92,9 @@ describe('RngAggregateService.compute sources', () => {
     await service.compute(NOW);
 
     expect(sqlOf(prisma)?.sql).toContain('corroboration');
+  });
+
+  it('holds the watermark back until the corroboration window has closed', () => {
+    expect(HONEST_RNG_AGGREGATE.settleHours).toBeGreaterThan(BATTLE_CORROBORATION.windowHours);
   });
 });

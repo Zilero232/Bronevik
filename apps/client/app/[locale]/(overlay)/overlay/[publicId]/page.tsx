@@ -5,6 +5,7 @@ import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { OverlayPage } from '@/views/overlay';
 
@@ -18,7 +19,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 const OverlayRoute = async ({ params }: Pick<PageProps<'/[locale]/overlay/[publicId]'>, 'params'>) => {
   const { publicId } = await params;
 
-  return <OverlayPage publicId={decodeURIComponent(publicId)} />;
+  return <OverlayPage publicId={decodeRouteParam(publicId)} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/overlay/[publicId]'>) => (

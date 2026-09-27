@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 
 import { ROUTES } from '@/shared/constants';
+import { useRouteParam } from '@/shared/lib';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { TankProvider } from '../model/context';
@@ -31,8 +31,7 @@ import s from './TankPage.module.scss';
 export const TankPage = () => {
   const t = useTranslations('tank.missing');
   const ts = useTranslations('tank');
-  const { slug } = useParams<{ slug: string }>();
-  const name = decodeURIComponent(slug);
+  const name = useRouteParam('slug');
   const query = useTankDetail();
 
   return (

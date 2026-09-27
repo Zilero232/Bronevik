@@ -2,7 +2,7 @@ from .compat import to_text
 from .jsonutil import dumps_bytes, loads
 from .outbox import OUTCOME_AUTH, OUTCOME_SENT
 from .payload import build_envelope
-from .signing import signed_headers
+from .signing import signed_request
 
 INGEST_PATH = '/mod/ingest'
 
@@ -56,13 +56,12 @@ class IngestSender(object):
             return False
         envelope = build_envelope(batch, creds.device_id, creds.account_id, self.mod_version, self.client_version, now)
         body = dumps_bytes(envelope)
-        headers = signed_headers(creds.device_id, creds.secret, body, self.user_agent, 'POST', self.url)
         self.in_flight = batch
 
         def done(status, response_body, response_headers):
             self._complete(batch, status, response_body, response_headers)
 
-        self.transport.request('POST', self.url, headers, body, done)
+        signed_request(self.transport, 'POST', self.url, creds.device_id, creds.secret, body, self.user_agent, done)
         return True
 
     def _complete(self, batch, status, body, headers):

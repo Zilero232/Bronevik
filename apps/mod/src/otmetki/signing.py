@@ -3,8 +3,9 @@ import hashlib
 import hmac
 import os
 import time
+from email.utils import mktime_tz, parsedate_tz
 
-from .compat import to_bytes
+from .compat import to_bytes, to_text
 
 DEVICE_HEADER = 'X-Otmetki-Device'
 SIGNATURE_HEADER = 'X-Otmetki-Signature'
@@ -13,6 +14,10 @@ NONCE_HEADER = 'X-Otmetki-Nonce'
 SIGNATURE_PREFIX = 'sha256='
 SIGNATURE_VERSION = 'v2'
 NONCE_BYTES = 16
+SERVER_TIME_HEADER = 'X-Otmetki-Server-Time'
+STALE_REQUEST_STATUS = 428
+
+_clock = {'offset': 0.0}
 
 
 def sign(secret, body):
@@ -59,8 +64,31 @@ def verify_request(secret, method, url, headers, body):
     return verify(secret, message, headers.get(SIGNATURE_HEADER, ''))
 
 
+def clock_offset():
+    return _clock['offset']
+
+
+def server_time(headers):
+    if not isinstance(headers, dict):
+        return None
+    values = dict((to_text(key).lower(), to_text(value).strip()) for key, value in headers.items())
+    raw = values.get(SERVER_TIME_HEADER.lower(), '')
+    if raw.isdigit():
+        return float(raw)
+    parsed = parsedate_tz(values.get('date', ''))
+    return float(mktime_tz(parsed)) if parsed else None
+
+
+def sync_clock(headers, now=None):
+    server = server_time(headers)
+    if server is None:
+        return False
+    _clock['offset'] = server - (now if now is not None else time.time())
+    return True
+
+
 def signed_headers(device_id, secret, body, user_agent, method, url, now=None, nonce=None):
-    timestamp = str(int(now if now is not None else time.time()))
+    timestamp = str(int(now if now is not None else time.time() + _clock['offset']))
     nonce = nonce or new_nonce()
     return {
         'Content-Type': 'application/json',
@@ -71,3 +99,16 @@ def signed_headers(device_id, secret, body, user_agent, method, url, now=None, n
         NONCE_HEADER: nonce,
         SIGNATURE_HEADER: sign(secret, signed_message(method, request_path(url), timestamp, nonce, body)),
     }
+
+
+def signed_request(transport, method, url, device_id, secret, body, user_agent, callback):
+    def send(may_retry):
+        def done(status, response_body, response_headers):
+            if status == STALE_REQUEST_STATUS and may_retry and sync_clock(response_headers):
+                send(False)
+                return
+            callback(status, response_body, response_headers)
+
+        transport.request(method, url, signed_headers(device_id, secret, body, user_agent, method, url), body, done)
+
+    send(True)

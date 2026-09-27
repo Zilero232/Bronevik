@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
+import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { StreamerClaimPage } from '@/views/streamer-claim';
 
@@ -13,7 +14,7 @@ export const instant = false;
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]/claim'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
-  const slug = decodeURIComponent((await params).slug);
+  const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'streamersDirectory.claimMeta' });
 
   return createPageMetadata({ title: t('title', { slug }), description: t('description'), path: ROUTES.streamers.claim(slug), locale, index: false });
@@ -22,7 +23,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]
 const ClaimRoute = async ({ params }: Pick<PageProps<'/[locale]/s/[slug]/claim'>, 'params'>) => {
   const { slug } = await params;
 
-  return <StreamerClaimPage slug={decodeURIComponent(slug)} />;
+  return <StreamerClaimPage slug={decodeRouteParam(slug)} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/s/[slug]/claim'>) => (

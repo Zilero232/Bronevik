@@ -49,7 +49,7 @@ export class WatchlistDigestService {
 
   private async digestFor({ settings, now }: DigestForInput): Promise<number> {
     const { userId, watchlistDigest, watchlistDigestAt: lastDigestAt } = settings;
-    const digest = isPlusDigest(watchlistDigest) && !(await this.entitlements.isPlus(userId)) ? WATCHLIST.defaultDigest : watchlistDigest;
+    const digest = isPlusDigest(watchlistDigest) && !(await this.entitlements.isPlus(userId)) ? WATCHLIST.lapsedPlusDigest : watchlistDigest;
 
     if (!isDigestDue({ digest, lastDigestAt, now })) {
       return 0;

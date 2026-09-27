@@ -14,6 +14,7 @@ export default eslint(
       '**/coverage',
       '**/.cache',
       '**/next-env.d.ts',
+      'apps/client/public/twitch-panel.js',
       '.data/**',
       'e2e/.results/**',
       'playwright-report/**',

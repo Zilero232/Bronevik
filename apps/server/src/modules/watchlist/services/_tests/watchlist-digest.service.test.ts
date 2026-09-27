@@ -147,6 +147,16 @@ describe('WatchlistDigestService.run', () => {
     expect(activity.activity).not.toHaveBeenCalled();
   });
 
+  it('still sends the lapsed hourly digest once the daily interval has passed', async () => {
+    const { prisma, activity, service } = setup();
+
+    prisma.notificationSettings.findMany.mockResolvedValue([settings({ watchlistDigest: 'hourly', watchlistDigestAt: subHours(now, 25) })]);
+
+    await service.run(now);
+
+    expect(activity.activity).toHaveBeenCalled();
+  });
+
   it('keeps an hourly digest for a Plus user', async () => {
     const { prisma, entitlements, activity, service } = setup();
 

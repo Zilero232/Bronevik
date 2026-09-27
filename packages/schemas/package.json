@@ -1,8 +1,17 @@
 {
   "name": "@otmetki/schemas",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Zod contracts shared by the Three Marks web, api and collector.",
+  "homepage": "https://triotmetki.ru",
+  "bugs": {
+    "url": "https://github.com/Zilero232/Triotmetki/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zilero232/Triotmetki.git",
+    "directory": "packages/schemas"
+  },
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
   "sideEffects": false,

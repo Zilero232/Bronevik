@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { memoryFiles } from '../../_tests/fixtures';
-import { createMemoryReader } from '../../source';
+import { createMemoryReader, ForeignClientError, GAME_PATHS, MT_CLIENT } from '../../source';
 import { buildGameData } from '../game-data';
 
 describe('buildGameData', () => {
@@ -32,5 +32,19 @@ describe('buildGameData', () => {
     delete files['sources/res/scripts/item_defs/vehicles/common/equipments.xml'];
 
     await expect(buildGameData({ reader: createMemoryReader({ sourceId: 'RU', files }), nations: ['ussr'] })).rejects.toThrow('equipments.xml');
+  });
+
+  it('refuses a World of Tanks (Wargaming) build instead of importing it as Мир танков', async () => {
+    const files = { ...memoryFiles(), [GAME_PATHS.version]: '2.4.0.5450\n' };
+
+    await expect(buildGameData({ reader: createMemoryReader({ sourceId: 'RU', files }), nations: ['ussr'] })).rejects.toBeInstanceOf(
+      ForeignClientError
+    );
+  });
+
+  it('refuses a mirror whose README names a Wargaming guid', async () => {
+    const files = { ...memoryFiles(), [MT_CLIENT.readme]: '# WOT.EU.PRODUCTION\n' };
+
+    await expect(buildGameData({ reader: createMemoryReader({ sourceId: 'RU', files }), nations: ['ussr'] })).rejects.toThrow('WOT.EU.PRODUCTION');
   });
 });

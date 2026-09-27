@@ -26,6 +26,7 @@ ENV NODE_ENV=production \
 # even those this image never builds.
 COPY package.json bun.lock tsconfig.json ./
 COPY apps/client/package.json ./apps/client/package.json
+COPY apps/modpack/package.json ./apps/modpack/package.json
 COPY apps/server/package.json ./apps/server/package.json
 COPY packages/gamedata/package.json ./packages/gamedata/package.json
 COPY packages/icons/package.json ./packages/icons/package.json

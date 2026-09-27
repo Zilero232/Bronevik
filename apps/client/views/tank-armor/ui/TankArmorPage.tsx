@@ -20,7 +20,12 @@ export const TankArmorPage = () => {
 
   return (
     <div className={s.root}>
-      <ArmorHeader name={query.data?.response.vehicle.name} slug={slug} version={query.data?.response.gameVersion} />
+      <ArmorHeader
+        client={query.data?.response.source.client}
+        name={query.data?.response.vehicle.name}
+        slug={slug}
+        version={query.data?.response.gameVersion}
+      />
       <QueryState
         errorState={
           isNotFoundError(query.error) ? (

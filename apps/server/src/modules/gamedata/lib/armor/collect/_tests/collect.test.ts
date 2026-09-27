@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { GameData } from '../../../game-data';
 
 import { COLLISION_FIXTURES, loadIs, readFixture } from '../../../_tests/fixtures';
-import { createLocalRepoReader, MODEL_PATHS, MODEL_SOURCES } from '../../../source';
+import { createLocalRepoReader, ForeignClientError, MODEL_PATHS, MODEL_SOURCES } from '../../../source';
 import { collectArmorModels } from '../collect';
 import { ArmorVersionMismatchError } from '../collect.errors';
 
@@ -40,7 +40,7 @@ describe('collectArmorModels', () => {
     const collected = await collectArmorModels({ data: gameData(), reader: reader(FILES) });
 
     expect(collected.models.map(({ tag }) => tag)).toEqual([spec.tag]);
-    expect(collected.skipped).toEqual(['R99_Unknown']);
+    expect(collected.skipped).toEqual([{ tag: 'R99_Unknown', reason: `not in ${MODEL_PATHS.index}` }]);
     expect(collected.version).toBe(VERSION);
     expect(collected.sourceSha).toBe('b'.repeat(40));
   });
@@ -55,6 +55,21 @@ describe('collectArmorModels', () => {
     const files = { ...FILES, [MODEL_PATHS.version]: '1.44.0.1' };
 
     await expect(collectArmorModels({ data: gameData(), reader: reader(files) })).rejects.toBeInstanceOf(ArmorVersionMismatchError);
+  });
+
+  it('refuses the Wargaming branch of the models mirror', async () => {
+    const files = { ...FILES, [MODEL_PATHS.version]: '2.4.0.5450' };
+
+    await expect(collectArmorModels({ data: gameData(), reader: reader(files) })).rejects.toBeInstanceOf(ForeignClientError);
+  });
+
+  it('names a vehicle the index lists but whose collision file is gone', async () => {
+    const files = { ...FILES, [MODEL_PATHS.index]: JSON.stringify({ R01_IS: 'russian/R01_IS', R99_Unknown: 'russian/R99_Unknown' }) };
+    const collected = await collectArmorModels({ data: gameData(), reader: reader(files) });
+
+    expect(collected.skipped).toEqual([
+      { tag: 'R99_Unknown', reason: `${MODEL_PATHS.vehicles}/russian/R99_Unknown/${MODEL_PATHS.collision} is missing` }
+    ]);
   });
 
   it('refuses a test-server source outright', async () => {

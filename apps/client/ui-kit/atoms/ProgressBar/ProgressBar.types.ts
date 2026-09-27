@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import type { RatingTone } from '@/shared/lib';
 
-export type ProgressTone = 'accent' | 'steel' | RatingTone;
+export type ProgressTone = 'accent' | 'battle' | 'brass' | 'gold' | 'olive' | 'sky' | 'steel' | RatingTone;
 
 export type ProgressBarProps = {
   value: number;

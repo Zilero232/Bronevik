@@ -22,7 +22,7 @@ export const ClanHeader = ({ page: { clan, stats, members } }: ClanHeaderProps) 
   const workspaceHref = useWorkspaceLink({ clan, members });
 
   return (
-    <div className={s.root}>
+    <div className={s.root} style={{ '--clan-color': clan.color ?? undefined }}>
       <ClanEmblem className={s.emblem} color={clan.color} size='lg' src={clan.emblem} tag={clan.tag} />
       <PageHeader
         actions={

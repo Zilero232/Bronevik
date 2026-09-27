@@ -22,7 +22,14 @@
     "missions": "Missions",
     "codes": "Codes",
     "tournaments": "Tournaments",
-    "cta": "Install the mod"
+    "cta": "Install the mod",
+    "hints": {
+      "marks": "Percent and progress",
+      "builds": "Equipment and crew",
+      "missions": "Personal missions",
+      "codes": "Bonus and invite codes",
+      "tournaments": "Schedule and brackets"
+    }
   },
   "garage": {
     "title": "Popular vehicles",

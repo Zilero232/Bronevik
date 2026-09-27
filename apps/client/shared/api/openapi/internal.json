@@ -18857,9 +18857,12 @@
               },
               "commit": {
                 "type": "string"
+              },
+              "client": {
+                "type": "string"
               }
             },
-            "required": ["repo", "commit"],
+            "required": ["repo", "commit", "client"],
             "additionalProperties": false
           }
         },

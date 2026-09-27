@@ -38,15 +38,31 @@ describe('writeCatalog', () => {
     expect(fresh).toHaveProperty('images', VEHICLE_IMAGES);
   });
 
-  it('never overwrites a vehicle name or slug on update', async () => {
+  it('keeps a stored vehicle name and slug on update when the name is not localized', async () => {
     const prisma = createPrisma();
 
-    await writeCatalog({ prisma, plan: plan({ vehicles: [vehicleRow(1)] }) });
+    await writeCatalog({ prisma, plan: plan({ vehicles: [vehicleRow(1, { localized: {} })] }) });
 
     const [upsert] = prisma.vehicle.upsert.mock.calls[0] ?? [];
 
     expect(upsert?.create).toMatchObject({ name: 'Tank 1', slug: 'tank-1' });
     expect(upsert?.update).not.toHaveProperty('name');
+    expect(upsert?.update).not.toHaveProperty('shortName');
+    expect(upsert?.update).not.toHaveProperty('description');
+    expect(upsert?.update).not.toHaveProperty('slug');
+  });
+
+  it('replaces a stored tag-derived name with the localized one but never the slug', async () => {
+    const prisma = createPrisma();
+    const localized = { name: 'Объект 268 Вариант 4', shortName: 'Об. 268/4' };
+
+    await writeCatalog({ prisma, plan: plan({ vehicles: [vehicleRow(1, { ...localized, localized })] }) });
+
+    const [upsert] = prisma.vehicle.upsert.mock.calls[0] ?? [];
+
+    expect(upsert?.create).toMatchObject(localized);
+    expect(upsert?.update).toMatchObject(localized);
+    expect(upsert?.update).not.toHaveProperty('description');
     expect(upsert?.update).not.toHaveProperty('slug');
   });
 

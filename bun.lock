@@ -38,7 +38,7 @@
     },
     "apps/client": {
       "name": "@otmetki/client",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@base-ui/react": "^1.8.0",
         "@dagrejs/dagre": "^3.1.1",
@@ -113,9 +113,13 @@
         "typescript": "catalog:",
       },
     },
+    "apps/modpack": {
+      "name": "@otmetki/modpack",
+      "version": "0.1.0",
+    },
     "apps/server": {
       "name": "@otmetki/server",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@aws-sdk/client-s3": "3.1140.0",
         "@better-auth/api-key": "1.7.5",
@@ -239,14 +243,14 @@
     },
     "packages/gamedata": {
       "name": "@otmetki/gamedata",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "devDependencies": {
         "typescript": "catalog:",
       },
     },
     "packages/icons": {
       "name": "@otmetki/icons",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@otmetki/schemas": "workspace:*",
         "remeda": "catalog:",
@@ -264,7 +268,7 @@
     },
     "packages/logger": {
       "name": "@otmetki/logger",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "pino": "catalog:",
         "pino-pretty": "catalog:",
@@ -275,7 +279,7 @@
     },
     "packages/ratings": {
       "name": "@otmetki/ratings",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "date-fns": "catalog:",
         "remeda": "catalog:",
@@ -287,7 +291,7 @@
     },
     "packages/schemas": {
       "name": "@otmetki/schemas",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@otmetki/ratings": "workspace:*",
         "zod": "catalog:",
@@ -298,7 +302,7 @@
     },
     "packages/sdk": {
       "name": "@otmetki/sdk",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "ky": "catalog:",
         "standardwebhooks": "catalog:",
@@ -969,6 +973,8 @@
     "@otmetki/icons": ["@otmetki/icons@workspace:packages/icons"],
 
     "@otmetki/logger": ["@otmetki/logger@workspace:packages/logger"],
+
+    "@otmetki/modpack": ["@otmetki/modpack@workspace:apps/modpack"],
 
     "@otmetki/ratings": ["@otmetki/ratings@workspace:packages/ratings"],
 

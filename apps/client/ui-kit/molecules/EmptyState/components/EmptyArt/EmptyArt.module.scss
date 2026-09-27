@@ -1,0 +1,61 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: inline-grid;
+  width: 72px;
+  height: 64px;
+  flex-shrink: 0;
+  place-items: center;
+}
+
+.frame {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+
+.hex {
+  fill: var(--color-surface-sunken);
+  stroke: var(--color-border-strong);
+  stroke-width: 1.5;
+}
+
+.ring {
+  fill: none;
+  stroke: var(--color-armor);
+  stroke-dasharray: 3 4;
+  stroke-opacity: 0.45;
+}
+
+.ground {
+  stroke: var(--color-border-strong);
+  stroke-linecap: round;
+  stroke-width: 1.5;
+}
+
+.tank {
+  position: relative;
+  margin-top: -6px;
+  color: var(--color-text-dim);
+}
+
+.badge {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+  display: inline-grid;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--color-surface-raised);
+  box-shadow: 0 0 0 1px var(--color-border-strong);
+  color: var(--color-accent);
+  place-items: center;
+
+  :global(svg) {
+    width: 14px;
+    height: 14px;
+  }
+}

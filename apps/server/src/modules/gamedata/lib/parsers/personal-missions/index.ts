@@ -1,4 +1,3 @@
-export { parsePoMessages } from './localization';
 export { parsePersonalMissions } from './personal-missions';
 export { PERSONAL_MISSION_FILES } from './personal-missions.constants';
 export type {

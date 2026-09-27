@@ -17,16 +17,21 @@ export type ArmorModelBuild = {
   modules: ArmorModules;
 };
 
+export type SkippedArmorModel = {
+  tag: string;
+  reason: string;
+};
+
 export type CollectedArmorModels = {
   version: string;
   sourceSha: string;
   models: ArmorModelBuild[];
-  skipped: string[];
+  skipped: SkippedArmorModel[];
   mismatches: string[];
 };
 
 export type VehicleOutcome = {
   model?: ArmorModelBuild;
-  skipped?: string;
+  skipped?: SkippedArmorModel;
   mismatches: string[];
 };

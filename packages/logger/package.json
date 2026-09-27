@@ -1,10 +1,20 @@
 {
   "name": "@otmetki/logger",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "One pino configuration shared by every Three Marks app.",
+  "homepage": "https://triotmetki.ru",
+  "bugs": {
+    "url": "https://github.com/Zilero232/Triotmetki/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zilero232/Triotmetki.git",
+    "directory": "packages/logger"
+  },
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"

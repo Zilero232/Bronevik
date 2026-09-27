@@ -8,8 +8,12 @@ dist/
 generated/
 *.tsbuildinfo
 *.wotmod
+*.mtmod
 __pycache__/
 *.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
 
 # Secrets and local config — every .env variant except the committed template
 .env

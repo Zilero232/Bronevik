@@ -1,7 +1,9 @@
+import { MT_CLIENT } from './mt-client/mt-client.constants';
+
 export const GAME_DATA_SOURCES = {
-  RU: { id: 'RU', owner: 'unicum-gg', repo: 'wot.src', ref: 'RU', isTest: false },
-  PT_RU: { id: 'PT_RU', owner: 'unicum-gg', repo: 'wot.src', ref: 'PT_RU', isTest: true },
-  IZEBERG_RU: { id: 'IZEBERG_RU', owner: 'izeberg', repo: 'wot-src', ref: 'RU', isTest: false }
+  RU: { id: 'RU', owner: 'unicum-gg', repo: 'wot.src', ref: 'RU', isTest: false, guid: MT_CLIENT.guids.release },
+  PT_RU: { id: 'PT_RU', owner: 'unicum-gg', repo: 'wot.src', ref: 'PT_RU', isTest: true, guid: MT_CLIENT.guids.test },
+  IZEBERG_RU: { id: 'IZEBERG_RU', owner: 'izeberg', repo: 'wot-src', ref: 'RU', isTest: false, guid: MT_CLIENT.guids.release }
 } as const;
 
 export const MINIMAP_SOURCES = {
@@ -11,11 +13,11 @@ export const MINIMAP_SOURCES = {
 } as const;
 
 export const MODEL_SOURCES = {
-  RU: { owner: 'unicum-gg', repo: 'wot.models', ref: 'Lesta', isTest: false }
+  RU: { owner: 'unicum-gg', repo: 'wot.models', ref: 'Lesta', isTest: false, guid: MT_CLIENT.guids.release }
 } as const;
 
 export const LOCALE_SOURCES = {
-  RU: { owner: 'izeberg', repo: 'wot-src', ref: 'RU' }
+  RU: { owner: 'izeberg', repo: 'wot-src', ref: 'RU', guid: MT_CLIENT.guids.release }
 } as const;
 
 export const MODEL_PATHS = {
@@ -47,5 +49,6 @@ export const GAME_PATHS = {
   perks: 'sources/res/scripts/item_defs/perks/perks.xml',
   tankmen: 'sources/res/scripts/item_defs/tankmen/tankmen.xml',
   arenas: 'sources/res/scripts/arena_defs',
-  personalMissions: 'sources/res/scripts/item_defs/personal_missions'
+  personalMissions: 'sources/res/scripts/item_defs/personal_missions',
+  localization: 'sources/res/text/ru/lc_messages'
 } as const;

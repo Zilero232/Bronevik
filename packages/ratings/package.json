@@ -1,8 +1,17 @@
 {
   "name": "@otmetki/ratings",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Pure rating math for «Мир танков»: WN8, EFF, Броня-Индекс, recent periods, marks of excellence and mastery.",
+  "homepage": "https://triotmetki.ru",
+  "bugs": {
+    "url": "https://github.com/Zilero232/Triotmetki/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zilero232/Triotmetki.git",
+    "directory": "packages/ratings"
+  },
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
   "sideEffects": false,

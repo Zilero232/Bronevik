@@ -23,10 +23,18 @@ export const KeyFigure = ({
   size = 'md',
   isFramed = false,
   variant = 'plain',
+  icon,
   className
 }: KeyFigureProps) => (
   <div className={clsx(s.root, s[size], s[variant], isFramed && s.framed, className)} data-tone={tone}>
-    <span className={s.label}>{label}</span>
+    <span className={s.head}>
+      {icon && (
+        <span aria-hidden className={s.icon}>
+          {icon}
+        </span>
+      )}
+      <span className={s.label}>{label}</span>
+    </span>
     <span className={s.value}>
       {match(value)
         .with(P.nullish, () => '—')
@@ -39,7 +47,16 @@ export const KeyFigure = ({
         {delta !== undefined && <DeltaValue isLowerBetter={isDeltaLowerBetter} isSameShown={deltaLabel === undefined} value={delta} />}
         {deltaLabel && <span className={s.deltaLabel}>{deltaLabel}</span>}
         {hint && <span className={s.hint}>{hint}</span>}
-        {trend && <Sparkline className={s.spark} data={trend} height={20} tone={tone} width={72} />}
+        {trend && (
+          <Sparkline
+            className={s.spark}
+            data={trend}
+            height={variant === 'tile' ? 32 : 20}
+            tone={tone}
+            width={variant === 'tile' ? 120 : 72}
+            withArea={variant === 'tile'}
+          />
+        )}
       </span>
     )}
   </div>

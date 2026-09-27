@@ -12,7 +12,7 @@ import { parseOptionalDevices } from '../parsers/optional-devices';
 import { parsePostProgression } from '../parsers/post-progression';
 import { COMPONENT_FILES, emptyComponents, parseSharedComponents, parseShells, parseVehicle, SHELLS } from '../parsers/vehicle';
 import { isRegularVehicle, parseVehicleList } from '../parsers/vehicle-list';
-import { GAME_PATHS } from '../source';
+import { assertMtClient, GAME_DATA_SOURCES, GAME_PATHS, MT_CLIENT } from '../source';
 
 const readRequired = async ({ reader, path }: ReadRequiredInput): Promise<string> => {
   const content = await reader.read(path);
@@ -122,9 +122,11 @@ export const buildGameData = async ({
   vehicleLimit,
   onProgress
 }: BuildGameDataInput): Promise<GameData> => {
-  const version = (await reader.read(GAME_PATHS.version))?.trim();
+  const label = `${reader.revision.owner}/${reader.revision.repo}@${reader.revision.sha}`;
+  const [rawVersion, readme] = await Promise.all([reader.read(GAME_PATHS.version), reader.read(MT_CLIENT.readme)]);
+  const version = assertMtClient({ label, version: rawVersion?.trim(), guid: GAME_DATA_SOURCES[reader.revision.sourceId].guid, readme });
 
-  onProgress?.(`Game version ${version ?? 'unknown'} from ${reader.revision.owner}/${reader.revision.repo}@${reader.revision.sha}`);
+  onProgress?.(`${MT_CLIENT.product} ${version} from ${label}`);
 
   const nationData: NationData[] = [];
 

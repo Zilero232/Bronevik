@@ -7,6 +7,7 @@ import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 import type { TankTraitsService } from '../tank-traits.service';
 
+import { TANK_STATS_RANKING } from '../../config';
 import { TankStatsService } from '../tank-stats.service';
 import { catalogEntry, serverStats, vehicle } from './tanks.fixtures';
 
@@ -81,5 +82,38 @@ describe('TankStatsService.list', () => {
     const page = await service.list({ ...query, period: '30d', cohort: 'elite', mode: 'ranked' });
 
     expect(page.items[0]).toMatchObject({ period: '30d', cohort: 'elite', mode: 'ranked' });
+  });
+
+  it('asks only for tanks with enough battles and players when ranking by win rate', async () => {
+    const { service, prisma } = createService();
+
+    await service.list({ ...query, sort: 'winRate' });
+
+    expect(prisma.tankServerStats.findMany.mock.calls[0]?.[0]?.where).toMatchObject({
+      battles: { gte: TANK_STATS_RANKING.minBattles },
+      players: { gte: TANK_STATS_RANKING.minPlayers }
+    });
+  });
+
+  it('keeps the requested battles floor when sorting by volume', async () => {
+    const { service, prisma } = createService();
+
+    await service.list(query);
+
+    expect(prisma.tankServerStats.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ battles: { gte: 0 }, players: { gte: 0 } });
+  });
+
+  it('ranks a large sample above a small one with a higher raw win rate', async () => {
+    const { service, prisma } = createService();
+
+    prisma.tankServerStats.findMany.mockResolvedValue([
+      serverStats({ tankId: 1, battles: TANK_STATS_RANKING.minBattles, winRate: 70 }),
+      serverStats({ tankId: 3, battles: 5_000, winRate: 60 })
+    ]);
+
+    const page = await service.list({ ...query, sort: 'winRate' });
+
+    expect(page.items.map((row) => row.vehicle.tankId)).toEqual([3, 1]);
+    expect(page.items.map((row) => row.winRate)).toEqual([60, 70]);
   });
 });

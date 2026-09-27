@@ -26,7 +26,7 @@ export const AccountMenu = () => {
 
   if (!user) {
     return (
-      <Link className={clsx(buttonVariants({ variant: 'primary', size: 'md' }), s.signIn)} href={loginHref}>
+      <Link className={clsx(buttonVariants({ variant: 'secondary', size: 'md' }), s.signIn)} href={loginHref}>
         <LogIn aria-hidden size={15} />
         <span className={s.signInLabel}>{t('signIn')}</span>
       </Link>

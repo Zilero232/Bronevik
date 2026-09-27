@@ -62,6 +62,9 @@ export type { RatingScale, RatingTier, RatingTierInput } from './scale';
 export { computeAverages, safeDivide, sumTotals, winRate } from './stats';
 export type { BattleAverages, BattleTotals, SafeDivideInput, TankTotals, WinRateInput } from './stats';
 
+export { WILSON, wilsonInterval } from './wilson';
+export type { WilsonInterval, WilsonIntervalInput } from './wilson';
+
 export { aggregateWinRateDiff, winRateDiff, winRateDiffFromAggregate } from './win-rate';
 export type { WinRateDiff, WinRateDiffAggregate, WinRateDiffRow } from './win-rate';
 

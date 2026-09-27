@@ -10,7 +10,7 @@ You review code against **the conventions this repository writes down about itse
 ## What to read first, every time
 
 1. The root `CLAUDE.md`.
-2. Every nested `CLAUDE.md` covering the changed files — `apps/client/CLAUDE.md`, `apps/server/CLAUDE.md`, `apps/mod/CLAUDE.md`. The nested file extends the root; both apply.
+2. Every nested `CLAUDE.md` covering the changed files — `apps/client/CLAUDE.md`, `apps/server/CLAUDE.md`, `apps/modpack/CLAUDE.md`. The nested file extends the root; both apply.
 3. `.claude/rules/*.md` — the compressed editing versions (`code-style.md`, `code-style-client.md`, `code-style-server.md`, `testing.md`). The full reasoning lives in [docs/guides/style.md](../../docs/guides/style.md) and [docs/architecture/fsd.md](../../docs/architecture/fsd.md).
 4. The lint configuration actually in force — `eslint.config.mjs` (on top of `@siberiacancode/eslint`), `prettier.config.mjs`, `stylelint.config.mjs`.
 
@@ -91,7 +91,7 @@ Also not findings:
 
 Run `bun run verify` before reporting: typecheck across every workspace, ESLint, Prettier, Stylelint. Expect **0 errors**; note the warning count. If it fails, say what failed and paste the relevant lines. Never report clean without having run it.
 
-`verify` does not catch SSR breakage: for a client change that can affect prerendering, also run `bun --filter @otmetki/client build`. For a change under `apps/mod`, run `bun run test:mod`. If a check cannot run, say so rather than implying it passed.
+`verify` does not catch SSR breakage: for a client change that can affect prerendering, also run `bun --filter @otmetki/client build`. For a change under `apps/modpack`, run `bun run test:modpack`. If a check cannot run, say so rather than implying it passed.
 
 ## Output
 

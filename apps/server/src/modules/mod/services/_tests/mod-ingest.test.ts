@@ -14,7 +14,7 @@ import { Prisma } from '../../../../../generated';
 import { ingestBatchSchema, moePercent } from '../../lib';
 
 const example = ingestBatchSchema.parse(
-  JSON.parse(readFileSync(new URL('../../../../../../mod/contract/examples/ingest.example.json', import.meta.url), 'utf8'))
+  JSON.parse(readFileSync(new URL('../../../../../../modpack/contract/examples/ingest.example.json', import.meta.url), 'utf8'))
 );
 
 const battleEvents = example.events.filter((event) => event.type === 'battle_result');

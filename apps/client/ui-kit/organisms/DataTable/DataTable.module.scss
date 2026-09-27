@@ -137,11 +137,11 @@
 
   @media (hover: hover) {
     &:hover {
-      background-color: var(--color-surface-hover);
+      background-color: var(--color-row-hover);
     }
 
     &:hover .td:first-child {
-      box-shadow: inset 2px 0 0 var(--color-accent);
+      box-shadow: inset 3px 0 0 var(--color-accent);
     }
   }
 
@@ -158,7 +158,7 @@
     position: relative;
 
     &:focus-within {
-      background-color: var(--color-surface-hover);
+      background-color: var(--color-row-hover);
     }
   }
 
@@ -252,6 +252,12 @@
 .th[data-sticky='true'] {
   @include below(3xl) {
     background-color: var(--color-surface-raised);
+  }
+}
+
+.row:hover .td[data-sticky='true'] {
+  @media (hover: hover) {
+    background-color: var(--color-row-hover);
   }
 }
 

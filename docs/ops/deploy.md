@@ -87,12 +87,12 @@ On the first run, or after an edit to `003_continuous_aggregates.sql`, the full 
 
 ## 4. Game mod: rebuild for v2 signing
 
-The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HMAC over `v2\n<METHOD>\n<path>\n<timestamp>\n<nonce>\n<body>`, a 5-minute skew window and a one-time nonce). A mod package built before v2 signing is rejected, so every published `.wotmod` must be rebuilt:
+The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HMAC over `v2\n<METHOD>\n<path>\n<timestamp>\n<nonce>\n<body>`, a 5-minute skew window and a one-time nonce). A mod package built before v2 signing is rejected, so every published package must be rebuilt:
 
-- [ ] Check that `DEFAULT_SERVER_URL` in `apps/mod/src/otmetki/config.py` is `https://api.triotmetki.ru`.
-- [ ] Bump `VERSION` in `apps/mod/src/otmetki/version.py`.
-- [ ] Run `python apps/mod/build.py --require-pyc` (a release build, which needs Python 2.7).
-- [ ] Publish the package on the site (`SITE.downloadUrl` is `https://triotmetki.ru/downloads/otmetki.wotmod`) and through МОСТ. See [apps/mod/README.md](../../apps/mod/README.md).
+- [ ] Check that `DEFAULT_SERVER_URL` in `apps/modpack/packages/companion/config.py` is `https://api.triotmetki.ru`.
+- [ ] Bump `VERSION` in `apps/modpack/packages/companion/version.py` (and in `packages/core/version.py` and `features/<id>/__init__.py` for the packages that changed).
+- [ ] Run `python apps/modpack/tools/build/build.py --single --require-pyc` (a release build: one `otmetki.<version>.mtmod`; it needs `owg_python_compiler` or Python 2.7, see [apps/modpack/README.md](../../apps/modpack/README.md#build)).
+- [ ] Publish the package on the site (`SITE.downloadUrl` is `https://triotmetki.ru/downloads/otmetki.wotmod`; the Lesta client loads `.mtmod`, so the URL and file name need updating) and through МОСТ. See [apps/modpack/README.md](../../apps/modpack/README.md).
 - [ ] Users bind their devices again with a code from `/me`. Devices bound in development do not exist in production.
 
 ## 5. Legal pages and Plus: fill before checkout opens

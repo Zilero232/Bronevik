@@ -198,7 +198,7 @@ Enums of client options (`graphicsOptionSchema`, marker fields, minimap fields) 
 - **Export:** in the hangar, «Поделиться настройками» reads standard client settings through the game's settings core (not the file), builds `streamerSettingsSchema`-compatible JSON **without** login/account keys, and sends it through the existing mod ingest (bound `ModDevice`). The user chooses the target: "my profile" (claimed creators), "private" (for compare with "мои настройки"), and a separate opt-in checkbox "учитывать анонимно в статистике".
 - **Apply:** from `/s/[slug]/settings` → «Применить через мод» → the site stores a pending "apply request" for the user's device → the mod shows a hangar dialog with the diff, excluding resolution and sensitivity by default (Korben's precedent — hardware-specific) → on confirm it backs up current settings and applies. «Вернуть мои» restores the backup.
 - Scope: only standard client settings (graphics, camera, zoom steps, sight/marker/minimap options, sound). **Never** installs or configures third-party mods. Fair-play neutral: identical to changing settings by hand.
-- Python 2.7, `apps/mod`; unit tests in the mod's suite; verify the settings-core API on the Lesta 1.45 client first **[unverified API names]**.
+- Python 2.7, `apps/modpack`; unit tests in the mod's suite; verify the settings-core API on the Lesta 1.45 client first **[unverified API names]**.
 
 ## 4. More feature ideas
 
@@ -394,13 +394,13 @@ Worker (`streamers-worker.module.ts`, `config/queue.config.ts`): new jobs `live-
 | **WP4** | Editorial + claims: admin endpoints, `StreamerClaim`, OAuth / bio-code / manual proofs, removal requests, tombstones | `streamers/services/streamer-claim.service.ts`, `streamers/controllers/admin-streamers.controller.ts`, `features/streamer/claim-profile` | M |
 | **WP5** | Settings core: schemas + constants, `StreamerSettings(+Version)`, studio `SettingsPanel`, public settings page, table, compare, `ModReference` with fair-play workflow | `packages/schemas/src/streamer-settings`, `streamers/services/streamer-settings.service.ts`, `views/streamer-settings*`, `views/streamer-studio` | L |
 | **WP6** | Browser `preferences.xml` import (whitelist; skip or safely read pickled blobs); fixture-based tests | `entities/streamer/lib/preferences-parser`, `SettingsImportXml` | M |
-| **WP7** | Mod export/apply: settings-core reader/applier with backup, ingest endpoints, `SettingsApplyRequest`, `PlayerSettingsShare` | `apps/mod`, `modules/mod`, `features/streamer/apply-settings` | L |
+| **WP7** | Mod export/apply: settings-core reader/applier with backup, ingest endpoints, `SettingsApplyRequest`, `PlayerSettingsShare` | `apps/modpack`, `modules/mod`, `features/streamer/apply-settings` | L |
 | **WP8** | Aggregates: daily job, k ≥ 20, cohorts (creators / top by rating / all opt-in), page section | `streamers/lib/settings-aggregate`, `processors`, `views/streamers-settings-table` | M |
 | **WP9** | Extras from §4 in order: follows + alerts (2), schedules (3), clips/videos (4), `!settings` chat command (11), builds (5), marks race (9), sight gallery (6), wizard (7), own settings impact (8, Plus) | respective modules | S–L each |
 
 Order: WP0 → WP1 → WP2 + WP3 (directory ships with claimed profiles only) → WP4 (editorial entries go live only after WP0) → WP5 → WP7 → WP6 → WP8 → WP9.
 
-Verification per WP: `bun run verify`, targeted `bun run test` for new `lib/*` and services, `bun run test:mod` for WP7; no `next build`.
+Verification per WP: `bun run verify`, targeted `bun run test` for new `lib/*` and services, `bun run test:modpack` for WP7; no `next build`.
 
 ## 9. Open questions
 

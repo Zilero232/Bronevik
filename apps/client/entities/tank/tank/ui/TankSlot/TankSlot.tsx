@@ -16,7 +16,13 @@ export const TankSlot = ({ row }: TankSlotProps) => {
   const ClassIcon = TANK_CLASS_ICONS[tank.type];
 
   return (
-    <Link className={s.root} data-nation={tank.nation} data-premium={tank.isPremium || undefined} href={ROUTES.tanks.detail(row.vehicle.slug)}>
+    <Link
+      className={s.root}
+      data-class={tank.type}
+      data-nation={tank.nation}
+      data-premium={tank.isPremium || undefined}
+      href={ROUTES.tanks.detail(row.vehicle.slug)}
+    >
       <span className={s.badge}>
         <ClassIcon aria-hidden size={14} variant={tank.isPremium ? 'premium' : 'regular'} />
         <span className={s.tier}>{toRoman(tank.tier)}</span>

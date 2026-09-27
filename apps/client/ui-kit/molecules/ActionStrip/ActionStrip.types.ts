@@ -1,10 +1,14 @@
 import type { ComponentProps, ReactNode } from 'react';
 
+import type { ProgressTone } from '../../atoms';
+
 export type ActionStripLink = {
   id: string;
   href: string;
   label: string;
   icon: ReactNode;
+  hint?: string;
+  tone?: ProgressTone;
 };
 
 export type ActionStripProps = Omit<ComponentProps<'div'>, 'ref'> & {
@@ -14,5 +18,6 @@ export type ActionStripProps = Omit<ComponentProps<'div'>, 'ref'> & {
   end?: ReactNode;
   width?: 'narrow' | 'wide';
   align?: 'bottom' | 'center';
+  variant?: 'chips' | 'tiles';
   innerClassName?: string;
 };

@@ -1,0 +1,98 @@
+name: modpack
+
+# The «Мир танков» modpack (apps/modpack): Python 2.7 game-client packages with Python 3 host tooling.
+#
+# checks         pull requests that touch the modpack, and manual runs. Windows, like the players:
+#                pytest + the stdlib runner, ruff, vermin (the py2.7 syntax guard is a test).
+# release-build  manual runs only. Builds OpenWG owg_python_compiler from source (no Python 2.7
+#                needed) and the release packages with compiled .pyc, uploaded as an artifact.
+
+on:
+  pull_request:
+    paths:
+      - 'apps/modpack/**'
+      - .github/workflows/modpack.yml
+  workflow_dispatch:
+
+concurrency:
+  group: modpack-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+env:
+  OWG_COMPILER_VERSION: v1.2.1
+
+jobs:
+  checks:
+    permissions:
+      contents: read
+
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: apps/modpack
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+
+      - run: python -m pip install uv
+
+      - run: uv sync --locked
+
+      - run: uv run --locked pytest
+
+      # The same suites through the stdlib runner the pre-commit hook uses.
+      - run: python tools/run_tests.py
+
+      - run: uv run --locked ruff check .
+
+      - run: uv run --locked vermin --no-tips --violations -t=2.7- -t=3.0- --exclude-regex "tests|tools" packages features
+
+  release-build:
+    if: github.event_name == 'workflow_dispatch'
+
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+
+      # A C++23 tool without published binaries: build the pinned tag (GCC 14 ships on the runner).
+      - name: Build owg_python_compiler
+        run: |
+          git clone --depth 1 --branch "$OWG_COMPILER_VERSION" --recurse-submodules --shallow-submodules \
+            https://gitlab.com/openwg/owg-python-compiler.git "$RUNNER_TEMP/owg"
+          cmake -S "$RUNNER_TEMP/owg" -B "$RUNNER_TEMP/owg/build" -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
+          cmake --build "$RUNNER_TEMP/owg/build" --parallel
+          "$RUNNER_TEMP/owg/build/owg_python_compiler" version
+
+      - name: Build the packages
+        run: |
+          owg="$RUNNER_TEMP/owg/build/owg_python_compiler"
+          python apps/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack
+          python apps/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack --single
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: modpack
+          path: dist/modpack/
+          retention-days: 14

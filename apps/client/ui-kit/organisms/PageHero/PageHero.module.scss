@@ -7,9 +7,28 @@
   background-color: var(--color-band);
   color: var(--color-text);
 
+  @include rivet-rule(bottom);
+
   @include below(lg) {
     min-height: 160px;
   }
+
+  &:before {
+    @include texture(camo);
+
+    position: absolute;
+    content: '';
+    inset: 0;
+    pointer-events: none;
+  }
+}
+
+.hexes {
+  position: absolute;
+  background: var(--texture-hex) 0 0 / 28px 48px;
+  inset: 0;
+  mask-image: radial-gradient(ellipse 55% 80% at 85% 40%, #000 0%, transparent 80%);
+  pointer-events: none;
 }
 
 .scrim {

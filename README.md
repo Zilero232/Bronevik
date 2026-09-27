@@ -97,7 +97,7 @@ With `LESTA_APPLICATION_ID` empty and `NODE_ENV=development`, the server and the
 | `bun run fix`                                              | Auto-fix lint, formatting, styles and the Prisma schema                                         |
 | `bun run test`                                             | Vitest across the monorepo (never `bun test`)                                                   |
 | `bun run test:e2e`                                         | Playwright smoke against the client                                                             |
-| `bun run test:mod`                                         | The game mod's unittest suite                                                                   |
+| `bun run test:modpack`                                     | The game modpack's Python suites                                                                |
 | `bun run lint:unused`                                      | knip — unused files, exports and dependencies                                                   |
 | `bun run lint:dupes`                                       | jscpd — duplicated code                                                                         |
 | `docker compose up -d --build`                             | Production-like stack: caddy, client, server, worker, db, redis                                 |

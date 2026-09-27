@@ -83,5 +83,15 @@
     @include below(lg) {
       font-size: var(--text-2xl);
     }
+
+    &:before {
+      display: inline-block;
+      width: 6px;
+      height: 0.8em;
+      margin-right: 0.4em;
+      background: linear-gradient(180deg, var(--color-accent) 0 55%, var(--color-gold) 55% 100%);
+      content: '';
+      transform: skewX(-18deg);
+    }
   }
 }

@@ -4,6 +4,7 @@ import type { ModuleSlot } from '@otmetki/schemas';
 import type { Arena, CrewRole, CrewSkill, GameDataEntry, Module, PrismaClient, Provision, Vehicle, VehicleProfile } from '../../../../../generated';
 import type { LestaVehicleImages } from '../../../../lib/lesta';
 import type { GameData } from '../game-data';
+import type { LocalizedMessages } from '../localization';
 import type { SourceRevision } from '../source';
 
 export type SpecPrimitive = boolean | number | string | null;
@@ -44,11 +45,27 @@ export type ImportedVehicleSummary = {
   speed: { forward: number; backward: number };
 };
 
+export type LocalizedVehicleFields = Partial<Pick<Vehicle, 'description' | 'name' | 'shortName'>>;
+
 export type VehicleRow = Pick<
   Vehicle,
-  'isCollectible' | 'isPremium' | 'isWheeled' | 'name' | 'nation' | 'prevTankIds' | 'shortName' | 'slug' | 'tankId' | 'tier' | 'type'
+  | 'description'
+  | 'descriptionKey'
+  | 'isCollectible'
+  | 'isPremium'
+  | 'isWheeled'
+  | 'name'
+  | 'nameKey'
+  | 'nation'
+  | 'prevTankIds'
+  | 'shortName'
+  | 'slug'
+  | 'tankId'
+  | 'tier'
+  | 'type'
 > & {
   tag: string;
+  localized: LocalizedVehicleFields;
   images: LestaVehicleImages;
   priceCredit?: number;
   priceGold?: number;
@@ -126,6 +143,17 @@ export type ImportPlan = {
 
 export type CreateImportPlanInput = {
   data: GameData;
+  messages?: LocalizedMessages;
+};
+
+export type BuildVehicleRowsInput = {
+  vehicles: VehicleSpec[];
+  messages?: LocalizedMessages;
+};
+
+export type LocalizeVehicleInput = {
+  vehicle: VehicleSpec;
+  messages?: LocalizedMessages;
 };
 
 export type SummarizeVehicleInput = {

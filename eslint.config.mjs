@@ -13,6 +13,7 @@ export default eslint(
       '**/generated',
       '**/coverage',
       '**/.cache',
+      '**/.venv',
       '**/next-env.d.ts',
       'apps/client/public/twitch-panel.js',
       '.data/**',

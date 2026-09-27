@@ -27,13 +27,25 @@ export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameV
             crew: toStoredJson(row.crew),
             modulesTree: toStoredJson(row.modulesTree),
             nextTanks: toStoredJson(row.nextTanks),
-            prevTankIds: row.prevTankIds
+            prevTankIds: row.prevTankIds,
+            nameKey: row.nameKey,
+            descriptionKey: row.descriptionKey
           };
+
+          const update = { ...game, ...row.localized };
 
           return prisma.vehicle.upsert({
             where: { tankId: row.tankId },
-            create: { tankId: row.tankId, name: row.name, shortName: row.shortName, slug: row.slug, images: row.images, ...game },
-            update: withImages.has(row.tankId) ? game : { ...game, images: row.images }
+            create: {
+              tankId: row.tankId,
+              name: row.name,
+              shortName: row.shortName,
+              description: row.description,
+              slug: row.slug,
+              images: row.images,
+              ...game
+            },
+            update: withImages.has(row.tankId) ? update : { ...update, images: row.images }
           });
         })
       )

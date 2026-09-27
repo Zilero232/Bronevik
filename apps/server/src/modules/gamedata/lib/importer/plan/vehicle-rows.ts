@@ -1,15 +1,27 @@
-import type { VehicleSpec } from '@otmetki/gamedata';
+import { isDefined, pickBy, unique } from 'remeda';
 
-import { unique } from 'remeda';
-
-import type { ModuleTreeNode, NextTank, VehicleRow } from '../importer.types';
+import type { BuildVehicleRowsInput, LocalizedVehicleFields, LocalizeVehicleInput, ModuleTreeNode, NextTank, VehicleRow } from '../importer.types';
 
 import { slugify } from '../../../../../common/lib';
 import { vehicleImages } from '../../../../../lib/lesta';
+import { translate } from '../../localization';
 import { MODULE_TYPE, VEHICLE_TYPE } from '../importer.constants';
 import { prices, vehicleModules } from './vehicle-modules';
 
-export const buildVehicleRows = (vehicles: VehicleSpec[]): VehicleRow[] => {
+export const localizeVehicle = ({ vehicle, messages = {} }: LocalizeVehicleInput): LocalizedVehicleFields => {
+  const name = translate({ messages, key: vehicle.nameKey });
+
+  return pickBy(
+    {
+      name,
+      shortName: translate({ messages, key: vehicle.shortNameKey }) ?? name,
+      description: translate({ messages, key: vehicle.descriptionKey })
+    },
+    isDefined
+  );
+};
+
+export const buildVehicleRows = ({ vehicles, messages }: BuildVehicleRowsInput): VehicleRow[] => {
   const tankIdByTag = new Map(vehicles.map((vehicle) => [vehicle.tag, vehicle.tankId]));
   const nextByTank = new Map<number, NextTank[]>();
   const prevByTank = new Map<number, number[]>();
@@ -34,6 +46,7 @@ export const buildVehicleRows = (vehicles: VehicleSpec[]): VehicleRow[] => {
   return vehicles.map((vehicle) => {
     const modules = vehicleModules(vehicle);
     const idByName = new Map(modules.map(({ kind, module }) => [`${kind}:${module.name}`, module.moduleId]));
+    const localized = localizeVehicle({ vehicle, messages });
 
     const modulesTree: ModuleTreeNode[] = modules.map(({ kind, module }) => ({
       moduleId: module.moduleId,
@@ -51,8 +64,12 @@ export const buildVehicleRows = (vehicles: VehicleSpec[]): VehicleRow[] => {
     return {
       tankId: vehicle.tankId,
       tag: vehicle.tag,
-      name: vehicle.name,
-      shortName: vehicle.shortName,
+      name: localized.name ?? vehicle.name,
+      shortName: localized.shortName ?? vehicle.shortName,
+      description: localized.description ?? null,
+      nameKey: vehicle.nameKey ?? null,
+      descriptionKey: vehicle.descriptionKey ?? null,
+      localized,
       slug: slugify(vehicle.tag),
       nation: vehicle.nation,
       type: VEHICLE_TYPE[vehicle.type],

@@ -3,7 +3,7 @@
 import { curveMonotoneX } from '@visx/curve';
 import { AreaClosed, LinePath } from '@visx/shape';
 
-import { clampIndex, linearLayout, useChartHover } from '@/shared/lib';
+import { clampIndex, linearLayout, seriesTone, useChartHover } from '@/shared/lib';
 
 import type { LineChartPlotProps } from '../../LineChart.types';
 
@@ -24,11 +24,11 @@ export const LineChartPlot = ({ labels, series, width, height, yDomain, withArea
 
   return (
     <ChartCanvas {...layout} {...pointer} formatValue={formatValue} height={height} labels={labels} series={series} width={width}>
-      {series.map((item) => {
+      {series.map((item, seriesIndex) => {
         const points = item.values.map((value, index) => ({ index, value }));
 
         return (
-          <g key={item.id} className={s.series} data-tone={item.tone ?? 'accent'}>
+          <g key={item.id} className={s.series} data-tone={seriesTone({ tone: item.tone, index: seriesIndex })}>
             {withArea && (
               <AreaClosed curve={curveMonotoneX} data={points} x={(point) => xScale(point.index)} y={(point) => yScale(point.value)} yScale={yScale}>
                 {({ path }) => <path className={s.area} d={path(points) ?? ''} />}

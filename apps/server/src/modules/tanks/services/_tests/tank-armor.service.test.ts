@@ -65,6 +65,7 @@ describe('TankArmorService', () => {
     expect(armorModelSchema.safeParse(response).success).toBe(true);
     expect([...base64ToBytes(response.geometry)]).toEqual([...stored]);
     expect(response.source.commit).toBe(ROW.sourceSha);
+    expect(response.source.client).toBe('MT.RU.PRODUCTION');
     expect(response.modules.hull.plates[0].thickness).toBe(150);
   });
 

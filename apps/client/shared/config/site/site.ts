@@ -32,6 +32,6 @@ export const TELEGRAM_BOT = {
 
 export const MOD_DISTRIBUTION: ModDistribution = {
   mostUrl: null,
-  downloadUrl: 'https://triotmetki.ru/downloads/otmetki.wotmod',
-  fileName: 'otmetki.wotmod'
+  downloadUrl: 'https://triotmetki.ru/downloads/otmetki.mtmod',
+  fileName: 'otmetki.mtmod'
 };

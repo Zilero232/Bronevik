@@ -1,15 +1,21 @@
-import { Mark3Icon, RadioIcon, StrongholdIcon } from '@otmetki/icons';
-import { Download, ListChecks, Newspaper, NotebookPen, ScrollText, Swords, Ticket, Wrench } from 'lucide-react';
+import { CrewCommanderIcon, Mark3Icon, RadioIcon, StrongholdIcon } from '@otmetki/icons';
+import { Activity, Download, ListChecks, Newspaper, NotebookPen, ScrollText, Swords, Tag, Ticket, Wrench } from 'lucide-react';
 
 import { ROUTES } from '@/shared/constants';
 
 export const HOME_ACTIONS = [
-  { key: 'marks', href: ROUTES.marks, icon: Mark3Icon },
-  { key: 'builds', href: ROUTES.builds.list, icon: Wrench },
-  { key: 'missions', href: ROUTES.missions.hub, icon: ListChecks },
-  { key: 'codes', href: ROUTES.codes, icon: Ticket },
-  { key: 'tournaments', href: ROUTES.tournaments.list, icon: Swords }
+  { key: 'marks', href: ROUTES.marks, icon: Mark3Icon, tone: 'gold' },
+  { key: 'builds', href: ROUTES.builds.list, icon: Wrench, tone: 'sky' },
+  { key: 'missions', href: ROUTES.missions.hub, icon: ListChecks, tone: 'olive' },
+  { key: 'codes', href: ROUTES.codes, icon: Ticket, tone: 'brass' },
+  { key: 'tournaments', href: ROUTES.tournaments.list, icon: Swords, tone: 'battle' }
 ] as const;
+
+export const HOME_FIGURES = {
+  tracked: { icon: CrewCommanderIcon, tone: 'accent' },
+  online: { icon: Activity, tone: 'olive' },
+  version: { icon: Tag, tone: 'sky' }
+} as const;
 
 export const HOME_CTA = { href: ROUTES.mod, icon: Download } as const;
 

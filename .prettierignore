@@ -3,6 +3,7 @@
 next-env.d.ts
 bun.lock
 **/_tests/fixtures/**/*.html
+**/_tests/fixtures/**/mt-*.collision.json
 apps/client/public/twitch-panel.js
 
 .claude

@@ -4,7 +4,7 @@ paths:
   - "e2e/**/*.spec.ts"
   - "**/vitest.config.*"
   - "playwright.config.ts"
-  - "apps/mod/tests/**"
+  - "apps/modpack/**/tests/**"
 ---
 
 <!-- Auto-loaded when editing tests or their configs. Full picture — the root CLAUDE.md. -->
@@ -24,7 +24,7 @@ packages/ratings/src/eff/
 
 Not `__tests__`, not a bare test file beside the source, not a separate `tests/` tree at the workspace root. E2E specs live only in the root [e2e/](../../e2e/) with a `.spec.ts` extension.
 
-The one exception is the game mod: `apps/mod/tests/` is a Python `unittest` suite, because the mod's source tree is packed into the `.wotmod` as-is and must not carry tests.
+The one exception is the game modpack: Python `unittest` suites in a `tests/` folder of each package (`apps/modpack/packages/*/tests`, `apps/modpack/features/*/tests`, `apps/modpack/tools/**/tests`), because the build packs the source folders into `.mtmod` packages and leaves `tests/` out.
 
 ## How it runs
 
@@ -32,7 +32,7 @@ The one exception is the game mod: `apps/mod/tests/` is a Python `unittest` suit
 
 E2E — `bun run test:e2e`, two projects (`desktop` + `mobile`). Without `E2E_BASE_URL` the config starts the client dev server itself; CI builds the client and serves the standalone output instead. The client has no mocks and e2e runs without the server app or a database: the smoke aborts every API request and checks that pages render their shell and error states. On Windows, run Playwright through node (`node node_modules/@playwright/test/cli.js test`) if `bunx playwright` hangs.
 
-The mod — `bun run test:mod` (`python -m unittest discover apps/mod/tests`), on Python 3; the pure code is 2/3 compatible.
+The modpack — `bun run test:modpack` (`python apps/modpack/tools/run_tests.py`: every suite, no third-party packages, also runs on Python 2.7); `uv run pytest` in `apps/modpack` runs the same tests. The pure code is 2/3 compatible.
 
 The manual deploy workflow ([.github/workflows/deploy.yml](../../.github/workflows/deploy.yml)) runs all three before it builds any image; there is no per-push CI.
 
@@ -54,7 +54,7 @@ A test should catch a regression, not restate the implementation. Every bug fixe
 | Rating math                  | WN8, EFF, MoE projections are what players compare; a silent drift is a public bug    | `packages/ratings/src/**/_tests`                     |
 | Parsers and codecs           | Silent data loss between Lesta, the replay format and our schema                      | `apps/server/src/lib/replay`, `apps/server/src/common/lib/json/_tests` |
 | Fallback branches            | Lesta error codes, empty pages, a tripped circuit breaker — the paths hit on a bad day | `apps/server/src/lib/lesta/outcome/_tests`        |
-| Fair-play guards             | The mod must never serialise other players' data                                      | `apps/mod/tests/test_payload.py`                     |
+| Fair-play guards             | The mod must never serialise other players' data                                      | `apps/modpack/packages/companion/tests/test_payload.py` |
 | Signatures and auth handshakes | A wrong HMAC or OpenID check is a security bug, not a cosmetic one                   | `apps/server/src/lib/auth/**/_tests`                    |
 | Rules with a threshold       | Schedules, backoff, streaks and diff windows fire for the wrong reason unnoticed       | `apps/server/src/modules/collector/tracking/lib/poll-schedule/_tests`        |
 | Contracts between layers     | A schema and its translations drifting apart ships a blank string                      | `apps/client/shared/i18n/messages/_tests`                     |

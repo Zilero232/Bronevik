@@ -312,7 +312,7 @@ Code changes that follow:
 | **WP8a** Progression (Dota Plus core) | New `progression` module: tank XP/levels, per-tank challenges, «Гильзы» ledger (earn-only), quarterly season track, cosmetics inventory; profile cosmetics in `social` | `apps/server/src/modules/progression/**`, `prisma/schema/progression.prisma`, `packages/schemas/src/progression`, client `views/progression`, `widgets/player` | WP2 |
 | **WP8b** Deep analytics | Full insights, hour/weekday performance, tilt, patch analysis, learning curve, map & platoon advisor, analytics export | `modules/players`, `modules/me`, new `modules/analytics` if `players` grows too large | WP2, mod data |
 | **WP8c** Battle analysis + AI coach | Post-battle deep analysis on mod ingest/replays; AI coach with per-tier quota and response cache | `modules/{mod,replays}`, new `modules/coach-ai` | WP2 |
-| **WP8d** Overlays and hangar extras | Premium themes, theme builder, MoE graph widget; mod hangar briefing/playlist after the МОСТ review | `modules/streamers`, `apps/client/views/{overlay,streamer-studio}`, `apps/mod` | WP6 |
+| **WP8d** Overlays and hangar extras | Premium themes, theme builder, MoE graph widget; mod hangar briefing/playlist after the МОСТ review | `modules/streamers`, `apps/client/views/{overlay,streamer-studio}`, `apps/modpack` | WP6 |
 | **WP9** Docs | Update features.md §15/§18/§19 and the design spec phases; API terms page copy | `docs/**`, client legal views | WP3, WP4 |
 
 Order: WP0 and WP1 in parallel → WP2 → WP3/WP4/WP5 in parallel → WP6/WP7 → WP8* → WP9. WP1–WP7 make the current product consistent with the one-subscription model. WP8* adds the new Plus value and can ship incrementally behind `earlyAccess`.

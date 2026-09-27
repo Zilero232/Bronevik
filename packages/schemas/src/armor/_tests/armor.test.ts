@@ -51,7 +51,7 @@ const MODEL = {
       }
     ]
   },
-  source: { repo: 'unicum-gg/wot.models', commit: 'f'.repeat(40) }
+  source: { repo: 'unicum-gg/wot.models', commit: 'f'.repeat(40), client: 'MT.RU.PRODUCTION' }
 };
 
 describe('armorModelSchema', () => {

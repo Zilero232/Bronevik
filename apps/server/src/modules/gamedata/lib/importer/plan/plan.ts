@@ -32,7 +32,7 @@ const tryLoadout = ({ vehicle, preset, warnings }: TryLoadoutInput): FinalStats 
   }
 };
 
-export const createImportPlan = ({ data }: CreateImportPlanInput): ImportPlan => {
+export const createImportPlan = ({ data, messages }: CreateImportPlanInput): ImportPlan => {
   const warnings = [...data.warnings];
   const version = data.version ?? data.revision.sha;
   const profiles: ProfileRow[] = [];
@@ -100,7 +100,7 @@ export const createImportPlan = ({ data }: CreateImportPlanInput): ImportPlan =>
     version,
     title: `${data.revision.sourceId} ${version}`,
     revision: data.revision,
-    vehicles: buildVehicleRows(data.vehicles),
+    vehicles: buildVehicleRows({ vehicles: data.vehicles, messages }),
     profiles,
     modules: buildModuleRows(data.vehicles),
     provisions: buildProvisionRows({ data }),

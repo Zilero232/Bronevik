@@ -16,9 +16,17 @@ export const HomeActions = () => {
           {t('cta')}
         </Link>
       }
+      links={HOME_ACTIONS.map(({ key, href, icon: Icon, tone }) => ({
+        id: key,
+        href,
+        tone,
+        label: t(key),
+        hint: t(`hints.${key}`),
+        icon: <Icon aria-hidden size={HOME_ICON.action} />
+      }))}
       aria-label={t('label')}
       as='nav'
-      links={HOME_ACTIONS.map(({ key, href, icon: Icon }) => ({ id: key, href, label: t(key), icon: <Icon aria-hidden size={HOME_ICON.action} /> }))}
+      variant='tiles'
     />
   );
 };

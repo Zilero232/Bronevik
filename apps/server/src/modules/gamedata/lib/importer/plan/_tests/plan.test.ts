@@ -9,6 +9,8 @@ import { createImportPlan } from '../plan';
 const data = await buildGameData({ reader: createMemoryReader({ sourceId: 'RU', files: memoryFiles() }), nations: ['ussr'] });
 const plan = createImportPlan({ data });
 const [vehicle] = data.vehicles;
+const KEYS = { nameKey: 'ussr_vehicles:IS', shortNameKey: 'ussr_vehicles:IS_short', descriptionKey: 'ussr_vehicles:IS_descr' } as const;
+const keyedData = { ...data, vehicles: [{ ...vehicle, ...KEYS }] };
 
 describe('createImportPlan', () => {
   it('maps vehicles onto database rows without inventing localized names', () => {
@@ -16,6 +18,30 @@ describe('createImportPlan', () => {
     expect(plan.vehicles[0]).toMatchObject({ tankId: vehicle.tankId, type: 'heavyTank', tier: vehicle.tier, slug: 'r01-is', name: vehicle.name });
     expect(plan.vehicles[0].priceCredit).toBe(vehicle.price?.amount);
     expect(plan.title).toBe(`RU ${data.version}`);
+  });
+
+  it('leaves the localized fields empty when there are no messages', () => {
+    expect(plan.vehicles[0]).toMatchObject({ localized: {}, description: null, nameKey: vehicle.nameKey });
+  });
+
+  it('takes the name, short name and description from the localization messages', () => {
+    const messages = { [KEYS.nameKey]: 'ИС', [KEYS.shortNameKey]: 'ИС-1', [KEYS.descriptionKey]: 'Тяжёлый танк' };
+    const [row] = createImportPlan({ data: keyedData, messages }).vehicles;
+
+    expect(row).toMatchObject({
+      name: 'ИС',
+      shortName: 'ИС-1',
+      description: 'Тяжёлый танк',
+      slug: 'r01-is',
+      localized: { name: 'ИС', shortName: 'ИС-1', description: 'Тяжёлый танк' }
+    });
+  });
+
+  it('uses the localized name as the short name when the short key has no message', () => {
+    const [row] = createImportPlan({ data: keyedData, messages: { [KEYS.nameKey]: 'ИС' } }).vehicles;
+
+    expect(row).toMatchObject({ name: 'ИС', shortName: 'ИС', localized: { name: 'ИС', shortName: 'ИС' } });
+    expect(row?.localized).not.toHaveProperty('description');
   });
 
   it('builds stock and top profiles with their module ids', () => {

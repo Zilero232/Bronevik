@@ -1,0 +1,255 @@
+"""The companion app: a thin host that wires client events to the companion's capture modules and to
+the features attached through the core registry.
+
+Events on `app.bus` (features subscribe to these; see CLAUDE.md for the host interface):
+    account(account_id)          the outbox switched to this account
+    rebind()                     credentials changed, paused queues may resume
+    hangar()                     the hangar GUI is shown
+    vehicle_moe(snapshot)        MoE snapshot of the vehicle selected in the hangar
+    battle_enter()               an avatar is ready (own battle or replay playback)
+    battle_start(arena_id)       own battle started (never a replay)
+    battle_ready(player)         own battle set up (never a replay)
+    battle_leave()               the avatar left
+    battle_results(arena_id, results)
+    battle_event(event, now)     the battle_result event before it is queued
+    battle_recorded()            a battle result was recorded
+    ingest_response(data)        a 2xx body from /mod/ingest
+    tick(now)                    once a second, hangar only
+"""
+from __future__ import absolute_import
+
+import os
+import time
+
+import BattleReplay
+import BigWorld
+from CurrentVehicle import g_currentVehicle
+from PlayerEvents import g_playerEvents
+
+from ...core.client.fetch import create_transport
+from ...core.client.ui import Ui
+from ...core.events import EventBus
+from ...core.hooks import Subscriptions
+from ...core.log import log, log_exception, safe
+from ...core.registry import registry
+from ...core.storage import JsonFile
+from ..binding import CredentialStore
+from ..config import Config
+from ..i18n import Translator, resolve_language
+from ..outbox import Outbox
+from ..sender import INGEST_PATH, IngestSender
+from ..version import MOD_ID, VERSION
+from .battles import BattleCapture
+from .binding import Binder
+from .game import client_language, client_version
+from .marks import MarksCapture
+from .settings_core import SettingsShare
+from .settings_ui import create_settings_ui
+
+CONFIG_DIR = os.path.join('mods', 'configs', 'otmetki')
+TICK_S = 1.0
+
+
+def _path(name):
+    return os.path.join(CONFIG_DIR, name)
+
+
+class OtmetkiApp(object):
+
+    def __init__(self):
+        self.config_dir = CONFIG_DIR
+        self.bus = EventBus()
+        self.hooks = Subscriptions()
+        self.config_file = JsonFile(_path('config.json'), pretty=True)
+        self.config = Config(self.config_file.read({}))
+        self.save_config()
+        self.translate = Translator(resolve_language(self.config.get('language'), client_language()))
+        self.credentials = CredentialStore(JsonFile(_path('credentials.json')))
+        self.state_file = JsonFile(_path('state.json'))
+        self.state = self.state_file.read({}) or {}
+        self.state_parts = []
+        self.transport = create_transport()
+        self.account_id = None
+        self.outbox = None
+        self.sender = None
+        self.auth_failed = False
+        self.in_battle = False
+        self.last_flush = 0.0
+        self.flush_requested = False
+        self.ui = Ui()
+        self.binder = Binder(self)
+        self.marks = MarksCapture(self)
+        self.battles = BattleCapture(self)
+        self.settings_ui = create_settings_ui(self)
+        self.settings_share = SettingsShare(self, CONFIG_DIR)
+
+    def start(self):
+        hooks = self.hooks
+        hooks.add(g_playerEvents, 'onAccountShowGUI', self._on_account_show_gui)
+        hooks.add(g_playerEvents, 'onEnqueued', self._on_enqueued)
+        hooks.add(g_playerEvents, 'onDequeued', self._on_dequeued)
+        hooks.add(g_playerEvents, 'onArenaCreated', self._on_arena_created)
+        hooks.add(g_playerEvents, 'onAvatarReady', self._on_avatar_ready)
+        hooks.add(g_playerEvents, 'onAvatarBecomeNonPlayer', self._on_avatar_leave)
+        hooks.add(g_playerEvents, 'onBattleResultsReceived', self._on_battle_results)
+        hooks.add(g_currentVehicle, 'onChanged', self._on_vehicle_changed)
+        self.settings_ui.register()
+        BigWorld.callback(TICK_S, self._tick)
+        log('started %s' % VERSION)
+        registry().bind(self)
+
+    # Host interface used by the capture modules and the features.
+
+    def user_agent(self):
+        return '%s/%s' % (MOD_ID, VERSION)
+
+    def save_config(self):
+        self.config_file.write(self.config.to_dict())
+
+    def register_state(self, key, dump):
+        """`dump()` gives the value stored under `key` in state.json on every save."""
+        self.state_parts.append((key, dump))
+
+    def save_state(self):
+        data = dict(self.state)
+        for key, dump in self.state_parts:
+            data[key] = dump()
+        self.state = data
+        self.state_file.write(data)
+
+    def current_credentials(self):
+        if self.account_id is None:
+            return None
+        return self.credentials.get(self.account_id)
+
+    def is_bound(self):
+        return self.current_credentials() is not None
+
+    def status_text(self):
+        if self.auth_failed:
+            return self.translate('status_auth_failed')
+        if self.is_bound():
+            return self.translate('status_bound', account_id=self.account_id)
+        return self.translate('status_unbound')
+
+    def enqueue(self, event):
+        if self.outbox is None or not self.is_bound() or not self.config.get('enabled'):
+            return False
+        return self.outbox.enqueue(event)
+
+    def bind(self, raw_code):
+        self.binder.bind(raw_code)
+
+    def rebuild_sender(self):
+        self.auth_failed = False
+        if self.outbox is None:
+            self.sender = None
+            return
+        self.outbox.unblock()
+        self.bus.emit('rebind')
+        self.sender = IngestSender(
+            self.outbox,
+            self.current_credentials(),
+            self.transport,
+            self.config.endpoint(INGEST_PATH),
+            VERSION,
+            client_version(),
+            self.user_agent(),
+            on_response=self._on_ingest_response,
+            on_auth_failed=self.on_auth_failed,
+            clock=time.time,
+        )
+
+    @safe
+    def on_auth_failed(self):
+        self.auth_failed = True
+        self.ui.notify(self.translate('status_auth_failed'))
+        self.settings_ui.refresh()
+
+    # Client events.
+
+    def _switch_account(self, account_id):
+        self.account_id = account_id
+        self.outbox = Outbox(JsonFile(_path('outbox_%d.json' % account_id)))
+        self.bus.emit('account', account_id)
+        self.rebuild_sender()
+
+    def _tick(self):
+        try:
+            self.transport.poll()
+            now = time.time()
+            if not self.in_battle:
+                self.battles.poll_pending_results(now)
+                interval = self.config.get('flush_interval_seconds')
+                if self.sender is not None and (self.flush_requested or now - self.last_flush >= interval):
+                    self.flush_requested = False
+                    self.last_flush = now
+                    self.sender.tick(now)
+                self.settings_share.tick(now)
+                self.bus.emit('tick', now)
+        except Exception:
+            log_exception('tick')
+        BigWorld.callback(TICK_S, self._tick)
+
+    @safe
+    def _on_account_show_gui(self, *args):
+        account_id = getattr(BigWorld.player(), 'databaseID', None)
+        if account_id and account_id != self.account_id:
+            self._switch_account(account_id)
+        self.binder.bind_from_config()
+        self._on_vehicle_changed()
+        self.bus.emit('hangar')
+        self.settings_ui.refresh()
+        self.settings_share.on_hangar()
+
+    @safe
+    def _on_ingest_response(self, data):
+        self.bus.emit('ingest_response', data)
+
+    @safe
+    def _on_vehicle_changed(self, *args):
+        if not self.in_battle:
+            self.marks.on_vehicle_changed()
+
+    @safe
+    def _on_enqueued(self, queue_type, *args):
+        self.battles.on_enqueued(queue_type)
+
+    @safe
+    def _on_dequeued(self, queue_type, *args):
+        self.battles.on_dequeued()
+
+    @safe
+    def _on_arena_created(self, *args):
+        self.battles.on_arena_created()
+
+    @safe
+    def _on_avatar_ready(self, *args):
+        self.in_battle = True
+        self.bus.emit('battle_enter')
+        if BattleReplay.isPlaying():
+            return
+        player = BigWorld.player()
+        self.battles.on_battle_ready(player)
+        self.bus.emit('battle_ready', player)
+
+    @safe
+    def _on_avatar_leave(self, *args):
+        self.in_battle = False
+        self.battles.on_battle_leave()
+        self.bus.emit('battle_leave')
+
+    @safe
+    def _on_battle_results(self, is_player_vehicle, results):
+        self.battles.on_battle_results(is_player_vehicle, results)
+
+
+g_app = None
+
+
+def start():
+    global g_app
+    if g_app is None:
+        g_app = OtmetkiApp()
+        g_app.start()
+    return g_app

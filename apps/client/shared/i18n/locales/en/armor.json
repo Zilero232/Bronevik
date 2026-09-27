@@ -7,7 +7,8 @@
   "page": {
     "eyebrow": "Armor layout",
     "back": "Back to the vehicle",
-    "version": "Game version {version}",
+    "source": "Mir Tankov {version} · {client}",
+    "sourceTitle": "Geometry, armor, modules and shells come from the Mir Tankov (Lesta Games) client, build {client}",
     "fallbackTitle": "Armor"
   },
   "states": {
@@ -20,7 +21,7 @@
   "attribution": {
     "lesta": "Armor geometry and characteristics: © Lesta Games. All rights reserved. Data source: Lesta Games.",
     "site": "Official game website",
-    "geometry": "Collision geometry from the <link>{repo}</link> mirror, commit {commit}.",
+    "geometry": "Collision geometry from the <link>{repo}</link> mirror of the Mir Tankov client (Lesta branch), commit {commit}.",
     "note": "Only the simplified collision model is shown, with no visual models or textures."
   },
   "controls": {

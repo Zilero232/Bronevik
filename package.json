@@ -1,8 +1,16 @@
 {
   "name": "otmetki",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Три отметки — the all-in-one companion platform for «Мир танков» (Lesta RU): stats, marks of excellence, tank analytics, builds, replays, clans, streamer tools and a developer API. Bun-workspaces monorepo.",
+  "homepage": "https://triotmetki.ru",
+  "bugs": {
+    "url": "https://github.com/Zilero232/Triotmetki/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zilero232/Triotmetki.git"
+  },
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
   "type": "module",
@@ -67,7 +75,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:mod": "python -m unittest discover apps/mod/tests",
+    "test:modpack": "bun --filter @otmetki/modpack test",
     "test:watch": "vitest",
     "typecheck": "bun --filter '*' typecheck",
     "verify": "bun run typecheck && bun run lint && bun run lint:encoding && bun run format:check && bun run lint:css"

@@ -12,31 +12,36 @@ bun run gamedata:import -- --source PT_RU   # public test: snapshot only
 bun run gamedata:import -- --local /path/to/wot.src-checkout
 ```
 
-| Option                 | What it does                                                                                                                    |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `--source`             | `RU` (default, `unicum-gg/wot.src@RU`), `PT_RU` (`unicum-gg/wot.src@PT_RU`), `IZEBERG_RU` (`izeberg/wot-src@RU`, backup mirror) |
-| `--ref <branch\|sha>`  | Pin another branch or an exact commit                                                                                           |
-| `--local <dir>`        | Read a local checkout of the mirror instead of GitHub                                                                           |
-| `--cache <dir>`        | Raw file cache, default `apps/server/.cache` (git-ignored), keyed by commit sha                                                 |
-| `--nations ussr,uk`    | Only these nations                                                                                                              |
-| `--limit <n>`          | At most `n` vehicles per nation                                                                                                 |
-| `--dry-run`            | Fetch, parse and plan; print counts; no database                                                                                |
-| `--snapshot`           | Only `GameVersion` + raw `GameDataEntry` rows. Always on for test-server sources                                                |
-| `--no-current`         | Do not flag the imported version as `GameVersion.isCurrent`                                                                     |
-| `--armor`              | Also build 3D armor models from `unicum-gg/wot.models@Lesta` (see below)                                                        |
-| `--armor-only`         | Build armor models only; the catalog is left untouched                                                                          |
-| `--models-ref <sha>`   | Pin the models mirror to another branch or commit                                                                               |
-| `--local-models <dir>` | Read a local checkout of the models mirror instead of GitHub                                                                    |
-| `--armor-dir <dir>`    | Local armor storage, default `<repo>/.data/armor` (only with `REPLAY_STORAGE=local`)                                            |
-| `--skip-missions`      | Do not import personal missions (ЛБЗ), see [docs/research/lbz.md](../../../../../docs/research/lbz.md)                          |
+| Option                     | What it does                                                                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `--source`                 | `RU` (default, `unicum-gg/wot.src@RU`), `PT_RU` (`unicum-gg/wot.src@PT_RU`), `IZEBERG_RU` (`izeberg/wot-src@RU`, backup mirror) |
+| `--ref <branch\|sha>`      | Pin another branch or an exact commit                                                                                           |
+| `--locale-ref <sha>`       | Pin the localization mirror (`izeberg/wot-src@RU`) to another branch or commit                                                  |
+| `--local <dir>`            | Read a local checkout of the mirror instead of GitHub                                                                           |
+| `--cache <dir>`            | Raw file cache, default `apps/server/.cache` (git-ignored), keyed by commit sha                                                 |
+| `--nations ussr,uk`        | Only these nations                                                                                                              |
+| `--limit <n>`              | At most `n` vehicles per nation                                                                                                 |
+| `--dry-run`                | Fetch, parse and plan; print counts; no database                                                                                |
+| `--snapshot`               | Only `GameVersion` + raw `GameDataEntry` rows. Always on for test-server sources                                                |
+| `--no-current`             | Do not flag the imported version as `GameVersion.isCurrent`                                                                     |
+| `--armor`                  | Also build 3D armor models from `unicum-gg/wot.models@Lesta` (see below)                                                        |
+| `--armor-only`             | Build armor models only; the catalog is left untouched                                                                          |
+| `--models-ref <sha>`       | Pin the models mirror to another branch or commit                                                                               |
+| `--local-models <dir>`     | Read a local checkout of the models mirror instead of GitHub                                                                    |
+| `--armor-dir <dir>`        | Local armor storage, default `<repo>/.data/armor` (only with `REPLAY_STORAGE=local`)                                            |
+| `--skip-missions`          | Do not import personal missions (ЛБЗ), see [docs/research/lbz.md](../../../../../docs/research/lbz.md)                          |
+| `--strict-armor`           | Exit 1 when any vehicle has no collision model in the models mirror (every one is printed with its reason either way)           |
+| `--allow-version-mismatch` | Import even when the client release line differs from the live Lesta `encyclopedia/info` version                                |
 
 `DATABASE_URL` comes from the root `.env`. `GITHUB_TOKEN` is optional: the importer makes a single GitHub API call per run (to pin the branch to a commit). Everything else is downloaded from `raw.githubusercontent.com` by commit sha, so a cached run makes no network requests at all. A full RU import (about 1 000 vehicles, 1 070 files, roughly 200 MB) takes about 70 s cold and 50 s warm.
 
 ## Data source
 
+- **Мир танков only.** Every source is the Lesta client (`MT.RU.PRODUCTION`, public test `MT.PT.PRODUCTION`), never Wargaming World of Tanks. `lib/source/mt-client` (`assertMtClient`) rejects a mirror whose `.version_name` is not a 1.x build (Wargaming is on 2.x) or whose README names a `WOT.*.PRODUCTION` guid or lacks the source's own guid; it throws `ForeignClientError`, and there is no fallback. With `LESTA_APPLICATION_ID` set, the script also compares the release line with the live `encyclopedia/info.game_version` and exits on a mismatch. See [docs/research/armor-viewer.md §7](../../../../../docs/research/armor-viewer.md).
+
 - **Mirrors.** [`unicum-gg/wot.src`](https://github.com/unicum-gg/wot.src) has branches `RU` and `PT_RU`, rebuilt daily from the Lesta update CDN. It contains packed XML converted to text plus decompiled scripts. [`izeberg/wot-src`](https://github.com/izeberg/wot-src) (branch `RU`) has the same layout and is the backup. Minimaps come from [`unicum-gg/wot.maps`](https://github.com/unicum-gg/wot.maps) (`Lesta`, `Lesta_PT`). Each is `maps/<geometry>[_<mode>].webp`, re-encoded from `spaces/<id>/mmap*.dds`.
 - **Licences.** None of these repositories has a licence file, and the assets belong to Lesta. We use them only as a source of public game data files. No code from `wot.build`/`wot.src` is copied. The parsers here are written against the XML format. The client's decompiled Python was read to learn the formulas, and none of it is vendored.
-- **No localization.** The mirrors contain no `.mo` files, so names are fallbacks derived from localization keys (`#ussr_vehicles:IS` → `IS`). The keys themselves are kept (`nameKey`, `descriptionKey`) so a later Lesta API encyclopedia sync can fill in the real Russian names. The importer never overwrites `name`, `shortName`, `slug` or `description` on existing rows.
+- **Localization.** `unicum-gg/wot.src` has no `.po` files; `izeberg/wot-src@RU` (`LOCALE_SOURCES`) has them under `sources/res/text/ru/lc_messages`. `lib/localization` loads one `<domain>.po` per key domain (`#ussr_vehicles:IS` → `ussr_vehicles.po`) and the plan takes a vehicle's `name`, `shortName` (or the name when the short key has no message) and `description` from it. Without a message the name is the key fallback (`#ussr_vehicles:IS` → `IS`). The keys are kept (`nameKey`, `descriptionKey`). The Lesta encyclopedia sync is `realLestaOnly`, so while the Lesta mock is on the importer is the only source of names: on existing rows it overwrites `name`, `shortName` and `description` only with a localized value, never with a fallback, and never touches `slug`.
 
 ### File layout (paths relative to the repo root)
 
@@ -76,21 +81,21 @@ The target is 20 KB gzipped per tank: IS-7 is about 10 KB, but modern high-poly 
 | `lib/armor`                  | Armor models: `collect` (mirror + version guard), `join`, `pack`, `storage`, `writer` (upload, rows, purge)                                    |
 | `lib/personal-missions`      | ЛБЗ: `buildPersonalMissions` (wot.src XML + client config, izeberg/wot-src .po) and `writePersonalMissions` (Mission* tables per game version) |
 | `lib/python-literal`         | Reader for the decompiled Python dict literals of the client config                                                                            |
-| `lib/source`                 | GitHub raw fetcher with disk cache, local-checkout and in-memory readers                                                                       |
+| `lib/source`                 | GitHub raw fetcher with disk cache, local-checkout and in-memory readers, `mt-client` guard                                                    |
 | `lib/game-data`              | `buildGameData({ reader })` reads and parses everything for one revision                                                                       |
 | `lib/importer`               | `createImportPlan` (pure rows + summaries), `diffSpecs`, `writeImportPlan` (Prisma upserts)                                                    |
 | `scripts/gamedata-import.ts` | The `gamedata:import` CLI (in `apps/server/scripts`)                                                                                           |
 
 ## Database mapping
 
-| Table                   | Written as                                                                                                                                                                                                            |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GameVersion`           | upsert by `version` (`title` = `"<source> <version>"`, `releasedAt` = mirror commit date); a full import marks it `isCurrent`                                                                                         |
-| `GameDataEntry`         | replaced per version: `vehicle`, `shell`, `optionalDevice`, `equipment`, `crewSkill`, `crewRole`, `postProgressionTree`, `fieldModification`, `fieldModificationPair`, `arena`, plus `meta/revision` (commit, source) |
-| `Vehicle`               | upsert by `tankId`. `specs` = full parsed `VehicleSpec`. Also `crew`, `modulesTree`, `nextTanks`, `prevTankIds`, prices and flags. `name`/`shortName`/`slug` (slug = tag) are set only on create                      |
-| `VehicleProfile`        | `stock` (default) and `top`: module ids plus the calculator output for a 100 % crew without equipment                                                                                                                 |
-| `Module`                | one row per compact id (chassis, turret, gun, engine, radio) with `tankIds` and the first definition seen as `data`                                                                                                   |
-| `Provision`             | optional devices, consumables (`equipment`), directives, field modifications. `tankIds` = compatible vehicles                                                                                                         |
-| `CrewRole`, `CrewSkill` | roles with their skills; skills with `data.params` (per-level values) and `data.extras`                                                                                                                               |
-| `Arena`                 | `arenaId` = geometry name (`01_karelia`), `image` = wot.maps minimap URL, `data` = bounds, modes, bases, spawns                                                                                                       |
-| `VehicleSpecHistory`    | per version: a compact summary (stock/top stats, guns, armor, engines, chassis) and `diff` against the latest earlier version                                                                                         |
+| Table                   | Written as                                                                                                                                                                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GameVersion`           | upsert by `version` (`title` = `"<source> <version>"`, `releasedAt` = mirror commit date); a full import marks it `isCurrent`                                                                                                                     |
+| `GameDataEntry`         | replaced per version: `vehicle`, `shell`, `optionalDevice`, `equipment`, `crewSkill`, `crewRole`, `postProgressionTree`, `fieldModification`, `fieldModificationPair`, `arena`, plus `meta/revision` (commit, source)                             |
+| `Vehicle`               | upsert by `tankId`. `specs` = full parsed `VehicleSpec`. Also `crew`, `modulesTree`, `nextTanks`, `prevTankIds`, prices and flags. `slug` (slug = tag) is set only on create; `name`/`shortName`/`description` are updated only from localization |
+| `VehicleProfile`        | `stock` (default) and `top`: module ids plus the calculator output for a 100 % crew without equipment                                                                                                                                             |
+| `Module`                | one row per compact id (chassis, turret, gun, engine, radio) with `tankIds` and the first definition seen as `data`                                                                                                                               |
+| `Provision`             | optional devices, consumables (`equipment`), directives, field modifications. `tankIds` = compatible vehicles                                                                                                                                     |
+| `CrewRole`, `CrewSkill` | roles with their skills; skills with `data.params` (per-level values) and `data.extras`                                                                                                                                                           |
+| `Arena`                 | `arenaId` = geometry name (`01_karelia`), `image` = wot.maps minimap URL, `data` = bounds, modes, bases, spawns                                                                                                                                   |
+| `VehicleSpecHistory`    | per version: a compact summary (stock/top stats, guns, armor, engines, chassis) and `diff` against the latest earlier version                                                                                                                     |

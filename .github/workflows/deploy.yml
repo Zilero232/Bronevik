@@ -55,8 +55,8 @@ jobs:
         with:
           python-version: '3.12'
 
-      # The game mod is Python 2.7 in the client; its pure logic runs on Python 3.
-      - run: bun run test:mod
+      # The game modpack is Python 2.7 in the client; its suites run on Python 3.
+      - run: bun run test:modpack
 
   # Playwright over the public pages. No API runs here: every page must render
   # its shell and fall back to its error state.

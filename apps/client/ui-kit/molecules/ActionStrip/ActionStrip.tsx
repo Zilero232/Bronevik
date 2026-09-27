@@ -13,22 +13,26 @@ export const ActionStrip = ({
   end,
   width = 'wide',
   align = 'center',
+  variant = 'chips',
   className,
   innerClassName,
   children,
   ...props
 }: ActionStripProps) => (
-  <Tag className={clsx(s.root, className)} data-theme='dark' {...props}>
+  <Tag className={clsx(s.root, s[variant], className)} data-theme='dark' {...props}>
     <div className={clsx(s.inner, s[width], s[align], innerClassName)}>
       {links && links.length > 0 && (
         <ul className={s.links}>
-          {links.map(({ id, href, label, icon }) => (
+          {links.map(({ id, href, label, icon, hint, tone }) => (
             <li key={id}>
-              <Link className={s.link} href={href}>
+              <Link className={s.link} data-tone={tone} href={href}>
                 <span aria-hidden className={s.icon}>
                   {icon}
                 </span>
-                <span className={s.text}>{label}</span>
+                <span className={s.text}>
+                  <span className={s.label}>{label}</span>
+                  {hint && variant === 'tiles' && <span className={s.hint}>{hint}</span>}
+                </span>
               </Link>
             </li>
           ))}

@@ -23,6 +23,6 @@ else
   done
 fi
 
-if staged_has '^apps/mod/.*\.py$'; then
-  bun run test:mod || exit 1
+if staged_has '^apps/modpack/.*\.py$'; then
+  bun run test:modpack || exit 1
 fi

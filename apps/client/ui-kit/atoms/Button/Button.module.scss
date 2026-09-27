@@ -66,6 +66,14 @@
   }
 }
 
+.premium {
+  @include premium-surface;
+
+  &:hover:not(:disabled) {
+    background: var(--gradient-premium-hover);
+  }
+}
+
 .secondary {
   border-color: var(--color-border-strong);
   background-color: var(--color-surface-raised);

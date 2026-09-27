@@ -89,3 +89,6 @@ are estimates. `simulateMoe` replays a list of battles through the same model.
   `masteryThresholds` reads the XP needed for each badge from a `tanks/mastery` XP distribution at the 50 / 80 / 95 / 99 percentiles.
 - `winRateDiff`: the tank's win rate minus the battle-weighted overall win rate of the players who drove it,
   `Σwins / Σb − Σ(b·WR_overall) / Σb`.
+- `wilsonInterval({ rate, trials, z })`: the Wilson score interval of a percentage over `trials` (z = 1.96, 95 %), in percent.
+  Ranking by its lower bound (or the upper one for an ascending sort) puts 5 000 battles at 60 % above 60 battles at 70 %;
+  a tiny sample (6 battles at 100 %) still needs a minimum-battles floor on top.

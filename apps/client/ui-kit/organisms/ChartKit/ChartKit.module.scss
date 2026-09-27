@@ -76,7 +76,7 @@
 }
 
 .grid :global(line) {
-  stroke: var(--color-border);
+  stroke: color-mix(in srgb, var(--color-steel-blue) 16%, var(--color-border));
 }
 
 .axis :global(text) {

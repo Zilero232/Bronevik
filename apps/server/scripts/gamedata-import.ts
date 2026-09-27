@@ -4,15 +4,17 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { z } from 'zod';
 
-import type { CollectedArmorModels, RepoReader } from '../src/modules/gamedata';
+import type { CollectedArmorModels } from '../src/modules/gamedata';
 
 import { ARMOR_VIEWER } from '../src/config';
 import { createPrismaClient } from '../src/core/prisma/prisma.factory';
+import { createLestaClient } from '../src/lib/lesta';
 import {
   ArmorVersionMismatchError,
   buildGameData,
   buildPersonalMissions,
   collectArmorModels,
+  compareEncyclopediaVersion,
   createArmorStorage,
   createGithubReader,
   createImportPlan,
@@ -21,8 +23,10 @@ import {
   createRepoReader,
   GAME_DATA_SOURCES,
   isNation,
+  loadLocalization,
   LOCALE_SOURCES,
   MODEL_SOURCES,
+  MT_CLIENT,
   writeArmorModels,
   writeImportPlan,
   writePersonalMissions
@@ -32,6 +36,7 @@ const { values } = parseArgs({
   options: {
     source: { type: 'string', default: 'RU' },
     ref: { type: 'string' },
+    'locale-ref': { type: 'string' },
     local: { type: 'string' },
     cache: { type: 'string' },
     nations: { type: 'string' },
@@ -44,7 +49,9 @@ const { values } = parseArgs({
     'models-ref': { type: 'string' },
     'local-models': { type: 'string' },
     'armor-dir': { type: 'string' },
-    'skip-missions': { type: 'boolean', default: false }
+    'skip-missions': { type: 'boolean', default: false },
+    'strict-armor': { type: 'boolean', default: false },
+    'allow-version-mismatch': { type: 'boolean', default: false }
   }
 });
 
@@ -67,7 +74,60 @@ const reader = values.local
 console.log(`→ ${reader.revision.owner}/${reader.revision.repo}@${reader.revision.ref} (${reader.revision.sha})`);
 
 const data = await buildGameData({ reader, nations, vehicleLimit: options.limit, onProgress: (message) => console.log(`  ${message}`) });
-const plan = createImportPlan({ data });
+
+const checkEncyclopediaVersion = async (): Promise<void> => {
+  const applicationId = process.env.LESTA_APPLICATION_ID;
+
+  if (!applicationId || source.isTest || !data.version) {
+    console.warn(
+      `  ! ${MT_CLIENT.product} encyclopedia version not checked (${applicationId ? 'test-server source' : 'LESTA_APPLICATION_ID is empty'})`
+    );
+
+    return;
+  }
+
+  const info = await createLestaClient({ applicationId }).encyclopedia.info();
+  const check = compareEncyclopediaVersion({ clientVersion: data.version, encyclopediaVersion: info.game_version });
+
+  if (check.matches) {
+    console.log(`→ ${MT_CLIENT.product} encyclopedia is at ${info.game_version}, client data at ${data.version}`);
+
+    return;
+  }
+
+  const message = `client data is at ${data.version} but the ${MT_CLIENT.product} encyclopedia is at ${info.game_version}`;
+
+  if (!values['allow-version-mismatch']) {
+    console.error(`✗ ${message}; pin --ref to the live build or pass --allow-version-mismatch`);
+    process.exit(1);
+  }
+
+  console.warn(`  ! ${message} (allowed)`);
+};
+
+await checkEncyclopediaVersion();
+
+const localeReader = values['armor-only']
+  ? undefined
+  : await createRepoReader({ source: LOCALE_SOURCES.RU, ref: values['locale-ref'], cacheDir, token: process.env.GITHUB_TOKEN }).catch(
+      (error: unknown) => {
+        console.warn(`  ! localization unavailable, names fall back to tags: ${error instanceof Error ? error.message : String(error)}`);
+
+        return undefined;
+      }
+    );
+
+const messages = localeReader
+  ? await loadLocalization({
+      reader: localeReader,
+      keys: data.vehicles.flatMap((vehicle) => [vehicle.nameKey, vehicle.shortNameKey, vehicle.descriptionKey])
+    })
+  : undefined;
+
+const plan = createImportPlan({ data, messages });
+const localizedVehicles = plan.vehicles.filter((vehicle) => vehicle.localized.name !== undefined).length;
+
+console.log(`→ localization: ${localizedVehicles} of ${plan.vehicles.length} vehicle names from ${localeReader?.revision.repo ?? 'nowhere'}`);
 
 console.log(
   `→ plan: ${plan.vehicles.length} vehicles, ${plan.profiles.length} profiles, ${plan.modules.length} modules, ` +
@@ -96,6 +156,15 @@ const collectArmor = async (): Promise<CollectedArmorModels | undefined> => {
         `${Math.round(sizes.reduce((sum, size) => sum + size, 0) / Math.max(1, sizes.length))} B average, ${Math.max(0, ...sizes)} B largest`
     );
 
+    for (const { tag, reason } of collected.skipped) {
+      console.warn(`  ! armor: no ${MT_CLIENT.product} collision model for ${tag}: ${reason}`);
+    }
+
+    if (values['strict-armor'] && collected.skipped.length > 0) {
+      console.error(`✗ ${collected.skipped.length} vehicles have no collision model in ${modelsReader.revision.owner}/${modelsReader.revision.repo}`);
+      process.exit(1);
+    }
+
     for (const mismatch of collected.mismatches.slice(0, 40)) {
       console.warn(`  ! ${mismatch}`);
     }
@@ -118,15 +187,7 @@ const collectArmor = async (): Promise<CollectedArmorModels | undefined> => {
 
 const armor = values.armor || values['armor-only'] ? await collectArmor() : undefined;
 
-const createLocaleReader = async (): Promise<RepoReader | undefined> =>
-  createRepoReader({ source: LOCALE_SOURCES.RU, cacheDir, token: process.env.GITHUB_TOKEN }).catch((error: unknown) => {
-    console.warn(`  ! personal missions localization unavailable: ${error instanceof Error ? error.message : String(error)}`);
-
-    return undefined;
-  });
-
-const missions =
-  values['skip-missions'] || values['armor-only'] ? undefined : await buildPersonalMissions({ reader, localeReader: await createLocaleReader() });
+const missions = values['skip-missions'] || values['armor-only'] ? undefined : await buildPersonalMissions({ reader, localeReader });
 
 if (missions) {
   console.log(

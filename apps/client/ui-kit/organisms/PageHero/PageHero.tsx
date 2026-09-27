@@ -22,6 +22,7 @@ export const PageHero = ({
   className
 }: PageHeroProps) => (
   <header className={clsx(s.root, className)} data-theme='dark'>
+    <span aria-hidden className={s.hexes} />
     {art && <HeroArt art={art} />}
     <span aria-hidden className={s.scrim} />
     {backdrop && (

@@ -6,6 +6,26 @@
   background: var(--page-glow), var(--color-band);
   color: var(--color-text);
   isolation: isolate;
+
+  &:before {
+    @include texture(camo);
+
+    position: absolute;
+    z-index: 0;
+    content: '';
+    inset: 0;
+    pointer-events: none;
+  }
+
+  &:after {
+    position: absolute;
+    z-index: 0;
+    background: var(--texture-hex) 0 0 / 28px 48px;
+    content: '';
+    inset: 0;
+    mask-image: radial-gradient(ellipse 60% 70% at 78% 45%, #000 0%, transparent 75%);
+    pointer-events: none;
+  }
 }
 
 .scrim {

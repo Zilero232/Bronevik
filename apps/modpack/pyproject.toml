@@ -1,0 +1,69 @@
+# Host tooling for the «Мир танков» modpack (tests, lint, build). Not the game runtime: the client runs
+# the sources on its own CPython 2.7, and the sources stay 2.7-compatible (tools/tests/test_py27_compat.py).
+# requires-python pins the Python 3 used for the tooling only.
+
+[project]
+name = "otmetki-modpack"
+version = "0.1.0"
+description = "Три отметки modpack: the game-client packages (core, companion, features) and their host tooling."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "UNLICENSED" }
+authors = [{ name = "Alexandr Artemev" }]
+dependencies = [
+  "otmetki-core",
+  "otmetki-companion",
+  "otmetki-feature-marks-panel",
+  "otmetki-feature-session-stats",
+  "otmetki-feature-replay-upload",
+]
+
+[project.urls]
+Homepage = "https://triotmetki.ru"
+Repository = "https://github.com/Zilero232/Triotmetki"
+Issues = "https://github.com/Zilero232/Triotmetki/issues"
+
+# The OpenWG bytecode compiler (owg_python_compiler) is a C++ tool, not on PyPI: see tools/build/compilers.py.
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6", "jsonschema>=4", "vermin>=1.6"]
+
+[tool.uv]
+# Nothing here is installed as a distribution: the members are game packages the tests import through
+# tools/testing/_support.py, exactly as the client lays them out (gui.mods.otmetki.*).
+package = false
+
+[tool.uv.workspace]
+members = ["packages/*", "features/*"]
+exclude = ["packages/__pycache__", "features/__pycache__"]
+
+[tool.uv.sources]
+otmetki-core = { workspace = true }
+otmetki-companion = { workspace = true }
+otmetki-feature-marks-panel = { workspace = true }
+otmetki-feature-session-stats = { workspace = true }
+otmetki-feature-replay-upload = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["packages", "features", "tools"]
+python_files = ["test_*.py"]
+# importlib mode: test modules are not put on sys.path by folder, _support comes from tools/testing.
+addopts = "--import-mode=importlib"
+pythonpath = ["tools/testing"]
+# pytest skips folders named build by default; tools/build/tests must run.
+norecursedirs = [".*", "dist", "__pycache__", "entry", "fixtures"]
+
+[tool.ruff]
+# ruff's oldest target is py37; the py2.7 syntax rules live in tools/tests/test_py27_compat.py and vermin.
+target-version = "py37"
+line-length = 160
+extend-exclude = ["dist"]
+
+[tool.ruff.lint]
+# pyupgrade (UP), bugbear (B) and friends stay off: they suggest Python-3-only rewrites.
+select = ["E", "F", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+# Entry scripts and the test runner import after sys.path set-up.
+"tools/**" = ["E402"]
+# Translated strings are long lines by nature.
+"**/i18n.py" = ["E501"]

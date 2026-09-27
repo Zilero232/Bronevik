@@ -1,6 +1,7 @@
 export { bucketOf } from './learning-curve';
 export { patchVerdict, readSpecChanges, toPatchChanges } from './spec-patches';
 export type { SpecChange } from './spec-patches';
+export { statsRankValue, statsSampleFloor } from './stats-ranking';
 export { accountEconomy } from './tank-economy';
 export type { EconomyBattle } from './tank-economy';
 export { rankTierList } from './tier-list';

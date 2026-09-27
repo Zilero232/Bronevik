@@ -2,7 +2,7 @@
 
 import { scaleBand } from '@visx/scale';
 
-import { bandLayout, clampIndex, useChartHover } from '@/shared/lib';
+import { bandLayout, clampIndex, seriesTone, useChartHover } from '@/shared/lib';
 
 import type { BarChartPlotProps } from '../../BarChart.types';
 
@@ -25,8 +25,8 @@ export const BarChartPlot = ({ labels, series, width, height, yDomain, formatVal
 
   return (
     <ChartCanvas {...layout} {...pointer} formatValue={formatValue} height={height} labels={labels} series={series} width={width}>
-      {series.map((item) => (
-        <g key={item.id} className={s.series} data-tone={item.tone ?? 'accent'}>
+      {series.map((item, seriesIndex) => (
+        <g key={item.id} className={s.series} data-tone={seriesTone({ tone: item.tone, index: seriesIndex })}>
           {labels.map((label, index) => {
             const top = yScale(Math.max(item.values[index] ?? 0, 0));
 

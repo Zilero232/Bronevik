@@ -28,7 +28,9 @@ export const VEHICLE_FIXTURES = {
 
 export const COLLISION_FIXTURES = {
   collision: 'collision/_tests/fixtures/collision.json',
-  index: 'collision/_tests/fixtures/vehicles.json'
+  index: 'collision/_tests/fixtures/vehicles.json',
+  mtCollision: 'collision/_tests/fixtures/mt-R230_Maus.collision.json',
+  mtIndex: 'collision/_tests/fixtures/mt-vehicles.json'
 } as const;
 
 export const COMMON_FIXTURES = {

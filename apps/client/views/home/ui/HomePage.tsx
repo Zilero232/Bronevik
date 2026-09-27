@@ -1,3 +1,5 @@
+import { Band } from '@/ui-kit';
+
 import {
   ClanActivity,
   CommunityBand,
@@ -20,10 +22,14 @@ export const HomePage = () => (
       <HomeActions />
     </div>
     <ForYou />
-    <StrongTanks />
+    <Band as='div' isDark={false} tone='raised' width='full'>
+      <StrongTanks />
+    </Band>
     <GarageStrip />
     <MarksMovement />
-    <TopPlayers />
+    <Band as='div' isDark={false} texture='noise' tone='raised' width='full'>
+      <TopPlayers />
+    </Band>
     <div className={s.pair}>
       <GameNews />
       <ClanActivity />

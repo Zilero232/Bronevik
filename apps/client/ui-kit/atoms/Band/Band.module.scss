@@ -2,6 +2,18 @@
 
 .root {
   width: 100%;
+
+  &[data-texture='hex'] {
+    @include texture(hex);
+  }
+
+  &[data-texture='camo'] {
+    @include texture(camo);
+  }
+
+  &[data-texture='noise'] {
+    @include texture(noise);
+  }
 }
 
 .deep {
@@ -10,6 +22,7 @@
 
 .raised {
   @include band(raised);
+  @include rivet-rule(top);
 }
 
 .inner {
@@ -22,4 +35,8 @@
 
 .narrow {
   width: var(--shell-narrow);
+}
+
+.full {
+  width: 100%;
 }

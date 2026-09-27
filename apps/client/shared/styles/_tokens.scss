@@ -191,6 +191,32 @@
   --rating-good: #4cc36b;
   --rating-great: #3fa9f5;
   --rating-unicum: #b26fff;
+  --color-armor: #a9b56c;
+  --color-armor-deep: #3d4a2a;
+  --color-armor-soft: rgb(169 181 108 / 14%);
+  --color-gold: #e8b84a;
+  --color-gold-soft: rgb(232 184 74 / 14%);
+  --color-gold-contrast: #241800;
+  --color-steel-blue: #80a6cc;
+  --color-steel-blue-soft: rgb(128 166 204 / 14%);
+  --color-battle: #f0654f;
+  --color-battle-soft: rgb(240 101 79 / 14%);
+  --color-brass: #caa46c;
+  --color-parchment: #e6d9b8;
+  --color-row-hover: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  --gradient-premium: linear-gradient(180deg, #f5d27a 0%, #e8b84a 50%, #c8912a 100%);
+  --gradient-premium-hover: linear-gradient(180deg, #f8dc92 0%, #efc460 50%, #d49d34 100%);
+  --gradient-armor: linear-gradient(135deg, #3d4a2a 0%, #262b1c 100%);
+  --texture-hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48'%3E%3Cpath d='M14 0 28 8v16L14 32 0 24V8Zm0 32v16' fill='none' stroke='%23fff' stroke-opacity='.05'/%3E%3C/svg%3E");
+  --texture-camo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23a9b56c' fill-opacity='.045'%3E%3Cpath d='M10 40c30-30 70-10 80 10s-10 50-40 45S-20 70 10 40Z'/%3E%3Cpath d='M140 20c40-10 90 10 80 50s-60 30-80 20-40-60 0-70Z'/%3E%3Cpath d='M60 150c20-40 80-40 100-10s0 70-40 70-80-20-60-60Z'/%3E%3Cpath d='M190 170c20-10 50 10 45 40s-40 30-55 10-10-40 10-50Z'/%3E%3C/g%3E%3C/svg%3E");
+  --texture-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --rivet-color: rgb(255 255 255 / 14%);
+  --chart-1: var(--color-accent);
+  --chart-2: var(--color-steel-blue);
+  --chart-3: var(--color-armor);
+  --chart-4: var(--color-gold);
+  --chart-5: var(--color-battle);
+  --chart-6: var(--rating-unicum);
 
   color-scheme: dark;
 }
@@ -244,6 +270,32 @@
   --rating-good: #206d36;
   --rating-great: #18639d;
   --rating-unicum: #7e32d2;
+  --color-armor: #4a5a1a;
+  --color-armor-deep: #dfe3c8;
+  --color-armor-soft: rgb(74 90 26 / 10%);
+  --color-gold: #855a00;
+  --color-gold-soft: rgb(200 145 42 / 16%);
+  --color-gold-contrast: #241800;
+  --color-steel-blue: #2c5b85;
+  --color-steel-blue-soft: rgb(44 91 133 / 10%);
+  --color-battle: #b02a1c;
+  --color-battle-soft: rgb(176 42 28 / 10%);
+  --color-brass: #7a5418;
+  --color-parchment: #6e5a34;
+  --color-row-hover: color-mix(in srgb, var(--color-accent) 7%, var(--color-surface));
+  --gradient-premium: linear-gradient(180deg, #f3d079 0%, #e0a93a 55%, #c68a1c 100%);
+  --gradient-premium-hover: linear-gradient(180deg, #f6da90 0%, #e7b44c 55%, #cf952a 100%);
+  --gradient-armor: linear-gradient(135deg, #e6e9d2 0%, #d3d8b8 100%);
+  --texture-hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48'%3E%3Cpath d='M14 0 28 8v16L14 32 0 24V8Zm0 32v16' fill='none' stroke='%23000' stroke-opacity='.06'/%3E%3C/svg%3E");
+  --texture-camo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%234a5a1a' fill-opacity='.05'%3E%3Cpath d='M10 40c30-30 70-10 80 10s-10 50-40 45S-20 70 10 40Z'/%3E%3Cpath d='M140 20c40-10 90 10 80 50s-60 30-80 20-40-60 0-70Z'/%3E%3Cpath d='M60 150c20-40 80-40 100-10s0 70-40 70-80-20-60-60Z'/%3E%3Cpath d='M190 170c20-10 50 10 45 40s-40 30-55 10-10-40 10-50Z'/%3E%3C/g%3E%3C/svg%3E");
+  --texture-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --rivet-color: rgb(0 0 0 / 16%);
+  --chart-1: var(--color-accent);
+  --chart-2: var(--color-steel-blue);
+  --chart-3: var(--color-armor);
+  --chart-4: var(--color-gold);
+  --chart-5: var(--color-battle);
+  --chart-6: var(--rating-unicum);
 
   color-scheme: light;
 }

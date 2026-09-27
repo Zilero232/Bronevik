@@ -1,6 +1,6 @@
 # 3D armor viewer: research
 
-Research date: 2026-09-25. Feature row in [features.md](../features.md): "3D-модель и схема брони (просмотр, пробитие по снарядам)", source FILES, P5.
+Research date: 2026-09-25, source audit 2026-09-27 (see section 7). Feature row in [features.md](../features.md): "3D-модель и схема брони (просмотр, пробитие по снарядам)", source FILES, P5.
 
 **Summary.** No binary parsing is needed. [`unicum-gg/wot.models`](https://github.com/unicum-gg/wot.models), branch `Lesta`, already publishes per-vehicle armor geometry as `collision.json` (about 40 KB per tank). It is split per piece (hull, chassis, turret N, gun N) and grouped by plate name (`armor_N`, `leftTrack`, `gun`, `surveyingDevice`). It comes with mounts (turret and gun joints, pitch limits) and a module-name → piece map. It is built by the TypeScript [`unicum-gg/wot.build`](https://github.com/unicum-gg/wot.build) from the Lesta update CDN, on the same client build as our `wot.src` source (`1.45.0.5231`). The importer fetches it the way it already fetches `wot.src`. It joins thickness and spaced flags from our own parsed XML. The client draws it with three.js and R3F. We draw collision geometry only: no visual `.glb`, no textures.
 
@@ -215,6 +215,96 @@ Implement this as pure TS in `packages/gamedata` (`calculateArmorHit({ thickness
 5. Shader + hover.
 6. Shell and distance pickers, module switching.
 7. Attribution, feature flag, e2e smoke on the demo model.
+
+## 7. Мир танков, not World of Tanks: source audit (2026-09-27)
+
+**Verdict.** Every source the importer reads is already built from the Lesta client of «Мир танков», not from Wargaming's World of Tanks. Nothing had to be switched. What was missing was a guard that proves it on every run, a check against the live game version, and a visible source badge in the viewer. All three are now in place (see "Guards added" below).
+
+### Sources and versions
+
+| Constant | Repository @ branch | Client (update service guid) | Version on 2026-09-27 | Used for |
+| --- | --- | --- | --- | --- |
+| `GAME_DATA_SOURCES.RU` | [`unicum-gg/wot.src@RU`](https://github.com/unicum-gg/wot.src/tree/RU) | `MT.RU.PRODUCTION` (`lstus-ru.lesta.ru`), named in the branch README | 1.45.0.5231 | vehicles, modules, shells, armor thickness, equipment, crew, maps |
+| `GAME_DATA_SOURCES.PT_RU` | `unicum-gg/wot.src@PT_RU` | `MT.PT.PRODUCTION` (Lesta public test) | — | snapshot only, never armor |
+| `GAME_DATA_SOURCES.IZEBERG_RU` | [`izeberg/wot-src@RU`](https://github.com/izeberg/wot-src/tree/RU) | Lesta RU (no guid in its README) | 1.45.0.8259 (`v.1.45.0.0 #2284`) | backup mirror |
+| `LOCALE_SOURCES.RU` | `izeberg/wot-src@RU` | Lesta RU | same | `.po` localization (`sources/res/text/ru/lc_messages`) |
+| `MODEL_SOURCES.RU` | [`unicum-gg/wot.models@Lesta`](https://github.com/unicum-gg/wot.models/tree/Lesta) | `MT.RU.PRODUCTION` (per the branch table in the `main` README) | 1.45.0.5231 | armor collision geometry |
+| `MINIMAP_SOURCES` | `unicum-gg/wot.maps@Lesta` / `Lesta_PT` | Lesta | — | minimaps |
+
+Both mirror families also publish Wargaming branches, and these are what we must never read:
+- `wot.src@EU/NA/ASIA/CT`
+- `izeberg/wot-src@EU/NA/ASIA/CT/CN`
+- `wot.models@WG/WG_CT`
+
+The Wargaming branches are on **2.4.0.5450** (`WOT.EU.PRODUCTION`). Since World of Tanks 2.0 the version line alone tells the two clients apart: Мир танков is 1.x (1.45 «Дело чести», released September 2026, see [update 1.45](https://tanki.su/ru/update-1-45/)), and Wargaming is 2.x.
+
+The `izeberg` and `unicum` RU build numbers differ (8259 and 5231) because each bot numbers builds its own way. Both are release 1.45.
+
+### What differs between the clients (checked in the cached 1.45.0.5231 data)
+
+- **Nations.** The MT `item_defs/vehicles` has `intunion`, with 19 regular vehicles (`Un02_Merkava_LP`, `Un03_Degem_Yud`, `Un17_RDT_62`…). The WG EU branch has no such folder.
+- **Lesta-only vehicles** are in both the XML and the models index:
+  - `R229_Object_718B` (Объект 718Б)
+  - `R230_Maus` (Трофейная «Мышь»)
+  - `R239_ST_Molot` (СТ Молот)
+  - `R211_Object_261_4`
+  - `R174_BT-5`
+  - `Ch76_HSD_1`
+  - `It35_Gladiatore` (the 1.45 reward tank)
+  - the whole `R16x`–`R25x` Soviet range
+
+  `wot.models@Lesta/vehicles.json` has 1 285 tags. The model folder for `intunion` is also `intunion`.
+- **tank_id** follows the MT client's compact descriptors and equals the tanki.su tankopedia ids: 7946753 `R239_ST_Molot`, 7941889 `R230_Maus`, 7943425 `R229_Object_718B`.
+- **Vehicles Lesta withdrew** stay in `list.xml` as `secret` / `notInShop` entries whose `collisionModelClient` points at `vehicles/russian/R00_Placeholder/…`. So these have no geometry: `R05_KV`, `R70_T_50_2`, `A15_T57`, `A26_T18`, `A08_T23`, `A158_T832`, `GB70_FV4202_105`, `G79_Pz_IV_AusfGH` and `G98_Waffentrager_E100_WO`.
+- **Two vehicles the mirror does not index.** `R95_Object_907A` reuses the collision of `R95_Object_907`. `G58_VK4502P7` points at a folder the mirror names `G58_VK4502P`. Both are reported as missing rather than guessed.
+- **Shared geometry, own thickness.** Variants such as `R127_T44_100_I` load another vehicle's collision (`R127_T44_100_P`) but keep their own `<armor>`. The mirror's `armor` block then carries the other vehicle's numbers (turret `armor_1` 190 vs our 240). The importer reports this as a mismatch and keeps the XML value, which is the right one.
+- **Mechanics.** The penetration constants in `@otmetki/gamedata` are the Lesta ones:
+  - ±25 % RNG (Lesta support)
+  - modern HE
+  - the normalisation and ricochet values from §4 (Lesta wiki)
+
+### Guards added
+
+- **`lib/source/mt-client`.** `assertMtClient` runs in `buildGameData` (game data) and in `collectArmorModels` (models mirror). It throws `ForeignClientError` when any of these holds:
+  - `.version_name` is missing
+  - the version is not `1.x.y.z`
+  - the README names a `WOT.*.PRODUCTION` guid
+  - the README does not name the source's own guid (`MT.RU.PRODUCTION`, or `MT.PT.PRODUCTION` for PT_RU)
+
+  There is no fallback to any Wargaming branch.
+- **Exact version match.** The models mirror version must still equal the game data version (`ArmorVersionMismatchError`).
+- **Encyclopedia check.** When `LESTA_APPLICATION_ID` is set, the importer compares the client's release line (`1.45`) with `encyclopedia/info.game_version` from the live Lesta API. On a mismatch it exits with code 1, unless `--allow-version-mismatch` is passed. With an empty key (dev today) it prints that the check was skipped.
+- **Pinning.** `--ref`, `--models-ref` and `--locale-ref` take a commit sha. Every run resolves the branch to a sha and records it in `GameVersion` and `VehicleArmorModel.sourceSha`.
+- **Missing models.** Every vehicle without a model is printed with its reason: not in `vehicles.json`, `collision.json` missing, or a parse error. `--strict-armor` makes any such vehicle exit with code 1.
+- **Viewer badge.** `GET /tanks/:idOrSlug/armor` returns `source.client` (`MT.RU.PRODUCTION`). The armor page header shows the badge «Мир танков 1.45.0.5231 · MT.RU.PRODUCTION», and the attribution links the `Lesta` branch.
+
+### Verification run (2026-09-27)
+
+Pinned to `wot.src` 42158ff, `wot.models` 63471c1 and `wot-src` b3896b5.
+
+The full import took 33 s: 1 028 vehicles, 5 410 modules, 1 017 armor models. 11 vehicles have no model: the 9 placeholders above, plus `R95_Object_907A` and `G58_VK4502P7`.
+
+Primary armor from our data (front / side / rear, mm; turret = top turret) against the Lesta tankopedia and wiki:
+
+| Vehicle | Ours: hull | Ours: turret | Lesta source |
+| --- | --- | --- | --- |
+| СТ Молот (`R239`, Lesta-only) | 85/70/40 | 330/100/60 | same ([tankopedia](https://tanki.su/ru/tankopedia/7946753-R239_ST_Molot/)) |
+| Трофейная «Мышь» (`R230`, Lesta-only) | 200/185/160 | 220/210/210 | same ([tankopedia](https://tanki.su/ru/tankopedia/7941889-R230_Maus/)) |
+| Объект 718Б (`R229`, Lesta-only) | 190/110/70 | 310/120/70 | same ([tankopedia](https://tanki.su/ru/tankopedia/7943425-R229_Object_718B/)) |
+| ИС-7 | 150/150/100 | 240/185/94 | long-standing values |
+| Maus | 200/185/160 | 260/210/210 | long-standing values |
+| Merkava LP (`intunion`) | 155/50/30 | 330/120/30 | not checked |
+
+The Soviet trophy Maus has a 220 mm turret front where the German Maus has 260: a Lesta-specific difference that the data carries correctly.
+
+The per-plate join also reports 697 more mismatches. They are shared-geometry variants and tracks, and in each case the XML stays the source of truth.
+
+### Other Мир танков sources (not used)
+
+- **[armor.wotinspector.com/ru/mirtankov](https://armor.wotinspector.com/ru/mirtankov/7946753--/).** A closed MT armor viewer. Use it as a UX reference only.
+- **[Lesta wiki](https://wiki.lesta.ru/) and the tanki.su tankopedia.** Good for human cross-checks. The tankopedia renders its numbers client-side, so a plain fetch cannot scrape them.
+- **Local Lesta client** (`<install>/res/packages/*.pkg`, `scripts.pkg`, `vehicles_level_*.pkg`). This is the only fallback if the mirrors stop. Reading `collision_client/*.havok` needs a port of `wot.build/lib/havok.ts`, which has no licence (§1). A checkout produced by running `wot.build` against `lstus-ru.lesta.ru` / `MT.RU.PRODUCTION` works today through `--local <dir>` / `--local-models <dir>`, with no code changes.
+- **Licences.** None of the mirrors has a licence file, and the game files are © Lesta Games. The committed test fixtures (`parsers/collision/_tests/fixtures/mt-*.json`) are kept minimal: a trimmed R230_Maus hull and chassis, plus an 8-tag excerpt of the index. Remove them if Lesta asks.
 
 ## Blockers and open questions
 

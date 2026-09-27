@@ -1,13 +1,13 @@
 import type { Paginated, TankServerStatsRow } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { match } from 'ts-pattern';
 
 import type { TankStatsListInput } from '../tanks.types';
 
 import { COHORT_TO_DB, page, SERVER_PERIOD_TO_DB, sortRows, STATS_MODE_TO_DB } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
+import { statsRankValue, statsSampleFloor } from '../lib';
 import { toServerStatsRow } from '../mappers';
 import { TankTraitsService } from './tank-traits.service';
 
@@ -20,13 +20,17 @@ export class TankStatsService {
   ) {}
 
   async list(query: TankStatsListInput): Promise<Paginated<TankServerStatsRow>> {
+    const sort = query.sort ?? 'battles';
+    const floor = statsSampleFloor({ sort, minBattles: query.minBattles });
+
     const [rows, eligible] = await Promise.all([
       this.prisma.tankServerStats.findMany({
         where: {
           mode: STATS_MODE_TO_DB[query.mode],
           period: SERVER_PERIOD_TO_DB[query.period],
           cohort: COHORT_TO_DB[query.cohort],
-          battles: { gte: query.minBattles }
+          battles: { gte: floor.battles },
+          players: { gte: floor.players }
         }
       }),
       this.catalog.filter(query).then((entries) => this.traits.filter({ entries, filter: query }))
@@ -43,19 +47,7 @@ export class TankStatsService {
     const sorted = sortRows({
       rows: items,
       order: query.order,
-      value: (row) =>
-        match(query.sort ?? 'battles')
-          .with('battles', () => row.battles)
-          .with('players', () => row.players)
-          .with('winRate', () => row.winRate)
-          .with('winRateDiff', () => row.winRateDiff)
-          .with('avgDamage', () => row.avgDamage)
-          .with('avgFrags', () => row.avgFrags)
-          .with('avgSpotted', () => row.avgSpotted)
-          .with('survivalRate', () => row.survivalRate)
-          .with('accuracy', () => row.accuracy)
-          .with('tier', () => row.vehicle.tier)
-          .exhaustive()
+      value: (row) => statsRankValue({ row, sort, order: query.order })
     });
 
     return page({ items: sorted, limit: query.limit, offset: query.offset });

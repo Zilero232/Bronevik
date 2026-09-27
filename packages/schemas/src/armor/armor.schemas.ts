@@ -48,7 +48,8 @@ export const armorModulesSchema = z.object({
 
 export const armorModelSourceSchema = z.object({
   repo: z.string(),
-  commit: z.string()
+  commit: z.string(),
+  client: z.string()
 });
 
 export const armorModelSchema = z.object({

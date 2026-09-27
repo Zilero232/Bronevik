@@ -6,7 +6,7 @@ import type { CollectArmorModelsInput, CollectedArmorModels, VehicleOutcome } fr
 
 import { errorMessage } from '../../../../../common/lib';
 import { parseCollision, parseModelIndex } from '../../parsers/collision';
-import { GAME_DATA_SOURCES, MODEL_PATHS } from '../../source';
+import { assertMtClient, GAME_DATA_SOURCES, MODEL_PATHS, MODEL_SOURCES, MT_CLIENT } from '../../source';
 import { joinArmorModel } from '../join';
 import { ARMOR_PACK, packArmorGeometry } from '../pack';
 import { ArmorVersionMismatchError } from './collect.errors';
@@ -16,9 +16,11 @@ export const collectArmorModels = async ({ data, reader, onProgress }: CollectAr
     throw new ArmorVersionMismatchError('Armor models are never imported for a test-server source');
   }
 
-  const version = (await reader.read(MODEL_PATHS.version))?.trim();
+  const [rawVersion, readme] = await Promise.all([reader.read(MODEL_PATHS.version), reader.read(MT_CLIENT.readme)]);
+  const label = `${reader.revision.owner}/${reader.revision.repo}@${reader.revision.sha}`;
+  const version = assertMtClient({ label, version: rawVersion?.trim(), guid: MODEL_SOURCES.RU.guid, readme });
 
-  if (!version || version !== data.version) {
+  if (version !== data.version) {
     throw new ArmorVersionMismatchError(`Armor mirror is at ${version ?? 'unknown'}, game data is at ${data.version ?? 'unknown'}`);
   }
 
@@ -33,10 +35,16 @@ export const collectArmorModels = async ({ data, reader, onProgress }: CollectAr
 
   const buildOne = async (spec: VehicleSpec): Promise<VehicleOutcome> => {
     const folder = index[spec.tag];
-    const json = folder ? await reader.read(`${MODEL_PATHS.vehicles}/${folder}/${MODEL_PATHS.collision}`) : undefined;
+
+    if (!folder) {
+      return { skipped: { tag: spec.tag, reason: `not in ${MODEL_PATHS.index}` }, mismatches: [] };
+    }
+
+    const path = `${MODEL_PATHS.vehicles}/${folder}/${MODEL_PATHS.collision}`;
+    const json = await reader.read(path);
 
     if (json === undefined) {
-      return { skipped: spec.tag, mismatches: [] };
+      return { skipped: { tag: spec.tag, reason: `${path} is missing` }, mismatches: [] };
     }
 
     try {
@@ -48,11 +56,11 @@ export const collectArmorModels = async ({ data, reader, onProgress }: CollectAr
 
       return { model: { tankId: spec.tankId, tag: spec.tag, bytes, hash, modules }, mismatches: [...mismatches, ...budget] };
     } catch (error) {
-      return { skipped: spec.tag, mismatches: [`${spec.tag}: ${errorMessage(error)}`] };
+      return { skipped: { tag: spec.tag, reason: errorMessage(error) }, mismatches: [`${spec.tag}: ${errorMessage(error)}`] };
     }
   };
 
-  onProgress?.(`Armor mirror ${reader.revision.owner}/${reader.revision.repo}@${reader.revision.sha} (${version})`);
+  onProgress?.(`Armor mirror ${label} (${MT_CLIENT.product} ${version})`);
 
   const outcomes = await Promise.all(data.vehicles.map(buildOne));
 

@@ -14,7 +14,7 @@ import { ingestBatchSchema } from '../lib';
 import { ModController } from '../mod.controller';
 
 const example = ingestBatchSchema.parse(
-  JSON.parse(readFileSync(new URL('../../../../../mod/contract/examples/ingest.example.json', import.meta.url), 'utf8'))
+  JSON.parse(readFileSync(new URL('../../../../../modpack/contract/examples/ingest.example.json', import.meta.url), 'utf8'))
 );
 
 const device: AuthenticatedDevice = {

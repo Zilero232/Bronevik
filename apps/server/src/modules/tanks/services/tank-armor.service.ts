@@ -9,6 +9,7 @@ import type { ArmorStorage } from '../../gamedata';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { ARMOR_VIEWER } from '../../../config';
 import { PrismaService } from '../../../core';
+import { MODEL_SOURCES } from '../../gamedata';
 import { VehicleCatalogService } from '../../reference';
 import { ARMOR_STORAGE } from '../config';
 
@@ -41,7 +42,7 @@ export class TankArmorService {
       hash: row.hash,
       geometry: bytesToBase64(bytes),
       modules: armorModulesSchema.parse(row.modules),
-      source: { repo: ARMOR_VIEWER.sourceRepo, commit: row.sourceSha }
+      source: { repo: ARMOR_VIEWER.sourceRepo, commit: row.sourceSha, client: MODEL_SOURCES.RU.guid }
     };
   }
 }

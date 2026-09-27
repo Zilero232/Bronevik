@@ -1,7 +1,8 @@
 import type { PersonalMissionsData } from '../parsers/personal-missions';
 import type { BuildPersonalMissionsInput } from './personal-missions.types';
 
-import { parsePersonalMissions, parsePoMessages, PERSONAL_MISSION_FILES } from '../parsers/personal-missions';
+import { parsePersonalMissions, PERSONAL_MISSION_FILES } from '../parsers/personal-missions';
+import { parsePoMessages } from '../parsers/po';
 import { GAME_PATHS } from '../source';
 
 export const buildPersonalMissions = async ({ reader, localeReader }: BuildPersonalMissionsInput): Promise<PersonalMissionsData | undefined> => {

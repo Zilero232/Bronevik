@@ -30,6 +30,8 @@ export { rowActivation } from './row-activation';
 export type { RowActivationInput } from './row-activation';
 export { isExternalHref, safeHref, safeWebHref } from './safe-href';
 export { seededRandom } from './seeded-random';
+export { SERIES_TONES, seriesTone } from './series-tone';
+export type { SeriesTone, SeriesToneInput } from './series-tone';
 export { statValueText } from './stat-value';
 export type { StatValueKind, StatValueTextInput } from './stat-value';
 export { tierBand } from './tier-band';

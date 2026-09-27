@@ -1,0 +1,17 @@
+# Game-client package: runs on the client's CPython 2.7. requires-python is for the host tooling (tests on 3.x).
+
+[project]
+name = "otmetki-feature-marks-panel"
+version = "0.1.0"
+description = "Feature: in-battle marks-of-excellence panel with the projected percentage and the damage still needed."
+requires-python = ">=3.10"
+license = { text = "UNLICENSED" }
+authors = [{ name = "Alexandr Artemev" }]
+dependencies = ["otmetki-core", "otmetki-companion"]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+otmetki-core = { workspace = true }
+otmetki-companion = { workspace = true }

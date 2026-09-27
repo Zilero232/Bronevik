@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import os
 import time
 
+from ...core.client.replays import DEFAULT_REPLAY_DIR, replay_dir
 from ...core.log import log, safe
 from ...core.signing import clock_offset
 from ...core.storage import JsonFile
@@ -10,27 +11,13 @@ from ...core.transport import BackgroundRunner, SyncTransport
 from .files import UPLOAD_PATH, VISIBILITY_PRIVATE, VISIBILITY_PUBLIC, find_replay
 from .model import ReplayQueue, ReplayUploader
 
+REPLAY_UPLOADED_EVENT = 'replay_uploaded'
+
 UPLOAD_TIMEOUT_S = 120.0
-DEFAULT_REPLAY_DIR = 'replays'
 STARTED_KEEP = 20
 # account_helpers.settings_core.settings_constants.GAME.REPLAY_ENABLED: 0 off, 1 last battle, 2 all.
 # UNVERIFIED on Lesta 1.45; an unknown name reads as None and the mod then just looks for a file.
 REPLAY_SETTING = 'replayEnabled'
-
-
-def _replay_ctrl():
-    try:
-        import BattleReplay
-        return getattr(BattleReplay, 'g_replayCtrl', None)
-    except Exception:
-        return None
-
-
-def replay_dir():
-    """The folder the client records replays into (BattleReplay's private __replayDir, else ./replays)."""
-    ctrl = _replay_ctrl()
-    folder = getattr(ctrl, '_BattleReplay__replayDir', None) if ctrl is not None else None
-    return folder or DEFAULT_REPLAY_DIR
 
 
 def game_records_replays():
@@ -87,6 +74,7 @@ class ReplayAutoUpload(object):
             time.time,
             on_auth_failed=self.app.on_auth_failed,
             on_uploaded=self._on_uploaded,
+            on_replay_id=self._on_replay_id,
         )
 
     def on_rebind(self):
@@ -120,6 +108,10 @@ class ReplayAutoUpload(object):
     @safe
     def _on_uploaded(self, arena_unique_id):
         log('replay uploaded: %s' % arena_unique_id)
+
+    @safe
+    def _on_replay_id(self, arena_unique_id, replay_id):
+        self.app.bus.emit(REPLAY_UPLOADED_EVENT, arena_unique_id, replay_id)
 
     def tick(self, now):
         """Hangar only: hand finished jobs back to the main thread and start the next upload."""

@@ -35,6 +35,7 @@ def parse_args(argv=None):
     parser.add_argument('--python27', help='path to a Python 2.7 interpreter')
     parser.add_argument('--out', default=os.path.join(layout.MODPACK_DIR, 'dist'), help='output directory')
     parser.add_argument('--install-dir', help='also copy the packages here, e.g. <game>/mods/<client version>')
+    parser.add_argument('--dry-run', action='store_true', help='list the packages and their in-game paths, write nothing')
     return parser.parse_args(argv)
 
 
@@ -45,18 +46,27 @@ def build(args):
         with open(root_init, 'w', encoding='utf-8', newline='\n') as handle:
             handle.write(layout.ROOT_INIT)
         packages = [layout.single_package(root_init)] if args.single else layout.split_packages(root_init)
+        platform = 'wg' if args.wg else 'lesta'
+        if args.dry_run:
+            for package in packages:
+                print('%s  %s (%d files)' % (archive.file_name(package, platform, single=args.single), package.package_id, len(package.files)))
+                for _, archive_path in sorted(package.files, key=lambda item: item[1]):
+                    print('    ' + archive_path)
+            return []
         name, compile_entries = compilers.select(args.compiler, args.owg_compiler, args.python27)
         if compile_entries is None:
             if args.require_pyc:
                 raise SystemExit('no Python 2.7 bytecode compiler found (owg_python_compiler or Python 2.7); release builds need .pyc')
             print('WARNING: no compiler found, packaging .py sources (development client only)')
-        platform = 'wg' if args.wg else 'lesta'
         os.makedirs(args.out, exist_ok=True)
         outputs = []
         for index, package in enumerate(packages):
-            entries = package.files
-            if compile_entries is not None:
-                entries = compile_entries(entries, os.path.join(staging, 'pkg%d' % index))
+            sources = [item for item in package.files if item[1].endswith('.py')]
+            assets = [item for item in package.files if not item[1].endswith('.py')]
+            entries = sources
+            if compile_entries is not None and sources:
+                entries = compile_entries(sources, os.path.join(staging, 'pkg%d' % index))
+            entries = entries + assets
             output = os.path.join(args.out, archive.file_name(package, platform, single=args.single))
             archive.write_package(output, entries, archive.meta_xml(package))
             print('Built %s (%d files)' % (output, len(entries)))

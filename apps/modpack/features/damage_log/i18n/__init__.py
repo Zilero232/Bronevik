@@ -1,0 +1,41 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+STRINGS = {
+    'ru': {
+        'dlog_template_full': u'<font color="#E3564A">Урон {dealt}</font>   <font color="#9EC9F5">Блок {blocked}</font>   <font color="#7CD35B">Помощь {assisted}</font>   <font color="#F2B25B">Получено {received}</font>',
+        'dlog_template_compact': u'{dealt} / {blocked} / {assisted} / {received}',
+        'dlog_template_minimal': u'Урон {dealt}   Помощь {assisted}',
+        'dlog_entry_template': u'{kind} {amount} {vehicle} {shell}',
+        'dlog_kind_damage': u'Урон',
+        'dlog_kind_radio': u'Разведка',
+        'dlog_kind_track': u'Гусеница',
+        'dlog_kind_stun': u'Оглушение',
+        'dlog_kind_blocked': u'Блок',
+        'dlog_kind_received': u'Получено',
+        'dlog_shell_ap': u'ББ',
+        'dlog_shell_apcr': u'БП',
+        'dlog_shell_heat': u'КС',
+        'dlog_shell_he': u'ОФ',
+        'dlog_shell_smoke': u'Дым',
+        'dlog_shell_flame': u'Огонь',
+    },
+    'en': {
+        'dlog_template_full': u'<font color="#E3564A">Damage {dealt}</font>   <font color="#9EC9F5">Blocked {blocked}</font>   <font color="#7CD35B">Assist {assisted}</font>   <font color="#F2B25B">Received {received}</font>',
+        'dlog_template_compact': u'{dealt} / {blocked} / {assisted} / {received}',
+        'dlog_template_minimal': u'Damage {dealt}   Assist {assisted}',
+        'dlog_entry_template': u'{kind} {amount} {vehicle} {shell}',
+        'dlog_kind_damage': u'Damage',
+        'dlog_kind_radio': u'Spotting',
+        'dlog_kind_track': u'Tracking',
+        'dlog_kind_stun': u'Stun',
+        'dlog_kind_blocked': u'Blocked',
+        'dlog_kind_received': u'Received',
+        'dlog_shell_ap': u'AP',
+        'dlog_shell_apcr': u'APCR',
+        'dlog_shell_heat': u'HEAT',
+        'dlog_shell_he': u'HE',
+        'dlog_shell_smoke': u'Smoke',
+        'dlog_shell_flame': u'Flame',
+    },
+}

@@ -17,6 +17,10 @@
       ],
       "project": ["**/*.{ts,tsx,scss}"]
     },
+    "apps/modpack": {
+      "entry": ["ui-web/src/settings/main.tsx", "ui-web/src/button/main.ts"],
+      "project": ["ui-web/**/*.{ts,tsx}"]
+    },
     "apps/server": {
       "entry": ["scripts/*.ts"],
       "project": ["src/**/*.ts", "scripts/**/*.ts", "prisma/**/*.prisma"]

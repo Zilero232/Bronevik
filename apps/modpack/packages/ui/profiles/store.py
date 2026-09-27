@@ -1,0 +1,106 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import binascii
+import os
+import re
+
+from ...core.compat import string_types, to_text
+from .constants import ERROR_LIMIT, ERROR_MISSING, ERROR_NAME, FILE_VERSION, MAX_PROFILES, NAME_MAX_LENGTH
+from .errors import ProfileError
+
+_SPACES = re.compile(r'\s+')
+
+
+def normalize_name(name):
+    if not isinstance(name, string_types):
+        raise ProfileError(ERROR_NAME)
+    name = _SPACES.sub(' ', to_text(name)).strip()[:NAME_MAX_LENGTH].strip()
+    if not name:
+        raise ProfileError(ERROR_NAME)
+    return name
+
+
+def random_id():
+    return to_text(binascii.hexlify(os.urandom(6)))
+
+
+def _valid_profile(item):
+    return isinstance(item, dict) and isinstance(item.get('id'), string_types) and isinstance(item.get('name'), string_types) \
+        and isinstance(item.get('data'), dict)
+
+
+class ProfileStore(object):
+    """Named snapshots of the settings in profiles.json, at most MAX_PROFILES (the installer reads and
+    writes the same file). Invalid entries of a hand-edited file are dropped on load."""
+
+    def __init__(self, store, clock, new_id=random_id):
+        self.store = store
+        self.clock = clock
+        self.new_id = new_id
+        data = store.read({})
+        data = data if isinstance(data, dict) else {}
+        self.profiles = [dict(item) for item in data.get('profiles') or [] if _valid_profile(item)][:MAX_PROFILES]
+        active = data.get('active')
+        self.active = active if self.get(active) is not None else None
+
+    def items(self):
+        return [{'id': item['id'], 'name': item['name'], 'updated': item.get('updated')} for item in self.profiles]
+
+    def get(self, profile_id):
+        for item in self.profiles:
+            if item['id'] == profile_id:
+                return item
+        return None
+
+    def save(self, name, data, profile_id=None):
+        """Overwrites `profile_id` when given, else adds a new profile. Returns the profile."""
+        name = normalize_name(name)
+        now = self.clock()
+        if profile_id is not None:
+            item = self.get(profile_id)
+            if item is None:
+                raise ProfileError(ERROR_MISSING)
+            item.update({'name': name, 'data': data, 'updated': now})
+        else:
+            if len(self.profiles) >= MAX_PROFILES:
+                raise ProfileError(ERROR_LIMIT)
+            item = {'id': self._unique_id(), 'name': name, 'created': now, 'updated': now, 'data': data}
+            self.profiles.append(item)
+        self.active = item['id']
+        self._persist()
+        return item
+
+    def rename(self, profile_id, name):
+        item = self.get(profile_id)
+        if item is None:
+            raise ProfileError(ERROR_MISSING)
+        item['name'] = normalize_name(name)
+        item['updated'] = self.clock()
+        self._persist()
+        return item
+
+    def delete(self, profile_id):
+        item = self.get(profile_id)
+        if item is None:
+            raise ProfileError(ERROR_MISSING)
+        self.profiles = [other for other in self.profiles if other is not item]
+        if self.active == profile_id:
+            self.active = None
+        self._persist()
+
+    def activate(self, profile_id):
+        item = self.get(profile_id)
+        if item is None:
+            raise ProfileError(ERROR_MISSING)
+        self.active = profile_id
+        self._persist()
+        return item
+
+    def _unique_id(self):
+        while True:
+            candidate = self.new_id()
+            if self.get(candidate) is None:
+                return candidate
+
+    def _persist(self):
+        self.store.write({'version': FILE_VERSION, 'active': self.active, 'profiles': self.profiles})

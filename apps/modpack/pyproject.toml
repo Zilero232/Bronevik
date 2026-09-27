@@ -16,6 +16,18 @@ dependencies = [
   "otmetki-feature-marks-panel",
   "otmetki-feature-session-stats",
   "otmetki-feature-replay-upload",
+  "otmetki-feature-damage-log",
+  "otmetki-feature-hit-log",
+  "otmetki-feature-battle-clock",
+  "otmetki-feature-team-hp",
+  "otmetki-feature-battle-results",
+  "otmetki-feature-sixth-sense",
+  "otmetki-ui",
+  "otmetki-feature-replay-manager",
+  "otmetki-feature-hangar-tweaks",
+  "otmetki-feature-minimap",
+  "otmetki-feature-camera",
+  "otmetki-feature-crosshair",
 ]
 
 [project.urls]
@@ -25,7 +37,14 @@ Issues = "https://github.com/Zilero232/Triotmetki/issues"
 
 # The OpenWG bytecode compiler (owg_python_compiler) is a C++ tool, not on PyPI: see tools/build/compilers.py.
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.6", "jsonschema>=4", "vermin>=1.6"]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+    "jsonschema>=4",
+    "vermin>=1.6",
+    "resvg-py>=0.5",
+    "pillow>=11",
+]
 
 [tool.uv]
 # Nothing here is installed as a distribution: the members are game packages the tests import through
@@ -42,9 +61,21 @@ otmetki-companion = { workspace = true }
 otmetki-feature-marks-panel = { workspace = true }
 otmetki-feature-session-stats = { workspace = true }
 otmetki-feature-replay-upload = { workspace = true }
+otmetki-feature-damage-log = { workspace = true }
+otmetki-feature-hit-log = { workspace = true }
+otmetki-feature-battle-clock = { workspace = true }
+otmetki-feature-team-hp = { workspace = true }
+otmetki-feature-battle-results = { workspace = true }
+otmetki-feature-sixth-sense = { workspace = true }
+otmetki-ui = { workspace = true }
+otmetki-feature-replay-manager = { workspace = true }
+otmetki-feature-hangar-tweaks = { workspace = true }
+otmetki-feature-minimap = { workspace = true }
+otmetki-feature-camera = { workspace = true }
+otmetki-feature-crosshair = { workspace = true }
 
 [tool.pytest.ini_options]
-testpaths = ["packages", "features", "tools"]
+testpaths = ["packages", "features", "tools", "installer"]
 python_files = ["test_*.py"]
 # importlib mode: test modules are not put on sys.path by folder, _support comes from tools/testing.
 addopts = "--import-mode=importlib"
@@ -67,3 +98,4 @@ select = ["E", "F", "W"]
 "tools/**" = ["E402"]
 # Translated strings are long lines by nature.
 "**/i18n.py" = ["E501"]
+"**/i18n/*.py" = ["E501"]

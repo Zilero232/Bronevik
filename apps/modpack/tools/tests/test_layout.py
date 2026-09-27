@@ -6,19 +6,24 @@ import _support
 from otmetki.companion.config import DEFAULTS, FEATURES
 from otmetki.companion.i18n import STRINGS as COMPANION_STRINGS
 
-FEATURE_FILES = ('__init__.py', 'model.py', 'client.py', 'settings.py', 'i18n.py')
+FEATURE_FILES = ('model', 'client', 'settings', 'i18n')
+HUD_FEATURES = ('battle_clock', 'battle_results', 'damage_log', 'hit_log', 'sixth_sense', 'team_hp')
 
 
 class FeatureLayoutTest(unittest.TestCase):
 
     def test_features_found(self):
-        self.assertEqual(sorted(_support.feature_ids()), ['marks_panel', 'replay_upload', 'session_stats'])
+        found = set(_support.feature_ids())
+        self.assertTrue(set(('marks_panel', 'replay_upload', 'session_stats') + HUD_FEATURES) <= found, sorted(found))
 
     def test_feature_layout(self):
         for feature_id in _support.feature_ids():
             base = os.path.join(_support.FEATURES_DIR, feature_id)
+            self.assertTrue(os.path.isfile(os.path.join(base, '__init__.py')), feature_id)
             for name in FEATURE_FILES:
-                self.assertTrue(os.path.isfile(os.path.join(base, name)), '%s/%s' % (feature_id, name))
+                is_module = os.path.isfile(os.path.join(base, name + '.py'))
+                is_package = os.path.isfile(os.path.join(base, name, '__init__.py'))
+                self.assertTrue(is_module or is_package, '%s/%s' % (feature_id, name))
             self.assertTrue(os.path.isdir(os.path.join(base, 'tests')), feature_id)
             entry = os.path.join(base, 'entry', 'mod_otmetki_%s.py' % feature_id)
             self.assertTrue(os.path.isfile(entry), entry)

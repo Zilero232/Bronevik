@@ -1,0 +1,288 @@
+{
+  "$comment": "Installer UI metadata, one entry per package key (packages/<key>, features/<key>). Ids, versions, files and package dependencies come from tools/build/layout.py; setupkit merges both into components.json. A package without an entry still ships, unticked, in fallbackCategory (a --strict build fails instead).",
+  "fallbackCategory": "other",
+  "fallbackFairPlay": {
+    "ru": "Работает только с вашими данными и не показывает информацию о противниках.",
+    "en": "Uses only your own data and shows nothing about enemies."
+  },
+  "ownedPatterns": ["net.triotmetki.*.mtmod", "net.triotmetki.*.wotmod", "otmetki.*.mtmod", "otmetki.*.wotmod"],
+  "presets": [
+    {
+      "id": "recommended",
+      "title": { "ru": "Рекомендуемый", "en": "Recommended" },
+      "description": { "ru": "Всё, чем пользуется большинство игроков.", "en": "What most players use." }
+    },
+    {
+      "id": "minimal",
+      "title": { "ru": "Минимальный (FPS)", "en": "Minimal (FPS)" },
+      "description": {
+        "ru": "Только отметка и лампа: минимум нагрузки на слабых ПК.",
+        "en": "Only the MoE panel and the sixth sense lamp: the lightest load for weak PCs."
+      }
+    },
+    {
+      "id": "streamer",
+      "title": { "ru": "Стример", "en": "Streamer" },
+      "description": { "ru": "Крупные панели, которые хорошо читаются на трансляции.", "en": "Big panels that read well on stream." }
+    },
+    {
+      "id": "custom",
+      "custom": true,
+      "title": { "ru": "Свой", "en": "Custom" },
+      "description": { "ru": "Отметьте компоненты сами.", "en": "Pick the components yourself." }
+    }
+  ],
+  "categories": [
+    {
+      "id": "base",
+      "title": { "ru": "Основа", "en": "Core" },
+      "description": {
+        "ru": "Ядро и компаньон «Три отметки»: нужны всем остальным компонентам и связывают мод с сайтом.",
+        "en": "The Three Marks core and companion: every other component needs them, and they link the mod to the site."
+      }
+    },
+    {
+      "id": "battle",
+      "title": { "ru": "В бою", "en": "In battle" },
+      "description": { "ru": "Панели боевого интерфейса.", "en": "Battle interface panels." }
+    },
+    {
+      "id": "hangar",
+      "title": { "ru": "Ангар", "en": "Hangar" },
+      "description": { "ru": "Статистика и итоги боёв в ангаре.", "en": "Stats and battle results in the hangar." }
+    },
+    {
+      "id": "data",
+      "title": { "ru": "Сайт и данные", "en": "Site and data" },
+      "description": { "ru": "Что мод может отправлять на triotmetki.ru после привязки.", "en": "What the mod can send to triotmetki.ru once bound." }
+    },
+    {
+      "id": "other",
+      "title": { "ru": "Другое", "en": "Other" },
+      "description": { "ru": "Компоненты без описания в каталоге установщика.", "en": "Components the installer catalog does not describe yet." }
+    }
+  ],
+  "components": [
+    {
+      "id": "core",
+      "category": "base",
+      "required": true,
+      "title": { "ru": "Ядро", "en": "Core runtime" },
+      "description": {
+        "ru": "Общая основа всех модулей: события, настройки, журнал. Сам по себе ничего не показывает.",
+        "en": "The shared runtime of every module: events, settings, log. Shows nothing by itself."
+      },
+      "fairPlay": { "ru": "Не читает данные боя.", "en": "Reads no battle data." },
+      "preview": { "image": "previews/base.svg" }
+    },
+    {
+      "id": "companion",
+      "category": "base",
+      "required": true,
+      "title": { "ru": "Компаньон «Три отметки»", "en": "Three Marks companion" },
+      "description": {
+        "ru": "Привязка к сайту, отправка ваших итогов боя и процентов отметок. Ничего не отправляет, пока вы не привяжете мод кодом с сайта.",
+        "en": "Links the mod to the site and sends your own battle results and MoE percentages. Sends nothing until you bind it with a code from the site."
+      },
+      "fairPlay": {
+        "ru": "Только ваши данные: блок personal итогов боя и ваш досье. Данные других игроков не читаются.",
+        "en": "Only your own data: the personal block of battle results and your dossier. Other players' data is never read."
+      },
+      "preview": { "image": "previews/base.svg" }
+    },
+    {
+      "id": "ui",
+      "category": "base",
+      "required": true,
+      "title": { "ru": "Интерфейс в игре", "en": "In-game UI" },
+      "description": {
+        "ru": "Окно настроек и панели «Три отметки» в игре.",
+        "en": "The Three Marks settings window and panels in the game."
+      },
+      "fairPlay": { "ru": "Показывает только то, что передают другие компоненты.", "en": "Shows only what the other components provide." },
+      "preview": { "image": "previews/base.svg" }
+    },
+    {
+      "id": "marks_panel",
+      "category": "battle",
+      "presets": ["recommended", "minimal", "streamer"],
+      "title": { "ru": "Отметка в бою", "en": "MoE panel in battle" },
+      "description": {
+        "ru": "Текущий процент отметки, прогноз после боя и сколько урона не хватает до следующей отметки.",
+        "en": "Your current MoE percentage, the projection after the battle and the damage still needed for the next mark."
+      },
+      "fairPlay": {
+        "ru": "Считается по вашему урону и засвету, как в итогах боя.",
+        "en": "Computed from your own damage and assistance, as in battle results."
+      },
+      "preview": { "image": "previews/marks_panel.svg" }
+    },
+    {
+      "id": "damage_log",
+      "category": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Лог урона", "en": "Damage log" },
+      "description": {
+        "ru": "Нанесённый и полученный урон с типами снарядов и итогом за бой.",
+        "en": "Damage dealt and received, with shell types and battle totals."
+      },
+      "fairPlay": { "ru": "Только события, которые игра уже показывает вам.", "en": "Only events the game already shows you." },
+      "preview": { "image": "previews/damage_log.svg" }
+    },
+    {
+      "id": "hit_log",
+      "category": "battle",
+      "presets": ["recommended"],
+      "title": { "ru": "Хит-лог", "en": "Hit log" },
+      "description": {
+        "ru": "Ваши попадания: цель, урон и сколько прочности у неё осталось.",
+        "en": "Your hits: the target, the damage and the hit points it has left."
+      },
+      "fairPlay": { "ru": "Только ваши попадания по видимым целям.", "en": "Only your own hits on visible targets." },
+      "preview": { "image": "previews/hit_log.svg" }
+    },
+    {
+      "id": "team_hp",
+      "category": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "ХП команд и счёт", "en": "Team HP and score" },
+      "description": {
+        "ru": "Суммарная прочность команд и счёт уничтоженных машин над миникартой.",
+        "en": "Total team hit points and the frag score above the minimap."
+      },
+      "fairPlay": { "ru": "Те же данные, что в ушах команд у стандартного интерфейса.", "en": "The same data as the vanilla team panels." },
+      "preview": { "image": "previews/team_hp.svg" }
+    },
+    {
+      "id": "sixth_sense",
+      "category": "battle",
+      "presets": ["recommended", "minimal", "streamer"],
+      "title": { "ru": "Лампа шестого чувства", "en": "Sixth sense lamp" },
+      "description": {
+        "ru": "Крупная картинка и звук, когда срабатывает навык «Шестое чувство».",
+        "en": "A big image and a sound when the Sixth Sense skill fires."
+      },
+      "fairPlay": {
+        "ru": "Срабатывает только от навыка экипажа, без поиска ближайшего врага.",
+        "en": "Fires only from the crew skill, with no nearest-enemy search."
+      },
+      "preview": { "image": "previews/sixth_sense.svg" }
+    },
+    {
+      "id": "battle_clock",
+      "category": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Часы", "en": "Clock" },
+      "description": { "ru": "Текущее время в бою и в ангаре.", "en": "The current time in battle and in the hangar." },
+      "fairPlay": { "ru": "Не читает данные боя.", "en": "Reads no battle data." },
+      "preview": { "image": "previews/battle_clock.svg" }
+    },
+    {
+      "id": "minimap",
+      "category": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Миникарта", "en": "Minimap" },
+      "description": {
+        "ru": "Увеличение миникарты, имена танков и ваши круги обзора: только настройки, которые поддерживает сам клиент.",
+        "en": "A bigger minimap, vehicle names and your own view range circles: only options the client itself supports."
+      },
+      "fairPlay": {
+        "ru": "Без маркеров пропавших из засвета и направлений стволов.",
+        "en": "No markers for vehicles that left spotting and no gun directions."
+      },
+      "preview": { "image": "previews/minimap.svg" }
+    },
+    {
+      "id": "crosshair",
+      "category": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Прицелы", "en": "Crosshairs" },
+      "description": {
+        "ru": "Стили прицела, дальность до цели и время полёта вашего снаряда, пресеты прямо в игре.",
+        "en": "Crosshair styles, distance to target and your own shell flight time, with presets in the game."
+      },
+      "fairPlay": {
+        "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
+        "en": "Looks only: no aim assist, no penetration calculator, no data about others."
+      },
+      "preview": { "image": "previews/crosshair.svg" }
+    },
+    {
+      "id": "camera",
+      "category": "battle",
+      "presets": ["recommended"],
+      "title": { "ru": "Зум и камера", "en": "Zoom and camera" },
+      "description": {
+        "ru": "Кратность снайперского режима, камера без качания и командирская камера, настройка в окне мода вместо правки файлов.",
+        "en": "Sniper zoom steps, a camera without sway and the commander camera, set up in the mod window instead of editing files."
+      },
+      "fairPlay": {
+        "ru": "Меняет только вашу камеру в пределах правил Lesta.",
+        "en": "Changes only your own camera, within Lesta's rules."
+      },
+      "preview": { "image": "previews/camera.svg" }
+    },
+    {
+      "id": "session_stats",
+      "category": "hangar",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Сессия в ангаре", "en": "Hangar session stats" },
+      "description": {
+        "ru": "Бои, процент побед, средний урон и WN8 за текущую сессию.",
+        "en": "Battles, win rate, average damage and WN8 for the current session."
+      },
+      "fairPlay": { "ru": "Только ваши итоги боёв.", "en": "Only your own battle results." },
+      "preview": { "image": "previews/session_stats.svg" }
+    },
+    {
+      "id": "battle_results",
+      "category": "hangar",
+      "presets": ["recommended"],
+      "title": { "ru": "Итоги боя", "en": "Battle summary" },
+      "description": {
+        "ru": "Короткая сводка после боя и ссылка на разбор боя на сайте.",
+        "en": "A short summary after each battle and a link to its breakdown on the site."
+      },
+      "fairPlay": { "ru": "Только ваш блок итогов боя.", "en": "Only your own block of battle results." },
+      "preview": { "image": "previews/battle_results.svg" }
+    },
+    {
+      "id": "hangar_tweaks",
+      "category": "hangar",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Удобный ангар", "en": "Hangar tweaks" },
+      "description": {
+        "ru": "Карусель техники в несколько рядов и быстрые действия в ангаре.",
+        "en": "A multi-row vehicle carousel and quick actions in the hangar."
+      },
+      "fairPlay": { "ru": "Работает только в ангаре.", "en": "Works in the hangar only." },
+      "preview": { "image": "previews/hangar_tweaks.svg" }
+    },
+    {
+      "id": "replay_manager",
+      "category": "hangar",
+      "presets": ["recommended"],
+      "title": { "ru": "Менеджер реплеев", "en": "Replay manager" },
+      "description": {
+        "ru": "Список ваших реплеев прямо в ангаре; загруженные на сайт открываются по ссылке.",
+        "en": "Your replays right in the hangar; the uploaded ones open on the site."
+      },
+      "fairPlay": { "ru": "Только ваши реплеи из папки клиента.", "en": "Only your own replays from the client folder." },
+      "preview": { "image": "previews/replay_manager.svg" }
+    },
+    {
+      "id": "replay_upload",
+      "category": "data",
+      "title": { "ru": "Автозагрузка реплеев", "en": "Replay auto-upload" },
+      "description": {
+        "ru": "Загружает на сайт реплеи ваших боёв, которые записала сама игра. Включается отдельно в настройках мода, по умолчанию выключено.",
+        "en": "Uploads the replays the game itself recorded of your battles. Switched on separately in the mod settings, off by default."
+      },
+      "fairPlay": {
+        "ru": "Только ваши реплеи, и только после привязки. Приватны, пока вы не включите публикацию.",
+        "en": "Only your own replays, and only once bound. Private until you turn publishing on."
+      },
+      "preview": { "image": "previews/replay_upload.svg" }
+    }
+  ]
+}

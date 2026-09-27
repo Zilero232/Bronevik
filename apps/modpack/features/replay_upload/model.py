@@ -9,7 +9,7 @@ import os
 import random
 
 from ...companion.sender import parse_retry_after
-from ...core.compat import to_text
+from ...core.compat import string_types, to_text
 from ...core.jsonutil import loads
 from ...core.signing import signed_request
 from .files import MAX_BYTES, SETTLE_S, VISIBILITY_HEADER, VISIBILITY_PRIVATE, build_multipart
@@ -50,6 +50,18 @@ def _error_code(body):
     except (ValueError, UnicodeDecodeError):
         return None
     return data.get('code') if isinstance(data, dict) else None
+
+
+def uploaded_replay_id(result):
+    """The site's id of an uploaded replay (the 201 body), or None (409 duplicate, unreadable body)."""
+    if not isinstance(result, dict) or result.get('status') != 201 or not result.get('body'):
+        return None
+    try:
+        data = loads(result['body'])
+    except (ValueError, UnicodeDecodeError):
+        return None
+    replay_id = data.get('id') if isinstance(data, dict) else None
+    return to_text(replay_id) if isinstance(replay_id, string_types) and replay_id else None
 
 
 def classify_upload(status, body=None):
@@ -243,7 +255,7 @@ class ReplayUploader(object):
     """Main-thread driver: at most one upload in flight, the job itself runs on `runner`."""
 
     def __init__(self, queue, credentials, runner, transport, url, user_agent, finder, clock,
-                 on_auth_failed=None, on_uploaded=None, read_file=None, visibility=VISIBILITY_PRIVATE):
+                 on_auth_failed=None, on_uploaded=None, read_file=None, visibility=VISIBILITY_PRIVATE, on_replay_id=None):
         self.queue = queue
         self.credentials = credentials
         self.runner = runner
@@ -254,6 +266,7 @@ class ReplayUploader(object):
         self.clock = clock
         self.on_auth_failed = on_auth_failed
         self.on_uploaded = on_uploaded
+        self.on_replay_id = on_replay_id
         self.read_file = read_file
         self.visibility = visibility
         self.in_flight = None
@@ -288,5 +301,7 @@ class ReplayUploader(object):
             self.on_auth_failed()
         if outcome == OUTCOME_DONE and self.on_uploaded is not None:
             self.on_uploaded(arena_unique_id)
+        if outcome == OUTCOME_DONE and self.on_replay_id is not None:
+            self.on_replay_id(arena_unique_id, uploaded_replay_id(result))
         return outcome
 

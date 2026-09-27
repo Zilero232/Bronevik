@@ -1,0 +1,41 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+STRINGS = {
+    'ru': {
+        'hlog_header_template': 'Попаданий {hits}   Пробитий {pens}   Урон {damage}',
+        'hlog_line_template': '{index}. {vehicle}: {outcome} {damage} {shell}',
+        'hlog_target_template': '{vehicle}: x{hits} урон {damage}',
+        'hlog_outcome_pen': 'пробитие',
+        'hlog_outcome_crit': 'крит',
+        'hlog_outcome_no_pen': 'не пробил',
+        'hlog_outcome_ricochet': 'рикошет',
+        'hlog_outcome_spaced': 'экран',
+        'hlog_outcome_tracks': 'гусеница',
+        'hlog_outcome_missed_armor': 'мимо брони',
+        'hlog_shell_ap': 'ББ',
+        'hlog_shell_apcr': 'БП',
+        'hlog_shell_heat': 'КС',
+        'hlog_shell_he': 'ОФ',
+        'hlog_shell_smoke': 'Дым',
+        'hlog_shell_flame': 'Огонь',
+    },
+    'en': {
+        'hlog_header_template': 'Hits {hits}   Pens {pens}   Damage {damage}',
+        'hlog_line_template': '{index}. {vehicle}: {outcome} {damage} {shell}',
+        'hlog_target_template': '{vehicle}: x{hits} damage {damage}',
+        'hlog_outcome_pen': 'penetrated',
+        'hlog_outcome_crit': 'critical',
+        'hlog_outcome_no_pen': 'no pen',
+        'hlog_outcome_ricochet': 'ricochet',
+        'hlog_outcome_spaced': 'spaced armour',
+        'hlog_outcome_tracks': 'tracks',
+        'hlog_outcome_missed_armor': 'missed armour',
+        'hlog_shell_ap': 'AP',
+        'hlog_shell_apcr': 'APCR',
+        'hlog_shell_heat': 'HEAT',
+        'hlog_shell_he': 'HE',
+        'hlog_shell_smoke': 'Smoke',
+        'hlog_shell_flame': 'Flame',
+    },
+}

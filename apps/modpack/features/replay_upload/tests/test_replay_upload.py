@@ -578,5 +578,16 @@ class ReplayContractTest(unittest.TestCase):
         validator.validate({'id': '0b0f9a6e-9a36-4f59-8a61-1d1a4b6a0c11', 'status': 'uploaded'})
 
 
+
+class UploadedReplayIdTest(unittest.TestCase):
+
+    def test_id_only_from_a_201_body(self):
+        body = b'{"id": "7b0c2a44-1111-4111-8111-111111111111", "status": "uploaded"}'
+        assert replay_upload.uploaded_replay_id({'status': 201, 'body': body}) == '7b0c2a44-1111-4111-8111-111111111111'
+        assert replay_upload.uploaded_replay_id({'status': 409, 'body': body}) is None
+        assert replay_upload.uploaded_replay_id({'status': 201, 'body': b'not json'}) is None
+        assert replay_upload.uploaded_replay_id({'status': 201, 'body': b'{"id": 5}'}) is None
+        assert replay_upload.uploaded_replay_id(None) is None
+
 if __name__ == '__main__':
     unittest.main()

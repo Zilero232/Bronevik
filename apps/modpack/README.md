@@ -8,11 +8,12 @@ It does four things, plus one opt-in:
 - it records marks-of-excellence (MoE) percentages for the player's own vehicles;
 - in battle, it shows a MoE panel with the projected percentage and the damage needed for the next mark;
 - in the hangar, it shows a session panel with battles, win rate, average damage and WN8;
+- in battle, optional HUD components on a shared draggable panel layer: damage log, hit log, clock and battle timer, team HP, sixth-sense alert; in the hangar, an extended battle summary (see [Battle HUD](#battle-hud));
 - opt-in, off by default: it uploads the replays the game itself recorded of the player's own battles (see [Replay auto-upload](#replay-auto-upload)).
 
 ## Fair play
 
-The mod follows the Lesta Fair Play Policy (see [market research](../../docs/research/market.md#техника-модов)) and the `Fair play` rule in [CLAUDE.md](../../CLAUDE.md).
+The mod follows the Lesta Fair Play Policy (see [market research](../../docs/research/competitors/market.md#техника-модов)) and the `Fair play` rule in [CLAUDE.md](../../CLAUDE.md).
 
 - **It reads only the player's own data:**
   - the `personal` block of the player's own battle results;
@@ -22,9 +23,11 @@ The mod follows the Lesta Fair Play Policy (see [market research](../../docs/res
   - the loadout of the player's own selected vehicle in the hangar (equipment, consumables, directives, loaded shells, field modifications, crew skills), read when the player joins the queue;
   - an account command about the player's own vehicle.
 - **It never reads or shows enemy information.** It has no positions, reload timers, aim or gun-marker data, spotting beyond vanilla, or minimap markers.
-- **It has no aim assist.** It does not touch the crosshair, the camera or vehicle parameters.
+- **It has no aim assist.** It never changes vehicle parameters or computes anything about aiming. The crosshair, camera and minimap components only switch options the game's own settings window already offers (reticle look, sniper zoom steps, stabilisation, minimap size and own range circles), in the hangar, when the player picks them (see [Hangar and client-settings components](#hangar-and-client-settings-components)).
+- **Hangar-only components stay in the hangar:** the replay manager touches only the player's own replay files; the quick actions are the client's own free requests (removable equipment, crew to barracks), each confirmed by the player.
 - **It never serialises other players' data from battle results.** The `vehicles`, `players` and `avatars` blocks are never read into the payload. The test `test_payload.BattleEventTest.test_never_leaks_other_players` enforces this.
 - The only other-vehicle value it reads is the team of a vehicle the player damaged. It uses that to ignore team damage in the MoE panel. The client already shows this value.
+- **The battle HUD components only re-arrange what the client already shows the player** (see [Battle HUD](#battle-hud)): the player's own damage/assist/blocked/received feedback, the hit result the client draws on an enemy marker after the player's own shot, the vehicle HP the client already has for markers and team panels, the arena timer, the client's own sixth-sense lamp. Nothing from Lesta's forbidden list: no enemy reload timers, aim direction, arty trajectories or tracer positions, destroyed-object or lost-enemy markers, smart crosshair or in-battle armour analysis.
 - **Nothing is collected or sent until the player binds the mod.** Binding uses a one-time code from the site. Each feature can be switched off.
 - **Replay auto-upload is opt-in** (`upload_replays`, off by default). It never turns replay recording on and never touches the battle: in the hangar it uploads the `.wotreplay` file the client already wrote, only when the replay header's `playerID` is the bound account. The file is the player's own recording, exactly as the site's manual upload accepts it. Uploads stay private unless `publish_replays` (also off by default) is on; the server re-checks the recorder and refuses anyone else's replay.
 
@@ -45,7 +48,18 @@ apps/modpack/
       i18n.py                 string catalog, language resolution, translator
       log.py                  [OTMETKI] log lines and the safe() decorator
       compat.py jsonutil.py storage.py signing.py transport.py panels.py
-      client/                 client glue: GUIFlash/system-message UI, BigWorld.fetchURL transport
+      hud/                    battle HUD layer: panel/ (per-panel schema), config/ (components.json), backend/ (renderer
+                              interface), layer/ (HudLayer), templates/ ({macro} panel templates)
+      shells/                 shell types from the battle feedback -> short codes
+      client/                 client glue: GUIFlash/system-message UI, BigWorld.fetchURL transport,
+                              hud/ (shared HudLayer, guiflash/ backend), battle/ (session reads, waiting subscriptions)
+      native_settings/        component values -> the player's own client settings ('native' keeps the game's value)
+      replay_file/            JSON header blocks of the client's own replay files (upload and manager)
+    ui/                     -> gui/mods/otmetki/ui              in-game UI (own package net.triotmetki.ui, see "In-game UI")
+      protocol/ fields/ components/ profiles/ hud_edit/ bridge/ i18n/   pure: the whole window as state out, messages in
+      client/                 glue: Gameface window, hangar button, ModsList entry, hotkey, the bridge context
+      gameface/               the built ui-web page (committed; `bun run ui:build` rewrites it)
+      res_map/                OpenWG Gameface resource registration of the page
     companion/              -> gui/mods/otmetki/companion       the mod the site binds to (id otmetki.companion)
       entry/mod_otmetki.py    entry point the client auto-loads (gui/mods/mod_otmetki.pyc)
       binding.py config.py i18n.py loadout.py outbox.py payload.py queue_timer.py sender.py
@@ -64,11 +78,18 @@ apps/modpack/
     marks_panel/            in-battle MoE panel: thresholds, EMA projection, damage needed
     session_stats/          hangar session panel and the session id on battle results
     replay_upload/          opt-in replay auto-upload (model.py queue/uploader, files.py header/lookup/multipart)
+    damage_log/ hit_log/ battle_clock/ team_hp/ sixth_sense/ battle_results/
+                            battle HUD components (see "Battle HUD"); each is model/ client/ settings/ i18n/ packages
+    replay_manager/ hangar_tweaks/ minimap/ camera/ crosshair/
+                            hangar and client-settings components (see "Hangar and client-settings components")
+  ui-web/                   TypeScript source of the Gameface page (preact, nanostores, zod/mini, clsx; esbuild via bun)
   tools/
-    build/                  build.py (CLI), layout.py (what goes where), archive.py (zip + meta.xml), compilers.py
+    build/                  build.py (CLI), layout.py (what goes where), archive.py (zip + meta.xml), compilers.py,
+                            setupkit/ (the installer build: components.json, Inno includes, artwork, OpenWG.Utils)
     testing/_support.py     maps the repo onto the otmetki package; fixtures, schema validators
     tests/                  cross-package tests: py2.7 compat scan, layout, client import smoke
     run_tests.py            runs every suite with the standard library only (also on Python 2.7)
+  installer/                Windows installer: Inno Setup 6.7 + OpenWG.Utils, component catalog, tests (installer/README.md)
 ```
 
 Every package keeps its tests in its own `tests/` folder. The build leaves `tests/` out and moves `entry/` scripts to `gui/mods/`.
@@ -88,25 +109,32 @@ The client imports every `gui/mods/mod_*.pyc` in hash order, so packages have no
 `companion/client/app.py` is a thin host. It hooks the client events and hands them to the companion's capture modules (`battles.py`, `marks.py`, `binding.py`) and to the features through `app.bus`.
 
 - **Host interface for features:** `config`, `translate` (features add their strings with `translate.catalog.add(STRINGS)`), `ui`, `transport`, `account_id`, `in_battle`, `marks.hangar_moe`, `is_bound()`, `current_credentials()`, `auth_failed`, `on_auth_failed()`, `user_agent()`, `config_dir`, and the state file: `state`, `register_state(key, dump)`, `save_state()`.
-- **Bus events:** `account`, `rebind`, `hangar`, `vehicle_moe`, `battle_enter`, `battle_start`, `battle_ready`, `battle_leave`, `battle_results`, `battle_event`, `battle_recorded`, `ingest_response`, `tick`. Their arguments are in the docstring of `app.py`.
-- **Settings window:** `companion/client/settings_ui.py`. `SettingsView` is the interface (`register()`, `refresh()`), `ModsSettingsApiView` the current view, `NoSettingsView` the fallback. ModsList master, which ModsSettingsAPI needs, requires WG 2.4.1+, so a Gameface view (openwg_gameface) can be added to `VIEWS` without touching the app.
+- **Bus events:** `account`, `rebind`, `hangar`, `vehicle_moe`, `battle_enter`, `battle_start`, `battle_ready`, `battle_leave`, `battle_results`, `battle_event`, `battle_recorded`, `ingest_response`, `tick`. Their arguments are in the docstring of `app.py`. Emitted by packages: `component_settings(component_id, changed_keys)` and `language(language)` (the in-game window), `hud_edit(active)` and `hud_describe(collect)` (HUD edit mode, see [In-game UI](#in-game-ui)), `replay_uploaded(arena_unique_id, replay_id)` (replay upload).
+- **Settings window:** `companion/client/settings_ui.py`. `SettingsView` is the interface (`register()`, `refresh()`). The app creates `ModsSettingsApiView` (or `NoSettingsView`); the ui package adds its Gameface window next to it with `add_settings_view(app, view)` (a `CompositeSettingsView`), so the app keeps calling `app.settings_ui.refresh()` and ModsSettingsAPI stays the fallback.
 
 ## Client hooks
 
-| What                    | Hook                                                                                                                                                                                                                                                                                                                                                      | Learnt from                                                                            |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Own battle results      | `PlayerEvents.g_playerEvents.onBattleResultsReceived(isPlayerVehicle, results)`. Fallback: poll `BigWorld.player().battleResultsCache.get(arenaUniqueID, cb)` for arenas played in this run.                                                                                                                                                              | wotstat-analytics `onBattleResultLogger.py` (same two-path approach), RU client source |
-| Result fields           | `results['personal'][<intCD>]`: `damageDealt`, `damageAssistedRadio`/`Track`/`Stun`, `damageBlockedByArmor`, `spotted`, `kills`, `shots`, `directEnemyHits`, `piercingEnemyHits`, `xp`, `credits`, `lifeTime`, `deathReason`, and post-battle `marksOnGun`/`damageRating`/`movingAvgDamage` (VEHICLE_SELF). `results['common']` holds arena and duration. | `battle_results/battle_results_common.py` in the RU client source mirror               |
-| Hangar MoE              | `g_currentVehicle.getDossier().getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating' / 'movingAvgDamage' / 'marksOnGun')`, refreshed on `g_currentVehicle.onChanged`                                                                                                                                                                                     | spoter `mod_marksOnGunExtended` (WTFPL), `dossiers2/custom/records.py`                 |
-| MoE distribution        | `BigWorld.player()._doCmdInt(AccountCommands.CMD_GET_VEHICLE_DAMAGE_DISTRIBUTION, intCD, cb)` returns `ext.battleCount` and `ext.damageBetterThanNPercent`, at most once per vehicle per 24 h                                                                                                                                                             | wotstat-analytics `moeLogger.py`                                                       |
-| In-battle damage/assist | `guiSessionProvider.shared.feedback.onPlayerFeedbackReceived`, using `BATTLE_EVENT_TYPE.DAMAGE/RADIO_ASSIST/TRACK_ASSIST/STUN_ASSIST` and `extra.getDamage()`. It only counts while the controlled vehicle is the player's own.                                                                                                                           | spoter `mod_marksOnGunExtended`, `feedback_adaptor.py`                                 |
-| MoE formula             | EMA with k = 2/(100+1) over `damage + max(radio, track, stun)`                                                                                                                                                                                                                                                                                            | spoter `mod_marksOnGunExtended`                                                        |
-| Queue time              | `g_playerEvents.onEnqueued(queueType)`, `onDequeued(queueType)`, `onArenaCreated()`                                                                                                                                                                                                                                                                       | `Account.py` / `PlayerEvents.py`, RU client                                            |
-| Battle start/end        | `g_playerEvents.onAvatarReady`, `onAvatarBecomeNonPlayer`. Replays are skipped with `BattleReplay.isPlaying()`.                                                                                                                                                                                                                                           | `Avatar.py`, RU client                                                                 |
-| Account                 | `BigWorld.player().databaseID` on `onAccountShowGUI`                                                                                                                                                                                                                                                                                                      | `Account.py`, `connection_mgr.py`                                                      |
-| HTTP                    | `BigWorld.fetchURL(url, cb, headers=, timeout=, method=, postData=)`, which is asynchronous on the main thread. Fallback: `transport.ThreadTransport`, a urllib2 daemon thread whose results the main-thread tick drains, so no BigWorld call ever runs off the main thread.                                                                              | wotstat-analytics `asyncResponse.py`                                                   |
-| Settings                | `gui.modsSettingsApi.g_modsSettingsApi`: `getModSettings`, `setModTemplate`, `registerCallback`, a `TextInput` with a button for the binding code                                                                                                                                                                                                         | izeberg/modssettingsapi example + `templates.py`                                       |
-| Panels                  | `gui.mods.gambiter.g_guiFlash.createComponent/updateComponent/deleteComponent(alias, COMPONENT_TYPE.LABEL, props)`                                                                                                                                                                                                                                        | GambitER/GUIFlash (MIT)                                                                |
+| What                    | Hook                                                                                                                                                                                                                                                                                                                                                                                                                               | Learnt from                                                                            |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Own battle results      | `PlayerEvents.g_playerEvents.onBattleResultsReceived(isPlayerVehicle, results)`. Fallback: poll `BigWorld.player().battleResultsCache.get(arenaUniqueID, cb)` for arenas played in this run.                                                                                                                                                                                                                                       | wotstat-analytics `onBattleResultLogger.py` (same two-path approach), RU client source |
+| Result fields           | `results['personal'][<intCD>]`: `damageDealt`, `damageAssistedRadio`/`Track`/`Stun`, `damageBlockedByArmor`, `spotted`, `kills`, `shots`, `directEnemyHits`, `piercingEnemyHits`, `xp`, `credits`, `lifeTime`, `deathReason`, and post-battle `marksOnGun`/`damageRating`/`movingAvgDamage` (VEHICLE_SELF). `results['common']` holds arena and duration.                                                                          | `battle_results/battle_results_common.py` in the RU client source mirror               |
+| Hangar MoE              | `g_currentVehicle.getDossier().getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating' / 'movingAvgDamage' / 'marksOnGun')`, refreshed on `g_currentVehicle.onChanged`                                                                                                                                                                                                                                                              | spoter `mod_marksOnGunExtended` (WTFPL), `dossiers2/custom/records.py`                 |
+| MoE distribution        | `BigWorld.player()._doCmdInt(AccountCommands.CMD_GET_VEHICLE_DAMAGE_DISTRIBUTION, intCD, cb)` returns `ext.battleCount` and `ext.damageBetterThanNPercent`, at most once per vehicle per 24 h                                                                                                                                                                                                                                      | wotstat-analytics `moeLogger.py`                                                       |
+| In-battle damage/assist | `guiSessionProvider.shared.feedback.onPlayerFeedbackReceived`, using `BATTLE_EVENT_TYPE.DAMAGE/RADIO_ASSIST/TRACK_ASSIST/STUN_ASSIST` and `extra.getDamage()`. It only counts while the controlled vehicle is the player's own.                                                                                                                                                                                                    | spoter `mod_marksOnGunExtended`, `feedback_adaptor.py`                                 |
+| MoE formula             | EMA with k = 2/(100+1) over `damage + max(radio, track, stun)`                                                                                                                                                                                                                                                                                                                                                                     | spoter `mod_marksOnGunExtended`                                                        |
+| Queue time              | `g_playerEvents.onEnqueued(queueType)`, `onDequeued(queueType)`, `onArenaCreated()`                                                                                                                                                                                                                                                                                                                                                | `Account.py` / `PlayerEvents.py`, RU client                                            |
+| Battle start/end        | `g_playerEvents.onAvatarReady`, `onAvatarBecomeNonPlayer`. Replays are skipped with `BattleReplay.isPlaying()`.                                                                                                                                                                                                                                                                                                                    | `Avatar.py`, RU client                                                                 |
+| Account                 | `BigWorld.player().databaseID` on `onAccountShowGUI`                                                                                                                                                                                                                                                                                                                                                                               | `Account.py`, `connection_mgr.py`                                                      |
+| HTTP                    | `BigWorld.fetchURL(url, cb, headers=, timeout=, method=, postData=)`, which is asynchronous on the main thread. Fallback: `transport.ThreadTransport`, a urllib2 daemon thread whose results the main-thread tick drains, so no BigWorld call ever runs off the main thread.                                                                                                                                                       | wotstat-analytics `asyncResponse.py`                                                   |
+| Settings                | `gui.modsSettingsApi.g_modsSettingsApi`: `getModSettings`, `setModTemplate`, `registerCallback`, a `TextInput` with a button for the binding code                                                                                                                                                                                                                                                                                  | izeberg/modssettingsapi example + `templates.py`                                       |
+| Panels                  | `gui.mods.gambiter.g_guiFlash.createComponent/updateComponent/deleteComponent(alias, COMPONENT_TYPE.LABEL, props)`                                                                                                                                                                                                                                                                                                                 | GambitER/GUIFlash (MIT)                                                                |
+| Panel drag              | `gui.mods.gambiter.flash.COMPONENT_EVENT.UPDATED(alias, props)`, fired by GUIFlash's `py_update` when the player drags a label; the HUD layer saves `x`/`y` to components.json                                                                                                                                                                                                                                                     | GUIFlash `flash.py`                                                                    |
+| Damage log              | `feedback.onPlayerFeedbackReceived`: `BATTLE_EVENT_TYPE.DAMAGE/RADIO_ASSIST/TRACK_ASSIST/STUN_ASSIST/TANKING/RECEIVED_DAMAGE`, `extra.getDamage()`, `extra.getShellType()` (a `BATTLE_LOG_SHELL_TYPES` IntEnum member); `feedback.onPlayerSummaryFeedbackReceived` (`getTotalDamage/AssistDamage/BlockedDamage/StunDamage`)                                                                                                        | `feedback_events.py`, `feedback_adaptor.py`, RU 1.45                                   |
+| Hit log                 | `feedback.onVehicleFeedbackReceived(eventID, vehicleID, value)` with the marker hit states `FEEDBACK_EVENT_ID.VEHICLE_HIT/RICOCHET/ARMOR_PIERCED/CRITICAL_HIT*/ARMOR_SCREEN_BLOCKED/TRACK_BLOCKED/WHEEL_BLOCKED/ARMOR_MISSED` (the client sends them only for the controlling vehicle's own shots: `Vehicle.showDamageFromShot` → `updateMarkerHitState`), `VEHICLE_HEALTH`; `BATTLE_EVENT_TYPE.DAMAGE/CRIT` with `extra.isShot()` | `Vehicle.py`, `feedback_adaptor.py`, `battle_constants.MARKER_HIT_STATE`, RU 1.45      |
+| Team HP                 | `sessionProvider.getArenaDP().getVehiclesInfoIterator()` (`vehicleID`, `team`, `vehicleType.maxHealth`, `isAlive()`); `feedback.onVehicleFeedbackReceived` `VEHICLE_HEALTH` `(newHealth, attackerInfo, reason)` / `VEHICLE_DEAD`; own vehicle `vehicleState.onVehicleStateUpdated(VEHICLE_VIEW_STATE.HEALTH, hp)`; `arena.onVehicleKilled`, `arena.onVehicleAdded`                                                                 | `arena_dp.py`, `arena_vos.py`, `battle_session.setVehicleHealth`, `ClientArena.py`     |
+| Battle clock            | `BigWorld.player().arena.period` / `periodEndTime` (`constants.ARENA_PERIOD`), `BigWorld.serverTime()`                                                                                                                                                                                                                                                                                                                             | `ClientArena.py`, `constants.py`, RU 1.45                                              |
+| Sixth sense             | `vehicleState.onVehicleStateUpdated(VEHICLE_VIEW_STATE.OBSERVED_BY_ENEMY, isObserved)` (what the vanilla lamp listens to; `SWITCHING` resets); sound `SoundGroups.g_instance.playSound2D(event)`                                                                                                                                                                                                                                   | `Avatar.onObservedByEnemy`, `indicators.py`, `SoundGroups.py`, RU 1.45                 |
+| Battle summary          | the companion's own `battle_event(event, now)` bus event (built from the `personal` block) and `marks.hangar_moe` from before the battle; map label `ArenaType.g_cache[...].name`; `SystemMessages.pushMessage`                                                                                                                                                                                                                    | companion `payload.py`                                                                 |
 
 Client source reference: [IzeBerg/wot-src](https://github.com/IzeBerg/wot-src), branch `RU` (Lesta client 1.45.0.8259 at the time of writing).
 
@@ -190,7 +218,7 @@ The test suite validates the example and the builder output against the schema w
 
 ## Streamer settings (hangar only)
 
-Spec: [streamer-settings §3.5](../../docs/superpowers/specs/2026-09-26-streamer-settings.md). Switch: `share_settings` (on by default; does nothing until the mod is bound). Client glue: `packages/companion/client/settings_core.py`.
+Spec: [streamer-settings §3.5](../../docs/specs/2026-09-26-streamer-settings.md). Switch: `share_settings` (on by default; does nothing until the mod is bound). Client glue: `packages/companion/client/settings_core.py`.
 
 - **Whitelist.** The glue reads standard client settings through the settings core (`dependency.instance(ISettingsCore)`) into flat keys (`fov`, `sniperSens`, `zoomSteps`, …, see `settings_share.FIELDS`). `build_export` keeps only those keys with valid values and nests them into the contract groups `display` … `battleUi`. Login/account keys, hardware and mods are never sent.
 - **Export.** Set `"settings_action": "export"` in `config.json` and open the hangar. The mod posts `POST /mod/settings` `{device_id, account_id, mod_version, target, anonymous_stats, settings}`. `settings_target` is `private` (default) or `profile`; `settings_anonymous_stats` is off by default.
@@ -217,6 +245,103 @@ Switches: `upload_replays` (off by default; does nothing until the mod is bound)
 | 400 / 404 / 413 / 422 (`replay_not_owned` included), or file too large | Dropped, remembered                                            |
 | network error, 428 twice, 429, 5xx                                     | Exponential backoff 30 s up to 1 h, ±20% jitter, `Retry-After` |
 
+## Battle HUD
+
+Six components, each its own feature package (`features/<id>/`, own `.mtmod`, depends on core and companion) with a switch in `config.json` (on by default) and its own section in `mods/configs/otmetki/components.json`. They follow the research's "who does it best": XVM for template-formatted logs, Battle Observer for team HP and the clock (Battle Observer does not run on Lesta), everyone's sixth-sense lamp without the forbidden "nearest enemy".
+
+### The HUD layer (core)
+
+- **`core/hud/`** (pure): `HudLayer` (`register(panel_id, schema)`, `show(panel_id, text)`, `hide`, `hide_all`, `update_settings`, `on_moved`), `ComponentConfig` (components.json: one schema-checked section per component; sections of components that are not installed are kept), `panel_schema(...)` (the common layout keys plus the panel's own), `HudBackend` (the renderer interface), `render(template, values)` (`{macro}` templates on the standard library's `string.Template`; `{{` is a literal brace, an unknown macro stays as written).
+- **Common panel keys** (every panel section): `x`, `y` (-4000..4000), `align_x` (`left`/`center`/`right`), `align_y` (`top`/`center`/`bottom`), `alpha` (0..100), `font_size` (8..48), `drag`, `border`. The on/off switch stays in `config.json` (the companion schema), so the settings window keeps working while a component is not installed.
+- **Dragging:** hold Ctrl for the cursor and drag a panel; GUIFlash reports the new position (`COMPONENT_EVENT.UPDATED`) and the layer writes `x`/`y` into the panel's section, so it comes back there next battle.
+- **Renderer:** `core/client/hud/` picks the first usable backend from `BACKENDS`. Today that is GUIFlash (optional dependency, not bundled, last updated 2024: unverified on Lesta 1.45). Without it `NullBackend` keeps every panel hidden and logs `no HUD renderer (GUIFlash) installed`; the battle summary still works (it uses system messages). A Gameface backend (openwg_gameface) can be added to `BACKENDS` without touching the features: it only has to implement `available/create/update/delete/listen` with the GUIFlash label props (`x`, `y`, `alignX`, `alignY`, `alpha`, `drag`, `border`, `text`, `visible`).
+- **Settings UI:** a settings window reads `hud_layer(app).schemas` / `.panels` and writes through `hud_layer(app).update_settings(panel_id, values)` (a shown panel moves at once).
+- Components start on the app's `battle_ready` (own battles, never replays; the clock also on `battle_enter`) and hide on `battle_leave`. Battle-session events are subscribed through `core/client/battle.BattleHooks`, which retries for 20 s while the session is not ready and unsubscribes everything on leave.
+
+### damage_log — damage log
+
+- **What:** totals of the player's own damage dealt, damage blocked by armour, assistance (radio + track + stun) and damage received, plus the latest entries (kind, amount, vehicle short name, shell). The client's own end-of-life summary (`onPlayerSummaryFeedbackReceived`) raises the totals to at least its values.
+- **Fair play:** the same feedback events that drive the vanilla damage log and ribbons, counted only while the camera follows the player's own vehicle. Damage to allies is not counted as dealt.
+- **Switch:** `battle_damage_log`. **Section `damage_log`:** `style` (`full`, `compact`, `minimal`, `custom`), `template` (for `custom`), `show_log`, `log_lines` (0..15), `log_kinds` (`all`, `dealt`, `received`), `entry_template` (empty = built-in). Default position: bottom left.
+- **Macros:** totals `{dealt}`, `{blocked}`, `{assisted}`, `{assist_radio}`, `{assist_track}`, `{assist_stun}`, `{received}`, `{hits}`, `{blocked_hits}`, `{received_hits}`; entries `{index}`, `{amount}`, `{kind}`, `{vehicle}`, `{shell}`.
+
+### hit_log — own hits
+
+- **What:** each of the player's own shots that hit an enemy: penetration, critical, no penetration, ricochet, spaced armour, tracks/wheels, missed armour, with the damage and shell when the server reports damage, crits, and the target's HP after the hit. Optionally grouped by target (hits and damage per vehicle). A damage event arriving within 2 s after a hit result is merged into it.
+- **Fair play:** the hit result is exactly the one the client draws on the enemy marker after the player's own shot (the client only sends it for the controlling vehicle's shots); HP is what the enemy's marker shows. No armour analysis, nothing predictive.
+- **Switch:** `battle_hit_log`. **Section `hit_log`:** `show_header`, `header_template`, `line_template` (empty = built-in), `lines` (0..20), `group_by_target`. Default position: bottom right.
+- **Macros:** header `{hits}`, `{pens}`, `{no_pens}`, `{ricochets}`, `{damage}`, `{crits}`; lines `{index}`, `{vehicle}`, `{outcome}`, `{damage}`, `{crits}`, `{hp}`, `{shell}`, `{hits}` (grouped).
+
+### battle_clock — clock and battle timer
+
+- **What:** local time (and optionally the date) with the time left in the current arena period (countdown before the battle, then the battle timer).
+- **Fair play:** the arena period and its end time are what the client's own timer shows.
+- **Switch:** `battle_clock`. **Section `battle_clock`:** `clock_format` (`%H:%M`, `%H:%M:%S`, `%I:%M %p`), `date_format` (none, `%d.%m`, `%d.%m.%Y`, `%Y-%m-%d`), `show_timer`, `template` (`{time}`, `{date}`, `{timer}`, `{period}`). Default position: top right.
+
+### team_hp — team HP and score
+
+- **What:** the HP sum of each team against its maximum, as bars and/or numbers, the frag score and the HP difference. Styles `full`, `numbers`, `bars`, `compact`.
+- **Fair play:** max HP comes from the arena data behind the player panels; current HP from the health updates the client already receives for markers and panels (an enemy the client has not seen keeps its last known HP, exactly as on its marker); deaths from the arena. The client already tracks the same values for its own HUD (the `battleField` controller in `battle_session.setVehicleHealth`); this panel only sums and restyles them.
+- **Switch:** `battle_team_hp`. **Section `team_hp`:** `style`, `bar_width` (5..60), `show_score`, `show_diff`, `ally_color`, `enemy_color` (`#RRGGBB`), `template` (`{allies_hp}`, `{allies_max}`, `{allies_alive}`, `{enemies_hp}`, `{enemies_max}`, `{enemies_alive}`, `{allies_frags}`, `{enemies_frags}`, `{diff}`). Default position: top centre, under the vanilla score.
+
+### sixth_sense — sixth-sense alert
+
+- **What:** when the client's own sixth-sense lamp lights, a text or icon (with seconds since it lit) and, optionally, a custom sound; hidden when the lamp goes out or after `hide_after_s`.
+- **Fair play:** it listens to the same vehicle-state event as the vanilla lamp, for the player's own vehicle only. No "nearest enemy", direction or distance (forbidden, item 8/9 of the rules).
+- **Switch:** `battle_sixth_sense`. **Section `sixth_sense`:** `text` (empty = built-in), `color`, `icon` (a client image path, shown as `img://<path>`; letters, digits, `_./-` only), `icon_size` (16..256), `sound_event` (a Wwise event name already loaded by the client or a sound mod; letters, digits, `_` only; empty = no extra sound, the vanilla lamp sound is untouched), `show_timer`, `hide_after_s` (0 = while lit). We ship no sound bank: a custom sound needs a bank from a sound mod (e.g. built with openwg/wot.wwise).
+
+### battle_results — extended battle summary
+
+- **What:** after each own battle, a hangar system notification with the result, vehicle and map, XP and credits, damage/assist/blocked/frags/spotted, and the MoE percent with its change against the hangar snapshot from before the battle (and the change of the moving-average damage). Arrives in the hangar; results that arrive during a battle wait for the hangar.
+- **Fair play:** built from the companion's own `battle_result` event, i.e. the `personal` block of the player's own results only.
+- **Switch:** `hangar_battle_results`. **Section `battle_results`:** `show_economy`, `show_combat`, `show_marks`, `colored`, `bonus_types` (`all`, `random`), `template` (macros: `{result}`, `{vehicle}`, `{tier}`, `{map}`, `{xp}`, `{credits}`, `{damage}`, `{assist}`, `{assist_radio}`, `{assist_track}`, `{assist_stun}`, `{blocked}`, `{frags}`, `{spotted}`, `{marks_on_gun}`, `{moe_percent}`, `{moe_delta}`, `{moving_avg}`, `{moving_avg_delta}`, `{marks_delta}`).
+
+## In-game UI
+
+Package `packages/ui` (`net.triotmetki.ui`, depends on core and companion; registers through the core registry as `ui`, so it attaches in any load order). Without OpenWG Gameface it logs one line and the ModsSettingsAPI window / `config.json` stay the settings UI.
+
+- **Window:** a Gameface `WindowImpl` + `ViewImpl` whose `ViewModel` has one string property `state` (the whole UI state as JSON) and one command `send` (`{message: '<json>'}`). The page is `ui-web` built into `packages/ui/gameface/` and shipped at `res/gui/gameface/mods/triotmetki/ui/`; `res_map/net.triotmetki.ui.json` registers it for OpenWG Gameface (Lesta needs its Lesta-compatible build; the first start after install restarts the client once).
+- **Entry points:** a «///» button injected into a hangar Gameface view (`client/constants.BUTTON_HOSTS`, `setChildView` + `gf_mod_inject` of `button.js`), a ModsList entry when a Lesta-compatible ModsList is installed, and the hotkey Ctrl+Shift+T (hangar only; it also ends the on-screen HUD edit mode). The window closes on `battle_enter`.
+- **Bridge (pure, `ui/bridge`):** `SettingsBridge.state()` and `handle(message)`; the glue only moves JSON. Messages: `ready`, `close`, `set {component, key, value}`, `action {component, action, row?, value?}`, `language`, `bind {code}`, `open {path}` (site-relative paths only, joined to the site next to `server_url`), `profile_save/load/rename/delete/export/import`, `hud_edit {active}`, `hud_move {panel, x, y, align_x?, align_y?}`, `hud_reset {panel}`. A test checks the command list against `ui-web`, and the page's zod schema parses a state fixture the Python tests write (`OTMETKI_UPDATE_FIXTURES=1` regenerates it).
+- **Cards (`ui/components`):** the companion's data switches (`COMPANION_KEYS`) first, then every attached feature, then HUD panels no feature claims. A card's switch is the feature's config.json switch (`settings.SETTINGS`); its fields come from its components.json section (`settings.SCHEMA`) or its companion keys; field type, limits and choices are derived from the `Schema` (bool, int with min/max, choice, text). Panel position keys (`x`, `y`, `align_*`, `drag`) are left to the HUD editor. A feature instance may add buttons and a list page with duck-typed `ui_actions()`, `ui_page()` and `ui_action(action, row, value)` (the replay manager and hangar tweaks do). Group: `GROUP` in the feature's settings (`data`, `hangar`, `battle`).
+- **Labels:** from the shared catalog, most specific first: `component_<id>` / `component_<id>_hint`; field `<id>_<key>`, `setting_<key>`, then the bare key (the companion labels its switches that way); hints with `_hint`; choices `<id>_<key>_<value>`, then `choice_<value>`. A feature adds these to its `i18n` STRINGS.
+- **Profiles (`ui/profiles`):** `mods/configs/otmetki/profiles.json` `{version: 1, active, profiles: [{id, name, created, updated, data: {config, components}}]}`, at most 12. `data.config` is config.json without `server_url`, `bind_code`, `settings_action`; `data.components` is the whole components.json (sections of components that are not installed included: they are stored as is and merged through their schema once installed). The installer reads and writes the same file. Profile codes `TM1.<base64url(zlib(json))>` copy a profile between players. **Site sync is not wired:** the settings-share contract (`contract/settings.schema.json`) is a strict whitelist of standard client settings and excludes mods by design, so syncing profiles to the site needs its own contract and endpoint.
+- **HUD edit mode:** the window's editor draws the screen (the client size from `viewEnv.getClientSizePx()`) with every registered panel from `hud_layer(app).panels`; dragging (or the arrow keys) sends `hud_move` with the nearest anchor (`align_x`/`align_y` by screen third), throttled to 150 ms, and the bridge writes it through `hud_layer(app).update_settings`, so a shown panel moves live. «Edit on screen» emits `hud_edit(True)` on the bus and closes the window: HUD components are expected to show their panels with preview data in the hangar and let GUIFlash drag them (Ctrl); `hud_edit(False)` (hotkey, window reopened, battle) hides them. `hud_describe(collect)` asks panels for the editor's miniature: `collect(panel_id, preview=None, width=None, height=None)`.
+- **Look:** the site's design v4 tokens, read from `apps/client/shared/styles/_tokens.scss` at build time (dark theme; `rgb(r g b / a)` becomes `rgba()`, px becomes rem because Gameface scales rem) and inlined into the CSS: graphite surfaces, orange accent, gold for the active profile. The ModsList icon is drawn at build time from the same tokens (`fast-png`).
+- **Build and tests:** `bun run ui:build` (in `apps/modpack`) bundles `ui-web` with esbuild into `packages/ui/gameface/` (committed; a test fails when it is stale). `bun run ui:test` (`bun test ui-web`) and the repo's Vitest project `modpack-ui` run the same `_tests`; `bun run typecheck` covers `ui-web`.
+
+## Hangar and client-settings components
+
+Each is a feature package with a config.json switch (on by default) and a components.json section. The four client-settings components write **only standard client settings the game's own settings window offers**, through the settings core (`core/client/native`), only in the hangar, and only when the player changes a value in the window or loads a profile (`component_settings`): the value `native` («Как в игре») never touches the game's setting, and a later change in the game's own settings window is never overridden.
+
+### replay_manager — replay manager
+
+- **What:** the player's own replays in the client's replay folder (the header's recorder must be the logged-in account), newest first, with map, vehicle, date and size; rename (Windows-safe names, same extension), delete (with a confirmation), open the folder; replays the mod uploaded link to `/replays/<id>` on the site (the upload's `replay_uploaded` event stores the site id per arena in `replay_manager_<account>.json`), plus «Мои реплеи на сайте».
+- **Switch:** `hangar_replay_manager`. **Section:** `max_rows` (10..200), `uploaded_only`.
+- **Left out:** playing a replay from the hangar (no verified client API).
+
+### hangar_tweaks — hangar
+
+- **What:** the carousel options of the client (`carouselType` one/two rows, `doubleCarouselType` tile size) and two free quick actions on the selected vehicle, with confirmations: demount every piece of equipment the client marks removable, and send the crew to the barracks (refused when the barracks are known to be full). Both refuse while the vehicle is in battle, in the queue or in a platoon, and run the client's own item processors.
+- **Switch:** `hangar_tweaks`. **Section:** `carousel_rows`, `carousel_tiles`, `quick_actions`.
+- **Left out:** a three-row carousel (needs patching the Flash carousel) and hiding the hangar tutorial hints (no side-effect-free client API could be verified for Lesta 1.45).
+
+### minimap — minimap
+
+- **What:** size (`minimapSize` 0..5), transparency (`minimapAlpha`), vehicle names on the map (`showVehModelsOnMap`: never / Alt / always) and the player's own range circles (`minimapViewRange`, `minimapMaxViewRange`, `minimapDrawRange`).
+- **Switch:** `minimap_tweaks`. **Fair play:** vanilla options only; a test checks that no setting name concerns enemies, directions, tracers, destroyed objects or spotting. **Left out:** zoom beyond the client's own size range (Flash patch); lost-enemy markers, gun directions, arty tracers (forbidden).
+
+### camera — camera
+
+- **What:** the sniper zoom steps preset (`zoomSteps`: x2–x8, x2–x16, x2–x25, x4–x25), the dynamic camera and horizontal stabilisation.
+- **Switch:** `camera_tweaks`. **Left out until Lesta/МОСТ confirms them in writing:** camera distance and zoom beyond the client's own options, free-look / pitch limits, the commander camera and sway removal. All of them override the camera configuration (PMOD-style) rather than a setting the game exposes.
+
+### crosshair — crosshair presets
+
+- **What:** presets (`classic`, `minimal`, `contrast`, `clean`) over the client's own reticle settings (`arcade` / `sniper`: opacity and style index of the net, centre mark, gun mark, mixing, reload, condition, cassette and zoom indicator; the player's other parts are kept), for arcade, sniper or both; and the client's server-reticle switch (`useServerAim`).
+- **Switch:** `crosshair_presets`. **Fair play:** looks only; nothing computes lead, penetration, distance or anything about enemies.
+- **Custom reticle art (not shipped):** the battle reticle is the Scaleform `crosshairPanel` (AS3). New art would mean an original vector design exported from SVG into our own AS3 skin (Animate or FFDec), compiled to SWF and shipped inside a `.mtmod` at the client's `gui/flash/...` path so the VFS overrides the vanilla file, rebuilt after every client patch. It stays visual-only and keeps the vanilla logic; until then the presets use only the settings the game offers.
+
 ## Build
 
 ```bash
@@ -224,6 +349,7 @@ python apps/modpack/tools/build/build.py                          # dev: one .mt
 python apps/modpack/tools/build/build.py --require-pyc            # release: fails without a bytecode compiler
 python apps/modpack/tools/build/build.py --single --require-pyc   # release in the single-package format
 python apps/modpack/tools/build/build.py --wg                     # .wotmod for WG clients
+python apps/modpack/tools/build/build.py --dry-run                # list the packages and their in-game paths, write nothing
 python apps/modpack/tools/build/build.py --install-dir "D:\Games\Tanki\mods\1.45.0.8259"
 ```
 
@@ -233,12 +359,13 @@ python apps/modpack/tools/build/build.py --install-dir "D:\Games\Tanki\mods\1.45
 | -------------- | ------------------------------- | ---------------------------------- | --------------- |
 | core           | `net.triotmetki.core_<v>.mtmod` | `net.triotmetki.core`              | —               |
 | companion      | `otmetki.companion_<v>.mtmod`   | `otmetki.companion` (kept forever) | core            |
+| ui             | `net.triotmetki.ui_<v>.mtmod`   | `net.triotmetki.ui`                | core, companion |
 | feature `<id>` | `net.triotmetki.<id>_<v>.mtmod` | `net.triotmetki.<id>`              | core, companion |
 | `--single`     | `otmetki.<v>.mtmod`             | `otmetki.companion`                | —               |
 
 Versions come from `packages/core/version.py`, `packages/companion/version.py` and each `features/<id>/__init__.py`.
 
-Each package is a stored (uncompressed) zip with explicit directory entries, `meta.xml` and `res/scripts/client/gui/mods/...`. The split packages never ship the same file, and `--single` is their union. The `<dependencies>` block in `meta.xml` is for installers and people. Whether the client reads it is **unverified**, and the code never relies on it (see [Load order](#load-order)).
+Each package is a stored (uncompressed) zip with explicit directory entries, `meta.xml` and `res/scripts/client/gui/mods/...`; the ui package also carries `res/gui/gameface/mods/triotmetki/ui/*` and `res/mods/configs/res_map/net.triotmetki.ui.json`, which are never compiled. The split packages never ship the same file, and `--single` is their union. The `<dependencies>` block in `meta.xml` is for installers and people. Whether the client reads it is **unverified**, and the code never relies on it (see [Load order](#load-order)).
 
 **Release builds must ship `.pyc`.** The production client loads only `mod_*.pyc`; it reads `.py` only in development mode. A source-only package does not load in a live client. Pick the compiler with `--compiler auto|owg|py27` (see `tools/build/compilers.py`):
 
@@ -259,6 +386,7 @@ cd apps/modpack && uv sync && uv run pytest && uv run ruff check .
 
 - `tools/run_tests.py` needs only the standard library and runs every `tests/` folder (`packages/*`, `features/*`, `tools/**`). It also runs on Python 2.7, where the build tool's own tests are left out.
 - pytest runs the same unittest-style tests, with its config in `pyproject.toml`.
+- `ui-web`: `bun run ui:test` (or the repo's `bun run test`, Vitest project `modpack-ui`). `tools/tests/test_ui_smoke.py` loads the ui with stubbed Gameface, ModsList, InputHandler and settings core, opens the window and drives it with page messages.
 - The pre-commit hook runs `test:modpack` when a staged Python file is under `apps/modpack`.
 - [.github/workflows/modpack.yml](../../.github/workflows/modpack.yml) runs pytest, the stdlib runner, ruff and vermin on Windows for pull requests.
 
@@ -292,6 +420,8 @@ Lint and extra checks:
 
 ## Install (players)
 
+The installer `otmetki-setup-<version>.exe` finds the client, offers presets and profiles, backs up the mod folders and can roll back: see [installer/README.md](installer/README.md). By hand:
+
 1. Copy the packages into `<game>/mods/<client version>/`: `net.triotmetki.core_<v>.mtmod`, `otmetki.companion_<v>.mtmod` and the features you want, or the single `otmetki.<v>.mtmod`. Do not mix the single package with the split ones.
 2. Optional: install ModsSettingsAPI (izeberg) with ModsList (poliroid) and OpenWG Gameface to get the settings window and binding UI. ModsList master needs WG 2.4.1+; on Lesta use a release that supports the client. Without them, edit `mods/configs/otmetki/config.json`.
 3. Optional: install GUIFlash (gambiter) for the on-screen panels. Without it, the session summary comes as a system notification after each battle, and the in-battle panel is off.
@@ -299,18 +429,19 @@ Lint and extra checks:
 
 `mods/configs/otmetki/config.json` (created on first start):
 
-| Key                                                                                                                     | Default                     | Meaning                                                                          |
-| ----------------------------------------------------------------------------------------------------------------------- | --------------------------- | -------------------------------------------------------------------------------- |
-| `enabled`                                                                                                               | `true`                      | Master switch                                                                    |
-| `server_url`                                                                                                            | `https://api.triotmetki.ru` | API base. Must be https, or http://localhost / http://127.0.0.1 for development. |
-| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times`, `send_loadouts`, `send_shots` | `true`                      | Per-feature data switches                                                        |
-| `battle_moe_panel`, `hangar_session_panel`                                                                              | `true`                      | UI switches                                                                      |
-| `session_idle_minutes`                                                                                                  | `60`                        | New session after this idle gap (10–1440)                                        |
-| `flush_interval_seconds`                                                                                                | `15`                        | Send interval (5–600)                                                            |
-| `upload_replays`                                                                                                        | `false`                     | Upload the game's own replays of your battles (opt-in)                           |
-| `publish_replays`                                                                                                       | `false`                     | Make auto-uploaded replays public; off keeps them private (owner only)           |
-| `bind_code`                                                                                                             | `""`                        | Fallback binding without ModsSettingsAPI; cleared after use                      |
-| `language`                                                                                                              | `auto`                      | `ru`, `en` or `auto` (client language)                                           |
+| Key                                                                                                                     | Default                     | Meaning                                                                                                |
+| ----------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `enabled`                                                                                                               | `true`                      | Master switch                                                                                          |
+| `server_url`                                                                                                            | `https://api.triotmetki.ru` | API base. Must be https, or http://localhost / http://127.0.0.1 for development.                       |
+| `send_battle_results`, `send_moe_snapshots`, `send_moe_distribution`, `send_queue_times`, `send_loadouts`, `send_shots` | `true`                      | Per-feature data switches                                                                              |
+| `battle_moe_panel`, `hangar_session_panel`                                                                              | `true`                      | UI switches                                                                                            |
+| `battle_damage_log`, `battle_hit_log`, `battle_clock`, `battle_team_hp`, `battle_sixth_sense`, `hangar_battle_results`  | `true`                      | Battle HUD switches; their look and position live in `components.json` (see [Battle HUD](#battle-hud)) |
+| `session_idle_minutes`                                                                                                  | `60`                        | New session after this idle gap (10–1440)                                                              |
+| `flush_interval_seconds`                                                                                                | `15`                        | Send interval (5–600)                                                                                  |
+| `upload_replays`                                                                                                        | `false`                     | Upload the game's own replays of your battles (opt-in)                                                 |
+| `publish_replays`                                                                                                       | `false`                     | Make auto-uploaded replays public; off keeps them private (owner only)                                 |
+| `bind_code`                                                                                                             | `""`                        | Fallback binding without ModsSettingsAPI; cleared after use                                            |
+| `language`                                                                                                              | `auto`                      | `ru`, `en` or `auto` (client language)                                                                 |
 
 The device secret is stored in plain text in `credentials.json`, as other mods store tokens. It is scoped to one device and one account, and the user can revoke it on the site.
 
@@ -365,6 +496,10 @@ Check МОСТ's current submission rules before the first upload. This README d
 - `ArenaType.g_cache[...].geometryName`;
 - the settings core on Lesta 1.45: `skeletons.account_helpers.settings_core.ISettingsCore`, `getSetting` / `applySettings` / `confirmChanges` / `applyStorages`, the setting names in `companion/client/settings_core.CORE_NAMES` and their value scales (sensitivity, volume);
 - the confirm dialog (`DialogsInterface.showDialog` + `SimpleDialogMeta` / `I18nConfirmDialogButtons`);
+- battle HUD: GUIFlash on Lesta 1.45 at all; the `alpha` label prop; that the `x`/`y` in `COMPONENT_EVENT.UPDATED` are in the same space as the ones passed to `createComponent` (relative to `alignX`/`alignY`); `<img src="img://...">` in a label; the hit-state events arriving before the matching damage event (the 2 s merge window); `vehicleType.maxHealth` on every vehicle info at `battle_ready`; `arena.periodEndTime` against `BigWorld.serverTime()`; `SoundGroups.g_instance.playSound2D` with a mod bank's event; that `onPlayerSummaryFeedbackReceived` fires on Lesta;
+- in-game UI: OpenWG Gameface's Python API on Lesta (`ModDynAccessor`, `gf_mod_inject`, `ViewModel._addStringProperty/_addCommand/_setString`, `WindowImpl(wndFlags=WindowFlags.WINDOW)`), that `mods/configs/res_map/*.json` is read from inside a `.mtmod`, the command argument shape (`{message}`), `viewEnv.getClientSizePx()`, rem scaling and the CSS Gameface supports (flex, `rgba()`), the hangar host views in `BUTTON_HOSTS`, how the injected `button.js` reaches its model (`window.subViews` / `window.model`), the ModsList `addModification` keywords, `InputHandler.g_instance.onKeyDown`, `BigWorld.wg_openWebBrowser`, and the `Warhelios` font name;
+- client-settings components: the setting names and value formats `minimapSize`, `minimapAlpha`, `showVehModelsOnMap`, `minimapMaxViewRange`, `zoomSteps` (assumed a list of multipliers), `dynamicCamera`, `horStabilizationSnp`, `carouselType`, `doubleCarouselType`, the `arcade`/`sniper` reticle dicts with their part names and style indexes, `useServerAim`;
+- hangar quick actions: `Vehicle.optDevices.installed`, `OptionalDevice.isRemovable`, `getInstallerProcessor(vehicle, device, slot, install=False)`, `TankmanUnload(vehicle)`, `Processor.request(callback)`, `IItemsCache.items.stats.tankmenBerthsCount/tankmenCount`;
 - replay upload: `BattleReplay.g_replayCtrl._BattleReplay__replayDir`, the `replayEnabled` setting name and values, when the client appends the results block to the replay file, and that the header `dateTime` is local time.
 
 ### Live-client smoke checklist
@@ -374,9 +509,12 @@ Check МОСТ's current submission rules before the first upload. This README d
 3. After a random battle, `outbox_<id>.json` empties within about 15 s and the API shows the battle.
 4. Selecting a tier 5+ vehicle sends a `moe_snapshot`. The in-battle panel appears when GUIFlash is installed.
 5. With the network off, events stay in the outbox and are sent after reconnect.
+6. With GUIFlash installed, a random battle shows the damage log, hit log, clock, team HP panels; shots at an enemy add hit-log lines; Ctrl-dragging a panel and re-entering battle keeps its position (`components.json`); the sixth-sense text appears with the vanilla lamp; after the battle a «Три отметки: победа/поражение…» notification appears in the hangar.
+7. With OpenWG Gameface installed (its Lesta build): after the one-time restart the hangar shows the «///» button (or the ModsList entry / Ctrl+Shift+T opens the window); switching a component off, choosing a minimap size and saving/loading a profile change `config.json`, the game's own minimap setting and `profiles.json`; the HUD editor moves a panel and the next battle shows it there; the replay manager lists own replays and «На сайте» opens the uploaded one.
 
 ## TODO
 
+- A Gameface HUD backend (`core/client/hud/BACKENDS`) so the battle panels no longer need GUIFlash.
 - A flash-free in-battle fallback when GUIFlash is absent. `GUI.Text` no longer exists in the 1.45 client stubs. Candidates are a Gameface (OpenWG) view or the battle `messages` controller.
 - A smoke import of the client glue against the stubs from `IzeBerg/wot-src`. The smoke test uses hand-written stubs today.
-- A Gameface settings view (`SettingsView`) and per-feature settings schemas, once the settings window moves off ModsSettingsAPI.
+- Profile sync with the site: a contract and endpoint for `profiles.json` (the settings-share contract excludes mods by design).

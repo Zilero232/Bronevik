@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 import time
 
+from ...core.client.native import apply_settings, read_settings
 from ...core.jsonutil import loads
 from ..settings_share import (POLL_PATH, SETTINGS_PATH, SettingsBackup, SettingsShareError, backup_path, build_export_request,
                               build_poll_request, build_result_request, changes_to_values, clean_values, parse_poll_response,
@@ -34,44 +35,16 @@ CORE_NAMES = {
 }
 
 
-def _settings_core():
-    try:
-        from helpers import dependency
-        from skeletons.account_helpers.settings_core import ISettingsCore
-        return dependency.instance(ISettingsCore)
-    except Exception:
-        return None
-
-
 def read_client_settings():
     """Flat raw values (whitelisted) read through the settings core, or None if unavailable."""
-    core = _settings_core()
-    if core is None:
+    current = read_settings(CORE_NAMES.values())
+    if current is None:
         return None
-    raw = {}
-    for key, name in CORE_NAMES.items():
-        try:
-            raw[key] = core.getSetting(name)
-        except Exception:
-            continue
-    return clean_values(raw)
+    return clean_values(dict((key, current[name]) for key, name in CORE_NAMES.items() if name in current))
 
 
 def write_client_settings(values):
-    core = _settings_core()
-    if core is None:
-        return False
-    diff = dict((CORE_NAMES[key], value) for key, value in clean_values(values).items() if key in CORE_NAMES)
-    if not diff:
-        return True
-    confirmators = core.applySettings(diff)
-    confirm = getattr(core, 'confirmChanges', None)
-    if confirm is not None:
-        confirm(confirmators)
-    apply_storages = getattr(core, 'applyStorages', None)
-    if apply_storages is not None:
-        apply_storages(False)
-    return True
+    return apply_settings(dict((CORE_NAMES[key], value) for key, value in clean_values(values).items() if key in CORE_NAMES))
 
 
 def show_confirm(title, message, callback):

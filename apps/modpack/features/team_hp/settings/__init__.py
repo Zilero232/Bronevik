@@ -1,0 +1,15 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from ....core.hud import hex_color, max_length, panel_schema
+from .constants import DEFAULTS, MAX_TEMPLATE, PANEL_ID, STYLES, SWITCH
+
+SETTINGS = (SWITCH,)
+
+SCHEMA = panel_schema(
+    DEFAULTS,
+    choices={'style': STYLES},
+    limits={'bar_width': (5, 60)},
+    normalizers={'ally_color': hex_color, 'enemy_color': hex_color, 'template': max_length(MAX_TEMPLATE)},
+)
+
+__all__ = ('PANEL_ID', 'SCHEMA', 'SETTINGS', 'SWITCH')

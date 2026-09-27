@@ -1,6 +1,7 @@
 """In-game settings window, behind a small interface so the window can be swapped.
 
-Today the only view is ModsSettingsAPI (izeberg). Its ModsList dependency on current master needs the WG
+The app creates the ModsSettingsAPI (izeberg) view; the ui package adds its Gameface window next to it
+with `add_settings_view` when it attaches. Its ModsList dependency on current master needs the WG
 client (2.4.1+), so on Lesta it works only with an older compatible release. A Gameface view
 (openwg_gameface) can replace it by adding a class to VIEWS; the app only calls `register()` and
 `refresh()`, and a view calls back `app.config`, `app.translate`, `app.status_text()`,
@@ -102,3 +103,35 @@ def create_settings_ui(app, views=VIEWS):
         if view.available():
             return view(app)
     return NoSettingsView(app)
+
+
+class CompositeSettingsView(SettingsView):
+    """Several settings windows side by side (the Gameface window next to ModsSettingsAPI)."""
+
+    name = 'composite'
+
+    def __init__(self, app, views):
+        SettingsView.__init__(self, app)
+        self.views = list(views)
+
+    def register(self):
+        return any([view.register() for view in self.views])
+
+    def refresh(self):
+        for view in self.views:
+            view.refresh()
+
+
+def add_settings_view(app, view):
+    """Adds a window that attaches after the app started (the ui package registers through the core
+    registry); the app keeps calling `app.settings_ui.refresh()` and reaches both."""
+    current = app.settings_ui
+    if isinstance(current, CompositeSettingsView):
+        views = current.views + [view]
+    elif isinstance(current, NoSettingsView):
+        views = [view]
+    else:
+        views = [current, view]
+    app.settings_ui = CompositeSettingsView(app, views)
+    view.register()
+    return view

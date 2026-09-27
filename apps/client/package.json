@@ -59,7 +59,7 @@
     "better-auth": "catalog:",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
+    "clsx": "catalog:",
     "cmdk": "^1.1.1",
     "date-fns": "catalog:",
     "konva": "^10.7.0",
@@ -93,7 +93,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.186.0",
-    "esbuild": "^0.28.2",
+    "esbuild": "catalog:",
     "sass-embedded": "^1.105.0",
     "serwist": "^9.5.12",
     "typescript": "catalog:"

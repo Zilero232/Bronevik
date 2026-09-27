@@ -16,6 +16,7 @@ export default eslint(
       '**/.venv',
       '**/next-env.d.ts',
       'apps/client/public/twitch-panel.js',
+      'apps/modpack/packages/ui/gameface/**',
       '.data/**',
       'e2e/.results/**',
       'playwright-report/**',

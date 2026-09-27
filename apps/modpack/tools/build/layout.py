@@ -5,6 +5,10 @@ In the client every package lands in the same tree, res/scripts/client/gui/mods/
     otmetki/__init__.py, otmetki/core/**, otmetki/features/__init__.py   <- core
     mod_otmetki.py, otmetki/companion/**                                  <- companion
     mod_otmetki_<id>.py, otmetki/features/<id>/**                         <- feature <id>
+    mod_otmetki_ui.py, otmetki/ui/**                                      <- ui (packages/ui)
+
+plus, for the ui, res/gui/gameface/mods/triotmetki/ui/* (the built ui-web page) and
+res/mods/configs/res_map/*.json (its OpenWG Gameface resource registration).
 
 so the split packages never ship the same file, and the single package is their union.
 """
@@ -17,6 +21,13 @@ FEATURES_DIR = os.path.join(MODPACK_DIR, 'features')
 MODS_ROOT = 'res/scripts/client/gui/mods'
 PACKAGE_ROOT = MODS_ROOT + '/otmetki'
 SKIPPED_DIRS = ('tests', 'entry', '__pycache__')
+# packages/<name> besides the core and the companion (the in-game UI) ship as their own package.
+CORE_PACKAGES = ('core', 'companion')
+# Gameface assets of a package (packages/<name>/gameface/*) and its OpenWG Gameface resource registration
+# (packages/<name>/res_map/*.json). The res_map location inside the package is UNVERIFIED on Lesta 1.45.
+GAMEFACE_ROOT = 'res/gui/gameface/mods/triotmetki'
+RES_MAP_ROOT = 'res/mods/configs/res_map'
+ASSET_DIRS = ('gameface', 'res_map')
 ROOT_INIT = '"""Three Marks: the core, companion and features/<id> packages share this namespace."""\n'
 DESCRIPTIONS = {
     'core': 'Three Marks core runtime for the companion and its features (triotmetki.ru)',
@@ -87,6 +98,34 @@ def companion_package(core):
     return Package('companion', package_id, name, version, DESCRIPTIONS['companion'], files, [core])
 
 
+def asset_files(base, name):
+    """(source path, archive path) of a package's Gameface assets and res_map registration files."""
+    targets = {'gameface': GAMEFACE_ROOT + '/' + name, 'res_map': RES_MAP_ROOT}
+    files = []
+    for folder in ASSET_DIRS:
+        root = os.path.join(base, folder)
+        if not os.path.isdir(root):
+            continue
+        for file_name in sorted(os.listdir(root)):
+            path = os.path.join(root, file_name)
+            if os.path.isfile(path):
+                files.append((path, targets[folder] + '/' + file_name))
+    return files
+
+
+def extension_ids():
+    """packages/<name> with a version.py, besides the core and the companion (today: ui)."""
+    return sorted(name for name in os.listdir(PACKAGES_DIR)
+                  if name not in CORE_PACKAGES and os.path.isfile(os.path.join(PACKAGES_DIR, name, 'version.py')))
+
+
+def extension_package(name, core, companion):
+    base = os.path.join(PACKAGES_DIR, name)
+    package_id, package_name, version = read_constants(os.path.join(base, 'version.py'), ('PACKAGE_ID', 'PACKAGE_NAME', 'VERSION'))
+    files = entries(base) + list(tree(base, PACKAGE_ROOT + '/' + name)) + asset_files(base, name)
+    return Package(name, package_id, package_name, version, package_name + ' (triotmetki.ru)', files, [core, companion])
+
+
 def feature_package(feature_id, core, companion):
     base = os.path.join(FEATURES_DIR, feature_id)
     package_id, name, version = read_constants(os.path.join(base, '__init__.py'), ('PACKAGE_ID', 'PACKAGE_NAME', 'VERSION'))
@@ -97,7 +136,8 @@ def feature_package(feature_id, core, companion):
 def split_packages(root_init):
     core = core_package(root_init)
     companion = companion_package(core)
-    return [core, companion] + [feature_package(feature_id, core, companion) for feature_id in feature_ids()]
+    extensions = [extension_package(name, core, companion) for name in extension_ids()]
+    return [core, companion] + extensions + [feature_package(feature_id, core, companion) for feature_id in feature_ids()]
 
 
 def single_package(root_init):

@@ -1,0 +1,14 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from ....core.hud import max_length, panel_schema
+from .constants import DEFAULTS, MAX_TEMPLATE, PANEL_ID, SWITCH
+
+SETTINGS = (SWITCH,)
+
+SCHEMA = panel_schema(
+    DEFAULTS,
+    limits={'lines': (0, 20)},
+    normalizers={'header_template': max_length(MAX_TEMPLATE), 'line_template': max_length(MAX_TEMPLATE)},
+)
+
+__all__ = ('PANEL_ID', 'SCHEMA', 'SETTINGS', 'SWITCH')

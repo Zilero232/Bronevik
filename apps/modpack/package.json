@@ -14,11 +14,28 @@
   },
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
+  "type": "module",
   "scripts": {
     "build": "python tools/build/build.py",
+    "build:installer": "uv run python tools/build/setupkit --packages dist --compile",
     "build:release": "python tools/build/build.py --require-pyc",
     "lint": "uv run ruff check .",
     "test": "python tools/run_tests.py",
-    "test:pytest": "uv run pytest"
+    "test:pytest": "uv run pytest",
+    "typecheck": "tsc -p ui-web --noEmit",
+    "ui:build": "bun ui-web/config/build/build.ts",
+    "ui:test": "bun test ui-web"
+  },
+  "dependencies": {
+    "@nanostores/preact": "^1.1.0",
+    "clsx": "catalog:",
+    "nanostores": "1.5.3",
+    "preact": "^10.29.8",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "esbuild": "catalog:",
+    "fast-png": "^8.0.0",
+    "typescript": "catalog:"
   }
 }

@@ -15,7 +15,7 @@ PY3_ONLY_MODULES = ('urllib.request', 'urllib.error', 'http.server', 'queue', 'c
 
 
 CLIENT_ONLY = ('BigWorld', 'gui', 'PlayerEvents', 'CurrentVehicle', 'BattleReplay', 'BattleFeedbackCommon', 'dossiers2', 'AccountCommands',
-               'items', 'helpers', 'ArenaType', 'skeletons')
+               'items', 'helpers', 'ArenaType', 'skeletons', 'constants', 'SoundGroups')
 PY3 = sys.version_info[0] >= 3
 
 

@@ -1,0 +1,337 @@
+{
+  "components": [
+    {
+      "actions": [
+        {
+          "confirm": null,
+          "id": "settings_export",
+          "label": "Отправить настройки игры на сайт"
+        },
+        {
+          "confirm": "Вернуть настройки, сохранённые до применения чужих?",
+          "id": "settings_restore",
+          "label": "Вернуть мои настройки"
+        }
+      ],
+      "fields": [
+        {
+          "default": true,
+          "hint": null,
+          "key": "send_battle_results",
+          "label": "Отправлять итоги своих боёв",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "default": true,
+          "hint": null,
+          "key": "send_moe_snapshots",
+          "label": "Отправлять проценты отметок",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "default": true,
+          "hint": null,
+          "key": "send_moe_distribution",
+          "label": "Отправлять распределение урона для отметок",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "default": true,
+          "hint": null,
+          "key": "send_queue_times",
+          "label": "Отправлять время в очереди",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "default": true,
+          "hint": null,
+          "key": "send_loadouts",
+          "label": "Отправлять оборудование, снаряжение и навыки своего танка",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "default": true,
+          "hint": null,
+          "key": "send_shots",
+          "label": "Отправлять урон своих выстрелов (для «Честного рандома»)",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "default": true,
+          "hint": null,
+          "key": "share_settings",
+          "label": "Настройки игры: экспорт и «Применить через мод»",
+          "type": "bool",
+          "value": true
+        },
+        {
+          "choices": [
+            {
+              "label": "В профиль на сайте",
+              "value": "profile"
+            },
+            {
+              "label": "Только себе",
+              "value": "private"
+            }
+          ],
+          "default": "private",
+          "hint": null,
+          "key": "settings_target",
+          "label": "Куда отправлять настройки игры",
+          "type": "choice",
+          "value": "private"
+        },
+        {
+          "default": false,
+          "hint": null,
+          "key": "settings_anonymous_stats",
+          "label": "Учитывать мои настройки в анонимной статистике",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "default": false,
+          "hint": null,
+          "key": "settings_include_resolution",
+          "label": "Применять разрешение и частоту экрана",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "default": false,
+          "hint": null,
+          "key": "settings_include_sensitivity",
+          "label": "Применять чувствительность мыши",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "default": 15,
+          "hint": null,
+          "key": "flush_interval_seconds",
+          "label": "Интервал отправки, с",
+          "max": 600,
+          "min": 5,
+          "type": "int",
+          "value": 15
+        }
+      ],
+      "group": "data",
+      "hint": "Что мод отправляет на triotmetki.ru. Ничего не уходит, пока мод не привязан.",
+      "id": "companion",
+      "page": null,
+      "panel": false,
+      "switch": {
+        "key": "enabled",
+        "value": true
+      },
+      "title": "Данные и сайт"
+    },
+    {
+      "actions": [],
+      "fields": [],
+      "group": "battle",
+      "hint": "Текущий процент, прогноз и сколько урона осталось до следующей отметки.",
+      "id": "marks_panel",
+      "page": null,
+      "panel": false,
+      "switch": {
+        "key": "battle_moe_panel",
+        "value": true
+      },
+      "title": "Отметка в бою"
+    },
+    {
+      "actions": [],
+      "fields": [
+        {
+          "default": 60,
+          "hint": null,
+          "key": "session_idle_minutes",
+          "label": "Новая сессия после простоя, мин",
+          "max": 1440,
+          "min": 10,
+          "type": "int",
+          "value": 60
+        }
+      ],
+      "group": "hangar",
+      "hint": "Бои, победы, средний урон и WN8 за текущую сессию.",
+      "id": "session_stats",
+      "page": null,
+      "panel": false,
+      "switch": {
+        "key": "hangar_session_panel",
+        "value": true
+      },
+      "title": "Сессия в ангаре"
+    },
+    {
+      "actions": [],
+      "fields": [
+        {
+          "choices": [
+            {
+              "label": "Как в игре",
+              "value": "native"
+            },
+            {
+              "label": "x2",
+              "value": "x2"
+            }
+          ],
+          "default": "native",
+          "hint": null,
+          "key": "zoom",
+          "label": "zoom",
+          "type": "choice",
+          "value": "native"
+        }
+      ],
+      "group": "battle",
+      "hint": null,
+      "id": "minimap",
+      "page": null,
+      "panel": false,
+      "switch": {
+        "key": "enabled",
+        "value": true
+      },
+      "title": "minimap"
+    },
+    {
+      "actions": [
+        {
+          "confirm": null,
+          "id": "refresh",
+          "label": "Refresh"
+        }
+      ],
+      "fields": [],
+      "group": "hangar",
+      "hint": null,
+      "id": "replay_manager",
+      "page": {
+        "empty": "none",
+        "kind": "list",
+        "rows": [
+          {
+            "actions": [],
+            "id": "a.mtreplay",
+            "title": "A"
+          }
+        ]
+      },
+      "panel": false,
+      "switch": null,
+      "title": "replay_manager"
+    },
+    {
+      "actions": [],
+      "fields": [
+        {
+          "default": 100,
+          "hint": null,
+          "key": "alpha",
+          "label": "Непрозрачность, %",
+          "max": 100,
+          "min": 0,
+          "type": "int",
+          "value": 100
+        },
+        {
+          "default": false,
+          "hint": null,
+          "key": "border",
+          "label": "Рамка",
+          "type": "bool",
+          "value": false
+        },
+        {
+          "default": 14,
+          "hint": null,
+          "key": "font_size",
+          "label": "Размер шрифта",
+          "max": 48,
+          "min": 8,
+          "type": "int",
+          "value": 14
+        },
+        {
+          "default": 5,
+          "hint": null,
+          "key": "lines",
+          "label": "lines",
+          "max": 20,
+          "min": 1,
+          "type": "int",
+          "value": 5
+        }
+      ],
+      "group": "battle",
+      "hint": null,
+      "id": "damage_log",
+      "page": null,
+      "panel": true,
+      "switch": {
+        "key": "upload_replays",
+        "value": false
+      },
+      "title": "damage_log"
+    }
+  ],
+  "hud": {
+    "editing": false,
+    "panels": [
+      {
+        "align_x": "center",
+        "align_y": "top",
+        "enabled": true,
+        "height": 40,
+        "id": "damage_log",
+        "preview": "1 200",
+        "title": "damage_log",
+        "width": 300,
+        "x": 10,
+        "y": 0
+      }
+    ]
+  },
+  "language": "ru",
+  "language_setting": "auto",
+  "languages": [
+    "ru",
+    "en"
+  ],
+  "notice": {
+    "code": null,
+    "kind": "info",
+    "text": "Профиль «Стример» сохранён"
+  },
+  "profiles": {
+    "active": "p1",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Стример",
+        "updated": 1000.0
+      }
+    ]
+  },
+  "revision": 1,
+  "site": "https://triotmetki.ru",
+  "status": {
+    "account_id": null,
+    "auth_failed": false,
+    "bound": false,
+    "text": "not bound"
+  },
+  "v": 1
+}

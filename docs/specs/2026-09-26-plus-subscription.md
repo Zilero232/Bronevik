@@ -46,7 +46,7 @@ The product will be renamed to «Три отметки». Every user-facing and 
   ```ts
   export const BRAND = { name: 'Три отметки', plusName: 'Три отметки Плюс' } as const;
   ```
-  `PAYMENT_DESCRIPTION` in `apps/server/src/modules/billing/config/plans.config.ts` and the email digest template build their strings from it.
+  `PAYMENT_DESCRIPTION` in `apps/web/server/src/modules/billing/config/plans.config.ts` and the email digest template build their strings from it.
 - Client: `shared/i18n/locales/{ru,en}/brand.json` gets a `plus` key; all UI text uses `brand.name` / `brand.plus`, never a literal.
 
 The rename then touches only these two places.
@@ -119,7 +119,7 @@ Legend — **Exists**: already implemented (module shown). **New**: to build. **
 | 13 | **Capacity** | 2 linked accounts, 3 goals, 10 watched tanks for threshold drops, 50 stored replays | 10 accounts, 10 goals, 300 watched tanks, 1 000 stored replays, mod auto-upload goes first in the parse queue | — | Change: `me/config/me.config.ts`, `replays/config`, `notifications/config/watchers.config.ts` |
 | 14 | **Analytics export** | Raw own stats (free, §3.1) | CSV/JSON export of **derived** data: sessions, analytics tables, per-battle mod data | DB/MOD | New, in `me` |
 | 15 | **Personal API limits** | 10 000 req/day, 5 rps, 1 webhook | 50 000 req/day, 10 rps, 5 webhooks, personal non-commercial use only (in the API terms) | — | Change (§5.2) |
-| 16 | **Early access** | — | Beta features behind `FEATURES` flags with an `earlyAccess` audience | — | New: flag audience in `apps/server/src/config/features.constants.ts` |
+| 16 | **Early access** | — | Beta features behind `FEATURES` flags with an `earlyAccess` audience | — | New: flag audience in `apps/web/server/src/config/features.constants.ts` |
 | 17 | **Hangar mod extras** (hangar only) | Session panel, MoE % | Hangar map briefing (#22 in features §23: your WR on the map, strong positions for your class), the evening playlist in the hangar. **Needs a МОСТ fair-play review before release** | MOD | New |
 
 **Note on #1 (history window).** The snapshots are copies of Lesta data. Gating how far back you can see them is the one Plus item that comes closest to "commercial distribution of API data". Retention is the same for everyone (Plus does not store raw data longer), so we sell the analysis view, not the data. It still goes into the letter to Lesta (§6, WP0) as an explicit question. **Fallback if Lesta objects:** the full history becomes free, and Plus keeps only the analytics layered on it (#2, #6).
@@ -129,7 +129,7 @@ Legend — **Exists**: already implemented (module shown). **New**: to build. **
 ### 4.1 One entitlement
 
 - `SubscriptionProduct` shrinks to the single value `plus`. `PLUS_SUBSCRIPTION.product = 'plus'` stays the key.
-- The source of truth is `isEntitled` in `apps/server/src/modules/billing/lib/period/period.ts`: status is in `entitledStatuses` (`active`, `trialing`, `pastDue`) and `currentPeriodEnd > now`.
+- The source of truth is `isEntitled` in `apps/web/server/src/modules/billing/lib/period/period.ts`: status is in `entitledStatuses` (`active`, `trialing`, `pastDue`) and `currentPeriodEnd > now`.
 - `collector/tracking/config/tracking.config.ts` (`subscriberProducts`, `subscriberStatuses`) and `tracking-announce.service.ts` stop duplicating the rule. They import `PLUS_SUBSCRIPTION` from `billing` and also check `currentPeriodEnd`. Today `subscriberStatuses` leaves out `pastDue`, which drops a user during the grace period.
 
 ### 4.2 Shared contract (`packages/schemas/src/plus/`)
@@ -201,7 +201,7 @@ What happens to Plus-created things on expiry (read-only, never lost):
 
 ## 5. What to remove or change in the current code
 
-### 5.1 Billing and schema (`apps/server/prisma/schema/billing.prisma`)
+### 5.1 Billing and schema (`apps/web/server/prisma/schema/billing.prisma`)
 
 - `SubscriptionProduct`: drop `clanPanel`, `developerPro`, `overlaysPro`, leaving only `plus`.
 - `SubscriptionPlan`: `monthly | quarterly | yearly` (drop `halfYearly`, add `quarterly`).
@@ -224,7 +224,7 @@ Code changes that follow:
 
 ### 5.2 Developer API: free for everyone, Plus = higher personal limits
 
-- Delete `apps/server/src/modules/developer/developer-plans.controller.ts` (`GET /developer/plans`). Replace it with `GET /developer/tiers`: public and informational, limits only, no prices.
+- Delete `apps/web/server/src/modules/developer/developer-plans.controller.ts` (`GET /developer/plans`). Replace it with `GET /developer/tiers`: public and informational, limits only, no prices.
 - Replace `developer/services/developer-plan.service.ts` with `ApiTierService`. The tier is `community` (admin-granted through key metadata, which replaces `partner`), `plus` (from `EntitlementsService.plusState`) or `free`.
 - Remove `DEVELOPER_PLAN` from `developer/config/developer.config.ts`.
 - Rename `API_PLANS` → `API_TIERS`.
@@ -244,11 +244,11 @@ Code changes that follow:
   - update `LimitFigures`.
 - Client `views/developer-cabinet`: in `CabinetHeader` and `ApiKeyRow`, the plan badge becomes a tier badge. The upsell becomes «Плюс повышает личные лимиты».
 - i18n `developers.json`, `developer.json`: remove Pro/Partner pricing copy.
-- Regenerate `apps/client/shared/api/openapi/internal.json` and `shared/api/generated/*`.
+- Regenerate `apps/web/client/shared/api/openapi/internal.json` and `shared/api/generated/*`.
 
 ### 5.3 Coaching: free listing + contact/booking, no payments through us
 
-- Delete `apps/server/src/modules/coaching/services/coaching-payment.service.ts` and its export.
+- Delete `apps/web/server/src/modules/coaching/services/coaching-payment.service.ts` and its export.
 - `coaching.controller.ts`: remove `POST orders/:id/pay` and `POST orders/:id/confirm-payment`, and the `CheckoutDto` import.
 - `coaching/dto/coaching.schemas.ts`: remove the checkout schema.
   - `priceRub` becomes optional and informational (`priceNote`: "from 500 ₽ / agreed with the coach").
@@ -301,18 +301,18 @@ Code changes that follow:
 
 | WP | Scope | Main paths | Depends on |
 |---|---|---|---|
-| **WP0** Lesta letter | Draft and send the letter; `FEATURES.plusCheckout` flag (off) | `docs/research/data/lesta-api.md`, `apps/server/src/config/features.constants.ts` | — |
-| **WP1** Schema cleanup | §5.1 enums, columns, `PlusTrial`; `BRAND` constant; quarterly plan; promo product removal | `apps/server/prisma/schema/{billing,community,streamers}.prisma`, `apps/server/src/modules/billing/**`, `packages/schemas/src/{billing,common/brand}` | — |
-| **WP2** Entitlement core | `plusState`, cache + invalidation, `limit()`, `@RequiresPlus` + `PlusGuard`, two-way `syncTracking`, trial service + endpoint, `packages/schemas/src/plus` (`PLUS_FEATURES`, `PLUS_LIMITS`, `PLUS_GRACE`, `plusStateSchema`), error details | `apps/server/src/modules/billing/{services,guards,decorators}`, `packages/schemas/src/{plus,errors}`, `collector/tracking` | WP1 |
-| **WP3** Developer API de-monetisation | §5.2 end to end, server + schemas + client + OpenAPI regen | `modules/developer/**`, `modules/public-api/**`, `packages/schemas/src/developer`, `apps/client/views/{developers,developer-cabinet}` | WP2 |
+| **WP0** Lesta letter | Draft and send the letter; `FEATURES.plusCheckout` flag (off) | `docs/research/data/lesta-api.md`, `apps/web/server/src/config/features.constants.ts` | — |
+| **WP1** Schema cleanup | §5.1 enums, columns, `PlusTrial`; `BRAND` constant; quarterly plan; promo product removal | `apps/web/server/prisma/schema/{billing,community,streamers}.prisma`, `apps/web/server/src/modules/billing/**`, `packages/schemas/src/{billing,common/brand}` | — |
+| **WP2** Entitlement core | `plusState`, cache + invalidation, `limit()`, `@RequiresPlus` + `PlusGuard`, two-way `syncTracking`, trial service + endpoint, `packages/schemas/src/plus` (`PLUS_FEATURES`, `PLUS_LIMITS`, `PLUS_GRACE`, `plusStateSchema`), error details | `apps/web/server/src/modules/billing/{services,guards,decorators}`, `packages/schemas/src/{plus,errors}`, `collector/tracking` | WP1 |
+| **WP3** Developer API de-monetisation | §5.2 end to end, server + schemas + client + OpenAPI regen | `modules/developer/**`, `modules/public-api/**`, `packages/schemas/src/developer`, `apps/web/client/views/{developers,developer-cabinet}` | WP2 |
 | **WP4** Coaching de-monetisation | §5.3 | `modules/coaching/**`, `modules/community-maintenance/**`, `prisma/schema/community.prisma` | WP1 |
-| **WP5** Client gating kit | `entities/plus` (move `usePlusAccess` → `usePlus`), `features/plus` (`PlusGate`, `PlusTeaser`, `LimitReached`, `PlusBadge`), `plus.json` gate copy, `SUBSCRIPTION_REQUIRED` handler in `shared/api/http` | `apps/client/{entities,features}/plus`, `apps/client/shared/{api,i18n}` | WP2 |
+| **WP5** Client gating kit | `entities/plus` (move `usePlusAccess` → `usePlus`), `features/plus` (`PlusGate`, `PlusTeaser`, `LimitReached`, `PlusBadge`), `plus.json` gate copy, `SUBSCRIPTION_REQUIRED` handler in `shared/api/http` | `apps/web/client/{entities,features}/plus`, `apps/web/client/shared/{api,i18n}` | WP2 |
 | **WP6** Migrate existing gates | Overlays (drop `isPro`, pause logic), goals, linked accounts, watched tanks, replay quota, history window, polling, insights/playtime/next-mark depth; expiry jobs (overflow read-only, replay cleanup notices) | `modules/{streamers,me,notifications,replays,players,billing/processors}` | WP2, WP5 |
-| **WP7** Plus page and billing UI | New benefits list, quarterly, trial CTA, FAQ, trial/grace states, brand keys | `apps/client/views/{plus,billing}`, `shared/i18n/locales/*/{plus,billing,brand}.json` | WP2, WP5 |
-| **WP8a** Progression (Dota Plus core) | New `progression` module: tank XP/levels, per-tank challenges, «Гильзы» ledger (earn-only), quarterly season track, cosmetics inventory; profile cosmetics in `social` | `apps/server/src/modules/progression/**`, `prisma/schema/progression.prisma`, `packages/schemas/src/progression`, client `views/progression`, `widgets/player` | WP2 |
+| **WP7** Plus page and billing UI | New benefits list, quarterly, trial CTA, FAQ, trial/grace states, brand keys | `apps/web/client/views/{plus,billing}`, `shared/i18n/locales/*/{plus,billing,brand}.json` | WP2, WP5 |
+| **WP8a** Progression (Dota Plus core) | New `progression` module: tank XP/levels, per-tank challenges, «Гильзы» ledger (earn-only), quarterly season track, cosmetics inventory; profile cosmetics in `social` | `apps/web/server/src/modules/progression/**`, `prisma/schema/progression.prisma`, `packages/schemas/src/progression`, client `views/progression`, `widgets/player` | WP2 |
 | **WP8b** Deep analytics | Full insights, hour/weekday performance, tilt, patch analysis, learning curve, map & platoon advisor, analytics export | `modules/players`, `modules/me`, new `modules/analytics` if `players` grows too large | WP2, mod data |
 | **WP8c** Battle analysis + AI coach | Post-battle deep analysis on mod ingest/replays; AI coach with per-tier quota and response cache | `modules/{mod,replays}`, new `modules/coach-ai` | WP2 |
-| **WP8d** Overlays and hangar extras | Premium themes, theme builder, MoE graph widget; mod hangar briefing/playlist after the МОСТ review | `modules/streamers`, `apps/client/views/{overlay,streamer-studio}`, `apps/modpack` | WP6 |
+| **WP8d** Overlays and hangar extras | Premium themes, theme builder, MoE graph widget; mod hangar briefing/playlist after the МОСТ review | `modules/streamers`, `apps/web/client/views/{overlay,streamer-studio}`, `apps/game/modpack` | WP6 |
 | **WP9** Docs | Update features.md §15/§18/§19 and the design spec phases; API terms page copy | `docs/**`, client legal views | WP3, WP4 |
 
 Order: WP0 and WP1 in parallel → WP2 → WP3/WP4/WP5 in parallel → WP6/WP7 → WP8* → WP9. WP1–WP7 make the current product consistent with the one-subscription model. WP8* adds the new Plus value and can ship incrementally behind `earlyAccess`.
@@ -324,14 +324,14 @@ Verification per WP: `bun run verify` + targeted `bun run test` (limits, `isEnti
 State after WP1–WP7 and WP9 (2026-09-26).
 
 - **Shared contract:** `packages/schemas/src/plus` holds `PLUS` (with `PLUS.checkoutEnabled`, currently `false` until the Lesta reply, §6), `PLUS_FEATURES`, `PLUS_LIMITS`, `PLUS_GRACE`, `PLUS_TRIAL`, `plusStateSchema` and the `plusLimit` helper. `BRAND` lives in `packages/schemas/src/common/brand`. The flag replaces the `FEATURES.plusCheckout` idea from WP0.
-- **Server core:** `apps/server/src/modules/billing`.
+- **Server core:** `apps/web/server/src/modules/billing`.
   - `EntitlementsService`: `plusState`, `refresh`, `isPlus`, `limit`, `assertFeature`, `assertWithinLimit`, `syncTracking`, with a 60 s LRU cache that the webhook, renewal and expiry handlers invalidate.
   - `@RequiresPlus(feature)` decorator + `PlusGuard` for whole endpoints.
   - `TrialService` + `POST me/billing/trial`.
   - `entitledSubscriptionWhere` is shared with collector tracking, so the `pastDue` grace period counts for priority polling.
 - **Errors:** API errors carry `details: { feature?, limitKey?, limit? }`. New error codes: `CHECKOUT_UNAVAILABLE` (checkout while the flag is off) and `TRIAL_UNAVAILABLE`.
 - **Existing gates:** overlays compute `isPaused` at read time (`Overlay.isPro` is dropped); goals use `PLUS_LIMITS.goals`.
-- **Client kit:** `apps/client/entities/plus` (`usePlus`) and `apps/client/features/plus` (`PlusGate`, `PlusTeaser`, `LimitNotice`, `PlusBadge`). `LimitNotice` is the component §4.4 calls `LimitReached`.
+- **Client kit:** `apps/web/client/entities/plus` (`usePlus`) and `apps/web/client/features/plus` (`PlusGate`, `PlusTeaser`, `LimitNotice`, `PlusBadge`). `LimitNotice` is the component §4.4 calls `LimitReached`.
 - **Remaining:**
   - WP0: the Lesta letter; turn on `PLUS.checkoutEnabled` only after the written reply is stored in `docs/research/data/lesta-api.md`;
   - WP8a–d: progression, deep analytics, battle analysis and AI coach, overlay themes and hangar extras;

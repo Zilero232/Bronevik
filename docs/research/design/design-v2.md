@@ -142,7 +142,7 @@ All of the items below come **from the API itself**. Showing them counts as usin
 | Content | Source (server already syncs it) | Where it must appear |
 |---|---|---|
 | Tank renders `big_icon` 160×100, `small_icon` 124×31, `contour_icon` ~60×23 | `encyclopedia/vehicles` `images.*`; client `entities/tank/tank/ui/TankImage.tsx` | **Tables**: `small_icon` in the first column of every tank row (tanks, marks, top-by-tank, profile tanks, sessions). `contour` only where the row is under 32 px. **Cards / carousel / compare heads / profile favourites**: `big_icon`. **Tank page hero**: `big_icon` at 2× CSS scale (320×200) with `image-rendering:auto`, on a nation-tinted gradient, as the dominant element |
-| Achievement / medal images (`image`, `image_big` 180×180, `options[].image(_big)`, `options.nation_images.x180/x85/x71`). URL pattern `…/static/<ver>/wot/encyclopedia/achievement/{,big/}<name>.png` (verified: `medalKolobanov`, `markOfMastery1`). Read marks-on-gun and mastery file names from the API; don't guess them | `encyclopedia/achievements`; `apps/server/src/modules/collector/reference/services/encyclopedia-sync.service.ts:329` stores `image_big ?? image` | Profile "Достижения" tab (grid of medals with counts); mastery badges beside tanks where available; home "Мастера за сутки" |
+| Achievement / medal images (`image`, `image_big` 180×180, `options[].image(_big)`, `options.nation_images.x180/x85/x71`). URL pattern `…/static/<ver>/wot/encyclopedia/achievement/{,big/}<name>.png` (verified: `medalKolobanov`, `markOfMastery1`). Read marks-on-gun and mastery file names from the API; don't guess them | `encyclopedia/achievements`; `apps/web/server/src/modules/collector/reference/services/encyclopedia-sync.service.ts:329` stores `image_big ?? image` | Profile "Достижения" tab (grid of medals with counts); mastery badges beside tanks where available; home "Мастера за сутки" |
 | Crew skill icons (`image_url.*`) | `encyclopedia/crewskills` (`crewSkillSchema.image_url`) | `/builds/[tank]` crew panel (replaces lucide icons in `views/build/config/build-icons.config.ts`) |
 | Equipment / consumables / directives (`provisions.image`) | `encyclopedia/provisions` | `/builds/[tank]` slots, tank page "Популярные сборки" |
 | Module images (`modules.image`) | `encyclopedia/modules` | Tank page configuration table |
@@ -151,7 +151,7 @@ All of the items below come **from the API itself**. Showing them counts as usin
 | Personal reserves `images.large/small` | `encyclopedia/boosters` | `/tools` economy calculator |
 | Clan emblems (`emblems.x24/x32/x64/x195/x256`, each a map of URLs by usage) + the clan `color` (#RRGGBB) | `clans/info` (`clans.schemas.ts:31`) | Clan rows (x32), clan hero (x195), player hero next to the clan tag |
 | Game version (`game_version`) | `encyclopedia/info`; `GameVersion` table (`encyclopedia-sync.service.ts:44`) | Header badge "Обновление X.Y" everywhere; tank page "Изменения по патчам" |
-| News headlines | tanki.su RSS (`apps/server/src/config/sources.constants.ts:4`, `modules/collector/news`, served by `GET /shop/news`?) **[verify route]** | Home "Новости игры": headline + date + link out. Don't rehost article images unless the RSS enclosure licence allows it; use headline-only rows by default |
+| News headlines | tanki.su RSS (`apps/web/server/src/config/sources.constants.ts:4`, `modules/collector/news`, served by `GET /shop/news`?) **[verify route]** | Home "Новости игры": headline + date + link out. Don't rehost article images unless the RSS enclosure licence allows it; use headline-only rows by default |
 | Server online | `/wgn/servers/info/` isn't in Lesta's docs, but the endpoint exists on api.tanki.su: it answers with an app-id error, not METHOD_NOT_FOUND. The response shape `data.wot[{server, players_online}]` is assumed from the WG API **[verify with a real key]** | If it works: a header status «RU · N онлайн» per server. If not: show **our** measured activity («Активных игроков за час», from `pulse`) labelled as our estimate, never «онлайн сервера» |
 
 Mandatory attribution (already in `widgets/site/site-footer/ui/SiteFooter.tsx`): keep it, but make it one compact line.
@@ -160,7 +160,7 @@ Also add a **source line under every data table**: "Данные: API Леста
 
 ---
 
-## 4. Tokens: exact changes (`apps/client/shared/styles/_tokens.scss`)
+## 4. Tokens: exact changes (`apps/web/client/shared/styles/_tokens.scss`)
 
 ### 4.1 Fonts (all from Google Fonts, Cyrillic subsets, self-hosted through `next/font/google`)
 
@@ -170,7 +170,7 @@ Also add a **source line under every data table**: "Данные: API Леста
 | Body, descriptions, form text | **Fira Sans** | 400, 500 | Same family and metrics, so one voice. Replaces Onest |
 | Code only (`/developers`, `CodeBlock`) | **JetBrains Mono** | 400 | Replaces IBM Plex Mono. **Mono is no longer used for labels** |
 
-Replace `apps/client/shared/config/fonts/*.ts` (currently `localFont` Tektur/Onest/Plex) with:
+Replace `apps/web/client/shared/config/fonts/*.ts` (currently `localFont` Tektur/Onest/Plex) with:
 
 ```ts
 import { Fira_Sans, Fira_Sans_Condensed, JetBrains_Mono } from 'next/font/google';
@@ -348,7 +348,7 @@ Replace with:
 
 ---
 
-## 5. Component rules (`apps/client/ui-kit`)
+## 5. Component rules (`apps/web/client/ui-kit`)
 
 ### 5.1 Button (`atoms/Button/Button.module.scss`)
 
@@ -685,7 +685,7 @@ No section needs a description paragraph.
 
 ---
 
-## 9. Copy rules (i18n: `apps/client/shared/i18n/locales/{ru,en}/<namespace>.json`)
+## 9. Copy rules (i18n: `apps/web/client/shared/i18n/locales/{ru,en}/<namespace>.json`)
 
 - H1 = the noun of the page («Статистика танков», «Отметки на стволе», «Топы», «Кланы»). No metaphors.
 - Descriptions: max 1 line, factual, with the period or source.
@@ -700,12 +700,12 @@ No section needs a description paragraph.
 ## 10. Slop deletion checklist (file by file)
 
 Tokens and global:
-- [ ] `apps/client/shared/styles/_tokens.scss`: apply §4, delete `--noise`, `--camo`, `--dusk`, `--brushed`, `--grid-line`, `--glow-accent`, `--elevation-*`, `--chamfer-*`, `--rivet-*`, `--shine-*`, `--text-4xl`, `--radius-lg/xl`, `--stretch-condensed`, `--duration-slow`
-- [ ] `apps/client/app/globals.scss`: body bg, the `body:after` noise, the toast `:before` bar
-- [ ] `apps/client/shared/styles/_mixins.scss`: delete `plate`, `riveted-plate`, `rivets`, `chamfer-path`, `stencil`, `camo-divider`, `corner-brackets`, `tile-grid`, `accent-outline-hover`; add `panel`, `label`, `heading`, `numeric(size)`
-- [ ] `apps/client/shared/styles/_animations.scss`: delete `scanner`, `otmetki-scan`, `otmetki-pop-in`
-- [ ] `apps/client/shared/config/fonts/*`: Tektur/Onest/Plex → Fira Sans Condensed / Fira Sans / JetBrains Mono (Google, cyrillic); delete `files/*.woff2`
-- [ ] `apps/client/shared/lib/motion/motion.ts`: remove `HEAD_REVEAL`, `STAGGER*`, `SCALE_IN`, `SLIDE_UP`, `ROW_ITEM` after the views are migrated
+- [ ] `apps/web/client/shared/styles/_tokens.scss`: apply §4, delete `--noise`, `--camo`, `--dusk`, `--brushed`, `--grid-line`, `--glow-accent`, `--elevation-*`, `--chamfer-*`, `--rivet-*`, `--shine-*`, `--text-4xl`, `--radius-lg/xl`, `--stretch-condensed`, `--duration-slow`
+- [ ] `apps/web/client/app/globals.scss`: body bg, the `body:after` noise, the toast `:before` bar
+- [ ] `apps/web/client/shared/styles/_mixins.scss`: delete `plate`, `riveted-plate`, `rivets`, `chamfer-path`, `stencil`, `camo-divider`, `corner-brackets`, `tile-grid`, `accent-outline-hover`; add `panel`, `label`, `heading`, `numeric(size)`
+- [ ] `apps/web/client/shared/styles/_animations.scss`: delete `scanner`, `otmetki-scan`, `otmetki-pop-in`
+- [ ] `apps/web/client/shared/config/fonts/*`: Tektur/Onest/Plex → Fira Sans Condensed / Fira Sans / JetBrains Mono (Google, cyrillic); delete `files/*.woff2`
+- [ ] `apps/web/client/shared/lib/motion/motion.ts`: remove `HEAD_REVEAL`, `STAGGER*`, `SCALE_IN`, `SLIDE_UP`, `ROW_ITEM` after the views are migrated
 
 ui-kit:
 - [ ] `ui-kit/atoms/Button/Button.module.scss`: chamfer, shine sweep, glow, gradient
@@ -763,10 +763,10 @@ views (fake gadgets and idle animation):
 - [ ] `views/player-profile/config/profile-tabs.config.ts`: lucide tab icons
 - [ ] `views/build/config/build-icons.config.ts`: lucide → API images
 - [ ] `views/top/ui/components/TopPodium/*`: delete
-- [ ] all 72 files importing `HEAD_REVEAL|STAGGER|SCALE_IN` (`rg -l "HEAD_REVEAL|STAGGER|SCALE_IN" apps/client/views apps/client/widgets`)
-- [ ] all 31 `index='// 0x'` props (`rg "index='// " apps/client/views`)
-- [ ] the 114 SCSS files using `plate|riveted|corner-brackets|camo-divider|stencil|chamfer|clip-path` (`rg -l "@include (plate|riveted-plate|corner-brackets|camo-divider|stencil|chamfer-path)|clip-path" apps/client --glob "*.scss"`)
-- [ ] the 74 `box-shadow: 0 0 …` / `drop-shadow(0 0 …)` glows (`rg "box-shadow: 0 0|drop-shadow\(0 0" apps/client --glob "*.scss"`)
+- [ ] all 72 files importing `HEAD_REVEAL|STAGGER|SCALE_IN` (`rg -l "HEAD_REVEAL|STAGGER|SCALE_IN" apps/web/client/views apps/web/client/widgets`)
+- [ ] all 31 `index='// 0x'` props (`rg "index='// " apps/web/client/views`)
+- [ ] the 114 SCSS files using `plate|riveted|corner-brackets|camo-divider|stencil|chamfer|clip-path` (`rg -l "@include (plate|riveted-plate|corner-brackets|camo-divider|stencil|chamfer-path)|clip-path" apps/web/client --glob "*.scss"`)
+- [ ] the 74 `box-shadow: 0 0 …` / `drop-shadow(0 0 …)` glows (`rg "box-shadow: 0 0|drop-shadow\(0 0" apps/web/client --glob "*.scss"`)
 
 ---
 

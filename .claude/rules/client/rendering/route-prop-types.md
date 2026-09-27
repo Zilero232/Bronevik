@@ -1,10 +1,10 @@
 ---
 paths:
-  - "apps/client/app/**/*.{ts,tsx}"
+  - "apps/web/client/app/**/*.{ts,tsx}"
 ---
 
 <!-- Compressed editing rules for the web client, loaded automatically on edit. -->
-<!-- Full reasoning in apps/client/CLAUDE.md and docs/guides/shared/types.md; keep them in sync. -->
+<!-- Full reasoning in apps/web/client/CLAUDE.md and docs/guides/shared/types.md; keep them in sync. -->
 
 # Code style — client: route prop types
 

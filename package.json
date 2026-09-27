@@ -16,7 +16,8 @@
   "type": "module",
   "workspaces": {
     "packages": [
-      "apps/*",
+      "apps/game/*",
+      "apps/web/*",
       "packages/*"
     ],
     "catalog": {
@@ -66,8 +67,8 @@
     "format:prisma": "bun --filter @otmetki/server format:prisma",
     "gamedata:import": "bun --filter @otmetki/server gamedata:import",
     "lint": "eslint . --cache --cache-location node_modules/.cache/.eslintcache",
-    "lint:css": "stylelint \"apps/client/**/*.scss\" --cache --cache-location node_modules/.cache/.stylelintcache",
-    "lint:css:fix": "stylelint \"apps/client/**/*.scss\" --fix --cache --cache-location node_modules/.cache/.stylelintcache",
+    "lint:css": "stylelint \"apps/web/client/**/*.scss\" --cache --cache-location node_modules/.cache/.stylelintcache",
+    "lint:css:fix": "stylelint \"apps/web/client/**/*.scss\" --fix --cache --cache-location node_modules/.cache/.stylelintcache",
     "lint:dupes": "jscpd",
     "lint:encoding": "node scripts/check-utf8.mjs",
     "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/.eslintcache",
@@ -91,7 +92,7 @@
       "sort-package-json"
     ],
     "*.{json,md,yml,yaml}": "prettier --write",
-    "apps/client/**/*.scss": [
+    "apps/web/client/**/*.scss": [
       "stylelint --fix",
       "prettier --write"
     ]

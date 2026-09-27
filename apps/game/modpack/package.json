@@ -1,0 +1,41 @@
+{
+  "name": "@otmetki/modpack",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Три отметки modpack for «Мир танков»: Python 2.7 game-client packages (core, companion, features) built into .mtmod/.wotmod, with Python 3 host tooling (uv workspace, pytest, ruff).",
+  "homepage": "https://triotmetki.ru",
+  "bugs": {
+    "url": "https://github.com/Zilero232/Triotmetki/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zilero232/Triotmetki.git",
+    "directory": "apps/game/modpack"
+  },
+  "license": "UNLICENSED",
+  "author": "Alexandr Artemev",
+  "type": "module",
+  "scripts": {
+    "build": "python tools/build/build.py",
+    "build:installer": "uv run python tools/build/setupkit --packages dist --compile",
+    "build:release": "python tools/build/build.py --require-pyc",
+    "lint": "uv run ruff check .",
+    "test": "python tools/run_tests.py",
+    "test:pytest": "uv run pytest",
+    "typecheck": "tsc -p ui-web --noEmit",
+    "ui:build": "bun ui-web/config/build/build.ts",
+    "ui:test": "bun test ui-web"
+  },
+  "dependencies": {
+    "@nanostores/preact": "^1.1.0",
+    "clsx": "catalog:",
+    "nanostores": "1.5.3",
+    "preact": "^10.29.8",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "esbuild": "catalog:",
+    "fast-png": "^8.0.0",
+    "typescript": "catalog:"
+  }
+}

@@ -112,7 +112,7 @@ https://api.tanki.su/static/<apiVersion>/wot/encyclopedia/vehicle/<size>/<nation
 
 ## 6. Recommendations for Три отметки
 
-**Palette (`apps/client/shared/styles/_tokens.scss`)**
+**Palette (`apps/web/client/shared/styles/_tokens.scss`)**
 - The current tokens (bg `#0B0D0F`, accent `#FF6B1A`, Tektur/Onest) are already clearly different from tanki.su. Keep the orange accent, and don't move to amber `#FAB81B` + cream `#F9F5E1`.
 - Add game-semantic tokens:
   - `--color-premium: #FFC363` (gold text/glyph), `--color-premium-glow: rgb(255 85 0 / 45%)`
@@ -142,7 +142,7 @@ https://api.tanki.su/static/<apiVersion>/wot/encyclopedia/vehicle/<size>/<nation
 - **Tables and lists**: `contour_icon` (60×23), tinted by CSS `filter` or used as-is, or `small_icon` (124×31) for session and replay rows.
 - **Cards and compare columns**: `big_icon` 160×100 over the flag backdrop, class glyph + tier numeral top-left, gold name when premium.
 - **Tank page hero**: `big_icon` shown at a scale of 1 to 1.5 at most (it's only 160 px), placed on a large blurred flag backdrop with the `--dusk` glow. Don't upscale it into a blurry hero. If we ever need big art, use our own illustration or a CSS "blueprint" treatment.
-- **`next/image`**: add to `IMAGES` in `apps/client/config/build.ts`:
+- **`next/image`**: add to `IMAGES` in `apps/web/client/config/build.ts`:
   ```ts
   remotePatterns: [{ protocol: 'https', hostname: 'api.tanki.su', pathname: '/static/**' }]
   ```

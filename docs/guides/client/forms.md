@@ -4,7 +4,7 @@ Part of the [style guide](../../README.md).
 
 ## 15. Forms — react-hook-form + zodResolver
 
-`react-hook-form` and `@hookform/resolvers/zod` are installed in `apps/client`. Every
+`react-hook-form` and `@hookform/resolvers/zod` are installed in `apps/web/client`. Every
 form uses them, and the form logic lives in a hook, not the component:
 
 ```text

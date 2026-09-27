@@ -1,10 +1,10 @@
 ---
 paths:
-  - "apps/client/**/*.{ts,tsx,scss}"
+  - "apps/web/client/**/*.{ts,tsx,scss}"
 ---
 
 <!-- Compressed editing rules for the web client, loaded automatically on edit. -->
-<!-- Full reasoning in apps/client/CLAUDE.md and docs/architecture/fsd.md; keep them in sync. -->
+<!-- Full reasoning in apps/web/client/CLAUDE.md and docs/architecture/fsd.md; keep them in sync. -->
 
 # Code style — client: FSD layers and public API
 
@@ -32,7 +32,7 @@ never imports itself through its own barrel; and code in `lib/` never imports fr
 
 ## No import cycles
 
-`apps/client/_tests/import-cycles.test.ts` runs madge over `views`, `widgets`, `features`,
+`apps/web/client/_tests/import-cycles.test.ts` runs madge over `views`, `widgets`, `features`,
 `entities`, `shared` and `ui-kit` (tsconfig paths, type-only and dynamic imports skipped,
 `generated/` and `_tests/` ignored) and fails on any runtime cycle. A barrel makes a cycle
 easy to miss — `a → ../hooks → b → a` — so:

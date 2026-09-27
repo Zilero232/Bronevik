@@ -1,6 +1,6 @@
 # Feature-Sliced Design — Three Marks
 
-The FSD methodology for `apps/client/`. This document is the working reference for the frontend architecture: the layer hierarchy, import rules, public APIs, segments.
+The FSD methodology for `apps/web/client/`. This document is the working reference for the frontend architecture: the layer hierarchy, import rules, public APIs, segments.
 
 Full specification: [feature-sliced.design](https://feature-sliced.design). Linter for FSD rules: [Steiger](https://github.com/feature-sliced/steiger).
 
@@ -8,14 +8,14 @@ Full specification: [feature-sliced.design](https://feature-sliced.design). Lint
 >
 > | Canonical FSD | Three Marks | Why |
 > |---|---|---|
-> | `src/` root | `apps/client/` root (no `src/`) | Monorepo: `apps/client` already isolates the frontend. `@/` → `apps/client/`. |
+> | `src/` root | `apps/web/client/` root (no `src/`) | Monorepo: `apps/web/client` already isolates the frontend. `@/` → `apps/web/client/`. |
 > | `pages/` layer | `views/` layer | `pages/` at the Next.js root turns on the Pages Router. `views/` sidesteps it. |
 > | `shared/ui` segment | `ui-kit/` at the root | The design system is large enough to read as its own thing, and every layer imports it. Keeping it under `shared` buried it three levels down. |
 
 ## 1. Layers
 
 ```text
-apps/client/
+apps/web/client/
 ├── app/                # Next.js routes, providers, global styles entry
 ├── views/              # whole screens, one per route
 ├── widgets/            # blocks composed for more than one view
@@ -245,7 +245,7 @@ Route groups do not appear in the URL. `(site)` carries the layout that wraps it
 
 An example from live code: `views/home` assembles `HomePage` out of its own `ui/components` (`HomeHero`, `TopPlayers`, `StrongTanks`, `MarksMovement`, `ClanActivity`, `GameNews`, …) and `model/hooks` (`useTopPlayers`, `useTopPlayerColumns`, `useServerStatus`, …). `useTopPlayers` reads `getLeaderboard` from `entities/player/leaderboard` with a key from `QUERY_KEYS`; `useTopPlayerColumns` builds `TableColumn<LeaderboardEntry>[]` with `PlayerNameCell` from `entities/player/player` and `NumberCell` from `ui-kit`; `TopPlayers` renders them through `QueryState`, `DataTable` and `SectionHeader` from `ui-kit`. It reaches nothing sideways.
 
-Server-only code of a slice (route lookups, prefetch state, OG sources) is exported from a separate `server.ts` beside `index.ts` (`@/entities/tank/tank/server`, `@/views/tank/server`), so client bundles never pull it in — see [apps/client/CLAUDE.md](../../apps/client/CLAUDE.md#server-rendering-route-meta-and-prefetch).
+Server-only code of a slice (route lookups, prefetch state, OG sources) is exported from a separate `server.ts` beside `index.ts` (`@/entities/tank/tank/server`, `@/views/tank/server`), so client bundles never pull it in — see [apps/web/client/CLAUDE.md](../../apps/web/client/CLAUDE.md#server-rendering-route-meta-and-prefetch).
 
 ## 8. Tests
 

@@ -91,10 +91,10 @@ jobs:
           PORT: '3000'
           HOSTNAME: 127.0.0.1
         run: |
-          cp -r apps/client/.next/static apps/client/.next/standalone/apps/client/.next/static
-          cp -r apps/client/public apps/client/.next/standalone/apps/client/public 2>/dev/null || true
+          cp -r apps/web/client/.next/static apps/web/client/.next/standalone/apps/web/client/.next/static
+          cp -r apps/web/client/public apps/web/client/.next/standalone/apps/web/client/public 2>/dev/null || true
 
-          node apps/client/.next/standalone/apps/client/server.js &
+          node apps/web/client/.next/standalone/apps/web/client/server.js &
           echo "$!" > /tmp/web.pid
 
       - name: Run the smoke tests
@@ -130,7 +130,7 @@ jobs:
       - uses: ./.github/actions/docker-image
         with:
           image: client
-          dockerfile: apps/client/Dockerfile
+          dockerfile: apps/web/client/Dockerfile
           token: ${{ secrets.GITHUB_TOKEN }}
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
@@ -154,7 +154,7 @@ jobs:
       - uses: ./.github/actions/docker-image
         with:
           image: server
-          dockerfile: apps/server/Dockerfile
+          dockerfile: apps/web/server/Dockerfile
           token: ${{ secrets.GITHUB_TOKEN }}
 
   vps:

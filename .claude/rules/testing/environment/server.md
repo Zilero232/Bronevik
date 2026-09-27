@@ -1,8 +1,8 @@
 ---
 paths:
-  - "apps/server/**/_tests/**/*.ts"
-  - "apps/server/vitest.config.*"
-  - "apps/server/vitest.setup.ts"
+  - "apps/web/server/**/_tests/**/*.ts"
+  - "apps/web/server/vitest.config.*"
+  - "apps/web/server/vitest.setup.ts"
 ---
 
 <!-- Auto-loaded when editing tests or their configs. Full picture — the root CLAUDE.md. -->

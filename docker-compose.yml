@@ -9,7 +9,7 @@
 #   docker compose up -d
 #   docker compose logs -f
 #
-# `server` and `worker` run the same image (apps/server/Dockerfile): the API is
+# `server` and `worker` run the same image (apps/web/server/Dockerfile): the API is
 # src/main.ts, the collector worker is src/worker.ts. The worker has no HTTP
 # port; its heartbeat and the Lesta circuit state show up in the server's
 # /health, and bull-board is served by the server on /admin/queues.
@@ -67,7 +67,7 @@ services:
   client:
     build:
       context: .
-      dockerfile: apps/client/Dockerfile
+      dockerfile: apps/web/client/Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?}
         GIT_COMMIT_SHA: ${GIT_COMMIT_SHA:-}
@@ -85,7 +85,7 @@ services:
   server:
     build:
       context: .
-      dockerfile: apps/server/Dockerfile
+      dockerfile: apps/web/server/Dockerfile
     image: ghcr.io/zilero232/otmetki-server:latest
     container_name: otmetki-server
     restart: always

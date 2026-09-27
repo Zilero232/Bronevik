@@ -36,7 +36,23 @@
         "vitest": "^5.0.2",
       },
     },
-    "apps/client": {
+    "apps/game/modpack": {
+      "name": "@otmetki/modpack",
+      "version": "0.1.0",
+      "dependencies": {
+        "@nanostores/preact": "^1.1.0",
+        "clsx": "catalog:",
+        "nanostores": "1.5.3",
+        "preact": "^10.29.8",
+        "zod": "catalog:",
+      },
+      "devDependencies": {
+        "esbuild": "catalog:",
+        "fast-png": "^8.0.0",
+        "typescript": "catalog:",
+      },
+    },
+    "apps/web/client": {
       "name": "@otmetki/client",
       "version": "0.1.0",
       "dependencies": {
@@ -115,23 +131,7 @@
         "typescript": "catalog:",
       },
     },
-    "apps/modpack": {
-      "name": "@otmetki/modpack",
-      "version": "0.1.0",
-      "dependencies": {
-        "@nanostores/preact": "^1.1.0",
-        "clsx": "catalog:",
-        "nanostores": "1.5.3",
-        "preact": "^10.29.8",
-        "zod": "catalog:",
-      },
-      "devDependencies": {
-        "esbuild": "catalog:",
-        "fast-png": "^8.0.0",
-        "typescript": "catalog:",
-      },
-    },
-    "apps/server": {
+    "apps/web/server": {
       "name": "@otmetki/server",
       "version": "0.1.0",
       "dependencies": {
@@ -984,7 +984,7 @@
 
     "@ota-meshi/ast-token-store": ["@ota-meshi/ast-token-store@0.3.0", "", {}, "sha512-XRO0zi2NIUKq2lUk3T1ecFSld1fMWRKE6naRFGkgkdeosx7IslyUKNv5Dcb5PJTja9tHJoFu0v/7yEpAkrkrTg=="],
 
-    "@otmetki/client": ["@otmetki/client@workspace:apps/client"],
+    "@otmetki/client": ["@otmetki/client@workspace:apps/web/client"],
 
     "@otmetki/gamedata": ["@otmetki/gamedata@workspace:packages/gamedata"],
 
@@ -992,7 +992,7 @@
 
     "@otmetki/logger": ["@otmetki/logger@workspace:packages/logger"],
 
-    "@otmetki/modpack": ["@otmetki/modpack@workspace:apps/modpack"],
+    "@otmetki/modpack": ["@otmetki/modpack@workspace:apps/game/modpack"],
 
     "@otmetki/ratings": ["@otmetki/ratings@workspace:packages/ratings"],
 
@@ -1000,7 +1000,7 @@
 
     "@otmetki/sdk": ["@otmetki/sdk@workspace:packages/sdk"],
 
-    "@otmetki/server": ["@otmetki/server@workspace:apps/server"],
+    "@otmetki/server": ["@otmetki/server@workspace:apps/web/server"],
 
     "@oxc-parser/binding-android-arm-eabi": ["@oxc-parser/binding-android-arm-eabi@0.150.0", "", { "os": "android", "cpu": "arm" }, "sha512-oQef2Zu4Prz1KLKznz3HqZzU9uVoA5PMoDZuuLmqms7hKmKSAPzlaMnLllJq3t+rgKmfJJ2siPrpZfFrW06btw=="],
 

@@ -1,6 +1,6 @@
 # Three Marks Style Guide
 
-Project code-style conventions for `apps/client/`, plus the parts of the server app and the shared packages that the client touches. Architectural rules live in [`docs/architecture/fsd.md`](../architecture/fsd.md).
+Project code-style conventions for `apps/web/client/`, plus the parts of the server app and the shared packages that the client touches. Architectural rules live in [`docs/architecture/fsd.md`](../architecture/fsd.md).
 
 Tools:
 
@@ -17,7 +17,7 @@ command — `bun run verify` (typecheck + ESLint + Prettier + Stylelint).
 
 ## Sections
 
-### Client (`apps/client`)
+### Client (`apps/web/client`)
 
 - [Slice structure](client/slices.md) — §1
 - [Slice `ui/` and `ui-kit`](client/slice-ui.md) — §2, §2.1
@@ -31,7 +31,7 @@ command — `bun run verify` (typecheck + ESLint + Prettier + Stylelint).
 - [Conditional render](client/conditional-render.md) — §16, §16.1
 - [Drill cleanup](client/drill-cleanup.md) — §17
 
-### Server (`apps/server`)
+### Server (`apps/web/server`)
 
 - [Server routes — NestJS](server/nestjs.md) — §18
 
@@ -49,4 +49,4 @@ command — `bun run verify` (typecheck + ESLint + Prettier + Stylelint).
 ### Other guides
 
 - [External documentation (context7 ids)](shared/references.md)
-- Modpack (`apps/modpack`): [apps/modpack/CLAUDE.md](../../apps/modpack/CLAUDE.md) and [README](../../apps/modpack/README.md)
+- Modpack (`apps/game/modpack`): [apps/game/modpack/CLAUDE.md](../../apps/game/modpack/CLAUDE.md) and [README](../../apps/game/modpack/README.md)

@@ -14,7 +14,7 @@ typecheck_targets=''
 if staged_has '^(package\.json|bun\.lock|tsconfig.*\.json)$' || staged_has '^packages/'; then
   bun run typecheck || exit 1
 else
-  for app in apps/server apps/client; do
+  for app in apps/web/server apps/web/client; do
     staged_has "^$app/" && typecheck_targets="$typecheck_targets ./$app"
   done
 
@@ -23,6 +23,6 @@ else
   done
 fi
 
-if staged_has '^apps/modpack/.*\.py$'; then
+if staged_has '^apps/game/modpack/.*\.py$'; then
   bun run test:modpack || exit 1
 fi

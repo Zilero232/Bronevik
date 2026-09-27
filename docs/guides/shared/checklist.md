@@ -15,7 +15,7 @@ collects the same files and then fails them all, because it is not Vitest.
 
 Tests live in a `_tests/` folder beside what they test
 (`shared/lib/rating-tone/_tests/rating-tone.test.ts`); the Playwright specs are in
-`e2e/`, and the game modpack's Python suites are in the `tests/` folder of each package under `apps/modpack/` (`bun run test:modpack`).
+`e2e/`, and the game modpack's Python suites are in the `tests/` folder of each package under `apps/game/modpack/` (`bun run test:modpack`).
 
 Typecheck, lint and tests are the routine check; the production build
 (`bun --filter @otmetki/client build`) runs only when the owner asks for one. It is the

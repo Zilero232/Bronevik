@@ -1,14 +1,14 @@
 ---
 paths:
-  - "apps/server/**/*.ts"
+  - "apps/web/server/**/*.ts"
 ---
 
 <!-- Compressed editing rules for the server app (API and worker), loaded automatically on edit. -->
-<!-- Server specifics in apps/server/CLAUDE.md; module shape in docs/guides/server/nestjs.md. Keep them in sync. -->
+<!-- Server specifics in apps/web/server/CLAUDE.md; module shape in docs/guides/server/nestjs.md. Keep them in sync. -->
 
 # Code style — server: module shape
 
-NestJS 11 on Bun + Prisma 7 (client generated into `apps/server/generated`) +
+NestJS 11 on Bun + Prisma 7 (client generated into `apps/web/server/generated`) +
 PostgreSQL with TimescaleDB + Redis + BullMQ. Bun runs the TypeScript directly,
 no build step. One app, two entrypoints: `src/main.ts` (the API, `AppModule`) and
 `src/worker.ts` (the collector, `WorkerModule`, a standalone application context).

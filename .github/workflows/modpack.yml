@@ -1,6 +1,6 @@
 name: modpack
 
-# The «Мир танков» modpack (apps/modpack): Python 2.7 game-client packages with Python 3 host tooling.
+# The «Мир танков» modpack (apps/game/modpack): Python 2.7 game-client packages with Python 3 host tooling.
 #
 # checks         pull requests that touch the modpack, and manual runs. Windows, like the players:
 #                pytest + the stdlib runner, ruff, vermin (the py2.7 syntax guard is a test).
@@ -8,12 +8,12 @@ name: modpack
 #                needed) and the release packages with compiled .pyc, uploaded as an artifact.
 # release-installer  manual runs only, after release-build. Windows: Inno Setup from choco, the installer's
 #                Pascal unit tests and a silent install/uninstall round trip, then components.json and the
-#                unsigned otmetki-setup-<version>.exe around the release packages (apps/modpack/installer).
+#                unsigned otmetki-setup-<version>.exe around the release packages (apps/game/modpack/installer).
 
 on:
   pull_request:
     paths:
-      - 'apps/modpack/**'
+      - 'apps/game/modpack/**'
       - .github/workflows/modpack.yml
   workflow_dispatch:
 
@@ -39,7 +39,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: apps/modpack
+        working-directory: apps/game/modpack
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -94,8 +94,8 @@ jobs:
       - name: Build the packages
         run: |
           owg="$RUNNER_TEMP/owg/build/owg_python_compiler"
-          python apps/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack
-          python apps/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack --single
+          python apps/game/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack
+          python apps/game/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack --single
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -115,7 +115,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: apps/modpack
+        working-directory: apps/game/modpack
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

@@ -4,7 +4,7 @@ paths:
   - "e2e/**/*.spec.ts"
   - "**/vitest.config.*"
   - "playwright.config.ts"
-  - "apps/modpack/**/tests/**"
+  - "apps/game/modpack/**/tests/**"
 ---
 
 <!-- Auto-loaded when editing tests or their configs. Full picture — the root CLAUDE.md. -->

@@ -99,7 +99,7 @@ Final numbers get agreed with Lesta when the limit increase is requested.
 - A circuit breaker pauses Tier B while Lesta is degraded. Tier A keeps a small reserved budget.
 - Collector lag metrics go to the admin panel.
 
-## 5. Backend API (apps/server)
+## 5. Backend API (apps/web/server)
 
 Modules follow the GnomeVPN layout:
 - `auth`: better-auth + a custom Lesta OpenID provider, plus Telegram login and email magic link;
@@ -115,7 +115,7 @@ Read paths:
 - Hot pages (profile, tank) are served from Redis cache (TTL tied to the snapshot time) plus Next.js ISR.
 - A cache miss on a never-seen player triggers a synchronous fetch from Lesta and enrols the player in Tier A.
 
-## 6. Frontend (apps/client)
+## 6. Frontend (apps/web/client)
 
 FSD layout and ui-kit wrapping `@base-ui/react`, as in GnomeVPN.
 

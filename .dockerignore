@@ -18,10 +18,10 @@
 *.wotmod
 *.mtmod
 
-# The game modpack is built on the host (apps/modpack/tools/build), never in an image.
+# The game modpack is built on the host (apps/game/modpack/tools/build), never in an image.
 # Only its package.json goes in: the bun workspace list must match bun.lock for --frozen-lockfile.
-apps/modpack/*
-!apps/modpack/package.json
+apps/game/modpack/*
+!apps/game/modpack/package.json
 
 # Secrets and local env — images get their config at runtime, never baked in.
 .env

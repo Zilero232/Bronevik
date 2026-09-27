@@ -1,10 +1,10 @@
 ---
 paths:
-  - "apps/client/**/*.{ts,tsx,scss}"
+  - "apps/web/client/**/*.{ts,tsx,scss}"
 ---
 
 <!-- Compressed editing rules for the web client, loaded automatically on edit. -->
-<!-- Full reasoning in apps/client/CLAUDE.md and docs/guides/client/slice-ui.md; keep them in sync. -->
+<!-- Full reasoning in apps/web/client/CLAUDE.md and docs/guides/client/slice-ui.md; keep them in sync. -->
 
 # Code style — client: variants
 

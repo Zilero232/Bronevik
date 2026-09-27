@@ -8,7 +8,7 @@
     "types": "warn"
   },
   "workspaces": {
-    "apps/client": {
+    "apps/web/client": {
       "entry": [
         "shared/i18n/request/request.ts",
         "app/sw.ts",
@@ -17,11 +17,11 @@
       ],
       "project": ["**/*.{ts,tsx,scss}"]
     },
-    "apps/modpack": {
+    "apps/game/modpack": {
       "entry": ["ui-web/src/settings/main.tsx", "ui-web/src/button/main.ts"],
       "project": ["ui-web/**/*.{ts,tsx}"]
     },
-    "apps/server": {
+    "apps/web/server": {
       "entry": ["scripts/*.ts"],
       "project": ["src/**/*.ts", "scripts/**/*.ts", "prisma/**/*.prisma"]
     },

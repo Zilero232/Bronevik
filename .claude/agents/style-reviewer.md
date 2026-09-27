@@ -10,7 +10,7 @@ You review code against **the conventions this repository writes down about itse
 ## What to read first, every time
 
 1. The root `CLAUDE.md`.
-2. Every nested `CLAUDE.md` covering the changed files — `apps/client/CLAUDE.md`, `apps/server/CLAUDE.md`, `apps/modpack/CLAUDE.md`. The nested file extends the root; both apply.
+2. Every nested `CLAUDE.md` covering the changed files — `apps/web/client/CLAUDE.md`, `apps/web/server/CLAUDE.md`, `apps/game/modpack/CLAUDE.md`. The nested file extends the root; both apply.
 3. `.claude/rules/**/*.md` — the compressed editing versions, one topic per file (`shared/`, `client/`, `server/`, `modpack/`, `testing/`). The full reasoning lives in [docs/guides/](../../docs/guides/README.md) and [docs/architecture/fsd.md](../../docs/architecture/fsd.md).
 4. The lint configuration actually in force — `eslint.config.mjs` (on top of `@siberiacancode/eslint`), `prettier.config.mjs`, `stylelint.config.mjs`.
 
@@ -52,7 +52,7 @@ Check, in this order:
 - **A Lesta call that bypasses `core/lesta`** — a bare `fetch` to `api.tanki.su`, a second rate limiter, or a retry loop around the server's `lib/lesta`, which already shares the Redis token bucket and retries with `p-retry`.
 - **Hand-rolled retry loops** where `p-retry` is already a dependency.
 - **A `fetch` without a timeout.** Every outbound call carries `AbortSignal.timeout(MS)`; a hand-rolled `AbortController` + `setTimeout` is the older shape and should be replaced.
-- **A queue or job name as a string literal** instead of `QUEUE` / `JOB` from `apps/server/src/modules/collector/contracts`.
+- **A queue or job name as a string literal** instead of `QUEUE` / `JOB` from `apps/web/server/src/modules/collector/contracts`.
 - **`import type` for a class Nest injects** in the server app (API or worker) — it erases the metadata and the app fails to boot.
 - **Browser APIs at module scope or during render** — `window`, `document`, `localStorage` throw on the server. Must be behind `isBrowser()`/`isServer()` from `@/shared/lib`, inside `useEffect`, or gated on `useHydrated()`. A raw `typeof window` check is itself a finding.
 - **`Link`, `useRouter` or `usePathname` imported from `next/*`** instead of `@/shared/i18n/navigation`.
@@ -74,10 +74,10 @@ Check, in this order:
 
 Never report findings in generated files — flag only if the diff **edits** them by hand:
 
-- `apps/server/generated/**` — Prisma client output.
-- `apps/server/.cache/**` — downloaded game-client sources.
-- `apps/client/.next/**`, `**/node_modules/**`, `bun.lock`.
-- `apps/client/next-env.d.ts` and the `# This is NOT the Next.js you know` block `next typegen` appends to `apps/client/CLAUDE.md` — both rewritten by Next.
+- `apps/web/server/generated/**` — Prisma client output.
+- `apps/web/server/.cache/**` — downloaded game-client sources.
+- `apps/web/client/.next/**`, `**/node_modules/**`, `bun.lock`.
+- `apps/web/client/next-env.d.ts` and the `# This is NOT the Next.js you know` block `next typegen` appends to `apps/web/client/CLAUDE.md` — both rewritten by Next.
 
 Also not findings:
 
@@ -91,7 +91,7 @@ Also not findings:
 
 Run `bun run verify` before reporting: typecheck across every workspace, ESLint, Prettier, Stylelint. Expect **0 errors**; note the warning count. If it fails, say what failed and paste the relevant lines. Never report clean without having run it.
 
-`verify` does not catch SSR breakage, and a production build is run only when the owner asks for one; say when a client change could affect prerendering so it gets checked on the next build. For a change under `apps/modpack`, run `bun run test:modpack`. If a check cannot run, say so rather than implying it passed.
+`verify` does not catch SSR breakage, and a production build is run only when the owner asks for one; say when a client change could affect prerendering so it gets checked on the next build. For a change under `apps/game/modpack`, run `bun run test:modpack`. If a check cannot run, say so rather than implying it passed.
 
 ## Output
 

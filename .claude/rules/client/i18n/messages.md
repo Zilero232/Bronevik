@@ -1,11 +1,11 @@
 ---
 paths:
-  - "apps/client/**/*.{ts,tsx}"
-  - "apps/client/shared/i18n/**"
+  - "apps/web/client/**/*.{ts,tsx}"
+  - "apps/web/client/shared/i18n/**"
 ---
 
 <!-- Compressed editing rules for the web client, loaded automatically on edit. -->
-<!-- Full reasoning in apps/client/CLAUDE.md and docs/guides/shared/forbidden.md; keep them in sync. -->
+<!-- Full reasoning in apps/web/client/CLAUDE.md and docs/guides/shared/forbidden.md; keep them in sync. -->
 
 # Code style — client: i18n messages
 

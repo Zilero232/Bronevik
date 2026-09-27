@@ -4,7 +4,7 @@ paths:
   - "e2e/**/*.spec.ts"
   - "**/vitest.config.*"
   - "playwright.config.ts"
-  - "apps/modpack/**/tests/**"
+  - "apps/game/modpack/**/tests/**"
 ---
 
 <!-- Auto-loaded when editing tests or their configs. Full picture — the root CLAUDE.md. -->
@@ -13,7 +13,7 @@ paths:
 
 ## How it runs
 
-`bun run test` from the repo root — **one** Vitest run across the whole monorepo, wired through `test.projects` in the root [vitest.config.ts](../../../../vitest.config.ts), which picks up every `apps/*/vitest.config.ts` and `packages/*/vitest.config.ts`. Workspaces carry their own configs (`name`, environment, env); they have no `test` script of their own and don't need one. Never `bun test` — that is Bun's own runner, not Vitest.
+`bun run test` from the repo root — **one** Vitest run across the whole monorepo, wired through `test.projects` in the root [vitest.config.ts](../../../../vitest.config.ts), which picks up every `apps/web/*/vitest.config.ts`, `apps/game/*/vitest.config.ts` and `packages/*/vitest.config.ts`. Workspaces carry their own configs (`name`, environment, env); they have no `test` script of their own and don't need one. Never `bun test` — that is Bun's own runner, not Vitest.
 
 E2E — `bun run test:e2e`, two projects (`desktop` + `mobile`). Without `E2E_BASE_URL` the config starts the client dev server itself; CI builds the client and serves the standalone output instead. The client has no mocks and e2e runs without the server app or a database: the smoke aborts every API request and checks that pages render their shell and error states. On Windows, run Playwright through node (`node node_modules/@playwright/test/cli.js test`) if `bunx playwright` hangs.
 

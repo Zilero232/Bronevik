@@ -16,7 +16,7 @@ Design specs, one per initiative, dated.
 
 ## Architecture
 
-- [architecture/fsd.md](architecture/fsd.md) — Feature-Sliced Design as used by `apps/client`: layers, slices, segments, where a thing goes.
+- [architecture/fsd.md](architecture/fsd.md) — Feature-Sliced Design as used by `apps/web/client`: layers, slices, segments, where a thing goes.
 
 ## Guides
 
@@ -25,7 +25,7 @@ The style guide, split by stack. Index and tooling: [guides/README.md](guides/RE
 - `guides/client/` — slices, `ui/` and `ui-kit`, `model/hooks`, segments, React, component body and size, styles, forms, conditional render, drill cleanup.
 - `guides/server/` — [NestJS modules and routes](guides/server/nestjs.md).
 - `guides/shared/` — naming, imports and barrels, types, functions, blank lines, shared schemas, forbidden list, pre-commit checklist, [external docs (context7 ids)](guides/shared/references.md).
-- Modpack — [apps/modpack/CLAUDE.md](../apps/modpack/CLAUDE.md) and [apps/modpack/README.md](../apps/modpack/README.md).
+- Modpack — [apps/game/modpack/CLAUDE.md](../apps/game/modpack/CLAUDE.md) and [apps/game/modpack/README.md](../apps/game/modpack/README.md).
 
 ## Research
 

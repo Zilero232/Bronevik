@@ -1,10 +1,10 @@
 ---
 paths:
-  - "apps/modpack/**/*.py"
+  - "apps/game/modpack/**/*.py"
 ---
 
 <!-- Editing rules for the «Три отметки» modpack (Python), loaded automatically on edit. -->
-<!-- Modpack specifics in apps/modpack/CLAUDE.md and README.md. Keep them in sync. -->
+<!-- Modpack specifics in apps/game/modpack/CLAUDE.md and README.md. Keep them in sync. -->
 
 # Code style — modpack (Python): libraries
 

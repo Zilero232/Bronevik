@@ -155,11 +155,11 @@ Implement this as pure TS in `packages/gamedata` (`calculateArmorHit({ thickness
 
 ## 6. Implementation plan
 
-**Server: importer step** (`apps/server/src/modules/gamedata`)
+**Server: importer step** (`apps/web/server/src/modules/gamedata`)
 
 1. **Source.**
    - Add a `models` source in `lib/source/source.constants.ts`: `unicum-gg/wot.models@Lesta`, backup none, `--models-ref`, and `--local-models <dir>` for a local checkout.
-   - Reuse the GitHub fetcher and disk cache (`apps/server/.cache`, keyed by sha).
+   - Reuse the GitHub fetcher and disk cache (`apps/web/server/.cache`, keyed by sha).
    - Guard: the models `.version_name` must equal the `wot.src` version. Otherwise keep the previous armor models and log a warning.
 2. **Parser.**
    - Create `lib/parsers/armor-model`: a pure `parseCollision(json)` that validates with zod and returns `ArmorModel { pieces: Record<Piece, { positions: Float32Array; indices: Uint32Array; groups: {plate, start, count}[] }>, modules, mounts, hullPosition }`.
@@ -173,7 +173,7 @@ Implement this as pure TS in `packages/gamedata` (`calculateArmorHit({ thickness
 5. **Storage.**
    - Upload to S3 via the existing `@aws-sdk/client-s3` (pattern in `modules/replays/storage/s3.storage.ts`): key `armor/<gameVersion>/<tankId>.bin`, immutable, long `Cache-Control`.
    - Add a DB row `VehicleArmorModel { tankId, gameVersion, key, hash, pieces }`, or a `GameDataEntry` kind `armorModel`.
-   - Without S3 in dev, fall back to `apps/server/.cache/armor/…` served by Nest `StaticFiles`.
+   - Without S3 in dev, fall back to `apps/web/server/.cache/armor/…` served by Nest `StaticFiles`.
 6. **API.**
    - `GET /tanks/:slug/armor?turret=&gun=&chassis=` → `{ gameVersion, modelUrl, pieces→module map, plates: { piece: { plate: { thickness, spaced, kind } } }, mounts, shells: [{ id, kind, caliber, pen100, pen500, damage, piercingPowerLossFactorByDistance }] }`.
    - Put the zod contract in `packages/schemas`.
@@ -204,7 +204,7 @@ Implement this as pure TS in `packages/gamedata` (`calculateArmorHit({ thickness
 
 - Models missing for a tank (new vehicle, mirror lag) → show a 2D fallback: the primary armor table (`primaryArmor` hull/turret front/side/rear from `VehicleSpec`), plus a "3D-модель появится после обновления" state.
 - Mirror dead → run the `--local-models` path: either a checkout produced by running `wot.build --collision-only` ourselves, or (after the author agrees) a vendored Havok reader over a local client's `vehicles_level_*.pkg`.
-- Dev/e2e and Storybook-like design page → a committed **demo model**: a hand-built box tank (hull, turret and gun boxes with named groups `armor_1..n`, one spaced skirt, tracks) at `apps/client/shared/fixtures/armor-demo.json`. It is generated, not extracted, so it is legally clean and lets the e2e smoke test run without S3 or the mirror.
+- Dev/e2e and Storybook-like design page → a committed **demo model**: a hand-built box tank (hull, turret and gun boxes with named groups `armor_1..n`, one spaced skirt, tracks) at `apps/web/client/shared/fixtures/armor-demo.json`. It is generated, not extracted, so it is legally clean and lets the e2e smoke test run without S3 or the mirror.
 
 **Order of work**
 

@@ -198,7 +198,7 @@ Enums of client options (`graphicsOptionSchema`, marker fields, minimap fields) 
 - **Export:** in the hangar, «Поделиться настройками» reads standard client settings through the game's settings core (not the file), builds `streamerSettingsSchema`-compatible JSON **without** login/account keys, and sends it through the existing mod ingest (bound `ModDevice`). The user chooses the target: "my profile" (claimed creators), "private" (for compare with "мои настройки"), and a separate opt-in checkbox "учитывать анонимно в статистике".
 - **Apply:** from `/s/[slug]/settings` → «Применить через мод» → the site stores a pending "apply request" for the user's device → the mod shows a hangar dialog with the diff, excluding resolution and sensitivity by default (Korben's precedent — hardware-specific) → on confirm it backs up current settings and applies. «Вернуть мои» restores the backup.
 - Scope: only standard client settings (graphics, camera, zoom steps, sight/marker/minimap options, sound). **Never** installs or configures third-party mods. Fair-play neutral: identical to changing settings by hand.
-- Python 2.7, `apps/modpack`; unit tests in the mod's suite; verify the settings-core API on the Lesta 1.45 client first **[unverified API names]**.
+- Python 2.7, `apps/game/modpack`; unit tests in the mod's suite; verify the settings-core API on the Lesta 1.45 client first **[unverified API names]**.
 
 ## 4. More feature ideas
 
@@ -217,7 +217,7 @@ Enums of client options (`graphicsOptionSchema`, marker fields, minimap fields) 
 | 11 | **Chat command `!settings` / `!sens`** in existing chat integrations, replying with a link and the key values | `chat-command` lib (exists) | S | Free |
 | 12 | **Creator challenges on tanks** (exists) surfaced on cards: "принимает челленджи" chip | Existing `Challenge` | S | Free |
 
-## 5. Data model (Prisma, `apps/server/prisma/schema/streamers.prisma`)
+## 5. Data model (Prisma, `apps/web/server/prisma/schema/streamers.prisma`)
 
 `db push`, no migrations (pre-prod). Changes:
 
@@ -346,7 +346,7 @@ Aggregates: a materialised table `SettingsAggregate(cohort, field, bucket, count
 
 Refactor note: `StreamerProfile` PK moves from `userId` to `id`; `Overlay`, `Challenge`, `StreamerIntegration` stay keyed by `userId` (they belong to a user, not to an entry). `streamer-profile.service.ts` switches `findUnique({ where: { userId } })` to the `userId` unique index — same call shape. `links` Json moves into `StreamerChannel` (data copy script in WP1; pre-prod so dropping the column is fine).
 
-## 6. API (NestJS, `apps/server/src/modules/streamers`)
+## 6. API (NestJS, `apps/web/server/src/modules/streamers`)
 
 Public:
 - `GET /streamers` — directory (filters: live, platform, tankId, hasSettings, kind; cursor pagination).
@@ -370,7 +370,7 @@ Contracts: `packages/schemas/src/streamers/` (directory, channels, claims) and a
 
 Worker (`streamers-worker.module.ts`, `config/queue.config.ts`): new jobs `live-poll` (every 60 s: Twitch batch 100 logins, VK `POST /v1/channels` batch; YouTube every 15 min for claimed only), `live-tank` (every 30 s for live creators with a Lesta account: mod feed first, else `account/tanks` delta), `settings-aggregate` (daily), `mod-reference-recheck` (on new `GameVersion`). New lib pure functions with `_tests`: `lib/live-status` (merge platform responses → profile live state), `lib/settings-diff`, `lib/settings-aggregate` (k-threshold, bucketing), `lib/claim-code`.
 
-## 7. Client (FSD, `apps/client`)
+## 7. Client (FSD, `apps/web/client`)
 
 - `app/[locale]/(site)/streamers/page.tsx` → directory view; current landing moves to `app/[locale]/(site)/for-streamers/page.tsx` (Q1).
 - `app/[locale]/(site)/streamers/settings/page.tsx`, `…/streamers/settings/compare/page.tsx`, `app/[locale]/(site)/s/[slug]/settings/page.tsx`.
@@ -394,7 +394,7 @@ Worker (`streamers-worker.module.ts`, `config/queue.config.ts`): new jobs `live-
 | **WP4** | Editorial + claims: admin endpoints, `StreamerClaim`, OAuth / bio-code / manual proofs, removal requests, tombstones | `streamers/services/streamer-claim.service.ts`, `streamers/controllers/admin-streamers.controller.ts`, `features/streamer/claim-profile` | M |
 | **WP5** | Settings core: schemas + constants, `StreamerSettings(+Version)`, studio `SettingsPanel`, public settings page, table, compare, `ModReference` with fair-play workflow | `packages/schemas/src/streamer-settings`, `streamers/services/streamer-settings.service.ts`, `views/streamer-settings*`, `views/streamer-studio` | L |
 | **WP6** | Browser `preferences.xml` import (whitelist; skip or safely read pickled blobs); fixture-based tests | `entities/streamer/lib/preferences-parser`, `SettingsImportXml` | M |
-| **WP7** | Mod export/apply: settings-core reader/applier with backup, ingest endpoints, `SettingsApplyRequest`, `PlayerSettingsShare` | `apps/modpack`, `modules/mod`, `features/streamer/apply-settings` | L |
+| **WP7** | Mod export/apply: settings-core reader/applier with backup, ingest endpoints, `SettingsApplyRequest`, `PlayerSettingsShare` | `apps/game/modpack`, `modules/mod`, `features/streamer/apply-settings` | L |
 | **WP8** | Aggregates: daily job, k ≥ 20, cohorts (creators / top by rating / all opt-in), page section | `streamers/lib/settings-aggregate`, `processors`, `views/streamers-settings-table` | M |
 | **WP9** | Extras from §4 in order: follows + alerts (2), schedules (3), clips/videos (4), `!settings` chat command (11), builds (5), marks race (9), sight gallery (6), wizard (7), own settings impact (8, Plus) | respective modules | S–L each |
 

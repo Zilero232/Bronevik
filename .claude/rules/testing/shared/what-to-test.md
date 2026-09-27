@@ -4,7 +4,7 @@ paths:
   - "e2e/**/*.spec.ts"
   - "**/vitest.config.*"
   - "playwright.config.ts"
-  - "apps/modpack/**/tests/**"
+  - "apps/game/modpack/**/tests/**"
 ---
 
 <!-- Auto-loaded when editing tests or their configs. Full picture — the root CLAUDE.md. -->
@@ -20,12 +20,12 @@ A test should catch a regression, not restate the implementation. Every bug fixe
 | Kind                         | Why                                                                                   | Example in the repo                                  |
 | ---------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------- |
 | Rating math                  | WN8, EFF, MoE projections are what players compare; a silent drift is a public bug    | `packages/ratings/src/**/_tests`                     |
-| Parsers and codecs           | Silent data loss between Lesta, the replay format and our schema                      | `apps/server/src/lib/replay`, `apps/server/src/common/lib/json/_tests` |
-| Fallback branches            | Lesta error codes, empty pages, a tripped circuit breaker — the paths hit on a bad day | `apps/server/src/lib/lesta/outcome/_tests`        |
-| Fair-play guards             | The mod must never serialise other players' data                                      | `apps/modpack/packages/companion/tests/test_payload.py` |
-| Signatures and auth handshakes | A wrong HMAC or OpenID check is a security bug, not a cosmetic one                   | `apps/server/src/lib/auth/**/_tests`                    |
-| Rules with a threshold       | Schedules, backoff, streaks and diff windows fire for the wrong reason unnoticed       | `apps/server/src/modules/collector/tracking/lib/poll-schedule/_tests`        |
-| Contracts between layers     | A schema and its translations drifting apart ships a blank string                      | `apps/client/shared/i18n/messages/_tests`                     |
+| Parsers and codecs           | Silent data loss between Lesta, the replay format and our schema                      | `apps/web/server/src/lib/replay`, `apps/web/server/src/common/lib/json/_tests` |
+| Fallback branches            | Lesta error codes, empty pages, a tripped circuit breaker — the paths hit on a bad day | `apps/web/server/src/lib/lesta/outcome/_tests`        |
+| Fair-play guards             | The mod must never serialise other players' data                                      | `apps/game/modpack/packages/companion/tests/test_payload.py` |
+| Signatures and auth handshakes | A wrong HMAC or OpenID check is a security bug, not a cosmetic one                   | `apps/web/server/src/lib/auth/**/_tests`                    |
+| Rules with a threshold       | Schedules, backoff, streaks and diff windows fire for the wrong reason unnoticed       | `apps/web/server/src/modules/collector/tracking/lib/poll-schedule/_tests`        |
+| Contracts between layers     | A schema and its translations drifting apart ships a blank string                      | `apps/web/client/shared/i18n/messages/_tests`                     |
 
 **Distinguish carefully**, because these are where the bugs actually live: `null` vs `undefined` vs `0` vs `''`; the first render vs a real change (an effect firing on mount is not a user action); the empty collection; the value exactly on a boundary.
 

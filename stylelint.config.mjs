@@ -23,7 +23,7 @@ export default {
   overrides: [
     {
       // The toaster overrides Sonner's inline styles, which nothing else can do.
-      files: ['apps/client/app/globals.scss'],
+      files: ['apps/web/client/app/globals.scss'],
       rules: {
         'declaration-no-important': null
       }

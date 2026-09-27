@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { ROUTES } from '../apps/client/shared/constants/routes';
+import { ROUTES } from '../apps/web/client/shared/constants/routes';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 

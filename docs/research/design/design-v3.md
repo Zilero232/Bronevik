@@ -15,7 +15,7 @@ The rules in `visual-language.md` §1–§4 and `lesta-api.md` also still apply.
   - `lebwa-blog.png`: the blog page (chrome, hero banner, card grid, sidebar)
   - `lebwa-build-champion.png`: «Как собрать танк» for the Champion
 - **Secondary references** (tanks.gg, blitzkit.app, tomato.gg, op.gg, mobalytics.gg, dotabuff / Dota Plus, wotexpress, tanki.su). These come from domain knowledge **[K]**, not from fresh captures. The user asked for a quick delivery, so no crawl was done. Items that need a live look are marked **[verify]**.
-- **Our site was audited from the source, not from screenshots.** The user asked not to run builds or servers. The first attempt at local captures failed anyway: pages blocked on `networkidle` for over 90 s, then the dev server died. All dev servers started for this pass were stopped. File references below are relative to `apps/client/`.
+- **Our site was audited from the source, not from screenshots.** The user asked not to run builds or servers. The first attempt at local captures failed anyway: pages blocked on `networkidle` for over 90 s, then the dev server died. All dev servers started for this pass were stopped. File references below are relative to `apps/web/client/`.
 - **A data fact found along the way.** The local DB has 1028 vehicles, and every row has `vehicle.images = NULL`. Every tank render on the local site therefore falls back to a glyph, which makes the site look even emptier than it is. See WP-0.
 
 ---
@@ -742,7 +742,7 @@ v2 already removed the `OnAirMonitor` gadget; keep it removed.
 Order: tokens → primitives → chrome → the flagship build page → the other pages. Each WP ends with `bun run verify` and the targeted vitest runs. No `next build`.
 
 **WP-0 · Data prerequisites** (server; can run in parallel)
-- Make sure the `encyclopedia/vehicles` sync fills `vehicle.images` (it is `NULL` for all 1028 rows locally). Check `apps/server/src/modules/collector/reference/services/encyclopedia-sync.service.ts` and re-run the reference job.
+- Make sure the `encyclopedia/vehicles` sync fills `vehicle.images` (it is `NULL` for all 1028 rows locally). Check `apps/web/server/src/modules/collector/reference/services/encyclopedia-sync.service.ts` and re-run the reference job.
 - Confirm that the `image` fields for provisions, crew skills and field modifications are populated.
 - Expose `period='30d'` tank stats for the build stage (it already exists in `serverPeriodSchema`).
 - Expose the marks thresholds per tank.

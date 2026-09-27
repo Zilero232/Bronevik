@@ -21,7 +21,7 @@ Part of the [style guide](../../README.md).
 | Props type               | `<Name>Props`        | `PlayerCardProps`                            |
 | DTO type                 | `<Name>Input/Output` | `SearchInput`, `LocalePathInput`             |
 
-Server app (`apps/server`) and packages — kebab-case for every file and folder:
+Server app (`apps/web/server`) and packages — kebab-case for every file and folder:
 
 | What                     | How                               | Example                                               |
 | ------------------------ | --------------------------------- | ----------------------------------------------------- |

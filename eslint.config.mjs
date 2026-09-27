@@ -15,8 +15,8 @@ export default eslint(
       '**/.cache',
       '**/.venv',
       '**/next-env.d.ts',
-      'apps/client/public/twitch-panel.js',
-      'apps/modpack/packages/ui/gameface/**',
+      'apps/web/client/public/twitch-panel.js',
+      'apps/game/modpack/packages/ui/gameface/**',
       '.data/**',
       'e2e/.results/**',
       'playwright-report/**',
@@ -86,7 +86,7 @@ export default eslint(
 
   {
     name: 'otmetki/server',
-    files: ['apps/server/**'],
+    files: ['apps/web/server/**'],
     rules: {
       // Nest resolves dependencies from decorator metadata, which `import type`
       // erases — the app then fails to boot with "Nest can't resolve".
@@ -108,7 +108,7 @@ export default eslint(
   },
 
   // `next typegen` appends its own `# This is NOT the Next.js you know` block to
-  // apps/client/CLAUDE.md, so the file has two H1s and is regenerated on every
+  // apps/web/client/CLAUDE.md, so the file has two H1s and is regenerated on every
   // run — editing it back would only lose the change.
   {
     name: 'otmetki/agent-docs',

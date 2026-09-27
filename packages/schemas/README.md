@@ -1,6 +1,6 @@
 # @otmetki/schemas
 
-Zod contracts shared by `apps/client` and `apps/server` (API and worker). The API validates against these schemas and the client reads its types from them, so a contract is defined only once.
+Zod contracts shared by `apps/web/client` and `apps/web/server` (API and worker). The API validates against these schemas and the client reads its types from them, so a contract is defined only once.
 
 ```ts
 import { playerTanksQuerySchema } from '@otmetki/schemas';

@@ -55,7 +55,7 @@ Start from [.env.example](../../.env.example). The server and worker containers 
 - [ ] **Secrets.** Generate fresh values with `openssl rand -base64 32`:
   - `BETTER_AUTH_SECRET`: at least 32 characters.
   - `MOD_INGEST_SECRET`: the root of every mod device key. Rotating it unbinds every device.
-  - In production, the server **refuses to start** when either secret still looks like a development placeholder. The check matches `change-me`, `changeme`, `dev-secret`, `dev-mod-secret`, `test-secret`, `example` or `placeholder` (`ENV_GUARD` in `apps/server/src/config/env/env.constants.ts`), so copying `.env.example` unchanged fails loudly.
+  - In production, the server **refuses to start** when either secret still looks like a development placeholder. The check matches `change-me`, `changeme`, `dev-secret`, `dev-mod-secret`, `test-secret`, `example` or `placeholder` (`ENV_GUARD` in `apps/web/server/src/config/env/env.constants.ts`), so copying `.env.example` unchanged fails loudly.
 - [ ] `API_URL=https://api.triotmetki.ru`, `WEB_URL=https://triotmetki.ru`. `CORS_ORIGINS` stays empty unless another origin needs the API.
 - [ ] `TRUSTED_PROXIES`: leave it empty for the stock stack. The only hop is Caddy, which sends a single-entry `X-Forwarded-For`, and the default trusts one hop. Once a CDN or load balancer sits in front of Caddy, list its IPs or CIDRs (comma-separated). If you skip that, rate limits and the better-auth IP checks see the proxy's IP as every client's.
 - [ ] `DATABASE_POOL_MAX`: leave it unset at first. The API then keeps 10 connections and the worker sizes its pool from its queue concurrency (`WORKER_DATABASE.poolMax`). Set it only when Postgres `max_connections` is tight. The variable applies per process, so the API and the worker each take that many.
@@ -80,7 +80,7 @@ On the first run, or after an edit to `003_continuous_aggregates.sql`, the full 
 ## 3. After the first successful run
 
 - [ ] `https://api.triotmetki.ru/health` is green: database, Redis, worker heartbeat, and the Lesta breaker closed. The worker log says `registered N of M … job schedulers`, and no "degraded" warning appears.
-- [ ] **Game data.** The API catalog fills from Lesta through the nightly encyclopedia sync. Builds, armor, personal missions and patch diffs need the client files import, `bun run gamedata:import` (`apps/server/scripts/gamedata-import.ts`). Run it once against the production database, for example from a checkout through an SSH tunnel to `127.0.0.1:5432`, with `GITHUB_TOKEN` set for the GitHub rate limit. Run it again after every game patch.
+- [ ] **Game data.** The API catalog fills from Lesta through the nightly encyclopedia sync. Builds, armor, personal missions and patch diffs need the client files import, `bun run gamedata:import` (`apps/web/server/scripts/gamedata-import.ts`). Run it once against the production database, for example from a checkout through an SSH tunnel to `127.0.0.1:5432`, with `GITHUB_TOKEN` set for the GitHub rate limit. Run it again after every game patch.
 - [ ] Optional: `bun --filter @otmetki/server streamers:seed` loads the invited streamer list.
 - [ ] Sign in with Lesta ID and with Telegram on the live site. Check that the footer shows the Lesta attribution on every page.
 - [ ] Check `https://triotmetki.ru/sitemap.xml` and `/robots.txt`. The sitemap reads the API at build or request time, so it fills once the collector has data.
@@ -89,15 +89,15 @@ On the first run, or after an edit to `003_continuous_aggregates.sql`, the full 
 
 The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HMAC over `v2\n<METHOD>\n<path>\n<timestamp>\n<nonce>\n<body>`, a 5-minute skew window and a one-time nonce). A mod package built before v2 signing is rejected, so every published package must be rebuilt:
 
-- [ ] Check that `DEFAULT_SERVER_URL` in `apps/modpack/packages/companion/config.py` is `https://api.triotmetki.ru`.
-- [ ] Bump `VERSION` in `apps/modpack/packages/companion/version.py` (and in `packages/core/version.py` and `features/<id>/__init__.py` for the packages that changed).
-- [ ] Run `python apps/modpack/tools/build/build.py --single --require-pyc` (a release build: one `otmetki.<version>.mtmod`; it needs `owg_python_compiler` or Python 2.7, see [apps/modpack/README.md](../../apps/modpack/README.md#build)).
-- [ ] Publish the package on the site (`SITE.downloadUrl` is `https://triotmetki.ru/downloads/otmetki.wotmod`; the Lesta client loads `.mtmod`, so the URL and file name need updating) and through МОСТ. See [apps/modpack/README.md](../../apps/modpack/README.md).
+- [ ] Check that `DEFAULT_SERVER_URL` in `apps/game/modpack/packages/companion/config.py` is `https://api.triotmetki.ru`.
+- [ ] Bump `VERSION` in `apps/game/modpack/packages/companion/version.py` (and in `packages/core/version.py` and `features/<id>/__init__.py` for the packages that changed).
+- [ ] Run `python apps/game/modpack/tools/build/build.py --single --require-pyc` (a release build: one `otmetki.<version>.mtmod`; it needs `owg_python_compiler` or Python 2.7, see [apps/game/modpack/README.md](../../apps/game/modpack/README.md#build)).
+- [ ] Publish the package on the site (`SITE.downloadUrl` is `https://triotmetki.ru/downloads/otmetki.wotmod`; the Lesta client loads `.mtmod`, so the URL and file name need updating) and through МОСТ. See [apps/game/modpack/README.md](../../apps/game/modpack/README.md).
 - [ ] Users bind their devices again with a code from `/me`. Devices bound in development do not exist in production.
 
 ## 5. Legal pages and Plus: fill before checkout opens
 
-- [ ] `/privacy`, `/terms` and `/contacts` are **drafts**. They render a "draft" banner, and every `<todo>…</todo>` in `apps/client/shared/i18n/locales/{ru,en}/legal.json` (13 per language) must be filled before launch:
+- [ ] `/privacy`, `/terms` and `/contacts` are **drafts**. They render a "draft" banner, and every `<todo>…</todo>` in `apps/web/client/shared/i18n/locales/{ru,en}/legal.json` (13 per language) must be filled before launch:
   - operator full name or company name, ИНН (TIN), ОГРН/ОГРНИП (PSRN), address and contact e-mail;
   - effective dates;
   - hosting provider and region;

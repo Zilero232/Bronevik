@@ -1,6 +1,6 @@
 # @otmetki/gamedata
 
-The pure «Мир танков» loadout calculator and the game-data model it reads. No I/O and no dependencies, so the client's build constructor and the server's importer run the same maths. The importer that produces this data (XML parsers, GitHub reader, database writer) lives in the server app: [apps/server/src/modules/gamedata](../../apps/server/src/modules/gamedata/README.md).
+The pure «Мир танков» loadout calculator and the game-data model it reads. No I/O and no dependencies, so the client's build constructor and the server's importer run the same maths. The importer that produces this data (XML parsers, GitHub reader, database writer) lives in the server app: [apps/web/server/src/modules/gamedata](../../apps/web/server/src/modules/gamedata/README.md).
 
 ```ts
 import { calculateLoadout } from '@otmetki/gamedata';
@@ -26,7 +26,7 @@ The root exports `calculateLoadout` with its input and output types (`LoadoutInp
 | `src/loadout`   | `calculateLoadout` → final stats                                                                                                                                     |
 | `src/armor`     | Penetration math (`calculateArmorHit`, `traceArmorRay`, `penetrationAtDistance`), armor flags and the binary geometry codec shared by the importer and the 3D viewer |
 
-The calculator is tested against real parsed vehicles in the server (`apps/server/src/modules/gamedata/lib/_tests/calculate-loadout.test.ts`), where the parsers and fixtures live.
+The calculator is tested against real parsed vehicles in the server (`apps/web/server/src/modules/gamedata/lib/_tests/calculate-loadout.test.ts`), where the parsers and fixtures live.
 
 ## Modifier model
 

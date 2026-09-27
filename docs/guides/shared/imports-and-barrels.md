@@ -6,9 +6,9 @@ Part of the [style guide](../../README.md).
 
 ### Aliases
 
-`@/` → the `apps/client/` root. Used for everything except relatives inside the same slice.
+`@/` → the `apps/web/client/` root. Used for everything except relatives inside the same slice.
 
-The server app (`apps/server`) and the packages have no alias: every internal import is
+The server app (`apps/web/server`) and the packages have no alias: every internal import is
 relative. Inside a module relative paths reach any file; across modules, and into
 `core/`, `common/`, `config/` and `lib/`, an import stops at the barrel
 (`../../core`, `../../common/lib`, `../billing`), never at a file behind it. Every

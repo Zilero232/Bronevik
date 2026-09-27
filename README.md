@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="apps/client/app/icon.svg" width="88" height="88" alt="Три отметки" />
+  <img src="apps/web/client/app/icon.svg" width="88" height="88" alt="Три отметки" />
 </p>
 
 <h1 align="center">Три отметки</h1>
@@ -43,13 +43,15 @@ Product scope: [docs/product/features.md](docs/product/features.md).
 
 ```text
 apps/
-  client/          Next.js site (Feature-Sliced Design)
-  server/          NestJS server app, one image with two entrypoints:
-    src/main.ts      site API, developer API /v1, auth, mod ingest, bull-board
-    src/worker.ts    collector worker: BullMQ jobs pulling the Lesta API
-    prisma/          Prisma schema, Timescale SQL
-    src/lib/         Lesta API client, replay parser, HTTP client, auth
-  mod/             game-client mod (Python 2.7)
+  web/
+    client/          Next.js site (Feature-Sliced Design)
+    server/          NestJS server app, one image with two entrypoints:
+      src/main.ts      site API, developer API /v1, auth, mod ingest, bull-board
+      src/worker.ts    collector worker: BullMQ jobs pulling the Lesta API
+      prisma/          Prisma schema, Timescale SQL
+      src/lib/         Lesta API client, replay parser, HTTP client, auth
+  game/
+    modpack/         game-client modpack (Python 2.7)
 packages/          only code shared between apps
   ratings/         WN8, EFF, Броня-Индекс, MoE math
   schemas/         Zod contracts shared by client and server
@@ -80,7 +82,7 @@ The client has no mocks: it always talks to the API at `NEXT_PUBLIC_API_URL`. Wi
 
 ### Lesta API mock (until the key exists)
 
-With `LESTA_APPLICATION_ID` empty and `NODE_ENV=development`, the server and the worker answer every Lesta call from a deterministic generated world: ~12k players with «Мир танков»-style nicknames, ~260 clans, skill, win rate and WN8 distributions that match XVM, per-tank stats derived from the real imported vehicles, and stats that keep advancing in real time (evening sessions, marks, mastery, clan changes, server online). The real Lesta client, schemas, rate limiter and collector run unchanged — MSW intercepts their HTTP. Lesta ID login opens a dev page where you sign in as any generated player. `LESTA_MOCK=auto|on|off` overrides the switch; setting the real key turns the mock off, and it never runs in production. Details: [apps/server/CLAUDE.md](apps/server/CLAUDE.md#lesta-api-mock).
+With `LESTA_APPLICATION_ID` empty and `NODE_ENV=development`, the server and the worker answer every Lesta call from a deterministic generated world: ~12k players with «Мир танков»-style nicknames, ~260 clans, skill, win rate and WN8 distributions that match XVM, per-tank stats derived from the real imported vehicles, and stats that keep advancing in real time (evening sessions, marks, mastery, clan changes, server online). The real Lesta client, schemas, rate limiter and collector run unchanged — MSW intercepts their HTTP. Lesta ID login opens a dev page where you sign in as any generated player. `LESTA_MOCK=auto|on|off` overrides the switch; setting the real key turns the mock off, and it never runs in production. Details: [apps/web/server/CLAUDE.md](apps/web/server/CLAUDE.md#lesta-api-mock).
 
 `bun run dev:seed` (`--reset`, `--accounts N`, `--days N`, `--mod-players N`, `--mod-days N`) enrols a realistic sample of the generated players, backfills their snapshots through the collector's own poll pipeline, syncs their clans, writes mod-style battles with loadouts and economy, and runs the nightly aggregate jobs once. It is idempotent; `--reset` starts over.
 

@@ -56,7 +56,7 @@ Read the docs **before writing the code**, not after a failure, whenever the tas
 - **A react-query behaviour that is not `useQuery(key, fn)`** — retry semantics, `gcTime` versus `staleTime`, invalidation, optimistic updates.
 - **BullMQ beyond add/process** — job schedulers and repeatable jobs, flows, rate limiting, stalled jobs, removal policies, concurrency. The collector's correctness depends on these.
 - **A Prisma migration or a schema-level feature** — multi-file schema, driver adapters (`@prisma/adapter-pg`), `migrate` versus `db push`, raw SQL for Timescale objects Prisma does not model.
-- **TimescaleDB** — hypertables, continuous aggregates, compression and retention policies (`apps/server/prisma/sql/timescale`).
+- **TimescaleDB** — hypertables, continuous aggregates, compression and retention policies (`apps/web/server/prisma/sql/timescale`).
 - **better-auth configuration** — plugins, hooks, session transport, the Prisma adapter's schema expectations.
 - **A Base UI primitive or a visx chart part** — parts, render props, portals, scales and tooltips.
 - **A helper that might already exist** in remeda / ts-pattern / date-fns / reactuse — see "Reuse over reinvention" in the root [CLAUDE.md](../../../CLAUDE.md).

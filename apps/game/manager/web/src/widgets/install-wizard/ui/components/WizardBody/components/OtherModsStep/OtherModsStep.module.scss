@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.list {
+  @include stack(var(--space-4));
+
+  max-height: 360px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}

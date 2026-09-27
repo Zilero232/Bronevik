@@ -1,0 +1,51 @@
+@use '../../../shared/styles/gameface' as *;
+
+.sidebar {
+  display: flex;
+  flex: 0 0 280px;
+  flex-direction: column;
+  border-right: 1px solid token(color-border);
+  background-color: token(color-surface-sunken);
+}
+
+.scroll {
+  flex: 1 1 auto;
+  padding: 12px 0;
+  overflow-y: auto;
+}
+
+.group {
+  margin-bottom: 12px;
+}
+
+.groupTitle {
+  padding: 6px 16px;
+  margin: 0;
+  color: token(color-text-dim);
+  font-size: 11px;
+
+  @include caps;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border-top: 1px solid token(color-border);
+}
+
+.link {
+  height: 36px;
+  border: 1px solid token(color-border);
+  border-radius: token(radius-md);
+  margin: 2px 0;
+  background-color: token(color-surface);
+  color: token(color-text);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.linkOn {
+  border-color: token(color-accent);
+  color: token(color-accent);
+}

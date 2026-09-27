@@ -1,0 +1,44 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.search {
+  position: relative;
+  width: 260px;
+
+  input {
+    padding-left: var(--space-8);
+  }
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: var(--space-4);
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-dim);
+  transform: translateY(-50%);
+}
+
+.srOnly {
+  @include sr-only;
+}
+
+.list {
+  @include stack(var(--space-4));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

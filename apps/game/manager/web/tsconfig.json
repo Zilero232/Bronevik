@@ -1,0 +1,18 @@
+{
+  "extends": "@siberiacancode/tsconfig/tsconfig.react.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@contract/*": ["../tauri/contract/*"]
+    },
+    "noEmit": true,
+    "incremental": true,
+    "tsBuildInfoFile": "../node_modules/.cache/tsc/manager.tsbuildinfo"
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "global.d.ts", "vite.config.ts", "vitest.config.ts", "vitest.setup.ts"],
+  "exclude": ["node_modules", "dist"]
+}

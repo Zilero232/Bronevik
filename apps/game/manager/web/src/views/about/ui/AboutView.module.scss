@@ -1,0 +1,53 @@
+@use '@/shared/styles/mixins' as *;
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.logo {
+  color: var(--color-accent);
+}
+
+.brandText {
+  @include stack(var(--space-1));
+}
+
+.name {
+  @include heading(var(--text-xl));
+}
+
+.version {
+  @include numeric;
+
+  color: var(--color-text-muted);
+}
+
+.links {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.paths {
+  display: grid;
+  margin: 0;
+  gap: var(--space-3) var(--space-6);
+  grid-template-columns: max-content minmax(0, 1fr);
+
+  dt {
+    @include label;
+  }
+
+  dd {
+    @include mono-path;
+
+    margin: 0;
+  }
+}
+
+.legal {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}

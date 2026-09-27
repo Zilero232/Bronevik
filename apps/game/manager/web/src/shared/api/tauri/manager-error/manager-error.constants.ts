@@ -1,0 +1,22 @@
+export const MANAGER_ERROR_CODES = [
+  'io',
+  'json',
+  'http',
+  'client_not_found',
+  'client_running',
+  'not_installed',
+  'unknown_component',
+  'required_component',
+  'profile_limit',
+  'profile_name',
+  'profile_missing',
+  'profile_code',
+  'snapshot_missing',
+  'snapshot_failed',
+  'checksum_mismatch',
+  'release_unavailable',
+  'invalid_path',
+  'autostart',
+  'contract',
+  'unknown'
+] as const;

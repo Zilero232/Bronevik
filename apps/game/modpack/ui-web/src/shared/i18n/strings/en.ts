@@ -3,6 +3,10 @@ import type { Strings } from '../i18n.types';
 export const EN: Strings = {
   title: 'Three Marks',
   subtitle: 'Mod settings',
+  language: 'Language',
+  decrease: 'Decrease',
+  increase: 'Increase',
+  hudStage: 'Screen mock-up',
   close: 'Close',
   sectionComponents: 'Components',
   sectionProfiles: 'Profiles',

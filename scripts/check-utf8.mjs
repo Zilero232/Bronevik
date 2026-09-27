@@ -5,7 +5,7 @@ import { basename } from 'node:path';
 const SOURCES = {
   roots: ['apps', 'packages'],
   extensions: ['ts', 'tsx', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', 'scss', 'md', 'ftl', 'py', 'prisma', 'sql', 'yml', 'yaml'],
-  skipDirs: new Set(['node_modules', '.next', 'generated', 'dist', 'coverage', '__pycache__', '.venv'])
+  skipDirs: new Set(['node_modules', '.next', 'generated', 'dist', 'coverage', '__pycache__', '.venv', 'target'])
 };
 
 const files = globSync(`{${SOURCES.roots.join(',')}}/**/*.{${SOURCES.extensions.join(',')}}`, {

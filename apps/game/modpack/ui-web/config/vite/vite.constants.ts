@@ -7,17 +7,24 @@ export const UI_BUILD = {
   outDir: path.resolve(UI_WEB_ROOT, '../packages/ui/gameface'),
   buttonMode: 'button',
   pages: {
-    settings: path.resolve(UI_WEB_ROOT, 'index.html'),
-    button: path.resolve(UI_WEB_ROOT, 'button.html')
+    settings: path.resolve(UI_WEB_ROOT, 'index.html')
   },
   button: {
-    entry: path.resolve(UI_WEB_ROOT, 'src/button/main.tsx'),
+    entry: path.resolve(UI_WEB_ROOT, 'src/app/button/main.tsx'),
     name: 'otmetkiButton',
     script: 'button.js',
     style: 'button'
   },
   script: {
     target: 'es2017'
+  },
+  dev: {
+    mockEntry: '/src/app/dev/main.ts'
+  },
+  html: {
+    extension: '.html',
+    moduleScript: /[ \t]*<script type="module"[^>]*>([\s\S]*?)<\/script>\n?/,
+    bodyEnd: '</body>'
   },
   style: {
     target: 'chrome58',

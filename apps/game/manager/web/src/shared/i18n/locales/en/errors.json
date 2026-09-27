@@ -1,0 +1,22 @@
+{
+  "io": "A file operation failed",
+  "json": "A settings file is damaged",
+  "http": "No connection to the update server",
+  "client_not_found": "No game client found",
+  "client_running": "Close the game and try again",
+  "not_installed": "The modpack is not installed in this client",
+  "unknown_component": "No such component in the catalogue",
+  "required_component": "This component is required",
+  "profile_limit": "The profile limit is reached",
+  "profile_name": "Enter a profile name",
+  "profile_missing": "Profile not found",
+  "profile_code": "Not a Three Marks profile code",
+  "snapshot_missing": "Snapshot not found",
+  "snapshot_failed": "Could not take a snapshot",
+  "checksum_mismatch": "A file was damaged in transit — try again",
+  "release_unavailable": "No suitable modpack version",
+  "invalid_path": "This folder cannot be used",
+  "autostart": "Could not change autostart",
+  "contract": "The app returned an unexpected answer",
+  "unknown": "Something went wrong"
+}

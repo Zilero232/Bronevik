@@ -1,0 +1,27 @@
+{
+  "title": "Settings",
+  "backgroundTitle": "Background mode",
+  "autostart": "Start with Windows",
+  "autostartHint": "The manager sits in the tray and watches for client patches.",
+  "notifications": "Notifications",
+  "notificationsHint": "Tell me when the modpack moves, updates or waits for a new version.",
+  "autoMigrate": "Update the modpack after a patch automatically",
+  "autoMigrateHint": "Move to the new mods folder and install a compatible version without asking.",
+  "interval": "Check for updates",
+  "intervalOption": {
+    "m15": "Every 15 minutes",
+    "m30": "Every 30 minutes",
+    "h1": "Every hour",
+    "h3": "Every 3 hours",
+    "h12": "Every 12 hours"
+  },
+  "language": "Language",
+  "languageOption": {
+    "auto": "System",
+    "ru": "Русский",
+    "en": "English"
+  },
+  "clientTitle": "Game client",
+  "save": "Save",
+  "saved": "Settings saved"
+}

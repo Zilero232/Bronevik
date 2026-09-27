@@ -9,7 +9,9 @@ so tests import the sources exactly as the client does, with their relative impo
 import io
 import json
 import os
+import shutil
 import sys
+import tempfile
 import types
 
 TESTING_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,6 +33,20 @@ def _install_root_package():
 
 
 _install_root_package()
+
+
+def _isolate_durable_dir():
+    """The app mirrors its settings into %APPDATA%\\TriOtmetki (core.durable); tests get a throwaway one."""
+    directory = tempfile.mkdtemp(prefix='otmetki-appdata-')
+    os.environ['APPDATA'] = directory
+    try:
+        import atexit  # the portable Python 2.7 used for the py27 run ships without it
+    except ImportError:
+        return
+    atexit.register(shutil.rmtree, directory, True)
+
+
+_isolate_durable_dir()
 
 
 def source_dirs():

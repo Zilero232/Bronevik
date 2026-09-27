@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "modpackVersion": "0.0.0",
+  "platform": "lesta",
+  "extension": "mtmod",
+  "categories": [],
+  "presets": [],
+  "components": [],
+  "ownedPatterns": ["net.triotmetki.*.mtmod", "net.triotmetki.*.wotmod", "otmetki.*.mtmod", "otmetki.*.wotmod"]
+}

@@ -1,0 +1,12 @@
+@use '../../../shared/styles/gameface' as *;
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  width: 640px;
+  height: 360px;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-md);
+  margin-top: 8px;
+  background-color: token(color-bg-deep);
+}

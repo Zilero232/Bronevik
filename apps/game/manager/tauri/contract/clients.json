@@ -1,0 +1,29 @@
+{
+  "clients": [
+    {
+      "branch": "release",
+      "modsDir": "D:\\Игры\\Мир танков\\mods\\1.45.0.0",
+      "packageMask": "*.mtmod",
+      "path": "D:\\Игры\\Мир танков",
+      "preferred": true,
+      "problem": null,
+      "realm": "RU",
+      "resModsDir": "D:\\Игры\\Мир танков\\res_mods\\1.45.0.0",
+      "source": "lgc",
+      "version": "1.45.0.0"
+    },
+    {
+      "branch": "release",
+      "modsDir": "D:\\Games\\WoT\\mods\\2.4.1.0",
+      "packageMask": "*.mtmod",
+      "path": "D:\\Games\\WoT",
+      "preferred": true,
+      "problem": "not_lesta",
+      "realm": "RU",
+      "resModsDir": "D:\\Games\\WoT\\res_mods\\2.4.1.0",
+      "source": "lgc",
+      "version": "2.4.1.0"
+    }
+  ],
+  "selected": "D:\\Игры\\Мир танков"
+}

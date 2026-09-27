@@ -5,11 +5,9 @@ features fall back to system messages). Add a Gameface backend to BACKENDS when 
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os
-
+from ...durable import open_config
 from ...hud import ComponentConfig, HudLayer, NullBackend
 from ...log import log
-from ...storage import JsonFile
 from .constants import CONFIG_NAME
 from .guiflash import GuiFlashBackend
 
@@ -30,7 +28,7 @@ def create_backend(backends=BACKENDS, log_missing=True):
 def component_config(app):
     """components.json next to config.json, shared by every component (created on first use)."""
     if _state['config'] is None:
-        _state['config'] = ComponentConfig(JsonFile(os.path.join(app.config_dir, CONFIG_NAME), pretty=True))
+        _state['config'] = ComponentConfig(open_config(app.config_dir, CONFIG_NAME, pretty=True))
     return _state['config']
 
 

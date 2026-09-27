@@ -1,0 +1,215 @@
+use std::fs;
+use std::path::{Path, PathBuf};
+
+use serde::Serialize;
+use serde_json::Value;
+
+use crate::catalog::fixtures::catalog;
+use crate::catalog::{CatalogSource, LoadedCatalog, Localized};
+use crate::commands::AppInfo;
+use crate::components::{ComponentState, Installation, InstalledComponent};
+use crate::deep_link::DeepLink;
+use crate::detect::client::{Branch, ClientProblem};
+use crate::detect::{ClientSource, GameClient, GameVersion};
+use crate::error::{AppError, ErrorCode};
+use crate::install::{ForeignEntry, ForeignLocation};
+use crate::patch::{PatchReport, PatchStatus};
+use crate::profiles::{ProfileSummary, ProfilesView, MAX_PROFILES};
+use crate::service::setup::{PackageSource, ReleaseSummary};
+use crate::service::{ClientsView, InstallPlan};
+use crate::settings::ManagerSettings;
+use crate::snapshots::{Snapshot, SnapshotPart};
+
+pub const UPDATE_ENV: &str = "OTMETKI_UPDATE_FIXTURES";
+pub const CLIENT_PATH: &str = r"D:\Игры\Мир танков";
+
+fn contract_dir() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("contract")
+}
+
+fn client(path: &str, version: &str, problem: Option<ClientProblem>) -> GameClient {
+    let root = PathBuf::from(path);
+
+    GameClient {
+        mods_dir: root.join("mods").join(version),
+        res_mods_dir: root.join("res_mods").join(version),
+        path: root,
+        version: GameVersion::parse(version).unwrap(),
+        branch: Branch::Release,
+        realm: Some("RU".into()),
+        package_mask: "*.mtmod".into(),
+        problem,
+        source: ClientSource::Lgc,
+        preferred: true,
+    }
+}
+
+fn samples() -> Vec<(&'static str, Value)> {
+    let main = client(CLIENT_PATH, "1.45.0.0", None);
+    let installation = Installation {
+        installed: true,
+        client_path: main.path.clone(),
+        game_version: main.version,
+        manifest_game_version: Some("1.45.0.0".into()),
+        mods_dir: main.mods_dir.clone(),
+        modpack_version: Some("0.1.0".into()),
+        installed_at: Some("2026-09-27 21:47:05".into()),
+        needs_migration: false,
+        components: vec![
+            InstalledComponent {
+                id: "core".into(),
+                state: ComponentState::Enabled,
+                file: Some("net.triotmetki.core_0.1.0.mtmod".into()),
+                version: Some("0.1.0".into()),
+            },
+            InstalledComponent {
+                id: "hit_log".into(),
+                state: ComponentState::Disabled,
+                file: Some("net.triotmetki.hit_log_0.1.0.mtmod".into()),
+                version: Some("0.1.0".into()),
+            },
+            InstalledComponent { id: "damage_log".into(), state: ComponentState::Missing, file: None, version: None },
+        ],
+    };
+    let reports = vec![
+        PatchReport::default(),
+        report(PatchStatus::UpToDate { game_version: "1.45.0.0".into(), modpack_version: Some("0.1.0".into()) }),
+        report(PatchStatus::UpdateAvailable {
+            game_version: "1.45.0.0".into(),
+            current: Some("0.1.0".into()),
+            latest: "0.2.0".into(),
+            notes: Some(Localized { ru: "Исправления".into(), en: "Fixes".into() }),
+        }),
+        report(PatchStatus::Migrated { from: "1.45.0.0".into(), to: "1.46.0.0".into(), modpack_version: Some("0.1.0".into()) }),
+        report(PatchStatus::Updated { game_version: "1.46.0.0".into(), from: Some("0.1.0".into()), to: "0.2.0".into() }),
+        report(PatchStatus::Waiting { game_version: "1.46.0.0".into(), from: "1.45.0.0".into() }),
+        report(PatchStatus::Offline { game_version: "1.46.0.0".into() }),
+        report(PatchStatus::NotInstalled { game_version: "1.45.0.0".into() }),
+        report(PatchStatus::NoClient),
+        report(PatchStatus::Failed { message: "network".into() }),
+    ];
+
+    vec![
+        (
+            "app-info",
+            value(&AppInfo {
+                version: "0.1.0".into(),
+                state_root: r"C:\Users\Игрок\AppData\Local\TriOtmetki".into(),
+                roaming_root: r"C:\Users\Игрок\AppData\Roaming\TriOtmetki".into(),
+                logs_dir: r"C:\Users\Игрок\AppData\Local\TriOtmetki\manager\logs".into(),
+                api_url: "https://api.triotmetki.ru".into(),
+            }),
+        ),
+        (
+            "clients",
+            value(&ClientsView {
+                clients: vec![main.clone(), client(r"D:\Games\WoT", "2.4.1.0", Some(ClientProblem::NotLesta))],
+                selected: Some(main.path.clone()),
+            }),
+        ),
+        (
+            "catalog",
+            value(&Some(LoadedCatalog {
+                catalog: catalog(),
+                source: CatalogSource::Bundled,
+                previews_dir: Some(r"C:\Program Files\Three Marks\resources".into()),
+            })),
+        ),
+        ("installation", value(&installation)),
+        (
+            "profiles",
+            value(&ProfilesView {
+                max: MAX_PROFILES,
+                active: Some("a1b2c3d4e5f6".into()),
+                profiles: vec![ProfileSummary {
+                    id: "a1b2c3d4e5f6".into(),
+                    name: "Стрим".into(),
+                    created: Some(1_790_000_000.5),
+                    updated: Some(1_790_000_100.25),
+                    active: true,
+                }],
+            }),
+        ),
+        (
+            "snapshots",
+            value(&vec![Snapshot {
+                id: "20260927-214705".into(),
+                date: "2026-09-27 21:47:05".into(),
+                size_bytes: 1_048_576,
+                parts: vec![
+                    SnapshotPart { name: "mods".into(), target: main.mods_dir.clone(), existed: true },
+                    SnapshotPart { name: "res_mods".into(), target: main.res_mods_dir.clone(), existed: false },
+                ],
+            }]),
+        ),
+        (
+            "settings",
+            value(&ManagerSettings {
+                selected_client: Some(main.path.clone()),
+                manual_clients: vec![main.path.clone()],
+                ..ManagerSettings::default()
+            }),
+        ),
+        ("patch-reports", value(&reports)),
+        ("error", value(&AppError::coded(ErrorCode::ClientRunning, "the game is running"))),
+        (
+            "install-plan",
+            value(&InstallPlan {
+                client: main.clone(),
+                catalog: Some(LoadedCatalog { catalog: catalog(), source: CatalogSource::Downloaded, previews_dir: None }),
+                release: Some(ReleaseSummary {
+                    version: "0.1.0".into(),
+                    notes: Some(Localized { ru: "Первый выпуск".into(), en: "First release".into() }),
+                }),
+                source: PackageSource::Release,
+                other_mods: vec![
+                    ForeignEntry {
+                        path: main.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod"),
+                        name: "izeberg.modssettingsapi_1.6.0.mtmod".into(),
+                        is_dir: false,
+                        location: ForeignLocation::Mods,
+                    },
+                    ForeignEntry { path: main.res_mods_dir.join("gui"), name: "gui".into(), is_dir: true, location: ForeignLocation::ResMods },
+                ],
+                installed: false,
+            }),
+        ),
+        (
+            "deep-links",
+            value(&vec![
+                DeepLink::Open,
+                DeepLink::Profile { code: "TM1.eJyrVkrLz1eyUkpKLFKqBQApfgT-".into() },
+                DeepLink::Install { preset: Some("minimal".into()) },
+                DeepLink::Install { preset: None },
+            ]),
+        ),
+    ]
+}
+
+fn report(status: PatchStatus) -> PatchReport {
+    PatchReport { status, client_path: Some(CLIENT_PATH.into()), checked_at: Some("2026-09-28T10:00:00+03:00".into()) }
+}
+
+fn value<T: Serialize>(item: &T) -> Value {
+    serde_json::to_value(item).unwrap()
+}
+
+#[test]
+fn the_ui_contract_fixtures_are_current() {
+    let update = std::env::var_os(UPDATE_ENV).is_some();
+    let mut stale = Vec::new();
+
+    for (name, value) in samples() {
+        let path = contract_dir().join(format!("{name}.json"));
+        let text = format!("{}\n", serde_json::to_string_pretty(&value).unwrap());
+
+        if update {
+            fs::create_dir_all(contract_dir()).unwrap();
+            fs::write(&path, &text).unwrap();
+        } else if fs::read_to_string(&path).map(|current| current.replace("\r\n", "\n")).ok().as_deref() != Some(text.as_str()) {
+            stale.push(name);
+        }
+    }
+
+    assert!(stale.is_empty(), "stale contract fixtures {stale:?}: rerun with {UPDATE_ENV}=1");
+}

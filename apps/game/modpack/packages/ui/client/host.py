@@ -1,11 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os
 import time
 
 from ...companion.settings_ui.client import SettingsView, add_settings_view
 from ...core.log import log, safe
-from ...core.storage import JsonFile
+from ...core.durable import open_config
 from ..bridge import SettingsBridge
 from ..i18n import STRINGS
 from ..profiles import FILE_NAME, ProfileStore
@@ -47,7 +46,7 @@ class UiHost(object):
     def __init__(self, app):
         self.app = app
         app.translate.catalog.add(STRINGS)
-        self.profiles = ProfileStore(JsonFile(os.path.join(app.config_dir, FILE_NAME), pretty=True), time.time)
+        self.profiles = ProfileStore(open_config(app.config_dir, FILE_NAME, pretty=True), time.time)
         self.bridge = SettingsBridge(UiContext(app, self))
         self.window = WindowController(self.on_message, self.state_text)
         self.button = HangarButton(self.open)

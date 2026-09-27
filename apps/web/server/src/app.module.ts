@@ -40,6 +40,7 @@ import { MissionsModule } from './modules/missions';
 import { ModModule } from './modules/mod';
 import { ModerationModule } from './modules/moderation';
 import { ModesModule } from './modules/modes';
+import { ModpackReleasesModule } from './modules/modpack-releases';
 import { NotificationsModule } from './modules/notifications';
 import { PlatoonsModule } from './modules/platoons';
 import { PlayersModule } from './modules/players';
@@ -105,6 +106,7 @@ import { WatchlistModule } from './modules/watchlist';
     AnalyticsModule,
     MeModule,
     ModModule,
+    ModpackReleasesModule,
     DeveloperModule,
     PublicApiModule,
     NotificationsModule,

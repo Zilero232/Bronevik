@@ -1,0 +1,16 @@
+@use '../../styles/gameface' as *;
+
+.input {
+  @include field-box;
+}
+
+.code {
+  width: 150px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.wide {
+  min-width: 200px;
+  flex: 1 1 auto;
+}

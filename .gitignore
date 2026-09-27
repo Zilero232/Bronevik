@@ -10,6 +10,8 @@ generated/
 *.wotmod
 *.mtmod
 __pycache__/
+apps/game/manager/tauri/target/
+apps/game/manager/tauri/gen/
 *.pyc
 .venv/
 .pytest_cache/

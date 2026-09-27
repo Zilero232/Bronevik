@@ -7,6 +7,8 @@ bun.lock
 apps/web/client/public/twitch-panel.js
 apps/game/modpack/packages/ui/gameface/**
 apps/game/modpack/ui-web/**/_tests/fixtures/**
+# Written by the manager's Rust contract test (OTMETKI_UPDATE_FIXTURES=1) and compared byte for byte.
+apps/game/manager/tauri/contract/**
 
 .claude
 docs

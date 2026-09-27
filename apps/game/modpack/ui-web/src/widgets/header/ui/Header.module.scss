@@ -1,0 +1,12 @@
+@use '../../../shared/styles/gameface' as *;
+
+.header {
+  display: flex;
+  height: 64px;
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid token(color-border);
+  background-color: token(color-bg-deep);
+}

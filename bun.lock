@@ -36,6 +36,45 @@
         "vitest": "^5.0.2",
       },
     },
+    "apps/game/manager": {
+      "name": "@otmetki/manager",
+      "version": "0.1.0",
+      "dependencies": {
+        "@base-ui/react": "catalog:",
+        "@fontsource/fira-sans": "^5.3.0",
+        "@fontsource/fira-sans-condensed": "^5.3.0",
+        "@fontsource/jetbrains-mono": "^5.3.0",
+        "@hookform/resolvers": "catalog:",
+        "@otmetki/design-tokens": "workspace:*",
+        "@otmetki/icons": "workspace:*",
+        "@tanstack/react-query": "catalog:",
+        "@tauri-apps/api": "~2.12.0",
+        "@tauri-apps/plugin-dialog": "~2.8.0",
+        "@tauri-apps/plugin-opener": "~2.6.0",
+        "@tauri-apps/plugin-process": "~2.4.0",
+        "@tauri-apps/plugin-updater": "~2.13.0",
+        "class-variance-authority": "catalog:",
+        "clsx": "catalog:",
+        "date-fns": "catalog:",
+        "lucide-react": "catalog:",
+        "motion": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "react-hook-form": "catalog:",
+        "sonner": "catalog:",
+        "ts-pattern": "catalog:",
+        "use-intl": "^4.14.7",
+        "zod": "catalog:",
+      },
+      "devDependencies": {
+        "@tauri-apps/cli": "~2.12.0",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "sass-embedded": "catalog:",
+        "typescript": "catalog:",
+        "vite": "^8.3.1",
+      },
+    },
     "apps/game/modpack": {
       "name": "@otmetki/modpack",
       "version": "0.1.0",
@@ -65,11 +104,11 @@
       "name": "@otmetki/client",
       "version": "0.1.0",
       "dependencies": {
-        "@base-ui/react": "^1.8.0",
+        "@base-ui/react": "catalog:",
         "@dagrejs/dagre": "^3.1.1",
         "@date-fns/tz": "catalog:",
         "@hocuspocus/provider": "4.7.0",
-        "@hookform/resolvers": "^5.9.1",
+        "@hookform/resolvers": "catalog:",
         "@number-flow/react": "^0.6.2",
         "@otmetki/design-tokens": "workspace:*",
         "@otmetki/gamedata": "workspace:*",
@@ -80,7 +119,7 @@
         "@react-three/fiber": "^9.8.1",
         "@serwist/turbopack": "^9.5.12",
         "@siberiacancode/reactuse": "^1.0.17",
-        "@tanstack/react-query": "^5.103.2",
+        "@tanstack/react-query": "catalog:",
         "@tanstack/react-table": "^8.21.3",
         "@tanstack/react-virtual": "^3.14.13",
         "@tma.js/sdk-react": "^3.0.23",
@@ -98,12 +137,12 @@
         "axios": "^1.20.0",
         "better-auth": "catalog:",
         "canvas-confetti": "^1.9.4",
-        "class-variance-authority": "^0.7.1",
+        "class-variance-authority": "catalog:",
         "clsx": "catalog:",
         "cmdk": "^1.1.1",
         "date-fns": "catalog:",
         "konva": "^10.7.0",
-        "lucide-react": "^1.48.0",
+        "lucide-react": "catalog:",
         "modern-normalize": "^3.0.1",
         "motion": "catalog:",
         "next": "^16.3.6",
@@ -112,13 +151,13 @@
         "nuqs": "^2.10.1",
         "react": "catalog:",
         "react-dom": "catalog:",
-        "react-hook-form": "^7.88.0",
+        "react-hook-form": "catalog:",
         "react-konva": "^19.3.0",
         "react-markdown": "^10.1.0",
         "remark-gfm": "^4.0.1",
         "remeda": "catalog:",
         "server-only": "^0.0.1",
-        "sonner": "^2.0.8",
+        "sonner": "catalog:",
         "sugar-high": "^2.5.0",
         "three": "^0.186.1",
         "ts-pattern": "catalog:",
@@ -132,7 +171,7 @@
         "@types/madge": "^5.0.3",
         "@types/node": "^26.6.2",
         "@types/react": "catalog:",
-        "@types/react-dom": "^19.3.0",
+        "@types/react-dom": "catalog:",
         "@types/three": "^0.186.0",
         "esbuild": "catalog:",
         "madge": "^8.0.0",
@@ -235,6 +274,7 @@
         "rss-parser": "3.13.0",
         "rxjs": "^7.8.2",
         "satori": "0.33.5",
+        "semver": "^7.8.5",
         "standardwebhooks": "catalog:",
         "ts-pattern": "catalog:",
         "vk-io": "^4.10.1",
@@ -255,6 +295,7 @@
         "@types/nodemailer": "^8.0.2",
         "@types/pg": "^8.23.1",
         "@types/react": "catalog:",
+        "@types/semver": "^7.8.0",
         "@types/supertest": "^7.2.1",
         "@types/web-push": "^3.6.4",
         "@types/ws": "8.18.1",
@@ -348,24 +389,32 @@
     },
   },
   "catalog": {
+    "@base-ui/react": "^1.8.0",
     "@date-fns/tz": "^1.5.0",
     "@hey-api/openapi-ts": "0.99.0",
+    "@hookform/resolvers": "^5.9.1",
     "@resvg/resvg-js": "2.6.2",
+    "@tanstack/react-query": "^5.103.2",
     "@types/bun": "^1.4.2",
     "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "better-auth": "^1.7.5",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "esbuild": "^0.28.2",
     "ky": "^2.1.0",
+    "lucide-react": "^1.48.0",
     "motion": "^13.4.3",
     "p-retry": "^8.0.1",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "react-hook-form": "^7.88.0",
     "remeda": "^2.50.0",
     "sass-embedded": "^1.105.0",
+    "sonner": "^2.0.8",
     "standardwebhooks": "^1.1.1",
     "ts-pattern": "^5.9.0",
     "typescript": "~6.0.3",
@@ -756,6 +805,12 @@
 
     "@fluent/langneg": ["@fluent/langneg@0.6.2", "", {}, "sha512-YF4gZ4sLYRQfctpUR2uhb5UyPUYY5n/bi3OaED/Q4awKjPjlaF8tInO3uja7pnLQcmLTURkZL7L9zxv2Z5NDwg=="],
 
+    "@fontsource/fira-sans": ["@fontsource/fira-sans@5.3.0", "", {}, "sha512-z1SKSG7eRhm3srlb7rQ3j77QP4TP7OFxCZ4wUWhCdt+3hOF9K0AyvybpAsz6+JWNcCVV7AqC7dbOT3e67P2r5A=="],
+
+    "@fontsource/fira-sans-condensed": ["@fontsource/fira-sans-condensed@5.3.0", "", {}, "sha512-aYiPJnAwfvhHW1Yra+YPGdFvhvJhQax1wHb6aa6979ixPe51CspvxgZTJ8JNfIs3Gu7UcclUl6d2MuDnw1wsdg=="],
+
+    "@fontsource/jetbrains-mono": ["@fontsource/jetbrains-mono@5.3.0", "", {}, "sha512-fqDfB5I9f1p1TV486aUgB9t8zP84P0O1FtQR5Ol9vjwPy+S+EIGlVYm1cvj2W5shcZMTg2nZFdVMoH5wFu8a1A=="],
+
     "@formatjs/fast-memoize": ["@formatjs/fast-memoize@3.1.7", "", {}, "sha512-zXfhLpvA6T7+efdt9JLbBwZ00tT7NsBMDVnDu8rpHeNNv8KfRZAMo2gkG0k9lK/Nzc//3kJ9pImsfuJxk3KhUA=="],
 
     "@formatjs/icu-messageformat-parser": ["@formatjs/icu-messageformat-parser@3.5.20", "", { "dependencies": { "@formatjs/icu-skeleton-parser": "2.1.12" } }, "sha512-DUzCb2iskGDKvLU7P+nz/rjpmN59luoTRbWHFFNYNnZTxWCKvwPI94rNll99TGZaI6XoTbDF0QGegk21GFrQZQ=="],
@@ -1025,6 +1080,8 @@
     "@otmetki/icons": ["@otmetki/icons@workspace:packages/icons"],
 
     "@otmetki/logger": ["@otmetki/logger@workspace:packages/logger"],
+
+    "@otmetki/manager": ["@otmetki/manager@workspace:apps/game/manager"],
 
     "@otmetki/modpack": ["@otmetki/modpack@workspace:apps/game/modpack"],
 
@@ -1436,6 +1493,40 @@
 
     "@tanstack/virtual-core": ["@tanstack/virtual-core@3.17.11", "", {}, "sha512-+ILjvtHup6Y2hzQ6YzwMgX1Q+oQpxEGOXCEsCNaPoIP0VxMbizIBTmYTDtkerkIQS8/CbP1BRuyt8V/8BCsy1g=="],
 
+    "@tauri-apps/api": ["@tauri-apps/api@2.12.0", "", {}, "sha512-fUSxFX8VABYe9W9K5ROdEaKVkNUFRcMSRofjruvaxztXA+I0XnQHcYHF8m/a6iExRUxsUf0HsFWhPBuH9IgzJw=="],
+
+    "@tauri-apps/cli": ["@tauri-apps/cli@2.12.0", "", { "optionalDependencies": { "@tauri-apps/cli-darwin-arm64": "2.12.0", "@tauri-apps/cli-darwin-x64": "2.12.0", "@tauri-apps/cli-linux-arm-gnueabihf": "2.12.0", "@tauri-apps/cli-linux-arm64-gnu": "2.12.0", "@tauri-apps/cli-linux-arm64-musl": "2.12.0", "@tauri-apps/cli-linux-riscv64-gnu": "2.12.0", "@tauri-apps/cli-linux-x64-gnu": "2.12.0", "@tauri-apps/cli-linux-x64-musl": "2.12.0", "@tauri-apps/cli-win32-arm64-msvc": "2.12.0", "@tauri-apps/cli-win32-ia32-msvc": "2.12.0", "@tauri-apps/cli-win32-x64-msvc": "2.12.0" }, "bin": { "tauri": "tauri.js" } }, "sha512-GIShnAR4C16kSTA8NO02fo8fOw/I5z5sAUEB5S2HlPHFnBkbihL4c9a/MpkxOm1+q5S+tFd3X4QUjHWxfyGzpQ=="],
+
+    "@tauri-apps/cli-darwin-arm64": ["@tauri-apps/cli-darwin-arm64@2.12.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-v5J+jISihLGtih1+3yWagbsL+5dbLZORu4vaSI0vhY0Heb+MAW+T/1s1RyKxrQrwEPGBG5kqwfDDTnSbmVkuqA=="],
+
+    "@tauri-apps/cli-darwin-x64": ["@tauri-apps/cli-darwin-x64@2.12.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-g27I07pfW/dMS8vcNqB9lamgKF0TqLlcy8e7t9qDGsB1iaeyjJWb2TgBF4tM9ZwLqPAZUXbsz28oXljO12WC4g=="],
+
+    "@tauri-apps/cli-linux-arm-gnueabihf": ["@tauri-apps/cli-linux-arm-gnueabihf@2.12.0", "", { "os": "linux", "cpu": "arm" }, "sha512-gXyQ710fNc99YuxFxNyeX9PLSrIpbtgBBj7GQo9tSeRT6fIK40q3/gm7X5jqZo7mWLR2m0R/2ALd3vAWo0Z32Q=="],
+
+    "@tauri-apps/cli-linux-arm64-gnu": ["@tauri-apps/cli-linux-arm64-gnu@2.12.0", "", { "os": "linux", "cpu": "arm64" }, "sha512-H9cyXuq9WgxoHh2NZ+R+oN+W78x5UwaBDEp0/fmqUUkaBoioCuOZErM9xKiIV6bpNAhmw1RoWZ49u37q/vaiAg=="],
+
+    "@tauri-apps/cli-linux-arm64-musl": ["@tauri-apps/cli-linux-arm64-musl@2.12.0", "", { "os": "linux", "cpu": "arm64" }, "sha512-5tFuk3JKMBa1M/iN4gN32OYlSfhY3aqb5PO3zCugxaT+sfecyMKpc3EM9VDbhmwWBE9QD4Tfj7wGhlqx2yy2pQ=="],
+
+    "@tauri-apps/cli-linux-riscv64-gnu": ["@tauri-apps/cli-linux-riscv64-gnu@2.12.0", "", { "os": "linux", "cpu": "none" }, "sha512-LOrMyV+nb7pKq8P0BZtTBQuyzm1ORjn16R9MlupmxuT5LqxtuYJlw3VMwbaeXCToJ8jbP5u9JnkfmbqDlvETXw=="],
+
+    "@tauri-apps/cli-linux-x64-gnu": ["@tauri-apps/cli-linux-x64-gnu@2.12.0", "", { "os": "linux", "cpu": "x64" }, "sha512-aMIkI+X9qvD2+k80QZB3tuOYT41/cEheikC510CwAIZ31KLXORsRASYYzM4mi1/58ICmtzSLFhCC08keir7COw=="],
+
+    "@tauri-apps/cli-linux-x64-musl": ["@tauri-apps/cli-linux-x64-musl@2.12.0", "", { "os": "linux", "cpu": "x64" }, "sha512-9gl3NhUbfuGhSKjeGCypKSdtoezOQRcDUrkhTWtLQEjnajets6peO6NadgI2DF0OzbiiFOzrnnIGMwBS+Ap6Iw=="],
+
+    "@tauri-apps/cli-win32-arm64-msvc": ["@tauri-apps/cli-win32-arm64-msvc@2.12.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-1W+v86wsYLuyBDN0iDessD4CD9o+yNyO0m8Dp3+/vfjiZrJ/v7R7/aTRBeikaq2tLGgxeag0gxnFggBNBGw91A=="],
+
+    "@tauri-apps/cli-win32-ia32-msvc": ["@tauri-apps/cli-win32-ia32-msvc@2.12.0", "", { "os": "win32", "cpu": "ia32" }, "sha512-SsBjvq4f7YaBGqcWoE3cycoItPf0SrQeqFqWWgfxoeZWAIz01E31LDSeZ2p/etJiIY0R9oi045chkFfb0O7WGw=="],
+
+    "@tauri-apps/cli-win32-x64-msvc": ["@tauri-apps/cli-win32-x64-msvc@2.12.0", "", { "os": "win32", "cpu": "x64" }, "sha512-9zzDKYUH4TKKBgRdDdVQX8fiRO5gJ8hD1nGsHU9DOHG5Jpm3arjbu9Xg1frR20EusG3Sl8X0dppoO/4EoUXUGg=="],
+
+    "@tauri-apps/plugin-dialog": ["@tauri-apps/plugin-dialog@2.8.0", "", { "dependencies": { "@tauri-apps/api": "^2.12.0" } }, "sha512-HSSD5C8UFE9ijD1wue84F7jjaIReFmj8AAPtS+xyjYRltJafIc4BiWHY7SJ6vbbew6u+YljEJHfyNfy5VwywXg=="],
+
+    "@tauri-apps/plugin-opener": ["@tauri-apps/plugin-opener@2.6.0", "", { "dependencies": { "@tauri-apps/api": "^2.12.0" } }, "sha512-KIl9qkBGyAUrbzfCtdk+NRPTXUOwpMyUKsKN57H6/qA0q8auVywXpfUyWClqX6I/iH8PHmqAUa/KK9YZPWVQew=="],
+
+    "@tauri-apps/plugin-process": ["@tauri-apps/plugin-process@2.4.0", "", { "dependencies": { "@tauri-apps/api": "^2.12.0" } }, "sha512-GddrmsSLAYrLa/yTXlXK/YRDzUgYeeOnUXTbiyvJWkmI424RmDPD3FVLeqcon7rv6O6ZfhBilcrHWnSo7o6hIQ=="],
+
+    "@tauri-apps/plugin-updater": ["@tauri-apps/plugin-updater@2.13.0", "", { "dependencies": { "@tauri-apps/api": "^2.12.0" } }, "sha512-9iwTSOlxMPZGI6M84Nd00rv6g+xERo8g4GDvG9cazOao+HjdIHZYCcvkvSP6JGn7Z50/R8t2jbR+PxQxf2qKMQ=="],
+
     "@telegram-apps/init-data-node": ["@telegram-apps/init-data-node@2.0.10", "", { "dependencies": { "@telegram-apps/transformers": "^2.2.6", "@telegram-apps/types": "^2.0.3", "error-kid": "^0.0.7" } }, "sha512-hyJ0Qbc1Rqmog4OMS1neZo0PTBKDpOrXzy4EtEyXu8nAA8IK2iYJXnt3wRcvbYn6Qnkyh0wPEkIJmY8Hj3awPw=="],
 
     "@telegram-apps/toolkit": ["@telegram-apps/toolkit@2.1.3", "", {}, "sha512-LPUBL7hxQTOr+Dowyk9a1O82nQS4ja4+OYiYWtvqq5nNUHC6Gbbus0zGWCbFcj9CLnIzaeb5HWOg5iSnhoRcyg=="],
@@ -1605,6 +1696,8 @@
     "@types/react-dom": ["@types/react-dom@19.3.0", "", { "peerDependencies": { "@types/react": "^19.3.0" } }, "sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q=="],
 
     "@types/react-reconciler": ["@types/react-reconciler@0.33.0", "", { "peerDependencies": { "@types/react": "*" } }, "sha512-HZOXsKT0tGI9LlUw2LuedXsVeB88wFa536vVL0M6vE8zN63nI+sSr1ByxmPToP5K5bukaVscyeCJcF9guVNJ1g=="],
+
+    "@types/semver": ["@types/semver@7.8.0", "", {}, "sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ=="],
 
     "@types/send": ["@types/send@1.2.1", "", { "dependencies": { "@types/node": "*" } }, "sha512-arsCikDvlU99zl1g69TcAB3mzZPpxgw0UQnaHeC1Nwb015xp8bknZv5rIfri9xTOcMuaVgvabfIRA7PSZVuZIQ=="],
 

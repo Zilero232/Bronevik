@@ -1,0 +1,25 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+
+  min-width: 0;
+}
+
+.label {
+  @include label;
+}
+
+.hint,
+.error {
+  margin: 0;
+  font-size: var(--text-xs);
+}
+
+.hint {
+  color: var(--color-text-muted);
+}
+
+.error {
+  color: var(--color-danger);
+}

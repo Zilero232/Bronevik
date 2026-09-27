@@ -1,0 +1,42 @@
+{
+  "title": "Install the modpack",
+  "description": "Pick a client and the components. The manager takes a snapshot first and never touches other mods without your confirmation.",
+  "steps": {
+    "client": "Client",
+    "components": "Components",
+    "otherMods": "Other mods",
+    "review": "Install"
+  },
+  "stepsLabel": "Install steps",
+  "next": "Next",
+  "back": "Back",
+  "install": "Install",
+  "preset": "Preset",
+  "loadProfile": "Load an installer profile…",
+  "profileFilter": "Installer profile",
+  "profileLoaded": "The selection is loaded from the profile",
+  "selectedCount": "{count} of {total} selected",
+  "required": "Required",
+  "source": {
+    "bundled": "The packages ship with the manager",
+    "release": "Version {version} is downloaded from the server; every package is checked against its sha256",
+    "unavailable": "No packages: the server is unreachable and the manager ships none"
+  },
+  "otherModsDescription": "Mods by other authors stay in place. Tick what you want removed: a snapshot is taken first.",
+  "removeOthers": "Remove the ticked mods",
+  "otherModsEmpty": "No other mods in this client",
+  "otherModsSelected": "To be removed: {count}",
+  "location": {
+    "mods": "mods",
+    "res_mods": "res_mods"
+  },
+  "snapshot": "Take a snapshot before installing",
+  "snapshotForced": "A snapshot is required when other mods are removed",
+  "reviewClient": "Client {version}",
+  "reviewComponents": "Components: {count}",
+  "reviewRemove": "Other mods to remove: {count}",
+  "confirmRemoveTitle": "Remove {count} other mods?",
+  "confirmRemoveDescription": "Exactly the ticked files and folders are removed. The snapshot brings them back on the Backups page.",
+  "installed": "The modpack is installed",
+  "noCatalog": "The component catalogue is not loaded: the server is unreachable and the manager ships none"
+}

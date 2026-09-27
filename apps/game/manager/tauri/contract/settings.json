@@ -1,0 +1,11 @@
+{
+  "autoMigrate": true,
+  "autostart": true,
+  "checkIntervalMinutes": 30,
+  "language": "auto",
+  "manualClients": [
+    "D:\\Игры\\Мир танков"
+  ],
+  "notifications": true,
+  "selectedClient": "D:\\Игры\\Мир танков"
+}

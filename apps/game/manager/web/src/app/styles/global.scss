@@ -1,0 +1,38 @@
+@use '@/shared/styles/tokens';
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  -webkit-font-smoothing: antialiased;
+  line-height: var(--leading-body);
+  user-select: none;
+}
+
+input,
+textarea,
+select {
+  user-select: text;
+}
+
+button {
+  font: inherit;
+}
+
+::selection {
+  background-color: var(--color-accent-soft);
+}

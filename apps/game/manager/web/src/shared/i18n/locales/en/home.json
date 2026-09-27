@@ -1,0 +1,12 @@
+{
+  "title": "Home",
+  "installTitle": "Modpack",
+  "notInstalled": "The modpack is not installed in this client yet",
+  "notInstalledHint": "Run the Three Marks installer — the manager picks the install up.",
+  "modpackVersion": "Modpack {version}",
+  "enabledCount": "Components on: {enabled} of {total}",
+  "installedAt": "Installed {date}",
+  "openComponents": "Open components",
+  "installCta": "Install the modpack",
+  "changeSelection": "Change the selection"
+}

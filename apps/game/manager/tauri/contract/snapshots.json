@@ -1,0 +1,19 @@
+[
+  {
+    "date": "2026-09-27 21:47:05",
+    "id": "20260927-214705",
+    "parts": [
+      {
+        "existed": true,
+        "name": "mods",
+        "target": "D:\\Игры\\Мир танков\\mods\\1.45.0.0"
+      },
+      {
+        "existed": false,
+        "name": "res_mods",
+        "target": "D:\\Игры\\Мир танков\\res_mods\\1.45.0.0"
+      }
+    ],
+    "sizeBytes": 1048576
+  }
+]

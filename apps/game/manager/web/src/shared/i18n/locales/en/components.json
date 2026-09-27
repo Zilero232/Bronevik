@@ -1,0 +1,22 @@
+{
+  "title": "Components",
+  "description": "Switch components on and off without reinstalling: switched-off files are kept aside and come back instantly.",
+  "search": "Search components",
+  "searchPlaceholder": "Name or description",
+  "categories": "Categories",
+  "allCategories": "All",
+  "state": {
+    "enabled": "On",
+    "disabled": "Off",
+    "missing": "Not installed"
+  },
+  "required": "Required",
+  "fairPlay": "Fair play",
+  "dependencies": "Needs: {list}",
+  "video": "Video",
+  "noCatalog": "The component catalogue is not loaded yet",
+  "noCatalogHint": "It comes with the installer and with modpack updates.",
+  "noResults": "Nothing found",
+  "enabledToast": "{title}: on",
+  "disabledToast": "{title}: off"
+}

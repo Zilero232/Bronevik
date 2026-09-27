@@ -22,7 +22,7 @@ from otmetki.ui.i18n import STRINGS
 from otmetki.ui.profiles import ProfileStore
 from otmetki.ui.protocol import COMMANDS, encode_state
 
-UI_WEB = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'settings', 'model', 'protocol')
+UI_WEB = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'protocol')
 STATE_FIXTURE = os.path.join(UI_WEB, '_tests', 'fixtures', 'state.sample.json')
 
 

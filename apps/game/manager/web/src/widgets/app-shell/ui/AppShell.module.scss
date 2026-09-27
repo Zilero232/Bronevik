@@ -1,0 +1,135 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  height: 100vh;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6) var(--space-4);
+  border-right: 1px solid var(--color-border);
+  background-color: var(--color-bg-deep);
+  gap: var(--space-7);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  gap: var(--space-4);
+}
+
+.logo {
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+.brandText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.name {
+  @include heading(var(--text-lg));
+}
+
+.subtitle {
+  @include label;
+}
+
+.nav {
+  @include stack(var(--space-1));
+}
+
+.navItem {
+  @include reset-button;
+
+  display: flex;
+  height: 38px;
+  align-items: center;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 600;
+  gap: var(--space-4);
+  letter-spacing: 0.02em;
+  text-align: left;
+  transition:
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+
+  :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[aria-current='page'] {
+    background-color: var(--color-surface-hover);
+    box-shadow: inset 2px 0 0 var(--color-accent);
+    color: var(--color-text);
+  }
+}
+
+.status {
+  @include label;
+
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  margin-top: auto;
+  gap: var(--space-3);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-text-dim);
+
+  .status[data-kind='up_to_date'] &,
+  .status[data-kind='migrated'] &,
+  .status[data-kind='updated'] & {
+    background-color: var(--color-success);
+  }
+
+  .status[data-kind='update_available'] & {
+    background-color: var(--color-gold);
+  }
+
+  .status[data-kind='waiting'] & {
+    background-color: var(--color-warning);
+  }
+
+  .status[data-kind='offline'] &,
+  .status[data-kind='failed'] & {
+    background-color: var(--color-danger);
+  }
+}
+
+.main {
+  background-color: var(--color-bg);
+  overflow-y: auto;
+}
+
+.content {
+  @include stack(var(--space-7));
+
+  max-width: var(--content-width);
+  padding: var(--space-8) var(--space-8) var(--space-9);
+  margin: 0 auto;
+}

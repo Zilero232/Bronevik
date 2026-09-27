@@ -1,0 +1,21 @@
+{
+  "title": "Backups and rollback",
+  "description": "Snapshots of the mod folders and the mod settings. The manager takes one before every update and keeps the latest three.",
+  "create": "Take a snapshot",
+  "empty": "No snapshots yet",
+  "emptyHint": "Take a snapshot before experimenting with mods — a rollback brings everything back.",
+  "part": {
+    "mods": "Mods",
+    "res_mods": "res_mods",
+    "configs": "Mod settings"
+  },
+  "partMissing": "{part}: absent",
+  "restore": "Roll back",
+  "restoreTitle": "Roll back to the snapshot of {date}?",
+  "restoreDescription": "The folders return to the snapshot, other mods included. The game must be closed.",
+  "deleteTitle": "Delete the snapshot of {date}?",
+  "deleteDescription": "Files in the game stay as they are.",
+  "created": "Snapshot taken",
+  "restored": "Rolled back",
+  "deleted": "Snapshot deleted"
+}

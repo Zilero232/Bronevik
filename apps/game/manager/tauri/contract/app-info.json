@@ -1,0 +1,7 @@
+{
+  "apiUrl": "https://api.triotmetki.ru",
+  "logsDir": "C:\\Users\\Игрок\\AppData\\Local\\TriOtmetki\\manager\\logs",
+  "roamingRoot": "C:\\Users\\Игрок\\AppData\\Roaming\\TriOtmetki",
+  "stateRoot": "C:\\Users\\Игрок\\AppData\\Local\\TriOtmetki",
+  "version": "0.1.0"
+}

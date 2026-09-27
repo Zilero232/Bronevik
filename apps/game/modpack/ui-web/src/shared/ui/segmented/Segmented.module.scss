@@ -1,0 +1,28 @@
+@use '../../styles/gameface' as *;
+
+.segmented {
+  display: flex;
+  overflow: hidden;
+  flex-direction: row;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-md);
+}
+
+.wrap {
+  max-width: 520px;
+  flex-wrap: wrap;
+}
+
+.item {
+  padding: 6px 12px;
+  border: none;
+  background-color: token(color-surface-sunken);
+  color: token(color-text-muted);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.itemOn {
+  background-color: token(color-accent);
+  color: token(color-accent-contrast);
+}

@@ -64,6 +64,7 @@ export const envSchema = z.object({
   YOUTUBE_API_KEY: z.string().default(''),
 
   MOD_INGEST_SECRET: z.string().min(8),
+  MODPACK_RELEASES_URL: z.union([z.url(), z.literal('')]).default(''),
 
   REPLAY_STORAGE: z.enum(['local', 's3']).default('local'),
   REPLAY_STORAGE_DIR: z.string().default('.data/replays'),

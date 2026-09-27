@@ -1,0 +1,92 @@
+[
+  {
+    "checkedAt": null,
+    "clientPath": null,
+    "status": {
+      "kind": "idle"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "gameVersion": "1.45.0.0",
+      "kind": "up_to_date",
+      "modpackVersion": "0.1.0"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "current": "0.1.0",
+      "gameVersion": "1.45.0.0",
+      "kind": "update_available",
+      "latest": "0.2.0",
+      "notes": {
+        "en": "Fixes",
+        "ru": "Исправления"
+      }
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "from": "1.45.0.0",
+      "kind": "migrated",
+      "modpackVersion": "0.1.0",
+      "to": "1.46.0.0"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "from": "0.1.0",
+      "gameVersion": "1.46.0.0",
+      "kind": "updated",
+      "to": "0.2.0"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "from": "1.45.0.0",
+      "gameVersion": "1.46.0.0",
+      "kind": "waiting"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "gameVersion": "1.46.0.0",
+      "kind": "offline"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "gameVersion": "1.45.0.0",
+      "kind": "not_installed"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "kind": "no_client"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "kind": "failed",
+      "message": "network"
+    }
+  }
+]

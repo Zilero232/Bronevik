@@ -164,6 +164,8 @@ class UiSmokeTest(unittest.TestCase):
         sys.stdout = Sink()
         self.game_dir = tempfile.mkdtemp()
         os.chdir(self.game_dir)
+        self.saved_appdata = os.environ.get('APPDATA')
+        os.environ['APPDATA'] = os.path.join(self.game_dir, 'AppData')
         self.purge()
         self.windows = []
         self.injected = []
@@ -181,6 +183,7 @@ class UiSmokeTest(unittest.TestCase):
 
     def tearDown(self):
         os.chdir(self.saved_cwd)
+        os.environ['APPDATA'] = self.saved_appdata
         sys.stdout = self.saved_stdout
         self.purge()
         shutil.rmtree(self.game_dir, ignore_errors=True)

@@ -129,6 +129,12 @@ export default {
     'selector-max-compound-selectors': 1,
     // Nested rules would compile into descendant selectors, which the two rules above do not see.
     'max-nesting-depth': [0, { ignore: ['blockless-at-rules', 'pseudo-classes'] }],
+    // Lists and selects render only through a polyfill, and radio, range and checkbox inputs are
+    // missing (the page builds them from div + role; ESLint bans the JSX elements the same way).
+    'selector-disallowed-list': [
+      ['/(^|[^\\w-])(ul|ol|li|dl|dt|dd|select|option|optgroup|datalist)(?![\\w-])/', '/type=["\']?(radio|range|checkbox)/'],
+      { message: (selector) => `Gameface has no native "${selector}": style the div-based replacement by its class` }
+    ],
     'selector-pseudo-class-allowed-list': ['hover', 'active', 'focus', 'first-child', 'last-child', 'only-child', 'nth-child', 'root'],
     'selector-pseudo-element-allowed-list': ['before', 'after', 'selection'],
     'at-rule-disallowed-list': ['supports', 'container', 'layer', 'property', 'page', 'counter-style', 'font-feature-values', 'scope'],

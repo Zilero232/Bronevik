@@ -1,0 +1,271 @@
+{
+  "catalog": {
+    "categories": [
+      {
+        "description": {
+          "en": "",
+          "ru": ""
+        },
+        "id": "base",
+        "title": {
+          "en": "Core",
+          "ru": "Основа"
+        }
+      },
+      {
+        "description": {
+          "en": "",
+          "ru": ""
+        },
+        "id": "battle",
+        "title": {
+          "en": "In battle",
+          "ru": "В бою"
+        }
+      }
+    ],
+    "components": [
+      {
+        "catalogued": true,
+        "category": "base",
+        "default": true,
+        "dependencies": [],
+        "description": {
+          "en": "Description",
+          "ru": "Описание"
+        },
+        "fairPlay": {
+          "en": "Only your own data.",
+          "ru": "Только свои данные."
+        },
+        "file": "net.triotmetki.core_0.1.0.mtmod",
+        "id": "core",
+        "packageId": "net.triotmetki.core",
+        "presets": [
+          "recommended"
+        ],
+        "preview": {
+          "image": "previews/core.png",
+          "video": null
+        },
+        "required": true,
+        "sha256": null,
+        "size": null,
+        "title": {
+          "en": "Component core",
+          "ru": "Компонент core"
+        },
+        "version": "0.1.0"
+      },
+      {
+        "catalogued": true,
+        "category": "base",
+        "default": true,
+        "dependencies": [
+          "core"
+        ],
+        "description": {
+          "en": "Description",
+          "ru": "Описание"
+        },
+        "fairPlay": {
+          "en": "Only your own data.",
+          "ru": "Только свои данные."
+        },
+        "file": "otmetki.companion_0.1.0.mtmod",
+        "id": "companion",
+        "packageId": "otmetki.companion",
+        "presets": [
+          "recommended"
+        ],
+        "preview": {
+          "image": "previews/companion.png",
+          "video": null
+        },
+        "required": true,
+        "sha256": null,
+        "size": null,
+        "title": {
+          "en": "Component companion",
+          "ru": "Компонент companion"
+        },
+        "version": "0.1.0"
+      },
+      {
+        "catalogued": true,
+        "category": "battle",
+        "default": true,
+        "dependencies": [
+          "core",
+          "companion"
+        ],
+        "description": {
+          "en": "Description",
+          "ru": "Описание"
+        },
+        "fairPlay": {
+          "en": "Only your own data.",
+          "ru": "Только свои данные."
+        },
+        "file": "net.triotmetki.marks_panel_0.1.0.mtmod",
+        "id": "marks_panel",
+        "packageId": "net.triotmetki.marks_panel",
+        "presets": [
+          "recommended"
+        ],
+        "preview": {
+          "image": "previews/marks_panel.png",
+          "video": null
+        },
+        "required": false,
+        "sha256": null,
+        "size": null,
+        "title": {
+          "en": "Component marks_panel",
+          "ru": "Компонент marks_panel"
+        },
+        "version": "0.1.0"
+      },
+      {
+        "catalogued": true,
+        "category": "battle",
+        "default": true,
+        "dependencies": [
+          "core",
+          "companion"
+        ],
+        "description": {
+          "en": "Description",
+          "ru": "Описание"
+        },
+        "fairPlay": {
+          "en": "Only your own data.",
+          "ru": "Только свои данные."
+        },
+        "file": "net.triotmetki.damage_log_0.1.0.mtmod",
+        "id": "damage_log",
+        "packageId": "net.triotmetki.damage_log",
+        "presets": [
+          "recommended"
+        ],
+        "preview": {
+          "image": "previews/damage_log.png",
+          "video": null
+        },
+        "required": false,
+        "sha256": null,
+        "size": null,
+        "title": {
+          "en": "Component damage_log",
+          "ru": "Компонент damage_log"
+        },
+        "version": "0.1.0"
+      },
+      {
+        "catalogued": true,
+        "category": "battle",
+        "default": true,
+        "dependencies": [
+          "damage_log"
+        ],
+        "description": {
+          "en": "Description",
+          "ru": "Описание"
+        },
+        "fairPlay": {
+          "en": "Only your own data.",
+          "ru": "Только свои данные."
+        },
+        "file": "net.triotmetki.hit_log_0.1.0.mtmod",
+        "id": "hit_log",
+        "packageId": "net.triotmetki.hit_log",
+        "presets": [
+          "recommended"
+        ],
+        "preview": {
+          "image": "previews/hit_log.png",
+          "video": null
+        },
+        "required": false,
+        "sha256": null,
+        "size": null,
+        "title": {
+          "en": "Component hit_log",
+          "ru": "Компонент hit_log"
+        },
+        "version": "0.1.0"
+      }
+    ],
+    "extension": "mtmod",
+    "modpackVersion": "0.1.0",
+    "ownedPatterns": [
+      "net.triotmetki.*.mtmod",
+      "otmetki.*.mtmod"
+    ],
+    "platform": "lesta",
+    "presets": [
+      {
+        "custom": false,
+        "description": {
+          "en": "",
+          "ru": ""
+        },
+        "id": "recommended",
+        "title": {
+          "en": "Recommended",
+          "ru": "Рекомендуемый"
+        }
+      },
+      {
+        "custom": true,
+        "description": {
+          "en": "",
+          "ru": ""
+        },
+        "id": "custom",
+        "title": {
+          "en": "Custom",
+          "ru": "Свой"
+        }
+      }
+    ],
+    "previewsDir": null,
+    "schemaVersion": 1,
+    "source": "downloaded"
+  },
+  "client": {
+    "branch": "release",
+    "modsDir": "D:\\Игры\\Мир танков\\mods\\1.45.0.0",
+    "packageMask": "*.mtmod",
+    "path": "D:\\Игры\\Мир танков",
+    "preferred": true,
+    "problem": null,
+    "realm": "RU",
+    "resModsDir": "D:\\Игры\\Мир танков\\res_mods\\1.45.0.0",
+    "source": "lgc",
+    "version": "1.45.0.0"
+  },
+  "installed": false,
+  "otherMods": [
+    {
+      "isDir": false,
+      "location": "mods",
+      "name": "izeberg.modssettingsapi_1.6.0.mtmod",
+      "path": "D:\\Игры\\Мир танков\\mods\\1.45.0.0\\izeberg.modssettingsapi_1.6.0.mtmod"
+    },
+    {
+      "isDir": true,
+      "location": "res_mods",
+      "name": "gui",
+      "path": "D:\\Игры\\Мир танков\\res_mods\\1.45.0.0\\gui"
+    }
+  ],
+  "release": {
+    "notes": {
+      "en": "First release",
+      "ru": "Первый выпуск"
+    },
+    "version": "0.1.0"
+  },
+  "source": "release"
+}

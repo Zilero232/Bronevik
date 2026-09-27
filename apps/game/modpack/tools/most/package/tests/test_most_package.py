@@ -3,11 +3,12 @@ import shutil
 import sys
 import tempfile
 import unittest
-import zipfile
 
 PY3 = sys.version_info[0] >= 3
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if PY3:
+    import zipfile  # the portable Python 2.7 of the py27 run ships without it
+
     if TOOLS_DIR not in sys.path:
         sys.path.insert(0, TOOLS_DIR)
     from most.testing import write_build

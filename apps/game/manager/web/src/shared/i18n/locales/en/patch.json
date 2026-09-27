@@ -1,0 +1,35 @@
+{
+  "title": "Updates",
+  "checkedAt": "Checked {date}",
+  "neverChecked": "Not checked yet",
+  "status": {
+    "idle": "Not checked yet",
+    "no_client": "No game client found",
+    "not_installed": "The modpack is not installed",
+    "up_to_date": "Everything is current",
+    "update_available": "Modpack {latest} is available",
+    "migrated": "The modpack moved to client {to}",
+    "updated": "The modpack is updated to {to}",
+    "waiting": "Waiting for a modpack update for {gameVersion}",
+    "offline": "The update server is unreachable",
+    "failed": "The update failed"
+  },
+  "hint": {
+    "idle": "The manager checks the client on start and on the schedule from the settings.",
+    "no_client": "Choose a client on this page or in the settings.",
+    "not_installed": "Install the modpack with the Three Marks installer.",
+    "up_to_date": "Modpack {version} runs on client {gameVersion}.",
+    "update_available": "Install it while the game is closed. The manager takes a snapshot first.",
+    "migrated": "The client was updated from {from} — components and settings are in place.",
+    "updated": "Client {gameVersion}: the new version was downloaded, checked against its sha256 and installed.",
+    "waiting": "The client was updated from {from}. The manager installs a compatible version as soon as it is out.",
+    "offline": "We will try again on schedule. The components of client {gameVersion} are untouched.",
+    "failed": "{message}"
+  },
+  "check": "Check now",
+  "update": "Update the modpack",
+  "migrate": "Move to the new folder",
+  "notes": "What is new",
+  "updatedToast": "The modpack is updated",
+  "migratedToast": "The modpack moved"
+}

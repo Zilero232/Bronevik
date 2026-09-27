@@ -26,6 +26,7 @@ The style guide, split by stack. Index and tooling: [guides/README.md](guides/RE
 - `guides/server/` — [NestJS modules and routes](guides/server/nestjs.md).
 - `guides/shared/` — naming, imports and barrels, types, functions, blank lines, shared schemas, forbidden list, pre-commit checklist, [external docs (context7 ids)](guides/shared/references.md).
 - Modpack — [apps/game/modpack/CLAUDE.md](../apps/game/modpack/CLAUDE.md) and [apps/game/modpack/README.md](../apps/game/modpack/README.md).
+- Modpack manager (Tauri 2 app that replaces the installer) — [apps/game/manager/CLAUDE.md](../apps/game/manager/CLAUDE.md) and [apps/game/manager/README.md](../apps/game/manager/README.md): client detection, state layout, patch flow, the `/modpack/releases/latest` and updater feeds, `triotmetki://` deep links.
 
 ## Research
 

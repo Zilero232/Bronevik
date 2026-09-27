@@ -32,6 +32,7 @@ from ....core.client.transport import create_transport
 from ....core.client.ui import Ui
 from ....core.events import EventBus
 from ....core.hooks import Subscriptions
+from ....core.durable import open_config
 from ....core.log import log, safe
 from ....core.registry import registry
 from ....core.storage import JsonFile
@@ -59,12 +60,12 @@ class OtmetkiApp(object):
         self.config_dir = CONFIG_DIR
         self.bus = EventBus()
         self.hooks = Subscriptions()
-        self.config_file = JsonFile(_path('config.json'), pretty=True)
+        self.config_file = open_config(CONFIG_DIR, 'config.json', pretty=True)
         self.config = Config(self.config_file.read({}))
         self.save_config()
         self.translate = Translator(resolve_language(self.config.get('language'), client_language()))
-        self.credentials = CredentialStore(JsonFile(_path('credentials.json')))
-        self.state_file = JsonFile(_path('state.json'))
+        self.credentials = CredentialStore(open_config(CONFIG_DIR, 'credentials.json'))
+        self.state_file = open_config(CONFIG_DIR, 'state.json')
         self.state = self.state_file.read({}) or {}
         self.state_parts = []
         self.transport = create_transport()

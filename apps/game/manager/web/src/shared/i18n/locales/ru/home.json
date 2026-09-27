@@ -1,0 +1,12 @@
+{
+  "title": "Главная",
+  "installTitle": "Модпак",
+  "notInstalled": "Модпак ещё не установлен в этот клиент",
+  "notInstalledHint": "Запустите установщик «Три отметки» — менеджер подхватит установку.",
+  "modpackVersion": "Версия модпака {version}",
+  "enabledCount": "Включено компонентов: {enabled} из {total}",
+  "installedAt": "Установлен {date}",
+  "openComponents": "К компонентам",
+  "installCta": "Установить модпак",
+  "changeSelection": "Изменить набор"
+}

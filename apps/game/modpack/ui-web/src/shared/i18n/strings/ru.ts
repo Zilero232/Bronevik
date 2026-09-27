@@ -1,6 +1,10 @@
 export const RU = {
   title: 'Три отметки',
   subtitle: 'Настройки мода',
+  language: 'Язык',
+  decrease: 'Меньше',
+  increase: 'Больше',
+  hudStage: 'Макет экрана',
   close: 'Закрыть',
   sectionComponents: 'Компоненты',
   sectionProfiles: 'Профили',

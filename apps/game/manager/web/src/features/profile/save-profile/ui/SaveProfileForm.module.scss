@@ -1,0 +1,13 @@
+.root {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+
+  > :first-child {
+    flex: 1;
+  }
+
+  > button {
+    margin-top: 22px;
+  }
+}

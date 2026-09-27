@@ -1,0 +1,70 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "TriOtmetki Manager",
+  "mainBinaryName": "otmetki-manager",
+  "version": "../package.json",
+  "identifier": "ru.triotmetki.manager",
+  "build": {
+    "frontendDist": "../web/dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "bun --filter @otmetki/manager dev:ui",
+    "beforeBuildCommand": "bun --filter @otmetki/manager build:ui"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Три отметки — менеджер модпака",
+        "width": 1120,
+        "height": 740,
+        "minWidth": 920,
+        "minHeight": 620,
+        "center": true,
+        "visible": false,
+        "backgroundColor": "#0e0e10",
+        "dragDropEnabled": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost",
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$RESOURCE/**", "$LOCALDATA/TriOtmetki/**"]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "Три отметки",
+    "homepage": "https://triotmetki.ru",
+    "copyright": "© Три отметки",
+    "category": "Utility",
+    "shortDescription": "Менеджер модпака «Три отметки»",
+    "createUpdaterArtifacts": true,
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "resources": ["resources/**/*"],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerHooks": "./windows/hooks.nsh",
+        "languages": ["Russian", "English"],
+        "displayLanguageSelector": false
+      }
+    }
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["triotmetki"]
+      }
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk4RjE3QzUzQzAxMkEwNEEKUldSS29CTEFVM3p4bU9mc3dpaEcwcHdyT1VhaXlMbXVneXltMXBOQ3V1ZUF2dnhBRE1pd1VjcTAK",
+      "endpoints": ["https://api.triotmetki.ru/modpack/manager/update?target={{target}}&arch={{arch}}&current={{current_version}}"],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

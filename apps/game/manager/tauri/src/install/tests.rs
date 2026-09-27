@@ -1,0 +1,180 @@
+use std::fs;
+
+use super::*;
+use crate::catalog::fixtures::catalog;
+use crate::detect::fixtures::lesta_client;
+use crate::releases::{sha256_hex, ReleasePackage};
+use crate::snapshots::list;
+
+fn fetched(id: &str, file: &str) -> FetchedPackage {
+    FetchedPackage {
+        package: ReleasePackage {
+            id: id.to_owned(),
+            file: file.to_owned(),
+            url: format!("https://cdn.triotmetki.ru/{file}"),
+            sha256: sha256_hex(file.as_bytes()),
+            size: file.len() as u64,
+        },
+        bytes: file.as_bytes().to_vec(),
+    }
+}
+
+fn base_packages() -> Vec<FetchedPackage> {
+    vec![
+        fetched("core", "net.triotmetki.core_0.1.0.mtmod"),
+        fetched("companion", "otmetki.companion_0.1.0.mtmod"),
+        fetched("marks_panel", "net.triotmetki.marks_panel_0.1.0.mtmod"),
+    ]
+}
+
+#[test]
+fn lists_other_mods_but_never_ours() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+
+    fs::write(client.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "").unwrap();
+    fs::write(client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod"), "").unwrap();
+    fs::create_dir_all(client.res_mods_dir.join("gui")).unwrap();
+
+    let names: Vec<String> = other_mods(&client, &catalog()).into_iter().map(|entry| entry.name).collect();
+
+    assert_eq!(names, vec!["izeberg.modssettingsapi_1.6.0.mtmod", "gui"]);
+}
+
+#[test]
+fn installs_the_selection_with_a_manifest_and_a_snapshot() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+
+    fs::write(client.mods_dir.join("net.triotmetki.core_0.0.9.mtmod"), "old").unwrap();
+    fs::write(client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod"), "foreign").unwrap();
+
+    let written =
+        install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], take_snapshot: true }).unwrap();
+    let manifest = Manifest::read(&client_dir).unwrap().unwrap();
+
+    assert_eq!(written, vec!["core", "companion", "marks_panel"]);
+    assert!(!client.mods_dir.join("net.triotmetki.core_0.0.9.mtmod").exists());
+    assert!(client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod").exists());
+    assert_eq!(manifest.modpack, "0.1.0");
+    assert_eq!(manifest.files.len(), 3);
+    assert_eq!(manifest.component_ids(), vec!["companion", "core", "marks_panel"]);
+    assert_eq!(list(&client_dir).len(), 1);
+}
+
+#[test]
+fn removes_only_the_reviewed_other_mods() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let reviewed = client.mods_dir.join("a.mtmod");
+
+    fs::write(&reviewed, "").unwrap();
+    fs::write(client.mods_dir.join("b.mtmod"), "").unwrap();
+
+    install(InstallInput {
+        context,
+        packages: &base_packages(),
+        modpack_version: "0.1.0",
+        remove_others: std::slice::from_ref(&reviewed),
+        take_snapshot: false,
+    })
+    .unwrap();
+
+    assert!(!reviewed.exists());
+    assert!(client.mods_dir.join("b.mtmod").exists());
+    assert_eq!(list(&client_dir).len(), 1);
+}
+
+#[test]
+fn refuses_to_remove_a_path_outside_the_reviewed_list() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let outside = root.path().join("important.txt");
+
+    fs::write(&outside, "keep").unwrap();
+
+    assert!(remove_other_mods(&client, &catalog(), std::slice::from_ref(&outside)).is_err());
+    assert!(outside.exists());
+}
+
+#[test]
+fn a_tampered_package_aborts_before_touching_the_client() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let mut packages = base_packages();
+
+    fs::write(client.mods_dir.join("net.triotmetki.core_0.0.9.mtmod"), "old").unwrap();
+    packages[1].bytes = b"evil".to_vec();
+
+    assert!(install(InstallInput { context, packages: &packages, modpack_version: "0.1.0", remove_others: &[], take_snapshot: true }).is_err());
+    assert!(client.mods_dir.join("net.triotmetki.core_0.0.9.mtmod").exists());
+    assert!(list(&client_dir).is_empty());
+}
+
+#[test]
+fn selects_required_components_and_dependencies() {
+    let ids = selection(&catalog(), &["hit_log".to_owned()]).unwrap();
+
+    assert_eq!(ids, BTreeSet::from(["companion", "core", "damage_log", "hit_log"].map(String::from)));
+    assert!(selection(&catalog(), &["nope".to_owned()]).is_err());
+}
+
+#[test]
+fn uninstalls_our_files_and_optionally_the_config() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let configs = configs_dir(&client.path);
+
+    install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], take_snapshot: false }).unwrap();
+    fs::write(client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod"), "").unwrap();
+    fs::create_dir_all(&configs).unwrap();
+    fs::write(configs.join("config.json"), "{}").unwrap();
+
+    uninstall(UninstallInput { context, restore_snapshot: None, remove_config: false }).unwrap();
+
+    assert_eq!(list_files(&client.mods_dir), vec![client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod")]);
+    assert!(configs.join("config.json").exists());
+    assert!(!client_dir.exists());
+}
+
+#[test]
+fn the_app_uninstaller_cleans_every_recorded_client() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let clients_dir = root.path().join("clients");
+    let client_dir = clients_dir.join(crate::state::client_key(&client.path));
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+
+    install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], take_snapshot: false }).unwrap();
+
+    let cleaned = uninstall_everywhere(&clients_dir, &owned_patterns_catalog(None));
+
+    assert_eq!(cleaned, vec![client.path.clone()]);
+    assert!(list_files(&client.mods_dir).is_empty());
+    assert!(!client_dir.exists());
+}
+
+#[test]
+fn reads_an_installer_component_profile() {
+    let root = tempfile::tempdir().unwrap();
+    let path = root.path().join("Стрим.ini");
+    let mut ini = ini::Ini::new();
+
+    ini.with_section(Some("Setup")).set("SetupType", "custom").set("Components", r"base\core,battle\marks_panel,battle");
+    crate::ini_file::write(&path, &ini).unwrap();
+
+    assert_eq!(read_component_profile(&path).unwrap(), vec!["core", "marks_panel", "battle"]);
+}

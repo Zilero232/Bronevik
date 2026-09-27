@@ -17,6 +17,9 @@ export default eslint(
       '**/next-env.d.ts',
       'apps/web/client/public/twitch-panel.js',
       'apps/game/modpack/packages/ui/gameface/**',
+      'apps/game/manager/tauri/target/**',
+      'apps/game/manager/tauri/gen/**',
+      'apps/game/manager/web/dist/**',
       '.data/**',
       'e2e/.results/**',
       'playwright-report/**',
@@ -95,6 +98,31 @@ export default eslint(
       'react/no-unnecessary-use-prefix': 'off',
       // main.ts and worker.ts are ESM entrypoints Bun runs directly.
       'antfu/no-top-level-await': 'off'
+    }
+  },
+
+  // The modpack's in-game window runs in Coherent Gameface: list elements (ul/ol/li, dl/dt/dd) and
+  // select/option only render through a polyfill, and radio, range and checkbox inputs are missing,
+  // so the window builds them from div + role and button (apps/game/modpack/README.md «In-game UI»).
+  // The first two entries repeat the base config's list, which a file-scoped rule replaces.
+  {
+    name: 'otmetki/modpack-gameface',
+    files: ['apps/game/modpack/ui-web/src/**/*.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        'TSEnumDeclaration[const=true]',
+        'TSExportAssignment',
+        {
+          selector: 'JSXOpeningElement[name.name=/^(ul|ol|li|dl|dt|dd|select|option|optgroup|datalist)$/]',
+          message:
+            'Gameface renders this element only through a polyfill: use a div with a role (shared/ui/list, shared/ui/detail-list, shared/ui/segmented).'
+        },
+        {
+          selector: 'JSXOpeningElement[name.name="input"] > JSXAttribute[name.name="type"][value.value=/^(radio|range|checkbox)$/]',
+          message: 'Gameface has no radio, range or checkbox input: use shared/ui/segmented, shared/ui/toggle or a stepper.'
+        }
+      ]
     }
   },
 

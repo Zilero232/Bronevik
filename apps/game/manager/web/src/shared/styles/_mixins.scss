@@ -1,0 +1,128 @@
+@forward '@otmetki/design-tokens' show reduced-motion, texture;
+
+@mixin stack($gap: var(--space-4)) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+@mixin panel {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--panel-gradient);
+  box-shadow: var(--panel-highlight);
+}
+
+@mixin well {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+}
+
+@mixin popup-surface {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-popover);
+  color: var(--color-text);
+}
+
+@mixin label {
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+@mixin heading($size: var(--text-xl)) {
+  font-family: var(--font-display);
+  font-size: $size;
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-tight);
+  text-transform: uppercase;
+}
+
+@mixin numeric {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+@mixin focus-ring {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@mixin reset-button {
+  padding: 0;
+  border: none;
+  margin: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+@mixin icon-button($size) {
+  @include reset-button;
+
+  display: inline-flex;
+  width: $size;
+  height: $size;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+@mixin premium-surface {
+  border-color: color-mix(in srgb, var(--color-gold) 60%, var(--color-shade));
+  background: var(--gradient-premium);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-on-media) 45%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-shade) 20%, transparent),
+    0 4px 14px var(--color-gold-soft);
+  color: var(--color-gold-contrast);
+}
+
+@mixin field-box {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text);
+  transition: border-color var(--duration-fast) ease;
+
+  &:focus-within {
+    border-color: var(--color-accent);
+  }
+}
+
+@mixin sr-only {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@mixin mono-path {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  overflow-wrap: anywhere;
+}

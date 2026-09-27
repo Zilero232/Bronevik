@@ -1,0 +1,11 @@
+@use '@/shared/styles/mixins' as *;
+
+.facts {
+  @include stack(var(--space-3));
+
+  align-items: flex-start;
+}
+
+.path {
+  @include mono-path;
+}

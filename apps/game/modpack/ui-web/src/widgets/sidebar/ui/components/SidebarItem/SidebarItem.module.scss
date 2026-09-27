@@ -1,0 +1,36 @@
+@use '../../../../../shared/styles/gameface' as *;
+
+.item {
+  display: flex;
+  height: 36px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px 0 16px;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+
+  &:hover {
+    background-color: token(color-surface-hover);
+  }
+}
+
+.itemOn {
+  border-left-color: token(color-accent);
+  background-color: token(color-surface-raised);
+}
+
+.itemTitle {
+  height: 100%;
+  flex: 1 1 auto;
+  padding: 0;
+  border: none;
+  margin-right: 8px;
+  background-color: transparent;
+  color: token(color-text);
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+
+  @include ellipsis;
+}

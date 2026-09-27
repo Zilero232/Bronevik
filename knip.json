@@ -21,6 +21,9 @@
       "entry": ["ui-web/src/button/main.tsx", "ui-web/stylelint.config.mjs"],
       "project": ["ui-web/**/*.{ts,tsx,scss}"]
     },
+    "apps/game/manager": {
+      "project": ["web/**/*.{ts,tsx,scss}"]
+    },
     "apps/web/server": {
       "entry": ["scripts/*.ts"],
       "project": ["src/**/*.ts", "scripts/**/*.ts", "prisma/**/*.prisma"]

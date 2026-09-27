@@ -11,7 +11,7 @@ export default mergeConfig(
       name: 'modpack-ui',
       isolate: true,
       environment: 'node',
-      include: ['**/_tests/**/*.test.ts']
+      include: ['**/_tests/**/*.test.{ts,tsx}']
     }
   })
 );

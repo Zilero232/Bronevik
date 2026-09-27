@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.summary {
+  @include stack(var(--space-2));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.path {
+  @include mono-path;
+}
+
+.danger {
+  color: var(--color-danger);
+}

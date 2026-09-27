@@ -1,0 +1,80 @@
+use std::path::{Path, PathBuf};
+
+use crate::error::{AppError, AppResult, ErrorCode};
+use crate::state::client_key;
+
+pub const APP_FOLDER: &str = "TriOtmetki";
+pub const STATE_ROOT_ENV: &str = "OTMETKI_STATE_ROOT";
+pub const ROAMING_ROOT_ENV: &str = "OTMETKI_ROAMING_ROOT";
+
+#[derive(Debug, Clone)]
+pub struct Layout {
+    pub state_root: PathBuf,
+    pub roaming_root: PathBuf,
+}
+
+impl Layout {
+    pub fn new(state_root: impl Into<PathBuf>, roaming_root: impl Into<PathBuf>) -> Self {
+        Self { state_root: state_root.into(), roaming_root: roaming_root.into() }
+    }
+
+    pub fn from_env() -> AppResult<Self> {
+        let state_root = std::env::var_os(STATE_ROOT_ENV)
+            .map(PathBuf::from)
+            .or_else(|| dirs::data_local_dir().map(|dir| dir.join(APP_FOLDER)))
+            .ok_or_else(|| AppError::coded(ErrorCode::InvalidPath, "no local app data folder"))?;
+        let roaming_root = std::env::var_os(ROAMING_ROOT_ENV)
+            .map(PathBuf::from)
+            .or_else(|| dirs::data_dir().map(|dir| dir.join(APP_FOLDER)))
+            .ok_or_else(|| AppError::coded(ErrorCode::InvalidPath, "no roaming app data folder"))?;
+
+        Ok(Self::new(state_root, roaming_root))
+    }
+
+    pub fn clients_dir(&self) -> PathBuf {
+        self.state_root.join("clients")
+    }
+
+    pub fn client_dir(&self, client_path: &Path) -> PathBuf {
+        self.clients_dir().join(client_key(client_path))
+    }
+
+    pub fn manager_dir(&self) -> PathBuf {
+        self.state_root.join("manager")
+    }
+
+    pub fn catalog_cache(&self) -> PathBuf {
+        self.manager_dir().join("components.json")
+    }
+
+    pub fn logs_dir(&self) -> PathBuf {
+        self.manager_dir().join("logs")
+    }
+
+    pub fn settings_file(&self) -> PathBuf {
+        self.roaming_root.join("manager").join("settings.json")
+    }
+
+    pub fn durable_dir(&self) -> PathBuf {
+        self.roaming_root.clone()
+    }
+}
+
+pub fn configs_dir(client_path: &Path) -> PathBuf {
+    client_path.join("mods").join("configs").join("otmetki")
+}
+
+pub fn join_relative(root: &Path, relative: &str) -> PathBuf {
+    relative.split(['/', '\\']).filter(|part| !part.is_empty() && *part != ".").fold(root.to_path_buf(), |path, part| path.join(part))
+}
+
+pub fn same_path(left: &Path, right: &Path) -> bool {
+    normalized(left) == normalized(right)
+}
+
+pub fn normalized(path: &Path) -> String {
+    let text = path.to_string_lossy().replace('/', "\\");
+    let trimmed = if text.len() > 3 { text.trim_end_matches('\\') } else { text.as_str() };
+
+    trimmed.to_lowercase()
+}

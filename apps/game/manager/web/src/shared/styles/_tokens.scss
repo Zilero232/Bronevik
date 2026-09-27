@@ -1,0 +1,16 @@
+@use '@otmetki/design-tokens' as tokens;
+
+:root {
+  @include tokens.root-properties;
+  @include tokens.theme-properties(dark);
+
+  --font-display: 'Fira Sans Condensed', 'Arial Narrow', sans-serif;
+  --font-sans: 'Fira Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sidebar-width: 232px;
+  --content-width: 960px;
+  --z-overlay: 60;
+  --z-toast: 80;
+
+  color-scheme: dark;
+}

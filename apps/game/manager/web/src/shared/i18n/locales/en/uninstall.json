@@ -1,0 +1,9 @@
+{
+  "title": "Remove the modpack",
+  "description": "Only our files are removed. Other mods stay in place.",
+  "restore": "Roll back to the latest snapshot",
+  "removeConfig": "Delete the mod settings and the site binding",
+  "action": "Remove the modpack",
+  "confirmTitle": "Remove the modpack from this client?",
+  "done": "The modpack is removed"
+}

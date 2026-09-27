@@ -1,0 +1,25 @@
+{
+  "account_id": 12345678,
+  "nickname": "Tanker_2026",
+  "overall": {
+    "battles": 18432,
+    "win_rate": 53.41,
+    "avg_damage": 1654.2,
+    "wn8": { "value": 1850.4, "tier": "good" },
+    "eff": { "value": 1320.7, "tier": "good" },
+    "brone_index": { "value": 61.3, "tier": "good" },
+    "updated_at": "2026-09-27T09:30:00.000Z"
+  },
+  "session": {
+    "kind": "live",
+    "source": "mod",
+    "is_live": true,
+    "started_at": "2026-09-27T17:05:00.000Z",
+    "ended_at": null,
+    "battles": 7,
+    "win_rate": 57.14,
+    "avg_damage": 2231.6,
+    "wn8": { "value": 2410.2, "tier": "very_good" },
+    "brone_index": { "value": null, "tier": null }
+  }
+}

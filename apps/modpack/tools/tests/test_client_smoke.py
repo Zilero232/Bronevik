@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import os
 import random
 import shutil
@@ -178,6 +179,14 @@ class BattleSession(object):
         return self.dp
 
 
+class Response(object):
+
+    def __init__(self, code, body):
+        self.responseCode = code
+        self.body = body
+        self.headers = {}
+
+
 class ClientSmokeTest(unittest.TestCase):
 
     def setUp(self):
@@ -190,6 +199,7 @@ class ClientSmokeTest(unittest.TestCase):
         self.callbacks = []
         self.messages = []
         self.requests = []
+        self.fetches = []
         self.player = Player()
         self.events = type('PlayerEvents', (object,), {})()
         for name in ('onAccountShowGUI', 'onEnqueued', 'onDequeued', 'onArenaCreated', 'onAvatarReady', 'onAvatarBecomeNonPlayer',
@@ -214,6 +224,7 @@ class ClientSmokeTest(unittest.TestCase):
 
         def fetch_url(url, callback, headers=None, timeout=None, method=None, postData=None):
             test.requests.append((method, url))
+            test.fetches.append((method, url, headers, postData, callback))
 
         module('BigWorld', callback=lambda delay, fn: test.callbacks.append(fn), player=lambda: test.player, fetchURL=fetch_url,
                serverTime=lambda: SERVER_TIME)
@@ -516,6 +527,30 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertEqual(refusal['kind'], 'error')
         instances['hangar_info'].render(SERVER_TIME)
         self.assertIn('otmetki.hangar_info', self.components)
+
+    def test_hangar_ratings_reads_only_the_bound_account(self):
+        self.install_hud_stubs()
+        app = self.load(list(ENTRY_MODULES))
+        app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
+        self.vehicle.item = type('Vehicle', (object,), {'intCD': 1})()
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        reads = dict((url.rsplit('/', 1)[-1], (headers, body, callback)) for method, url, headers, body, callback in self.fetches
+                     if method == 'POST' and '/mod/me/' in url)
+        self.assertEqual(sorted(reads), ['overview', 'tanks'])
+        for headers, body, callback in reads.values():
+            self.assertTrue(headers['X-Otmetki-Signature'].startswith('sha256='))
+            self.assertEqual(json.loads(body)['account_id'], ACCOUNT)
+        self.assertEqual(json.loads(reads['tanks'][1])['tank_ids'], [1])
+        for name, key in (('overview', 'ratings-overview.example.json'), ('tanks', 'ratings-tanks.example.json')):
+            answer = _support.load_json(os.path.join(_support.CONTRACT_DIR, 'examples', key))
+            answer['account_id'] = ACCOUNT
+            reads[name][2](Response(200, json.dumps(answer).encode('utf-8')))
+        text = self.components['otmetki.hangar_ratings']['text']
+        self.assertIn('WN8', text)
+        self.assertIn(u'★★', text)
+        self.enter_battle(1)
+        self.assertNotIn('otmetki.hangar_ratings', self.components)
 
     def test_battle_hud_switched_off(self):
         self.install_hud_stubs()

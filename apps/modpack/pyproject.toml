@@ -35,6 +35,7 @@ dependencies = [
   "otmetki-feature-notification-filter",
   "otmetki-feature-hangar-cleaner",
   "otmetki-feature-marks-history",
+  "otmetki-feature-hangar-ratings",
 ]
 
 [project.urls]
@@ -87,6 +88,7 @@ otmetki-feature-auto-resupply = { workspace = true }
 otmetki-feature-notification-filter = { workspace = true }
 otmetki-feature-hangar-cleaner = { workspace = true }
 otmetki-feature-marks-history = { workspace = true }
+otmetki-feature-hangar-ratings = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["packages", "features", "tools", "installer"]

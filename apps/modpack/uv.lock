@@ -20,6 +20,7 @@ members = [
     "otmetki-feature-damage-log",
     "otmetki-feature-hangar-cleaner",
     "otmetki-feature-hangar-info",
+    "otmetki-feature-hangar-ratings",
     "otmetki-feature-hangar-tweaks",
     "otmetki-feature-hit-log",
     "otmetki-feature-marks-history",
@@ -269,6 +270,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "otmetki-feature-hangar-ratings"
+version = "0.1.0"
+source = { virtual = "features/hangar_ratings" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-hangar-tweaks"
 version = "0.1.0"
 source = { virtual = "features/hangar_tweaks" }
@@ -450,6 +466,7 @@ dependencies = [
     { name = "otmetki-feature-damage-log" },
     { name = "otmetki-feature-hangar-cleaner" },
     { name = "otmetki-feature-hangar-info" },
+    { name = "otmetki-feature-hangar-ratings" },
     { name = "otmetki-feature-hangar-tweaks" },
     { name = "otmetki-feature-hit-log" },
     { name = "otmetki-feature-marks-history" },
@@ -488,6 +505,7 @@ requires-dist = [
     { name = "otmetki-feature-damage-log", virtual = "features/damage_log" },
     { name = "otmetki-feature-hangar-cleaner", virtual = "features/hangar_cleaner" },
     { name = "otmetki-feature-hangar-info", virtual = "features/hangar_info" },
+    { name = "otmetki-feature-hangar-ratings", virtual = "features/hangar_ratings" },
     { name = "otmetki-feature-hangar-tweaks", virtual = "features/hangar_tweaks" },
     { name = "otmetki-feature-hit-log", virtual = "features/hit_log" },
     { name = "otmetki-feature-marks-history", virtual = "features/marks_history" },

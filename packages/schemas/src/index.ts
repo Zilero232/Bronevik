@@ -635,12 +635,35 @@ export {
   bindCodeSchema,
   MOD_ERROR_CODES,
   MOD_LOADOUT,
+  MOD_RATINGS,
   modBattleLoadoutSchema,
+  modDeviceIdSchema,
   modDeviceSchema,
   modDevicesSchema,
-  modErrorCodeSchema
+  modErrorCodeSchema,
+  modOverallRatingsSchema,
+  modOverviewSchema,
+  modRatingsRequestSchema,
+  modSessionRatingsSchema,
+  modTankRatingSchema,
+  modTankRatingsRequestSchema,
+  modTankRatingsSchema
 } from './mod';
-export type { BindCode, BindCodeInput, ModBattleLoadout, ModDevice, ModDevices, ModErrorCode } from './mod';
+export type {
+  BindCode,
+  BindCodeInput,
+  ModBattleLoadout,
+  ModDevice,
+  ModDevices,
+  ModErrorCode,
+  ModOverallRatings,
+  ModOverview,
+  ModRatingsRequest,
+  ModSessionRatings,
+  ModTankRating,
+  ModTankRatings,
+  ModTankRatingsRequest
+} from './mod';
 export { MODE_META, MODE_RANKS, PLAY_MODES } from './modes';
 export {
   modeMetaQuerySchema,

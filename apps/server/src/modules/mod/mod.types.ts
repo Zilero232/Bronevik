@@ -95,3 +95,10 @@ export type AuthenticatedBody<T> = {
   device: AuthenticatedDevice;
   body: T;
 };
+
+export type { ModOverview, ModTankRatings } from '@otmetki/schemas';
+
+export type TankRatingsInput = {
+  accountId: bigint;
+  tankIds: number[];
+};

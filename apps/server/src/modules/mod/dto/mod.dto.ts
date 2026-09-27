@@ -1,4 +1,12 @@
-import { bindCodeInputSchema, bindCodeSchema, modDevicesSchema } from '@otmetki/schemas';
+import {
+  bindCodeInputSchema,
+  bindCodeSchema,
+  modDevicesSchema,
+  modOverviewSchema,
+  modRatingsRequestSchema,
+  modTankRatingsRequestSchema,
+  modTankRatingsSchema
+} from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import { bindRequestSchema, bindResponseSchema, ingestResponseSchema } from '../lib';
@@ -11,3 +19,7 @@ export class BindResponseDto extends createZodDto(bindResponseSchema) {}
 export class IngestResponseDto extends createZodDto(ingestResponseSchema) {}
 export class ModDevicesDto extends createZodDto(modDevicesSchema) {}
 export class DeviceParamsDto extends createZodDto(deviceParamsSchema) {}
+export class ModOverviewDto extends createZodDto(modOverviewSchema) {}
+export class ModTankRatingsDto extends createZodDto(modTankRatingsSchema) {}
+export class ModRatingsRequestDto extends createZodDto(modRatingsRequestSchema) {}
+export class ModTankRatingsRequestDto extends createZodDto(modTankRatingsRequestSchema) {}

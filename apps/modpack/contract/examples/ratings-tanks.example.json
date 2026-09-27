@@ -1,0 +1,25 @@
+{
+  "account_id": 12345678,
+  "tanks": [
+    {
+      "tank_id": 1,
+      "battles": 412,
+      "win_rate": 55.1,
+      "avg_damage": 1204.5,
+      "wn8": { "value": 2104.9, "tier": "very_good" },
+      "moe_percent": 86.12,
+      "marks_on_gun": 2,
+      "mastery": 4
+    },
+    {
+      "tank_id": 2849,
+      "battles": 3,
+      "win_rate": 33.33,
+      "avg_damage": null,
+      "wn8": { "value": null, "tier": null },
+      "moe_percent": null,
+      "marks_on_gun": null,
+      "mastery": 0
+    }
+  ]
+}

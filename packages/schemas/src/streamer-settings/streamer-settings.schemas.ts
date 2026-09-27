@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { countSchema, httpUrlSchema, isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
+import { modDeviceIdSchema } from '../mod/mod.schemas';
 import { STREAMER_SETTINGS, STREAMER_SETTINGS_APPLICABLE } from './streamer-settings.constants';
 
 const text = z.string().trim().min(1).max(STREAMER_SETTINGS.textMax);
@@ -242,7 +243,7 @@ export const updateSettingsShareSchema = z.object({
 });
 
 export const modSettingsExportSchema = z.object({
-  device_id: uuidSchema,
+  device_id: modDeviceIdSchema,
   account_id: z.number().int().positive(),
   mod_version: z.string().max(32),
   target: z.enum(STREAMER_SETTINGS.applyTargets),
@@ -251,7 +252,7 @@ export const modSettingsExportSchema = z.object({
 });
 
 export const modDeviceRequestSchema = z.object({
-  device_id: uuidSchema,
+  device_id: modDeviceIdSchema,
   account_id: z.number().int().positive()
 });
 

@@ -27,3 +27,9 @@ export const MOD_ERROR_CODES = [
   'too_large',
   'unknown_device'
 ] as const;
+
+export const MOD_RATINGS = {
+  maxTanks: 100,
+  deviceIdPattern: /^[\w-]+$/,
+  deviceIdMaxLength: 64
+} as const;

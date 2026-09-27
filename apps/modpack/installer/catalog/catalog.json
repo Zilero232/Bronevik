@@ -306,6 +306,21 @@
       "preview": { "image": "previews/marks_history.svg" }
     },
     {
+      "id": "hangar_ratings",
+      "category": "hangar",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Мои рейтинги в ангаре", "en": "My ratings in the hangar" },
+      "description": {
+        "ru": "Ваши WN8, ЭФФ, Броня-Индекс, процент побед и средний урон с сайта: по аккаунту, за последнюю сессию и по выбранному танку с отметкой и классностью. Обновляется после каждого боя.",
+        "en": "Your WN8, EFF, Bronya Index, win rate and average damage from the site: for the account, the latest session and the selected tank with its MoE and mastery. Refreshed after every battle."
+      },
+      "fairPlay": {
+        "ru": "Только ваши собственные рейтинги с сайта, после привязки мода; ничего о других игроках.",
+        "en": "Only your own ratings from the site, once the mod is bound; nothing about other players."
+      },
+      "preview": { "image": "previews/hangar_ratings.svg" }
+    },
+    {
       "id": "hangar_info",
       "category": "hangar",
       "presets": ["recommended", "streamer"],

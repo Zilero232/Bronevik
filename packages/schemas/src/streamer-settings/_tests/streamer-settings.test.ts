@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { changedGroups, diffSettings, flattenSettings, toSettingsValues, valuesForApply, zoomMax } from '../streamer-settings';
-import { settingsCompareQuerySchema, streamerSettingsSchema } from '../streamer-settings.schemas';
+import { modDeviceRequestSchema, settingsCompareQuerySchema, streamerSettingsSchema } from '../streamer-settings.schemas';
 
 const provenance = { source: 'creator', sourceUrl: null, checkedAt: '2026-09-26T10:00:00.000Z' } as const;
 
@@ -87,5 +87,15 @@ describe('settingsCompareQuerySchema', () => {
   it('dedupes slugs and caps the count', () => {
     expect(settingsCompareQuerySchema.parse({ slugs: 'jove, near-you,jove' }).slugs).toEqual(['jove', 'near-you']);
     expect(settingsCompareQuerySchema.safeParse({ slugs: 'a,b,c,d,e' }).success).toBe(false);
+  });
+});
+
+describe('modDeviceRequestSchema', () => {
+  it('accepts the device ids the server issues', () => {
+    expect(modDeviceRequestSchema.safeParse({ device_id: 'dev_Ab3-xZ_09', account_id: 7 }).success).toBe(true);
+  });
+
+  it('refuses ids with characters outside the device alphabet', () => {
+    expect(modDeviceRequestSchema.safeParse({ device_id: 'dev/../x', account_id: 7 }).success).toBe(false);
   });
 });

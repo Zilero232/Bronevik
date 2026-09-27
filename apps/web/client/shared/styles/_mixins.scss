@@ -1,3 +1,4 @@
+@forward '@otmetki/design-tokens' show reduced-motion, texture;
 @forward '@/shared/styles/animations';
 @forward '@/shared/styles/breakpoints';
 @use '@/shared/styles/breakpoints' as *;
@@ -402,21 +403,6 @@
 @mixin touch-input {
   @media (pointer: coarse) {
     font-size: max(16px, 1rem);
-  }
-}
-
-@mixin texture($kind: hex) {
-  @if $kind == hex {
-    background-image: var(--texture-hex);
-    background-size: 28px 48px;
-  } @else if $kind == camo {
-    background-image: var(--texture-camo), var(--texture-noise);
-    background-size:
-      240px 240px,
-      160px 160px;
-  } @else if $kind == noise {
-    background-image: var(--texture-noise);
-    background-size: 160px 160px;
   }
 }
 

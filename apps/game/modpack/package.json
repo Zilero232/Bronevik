@@ -20,22 +20,33 @@
     "build:installer": "uv run python tools/build/setupkit --packages dist --compile",
     "build:release": "python tools/build/build.py --require-pyc",
     "lint": "uv run ruff check .",
+    "most:bundle": "uv run python tools/most --packages dist --release",
     "test": "python tools/run_tests.py",
     "test:pytest": "uv run pytest",
     "typecheck": "tsc -p ui-web --noEmit",
-    "ui:build": "bun ui-web/config/build/build.ts",
-    "ui:test": "bun test ui-web"
+    "ui:build": "vite build -c ui-web/vite.config.ts --configLoader runner && vite build -c ui-web/vite.config.ts --configLoader runner --mode button",
+    "ui:dev": "vite -c ui-web/vite.config.ts --configLoader runner",
+    "ui:test": "vitest run"
   },
   "dependencies": {
     "@nanostores/preact": "^1.1.0",
+    "@otmetki/icons": "workspace:*",
     "clsx": "catalog:",
     "nanostores": "1.5.3",
     "preact": "^10.29.8",
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@otmetki/design-tokens": "workspace:*",
+    "@preact/preset-vite": "^2.10.6",
+    "@resvg/resvg-js": "catalog:",
+    "@types/postcss-pxtorem": "^6.1.0",
     "esbuild": "catalog:",
-    "fast-png": "^8.0.0",
-    "typescript": "catalog:"
+    "postcss-pxtorem": "^6.1.0",
+    "sass-embedded": "catalog:",
+    "typescript": "catalog:",
+    "vite": "^8.3.1",
+    "vite-plugin-singlefile": "^2.3.3"
   }
 }

@@ -1,4 +1,5 @@
 import { useStore } from '@nanostores/preact';
+import clsx from 'clsx';
 
 import { useBridge } from '../../model/hooks/use-bridge';
 import { useT } from '../../model/hooks/use-t';
@@ -9,6 +10,8 @@ import { HudEditor } from '../hud-editor';
 import { Notice } from '../notice';
 import { Profiles } from '../profiles';
 import { Sidebar } from '../sidebar';
+
+import s from './App.module.scss';
 
 export const App = () => {
   useBridge();
@@ -21,15 +24,15 @@ export const App = () => {
   const invalid = useStore($invalid);
 
   if (!state) {
-    return <div className='window window--empty'>{invalid ? t('invalidState') : t('loading')}</div>;
+    return <div className={clsx(s.window, s.empty)}>{invalid ? t('invalidState') : t('loading')}</div>;
   }
 
   return (
-    <div className='window'>
+    <div className={s.window}>
       <Header state={state} />
-      <div className='window__body'>
+      <div className={s.body}>
         <Sidebar groups={groups} selectedId={selected?.id ?? null} view={view} />
-        <main className='content'>
+        <main className={s.content}>
           {view.section === 'components' && selected && <ComponentView key={selected.id} component={selected} />}
           {view.section === 'profiles' && <Profiles profiles={state.profiles} />}
           {view.section === 'hud' && <HudEditor panels={state.hud.panels} />}

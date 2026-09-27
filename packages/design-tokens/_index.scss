@@ -1,0 +1,3 @@
+@forward 'scss/properties' show token, root-properties, theme-properties, rating-palette-properties, $root, $themes;
+@forward 'scss/motion' show reduced-motion;
+@forward 'scss/textures' show texture;

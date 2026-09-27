@@ -1,0 +1,28 @@
+@use '../../../shared/styles/gameface' as *;
+
+.field {
+  display: flex;
+  min-height: 44px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid token(color-border);
+}
+
+.text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  margin-right: 16px;
+}
+
+.label {
+  font-size: 14px;
+}
+
+.hint {
+  margin-top: 2px;
+  color: token(color-text-dim);
+  font-size: 12px;
+}

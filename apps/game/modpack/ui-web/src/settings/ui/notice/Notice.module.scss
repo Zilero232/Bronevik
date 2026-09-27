@@ -1,0 +1,33 @@
+@use '../../../shared/styles/gameface' as *;
+
+.notice {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  padding: 10px 16px;
+  border-top: 1px solid token(color-border);
+  background-color: token(color-bg-deep);
+  font-size: 13px;
+}
+
+.info {
+  color: token(color-armor);
+}
+
+.error {
+  color: token(color-danger);
+}
+
+.code {
+  color: token(color-gold);
+}
+
+.codeField {
+  @include field-box;
+
+  height: 56px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  font-family: monospace;
+  font-size: 11px;
+}

@@ -18,12 +18,16 @@
       "project": ["**/*.{ts,tsx,scss}"]
     },
     "apps/game/modpack": {
-      "entry": ["ui-web/src/settings/main.tsx", "ui-web/src/button/main.ts"],
-      "project": ["ui-web/**/*.{ts,tsx}"]
+      "entry": ["ui-web/src/button/main.tsx", "ui-web/stylelint.config.mjs"],
+      "project": ["ui-web/**/*.{ts,tsx,scss}"]
     },
     "apps/web/server": {
       "entry": ["scripts/*.ts"],
       "project": ["src/**/*.ts", "scripts/**/*.ts", "prisma/**/*.prisma"]
+    },
+    "packages/design-tokens": {
+      "entry": ["_index.scss"],
+      "project": ["src/**/*.ts", "scss/**/*.{ts,scss}", "_index.scss"]
     },
     "packages/*": {
       "project": ["src/**/*.{ts,tsx}"]

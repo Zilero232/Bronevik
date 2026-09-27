@@ -1,0 +1,36 @@
+{
+  "name": "@otmetki/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Three Marks design tokens: colours (dark and light), spacing, radii, typography, motion and textures as SCSS maps and mixins, plus a Node reader of their values.",
+  "homepage": "https://triotmetki.ru",
+  "bugs": {
+    "url": "https://github.com/Zilero232/Triotmetki/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zilero232/Triotmetki.git",
+    "directory": "packages/design-tokens"
+  },
+  "license": "UNLICENSED",
+  "author": "Alexandr Artemev",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "sass": "./_index.scss",
+      "default": "./src/index.ts"
+    }
+  },
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "sass-embedded": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  },
+  "sass": "_index.scss"
+}

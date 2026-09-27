@@ -1,0 +1,74 @@
+$default: (
+  dark: (
+    'rating-bad': #e96569,
+    'rating-below': #ff8b3d,
+    'rating-average': #f2c94c,
+    'rating-good': #4cc36b,
+    'rating-great': #3fa9f5,
+    'rating-unicum': #b26fff
+  ),
+  light: (
+    'rating-bad': #af2a2f,
+    'rating-below': #994812,
+    'rating-average': #785b00,
+    'rating-good': #206d36,
+    'rating-great': #18639d,
+    'rating-unicum': #7e32d2
+  )
+);
+$palettes: (
+  xvm: (
+    dark: (
+      'rating-bad': #ff5146,
+      'rating-below': #fe7903,
+      'rating-average': #f8f400,
+      'rating-good': #60ff00,
+      'rating-great': #02c9b3,
+      'rating-unicum': #d558f4
+    ),
+    light: (
+      'rating-bad': #ba0a00,
+      'rating-below': #9a4507,
+      'rating-average': #666300,
+      'rating-good': #2c6e00,
+      'rating-great': #006a5d,
+      'rating-unicum': #942bb1
+    )
+  ),
+  wotlife: (
+    dark: (
+      'rating-bad': #dc6e6e,
+      'rating-below': #d77900,
+      'rating-average': #d7b600,
+      'rating-good': #739d23,
+      'rating-great': #5397bb,
+      'rating-unicum': #a683bb,
+      'rating-tier-very-bad': #909090,
+      'rating-tier-bad': #dc6e6e,
+      'rating-tier-below-avg': #d77900,
+      'rating-tier-avg': #d7b600,
+      'rating-tier-good': #739d23,
+      'rating-tier-very-good': #669e3e,
+      'rating-tier-great': #5397bb,
+      'rating-tier-unicum': #a683bb,
+      'rating-tier-super-unicum': #a780c8
+    ),
+    light: (
+      'rating-bad': #af2b2b,
+      'rating-below': #8d4f00,
+      'rating-average': #705f00,
+      'rating-good': #4b6717,
+      'rating-great': #33657f,
+      'rating-unicum': #785090,
+      'rating-tier-very-bad': #000,
+      'rating-tier-bad': #af2b2b,
+      'rating-tier-below-avg': #8d4f00,
+      'rating-tier-avg': #705f00,
+      'rating-tier-good': #4b6717,
+      'rating-tier-very-good': #446929,
+      'rating-tier-great': #33657f,
+      'rating-tier-unicum': #785090,
+      'rating-tier-super-unicum': #5a3175
+    )
+  )
+);

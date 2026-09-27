@@ -75,7 +75,7 @@ apps/game/modpack/
     ui/                     -> gui/mods/otmetki/ui              in-game UI (own package net.triotmetki.ui, see "In-game UI")
       protocol/ fields/ components/ profiles/ hud_edit/ bridge/ i18n/   pure: the whole window as state out, messages in
       client/                 glue: Gameface window, hangar button, ModsList entry, hotkey, the bridge context
-      gameface/               the built ui-web page (committed; `bun run ui:build` rewrites it)
+      gameface/               the built ui-web bundles (committed; `bun run ui:build` rewrites them)
       res_map/                OpenWG Gameface resource registration of the page
     companion/              -> gui/mods/otmetki/companion       the mod the site binds to (id otmetki.companion)
       entry/mod_otmetki.py    entry point the client auto-loads (gui/mods/mod_otmetki.pyc)
@@ -103,7 +103,7 @@ apps/game/modpack/
     replay_manager/ hangar_tweaks/ minimap/ camera/ crosshair/ hangar_info/ marks_history/ auto_resupply/
     notification_filter/ hangar_cleaner/ hangar_ratings/
                             hangar and client-settings components (see "Hangar and client-settings components")
-  ui-web/                   TypeScript source of the Gameface page (preact, nanostores, zod/mini, clsx; esbuild via bun)
+  ui-web/                   source of the Gameface page and hangar button (preact, nanostores, zod/mini, clsx, SCSS modules; Vite)
   tools/
     build/                  build.py (CLI), layout.py (what goes where), archive.py (zip + meta.xml), compilers.py,
                             setupkit/ (the installer build: components.json, Inno includes, artwork, OpenWG.Utils)
@@ -347,15 +347,23 @@ Components that change no panel: each is a feature package with a config.json sw
 
 Package `packages/ui` (`net.triotmetki.ui`, depends on core and companion; registers through the core registry as `ui`, so it attaches in any load order). Without OpenWG Gameface it logs one line and the ModsSettingsAPI window / `config.json` stay the settings UI.
 
-- **Window:** a Gameface `WindowImpl` + `ViewImpl` whose `ViewModel` has one string property `state` (the whole UI state as JSON) and one command `send` (`{message: '<json>'}`). The page is `ui-web` built into `packages/ui/gameface/` and shipped at `res/gui/gameface/mods/triotmetki/ui/`; `res_map/net.triotmetki.ui.json` registers it for OpenWG Gameface (Lesta needs its Lesta-compatible build; the first start after install restarts the client once).
-- **Entry points:** a «///» button injected into a hangar Gameface view (`client/constants.BUTTON_HOSTS`, `setChildView` + `gf_mod_inject` of `button.js`), a ModsList entry when a Lesta-compatible ModsList is installed, and the hotkey Ctrl+Shift+T (hangar only; it also ends the on-screen HUD edit mode). The window closes on `battle_enter`.
+- **Window:** a Gameface `WindowImpl` + `ViewImpl` whose `ViewModel` has one string property `state` (the whole UI state as JSON) and one command `send` (`{message: '<json>'}`). The page is `ui-web` built into `packages/ui/gameface/index.html` (one self-contained file: script and styles inlined) and shipped at `res/gui/gameface/mods/triotmetki/ui/`; `res_map/net.triotmetki.ui.json` registers it for OpenWG Gameface (Lesta needs its Lesta-compatible build; the first start after install restarts the client once).
+- **Entry points:** a «///» button injected into a hangar Gameface view (`client/constants.BUTTON_HOSTS`, `setChildView` + `gf_mod_inject` of `button.js` and `button.css`; `button.html` is the child view's empty layout), a ModsList entry when a Lesta-compatible ModsList is installed, and the hotkey Ctrl+Shift+T (hangar only; it also ends the on-screen HUD edit mode). The window closes on `battle_enter`.
 - **Bridge (pure, `ui/bridge`):** `SettingsBridge.state()` and `handle(message)`; the glue only moves JSON. Messages: `ready`, `close`, `set {component, key, value}`, `action {component, action, row?, value?}`, `language`, `bind {code}`, `open {path}` (site-relative paths only, joined to the site next to `server_url`), `profile_save/load/rename/delete/export/import`, `hud_edit {active}`, `hud_move {panel, x, y, align_x?, align_y?}`, `hud_reset {panel}`. A test checks the command list against `ui-web`, and the page's zod schema parses a state fixture the Python tests write (`OTMETKI_UPDATE_FIXTURES=1` regenerates it).
 - **Cards (`ui/components`):** the companion's data switches (`COMPANION_KEYS`) first, then every attached feature, then HUD panels no feature claims. A page row may carry `details: [{label, value}]`; the page shows them behind a «Подробнее» toggle (the battle summaries and the marks history use it). A card's switch is the feature's config.json switch (`settings.SETTINGS`); its fields come from its components.json section (`settings.SCHEMA`) or its companion keys; field type, limits and choices are derived from the `Schema` (bool, int with min/max, choice, text). Panel position keys (`x`, `y`, `align_*`, `drag`) are left to the HUD editor. A feature instance may add buttons and a list page with duck-typed `ui_actions()`, `ui_page()` and `ui_action(action, row, value)` (the replay manager and hangar tweaks do). Group: `GROUP` in the feature's settings (`data`, `hangar`, `battle`).
 - **Labels:** from the shared catalog, most specific first: `component_<id>` / `component_<id>_hint`; field `<id>_<key>`, `setting_<key>`, then the bare key (the companion labels its switches that way); hints with `_hint`; choices `<id>_<key>_<value>`, then `choice_<value>`. A feature adds these to its `i18n` STRINGS.
 - **Profiles (`ui/profiles`):** `mods/configs/otmetki/profiles.json` `{version: 1, active, profiles: [{id, name, created, updated, data: {config, components}}]}`, at most 12. `data.config` is config.json without `server_url`, `bind_code`, `settings_action`; `data.components` is the whole components.json (sections of components that are not installed included: they are stored as is and merged through their schema once installed). The installer reads and writes the same file. Profile codes `TM1.<base64url(zlib(json))>` copy a profile between players. **Site sync is not wired:** the settings-share contract (`contract/settings.schema.json`) is a strict whitelist of standard client settings and excludes mods by design, so syncing profiles to the site needs its own contract and endpoint.
 - **HUD edit mode:** the window's editor draws the screen (the client size from `viewEnv.getClientSizePx()`) with every registered panel from `hud_layer(app).panels`; dragging (or the arrow keys) sends `hud_move` with the nearest anchor (`align_x`/`align_y` by screen third), throttled to 150 ms, and the bridge writes it through `hud_layer(app).update_settings`, so a shown panel moves live. «Edit on screen» emits `hud_edit(True)` on the bus and closes the window: every HUD panel (damage log, hit log, clock, team HP, sixth sense) shows itself with preview data in the hangar when its switch is on, and GUIFlash lets the player drag it (Ctrl); `hud_edit(False)` (hotkey, window reopened, battle) hides the previews, and a panel's own battle start ends its preview. `hud_describe(collect)` asks panels for the editor's miniature: `collect(panel_id, preview=None, width=None, height=None)`. A panel answers both through `core.hud.HudPreview(layer, panel_id, render_preview, is_enabled, can_show, size).attach(app.bus)`; its preview text comes from the feature's pure `model/preview.py`.
-- **Look:** the site's design v4 tokens, read from `apps/web/client/shared/styles/_tokens.scss` at build time (dark theme; `rgb(r g b / a)` becomes `rgba()`, px becomes rem because Gameface scales rem) and inlined into the CSS: graphite surfaces, orange accent, gold for the active profile. The ModsList icon is drawn at build time from the same tokens (`fast-png`).
-- **Build and tests:** `bun run ui:build` (in `apps/game/modpack`) bundles `ui-web` with esbuild into `packages/ui/gameface/` (committed; a test fails when it is stale). `bun run ui:test` (`bun test ui-web`) and the repo's Vitest project `modpack-ui` run the same `_tests`; `bun run typecheck` covers `ui-web`.
+- **Look:** the site's design v4 tokens from `@otmetki/design-tokens` (`packages/design-tokens`, the same SCSS maps the site emits as CSS variables), dark theme. Each component has its own SCSS module (`<Component>.module.scss`, classes named `otmetki-<Component>__<class>`); `token(name)` from `src/shared/styles/_gameface.scss` inlines the static value, so the CSS carries no `var()`. Lengths are written in px and shipped as rem (`postcss-pxtorem`, 1rem = 1px of the design, because Gameface scales rem); esbuild's CSS minifier lowers `rgb(r g b / a)` to `rgba()` for `chrome58`. The «///» mark (header, hangar button) is `LOGO_SHAPES` from `@otmetki/icons/shapes`; the ModsList `icon.png` is the same mark on the tile colours, rasterised at build time with resvg.
+- **Build and tests:** `bun run ui:build` (in `apps/game/modpack`) runs Vite twice (`ui-web/vite.config.ts`, `@preact/preset-vite`): the default mode builds the multi-page app (`index.html` settings window, `button.html` button layout) with `vite-plugin-singlefile` plus `icon.png`; `--mode button` builds `src/button/main.tsx` as a library IIFE with its own `button.css`, the two files `gf_mod_inject` loads. JS targets `es2017`: the client's own Gameface bundles (wotstat/wot-src, `sources-gameface/_dist`) are compiled down to that level (optional chaining and object spread lowered), and Coherent documents only "V8" without a version. The output is deterministic and committed; `config/vite/_tests/gameface-bundle.test.ts` rebuilds into a temp folder and fails when `packages/ui/gameface` is stale. `bun run ui:dev` serves both pages in a browser; in dev `main.tsx` installs `src/dev/mock-bridge` (the Gameface `model`/`engine`/`viewEnv` globals over the Python state fixture; `set` and `language` change it, other messages come back as a notice). `bun run ui:test` (and the repo's Vitest project `modpack-ui`, which runs on the same Vite config) runs the `_tests`; `bun run typecheck` covers `ui-web`.
+- **Gameface CSS** (`ui-web/stylelint.config.mjs`, run by the repo's `bun run lint:css`). Sources: Coherent's [CSS properties](https://docs.coherent-labs.com/cpp-gameface/content_development/supported_features_tables/cssproperties/), [selectors](https://docs.coherent-labs.com/cpp-gameface/content_development/supported_features_tables/cssselectors/), [media queries](https://docs.coherent-labs.com/cpp-gameface/content_development/mediaqueries/) and [SVG](https://docs.coherent-labs.com/cpp-gameface/content_development/supported_features_tables/svgsupport/) tables (current Gameface; the client ships an older build, so treat them as a ceiling) and the Lesta client's own Gameface CSS (rem lengths, `rgba()`, no `var()`, `calc()`, `gap` or combinators). Banned:
+  - layout: `display` other than `flex`/`none`, grid, `gap`, columns, `flex-flow` (write `flex-direction` + `flex-wrap`), `order`, `float`, `position: sticky`, `inset`, logical `margin-/padding-/border-inline|block`, `justify-items|self`, `place-*`; `align-*` beyond `stretch|flex-start|flex-end|center` (`auto` for `align-self`), `justify-content` beyond `flex-start|flex-end|center|space-between|space-around`;
+  - borders and outlines: styles other than `solid|none|hidden`, `outline*`, `border-collapse|spacing`;
+  - text: `white-space` beyond `normal|nowrap|pre|pre-wrap`, `text-overflow` beyond `clip|ellipsis`, `word-break`, `word-spacing`, `text-indent`, `writing-mode`, `direction`, `font-variant*`, `font-kerning`, `font-stretch`, `list-style*`, `quotes`, counters;
+  - values: `var()` (fallbacks and `@keyframes` unsupported), `calc()` (no `%` mixed with lengths), `min|max|clamp|env|attr`, `color-mix`, conic and repeating gradients, `image-set`, modern colour spaces, named colours («limited color names»), `#rrggbbaa`, units other than `px rem em % vw vh s ms deg`, `max-width|height: none`, `user-select: all`, `visibility: collapse`;
+  - other properties: `object-fit|position`, `will-change`, `background-attachment|blend-mode|origin`, `clip`, `resize`, `scroll-behavior`, `touch-action`, `container*`, `tab-size`, table layout;
+  - selectors: any combinator or nested rule (child, descendant and sibling selectors need `EnableComplexCSSSelectorsStyling`), pseudo-classes other than `:hover :active :focus :first-child :last-child :only-child :nth-child :root`, pseudo-elements other than `::before ::after ::selection`;
+  - at-rules: `@supports @container @layer @property @page @counter-style @font-feature-values @scope`; media features other than width/height/aspect-ratio/orientation, and range notation (`width < 640px`).
 
 ## Hangar and client-settings components
 
@@ -496,7 +504,7 @@ cd apps/game/modpack && uv sync && uv run pytest && uv run ruff check .
 
 - `tools/run_tests.py` needs only the standard library and runs every `tests/` folder (`packages/*`, `features/*`, `tools/**`). It also runs on Python 2.7, where the build tool's own tests are left out.
 - pytest runs the same unittest-style tests, with its config in `pyproject.toml`.
-- `ui-web`: `bun run ui:test` (or the repo's `bun run test`, Vitest project `modpack-ui`). `tools/tests/test_ui_smoke.py` loads the ui with stubbed Gameface, ModsList, InputHandler and settings core, opens the window and drives it with page messages.
+- `ui-web`: `bun run ui:test` (or the repo's `bun run test`, Vitest project `modpack-ui`, which runs on the ui-web Vite config). `tools/tests/test_ui_smoke.py` loads the ui with stubbed Gameface, ModsList, InputHandler and settings core, opens the window and drives it with page messages.
 - The pre-commit hook runs `test:modpack` when a staged Python file is under `apps/game/modpack`.
 - [.github/workflows/modpack.yml](../../../.github/workflows/modpack.yml) runs pytest, the stdlib runner, ruff and vermin on Windows for pull requests.
 
@@ -560,25 +568,47 @@ The device secret is stored in plain text in `credentials.json`, as other mods s
 
 ## Publishing via МОСТ
 
-МОСТ is Lesta's official mod portal. Moderators check every mod against the Fair Play Policy.
+МОСТ is Lesta's official mod installer. The curators check every mod against the fair-play rules, and МОСТ delivers the files and updates to players. There is no upload API: a mod is proposed in the МОСТ forum topic, and the author still ships a working build within 7 days of each client patch. The researched requirements, the step-by-step checklist and what only the account owner can do are in [docs/ops/most-publishing.md](../../../docs/ops/most-publishing.md).
 
-1. Build a release with `--require-pyc` on the exact client version and test it in the live client (see the checklist below).
-2. On МОСТ, create the mod page in Russian and English. Include:
-   - what the mod does;
-   - the list of data it sends and where. Link to the site's privacy page and the contract;
-   - the fair-play statement above;
-   - the optional dependencies (ModsSettingsAPI, ModsList, GUIFlash);
-   - screenshots of both panels.
-3. Upload `otmetki.<version>.mtmod` (`--single`) or the split packages. The companion's `meta.xml` id stays `otmetki.companion` forever, so updates replace older versions. Bump `VERSION` on every release.
-4. Tell the moderators that the mod makes HTTPS requests to our API, and that the only other-vehicle value it reads is the team of a vehicle the player damaged (to exclude team damage).
-5. After each client patch:
-   - rebuild;
-   - smoke-test that the hooks still fire (see the checklist);
-   - resubmit.
+`tools/most` assembles the submission bundle from a release build:
 
-   The site's download page should link to the МОСТ page, not to a self-hosted binary, where possible.
+```bash
+python tools/build/build.py --require-pyc                  # dist/*.mtmod with bytecode
+bun run most:bundle --game-version 1.45.0.0                # uv run python tools/most --packages dist --release
+python tools/most --game-version 1.45.0.0 --only companion marks_panel --strict
+```
 
-Check МОСТ's current submission rules before the first upload. This README describes the process as we understand it, not an official document.
+| Option                      | Meaning                                                                                                    |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `--game-version` (required) | Client version, `X.Y.Z.W`: the forum title prefix and the `mods/<version>/` folder in the install text     |
+| `--packages`, `--out`       | Split packages (default `dist`) and the bundle folder (default `dist/most`)                                |
+| `--release`                 | `.py` sources in a package are an error (the production client loads only `.pyc`)                          |
+| `--changelog`               | Default `CHANGELOG.md`: `## <id> <version>` entries, or `## <version>` for every component at that version |
+| `--only ID ...`             | Bundle some components; a left-out dependency is a warning                                                 |
+| `--skip-images`, `--strict` | No preview rendering; fail on warnings too                                                                 |
+
+For every component, `dist/most/<id>/` gets the following. `dist/most/index.json` lists every component and its findings, each with the URL of the rule it comes from (`tools/most/rules`).
+
+- the unchanged `.mtmod` and its extracted `meta.xml`;
+- `previews/preview-1280x720.png` and `preview-640x360.png`, rendered from the catalog SVG through setupkit's resvg renderer (needs `uv sync`; without it the SVG is copied and a warning is printed);
+- `screenshots/`, copied from `installer/assets/screenshots/<id>/` (at most 3);
+- `description.ru.md` / `description.en.md`, built from the catalog texts, the fair-play note, the data note and the dependencies;
+- `changelog.md`;
+- `submission.json`, with the forum titles, the dependency list, sha256 and size.
+
+The checks:
+
+- the file name and the `meta.xml` id, version and dependencies against `tools/build/layout.py`;
+- a zip with `meta.xml` at its root;
+- bytecode only;
+- the ru texts;
+- the screenshot count;
+- an https video;
+- a changelog entry.
+
+The tool is Python 3 only (it reuses `tools/build` and setupkit). Its tests live in `tools/most/*/tests` and are skipped on Python 2.7.
+
+The companion's `meta.xml` id stays `otmetki.companion` forever, so a new version replaces the old one. Bump `VERSION` on every release.
 
 ## Verified and not verified
 

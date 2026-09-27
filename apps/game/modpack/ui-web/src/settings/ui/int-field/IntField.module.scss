@@ -1,0 +1,23 @@
+@use '../../../shared/styles/gameface' as *;
+
+.stepper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.step {
+  width: 32px;
+  height: 32px;
+  border: 1px solid token(color-border-strong);
+  background-color: token(color-surface-raised);
+  color: token(color-text);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.value {
+  width: 72px;
+  margin: 0 4px;
+  text-align: center;
+}

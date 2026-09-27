@@ -80,7 +80,7 @@ class LayoutTest(unittest.TestCase):
         ui = self.paths('ui')
         self.assertIn(MODS + 'mod_otmetki_ui.py', ui)
         self.assertIn(MODS + 'otmetki/ui/bridge/bridge.py', ui)
-        for name in ('index.html', 'index.js', 'index.css', 'button.html', 'button.js', 'button.css', 'icon.png'):
+        for name in ('index.html', 'button.html', 'button.js', 'button.css', 'icon.png'):
             self.assertIn(UI_ASSETS + name, ui)
         self.assertIn(layout.RES_MAP_ROOT + '/net.triotmetki.ui.json', ui)
         every = [path for package in self.packages for _, path in package.files]
@@ -155,7 +155,7 @@ class BuildTest(unittest.TestCase):
         self.assertTrue(compiled and all(path.endswith('.py') for path in compiled))
         with zipfile.ZipFile([path for path in outputs if 'net.triotmetki.ui_' in path][0]) as package:
             names = package.namelist()
-            self.assertIn(UI_ASSETS + 'index.js', names)
+            self.assertIn(UI_ASSETS + 'index.html', names)
             self.assertIn(layout.RES_MAP_ROOT + '/net.triotmetki.ui.json', names)
             self.assertIn(MODS + 'mod_otmetki_ui.pyc', names)
 
@@ -165,7 +165,7 @@ class BuildTest(unittest.TestCase):
             result = build.build(build.parse_args(['--out', os.path.join(self.out, 'dry'), '--dry-run']))
         self.assertEqual(result, [])
         self.assertFalse(os.path.exists(os.path.join(self.out, 'dry')))
-        self.assertIn(UI_ASSETS + 'index.js', output.getvalue())
+        self.assertIn(UI_ASSETS + 'index.html', output.getvalue())
 
 
 if __name__ == '__main__':

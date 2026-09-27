@@ -1,0 +1,43 @@
+$root: (
+  'flag-backdrop': 'radial-gradient(ellipse 50% 50% at 42% 50%, #000 25%, transparent 78%)',
+  'rating-pattern-bad': 'repeating-linear-gradient(45deg, rgb(0 0 0 / 38%) 0 2px, transparent 2px 6px)',
+  'rating-pattern-below': 'repeating-linear-gradient(-45deg, rgb(0 0 0 / 32%) 0 2px, transparent 2px 7px)',
+  'rating-pattern-average': 'radial-gradient(rgb(0 0 0 / 35%) 1px, transparent 1.5px) 0 0 / 5px 5px',
+  'rating-pattern-good': 'repeating-linear-gradient(90deg, rgb(0 0 0 / 30%) 0 1px, transparent 1px 5px)',
+  'rating-pattern-great': 'repeating-linear-gradient(0deg, rgb(255 255 255 / 30%) 0 1px, transparent 1px 5px)',
+  'rating-pattern-unicum':
+    'repeating-linear-gradient(45deg, rgb(255 255 255 / 28%) 0 1px, transparent 1px 5px), repeating-linear-gradient(-45deg, rgb(255 255 255 / 28%) 0 1px, transparent 1px 5px)'
+);
+$dark: (
+  'texture-hex':
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48'%3E%3Cpath d='M14 0 28 8v16L14 32 0 24V8Zm0 32v16' fill='none' stroke='%23fff' stroke-opacity='.05'/%3E%3C/svg%3E\")",
+  'texture-camo':
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23a9b56c' fill-opacity='.045'%3E%3Cpath d='M10 40c30-30 70-10 80 10s-10 50-40 45S-20 70 10 40Z'/%3E%3Cpath d='M140 20c40-10 90 10 80 50s-60 30-80 20-40-60 0-70Z'/%3E%3Cpath d='M60 150c20-40 80-40 100-10s0 70-40 70-80-20-60-60Z'/%3E%3Cpath d='M190 170c20-10 50 10 45 40s-40 30-55 10-10-40 10-50Z'/%3E%3C/g%3E%3C/svg%3E\")",
+  'texture-noise':
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url#{"("}%23n)'/%3E%3C/svg%3E\")",
+  'rivet-color': 'rgb(255 255 255 / 14%)'
+);
+$light: (
+  'texture-hex':
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48'%3E%3Cpath d='M14 0 28 8v16L14 32 0 24V8Zm0 32v16' fill='none' stroke='%23000' stroke-opacity='.06'/%3E%3C/svg%3E\")",
+  'texture-camo':
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%234a5a1a' fill-opacity='.05'%3E%3Cpath d='M10 40c30-30 70-10 80 10s-10 50-40 45S-20 70 10 40Z'/%3E%3Cpath d='M140 20c40-10 90 10 80 50s-60 30-80 20-40-60 0-70Z'/%3E%3Cpath d='M60 150c20-40 80-40 100-10s0 70-40 70-80-20-60-60Z'/%3E%3Cpath d='M190 170c20-10 50 10 45 40s-40 30-55 10-10-40 10-50Z'/%3E%3C/g%3E%3C/svg%3E\")",
+  'texture-noise':
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url#{"("}%23n)'/%3E%3C/svg%3E\")",
+  'rivet-color': 'rgb(0 0 0 / 16%)'
+);
+
+@mixin texture($kind: hex) {
+  @if $kind == hex {
+    background-image: var(--texture-hex);
+    background-size: 28px 48px;
+  } @else if $kind == camo {
+    background-image: var(--texture-camo), var(--texture-noise);
+    background-size:
+      240px 240px,
+      160px 160px;
+  } @else if $kind == noise {
+    background-image: var(--texture-noise);
+    background-size: 160px 160px;
+  }
+}

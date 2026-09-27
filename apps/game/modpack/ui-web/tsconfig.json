@@ -4,7 +4,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["bun"],
+    "types": ["bun", "vite/client"],
     "noEmit": true
   },
   "include": ["**/*.ts", "**/*.tsx"]

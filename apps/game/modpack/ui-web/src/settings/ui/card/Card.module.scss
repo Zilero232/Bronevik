@@ -1,0 +1,53 @@
+@use '../../../shared/styles/gameface' as *;
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border: 1px solid token(color-border);
+  border-radius: token(radius-lg);
+  background-color: token(color-surface);
+  box-shadow: token(elev-1);
+}
+
+.head {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.titles {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  margin-right: 16px;
+}
+
+.title {
+  padding-left: 14px;
+  border-left: 4px solid token(color-accent);
+  margin: 0;
+  font-size: 22px;
+
+  @include caps;
+}
+
+.hint {
+  margin: 8px 0 0;
+  color: token(color-text-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.action {
+  margin: 0 8px 8px 0;
+}

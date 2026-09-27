@@ -1,0 +1,33 @@
+@use '../../../shared/styles/gameface' as *;
+
+.window {
+  display: flex;
+  overflow: hidden;
+  width: 1120px;
+  height: 720px;
+  flex-direction: column;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-lg);
+  background-color: token(color-bg);
+  box-shadow: token(elev-3);
+}
+
+.empty {
+  align-items: center;
+  justify-content: center;
+  color: token(color-text-muted);
+  font-size: 16px;
+}
+
+.body {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: row;
+}
+
+.content {
+  flex: 1 1 auto;
+  padding: 20px 24px;
+  overflow-y: auto;
+}

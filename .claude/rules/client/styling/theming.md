@@ -10,10 +10,13 @@ paths:
 
 ## Theming and tokens
 
-Tokens are CSS variables in `shared/styles/_tokens.scss`: theme-independent ones
-on `:root`, the dark palette on `:root, [data-theme='dark']`, the light one on
-`[data-theme='light']`. `next-themes` sets `data-theme` (dark by default, no
-system detection). A colour token goes into both theme blocks in the same change;
+Token values live in `@otmetki/design-tokens` (`packages/design-tokens/scss`, SCSS maps per
+concern: colours per theme, scale, motion, palette, surfaces, textures, rating palettes) and are
+emitted as CSS variables by `shared/styles/_tokens.scss`: theme-independent ones on `:root`, the
+dark palette on `:root, [data-theme='dark']`, the light one on `[data-theme='light']`. Layout
+tokens that only the site has (shell, header, rows, z-index, safe areas, font stacks) stay in
+`_tokens.scss`. `next-themes` sets `data-theme` (dark by default, no
+system detection). A colour token goes into both theme maps (`colors.$dark` and `$light`) in the same change;
 components read tokens and carry no theme-specific code. No literal colour in a
 component's SCSS: a translucent variant is `color-mix(in srgb, var(--token) N%, transparent)`,
 a scrim over imagery uses `--color-shade`, text on imagery `--color-on-media` (both

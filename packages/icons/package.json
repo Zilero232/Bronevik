@@ -17,7 +17,8 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./shapes": "./src/shapes/index.ts"
   },
   "main": "src/index.ts",
   "scripts": {

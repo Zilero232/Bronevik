@@ -1,0 +1,39 @@
+$typography: (
+  'text-2xs': 0.6875rem,
+  'text-xs': 0.75rem,
+  'text-sm': 0.8125rem,
+  'text-md': 0.875rem,
+  'text-lg': 1rem,
+  'text-xl': 1.25rem,
+  'text-2xl': 1.5rem,
+  'text-3xl': 1.75rem,
+  'num-md': 1.5rem,
+  'num-lg': 2rem,
+  'num-xl': 2.5rem,
+  'num-hero': 3rem,
+  'display-xl': 3.5rem,
+  'display-lg': 2.75rem,
+  'display-md': 2rem,
+  'tracking-label': 0.06em,
+  'tracking-display': 0.02em,
+  'leading-tight': 1.15,
+  'leading-body': 1.45
+);
+$spacing: (
+  'space-1': 2px,
+  'space-2': 4px,
+  'space-3': 8px,
+  'space-4': 12px,
+  'space-5': 16px,
+  'space-6': 20px,
+  'space-7': 24px,
+  'space-8': 32px,
+  'space-9': 48px
+);
+$radii: (
+  'radius-xs': 1px,
+  'radius-sm': 3px,
+  'radius-md': 4px,
+  'radius-lg': 8px,
+  'radius-full': 999px
+);

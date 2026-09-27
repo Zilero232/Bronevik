@@ -1,10 +1,17 @@
-import { defineConfig } from 'vitest/config';
+import { defineProject, mergeConfig } from 'vitest/config';
 
-export default defineConfig({
-  test: {
-    name: 'modpack-ui',
-    isolate: true,
-    environment: 'node',
-    include: ['ui-web/**/_tests/**/*.test.ts']
-  }
-});
+import { sharedConfig } from './ui-web/config/vite/shared';
+
+// The modpack-ui project runs on the same Vite config as the Gameface build (preact, SCSS
+// modules, design tokens), rooted at ui-web.
+export default mergeConfig(
+  sharedConfig(),
+  defineProject({
+    test: {
+      name: 'modpack-ui',
+      isolate: true,
+      environment: 'node',
+      include: ['**/_tests/**/*.test.ts']
+    }
+  })
+);

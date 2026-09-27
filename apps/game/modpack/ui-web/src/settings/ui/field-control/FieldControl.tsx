@@ -1,9 +1,9 @@
-import clsx from 'clsx';
-
 import type { FieldProps } from '../field';
 
 import { useT } from '../../model/hooks/use-t';
+import { Input } from '../input';
 import { IntField } from '../int-field';
+import { Segmented } from '../segmented';
 import { Toggle } from '../toggle';
 
 export const FieldControl = ({ field, onSet }: FieldProps) => {
@@ -18,28 +18,15 @@ export const FieldControl = ({ field, onSet }: FieldProps) => {
   }
 
   if (field.type === 'choice') {
-    return (
-      <div className='segmented segmented--wrap'>
-        {field.choices.map((choice) => (
-          <button
-            key={choice.value}
-            className={clsx('segmented__item', choice.value === field.value && 'segmented__item--on')}
-            type='button'
-            onClick={() => onSet({ key: field.key, value: choice.value })}
-          >
-            {choice.label}
-          </button>
-        ))}
-      </div>
-    );
+    return <Segmented wrap items={field.choices} value={field.value} onSelect={(value) => onSet({ key: field.key, value })} />;
   }
 
   return (
-    <input
-      className='input input--wide'
+    <Input
       defaultValue={field.value}
       maxLength={field.max_length}
       placeholder={t('reset')}
+      variant='wide'
       onChange={(event) => onSet({ key: field.key, value: event.currentTarget.value })}
     />
   );

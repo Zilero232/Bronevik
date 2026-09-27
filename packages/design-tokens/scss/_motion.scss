@@ -1,0 +1,12 @@
+$motion: (
+  'duration-fast': 0.1s,
+  'duration-base': 0.16s,
+  'duration-lift': 0.18s,
+  'ease-out': cubic-bezier(0.2, 0, 0, 1)
+);
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}

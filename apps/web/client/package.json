@@ -32,6 +32,7 @@
     "@hocuspocus/provider": "4.7.0",
     "@hookform/resolvers": "^5.9.1",
     "@number-flow/react": "^0.6.2",
+    "@otmetki/design-tokens": "workspace:*",
     "@otmetki/gamedata": "workspace:*",
     "@otmetki/icons": "workspace:*",
     "@otmetki/ratings": "workspace:*",
@@ -96,7 +97,7 @@
     "@types/three": "^0.186.0",
     "esbuild": "catalog:",
     "madge": "^8.0.0",
-    "sass-embedded": "^1.105.0",
+    "sass-embedded": "catalog:",
     "serwist": "^9.5.12",
     "typescript": "catalog:"
   }

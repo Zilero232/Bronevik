@@ -2,9 +2,11 @@ import clsx from 'clsx';
 
 import type { NoticeProps } from './Notice.types';
 
+import s from './Notice.module.scss';
+
 export const Notice = ({ notice }: NoticeProps) => (
-  <div className={clsx('notice', `notice--${notice.kind}`)}>
-    {notice.text && <span className='notice__text'>{notice.text}</span>}
-    {notice.code && <textarea readOnly className='input notice__code' value={notice.code} />}
+  <div className={clsx(s.notice, s[notice.kind])}>
+    {notice.text && <span>{notice.text}</span>}
+    {notice.code && <textarea readOnly className={s.codeField} value={notice.code} />}
   </div>
 );

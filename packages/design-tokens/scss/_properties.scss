@@ -1,0 +1,88 @@
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+@use 'colors';
+@use 'motion';
+@use 'palette';
+@use 'ratings';
+@use 'scale';
+@use 'surfaces';
+@use 'textures';
+
+@function merge-maps($maps...) {
+  $merged: ();
+
+  @each $map in $maps {
+    $merged: map.merge($merged, $map);
+  }
+
+  @return $merged;
+}
+
+$root: merge-maps(
+  scale.$typography,
+  scale.$spacing,
+  scale.$radii,
+  motion.$motion,
+  surfaces.$root,
+  palette.$shades,
+  palette.$game,
+  palette.$aliases,
+  textures.$root
+);
+$themes: (
+  dark: merge-maps(colors.$dark, surfaces.$dark, map.get(ratings.$default, dark), textures.$dark, colors.$charts),
+  light: merge-maps(colors.$light, surfaces.$light, map.get(ratings.$default, light), textures.$light, colors.$charts)
+);
+
+@function token-value($value) {
+  @if meta.type-of($value) == string {
+    @return string.unquote($value);
+  }
+
+  @return $value;
+}
+
+@function find-token($name, $maps...) {
+  @each $map in $maps {
+    @if map.has-key($map, $name) {
+      @return map.get($map, $name);
+    }
+  }
+
+  @error "Unknown design token `#{$name}`.";
+}
+
+@function theme-map($theme) {
+  @if not map.has-key($themes, $theme) {
+    @error "Unknown theme `#{$theme}`. Use one of: #{map.keys($themes)}.";
+  }
+
+  @return map.get($themes, $theme);
+}
+
+@function token($name, $theme: dark) {
+  @return token-value(find-token($name, theme-map($theme), $root));
+}
+
+@mixin declare($map) {
+  @each $name, $value in $map {
+    --#{$name}: #{token-value($value)};
+  }
+}
+
+@mixin root-properties {
+  @include declare($root);
+}
+
+@mixin theme-properties($theme) {
+  @include declare(theme-map($theme));
+}
+
+@mixin rating-palette-properties($palette, $theme) {
+  @if not map.has-key(ratings.$palettes, $palette) {
+    @error "Unknown rating palette `#{$palette}`. Use one of: #{map.keys(ratings.$palettes)}.";
+  }
+
+  @include declare(map.get(ratings.$palettes, $palette, $theme));
+}

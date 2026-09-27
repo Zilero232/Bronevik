@@ -4,50 +4,52 @@ import type { HudEditorProps } from './HudEditor.types';
 
 import { useHudEditor } from '../../model/hooks/use-hud-editor';
 import { useT } from '../../model/hooks/use-t';
+import { Button } from '../button';
+import { Card, CardAction, CardActions } from '../card';
+import { Empty } from '../empty';
+
+import s from './HudEditor.module.scss';
 
 export const HudEditor = ({ panels }: HudEditorProps) => {
   const t = useT();
   const editor = useHudEditor(panels);
 
   return (
-    <article className='card'>
-      <header className='card__head'>
-        <div className='card__titles'>
-          <h2 className='section-title'>{t('sectionHud')}</h2>
-          <p className='card__hint'>{t('hudHint')}</p>
-        </div>
-        <button className='button button--accent' disabled={panels.length === 0} type='button' onClick={editor.editOnScreen}>
+    <Card
+      aside={
+        <Button disabled={panels.length === 0} variant='accent' onClick={editor.editOnScreen}>
           {t('hudOnScreen')}
-        </button>
-      </header>
+        </Button>
+      }
+      hint={t('hudHint')}
+      title={t('sectionHud')}
+    >
       {panels.length === 0 ? (
-        <p className='empty'>{t('hudEmpty')}</p>
+        <Empty>{t('hudEmpty')}</Empty>
       ) : (
-        <div ref={editor.stageRef} className='stage'>
+        <div ref={editor.stageRef} className={s.stage}>
           {editor.placed.map(({ panel, box }) => (
             <div
               key={panel.id}
               aria-label={panel.title}
-              className={clsx('stage__panel', editor.selected === panel.id && 'stage__panel--on', !panel.enabled && 'stage__panel--off')}
+              className={clsx(s.panel, editor.selected === panel.id && s.panelOn, !panel.enabled && s.panelOff)}
               role='button'
               style={box}
               tabIndex={0}
               onKeyDown={(event) => editor.nudge({ id: panel.id, key: event.key })}
               onMouseDown={(event) => editor.startDrag({ id: panel.id, mouseX: event.clientX, mouseY: event.clientY })}
             >
-              <span className='stage__panel-title'>{panel.title}</span>
-              <span className='stage__panel-preview'>{panel.enabled ? (panel.preview ?? '') : t('hudDisabled')}</span>
+              <span className={s.panelTitle}>{panel.title}</span>
+              <span className={s.panelPreview}>{panel.enabled ? (panel.preview ?? '') : t('hudDisabled')}</span>
             </div>
           ))}
         </div>
       )}
       {editor.selected && (
-        <div className='card__actions'>
-          <button className='button' type='button' onClick={() => editor.selected && editor.reset(editor.selected)}>
-            {t('hudReset')}
-          </button>
-        </div>
+        <CardActions>
+          <CardAction onClick={() => editor.selected && editor.reset(editor.selected)}>{t('hudReset')}</CardAction>
+        </CardActions>
       )}
-    </article>
+    </Card>
   );
 };

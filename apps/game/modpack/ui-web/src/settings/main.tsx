@@ -2,8 +2,21 @@ import { render } from 'preact';
 
 import { App } from './ui/app';
 
-const root = document.getElementById('root');
+import './styles/global.scss';
 
-if (root) {
-  render(<App />, root);
+const start = (): void => {
+  const root = document.getElementById('root');
+
+  if (root) {
+    render(<App />, root);
+  }
+};
+
+if (import.meta.env.DEV) {
+  void import('../dev/mock-bridge').then(({ installMockBridge }) => {
+    installMockBridge();
+    start();
+  });
+} else {
+  start();
 }

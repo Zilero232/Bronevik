@@ -1,0 +1,44 @@
+@use '../../../shared/styles/gameface' as *;
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  width: 640px;
+  height: 360px;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-md);
+  margin-top: 8px;
+  background-color: token(color-bg-deep);
+}
+
+.panel {
+  position: absolute;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  padding: 2px 4px;
+  border: 1px solid token(color-text-dim);
+  background-color: token(shade-35);
+  cursor: move;
+}
+
+.panelOn {
+  border-color: token(color-accent);
+}
+
+.panelOff {
+  opacity: 0.45;
+}
+
+.panelTitle {
+  color: token(color-accent);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.panelPreview {
+  color: token(color-text);
+  font-size: 9px;
+  white-space: nowrap;
+}

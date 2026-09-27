@@ -6,7 +6,7 @@ Part of the [style guide](../../README.md).
 
 | Layer                      | Format                                                           |
 | -------------------------- | ---------------------------------------------------------------- |
-| `ui-kit/**`                | `*.module.scss` + CSS variables from `shared/styles/_tokens.scss` |
+| `ui-kit/**`                | `*.module.scss` + CSS variables from `shared/styles/_tokens.scss` (values: `@otmetki/design-tokens`) |
 | widgets / features / views | `*.module.scss`                                                  |
 
 There is no CSS-in-JS in this project — no Tailwind, no `.styles.ts`. `class-variance-authority`
@@ -31,9 +31,11 @@ The principle: the JSX reads, and `s.root`/`s.head` tell you the structure.
 
 ## 12. Global styles and SCSS
 
-- **Design tokens** are CSS variables in `shared/styles/_tokens.scss`, pulled in once by
-  `app/globals.scss` — type scale, spacing, radii, durations, easings, z-index,
-  safe-area insets, colours, elevations and the rating palette. `shared/styles/` also
+- **Design tokens** are CSS variables emitted by `shared/styles/_tokens.scss`, pulled in once by
+  `app/globals.scss`. Their values — type scale, spacing, radii, durations, easings, colours,
+  elevations, textures and the rating palettes — live in `@otmetki/design-tokens`
+  (`packages/design-tokens`, also used by the modpack's Gameface window); z-index, safe-area
+  insets, font stacks and the shell/header/row sizes are the site's own and stay in `_tokens.scss`. `shared/styles/` also
   holds `_animations.scss`, `_breakpoints.scss` and `_mixins.scss`.
 - **Two themes, dark and light.** Theme-independent tokens sit on `:root`; the dark palette
   on `:root, [data-theme='dark']`; the light palette on `[data-theme='light']`. `next-themes`

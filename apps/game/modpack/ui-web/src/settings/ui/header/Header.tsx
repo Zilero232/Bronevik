@@ -2,61 +2,56 @@ import clsx from 'clsx';
 
 import type { HeaderProps } from './Header.types';
 
-import { LANGUAGES } from '../../../shared/i18n';
-import { INPUT_LIMITS } from '../../config';
+import { LogoMark } from '../../../shared/ui/logo-mark';
+import { HEADER, INPUT_LIMITS } from '../../config';
 import { useHeader } from '../../model/hooks/use-header';
 import { useT } from '../../model/hooks/use-t';
+import { Button } from '../button';
+import { Input } from '../input';
+import { Segmented } from '../segmented';
+
+import s from './Header.module.scss';
 
 export const Header = ({ state }: HeaderProps) => {
   const t = useT();
   const header = useHeader();
 
   return (
-    <header className='header'>
-      <div className='brand'>
-        <span className='brand__mark'>{'///'}</span>
-        <div className='brand__text'>
-          <span className='brand__title'>{t('title')}</span>
-          <span className='brand__subtitle'>{t('subtitle')}</span>
+    <header className={s.header}>
+      <div className={s.brand}>
+        <LogoMark className={s.mark} size={HEADER.logoSize} />
+        <div className={s.brandText}>
+          <span className={s.title}>{t('title')}</span>
+          <span className={s.subtitle}>{t('subtitle')}</span>
         </div>
       </div>
-      <div className='header__status'>
-        <span className={clsx('chip', state.status.bound ? 'chip--ok' : 'chip--warn')}>{state.status.bound ? t('bound') : t('unbound')}</span>
-        <span className='header__status-text'>{state.status.text}</span>
+      <div className={s.status}>
+        <span className={clsx(s.chip, state.status.bound ? s.chipOk : s.chipWarn)}>{state.status.bound ? t('bound') : t('unbound')}</span>
+        <span className={s.statusText}>{state.status.text}</span>
       </div>
       {!state.status.bound && (
-        <div className='header__bind'>
-          <input
-            className='input input--code'
+        <div className={s.bind}>
+          <Input
+            className={s.bindInput}
             maxLength={INPUT_LIMITS.bindCode}
             placeholder={t('bindPlaceholder')}
             value={header.code}
+            variant='code'
             onInput={(event) => header.setCode(event.currentTarget.value)}
           />
-          <button className='button button--accent' type='button' onClick={header.bind}>
+          <Button variant='accent' onClick={header.bind}>
             {t('bind')}
-          </button>
+          </Button>
         </div>
       )}
-      <div className='header__tools'>
-        <button className='button button--ghost' type='button' onClick={header.openSite}>
+      <div className={s.tools}>
+        <Button className={s.tool} variant='ghost' onClick={header.openSite}>
           {t('openSite')}
-        </button>
-        <div className='segmented'>
-          {LANGUAGES.map((language) => (
-            <button
-              key={language}
-              className={clsx('segmented__item', state.language === language && 'segmented__item--on')}
-              type='button'
-              onClick={() => header.language(language)}
-            >
-              {language.toUpperCase()}
-            </button>
-          ))}
-        </div>
-        <button aria-label={t('close')} className='button button--icon' type='button' onClick={header.close}>
+        </Button>
+        <Segmented className={s.tool} items={header.languages} value={state.language} onSelect={header.language} />
+        <Button aria-label={t('close')} className={s.tool} size='icon' onClick={header.close}>
           ×
-        </button>
+        </Button>
       </div>
     </header>
   );

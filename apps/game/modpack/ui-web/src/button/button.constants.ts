@@ -3,6 +3,6 @@ export const BUTTON = {
   marker: 'otmetkiButton',
   markerValue: 'otmetki',
   openCommand: 'open',
-  label: '///',
-  title: 'Три отметки'
+  title: 'Три отметки',
+  logoSize: 26
 } as const;

@@ -1,8 +1,4 @@
-@mixin reduced-motion {
-  @media (prefers-reduced-motion: reduce) {
-    @content;
-  }
-}
+@use '@otmetki/design-tokens' as tokens;
 
 @mixin spin($duration: 0.7s) {
   animation: otmetki-spin $duration linear infinite;
@@ -11,7 +7,7 @@
 @mixin pulse($duration: 1.2s) {
   animation: otmetki-pulse $duration ease-in-out infinite alternate;
 
-  @include reduced-motion {
+  @include tokens.reduced-motion {
     animation: none;
   }
 }

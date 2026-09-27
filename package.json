@@ -23,6 +23,7 @@
     "catalog": {
       "@date-fns/tz": "^1.5.0",
       "@hey-api/openapi-ts": "0.99.0",
+      "@resvg/resvg-js": "2.6.2",
       "@types/bun": "^1.4.2",
       "@types/react": "^19.3.0",
       "better-auth": "^1.7.5",
@@ -37,6 +38,7 @@
       "react": "^19.3.0",
       "react-dom": "^19.3.0",
       "remeda": "^2.50.0",
+      "sass-embedded": "^1.105.0",
       "standardwebhooks": "^1.1.1",
       "ts-pattern": "^5.9.0",
       "typescript": "~6.0.3",
@@ -67,8 +69,8 @@
     "format:prisma": "bun --filter @otmetki/server format:prisma",
     "gamedata:import": "bun --filter @otmetki/server gamedata:import",
     "lint": "eslint . --cache --cache-location node_modules/.cache/.eslintcache",
-    "lint:css": "stylelint \"apps/web/client/**/*.scss\" --cache --cache-location node_modules/.cache/.stylelintcache",
-    "lint:css:fix": "stylelint \"apps/web/client/**/*.scss\" --fix --cache --cache-location node_modules/.cache/.stylelintcache",
+    "lint:css": "stylelint \"{apps/web/client,apps/game/modpack/ui-web,packages/design-tokens}/**/*.scss\" --cache --cache-location node_modules/.cache/.stylelintcache",
+    "lint:css:fix": "stylelint \"{apps/web/client,apps/game/modpack/ui-web,packages/design-tokens}/**/*.scss\" --fix --cache --cache-location node_modules/.cache/.stylelintcache",
     "lint:dupes": "jscpd",
     "lint:encoding": "node scripts/check-utf8.mjs",
     "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/.eslintcache",
@@ -92,7 +94,7 @@
       "sort-package-json"
     ],
     "*.{json,md,yml,yaml}": "prettier --write",
-    "apps/web/client/**/*.scss": [
+    "{apps/web/client,apps/game/modpack/ui-web,packages/design-tokens}/**/*.scss": [
       "stylelint --fix",
       "prettier --write"
     ]

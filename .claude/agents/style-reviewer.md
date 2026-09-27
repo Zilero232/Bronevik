@@ -57,7 +57,7 @@ Check, in this order:
 - **Browser APIs at module scope or during render** — `window`, `document`, `localStorage` throw on the server. Must be behind `isBrowser()`/`isServer()` from `@/shared/lib`, inside `useEffect`, or gated on `useHydrated()`. A raw `typeof window` check is itself a finding.
 - **`Link`, `useRouter` or `usePathname` imported from `next/*`** instead of `@/shared/i18n/navigation`.
 - **A user-visible string not in both `en.json` and `ru.json`.**
-- **A colour hard-coded in a component, or a token added to only one theme** in `shared/styles/_tokens.scss` — the dark and light palettes must stay in step.
+- **A colour hard-coded in a component, or a token added to only one theme** in `@otmetki/design-tokens` (`packages/design-tokens/scss`) — the dark and light palettes must stay in step.
 - **A rating mapped to a colour outside `shared/lib/rating-tone`** — use `ratingTone` / `toneOfTier` with `data-tone` and `@include tone`.
 - **A raw `@media` query** instead of `@include below(…)` / `@include from(…)` with a step from `_breakpoints.scss`.
 - **A hand-rolled CSS `transition` for something `motion` already drives**, or a motion preset inlined instead of living in a sibling `<Component>.motion.ts` or `shared/lib/motion`.

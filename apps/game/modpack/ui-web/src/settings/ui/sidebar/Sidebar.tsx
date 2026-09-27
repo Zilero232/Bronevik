@@ -8,18 +8,20 @@ import { useT } from '../../model/hooks/use-t';
 import { openComponent, openSection } from '../../model/store';
 import { Toggle } from '../toggle';
 
+import s from './Sidebar.module.scss';
+
 export const Sidebar = ({ groups, view, selectedId }: SidebarProps) => {
   const t = useT();
 
   return (
-    <nav className='sidebar'>
-      <div className='sidebar__scroll'>
+    <nav className={s.sidebar}>
+      <div className={s.scroll}>
         {groups.map((group) => (
-          <section key={group.id} className='sidebar__group'>
-            <h3 className='sidebar__group-title'>{t(SIDEBAR.groupTitles[group.id] ?? SIDEBAR.otherGroupTitle)}</h3>
+          <section key={group.id} className={s.group}>
+            <h3 className={s.groupTitle}>{t(SIDEBAR.groupTitles[group.id] ?? SIDEBAR.otherGroupTitle)}</h3>
             {group.components.map((component) => (
-              <div key={component.id} className={clsx('nav-item', view.section === 'components' && selectedId === component.id && 'nav-item--on')}>
-                <button className='nav-item__title' type='button' onClick={() => openComponent(component.id)}>
+              <div key={component.id} className={clsx(s.item, view.section === 'components' && selectedId === component.id && s.itemOn)}>
+                <button className={s.itemTitle} type='button' onClick={() => openComponent(component.id)}>
                   {component.title}
                 </button>
                 {component.switch && <Toggle label={component.title} on={component.switch.value} onToggle={() => toggleSwitch(component)} />}
@@ -28,11 +30,11 @@ export const Sidebar = ({ groups, view, selectedId }: SidebarProps) => {
           </section>
         ))}
       </div>
-      <div className='sidebar__footer'>
-        <button className={clsx('nav-link', view.section === 'profiles' && 'nav-link--on')} type='button' onClick={() => openSection('profiles')}>
+      <div className={s.footer}>
+        <button className={clsx(s.link, view.section === 'profiles' && s.linkOn)} type='button' onClick={() => openSection('profiles')}>
           {t('sectionProfiles')}
         </button>
-        <button className={clsx('nav-link', view.section === 'hud' && 'nav-link--on')} type='button' onClick={() => openSection('hud')}>
+        <button className={clsx(s.link, view.section === 'hud' && s.linkOn)} type='button' onClick={() => openSection('hud')}>
           {t('sectionHud')}
         </button>
       </div>

@@ -1,0 +1,1 @@
+export { buttonConfig } from './button';

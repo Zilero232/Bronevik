@@ -24,7 +24,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "pino": "catalog:",
+    "pino": "^10.3.1",
     "pino-pretty": "catalog:"
   },
   "devDependencies": {

@@ -36,7 +36,9 @@ Respond to the user in Russian. Code, comments, docs and commits are in English.
 bun install
 bun run dev:infra      # TimescaleDB :5434, Redis :6380, Mailpit SMTP :1025 (inbox :8025)
 bun run db:push        # prisma db push + the Timescale layer (no migrations before production)
-bun run dev            # server :4000, worker (no port), client :3000
+bun run dev            # server :4000 + client :3000 (no worker)
+bun run dev:all        # + worker (collector jobs, schedules)
+bun run dev:manager    # modpack manager (Tauri)
 bun run verify         # typecheck + lint + UTF-8 check + format:check + lint:css
 bun run test           # vitest (never `bun test`)
 bun run test:e2e       # playwright smoke (starts the client dev server itself)

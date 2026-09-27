@@ -75,7 +75,8 @@ bun run dev:infra        # TimescaleDB on :5434, Redis on :6380, Mailpit on :102
 bun run db:push
 bun run gamedata:import  # vehicles, modules, equipment — the mock world is built on them
 bun run dev:seed         # optional: 600 tracked players with 90 days of history, clans, mod battles, aggregates
-bun run dev              # server :4000, worker, client :3000
+bun run dev              # server :4000 + client :3000 (no worker)
+bun run dev:all          # + worker (collector jobs)
 ```
 
 The client has no mocks: it always talks to the API at `NEXT_PUBLIC_API_URL`. Without the server running, `bun run dev:client` still renders every page, with its empty or error states.
@@ -88,21 +89,21 @@ With `LESTA_APPLICATION_ID` empty and `NODE_ENV=development`, the server and the
 
 ## Commands
 
-| Command                                                    | What                                                                                            |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `bun run dev` / `dev:client` / `dev:server` / `dev:worker` | Dev servers                                                                                     |
-| `bun run dev:infra` / `dev:infra:down`                     | Local TimescaleDB + Redis + Mailpit                                                             |
-| `bun run db:push` / `db:studio` / `db:timescale`           | Schema sync (`prisma db push`, no migrations before production), studio and the Timescale layer |
-| `bun run gamedata:import`                                  | Import the game client's data into the database                                                 |
-| `bun run dev:seed`                                         | Seed the local database from the Lesta mock (history, clans, mod battles, aggregates)           |
-| `bun run verify`                                           | typecheck + lint + format:check + lint:css — what CI runs                                       |
-| `bun run fix`                                              | Auto-fix lint, formatting, styles and the Prisma schema                                         |
-| `bun run test`                                             | Vitest across the monorepo (never `bun test`)                                                   |
-| `bun run test:e2e`                                         | Playwright smoke against the client                                                             |
-| `bun run test:modpack`                                     | The game modpack's Python suites                                                                |
-| `bun run lint:unused`                                      | knip — unused files, exports and dependencies                                                   |
-| `bun run lint:dupes`                                       | jscpd — duplicated code                                                                         |
-| `docker compose up -d --build`                             | Production-like stack: caddy, client, server, worker, db, redis                                 |
+| Command                                                                                | What                                                                                            |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `bun run dev` / `dev:all` / `dev:client` / `dev:server` / `dev:worker` / `dev:manager` | Dev servers                                                                                     |
+| `bun run dev:infra` / `dev:infra:down`                                                 | Local TimescaleDB + Redis + Mailpit                                                             |
+| `bun run db:push` / `db:studio` / `db:timescale`                                       | Schema sync (`prisma db push`, no migrations before production), studio and the Timescale layer |
+| `bun run gamedata:import`                                                              | Import the game client's data into the database                                                 |
+| `bun run dev:seed`                                                                     | Seed the local database from the Lesta mock (history, clans, mod battles, aggregates)           |
+| `bun run verify`                                                                       | typecheck + lint + format:check + lint:css — what CI runs                                       |
+| `bun run fix`                                                                          | Auto-fix lint, formatting, styles and the Prisma schema                                         |
+| `bun run test`                                                                         | Vitest across the monorepo (never `bun test`)                                                   |
+| `bun run test:e2e`                                                                     | Playwright smoke against the client                                                             |
+| `bun run test:modpack`                                                                 | The game modpack's Python suites                                                                |
+| `bun run lint:unused`                                                                  | knip — unused files, exports and dependencies                                                   |
+| `bun run lint:dupes`                                                                   | jscpd — duplicated code                                                                         |
+| `docker compose up -d --build`                                                         | Production-like stack: caddy, client, server, worker, db, redis                                 |
 
 ## Contributing
 

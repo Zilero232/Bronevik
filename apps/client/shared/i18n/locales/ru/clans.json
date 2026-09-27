@@ -74,7 +74,8 @@
       "stronghold": "Укрепрайон",
       "provinces": "Провинции на ГК",
       "elo": "Эло X"
-    }
+    },
+    "workspace": "Штаб клана"
   },
   "roster": {
     "shown": "{shown} из {total}",

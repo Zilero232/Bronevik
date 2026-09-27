@@ -1,4 +1,4 @@
-export type PlayerSection = 'activity' | 'history' | 'insights' | 'marks' | 'nicknames' | 'playtime' | 'session' | 'sessions' | 'tanks';
+export type PlayerSection = 'activity' | 'history' | 'insights' | 'marks' | 'nicknames' | 'playtime' | 'session' | 'sessions' | 'tanks' | 'wrapped';
 
 export type PlayerSectionKeyInput = {
   accountId: number;
@@ -18,4 +18,9 @@ export type GuideListKeyInput = GuideViewerKeyInput & {
 
 export type GuideDetailKeyInput = GuideViewerKeyInput & {
   slug: string;
+};
+
+export type ClanWorkspaceKeyInput = {
+  clanId: number;
+  params: object;
 };

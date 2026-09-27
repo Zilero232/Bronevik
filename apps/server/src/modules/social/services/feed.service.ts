@@ -6,6 +6,7 @@ import type { FeedInput, FeedItem } from '../social.types';
 import { PrismaService } from '../../../core';
 import { FEED } from '../config';
 import { buildFeed } from '../lib';
+import { toFeedBadge } from '../mappers';
 import { FollowService } from './follow.service';
 import { SnapshotEventsService } from './snapshot-events.service';
 
@@ -38,7 +39,8 @@ export class FeedService {
         badges,
         nicknames: new Map(players.map((player) => [player.accountId, player.nickname])),
         aceMastery: FEED.aceMastery,
-        limit: FEED.limit
+        limit: FEED.limit,
+        badgeOf: toFeedBadge
       })
     };
   }

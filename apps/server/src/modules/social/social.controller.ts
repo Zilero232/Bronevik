@@ -59,8 +59,8 @@ export class SocialController {
 
   @Get('social/leagues')
   @ZodResponse({ type: LeagueDto })
-  league(@CurrentUserId() userId: string, @Query() { metric, week }: LeagueQueryDto) {
-    return this.leagues.league({ userId, metric, week });
+  league(@CurrentUserId() userId: string, @Query() { scope, metric, week }: LeagueQueryDto) {
+    return this.leagues.league({ userId, scope, metric, week });
   }
 
   @Get('social/challenges')

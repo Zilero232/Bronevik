@@ -51,6 +51,16 @@ describe('scoreTotals', () => {
     expect(capped.battles).toBe(2);
     expect(capped.score).toBeLessThan(exact.score * 2);
   });
+
+  it('keeps the full totals under the limit', () => {
+    const totals = battle();
+
+    expect(scoreTotals({ totals, battles: 1, scoring, limit: 5 })).toEqual({ score: scoreLine({ line: totals, scoring }), battles: 1 });
+  });
+
+  it('scores nobody without battles, even with leftover totals', () => {
+    expect(scoreTotals({ totals: battle(), battles: 0, scoring, limit: 5 })).toEqual({ score: 0, battles: 0 });
+  });
 });
 
 describe('rankTeams', () => {

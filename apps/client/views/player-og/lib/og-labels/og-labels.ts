@@ -9,6 +9,7 @@ import type { OgLabels } from './og-labels.types';
 export const ogLabels = (locale: Locale): OgLabels => {
   const t = createTranslator({ locale, messages: messages[locale], namespace: 'profile.og' });
   const tRoot = createTranslator({ locale, messages: messages[locale] });
+  const tWrapped = createTranslator({ locale, messages: messages[locale], namespace: 'wrapped.og' });
 
   return {
     brand: tRoot('brand.name'),
@@ -27,6 +28,15 @@ export const ogLabels = (locale: Locale): OgLabels => {
       winRate: t('winRate'),
       avgDamage: t('avgDamage'),
       best: t('best'),
+      source: t('source')
+    },
+    wrapped: {
+      kind: tWrapped('eyebrow'),
+      year: tWrapped('year'),
+      battles: t('battles'),
+      winRate: t('winRate'),
+      avgDamage: t('avgDamage'),
+      marks: tWrapped('marks'),
       source: t('source')
     }
   };

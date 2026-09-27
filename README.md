@@ -23,7 +23,7 @@
 
 A single site for everything a «Мир танков» (Lesta, RU realm) player looks up between battles: their own and anyone's statistics with WN8, EFF and our own Броня-Индекс, mark-of-excellence progress and projections, tank analytics and tier lists, clans, replays, streamer tools, and a public developer API. A companion game mod feeds the player's own battle results and MoE percentages straight from the client.
 
-Три отметки is an independent fan project and is not affiliated with Lesta Games. Game data comes from the [Lesta API](https://developers.lesta.ru), under its terms: every page carries the attribution, sign-in is only through Lesta ID, there are no ads, and the mod never reads anything beyond the player's own data.
+Три отметки is an independent fan project and is not affiliated with Lesta Games. Game data comes from the [Lesta API](https://developers.lesta.ru), under its terms: every page carries the attribution, game accounts are linked only through Lesta ID (sign-in also works with Telegram and the VK Mini App; Discord and VK ID can be linked), there are no ads, and the mod never reads anything beyond the player's own data.
 
 Product scope: [docs/features.md](docs/features.md).
 
@@ -32,7 +32,7 @@ Product scope: [docs/features.md](docs/features.md).
 | Layer    | Tech                                                                                                                              |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | Web      | Next.js 16, React 19, React Compiler, next-intl (ru/en), dark + light themes, TanStack Query & Table, visx, cmdk, Base UI, motion |
-| API      | NestJS 11 on Bun, better-auth (Lesta ID, Telegram), Zod contracts, Swagger                                                        |
+| API      | NestJS 11 on Bun, better-auth (Lesta ID, Telegram, VK Mini App), Zod contracts, Swagger                                           |
 | Worker   | Second entrypoint of the server app: BullMQ jobs pulling the Lesta API, shared Redis rate limiter, cockatiel circuit breaker      |
 | Data     | PostgreSQL 17 + TimescaleDB, Prisma 7, Redis                                                                                      |
 | Game mod | Python 2.7 `.wotmod`, pure logic tested on Python 3                                                                               |
@@ -56,9 +56,10 @@ packages/          only code shared between apps
   gamedata/        loadout calculator and the game-data model
   icons/           SVG icon set as React components
   logger/          shared pino config
+  sdk/             public API client (@otmetki/sdk)
 e2e/               Playwright smoke tests
 infra/caddy/       Caddyfile for docker-compose.yml
-docs/              architecture/, guides/, research/, references.md
+docs/              architecture/, guides/, ops/ (deploy checklist), research/, references.md
 ```
 
 ## Getting started

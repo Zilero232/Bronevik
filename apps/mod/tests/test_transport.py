@@ -4,7 +4,7 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.queue_timer import QueueTimer
-from otmetki.transport import NETWORK_ERROR, ThreadTransport
+from otmetki.transport import NETWORK_ERROR, SyncTransport, ThreadTransport
 
 try:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -75,6 +75,24 @@ class ThreadTransportTest(unittest.TestCase):
         wait_for(transport, results, 1)
         transport.stop()
         self.assertEqual(results, [NETWORK_ERROR])
+
+
+class SyncTransportTest(ThreadTransportTest):
+
+    def test_answers_inside_request(self):
+        transport = SyncTransport(timeout=5)
+        results = []
+        body = b'--b' + b'x' * 70000 + b'--b--'
+        transport.request('POST', self.base + '/ok', {'Content-Type': 'multipart/form-data; boundary=b'}, body,
+                          lambda *args: results.append(args))
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0][0], 200)
+        self.assertEqual(results[0][1], b'{"echo":' + str(len(body)).encode('ascii') + b'}')
+
+    def test_network_error_is_reported(self):
+        results = []
+        SyncTransport(timeout=2).request('POST', 'http://127.0.0.1:1/x', {}, b'x', lambda *args: results.append(args))
+        self.assertEqual(results[0][0], NETWORK_ERROR)
 
 
 class QueueTimerTest(unittest.TestCase):

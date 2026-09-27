@@ -191,6 +191,41 @@ describe('TelegramCommandsService.confirmLink', () => {
     await service.confirmLink(ctx);
 
     expect(links.consumeCode).not.toHaveBeenCalled();
+    expect(ctx.reply).not.toHaveBeenCalled();
+    expect(ctx.answerCallbackQuery).toHaveBeenCalledOnce();
+  });
+
+  it('ignores a confirmation pressed by a bot', async () => {
+    const { service, links } = createService();
+    const ctx = confirmContext(linkConfirmData({ answer: 'yes', code: CODE }));
+
+    Object.assign(ctx, { from: { ...USER, is_bot: true } });
+    await service.confirmLink(ctx);
+
+    expect(links.consumeCode).not.toHaveBeenCalled();
+    expect(ctx.reply).not.toHaveBeenCalled();
+  });
+
+  it('ignores a callback without data', async () => {
+    const { service, links } = createService();
+    const ctx = contextOf();
+
+    Object.assign(ctx, { callbackQuery: undefined });
+    ctx.editMessageReplyMarkup.mockResolvedValue(true);
+    await service.confirmLink(ctx);
+
+    expect(links.consumeCode).not.toHaveBeenCalled();
+  });
+
+  it('still links when the confirmation keyboard can no longer be removed', async () => {
+    const { service, links } = createService();
+    const ctx = confirmContext(linkConfirmData({ answer: 'yes', code: CODE }));
+
+    ctx.editMessageReplyMarkup.mockRejectedValue(new Error('message is not modified'));
+    await service.confirmLink(ctx);
+
+    expect(links.consumeCode).toHaveBeenCalledOnce();
+    expect(ctx.reply).toHaveBeenCalledWith('start-linked');
   });
 
   it('explains that a code is taken by another account', async () => {

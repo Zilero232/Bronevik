@@ -153,6 +153,25 @@ describe('AllExceptionsFilter on the mod contract', () => {
     expect(headers.has(MOD_REPLY.serverTimeHeader)).toBe(true);
   });
 
+  it('sends the server time on a mod replay upload error', () => {
+    const { headers } = reply(new ModException({ status: HttpStatus.PRECONDITION_REQUIRED, error: 'stale_request' }), { path: '/replays/mod' });
+
+    expect(Number(headers.get(MOD_REPLY.serverTimeHeader))).toBeCloseTo(Date.now() / 1000, -1);
+  });
+
+  it('keeps the mod error of a replay upload next to the API code', () => {
+    const { status, body } = reply(new ModException({ status: HttpStatus.UNPROCESSABLE_ENTITY, error: 'replay_not_owned' }), {
+      path: '/replays/mod'
+    });
+
+    expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({ error: 'replay_not_owned', code: 'VALIDATION_FAILED' });
+  });
+
+  it('keeps the server time off the site replay upload', () => {
+    expect(reply(new AppNotFoundException('NOT_FOUND', 'No replay'), { path: '/replays' }).headers.size).toBe(0);
+  });
+
   it('keeps the server time off the site API', () => {
     expect(reply(new AppNotFoundException('PLAYER_NOT_FOUND', 'No player')).headers.size).toBe(0);
   });

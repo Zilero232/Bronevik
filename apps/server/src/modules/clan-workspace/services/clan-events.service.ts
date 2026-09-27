@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { addHours, subMinutes } from 'date-fns';
+import { addHours, differenceInMinutes, subMinutes } from 'date-fns';
 
 import type { ClanEvent } from '../../../../generated';
 import type { ClanEventView, ClanItemScope, CreateClanEventRequest, ListEventsRequest, UpdateClanEventRequest } from '../clan-workspace.types';
@@ -55,6 +55,13 @@ export class ClanEventsService {
 
     const event = await this.find({ clanId, userId, id });
     const start = startsAt ? new Date(startsAt) : event.startsAt;
+    const end = endsAt ? new Date(endsAt) : event.endsAt;
+    const lead = remindMinutesBefore ?? (event.remindAt ? differenceInMinutes(event.startsAt, event.remindAt) : null);
+    const remindAt = lead === null ? null : subMinutes(start, lead);
+
+    if (end && end <= start) {
+      throw new AppBadRequestException('VALIDATION_FAILED', 'The event must end after it starts');
+    }
 
     await this.prisma.clanEvent.update({
       where: { id },
@@ -62,8 +69,9 @@ export class ClanEventsService {
         ...(kind ? { kind } : {}),
         ...(title ? { title } : {}),
         startsAt: start,
-        ...(endsAt ? { endsAt: new Date(endsAt) } : {}),
-        ...(remindMinutesBefore === undefined ? {} : { remindAt: subMinutes(start, remindMinutesBefore), remindedAt: null })
+        endsAt: end,
+        remindAt,
+        ...(remindAt?.getTime() === event.remindAt?.getTime() ? {} : { remindedAt: null })
       }
     });
 

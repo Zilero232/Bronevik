@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, Check, GitCompareArrows, PenLine, Share2 } from 'lucide-react';
+import { BarChart3, CalendarDays, Check, GitCompareArrows, PenLine, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { FavoriteButton } from '@/features/player/toggle-favorite';
@@ -15,7 +15,7 @@ import s from './ProfileActionStrip.module.scss';
 
 export const ProfileActionStrip = () => {
   const t = useTranslations('profile.actions');
-  const { accountId, copied, share, signatureHref, analyticsHref } = useProfileActions();
+  const { accountId, copied, share, signatureHref, wrappedHref, analyticsHref } = useProfileActions();
 
   return (
     <div className={s.root} data-theme='dark'>
@@ -36,6 +36,12 @@ export const ProfileActionStrip = () => {
             <PenLine aria-hidden size={16} />
             {t('signature')}
           </Link>
+          {wrappedHref && (
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={wrappedHref}>
+              <CalendarDays aria-hidden size={16} />
+              {t('wrapped')}
+            </Link>
+          )}
           {analyticsHref && (
             <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={analyticsHref}>
               <BarChart3 aria-hidden size={16} />

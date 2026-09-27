@@ -1,0 +1,55 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(0);
+}
+
+.inner {
+  padding-block: var(--space-8);
+
+  @include below(md) {
+    padding-block: var(--space-6);
+  }
+}
+
+.chapter {
+  @include stack(var(--space-5));
+}
+
+.step {
+  @include label;
+
+  color: var(--color-accent);
+}
+
+.title {
+  @include display(var(--display-md));
+
+  margin: 0;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-7);
+
+  @include below(md) {
+    gap: var(--space-5);
+  }
+}
+
+.tanks {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  list-style: none;
+}
+
+.best {
+  @include stack(var(--space-5));
+
+  align-items: flex-start;
+}

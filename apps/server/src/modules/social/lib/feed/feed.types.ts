@@ -7,6 +7,7 @@ export type BuildFeedInput = {
   nicknames: ReadonlyMap<bigint, string>;
   aceMastery: number;
   limit: number;
+  badgeOf: (code: string) => FeedItem['badge'];
 };
 
 export type { FeedItem };

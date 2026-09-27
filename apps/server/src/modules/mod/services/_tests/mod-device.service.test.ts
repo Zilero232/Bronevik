@@ -7,6 +7,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { ModDevice } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
+import type { SignedHeader } from '../../lib';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { MOD_DEVICE, MOD_REQUEST } from '../../config';
@@ -116,6 +117,7 @@ describe('ModDeviceService.identify', () => {
 
 const NOW = new Date('2026-09-27T12:00:00.000Z');
 const PATH = '/mod/ingest';
+const VISIBILITY = 'x-otmetki-visibility';
 
 type SignedRequestInput = {
   key?: string;
@@ -125,6 +127,8 @@ type SignedRequestInput = {
   signedPath?: string;
   timestamp?: string;
   nonce?: string;
+  sent?: Record<string, string>;
+  signed?: SignedHeader[];
 };
 
 const signedRequest = ({
@@ -134,11 +138,17 @@ const signedRequest = ({
   path = PATH,
   signedPath = path,
   timestamp = String(NOW.getTime() / 1000),
-  nonce = 'nonce-0123456789abcdef'
+  nonce = 'nonce-0123456789abcdef',
+  sent = {},
+  signed = []
 }: SignedRequestInput = {}) => {
   const headers: Record<string, string> = {
+    ...sent,
     [MOD_DEVICE.header]: DEVICE_ID,
-    [MOD_DEVICE.signatureHeader]: signatureOf({ key, body: signedMessage({ method: 'POST', path: signedPath, timestamp, nonce, body: signedBody }) }),
+    [MOD_DEVICE.signatureHeader]: signatureOf({
+      key,
+      body: signedMessage({ method: 'POST', path: signedPath, timestamp, nonce, headers: signed, body: signedBody })
+    }),
     [MOD_DEVICE.timestampHeader]: timestamp,
     [MOD_DEVICE.nonceHeader]: nonce
   };
@@ -210,6 +220,34 @@ describe('ModDeviceService.authenticate', () => {
       status: HttpStatus.PRECONDITION_REQUIRED,
       response: { error: 'stale_request' }
     });
+  });
+
+  it('accepts a signed header the mod sent and signed', async () => {
+    const { service } = createService();
+    const signed = signedRequest({ sent: { [VISIBILITY]: 'public' }, signed: [{ name: VISIBILITY, value: 'public' }] });
+
+    await expect(service.authenticate({ ...signed, signedHeaders: [VISIBILITY] })).resolves.toMatchObject({ id: DEVICE_ID });
+  });
+
+  it('rejects a signed header changed on the way', async () => {
+    const { service } = createService();
+    const signed = signedRequest({ sent: { [VISIBILITY]: 'public' }, signed: [{ name: VISIBILITY, value: 'private' }] });
+
+    await expect(service.authenticate({ ...signed, signedHeaders: [VISIBILITY] })).rejects.toMatchObject({ response: { error: 'bad_signature' } });
+  });
+
+  it('rejects a request whose signed header was stripped', async () => {
+    const { service } = createService();
+    const signed = signedRequest({ signed: [{ name: VISIBILITY, value: 'public' }] });
+
+    await expect(service.authenticate({ ...signed, signedHeaders: [VISIBILITY] })).rejects.toMatchObject({ response: { error: 'bad_signature' } });
+  });
+
+  it('rejects a header added to a request signed without it', async () => {
+    const { service } = createService();
+    const signed = signedRequest({ sent: { [VISIBILITY]: 'public' } });
+
+    await expect(service.authenticate({ ...signed, signedHeaders: [VISIBILITY] })).rejects.toMatchObject({ response: { error: 'bad_signature' } });
   });
 
   it('refuses the same signed request a second time', async () => {

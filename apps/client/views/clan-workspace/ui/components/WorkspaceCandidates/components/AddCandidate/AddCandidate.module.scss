@@ -1,0 +1,5 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  width: min(320px, 100%);
+}

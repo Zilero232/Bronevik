@@ -2,12 +2,13 @@
 
 Game-client companion for «Мир танков» (Lesta, RU realm). It ships as a `.wotmod` package: Python 2.7 scripts that the client loads from `mods/<client version>/`.
 
-It does four things:
+It does four things, plus one opt-in:
 
 - after each battle, it sends the player's own battle results to Three Marks in signed batches;
 - it records marks-of-excellence (MoE) percentages for the player's own vehicles;
 - in battle, it shows a MoE panel with the projected percentage and the damage needed for the next mark;
-- in the hangar, it shows a session panel with battles, win rate, average damage and WN8.
+- in the hangar, it shows a session panel with battles, win rate, average damage and WN8;
+- opt-in, off by default: it uploads the replays the game itself recorded of the player's own battles (see [Replay auto-upload](#replay-auto-upload)).
 
 ## Fair play
 
@@ -25,6 +26,7 @@ The mod follows the Lesta Fair Play Policy (see [market research](../../docs/res
 - **It never serialises other players' data from battle results.** The `vehicles`, `players` and `avatars` blocks are never read into the payload. The test `test_payload.BattleEventTest.test_never_leaks_other_players` enforces this.
 - The only other-vehicle value it reads is the team of a vehicle the player damaged. It uses that to ignore team damage in the MoE panel. The client already shows this value.
 - **Nothing is collected or sent until the player binds the mod.** Binding uses a one-time code from the site. Each feature can be switched off.
+- **Replay auto-upload is opt-in** (`upload_replays`, off by default). It never turns replay recording on and never touches the battle: in the hangar it uploads the `.wotreplay` file the client already wrote, only when the replay header's `playerID` is the bound account. The file is the player's own recording, exactly as the site's manual upload accepts it. Uploads stay private unless `publish_replays` (also off by default) is on; the server re-checks the recorder and refuses anyone else's replay.
 
 ## Layout
 
@@ -42,13 +44,16 @@ apps/mod/
     panels.py               panel text formatting (GUIFlash HTML subset)
     payload.py              battle/MoE/queue event builders and the ingest envelope
     queue_timer.py          matchmaking queue timing
+    replays.py              replay header reading, own-battle matching, replay lookup, multipart body
+    replay_upload.py        persistent replay upload queue (dedupe, backoff) and the one-at-a-time uploader
     sender.py               signs and posts batches through an injected transport
     session.py              session aggregation (idle gap, random battles only)
     settings_share.py       streamer settings: whitelist export, apply diff, backup/restore, /mod/settings payloads
     settings_template.py    ModsSettingsAPI template
     signing.py              HMAC-SHA256 signature headers
     storage.py              atomic JSON files
-    transport.py            urllib2/urllib worker-thread transport with main-thread callback polling
+    transport.py            urllib2/urllib worker-thread transport with main-thread callback polling,
+                            SyncTransport and BackgroundRunner (jobs on a daemon thread, results on the main thread)
   src/otmetki/client/      client glue (imports BigWorld and gui): hooks, dossier, battle tracker, UI, settings
   tests/                    unittest suite, run with Python 3 (the pure code is 2/3 compatible)
 ```
@@ -123,6 +128,7 @@ The API team implements the full contract in [contract/](contract):
 - [contract/bind.schema.json](contract/bind.schema.json)
 - [contract/moe-thresholds.schema.json](contract/moe-thresholds.schema.json)
 - [contract/settings.schema.json](contract/settings.schema.json)
+- [contract/replay-upload.schema.json](contract/replay-upload.schema.json)
 - the example [contract/examples/ingest.example.json](contract/examples/ingest.example.json)
 
 The test suite validates the example and the builder output against the schema when `jsonschema` is installed.
@@ -161,6 +167,25 @@ Spec: [streamer-settings §3.5](../../docs/superpowers/specs/2026-09-26-streamer
 - **Restore («Вернуть мои»).** `"settings_action": "restore"` writes the backup back and deletes it.
 - It never installs or configures third-party mods. All three requests are signed like `/mod/ingest`.
 
+## Replay auto-upload
+
+Switches: `upload_replays` (off by default; does nothing until the mod is bound) and `publish_replays` (off by default: uploads are private). Pure logic: `replays.py`, `replay_upload.py`; client glue: `client/replays.py`. Contract: [contract/replay-upload.schema.json](contract/replay-upload.schema.json).
+
+1. **Respecting the game setting.** The mod never enables recording. If the client's replay setting (`replayEnabled` in the settings core) reads as off, nothing is queued; if it cannot be read, the mod just looks for a file and gives up when none appears.
+2. **Queue.** When the player's own battle results arrive (the same hook as `battle_result`, never during replay playback), the battle is queued in `replays_<account_id>.json`: `arenaUniqueID`, account, local start time (from `onAvatarReady`, else `arenaCreateTime` corrected by the clock offset). The queue deduplicates by `arenaUniqueID` against pending items and the last 500 finished ones, holds at most 50 battles and forgets a battle after 7 days. It survives a client restart.
+3. **Finding the file.** From 30 s after the battle, in the hangar only, the mod scans the client replay folder (`BattleReplay`'s replay dir, else `replays/`) for `.wotreplay`/`.mtreplay` files, skipping `temp.wotreplay` and anything older than the battle. It reads only the JSON header blocks: the file matches when `playerID` is the bound account and the results block names the same `arenaUniqueID`; a replay without a results block (left before the end) matches by its `dateTime` within 5 minutes of the battle start. A file modified in the last 5 s is still being written and is retried in 15 s. With the "last battle only" setting the file is overwritten by the next battle, and the header check then refuses it. No match within 30 minutes drops the battle.
+4. **Upload.** One upload at a time, on a background thread (`BackgroundRunner` + blocking `SyncTransport`, 120 s timeout); the main thread only starts jobs and applies results. The file is refused above **50 MiB** (`max_bytes` in the contract, same as the server) before it is read. It is posted as `multipart/form-data` (one part named `file`) to `POST /replays/mod`, with the `/mod/ingest` headers, `X-Otmetki-Visibility` and `signing.signed_request`; the HMAC covers the raw file bytes (`"v2\nPOST\n/replays/mod\n<timestamp>\n<nonce>\nx-otmetki-visibility:<visibility>\n" + file`), because that is what the server verifies. A 428 re-syncs the clock from `X-Otmetki-Server-Time` or `Date` and re-signs once. The server has no chunked or resumable upload, so the file goes in one request.
+5. **Visibility.** Uploads are private (only the owner sees them on the site) unless `publish_replays` is on (off by default), which sends `X-Otmetki-Visibility: public`. The value is taken when the upload starts. The header is a signed header: its `name:value` line sits between the nonce and the body in the signed message, so it cannot be added, stripped or changed on the way. The server stores a request without the header as private and refuses `unlisted` or any other value (400).
+6. **Ownership.** The server parses the replay header before storing it and answers 422 `replay_not_owned` when its recorder (`playerID`) is not the device's bound account. Every error reply on `/replays/mod` carries `X-Otmetki-Server-Time`, as on `/mod/*`.
+
+| Response                                                               | Mod behaviour                                                  |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 2xx / 409 (same file already uploaded)                                 | Done, remembered                                               |
+| 401, 403 other than the plan limit                                     | Pauses replay uploads and asks the player to rebind            |
+| 403 `SUBSCRIPTION_REQUIRED`                                            | Stored-replays limit: retried in 6 h                           |
+| 400 / 404 / 413 / 422 (`replay_not_owned` included), or file too large | Dropped, remembered                                            |
+| network error, 428 twice, 429, 5xx                                     | Exponential backoff 30 s up to 1 h, ±20% jitter, `Retry-After` |
+
 ## Build
 
 ```bash
@@ -192,7 +217,8 @@ The tests are pure logic and need no game client:
 - binding;
 - config and settings template;
 - panels and i18n;
-- the thread transport against a local HTTP server.
+- the thread and sync transports against a local HTTP server;
+- replay auto-upload: header matching, lookup, multipart and signed headers, size limit, queue dedupe/persistence/backoff, the background runner, the settings switch and the contract/server limits.
 
 `test_py27_compat` scans the sources for syntax that Python 2.7 lacks: f-strings, annotations, keyword-only args, `nonlocal`, `print` without `__future__`, unguarded py3-only imports. It also checks that the pure modules never import client modules.
 
@@ -218,6 +244,8 @@ Optional checks:
 | `battle_moe_panel`, `hangar_session_panel`                                                                              | `true`                      | UI switches                                                                      |
 | `session_idle_minutes`                                                                                                  | `60`                        | New session after this idle gap (10–1440)                                        |
 | `flush_interval_seconds`                                                                                                | `15`                        | Send interval (5–600)                                                            |
+| `upload_replays`                                                                                                        | `false`                     | Upload the game's own replays of your battles (opt-in)                           |
+| `publish_replays`                                                                                                       | `false`                     | Make auto-uploaded replays public; off keeps them private (owner only)           |
 | `bind_code`                                                                                                             | `""`                        | Fallback binding without ModsSettingsAPI; cleared after use                      |
 | `language`                                                                                                              | `auto`                      | `ru`, `en` or `auto` (client language)                                           |
 
@@ -272,7 +300,8 @@ Check МОСТ's current submission rules before the first upload. This README d
 - `vehicleTypeDescriptor.type.compactDescr` on the avatar;
 - `ArenaType.g_cache[...].geometryName`;
 - the settings core on Lesta 1.45: `skeletons.account_helpers.settings_core.ISettingsCore`, `getSetting` / `applySettings` / `confirmChanges` / `applyStorages`, the setting names in `client/settings_core.CORE_NAMES` and their value scales (sensitivity, volume);
-- the confirm dialog (`DialogsInterface.showDialog` + `SimpleDialogMeta` / `I18nConfirmDialogButtons`).
+- the confirm dialog (`DialogsInterface.showDialog` + `SimpleDialogMeta` / `I18nConfirmDialogButtons`);
+- replay upload: `BattleReplay.g_replayCtrl._BattleReplay__replayDir`, the `replayEnabled` setting name and values, when the client appends the results block to the replay file, and that the header `dateTime` is local time.
 
 ### Live-client smoke checklist
 
@@ -285,5 +314,4 @@ Check МОСТ's current submission rules before the first upload. This README d
 ## TODO
 
 - A flash-free in-battle fallback when GUIFlash is absent. `GUI.Text` no longer exists in the 1.45 client stubs. Candidates are a Gameface (OpenWG) view or the battle `messages` controller.
-- Automatic replay upload (features §16). This needs `/mod/replays` in the contract first.
 - CI job: Python 2.7 build, `--require-pyc`, and a smoke import against the stubs from `IzeBerg/wot-src`.

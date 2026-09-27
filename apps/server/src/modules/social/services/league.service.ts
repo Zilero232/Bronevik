@@ -1,71 +1,110 @@
 import { Injectable } from '@nestjs/common';
 
-import type { LeagueStats } from '../lib';
-import type { LeagueInput, LeagueView } from '../social.types';
+import type { LeagueInput, LeagueScopeInput, LeagueView } from '../social.types';
 
 import { toIsoDate, weekWindow } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { LEAGUE } from '../config';
-import { rankLeague } from '../lib';
+import { LEAGUE, LEAGUE_DIVISION } from '../config';
+import { divisionStandings, needsMarks, rankLeague, tierMoves } from '../lib';
+import { toLeagueEntry, toStoredStandings } from '../mappers';
 import { FollowService } from './follow.service';
-import { SnapshotEventsService } from './snapshot-events.service';
+import { LeagueStatsService } from './league-stats.service';
 
 @Injectable()
 export class LeagueService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly follows: FollowService,
-    private readonly events: SnapshotEventsService
+    private readonly stats: LeagueStatsService
   ) {}
 
-  async league({ userId, metric, week }: LeagueInput): Promise<LeagueView> {
+  async league({ userId, scope, metric, week }: LeagueInput): Promise<LeagueView> {
+    const window = weekWindow(week ? new Date(`${week}T00:00:00Z`) : new Date());
+
+    return scope === 'friends' ? this.friends({ userId, metric, window }) : this.division({ userId, metric, window });
+  }
+
+  private async friends({ userId, metric, window }: LeagueScopeInput): Promise<LeagueView> {
     const { accountIds, own } = await this.follows.circle(userId);
-    const { start, end, weekStart } = weekWindow(week ? new Date(`${week}T00:00:00Z`) : new Date());
-    const [sessions, marks, players] = await Promise.all([
-      this.prisma.playSession.findMany({
-        where: { accountId: { in: accountIds }, source: 'api', kind: 'day', startedAt: { gte: start, lt: end } },
-        select: { accountId: true, battles: true, damageDealt: true, wn8: true }
-      }),
-      metric === 'marks' ? this.events.markCounts({ accountIds, since: start, until: end }) : new Map<bigint, number>(),
-      this.prisma.player.findMany({ where: { accountId: { in: accountIds } }, select: { accountId: true, nickname: true } })
+    const [stats, players, memberships] = await Promise.all([
+      this.stats.weekStats({ accountIds, start: window.start, end: window.end, withMarks: needsMarks(metric) }),
+      this.prisma.player.findMany({ where: { accountId: { in: accountIds } }, select: { accountId: true, nickname: true } }),
+      this.prisma.leagueMembership.findMany({
+        where: { weekStart: window.weekStart, accountId: { in: accountIds } },
+        select: { accountId: true, tier: true }
+      })
     ]);
 
-    const stats = new Map<bigint, LeagueStats>(
-      accountIds.map((accountId) => [
-        accountId,
-        { accountId, battles: 0, damage: 0, wn8Weighted: 0, wn8Battles: 0, marks: marks.get(accountId) ?? 0 }
-      ])
-    );
+    const nicknames = new Map(players.map((player) => [player.accountId, player.nickname]));
+    const tiers = new Map(memberships.map((membership) => [membership.accountId, membership.tier]));
 
-    for (const session of sessions) {
-      const entry = stats.get(session.accountId);
+    return {
+      scope: 'friends',
+      metric,
+      weekStart: toIsoDate(window.weekStart) ?? '',
+      endsAt: window.end.toISOString(),
+      division: null,
+      entries: rankLeague({ stats: [...stats.values()], metric, minBattles: LEAGUE.minBattles }).map((entry) =>
+        toLeagueEntry({ entry, nicknames, own, tier: tiers.get(entry.accountId) ?? null, zone: null })
+      )
+    };
+  }
 
-      if (!entry) {
-        continue;
-      }
+  private async division({ userId, window }: LeagueScopeInput): Promise<LeagueView> {
+    const base = {
+      scope: 'division',
+      metric: LEAGUE_DIVISION.metric,
+      weekStart: toIsoDate(window.weekStart) ?? '',
+      endsAt: window.end.toISOString()
+    } as const;
 
-      entry.battles += session.battles;
-      entry.damage += session.damageDealt;
+    const links = await this.prisma.userLestaAccount.findMany({
+      where: { userId },
+      select: { accountId: true },
+      orderBy: [{ isPrimary: 'desc' }, { linkedAt: 'asc' }]
+    });
 
-      if (session.wn8 !== null) {
-        entry.wn8Weighted += session.wn8 * session.battles;
-        entry.wn8Battles += session.battles;
-      }
+    const own = new Set(links.map((link) => link.accountId));
+    const memberships = await this.prisma.leagueMembership.findMany({ where: { weekStart: window.weekStart, accountId: { in: [...own] } } });
+    const mine = links.map((link) => memberships.find((membership) => membership.accountId === link.accountId)).find(Boolean);
+
+    if (!mine) {
+      return { ...base, division: null, entries: [] };
     }
+
+    const group = await this.prisma.leagueMembership.findMany({ where: { weekStart: window.weekStart, tier: mine.tier, groupNo: mine.groupNo } });
+    const accountIds = group.map((member) => member.accountId);
+    const isClosed = group.every((member) => member.closedAt !== null);
+    const players = await this.prisma.player.findMany({ where: { accountId: { in: accountIds } }, select: { accountId: true, nickname: true } });
+    const standings = isClosed
+      ? toStoredStandings(group)
+      : divisionStandings({
+          tier: mine.tier,
+          stats: [
+            ...(
+              await this.stats.weekStats({ accountIds, start: window.start, end: window.end, withMarks: needsMarks(LEAGUE_DIVISION.metric) })
+            ).values()
+          ],
+          metric: LEAGUE_DIVISION.metric,
+          minBattles: LEAGUE_DIVISION.minBattles,
+          rules: LEAGUE_DIVISION
+        }).entries;
 
     const nicknames = new Map(players.map((player) => [player.accountId, player.nickname]));
 
     return {
-      metric,
-      weekStart: toIsoDate(weekStart) ?? '',
-      entries: rankLeague({ stats: [...stats.values()], metric, minBattles: LEAGUE.minBattles }).map((entry) => ({
-        rank: entry.rank,
-        accountId: Number(entry.accountId),
-        nickname: nicknames.get(entry.accountId) ?? null,
-        isMe: own.has(entry.accountId),
-        battles: entry.battles,
-        value: entry.value
-      }))
+      ...base,
+      division: {
+        accountId: Number(mine.accountId),
+        tier: mine.tier,
+        group: mine.groupNo,
+        size: group.length,
+        isClosed,
+        promotionSlots: standings.filter((entry) => entry.zone === 'promotion').length,
+        relegationSlots: standings.filter((entry) => entry.zone === 'relegation' && entry.value !== null).length,
+        ...tierMoves(mine.tier)
+      },
+      entries: standings.map((entry) => toLeagueEntry({ entry, nicknames, own, tier: mine.tier, zone: entry.zone }))
     };
   }
 }

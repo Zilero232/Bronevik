@@ -912,6 +912,9 @@ export type {
   NewsQuery,
   PremiumOffer
 } from './shop';
+export { LEAGUE_METRICS, LEAGUE_SCOPES, LEAGUE_TIERS, LEAGUE_ZONES, WEEKLY_CHALLENGE_METRICS } from './social';
+export { leagueMetricSchema, leagueScopeSchema, leagueTierSchema, leagueZoneSchema, weeklyChallengeMetricSchema } from './social';
+export type { LeagueMetric, LeagueScope, LeagueTier, LeagueZone, WeeklyChallengeMetric } from './social';
 export { changedGroups, diffSettings, flattenSettings, toSettingsValues, valuesForApply, zoomMax } from './streamer-settings';
 export {
   STREAMER_SETTINGS,

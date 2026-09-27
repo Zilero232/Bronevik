@@ -1,0 +1,20 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.unknown {
+  color: var(--color-text-dim);
+}
+
+.notes {
+  overflow: hidden;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

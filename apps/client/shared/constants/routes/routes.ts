@@ -1,4 +1,4 @@
-import type { MissionOperationRouteInput, PlayerSessionRouteInput, TreeTankRouteInput } from './routes.types';
+import type { MissionOperationRouteInput, PlayerSessionRouteInput, PlayerWrappedRouteInput, TreeTankRouteInput } from './routes.types';
 
 import { ROUTE_PARAMS } from './routes.constants';
 
@@ -15,6 +15,7 @@ export const ROUTES = {
     profile: (nickname: string) => `/p/${encodeURIComponent(nickname)}`,
     session: ({ nickname, sessionId }: PlayerSessionRouteInput) => `/p/${encodeURIComponent(nickname)}/sessions/${sessionId}`,
     signature: (nickname: string) => `/p/${encodeURIComponent(nickname)}/signature`,
+    wrapped: ({ nickname, year }: PlayerWrappedRouteInput) => `/p/${encodeURIComponent(nickname)}/wrapped/${year}`,
     compare: '/compare/players'
   },
   top: '/top',
@@ -52,7 +53,8 @@ export const ROUTES = {
   },
   clans: {
     list: '/clans',
-    detail: (tag: string) => `/c/${encodeURIComponent(tag)}`
+    detail: (tag: string) => `/c/${encodeURIComponent(tag)}`,
+    workspace: (tag: string) => `/c/${encodeURIComponent(tag)}/workspace`
   },
   tools: '/tools',
   codes: '/codes',
@@ -94,6 +96,11 @@ export const ROUTES = {
     detail: (slug: string) => `/guides/${encodeURIComponent(slug)}`,
     create: '/guides/new',
     edit: (slug: string) => `/guides/${encodeURIComponent(slug)}/edit`
+  },
+  social: {
+    feed: '/feed',
+    leagues: '/leagues',
+    challenges: '/challenges'
   },
   platoons: '/platoons',
   recruiting: '/recruiting',

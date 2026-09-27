@@ -1,0 +1,66 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+  @include stack(var(--space-3));
+
+  padding: var(--space-4);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.time {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.reminder {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+  gap: var(--space-2);
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.rsvp,
+.officer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.officer {
+  margin-inline-start: auto;
+}

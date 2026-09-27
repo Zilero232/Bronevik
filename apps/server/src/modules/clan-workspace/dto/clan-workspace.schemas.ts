@@ -27,6 +27,7 @@ export const clanEventSchema = z.object({
   startsAt: isoDateTimeSchema,
   endsAt: isoDateTimeSchema.nullable(),
   remindAt: isoDateTimeSchema.nullable(),
+  remindMinutesBefore: z.number().int().min(0).nullable(),
   remindedAt: isoDateTimeSchema.nullable(),
   attendance: z.array(
     z.object({ accountId: accountIdSchema, nickname: z.string().nullable(), status: attendanceStatusSchema, source: z.enum(['manual', 'api']) })

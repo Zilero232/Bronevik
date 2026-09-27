@@ -12,7 +12,7 @@ import type { IntegrationStoreService } from '../integration-store.service';
 
 import { AppBadRequestException } from '../../../../common/exceptions';
 import { AppConfigService } from '../../../../config';
-import { DONATION_ALERTS, INTEGRATIONS, TWITCH } from '../../config';
+import { DONATION_ALERTS, INTEGRATIONS, OAUTH_STATE, TWITCH } from '../../config';
 import { IntegrationsService } from '../integrations.service';
 import { OAuthStateService } from '../oauth-state.service';
 
@@ -236,5 +236,25 @@ describe('IntegrationsService.callback', () => {
     await expect(service.callback({ provider: 'twitch', code: 'c', ...issued, viewerId: 'u2' })).resolves.toBe(failedUrl);
     expect(oauth.exchangeCode).not.toHaveBeenCalled();
     expect(store.save).not.toHaveBeenCalled();
+  });
+});
+
+describe('IntegrationsService.bindingCookie', () => {
+  it('keeps the browser binding http-only, same-site lax and scoped to the integration callbacks for the state lifetime', () => {
+    const { service } = createService();
+
+    expect(service.bindingCookie()).toEqual({
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      path: OAUTH_STATE.cookiePath,
+      maxAge: OAUTH_STATE.ttlSeconds * 1000
+    });
+  });
+
+  it('marks the binding secure when the API is served over https', () => {
+    const { service } = createService({ ...ENV, API_URL: 'https://api.triotmetki.ru' });
+
+    expect(service.bindingCookie().secure).toBe(true);
   });
 });

@@ -27,6 +27,7 @@ from .battle import BattleMoeTracker
 from .shots import ShotTracker
 from .dossier import achievement_name, current_vehicle_id, current_vehicle_moe
 from .loadout import read_current_loadout
+from .replays import ReplayAutoUpload
 from .fetch import create_transport
 from .log import log, log_exception, safe
 from .settings_core import SettingsShare
@@ -131,6 +132,7 @@ class OtmetkiApp(object):
         self.shot_arena = None
         self.settings_ui = SettingsUi(self)
         self.settings_share = SettingsShare(self, CONFIG_DIR)
+        self.replays = ReplayAutoUpload(self, CONFIG_DIR)
 
     def start(self):
         events = g_playerEvents
@@ -181,6 +183,7 @@ class OtmetkiApp(object):
     def _switch_account(self, account_id):
         self.account_id = account_id
         self.outbox = Outbox(JsonFile(_path('outbox_%d.json' % account_id)))
+        self.replays.on_account(account_id)
         self._rebuild_sender()
 
     def _rebuild_sender(self):
@@ -189,6 +192,7 @@ class OtmetkiApp(object):
             self.sender = None
             return
         self.outbox.unblock()
+        self.replays.on_rebind()
         self.sender = IngestSender(
             self.outbox,
             self.current_credentials(),
@@ -214,6 +218,7 @@ class OtmetkiApp(object):
                     self.last_flush = now
                     self.sender.tick(now)
                 self.settings_share.tick(now)
+                self.replays.tick(now)
         except Exception:
             log_exception('tick')
         BigWorld.callback(TICK_S, self._tick)
@@ -388,6 +393,7 @@ class OtmetkiApp(object):
         arena_id = getattr(player, 'arenaUniqueID', None)
         wait = self.queue_timer.take_last_wait()
         if arena_id:
+            self.replays.on_battle_start(arena_id)
             self.loadouts.battle_started(arena_id, _player_tank_id(player))
             if wait is not None:
                 self.queue_wait_by_arena[arena_id] = wait
@@ -461,6 +467,7 @@ class OtmetkiApp(object):
         owner = avatar.get('accountDBID')
         if owner and self.account_id and owner != self.account_id:
             return
+        self.replays.on_battle_result(arena_id, results)
         common = results.get('common') or {}
         try:
             probe = build_battle_event(results)

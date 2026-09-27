@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ACCOUNT_NAV, ROUTES } from '@/shared/constants';
 
-import { isActiveTab } from '../active-tab';
+import { activeSection, isActiveTab } from '../active-tab';
 
 describe('isActiveTab', () => {
   it('matches the overview tab only on its exact path', () => {
@@ -27,5 +27,15 @@ describe('ACCOUNT_NAV', () => {
     const active = hrefs.filter((href) => isActiveTab({ href, pathname: ROUTES.account.battle('abc') }));
 
     expect(active).toEqual([ROUTES.account.battles]);
+  });
+});
+
+describe('activeSection', () => {
+  it('names the section of a nested account page', () => {
+    expect(activeSection(`${ROUTES.account.billing}/history`).href).toBe(ROUTES.account.billing);
+  });
+
+  it('falls back to the first tab outside the account pages', () => {
+    expect(activeSection('/tanks')).toBe(ACCOUNT_NAV[0].items[0]);
   });
 });

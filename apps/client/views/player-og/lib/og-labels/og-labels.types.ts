@@ -16,9 +16,20 @@ export type SessionOgLabels = {
   source: string;
 };
 
+export type WrappedOgLabels = {
+  kind: string;
+  year: string;
+  battles: string;
+  winRate: string;
+  avgDamage: string;
+  marks: string;
+  source: string;
+};
+
 export type OgLabels = {
   brand: string;
   fallback: string;
   player: PlayerOgLabels;
   session: SessionOgLabels;
+  wrapped: WrappedOgLabels;
 };

@@ -21,7 +21,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = context.getRequest<Request>();
     const response = context.getResponse<Response>();
 
-    if (request.path.startsWith(MOD_REPLY.pathPrefix)) {
+    if (MOD_REPLY.pathPrefixes.some((prefix) => request.path.startsWith(prefix))) {
       response.setHeader(MOD_REPLY.serverTimeHeader, String(Math.floor(Date.now() / 1000)));
     }
 
@@ -64,7 +64,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const body = exception.getResponse();
       const status = exception.getStatus();
 
-      response.status(status).json(bodyWithField({ body, field: 'code' }) ?? { error: exception.message, code: codeForStatus(status) });
+      const modBody = bodyWithField({ body, field: 'error' });
+      const fallback = modBody !== null && MOD_ERROR_CODES.includes(modBody.error) ? { ...modBody, code: codeForStatus(status) } : undefined;
+
+      response.status(status).json(bodyWithField({ body, field: 'code' }) ?? fallback ?? { error: exception.message, code: codeForStatus(status) });
 
       return;
     }

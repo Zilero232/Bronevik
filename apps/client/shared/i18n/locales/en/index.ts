@@ -8,6 +8,7 @@ import brand from './brand.json';
 import builds from './builds.json';
 import buildsCatalog from './buildsCatalog.json';
 import clans from './clans.json';
+import clanWorkspace from './clanWorkspace.json';
 import coaching from './coaching.json';
 import codes from './codes.json';
 import common from './common.json';
@@ -55,6 +56,7 @@ import search from './search.json';
 import settings from './settings.json';
 import shop from './shop.json';
 import showcase from './showcase.json';
+import social from './social.json';
 import stats from './stats.json';
 import streamer from './streamer.json';
 import streamers from './streamers.json';
@@ -73,8 +75,12 @@ import top from './top.json';
 import tournaments from './tournaments.json';
 import tree from './tree.json';
 import watchlist from './watchlist.json';
+import wrapped from './wrapped.json';
 
 export const en = {
+  clanWorkspace,
+  wrapped,
+  social,
   analytics,
   armor,
   auth,

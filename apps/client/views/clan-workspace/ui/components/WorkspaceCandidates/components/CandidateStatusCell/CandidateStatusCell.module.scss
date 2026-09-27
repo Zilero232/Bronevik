@@ -1,0 +1,19 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-width: 150px;
+  box-shadow: inset 2px 0 0 var(--status-color, transparent);
+  padding-inline-start: var(--space-2);
+}
+
+.root[data-status='trial'] {
+  --status-color: var(--color-warning);
+}
+
+.root[data-status='accepted'] {
+  --status-color: var(--color-success);
+}
+
+.root[data-status='rejected'] {
+  --status-color: var(--color-danger);
+}

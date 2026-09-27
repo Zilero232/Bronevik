@@ -6,7 +6,10 @@ import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../../config';
 
 export const badgeCodeOf = (definition: Pick<ChallengeDefinition, 'code'>): string => `${CHALLENGE_BADGES.prefix}${definition.code}`;
 
-export const isChallengeBadgeCode = (code: string): boolean => WEEKLY_CHALLENGES.some((definition) => badgeCodeOf(definition) === code);
+export const challengeOfBadge = (code: string): ChallengeDefinition | null =>
+  WEEKLY_CHALLENGES.find((definition) => badgeCodeOf(definition) === code) ?? null;
+
+export const isChallengeBadgeCode = (code: string): boolean => challengeOfBadge(code) !== null;
 
 export const challengeProgress = ({ definition, stats }: ChallengeProgressInput): number =>
   match(definition)

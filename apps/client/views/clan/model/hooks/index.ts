@@ -5,3 +5,4 @@ export { useClanStronghold } from './use-clan-stronghold';
 export { useRoster } from './use-roster';
 export { useRosterColumns } from './use-roster-columns';
 export { useRosterFilters } from './use-roster-filters';
+export { useWorkspaceLink } from './use-workspace-link';

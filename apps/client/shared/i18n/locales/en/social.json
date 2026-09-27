@@ -1,0 +1,208 @@
+{
+  "meta": {
+    "feed": {
+      "title": "Friends feed",
+      "description": "Marks, Ace Tanker badges and damage records of the players you follow."
+    },
+    "leagues": {
+      "title": "Weekly leagues",
+      "description": "Weekly divisions from Bronze to Diamond: groups of 30 players, promotion and relegation every week. Plus a table of your friends."
+    },
+    "challenges": {
+      "title": "Weekly challenges",
+      "description": "Weekly goals for your linked accounts with badges as rewards."
+    }
+  },
+  "shell": {
+    "label": "Community sections",
+    "home": "Home",
+    "community": "Community",
+    "signIn": "Sign in",
+    "sections": {
+      "feed": {
+        "title": "Friends feed",
+        "lead": "What the players you follow achieved: marks, Ace Tanker and new damage records.",
+        "guestTitle": "Sign in to see your feed",
+        "guestText": "The feed is built from the players you follow and your own linked accounts."
+      },
+      "leagues": {
+        "title": "Weekly leagues",
+        "lead": "Every week you play in a group of ~30 players of your division. The best climb, the worst drop.",
+        "guestTitle": "Sign in to join a league",
+        "guestText": "Leagues are built from every player with a linked Lesta account. Sign in and link yours."
+      },
+      "challenges": {
+        "title": "Weekly challenges",
+        "lead": "Goals that reset every Monday. Finish one and a badge lands on your profile.",
+        "guestTitle": "Sign in to take the challenges",
+        "guestText": "Progress is counted for the Lesta accounts linked to your profile."
+      }
+    }
+  },
+  "feed": {
+    "figures": {
+      "players": "Players",
+      "marks": "Marks",
+      "records": "Records"
+    },
+    "filters": {
+      "days": "Period",
+      "dayOption": "{days, plural, one {# day} other {# days}}",
+      "kind": "Event type"
+    },
+    "kinds": {
+      "all": "All",
+      "mark": "Marks",
+      "mastery": "Ace Tanker",
+      "record": "Records",
+      "badge": "Badges"
+    },
+    "empty": {
+      "title": "Nothing here yet",
+      "description": "Follow players to see their marks, masteries and records in your feed.",
+      "action": "Find players"
+    },
+    "error": {
+      "title": "The feed did not load",
+      "description": "Try again in a moment."
+    },
+    "filteredEmpty": "No events of this type in the period",
+    "timeline": "Feed events",
+    "entry": {
+      "unknown": "A player",
+      "mark": "earned {value, plural, =1 {the first mark} =2 {the second mark} =3 {the third mark} other {# marks}}",
+      "mastery": "earned Ace Tanker",
+      "record": "set a damage record: {value, number}",
+      "weeklyBadge": "completed the weekly challenge “{title}”",
+      "badge": "earned a badge"
+    }
+  },
+  "leagues": {
+    "figures": {
+      "place": "Your place",
+      "circle": "In the league"
+    },
+    "scope": "Table",
+    "scopes": {
+      "division": "My division",
+      "friends": "Friends"
+    },
+    "tiers": {
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "platinum": "Platinum",
+      "diamond": "Diamond"
+    },
+    "division": {
+      "group": "Group {group} · {count, plural, one {# player} other {# players}}",
+      "live": "Week in progress",
+      "closed": "Week closed",
+      "promotion": "Promotion",
+      "relegation": "Relegation",
+      "moves": "{count, plural, =0 {nobody yet} one {# player} other {# players}} → {tier}",
+      "top": "Top division",
+      "bottom": "Nobody drops out of this division",
+      "liveNote": "Zones update during the week. Results are locked on Monday at 00:05 Moscow time; a player short of the battle minimum drops a division.",
+      "closedNote": "The week is closed: places and zones no longer change."
+    },
+    "pending": {
+      "title": "You are not in a division yet",
+      "description": "Every player with a linked Lesta account takes part. New accounts are placed into a group within an hour and start in Bronze.",
+      "action": "Link account"
+    },
+    "metric": "Ranking metric",
+    "metrics": {
+      "damage": "Avg damage",
+      "wn8": "WN8",
+      "marks": "Marks",
+      "battles": "Battles"
+    },
+    "week": {
+      "previous": "Previous week",
+      "next": "Next week",
+      "current": "This week, from {date}",
+      "of": "Week of {date}",
+      "loading": "Loading the week"
+    },
+    "empty": {
+      "title": "Your league is empty",
+      "description": "Follow players to compare your week with theirs.",
+      "action": "Find players"
+    },
+    "error": {
+      "title": "The league did not load",
+      "description": "Try again in a moment."
+    },
+    "caption": "Weekly league table",
+    "columns": {
+      "rank": "Place",
+      "player": "Player",
+      "battles": "Battles",
+      "tier": "Division"
+    },
+    "unknownPlayer": "Player #{id}",
+    "unrankedHint": "Too few battles this week to be ranked",
+    "battlesCount": "{count, plural, one {# battle} other {# battles}}",
+    "legend": {
+      "label": "League zones",
+      "promotion": "Promotion zone",
+      "relegation": "Relegation zone",
+      "unranked": "Too few battles to rank"
+    },
+    "standing": {
+      "title": "Your standing",
+      "absent": "Link a Lesta account to take part",
+      "zones": {
+        "promotion": "You are in the promotion zone",
+        "stay": "You are holding your division",
+        "relegation": "You are in the relegation zone",
+        "unranked": "Play a few more battles to get ranked",
+        "ranked": "Your place among friends"
+      },
+      "place": "Place",
+      "placeOf": "{place} of {total}",
+      "unranked": "Unranked",
+      "value": "Your result",
+      "behind": "To the next place",
+      "behindHint": "How far behind the player above you are",
+      "ahead": "Lead over the next",
+      "aheadHint": "How far ahead of the player below you are"
+    }
+  },
+  "challenges": {
+    "figures": {
+      "completed": "Completed",
+      "completedOf": "{completed} of {total}",
+      "left": "Time left",
+      "timeLeft": "{days, plural, =0 {} one {# day } other {# days }}{hours} h"
+    },
+    "lesta": {
+      "title": "Link a Lesta account",
+      "text": "Challenge progress is counted for linked accounts only.",
+      "action": "Link account"
+    },
+    "empty": {
+      "title": "No challenges this week",
+      "description": "New challenges appear every Monday."
+    },
+    "error": {
+      "title": "The challenges did not load",
+      "description": "Try again in a moment."
+    },
+    "progressLabel": "{value} of {target}",
+    "titles": {
+      "battles": "Play {target, plural, one {# battle} other {# battles}}",
+      "wins": "Win {target, plural, one {# battle} other {# battles}}",
+      "spotted": "Spot {target, plural, one {# enemy} other {# enemies}}",
+      "marks": "Earn {target, plural, one {# mark of excellence} other {# marks of excellence}}",
+      "bigDamageBattles": "Deal {threshold, number}+ damage in {target, plural, one {# battle} other {# battles}}{vehicle, select, none {} other { — {vehicle}}}"
+    },
+    "progress": "{value} / {target}",
+    "reward": {
+      "received": "Badge received",
+      "badge": "Reward: weekly badge"
+    },
+    "completedAt": "Done {date}"
+  }
+}

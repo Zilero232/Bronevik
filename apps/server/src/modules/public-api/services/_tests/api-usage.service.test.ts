@@ -135,3 +135,54 @@ describe('ApiUsageService.logError', () => {
     expect(prisma.apiErrorLog.create.mock.calls[0]?.[0].data.message).toBeNull();
   });
 });
+
+describe('ApiUsageService lifecycle', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('flushes the buffer on every interval once started', async () => {
+    vi.useFakeTimers({ now: BEFORE_MIDNIGHT });
+
+    const { service, prisma } = createService();
+
+    service.onModuleInit();
+    service.record({ keyId: 'key', endpoint: 'GET /v1/tanks', latencyMs: 1, failed: false });
+
+    await vi.advanceTimersByTimeAsync(API_USAGE.flushIntervalMs - 1);
+
+    expect(prisma.apiUsageDaily.upsert).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(1);
+
+    expect(prisma.apiUsageDaily.upsert).toHaveBeenCalledOnce();
+
+    await service.onModuleDestroy();
+  });
+
+  it('writes what is left and stops the interval on shutdown', async () => {
+    vi.useFakeTimers({ now: BEFORE_MIDNIGHT });
+
+    const { service, prisma } = createService();
+
+    service.onModuleInit();
+    service.record({ keyId: 'key', endpoint: 'GET /v1/tanks', latencyMs: 1, failed: false });
+    await service.onModuleDestroy();
+
+    expect(prisma.apiUsageDaily.upsert).toHaveBeenCalledOnce();
+
+    service.record({ keyId: 'key', endpoint: 'GET /v1/tanks', latencyMs: 1, failed: false });
+    await vi.advanceTimersByTimeAsync(API_USAGE.flushIntervalMs * 2);
+
+    expect(prisma.apiUsageDaily.upsert).toHaveBeenCalledOnce();
+  });
+
+  it('flushes on shutdown even if it never started', async () => {
+    const { service, prisma } = createService();
+
+    service.record({ keyId: 'key', endpoint: 'GET /v1/tanks', latencyMs: 1, failed: false });
+    await service.onModuleDestroy();
+
+    expect(prisma.apiUsageDaily.upsert).toHaveBeenCalledOnce();
+  });
+});

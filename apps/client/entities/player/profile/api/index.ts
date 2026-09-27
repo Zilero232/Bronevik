@@ -14,3 +14,5 @@ export {
   PLAYERS_REQUEST
 } from './players';
 export type { GroupInsight, PlayerMarkRow, PlayerMarks, PlayerTanksFilter, TankInsight } from './players';
+export { getPlayerWrapped } from './wrapped';
+export type { PlayerWrapped, PlayerWrappedBattle, PlayerWrappedInput, PlayerWrappedTank } from './wrapped';

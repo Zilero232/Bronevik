@@ -6,6 +6,7 @@ import {
   FeedService,
   FollowService,
   LeagueService,
+  LeagueStatsService,
   SignatureService,
   SnapshotEventsService,
   WeeklyChallengeService,
@@ -16,6 +17,15 @@ import { SocialController } from './social.controller';
 @Module({
   imports: [BillingCoreModule, NotificationsProducerModule],
   controllers: [SocialController],
-  providers: [SnapshotEventsService, FollowService, FeedService, LeagueService, WeeklyChallengeService, SignatureService, WrappedService]
+  providers: [
+    SnapshotEventsService,
+    FollowService,
+    FeedService,
+    LeagueStatsService,
+    LeagueService,
+    WeeklyChallengeService,
+    SignatureService,
+    WrappedService
+  ]
 })
 export class SocialModule {}

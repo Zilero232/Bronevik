@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "title": "{nickname}: {year} in review",
+    "description": "Battles, damage, favourite tanks, marks and the best battle of {nickname} in {year}."
+  },
+  "og": {
+    "eyebrow": "YEAR IN REVIEW",
+    "year": "Year",
+    "marks": "Marks gained"
+  },
+  "share": {
+    "title": "{nickname}: {year} in review",
+    "text": "My {year} in Mir Tankov in numbers",
+    "copied": "Link copied"
+  },
+  "figures": {
+    "battles": "Battles",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage"
+  },
+  "crumb": "Year {year}",
+  "eyebrow": "Year in review · {year}",
+  "title": "{nickname}: {year} in review",
+  "lead": "How the year went for {nickname}: battles, damage, favourite tanks and the best battle.",
+  "missing": {
+    "errorTitle": "The review did not load",
+    "notFound": "Player {nickname} not found"
+  },
+  "empty": {
+    "title": "No battles in {year}",
+    "description": "We have no tracked battles for this year. Stats are counted from the moment the profile is tracked."
+  },
+  "error": {
+    "title": "The review did not load",
+    "description": "Try again in a moment."
+  },
+  "chapters": {
+    "step": "{index} / {total}",
+    "activity": {
+      "title": "The year in battles",
+      "battles": "Battles",
+      "wins": "Wins",
+      "sessions": "Sessions",
+      "busiestMonth": "Busiest month"
+    },
+    "damage": {
+      "title": "Damage dealt",
+      "total": "Total damage",
+      "average": "Per battle",
+      "frags": "Vehicles destroyed"
+    },
+    "tanks": {
+      "title": "Favourite tanks",
+      "battles": "Battles",
+      "damage": "Damage",
+      "place": "#{place}"
+    },
+    "marks": {
+      "title": "Marks and awards",
+      "marks": "Marks gained",
+      "masteries": "Ace Tanker",
+      "badges": "Badges"
+    },
+    "best": {
+      "title": "Battle of the year",
+      "damage": "Damage",
+      "frags": "Destroyed",
+      "replay": "Watch the replay"
+    }
+  },
+  "outro": {
+    "title": "Share your year",
+    "share": "Share",
+    "copy": "Copy link",
+    "profile": "To the profile",
+    "years": "Other years"
+  }
+}

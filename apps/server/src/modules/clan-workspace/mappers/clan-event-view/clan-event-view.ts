@@ -1,3 +1,5 @@
+import { differenceInMinutes } from 'date-fns';
+
 import type { ClanEventView } from '../../clan-workspace.types';
 import type { ToEventViewInput } from './clan-event-view.types';
 
@@ -11,6 +13,7 @@ export const toClanEventView = ({ event, nicknames }: ToEventViewInput): ClanEve
   startsAt: event.startsAt.toISOString(),
   endsAt: toIso(event.endsAt),
   remindAt: toIso(event.remindAt),
+  remindMinutesBefore: event.remindAt ? differenceInMinutes(event.startsAt, event.remindAt) : null,
   remindedAt: toIso(event.remindedAt),
   attendance: event.attendance.map((row) => ({
     accountId: Number(row.accountId),

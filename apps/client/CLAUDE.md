@@ -9,21 +9,32 @@ Architecture is **Feature-Sliced Design** with two local tweaks: `pages` → `vi
 ## Layer map
 
 ```text
-app/          # Next.js routes — [locale]/{(site),(overlay),(tma)}, api/og, serwist, providers, global-error
-views/        # one screen per route (36): home, design, error, not-found, login, me, billing, plus,
-              #   notifications, players, player-profile, player-session, player-og, compare-players, top,
-              #   clan, clans, tank, tanks, compare-tanks, build, marks, tree, map, maps, play, tools,
-              #   streamer, for-streamers, streamer-studio, overlay, developers, developer-cabinet,
-              #   mini-app, telegram-link, telegram-login
-widgets/      # account/account-shell, player/session-detail, site/{site-header,site-footer}
-features/     # app/{rating-palette,rating-patterns,switch-locale,switch-theme}, auth/lesta-link,
-              #   notifications/inbox-bell, player/toggle-favorite, search/{command-palette,pick-entity},
-              #   stats/select-period, tank/{filter-vehicles,pick-tank}
-entities/     # app/locale, armor/armor-model, auth/session, map/map, notification/inbox,
-              #   player/{player,profile,recent-players,stats}, streamer/{broadcast,overlay}, tank/{build,tank}
-shared/       # project-agnostic: api/ (infrastructure only: http, generated, query-options, source, auth client) config/ constants/ i18n/ lib/ seo/ styles/
-ui-kit/       # the design system: atoms/ molecules/ organisms/ (ChartKit + charts, DataTable, PageHeader, toaster)
-config/       # build-time helpers for next.config.ts — not imported by the app
+app/          # Next.js routes — [locale]/{(site),(overlay),(tma)}, api/og, opengraph-image.tsx per entity route,
+              #   sitemap.ts, robots.ts, manifest.ts, sw.ts + serwist/[path] (service worker), twitch-panel/ (route
+              #   handler for the Twitch extension), providers, global-error
+views/        # one screen per route (86), e.g. home, player-profile, tank, tanks, marks, my-analytics, missions,
+              #   mission-operation, best-battles, achievements, supertest, honest-rng, mod, legal, plus, streamer-studio
+              #   — the full grouped list is in docs/architecture/fsd.md §2
+widgets/      # account/account-shell, armor/armor-viewer, map/map-rotation, player/session-detail,
+              #   showcase/showcase-3d, site/{resource-missing,site-footer,site-header}, social/social-shell, streamer/streamers-hub,
+              #   tank/{tank-best-battles,tank-math}
+features/     # app/{rating-palette,rating-patterns,switch-locale,switch-theme}, armor/armor-inspect, auth/lesta-link,
+              #   community/{api-error,comments,contact-player,form-dialog,guide-meta,markdown,player-stats,replay-meta,
+              #   report-content,stat-requirements,tactic-board-settings,tournament-status},
+              #   notifications/{inbox-bell,notification-settings}, player/{toggle-favorite,watch-player}, plus/plus-gate,
+              #   search/{command-palette,pick-entity}, stats/select-period, streamer/{apply-settings,claim-profile,follow-streamer},
+              #   tank/{filter-vehicles,pick-tank}
+entities/     # app/locale, armor/armor-model, auth/session, battle/best-battle, clan/clan, coaching/coach,
+              #   competition/competition, developer/developer, event/calendar, guide/guide, map/map, mission/mission,
+              #   mode/mode, notification/inbox, player/{analytics,cosmetics,leaderboard,marks,player,profile,recent-players,stats},
+              #   plus/subscription, pulse/pulse, reference/game-status, replay/replay, search/search, social/challenge,
+              #   streamer/{channel,overlay,preferences,settings,streamer}, tactic/board, tank/{build,tank,tree}, tournament/tournament
+shared/       # project-agnostic: api/ (infrastructure only: http, generated, openapi, query-options, query-client, prefetch-state,
+              #   source, auth client) config/ constants/ i18n/ lib/ seo/ (route-meta, require-route-entity, prefetch-boundary,
+              #   site-metadata, sitemap, json-ld, og, request-time, route-guard) styles/
+ui-kit/       # the design system: atoms/ molecules/ organisms/ (ChartKit + charts, DataTable, QueryState, PagedList,
+              #   PageHeader, PageHero, toaster)
+config/       # build-time helpers for next.config.ts (security headers / CSP, redirects, root env, panel script) — not imported by the app
 ```
 
 Inside a slice: `index.ts`, `ui/`, `model/hooks/`, `model/context/`, `api/<resource>/` (+ `api/mappers/<name>/`), `lib/<concern>/`, `config/`.
@@ -59,7 +70,26 @@ Imports go downward only: `app → views → widgets → features → entities �
 
 - **Requests live in their slice.** `shared/api` keeps only infrastructure (axios instance, bearer token, generated OpenAPI client + `query-options`, `fromServer`/`fromSdk`/`fromAuth` and the error classes, the better-auth client, `queryClient`). A read several slices need goes to `entities/<domain>/<slice>/api/<resource>/`, an action several slices trigger to `features/<domain>/<slice>/api/<resource>/`, anything one screen alone uses to `views/<view>/api/<resource>/`; the slice barrel re-exports it. Query keys stay in the shared `QUERY_KEYS` registry because invalidation crosses slices. Hooks live in the slice that owns them (`views/home/model/hooks`, `features/search/command-palette/model/hooks`).
 - **No mocks.** Every request goes to the server through `fromServer` (`shared/api/source`), which turns a 404 into `NotFoundError` and a 401 into `UnauthorizedError`. With no data a screen shows its empty state; with the API down, its error state with a retry. Queries run in the browser, so `next build` and the e2e smoke need no running server.
-- Env is read only through `@/shared/config` (`env`), which validates it with Zod. `next.config.ts` loads `NEXT_PUBLIC_*` from the root `.env` via `config/root-env.ts`.
+- Env is read only through `@/shared/config` (`env`), which validates it with Zod. `next.config.ts` loads `NEXT_PUBLIC_*` from the root `.env` via `config/root-env.ts`; `NEXT_PUBLIC_APP_VERSION` comes from the root `package.json`, and the build arg `GIT_COMMIT_SHA` joins it in the service worker's precache revision.
+
+### Loading, empty and error states
+
+- **`QueryState`** (`@/ui-kit`) renders a query's skeleton, empty, error-with-retry and data states: `<QueryState query={q} skeleton={…} empty={…} isEmpty={…}>{(data) => …}</QueryState>`. Lists and sections use it rather than hand-rolled `isLoading` branches.
+- **`ResourceGate`** (`@/widgets/site/resource-missing`) wraps `QueryState` for a page about one resource: a 404 from the API calls `notFound()` (or shows the `notFound` message when one is given), any other error shows `ResourceMissing` with a retry.
+- **Tables** are `DataTable` from `@/ui-kit`; column definitions are typed `TableColumn<Row>` (= TanStack `ColumnDef<Row, any>`) and built in a `use-<x>-columns` hook. A column picker or CSV export belongs to the view that owns the table (e.g. `views/tanks`: `TableTools`, `lib/tanks-csv`).
+
+### Server rendering: route meta and prefetch
+
+Queries run in the browser; the server only renders metadata, 404s and a warm cache for the entity pages.
+
+- **`server.ts` entries.** Server-only code of a slice is exported from its `server.ts` (`import 'server-only'`), never from `index.ts`: `entities/{tank/tank,clan/clan,player/profile,map/map,replay/replay,streamer/streamer}/server.ts` export the route lookups (`api/route-meta/`: `tankRouteEntity`, `topTankSlugs`, …) and OG sources; `views/{tank,tanks,player-profile,clan,map,marks,top,build,streamer}/server.ts` export the page's prefetch (`api/page-state/`: `tankPageState`, …).
+- **Route meta.** `generateMetadata` and the page call `requireRouteEntity(xRouteEntity(slug))` (`@/shared/seo/require-route-entity`): a 404 from the API becomes `notFound()`, any other failure renders the page anyway (`routeEntity` in `shared/seo/route-meta`), so an API outage never turns into 404s. `generateStaticParams` and `app/sitemap.ts` use the `top*Slugs` / `*Slugs` helpers with a fallback. Metadata goes through `createPageMetadata` (canonical, hreflang alternates, OG image).
+- **Prefetch pattern.** A page-state function is `'use cache'` + `cacheLife(PREFETCH_CACHE_LIFE)` and returns `prefetchState((client) => [client.fetchQuery(…)])` (dehydrated state from a fresh server `QueryClient`). The page renders `<Suspense><PrefetchBoundary state={xPageState(slug)}><XPage /></PrefetchBoundary></Suspense>`; `PrefetchBoundary` swallows a failed prefetch, so the browser simply fetches again.
+
+### Service worker and security headers
+
+- **Service worker** (Serwist, `app/sw.ts`, served from `app/serwist/[path]`): precache plus Serwist's `defaultCache` runtime rules wrapped in `sameOriginCaching` (`shared/lib/same-origin-caching`), so only same-origin requests are cached — API responses (another origin) always go to the network. It also shows web push notifications and focuses/opens the target URL on click.
+- **CSP** is set in `next.config.ts` from `config/security-headers.ts`, without nonces (they would make every page dynamic under `cacheComponents`): `script-src 'self' 'unsafe-inline'`, `connect-src 'self'` + the API origin and its `ws(s)` origin, `frame-ancestors 'none'`. Per-route overrides: `/login` allows the Telegram widget, `/overlay/*` is frameable by the site, `/tg/*` by web.telegram.org, `/vk/*` by vk.com / vk.ru, `/twitch-panel` by Twitch. A new third-party script, frame or connection needs an entry there.
 
 ## Lesta terms in the UI
 

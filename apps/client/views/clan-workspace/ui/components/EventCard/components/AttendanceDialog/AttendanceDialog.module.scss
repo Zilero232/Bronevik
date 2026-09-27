@@ -1,0 +1,32 @@
+@use '@/shared/styles/mixins' as *;
+
+.dialog {
+  width: min(560px, 100%);
+}
+
+.list {
+  @include stack(var(--space-2));
+
+  max-height: min(60vh, 520px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.row {
+  display: grid;
+  align-items: center;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) 180px;
+
+  @include below(sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

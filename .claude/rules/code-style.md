@@ -171,8 +171,9 @@ state between files fails under `--sequence.shuffle` before it fails in CI.
 ## Verify before claiming anything works
 
 `bun run verify` — typecheck, ESLint, Prettier, Stylelint. `bun run test` is
-separate; bare `bun test` is Bun's own runner and fails the suite. CI
-(`.github/workflows/ci.yml`) runs both on every push and pull request.
+separate; bare `bun test` is Bun's own runner and fails the suite. There is no
+per-push CI: the manual deploy workflow (`.github/workflows/deploy.yml`, `checks`
+job) runs both before any image is built.
 
 Neither catches SSR breakage. `bun --filter @otmetki/client build` is the only
 check that does — it is where a page that typechecks but throws during prerender

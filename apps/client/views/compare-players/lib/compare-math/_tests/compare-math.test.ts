@@ -47,4 +47,16 @@ describe('deltasToBest', () => {
   it('leaves every delta empty without a winner', () => {
     expect(deltasToBest({ values: [6.5, 8.2], best: [] })).toEqual([null, null]);
   });
+
+  it('gives no delta to any player sharing the best value', () => {
+    expect(deltasToBest({ values: [2_900, 1_200, 2_900], best: [0, 2] })).toEqual([null, -1_700, null]);
+  });
+
+  it('shows a positive delta for a worse value when lower is better', () => {
+    expect(deltasToBest({ values: [6.5, 8.2], best: [0] })).toEqual([null, 8.2 - 6.5]);
+  });
+
+  it('measures a player at zero against the best rather than skipping them', () => {
+    expect(deltasToBest({ values: [0, 40], best: [1] })).toEqual([-40, null]);
+  });
 });

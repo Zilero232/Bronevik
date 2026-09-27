@@ -31,4 +31,16 @@ describe('isCrossOriginStateChange', () => {
   it('ignores requests that carry no session cookie, such as bearer and signed calls', () => {
     expect(isCrossOriginStateChange({ ...BASE, origin: 'https://evil.example', cookie: 'theme=dark' })).toBe(false);
   });
+
+  it('ignores requests with no cookie header at all', () => {
+    expect(isCrossOriginStateChange({ ...BASE, origin: 'https://evil.example', cookie: undefined })).toBe(false);
+  });
+
+  it('treats a lower-case safe method as safe', () => {
+    expect(isCrossOriginStateChange({ ...BASE, method: 'get', origin: 'https://evil.example' })).toBe(false);
+  });
+
+  it('lets a same-site write without origin through', () => {
+    expect(isCrossOriginStateChange({ ...BASE, origin: undefined, fetchSite: 'same-site' })).toBe(false);
+  });
 });

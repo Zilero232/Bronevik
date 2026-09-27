@@ -213,3 +213,43 @@ model WeeklyChallengeProgress {
   @@index([weekStart, code])
   @@map("weekly_challenge_progress")
 }
+
+enum LeagueTier {
+  bronze
+  silver
+  gold
+  platinum
+  diamond
+
+  @@map("league_tier")
+}
+
+enum LeagueZone {
+  promotion
+  stay
+  relegation
+
+  @@map("league_zone")
+}
+
+model LeagueMembership {
+  accountId BigInt     @map("account_id")
+  weekStart DateTime   @map("week_start") @db.Date
+  tier      LeagueTier
+  groupNo   Int        @map("group_no")
+
+  rank     Int?
+  value    Float?
+  battles  Int         @default(0)
+  zone     LeagueZone?
+  closedAt DateTime?   @map("closed_at") @db.Timestamptz(3)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@id([accountId, weekStart])
+  @@index([weekStart, tier, groupNo])
+  @@index([weekStart, closedAt])
+  @@map("league_membership")
+}

@@ -1,6 +1,7 @@
 import { GlobalMapIcon, HeavyTankIcon, Mark3Icon, RadioIcon, StrongholdIcon, TrainingIcon } from '@otmetki/icons';
 import {
   Activity,
+  Award,
   BookOpen,
   CalendarDays,
   Clapperboard,
@@ -20,9 +21,11 @@ import {
   Network,
   Newspaper,
   Palette,
+  Rss,
   Scale,
   ShoppingCart,
   Swords,
+  Target,
   Ticket,
   Trophy,
   UserPlus,
@@ -79,6 +82,9 @@ export const SITE_NAV = {
       key: 'community',
       featured: 'liveStreamers',
       items: [
+        { key: 'feed', href: ROUTES.social.feed, icon: Rss },
+        { key: 'leagues', href: ROUTES.social.leagues, icon: Award },
+        { key: 'challenges', href: ROUTES.social.challenges, icon: Target },
         { key: 'streamers', href: ROUTES.streamers.list, icon: RadioIcon },
         { key: 'replays', href: ROUTES.replays.list, icon: Film },
         { key: 'guides', href: ROUTES.guides.list, icon: BookOpen },

@@ -12,6 +12,7 @@
     "db:deploy": "bun scripts/timescale.ts --extensions && prisma db push && bun run db:timescale",
     "db:generate": "prisma generate",
     "db:push": "bun scripts/timescale.ts --extensions && prisma db push && prisma generate && bun run db:timescale",
+    "db:reset": "prisma db execute --file prisma/sql/reset.sql && bun scripts/timescale.ts --extensions && prisma db push && prisma generate && bun run db:timescale",
     "db:studio": "prisma studio",
     "db:timescale": "bun scripts/timescale.ts",
     "predev": "fkill :4000 --force --silent",

@@ -11,6 +11,7 @@ import type {
   replayTracksSchema,
   uploadedReplaySchema
 } from './dto/replays.schemas';
+import type { ReplayExtension } from './lib/replay-file';
 import type { ReplayTrack } from './lib/replay-tracks';
 
 export type UploadedReplayFile = {
@@ -24,6 +25,17 @@ export type UploadReplayInput = {
   uploaderUserId: string;
   deviceId: string | null;
   visibility: Visibility;
+};
+
+export type AcceptedReplay = {
+  file: UploadedReplayFile;
+  bytes: Uint8Array;
+  extension: ReplayExtension;
+  summary: ReplaySummary;
+};
+
+export type StoreReplayInput = Omit<UploadReplayInput, 'file'> & {
+  replay: AcceptedReplay;
 };
 
 export type UploadFromModInput = {

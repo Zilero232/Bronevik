@@ -37,4 +37,20 @@ describe('similarTanks', () => {
 
     expect(similarTanks({ catalog, vehicle: tank(1), limit: 2 })).toHaveLength(2);
   });
+
+  it('prefers the same premium status once role and nation tie, then orders by name', () => {
+    const catalog = [tank(1), tank(2, { isPremium: true, name: 'A' }), tank(3, { name: 'C' }), tank(4, { name: 'B' })];
+
+    expect(similarTanks({ catalog, vehicle: tank(1), limit: 5 }).map(({ tankId }) => tankId)).toEqual([4, 3, 2]);
+  });
+
+  it('skips the role ordering when the tank itself is missing from the catalog', () => {
+    const catalog = [tank(2, { role: 'MT_support', nation: 'germany', name: 'A' }), tank(3, { role: 'MT_universal', name: 'B' })];
+
+    expect(similarTanks({ catalog, vehicle: tank(1, { role: 'MT_support' }), limit: 5 }).map(({ tankId }) => tankId)).toEqual([3, 2]);
+  });
+
+  it('returns nothing for an empty catalog', () => {
+    expect(similarTanks({ catalog: [], vehicle: tank(1), limit: 5 })).toEqual([]);
+  });
 });

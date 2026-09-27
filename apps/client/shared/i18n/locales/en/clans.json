@@ -74,7 +74,8 @@
       "stronghold": "Stronghold",
       "provinces": "Global Map provinces",
       "elo": "Elo X"
-    }
+    },
+    "workspace": "Clan workspace"
   },
   "roster": {
     "shown": "{shown} of {total}",

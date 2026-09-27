@@ -30,6 +30,11 @@ def to_text(value, encoding='utf-8'):
     return text_type(value)
 
 
+def to_native(value, encoding='utf-8'):
+    """The interpreter's `str`: bytes on Python 2 (httplib must not mix unicode headers with a binary body)."""
+    return to_bytes(value, encoding) if PY2 else to_text(value, encoding)
+
+
 def is_int(value):
     return isinstance(value, integer_types) and not isinstance(value, bool)
 

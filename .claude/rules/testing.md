@@ -34,7 +34,7 @@ E2E — `bun run test:e2e`, two projects (`desktop` + `mobile`). Without `E2E_BA
 
 The mod — `bun run test:mod` (`python -m unittest discover apps/mod/tests`), on Python 3; the pure code is 2/3 compatible.
 
-CI ([.github/workflows/ci.yml](../../.github/workflows/ci.yml)) runs all three.
+The manual deploy workflow ([.github/workflows/deploy.yml](../../.github/workflows/deploy.yml)) runs all three before it builds any image; there is no per-push CI.
 
 ## Environment
 
@@ -57,7 +57,7 @@ A test should catch a regression, not restate the implementation. Every bug fixe
 | Fair-play guards             | The mod must never serialise other players' data                                      | `apps/mod/tests/test_payload.py`                     |
 | Signatures and auth handshakes | A wrong HMAC or OpenID check is a security bug, not a cosmetic one                   | `apps/server/src/lib/auth/**/_tests`                    |
 | Rules with a threshold       | Schedules, backoff, streaks and diff windows fire for the wrong reason unnoticed       | `apps/server/src/modules/collector/tracking/lib/poll-schedule/_tests`        |
-| Contracts between layers     | A schema and its translations drifting apart ships a blank string                      | `apps/client/shared/i18n/_tests`                     |
+| Contracts between layers     | A schema and its translations drifting apart ships a blank string                      | `apps/client/shared/i18n/messages/_tests`                     |
 
 **Distinguish carefully**, because these are where the bugs actually live: `null` vs `undefined` vs `0` vs `''`; the first render vs a real change (an effect firing on mount is not a user action); the empty collection; the value exactly on a boundary.
 

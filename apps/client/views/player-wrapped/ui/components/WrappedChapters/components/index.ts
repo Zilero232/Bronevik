@@ -1,0 +1,1 @@
+export { WrappedFact } from './WrappedFact';

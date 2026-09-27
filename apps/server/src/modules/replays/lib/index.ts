@@ -1,5 +1,6 @@
 export { accumulateTracks, arenaBounds, emptyGrid, fallbackBounds, gridTotal, mergeGrids, readHeatmapCells } from './heatmap';
 export type { MapBounds } from './heatmap';
+export { isRecordedBy, modVisibility } from './mod-upload';
 export { replayColumns } from './replay-columns';
 export { replayExtension, replayStorageKey, sha256Hex, tracksStorageKey } from './replay-file';
 export { replayMedals } from './replay-medals';

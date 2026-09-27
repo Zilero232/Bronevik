@@ -8,6 +8,7 @@ export type ModErrorCode =
   | 'invalid_code'
   | 'invalid_payload'
   | 'rate_limited'
+  | 'replay_not_owned'
   | 'replayed_request'
   | 'server_error'
   | 'stale_request'

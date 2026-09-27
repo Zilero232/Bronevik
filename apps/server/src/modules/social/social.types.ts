@@ -1,21 +1,39 @@
-import type { Follow } from '@otmetki/schemas';
+import type { Follow, LeagueScope } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { TargetKind } from '../../../generated';
-import type { challengesSchema, feedItemSchema, leagueSchema, wrappedSchema } from './dto/social.schemas';
+import type { WeekWindow } from '../../common/lib';
+import type {
+  challengeRuleSchema,
+  challengesSchema,
+  feedBadgeSchema,
+  feedItemSchema,
+  leagueDivisionSchema,
+  leagueEntrySchema,
+  leagueSchema,
+  wrappedSchema
+} from './dto/social.schemas';
 import type { ChallengeDefinition, WeekStats } from './lib/challenges';
 import type { LeagueMetric } from './lib/league';
 
 export type FollowView = Follow;
 export type FeedItem = z.infer<typeof feedItemSchema>;
+export type FeedBadgeView = z.infer<typeof feedBadgeSchema>;
+export type ChallengeRuleView = z.infer<typeof challengeRuleSchema>;
 export type LeagueView = z.infer<typeof leagueSchema>;
+export type LeagueEntryView = z.infer<typeof leagueEntrySchema>;
+export type LeagueDivisionView = z.infer<typeof leagueDivisionSchema>;
 export type ChallengesView = z.infer<typeof challengesSchema>;
 export type WrappedView = z.infer<typeof wrappedSchema>;
 
 export type CreateFollowInput = { userId: string; kind: TargetKind; targetId: number };
 export type RemoveFollowInput = { userId: string; id: string };
 export type FeedInput = { userId: string; days: number };
-export type LeagueInput = { userId: string; metric: LeagueMetric; week: string | undefined };
+export type LeagueInput = { userId: string; scope: LeagueScope; metric: LeagueMetric; week: string | undefined };
+export type LeagueScopeInput = { userId: string; metric: LeagueMetric; window: WeekWindow };
+export type LeagueStatsInput = { accountIds: bigint[]; start: Date; end: Date; withMarks: boolean };
+export type CloseLeagueWeekInput = { weekStart: Date; now: Date };
+export type LeagueRollover = { closed: number; placed: number; pruned: number };
 export type WrappedInput = { accountId: number; year: number };
 
 export type SnapshotEventRow = {

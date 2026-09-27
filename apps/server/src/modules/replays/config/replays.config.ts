@@ -9,7 +9,10 @@ export const REPLAY_UPLOAD = {
   keyPrefix: 'replays',
   tracksSuffix: '.tracks.json',
   userThrottle: { limit: 20, ttl: 60_000 },
-  modThrottle: { limit: 30, ttl: 60_000 }
+  modThrottle: { limit: 30, ttl: 60_000 },
+  visibilityHeader: 'x-otmetki-visibility',
+  modVisibilities: ['private', 'public'],
+  modDefaultVisibility: 'private'
 } as const;
 
 export const REPLAYS_QUEUE = {

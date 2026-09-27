@@ -1,5 +1,7 @@
 export { FeedService } from './feed.service';
 export { FollowService } from './follow.service';
+export { LeagueDivisionService } from './league-division.service';
+export { LeagueStatsService } from './league-stats.service';
 export { LeagueService } from './league.service';
 export { SignatureService } from './signature.service';
 export { SnapshotEventsService } from './snapshot-events.service';

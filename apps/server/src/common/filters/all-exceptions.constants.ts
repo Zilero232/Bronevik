@@ -17,7 +17,7 @@ export const STATUS_TO_CODE: Partial<Record<number, ApiErrorCode>> = {
 };
 
 export const MOD_REPLY = {
-  pathPrefix: '/mod/',
+  pathPrefixes: ['/mod/', '/replays/mod'],
   serverTimeHeader: 'x-otmetki-server-time'
 } as const;
 
@@ -48,6 +48,7 @@ export const MOD_ERROR_CODES: readonly unknown[] = [
   'invalid_code',
   'invalid_payload',
   'rate_limited',
+  'replay_not_owned',
   'replayed_request',
   'server_error',
   'stale_request',

@@ -80,6 +80,20 @@ describe('useFormDialog', () => {
     expect(result.current.form.getValues()).toEqual(DEFAULTS);
   });
 
+  it('hands the saved result to onSuccess and neither invalidates nor navigates unless asked', async () => {
+    const onSuccess = vi.fn();
+    const { result, invalidate } = setup({ onSuccess });
+
+    act(() => result.current.onOpenChange(true));
+    act(() => result.current.form.setValue('name', 'tiger'));
+    await submit(result);
+
+    await waitFor(() => expect(result.current.isOpen).toBe(false));
+    expect(onSuccess.mock.calls[0]?.[0]).toEqual({ slug: 'tiger' });
+    expect(invalidate).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+  });
+
   it('does not call the server when the values are invalid', async () => {
     const { result, mutationFn } = setup();
 

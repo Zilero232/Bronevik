@@ -36,7 +36,7 @@ export class ModDeviceService {
     return { ...device, accountId: device.accountId };
   }
 
-  async authenticate({ request, rawBody }: AuthenticateInput): Promise<AuthenticatedDevice> {
+  async authenticate({ request, rawBody, signedHeaders = [] }: AuthenticateInput): Promise<AuthenticatedDevice> {
     const signature = request.header(MOD_DEVICE.signatureHeader);
     const device = await this.identify({ deviceId: request.header(MOD_DEVICE.header), signature });
     const timestamp = request.header(MOD_DEVICE.timestampHeader);
@@ -46,7 +46,13 @@ export class ModDeviceService {
       throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });
     }
 
-    const message = signedMessage({ method: request.method, path: requestPath(request.originalUrl), timestamp, nonce, body: rawBody });
+    const headers = signedHeaders.flatMap((name) => {
+      const value = request.header(name);
+
+      return value === undefined ? [] : [{ name, value }];
+    });
+
+    const message = signedMessage({ method: request.method, path: requestPath(request.originalUrl), timestamp, nonce, headers, body: rawBody });
 
     if (!verifySignatureHeader({ header: signature, key: this.secretOf(device.id), body: message })) {
       throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });

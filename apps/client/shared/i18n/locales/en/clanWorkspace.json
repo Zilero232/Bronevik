@@ -1,0 +1,217 @@
+{
+  "meta": {
+    "title": "{name} — clan workspace",
+    "description": "Events, attendance, reminders and weekly reports for the {name} clan."
+  },
+  "missingClan": {
+    "back": "To clans",
+    "errorTitle": "The clan did not load",
+    "notFound": "Clan [{tag}] not found"
+  },
+  "crumb": "Workspace",
+  "title": "Clan workspace",
+  "lead": "Plan clan wars and stronghold battles, track attendance and get weekly reports.",
+  "guest": {
+    "title": "Sign in to open the workspace",
+    "description": "The workspace is available to clan members with a linked Lesta account.",
+    "action": "Sign in"
+  },
+  "outsider": {
+    "title": "Members only",
+    "description": "None of your linked Lesta accounts is in [{tag}]. Link the account you play in this clan.",
+    "action": "Linked accounts"
+  },
+  "forbidden": {
+    "title": "No access",
+    "description": "The workspace is open to clan members only."
+  },
+  "missing": {
+    "title": "No workspace yet",
+    "description": "The commander or the executive officer can open the workspace for the clan.",
+    "ownerDescription": "Open the workspace to plan events, collect RSVPs and track attendance.",
+    "action": "Open the workspace",
+    "created": "Workspace opened"
+  },
+  "tabs": {
+    "label": "Workspace sections",
+    "overview": "Overview",
+    "events": "Events",
+    "roster": "Roster",
+    "candidates": "Recruiting"
+  },
+  "errors": {
+    "conflict": "This was already changed. Refresh and try again.",
+    "forbidden": "Only clan officers can do this.",
+    "notFound": "Not found. It may have been removed.",
+    "rateLimited": "Too many requests. Try again in a minute.",
+    "unauthorized": "Sign in to continue.",
+    "unknown": "Something went wrong. Try again.",
+    "validation": "Check the fields and try again."
+  },
+  "overview": {
+    "upcoming": "Upcoming events",
+    "noUpcoming": "Nothing planned",
+    "noUpcomingOfficer": "Create an event on the Events tab.",
+    "noUpcomingMember": "Officers have not planned anything yet.",
+    "members": "Members",
+    "yourRole": "Your access",
+    "roles": {
+      "officer": "Officer",
+      "member": "Member"
+    },
+    "clan": "Clan",
+    "recruits": "Recruitment funnel"
+  },
+  "candidates": {
+    "sourced": "Found",
+    "contacted": "Contacted",
+    "trial": "On trial",
+    "accepted": "Accepted",
+    "rejected": "Rejected"
+  },
+  "report": {
+    "error": "The weekly report did not load",
+    "period": "{from} — {to}",
+    "title": "Weekly report",
+    "events": "Events",
+    "attendance": "Attendance",
+    "attendanceHint": "Share of marked members who showed up",
+    "newCandidates": "New candidates",
+    "inactive": "Inactive members",
+    "inactiveHint": "No battles for a week or longer"
+  },
+  "kinds": {
+    "clan_wars": "Clan wars",
+    "stronghold": "Stronghold",
+    "training": "Training",
+    "tournament": "Tournament",
+    "other": "Other"
+  },
+  "events": {
+    "reminderSent": "Reminder sent {time}",
+    "reminderAt": "Reminder at {time}",
+    "noReminder": "No reminder",
+    "rsvp": "Your answer",
+    "going": "Going",
+    "notGoing": "Cannot make it",
+    "sync": "Mark attendance from battles",
+    "remove": "Delete",
+    "cancel": "Cancel",
+    "removeTitle": "Delete «{title}»?",
+    "rsvpSaved": "Answer saved",
+    "removed": "Event deleted",
+    "synced": "Attendance updated from battles",
+    "created": "Event created",
+    "upcoming": "Upcoming",
+    "empty": "No events yet",
+    "emptyOfficer": "Create the first event: members get a reminder before it starts.",
+    "emptyMember": "Officers have not planned anything yet.",
+    "error": "The events did not load",
+    "noUpcoming": "Nothing planned ahead",
+    "past": "Past events",
+    "pastMeta": "Last {days, plural, one {# day} other {# days}}",
+    "dialog": {
+      "open": "New event",
+      "title": "New clan event",
+      "description": "Members see it in the workspace and get a reminder before the start.",
+      "cancel": "Cancel",
+      "submit": "Create"
+    },
+    "updated": "Event updated",
+    "editDialog": {
+      "open": "Edit",
+      "title": "Edit event",
+      "description": "Moving the time moves the reminder with it, and it is sent again.",
+      "cancel": "Cancel",
+      "submit": "Save"
+    }
+  },
+  "attendance": {
+    "summary": "Attendance",
+    "count": "{status}: {count}",
+    "statuses": {
+      "invited": "Invited",
+      "confirmed": "Going",
+      "declined": "Declined",
+      "attended": "Attended",
+      "absent": "Absent"
+    },
+    "saved": "Attendance saved",
+    "open": "Attendance",
+    "title": "Attendance: {title}",
+    "description": "Set each member’s status. Only the changed rows are saved.",
+    "statusFor": "Status for {nickname}",
+    "cancel": "Cancel",
+    "save": "{count, plural, =0 {Save} one {Save # change} other {Save # changes}}"
+  },
+  "form": {
+    "title": "Title",
+    "titleError": "From 2 to 120 characters",
+    "titlePlaceholder": "For example, CW: Prokhorovka landing",
+    "kind": "Type",
+    "startsAt": "Start (Moscow time)",
+    "startsAtError": "Set the start time",
+    "endsAt": "End",
+    "endsAtError": "The end must be after the start",
+    "endsAtHint": "Optional",
+    "remind": "Reminder",
+    "remindOption": "{minutes, plural, =0 {At the start} =60 {1 hour before} =180 {3 hours before} =1440 {1 day before} other {# minutes before}}"
+  },
+  "roster": {
+    "meta": "{officers, plural, one {# officer} other {# officers}} · attendance over {events, plural, one {# event} other {# events}} in {days} days",
+    "title": "Roster",
+    "caption": "Clan roster with roles and attendance",
+    "columns": {
+      "nickname": "Player",
+      "role": "Role",
+      "attendance": "Attendance",
+      "inactive": "Last battle",
+      "recentWn8": "Recent WN8"
+    },
+    "daysAgo": "{days, plural, =0 {today} one {# day ago} other {# days ago}}",
+    "noEvents": "No marks",
+    "attendedOf": "Attended {attended} of {total}",
+    "attendedShort": "{attended}/{total}"
+  },
+  "recruits": {
+    "title": "Candidates",
+    "meta": "Visible to officers only",
+    "filter": "Recruiting stage",
+    "all": "All",
+    "add": "Add a player by nickname",
+    "added": "{nickname} added to the funnel",
+    "saved": "Candidate updated",
+    "refreshed": "Candidate stats refreshed",
+    "removed": "Candidate removed",
+    "unknown": "Player #{id}",
+    "empty": "No candidates yet",
+    "emptyFiltered": "Nobody at this stage",
+    "emptyDescription": "Find a player by nickname — their stats are saved as of adding and can be refreshed.",
+    "error": "The candidates did not load",
+    "caption": "Clan candidates",
+    "columns": {
+      "player": "Player",
+      "status": "Stage",
+      "wn8": "WN8",
+      "winRate": "Win rate",
+      "battles": "Battles",
+      "updated": "Updated"
+    },
+    "statusFor": "Stage: {name}",
+    "refresh": "Refresh stats: {name}",
+    "remove": "Remove {name}",
+    "removeConfirm": "Remove",
+    "removeTitle": "Remove {name} from the funnel?",
+    "cancel": "Cancel",
+    "notes": "Notes",
+    "notesError": "At most {max, number} characters",
+    "notesPlaceholder": "Where you found them, what you agreed, when the trial is",
+    "notesDialog": {
+      "open": "Notes",
+      "title": "Candidate notes",
+      "description": "Only clan officers can see them.",
+      "cancel": "Cancel",
+      "submit": "Save"
+    }
+  }
+}

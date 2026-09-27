@@ -79,4 +79,45 @@ describe('useAccountNav', () => {
     await waitFor(() => expect(result.current.isSigningOut).toBe(false));
     expect(client.getQueryData(QUERY_KEYS.auth.session)).toBeNull();
   });
+
+  describe('scrolling the active tab into view', () => {
+    const navWith = ({ scrollWidth, clientWidth }: { scrollWidth: number; clientWidth: number }) => {
+      const nav = document.createElement('nav');
+      const active = document.createElement('a');
+
+      active.setAttribute('aria-current', 'page');
+      nav.append(active);
+      Object.defineProperties(nav, { scrollWidth: { value: scrollWidth }, clientWidth: { value: clientWidth } });
+      Object.defineProperties(active, { offsetLeft: { value: 500 }, offsetWidth: { value: 100 } });
+      nav.scrollTo = vi.fn();
+
+      return nav;
+    };
+
+    const navigate = (nav: HTMLElement) => {
+      location.pathname = ROUTES.account.overview;
+
+      const hook = renderNav();
+
+      hook.result.current.navRef.current = nav;
+      location.pathname = ROUTES.account.billing;
+      hook.rerender();
+    };
+
+    it('centres the active tab when the tabs overflow', () => {
+      const nav = navWith({ scrollWidth: 1_000, clientWidth: 300 });
+
+      navigate(nav);
+
+      expect(nav.scrollTo).toHaveBeenCalledWith({ left: 500 - (300 - 100) / 2 });
+    });
+
+    it('leaves the tabs alone when they fit', () => {
+      const nav = navWith({ scrollWidth: 300, clientWidth: 300 });
+
+      navigate(nav);
+
+      expect(nav.scrollTo).not.toHaveBeenCalled();
+    });
+  });
 });

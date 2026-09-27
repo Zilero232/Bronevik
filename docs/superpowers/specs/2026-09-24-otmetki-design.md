@@ -224,7 +224,7 @@ Each phase ends deployed to production.
 
 ## 12. Open decisions (defaults chosen, change if needed)
 
-- **Name:** «Три отметки» / otmetki. Domain to be checked.
+- **Name:** «Три отметки» / otmetki. Domain: `triotmetki.ru` (site), `api.triotmetki.ru` (API).
 - **Charts:** visx.
 - **Time series:** TimescaleDB rather than plain Postgres partitioning.
 - **Queue:** BullMQ + Redis.

@@ -1,4 +1,11 @@
-import type { GuideDetailKeyInput, GuideListKeyInput, GuideViewerKeyInput, MeSection, PlayerSectionKeyInput } from './query-keys.types';
+import type {
+  ClanWorkspaceKeyInput,
+  GuideDetailKeyInput,
+  GuideListKeyInput,
+  GuideViewerKeyInput,
+  MeSection,
+  PlayerSectionKeyInput
+} from './query-keys.types';
 
 export const QUERY_KEYS = {
   search: (query: string) => ['search', query] as const,
@@ -141,7 +148,17 @@ export const QUERY_KEYS = {
     plans: ['billing', 'plans'] as const
   },
   social: {
-    follows: ['me', 'social', 'follows'] as const
+    follows: ['me', 'social', 'follows'] as const,
+    feed: (params: object) => ['me', 'social', 'feed', params] as const,
+    league: (params: object) => ['me', 'social', 'league', params] as const,
+    challenges: ['me', 'social', 'challenges'] as const
+  },
+  clanWorkspace: {
+    all: (clanId: number) => ['me', 'clan-workspace', clanId] as const,
+    workspace: (clanId: number) => ['me', 'clan-workspace', clanId, 'workspace'] as const,
+    events: ({ clanId, params }: ClanWorkspaceKeyInput) => ['me', 'clan-workspace', clanId, 'events', params] as const,
+    candidates: ({ clanId, params }: ClanWorkspaceKeyInput) => ['me', 'clan-workspace', clanId, 'candidates', params] as const,
+    report: (clanId: number) => ['me', 'clan-workspace', clanId, 'report'] as const
   },
   notifications: {
     pushKey: ['notifications', 'push-key'] as const

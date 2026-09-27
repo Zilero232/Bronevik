@@ -12,3 +12,8 @@ export type TreeTankRouteInput = {
   nation: string;
   tankId: number;
 };
+
+export type PlayerWrappedRouteInput = {
+  nickname: string;
+  year: number;
+};

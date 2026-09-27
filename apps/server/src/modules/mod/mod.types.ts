@@ -31,6 +31,7 @@ export type SignedModRequest = {
 export type AuthenticateInput = {
   request: SignedModRequest;
   rawBody: Buffer | undefined;
+  signedHeaders?: readonly string[];
 };
 
 export type BindInput = {

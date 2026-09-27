@@ -39,6 +39,7 @@
     "build": "bun --filter @otmetki/client build",
     "db:generate": "bun --filter @otmetki/server db:generate",
     "db:push": "bun --filter @otmetki/server db:push",
+    "db:reset": "bun --filter @otmetki/server db:reset",
     "db:studio": "bun --filter @otmetki/server db:studio",
     "db:timescale": "bun --filter @otmetki/server db:timescale",
     "dev": "concurrently -n server,worker,client -c blue,magenta,green \"bun run dev:server\" \"bun run dev:worker\" \"bun run dev:client\"",

@@ -11,7 +11,7 @@ A **Python 2.7** `.wotmod` package the «Мир танков» client loads from
 | `src/otmetki/*.py`    | Pure logic, **Python 2/3 compatible**, no client imports            | `tests/`, on Python 3   |
 | `src/otmetki/client/` | Glue that imports `BigWorld` / `gui` — hooks, dossier, UI, settings | only in the game client |
 | `src/mod_otmetki.py`  | Entry point the client auto-loads (`gui/mods/mod_*.pyc`)            | —                       |
-| `contract/`           | JSON Schemas the API implements (ingest, bind, MoE thresholds)      | —                       |
+| `contract/`           | JSON Schemas the API implements (ingest, bind, MoE, replay upload)  | —                       |
 
 Keep as much as possible in the pure half — it is the only half the deploy checks can run.
 

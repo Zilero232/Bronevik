@@ -7,9 +7,9 @@ export const isMarkGain = (row: MarkRow): boolean => row.marks_on_gun !== null &
 export const isMasteryGain = ({ row, aceMastery }: MasteryGainInput): boolean =>
   row.prev_mastery !== null && row.mark_of_mastery === aceMastery && row.prev_mastery < aceMastery;
 
-export const buildFeed = ({ snapshots, records, badges, nicknames, aceMastery, limit }: BuildFeedInput): FeedItem[] => {
+export const buildFeed = ({ snapshots, records, badges, nicknames, aceMastery, limit, badgeOf }: BuildFeedInput): FeedItem[] => {
   const items: FeedItem[] = [];
-  const base = (accountId: bigint) => ({ accountId: Number(accountId), nickname: nicknames.get(accountId) ?? null, badgeCode: null });
+  const base = (accountId: bigint) => ({ accountId: Number(accountId), nickname: nicknames.get(accountId) ?? null, badge: null });
 
   for (const row of snapshots) {
     if (isMarkGain(row)) {
@@ -55,7 +55,7 @@ export const buildFeed = ({ snapshots, records, badges, nicknames, aceMastery, l
       tankId: null,
       value: 1,
       previous: null,
-      badgeCode: badge.badgeCode,
+      badge: badgeOf(badge.badgeCode),
       at: badge.awardedAt.toISOString()
     });
   }

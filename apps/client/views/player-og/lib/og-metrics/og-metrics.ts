@@ -7,7 +7,7 @@ import { ratingValueTone, winRateTone } from '@/entities/player/stats';
 import { FORMATS, TIME_ZONE } from '@/shared/i18n';
 import { OG_COLORS, OG_TONES } from '@/shared/seo/og';
 
-import type { OrDashInput, PlayerOgMetricsInput, SessionOgDateInput, SessionOgMetricsInput } from './og-metrics.types';
+import type { OrDashInput, PlayerOgMetricsInput, SessionOgDateInput, SessionOgMetricsInput, WrappedOgMetricsInput } from './og-metrics.types';
 
 const formatterOf = (locale: Locale) => createFormatter({ locale, formats: FORMATS, timeZone: TIME_ZONE });
 
@@ -69,3 +69,25 @@ export const sessionOgMetrics = ({ stats, labels, locale }: SessionOgMetricsInpu
 
 export const sessionOgDate = ({ startedAt, locale }: SessionOgDateInput): string =>
   formatterOf(locale).dateTime(new Date(startedAt), { day: 'numeric', month: 'long', year: 'numeric' });
+
+export const wrappedOgMetrics = ({ wrapped, labels, locale }: WrappedOgMetricsInput): OgMetric[] => {
+  const format = formatterOf(locale);
+  const { battles, winRate, avgDamage, marksGained } = wrapped;
+
+  return [
+    { key: 'battles', label: labels.battles, value: format.number(battles, 'integer'), color: OG_COLORS.text },
+    {
+      key: 'winRate',
+      label: labels.winRate,
+      value: orDash({ value: winRate, render: (value) => format.number(value, 'percent') }),
+      color: OG_TONES[winRateTone(winRate === null ? null : winRate * 100)]
+    },
+    {
+      key: 'avgDamage',
+      label: labels.avgDamage,
+      value: orDash({ value: avgDamage, render: (value) => format.number(value, 'integer') }),
+      color: OG_COLORS.text
+    },
+    { key: 'marks', label: labels.marks, value: format.number(marksGained, 'integer'), color: OG_COLORS.text }
+  ];
+};

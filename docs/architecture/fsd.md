@@ -42,41 +42,71 @@ A layer never imports from itself across slices. Two features that need the same
 
 ```text
 features/
-├── app/            # rating-palette, rating-patterns, switch-locale, switch-theme
-├── auth/           # lesta-link
-├── notifications/  # inbox-bell
-├── player/         # toggle-favorite
-├── search/         # command-palette (cmdk, Ctrl+K and /), pick-entity
-├── stats/          # select-period
-└── tank/           # filter-vehicles, pick-tank
+├── app/           # rating-palette, rating-patterns, switch-locale, switch-theme
+├── armor/         # armor-inspect
+├── auth/          # lesta-link
+├── community/     # api-error, comments, contact-player, form-dialog, guide-meta, markdown, player-stats, replay-meta, report-content, stat-requirements, tactic-board-settings, tournament-status
+├── notifications/ # inbox-bell, notification-settings
+├── player/        # toggle-favorite, watch-player
+├── plus/          # plus-gate
+├── search/        # command-palette, pick-entity
+├── stats/         # select-period
+├── streamer/      # apply-settings, claim-profile, follow-streamer
+└── tank/          # filter-vehicles, pick-tank
 entities/
-├── app/            # locale
-├── armor/          # armor-model
-├── auth/           # session
-├── map/            # map
-├── notification/   # inbox
-├── player/         # player, profile, recent-players, stats
-├── streamer/       # broadcast, overlay
-└── tank/           # build, tank
+├── app/          # locale
+├── armor/        # armor-model
+├── auth/         # session
+├── battle/       # best-battle
+├── clan/         # clan
+├── coaching/     # coach
+├── competition/  # competition
+├── developer/    # developer
+├── event/        # calendar
+├── guide/        # guide
+├── map/          # map
+├── mission/      # mission
+├── mode/         # mode
+├── notification/ # inbox
+├── player/       # analytics, cosmetics, leaderboard, marks, player, profile, recent-players, stats
+├── plus/         # subscription
+├── pulse/        # pulse
+├── reference/    # game-status
+├── replay/       # replay
+├── search/       # search
+├── streamer/     # channel, overlay, preferences, settings, streamer
+├── tactic/       # board
+├── tank/         # build, tank, tree
+└── tournament/   # tournament
 widgets/
-├── account/        # account-shell
-├── player/         # session-detail
-└── site/           # site-header, site-footer
+├── account/  # account-shell
+├── armor/    # armor-viewer
+├── map/      # map-rotation
+├── player/   # session-detail
+├── showcase/ # showcase-3d
+├── site/     # resource-missing, site-footer, site-header
+├── social/   # social-shell
+├── streamer/ # streamers-hub
+└── tank/     # tank-best-battles, tank-math
 ```
 
-`views/` does not group by domain — the 36 route screens sit directly in it:
+`views/` does not group by domain — the 86 route screens sit directly in it:
 
 | Area | Views |
 |---|---|
-| site shell | `home`, `design` (living design-system page), `error`, `not-found` |
-| account | `login`, `me`, `billing`, `plus`, `notifications`, `telegram-link`, `telegram-login` |
-| players | `players`, `player-profile`, `player-session`, `player-og`, `compare-players`, `top` |
-| clans | `clan`, `clans` |
-| tanks | `tank`, `tanks`, `compare-tanks`, `build`, `marks`, `tree`, `tools`, `play` |
-| maps | `map`, `maps` |
-| streamers | `streamer`, `streamers`, `streamer-studio`, `overlay` |
+| site shell | `home`, `design`, `error`, `not-found`, `legal` |
+| OG images | `entity-og`, `player-og` |
+| account | `login`, `telegram-login`, `telegram-link`, `me`, `billing`, `plus`, `notifications`, `watchlist`, `my-analytics`, `my-battle`, `progression`, `cosmetics` |
+| players | `players`, `player-profile`, `player-session`, `player-signature`, `player-wrapped`, `compare-players`, `top`, `best-battles`, `achievements` |
+| clans | `clan`, `clans`, `clan-workspace` |
+| tanks | `tank`, `tank-armor`, `tanks`, `compare-tanks`, `build`, `builds-catalog`, `marks`, `tree`, `supertest`, `tools`, `play` |
+| maps, modes, missions | `map`, `maps`, `modes`, `mode`, `missions`, `mission-operation`, `honest-rng`, `pulse`, `events` |
+| shop and news | `shop`, `codes`, `news` |
+| community | `social-feed`, `leagues`, `challenges`, `replays`, `replay`, `tactics`, `tactic-board`, `guides`, `guide`, `guide-editor`, `platoons`, `recruiting`, `coaching`, `coach`, `tournaments`, `tournament`, `competitions`, `competition` |
+| streamers | `streamers-directory`, `streamer`, `streamer-claim`, `streamer-settings`, `streamers-settings`, `streamers-settings-compare`, `streamer-studio`, `for-streamers`, `overlay`, `twitch-panel` |
 | developers | `developers`, `developer-cabinet` |
-| Telegram Mini App | `mini-app` |
+| game mod | `mod` |
+| mini apps (Telegram and VK) | `mini-app` |
 
 ## 3. Public API
 
@@ -131,7 +161,7 @@ A file that has companions — `x.ts` with `x.types.ts`, `x.constants.ts`, `x.sc
 
 `shared/lib/` is flat, one folder per concern, the same layout GnomeVPN and Chatovo use: pure helpers as `shared/lib/<concern>/`, hooks as `shared/lib/use-<x>/` (`use-hydrated`, `use-reveal-once`, `use-client-now`). The `use-` prefix is what separates the two; there is no `hooks/` or `utils/` grouping folder. `shared/constants/` is the same — `routes/`, `site-nav/`, `account-nav/`, `query-keys/`, `storage-keys/`, each with its `index.ts`.
 
-`ROUTES` is nested by page family: `ROUTES.players.{list, profile(nick), session({ nickname, sessionId }), compare}`, `ROUTES.tanks.{list, detail, armor, compare}`, `ROUTES.guides.{list, detail, create, edit}`, `ROUTES.streamers.{list, profile, claim, overlay, forStreamers, settings.{table, compare, profile}}`, `ROUTES.auth.{login, telegram}`, `ROUTES.account.{overview, …}`, `ROUTES.api.playerCard`, `ROUTES.sw`. Single pages stay flat (`ROUTES.top`, `ROUTES.tree`).
+`ROUTES` is nested by page family: `ROUTES.players.{list, profile(nick), session({ nickname, sessionId }), signature(nick), compare}`, `ROUTES.tanks.{list, detail, armor, compare}`, `ROUTES.guides.{list, detail, create, edit}`, `ROUTES.streamers.{list, profile, claim, overlay, forStreamers, settings.{table, compare, profile}}`, `ROUTES.auth.{login, loginNext, telegram}`, `ROUTES.missions.{hub, operation}`, `ROUTES.legal.{privacy, terms, contacts}`, `ROUTES.account.{overview, analytics, analyticsTank(id), battles, …}`, `ROUTES.api.{playerCard, siteCard}`, `ROUTES.sw`. Single pages stay flat (`ROUTES.top`, `ROUTES.tree`, `ROUTES.supertest`, `ROUTES.mod`).
 
 A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts`); never `*.helpers.ts`, `*.utils.ts`, `*.constants.ts` or `hooks/`. One component per folder, and a `ui/` root holds at most one flat component. Full rules: [style.md §2](../guides/style.md).
 
@@ -139,13 +169,16 @@ A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `
 
 ```text
 ui-kit/
-├── atoms/       # AnimatedNumber, Avatar, Badge, Button, ClassIcon, DeltaValue, IconButton, Input, Kbd,
-│                # NationLabel, ProgressBar, ProgressRing, RatingBadge, RelativeTime, Skeleton, Switch,
-│                # TankImage, TierNumeral
-├── molecules/   # Card, CodeBlock, CopyField, DataSourceNote, Dialog, Drawer, EmptyState, ErrorState,
-│                # GameVersionBadge, KeyFigure, KeyFigures, NumberField, Popover, RangeSlider, RetryButton,
-│                # SectionHeader, SegmentedControl, Select, ServiceStatus, Sparkline, Tabs, ToggleChips, Tooltip
-├── organisms/   # AppToaster, AreaChart, BarChart, CalendarHeatmap, ChartKit, DataTable, LineChart, PageHeader
+├── atoms/       # AnimatedNumber, Avatar, Badge, Band, Button, ClassIcon, DeltaValue, IconButton, Input, Kbd,
+│                # LiveLamp, NationBackdrop, NationLabel, ProgressBar, ProgressRing, RatingBadge, RelativeTime, Reveal,
+│                # Skeleton, Switch, TankImage, Textarea, TierNumeral, Tilt
+├── molecules/   # ActionStrip, Breadcrumbs, Card, CellBar, CodeBlock, ConfirmDialog, CopyField, DataSourceNote,
+│                # DeltaCell, Dialog, Drawer, EmptyState, ErrorState, FilteredEmptyState, FormField, GameVersionBadge,
+│                # IconFilter, KeyFigure, KeyFigures, Legend, MarksRing, MediaCard, NumberCell, NumberField, Podium,
+│                # PodiumCard, Popover, RangeSlider, RetryButton, SectionHeader, SegmentedControl, Select,
+│                # ServiceStatus, Sparkline, StatList, Tabs, TextCard, Timeline, ToggleChips, Tooltip
+├── organisms/   # AppToaster, AreaChart, BarChart, BattleBackdrop, CalendarHeatmap, ChartKit, DataTable, LineChart,
+│                # PageHeader, PageHero, PagedList, QueryState
 └── index.ts     # the one barrel the rest of the app imports
 ```
 
@@ -164,26 +197,29 @@ app/
 ├── [locale]/              # every page lives under the locale segment
 │   ├── (site)/            # the public site: header + main + footer
 │   │   ├── page.tsx       # home
-│   │   ├── p/ c/ t/ s/    # player, clan, tank, streamer pages
-│   │   ├── builds/ clans/ compare/ design/ developers/ login/ maps/ marks/
-│   │   ├── me/ play/ players/ plus/ streamers/ tanks/ tools/ top/ tree/
+│   │   ├── p/ c/ t/ s/    # player, clan, tank, streamer pages (each with opengraph-image.tsx where it has a card)
+│   │   ├── achievements/ best-battles/ builds/ clans/ coaching/ codes/ compare/ competitions/ contacts/
+│   │   ├── design/ developers/ events/ for-streamers/ guides/ honest-rng/ login/ maps/ marks/ me/ missions/
+│   │   ├── mod/ modes/ news/ platoons/ play/ players/ plus/ privacy/ pulse/ recruiting/ replays/ shop/
+│   │   ├── streamers/ supertest/ tactics/ tanks/ terms/ tools/ top/ tournaments/ tree/
 │   │   ├── [...rest]/     # unknown paths → not-found inside the site shell
 │   │   ├── layout.tsx
 │   │   └── not-found.tsx
 │   ├── (overlay)/overlay/ # stream overlays, no site shell
-│   ├── (tma)/tg/          # Telegram Mini App
+│   ├── (tma)/tg/ vk/      # Telegram and VK Mini Apps
 │   ├── layout.tsx         # the root layout — html, fonts, providers
 │   ├── error.tsx
 │   └── not-found.tsx
-├── api/og/                # OG image routes
-├── serwist/               # service worker route (sw.ts source)
+├── api/og/                # OG image routes (player card, site card)
+├── serwist/[path]/        # service worker route (sw.ts source)
+├── twitch-panel/          # route handler serving the Twitch panel extension page
 ├── providers/             # AppProviders: Query, next-intl, next-themes, motion, tooltips, palette
 ├── globals.scss           # pulls in the tokens and the base element styles
-├── manifest.ts, icon.svg
+├── manifest.ts, sitemap.ts, robots.ts, sw.ts, icon.svg, apple-icon.png
 └── global-error.tsx
 ```
 
-Route groups do not appear in the URL. `(site)` carries the layout that wraps its pages in `SiteHeader` and `SiteFooter`; the footer carries the Lesta attribution every site page needs. `(overlay)` and `(tma)` have their own layouts for OBS overlays and the Telegram Mini App.
+Route groups do not appear in the URL. `(site)` carries the layout that wraps its pages in `SiteHeader` and `SiteFooter`; the footer carries the Lesta attribution every site page needs. `(overlay)` and `(tma)` have their own layouts for OBS overlays and the Telegram and VK Mini Apps.
 
 **The root layout must be inside `[locale]`.** `next/root-params` only reports a parameter that precedes the single root layout; an outer `app/layout.tsx` makes `rootParams.locale()` unresolvable.
 
@@ -207,7 +243,9 @@ Route groups do not appear in the URL. `(site)` carries the layout that wraps it
 | a pure helper | `<slice>/lib/<concern>/` |
 | a constant | `<slice>/config/<concern>.constants.ts` |
 
-An example from live code: `views/home` assembles `HomePage` out of its own `ui/components` (`HomeHero`, `LiveCounters`, `TopPlayers`, `HotTanks`, `MarksShowcase`) and `model/hooks` (`useTopPlayers`, `useLiveCounters`). `TopPlayers` in turn takes `PlayerIdentity` from `entities/player/player`, `PeriodSwitcher` from `features/stats/select-period` and `SectionHeader` / `buttonVariants` from `ui-kit`. It reaches nothing sideways.
+An example from live code: `views/home` assembles `HomePage` out of its own `ui/components` (`HomeHero`, `TopPlayers`, `StrongTanks`, `MarksMovement`, `ClanActivity`, `GameNews`, …) and `model/hooks` (`useTopPlayers`, `useTopPlayerColumns`, `useServerStatus`, …). `useTopPlayers` reads `getLeaderboard` from `entities/player/leaderboard` with a key from `QUERY_KEYS`; `useTopPlayerColumns` builds `TableColumn<LeaderboardEntry>[]` with `PlayerNameCell` from `entities/player/player` and `NumberCell` from `ui-kit`; `TopPlayers` renders them through `QueryState`, `DataTable` and `SectionHeader` from `ui-kit`. It reaches nothing sideways.
+
+Server-only code of a slice (route lookups, prefetch state, OG sources) is exported from a separate `server.ts` beside `index.ts` (`@/entities/tank/tank/server`, `@/views/tank/server`), so client bundles never pull it in — see [apps/client/CLAUDE.md](../../apps/client/CLAUDE.md#server-rendering-route-meta-and-prefetch).
 
 ## 8. Tests
 

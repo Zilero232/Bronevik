@@ -42,4 +42,12 @@ describe('sameOriginCaching', () => {
     expect(matches(anything, 'https://telegram.org/js/telegram-widget.js?22')).toBe(false);
     expect(matches(callback, 'https://api.example.test/api/players')).toBe(false);
   });
+
+  it('matches a string matcher only against that exact same-origin url', () => {
+    const [manifest] = sameOriginCaching([{ matcher: '/manifest.webmanifest', handler }]);
+
+    expect(matches(manifest, `${ORIGIN}/manifest.webmanifest`)).toBe(true);
+    expect(matches(manifest, `${ORIGIN}/manifest.webmanifest?v=2`)).toBe(false);
+    expect(matches(manifest, 'https://cdn.example.test/manifest.webmanifest')).toBe(false);
+  });
 });

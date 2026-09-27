@@ -35,7 +35,7 @@ import {
 } from '../src/modules/collector/aggregates/services';
 import { ClanHistoryService, ClanSyncService } from '../src/modules/collector/clans/services';
 import { PurgeGuardService } from '../src/modules/collector/purge/services';
-import { CatalogSyncService, MasteryThresholdsSyncService } from '../src/modules/collector/reference/services';
+import { CatalogSyncService, ExpectedValuesSyncService, MasteryThresholdsSyncService } from '../src/modules/collector/reference/services';
 import { runPollPipeline } from '../src/modules/collector/tracking/lib/poll-pipeline';
 import { TrackingAnnounceService, TrackingLestaService, TrackingStoreService } from '../src/modules/collector/tracking/services';
 import { sessionIncrement, sessionUuid, toBattleData } from '../src/modules/mod';
@@ -72,7 +72,19 @@ if (!isLestaMock(env)) {
 const log = (message: string) => console.log(`[dev:seed] ${new Date().toISOString().slice(11, 19)} ${message}`);
 const prisma = createPrismaClient({ url: env.DATABASE_URL, pool: { max: 10 } });
 const webhooks = { emit: async () => 0 };
+
+if ((await prisma.wn8ExpectedValue.count()) === 0) {
+  log('reference: no WN8 expected values (db:reset?), syncing them from XVM: the mock plays only tanks that have them');
+  log(`reference: ${JSON.stringify(await new ExpectedValuesSyncService(prisma).sync())}`);
+}
+
 const world: MockWorld = await loadMockWorld(env.DATABASE_URL);
+
+if (!world.catalog.vehicles.some((vehicle) => vehicle.playable)) {
+  console.error('dev:seed: no playable vehicle in the mock catalog: run `bun run gamedata:import` and sync the WN8 expected values first.');
+  process.exit(1);
+}
+
 const handler = createLestaMockHandler(world);
 const now = Math.floor(Date.now() / 1000);
 let clock = now;

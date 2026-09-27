@@ -12060,6 +12060,16 @@
         "operationId": "SocialController_league",
         "parameters": [
           {
+            "name": "scope",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "division",
+              "type": "string",
+              "enum": ["division", "friends"]
+            }
+          },
+          {
             "name": "metric",
             "required": false,
             "in": "query",
@@ -57236,6 +57246,18 @@
                     }
                   ]
                 },
+                "remindMinutesBefore": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "remindedAt": {
                   "anyOf": [
                     {
@@ -57275,7 +57297,7 @@
                   }
                 }
               },
-              "required": ["id", "kind", "title", "startsAt", "endsAt", "remindAt", "remindedAt", "attendance"],
+              "required": ["id", "kind", "title", "startsAt", "endsAt", "remindAt", "remindMinutesBefore", "remindedAt", "attendance"],
               "additionalProperties": false
             }
           },
@@ -57347,6 +57369,18 @@
                 }
               ]
             },
+            "remindMinutesBefore": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "remindedAt": {
               "anyOf": [
                 {
@@ -57386,7 +57420,7 @@
               }
             }
           },
-          "required": ["id", "kind", "title", "startsAt", "endsAt", "remindAt", "remindedAt", "attendance"],
+          "required": ["id", "kind", "title", "startsAt", "endsAt", "remindAt", "remindMinutesBefore", "remindedAt", "attendance"],
           "additionalProperties": false
         }
       },
@@ -57464,6 +57498,18 @@
               }
             ]
           },
+          "remindMinutesBefore": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "remindedAt": {
             "anyOf": [
               {
@@ -57503,7 +57549,7 @@
             }
           }
         },
-        "required": ["id", "kind", "title", "startsAt", "endsAt", "remindAt", "remindedAt", "attendance"],
+        "required": ["id", "kind", "title", "startsAt", "endsAt", "remindAt", "remindMinutesBefore", "remindedAt", "attendance"],
         "additionalProperties": false
       },
       "UpdateClanEventDto": {
@@ -57908,8 +57954,60 @@
                 "previous": {
                   "type": ["number", "null"]
                 },
-                "badgeCode": {
-                  "type": ["string", "null"]
+                "badge": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "challenge": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "code": {
+                                  "type": "string"
+                                },
+                                "metric": {
+                                  "type": "string",
+                                  "enum": ["battles", "wins", "spotted", "marks", "bigDamageBattles"]
+                                },
+                                "target": {
+                                  "type": "number"
+                                },
+                                "threshold": {
+                                  "type": ["number", "null"]
+                                },
+                                "vehicleType": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": ["code", "metric", "target", "threshold", "vehicleType"],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["code", "challenge"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "at": {
                   "type": "string",
@@ -57917,7 +58015,7 @@
                   "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 }
               },
-              "required": ["kind", "accountId", "nickname", "tankId", "value", "previous", "badgeCode", "at"],
+              "required": ["kind", "accountId", "nickname", "tankId", "value", "previous", "badge", "at"],
               "additionalProperties": false
             }
           }
@@ -57928,6 +58026,10 @@
       "LeagueDto_Output": {
         "type": "object",
         "properties": {
+          "scope": {
+            "type": "string",
+            "enum": ["division", "friends"]
+          },
           "metric": {
             "type": "string",
             "enum": ["damage", "wn8", "marks", "battles"]
@@ -57936,6 +58038,79 @@
             "type": "string",
             "format": "date",
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "division": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "accountId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "tier": {
+                    "type": "string",
+                    "enum": ["bronze", "silver", "gold", "platinum", "diamond"]
+                  },
+                  "group": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "size": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "isClosed": {
+                    "type": "boolean"
+                  },
+                  "promotionSlots": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "relegationSlots": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "promotesTo": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": ["bronze", "silver", "gold", "platinum", "diamond"]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "relegatesTo": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": ["bronze", "silver", "gold", "platinum", "diamond"]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": ["accountId", "tier", "group", "size", "isClosed", "promotionSlots", "relegationSlots", "promotesTo", "relegatesTo"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "entries": {
             "type": "array",
@@ -57965,14 +58140,36 @@
                 },
                 "value": {
                   "type": ["number", "null"]
+                },
+                "tier": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": ["bronze", "silver", "gold", "platinum", "diamond"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "zone": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": ["promotion", "stay", "relegation"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 }
               },
-              "required": ["rank", "accountId", "nickname", "isMe", "battles", "value"],
+              "required": ["rank", "accountId", "nickname", "isMe", "battles", "value", "tier", "zone"],
               "additionalProperties": false
             }
           }
         },
-        "required": ["metric", "weekStart", "entries"],
+        "required": ["scope", "metric", "weekStart", "endsAt", "division", "entries"],
         "additionalProperties": false
       },
       "ChallengesDto_Output": {
@@ -57997,7 +58194,8 @@
                   "type": "string"
                 },
                 "metric": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": ["battles", "wins", "spotted", "marks", "bigDamageBattles"]
                 },
                 "target": {
                   "type": "number"
@@ -58006,7 +58204,15 @@
                   "type": ["number", "null"]
                 },
                 "vehicleType": {
-                  "type": ["string", "null"]
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "badgeCode": {
                   "type": "string"

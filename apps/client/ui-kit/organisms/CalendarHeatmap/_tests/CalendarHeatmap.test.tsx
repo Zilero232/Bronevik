@@ -93,6 +93,28 @@ describe('CalendarHeatmap', () => {
     expect(readoutNode()).toHaveTextContent('none');
   });
 
+  it('keeps a tapped day read out when a touch pointer leaves it', () => {
+    renderWithIntl(<CalendarHeatmap ariaLabel={LABEL} days={DAYS} renderReadout={readout} />);
+
+    const peak = screen.getByRole('img', { name: 'September 3, 2026' });
+
+    fireEvent.pointerEnter(peak);
+    fireEvent.pointerLeave(peak, { pointerType: 'touch' });
+
+    expect(readoutNode()).toHaveTextContent(`${PEAK}: 20`);
+  });
+
+  it('leaves keys other than navigation to the browser', () => {
+    renderWithIntl(<CalendarHeatmap ariaLabel={LABEL} days={DAYS} renderReadout={readout} />);
+
+    const [focusable] = cells().filter((cell) => cell.getAttribute('tabindex') === '0');
+
+    fireEvent.focus(focusable);
+
+    expect(fireEvent.keyDown(focusable, { key: 'Tab' })).toBe(true);
+    expect(fireEvent.keyDown(focusable, { key: 'ArrowUp' })).toBe(false);
+  });
+
   it('gives the busiest day the top level and an idle day the bottom one', () => {
     renderWithIntl(<CalendarHeatmap ariaLabel={LABEL} days={DAYS} renderReadout={readout} />);
 

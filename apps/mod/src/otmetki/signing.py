@@ -16,6 +16,7 @@ SIGNATURE_VERSION = 'v2'
 NONCE_BYTES = 16
 SERVER_TIME_HEADER = 'X-Otmetki-Server-Time'
 STALE_REQUEST_STATUS = 428
+JSON_CONTENT_TYPE = 'application/json'
 
 _clock = {'offset': 0.0}
 
@@ -54,13 +55,18 @@ def new_nonce():
     return str(binascii.hexlify(os.urandom(NONCE_BYTES)).decode('ascii'))
 
 
-def signed_message(method, path, timestamp, nonce, body):
-    head = '\n'.join([SIGNATURE_VERSION, method.upper(), path, str(timestamp), nonce]) + '\n'
-    return to_bytes(head) + to_bytes(body)
+def signed_message(method, path, timestamp, nonce, body, extra_headers=()):
+    """v2 message: version, method, path, timestamp and nonce lines, then one `name:value` line per
+    signed header (lower-case name, in the order sent), then the raw body. Mirrors signedMessage in
+    apps/server/src/modules/mod/lib/request-signature."""
+    lines = [SIGNATURE_VERSION, method.upper(), path, str(timestamp), nonce]
+    lines.extend(to_text(name).lower() + ':' + to_text(value) for name, value in extra_headers)
+    return to_bytes('\n'.join(lines) + '\n') + to_bytes(body)
 
 
-def verify_request(secret, method, url, headers, body):
-    message = signed_message(method, request_path(url), headers.get(TIMESTAMP_HEADER, ''), headers.get(NONCE_HEADER, ''), body)
+def verify_request(secret, method, url, headers, body, signed_names=()):
+    extra = [(name, headers[name]) for name in signed_names if name in headers]
+    message = signed_message(method, request_path(url), headers.get(TIMESTAMP_HEADER, ''), headers.get(NONCE_HEADER, ''), body, extra)
     return verify(secret, message, headers.get(SIGNATURE_HEADER, ''))
 
 
@@ -87,21 +93,34 @@ def sync_clock(headers, now=None):
     return True
 
 
-def signed_headers(device_id, secret, body, user_agent, method, url, now=None, nonce=None):
+def signed_headers(device_id, secret, body, user_agent, method, url, now=None, nonce=None, content_type=JSON_CONTENT_TYPE,
+                   extra_headers=()):
     timestamp = str(int(now if now is not None else time.time() + _clock['offset']))
     nonce = nonce or new_nonce()
-    return {
-        'Content-Type': 'application/json',
+    extra_headers = list(extra_headers)
+    headers = {
+        'Content-Type': content_type,
         'Accept': 'application/json',
         'User-Agent': user_agent,
         DEVICE_HEADER: device_id,
         TIMESTAMP_HEADER: timestamp,
         NONCE_HEADER: nonce,
-        SIGNATURE_HEADER: sign(secret, signed_message(method, request_path(url), timestamp, nonce, body)),
+        SIGNATURE_HEADER: sign(secret, signed_message(method, request_path(url), timestamp, nonce, body, extra_headers)),
     }
+    headers.update(extra_headers)
+    return headers
 
 
-def signed_request(transport, method, url, device_id, secret, body, user_agent, callback):
+def signed_request(transport, method, url, device_id, secret, body, user_agent, callback, content_type=JSON_CONTENT_TYPE, signed_body=None,
+                   extra_headers=()):
+    """Signs and sends; on a 428 with a usable server time it re-syncs the clock and re-signs once.
+
+    `signed_body` is what the HMAC covers when it differs from the bytes on the wire: a multipart
+    upload is signed over the raw file, which is what the server verifies after parsing the form.
+    `extra_headers` are (name, value) pairs sent and covered by the signature (see signed_message).
+    """
+    covered = body if signed_body is None else signed_body
+
     def send(may_retry):
         def done(status, response_body, response_headers):
             if status == STALE_REQUEST_STATUS and may_retry and sync_clock(response_headers):
@@ -109,6 +128,7 @@ def signed_request(transport, method, url, device_id, secret, body, user_agent, 
                 return
             callback(status, response_body, response_headers)
 
-        transport.request(method, url, signed_headers(device_id, secret, body, user_agent, method, url), body, done)
+        headers = signed_headers(device_id, secret, covered, user_agent, method, url, content_type=content_type, extra_headers=extra_headers)
+        transport.request(method, url, headers, body, done)
 
     send(True)

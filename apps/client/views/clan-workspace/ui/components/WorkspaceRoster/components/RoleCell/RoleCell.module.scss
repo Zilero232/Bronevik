@@ -1,0 +1,18 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  gap: var(--space-1);
+}
+
+.root[data-officer='true'] {
+  color: var(--color-text);
+}
+
+.icon {
+  flex: none;
+  color: var(--color-accent);
+}

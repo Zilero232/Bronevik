@@ -1,11 +1,12 @@
 # Три отметки
 
-All-in-one companion platform for «Мир танков» (Lesta, RU realm). Bun-workspaces monorepo.
+All-in-one companion platform for «Мир танков» (Lesta, RU realm). Bun-workspaces monorepo. Production domains: site `https://triotmetki.ru`, API `https://api.triotmetki.ru`.
 
 - Product scope: [docs/features.md](docs/features.md)
 - Architecture: [docs/superpowers/specs/2026-09-24-otmetki-design.md](docs/superpowers/specs/2026-09-24-otmetki-design.md)
 - Lesta API reference and terms: [docs/research/lesta-api.md](docs/research/lesta-api.md)
 - External library docs (context7 ids): [docs/references.md](docs/references.md)
+- First production deploy checklist: [docs/ops/deploy.md](docs/ops/deploy.md)
 
 Respond to the user in Russian. Code, comments, docs and commits are in English. UI text is in Russian and English via next-intl.
 
@@ -20,6 +21,7 @@ Respond to the user in Russian. Code, comments, docs and commits are in English.
 | `packages/schemas`  | Zod contracts shared by the client and the server                                                                                                                                                                                                                                                                                                                                                 |
 | `packages/gamedata` | Pure loadout calculator (`calculateLoadout`) and the game-data model it reads; the importer lives in the server                                                                                                                                                                                                                                                                                   |
 | `packages/icons`    | Custom SVG icon set as React components                                                                                                                                                                                                                                                                                                                                                           |
+| `packages/sdk`      | `@otmetki/sdk`: TypeScript client for the public `/v1` API, generated from its OpenAPI spec, plus webhook verification ([README](packages/sdk/README.md))                                                                                                                                                                                                                                         |
 | `packages/logger`   | pino wrapper                                                                                                                                                                                                                                                                                                                                                                                      |
 | `e2e/`              | Playwright smoke tests over the public pages                                                                                                                                                                                                                                                                                                                                                      |
 | `infra/caddy/`      | Caddyfile for the prod-like [docker-compose.yml](docker-compose.yml) (no production deploy yet)                                                                                                                                                                                                                                                                                                   |
@@ -41,14 +43,14 @@ bun run lint:unused    # knip — unused files, exports and dependencies
 bun run lint:dupes     # jscpd — copy-pasted code
 ```
 
-Deploy ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) runs manually (workflow_dispatch): `verify` + `test` + the mod suite + the e2e smoke, then builds the client and server images to ghcr and rolls them out on the VPS (`db:push`, health checks). There is no separate CI workflow, as in GnomeVPN.
+Deploy ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) runs manually (workflow_dispatch): `verify` + `test` + the mod suite + the e2e smoke, then builds the client and server images to ghcr and rolls them out on the VPS (`db:deploy` — extensions, `prisma db push`, the Timescale layer — then `up -d` and health checks). First deploy: [docs/ops/deploy.md](docs/ops/deploy.md). There is no separate CI workflow, as in GnomeVPN.
 
 ## Rules
 
 The full style guide is [docs/guides/style.md](docs/guides/style.md). Digests in `.claude/rules/` load automatically by path (tests: [.claude/rules/testing.md](.claude/rules/testing.md)). The key rules:
 
 - **Packages before custom code.** Before building any non-trivial piece (replay parser, rate limiter, charts, drag-n-drop, canvas board, OG images, 3D, OpenAPI, SDK generation, bot framework…), search npm/PyPI/GitHub for a maintained package and use it. Write it yourself only when nothing fits, and say why in the commit.
-- **Reuse over reinvention.** Before writing a helper, check what is already installed: remeda, ts-pattern, date-fns, zod, @siberiacancode/reactuse, TanStack Query / Table / Virtual, @base-ui/react, class-variance-authority, cmdk, visx, lucide-react + `@otmetki/icons`, sonner, motion, p-retry — and the workspace packages: `@otmetki/ratings` for rating math, `@otmetki/lesta-client` for every Lesta call, `@otmetki/schemas` for every contract. Forms use react-hook-form + `@hookform/resolvers/zod`, inside a `model/hooks/use-<x>-form/` hook.
+- **Reuse over reinvention.** Before writing a helper, check what is already installed: remeda, ts-pattern, date-fns, zod, @siberiacancode/reactuse, TanStack Query / Table / Virtual, @base-ui/react, class-variance-authority, cmdk, visx, lucide-react + `@otmetki/icons`, sonner, motion, p-retry — and the workspace packages: `@otmetki/ratings` for rating math, the server's `lib/lesta` client (through `core/lesta`) for every Lesta call, `@otmetki/schemas` for every contract. Forms use react-hook-form + `@hookform/resolvers/zod`, inside a `model/hooks/use-<x>-form/` hook.
 - **Types and parameters.** Use `type`, never `interface`. A function with two or more parameters takes one object, whose shape goes in a sibling `*.types.ts`.
 - **Constants.** Constants that belong together live in one `as const` object.
 - **No comments in app code.** An `eslint-disable-next-line` carries its reason after `--`.

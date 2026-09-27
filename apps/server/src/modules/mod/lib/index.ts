@@ -5,3 +5,4 @@ export { deviceSecret, hashSecret, matchesSecretHash, newDeviceId, normalizeBind
 export { readStoredLoadout, storedLoadoutSchema } from './loadout';
 export type { StoredLoadout } from './loadout';
 export { isFreshTimestamp, isNonce, requestPath, signedMessage } from './request-signature';
+export type { SignedHeader } from './request-signature';

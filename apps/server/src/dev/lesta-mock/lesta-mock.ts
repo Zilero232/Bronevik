@@ -52,5 +52,11 @@ export const startLestaMock = async (env: Pick<Env, 'API_URL' | 'DATABASE_URL'>)
     `LESTA_APPLICATION_ID is empty: serving a generated Lesta API (${world.players.length} players, ${world.clans.length} clans, ${world.catalog.vehicles.length} vehicles). Set the key to switch it off.`
   );
 
+  if (!world.catalog.vehicles.some((vehicle) => vehicle.playable)) {
+    logger.error(
+      'no vehicle has WN8 expected values, so every generated garage is empty: run the reference wn8Expected job (or `bun run dev:seed`).'
+    );
+  }
+
   return { world, handler, server, loginRouter: createLoginRouter({ world, apiUrl: env.API_URL }) };
 };

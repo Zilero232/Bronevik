@@ -1,2 +1,2 @@
-export { playerOgSource, playerSessionOgSource } from './og-source';
-export type { PlayerSessionOgSourceInput } from './og-source.types';
+export { playerOgSource, playerSessionOgSource, playerWrappedOgSource } from './og-source';
+export type { PlayerSessionOgSourceInput, PlayerWrappedOgSourceInput } from './og-source.types';

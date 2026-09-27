@@ -1,0 +1,30 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.rank {
+  @include numeric;
+
+  min-width: 2ch;
+  font-weight: 600;
+}
+
+.icon {
+  flex: none;
+}
+
+.root[data-zone='promotion'] .icon {
+  color: var(--color-success);
+}
+
+.root[data-zone='relegation'] .icon {
+  color: var(--color-danger);
+}
+
+.root[data-ranked='false'] .rank {
+  color: var(--color-text-dim);
+}

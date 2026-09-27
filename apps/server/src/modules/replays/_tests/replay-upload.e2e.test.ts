@@ -2,7 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import type { Queue } from 'bullmq';
 
 import { getQueueToken } from '@nestjs/bullmq';
-import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -13,13 +13,16 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Replay } from '../../../../generated';
+import type { AuthenticatedDevice } from '../../mod';
 
-import { AppForbiddenException } from '../../../common/exceptions';
+import { AppForbiddenException, ModException } from '../../../common/exceptions';
+import { AllExceptionsFilter } from '../../../common/filters';
 import { LocalDiskStorage, ObjectStorage, PrismaService } from '../../../core';
+import { parseReplaySummary } from '../../../lib/replay';
 import { FIXTURE, readFixture } from '../../../lib/replay/_tests/fixtures';
 import { EntitlementsService } from '../../billing';
 import { ModDeviceService } from '../../mod';
-import { REPLAYS_QUEUE } from '../config';
+import { REPLAY_UPLOAD, REPLAYS_QUEUE } from '../config';
 import { ReplaysController } from '../replays.controller';
 import { HeatmapService, ReplayOwnerService, ReplayParseService, ReplayQueryService, ReplayUploadService } from '../services';
 
@@ -68,9 +71,33 @@ const replayRow = (overrides: Partial<Replay>): Replay => ({
   ...overrides
 });
 
+const recorderId = BigInt(parseReplaySummary(readFixture(FIXTURE.wgFull)).recorder.accountId ?? 0);
+const boundDevice = (accountId: bigint): AuthenticatedDevice => ({
+  id: 'dev_bound',
+  userId: 'mod-user',
+  accountId,
+  name: null,
+  secretHash: 'hash',
+  modVersion: '1.0.0',
+  gameVersion: '1.30.0',
+  lastSeenAt: null,
+  revokedAt: null,
+  createdAt: new Date()
+});
+
 let app: INestApplication;
 let root: string;
 let storage: LocalDiskStorage;
+
+const uploadFromMod = (visibility?: string) => {
+  const call = request(app.getHttpServer()).post('/replays/mod');
+
+  return (visibility === undefined ? call : call.set(REPLAY_UPLOAD.visibilityHeader, visibility)).attach(
+    'file',
+    Buffer.from(readFixture(FIXTURE.wgFull)),
+    'battle.wotreplay'
+  );
+};
 
 beforeAll(async () => {
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
@@ -90,6 +117,7 @@ beforeAll(async () => {
       { provide: ReplayOwnerService, useValue: mock<ReplayOwnerService>() },
       { provide: HeatmapService, useValue: mock<HeatmapService>() },
       { provide: APP_PIPE, useClass: ZodValidationPipe },
+      { provide: APP_FILTER, useClass: AllExceptionsFilter },
       { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }
     ]
   }).compile();
@@ -195,5 +223,62 @@ describe('POST /replays/mod', () => {
 
     expect(response.status).toBe(403);
     expect(devices.authenticate).not.toHaveBeenCalled();
+  });
+
+  it('stores an own replay as private when the mod names no visibility', async () => {
+    devices.authenticate.mockResolvedValueOnce(boundDevice(recorderId));
+    prisma.replay.findUnique.mockResolvedValueOnce(null);
+    prisma.replay.create.mockClear();
+    prisma.replay.create.mockResolvedValue(replayRow({ id: replayId, status: 'uploaded' }));
+
+    const response = await uploadFromMod();
+
+    expect(response.status).toBe(201);
+    expect(devices.authenticate).toHaveBeenLastCalledWith(expect.objectContaining({ signedHeaders: [REPLAY_UPLOAD.visibilityHeader] }));
+    expect(prisma.replay.create.mock.calls[0]?.[0].data).toMatchObject({ uploaderUserId: 'mod-user', deviceId: 'dev_bound', visibility: 'private' });
+  });
+
+  it('publishes an own replay when the mod asks for public', async () => {
+    devices.authenticate.mockResolvedValueOnce(boundDevice(recorderId));
+    prisma.replay.findUnique.mockResolvedValueOnce(null);
+    prisma.replay.create.mockClear();
+    prisma.replay.create.mockResolvedValue(replayRow({ id: replayId, status: 'uploaded' }));
+
+    const response = await uploadFromMod('public');
+
+    expect(response.status).toBe(201);
+    expect(prisma.replay.create.mock.calls[0]?.[0].data).toMatchObject({ visibility: 'public' });
+  });
+
+  it('refuses a replay recorded by another account before storing it', async () => {
+    devices.authenticate.mockResolvedValueOnce(boundDevice(recorderId + 1n));
+    prisma.replay.findUnique.mockClear();
+    prisma.replay.create.mockClear();
+
+    const response = await uploadFromMod('public');
+
+    expect(response.status).toBe(422);
+    expect(response.body).toMatchObject({ error: 'replay_not_owned' });
+    expect(prisma.replay.findUnique).not.toHaveBeenCalled();
+    expect(prisma.replay.create).not.toHaveBeenCalled();
+  });
+
+  it('refuses a visibility the mod cannot choose', async () => {
+    devices.authenticate.mockResolvedValueOnce(boundDevice(recorderId));
+    prisma.replay.create.mockClear();
+
+    const response = await uploadFromMod('unlisted');
+
+    expect(response.status).toBe(400);
+    expect(prisma.replay.create).not.toHaveBeenCalled();
+  });
+
+  it('tells the mod the server time on an error so it can re-sign', async () => {
+    devices.authenticate.mockRejectedValueOnce(new ModException({ status: 428, error: 'stale_request' }));
+
+    const response = await uploadFromMod();
+
+    expect(response.status).toBe(428);
+    expect(Number(response.headers['x-otmetki-server-time'])).toBeCloseTo(Date.now() / 1000, -1);
   });
 });

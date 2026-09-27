@@ -1,9 +1,11 @@
-export { badgeCodeOf, challengeProgress, isChallengeBadgeCode } from './challenges';
+export { badgeCodeOf, challengeOfBadge, challengeProgress, isChallengeBadgeCode } from './challenges';
 export type { ChallengeDefinition, WeekStats } from './challenges';
 export { buildFeed } from './feed';
 export { clearFollowFlag, setFollowFlag } from './follow-flags';
 export type { FollowFlag } from './follow-flags';
-export { rankLeague } from './league';
+export { needsMarks, rankLeague } from './league';
 export type { LeagueMetric, LeagueStats } from './league';
+export { divisionStandings, nextTier, placeMembers, tierMoves } from './league-division';
+export type { DivisionStanding } from './league-division';
 export { renderSignature } from './signature';
 export type { SignatureFont } from './signature';

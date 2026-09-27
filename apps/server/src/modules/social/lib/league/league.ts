@@ -1,7 +1,7 @@
 import { sortBy } from 'remeda';
 import { match } from 'ts-pattern';
 
-import type { LeagueValueInput, RankedEntry, RankLeagueInput } from './league.types';
+import type { LeagueMetric, LeagueValueInput, RankedEntry, RankLeagueInput } from './league.types';
 
 const valueOf = ({ stats, metric }: LeagueValueInput): number | null =>
   match(metric)
@@ -32,3 +32,5 @@ export const rankLeague = ({ stats, metric, minBattles }: RankLeagueInput): Rank
     return { ...row, rank };
   });
 };
+
+export const needsMarks = (metric: LeagueMetric): boolean => metric === 'marks';

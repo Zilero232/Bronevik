@@ -12,7 +12,12 @@ FEATURES = (
     'battle_moe_panel',
     'hangar_session_panel',
     'share_settings',
+    'upload_replays',
+    'publish_replays',
 )
+
+# Switches that stay off until the player turns them on.
+OPT_IN_FEATURES = ('upload_replays', 'publish_replays')
 
 DEFAULTS = {
     'enabled': True,
@@ -30,6 +35,8 @@ DEFAULTS = {
     'battle_moe_panel': True,
     'hangar_session_panel': True,
     'share_settings': True,
+    'upload_replays': False,
+    'publish_replays': False,
     'settings_action': '',
     'settings_target': 'private',
     'settings_anonymous_stats': False,

@@ -30,10 +30,25 @@ describe('buildFeed', () => {
       badges: [{ accountId: 2n, badgeCode: 'weekly-mark-1', awardedAt: at('2026-09-22T10:00:00Z') }],
       nicknames: new Map([[1n, 'Tanker']]),
       aceMastery: FEED.aceMastery,
-      limit: 3
+      limit: 3,
+      badgeOf: (code) => ({ code, challenge: null })
     });
 
     expect(items.map((item) => item.kind)).toEqual(['badge', 'record', 'mark']);
     expect(items[1]?.nickname).toBe('Tanker');
+  });
+
+  it('describes a badge through the given lookup and leaves other kinds without one', () => {
+    const items = buildFeed({
+      snapshots: [],
+      records: [{ account_id: 1n, captured_at: at('2026-09-21T10:00:00Z'), max_damage: 9000, prev_max_damage: 8000, max_damage_tank_id: 10 }],
+      badges: [{ accountId: 2n, badgeCode: 'weekly-mark-1', awardedAt: at('2026-09-22T10:00:00Z') }],
+      nicknames: new Map(),
+      aceMastery: FEED.aceMastery,
+      limit: FEED.limit,
+      badgeOf: (code) => ({ code: code.toUpperCase(), challenge: null })
+    });
+
+    expect(items.map((item) => item.badge?.code ?? null)).toEqual(['WEEKLY-MARK-1', null]);
   });
 });

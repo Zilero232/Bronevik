@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 import _support  # noqa: F401
-from otmetki.config import DEFAULT_SERVER_URL, FEATURES, Config, is_valid_server_url
+from otmetki.config import DEFAULT_SERVER_URL, FEATURES, OPT_IN_FEATURES, Config, is_valid_server_url
 from otmetki.i18n import STRINGS, Translator, resolve_language
 from otmetki.panels import format_moe_panel, format_number, format_session_panel, format_session_plain
 from otmetki.settings_template import BIND_CODE_VAR, build_template, settings_to_config
@@ -18,7 +18,7 @@ class ConfigTest(unittest.TestCase):
         config = Config()
         self.assertEqual(config.server_url, DEFAULT_SERVER_URL)
         for feature in FEATURES:
-            self.assertTrue(config.is_enabled(feature))
+            self.assertEqual(config.is_enabled(feature), feature not in OPT_IN_FEATURES)
 
     def test_update_validates_types(self):
         config = Config()

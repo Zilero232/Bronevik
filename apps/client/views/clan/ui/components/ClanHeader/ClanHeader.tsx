@@ -1,25 +1,38 @@
 'use client';
 
+import { ClipboardList } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ClanEmblem } from '@/entities/clan/clan';
 import { ratingValueTone, winRateTone } from '@/entities/player/stats';
 import { ROUTES } from '@/shared/constants';
-import { KeyFigure, KeyFigures, PageHeader } from '@/ui-kit';
+import { Link } from '@/shared/i18n/navigation';
+import { buttonVariants, KeyFigure, KeyFigures, PageHeader } from '@/ui-kit';
 
 import type { ClanHeaderProps } from './ClanHeader.types';
 
+import { useWorkspaceLink } from '../../../model/hooks';
+
 import s from './ClanHeader.module.scss';
 
-export const ClanHeader = ({ page: { clan, stats } }: ClanHeaderProps) => {
+export const ClanHeader = ({ page: { clan, stats, members } }: ClanHeaderProps) => {
   const t = useTranslations('clans.clan');
   const tNav = useTranslations('clans.head');
   const format = useFormatter();
+  const workspaceHref = useWorkspaceLink({ clan, members });
 
   return (
     <div className={s.root}>
       <ClanEmblem className={s.emblem} color={clan.color} size='lg' src={clan.emblem} tag={clan.tag} />
       <PageHeader
+        actions={
+          workspaceHref && (
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={workspaceHref}>
+              <ClipboardList aria-hidden size={16} />
+              {t('workspace')}
+            </Link>
+          )
+        }
         meta={
           <span className={s.meta}>
             {clan.createdAt && t('founded', { date: format.dateTime(new Date(clan.createdAt), { dateStyle: 'long' }) })}

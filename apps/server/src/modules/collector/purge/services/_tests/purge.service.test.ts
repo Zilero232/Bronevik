@@ -83,6 +83,15 @@ describe('PurgeService.purgeAccount', () => {
     expect(prisma.player.deleteMany).toHaveBeenCalledOnce();
     expect(prisma.dataDeletionRequest.update).not.toHaveBeenCalled();
   });
+
+  it('rethrows a failed purge without a request so the job retries', async () => {
+    const { prisma, purge } = createPurge();
+
+    prisma.player.deleteMany.mockRejectedValue(new Error('lock timeout'));
+
+    await expect(purge.purgeAccount({ accountId: 5 })).rejects.toThrow('lock timeout');
+    expect(prisma.dataDeletionRequest.update).not.toHaveBeenCalled();
+  });
 });
 
 describe('PurgeService.dispatch', () => {

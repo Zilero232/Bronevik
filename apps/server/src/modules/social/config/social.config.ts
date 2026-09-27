@@ -1,10 +1,12 @@
-import type { RatingTier } from '@otmetki/schemas';
+import type { RatingTier, WeeklyChallengeMetric } from '@otmetki/schemas';
+
+import { LEAGUE_METRICS } from '@otmetki/schemas';
 
 import type { VehicleType } from '../../../../generated';
 
 export const SOCIAL_QUEUE = {
   name: 'social',
-  jobs: { challenges: 'challenges' }
+  jobs: { challenges: 'challenges', leagues: 'leagues' }
 } as const;
 
 export const SOCIAL_SCHEDULES = [
@@ -13,6 +15,12 @@ export const SOCIAL_SCHEDULES = [
     queue: SOCIAL_QUEUE.name,
     name: SOCIAL_QUEUE.jobs.challenges,
     repeat: { pattern: '35 * * * *' }
+  },
+  {
+    id: 'social-leagues',
+    queue: SOCIAL_QUEUE.name,
+    name: SOCIAL_QUEUE.jobs.leagues,
+    repeat: { pattern: '5 * * * *' }
   }
 ] as const;
 
@@ -26,7 +34,18 @@ export const FEED = {
 
 export const LEAGUE = {
   minBattles: 5,
-  metrics: ['damage', 'wn8', 'marks', 'battles'] as const
+  metrics: LEAGUE_METRICS
+} as const;
+
+export const LEAGUE_DIVISION = {
+  metric: 'wn8',
+  minBattles: 10,
+  groupSize: 30,
+  zoneShare: 0.2,
+  minRanked: 5,
+  retentionWeeks: 26,
+  batchSize: 1_000,
+  daysPerWeek: 7
 } as const;
 
 export const WEEKLY_CHALLENGES = [
@@ -38,7 +57,7 @@ export const WEEKLY_CHALLENGES = [
   { code: 'mark-1', metric: 'marks', target: 1 }
 ] as const satisfies readonly {
   code: string;
-  metric: 'battles' | 'bigDamageBattles' | 'marks' | 'spotted' | 'wins';
+  metric: WeeklyChallengeMetric;
   target: number;
   threshold?: number;
   vehicleType?: VehicleType;

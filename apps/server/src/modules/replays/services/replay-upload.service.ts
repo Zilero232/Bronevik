@@ -1,17 +1,17 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
 
-import type { UploadedReplay, UploadFromModInput, UploadReplayInput } from '../replays.types';
+import type { AcceptedReplay, StoreReplayInput, UploadedReplay, UploadedReplayFile, UploadFromModInput, UploadReplayInput } from '../replays.types';
 
-import { AppBadRequestException, AppConflictException } from '../../../common/exceptions';
+import { AppBadRequestException, AppConflictException, ModException } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
 import { isUniqueViolation, LIMIT_LOCK_SCOPE, lockedTransaction, ObjectStorage, PrismaService } from '../../../core';
-import { parseReplay } from '../../../lib/replay';
+import { parseReplaySummary } from '../../../lib/replay';
 import { EntitlementsService } from '../../billing';
 import { ModDeviceService } from '../../mod';
 import { REPLAY_UPLOAD, REPLAYS_QUEUE } from '../config';
-import { replayExtension, replayStorageKey, sha256Hex } from '../lib';
+import { isRecordedBy, modVisibility, replayExtension, replayStorageKey, sha256Hex } from '../lib';
 
 @Injectable()
 export class ReplayUploadService {
@@ -23,7 +23,32 @@ export class ReplayUploadService {
     @InjectQueue(REPLAYS_QUEUE.name) private readonly queue: Queue
   ) {}
 
-  async upload({ file, uploaderUserId, deviceId, visibility }: UploadReplayInput): Promise<UploadedReplay> {
+  upload({ file, ...owner }: UploadReplayInput): Promise<UploadedReplay> {
+    return this.store({ replay: this.accept(file), ...owner });
+  }
+
+  async uploadFromMod({ file, request }: UploadFromModInput): Promise<UploadedReplay> {
+    const device = await this.devices.authenticate({ request, rawBody: file?.buffer, signedHeaders: [REPLAY_UPLOAD.visibilityHeader] });
+    const visibility = modVisibility(request.header(REPLAY_UPLOAD.visibilityHeader));
+
+    if (!visibility) {
+      throw new AppBadRequestException('VALIDATION_FAILED', `Visibility must be one of ${REPLAY_UPLOAD.modVisibilities.join(', ')}`);
+    }
+
+    const replay = this.accept(file);
+
+    if (!isRecordedBy({ summary: replay.summary, accountId: device.accountId })) {
+      throw new ModException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        error: 'replay_not_owned',
+        message: 'The replay was recorded by another account'
+      });
+    }
+
+    return this.store({ replay, uploaderUserId: device.userId, deviceId: device.id, visibility });
+  }
+
+  private accept(file: UploadedReplayFile | undefined): AcceptedReplay {
     if (!file || file.size === 0) {
       throw new AppBadRequestException('REPLAY_INVALID', `Attach the replay as the "${REPLAY_UPLOAD.field}" field`);
     }
@@ -41,11 +66,13 @@ export class ReplayUploadService {
     const bytes = new Uint8Array(file.buffer);
 
     try {
-      parseReplay(bytes);
+      return { file, bytes, extension, summary: parseReplaySummary(bytes) };
     } catch (error) {
       throw new AppBadRequestException('REPLAY_INVALID', `Not a readable replay: ${errorMessage(error)}`);
     }
+  }
 
+  private async store({ replay: { file, bytes, extension }, uploaderUserId, deviceId, visibility }: StoreReplayInput): Promise<UploadedReplay> {
     const sha256 = sha256Hex(bytes);
     const existing = await this.prisma.replay.findUnique({ where: { sha256 }, select: { id: true } });
 
@@ -92,11 +119,5 @@ export class ReplayUploadService {
     );
 
     return replay;
-  }
-
-  async uploadFromMod({ file, request }: UploadFromModInput): Promise<UploadedReplay> {
-    const device = await this.devices.authenticate({ request, rawBody: file?.buffer });
-
-    return this.upload({ file, uploaderUserId: device.userId, deviceId: device.id, visibility: 'public' });
   }
 }

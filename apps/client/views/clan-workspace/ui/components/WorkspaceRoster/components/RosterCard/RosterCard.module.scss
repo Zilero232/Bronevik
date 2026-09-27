@@ -1,0 +1,26 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include well;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  gap: var(--space-3);
+}
+
+.root[data-officer='true'] {
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+
+.main,
+.figures {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.figures {
+  align-items: flex-end;
+}

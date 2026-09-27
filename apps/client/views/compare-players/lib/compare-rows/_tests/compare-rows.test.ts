@@ -19,6 +19,15 @@ describe('compareRows', () => {
     expect(rowOf('mastery')).toMatchObject({ values: [10, 25], best: [1] });
   });
 
+  it('measures the other player against the best and leaves the best without a delta', () => {
+    expect(rowOf('mastery')?.deltas).toEqual([-15, null]);
+  });
+
+  it('gives no tone to a metric without a rating scale or without a value', () => {
+    expect(rowOf('mastery')?.tones).toEqual([null, null]);
+    expect(rowOf('winRate')?.tones).toEqual([null, null]);
+  });
+
   it('marks every player sharing the best value', () => {
     expect(rowOf('moe3')?.best).toEqual([0, 1]);
   });

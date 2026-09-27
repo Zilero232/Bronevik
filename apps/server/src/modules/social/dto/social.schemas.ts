@@ -1,7 +1,34 @@
-import { accountIdSchema, countSchema, isoDateSchema, isoDateTimeSchema, nicknameSchema, tankIdSchema, uuidSchema } from '@otmetki/schemas';
+import {
+  accountIdSchema,
+  countSchema,
+  isoDateSchema,
+  isoDateTimeSchema,
+  leagueMetricSchema,
+  leagueScopeSchema,
+  leagueTierSchema,
+  leagueZoneSchema,
+  nicknameSchema,
+  tankIdSchema,
+  uuidSchema,
+  vehicleTypeSchema,
+  weeklyChallengeMetricSchema
+} from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { LEAGUE, WRAPPED } from '../config';
+import { WRAPPED } from '../config';
+
+export const challengeRuleSchema = z.object({
+  code: z.string(),
+  metric: weeklyChallengeMetricSchema,
+  target: z.number(),
+  threshold: z.number().nullable(),
+  vehicleType: vehicleTypeSchema.nullable()
+});
+
+export const feedBadgeSchema = z.object({
+  code: z.string(),
+  challenge: challengeRuleSchema.nullable()
+});
 
 export const feedItemSchema = z.object({
   kind: z.enum(['mark', 'mastery', 'record', 'badge']),
@@ -10,7 +37,7 @@ export const feedItemSchema = z.object({
   tankId: tankIdSchema.nullable(),
   value: z.number(),
   previous: z.number().nullable(),
-  badgeCode: z.string().nullable(),
+  badge: feedBadgeSchema.nullable(),
   at: isoDateTimeSchema
 });
 
@@ -18,34 +45,45 @@ export const feedSchema = z.object({ items: z.array(feedItemSchema) });
 
 export const feedQuerySchema = z.object({ days: z.coerce.number().int().min(1).max(60).optional() });
 
-const leagueMetricSchema = z.enum(LEAGUE.metrics);
-
 export const leagueQuerySchema = z.object({
+  scope: leagueScopeSchema.default('division'),
   metric: leagueMetricSchema.default('damage'),
   week: isoDateSchema.optional()
 });
 
-export const leagueSchema = z.object({
-  metric: leagueMetricSchema,
-  weekStart: isoDateSchema,
-  entries: z.array(
-    z.object({
-      rank: z.number().int().positive(),
-      accountId: accountIdSchema,
-      nickname: z.string().nullable(),
-      isMe: z.boolean(),
-      battles: countSchema,
-      value: z.number().nullable()
-    })
-  )
+export const leagueEntrySchema = z.object({
+  rank: z.number().int().positive(),
+  accountId: accountIdSchema,
+  nickname: z.string().nullable(),
+  isMe: z.boolean(),
+  battles: countSchema,
+  value: z.number().nullable(),
+  tier: leagueTierSchema.nullable(),
+  zone: leagueZoneSchema.nullable()
 });
 
-export const challengeSchema = z.object({
-  code: z.string(),
-  metric: z.string(),
-  target: z.number(),
-  threshold: z.number().nullable(),
-  vehicleType: z.string().nullable(),
+export const leagueDivisionSchema = z.object({
+  accountId: accountIdSchema,
+  tier: leagueTierSchema,
+  group: z.number().int().positive(),
+  size: countSchema,
+  isClosed: z.boolean(),
+  promotionSlots: countSchema,
+  relegationSlots: countSchema,
+  promotesTo: leagueTierSchema.nullable(),
+  relegatesTo: leagueTierSchema.nullable()
+});
+
+export const leagueSchema = z.object({
+  scope: leagueScopeSchema,
+  metric: leagueMetricSchema,
+  weekStart: isoDateSchema,
+  endsAt: isoDateTimeSchema,
+  division: leagueDivisionSchema.nullable(),
+  entries: z.array(leagueEntrySchema)
+});
+
+export const challengeSchema = challengeRuleSchema.extend({
   badgeCode: z.string(),
   progress: z.array(z.object({ accountId: accountIdSchema, value: z.number(), completedAt: isoDateTimeSchema.nullable() }))
 });

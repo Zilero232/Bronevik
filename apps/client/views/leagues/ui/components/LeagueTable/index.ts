@@ -1,0 +1,1 @@
+export { LeagueTable } from './LeagueTable';

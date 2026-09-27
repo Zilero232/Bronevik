@@ -4,8 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { matches, mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Battle, PlayerTank } from '../../../../../generated';
-import type { PrismaService, WebhookEmitter } from '../../../../core';
+import type { BattleEventsSink, PrismaService, WebhookEmitter } from '../../../../core';
 import type { ExpectedValuesService } from '../../../reference';
+import type { IngestEvent } from '../../lib';
 import type { AuthenticatedDevice } from '../../mod.types';
 
 import { EventLedgerService, ModIngestService } from '..';
@@ -210,5 +211,50 @@ describe('ModIngestService', () => {
 
     await expect(service.ingest({ device, batch })).rejects.toThrow('db down');
     await expect(service.ingest({ device, batch })).resolves.toMatchObject({ accepted: 1, duplicates: 0 });
+  });
+});
+
+describe('ModIngestService side channels', () => {
+  const battleStart: IngestEvent = { type: 'battle_start', event_id: 'start-1', occurred_at: example.sent_at, tank_id: 1 };
+
+  it('forwards a battle start to the battle events sink once', async () => {
+    const { prisma } = createService();
+    const sink = mock<BattleEventsSink>();
+    const service = new ModIngestService(
+      prisma,
+      new EventLedgerService(new RedisMock()),
+      mock<ExpectedValuesService>(),
+      mock<WebhookEmitter>(),
+      sink
+    );
+
+    const batch = { ...example, events: [battleStart] };
+
+    await service.ingest({ device, batch });
+    await service.ingest({ device, batch });
+
+    expect(sink.started).toHaveBeenCalledOnce();
+    expect(sink.started).toHaveBeenCalledWith({ accountId: device.accountId, tankId: 1, occurredAt: new Date(example.sent_at * 1000) });
+  });
+
+  it('accepts a battle start when no sink is registered', async () => {
+    const { service } = createService();
+
+    await expect(service.ingest({ device, batch: { ...example, events: [battleStart] } })).resolves.toMatchObject({ accepted: 1 });
+  });
+
+  it('keeps the ingest successful when the mark webhook cannot be queued', async () => {
+    const { service, prisma, webhooks } = createService();
+    const snapshot = moeSnapshot();
+
+    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: snapshot.marks_on_gun - 1 }));
+    prisma.player.findUnique.mockResolvedValue(null);
+    webhooks.emit.mockRejectedValue(new Error('redis down'));
+
+    await expect(service.ingest({ device, batch: { ...example, events: [snapshot] } })).resolves.toMatchObject({ accepted: 1 });
+
+    expect(webhooks.emit).toHaveBeenCalledWith(
+      expect.objectContaining({ subject: { accountIds: [Number(device.accountId)], clanIds: [] }, data: expect.objectContaining({ nickname: null }) })
+    );
   });
 });

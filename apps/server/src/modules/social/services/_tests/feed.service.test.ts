@@ -7,7 +7,7 @@ import type { SnapshotEventRow } from '../../social.types';
 import type { FollowService } from '../follow.service';
 import type { SnapshotEventsService } from '../snapshot-events.service';
 
-import { FEED } from '../../config';
+import { CHALLENGE_BADGES, FEED } from '../../config';
 import { FeedService } from '../feed.service';
 
 const at = new Date('2026-09-20T12:00:00Z');
@@ -65,6 +65,17 @@ describe('FeedService.feed', () => {
       ['mark', 1, 'Tanker'],
       ['badge', 2, null]
     ]);
+  });
+
+  it('names the challenge behind a weekly badge', async () => {
+    const { service } = createService();
+
+    const { items } = await service.feed({ userId: 'u1', days });
+
+    expect(items.find((item) => item.kind === 'badge')?.badge).toMatchObject({
+      code: badge.badgeCode,
+      challenge: { code: badge.badgeCode.slice(CHALLENGE_BADGES.prefix.length) }
+    });
   });
 
   it('looks back exactly the requested number of days for the whole circle', async () => {

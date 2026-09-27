@@ -1,0 +1,1 @@
+export { AccuracyCard } from './AccuracyCard';

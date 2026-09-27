@@ -9,6 +9,7 @@ import { Button, DataTable, EmptyState, ErrorState, SegmentedControl, Switch } f
 
 import { TANKS_ECONOMY, TANKS_VIEW } from '../../../config';
 import { useEconomyTable } from '../../../model/hooks';
+import { EconomyCard } from './components';
 
 import s from './EconomyTable.module.scss';
 
@@ -16,6 +17,7 @@ export const EconomyTable = () => {
   const t = useTranslations('tanks.economy');
   const {
     columns,
+    view,
     rows,
     total,
     account,
@@ -71,6 +73,7 @@ export const EconomyTable = () => {
           getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
           initialSorting={[{ id: 'credits', desc: true }]}
           isLoading={isLoading}
+          renderCard={(row) => <EconomyCard row={row} view={view(row)} />}
           rowHeight={TANKS_VIEW.rowHeight}
         />
       )}

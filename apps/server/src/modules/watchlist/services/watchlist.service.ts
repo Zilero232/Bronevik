@@ -11,6 +11,8 @@ import { percentOf, ratio } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { CollectorProducerService } from '../../collector';
+import { NOTIFICATION_DEFAULTS } from '../../me';
+import { clearFollowFlag, setFollowFlag } from '../../social';
 import { WATCHLIST_DIGEST_RUN } from '../config';
 import { WatchlistActivityService } from './watchlist-activity.service';
 
@@ -27,7 +29,7 @@ export class WatchlistService {
     const since = subHours(new Date(), WATCHLIST.periodHours[query.period]);
 
     const [follows, settings, limit] = await Promise.all([
-      this.prisma.follow.findMany({ where: { userId, kind: 'player' }, orderBy: { createdAt: 'asc' } }),
+      this.prisma.follow.findMany({ where: { userId, kind: 'player', isFollowing: true }, orderBy: { createdAt: 'asc' } }),
       this.settings(userId),
       this.entitlements.limit({ userId, key: 'watchedPlayers' })
     ]);
@@ -83,13 +85,13 @@ export class WatchlistService {
   async add({ userId, accountId }: WatchlistAddInput): Promise<Watchlist> {
     const targetId = BigInt(accountId);
     const [existing, count] = await Promise.all([
-      this.prisma.follow.findUnique({ where: { userId_kind_targetId: { userId, kind: 'player', targetId } }, select: { id: true } }),
-      this.prisma.follow.count({ where: { userId, kind: 'player' } })
+      this.prisma.follow.findUnique({ where: { userId_kind_targetId: { userId, kind: 'player', targetId } }, select: { isFollowing: true } }),
+      this.prisma.follow.count({ where: { userId, kind: 'player', isFollowing: true } })
     ]);
 
-    if (!existing) {
+    if (!existing?.isFollowing) {
       await this.entitlements.assertWithinLimit({ userId, key: 'watchedPlayers', count });
-      await this.prisma.follow.create({ data: { userId, kind: 'player', targetId } });
+      await setFollowFlag({ prisma: this.prisma, flag: 'isFollowing', key: { userId, kind: 'player', targetId } });
       await this.collector.enrol({ accountId, priority: 'high', reason: 'follow' });
     }
 
@@ -97,17 +99,21 @@ export class WatchlistService {
   }
 
   async remove({ userId, accountId }: WatchlistRemoveInput): Promise<void> {
-    const { count } = await this.prisma.follow.deleteMany({ where: { userId, kind: 'player', targetId: BigInt(accountId) } });
+    const removed = await clearFollowFlag({
+      prisma: this.prisma,
+      flag: 'isFollowing',
+      where: { userId, kind: 'player', targetId: BigInt(accountId) }
+    });
 
-    if (count === 0) {
+    if (!removed) {
       throw new AppNotFoundException('NOT_FOUND', `Player ${accountId} is not on the watchlist`);
     }
   }
 
   async settings(userId: string): Promise<WatchlistSettings> {
-    const row = await this.prisma.watchlistSettings.findUnique({ where: { userId } });
+    const row = await this.prisma.notificationSettings.findUnique({ where: { userId }, select: { watchlistDigest: true, watchlistDigestAt: true } });
 
-    return { digest: row?.digest ?? WATCHLIST.defaultDigest, lastDigestAt: row?.lastDigestAt?.toISOString() ?? null };
+    return { digest: row?.watchlistDigest ?? WATCHLIST.defaultDigest, lastDigestAt: row?.watchlistDigestAt?.toISOString() ?? null };
   }
 
   async updateSettings({ userId, digest }: WatchlistSettingsInput): Promise<WatchlistSettings> {
@@ -115,8 +121,20 @@ export class WatchlistService {
       await this.entitlements.assertFeature({ userId, feature: WATCHLIST_DIGEST_RUN.hourlyFeature });
     }
 
-    const row = await this.prisma.watchlistSettings.upsert({ where: { userId }, create: { userId, digest }, update: { digest } });
+    const row = await this.prisma.notificationSettings.upsert({
+      where: { userId },
+      create: {
+        userId,
+        channels: [...NOTIFICATION_DEFAULTS.channels],
+        events: [...NOTIFICATION_DEFAULTS.events],
+        sessionReport: NOTIFICATION_DEFAULTS.sessionReport,
+        weeklyDigest: NOTIFICATION_DEFAULTS.weeklyDigest,
+        watchlistDigest: digest
+      },
+      update: { watchlistDigest: digest },
+      select: { watchlistDigest: true, watchlistDigestAt: true }
+    });
 
-    return { digest: row.digest, lastDigestAt: row.lastDigestAt?.toISOString() ?? null };
+    return { digest: row.watchlistDigest, lastDigestAt: row.watchlistDigestAt?.toISOString() ?? null };
   }
 }

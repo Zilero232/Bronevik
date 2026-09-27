@@ -7,17 +7,15 @@ import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants } from '@/ui-kit';
 
-import type { GuideLikeButtonProps } from './GuideLikeButton.types';
-
 import { useGuideLike } from '../../../../../model/hooks';
 
 import s from './GuideLikeButton.module.scss';
 
-export const GuideLikeButton = ({ guide }: GuideLikeButtonProps) => {
+export const GuideLikeButton = () => {
   const loginHref = useLoginHref();
   const t = useTranslations('guides.detail');
   const format = useFormatter();
-  const { isSignedIn, isLiked, likesCount, isAvailable, isPending, toggle } = useGuideLike(guide);
+  const { isSignedIn, isLiked, likesCount, isAvailable, isPending, toggle } = useGuideLike();
 
   if (!isSignedIn) {
     return (

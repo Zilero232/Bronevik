@@ -5,17 +5,15 @@ import { useId } from 'react';
 
 import { Card, CardHeader, DataTable, EmptyState } from '@/ui-kit';
 
-import type { ReplayScoreboardProps } from './ReplayScoreboard.types';
-
 import { useReplayScoreboard } from '../../../model/hooks';
 
 import s from './ReplayScoreboard.module.scss';
 
-export const ReplayScoreboard = ({ replay }: ReplayScoreboardProps) => {
+export const ReplayScoreboard = () => {
   const t = useTranslations('replays.scoreboard');
   const format = useFormatter();
   const titleId = useId();
-  const { columns, teams } = useReplayScoreboard(replay);
+  const { columns, teams } = useReplayScoreboard();
 
   return (
     <div className={s.root}>
@@ -36,6 +34,7 @@ export const ReplayScoreboard = ({ replay }: ReplayScoreboardProps) => {
             density='compact'
             emptyState={<EmptyState isCompact title={t('empty')} />}
             getRowId={(row) => `${row.accountId}-${row.vehicleId ?? row.tankId}`}
+            rowTint={(row) => (row.isRecorder ? 'self' : null)}
           />
         </Card>
       ))}

@@ -101,23 +101,24 @@ export class BuildShareService {
 
   async remove({ id, userId }: OwnedById): Promise<void> {
     await this.owned({ id, userId });
-    await this.prisma.build.delete({ where: { id } });
+
+    await this.prisma.$transaction([
+      this.prisma.reaction.deleteMany({ where: { target: 'build', targetId: id } }),
+      this.prisma.comment.deleteMany({ where: { target: 'build', targetId: id } }),
+      this.prisma.build.delete({ where: { id } })
+    ]);
   }
 
   async like({ id, userId, liked }: LikeInput): Promise<LikeResult> {
     await this.get({ id, viewerUserId: userId });
 
     return this.prisma.$transaction(async (tx) => {
-      const existing = await tx.buildLike.findUnique({ where: { buildId_userId: { buildId: id, userId } } });
+      const changed = liked
+        ? await tx.reaction.createMany({ data: [{ target: 'build', targetId: id, userId }], skipDuplicates: true })
+        : await tx.reaction.deleteMany({ where: { target: 'build', targetId: id, userId } });
 
-      if (liked && !existing) {
-        await tx.buildLike.create({ data: { buildId: id, userId } });
-        await tx.build.update({ where: { id }, data: { likesCount: { increment: 1 } } });
-      }
-
-      if (!liked && existing) {
-        await tx.buildLike.delete({ where: { buildId_userId: { buildId: id, userId } } });
-        await tx.build.update({ where: { id }, data: { likesCount: { decrement: 1 } } });
+      if (changed.count > 0) {
+        await tx.build.update({ where: { id }, data: { likesCount: liked ? { increment: 1 } : { decrement: 1 } } });
       }
 
       const build = await tx.build.findUniqueOrThrow({ where: { id }, select: { likesCount: true } });
@@ -134,13 +135,13 @@ export class BuildShareService {
 
   private async views({ rows, viewerUserId }: BuildViewsInput): Promise<BuildView[]> {
     const liked = viewerUserId
-      ? await this.prisma.buildLike.findMany({
-          where: { userId: viewerUserId, buildId: { in: rows.map((row) => row.id) } },
-          select: { buildId: true }
+      ? await this.prisma.reaction.findMany({
+          where: { target: 'build', userId: viewerUserId, targetId: { in: rows.map((row) => row.id) } },
+          select: { targetId: true }
         })
       : [];
 
-    const likedIds = new Set(liked.map((like) => like.buildId));
+    const likedIds = new Set(liked.map((like) => like.targetId));
 
     return rows.map((build) =>
       toBuildView({ build, author: build.author, likedByMe: likedIds.has(build.id), gameVersion: build.gameVersion?.version ?? null })

@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { MoeThreshold } from '../../../../../generated';
-import type { ThresholdsService } from '../../../reference';
+import type { MoeThresholdRecord, ThresholdsService } from '../../../reference';
 
 import { ProjectionService } from '../projection.service';
 
-const threshold: MoeThreshold = {
+const threshold: MoeThresholdRecord = {
   tankId: 1,
   date: new Date('2026-09-20'),
   source: 'otmetki',
@@ -20,7 +19,7 @@ const threshold: MoeThreshold = {
 
 const input = { tankId: 1, currentPercent: 60, targetMarks: 3, avgDamage: 3_500 };
 
-const createService = (moe: MoeThreshold | null) => {
+const createService = (moe: MoeThresholdRecord | null) => {
   const thresholds = mock<ThresholdsService>();
 
   thresholds.moe.mockResolvedValue(moe);

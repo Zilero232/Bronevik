@@ -11,10 +11,14 @@ import { messages } from '@/shared/i18n';
 
 import type { Comment } from '../../../../api';
 import type { CommentThreadTarget } from '../../../../lib/comment-form';
+import type { CommentsThreadContextValue } from '../../../context';
 import type { UseCommentItemInput } from '../use-comment-item.types';
 
 import { removeComment } from '../../../../api/comments/comments';
+import { CommentsThreadContext } from '../../../context';
 import { useCommentItem } from '../use-comment-item';
+
+type RenderItemInput = Partial<UseCommentItemInput & CommentsThreadContextValue>;
 
 vi.hoisted(() => vi.resetModules());
 
@@ -41,7 +45,7 @@ const COMMENT: Comment = {
   createdAt: '2026-01-01T00:00:00.000Z'
 };
 
-const setup = () => {
+const setup = (viewer: Partial<CommentsThreadContextValue>) => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
 
   client.setQueryData(THREAD_KEY, [COMMENT]);
@@ -49,7 +53,7 @@ const setup = () => {
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={client}>
       <NextIntlClientProvider locale='en' messages={messages.en}>
-        {children}
+        <CommentsThreadContext value={{ thread: THREAD, viewerId: AUTHOR_ID, isSignedIn: true, ...viewer }}>{children}</CommentsThreadContext>
       </NextIntlClientProvider>
     </QueryClientProvider>
   );
@@ -57,9 +61,9 @@ const setup = () => {
   return { client, wrapper };
 };
 
-const renderItem = (input: Partial<UseCommentItemInput> = {}) => {
-  const { client, wrapper } = setup();
-  const view = renderHook(() => useCommentItem({ comment: COMMENT, thread: THREAD, viewerId: AUTHOR_ID, ...input }), { wrapper });
+const renderItem = ({ comment = COMMENT, isReply, ...viewer }: RenderItemInput = {}) => {
+  const { client, wrapper } = setup(viewer);
+  const view = renderHook(() => useCommentItem({ comment, isReply }), { wrapper });
 
   return { client, ...view };
 };
@@ -69,6 +73,12 @@ describe('useCommentItem', () => {
     expect(renderItem().result.current.isOwn).toBe(true);
     expect(renderItem({ viewerId: 'user-2' }).result.current.isOwn).toBe(false);
     expect(renderItem({ viewerId: null }).result.current.isOwn).toBe(false);
+  });
+
+  it('lets a signed-in viewer reply only to a top-level comment', () => {
+    expect(renderItem().result.current.canReply).toBe(true);
+    expect(renderItem({ isReply: true }).result.current.canReply).toBe(false);
+    expect(renderItem({ isSignedIn: false, viewerId: null }).result.current.canReply).toBe(false);
   });
 
   it('marks a comment with an empty body as deleted', () => {

@@ -2,7 +2,7 @@ import { PROGRESSION_REWARDS, tankLevelOf } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { TankChallengeProgress, TankProgress, UserLestaAccount } from '../../../../../generated';
+import type { PlayerTank, TankChallengeProgress, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { weekWindow } from '../../../../common/lib';
@@ -32,7 +32,7 @@ const setup = () => {
 
   entitlements.isPlus.mockResolvedValue(true);
   prisma.userLestaAccount.findMany.mockResolvedValue([Object.assign(mock<UserLestaAccount>(), { accountId: 7n })]);
-  prisma.tankProgress.findMany.mockResolvedValue([]);
+  prisma.playerTank.findMany.mockResolvedValue([]);
   prisma.tankChallengeProgress.findMany.mockResolvedValue([]);
 
   return { prisma, entitlements, service: new TankProgressService(prisma, entitlements) };
@@ -43,14 +43,22 @@ describe('TankProgressService.list', () => {
     const { prisma, service } = setup();
     const xp = 1_000;
 
-    prisma.tankProgress.findMany.mockResolvedValue([
-      Object.assign(mock<TankProgress>(), { accountId: 7n, tankId: 1, xp, battles: 12, updatedAt: now })
+    prisma.playerTank.findMany.mockResolvedValue([
+      Object.assign(mock<PlayerTank>(), { accountId: 7n, tankId: 1, progressXp: xp, progressBattles: 12, updatedAt: now })
     ]);
 
     const [item] = (await service.list('u')).items;
 
     expect(item).toMatchObject({ accountId: 7, tankId: 1, ...tankLevelOf(xp), battles: 12 });
     expect(item?.xp).toBeGreaterThanOrEqual(item?.levelXp ?? Number.POSITIVE_INFINITY);
+  });
+
+  it('lists only the tanks that have earned progression XP', async () => {
+    const { prisma, service } = setup();
+
+    await service.list('u');
+
+    expect(prisma.playerTank.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: { in: [7n] }, progressXp: { gt: 0 } } }));
   });
 
   it('reports whether XP is accruing from the Plus status', async () => {

@@ -90,6 +90,7 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
   },
   { id: 'news-rss', queue: QUEUE.news, name: JOB.news.rss, repeat: { pattern: '*/30 * * * *' } },
   { id: 'purge-dispatch', queue: QUEUE.purge, name: JOB.purge.dispatch, repeat: { every: 10 * 60_000 } },
+  { id: 'job-metrics-retention', queue: QUEUE.purge, name: JOB.purge.jobMetrics, repeat: { pattern: '10 3 * * *' } },
   {
     id: 'sessions-close',
     queue: QUEUE.developerWebhooks,

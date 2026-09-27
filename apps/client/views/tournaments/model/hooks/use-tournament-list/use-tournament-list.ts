@@ -21,7 +21,7 @@ export const useTournamentList = () => {
   });
 
   return {
-    ...list,
+    list,
     filter,
     onFilterChange: (next: (typeof TOURNAMENT_FILTERS)[number]) => void setFilter(next)
   };

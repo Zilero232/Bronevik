@@ -88,10 +88,7 @@ describe('toOperationSummary', () => {
       campaignId: 3,
       name: null,
       description: null,
-      iconId: null,
       nextOperationIds: [9],
-      chainsCount: 3,
-      missionsPerChain: 25,
       chainsToUnlockNext: 3,
       rewardTankId: null,
       rewardTankTag: null

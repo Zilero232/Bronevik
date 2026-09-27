@@ -1,6 +1,8 @@
 import type { LeaderboardScope, RatingKind, RatingPeriod } from '@otmetki/schemas';
 
-import type { TopFilterState } from '../lib/top-filter';
+import { TANK_CLASSES } from '@otmetki/icons';
+import { ratingKindSchema } from '@otmetki/schemas';
+import { parseAsInteger, parseAsStringLiteral } from 'nuqs';
 
 export const TOP_SCOPES: readonly LeaderboardScope[] = ['players', 'clans', 'risingStars', 'marks', 'streamers'];
 
@@ -16,7 +18,16 @@ export const TOP_PERIODS: readonly RatingPeriod[] = ['overall', '24h', '7d', '30
 
 export const TOP_TANK_SCOPES: readonly LeaderboardScope[] = ['players', 'streamers'];
 
+export const TOP_PARAMS = {
+  scope: parseAsStringLiteral(TOP_SCOPES).withDefault('players'),
+  metric: parseAsStringLiteral(ratingKindSchema.options).withDefault('wn8'),
+  period: parseAsStringLiteral(TOP_PERIODS).withDefault('30d'),
+  tier: parseAsInteger,
+  type: parseAsStringLiteral(TANK_CLASSES),
+  tank: parseAsInteger
+};
+
 export const TOP_BOARD = {
   podiumSize: 3,
-  initialFilter: { scope: 'players', metric: 'wn8', period: '30d', tier: 'all', type: 'all', tank: null } satisfies TopFilterState
+  anyOption: 'all'
 } as const;

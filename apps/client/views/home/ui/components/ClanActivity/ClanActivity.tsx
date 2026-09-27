@@ -26,6 +26,7 @@ export const ClanActivity = () => {
             data={rows}
             emptyState={<EmptyState isCompact title={t('empty')} />}
             getRowId={(row) => String(row.clan.clanId)}
+            getRowLink={({ clan }) => ({ href: ROUTES.clans.detail(clan.tag), label: clan.name })}
             isLoading={isPending}
           />
         )}

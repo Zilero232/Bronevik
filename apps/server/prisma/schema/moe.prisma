@@ -8,54 +8,28 @@ enum ThresholdSource {
   @@map("threshold_source")
 }
 
-model MoeThreshold {
+enum ThresholdKind {
+  moe
+  mastery
+
+  @@map("threshold_kind")
+}
+
+model TankThreshold {
+  kind   ThresholdKind
   tankId Int             @map("tank_id")
   date   DateTime        @db.Date
   source ThresholdSource
 
-  p65  Int
-  p85  Int
-  p95  Int
-  p100 Int?
+  level1 Int  @map("level_1")
+  level2 Int  @map("level_2")
+  level3 Int  @map("level_3")
+  level4 Int? @map("level_4")
 
   sampleSize Int?     @map("sample_size")
   capturedAt DateTime @default(now()) @map("captured_at") @db.Timestamptz(3)
 
-  @@id([tankId, source, date])
-  @@index([date])
-  @@map("moe_threshold")
-}
-
-model MasteryThreshold {
-  tankId Int             @map("tank_id")
-  date   DateTime        @db.Date
-  source ThresholdSource
-
-  class3 Int @map("class_3")
-  class2 Int @map("class_2")
-  class1 Int @map("class_1")
-  master Int
-
-  sampleSize Int?     @map("sample_size")
-  capturedAt DateTime @default(now()) @map("captured_at") @db.Timestamptz(3)
-
-  @@id([tankId, source, date])
-  @@index([date])
-  @@map("mastery_threshold")
-}
-
-model MoeProgress {
-  accountId BigInt @map("account_id")
-  tankId    Int    @map("tank_id")
-
-  marks        Int    @db.SmallInt
-  percent      Float
-  movingDamage Float? @map("moving_damage")
-
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-
-  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
-
-  @@id([accountId, tankId])
-  @@map("moe_progress")
+  @@id([kind, tankId, source, date])
+  @@index([kind, date])
+  @@map("tank_threshold")
 }

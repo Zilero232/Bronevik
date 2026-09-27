@@ -46,18 +46,15 @@ const player = (accountId: bigint, nickname: string): Player => ({
   accountId,
   nickname,
   clanId: null,
-  globalRating: null,
   createdAt: null,
   lastBattleAt: null,
-  logoutAt: null,
-  lestaUpdatedAt: null,
   trackingTier: 'population',
   lastPolledAt: null,
   nextPollAt: null,
   lastViewedAt: null,
   isHidden: false,
   purgeAfter: null,
-  firstSeenAt: startedAt,
+  progressionProcessedUntil: null,
   updatedAt: startedAt
 });
 

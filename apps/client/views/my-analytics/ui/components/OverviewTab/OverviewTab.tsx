@@ -20,49 +20,45 @@ export const OverviewTab = () => {
   const overview = useAnalyticsOverview();
 
   return (
-    <AnalyticsState data={overview.data} isRetrying={overview.isRetrying} status={overview.status} onRetry={overview.retry}>
-      {(data) =>
-        overview.isEmpty ? (
-          <ModEmptyState />
-        ) : (
-          <div className={s.root}>
-            <KeyFigures>
-              <KeyFigure label={t('totals.battles')} tone='steel' value={data.totals.battles} />
-              <KeyFigure
-                format={{ maximumFractionDigits: 2 }}
-                label={t('totals.winRate')}
-                suffix='%'
-                tone={overview.tones.winRate}
-                value={data.totals.winRate}
-              />
-              <KeyFigure format={{ maximumFractionDigits: 0 }} label={t('totals.avgDamage')} tone='steel' value={data.totals.avgDamage} />
-              <KeyFigure format={{ maximumFractionDigits: 0 }} label={t('totals.wn8')} tone={overview.tones.wn8} value={data.totals.wn8} />
-              <KeyFigure
-                format={{ maximumFractionDigits: 1 }}
-                label={t('totals.survivalRate')}
-                suffix='%'
-                tone='steel'
-                value={data.totals.survivalRate}
-              />
-            </KeyFigures>
-            <p className={s.source}>{t('source', { count: data.modBattles })}</p>
-            <div className={s.grid}>
-              <BreakdownPanel breakdown={data.breakdown} />
-              <TiltPanel tilt={data.tilt} />
-            </div>
-            <ActivityCharts formatPercent={overview.formatPercent} hours={overview.hourChart} weekdays={overview.weekdayChart} />
-            <TrendPanel
-              damage={overview.damageSeries}
-              formatNumber={overview.formatNumber}
-              formatPercent={overview.formatPercent}
-              labels={overview.trendLabels}
-              winRate={overview.winRateSeries}
-              wn8={overview.wn8Series}
+    <AnalyticsState empty={<ModEmptyState />} isEmpty={() => overview.isEmpty} state={overview}>
+      {(data) => (
+        <div className={s.root}>
+          <KeyFigures>
+            <KeyFigure label={t('totals.battles')} tone='steel' value={data.totals.battles} />
+            <KeyFigure
+              format={{ maximumFractionDigits: 2 }}
+              label={t('totals.winRate')}
+              suffix='%'
+              tone={overview.tones.winRate}
+              value={data.totals.winRate}
             />
-            <SessionsTable sessions={data.sessions} />
+            <KeyFigure format={{ maximumFractionDigits: 0 }} label={t('totals.avgDamage')} tone='steel' value={data.totals.avgDamage} />
+            <KeyFigure format={{ maximumFractionDigits: 0 }} label={t('totals.wn8')} tone={overview.tones.wn8} value={data.totals.wn8} />
+            <KeyFigure
+              format={{ maximumFractionDigits: 1 }}
+              label={t('totals.survivalRate')}
+              suffix='%'
+              tone='steel'
+              value={data.totals.survivalRate}
+            />
+          </KeyFigures>
+          <p className={s.source}>{t('source', { count: data.modBattles })}</p>
+          <div className={s.grid}>
+            <BreakdownPanel breakdown={data.breakdown} />
+            <TiltPanel tilt={data.tilt} />
           </div>
-        )
-      }
+          <ActivityCharts formatPercent={overview.formatPercent} hours={overview.hourChart} weekdays={overview.weekdayChart} />
+          <TrendPanel
+            damage={overview.damageSeries}
+            formatNumber={overview.formatNumber}
+            formatPercent={overview.formatPercent}
+            labels={overview.trendLabels}
+            winRate={overview.winRateSeries}
+            wn8={overview.wn8Series}
+          />
+          <SessionsTable sessions={data.sessions} />
+        </div>
+      )}
     </AnalyticsState>
   );
 };

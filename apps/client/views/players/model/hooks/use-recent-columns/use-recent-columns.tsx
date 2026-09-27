@@ -1,11 +1,10 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
 import type { RecentPlayer } from '@/entities/player/recent-players';
+import type { TableColumn } from '@/ui-kit';
 
 import { PlayerNameCell } from '@/entities/player/player';
 import { RatingValue, scaledRating } from '@/entities/player/stats';
@@ -13,7 +12,7 @@ import { RelativeTime } from '@/ui-kit';
 
 const column = createColumnHelper<RecentPlayer>();
 
-export const useRecentColumns = (): ColumnDef<RecentPlayer, never>[] => {
+export const useRecentColumns = (): TableColumn<RecentPlayer>[] => {
   const t = useTranslations('players.columns');
 
   return [

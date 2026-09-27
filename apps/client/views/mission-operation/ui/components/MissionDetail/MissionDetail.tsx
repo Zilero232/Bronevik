@@ -2,19 +2,23 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Badge, Card, CardBody, CardHeader, Switch } from '@/ui-kit';
+import { Badge, Card, CardBody, CardHeader, EmptyState, Switch } from '@/ui-kit';
 
-import type { MissionDetailProps } from './MissionDetail.types';
-
-import { missionDetailState } from '../../../lib/mission-detail';
+import { useMissionDetail } from '../../../model/hooks';
 import { MissionTanks } from '../MissionTanks';
 import { ConditionList } from './components';
 
 import s from './MissionDetail.module.scss';
 
-export const MissionDetail = ({ mission, progress, isSignedIn, isSaving, onProgress }: MissionDetailProps) => {
+export const MissionDetail = () => {
   const t = useTranslations('missions.mission');
-  const { main, honors, hasHonors, done, withHonors, toggleDone, toggleHonors } = missionDetailState({ mission, progress, isSaving, onProgress });
+  const detail = useMissionDetail();
+
+  if (!detail) {
+    return <EmptyState title={t('select')} />;
+  }
+
+  const { mission, isSignedIn, main, honors, hasHonors, done, withHonors, toggleDone, toggleHonors } = detail;
 
   return (
     <div className={s.root}>

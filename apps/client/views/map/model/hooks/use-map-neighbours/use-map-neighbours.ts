@@ -2,16 +2,12 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { listMaps } from '@/entities/map/map';
-import { QUERY_KEYS } from '@/shared/constants';
+import { mapQueries } from '@/entities/map/map';
 
 import { mapNeighbours } from '../../../lib/map-neighbours';
 
 export const useMapNeighbours = (arenaId: string) => {
-  const { data: maps } = useQuery({
-    queryKey: QUERY_KEYS.maps.list,
-    queryFn: ({ signal }) => listMaps({ signal })
-  });
+  const { data: maps } = useQuery(mapQueries.list());
 
   const items = maps ?? [];
 

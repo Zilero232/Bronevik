@@ -3,7 +3,7 @@ import type { VehicleSummary } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { MoeThreshold } from '../../../../../generated';
+import type { TankThreshold } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { CatalogEntry } from '../../../reference';
 
@@ -27,14 +27,15 @@ const vehicle = (tankId: number, name: string): VehicleSummary => ({
 
 const entry = (summary: VehicleSummary): CatalogEntry => ({ summary, dbType: 'heavyTank', specs: null, description: null });
 
-const threshold = (overrides: Partial<MoeThreshold>): MoeThreshold => ({
+const threshold = (overrides: Partial<TankThreshold>): TankThreshold => ({
+  kind: 'moe',
   tankId: 1,
   date: new Date('2026-09-20'),
   source: 'otmetki',
-  p65: 2_000,
-  p85: 2_600,
-  p95: 3_100,
-  p100: null,
+  level1: 2_000,
+  level2: 2_600,
+  level3: 3_100,
+  level4: null,
   sampleSize: null,
   capturedAt: new Date(),
   ...overrides
@@ -84,7 +85,7 @@ describe('MoeTableService.historyBatch', () => {
   it('returns one series per requested tank, including those without data', async () => {
     const { service, prisma } = createService();
 
-    prisma.moeThreshold.findMany.mockResolvedValue([threshold({ tankId: 1 })]);
+    prisma.tankThreshold.findMany.mockResolvedValue([threshold({ tankId: 1 })]);
 
     const batch = await service.historyBatch({ tankIds: [1, 2], days: 30 });
 

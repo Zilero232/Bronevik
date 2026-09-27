@@ -11,9 +11,9 @@ import { CommentComposer } from '../CommentComposer';
 
 import s from './CommentItem.module.scss';
 
-export const CommentItem = ({ comment, thread, viewerId, canReply, replies = [] }: CommentItemProps) => {
+export const CommentItem = ({ comment, isReply, replies = [] }: CommentItemProps) => {
   const t = useTranslations('community.comments');
-  const { isOwn, isDeleted, isReplying, toggleReply, closeReply, remove, isRemoving } = useCommentItem({ comment, thread, viewerId });
+  const { isOwn, isDeleted, canReply, isReplying, toggleReply, closeReply, remove, isRemoving } = useCommentItem({ comment, isReply });
 
   return (
     <article className={s.root} data-reply={comment.parentId !== null}>
@@ -37,11 +37,11 @@ export const CommentItem = ({ comment, thread, viewerId, canReply, replies = [] 
           )}
         </div>
       )}
-      {isReplying && <CommentComposer parentId={comment.id} thread={thread} onCancel={closeReply} onDone={closeReply} />}
+      {isReplying && <CommentComposer parentId={comment.id} onCancel={closeReply} onDone={closeReply} />}
       {replies.length > 0 && (
         <div className={s.replies}>
           {replies.map((reply) => (
-            <CommentItem key={reply.id} canReply={false} comment={reply} thread={thread} viewerId={viewerId} />
+            <CommentItem isReply key={reply.id} comment={reply} />
           ))}
         </div>
       )}

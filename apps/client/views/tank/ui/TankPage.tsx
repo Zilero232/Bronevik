@@ -2,11 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { match, P } from 'ts-pattern';
 
-import { isNotFoundError } from '@/shared/api/source';
 import { ROUTES } from '@/shared/constants';
-import { ResourceMissing } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/resource-missing';
 
 import { TankProvider } from '../model/context';
 import { useTankDetail } from '../model/hooks';
@@ -32,13 +30,21 @@ export const TankPage = () => {
   const t = useTranslations('tank.missing');
   const ts = useTranslations('tank');
   const { slug } = useParams<{ slug: string }>();
-  const { data: detail, isPending, error, refetch } = useTankDetail();
+  const name = decodeURIComponent(slug);
+  const query = useTankDetail();
 
   return (
     <div className={s.root}>
-      {match({ detail, isPending, error })
-        .with({ detail: P.nonNullable }, ({ detail: loaded }) => (
-          <TankProvider detail={loaded}>
+      <ResourceGate
+        back={{ href: ROUTES.tanks.list, label: t('back') }}
+        className={s.shell}
+        error={{ title: t('error.title'), description: t('error.description', { slug: name }) }}
+        notFound={{ title: t('notFound.title'), description: t('notFound.description', { slug: name }) }}
+        query={query}
+        skeleton={<TankSkeleton />}
+      >
+        {(detail) => (
+          <TankProvider detail={detail}>
             <TankGarage />
             <SectionNav />
             <div className={s.shell}>
@@ -61,33 +67,8 @@ export const TankPage = () => {
               <p className={s.source}>{ts('source')}</p>
             </div>
           </TankProvider>
-        ))
-        .with({ isPending: true }, () => (
-          <div className={s.shell}>
-            <TankSkeleton />
-          </div>
-        ))
-        .with({ error: P.when(isNotFoundError) }, () => (
-          <div className={s.shell}>
-            <ResourceMissing
-              back={{ href: ROUTES.tanks.list, label: t('back') }}
-              description={t('notFound.description', { slug: decodeURIComponent(slug) })}
-              reason='notFound'
-              title={t('notFound.title')}
-            />
-          </div>
-        ))
-        .otherwise(() => (
-          <div className={s.shell}>
-            <ResourceMissing
-              back={{ href: ROUTES.tanks.list, label: t('back') }}
-              description={t('error.description', { slug: decodeURIComponent(slug) })}
-              reason='error'
-              title={t('error.title')}
-              onRetry={() => void refetch()}
-            />
-          </div>
-        ))}
+        )}
+      </ResourceGate>
     </div>
   );
 };

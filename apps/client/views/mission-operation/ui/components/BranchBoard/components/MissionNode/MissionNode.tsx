@@ -1,24 +1,28 @@
+'use client';
+
 import { Check, Lock, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { MissionNodeProps } from './MissionNode.types';
 
 import { MISSION_BOARD } from '../../../../../config';
+import { useMissionSelection } from '../../../../../model/hooks';
 
 import s from './MissionNode.module.scss';
 
-export const MissionNode = ({ node, isSelected, onSelect }: MissionNodeProps) => {
+export const MissionNode = ({ node }: MissionNodeProps) => {
   const t = useTranslations('missions.board');
+  const { selectedId, select } = useMissionSelection();
   const { mission, state } = node;
 
   return (
     <button
-      aria-pressed={isSelected}
+      aria-pressed={mission.questId === selectedId}
       className={s.root}
       data-state={state}
       title={mission.title}
       type='button'
-      onClick={() => onSelect(mission.questId)}
+      onClick={() => select(mission.questId)}
     >
       <span aria-hidden className={s.dot}>
         {state === 'honors' && <Star size={MISSION_BOARD.nodeIconSize} />}

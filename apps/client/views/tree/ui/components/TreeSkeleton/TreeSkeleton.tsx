@@ -15,9 +15,7 @@ export const TreeSkeleton = () => {
       {range(1, TREE_LAYOUT.skeletonColumns + 1).map((column) => (
         <div key={column} className={s.column}>
           <Skeleton height={12} shape='line' width={24} />
-          {range(0, 1 + (column % 4)).map((row) => (
-            <Skeleton key={row} height={56} width='100%' />
-          ))}
+          <Skeleton count={1 + (column % 4)} height={56} width='100%' />
         </div>
       ))}
     </div>

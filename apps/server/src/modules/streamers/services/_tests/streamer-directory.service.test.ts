@@ -9,10 +9,11 @@ import type { PrismaService } from '../../../../core';
 import type { ProfileWithChannels, StreamerDirectoryQueryView } from '../../streamers.types';
 import type { StreamerCardsService } from '../streamer-cards.service';
 
+import { Prisma } from '../../../../../generated';
 import { STREAMERS } from '../../config';
 import { StreamerDirectoryService } from '../streamer-directory.service';
 
-const profile = (slug: string): ProfileWithChannels => ({ ...mock<StreamerProfile>({ slug }), channels: [], settings: null });
+const profile = (slug: string): ProfileWithChannels => ({ ...mock<StreamerProfile>({ slug, settings: null }), channels: [] });
 
 const card = (slug: string): StreamerCard => ({
   slug,
@@ -72,7 +73,7 @@ describe('StreamerDirectoryService.list', () => {
           isLive: true,
           channels: { some: { platform: 'twitch' } },
           liveTankId: 7169,
-          settings: { is: null }
+          settings: { equals: Prisma.DbNull }
         })
       })
     );

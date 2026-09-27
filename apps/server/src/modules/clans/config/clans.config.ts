@@ -3,7 +3,8 @@ import type { ClanListSortField } from '@otmetki/schemas';
 export const CLAN_PAGE = {
   numericId: /^\d{1,12}$/,
   recentEvents: 20,
-  recentPeriod: 'd30'
+  recentPeriod: 'd30',
+  battlesPerDayDays: 7
 } as const;
 
 export const CLAN_LIST_SORT = {
@@ -11,7 +12,7 @@ export const CLAN_LIST_SORT = {
   wn8: 's.avg_wn8',
   winRate: 's.avg_win_rate',
   eloRating10: 's.elo_rating_10',
-  strongholdLevel: 'st.level',
+  strongholdLevel: 'c.stronghold_level',
   activeMembers: 's.active_members_7d'
 } as const satisfies Record<ClanListSortField, string>;
 

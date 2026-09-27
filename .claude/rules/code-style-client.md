@@ -232,3 +232,7 @@ breakage — typecheck passes on code that throws during prerender.
 ## Route prop types
 
 Never hand-write `params`/`searchParams` types in `app/`. Use Next's generated globals (no import): `PageProps<'/[locale]/t/[slug]'>` for pages, metadata and `opengraph-image`; `Pick<PageProps<'…'>, 'params'>` for an inner component that only receives params; `LayoutProps<'…'>` for layouts; `RouteContext<'…'>` for route handlers. Route keys omit route groups. `bun run typecheck` runs `next typegen` first.
+
+- `global.d.ts`: never put an `import()` or an app-type reference directly inside the generic `ColumnMeta` interface. It breaks every `ColumnDef<T, never>` → `ColumnDef<T, any>` assignment. Declare a separate type alias (for example `ColumnBarMeta`) inside the same `declare module` and use inline `import()` types there. Do not add top-level imports from app code.
+
+- DataTable columns are typed as `TableColumn<T>` from `@/ui-kit`, never as `ColumnDef<T, never>`. Converting never to any made the typecheck result depend on file order.

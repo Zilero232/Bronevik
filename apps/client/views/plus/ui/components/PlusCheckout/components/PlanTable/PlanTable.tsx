@@ -1,23 +1,27 @@
 'use client';
 
+import type { CheckoutInput } from '@otmetki/schemas';
+
 import { useFormatter, useTranslations } from 'next-intl';
+import { useFormContext } from 'react-hook-form';
 import { match } from 'ts-pattern';
 
 import { Badge, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
-import type { PlanTableProps } from './PlanTable.types';
-
 import { PLUS_CHECKOUT } from '../../../../../config';
+import { usePlusOffers } from '../../../../../model/hooks';
 
 import s from './PlanTable.module.scss';
 
-export const PlanTable = ({ pricing, recommended, registration, isPending, isError, isRetrying, onRetry }: PlanTableProps) => {
+export const PlanTable = () => {
   const t = useTranslations('plus.checkout');
   const format = useFormatter();
+  const { register } = useFormContext<CheckoutInput>();
+  const { pricing, recommended, isPending, isError, isRetrying, retry } = usePlusOffers();
 
   return match({ isPending, isError, isEmpty: pricing.length === 0 })
     .with({ isPending: true }, () => <Skeleton height={180} shape='block' />)
-    .with({ isError: true }, () => <ErrorState isRetrying={isRetrying} onRetry={onRetry} />)
+    .with({ isError: true }, () => <ErrorState isRetrying={isRetrying} onRetry={retry} />)
     .with({ isEmpty: true }, () => <EmptyState title={t('unavailable')} />)
     .otherwise(() => (
       <fieldset className={s.root}>
@@ -31,7 +35,7 @@ export const PlanTable = ({ pricing, recommended, registration, isPending, isErr
                 </Badge>
               )}
               <span className={s.head}>
-                <input className={s.radio} type='radio' value={plan} {...registration} />
+                <input className={s.radio} type='radio' value={plan} {...register('plan')} />
                 <span className={s.name}>{t(`plans.${plan}`)}</span>
               </span>
               <span className={s.price}>{format.number(priceRub, PLUS_CHECKOUT.priceFormat)}</span>

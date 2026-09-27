@@ -7,6 +7,7 @@ import type { LestaClients } from '../../../../core';
 
 import { toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
+import { masteryThresholdLevels } from '../../../reference';
 import { REFERENCE } from '../config';
 import { masteryThresholdRows } from '../lib/community-data';
 
@@ -39,8 +40,16 @@ export class MasteryThresholdsSyncService {
     const date = startOfDay(new Date(), { in: utc });
 
     await this.prisma.$transaction([
-      this.prisma.masteryThreshold.deleteMany({ where: { source: 'lesta', date } }),
-      this.prisma.masteryThreshold.createMany({ data: rows.map((row) => ({ ...row, date, source: 'lesta' as const })) }),
+      this.prisma.tankThreshold.deleteMany({ where: { kind: 'mastery', source: 'lesta', date } }),
+      this.prisma.tankThreshold.createMany({
+        data: rows.map(({ tankId, ...levels }) => ({
+          kind: 'mastery' as const,
+          tankId,
+          date,
+          source: 'lesta' as const,
+          ...masteryThresholdLevels(levels)
+        }))
+      }),
       this.prisma.tankPercentile.deleteMany({ where: { distribution: REFERENCE.masteryDistribution, date } }),
       this.prisma.tankPercentile.createMany({
         data: Object.entries(distribution).map(([tankId, percentiles]) => ({

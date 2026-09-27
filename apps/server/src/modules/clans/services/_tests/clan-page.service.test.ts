@@ -2,7 +2,7 @@ import { subDays } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountRating, Clan, ClanMember, ClanMemberEvent, ClanSnapshot, ClanStronghold, Player } from '../../../../../generated';
+import type { AccountRating, Clan, ClanMember, ClanMemberEvent, ClanSnapshot, Player } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
@@ -13,7 +13,7 @@ const NOW = new Date('2026-09-26T12:00:00Z');
 const CLAN_ID = 10n;
 
 const clan = (fields: Partial<Clan> = {}) =>
-  mock<Clan & { stronghold: ClanStronghold | null }>({
+  mock<Clan>({
     clanId: CLAN_ID,
     tag: 'BRNVK',
     name: 'Три отметки',
@@ -25,7 +25,7 @@ const clan = (fields: Partial<Clan> = {}) =>
     isDisbanded: false,
     lastPolledAt: null,
     updatedAt: subDays(NOW, 1),
-    stronghold: null,
+    strongholdLevel: null,
     ...fields
   });
 
@@ -59,7 +59,6 @@ const event = (fields: Partial<ClanMemberEvent>): ClanMemberEvent => ({
   oldRole: null,
   newRole: null,
   occurredAt: NOW,
-  recordedAt: NOW,
   ...fields
 });
 
@@ -68,6 +67,7 @@ const createPage = () => {
 
   prisma.clan.findUnique.mockResolvedValue(clan());
   prisma.clanSnapshot.findFirst.mockResolvedValue(null);
+  prisma.clanSnapshot.findMany.mockResolvedValue([]);
   prisma.globalMapProvince.count.mockResolvedValue(0);
   prisma.clanMember.findMany.mockResolvedValue([]);
   prisma.clanMemberEvent.findMany.mockResolvedValue([]);
@@ -100,19 +100,44 @@ describe('ClanPageService.page', () => {
 
     const page = await service.page(CLAN_ID);
 
-    expect(page.stats).toMatchObject({ avgWinRate: null, activeMembers7d: null, eloRating10: null, strongholdLevel: null, provincesCount: 0 });
+    expect(page.stats).toMatchObject({
+      avgWinRate: null,
+      avgBattlesPerDay: null,
+      activeMembers7d: null,
+      eloRating10: null,
+      strongholdLevel: null,
+      provincesCount: 0
+    });
   });
 
   it('takes stats from the latest snapshot and the stronghold', async () => {
     const { prisma, service } = createPage();
 
-    prisma.clan.findUnique.mockResolvedValue(clan({ lastPolledAt: NOW }));
+    prisma.clan.findUnique.mockResolvedValue(clan({ lastPolledAt: NOW, strongholdLevel: 7 }));
     prisma.clanSnapshot.findFirst.mockResolvedValue(mock<ClanSnapshot>({ avgWinRate: 52.5, avgWn8: 1800, activeMembers7d: 0, eloRating10: 1100 }));
 
     const page = await service.page(CLAN_ID);
 
-    expect(page.stats).toMatchObject({ avgWinRate: 52.5, activeMembers7d: 0, eloRating10: 1100 });
+    expect(page.stats).toMatchObject({ avgWinRate: 52.5, activeMembers7d: 0, eloRating10: 1100, strongholdLevel: 7 });
     expect(page.updatedAt).toBe(NOW.toISOString());
+  });
+
+  it('averages daily battles per member over the recent snapshots', async () => {
+    const { prisma, service } = createPage();
+
+    prisma.clanSnapshot.findMany.mockResolvedValue([
+      mock<ClanSnapshot>({ battlesDelta: 200, membersCount: 20 }),
+      mock<ClanSnapshot>({ battlesDelta: 400, membersCount: 20 })
+    ]);
+
+    const page = await service.page(CLAN_ID);
+
+    expect(page.stats.avgBattlesPerDay).toBe(15);
+
+    expect(prisma.clanSnapshot.findMany.mock.calls[0]?.[0]?.where).toEqual({
+      clanId: CLAN_ID,
+      capturedAt: { gte: subDays(NOW, CLAN_PAGE.battlesPerDayDays) }
+    });
   });
 
   it('falls back to the row update time when the clan was never polled', async () => {

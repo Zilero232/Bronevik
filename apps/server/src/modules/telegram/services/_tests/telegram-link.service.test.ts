@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { TelegramAccount, TelegramLinkCode, User } from '../../../../../generated';
+import type { OneTimeCode, TelegramAccount, User } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
+import type { CommunityContentService } from '../../../community-core';
 import type { TelegramIdentityService } from '../telegram-identity.service';
 
 import { AppBadRequestException, AppConflictException } from '../../../../common/exceptions';
@@ -16,13 +17,14 @@ const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const config = mock<AppConfigService>();
   const identities = mock<TelegramIdentityService>();
+  const communityContent = mock<CommunityContentService>();
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
-  prisma.telegramLinkCode.findUniqueOrThrow.mockResolvedValue(mock<TelegramLinkCode>({ userId: 'site-user' }));
+  prisma.oneTimeCode.findUniqueOrThrow.mockResolvedValue(mock<OneTimeCode>({ userId: 'site-user' }));
   prisma.notificationSettings.findUnique.mockResolvedValue(null);
   config.get.mockReturnValue('otmetki_bot');
 
-  return { service: new TelegramLinkService(prisma, config, identities), prisma, identities };
+  return { service: new TelegramLinkService(prisma, config, identities, communityContent), prisma, identities, communityContent };
 };
 
 const disposable = (id: string) => ({
@@ -34,7 +36,7 @@ describe('TelegramLinkService.consumeCode', () => {
   it('refuses an unknown, used or expired code', async () => {
     const { service, prisma } = createService();
 
-    prisma.telegramLinkCode.updateMany.mockResolvedValue({ count: 0 });
+    prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 0 });
 
     await expect(service.consumeCode({ code: 'ABCDEFGH', identity })).rejects.toBeInstanceOf(AppBadRequestException);
     expect(prisma.telegramAccount.upsert).not.toHaveBeenCalled();
@@ -43,13 +45,13 @@ describe('TelegramLinkService.consumeCode', () => {
   it('links the chat to the code owner and switches telegram notifications on', async () => {
     const { service, prisma } = createService();
 
-    prisma.telegramLinkCode.updateMany.mockResolvedValue({ count: 1 });
+    prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 1 });
     prisma.telegramAccount.findUnique.mockResolvedValue(null);
 
     expect(await service.consumeCode({ code: 'abcd efgh', identity })).toBe('site-user');
 
-    expect(prisma.telegramLinkCode.updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: expect.objectContaining({ code: 'ABCDEFGH' }) })
+    expect(prisma.oneTimeCode.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ code: 'ABCDEFGH', purpose: 'telegramLink', usedAt: null }) })
     );
 
     expect(prisma.telegramAccount.upsert).toHaveBeenCalledWith(expect.objectContaining({ where: { telegramId: 42n } }));
@@ -62,7 +64,7 @@ describe('TelegramLinkService.consumeCode', () => {
   it('refuses to steal a chat that belongs to a real account', async () => {
     const { service, prisma } = createService();
 
-    prisma.telegramLinkCode.updateMany.mockResolvedValue({ count: 1 });
+    prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 1 });
     prisma.telegramAccount.findUnique.mockResolvedValue(mock<TelegramAccount>({ userId: 'other-user' }));
     prisma.user.findUnique.mockResolvedValue({ ...disposable('other-user'), email: 'real@example.com' });
 
@@ -70,15 +72,16 @@ describe('TelegramLinkService.consumeCode', () => {
   });
 
   it('absorbs an empty account the bot created for the same chat', async () => {
-    const { service, prisma } = createService();
+    const { service, prisma, communityContent } = createService();
 
-    prisma.telegramLinkCode.updateMany.mockResolvedValue({ count: 1 });
+    prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 1 });
     prisma.telegramAccount.findUnique.mockResolvedValue(mock<TelegramAccount>({ userId: 'bot-user' }));
     prisma.user.findUnique.mockResolvedValue(disposable('bot-user'));
 
     await service.consumeCode({ code: 'ABCDEFGH', identity });
 
-    expect(prisma.user.delete).toHaveBeenCalledWith({ where: { id: 'bot-user' } });
+    expect(communityContent.purgeAuthoredBy).toHaveBeenCalledWith({ userId: 'bot-user', db: prisma });
+    expect(prisma.user.delete).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 'bot-user' } }));
   });
 });
 
@@ -86,11 +89,14 @@ describe('TelegramLinkService.redeemWebLogin', () => {
   it('issues a session only for a fresh one-time code', async () => {
     const { service, prisma, identities } = createService();
 
-    prisma.telegramWebLogin.updateMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
+    prisma.oneTimeCode.updateMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
 
-    prisma.telegramWebLogin.findUniqueOrThrow.mockResolvedValue({
+    prisma.oneTimeCode.findUniqueOrThrow.mockResolvedValue({
       code: 'c',
+      purpose: 'telegramWebLogin',
       userId: 'u1',
+      accountId: null,
+      deviceId: null,
       expiresAt: new Date(),
       usedAt: null,
       createdAt: new Date()
@@ -100,5 +106,32 @@ describe('TelegramLinkService.redeemWebLogin', () => {
 
     expect(await service.redeemWebLogin('c')).toBe('session-token');
     await expect(service.redeemWebLogin('c')).rejects.toBeInstanceOf(AppBadRequestException);
+
+    expect(prisma.oneTimeCode.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ code: 'c', purpose: 'telegramWebLogin', usedAt: null }) })
+    );
+  });
+
+  it('never redeems a link code as a web login', async () => {
+    const { service, prisma } = createService();
+
+    prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 0 });
+
+    await expect(service.redeemWebLogin('ABCDEFGH')).rejects.toBeInstanceOf(AppBadRequestException);
+    expect(prisma.oneTimeCode.findUniqueOrThrow).not.toHaveBeenCalled();
+  });
+});
+
+describe('TelegramLinkService.issueCode', () => {
+  it('replaces only the previous link codes of the user', async () => {
+    const { service, prisma } = createService();
+
+    await service.issueCode('u1');
+
+    expect(prisma.oneTimeCode.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'u1', purpose: 'telegramLink' } }));
+
+    expect(prisma.oneTimeCode.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ purpose: 'telegramLink', userId: 'u1' }) })
+    );
   });
 });

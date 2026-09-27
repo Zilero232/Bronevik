@@ -6,14 +6,15 @@ import { useTranslations } from 'next-intl';
 import { Button, SegmentedControl } from '@/ui-kit';
 
 import type { InactiveFilter, RoleFilter } from '../../../../../lib/roster';
-import type { RosterFiltersProps } from './RosterFilters.types';
 
 import { INACTIVE_FILTERS, ROLE_FILTERS } from '../../../../../config';
+import { useRosterFilters } from '../../../../../model/hooks';
 
 import s from './RosterFilters.module.scss';
 
-export const RosterFilters = ({ role, idle, isFiltered, onRoleChange, onIdleChange, onReset }: RosterFiltersProps) => {
+export const RosterFilters = () => {
   const t = useTranslations('clans.roster.filters');
+  const { role, idle, isFiltered, onRoleChange, onIdleChange, onReset } = useRosterFilters();
 
   return (
     <div className={s.root}>

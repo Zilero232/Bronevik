@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountRating, Player, PlaySession, StreamerProfile, User } from '../../../../../generated';
+import type { AccountRating, Player, PlaySession, Prisma, StreamerProfile, User } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 
@@ -15,11 +15,15 @@ type MarksGroup = Awaited<ReturnType<PrismaService['playerTank']['groupBy']>>[nu
 
 const marksGroup = (marksOnGun: number, count: number) => mock<MarksGroup>({ marksOnGun, _count: { _all: count } });
 
-const createService = ({ locale = 'en', accountId = ACCOUNT }: { locale?: string | null; accountId?: bigint | null } = {}) => {
+const createService = ({
+  locale = 'en',
+  accountId = ACCOUNT,
+  settings = null
+}: { locale?: string | null; accountId?: bigint | null; settings?: Prisma.JsonObject | null } = {}) => {
   const prisma = mockDeep<PrismaService>();
 
   prisma.user.findUnique.mockResolvedValue(locale === null ? null : mock<User>({ locale }));
-  prisma.streamerProfile.findUnique.mockResolvedValue(mock<StreamerProfile>({ id: 'p1', slug: 'jove', accountId, displayName: 'Jove' }));
+  prisma.streamerProfile.findUnique.mockResolvedValue(mock<StreamerProfile>({ id: 'p1', slug: 'jove', accountId, displayName: 'Jove', settings }));
   prisma.player.findUnique.mockResolvedValue(mock<Player>({ nickname: 'Jove_WoT' }));
 
   const config = mock<AppConfigService>();
@@ -102,9 +106,7 @@ describe('StreamerStatsService.reply', () => {
   });
 
   it('answers !settings with the settings page link even without a game account', async () => {
-    const { service, prisma } = createService({ accountId: null });
-
-    prisma.streamerSettings.count.mockResolvedValue(1);
+    const { service } = createService({ accountId: null, settings: {} });
 
     expect(await service.reply({ streamerUserId: 'u1', command: 'settings' })).toBe(
       chatText({ locale: 'en', message: CHAT_COPY.messages.settings, values: { name: 'Jove', url: 'https://triotmetki.ru/s/jove/settings' } })
@@ -112,9 +114,7 @@ describe('StreamerStatsService.reply', () => {
   });
 
   it('answers !settings with a hint when nothing is shared yet', async () => {
-    const { service, prisma } = createService();
-
-    prisma.streamerSettings.count.mockResolvedValue(0);
+    const { service } = createService();
 
     expect(await service.reply({ streamerUserId: 'u1', command: 'settings' })).toBe(
       chatText({ locale: 'en', message: CHAT_COPY.messages.settingsNone, values: { name: 'Jove', url: 'https://triotmetki.ru/s/jove/settings' } })

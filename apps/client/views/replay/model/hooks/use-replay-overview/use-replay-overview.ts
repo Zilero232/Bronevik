@@ -2,16 +2,16 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { Replay } from '@/entities/replay/replay';
-
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useReplayModeLabel } from '@/features/community/replay-meta';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { safeWebHref } from '@/shared/lib';
 
 import { formatClock } from '../../../lib/battle-timeline';
+import { useReplay } from '../../context';
 
-export const useReplayOverview = (replay: Replay) => {
+export const useReplayOverview = () => {
+  const replay = useReplay();
   const t = useTranslations('replays.detail');
   const format = useFormatter();
   const modeLabel = useReplayModeLabel();

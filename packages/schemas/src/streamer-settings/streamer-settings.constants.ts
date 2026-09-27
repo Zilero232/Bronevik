@@ -23,7 +23,6 @@ export const STREAMER_SETTINGS = {
   markerTargets: ['enemy', 'ally', 'destroyed'],
   markerFields: ['icon', 'tier', 'vehicleName', 'playerName', 'hpBar', 'hpValue', 'damage'],
   modsKinds: ['clean', 'modpack', 'custom'],
-  modReferenceKinds: ['modpack', 'sight', 'zoom', 'other'],
   applyStatuses: ['pending', 'applied', 'rejected', 'expired'],
   applyTargets: ['profile', 'private'],
   cohorts: ['creators', 'top', 'all'],

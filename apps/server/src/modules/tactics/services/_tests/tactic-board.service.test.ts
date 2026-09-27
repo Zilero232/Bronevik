@@ -77,7 +77,9 @@ describe('TacticBoardService.update', () => {
 
     await service.update({ id: board.id, userId: 'owner', token: null, title: 'Renamed' });
 
-    expect(prisma.tacticBoard.update).toHaveBeenCalledWith({ where: { id: board.id }, data: expect.not.objectContaining({ document: null }) });
+    expect(prisma.tacticBoard.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: board.id }, data: expect.not.objectContaining({ document: null }) })
+    );
   });
 });
 

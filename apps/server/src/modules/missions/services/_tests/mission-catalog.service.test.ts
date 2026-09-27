@@ -44,10 +44,7 @@ const operation = (operationId: number, campaignId: number, rewardTankId: number
   campaignId,
   name: null,
   description: null,
-  iconId: null,
   nextOperationIds: [],
-  chainsCount: 2,
-  missionsPerChain: 15,
   chainsToUnlockNext: 1,
   rewardTankId,
   rewardTankTag: null

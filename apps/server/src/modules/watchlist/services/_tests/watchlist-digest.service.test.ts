@@ -2,7 +2,7 @@ import { subHours } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Follow, Player, WatchlistSettings } from '../../../../../generated';
+import type { Follow, NotificationSettings, Player } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 import type { NotificationService } from '../../../notifications';
@@ -14,10 +14,16 @@ import { WatchlistDigestService } from '../watchlist-digest.service';
 
 const now = new Date('2026-09-26T10:05:00Z');
 
-const settings = (fields: Partial<WatchlistSettings> = {}): WatchlistSettings => ({
+const settings = (fields: Partial<NotificationSettings> = {}): NotificationSettings => ({
   userId: 'u1',
-  digest: 'daily',
-  lastDigestAt: null,
+  channels: [],
+  events: [],
+  quietHoursStart: null,
+  quietHoursEnd: null,
+  sessionReport: true,
+  weeklyDigest: false,
+  watchlistDigest: 'daily',
+  watchlistDigestAt: null,
   updatedAt: now,
   ...fields
 });
@@ -33,7 +39,7 @@ const setup = () => {
   const notifications = mockDeep<NotificationService>();
   const activity = mockDeep<WatchlistActivityService>();
 
-  prisma.watchlistSettings.findMany.mockResolvedValue([settings()]);
+  prisma.notificationSettings.findMany.mockResolvedValue([settings()]);
   prisma.follow.findMany.mockResolvedValue([mock<Follow>({ targetId: 1n }), mock<Follow>({ targetId: 2n })]);
   prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 1n, nickname: 'Known' })]);
   activity.activity.mockResolvedValue(new Map());
@@ -48,7 +54,23 @@ describe('WatchlistDigestService.run', () => {
 
     expect(await service.run(now)).toBe(0);
     expect(notifications.notify).not.toHaveBeenCalled();
-    expect(prisma.watchlistSettings.update).toHaveBeenCalledWith({ where: { userId: 'u1' }, data: { lastDigestAt: now } });
+
+    expect(prisma.notificationSettings.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'u1' }, data: { watchlistDigestAt: now } })
+    );
+  });
+
+  it('only visits users with a digest on who follow at least one player', async () => {
+    const { prisma, service } = setup();
+
+    await service.run(now);
+
+    expect(prisma.notificationSettings.findMany.mock.calls[0]?.[0]?.where).toMatchObject({
+      watchlistDigest: { not: 'off' },
+      user: { follows: { some: { kind: 'player', isFollowing: true } } }
+    });
+
+    expect(prisma.follow.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'u1', kind: 'player', isFollowing: true } }));
   });
 
   it('sends a digest of the active players and counts it', async () => {
@@ -90,7 +112,7 @@ describe('WatchlistDigestService.run', () => {
     const { prisma, activity, service } = setup();
     const lastDigestAt = subHours(now, 24);
 
-    prisma.watchlistSettings.findMany.mockResolvedValue([settings({ lastDigestAt })]);
+    prisma.notificationSettings.findMany.mockResolvedValue([settings({ watchlistDigestAt: lastDigestAt })]);
 
     await service.run(now);
 
@@ -108,17 +130,17 @@ describe('WatchlistDigestService.run', () => {
   it('waits until a daily digest is due', async () => {
     const { prisma, activity, service } = setup();
 
-    prisma.watchlistSettings.findMany.mockResolvedValue([settings({ lastDigestAt: subHours(now, 12) })]);
+    prisma.notificationSettings.findMany.mockResolvedValue([settings({ watchlistDigestAt: subHours(now, 12) })]);
 
     expect(await service.run(now)).toBe(0);
     expect(activity.activity).not.toHaveBeenCalled();
-    expect(prisma.watchlistSettings.update).not.toHaveBeenCalled();
+    expect(prisma.notificationSettings.update).not.toHaveBeenCalled();
   });
 
   it('downgrades an hourly digest to daily once Plus has lapsed', async () => {
     const { prisma, activity, service } = setup();
 
-    prisma.watchlistSettings.findMany.mockResolvedValue([settings({ digest: 'hourly', lastDigestAt: subHours(now, 2) })]);
+    prisma.notificationSettings.findMany.mockResolvedValue([settings({ watchlistDigest: 'hourly', watchlistDigestAt: subHours(now, 2) })]);
 
     await service.run(now);
 
@@ -129,7 +151,7 @@ describe('WatchlistDigestService.run', () => {
     const { prisma, entitlements, activity, service } = setup();
 
     entitlements.isPlus.mockResolvedValue(true);
-    prisma.watchlistSettings.findMany.mockResolvedValue([settings({ digest: 'hourly', lastDigestAt: subHours(now, 2) })]);
+    prisma.notificationSettings.findMany.mockResolvedValue([settings({ watchlistDigest: 'hourly', watchlistDigestAt: subHours(now, 2) })]);
 
     await service.run(now);
 
@@ -140,13 +162,13 @@ describe('WatchlistDigestService.run', () => {
     const { prisma, service } = setup();
     const fullPage = Array.from({ length: WATCHLIST_DIGEST_RUN.batchSize }, (_, index) => settings({ userId: `u${String(index).padStart(4, '0')}` }));
 
-    prisma.watchlistSettings.findMany.mockResolvedValueOnce(fullPage).mockResolvedValueOnce([settings({ userId: 'z' })]);
+    prisma.notificationSettings.findMany.mockResolvedValueOnce(fullPage).mockResolvedValueOnce([settings({ userId: 'z' })]);
 
     await service.run(now);
 
-    expect(prisma.watchlistSettings.findMany).toHaveBeenCalledTimes(2);
-    expect(prisma.watchlistSettings.findMany.mock.calls[1]?.[0]?.where).toMatchObject({ userId: { gt: fullPage.at(-1)?.userId } });
-    expect(prisma.watchlistSettings.update).toHaveBeenCalledTimes(WATCHLIST_DIGEST_RUN.batchSize + 1);
+    expect(prisma.notificationSettings.findMany).toHaveBeenCalledTimes(2);
+    expect(prisma.notificationSettings.findMany.mock.calls[1]?.[0]?.where).toMatchObject({ userId: { gt: fullPage.at(-1)?.userId } });
+    expect(prisma.notificationSettings.update).toHaveBeenCalledTimes(WATCHLIST_DIGEST_RUN.batchSize + 1);
   });
 
   it('stops after a short page', async () => {
@@ -154,6 +176,6 @@ describe('WatchlistDigestService.run', () => {
 
     await service.run(now);
 
-    expect(prisma.watchlistSettings.findMany).toHaveBeenCalledTimes(1);
+    expect(prisma.notificationSettings.findMany).toHaveBeenCalledTimes(1);
   });
 });

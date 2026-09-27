@@ -1,4 +1,4 @@
-import { subHours } from 'date-fns';
+import { subHours, subMinutes } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -8,7 +8,7 @@ import type { ClanAccessService } from '../clan-access.service';
 import { CLAN_WORKSPACE } from '../../config';
 import { ClanEventAttendanceService } from '../clan-event-attendance.service';
 import { ClanEventsService } from '../clan-events.service';
-import { attendance, clanEvent, defense, member, now, played, scope, skirmish, startsAt, withAttendance } from './clan-events.fixtures';
+import { advance, attendance, clanEvent, member, now, played, randomBattle, scope, skirmish, startsAt, withAttendance } from './clan-events.fixtures';
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
@@ -30,16 +30,16 @@ const upsertedStatuses = (prisma: ReturnType<typeof createService>['prisma']) =>
   new Map(prisma.clanAttendance.upsert.mock.calls.map(([args]) => [args.where.eventId_accountId?.accountId, args.create.status]));
 
 describe('ClanEventAttendanceService.syncFinished', () => {
-  it('marks members whose stronghold battles grew as attended and the rest as absent', async () => {
+  it('marks members who fought a stronghold battle as attended and those who fought only other battles as absent', async () => {
     const { service, prisma } = createService();
 
     prisma.clanEvent.findMany.mockResolvedValue([clanEvent()]);
-    prisma.clanMember.findMany.mockResolvedValue([member(1n), member(2n)]);
+    prisma.clanMember.findMany.mockResolvedValue([member(1n), member(2n), member(3n)]);
 
-    prisma.accountSnapshot.findMany.mockResolvedValue([
-      ...played({ accountId: 1n, mode: skirmish, grew: false }),
-      ...played({ accountId: 1n, mode: defense, grew: true }),
-      ...played({ accountId: 2n, mode: skirmish, grew: false })
+    prisma.battle.findMany.mockResolvedValue([
+      played({ accountId: 1n, bonusType: randomBattle }),
+      played({ accountId: 1n, bonusType: advance }),
+      played({ accountId: 2n, bonusType: randomBattle })
     ]);
 
     expect(await service.syncFinished(now)).toBe(1);
@@ -52,16 +52,34 @@ describe('ClanEventAttendanceService.syncFinished', () => {
     );
   });
 
+  it('looks for the battles of the members in the event window', async () => {
+    const { service, prisma } = createService();
+    const event = clanEvent();
+
+    prisma.clanEvent.findMany.mockResolvedValue([event]);
+    prisma.clanMember.findMany.mockResolvedValue([member(1n)]);
+    prisma.battle.findMany.mockResolvedValue([]);
+
+    await service.syncFinished(now);
+
+    expect(prisma.battle.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          accountId: { in: [1n] },
+          startedAt: { gte: subMinutes(event.startsAt, CLAN_WORKSPACE.battleLeadMinutes), lte: event.endsAt }
+        },
+        select: { accountId: true, battleType: true }
+      })
+    );
+  });
+
   it('never overwrites a manual attended or absent row', async () => {
     const { service, prisma } = createService();
 
     prisma.clanEvent.findMany.mockResolvedValue([clanEvent()]);
     prisma.clanMember.findMany.mockResolvedValue([member(1n), member(2n)]);
 
-    prisma.accountSnapshot.findMany.mockResolvedValue([
-      ...played({ accountId: 1n, mode: skirmish, grew: true }),
-      ...played({ accountId: 2n, mode: skirmish, grew: true })
-    ]);
+    prisma.battle.findMany.mockResolvedValue([played({ accountId: 1n, bonusType: skirmish }), played({ accountId: 2n, bonusType: skirmish })]);
 
     prisma.clanAttendance.findMany.mockResolvedValue([attendance(2n, 'absent')]);
 
@@ -80,7 +98,7 @@ describe('ClanEventAttendanceService.syncFinished', () => {
     prisma.clanEvent.findMany.mockResolvedValue([clanEvent({ data: { attendanceSyncedAt: startsAt.toISOString() } })]);
 
     expect(await service.syncFinished(now)).toBe(0);
-    expect(prisma.accountSnapshot.findMany).not.toHaveBeenCalled();
+    expect(prisma.battle.findMany).not.toHaveBeenCalled();
   });
 
   it('stamps the event as synced with the time it was given', async () => {
@@ -88,14 +106,16 @@ describe('ClanEventAttendanceService.syncFinished', () => {
 
     prisma.clanEvent.findMany.mockResolvedValue([clanEvent()]);
     prisma.clanMember.findMany.mockResolvedValue([member(1n)]);
-    prisma.accountSnapshot.findMany.mockResolvedValue(played({ accountId: 1n, mode: skirmish, grew: true }));
+    prisma.battle.findMany.mockResolvedValue([played({ accountId: 1n, bonusType: skirmish })]);
 
     await service.syncFinished(now);
 
-    expect(prisma.clanEvent.update).toHaveBeenCalledWith({
-      where: { id: 'e1' },
-      data: { data: expect.objectContaining({ attendanceSyncedAt: now.toISOString() }) }
-    });
+    expect(prisma.clanEvent.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'e1' },
+        data: { data: expect.objectContaining({ attendanceSyncedAt: now.toISOString() }) }
+      })
+    );
   });
 
   it('also picks up events without an end time, judged by the default duration', async () => {
@@ -105,19 +125,21 @@ describe('ClanEventAttendanceService.syncFinished', () => {
 
     await service.syncFinished(now);
 
-    expect(prisma.clanEvent.findMany).toHaveBeenCalledWith({
-      where: expect.objectContaining({
-        OR: expect.arrayContaining([
-          {
-            endsAt: null,
-            startsAt: {
-              lte: subHours(now, CLAN_WORKSPACE.snapshotSlackHours / 4 + CLAN_WORKSPACE.defaultEventHours),
-              gte: subHours(now, CLAN_WORKSPACE.syncLookbackHours + CLAN_WORKSPACE.defaultEventHours)
+    expect(prisma.clanEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            {
+              endsAt: null,
+              startsAt: {
+                lte: subHours(now, CLAN_WORKSPACE.syncDelayHours + CLAN_WORKSPACE.defaultEventHours),
+                gte: subHours(now, CLAN_WORKSPACE.syncLookbackHours + CLAN_WORKSPACE.defaultEventHours)
+              }
             }
-          }
-        ])
+          ])
+        })
       })
-    });
+    );
   });
 });
 
@@ -127,7 +149,7 @@ describe('ClanEventAttendanceService.syncFromApi', () => {
 
     prisma.clanEvent.findFirst.mockResolvedValue(clanEvent());
     prisma.clanMember.findMany.mockResolvedValue([member(1n)]);
-    prisma.accountSnapshot.findMany.mockResolvedValue(played({ accountId: 1n, mode: skirmish, grew: true }));
+    prisma.battle.findMany.mockResolvedValue([played({ accountId: 1n, bonusType: skirmish })]);
 
     await service.syncFromApi({ ...scope, id: 'e1' });
 
@@ -145,7 +167,7 @@ describe('ClanEventAttendanceService.syncFromApi', () => {
 
     await service.syncFromApi({ ...scope, id: 'e1' });
 
-    expect(prisma.accountSnapshot.findMany).not.toHaveBeenCalled();
+    expect(prisma.battle.findMany).not.toHaveBeenCalled();
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 });

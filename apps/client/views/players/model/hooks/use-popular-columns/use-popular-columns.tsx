@@ -1,17 +1,18 @@
 'use client';
 
 import type { PopularPlayer } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { PlayerNameCell } from '@/entities/player/player';
 import { RatingValue } from '@/entities/player/stats';
 
 const column = createColumnHelper<PopularPlayer>();
 
-export const usePopularColumns = (): ColumnDef<PopularPlayer, never>[] => {
+export const usePopularColumns = (): TableColumn<PopularPlayer>[] => {
   const t = useTranslations('players.columns');
   const format = useFormatter();
 

@@ -1,4 +1,4 @@
-import type { Mission, MissionBranch } from '../../../../../../generated';
+import type { Mission, MissionBranch, MissionOperation } from '../../../../../../generated';
 import type { PyValue } from '../../python-literal';
 import type { XmlNode } from '../../xml';
 import type { PERSONAL_MISSION_BRANCHES } from './personal-missions.constants';
@@ -20,16 +20,7 @@ export type PersonalCampaign = {
   reward: PersonalMissionRewardVehicle | null;
 };
 
-export type PersonalOperation = {
-  operationId: number;
-  campaignId: number;
-  name: string | null;
-  description: string | null;
-  iconId: string | null;
-  nextOperationIds: number[];
-  chainsCount: number;
-  missionsPerChain: number;
-  chainsToUnlockNext: number;
+export type PersonalOperation = Omit<MissionOperation, 'gameVersionId' | 'rewardTankId' | 'rewardTankTag'> & {
   reward: PersonalMissionRewardVehicle | null;
 };
 

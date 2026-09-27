@@ -1,5 +1,6 @@
 'use client';
 
+import { Popover } from '@base-ui/react/popover';
 import { CheckCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -8,16 +9,14 @@ import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button } from '@/ui-kit';
 
-import type { InboxPanelProps } from './InboxPanel.types';
-
 import { useInboxPanel } from '../../../model/hooks';
 import { InboxPanelList } from '../InboxPanelList';
 
 import s from './InboxPanel.module.scss';
 
-export const InboxPanel = ({ page, isPending, isError, isRetrying, onClose, onRetry }: InboxPanelProps) => {
+export const InboxPanel = () => {
   const t = useTranslations('inbox');
-  const { unread, items, onSelect, onMarkAll } = useInboxPanel({ page, onClose });
+  const { unread, onMarkAll } = useInboxPanel();
 
   return (
     <div className={s.root}>
@@ -31,10 +30,10 @@ export const InboxPanel = ({ page, isPending, isError, isRetrying, onClose, onRe
         count={unread}
         title={t('title')}
       />
-      <InboxPanelList isError={isError} isPending={isPending} isRetrying={isRetrying} items={items} onRetry={onRetry} onSelect={onSelect} />
-      <Link className={s.footer} href={ROUTES.account.notifications} onClick={onClose}>
+      <InboxPanelList />
+      <Popover.Close nativeButton={false} render={<Link className={s.footer} href={ROUTES.account.notifications} />}>
         {t('viewAll')}
-      </Link>
+      </Popover.Close>
     </div>
   );
 };

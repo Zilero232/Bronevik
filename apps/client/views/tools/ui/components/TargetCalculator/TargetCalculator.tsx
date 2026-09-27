@@ -35,8 +35,8 @@ export const TargetCalculator = () => {
               { key: 'battles', label: t('fields.battles'), ...TARGET.battlesRange },
               ...TARGET.valueFields.map((key) => ({ key, label: t(`fields.${key}`), min, max, step, suffix }))
             ]}
+            field={field}
             values={values}
-            onChange={({ key, value }) => field(key)(value)}
           />
         </>
       }

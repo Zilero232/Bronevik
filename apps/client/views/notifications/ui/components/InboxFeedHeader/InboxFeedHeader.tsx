@@ -6,14 +6,15 @@ import { useTranslations } from 'next-intl';
 import { Button, SegmentedControl } from '@/ui-kit';
 
 import type { InboxFeedFilter } from '../../../model/notifications.types';
-import type { InboxFeedHeaderProps } from './InboxFeedHeader.types';
 
 import { INBOX_FEED } from '../../../config';
+import { useInboxFeedHeader } from '../../../model/hooks';
 
 import s from './InboxFeedHeader.module.scss';
 
-export const InboxFeedHeader = ({ filter, unread, onFilterChange, onMarkAll }: InboxFeedHeaderProps) => {
+export const InboxFeedHeader = () => {
   const t = useTranslations('notifications.feed');
+  const { filter, setFilter, unread, onMarkAll } = useInboxFeedHeader();
 
   return (
     <header className={s.root}>
@@ -30,7 +31,7 @@ export const InboxFeedHeader = ({ filter, unread, onFilterChange, onMarkAll }: I
           aria-label={t('filterLabel')}
           size='sm'
           value={filter}
-          onChange={onFilterChange}
+          onChange={setFilter}
         />
         <Button disabled={unread === 0} size='sm' variant='ghost' onClick={onMarkAll}>
           <CheckCheck size={15} />

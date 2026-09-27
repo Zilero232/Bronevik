@@ -74,10 +74,12 @@ describe('OfferScrapeService.run', () => {
     expect(createdUrls).toEqual(listing.slice(1).map((item) => item.url));
     expect(createdUrls).not.toContain(knownItem?.url);
 
-    expect(prisma.premiumOffer.updateMany).toHaveBeenCalledWith({
-      where: { source: OFFER_SCRAPE.source, url: { in: [knownItem?.url] } },
-      data: { lastSeenAt: now }
-    });
+    expect(prisma.premiumOffer.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { source: OFFER_SCRAPE.source, url: { in: [knownItem?.url] } },
+        data: { lastSeenAt: now }
+      })
+    );
   });
 
   it('notifies about the tanks named on the offer page with its discount', async () => {

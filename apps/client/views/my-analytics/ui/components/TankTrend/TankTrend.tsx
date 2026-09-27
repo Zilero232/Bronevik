@@ -48,53 +48,49 @@ export const TankTrend = ({ tankId }: TankTrendProps) => {
         description={t('description')}
         title={tank.vehicle ? t('title', { name: tank.vehicle.name }) : t('titleFallback')}
       />
-      <AnalyticsState data={tank.data} isRetrying={tank.isRetrying} status={tank.status} onRetry={tank.retry}>
-        {(data) =>
-          tank.isEmpty ? (
-            <EmptyState description={t('emptyText')} title={t('empty')} />
-          ) : (
-            <div className={s.body}>
-              <KeyFigures>
-                <KeyFigure label={t('battles')} tone='steel' value={data.totals.battles} />
-                <KeyFigure
-                  format={{ maximumFractionDigits: 2 }}
-                  label={t('winRate')}
-                  suffix='%'
-                  tone={tank.tones.winRate}
-                  value={data.totals.winRate}
-                />
-                <KeyFigure format={{ maximumFractionDigits: 0 }} label={t('avgDamage')} tone='steel' value={data.totals.avgDamage} />
-                <KeyFigure format={{ maximumFractionDigits: 0 }} label={t('wn8')} tone={tank.tones.wn8} value={data.totals.wn8} />
-                <KeyFigure format={{ maximumFractionDigits: 1 }} label={t('survivalRate')} suffix='%' tone='steel' value={data.totals.survivalRate} />
-              </KeyFigures>
-              <TrendPanel
-                damage={tank.damageSeries}
-                formatNumber={tank.formatNumber}
-                formatPercent={tank.formatPercent}
-                labels={tank.labels}
-                winRate={tank.winRateSeries}
-                wn8={tank.wn8Series}
+      <AnalyticsState empty={<EmptyState description={t('emptyText')} title={t('empty')} />} isEmpty={() => tank.isEmpty} state={tank}>
+        {(data) => (
+          <div className={s.body}>
+            <KeyFigures>
+              <KeyFigure label={t('battles')} tone='steel' value={data.totals.battles} />
+              <KeyFigure
+                format={{ maximumFractionDigits: 2 }}
+                label={t('winRate')}
+                suffix='%'
+                tone={tank.tones.winRate}
+                value={data.totals.winRate}
               />
-              <Card padding='none'>
-                <CardHeader title={t('moeTitle')} />
-                {tank.moeLabels.length > 1 ? (
-                  <div className={s.chart}>
-                    <LineChart
-                      withArea
-                      ariaLabel={t('moe')}
-                      formatValue={tank.formatPercent}
-                      height={ANALYTICS_VIEW.chartHeight}
-                      labels={tank.moeLabels}
-                      series={tank.moeSeries}
-                    />
-                  </div>
-                ) : (
-                  <EmptyState isCompact title={t('moeEmpty')} />
-                )}
-              </Card>
-            </div>
-          )
-        }
+              <KeyFigure format={{ maximumFractionDigits: 0 }} label={t('avgDamage')} tone='steel' value={data.totals.avgDamage} />
+              <KeyFigure format={{ maximumFractionDigits: 0 }} label={t('wn8')} tone={tank.tones.wn8} value={data.totals.wn8} />
+              <KeyFigure format={{ maximumFractionDigits: 1 }} label={t('survivalRate')} suffix='%' tone='steel' value={data.totals.survivalRate} />
+            </KeyFigures>
+            <TrendPanel
+              damage={tank.damageSeries}
+              formatNumber={tank.formatNumber}
+              formatPercent={tank.formatPercent}
+              labels={tank.labels}
+              winRate={tank.winRateSeries}
+              wn8={tank.wn8Series}
+            />
+            <Card padding='none'>
+              <CardHeader title={t('moeTitle')} />
+              {tank.moeLabels.length > 1 ? (
+                <div className={s.chart}>
+                  <LineChart
+                    withArea
+                    ariaLabel={t('moe')}
+                    formatValue={tank.formatPercent}
+                    height={ANALYTICS_VIEW.chartHeight}
+                    labels={tank.moeLabels}
+                    series={tank.moeSeries}
+                  />
+                </div>
+              ) : (
+                <EmptyState isCompact title={t('moeEmpty')} />
+              )}
+            </Card>
+          </div>
+        )}
       </AnalyticsState>
     </div>
   );

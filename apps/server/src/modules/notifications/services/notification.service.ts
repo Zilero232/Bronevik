@@ -94,7 +94,7 @@ export class NotificationService {
 
   private async followersOf({ kind, targetId, event }: FollowersOfInput): Promise<string[]> {
     const follows = await this.prisma.follow.findMany({
-      where: { kind, targetId, OR: [{ events: { has: event } }, { events: { isEmpty: true } }] },
+      where: { kind, targetId, isFollowing: true, OR: [{ events: { has: event } }, { events: { isEmpty: true } }] },
       select: { userId: true }
     });
 

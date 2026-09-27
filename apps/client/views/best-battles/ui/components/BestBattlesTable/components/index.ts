@@ -1,3 +1,4 @@
+export { BestBattleCard } from './BestBattleCard';
 export { MapCell } from './MapCell';
 export { MedalsCell } from './MedalsCell';
 export { MetricCell } from './MetricCell';

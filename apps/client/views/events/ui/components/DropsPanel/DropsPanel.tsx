@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { ErrorState, Skeleton } from '@/ui-kit';
+import { QueryState, Skeleton } from '@/ui-kit';
 
 import { EVENTS } from '../../../config';
 import { useActiveDrops } from '../../../model/hooks';
@@ -10,15 +10,17 @@ import { EventGroup } from '../EventGroup';
 
 export const DropsPanel = () => {
   const t = useTranslations('events.drops');
-  const drops = useActiveDrops();
+  const { query, entries } = useActiveDrops();
 
-  if (drops.isPending) {
-    return <Skeleton height={EVENTS.dropsSkeleton} shape='block' />;
-  }
-
-  if (drops.isError) {
-    return <ErrorState isCompact description={t('errorDescription')} isRetrying={drops.isRetrying} title={t('errorTitle')} onRetry={drops.retry} />;
-  }
-
-  return <EventGroup emptyTitle={t('empty')} entries={drops.entries} title={t('title')} />;
+  return (
+    <QueryState
+      isCompact
+      errorDescription={t('errorDescription')}
+      errorTitle={t('errorTitle')}
+      query={query}
+      skeleton={<Skeleton height={EVENTS.dropsSkeleton} shape='block' />}
+    >
+      <EventGroup emptyTitle={t('empty')} entries={entries} title={t('title')} />
+    </QueryState>
+  );
 };

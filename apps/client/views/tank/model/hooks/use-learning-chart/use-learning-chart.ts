@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { sumBy } from 'remeda';
 
 import { bucketLabel } from '../../../lib';
 import { useTank } from '../../context';
@@ -19,6 +20,6 @@ export const useLearningChart = () => {
     windowDays: learning.windowDays,
     labels: learning.buckets.map(bucketLabel),
     series: [{ id: 'winRate', label: t('winRate'), values: learning.buckets.map((bucket) => bucket.winRate ?? 0), tone: 'accent' as const }],
-    battles: learning.buckets.reduce((total, bucket) => total + bucket.battles, 0)
+    battles: sumBy(learning.buckets, ({ battles }) => battles)
   };
 };

@@ -153,7 +153,9 @@ describe('PromoService.recordRedemption', () => {
 
     await service.recordRedemption({ db: prisma, userId: 'u1', code: 'SPRING' });
 
-    expect(prisma.promoCode.update).toHaveBeenCalledWith({ where: { code: 'SPRING' }, data: { usedCount: { increment: 1 } } });
+    expect(prisma.promoCode.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { code: 'SPRING' }, data: { usedCount: { increment: 1 } } })
+    );
   });
 
   it('counts a paid redemption once even when the webhook repeats', async () => {

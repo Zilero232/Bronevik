@@ -24,9 +24,7 @@ export const EventTimeline = ({ clanId }: EventTimelineProps) => {
       {match({ isPending, isError, count: days.length })
         .with({ isPending: true }, () => (
           <div aria-busy aria-label={t('loading')} className={s.body} role='status'>
-            {Array.from({ length: CLAN_EVENTS.skeletonRows }, (_, index) => (
-              <Skeleton key={index} height={28} />
-            ))}
+            <Skeleton count={CLAN_EVENTS.skeletonRows} height={28} />
           </div>
         ))
         .with({ isError: true, count: 0 }, () => <ErrorState isCompact isRetrying={isRetrying} title={t('error')} onRetry={retry} />)

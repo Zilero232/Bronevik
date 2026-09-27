@@ -1,4 +1,6 @@
+import type { MyBattle } from '@otmetki/schemas';
+
 export type MoeCellProps = {
-  percent: number | null;
-  delta: number | null;
+  percent: MyBattle['moePercent'];
+  delta: MyBattle['moePercentDelta'];
 };

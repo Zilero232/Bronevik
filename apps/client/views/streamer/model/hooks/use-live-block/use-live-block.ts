@@ -1,11 +1,14 @@
 'use client';
 
+import type { StreamerLive } from '@otmetki/schemas';
+
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 
-import type { UseLiveBlockInput } from './use-live-block.types';
+import { useStreamer } from '../../context';
 
-export const useLiveBlock = ({ live, channels }: UseLiveBlockInput) => {
+export const useLiveBlock = (live: StreamerLive) => {
+  const { channels } = useStreamer();
   const { data: catalog } = useVehicleCatalog();
 
   return {

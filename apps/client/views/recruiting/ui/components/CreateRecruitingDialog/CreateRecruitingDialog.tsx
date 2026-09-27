@@ -18,28 +18,12 @@ import { RecruitingAuthorField } from './components';
 export const CreateRecruitingDialog = ({ kind }: CreateRecruitingDialogProps) => {
   const t = useTranslations('recruiting.create');
   const id = useId();
-  const { form, isClan, isOpen, officers, canSubmit, isClansPending, isPending, onOpenChange, onSubmit } = useCreateRecruitingForm(kind);
+  const { dialog, isClan, officers, canSubmit, isClansPending } = useCreateRecruitingForm(kind);
+  const { form } = dialog;
   const { errors } = form.formState;
 
   return (
-    <FormDialog
-      trigger={
-        <>
-          <Plus size={14} />
-          {t(`open.${kind}`)}
-        </>
-      }
-      cancelLabel={t('cancel')}
-      canSubmit={canSubmit}
-      description={t(`description.${kind}`)}
-      form={form}
-      isOpen={isOpen}
-      isPending={isPending}
-      submitLabel={t('submit')}
-      title={t(`title.${kind}`)}
-      onOpenChange={onOpenChange}
-      onSubmit={onSubmit}
-    >
+    <FormDialog canSubmit={canSubmit} dialog={dialog} namespace={`recruiting.create.dialog.${kind}`} triggerIcon={Plus}>
       <RecruitingAuthorField isClan={isClan} isClansPending={isClansPending} officers={officers} />
       <FormField error={errors.title && t('titleError')} htmlFor={`${id}-title`} label={t('postTitle')}>
         <Input id={`${id}-title`} isInvalid={Boolean(errors.title)} placeholder={t(`titlePlaceholder.${kind}`)} {...form.register('title')} />

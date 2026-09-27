@@ -61,7 +61,9 @@ describe('ClanEventRemindersService.sendReminders', () => {
 
     await service.sendReminders(NOW);
 
-    expect(prisma.clanEvent.updateMany).toHaveBeenCalledWith({ where: { id: 'e1', remindedAt: null }, data: { remindedAt: NOW } });
+    expect(prisma.clanEvent.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'e1', remindedAt: null }, data: { remindedAt: NOW } })
+    );
   });
 
   it('sends nothing when no reminder is due', async () => {

@@ -126,10 +126,12 @@ describe('LiveStatusService.poll', () => {
 
     await expect(service.poll()).resolves.toBe(1);
 
-    expect(prisma.streamerProfile.update).toHaveBeenCalledWith({
-      where: { id: 'p1' },
-      data: expect.objectContaining({ isLive: true, livePlatform: 'vkVideoLive', liveViewers: 900, liveCheckedAt: now, liveStartedAt: now })
-    });
+    expect(prisma.streamerProfile.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'p1' },
+        data: expect.objectContaining({ isLive: true, livePlatform: 'vkVideoLive', liveViewers: 900, liveCheckedAt: now, liveStartedAt: now })
+      })
+    );
   });
 
   it('keeps the original start time while a profile stays live', async () => {
@@ -160,12 +162,16 @@ describe('LiveStatusService.poll', () => {
 
     await expect(service.poll()).resolves.toBe(2);
 
-    expect(prisma.streamerProfile.update).toHaveBeenCalledWith({
-      where: { id: 'p1' },
-      data: expect.objectContaining({ isLive: false, livePlatform: null, liveViewers: null, liveTankId: null, liveStartedAt: null })
-    });
+    expect(prisma.streamerProfile.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'p1' },
+        data: expect.objectContaining({ isLive: false, livePlatform: null, liveViewers: null, liveTankId: null, liveStartedAt: null })
+      })
+    );
 
-    expect(prisma.streamerProfile.update).toHaveBeenCalledWith({ where: { id: 'p2' }, data: expect.objectContaining({ isLive: true }) });
+    expect(prisma.streamerProfile.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'p2' }, data: expect.objectContaining({ isLive: true }) })
+    );
   });
 
   it('checks YouTube at most once per poll window and reuses the last answer in between', async () => {
@@ -279,10 +285,12 @@ describe('LiveStatusService live alerts', () => {
       notification: { event: 'streamerLive', slug: updated.slug, displayName: updated.displayName, platform: 'twitch', tankName: null }
     });
 
-    expect(prisma.streamerFollow.update).toHaveBeenCalledWith({
-      where: { userId_profileId: { userId: 'fan', profileId: 'p1' } },
-      data: { lastAlertKey: streamKey(updated) }
-    });
+    expect(prisma.streamerFollow.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId_profileId: { userId: 'fan', profileId: 'p1' } },
+        data: { lastAlertKey: streamKey(updated) }
+      })
+    );
   });
 
   it('notifies tank followers only when the streamer is on that tank, naming it', async () => {

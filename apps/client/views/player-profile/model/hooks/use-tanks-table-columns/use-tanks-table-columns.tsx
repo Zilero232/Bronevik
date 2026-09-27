@@ -1,10 +1,11 @@
 'use client';
 
 import type { PlayerTankRow } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { RatingValue, TankAwards } from '@/entities/player/stats';
 import { TankCell, WinRateCell } from '@/entities/tank/tank';
@@ -14,7 +15,7 @@ import { RecentCell } from '../../../ui/components/TanksTable/components';
 
 const column = createColumnHelper<PlayerTankRow>();
 
-export const useTanksTableColumns = (): ColumnDef<PlayerTankRow, never>[] => {
+export const useTanksTableColumns = (): TableColumn<PlayerTankRow>[] => {
   const t = useTranslations('profile.tanks.columns');
   const format = useFormatter();
 
@@ -25,7 +26,11 @@ export const useTanksTableColumns = (): ColumnDef<PlayerTankRow, never>[] => {
       cell: (info) => <TankCell vehicle={info.row.original.vehicle} />,
       meta: { width: '30%', isMedia: true, isSticky: true }
     }),
-    column.accessor('battles', { header: t('battles'), cell: (info) => format.number(info.getValue()), meta: { align: 'end', isNumeric: true } }),
+    column.accessor('battles', {
+      header: t('battles'),
+      cell: (info) => format.number(info.getValue()),
+      meta: { align: 'end', isNumeric: true, bar: { tone: 'steel' } }
+    }),
     column.accessor((row) => row.winRate ?? 0, {
       id: 'winRate',
       header: t('winRate'),

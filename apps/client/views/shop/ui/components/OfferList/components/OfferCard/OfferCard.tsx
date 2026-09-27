@@ -34,15 +34,14 @@ export const OfferCard = ({ entry: { offer, href, vehicles, isRunning } }: Offer
           ))}
         </ul>
       )}
-      <div className={s.price}>
-        {offer.priceRub !== null && (
-          <span className={s.amount}>{format.number(offer.priceRub, { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 })}</span>
-        )}
-        {offer.oldPriceRub !== null && (
-          <s className={s.old}>{format.number(offer.oldPriceRub, { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 })}</s>
-        )}
-        {offer.priceGold !== null && <span className={s.amount}>{t('gold', { amount: offer.priceGold })}</span>}
-      </div>
+      {(offer.priceRub !== null || offer.priceGold !== null) && (
+        <div className={s.price}>
+          {offer.priceRub !== null && (
+            <span className={s.amount}>{format.number(offer.priceRub, { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 })}</span>
+          )}
+          {offer.priceGold !== null && <span className={s.amount}>{t('gold', { amount: offer.priceGold })}</span>}
+        </div>
+      )}
       <dl className={s.meta}>
         <div className={s.row}>
           <dt>{t('period')}</dt>

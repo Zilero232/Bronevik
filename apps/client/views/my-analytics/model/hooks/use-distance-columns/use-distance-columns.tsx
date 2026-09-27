@@ -1,10 +1,11 @@
 'use client';
 
 import type { RngDistance } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { NumberCell } from '@/ui-kit';
 
@@ -12,7 +13,7 @@ import { PercentCell } from '../../../ui/components/BreakdownPanel/components';
 
 const column = createColumnHelper<RngDistance>();
 
-export const useDistanceColumns = (): ColumnDef<RngDistance, never>[] => {
+export const useDistanceColumns = (): TableColumn<RngDistance>[] => {
   const t = useTranslations('analytics.columns');
 
   return [
@@ -31,7 +32,7 @@ export const useDistanceColumns = (): ColumnDef<RngDistance, never>[] => {
     column.accessor('pierced', {
       header: t('pierced'),
       cell: ({ row }) => <NumberCell value={row.original.pierced} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
     }),
     column.accessor((row) => row.penRate ?? -1, {
       id: 'penRate',

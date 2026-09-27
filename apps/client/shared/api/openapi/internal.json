@@ -43141,9 +43141,6 @@
                 }
               ]
             },
-            "modpack": {
-              "type": ["string", "null"]
-            },
             "modsKind": {
               "type": ["string", "null"]
             },
@@ -43156,7 +43153,7 @@
               "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
             }
           },
-          "required": ["slug", "displayName", "isLive", "sniperSensitivity", "fov", "preset", "zoomMax", "modpack", "modsKind", "gpu", "updatedAt"],
+          "required": ["slug", "displayName", "isLive", "sniperSensitivity", "fov", "preset", "zoomMax", "modsKind", "gpu", "updatedAt"],
           "additionalProperties": false
         }
       },
@@ -43406,18 +43403,6 @@
                         "enum": ["x2", "x4", "x8", "x16", "x25"]
                       }
                     },
-                    "zoomModRef": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
                     "source": {
                       "type": "string",
                       "enum": ["creator", "editorial", "mod", "preferences"]
@@ -43485,18 +43470,6 @@
                         }
                       },
                       "additionalProperties": false
-                    },
-                    "sightModRef": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
                     },
                     "source": {
                       "type": "string",
@@ -43845,31 +43818,10 @@
                       "type": "string",
                       "enum": ["clean", "modpack", "custom"]
                     },
-                    "modpackRef": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
                     "preset": {
                       "type": "string",
                       "minLength": 1,
                       "maxLength": 120
-                    },
-                    "modRefs": {
-                      "maxItems": 20,
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      }
                     },
                     "source": {
                       "type": "string",
@@ -43899,50 +43851,6 @@
               },
               "additionalProperties": false
             },
-            "modReferences": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid",
-                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                  },
-                  "kind": {
-                    "type": "string",
-                    "enum": ["modpack", "sight", "zoom", "other"]
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "author": {
-                    "type": "string"
-                  },
-                  "officialUrl": {
-                    "type": "string",
-                    "format": "uri"
-                  },
-                  "onMost": {
-                    "type": "boolean"
-                  },
-                  "checkedAt": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "date-time",
-                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  }
-                },
-                "required": ["id", "kind", "name", "author", "officialUrl", "onMost", "checkedAt"],
-                "additionalProperties": false
-              }
-            },
             "updatedAt": {
               "anyOf": [
                 {
@@ -43956,7 +43864,7 @@
               ]
             }
           },
-          "required": ["slug", "displayName", "kind", "settings", "modReferences", "updatedAt"],
+          "required": ["slug", "displayName", "kind", "settings", "updatedAt"],
           "additionalProperties": false
         }
       },
@@ -44275,18 +44183,6 @@
                       "enum": ["x2", "x4", "x8", "x16", "x25"]
                     }
                   },
-                  "zoomModRef": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
                   "source": {
                     "type": "string",
                     "enum": ["creator", "editorial", "mod", "preferences"]
@@ -44354,18 +44250,6 @@
                       }
                     },
                     "additionalProperties": false
-                  },
-                  "sightModRef": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   },
                   "source": {
                     "type": "string",
@@ -44714,31 +44598,10 @@
                     "type": "string",
                     "enum": ["clean", "modpack", "custom"]
                   },
-                  "modpackRef": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
                   "preset": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 120
-                  },
-                  "modRefs": {
-                    "maxItems": 20,
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "uuid",
-                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                    }
                   },
                   "source": {
                     "type": "string",
@@ -44768,50 +44631,6 @@
             },
             "additionalProperties": false
           },
-          "modReferences": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                },
-                "kind": {
-                  "type": "string",
-                  "enum": ["modpack", "sight", "zoom", "other"]
-                },
-                "name": {
-                  "type": "string"
-                },
-                "author": {
-                  "type": "string"
-                },
-                "officialUrl": {
-                  "type": "string",
-                  "format": "uri"
-                },
-                "onMost": {
-                  "type": "boolean"
-                },
-                "checkedAt": {
-                  "anyOf": [
-                    {
-                      "type": "string",
-                      "format": "date-time",
-                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "required": ["id", "kind", "name", "author", "officialUrl", "onMost", "checkedAt"],
-              "additionalProperties": false
-            }
-          },
           "updatedAt": {
             "anyOf": [
               {
@@ -44825,7 +44644,7 @@
             ]
           }
         },
-        "required": ["slug", "displayName", "kind", "settings", "modReferences", "updatedAt"],
+        "required": ["slug", "displayName", "kind", "settings", "updatedAt"],
         "additionalProperties": false
       },
       "SaveStreamerSettingsDto": {
@@ -44996,18 +44815,6 @@
                       "type": "string",
                       "enum": ["x2", "x4", "x8", "x16", "x25"]
                     }
-                  },
-                  "zoomModRef": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   }
                 }
               },
@@ -45051,18 +44858,6 @@
                         "maxLength": 120
                       }
                     }
-                  },
-                  "sightModRef": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   }
                 }
               },
@@ -45270,31 +45065,10 @@
                     "type": "string",
                     "enum": ["clean", "modpack", "custom"]
                   },
-                  "modpackRef": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
                   "preset": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 120
-                  },
-                  "modRefs": {
-                    "maxItems": 20,
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "uuid",
-                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                    }
                   }
                 }
               }
@@ -45611,18 +45385,6 @@
                               "type": "string",
                               "enum": ["x2", "x4", "x8", "x16", "x25"]
                             }
-                          },
-                          "zoomModRef": {
-                            "anyOf": [
-                              {
-                                "type": "string",
-                                "format": "uuid",
-                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
                           }
                         },
                         "additionalProperties": false
@@ -45669,18 +45431,6 @@
                               }
                             },
                             "additionalProperties": false
-                          },
-                          "sightModRef": {
-                            "anyOf": [
-                              {
-                                "type": "string",
-                                "format": "uuid",
-                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
                           }
                         },
                         "additionalProperties": false
@@ -45897,31 +45647,10 @@
                             "type": "string",
                             "enum": ["clean", "modpack", "custom"]
                           },
-                          "modpackRef": {
-                            "anyOf": [
-                              {
-                                "type": "string",
-                                "format": "uuid",
-                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
                           "preset": {
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 120
-                          },
-                          "modRefs": {
-                            "maxItems": 20,
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "format": "uuid",
-                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                            }
                           }
                         },
                         "additionalProperties": false
@@ -46126,18 +45855,6 @@
                       "type": "string",
                       "enum": ["x2", "x4", "x8", "x16", "x25"]
                     }
-                  },
-                  "zoomModRef": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   }
                 },
                 "additionalProperties": false
@@ -46184,18 +45901,6 @@
                       }
                     },
                     "additionalProperties": false
-                  },
-                  "sightModRef": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   }
                 },
                 "additionalProperties": false
@@ -46412,31 +46117,10 @@
                     "type": "string",
                     "enum": ["clean", "modpack", "custom"]
                   },
-                  "modpackRef": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "format": "uuid",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
                   "preset": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 120
-                  },
-                  "modRefs": {
-                    "maxItems": 20,
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "uuid",
-                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                    }
                   }
                 },
                 "additionalProperties": false
@@ -48210,18 +47894,6 @@
                             "type": "string",
                             "enum": ["x2", "x4", "x8", "x16", "x25"]
                           }
-                        },
-                        "zoomModRef": {
-                          "anyOf": [
-                            {
-                              "type": "string",
-                              "format": "uuid",
-                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
                         }
                       },
                       "additionalProperties": false
@@ -48268,18 +47940,6 @@
                             }
                           },
                           "additionalProperties": false
-                        },
-                        "sightModRef": {
-                          "anyOf": [
-                            {
-                              "type": "string",
-                              "format": "uuid",
-                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
                         }
                       },
                       "additionalProperties": false
@@ -54603,7 +54263,18 @@
         "properties": {
           "targetType": {
             "type": "string",
-            "enum": ["build", "guide", "comment", "replay", "platoon_post", "recruiting_post", "coach", "tournament", "tactic_board"]
+            "enum": [
+              "build",
+              "guide",
+              "comment",
+              "replay",
+              "platoon_post",
+              "recruiting_post",
+              "coach",
+              "tournament",
+              "tactic_board",
+              "streamer_profile"
+            ]
           },
           "targetId": {
             "type": "string",
@@ -55571,17 +55242,6 @@
                     }
                   ]
                 },
-                "oldPriceRub": {
-                  "anyOf": [
-                    {
-                      "type": "number",
-                      "minimum": 0
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
                 "priceGold": {
                   "anyOf": [
                     {
@@ -55648,7 +55308,6 @@
                 "image",
                 "tankIds",
                 "priceRub",
-                "oldPriceRub",
                 "priceGold",
                 "discountPercent",
                 "startsAt",

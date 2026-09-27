@@ -3,7 +3,7 @@ import { addMinutes } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { ModBindCode, Player, UserLestaAccount } from '../../../../../generated';
+import type { OneTimeCode, Player, UserLestaAccount } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 
@@ -23,8 +23,9 @@ const link = (accountId: number, overrides: Partial<UserLestaAccount> = {}) =>
 const linkWithPlayer = (accountId: number) =>
   mock<UserLestaAccount & { player: Player }>({ userId: 'user', accountId: BigInt(accountId), player: mock<Player>({ nickname: 'Tanker' }) });
 
-const storedCode = (overrides: Partial<ModBindCode> = {}): ModBindCode => ({
+const storedCode = (overrides: Partial<OneTimeCode> = {}): OneTimeCode => ({
   code: CODE,
+  purpose: 'modBind',
   userId: 'user',
   accountId: null,
   deviceId: null,
@@ -53,12 +54,12 @@ const createService = () => {
   return { service: new ModBindService(prisma, config), prisma };
 };
 
-const readyToBind = (code: ModBindCode = storedCode()) => {
+const readyToBind = (code: OneTimeCode = storedCode()) => {
   const created = createService();
 
-  created.prisma.modBindCode.findUnique.mockResolvedValue(code);
+  created.prisma.oneTimeCode.findUnique.mockResolvedValue(code);
   created.prisma.userLestaAccount.findFirst.mockResolvedValue(linkWithPlayer(ACCOUNT_ID));
-  created.prisma.modBindCode.updateMany.mockResolvedValue({ count: 1 });
+  created.prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 1 });
 
   return created;
 };
@@ -79,7 +80,7 @@ describe('ModBindService.issueCode', () => {
     prisma.userLestaAccount.findMany.mockResolvedValue([]);
 
     await expect(service.issueCode({ userId: 'user' })).rejects.toBeInstanceOf(AppForbiddenException);
-    expect(prisma.modBindCode.create).not.toHaveBeenCalled();
+    expect(prisma.oneTimeCode.create).not.toHaveBeenCalled();
   });
 
   it('refuses to bind a code to an account the user has not linked', async () => {
@@ -88,7 +89,7 @@ describe('ModBindService.issueCode', () => {
     prisma.userLestaAccount.findMany.mockResolvedValue([link(ACCOUNT_ID)]);
 
     await expect(service.issueCode({ userId: 'user', accountId: ACCOUNT_ID + 1 })).rejects.toBeInstanceOf(AppForbiddenException);
-    expect(prisma.modBindCode.create).not.toHaveBeenCalled();
+    expect(prisma.oneTimeCode.create).not.toHaveBeenCalled();
   });
 
   it('issues a code the mod can type back, expiring after the configured ttl', async () => {
@@ -110,7 +111,9 @@ describe('ModBindService.issueCode', () => {
 
     await service.issueCode({ userId: 'user' });
 
-    expect(prisma.modBindCode.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user', usedAt: null } });
+    expect(prisma.oneTimeCode.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'user', purpose: 'modBind', usedAt: null } })
+    );
   });
 
   it('pins the code to the requested linked account', async () => {
@@ -121,7 +124,10 @@ describe('ModBindService.issueCode', () => {
     const issued = await service.issueCode({ userId: 'user', accountId: ACCOUNT_ID });
 
     expect(issued.accountId).toBe(ACCOUNT_ID);
-    expect(prisma.modBindCode.create).toHaveBeenCalledWith({ data: expect.objectContaining({ accountId: BigInt(ACCOUNT_ID) }) });
+
+    expect(prisma.oneTimeCode.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ accountId: BigInt(ACCOUNT_ID) }) })
+    );
   });
 });
 
@@ -135,7 +141,7 @@ describe('ModBindService.bind', () => {
     });
 
     await expect(service.bind('ABCDEF')).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
-    expect(prisma.modBindCode.findUnique).not.toHaveBeenCalled();
+    expect(prisma.oneTimeCode.findUnique).not.toHaveBeenCalled();
   });
 
   it('rejects a valid code sent with a malformed rest of the request', async () => {
@@ -146,7 +152,7 @@ describe('ModBindService.bind', () => {
       response: { error: 'invalid_code' }
     });
 
-    expect(prisma.modBindCode.findUnique).not.toHaveBeenCalled();
+    expect(prisma.oneTimeCode.findUnique).not.toHaveBeenCalled();
   });
 
   it('accepts a code typed in lower case with separators', async () => {
@@ -154,13 +160,13 @@ describe('ModBindService.bind', () => {
 
     await service.bind(bindBody({ code: 'abc-def' }));
 
-    expect(prisma.modBindCode.findUnique).toHaveBeenCalledWith({ where: { code: CODE } });
+    expect(prisma.oneTimeCode.findUnique).toHaveBeenCalledWith(expect.objectContaining({ where: { code: CODE, purpose: 'modBind' } }));
   });
 
   it('answers not found for an unknown code', async () => {
     const { service, prisma } = createService();
 
-    prisma.modBindCode.findUnique.mockResolvedValue(null);
+    prisma.oneTimeCode.findUnique.mockResolvedValue(null);
 
     await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND, response: { error: 'code_not_found' } });
   });
@@ -191,23 +197,36 @@ describe('ModBindService.bind', () => {
     prisma.userLestaAccount.findFirst.mockResolvedValue(null);
 
     await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.FORBIDDEN, response: { error: 'account_mismatch' } });
-    expect(prisma.modBindCode.updateMany).not.toHaveBeenCalled();
+    expect(prisma.oneTimeCode.updateMany).not.toHaveBeenCalled();
   });
 
   it('refuses a linked account other than the one the code was pinned to', async () => {
     const { service, prisma } = readyToBind(storedCode({ accountId: BigInt(ACCOUNT_ID + 1) }));
 
     await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.FORBIDDEN, response: { error: 'account_mismatch' } });
-    expect(prisma.modBindCode.updateMany).not.toHaveBeenCalled();
+    expect(prisma.oneTimeCode.updateMany).not.toHaveBeenCalled();
   });
 
   it('loses gracefully when a concurrent bind claims the code first', async () => {
     const { service, prisma } = readyToBind();
 
-    prisma.modBindCode.updateMany.mockResolvedValue({ count: 0 });
+    prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 0 });
 
     await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.CONFLICT, response: { error: 'code_used' } });
     expect(prisma.modDevice.create).not.toHaveBeenCalled();
+  });
+
+  it('claims only an unused, unexpired bind code', async () => {
+    const { service, prisma } = readyToBind();
+
+    await service.bind(bindBody());
+
+    expect(prisma.oneTimeCode.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { code: CODE, purpose: 'modBind', usedAt: null, expiresAt: { gt: NOW } },
+        data: { usedAt: NOW }
+      })
+    );
   });
 
   it('hands the mod a device secret derived from the server secret and stores only its hash', async () => {
@@ -219,14 +238,16 @@ describe('ModBindService.bind', () => {
     expect(response.secret).toBe(deviceSecret({ deviceId: response.device_id, serverSecret: SERVER_SECRET }));
     expect(response.nickname).toBe('Tanker');
 
-    expect(prisma.modDevice.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        id: response.device_id,
-        userId: 'user',
-        accountId: BigInt(ACCOUNT_ID),
-        secretHash: hashSecret(response.secret)
+    expect(prisma.modDevice.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          id: response.device_id,
+          userId: 'user',
+          accountId: BigInt(ACCOUNT_ID),
+          secretHash: hashSecret(response.secret)
+        })
       })
-    });
+    );
   });
 
   it('records which device consumed the code', async () => {
@@ -234,6 +255,8 @@ describe('ModBindService.bind', () => {
 
     const response = await service.bind(bindBody());
 
-    expect(prisma.modBindCode.update).toHaveBeenCalledWith({ where: { code: CODE }, data: { deviceId: response.device_id } });
+    expect(prisma.oneTimeCode.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { code: CODE }, data: { deviceId: response.device_id } })
+    );
   });
 });

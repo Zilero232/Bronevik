@@ -12,7 +12,6 @@ const row = (patch: Partial<SettingsTableRow>): SettingsTableRow => ({
   fov: null,
   preset: null,
   zoomMax: null,
-  modpack: null,
   modsKind: null,
   gpu: null,
   updatedAt: '2026-09-26T10:00:00.000Z',

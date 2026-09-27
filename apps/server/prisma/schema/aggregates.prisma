@@ -43,25 +43,18 @@ view TankDailyStats {
   mode   StatsMode
   cohort SkillCohort
 
-  samples              BigInt
-  battles              BigInt
-  wins                 BigInt
-  losses               BigInt
-  draws                BigInt
-  damageDealt          BigInt @map("damage_dealt")
-  damageReceived       BigInt @map("damage_received")
-  damageBlocked        BigInt @map("damage_blocked")
-  stunAssistedDamage   BigInt @map("stun_assisted_damage")
-  frags                BigInt
-  spotted              BigInt
-  xp                   BigInt
-  survived             BigInt @map("survived_battles")
-  hits                 BigInt
-  shots                BigInt
-  piercings            BigInt
-  capturePoints        BigInt @map("capture_points")
-  droppedCapturePoints BigInt @map("dropped_capture_points")
-  playerWinsWeighted   Float  @map("player_wins_weighted")
+  samples            BigInt
+  battles            BigInt
+  wins               BigInt
+  damageDealt        BigInt @map("damage_dealt")
+  damageBlocked      BigInt @map("damage_blocked")
+  frags              BigInt
+  spotted            BigInt
+  xp                 BigInt
+  survived           BigInt @map("survived_battles")
+  hits               BigInt
+  shots              BigInt
+  playerWinsWeighted Float  @map("player_wins_weighted")
 
   @@map("tank_daily_stats")
 }
@@ -218,15 +211,6 @@ model TankLearningCurve {
   @@map("tank_learning_curve")
 }
 
-enum BuildMode {
-  random
-  onslaught
-  frontline
-  ranked
-
-  @@map("build_mode")
-}
-
 enum BuildCohort {
   all
   top10
@@ -237,7 +221,7 @@ enum BuildCohort {
 
 model BuildUsageAggregate {
   tankId      Int         @map("tank_id")
-  mode        BuildMode
+  mode        GameMode
   cohort      BuildCohort
   gameVersion String      @map("game_version")
 

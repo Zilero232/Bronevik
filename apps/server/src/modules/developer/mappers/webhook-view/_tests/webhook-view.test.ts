@@ -35,6 +35,10 @@ describe('toWebhookEndpoint', () => {
     expect(toWebhookEndpoint(endpoint()).events).toEqual(['mark.gained']);
   });
 
+  it('drops notification events outside the webhook subset', () => {
+    expect(toWebhookEndpoint(endpoint({ events: ['moeGained', 'bonusCode', 'goalReached'] })).events).toEqual(['mark.gained']);
+  });
+
   it('reads a missing filter as an empty one', () => {
     expect(toWebhookEndpoint(endpoint()).filter).toEqual({ accountIds: [], clanIds: [] });
   });
@@ -47,6 +51,10 @@ describe('toWebhookEndpoint', () => {
 describe('toWebhookDelivery', () => {
   it('hides a delivery of an internal-only event', () => {
     expect(toWebhookDelivery(delivery({ event: 'moeThresholdDropped' }))).toEqual([]);
+  });
+
+  it('hides a delivery of a notification event that is not a webhook event', () => {
+    expect(toWebhookDelivery(delivery({ event: 'premiumOffer' }))).toEqual([]);
   });
 
   it('maps a public event delivery', () => {

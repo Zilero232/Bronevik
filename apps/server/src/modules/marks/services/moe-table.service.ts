@@ -9,7 +9,7 @@ import type { ModMoeThresholds, MoeHistoryBatchInput, MoeHistoryInput } from '..
 import { AppNotFoundException } from '../../../common/exceptions';
 import { page, sortRows, toIsoDate } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { ThresholdsService, toMasteryThreshold, toMoeThreshold, VehicleCatalogService } from '../../reference';
+import { ThresholdsService, toMasteryThreshold, toMoeThreshold, toMoeThresholdRecord, VehicleCatalogService } from '../../reference';
 import { MOE_TABLE } from '../config';
 import { EMPTY_SWEAT, historySeries } from '../lib';
 import { SweatIndexService } from './sweat-index.service';
@@ -95,8 +95,8 @@ export class MoeTableService {
   }
 
   async historyBatch({ tankIds, days, source }: MoeHistoryBatchInput): Promise<MoeHistoryBatch> {
-    const rows = await this.prisma.moeThreshold.findMany({
-      where: { tankId: { in: tankIds }, date: { gte: subDays(new Date(), days) }, ...(source ? { source } : {}) },
+    const rows = await this.prisma.tankThreshold.findMany({
+      where: { kind: 'moe', tankId: { in: tankIds }, date: { gte: subDays(new Date(), days) }, ...(source ? { source } : {}) },
       orderBy: { date: 'asc' }
     });
 
@@ -104,7 +104,7 @@ export class MoeTableService {
       days,
       series: historySeries({
         tankIds,
-        rows: rows.map((row) => ({
+        rows: rows.map(toMoeThresholdRecord).map((row) => ({
           tankId: row.tankId,
           date: toIsoDate(row.date) ?? '',
           source: row.source,

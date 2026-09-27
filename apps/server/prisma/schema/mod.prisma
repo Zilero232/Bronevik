@@ -21,21 +21,3 @@ model ModDevice {
   @@index([accountId])
   @@map("mod_device")
 }
-
-model ModBindCode {
-  code String @id
-
-  userId    String  @map("user_id")
-  accountId BigInt? @map("account_id")
-  deviceId  String? @map("device_id")
-
-  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
-  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([expiresAt])
-  @@map("mod_bind_code")
-}

@@ -1,5 +1,3 @@
-export type CoverageCellProps = {
-  battles: number;
-  players: number;
-  isEnough: boolean;
-};
+import type { BuildsCatalogEntry } from '@otmetki/schemas';
+
+export type CoverageCellProps = Pick<BuildsCatalogEntry, 'battles' | 'isEnough' | 'players'>;

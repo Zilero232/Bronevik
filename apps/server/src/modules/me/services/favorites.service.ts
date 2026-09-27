@@ -7,6 +7,7 @@ import { toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { CollectorProducerService } from '../../collector';
 import { VehicleCatalogService } from '../../reference';
+import { clearFollowFlag, setFollowFlag } from '../../social';
 import { FAVORITES } from '../config';
 
 @Injectable()
@@ -18,7 +19,7 @@ export class FavoritesService {
   ) {}
 
   async list(userId: string): Promise<Favorite[]> {
-    const rows = await this.prisma.favorite.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
+    const rows = await this.prisma.follow.findMany({ where: { userId, isFavorite: true }, orderBy: { createdAt: 'desc' } });
     const ids = (kind: string) => rows.filter((row) => row.kind === kind).map((row) => row.targetId);
 
     const [players, clans, catalog] = await Promise.all([
@@ -47,18 +48,14 @@ export class FavoritesService {
   }
 
   async create({ userId, kind, targetId, label, isOwn }: CreateFavoriteInput): Promise<Favorite> {
-    const key = { userId_kind_targetId: { userId, kind, targetId: BigInt(targetId) } };
-    const existing = await this.prisma.favorite.findUnique({ where: key, select: { id: true } });
+    const key = { userId, kind, targetId: BigInt(targetId) };
+    const existing = await this.prisma.follow.findUnique({ where: { userId_kind_targetId: key }, select: { isFavorite: true } });
 
-    if (!existing && (await this.prisma.favorite.count({ where: { userId } })) >= FAVORITES.maxCount) {
+    if (!existing?.isFavorite && (await this.prisma.follow.count({ where: { userId, isFavorite: true } })) >= FAVORITES.maxCount) {
       throw new AppConflictException('CONFLICT', `At most ${FAVORITES.maxCount} favourites`);
     }
 
-    await this.prisma.favorite.upsert({
-      where: key,
-      create: { userId, kind, targetId: BigInt(targetId), label: label ?? null, isOwn: isOwn ?? false },
-      update: { label: label ?? null, isOwn: isOwn ?? false }
-    });
+    await setFollowFlag({ prisma: this.prisma, flag: 'isFavorite', key, data: { label: label ?? null, isOwn: isOwn ?? false } });
 
     if (kind === 'player') {
       await this.collector.enrol({ accountId: targetId, priority: 'high', reason: 'favorite' });
@@ -75,9 +72,9 @@ export class FavoritesService {
   }
 
   async remove({ userId, id }: OwnedInput): Promise<void> {
-    const removed = await this.prisma.favorite.deleteMany({ where: { id, userId } });
+    const removed = await clearFollowFlag({ prisma: this.prisma, flag: 'isFavorite', where: { id, userId } });
 
-    if (removed.count === 0) {
+    if (!removed) {
       throw new AppNotFoundException('NOT_FOUND', 'Favourite not found');
     }
   }

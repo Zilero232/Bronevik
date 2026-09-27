@@ -24,8 +24,13 @@ export class WatchlistDigestService {
     let sent = 0;
 
     for (;;) {
-      const page = await this.prisma.watchlistSettings.findMany({
-        where: { digest: { not: 'off' }, ...(cursor ? { userId: { gt: cursor } } : {}) },
+      const page = await this.prisma.notificationSettings.findMany({
+        where: {
+          watchlistDigest: { not: 'off' },
+          user: { follows: { some: { kind: 'player', isFollowing: true } } },
+          ...(cursor ? { userId: { gt: cursor } } : {})
+        },
+        select: { userId: true, watchlistDigest: true, watchlistDigestAt: true },
         orderBy: { userId: 'asc' },
         take: WATCHLIST_DIGEST_RUN.batchSize
       });
@@ -43,14 +48,15 @@ export class WatchlistDigestService {
   }
 
   private async digestFor({ settings, now }: DigestForInput): Promise<number> {
-    const digest = isPlusDigest(settings.digest) && !(await this.entitlements.isPlus(settings.userId)) ? WATCHLIST.defaultDigest : settings.digest;
+    const { userId, watchlistDigest, watchlistDigestAt: lastDigestAt } = settings;
+    const digest = isPlusDigest(watchlistDigest) && !(await this.entitlements.isPlus(userId)) ? WATCHLIST.defaultDigest : watchlistDigest;
 
-    if (!isDigestDue({ digest, lastDigestAt: settings.lastDigestAt, now })) {
+    if (!isDigestDue({ digest, lastDigestAt, now })) {
       return 0;
     }
 
-    const since = digestWindowStart({ digest, lastDigestAt: settings.lastDigestAt, now });
-    const follows = await this.prisma.follow.findMany({ where: { userId: settings.userId, kind: 'player' }, select: { targetId: true } });
+    const since = digestWindowStart({ digest, lastDigestAt, now });
+    const follows = await this.prisma.follow.findMany({ where: { userId, kind: 'player', isFollowing: true }, select: { targetId: true } });
     const accountIds = follows.map((follow) => follow.targetId);
 
     const [activity, players] = await Promise.all([
@@ -74,14 +80,14 @@ export class WatchlistDigestService {
       limit: WATCHLIST.digestTopPlayers
     });
 
-    await this.prisma.watchlistSettings.update({ where: { userId: settings.userId }, data: { lastDigestAt: now } });
+    await this.prisma.notificationSettings.update({ where: { userId }, data: { watchlistDigestAt: now } });
 
     if (!summary) {
       return 0;
     }
 
     await this.notifications.notify({
-      userId: settings.userId,
+      userId,
       notification: { event: 'watchlistDigest', ...summary },
       dedupeKey: `${WATCHLIST_DIGEST_RUN.dedupePrefix}-${now.toISOString().slice(0, 13)}`
     });

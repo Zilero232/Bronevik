@@ -20,11 +20,3 @@
 
   padding: var(--space-4);
 }
-
-.board {
-  transition: opacity var(--duration-base) ease;
-
-  &[data-refreshing='true'] {
-    opacity: 0.55;
-  }
-}

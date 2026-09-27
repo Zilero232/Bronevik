@@ -1,0 +1,1 @@
+export { EconomyCard } from './EconomyCard';

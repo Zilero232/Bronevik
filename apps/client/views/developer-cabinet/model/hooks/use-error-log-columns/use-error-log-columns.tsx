@@ -1,16 +1,17 @@
 'use client';
 
 import type { ApiErrorLogEntry } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { CodeCell, OccurredAtCell, RequestCell, StatusCell } from '../../../ui/components/ErrorLog/components';
 
 const column = createColumnHelper<ApiErrorLogEntry>();
 
-export const useErrorLogColumns = (): ColumnDef<ApiErrorLogEntry, never>[] => {
+export const useErrorLogColumns = (): TableColumn<ApiErrorLogEntry>[] => {
   const t = useTranslations('developer.usage.errorLog');
 
   return [
@@ -24,7 +25,8 @@ export const useErrorLogColumns = (): ColumnDef<ApiErrorLogEntry, never>[] => {
     column.accessor('code', {
       header: t('code'),
       cell: ({ row: { original } }) => <CodeCell code={original.code} message={original.message} />,
-      enableSorting: false
+      enableSorting: false,
+      meta: { hideBelow: 'md' }
     })
   ];
 };

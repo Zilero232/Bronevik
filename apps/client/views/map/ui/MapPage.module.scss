@@ -2,6 +2,7 @@
 
 .root {
   @include shell;
+  @include stack(var(--space-6));
 
   padding-block: var(--space-7) var(--space-8);
 

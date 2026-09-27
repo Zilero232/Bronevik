@@ -1,2 +1,2 @@
-export { getInbox, markInboxRead } from './notifications';
-export type { InboxPageInput } from './notifications';
+export { getInbox, inboxQueries, markInboxRead } from './notifications';
+export type { InboxFeedQueryInput, InboxPageInput, InboxPreviewQueryInput } from './notifications';

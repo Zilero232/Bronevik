@@ -10,7 +10,7 @@ import { TournamentRow } from './components';
 
 export const TournamentList = () => {
   const t = useTranslations('tournaments');
-  const { filter, items, isPending, isError, isRetrying, hasNextPage, isFetchingNextPage, onFilterChange, loadMore, retry } = useTournamentList();
+  const { filter, list, onFilterChange } = useTournamentList();
 
   return (
     <Card padding='none'>
@@ -31,17 +31,10 @@ export const TournamentList = () => {
         errorDescription={t('list.errorDescription')}
         errorTitle={t('list.errorTitle')}
         getKey={(tournament) => tournament.id}
-        hasNextPage={hasNextPage}
-        isError={isError}
-        isFetchingNextPage={isFetchingNextPage}
-        isPending={isPending}
-        isRetrying={isRetrying}
-        items={items}
         layout='rows'
+        list={list}
         renderItem={(tournament) => <TournamentRow tournament={tournament} />}
         skeletonHeight={56}
-        onLoadMore={loadMore}
-        onRetry={retry}
       />
     </Card>
   );

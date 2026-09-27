@@ -6,10 +6,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { sortBy } from 'remeda';
 
-import { listMaps, useMapLabels } from '@/entities/map/map';
+import { mapQueries, useMapLabels } from '@/entities/map/map';
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { QUERY_KEYS } from '@/shared/constants';
 
 import type { GuideKindFilter } from '../use-guide-filters';
 
@@ -23,8 +22,7 @@ export const useGuideFilterPanel = () => {
   const { filters, setKind, setTank, setMap, setSort, reset } = useGuideFilters();
   const { data: catalog } = useVehicleCatalog();
   const { data: maps } = useQuery({
-    queryKey: QUERY_KEYS.maps.list,
-    queryFn: ({ signal }) => listMaps({ signal }),
+    ...mapQueries.list(),
     enabled: filters.kind === 'map' || filters.map !== null
   });
 

@@ -1,35 +1,11 @@
-import { firstBy } from 'remeda';
+import type { AttendedInput } from './attendance.types';
 
-import type { AttendedInput, BattleSample, NearestInput } from './attendance.types';
-
-const lastBefore = ({ samples, at }: NearestInput) =>
-  firstBy(
-    samples.filter((sample) => sample.capturedAt <= at),
-    [(sample) => sample.capturedAt.getTime(), 'desc']
-  );
-
-const firstAfter = ({ samples, at }: NearestInput) =>
-  firstBy(
-    samples.filter((sample) => sample.capturedAt >= at),
-    (sample) => sample.capturedAt.getTime()
-  );
-
-export const attendedAccounts = ({ samples, startsAt, endsAt }: AttendedInput): Map<bigint, boolean> => {
-  const byAccount = new Map<bigint, BattleSample[]>();
-
-  for (const sample of samples) {
-    byAccount.set(sample.accountId, [...(byAccount.get(sample.accountId) ?? []), sample]);
-  }
-
+export const attendedAccounts = ({ battles, bonusTypes }: AttendedInput): Map<bigint, boolean> => {
+  const wanted = new Set(bonusTypes.map(String));
   const result = new Map<bigint, boolean>();
 
-  for (const [accountId, own] of byAccount) {
-    const before = lastBefore({ samples: own, at: startsAt });
-    const after = firstAfter({ samples: own, at: endsAt });
-
-    if (before && after) {
-      result.set(accountId, after.battles > before.battles);
-    }
+  for (const battle of battles) {
+    result.set(battle.accountId, result.get(battle.accountId) === true || wanted.has(battle.battleType));
   }
 
   return result;

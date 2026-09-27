@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Clan, Favorite, Player } from '../../../../../generated';
+import type { Clan, Follow, Player } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { CollectorProducerService } from '../../../collector';
 import type { VehicleCatalogService } from '../../../reference';
@@ -13,16 +13,17 @@ import { FavoritesService } from '../favorites.service';
 
 const CREATED_AT = new Date('2026-09-01T00:00:00.000Z');
 
-const favorite = (kind: Favorite['kind'], targetId: bigint): Favorite =>
-  mock<Favorite>({ id: `${kind}-${targetId}`, kind, targetId, label: null, isOwn: false, createdAt: CREATED_AT });
+const favorite = (kind: Follow['kind'], targetId: bigint): Follow =>
+  mock<Follow>({ id: `${kind}-${targetId}`, kind, targetId, isFavorite: true, isFollowing: false, label: null, isOwn: false, createdAt: CREATED_AT });
 
-const createService = (rows: Favorite[] = []) => {
+const createService = (rows: Follow[] = []) => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
   const collector = mock<CollectorProducerService>();
 
-  prisma.favorite.findMany.mockResolvedValue(rows);
-  prisma.favorite.count.mockResolvedValue(rows.length);
+  prisma.follow.findMany.mockResolvedValue(rows);
+  prisma.follow.count.mockResolvedValue(rows.length);
+  prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
   prisma.player.findMany.mockResolvedValue([]);
   prisma.clan.findMany.mockResolvedValue([]);
 
@@ -50,26 +51,52 @@ describe('FavoritesService.list', () => {
 
     expect((await service.list('user')).map((entry) => entry.title)).toEqual([null, null, null]);
   });
+
+  it('lists only favourites, not bare follows', async () => {
+    const { service, prisma } = createService();
+
+    await service.list('user');
+
+    expect(prisma.follow.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user', isFavorite: true } }));
+  });
 });
 
 describe('FavoritesService.create', () => {
   it('refuses a new favourite at the limit', async () => {
     const { service, prisma } = createService();
 
-    prisma.favorite.count.mockResolvedValue(FAVORITES.maxCount);
+    prisma.follow.count.mockResolvedValue(FAVORITES.maxCount);
 
     await expect(service.create({ userId: 'user', kind: 'tank', targetId: 1 })).rejects.toBeInstanceOf(AppConflictException);
-    expect(prisma.favorite.upsert).not.toHaveBeenCalled();
+    expect(prisma.follow.upsert).not.toHaveBeenCalled();
+    expect(prisma.follow.count).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user', isFavorite: true } }));
+  });
+
+  it('favourites a followed target as a new favourite without unfollowing it', async () => {
+    const { service, prisma } = createService([favorite('player', 7n)]);
+
+    prisma.follow.findUnique.mockResolvedValue({ ...favorite('player', 7n), isFavorite: false, isFollowing: true });
+
+    await service.create({ userId: 'user', kind: 'player', targetId: 7 });
+
+    expect(prisma.follow.count).toHaveBeenCalled();
+
+    expect(prisma.follow.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ isFavorite: true, isFollowing: false }),
+        update: { isFavorite: true, label: null, isOwn: false }
+      })
+    );
   });
 
   it('still updates the label of an existing favourite at the limit', async () => {
     const { service, prisma } = createService([favorite('tank', 1n)]);
 
-    prisma.favorite.count.mockResolvedValue(FAVORITES.maxCount);
-    prisma.favorite.findUnique.mockResolvedValue(favorite('tank', 1n));
+    prisma.follow.count.mockResolvedValue(FAVORITES.maxCount);
+    prisma.follow.findUnique.mockResolvedValue(favorite('tank', 1n));
 
     await expect(service.create({ userId: 'user', kind: 'tank', targetId: 1, label: 'main' })).resolves.toMatchObject({ kind: 'tank', targetId: 1 });
-    expect(prisma.favorite.upsert).toHaveBeenCalled();
+    expect(prisma.follow.upsert).toHaveBeenCalled();
   });
 
   it('enrols a favourite player for tracking with high priority', async () => {
@@ -93,9 +120,26 @@ describe('FavoritesService.remove', () => {
   it('answers 404 when the favourite is not the user’s', async () => {
     const { service, prisma } = createService();
 
-    prisma.favorite.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.follow.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.follow.updateMany.mockResolvedValue({ count: 0 });
 
     await expect(service.remove({ userId: 'user', id: 'other' })).rejects.toBeInstanceOf(AppNotFoundException);
-    expect(prisma.favorite.deleteMany).toHaveBeenCalledWith({ where: { id: 'other', userId: 'user' } });
+
+    expect(prisma.follow.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'other', userId: 'user', isFavorite: true, isFollowing: false } })
+    );
+  });
+
+  it('keeps a favourite that is also followed, clearing only the favourite', async () => {
+    const { service, prisma } = createService();
+
+    prisma.follow.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.follow.updateMany.mockResolvedValue({ count: 1 });
+
+    await expect(service.remove({ userId: 'user', id: 'f1' })).resolves.toBeUndefined();
+
+    expect(prisma.follow.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'f1', userId: 'user', isFavorite: true }, data: expect.objectContaining({ isFavorite: false }) })
+    );
   });
 });

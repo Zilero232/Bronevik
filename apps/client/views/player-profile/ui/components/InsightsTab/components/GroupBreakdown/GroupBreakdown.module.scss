@@ -57,10 +57,14 @@
   width: var(--fill);
   background-color: var(--color-success);
 
-  &[data-side='down'] {
+  &[data-verdict='worse'] {
     right: 50%;
     left: auto;
     background-color: var(--color-danger);
+  }
+
+  &[data-verdict='same'] {
+    background-color: var(--color-text-dim);
   }
 }
 

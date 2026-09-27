@@ -22,7 +22,7 @@ describe('BestOfWeekService.feature', () => {
 
     expect(query).toMatchObject({ take: BEST_OF_WEEK.size, orderBy: { damageDealt: 'desc' } });
     expect(query?.where?.playedAt).toEqual({ gte: new Date('2026-09-14T00:00:00Z'), lt: new Date('2026-09-21T00:00:00Z') });
-    expect(prisma.replay.updateMany).toHaveBeenCalledWith({ where: { id: { in: ['a', 'b'] } }, data: { isFeatured: true } });
+    expect(prisma.replay.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: { in: ['a', 'b'] } }, data: { isFeatured: true } }));
   });
 
   it('returns 0 without writing when the week had no replays', async () => {

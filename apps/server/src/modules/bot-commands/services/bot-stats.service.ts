@@ -56,7 +56,12 @@ export class BotStatsService {
   async marks(accountId: bigint): Promise<MarksCard> {
     const [groups, closest] = await Promise.all([
       this.prisma.playerTank.groupBy({ by: ['marksOnGun'], where: { accountId, marksOnGun: { gt: 0 } }, _count: { _all: true } }),
-      this.prisma.moeProgress.findMany({ where: { accountId, marks: { lt: 3 } }, orderBy: { percent: 'desc' }, take: BOT_REPLY_LIMITS.closestMarks })
+      this.prisma.playerTank.findMany({
+        where: { accountId, marksOnGun: { lt: 3 }, moePercent: { not: null } },
+        orderBy: { moePercent: 'desc' },
+        take: BOT_REPLY_LIMITS.closestMarks,
+        select: { tankId: true, marksOnGun: true, moePercent: true }
+      })
     ]);
 
     const countOf = (marks: number) => groups.find((group) => group.marksOnGun === marks)?._count._all ?? 0;
@@ -65,7 +70,7 @@ export class BotStatsService {
       closest.map(async (row) => {
         const vehicle = await this.catalog.summary(row.tankId);
 
-        return { tankName: vehicle.shortName || vehicle.name, marks: row.marks, percent: row.percent };
+        return { tankName: vehicle.shortName || vehicle.name, marks: row.marksOnGun ?? 0, percent: row.moePercent ?? 0 };
       })
     );
 

@@ -38,7 +38,7 @@ const createService = (row: GuideRow | null = guide) => {
   const prisma = mockDeep<PrismaService>();
 
   prisma.guide.findUnique.mockResolvedValue(row);
-  prisma.guideLike.findMany.mockResolvedValue([]);
+  prisma.reaction.findMany.mockResolvedValue([]);
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
   return { service: new GuideService(prisma), prisma };
@@ -52,7 +52,10 @@ describe('GuideService.create', () => {
 
     const view = await service.create({ userId: 'author', kind: 'general', locale: 'ru', title: 'Heavy brawling', body: guide.body });
 
-    expect(prisma.guide.create).toHaveBeenCalledWith({ data: expect.objectContaining({ status: 'pending', authorUserId: 'author' }) });
+    expect(prisma.guide.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ status: 'pending', authorUserId: 'author' }) })
+    );
+
     expect(view.status).toBe('pending');
   });
 
@@ -63,9 +66,11 @@ describe('GuideService.create', () => {
 
     await service.create({ userId: 'author', kind: 'general', locale: 'ru', title: 'Heavy brawling', body: guide.body });
 
-    expect(prisma.guide.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ slug: expect.stringMatching(/^heavy-brawling-[\da-f]{6}$/) })
-    });
+    expect(prisma.guide.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ slug: expect.stringMatching(/^heavy-brawling-[\da-f]{6}$/) })
+      })
+    );
   });
 });
 
@@ -77,7 +82,9 @@ describe('GuideService.update', () => {
 
     await service.update({ id: guide.id, userId: 'author', title: 'Heavy brawling 2' });
 
-    expect(prisma.guide.update).toHaveBeenCalledWith({ where: { id: guide.id }, data: { title: 'Heavy brawling 2', status: 'pending' } });
+    expect(prisma.guide.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: guide.id }, data: { title: 'Heavy brawling 2', status: 'pending' } })
+    );
   });
 
   it('drops the old tank and map when the guide changes its kind', async () => {
@@ -87,10 +94,12 @@ describe('GuideService.update', () => {
 
     await service.update({ id: guide.id, userId: 'author', kind: 'map', arenaId: '14_siegfried_line' });
 
-    expect(prisma.guide.update).toHaveBeenCalledWith({
-      where: { id: guide.id },
-      data: { kind: 'map', tankId: null, arenaId: '14_siegfried_line', status: 'pending' }
-    });
+    expect(prisma.guide.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: guide.id },
+        data: { kind: 'map', tankId: null, arenaId: '14_siegfried_line', status: 'pending' }
+      })
+    );
   });
 
   it('refuses a guide of another user', async () => {
@@ -126,7 +135,7 @@ describe('GuideService.bySlug', () => {
     const { service, prisma } = createService();
 
     expect((await service.bySlug({ slug: guide.slug, viewerUserId: null })).likedByMe).toBe(false);
-    expect(prisma.guideLike.findMany).not.toHaveBeenCalled();
+    expect(prisma.reaction.findMany).not.toHaveBeenCalled();
   });
 });
 
@@ -144,13 +153,19 @@ describe('GuideService.like', () => {
     const { service, prisma } = createService();
 
     prisma.guide.findFirst.mockResolvedValue(guide);
-    prisma.guideLike.createMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
+    prisma.reaction.createMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
     prisma.guide.findUniqueOrThrow.mockResolvedValue({ ...guide, likesCount: 1 });
 
     await service.like({ id: guide.id, userId: 'viewer', liked: true });
     await service.like({ id: guide.id, userId: 'viewer', liked: true });
 
-    expect(prisma.guideLike.createMany).toHaveBeenCalledWith({ data: [{ guideId: guide.id, userId: 'viewer' }], skipDuplicates: true });
+    expect(prisma.reaction.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: [{ target: 'guide', targetId: guide.id, userId: 'viewer' }],
+        skipDuplicates: true
+      })
+    );
+
     expect(prisma.guide.update).toHaveBeenCalledTimes(1);
   });
 
@@ -158,12 +173,35 @@ describe('GuideService.like', () => {
     const { service, prisma } = createService();
 
     prisma.guide.findFirst.mockResolvedValue(guide);
-    prisma.guideLike.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.reaction.deleteMany.mockResolvedValue({ count: 0 });
     prisma.guide.findUniqueOrThrow.mockResolvedValue({ ...guide, likesCount: 0 });
 
     await service.like({ id: guide.id, userId: 'viewer', liked: false });
 
     expect(prisma.guide.update).not.toHaveBeenCalled();
+  });
+});
+
+describe('GuideService.remove', () => {
+  it('deletes the reactions and comments of the guide together with it', async () => {
+    const { service, prisma } = createService();
+
+    prisma.guide.deleteMany.mockResolvedValue({ count: 1 });
+
+    await service.remove({ id: guide.id, userId: 'author' });
+
+    expect(prisma.guide.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: guide.id, authorUserId: 'author' } }));
+    expect(prisma.reaction.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { target: 'guide', targetId: guide.id } }));
+    expect(prisma.comment.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { target: 'guide', targetId: guide.id } }));
+  });
+
+  it('leaves the reactions alone when the guide belongs to another user', async () => {
+    const { service, prisma } = createService();
+
+    prisma.guide.deleteMany.mockResolvedValue({ count: 0 });
+
+    await expect(service.remove({ id: guide.id, userId: 'other' })).rejects.toBeInstanceOf(AppNotFoundException);
+    expect(prisma.reaction.deleteMany).not.toHaveBeenCalled();
   });
 });
 

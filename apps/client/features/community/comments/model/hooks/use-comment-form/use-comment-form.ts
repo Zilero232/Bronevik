@@ -14,10 +14,12 @@ import type { UseCommentFormInput } from './use-comment-form.types';
 import { createComment } from '../../../api';
 import { COMMENT_FORM_DEFAULT_VALUES, COMMENT_MAX_LENGTH } from '../../../config';
 import { commentFormSchema, toCreateComment } from '../../../lib/comment-form';
+import { useCommentsThreadContext } from '../../context';
 
-export const useCommentForm = ({ thread, parentId, onDone }: UseCommentFormInput) => {
+export const useCommentForm = ({ parentId, onDone }: UseCommentFormInput = {}) => {
   const t = useTranslations('community.comments');
   const queryClient = useQueryClient();
+  const { thread } = useCommentsThreadContext();
   const form = useForm<CommentFormValues, unknown, CommentFormOutput>({
     resolver: zodResolver(commentFormSchema),
     defaultValues: COMMENT_FORM_DEFAULT_VALUES
@@ -29,7 +31,7 @@ export const useCommentForm = ({ thread, parentId, onDone }: UseCommentFormInput
     mutationFn: createComment,
     onSuccess: () => {
       form.reset(COMMENT_FORM_DEFAULT_VALUES);
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments({ target: thread.target, targetId: thread.targetId }) });
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments(thread) });
       onDone?.();
     },
     onError: () => toast.error(t('failed'))

@@ -2,7 +2,7 @@ import { playerTanksQuerySchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountTankRating, MoeProgress, PlayerTank } from '../../../../../generated';
+import type { AccountTankRating, PlayerTank } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 import type { CatalogEntry } from '../../../reference/reference.types';
@@ -19,7 +19,7 @@ const entry = (tankId: number, tier = 10): CatalogEntry => ({
 });
 
 const tank = (tankId: number, overrides: Partial<PlayerTank> = {}): PlayerTank =>
-  mock<PlayerTank>({ tankId, battles: 100, wins: 50, markOfMastery: 0, marksOnGun: null, lastBattleAt: null, ...overrides });
+  mock<PlayerTank>({ tankId, battles: 100, wins: 50, markOfMastery: 0, marksOnGun: null, moePercent: null, lastBattleAt: null, ...overrides });
 
 const snapshot = (tankId: number, overrides: Partial<LatestTankSnapshot> = {}): LatestTankSnapshot => ({
   tank_id: tankId,
@@ -49,7 +49,6 @@ const createService = ({
   prisma.playerTank.findMany.mockResolvedValue(tanks);
   prisma.$queryRaw.mockResolvedValue(snapshots);
   prisma.accountTankRating.findMany.mockResolvedValue([]);
-  prisma.moeProgress.findMany.mockResolvedValue([]);
   vehicles.filter.mockResolvedValue(catalog);
 
   vehicles.summary.mockImplementation((tankId) =>
@@ -99,13 +98,11 @@ describe('PlayerTanksService.list', () => {
 
     const [row] = (await service.list({ accountId: 42n, query: query() })).items;
 
-    expect(row).toMatchObject({ avgDamage: null, avgFrags: null, avgXp: null });
+    expect(row).toMatchObject({ avgDamage: null, avgFrags: null, avgXp: null, moePercent: null });
   });
 
   it('clamps MoE progress into 0..100 and mastery into 0..4', async () => {
-    const { service, prisma } = createService({ tanks: [tank(1, { markOfMastery: 7 })] });
-
-    prisma.moeProgress.findMany.mockResolvedValue([mock<MoeProgress>({ tankId: 1, marks: 2, percent: 104 })]);
+    const { service } = createService({ tanks: [tank(1, { markOfMastery: 7, marksOnGun: 2, moePercent: 104 })] });
 
     const [row] = (await service.list({ accountId: 42n, query: query() })).items;
 

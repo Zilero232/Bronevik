@@ -4,7 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { BarChart } from '@/ui-kit';
 
-import type { EconomyResultsProps } from '../../EconomyCalculator.types';
+import type { EconomyResultsProps } from './EconomyResults.types';
 
 import { TOOLS_FORMAT, TOOLS_LAYOUT } from '../../../../../config';
 import { battleEconomy } from '../../../../../lib/battle-economy';

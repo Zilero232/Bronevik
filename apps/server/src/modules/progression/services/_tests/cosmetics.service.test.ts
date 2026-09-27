@@ -2,7 +2,7 @@ import { catalogCosmetics, OVERLAY_THEMES, seasonalCosmeticCode } from '@otmetki
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { CosmeticOwnership, ProfileCosmetics, Subscription, UserLestaAccount } from '../../../../../generated';
+import type { CosmeticOwnership, Subscription, User, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
@@ -23,8 +23,8 @@ const seasonBadge = seasonalCosmeticCode({ season: '2026-q3', slot: 'badge', gra
 
 const owned = (userId: string, code: string) => Object.assign(mock<CosmeticOwnership>(), { userId, code, acquiredAt: now });
 
-const equipped = (userId: string, fields: Partial<Pick<ProfileCosmetics, 'badge' | 'banner' | 'frame'>>) =>
-  Object.assign(mock<ProfileCosmetics>(), { userId, badge: null, frame: null, banner: null, ...fields });
+const equipped = (id: string, fields: Partial<Pick<User, 'cosmeticBadge' | 'cosmeticBanner' | 'cosmeticFrame'>>) =>
+  Object.assign(mock<User>(), { id, cosmeticBadge: null, cosmeticFrame: null, cosmeticBanner: null, ...fields });
 
 const setup = ({ isPlus = false, codes = [] }: { isPlus?: boolean; codes?: string[] } = {}) => {
   const prisma = mockDeep<PrismaService>();
@@ -35,7 +35,7 @@ const setup = ({ isPlus = false, codes = [] }: { isPlus?: boolean; codes?: strin
   ledger.balance.mockResolvedValue(0);
   prisma.cosmeticOwnership.findMany.mockResolvedValue(codes.map((code) => owned('u', code)));
   prisma.cosmeticOwnership.count.mockResolvedValue(codes.length);
-  prisma.profileCosmetics.findUnique.mockResolvedValue(null);
+  prisma.user.findUnique.mockResolvedValue(null);
   prisma.cosmeticOwnership.findUnique.mockResolvedValue(null);
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
@@ -60,6 +60,14 @@ describe('CosmeticsService.inventory', () => {
     expect(inventory.equipped).toEqual(NO_COSMETICS);
     expect(inventory.items.filter((item) => item.isOwned).every((item) => item.source === 'default')).toBe(true);
     expect(inventory.items.find((item) => item.code === plusBadge?.code)?.isUsable).toBe(false);
+  });
+
+  it('reads the equipped slots from the user cosmetic columns', async () => {
+    const { prisma, service } = setup();
+
+    prisma.user.findUnique.mockResolvedValue(equipped('u', { cosmeticBadge: shopBadge?.code ?? null }));
+
+    expect((await service.inventory('u')).equipped).toEqual({ badge: shopBadge?.code, frame: null, banner: null });
   });
 
   it('lets Plus members use Plus items without owning them', async () => {
@@ -118,7 +126,10 @@ describe('CosmeticsService.purchase', () => {
     await service.purchase({ userId: 'u', code: shopBadge?.code ?? '' });
 
     expect(ledger.spend).toHaveBeenCalledWith(expect.objectContaining({ userId: 'u', amount: shopBadge?.price }));
-    expect(prisma.cosmeticOwnership.create).toHaveBeenCalledWith({ data: expect.objectContaining({ code: shopBadge?.code, grant: 'purchase' }) });
+
+    expect(prisma.cosmeticOwnership.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ code: shopBadge?.code, grant: 'purchase' }) })
+    );
   });
 
   it('records nothing when the balance is too low', async () => {
@@ -146,7 +157,7 @@ describe('CosmeticsService.equip', () => {
       response: expect.objectContaining({ code: 'SUBSCRIPTION_REQUIRED' })
     });
 
-    expect(prisma.profileCosmetics.upsert).not.toHaveBeenCalled();
+    expect(prisma.user.update).not.toHaveBeenCalled();
   });
 
   it('refuses a shop item the user does not own', async () => {
@@ -163,7 +174,12 @@ describe('CosmeticsService.equip', () => {
 
     await service.equip({ userId: 'u', badge: shopBadge?.code, banner: null });
 
-    expect(prisma.profileCosmetics.upsert).toHaveBeenCalledWith(expect.objectContaining({ update: { badge: shopBadge?.code, banner: null } }));
+    expect(prisma.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'u' },
+        data: { cosmeticBadge: shopBadge?.code, cosmeticFrame: undefined, cosmeticBanner: null }
+      })
+    );
   });
 });
 
@@ -176,8 +192,8 @@ describe('CosmeticsService.profiles', () => {
       Object.assign(mock<UserLestaAccount>(), { accountId: 2n, userId: 'v' })
     ]);
 
-    context.prisma.profileCosmetics.findMany.mockResolvedValue([
-      equipped('u', { badge: plusBadge?.code ?? null, banner: defaultBanner?.code ?? null })
+    context.prisma.user.findMany.mockResolvedValue([
+      equipped('u', { cosmeticBadge: plusBadge?.code ?? null, cosmeticBanner: defaultBanner?.code ?? null })
     ]);
 
     context.prisma.cosmeticOwnership.findMany.mockResolvedValue([]);
@@ -192,6 +208,21 @@ describe('CosmeticsService.profiles', () => {
     expect((await service.profiles([1, 2, 2])).map((profile) => profile.accountId)).toEqual([1]);
   });
 
+  it('loads only owners that have at least one slot equipped', async () => {
+    const { prisma, service } = setupProfiles({ plusUsers: [] });
+
+    await service.profiles([1, 2]);
+
+    expect(prisma.user.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          id: { in: ['u', 'v'] },
+          OR: [{ cosmeticBadge: { not: null } }, { cosmeticFrame: { not: null } }, { cosmeticBanner: { not: null } }]
+        }
+      })
+    );
+  });
+
   it('hides Plus items once the subscription lapsed but keeps default ones', async () => {
     const { service } = setupProfiles({ plusUsers: [] });
 
@@ -204,7 +235,7 @@ describe('CosmeticsService.profiles', () => {
     const { prisma, service } = setup();
 
     prisma.userLestaAccount.findMany.mockResolvedValue([]);
-    prisma.profileCosmetics.findMany.mockResolvedValue([]);
+    prisma.user.findMany.mockResolvedValue([]);
     prisma.subscription.findMany.mockResolvedValue([]);
 
     expect(await service.profile(5)).toEqual({ accountId: 5, ...NO_COSMETICS });

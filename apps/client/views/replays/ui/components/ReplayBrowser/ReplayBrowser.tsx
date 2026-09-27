@@ -4,13 +4,14 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
-import { Button, Card, CardHeader, DataTable, EmptyState, ErrorState, Tabs } from '@/ui-kit';
+import { Button, Card, CardHeader, DataTable, ErrorState, FilteredEmptyState, Tabs } from '@/ui-kit';
 
 import type { ReplayTab } from './ReplayBrowser.types';
 
 import { REPLAY_TABS } from '../../../config';
-import { useReplayColumns, useReplaysFeed } from '../../../model/hooks';
+import { useReplayColumns, useReplaysFeed, useReplayVehicle } from '../../../model/hooks';
 import { ReplayFilters } from '../ReplayFilters';
+import { ReplayCard } from './components';
 
 import s from './ReplayBrowser.module.scss';
 
@@ -37,6 +38,7 @@ export const ReplayBrowser = () => {
   } = useReplaysFeed();
 
   const columns = useReplayColumns();
+  const vehicleOf = useReplayVehicle();
 
   return (
     <Card aria-labelledby={titleId} className={s.root} padding='none'>
@@ -55,18 +57,7 @@ export const ReplayBrowser = () => {
       ) : (
         <DataTable
           emptyState={
-            <EmptyState
-              isCompact
-              action={
-                isFiltered && (
-                  <Button size='sm' variant='secondary' onClick={resetFilters}>
-                    {t('resetFilters')}
-                  </Button>
-                )
-              }
-              description={t(empty.description)}
-              title={t(empty.title)}
-            />
+            <FilteredEmptyState isCompact description={t(empty.description)} isFiltered={isFiltered} title={t(empty.title)} onReset={resetFilters} />
           }
           footer={
             pager.pages > 1 && (
@@ -87,6 +78,7 @@ export const ReplayBrowser = () => {
           getRowId={(row) => row.id}
           getRowLink={(row) => ({ href: ROUTES.replays.detail(row.id), label: row.mapName ?? row.arenaId ?? t('unknownMap') })}
           isLoading={isPending}
+          renderCard={(row) => <ReplayCard replay={row} vehicle={vehicleOf(row)} />}
         />
       )}
     </Card>

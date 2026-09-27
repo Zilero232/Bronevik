@@ -190,8 +190,7 @@ for (let day = options.days; day >= 1; day -= 1) {
                 membersCount: info.members_count ?? 0,
                 eloRating6: map.success ? (map.data.ratings.elo_6 ?? null) : null,
                 eloRating8: map.success ? (map.data.ratings.elo_8 ?? null) : null,
-                eloRating10: map.success ? (map.data.ratings.elo_10 ?? null) : null,
-                ratings: map.success ? map.data : undefined
+                eloRating10: map.success ? (map.data.ratings.elo_10 ?? null) : null
               }
             ]
           : [];
@@ -313,9 +312,14 @@ const writeModBattles = async (player: MockPlayer) => {
       continue;
     }
 
-    const moe = { marks: event.moe.marks_on_gun, percent: event.moe.damage_rating / 100, movingDamage: event.moe.moving_avg_damage };
+    const moe = {
+      marksOnGun: event.moe.marks_on_gun,
+      moePercent: event.moe.damage_rating / 100,
+      moeMovingDamage: event.moe.moving_avg_damage,
+      moeUpdatedAt: fromUnixTime(event.occurred_at)
+    };
 
-    await prisma.moeProgress.upsert({
+    await prisma.playerTank.upsert({
       where: { accountId_tankId: { accountId, tankId } },
       create: { accountId, tankId, ...moe },
       update: moe
@@ -374,12 +378,11 @@ const counts = await prisma.$queryRawUnsafe<{ name: string; count: bigint }[]>(`
   UNION ALL SELECT 'clan_snapshot', count(*) FROM clan_snapshot
   UNION ALL SELECT 'battle', count(*) FROM battle
   UNION ALL SELECT 'play_session', count(*) FROM play_session
-  UNION ALL SELECT 'moe_progress', count(*) FROM moe_progress
   UNION ALL SELECT 'account_rating', count(*) FROM account_rating
   UNION ALL SELECT 'account_tank_rating', count(*) FROM account_tank_rating
   UNION ALL SELECT 'tank_server_stats', count(*) FROM tank_server_stats
   UNION ALL SELECT 'achievement', count(*) FROM achievement
-  UNION ALL SELECT 'mastery_threshold', count(*) FROM mastery_threshold
+  UNION ALL SELECT 'tank_threshold', count(*) FROM tank_threshold
   UNION ALL SELECT 'build_usage_aggregate', count(*) FROM build_usage_aggregate
   UNION ALL SELECT 'tank_economy_aggregate', count(*) FROM tank_economy_aggregate
   UNION ALL SELECT 'tank_learning_curve', count(*) FROM tank_learning_curve

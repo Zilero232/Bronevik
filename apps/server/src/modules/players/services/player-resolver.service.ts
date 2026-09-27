@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import type { Prisma } from '../../../../generated';
 import type { LestaClient } from '../../../lib/lesta';
 import type { LestaPlayerInfo } from '../players.types';
 
@@ -80,12 +81,9 @@ export class PlayerResolverService {
     const data = {
       nickname: info.nickname,
       clanId: info.clan_id === null ? null : BigInt(info.clan_id),
-      globalRating: info.global_rating,
       createdAt: fromUnixSeconds(info.created_at),
-      lastBattleAt: fromUnixSeconds(info.last_battle_time),
-      logoutAt: fromUnixSeconds(info.logout_at),
-      lestaUpdatedAt: fromUnixSeconds(info.updated_at)
-    };
+      lastBattleAt: fromUnixSeconds(info.last_battle_time)
+    } satisfies Prisma.PlayerUpdateInput;
 
     await this.prisma.player.upsert({
       where: { accountId },

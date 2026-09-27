@@ -1,10 +1,11 @@
 'use client';
 
 import type { TankServerStatsRow } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { TankCell, TierCell, WinRateCell } from '@/entities/tank/tank';
 import { percentText } from '@/shared/lib';
@@ -14,7 +15,7 @@ import { TANKS_TABLE } from '../../../config';
 
 const column = createColumnHelper<TankServerStatsRow>();
 
-export const useTankColumns = (): ColumnDef<TankServerStatsRow, never>[] => {
+export const useTankColumns = (): TableColumn<TankServerStatsRow>[] => {
   const t = useTranslations('tanks.table');
   const format = useFormatter();
 

@@ -10,16 +10,16 @@ import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Badge, buttonVariants, Card, GameVersionBadge, KeyFigure, KeyFigures, PageHeader } from '@/ui-kit';
 
-import type { ReplayOverviewProps } from './ReplayOverview.types';
-
+import { useReplay } from '../../../model/context';
 import { useReplayOverview } from '../../../model/hooks';
 import { ReplayOwnerActions } from '../ReplayOwnerActions';
 
 import s from './ReplayOverview.module.scss';
 
-export const ReplayOverview = ({ replay }: ReplayOverviewProps) => {
+export const ReplayOverview = () => {
   const t = useTranslations('replays.detail');
-  const { title, vehicle, owner, mode, modeLabel, downloadHref, duration, playedAt, figures } = useReplayOverview(replay);
+  const replay = useReplay();
+  const { title, vehicle, owner, mode, modeLabel, downloadHref, duration, playedAt, figures } = useReplayOverview();
 
   return (
     <>
@@ -82,7 +82,7 @@ export const ReplayOverview = ({ replay }: ReplayOverviewProps) => {
             ))}
           </div>
         )}
-        <ReplayOwnerActions replay={replay} />
+        <ReplayOwnerActions />
       </Card>
     </>
   );

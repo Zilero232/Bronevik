@@ -1,44 +1,20 @@
 'use client';
 
-import { skipToken, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import { getBuildOptions } from '@/entities/tank/build';
-import { getTank } from '@/entities/tank/tank';
-import { QUERY_KEYS } from '@/shared/constants';
-
-import { BUILD_VIEW } from '../../../config';
+import { buildQueries } from '../../../api';
 
 export const useBuildData = (slug: string) => {
-  const tankQuery = useQuery({
-    queryKey: QUERY_KEYS.tanks.detail({ idOrSlug: slug }),
-    queryFn: ({ signal }) => getTank({ idOrSlug: slug, signal }),
-    staleTime: BUILD_VIEW.staleMs
-  });
-
-  const tankId = tankQuery.data?.vehicle.tankId;
-
-  const optionsQuery = useQuery({
-    queryKey: QUERY_KEYS.builds.options(tankId ?? 0),
-    queryFn: tankId === undefined ? skipToken : ({ signal }) => getBuildOptions({ tankId, signal }),
-    staleTime: BUILD_VIEW.staleMs
-  });
-
-  const refetch = () => {
-    if (tankQuery.isError) {
-      void tankQuery.refetch();
-
-      return;
-    }
-
-    void optionsQuery.refetch();
-  };
+  const tankQuery = useQuery(buildQueries.tank({ idOrSlug: slug }));
+  const vehicle = tankQuery.data?.vehicle;
+  const optionsQuery = useQuery({ ...buildQueries.options(vehicle?.tankId ?? 0), enabled: vehicle !== undefined });
+  const failed = tankQuery.isError ? tankQuery : optionsQuery;
 
   return {
-    vehicle: tankQuery.data?.vehicle,
-    options: optionsQuery.data,
-    isPending: tankQuery.isPending || (tankId !== undefined && optionsQuery.isPending),
-    isRetrying: tankQuery.isFetching || optionsQuery.isFetching,
-    error: tankQuery.error ?? optionsQuery.error,
-    refetch
+    data: vehicle && optionsQuery.data ? { vehicle, options: optionsQuery.data } : undefined,
+    isError: tankQuery.isError || optionsQuery.isError,
+    error: failed.error,
+    isRefetching: tankQuery.isFetching || optionsQuery.isFetching,
+    refetch: failed.refetch
   };
 };

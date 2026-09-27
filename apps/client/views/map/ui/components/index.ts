@@ -1,2 +1,4 @@
+export { MapHeader } from './MapHeader';
+export { MapNav } from './MapNav';
 export { MapSkeleton } from './MapSkeleton';
-export { MapView } from './MapView';
+export { MapStats } from './MapStats';

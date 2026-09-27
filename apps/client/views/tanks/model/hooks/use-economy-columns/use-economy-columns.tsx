@@ -1,12 +1,13 @@
 'use client';
 
 import type { TankEconomyRow } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { economyView, TankCell, TankStatusBadge, TierCell } from '@/entities/tank/tank';
+import type { TableColumn } from '@/ui-kit';
+
+import { TankCell, TankStatusBadge, TierCell } from '@/entities/tank/tank';
 
 import type { UseEconomyColumnsInput } from './use-economy-columns.types';
 
@@ -14,11 +15,10 @@ import { TANKS_TABLE } from '../../../config';
 
 const column = createColumnHelper<TankEconomyRow>();
 
-export const useEconomyColumns = ({ account, withReserve, withClanPayout }: UseEconomyColumnsInput): ColumnDef<TankEconomyRow, never>[] => {
+export const useEconomyColumns = ({ view }: UseEconomyColumnsInput): TableColumn<TankEconomyRow>[] => {
   const t = useTranslations('tanks.economy.columns');
   const format = useFormatter();
 
-  const view = (row: TankEconomyRow) => economyView({ economy: row.economy, account, withReserve, withClanPayout });
   const amount = (value: number | null | undefined) => (value === null || value === undefined ? '—' : format.number(value));
 
   return [

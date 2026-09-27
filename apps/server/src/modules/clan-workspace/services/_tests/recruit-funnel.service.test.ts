@@ -59,20 +59,22 @@ describe('RecruitFunnelService.add', () => {
 
     await service.add({ ...scope, accountId: 7, notes: 'good tanker' });
 
-    expect(prisma.recruitCandidate.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        clanId: BigInt(clanId),
-        accountId: 7n,
-        createdByUserId: 'u1',
-        statsSnapshot: expect.objectContaining({
-          nickname: 'Tanker',
-          battles: rating.battles,
-          wn8: rating.wn8,
-          winRate: rating.winRate,
-          avgDamage: rating.avgDamage
+    expect(prisma.recruitCandidate.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          clanId: BigInt(clanId),
+          accountId: 7n,
+          createdByUserId: 'u1',
+          statsSnapshot: expect.objectContaining({
+            nickname: 'Tanker',
+            battles: rating.battles,
+            wn8: rating.wn8,
+            winRate: rating.winRate,
+            avgDamage: rating.avgDamage
+          })
         })
       })
-    });
+    );
   });
 
   it('stores nulls when the player has no rating yet', async () => {
@@ -83,12 +85,14 @@ describe('RecruitFunnelService.add', () => {
 
     await service.add({ ...scope, accountId: 7 });
 
-    expect(prisma.recruitCandidate.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        notes: null,
-        statsSnapshot: expect.objectContaining({ nickname: null, battles: null, wn8: null, winRate: null, avgDamage: null })
+    expect(prisma.recruitCandidate.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          notes: null,
+          statsSnapshot: expect.objectContaining({ nickname: null, battles: null, wn8: null, winRate: null, avgDamage: null })
+        })
       })
-    });
+    );
   });
 
   it('reports a player already in the funnel as a conflict', async () => {

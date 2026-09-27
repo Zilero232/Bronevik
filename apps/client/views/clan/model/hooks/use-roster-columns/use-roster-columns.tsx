@@ -1,10 +1,10 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { clanRoleSchema } from '@otmetki/schemas';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { PlayerNameCell } from '@/entities/player/player';
 import { RatingValue } from '@/entities/player/stats';
@@ -16,7 +16,7 @@ import { ActivityCell, RoleCell } from '../../../ui/components/ClanRoster/compon
 
 const column = createColumnHelper<RosterRow>();
 
-export const useRosterColumns = (): ColumnDef<RosterRow, never>[] => {
+export const useRosterColumns = (): TableColumn<RosterRow>[] => {
   const t = useTranslations('clans.roster');
   const format = useFormatter();
 

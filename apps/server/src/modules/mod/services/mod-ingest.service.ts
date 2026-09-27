@@ -61,9 +61,11 @@ export class ModIngestService {
 
     try {
       await this.prisma.$transaction(async (tx) => {
-        const previous = event.moe ? await tx.moeProgress.findUnique({ where: { accountId_tankId: { accountId, tankId } } }) : null;
+        const previous = event.moe
+          ? await tx.playerTank.findUnique({ where: { accountId_tankId: { accountId, tankId } }, select: { marksOnGun: true, moePercent: true } })
+          : null;
 
-        previousMarks = previous?.marks ?? null;
+        previousMarks = previous?.marksOnGun ?? null;
 
         if (sessionId) {
           await tx.playSession.upsert({
@@ -74,7 +76,7 @@ export class ModIngestService {
         }
 
         await tx.battle.create({
-          data: toBattleData({ event, accountId, deviceId: device.id, sessionId, previousMoePercent: previous?.percent ?? null })
+          data: toBattleData({ event, accountId, deviceId: device.id, sessionId, previousMoePercent: previous?.moePercent ?? null })
         });
 
         if (sessionId) {
@@ -102,9 +104,14 @@ export class ModIngestService {
         }
 
         if (event.moe) {
-          const values = { marks: event.moe.marks_on_gun, percent: moePercent(event.moe.damage_rating), movingDamage: event.moe.moving_avg_damage };
+          const values = {
+            marksOnGun: event.moe.marks_on_gun,
+            moePercent: moePercent(event.moe.damage_rating),
+            moeMovingDamage: event.moe.moving_avg_damage,
+            moeUpdatedAt: new Date()
+          };
 
-          await tx.moeProgress.upsert({
+          await tx.playerTank.upsert({
             where: { accountId_tankId: { accountId, tankId } },
             create: { accountId, tankId, ...values },
             update: values
@@ -145,11 +152,17 @@ export class ModIngestService {
       }
 
       if (event.type === 'moe_snapshot') {
-        const values = { marks: event.marks_on_gun, percent: moePercent(event.damage_rating), movingDamage: event.moving_avg_damage };
-        const where = { accountId_tankId: { accountId: device.accountId, tankId: event.tank_id } };
-        const previous = await this.prisma.moeProgress.findUnique({ where, select: { marks: true } });
+        const values = {
+          marksOnGun: event.marks_on_gun,
+          moePercent: moePercent(event.damage_rating),
+          moeMovingDamage: event.moving_avg_damage,
+          moeUpdatedAt: new Date()
+        };
 
-        await this.prisma.moeProgress.upsert({
+        const where = { accountId_tankId: { accountId: device.accountId, tankId: event.tank_id } };
+        const previous = await this.prisma.playerTank.findUnique({ where, select: { marksOnGun: true } });
+
+        await this.prisma.playerTank.upsert({
           where,
           create: { accountId: device.accountId, tankId: event.tank_id, ...values },
           update: values
@@ -158,9 +171,9 @@ export class ModIngestService {
         await this.markGained({
           accountId: device.accountId,
           tankId: event.tank_id,
-          marks: values.marks,
-          previous: previous?.marks ?? null,
-          percent: values.percent
+          marks: values.marksOnGun,
+          previous: previous?.marksOnGun ?? null,
+          percent: values.moePercent
         });
       }
 

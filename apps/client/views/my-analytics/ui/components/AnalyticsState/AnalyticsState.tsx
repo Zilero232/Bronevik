@@ -1,7 +1,7 @@
 'use client';
 
 import { PlusTeaser } from '@/features/plus/plus-gate';
-import { ErrorState, Skeleton } from '@/ui-kit';
+import { QueryState, Skeleton } from '@/ui-kit';
 
 import type { AnalyticsStateProps } from './AnalyticsState.types';
 
@@ -9,12 +9,11 @@ import { ANALYTICS_VIEW } from '../../../config';
 import { NoAccountState } from '../NoAccountState';
 
 export const AnalyticsState = <T,>({
-  status,
-  data,
+  state: { data, status, isRetrying, retry },
   feature = 'analytics',
-  isRetrying,
   height = ANALYTICS_VIEW.skeletonHeight,
-  onRetry,
+  empty,
+  isEmpty,
   children
 }: AnalyticsStateProps<T>) => {
   if (status === 'plus') {
@@ -25,9 +24,15 @@ export const AnalyticsState = <T,>({
     return <NoAccountState />;
   }
 
-  if (status === 'error') {
-    return <ErrorState isCompact isRetrying={isRetrying} onRetry={onRetry} />;
-  }
-
-  return data === undefined ? <Skeleton height={height} shape='block' /> : children(data);
+  return (
+    <QueryState
+      isCompact
+      empty={empty}
+      isEmpty={isEmpty}
+      query={{ data, isError: status === 'error', isRefetching: isRetrying, refetch: retry }}
+      skeleton={<Skeleton height={height} shape='block' />}
+    >
+      {children}
+    </QueryState>
+  );
 };

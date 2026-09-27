@@ -1,15 +1,23 @@
+'use client';
+
 import { CREW_ROLE_ICONS, isCrewRole } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { SkillRow } from '@/entities/tank/build';
+import { EmptyState } from '@/ui-kit';
 
-import type { CrewBandProps } from './CrewBand.types';
+import { useShowcaseCrew } from '../../../../../model/hooks';
 
 import s from './CrewBand.module.scss';
 
-export const CrewBand = ({ columns, isShares }: CrewBandProps) => {
+export const CrewBand = () => {
   const t = useTranslations('builds.showcase.crew');
   const tRoles = useTranslations('builds.panels.crew.roles');
+  const { columns, isShares } = useShowcaseCrew();
+
+  if (columns.length === 0) {
+    return <EmptyState title={t('empty')} />;
+  }
 
   return (
     <section aria-label={t('title')} className={s.root} data-theme='dark'>

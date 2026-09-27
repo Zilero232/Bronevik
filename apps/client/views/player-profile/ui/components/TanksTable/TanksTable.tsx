@@ -9,6 +9,7 @@ import type { TanksTableProps } from './TanksTable.types';
 
 import { TANKS_TABLE } from '../../../config';
 import { useTanksTableColumns } from '../../../model/hooks';
+import { PlayerTankCard } from './components';
 
 export const TanksTable = ({ rows, isLoading, onReset }: TanksTableProps) => {
   const t = useTranslations('profile.tanks');
@@ -34,6 +35,7 @@ export const TanksTable = ({ rows, isLoading, onReset }: TanksTableProps) => {
       getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
       initialSorting={TANKS_TABLE.initialSorting}
       isLoading={isLoading}
+      renderCard={(row) => <PlayerTankCard row={row} />}
     />
   );
 };

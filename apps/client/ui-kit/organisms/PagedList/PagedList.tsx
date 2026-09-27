@@ -11,17 +11,10 @@ import { pagedListVariants } from './PagedList.variants';
 import s from './PagedList.module.scss';
 
 export const PagedList = <TItem,>({
-  items,
+  list: { items, isPending, isError, isRetrying, hasNextPage, isFetchingNextPage, loadMore, retry },
   getKey,
   renderItem,
   empty,
-  isPending,
-  isError,
-  onRetry,
-  onLoadMore,
-  isRetrying = false,
-  hasNextPage = false,
-  isFetchingNextPage = false,
   errorTitle,
   errorDescription,
   header,
@@ -38,7 +31,7 @@ export const PagedList = <TItem,>({
   if (isError && items.length === 0) {
     return (
       <section aria-label={label} className={rootClassName}>
-        <ErrorState description={errorDescription} isCompact={layout === 'rows'} isRetrying={isRetrying} title={errorTitle} onRetry={onRetry} />
+        <ErrorState description={errorDescription} isCompact={layout === 'rows'} isRetrying={isRetrying} title={errorTitle} onRetry={retry} />
       </section>
     );
   }
@@ -47,9 +40,7 @@ export const PagedList = <TItem,>({
     return (
       <section aria-busy aria-label={label} className={rootClassName}>
         <div className={s.skeletons}>
-          {Array.from({ length: skeletonCount }, (_, index) => (
-            <Skeleton key={index} height={skeletonHeight} />
-          ))}
+          <Skeleton count={skeletonCount} height={skeletonHeight} />
         </div>
       </section>
     );
@@ -75,7 +66,7 @@ export const PagedList = <TItem,>({
       </ul>
       {hasNextPage && (
         <div className={s.more}>
-          <Button disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={onLoadMore}>
+          <Button disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={loadMore}>
             {moreLabel ?? t('showMore')}
           </Button>
         </div>

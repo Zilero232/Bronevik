@@ -5,21 +5,21 @@ import { STREAMER_SETTINGS } from '@otmetki/schemas';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountRating, PlayerSettingsShare, SettingsAggregate, StreamerSettings } from '../../../../../generated';
+import type { AccountRating, PlayerSettingsShare, Prisma, SettingsAggregate, StreamerProfile } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { aggregateCohort } from '../../lib';
 import { SettingsAggregateService } from '../settings-aggregate.service';
+import { streamerProfileRow } from './streamers.fixtures';
 
 const NOW = new Date('2026-09-20T04:20:00Z');
 const COHORT_SIZE = STREAMER_SETTINGS.minCohort;
 const CHECKED_AT = '2026-08-01T00:00:00.000Z';
 
-const creatorRow = (index: number): StreamerSettings => ({
-  profileId: `p${index}`,
-  data: { camera: { fov: 90 + (index % 3) * 5, source: 'creator', sourceUrl: null, checkedAt: CHECKED_AT } },
-  updatedAt: NOW
-});
+const profileRow = (settings: Prisma.JsonObject): StreamerProfile => streamerProfileRow({ settings, settingsUpdatedAt: NOW });
+
+const creatorRow = (index: number): StreamerProfile =>
+  profileRow({ camera: { fov: 90 + (index % 3) * 5, source: 'creator', sourceUrl: null, checkedAt: CHECKED_AT } });
 
 const shareRow = (index: number, accountId: bigint | null = BigInt(1000 + index)): PlayerSettingsShare => ({
   userId: `u${index}`,
@@ -46,7 +46,7 @@ const createService = () => {
   const prisma = mockDeep<PrismaService>();
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
-  prisma.streamerSettings.findMany.mockResolvedValue([]);
+  prisma.streamerProfile.findMany.mockResolvedValue([]);
   prisma.playerSettingsShare.findMany.mockResolvedValue([]);
   prisma.accountRating.findMany.mockResolvedValue([]);
 
@@ -118,7 +118,7 @@ describe('SettingsAggregateService.compute', () => {
     const { service, prisma } = createService();
     const creators = range(COHORT_SIZE).map(creatorRow);
 
-    prisma.streamerSettings.findMany.mockResolvedValue(creators);
+    prisma.streamerProfile.findMany.mockResolvedValue(creators);
 
     const written = await service.compute();
     const contributions: SettingsValues[] = creators.map((_, index) => ({ camera: { fov: 90 + (index % 3) * 5 } }));
@@ -132,7 +132,7 @@ describe('SettingsAggregateService.compute', () => {
   it('counts creators in the all cohort but not in the top cohort', async () => {
     const { service, prisma } = createService();
 
-    prisma.streamerSettings.findMany.mockResolvedValue(range(COHORT_SIZE).map(creatorRow));
+    prisma.streamerProfile.findMany.mockResolvedValue(range(COHORT_SIZE).map(creatorRow));
 
     await service.compute();
 
@@ -143,11 +143,8 @@ describe('SettingsAggregateService.compute', () => {
     const { service, prisma } = createService();
     const half = Math.ceil(COHORT_SIZE / 2);
 
-    prisma.streamerSettings.findMany.mockResolvedValue(
-      range(half).map((index) => ({
-        ...creatorRow(index),
-        data: { display: { preset: 'high', source: 'creator', sourceUrl: null, checkedAt: CHECKED_AT } }
-      }))
+    prisma.streamerProfile.findMany.mockResolvedValue(
+      range(half).map(() => profileRow({ display: { preset: 'high', source: 'creator', sourceUrl: null, checkedAt: CHECKED_AT } }))
     );
 
     prisma.playerSettingsShare.findMany.mockResolvedValue(range(COHORT_SIZE - half).map((index) => shareRow(index)));
@@ -187,9 +184,9 @@ describe('SettingsAggregateService.compute', () => {
 
   it('skips stored settings that no longer match the schema', async () => {
     const { service, prisma } = createService();
-    const broken = { ...creatorRow(COHORT_SIZE), data: { camera: { fov: 'wide', source: 'creator', sourceUrl: null, checkedAt: CHECKED_AT } } };
+    const broken = profileRow({ camera: { fov: 'wide', source: 'creator', sourceUrl: null, checkedAt: CHECKED_AT } });
 
-    prisma.streamerSettings.findMany.mockResolvedValue([...range(COHORT_SIZE - 1).map(creatorRow), broken]);
+    prisma.streamerProfile.findMany.mockResolvedValue([...range(COHORT_SIZE - 1).map(creatorRow), broken]);
     prisma.playerSettingsShare.findMany.mockResolvedValue([{ ...shareRow(0), data: { display: { preset: 'cinematic' } } }]);
 
     expect(await service.compute()).toBe(0);

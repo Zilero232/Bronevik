@@ -1,6 +1,6 @@
 import type { AddWatchlistPlayerInput, UpdateWatchlistSettingsInput, WatchlistQuery } from '@otmetki/schemas';
 
-import type { WatchlistSettings } from '../../../generated';
+import type { NotificationSettings } from '../../../generated';
 import type { BotContext } from '../telegram';
 
 export type WatchlistListInput = {
@@ -54,7 +54,9 @@ export type MarksGainRow = {
   marks: number;
 };
 
+export type DigestSettings = Pick<NotificationSettings, 'userId' | 'watchlistDigest' | 'watchlistDigestAt'>;
+
 export type DigestForInput = {
-  settings: WatchlistSettings;
+  settings: DigestSettings;
   now: Date;
 };

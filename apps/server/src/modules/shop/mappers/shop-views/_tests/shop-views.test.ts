@@ -16,7 +16,6 @@ const offer = (fields: Partial<PremiumOffer>) =>
     url: null,
     image: null,
     priceRub: null,
-    oldPriceRub: null,
     startsAt: null,
     endsAt: null,
     ...fields
@@ -38,9 +37,9 @@ describe('toBonusCodeView', () => {
 
 describe('toOfferView', () => {
   it('converts decimal prices to numbers and keeps missing prices missing', () => {
-    const view = toOfferView({ offer: offer({ priceRub: new Prisma.Decimal('499.90'), oldPriceRub: null }), timesSeen: 2 });
+    const view = toOfferView({ offer: offer({ priceRub: new Prisma.Decimal('499.90') }), timesSeen: 2 });
 
-    expect(view).toMatchObject({ priceRub: 499.9, oldPriceRub: null, timesSeen: 2 });
+    expect(view).toMatchObject({ priceRub: 499.9, timesSeen: 2 });
   });
 
   it('counts an offer as seen at least once', () => {

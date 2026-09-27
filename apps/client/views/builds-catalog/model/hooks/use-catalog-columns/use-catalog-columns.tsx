@@ -1,10 +1,11 @@
 'use client';
 
 import type { BuildsCatalogEntry } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { TankCell, WinRateCell } from '@/entities/tank/tank';
 
@@ -13,7 +14,7 @@ import { CoverageCell, PicksCell } from '../../../ui/components/CatalogTable/com
 
 const column = createColumnHelper<BuildsCatalogEntry>();
 
-export const useCatalogColumns = (): ColumnDef<BuildsCatalogEntry, never>[] => {
+export const useCatalogColumns = (): TableColumn<BuildsCatalogEntry>[] => {
   const t = useTranslations('buildsCatalog.table');
   const format = useFormatter();
 

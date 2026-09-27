@@ -11,8 +11,10 @@ import { QUERY_KEYS } from '@/shared/constants';
 
 import { likeGuide, unlikeGuide } from '../../../api';
 import { applyLike } from '../../../lib/guide-like';
+import { useGuide } from '../../context';
 
-export const useGuideLike = (guide: Guide) => {
+export const useGuideLike = () => {
+  const guide = useGuide();
   const t = useTranslations('guides.detail');
   const queryClient = useQueryClient();
   const { data: session } = useAuthSession();

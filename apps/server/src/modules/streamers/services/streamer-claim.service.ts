@@ -1,17 +1,17 @@
 import type { AdminClaim, EditorialStreamerInput, StreamerInvitation as InvitationView, StreamerClaim as StreamerClaimView } from '@otmetki/schemas';
 
 import { Injectable, Logger } from '@nestjs/common';
-import { claimMethodSchema } from '@otmetki/schemas';
 import { match } from 'ts-pattern';
 
 import type { StreamerClaim, StreamerPlatform } from '../../../../generated';
 import type { ParsedChannel } from '../lib';
 import type { ClaimRef, ClaimTarget, CompleteClaimInput, RemovalRequestInput, ResolveClaimRequest, StartClaimRequest } from '../streamers.types';
 
+import { Prisma } from '../../../../generated';
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
-import { errorMessage, readRecord, toIso } from '../../../common/lib';
+import { errorMessage, readRecord, toIso, toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { CLAIM, STREAMER_INVITATIONS, STREAMERS } from '../config';
+import { CLAIM, CLAIM_METHOD_FROM_DB, CLAIM_METHOD_TO_DB, REMOVAL_REPORT, STREAMER_INVITATIONS, STREAMERS } from '../config';
 import { invitationChannelsSchema } from '../dto';
 import { bioHasCode, newClaimCode, parseChannel } from '../lib';
 import { LivePlatformsService } from './live-platforms.service';
@@ -41,7 +41,7 @@ export class StreamerClaimService {
       }
 
       const claim = await this.prisma.streamerClaim.create({
-        data: { ...this.targetRef(target), userId, method, platform: 'twitch' }
+        data: { ...this.targetRef(target), userId, method: CLAIM_METHOD_TO_DB[method], platform: 'twitch' }
       });
 
       return this.view(await this.complete({ claim, verifiedPlatform: 'twitch', moderatorId: null }), slug);
@@ -51,7 +51,7 @@ export class StreamerClaimService {
       data: {
         ...this.targetRef(target),
         userId,
-        method,
+        method: CLAIM_METHOD_TO_DB[method],
         platform: platform ?? null,
         code: method === 'bio_code' ? newClaimCode() : null,
         evidence: evidence ?? null
@@ -64,7 +64,7 @@ export class StreamerClaimService {
   async verify({ userId, slug }: ClaimRef): Promise<StreamerClaimView> {
     const target = await this.target(slug);
     const claim = await this.prisma.streamerClaim.findFirst({
-      where: { ...this.targetRef(target), userId, method: 'bio_code', status: 'open' },
+      where: { ...this.targetRef(target), userId, method: CLAIM_METHOD_TO_DB.bio_code, status: 'open' },
       orderBy: { createdAt: 'desc' }
     });
 
@@ -124,10 +124,18 @@ export class StreamerClaimService {
     await this.prisma.streamerClaim.update({ where: { id }, data: { status: 'dismissed', resolvedAt: new Date(), resolvedBy: moderatorId } });
   }
 
-  async requestRemoval({ slug, contact, reason }: RemovalRequestInput): Promise<void> {
+  async requestRemoval({ slug, contact, reason, userId }: RemovalRequestInput): Promise<void> {
     const profile = await this.profiles.publicBySlug(slug);
 
-    await this.prisma.streamerRemovalRequest.create({ data: { profileId: profile.id, contact, reason: reason ?? null } });
+    await this.prisma.contentReport.create({
+      data: {
+        reporterUserId: userId,
+        targetType: REMOVAL_REPORT.targetType,
+        targetId: profile.id,
+        reason: reason ?? REMOVAL_REPORT.reason,
+        details: contact
+      }
+    });
   }
 
   async hide(slug: string): Promise<void> {
@@ -139,8 +147,8 @@ export class StreamerClaimService {
 
     await this.prisma.$transaction([
       this.prisma.streamerProfile.update({ where: { id: profile.id }, data: { hiddenAt: new Date(), isLive: false } }),
-      this.prisma.streamerRemovalRequest.updateMany({
-        where: { profileId: profile.id, status: 'open' },
+      this.prisma.contentReport.updateMany({
+        where: { targetType: REMOVAL_REPORT.targetType, targetId: profile.id, status: 'open' },
         data: { status: 'resolved', resolvedAt: new Date() }
       })
     ]);
@@ -269,13 +277,20 @@ export class StreamerClaimService {
         return { id: target.id, channels: [] };
       }
 
+      const movesSettings = own.settings === null && target.settings !== null;
+
       await tx.streamerChannel.updateMany({ where: { profileId: target.id }, data: { profileId: own.id } });
-      await tx.streamerProfile.update({ where: { id: target.id }, data: { hiddenAt: now, mergedIntoId: own.id } });
 
-      const hasSettings = await tx.streamerSettings.count({ where: { profileId: own.id } });
+      await tx.streamerProfile.update({
+        where: { id: target.id },
+        data: { hiddenAt: now, mergedIntoId: own.id, ...(movesSettings ? { settings: Prisma.DbNull, settingsUpdatedAt: null } : {}) }
+      });
 
-      if (hasSettings === 0) {
-        await tx.streamerSettings.updateMany({ where: { profileId: target.id }, data: { profileId: own.id } });
+      if (movesSettings) {
+        await tx.streamerProfile.update({
+          where: { id: own.id },
+          data: { settings: toJsonValue(target.settings), settingsUpdatedAt: target.settingsUpdatedAt }
+        });
       }
 
       return { id: own.id, channels: [] };
@@ -304,7 +319,7 @@ export class StreamerClaimService {
     return {
       id: claim.id,
       slug,
-      method: claimMethodSchema.parse(claim.method),
+      method: CLAIM_METHOD_FROM_DB[claim.method],
       status: claim.status,
       code: claim.code,
       createdAt: claim.createdAt.toISOString(),

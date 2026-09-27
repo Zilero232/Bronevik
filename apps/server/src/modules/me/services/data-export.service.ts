@@ -82,7 +82,11 @@ export class DataExportService {
         orderBy: { startedAt: 'desc' },
         take: DATA_EXPORT.maxBattles
       }),
-      this.prisma.tankProgress.findMany({ where: { accountId: { in: accountIds } }, orderBy: { xp: 'desc' } })
+      this.prisma.playerTank.findMany({
+        where: { accountId: { in: accountIds }, progressXp: { gt: 0 } },
+        orderBy: { progressXp: 'desc' },
+        select: { accountId: true, tankId: true, progressXp: true, progressBattles: true }
+      })
     ]);
 
     return {
@@ -131,9 +135,9 @@ export class DataExportService {
       tankProgress: progress.map((row) => ({
         accountId: toNumber(row.accountId),
         tankId: row.tankId,
-        level: tankLevelOf(row.xp).level,
-        xp: row.xp,
-        battles: row.battles
+        level: tankLevelOf(row.progressXp).level,
+        xp: row.progressXp,
+        battles: row.progressBattles
       }))
     };
   }

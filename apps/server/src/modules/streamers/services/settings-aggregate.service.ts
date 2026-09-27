@@ -5,6 +5,7 @@ import { RATING_SCALES, RATING_TIERS } from '@otmetki/ratings';
 import { settingsValuesSchema, STREAMER_SETTINGS, streamerSettingsSchema, toSettingsValues } from '@otmetki/schemas';
 import { groupBy } from 'remeda';
 
+import { Prisma } from '../../../../generated';
 import { toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { aggregateCohort } from '../lib';
@@ -71,10 +72,13 @@ export class SettingsAggregateService {
   }
 
   private async creatorValues(): Promise<SettingsValues[]> {
-    const rows = await this.prisma.streamerSettings.findMany({ where: { profile: { hiddenAt: null, kind: 'claimed' } }, select: { data: true } });
+    const rows = await this.prisma.streamerProfile.findMany({
+      where: { hiddenAt: null, kind: 'claimed', settings: { not: Prisma.DbNull } },
+      select: { settings: true }
+    });
 
     return rows.flatMap((row) => {
-      const parsed = streamerSettingsSchema.safeParse(row.data);
+      const parsed = streamerSettingsSchema.safeParse(row.settings);
 
       return parsed.success ? [toSettingsValues(parsed.data)] : [];
     });

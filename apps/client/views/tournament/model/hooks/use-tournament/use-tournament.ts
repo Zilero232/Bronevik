@@ -6,19 +6,9 @@ import { getTournament } from '@/entities/tournament/tournament';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
-export const useTournament = (slug: string) => {
-  const { data, isPending, isError, error, isFetching, refetch } = useQuery({
+export const useTournament = (slug: string) =>
+  useQuery({
     queryKey: QUERY_KEYS.tournaments.detail(slug),
     queryFn: ({ signal }) => getTournament({ slug, signal }),
     retry: (count, failure) => !isNotFoundError(failure) && count < 2
   });
-
-  return {
-    tournament: data ?? null,
-    isPending,
-    isError,
-    isNotFound: isNotFoundError(error),
-    isRetrying: isFetching,
-    retry: () => void refetch()
-  };
-};

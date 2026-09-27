@@ -1,0 +1,7 @@
+.root {
+  transition: opacity var(--duration-base) ease;
+
+  &[data-refreshing='true'] {
+    opacity: 0.55;
+  }
+}

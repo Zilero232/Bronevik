@@ -17,6 +17,10 @@ const follow = (targetId: bigint): Follow => ({
   kind: 'player',
   targetId,
   events: [],
+  isFollowing: true,
+  isFavorite: false,
+  label: null,
+  isOwn: false,
   createdAt: at,
   updatedAt: at
 });
@@ -38,6 +42,7 @@ const createService = () => {
 
   prisma.follow.findMany.mockResolvedValue([]);
   prisma.player.findMany.mockResolvedValue([]);
+  prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
   return { service: new FollowService(prisma, entitlements), prisma, entitlements };
 };
@@ -100,6 +105,18 @@ describe('FollowService.create', () => {
     expect(entitlements.assertWithinLimit).not.toHaveBeenCalled();
   });
 
+  it('checks the watched-tanks limit when the tank is only a favourite', async () => {
+    const { service, prisma, entitlements } = createService();
+
+    prisma.follow.count.mockResolvedValue(3);
+    prisma.follow.findUnique.mockResolvedValue({ ...follow(7n), kind: 'tank', isFollowing: false, isFavorite: true });
+
+    await service.create({ userId: 'u1', kind: 'tank', targetId: 7 });
+
+    expect(entitlements.assertWithinLimit).toHaveBeenCalled();
+    expect(prisma.follow.count).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'u1', kind: 'tank', isFollowing: true } }));
+  });
+
   it('does not count player follows against the watched-tanks limit', async () => {
     const { service, prisma, entitlements } = createService();
 
@@ -116,8 +133,32 @@ describe('FollowService.remove', () => {
     const { service, prisma } = createService();
 
     prisma.follow.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.follow.updateMany.mockResolvedValue({ count: 0 });
 
     await expect(service.remove({ userId: 'u1', id: 'f-1' })).rejects.toBeInstanceOf(AppNotFoundException);
+  });
+
+  it('keeps a followed target that is also a favourite, only unfollowing it', async () => {
+    const { service, prisma } = createService();
+
+    prisma.follow.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.follow.updateMany.mockResolvedValue({ count: 1 });
+
+    await service.remove({ userId: 'u1', id: 'f-1' });
+
+    expect(prisma.follow.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'f-1', userId: 'u1', isFollowing: true }, data: expect.objectContaining({ isFollowing: false }) })
+    );
+  });
+});
+
+describe('FollowService.list', () => {
+  it('lists only rows that are followed, not bare favourites', async () => {
+    const { service, prisma } = createService();
+
+    await service.list('u1');
+
+    expect(prisma.follow.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'u1', isFollowing: true } }));
   });
 });
 
@@ -141,6 +182,6 @@ describe('FollowService.circle', () => {
 
     await service.circle('u1');
 
-    expect(prisma.follow.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'u1', kind: 'player' } }));
+    expect(prisma.follow.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'u1', kind: 'player', isFollowing: true } }));
   });
 });

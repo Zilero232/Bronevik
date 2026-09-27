@@ -42,33 +42,23 @@ export type TankDeltaInput = {
   current: TankSnapshotRow;
   cohort: SkillCohort;
   accountWinRate: number;
-  tier: number | null;
 };
 
 export type BlockFields = Pick<
   TankSnapshot,
   | 'avgDamageBlocked'
-  | 'battleAvgXp'
   | 'battles'
   | 'capturePoints'
   | 'damageDealt'
   | 'damageReceived'
-  | 'directHitsReceived'
   | 'draws'
   | 'droppedCapturePoints'
-  | 'explosionHits'
   | 'frags'
   | 'hits'
   | 'losses'
-  | 'noDamageDirectHitsReceived'
-  | 'piercings'
-  | 'piercingsReceived'
   | 'shots'
   | 'spotted'
-  | 'stunAssistedDamage'
-  | 'stunNumber'
   | 'survived'
-  | 'tankingFactor'
   | 'wins'
   | 'xp'
 >;

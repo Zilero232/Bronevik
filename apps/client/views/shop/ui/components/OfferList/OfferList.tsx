@@ -23,9 +23,7 @@ export const OfferList = ({ isActiveOnly }: OfferListProps) => {
   if (list.isPending) {
     return (
       <div className={s.grid}>
-        {Array.from({ length: SHOP.skeletons }, (_, index) => (
-          <Skeleton key={index} height={168} shape='block' />
-        ))}
+        <Skeleton count={SHOP.skeletons} height={168} shape='block' />
       </div>
     );
   }

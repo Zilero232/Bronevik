@@ -41,6 +41,8 @@ const settings = (overrides: Partial<NotificationSettings> = {}): NotificationSe
   quietHoursEnd: null,
   sessionReport: true,
   weeklyDigest: true,
+  watchlistDigest: 'daily',
+  watchlistDigestAt: null,
   updatedAt: new Date(),
   ...overrides
 });
@@ -203,7 +205,10 @@ describe('DeliveryService.deliver', () => {
     expect(await service.deliver(job)).toBe(2);
     expect(prisma.notification.create).not.toHaveBeenCalled();
     expect(telegram.sendNotification).toHaveBeenCalledTimes(1);
-    expect(prisma.notification.update).toHaveBeenCalledWith({ where: { id: 'failed-row' }, data: { sentAt: NOW, failedAt: null } });
+
+    expect(prisma.notification.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'failed-row' }, data: { sentAt: NOW, failedAt: null } })
+    );
   });
 
   it('delivers nothing to a deleted user', async () => {

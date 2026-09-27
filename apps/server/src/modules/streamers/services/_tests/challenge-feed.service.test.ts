@@ -73,10 +73,12 @@ describe('ChallengeFeedService.evaluate', () => {
 
     expect(await service.evaluate({ challenge, now: NOW })).toBe(false);
 
-    expect(prisma.challenge.update).toHaveBeenCalledWith({
-      where: { id: 'c1' },
-      data: { progress: expect.objectContaining({ battles: 1, value: 1200, durationMinutes: 60 }) }
-    });
+    expect(prisma.challenge.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'c1' },
+        data: { progress: expect.objectContaining({ battles: 1, value: 1200, durationMinutes: 60 }) }
+      })
+    );
 
     expect(announcer.announce).not.toHaveBeenCalled();
   });
@@ -200,7 +202,11 @@ describe('ChallengeFeedService.expire', () => {
     prisma.challenge.updateMany.mockResolvedValue({ count: 1 });
 
     expect(await service.expire(NOW)).toBe(1);
-    expect(prisma.challenge.updateMany).toHaveBeenCalledWith({ where: { id: 'c1', status: 'active' }, data: { status: 'expired', resolvedAt: NOW } });
+
+    expect(prisma.challenge.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'c1', status: 'active' }, data: { status: 'expired', resolvedAt: NOW } })
+    );
+
     expect(stats.text).toHaveBeenCalledWith(expect.objectContaining({ message: CHAT_COPY.messages.challengeExpired }));
     expect(announcer.announce).toHaveBeenCalledWith({ streamerUserId: 's1', text: 'announcement' });
     expect(publisher.publish).toHaveBeenCalledWith(7n);

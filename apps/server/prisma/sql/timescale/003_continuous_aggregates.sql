@@ -13,21 +13,14 @@ SELECT
   count(*) AS samples,
   sum(battles)::BIGINT AS battles,
   sum(wins)::BIGINT AS wins,
-  sum(losses)::BIGINT AS losses,
-  sum(draws)::BIGINT AS draws,
   sum(damage_dealt)::BIGINT AS damage_dealt,
-  sum(damage_received)::BIGINT AS damage_received,
   sum(damage_blocked)::BIGINT AS damage_blocked,
-  sum(stun_assisted_damage)::BIGINT AS stun_assisted_damage,
   sum(frags)::BIGINT AS frags,
   sum(spotted)::BIGINT AS spotted,
   sum(xp)::BIGINT AS xp,
   sum(survived_battles)::BIGINT AS survived_battles,
   sum(hits)::BIGINT AS hits,
   sum(shots)::BIGINT AS shots,
-  sum(piercings)::BIGINT AS piercings,
-  sum(capture_points)::BIGINT AS capture_points,
-  sum(dropped_capture_points)::BIGINT AS dropped_capture_points,
   sum(account_win_rate * battles)::DOUBLE PRECISION AS player_wins_weighted
 FROM tank_battle_delta
 GROUP BY 1, 2, 3, 4

@@ -1,0 +1,11 @@
+@use '@/shared/styles/mixins' as *;
+
+.inner {
+  @include stack(var(--space-5));
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
+}

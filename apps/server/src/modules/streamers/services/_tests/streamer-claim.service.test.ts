@@ -6,9 +6,11 @@ import type { PrismaService } from '../../../../core';
 import type { LivePlatformsService } from '../live-platforms.service';
 import type { StreamerProfileService } from '../streamer-profile.service';
 
+import { Prisma } from '../../../../../generated';
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
-import { CLAIM, STREAMER_INVITATIONS } from '../../config';
+import { CLAIM, CLAIM_METHOD_TO_DB, REMOVAL_REPORT, STREAMER_INVITATIONS } from '../../config';
 import { StreamerClaimService } from '../streamer-claim.service';
+import { streamerProfileRow } from './streamers.fixtures';
 
 const NOW = new Date('2026-09-01T12:00:00.000Z');
 const USER = 'user-1';
@@ -39,7 +41,7 @@ const claim = (overrides: Partial<StreamerClaim> = {}): StreamerClaim => ({
   profileId: null,
   invitationId: 'inv-1',
   userId: USER,
-  method: 'bio_code',
+  method: 'bioCode',
   platform: null,
   code: 'otmetki-abc123',
   status: 'open',
@@ -76,6 +78,8 @@ const integration = (login: string): StreamerIntegration => ({
   createdAt: NOW,
   updatedAt: NOW
 });
+
+const SETTINGS = { camera: { fov: 95, source: 'creator', sourceUrl: null, checkedAt: NOW.toISOString() } };
 
 const createdClaim = (prisma: ReturnType<typeof mockDeep<PrismaService>>, index = 0) => prisma.streamerClaim.create.mock.calls[index]?.[0].data;
 
@@ -136,8 +140,13 @@ describe('StreamerClaimService.start', () => {
     const view = await service.start({ userId: USER, slug: SLUG, method: 'bio_code' });
 
     expect(createdClaim(prisma)?.code?.startsWith(CLAIM.codePrefix)).toBe(true);
+    expect(createdClaim(prisma)?.method).toBe(CLAIM_METHOD_TO_DB.bio_code);
+    expect(view.method).toBe('bio_code');
     expect(view.status).toBe('open');
-    expect(prisma.streamerClaim.create).toHaveBeenCalledWith({ data: expect.objectContaining({ invitationId: 'inv-1', userId: USER }) });
+
+    expect(prisma.streamerClaim.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ invitationId: 'inv-1', userId: USER }) })
+    );
   });
 
   it('gives two bio claims different codes', async () => {
@@ -154,7 +163,9 @@ describe('StreamerClaimService.start', () => {
 
     await service.start({ userId: USER, slug: SLUG, method: 'manual', evidence: 'screenshot link' });
 
-    expect(prisma.streamerClaim.create).toHaveBeenCalledWith({ data: expect.objectContaining({ evidence: 'screenshot link', code: null }) });
+    expect(prisma.streamerClaim.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ evidence: 'screenshot link', code: null }) })
+    );
   });
 
   it('forbids an OAuth claim when the connected Twitch login is not among the channels', async () => {
@@ -184,10 +195,12 @@ describe('StreamerClaimService.start', () => {
     expect(view.status).toBe('resolved');
     expect(prisma.streamerInvitation.update).toHaveBeenCalledWith(expect.objectContaining({ data: { status: 'accepted' } }));
 
-    expect(prisma.streamerChannel.updateMany).toHaveBeenCalledWith({
-      where: { profileId: 'new-profile', platform: 'twitch' },
-      data: { verifiedAt: NOW }
-    });
+    expect(prisma.streamerChannel.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { profileId: 'new-profile', platform: 'twitch' },
+        data: { verifiedAt: NOW }
+      })
+    );
   });
 });
 
@@ -225,10 +238,12 @@ describe('StreamerClaimService.verify', () => {
 
     expect(view.status).toBe('resolved');
 
-    expect(prisma.streamerChannel.updateMany).toHaveBeenCalledWith({
-      where: { profileId: 'new-profile', platform: 'vkVideoLive' },
-      data: { verifiedAt: NOW }
-    });
+    expect(prisma.streamerChannel.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { profileId: 'new-profile', platform: 'vkVideoLive' },
+        data: { verifiedAt: NOW }
+      })
+    );
   });
 
   it('treats a failed description lookup as no match and checks the next channel', async () => {
@@ -282,10 +297,12 @@ describe('StreamerClaimService.resolve', () => {
 
     await service.resolve({ id: 'claim-1', approve: false, moderatorId: 'mod' });
 
-    expect(prisma.streamerClaim.update).toHaveBeenCalledWith({
-      where: { id: 'claim-1' },
-      data: { status: 'dismissed', resolvedAt: NOW, resolvedBy: 'mod' }
-    });
+    expect(prisma.streamerClaim.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'claim-1' },
+        data: { status: 'dismissed', resolvedAt: NOW, resolvedBy: 'mod' }
+      })
+    );
 
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
@@ -297,7 +314,7 @@ describe('StreamerClaimService.resolve', () => {
 
     await service.resolve({ id: 'claim-1', approve: true, moderatorId: 'mod' });
 
-    expect(prisma.streamerProfile.create).toHaveBeenCalledWith({ data: { userId: USER, slug: SLUG, displayName: 'Jove' } });
+    expect(prisma.streamerProfile.create).toHaveBeenCalledWith(expect.objectContaining({ data: { userId: USER, slug: SLUG, displayName: 'Jove' } }));
     expect(profiles.replaceChannels).toHaveBeenCalledWith({ profileId: 'new-profile', channels: INVITATION_CHANNELS });
 
     expect(prisma.streamerClaim.update).toHaveBeenCalledWith(
@@ -342,7 +359,10 @@ describe('StreamerClaimService.resolve', () => {
 
     await service.resolve({ id: 'claim-1', approve: true, moderatorId: 'mod' });
 
-    expect(prisma.streamerProfile.update).toHaveBeenCalledWith({ where: { id: 'target' }, data: { userId: USER, kind: 'claimed' } });
+    expect(prisma.streamerProfile.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'target' }, data: { userId: USER, kind: 'claimed' } })
+    );
+
     expect(prisma.streamerChannel.updateMany).not.toHaveBeenCalled();
   });
 
@@ -350,28 +370,41 @@ describe('StreamerClaimService.resolve', () => {
     const { service, prisma } = createService();
 
     prisma.streamerClaim.findUnique.mockResolvedValue(claim({ invitationId: null, profileId: 'target', method: 'manual' }));
-    prisma.streamerProfile.findUnique.mockResolvedValue(mock<StreamerProfile>({ id: 'own' }));
-    prisma.streamerProfile.findUniqueOrThrow.mockResolvedValue(mock<StreamerProfile>({ id: 'target' }));
-    prisma.streamerSettings.count.mockResolvedValue(0);
+    prisma.streamerProfile.findUnique.mockResolvedValue(streamerProfileRow({ id: 'own' }));
+    prisma.streamerProfile.findUniqueOrThrow.mockResolvedValue(streamerProfileRow({ id: 'target', settings: SETTINGS, settingsUpdatedAt: NOW }));
 
     await service.resolve({ id: 'claim-1', approve: true, moderatorId: 'mod' });
 
-    expect(prisma.streamerChannel.updateMany).toHaveBeenCalledWith({ where: { profileId: 'target' }, data: { profileId: 'own' } });
-    expect(prisma.streamerProfile.update).toHaveBeenCalledWith({ where: { id: 'target' }, data: { hiddenAt: NOW, mergedIntoId: 'own' } });
-    expect(prisma.streamerSettings.updateMany).toHaveBeenCalledWith({ where: { profileId: 'target' }, data: { profileId: 'own' } });
+    expect(prisma.streamerChannel.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { profileId: 'target' }, data: { profileId: 'own' } })
+    );
+
+    expect(prisma.streamerProfile.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'target' },
+        data: { hiddenAt: NOW, mergedIntoId: 'own', settings: Prisma.DbNull, settingsUpdatedAt: null }
+      })
+    );
+
+    expect(prisma.streamerProfile.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'own' }, data: { settings: SETTINGS, settingsUpdatedAt: NOW } })
+    );
   });
 
   it('keeps the owned profile settings when merging an editorial profile', async () => {
     const { service, prisma } = createService();
 
     prisma.streamerClaim.findUnique.mockResolvedValue(claim({ invitationId: null, profileId: 'target', method: 'manual' }));
-    prisma.streamerProfile.findUnique.mockResolvedValue(mock<StreamerProfile>({ id: 'own' }));
-    prisma.streamerProfile.findUniqueOrThrow.mockResolvedValue(mock<StreamerProfile>({ id: 'target' }));
-    prisma.streamerSettings.count.mockResolvedValue(1);
+    prisma.streamerProfile.findUnique.mockResolvedValue(streamerProfileRow({ id: 'own', settings: SETTINGS }));
+    prisma.streamerProfile.findUniqueOrThrow.mockResolvedValue(streamerProfileRow({ id: 'target', settings: SETTINGS }));
 
     await service.resolve({ id: 'claim-1', approve: true, moderatorId: 'mod' });
 
-    expect(prisma.streamerSettings.updateMany).not.toHaveBeenCalled();
+    expect(prisma.streamerProfile.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'target' }, data: { hiddenAt: NOW, mergedIntoId: 'own' } })
+    );
+
+    expect(prisma.streamerProfile.update).not.toHaveBeenCalledWith(expect.objectContaining({ where: { id: 'own' } }));
   });
 });
 
@@ -417,12 +450,46 @@ describe('StreamerClaimService.hide', () => {
 
     await service.hide(SLUG);
 
-    expect(prisma.streamerProfile.update).toHaveBeenCalledWith({ where: { id: 'p1' }, data: { hiddenAt: NOW, isLive: false } });
+    expect(prisma.streamerProfile.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'p1' }, data: { hiddenAt: NOW, isLive: false } })
+    );
 
-    expect(prisma.streamerRemovalRequest.updateMany).toHaveBeenCalledWith({
-      where: { profileId: 'p1', status: 'open' },
-      data: { status: 'resolved', resolvedAt: NOW }
-    });
+    expect(prisma.contentReport.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { targetType: REMOVAL_REPORT.targetType, targetId: 'p1', status: 'open' },
+        data: { status: 'resolved', resolvedAt: NOW }
+      })
+    );
+  });
+});
+
+describe('StreamerClaimService.requestRemoval', () => {
+  it('files the request as a content report against the profile with the contact as details', async () => {
+    const { service, prisma, profiles } = createService();
+
+    profiles.publicBySlug.mockResolvedValue(mock<StreamerProfile>({ id: 'p1' }));
+
+    await service.requestRemoval({ slug: SLUG, contact: 'mail@example.com', reason: 'not me', userId: null });
+
+    expect(prisma.contentReport.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: { reporterUserId: null, targetType: REMOVAL_REPORT.targetType, targetId: 'p1', reason: 'not me', details: 'mail@example.com' }
+      })
+    );
+  });
+
+  it('falls back to the default reason and keeps the signed-in reporter', async () => {
+    const { service, prisma, profiles } = createService();
+
+    profiles.publicBySlug.mockResolvedValue(mock<StreamerProfile>({ id: 'p1' }));
+
+    await service.requestRemoval({ slug: SLUG, contact: '@jove', userId: USER });
+
+    expect(prisma.contentReport.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ reporterUserId: USER, reason: REMOVAL_REPORT.reason })
+      })
+    );
   });
 });
 
@@ -476,9 +543,11 @@ describe('StreamerClaimService.markInvitationSent', () => {
 
     await service.markInvitationSent(SLUG);
 
-    expect(prisma.streamerInvitation.updateMany).toHaveBeenCalledWith({
-      where: { slug: SLUG, status: 'pending' },
-      data: { status: 'sent', sentAt: NOW }
-    });
+    expect(prisma.streamerInvitation.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { slug: SLUG, status: 'pending' },
+        data: { status: 'sent', sentAt: NOW }
+      })
+    );
   });
 });

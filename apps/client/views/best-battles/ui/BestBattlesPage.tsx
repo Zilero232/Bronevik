@@ -4,7 +4,7 @@ import { Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Button, Card, DataSourceNote, EmptyState, ErrorState, KeyFigure, PageHero } from '@/ui-kit';
+import { Card, DataSourceNote, ErrorState, FilteredEmptyState, KeyFigure, PageHero } from '@/ui-kit';
 
 import { useBestBattles } from '../model/hooks';
 import { BestBattlesFilters, BestBattlesPodium, BestBattlesTable } from './components';
@@ -46,17 +46,12 @@ export const BestBattlesPage = () => {
               <div className={s.board} data-refreshing={view.isRefreshing}>
                 <BestBattlesTable
                   emptyState={
-                    <EmptyState
+                    <FilteredEmptyState
                       isCompact
-                      action={
-                        view.isFiltered && (
-                          <Button size='sm' variant='secondary' onClick={view.reset}>
-                            {t('filters.reset')}
-                          </Button>
-                        )
-                      }
                       description={view.isFiltered ? t('empty.filtered') : t('empty.description')}
+                      isFiltered={view.isFiltered}
                       title={t('empty.title')}
+                      onReset={view.reset}
                     />
                   }
                   battles={view.battles}

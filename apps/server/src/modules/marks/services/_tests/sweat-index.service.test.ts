@@ -3,9 +3,9 @@ import type { VehicleSummary } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { MasteryThreshold, MoeThreshold, TankServerStats } from '../../../../../generated';
+import type { TankServerStats } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { CatalogEntry, ThresholdsService, VehicleCatalogService } from '../../../reference';
+import type { CatalogEntry, MasteryThresholdRecord, MoeThresholdRecord, ThresholdsService, VehicleCatalogService } from '../../../reference';
 
 import { EMPTY_SWEAT } from '../../lib';
 import { SweatIndexService } from '../sweat-index.service';
@@ -26,7 +26,7 @@ const summary = (tankId: number): VehicleSummary => ({
 const catalogOf = (...tankIds: number[]): Map<number, CatalogEntry> =>
   new Map(tankIds.map((tankId) => [tankId, { summary: summary(tankId), dbType: 'heavyTank', specs: null, description: null }]));
 
-const moe = (tankId: number, p95: number): MoeThreshold => ({
+const moe = (tankId: number, p95: number): MoeThresholdRecord => ({
   tankId,
   date: new Date('2026-09-20'),
   source: 'otmetki',
@@ -38,7 +38,7 @@ const moe = (tankId: number, p95: number): MoeThreshold => ({
   capturedAt: new Date('2026-09-20')
 });
 
-const mastery = (tankId: number, master: number): MasteryThreshold => ({
+const mastery = (tankId: number, master: number): MasteryThresholdRecord => ({
   tankId,
   date: new Date('2026-09-20'),
   source: 'otmetki',

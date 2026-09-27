@@ -1,20 +1,13 @@
 'use client';
 
 import { usePlayerProfile } from '@/entities/player/profile';
-import { isNotFoundError } from '@/shared/api/source';
 
 import { useRememberPlayer } from '../use-remember-player';
 
 export const useProfilePage = (nickname: string) => {
-  const { data: profile, isPending, error, isRefetching, refetch } = usePlayerProfile(nickname);
+  const query = usePlayerProfile(nickname);
 
-  useRememberPlayer(profile);
+  useRememberPlayer(query.data);
 
-  return {
-    profile,
-    isPending,
-    isNotFound: isNotFoundError(error),
-    isRetrying: isRefetching,
-    retry: () => void refetch()
-  };
+  return query;
 };

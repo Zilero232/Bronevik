@@ -4,7 +4,18 @@ import { z } from 'zod';
 import { moderationStatusSchema } from '../../community-core';
 import { guideSchema } from '../../guides';
 
-const reportTargetSchema = z.enum(['build', 'guide', 'comment', 'replay', 'platoon_post', 'recruiting_post', 'coach', 'tournament', 'tactic_board']);
+const reportTargetSchema = z.enum([
+  'build',
+  'guide',
+  'comment',
+  'replay',
+  'platoon_post',
+  'recruiting_post',
+  'coach',
+  'tournament',
+  'tactic_board',
+  'streamer_profile'
+]);
 
 export const createReportSchema = z.object({
   targetType: reportTargetSchema,

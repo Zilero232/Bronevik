@@ -1,16 +1,19 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { fromUnixTime, startOfHour } from 'date-fns';
+import { fromUnixTime, startOfHour, subDays, subHours } from 'date-fns';
 
 import type { LestaClients, WebhookEmitter } from '../../../../core';
 import type { ClanRefreshPayload } from '../../contracts';
-import type { ClanFieldsInput, ClanSnapshotInput, SyncClanInput } from '../clans.types';
+import type { ClanActivityInput, ClanFieldsInput, ClanSnapshotInput, LestaOrEmptyInput, ReplaceProvincesInput, SyncClanInput } from '../clans.types';
 import type { CurrentMember } from '../lib/clan-roster';
+import type { ClanActivityRow } from '../queries';
 
-import { clanInfoFields, clanRoleToDb, readNumber, readRecord, toJsonValue } from '../../../../common/lib';
+import { clanInfoFields, clanRoleToDb, errorMessage, readNumber, readRecord, toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService, WEBHOOK_EMITTER } from '../../../../core';
 import { PurgeGuardService } from '../../purge';
 import { CLANS } from '../config';
+import { ownedProvinces } from '../lib/clan-provinces';
 import { clanMemberEvents, diffClanRoster, rosterChanges } from '../lib/clan-roster';
+import { clanActivitySql } from '../queries';
 
 @Injectable()
 export class ClanSyncService {
@@ -122,17 +125,11 @@ export class ClanSyncService {
       return;
     }
 
-    const [globalmap, stronghold] = await Promise.all([
-      this.clients.bulk.globalmap.claninfo({ ids: live }).catch((error: unknown): Record<string, unknown> => {
-        this.logger.warn(`globalmap/claninfo failed: ${String(error)}`);
-
-        return {};
-      }),
-      this.clients.bulk.stronghold.claninfo({ ids: live }).catch((error: unknown): Record<string, unknown> => {
-        this.logger.warn(`stronghold/claninfo failed: ${String(error)}`);
-
-        return {};
-      })
+    const [globalmap, stronghold, provinces, activity] = await Promise.all([
+      this.lestaOrEmpty({ method: 'globalmap/claninfo', call: () => this.clients.bulk.globalmap.claninfo({ ids: live }) }),
+      this.lestaOrEmpty({ method: 'stronghold/claninfo', call: () => this.clients.bulk.stronghold.claninfo({ ids: live }) }),
+      this.lestaOrEmpty({ method: 'globalmap/clanprovinces', call: () => this.clients.bulk.globalmap.clanprovinces({ ids: live }) }),
+      this.activity({ clanIds: live, now })
     ]);
 
     for (const clanId of live) {
@@ -140,6 +137,7 @@ export class ClanSyncService {
       const map = readRecord(globalmap[String(clanId)]);
       const ratings = readRecord(map.ratings);
       const fort = stronghold[String(clanId)];
+      const members = activity.get(id);
 
       await this.prisma.clanSnapshot.upsert({
         where: { clanId_capturedAt: { clanId: id, capturedAt } },
@@ -147,10 +145,13 @@ export class ClanSyncService {
           clanId: id,
           capturedAt,
           membersCount: infos[String(clanId)]?.members_count ?? 0,
+          activeMembers7d: members?.activeMembers7d ?? null,
+          avgWinRate: members?.avgWinRate ?? null,
+          avgWn8: members?.avgWn8 ?? null,
+          battlesDelta: members?.battlesDelta ?? null,
           eloRating6: readNumber(ratings[CLANS.eloKeys.eloRating6]),
           eloRating8: readNumber(ratings[CLANS.eloKeys.eloRating8]),
-          eloRating10: readNumber(ratings[CLANS.eloKeys.eloRating10]),
-          ratings: toJsonValue(map)
+          eloRating10: readNumber(ratings[CLANS.eloKeys.eloRating10])
         },
         update: {}
       });
@@ -159,12 +160,54 @@ export class ClanSyncService {
         const record = readRecord(fort);
         const level = CLANS.strongholdLevelKeys.map((key) => readNumber(record[key])).find((value) => value !== null) ?? null;
 
-        await this.prisma.clanStronghold.upsert({
+        await this.prisma.clan.update({
           where: { clanId: id },
-          create: { clanId: id, level, stats: toJsonValue(fort) },
-          update: { level, stats: toJsonValue(fort) }
+          data: { strongholdLevel: level, stronghold: toJsonValue({ stats: fort }), strongholdUpdatedAt: now }
         });
       }
+
+      const owned = String(clanId) in provinces ? ownedProvinces(provinces[String(clanId)]) : null;
+
+      if (owned) {
+        await this.replaceProvinces({ clanId: id, provinces: owned });
+      }
+    }
+  }
+
+  private async activity({ clanIds, now }: ClanActivityInput): Promise<Map<bigint, ClanActivityRow>> {
+    const rows = await this.prisma.$queryRaw<ClanActivityRow[]>(
+      clanActivitySql({
+        clanIds: clanIds.map(BigInt),
+        battlesSince: subHours(now, CLANS.battlesWindowHours),
+        activeSince: subDays(now, CLANS.activeMemberDays)
+      })
+    );
+
+    return new Map(rows.map((row) => [row.clanId, row]));
+  }
+
+  private async replaceProvinces({ clanId, provinces }: ReplaceProvincesInput) {
+    await this.prisma.$transaction([
+      this.prisma.globalMapProvince.deleteMany({
+        where: { ownerClanId: clanId, provinceId: { notIn: provinces.map((province) => province.provinceId) } }
+      }),
+      ...provinces.map((province) =>
+        this.prisma.globalMapProvince.upsert({
+          where: { provinceId: province.provinceId },
+          create: { ...province, ownerClanId: clanId },
+          update: { ...province, ownerClanId: clanId }
+        })
+      )
+    ]);
+  }
+
+  private async lestaOrEmpty({ method, call }: LestaOrEmptyInput): Promise<Record<string, unknown>> {
+    try {
+      return await call();
+    } catch (error) {
+      this.logger.warn(`${method} failed: ${errorMessage(error)}`);
+
+      return {};
     }
   }
 }

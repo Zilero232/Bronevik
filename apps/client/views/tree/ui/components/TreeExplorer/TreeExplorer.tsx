@@ -1,27 +1,35 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { match, P } from 'ts-pattern';
 
-import { EmptyState, ErrorState } from '@/ui-kit';
+import { isNotFoundError } from '@/shared/api/source';
+import { EmptyState, QueryState } from '@/ui-kit';
 
-import { TreeProvider } from '../../../model/context';
-import { useTreeExplorer } from '../../../model/hooks';
+import { useTechTree } from '../../../model/hooks';
+import { TreeProvider } from '../TreeProvider';
 import { TreeSkeleton } from '../TreeSkeleton';
 import { TreeWorkspace } from '../TreeWorkspace';
 
 export const TreeExplorer = () => {
   const t = useTranslations('tree.states');
-  const { tree, premiums, layout, isLoading, isFetching, isError, isEmpty, refetch } = useTreeExplorer();
+  const query = useTechTree();
 
-  return match({ tree, layout, isLoading, isError, isEmpty })
-    .with({ isLoading: true }, () => <TreeSkeleton />)
-    .with({ isError: true }, () => <ErrorState isRetrying={isFetching} title={t('errorTitle')} onRetry={refetch} />)
-    .with({ isEmpty: true }, () => <EmptyState isCompact title={t('emptyTitle')} />)
-    .with({ tree: P.nonNullable, layout: P.nonNullable }, ({ tree: loaded, layout: placed }) => (
-      <TreeProvider layout={placed} premiums={premiums} tree={loaded}>
-        <TreeWorkspace />
-      </TreeProvider>
-    ))
-    .otherwise(() => <TreeSkeleton />);
+  const empty = <EmptyState isCompact title={t('emptyTitle')} />;
+
+  return (
+    <QueryState
+      empty={empty}
+      errorState={isNotFoundError(query.error) ? empty : undefined}
+      errorTitle={t('errorTitle')}
+      isEmpty={({ tree, premiums }) => tree.nodes.length === 0 && premiums.length === 0}
+      query={query}
+      skeleton={<TreeSkeleton />}
+    >
+      {(view) => (
+        <TreeProvider {...view}>
+          <TreeWorkspace />
+        </TreeProvider>
+      )}
+    </QueryState>
+  );
 };

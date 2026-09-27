@@ -7,5 +7,3 @@ export { PlayerIdentity } from './ui/PlayerIdentity';
 export type { PlayerIdentityProps } from './ui/PlayerIdentity';
 export { PlayerNameCell } from './ui/PlayerNameCell';
 export type { PlayerNameCellProps } from './ui/PlayerNameCell';
-export { PlayerRankCell } from './ui/PlayerRankCell';
-export type { PlayerRankCellProps } from './ui/PlayerRankCell';

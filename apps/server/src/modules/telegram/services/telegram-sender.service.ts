@@ -1,12 +1,12 @@
 import { I18n } from '@grammyjs/i18n';
 import { fmt, FormattedString } from '@grammyjs/parse-mode';
 import { Inject, Injectable } from '@nestjs/common';
-import { Bot, InlineKeyboard } from 'grammy';
+import { Bot } from 'grammy';
 
 import type { BotContext, SendNotificationInput, SendTextInput } from '../telegram.types';
 
 import { TELEGRAM_TOKENS } from '../config';
-import { isPublicUrl } from '../lib';
+import { openButton } from '../lib';
 
 @Injectable()
 export class TelegramSenderService {
@@ -25,7 +25,7 @@ export class TelegramSenderService {
     }
 
     const message = fmt`${FormattedString.bold(title)}\n${body}`;
-    const markup = url && isPublicUrl(url) ? new InlineKeyboard().url(this.i18n.t(locale, 'notification-open'), url) : undefined;
+    const markup = url ? openButton({ label: this.i18n.t(locale, 'notification-open'), url }) : undefined;
 
     await this.bot.api.sendMessage(Number(telegramId), message.text, {
       entities: message.entities,

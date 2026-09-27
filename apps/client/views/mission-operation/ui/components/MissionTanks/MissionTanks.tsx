@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { TankShowcaseCard, WinRateCell } from '@/entities/tank/tank';
+import { ROUTES } from '@/shared/constants';
 import { Card, CardHeader, DataTable, EmptyState, ErrorState, SectionHeader } from '@/ui-kit';
 
 import type { MissionTanksProps } from './MissionTanks.types';
@@ -72,6 +73,7 @@ export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
             density='compact'
             emptyState={<EmptyState isCompact description={t('tanks.emptyDescription')} title={t('tanks.emptyTitle')} />}
             getRowId={(row) => String(row.vehicle.tankId)}
+            getRowLink={({ vehicle }) => ({ href: ROUTES.tanks.detail(vehicle.slug), label: vehicle.name })}
             isLoading={isPending}
           />
         )}
@@ -87,6 +89,7 @@ export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
             density='compact'
             emptyState={<EmptyState isCompact title={t('tanks.garageEmpty')} />}
             getRowId={(row) => String(row.vehicle.tankId)}
+            getRowLink={({ vehicle }) => ({ href: ROUTES.tanks.detail(vehicle.slug), label: vehicle.name })}
             isLoading={isGarageLoading}
           />
         )}

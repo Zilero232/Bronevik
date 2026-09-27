@@ -29,5 +29,4 @@ export type FakeStoreInput = {
   accountBattles?: Record<number, Partial<Record<SnapshotMode, number>>>;
   tankSnapshots?: TankSnapshotRow[];
   blocked?: number[];
-  tiers?: Record<number, number>;
 };

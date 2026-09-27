@@ -13,6 +13,7 @@ import type { Comment } from '../../../../api';
 import type { CommentThreadTarget } from '../../../../lib/comment-form';
 
 import { createComment } from '../../../../api/comments/comments';
+import { CommentsThreadContext } from '../../../context';
 import { useCommentForm } from '../use-comment-form';
 
 vi.hoisted(() => vi.resetModules());
@@ -48,7 +49,7 @@ const setup = () => {
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={client}>
       <NextIntlClientProvider locale='en' messages={messages.en}>
-        {children}
+        <CommentsThreadContext value={{ thread: THREAD, viewerId: 'user-1', isSignedIn: true }}>{children}</CommentsThreadContext>
       </NextIntlClientProvider>
     </QueryClientProvider>
   );
@@ -61,7 +62,7 @@ describe('useCommentForm', () => {
     vi.mocked(createComment).mockResolvedValue(CREATED);
     const onDone = vi.fn<() => void>();
     const { client, wrapper } = setup();
-    const { result } = renderHook(() => useCommentForm({ thread: THREAD, parentId: PARENT_ID, onDone }), { wrapper });
+    const { result } = renderHook(() => useCommentForm({ parentId: PARENT_ID, onDone }), { wrapper });
 
     act(() => result.current.form.setValue('body', '  Nice guide  '));
     await act(() => result.current.onSubmit());
@@ -76,7 +77,7 @@ describe('useCommentForm', () => {
   it('omits the parent for a top-level comment', async () => {
     vi.mocked(createComment).mockResolvedValue({ ...CREATED, parentId: null });
     const { wrapper } = setup();
-    const { result } = renderHook(() => useCommentForm({ thread: THREAD }), { wrapper });
+    const { result } = renderHook(() => useCommentForm(), { wrapper });
 
     act(() => result.current.form.setValue('body', 'Nice guide'));
     await act(() => result.current.onSubmit());
@@ -87,7 +88,7 @@ describe('useCommentForm', () => {
 
   it('refuses a body made of whitespace without calling the server', async () => {
     const { wrapper } = setup();
-    const { result } = renderHook(() => useCommentForm({ thread: THREAD }), { wrapper });
+    const { result } = renderHook(() => useCommentForm(), { wrapper });
 
     act(() => result.current.form.setValue('body', '   '));
     await act(() => result.current.onSubmit());
@@ -100,7 +101,7 @@ describe('useCommentForm', () => {
     vi.mocked(createComment).mockRejectedValue(new Error('down'));
     const onDone = vi.fn<() => void>();
     const { client, wrapper } = setup();
-    const { result } = renderHook(() => useCommentForm({ thread: THREAD, onDone }), { wrapper });
+    const { result } = renderHook(() => useCommentForm({ onDone }), { wrapper });
 
     act(() => result.current.form.setValue('body', 'Nice guide'));
     await act(() => result.current.onSubmit());
@@ -113,7 +114,7 @@ describe('useCommentForm', () => {
 
   it('counts the typed characters against the server limit', () => {
     const { wrapper } = setup();
-    const { result } = renderHook(() => useCommentForm({ thread: THREAD }), { wrapper });
+    const { result } = renderHook(() => useCommentForm(), { wrapper });
 
     act(() => result.current.form.setValue('body', 'Nice'));
 

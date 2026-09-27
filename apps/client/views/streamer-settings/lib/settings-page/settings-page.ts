@@ -8,13 +8,12 @@ import type { SettingsFile, SettingsGroupView } from './settings-page.types';
 
 import { STREAMER_SETTINGS_PAGE } from '../../config';
 
-export const settingsGroups = ({ settings, modReferences }: Pick<StreamerSettingsView, 'modReferences' | 'settings'>): SettingsGroupView[] =>
+export const settingsGroups = ({ settings }: Pick<StreamerSettingsView, 'settings'>): SettingsGroupView[] =>
   STREAMER_SETTINGS.groups.flatMap((group) => {
     const rows = settingsRows(settings, group);
     const content = settings[group];
-    const hasContent = rows.length > 0 || (group === 'mods' && modReferences.length > 0);
 
-    if (!hasContent) {
+    if (rows.length === 0) {
       return [];
     }
 

@@ -21,31 +21,28 @@ export class PlayerMarksService {
   ) {}
 
   async marks(accountId: bigint): Promise<PlayerMarks> {
-    const [tanks, progress, { moe }, catalog, combined, ratings] = await Promise.all([
+    const [tanks, { moe }, catalog, combined, ratings] = await Promise.all([
       this.prisma.playerTank.findMany({ where: { accountId } }),
-      this.prisma.moeProgress.findMany({ where: { accountId } }),
       this.thresholds.latest(),
       this.catalog.all(),
       this.combinedDamage(accountId),
       this.prisma.accountTankRating.findMany({ where: { accountId, period: 'overall' }, select: { tankId: true, avgDamage: true } })
     ]);
 
-    const progressOf = new Map(progress.map((row) => [row.tankId, row]));
     const combinedOf = new Map(combined.map((row) => [row.tank_id, row.combined]));
     const damageOf = new Map(ratings.map((row) => [row.tankId, row.avgDamage]));
 
     const items = tanks
       .filter((tank) => (catalog.get(tank.tankId)?.summary.tier ?? 0) >= PLAYER_MARKS.minTier)
       .map((tank) => {
-        const current = progressOf.get(tank.tankId);
         const threshold = moe.get(tank.tankId);
         const thresholds = threshold ? { p65: threshold.p65, p85: threshold.p85, p95: threshold.p95, p100: threshold.p100 } : null;
-        const moePercent = current ? Math.min(MOE.maxPercent, Math.max(0, current.percent)) : null;
+        const moePercent = tank.moePercent === null ? null : Math.min(MOE.maxPercent, Math.max(0, tank.moePercent));
         const target = nextMark({
           percent: moePercent,
-          marksOnGun: current?.marks ?? tank.marksOnGun,
+          marksOnGun: tank.marksOnGun,
           thresholds,
-          movingDamage: current?.movingDamage ?? null
+          movingDamage: tank.moeMovingDamage
         });
 
         const fromBattles = combinedOf.get(tank.tankId);
@@ -54,16 +51,16 @@ export class PlayerMarksService {
         return {
           vehicle: catalog.get(tank.tankId)?.summary ?? null,
           battles: tank.battles,
-          marksOnGun: current?.marks ?? tank.marksOnGun,
+          marksOnGun: tank.marksOnGun,
           markOfMastery: Math.min(4, Math.max(0, tank.markOfMastery)),
           moePercent,
-          movingDamage: current?.movingDamage ?? null,
+          movingDamage: tank.moeMovingDamage,
           avgCombinedDamage: fromBattles ?? fromRating ?? null,
           combinedDamageSource: combinedSource({ fromBattles, fromRating }),
           thresholds,
           nextMarkPercent: target.percent,
           damageToNextMark: target.damage,
-          updatedAt: toIso(current?.updatedAt ?? tank.updatedAt)
+          updatedAt: toIso(tank.moeUpdatedAt ?? tank.updatedAt)
         };
       })
       .flatMap((item) => (item.vehicle ? [{ ...item, vehicle: item.vehicle }] : []));

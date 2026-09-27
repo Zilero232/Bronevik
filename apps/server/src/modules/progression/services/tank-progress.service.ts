@@ -20,25 +20,26 @@ export class TankProgressService {
 
   async list(userId: string): Promise<TankProgressList> {
     const [accountIds, isPlus] = await Promise.all([this.accountIds(userId), this.entitlements.isPlus(userId)]);
-    const rows = await this.prisma.tankProgress.findMany({
-      where: { accountId: { in: accountIds } },
-      orderBy: [{ xp: 'desc' }, { tankId: 'asc' }],
-      take: PROGRESS_LIST.limit
+    const rows = await this.prisma.playerTank.findMany({
+      where: { accountId: { in: accountIds }, progressXp: { gt: 0 } },
+      orderBy: [{ progressXp: 'desc' }, { tankId: 'asc' }],
+      take: PROGRESS_LIST.limit,
+      select: { accountId: true, tankId: true, progressXp: true, progressBattles: true, updatedAt: true }
     });
 
     return {
       isAccruing: isPlus,
       items: rows.map((row) => {
-        const { level, levelXp, nextLevelXp } = tankLevelOf(row.xp);
+        const { level, levelXp, nextLevelXp } = tankLevelOf(row.progressXp);
 
         return {
           accountId: toNumber(row.accountId),
           tankId: row.tankId,
           level,
-          xp: row.xp,
+          xp: row.progressXp,
           levelXp,
           nextLevelXp,
-          battles: row.battles,
+          battles: row.progressBattles,
           updatedAt: row.updatedAt.toISOString()
         };
       })

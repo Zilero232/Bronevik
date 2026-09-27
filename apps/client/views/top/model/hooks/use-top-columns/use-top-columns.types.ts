@@ -1,11 +1,9 @@
-import type { LeaderboardEntry } from '@otmetki/schemas';
+import type { LeaderboardEntry, VehicleSummary } from '@otmetki/schemas';
 
 import type { LeaderboardFilter } from '@/entities/player/leaderboard';
 
-import type { TopTank } from '../../../lib/top-filter';
-
 export type UseTopColumnsInput = {
   filter: LeaderboardFilter;
-  tank: TopTank | null;
+  tank: VehicleSummary | null;
   entries: readonly LeaderboardEntry[];
 };

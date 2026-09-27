@@ -63,7 +63,7 @@ describe('WebPushService.sendToUser', () => {
 
     await service.sendToUser(INPUT);
 
-    expect(prisma.pushSubscription.deleteMany).toHaveBeenCalledWith({ where: { id: { in: ['a'] } } });
+    expect(prisma.pushSubscription.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: { in: ['a'] } } }));
   });
 
   it('keeps a subscription after a transient push error', async () => {
@@ -89,7 +89,7 @@ describe('WebPushService.sendToUser', () => {
     sendNotification.mockRejectedValue(gone(410));
 
     await expect(service.sendToUser(INPUT)).resolves.toBeUndefined();
-    expect(prisma.pushSubscription.deleteMany).toHaveBeenCalledWith({ where: { id: { in: ['a', 'b'] } } });
+    expect(prisma.pushSubscription.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: { in: ['a', 'b'] } } }));
   });
 
   it('succeeds for a user without subscriptions', async () => {

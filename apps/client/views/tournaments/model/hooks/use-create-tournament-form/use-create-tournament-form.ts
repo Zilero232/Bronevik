@@ -1,19 +1,11 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useBoolean } from '@siberiacancode/reactuse';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-
-import type { CreateTournament } from '@/entities/tournament/tournament';
 
 import { communityErrorKind } from '@/features/community/api-error';
+import { useFormDialog } from '@/features/community/form-dialog';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
-import { useRouter } from '@/shared/i18n/navigation';
-
-import type { TournamentFormOutput, TournamentFormValues } from '../../../lib/tournament-form';
 
 import { createTournament } from '../../../api';
 import { TOURNAMENT_FORM_DEFAULTS } from '../../../config';
@@ -21,35 +13,16 @@ import { toCreateTournament, tournamentFormSchema } from '../../../lib/tournamen
 
 export const useCreateTournamentForm = () => {
   const t = useTranslations('tournaments');
-  const router = useRouter();
   const queryClient = useQueryClient();
-  const [isOpen, setOpen] = useBoolean(false);
-  const form = useForm<TournamentFormValues, unknown, TournamentFormOutput>({
-    resolver: zodResolver(tournamentFormSchema),
-    defaultValues: TOURNAMENT_FORM_DEFAULTS,
-    mode: 'onTouched'
+
+  return useFormDialog({
+    schema: tournamentFormSchema,
+    defaults: TOURNAMENT_FORM_DEFAULTS,
+    mutationFn: (values) => createTournament({ ...toCreateTournament(values), openRegistration: true }),
+    onSuccess: (tournament) => queryClient.setQueryData(QUERY_KEYS.tournaments.detail(tournament.slug), tournament),
+    successMessage: t('toast.created'),
+    errorMessage: (error) => t(`errors.${communityErrorKind(error)}`),
+    invalidate: QUERY_KEYS.tournaments.lists,
+    redirect: (tournament) => ROUTES.tournaments.detail(tournament.slug)
   });
-
-  const create = useMutation({
-    mutationFn: (body: CreateTournament) => createTournament({ ...body, openRegistration: true }),
-    onSuccess: async (tournament) => {
-      toast.success(t('toast.created'));
-      queryClient.setQueryData(QUERY_KEYS.tournaments.detail(tournament.slug), tournament);
-      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tournaments.lists });
-      router.push(ROUTES.tournaments.detail(tournament.slug));
-    },
-    onError: (error) => toast.error(t(`errors.${communityErrorKind(error)}`))
-  });
-
-  const onOpenChange = (next: boolean) => {
-    setOpen(next);
-
-    if (!next) {
-      form.reset(TOURNAMENT_FORM_DEFAULTS);
-    }
-  };
-
-  const onSubmit = form.handleSubmit((values) => create.mutate(toCreateTournament(values), { onSuccess: () => onOpenChange(false) }));
-
-  return { form, isOpen, isPending: create.isPending, onOpenChange, onSubmit };
 };

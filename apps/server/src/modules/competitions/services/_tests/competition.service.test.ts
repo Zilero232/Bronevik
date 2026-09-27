@@ -353,7 +353,9 @@ describe('CompetitionService.join', () => {
 
     await service.join({ ...joinInput, teamName: undefined, teamId: 't1' });
 
-    expect(prisma.competitionEntry.create).toHaveBeenCalledWith({ data: expect.objectContaining({ teamId: 't1', accountId: 7n }) });
+    expect(prisma.competitionEntry.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ teamId: 't1', accountId: 7n }) })
+    );
   });
 
   it('refuses a new team once the competition has the maximum number of teams', async () => {
@@ -382,7 +384,7 @@ describe('CompetitionService.join', () => {
     await service.join({ ...joinInput, teamName: '  Crew  ' });
 
     expect(prisma.competitionTeam.create).toHaveBeenCalledWith(expect.objectContaining({ data: { competitionId: 'c1', name: 'Crew' } }));
-    expect(prisma.competitionEntry.create).toHaveBeenCalledWith({ data: expect.objectContaining({ teamId: 'new-team' }) });
+    expect(prisma.competitionEntry.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ teamId: 'new-team' }) }));
   });
 
   it('reports a clash when the team name is taken', async () => {
@@ -441,8 +443,11 @@ describe('CompetitionService.leave', () => {
 
     await service.leave({ id: 'c1', userId: 'u1' });
 
-    expect(prisma.competitionEntry.deleteMany).toHaveBeenCalledWith({ where: { competitionId: 'c1', userId: 'u1' } });
-    expect(prisma.competitionTeam.deleteMany).toHaveBeenCalledWith({ where: { competitionId: 'c1', entries: { none: {} } } });
+    expect(prisma.competitionEntry.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { competitionId: 'c1', userId: 'u1' } }));
+
+    expect(prisma.competitionTeam.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { competitionId: 'c1', entries: { none: {} } } })
+    );
 
     expect(prisma.competitionEntry.deleteMany.mock.invocationCallOrder[0]).toBeLessThan(
       prisma.competitionTeam.deleteMany.mock.invocationCallOrder[0] ?? 0

@@ -15,15 +15,28 @@ const item = (id: string, createdAt: string, readAt: string | null = null): Inbo
 });
 
 const ITEMS = [
-  item('a', '2026-09-25T18:00:00'),
-  item('b', '2026-09-25T08:00:00', '2026-09-25T09:00:00'),
-  item('c', '2026-09-24T21:00:00'),
-  item('d', '2026-09-20T12:00:00')
+  item('a', '2026-09-25T15:00:00Z'),
+  item('b', '2026-09-25T05:00:00Z', '2026-09-25T06:00:00Z'),
+  item('c', '2026-09-24T18:00:00Z'),
+  item('d', '2026-09-20T09:00:00Z')
 ];
 
+const ids = (items: InboxItem[]) => groupInboxByDay(items).map((day) => day.items.map(({ id }) => id));
+
 describe('groupInboxByDay', () => {
-  it('puts items of one local day into one group', () => {
-    expect(groupInboxByDay(ITEMS).map(({ items }) => items.map(({ id }) => id))).toEqual([['a', 'b'], ['c'], ['d']]);
+  it('puts items of one calendar day into one group', () => {
+    expect(ids(ITEMS)).toEqual([['a', 'b'], ['c'], ['d']]);
+  });
+
+  it('keys each group by its Moscow calendar day', () => {
+    expect(groupInboxByDay(ITEMS).map(({ key }) => key)).toEqual(['2026-09-25', '2026-09-24', '2026-09-20']);
+  });
+
+  it('splits the day at Moscow midnight rather than UTC midnight', () => {
+    const late = [item('after', '2026-09-24T21:30:00Z'), item('before', '2026-09-24T20:30:00Z'), item('utc-same', '2026-09-24T01:00:00Z')];
+
+    expect(ids(late)).toEqual([['after'], ['before', 'utc-same']]);
+    expect(groupInboxByDay(late)[0]?.key).toBe('2026-09-25');
   });
 
   it('keeps the newest-first order of the feed', () => {
@@ -37,9 +50,7 @@ describe('groupInboxByDay', () => {
   });
 
   it('counts the unread items of every day', () => {
-    groupInboxByDay(ITEMS).forEach(({ items, unread }) => {
-      expect(unread).toBe(items.filter(({ readAt }) => readAt === null).length);
-    });
+    expect(groupInboxByDay(ITEMS).map(({ unread }) => unread)).toEqual([1, 1, 1]);
   });
 
   it('returns no groups for an empty feed', () => {

@@ -9,13 +9,13 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import type { UseRemovalFormInput } from './use-removal-form.types';
-
 import { requestStreamerRemoval } from '../../../api';
 import { REMOVAL_FORM_DEFAULT_VALUES } from '../../../config';
+import { useStreamer } from '../../context';
 
-export const useRemovalForm = ({ slug, onSent }: UseRemovalFormInput) => {
+export const useRemovalForm = (onSent: () => void) => {
   const t = useTranslations('streamersDirectory.public.removal');
+  const { slug } = useStreamer().profile;
   const send = useMutation({
     mutationFn: ({ contact, reason }: RemovalRequestInput) => requestStreamerRemoval({ slug, contact, reason: reason || undefined }),
     onSuccess: () => {

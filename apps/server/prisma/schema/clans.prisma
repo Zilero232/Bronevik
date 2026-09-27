@@ -60,13 +60,6 @@ enum RecruitStatus {
   @@map("recruit_status")
 }
 
-enum ClanIntegrationKind {
-  discord
-  telegram
-
-  @@map("clan_integration_kind")
-}
-
 model Clan {
   clanId BigInt @id @map("clan_id")
 
@@ -76,25 +69,25 @@ model Clan {
   motto        String?
   description  String?
   emblems      Json?
-  leaderId     BigInt? @map("leader_id")
   membersCount Int     @default(0) @map("members_count")
   isDisbanded  Boolean @default(false) @map("is_disbanded")
   isTracked    Boolean @default(false) @map("is_tracked")
 
+  strongholdLevel     Int?      @map("stronghold_level") @db.SmallInt
+  stronghold          Json?
+  strongholdUpdatedAt DateTime? @map("stronghold_updated_at") @db.Timestamptz(3)
+
   createdAt    DateTime? @map("created_at") @db.Timestamptz(3)
   lastPolledAt DateTime? @map("last_polled_at") @db.Timestamptz(3)
-  firstSeenAt  DateTime  @default(now()) @map("first_seen_at") @db.Timestamptz(3)
   updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   members      ClanMember[]
   memberEvents ClanMemberEvent[]
   snapshots    ClanSnapshot[]
-  stronghold   ClanStronghold?
   provinces    GlobalMapProvince[]
   workspace    ClanWorkspace?
   recruiting   RecruitingPost[]
 
-  @@index([tag])
   @@index([isTracked])
   @@index([tag(ops: raw("gin_trgm_ops"))], type: Gin, map: "clan_tag_trgm_idx")
   @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "clan_name_trgm_idx")
@@ -127,7 +120,6 @@ model ClanMemberEvent {
   newRole   ClanRole?           @map("new_role")
 
   occurredAt DateTime @map("occurred_at") @db.Timestamptz(3)
-  recordedAt DateTime @default(now()) @map("recorded_at") @db.Timestamptz(3)
 
   clan Clan @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
 
@@ -144,33 +136,16 @@ model ClanSnapshot {
   activeMembers7d Int?   @map("active_members_7d")
   avgWinRate      Float? @map("avg_win_rate")
   avgWn8          Float? @map("avg_wn8")
-  avgBattles      Float? @map("avg_battles")
   battlesDelta    Int?   @map("battles_delta")
 
-  eloRating6  Int?  @map("elo_rating_6")
-  eloRating8  Int?  @map("elo_rating_8")
-  eloRating10 Int?  @map("elo_rating_10")
-  ratings     Json?
+  eloRating6  Int? @map("elo_rating_6")
+  eloRating8  Int? @map("elo_rating_8")
+  eloRating10 Int? @map("elo_rating_10")
 
   clan Clan @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
 
   @@id([clanId, capturedAt])
   @@map("clan_snapshot")
-}
-
-model ClanStronghold {
-  clanId BigInt @id @map("clan_id")
-
-  level     Int?  @db.SmallInt
-  buildings Json?
-  reserves  Json?
-  stats     Json?
-
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-
-  clan Clan @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
-
-  @@map("clan_stronghold")
 }
 
 model GlobalMapProvince {
@@ -182,7 +157,6 @@ model GlobalMapProvince {
   ownerClanId  BigInt? @map("owner_clan_id")
   primeTime    String? @map("prime_time")
   dailyRevenue Int?    @map("daily_revenue")
-  data         Json?
 
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
@@ -202,11 +176,10 @@ model ClanWorkspace {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  clan         Clan               @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
-  owner        User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
-  events       ClanEvent[]
-  candidates   RecruitCandidate[]
-  integrations ClanIntegration[]
+  clan       Clan               @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
+  owner      User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  events     ClanEvent[]
+  candidates RecruitCandidate[]
 
   @@index([ownerUserId])
   @@map("clan_workspace")
@@ -268,22 +241,4 @@ model RecruitCandidate {
   @@unique([clanId, accountId])
   @@index([clanId, status])
   @@map("recruit_candidate")
-}
-
-model ClanIntegration {
-  id String @id @default(dbgenerated("gen_random_uuid()"))
-
-  clanId     BigInt              @map("clan_id")
-  kind       ClanIntegrationKind
-  externalId String              @map("external_id")
-  config     Json?
-
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-
-  workspace ClanWorkspace @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
-
-  @@unique([kind, externalId])
-  @@index([clanId])
-  @@map("clan_integration")
 }

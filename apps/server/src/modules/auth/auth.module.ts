@@ -6,6 +6,7 @@ import type { LestaClient } from '../../lib/lesta';
 import { validateEnv } from '../../config';
 import { LESTA_CLIENT, PrismaService } from '../../core';
 import { createAuth } from '../../lib/auth';
+import { CommunityContentService, CommunityCoreModule } from '../community-core';
 import { AuthStoresModule } from './auth-stores.module';
 import { AUTH_MODULE } from './config';
 import { LestaAccountsService, TelegramAccountsService } from './services';
@@ -15,15 +16,22 @@ import { LestaAccountsService, TelegramAccountsService } from './services';
     AuthStoresModule,
     BetterAuthModule.forRootAsync({
       isGlobal: true,
-      imports: [AuthStoresModule],
-      inject: [PrismaService, LESTA_CLIENT, LestaAccountsService, TelegramAccountsService],
-      useFactory: (prisma: PrismaService, lesta: LestaClient, lestaStore: LestaAccountsService, telegramStore: TelegramAccountsService) => ({
+      imports: [AuthStoresModule, CommunityCoreModule],
+      inject: [PrismaService, LESTA_CLIENT, LestaAccountsService, TelegramAccountsService, CommunityContentService],
+      useFactory: (
+        prisma: PrismaService,
+        lesta: LestaClient,
+        lestaStore: LestaAccountsService,
+        telegramStore: TelegramAccountsService,
+        userContent: CommunityContentService
+      ) => ({
         auth: createAuth({
           env: validateEnv(process.env),
           prisma,
           lesta,
           lestaStore,
           telegramStore,
+          userContent,
           logger: new Logger(AUTH_MODULE.logContext)
         }),
         disableTrustedOriginsCors: true,

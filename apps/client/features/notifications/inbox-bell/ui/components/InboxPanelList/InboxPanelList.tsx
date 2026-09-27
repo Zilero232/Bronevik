@@ -7,21 +7,19 @@ import { match } from 'ts-pattern';
 import { InboxEntry } from '@/entities/notification/inbox';
 import { RetryButton, Skeleton } from '@/ui-kit';
 
-import type { InboxPanelListProps } from './InboxPanelList.types';
-
 import { INBOX_BELL } from '../../../config';
+import { useInboxPanelList } from '../../../model/hooks';
 
 import s from './InboxPanelList.module.scss';
 
-export const InboxPanelList = ({ items, isPending, isError, isRetrying, onRetry, onSelect }: InboxPanelListProps) => {
+export const InboxPanelList = () => {
   const t = useTranslations('inbox');
+  const { items, isPending, isError, isRetrying, onRetry, onSelect } = useInboxPanelList();
 
   return match({ isPending, isError, isEmpty: items.length === 0 })
     .with({ isPending: true }, () => (
       <div aria-busy className={s.state}>
-        {Array.from({ length: INBOX_BELL.skeletonRows }, (_, index) => (
-          <Skeleton key={index} height={INBOX_BELL.skeletonHeight} shape='block' />
-        ))}
+        <Skeleton count={INBOX_BELL.skeletonRows} height={INBOX_BELL.skeletonHeight} shape='block' />
       </div>
     ))
     .with({ isError: true }, () => (

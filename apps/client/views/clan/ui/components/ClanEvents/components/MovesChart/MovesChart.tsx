@@ -1,9 +1,8 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
-import { BarChart, Card, CardBody, CardHeader, ErrorState, KeyFigure, KeyFigures, Skeleton } from '@/ui-kit';
+import { BarChart, Card, CardBody, CardHeader, KeyFigure, KeyFigures, QueryState, Skeleton } from '@/ui-kit';
 
 import type { MovesChartProps } from './MovesChart.types';
 
@@ -15,7 +14,7 @@ export const MovesChart = ({ clanId, now }: MovesChartProps) => {
   const t = useTranslations('clans.events.chart');
   const tEvents = useTranslations('clans.events');
   const format = useFormatter();
-  const { moves, totals, isPending, isError, isRetrying, refetch } = useClanMoves({ clanId, now });
+  const { moves, totals, query } = useClanMoves({ clanId, now });
 
   return (
     <Card padding='none'>
@@ -26,20 +25,17 @@ export const MovesChart = ({ clanId, now }: MovesChartProps) => {
           <KeyFigure label={t('left')} tone='bad' value={totals.left} />
           <KeyFigure format={{ signDisplay: 'exceptZero' }} label={t('net')} tone={totals.net >= 0 ? 'good' : 'bad'} value={totals.net} />
         </KeyFigures>
-        {match({ isPending, isError })
-          .with({ isPending: true }, () => <Skeleton height={200} shape='block' />)
-          .with({ isError: true }, () => <ErrorState isCompact isRetrying={isRetrying} title={tEvents('error')} onRetry={() => void refetch()} />)
-          .otherwise(() => (
-            <BarChart
-              series={[
-                { id: 'joined', label: t('joined'), values: moves.map((week) => week.joined), tone: 'good' },
-                { id: 'left', label: t('left'), values: moves.map((week) => week.left), tone: 'bad' }
-              ]}
-              ariaLabel={t('ariaLabel')}
-              height={200}
-              labels={moves.map(({ week }) => format.dateTime(new Date(`${week}T12:00:00`), { day: 'numeric', month: 'short' }))}
-            />
-          ))}
+        <QueryState isCompact errorTitle={tEvents('error')} query={query} skeleton={<Skeleton height={200} shape='block' />}>
+          <BarChart
+            series={[
+              { id: 'joined', label: t('joined'), values: moves.map((week) => week.joined), tone: 'good' },
+              { id: 'left', label: t('left'), values: moves.map((week) => week.left), tone: 'bad' }
+            ]}
+            ariaLabel={t('ariaLabel')}
+            height={200}
+            labels={moves.map(({ week }) => format.dateTime(new Date(`${week}T12:00:00`), { day: 'numeric', month: 'short' }))}
+          />
+        </QueryState>
       </CardBody>
     </Card>
   );

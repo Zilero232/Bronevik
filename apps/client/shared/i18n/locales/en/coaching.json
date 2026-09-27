@@ -109,11 +109,22 @@
     }
   },
   "profile": {
-    "become": "Become a coach",
-    "edit": "My coach profile",
-    "becomeTitle": "Coach profile",
-    "editTitle": "Coach profile",
-    "description": "Coaching is free. Say what you specialise in and how to reach you.",
+    "dialog": {
+      "become": {
+        "open": "Become a coach",
+        "title": "Coach profile",
+        "description": "Coaching is free. Say what you specialise in and how to reach you.",
+        "cancel": "Cancel",
+        "submit": "Save"
+      },
+      "edit": {
+        "open": "My coach profile",
+        "title": "Coach profile",
+        "description": "Coaching is free. Say what you specialise in and how to reach you.",
+        "cancel": "Cancel",
+        "submit": "Save"
+      }
+    },
     "account": "Game account",
     "headline": "Headline",
     "headlinePlaceholder": "E.g. light tank replay reviews, 5000+ WN8",
@@ -136,8 +147,6 @@
     "discordError": "2 to 128 characters",
     "active": "Taking requests",
     "activeHint": "Turn off to hide the profile from the list",
-    "cancel": "Cancel",
-    "save": "Save",
     "saved": "Profile saved"
   },
   "errors": {

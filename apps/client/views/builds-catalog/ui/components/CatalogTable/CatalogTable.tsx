@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Button, DataTable, EmptyState, ErrorState } from '@/ui-kit';
+import { DataTable, ErrorState, FilteredEmptyState } from '@/ui-kit';
 
 import { CATALOG_TABLE } from '../../../config';
 import { useCatalogTable } from '../../../model/hooks';
@@ -19,21 +19,10 @@ export const CatalogTable = () => {
 
   return (
     <DataTable
-      emptyState={
-        <EmptyState
-          action={
-            isFiltered ? (
-              <Button size='sm' variant='secondary' onClick={onReset}>
-                {t('resetFilters')}
-              </Button>
-            ) : undefined
-          }
-          title={t('emptyTitle')}
-        />
-      }
       caption={t('caption', { count: rows.length })}
       columns={columns}
       data={rows}
+      emptyState={<FilteredEmptyState isFiltered={isFiltered} title={t('emptyTitle')} onReset={onReset} />}
       getRowId={(row) => String(row.vehicle.tankId)}
       getRowLink={(row) => ({ href: ROUTES.builds.detail(row.vehicle.slug), label: row.vehicle.name })}
       initialSorting={[{ id: 'battles', desc: true }]}

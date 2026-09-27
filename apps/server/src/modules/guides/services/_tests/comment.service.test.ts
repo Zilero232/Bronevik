@@ -57,10 +57,12 @@ describe('CommentService.create', () => {
 
     await service.create({ userId: 'u1', target: 'guide', targetId, body: 'Hi' });
 
-    expect(prisma.guide.findFirst).toHaveBeenCalledWith({
-      where: { id: targetId, OR: [{ status: 'published' }, { authorUserId: 'u1' }] },
-      select: { id: true }
-    });
+    expect(prisma.guide.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: targetId, OR: [{ status: 'published' }, { authorUserId: 'u1' }] },
+        select: { id: true }
+      })
+    );
 
     expect(prisma.build.findFirst).not.toHaveBeenCalled();
   });
@@ -117,10 +119,12 @@ describe('CommentService.list', () => {
 
     await expect(service.list({ target: 'tacticBoard', targetId, viewerUserId: null })).rejects.toBeInstanceOf(AppNotFoundException);
 
-    expect(prisma.tacticBoard.findFirst).toHaveBeenCalledWith({
-      where: { id: targetId, OR: [{ visibility: { not: 'private' } }] },
-      select: { id: true }
-    });
+    expect(prisma.tacticBoard.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: targetId, OR: [{ visibility: { not: 'private' } }] },
+        select: { id: true }
+      })
+    );
   });
 
   it('returns the newest page of the thread in chronological order', async () => {

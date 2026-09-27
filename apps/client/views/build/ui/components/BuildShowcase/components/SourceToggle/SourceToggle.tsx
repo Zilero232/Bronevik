@@ -8,14 +8,14 @@ import { Fragment } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
-import type { SourceToggleProps } from './SourceToggle.types';
-
 import { SHOWCASE } from '../../../../../config';
+import { useSourceToggle } from '../../../../../model/hooks';
 
 import s from './SourceToggle.module.scss';
 
-export const SourceToggle = ({ source, isPlus, usage, onChange }: SourceToggleProps) => {
+export const SourceToggle = () => {
   const t = useTranslations('builds.showcase');
+  const { source, isPlus, usage, onSourceChange } = useSourceToggle();
 
   return (
     <div className={s.root}>
@@ -29,7 +29,7 @@ export const SourceToggle = ({ source, isPlus, usage, onChange }: SourceTogglePr
                 {t(`source.${option}`)}
               </Link>
             ) : (
-              <button aria-pressed={option === source} className={s.option} type='button' onClick={() => onChange(option)}>
+              <button aria-pressed={option === source} className={s.option} type='button' onClick={() => onSourceChange(option)}>
                 {t(`source.${option}`)}
                 {option === source && <motion.span aria-hidden className={s.underline} layoutId='build-source' transition={SHOWCASE.slide} />}
               </button>

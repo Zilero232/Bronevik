@@ -4,15 +4,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { Replay, ReplayVisibility } from '@/entities/replay/replay';
+import type { ReplayVisibility } from '@/entities/replay/replay';
 
 import { communityErrorKind } from '@/features/community/api-error';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
 import { deleteReplay, updateReplay } from '../../../api';
+import { useReplay } from '../../context';
 
-export const useReplayOwnerActions = (replay: Replay) => {
+export const useReplayOwnerActions = () => {
+  const replay = useReplay();
   const t = useTranslations('replays.owner');
   const queryClient = useQueryClient();
   const router = useRouter();

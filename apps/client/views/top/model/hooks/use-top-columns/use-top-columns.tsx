@@ -1,10 +1,11 @@
 'use client';
 
 import type { LeaderboardEntry } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { useProfilesCosmetics } from '@/entities/player/cosmetics';
 import { TankCell } from '@/entities/tank/tank';
@@ -15,7 +16,7 @@ import { EntrantCell, ValueCell } from '../../../ui/components/TopTable/componen
 
 const column = createColumnHelper<LeaderboardEntry>();
 
-export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): ColumnDef<LeaderboardEntry, never>[] => {
+export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): TableColumn<LeaderboardEntry>[] => {
   const t = useTranslations('top');
   const format = useFormatter();
   const cosmetics = useProfilesCosmetics(entries.flatMap((entry) => (entry.accountId === null ? [] : [entry.accountId])));
@@ -38,7 +39,7 @@ export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): Co
           id: 'tank',
           header: t('columns.tank'),
           cell: () => <TankCell vehicle={tank} />,
-          meta: { isMedia: true }
+          meta: { isMedia: true, hideBelow: 'md' }
         })
       ]
     : [];

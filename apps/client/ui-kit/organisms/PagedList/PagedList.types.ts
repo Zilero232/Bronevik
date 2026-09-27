@@ -1,22 +1,14 @@
 import type { Key, ReactNode } from 'react';
 
+import type { OffsetInfiniteList } from '@/shared/lib';
+
 export type PagedListLayout = 'grid' | 'rows';
 
-export type QueryStatusProps = {
-  isPending: boolean;
-  isError: boolean;
-  isRetrying?: boolean;
-  onRetry: () => void;
-};
-
-export type PagedListProps<TItem> = QueryStatusProps & {
-  items: readonly TItem[];
+export type PagedListProps<TItem> = {
+  list: OffsetInfiniteList<TItem>;
   getKey: (item: TItem) => Key;
   renderItem: (item: TItem) => ReactNode;
   empty: ReactNode;
-  onLoadMore: () => void;
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
   errorTitle?: ReactNode;
   errorDescription?: ReactNode;
   header?: ReactNode;

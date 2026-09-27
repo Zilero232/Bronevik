@@ -76,7 +76,10 @@ describe('CheckoutService.createCheckout', () => {
 
     expect(amountRub).toBeLessThan(PLUS_PLANS.quarterly.priceRub);
     expect(yookassa.createPayment).toHaveBeenCalledWith(expect.objectContaining({ amountRub }));
-    expect(prisma.payment.create).toHaveBeenCalledWith({ data: expect.objectContaining({ amount: amountRub, promoCode: 'SPRING' }) });
+
+    expect(prisma.payment.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ amount: amountRub, promoCode: 'SPRING' }) })
+    );
   });
 
   it('sends a free-days promo code to redemption instead of a payment', async () => {
@@ -124,9 +127,11 @@ describe('CheckoutService.createCheckout', () => {
 
     await expect(service.createCheckout({ userId: 'u1', plan: 'monthly' })).resolves.toEqual({ confirmationUrl, paymentId: 'pay-1' });
 
-    expect(prisma.payment.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ userId: 'u1', yookassaPaymentId: 'pay-1', status: 'pending', plan: 'monthly', promoCode: null })
-    });
+    expect(prisma.payment.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ userId: 'u1', yookassaPaymentId: 'pay-1', status: 'pending', plan: 'monthly', promoCode: null })
+      })
+    );
   });
 
   it('fails without recording anything when YooKassa returns no confirmation link', async () => {

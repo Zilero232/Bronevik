@@ -10,9 +10,11 @@ export type DataTableRowLink = {
   label: string;
 };
 
+export type TableColumn<T> = ColumnDef<T, any>;
+
 export type DataTableProps<T> = {
   data: T[];
-  columns: ColumnDef<T, any>[];
+  columns: TableColumn<T>[];
   initialSorting?: SortingState;
   virtualizeAfter?: number;
   density?: DataTableDensity;

@@ -16,10 +16,12 @@ export const ResourceMissing = ({ reason, title, description, back, isRetrying =
     action={
       <div className={s.actions}>
         {reason === 'error' && onRetry && <RetryButton disabled={isRetrying} size='sm' onClick={onRetry} />}
-        <Link className={buttonVariants({ variant: reason === 'error' ? 'ghost' : 'secondary', size: 'sm' })} href={back.href}>
-          <ArrowLeft aria-hidden size={RESOURCE_MISSING.iconSize} />
-          {back.label}
-        </Link>
+        {back && (
+          <Link className={buttonVariants({ variant: reason === 'error' ? 'ghost' : 'secondary', size: 'sm' })} href={back.href}>
+            <ArrowLeft aria-hidden size={RESOURCE_MISSING.iconSize} />
+            {back.label}
+          </Link>
+        )}
       </div>
     }
     className={className}

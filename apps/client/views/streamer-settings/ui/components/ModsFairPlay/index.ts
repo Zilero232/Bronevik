@@ -1,0 +1,1 @@
+export { ModsFairPlay } from './ModsFairPlay';

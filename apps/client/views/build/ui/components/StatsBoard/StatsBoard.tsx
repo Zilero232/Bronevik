@@ -26,9 +26,7 @@ export const StatsBoard = () => {
         {match({ isPending, isError, count: groups.length })
           .with({ isPending: true }, () => (
             <div className={s.skeleton}>
-              {BUILD_SKELETON.statRows.map((row) => (
-                <Skeleton key={row} height={28} />
-              ))}
+              <Skeleton count={BUILD_SKELETON.statRows} height={28} />
             </div>
           ))
           .with({ isError: true }, () => <ErrorState isRetrying={isFetching} title={t('error')} onRetry={refetch} />)

@@ -8,15 +8,15 @@ import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants } from '@/ui-kit';
 
-import type { ClaimBannerProps } from './ClaimBanner.types';
-
 import { STREAMER_PAGE } from '../../../config';
+import { useStreamer } from '../../../model/context';
 import { RemovalDialog } from './components';
 
 import s from './ClaimBanner.module.scss';
 
-export const ClaimBanner = ({ slug }: ClaimBannerProps) => {
+export const ClaimBanner = () => {
   const t = useTranslations('streamersDirectory.public.claim');
+  const { slug } = useStreamer().profile;
   const [isRemovalOpen, setIsRemovalOpen] = useState(false);
 
   return (
@@ -34,7 +34,7 @@ export const ClaimBanner = ({ slug }: ClaimBannerProps) => {
           {t('remove')}
         </Button>
       </div>
-      <RemovalDialog open={isRemovalOpen} slug={slug} onOpenChange={setIsRemovalOpen} />
+      <RemovalDialog open={isRemovalOpen} onOpenChange={setIsRemovalOpen} />
     </section>
   );
 };

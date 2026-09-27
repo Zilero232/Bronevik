@@ -14,11 +14,11 @@ import { useLiveBlock } from '../../../model/hooks';
 
 import s from './LiveBlock.module.scss';
 
-export const LiveBlock = ({ live, channels }: LiveBlockProps) => {
+export const LiveBlock = ({ live }: LiveBlockProps) => {
   const t = useTranslations('streamersDirectory.public.live');
   const tPlatforms = useTranslations('streamersDirectory.channel.platforms');
   const format = useFormatter();
-  const { vehicle, watchUrl } = useLiveBlock({ live, channels });
+  const { vehicle, watchUrl } = useLiveBlock(live);
 
   const PlatformIcon = PLATFORM_ICONS[live.platform];
 

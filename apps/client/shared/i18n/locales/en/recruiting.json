@@ -28,17 +28,21 @@
     "close": "Take down"
   },
   "create": {
-    "open": {
-      "clan_seeks_player": "Recruit for clan",
-      "player_seeks_clan": "Look for a clan"
-    },
-    "title": {
-      "clan_seeks_player": "Recruiting post",
-      "player_seeks_clan": "Looking for a clan"
-    },
-    "description": {
-      "clan_seeks_player": "Players see your requirements. The post is tied to the clan where you're an officer.",
-      "player_seeks_clan": "Your stats are attached: battles, WN8 and win rate."
+    "dialog": {
+      "clan_seeks_player": {
+        "open": "Recruit for clan",
+        "title": "Recruiting post",
+        "description": "Players see your requirements. The post is tied to the clan where you're an officer.",
+        "cancel": "Cancel",
+        "submit": "Post"
+      },
+      "player_seeks_clan": {
+        "open": "Look for a clan",
+        "title": "Looking for a clan",
+        "description": "Your stats are attached: battles, WN8 and win rate.",
+        "cancel": "Cancel",
+        "submit": "Post"
+      }
     },
     "checkingClan": "Checking your clan…",
     "notOfficer": "Only a commander, deputy, personnel, recruitment or combat officer can post for a clan. None of your linked accounts holds such a role.",
@@ -56,9 +60,7 @@
     },
     "bodyError": "10 to 4000 characters",
     "expiresIn": "Show for",
-    "days": "{count, plural, one {# day} other {# days}}",
-    "cancel": "Cancel",
-    "submit": "Post"
+    "days": "{count, plural, one {# day} other {# days}}"
   },
   "toast": {
     "created": "Post published",

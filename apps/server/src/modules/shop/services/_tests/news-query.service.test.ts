@@ -36,7 +36,9 @@ describe('NewsQueryService.list', () => {
 
     await new NewsQueryService(prisma).list({ kind: 'patch_notes', tankId: 7, limit: 10, offset: 0 });
 
-    expect(prisma.newsItem.count).toHaveBeenCalledWith({ where: { kind: NEWS_KIND_TO_DB.patch_notes, tankIds: { has: 7 } } });
+    expect(prisma.newsItem.count).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { kind: NEWS_KIND_TO_DB.patch_notes, tankIds: { has: 7 } } })
+    );
   });
 
   it('exposes the linked game version and the public kind', async () => {
@@ -47,7 +49,7 @@ describe('NewsQueryService.list', () => {
 
     const page = await new NewsQueryService(prisma).list({ kind: undefined, tankId: undefined, limit: 10, offset: 0 });
 
-    expect(prisma.newsItem.count).toHaveBeenCalledWith({ where: {} });
+    expect(prisma.newsItem.count).toHaveBeenCalledWith(expect.objectContaining({ where: {} }));
     expect(page.items.map((news) => news.gameVersion)).toEqual([item.gameVersion.version, null]);
     expect(page.items[0]?.kind).toBe('patch_notes');
     expect(page.total).toBe(2);

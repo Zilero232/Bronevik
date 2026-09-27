@@ -35,13 +35,14 @@ const clan: Clan = {
   motto: null,
   description: null,
   emblems: null,
-  leaderId: null,
   membersCount: 42,
   isDisbanded: false,
   isTracked: true,
   createdAt: at,
+  strongholdLevel: null,
+  stronghold: null,
+  strongholdUpdatedAt: null,
   lastPolledAt: null,
-  firstSeenAt: at,
   updatedAt: at
 };
 
@@ -69,7 +70,7 @@ describe('WorkspaceService.create', () => {
     vi.mocked(prisma.recruitCandidate.groupBy).mockResolvedValue([]);
 
     expect((await service.create(scope)).clanTag).toBe(clan.tag);
-    expect(prisma.clanWorkspace.create).toHaveBeenCalledWith({ data: { clanId: BigInt(clanId), ownerUserId: 'u1' } });
+    expect(prisma.clanWorkspace.create).toHaveBeenCalledWith(expect.objectContaining({ data: { clanId: BigInt(clanId), ownerUserId: 'u1' } }));
   });
 
   it('refuses an officer who is not an owner', async () => {

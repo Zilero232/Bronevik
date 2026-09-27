@@ -82,14 +82,7 @@ export const createFakeLesta = ({ infos, tanks, stats, marks = {}, failStatsFor 
   return lesta;
 };
 
-export const createFakeStore = ({
-  players = [],
-  baselines = {},
-  accountBattles = {},
-  tankSnapshots = [],
-  blocked = [],
-  tiers = {}
-}: FakeStoreInput) => {
+export const createFakeStore = ({ players = [], baselines = {}, accountBattles = {}, tankSnapshots = [], blocked = [] }: FakeStoreInput) => {
   const written: AccountChanges[] = [];
   const synced: MarkSyncedInput[] = [];
   const upserted: UpsertPlayerInput[] = [];
@@ -125,7 +118,6 @@ export const createFakeStore = ({
       tankSnapshots.filter((row) => row.accountId === BigInt(accountId) && tankIds.includes(row.tankId))
     ),
     overallWn8: vi.fn(async () => null),
-    tankTiers: vi.fn(async (ids: readonly number[]) => new Map(ids.flatMap((id) => (tiers[id] === undefined ? [] : [[id, tiers[id]]])))),
     writeAccountChanges: vi.fn(async (changes: AccountChanges) => {
       written.push(changes);
     })

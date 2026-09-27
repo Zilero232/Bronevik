@@ -26,9 +26,9 @@ const profileRow = (overrides: Partial<StreamerProfile> = {}): StreamerProfile =
   accountId: 1001n,
   accountSourceUrl: null,
   bio: null,
-  avatar: null,
   links: null,
-  schedule: null,
+  settings: null,
+  settingsUpdatedAt: null,
   isLive: false,
   liveTankId: null,
   liveViewers: null,
@@ -66,7 +66,6 @@ const createService = () => {
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
   prisma.streamerChannel.findMany.mockResolvedValue([]);
-  prisma.streamerSettings.findUnique.mockResolvedValue(null);
   prisma.streamerFollow.count.mockResolvedValue(0);
   platforms.youtubeVideos.mockResolvedValue([video]);
 
@@ -214,12 +213,14 @@ describe('StreamerProfileService.replaceChannels', () => {
       ]
     });
 
-    expect(prisma.streamerChannel.deleteMany).toHaveBeenCalledWith({ where: { profileId: 'p1', id: { notIn: ['kept'] } } });
+    expect(prisma.streamerChannel.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { profileId: 'p1', id: { notIn: ['kept'] } } }));
     expect(prisma.streamerChannel.create).toHaveBeenCalledTimes(1);
 
-    expect(prisma.streamerChannel.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ platform: 'youtube', handle: '@joveyt', sourceUrl: 'https://joves-modpack.ru/' })
-    });
+    expect(prisma.streamerChannel.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ platform: 'youtube', handle: '@joveyt', sourceUrl: 'https://joves-modpack.ru/' })
+      })
+    );
   });
 });
 
@@ -252,9 +253,7 @@ describe('StreamerProfileService.toView', () => {
     const { service, prisma } = createService();
 
     prisma.streamerChannel.findMany.mockResolvedValue([channelRow({ verifiedAt: CREATED_AT })]);
-    prisma.streamerSettings.findUnique.mockResolvedValue({ profileId: 'p1', data: {}, updatedAt: CREATED_AT });
-
-    const view = await service.toView(profileRow({ accountId: null }));
+    const view = await service.toView(profileRow({ accountId: null, settings: {}, settingsUpdatedAt: CREATED_AT }));
 
     expect(view).toMatchObject({ accountId: null, hasSettings: true, channels: [{ platform: 'twitch', handle: 'jove', verified: true }] });
   });

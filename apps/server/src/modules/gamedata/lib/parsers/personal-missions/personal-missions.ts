@@ -79,19 +79,14 @@ const parseOperations = ({ root, localize }: ParseOperationsInput): PersonalOper
       return [];
     }
 
-    const chainsCount = num(value.chainsCount) ?? 1;
-
     return [
       {
         operationId,
         campaignId,
         name: localize(text(value.userString)) ?? null,
         description: localize(text(value.description)) ?? null,
-        iconId: text(value.iconID) || null,
         nextOperationIds: nums(value.nextTileIDs),
-        chainsCount,
-        missionsPerChain: num(value.questsInChain) ?? 1,
-        chainsToUnlockNext: num(value.chainsCountToUnlockNext) ?? chainsCount,
+        chainsToUnlockNext: num(value.chainsCountToUnlockNext) ?? num(value.chainsCount) ?? 1,
         reward: rewards.get(PERSONAL_MISSION_KEYS.operationReward(campaignId, operationId)) ?? null
       }
     ];

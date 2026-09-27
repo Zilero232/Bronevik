@@ -5,6 +5,8 @@ import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi } from 'vitest';
 
+import type { OffsetInfiniteList } from '@/shared/lib';
+
 import { messages } from '@/shared/i18n';
 
 import { PagedList } from '../PagedList';
@@ -19,17 +21,28 @@ const ITEMS: Item[] = [
 const LABEL = 'Guides';
 const EMPTY = 'Nothing here yet';
 
-const BASE: ComponentProps<typeof PagedList<Item>> = {
+const LIST: OffsetInfiniteList<Item> = {
   items: ITEMS,
+  total: ITEMS.length,
+  isPending: false,
+  isError: false,
+  error: null,
+  isRetrying: false,
+  hasNextPage: false,
+  isFetchingNextPage: false,
+  loadMore: () => undefined,
+  retry: () => undefined
+};
+
+const BASE: ComponentProps<typeof PagedList<Item>> = {
+  list: LIST,
   getKey: (item) => item.id,
   renderItem: (item) => item.title,
   empty: EMPTY,
-  isPending: false,
-  isError: false,
-  onRetry: () => undefined,
-  onLoadMore: () => undefined,
   label: LABEL
 };
+
+const withList = (list: Partial<OffsetInfiniteList<Item>>) => ({ ...LIST, ...list });
 
 const renderWithIntl = (ui: ReactElement) =>
   render(
@@ -52,24 +65,32 @@ describe('PagedList', () => {
   });
 
   it('shows the empty state when there are no items', () => {
-    renderWithIntl(<PagedList {...BASE} items={[]} />);
+    renderWithIntl(<PagedList {...BASE} list={withList({ items: [] })} />);
 
     expect(within(region()).getByText(EMPTY)).toBeInTheDocument();
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 
   it('marks itself busy while the first page loads', () => {
-    renderWithIntl(<PagedList {...BASE} isPending items={[]} />);
+    renderWithIntl(<PagedList {...BASE} list={withList({ isPending: true, items: [] })} />);
 
     expect(region()).toHaveAttribute('aria-busy', 'true');
     expect(screen.queryByText(EMPTY)).not.toBeInTheDocument();
   });
 
+  it('draws the requested number of placeholders while loading', () => {
+    const skeletonCount = 3;
+
+    renderWithIntl(<PagedList {...BASE} list={withList({ isPending: true })} skeletonCount={skeletonCount} />);
+
+    expect(region().querySelectorAll('[aria-hidden="true"]')).toHaveLength(skeletonCount);
+  });
+
   it('offers a retry when the first page failed', async () => {
     const user = userEvent.setup();
-    const onRetry = vi.fn<() => void>();
+    const onRetry = vi.fn<() => undefined>();
 
-    renderWithIntl(<PagedList {...BASE} isError items={[]} onRetry={onRetry} />);
+    renderWithIntl(<PagedList {...BASE} list={withList({ isError: true, items: [], retry: onRetry })} />);
 
     await user.click(within(region()).getByRole('button', { name: messages.en.common.retry }));
 
@@ -77,7 +98,7 @@ describe('PagedList', () => {
   });
 
   it('keeps showing loaded items when a later page failed', () => {
-    renderWithIntl(<PagedList {...BASE} isError />);
+    renderWithIntl(<PagedList {...BASE} list={withList({ isError: true })} />);
 
     expect(within(region()).getAllByRole('listitem')).toHaveLength(ITEMS.length);
     expect(screen.queryByRole('button', { name: messages.en.common.retry })).not.toBeInTheDocument();
@@ -85,9 +106,9 @@ describe('PagedList', () => {
 
   it('loads the next page on demand', async () => {
     const user = userEvent.setup();
-    const onLoadMore = vi.fn<() => void>();
+    const onLoadMore = vi.fn<() => undefined>();
 
-    renderWithIntl(<PagedList {...BASE} hasNextPage onLoadMore={onLoadMore} />);
+    renderWithIntl(<PagedList {...BASE} list={withList({ hasNextPage: true, loadMore: onLoadMore })} />);
 
     await user.click(screen.getByRole('button', { name: messages.en.common.showMore }));
 
@@ -95,7 +116,7 @@ describe('PagedList', () => {
   });
 
   it('blocks a second request while the next page is loading', () => {
-    renderWithIntl(<PagedList {...BASE} hasNextPage isFetchingNextPage />);
+    renderWithIntl(<PagedList {...BASE} list={withList({ hasNextPage: true, isFetchingNextPage: true })} />);
 
     expect(screen.getByRole('button', { name: messages.en.common.showMore })).toBeDisabled();
   });
@@ -107,7 +128,7 @@ describe('PagedList', () => {
   });
 
   it('uses a custom load-more label when given', () => {
-    renderWithIntl(<PagedList {...BASE} hasNextPage moreLabel='More guides' />);
+    renderWithIntl(<PagedList {...BASE} list={withList({ hasNextPage: true })} moreLabel='More guides' />);
 
     expect(screen.getByRole('button', { name: 'More guides' })).toBeInTheDocument();
   });

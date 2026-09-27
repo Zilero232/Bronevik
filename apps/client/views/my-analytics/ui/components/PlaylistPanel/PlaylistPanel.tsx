@@ -32,18 +32,18 @@ export const PlaylistPanel = () => {
         title={t('title')}
       />
       <div className={s.body}>
-        <AnalyticsState data={status === 'ready' ? items : undefined} isRetrying={isShuffling} status={status} onRetry={retry}>
-          {(rows) =>
-            isNoGarage || rows.length === 0 ? (
-              <EmptyState description={tState('noGarageText')} icon={<Warehouse size={16} />} title={t('empty')} />
-            ) : (
-              <ol className={s.list}>
-                {rows.map((item, index) => (
-                  <PlaylistRow key={item.vehicle.tankId} index={index + 1} item={item} />
-                ))}
-              </ol>
-            )
-          }
+        <AnalyticsState
+          empty={<EmptyState description={tState('noGarageText')} icon={<Warehouse size={16} />} title={t('empty')} />}
+          isEmpty={(rows) => isNoGarage || rows.length === 0}
+          state={{ data: status === 'ready' ? items : undefined, status, isRetrying: isShuffling, retry }}
+        >
+          {(rows) => (
+            <ol className={s.list}>
+              {rows.map((item, index) => (
+                <PlaylistRow key={item.vehicle.tankId} index={index + 1} item={item} />
+              ))}
+            </ol>
+          )}
         </AnalyticsState>
         {!isExtended && status === 'ready' && (
           <p className={s.hint}>

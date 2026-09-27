@@ -11,7 +11,7 @@ import { RecruitingCard } from './components';
 
 export const RecruitingBoard = ({ kind }: RecruitingBoardProps) => {
   const t = useTranslations('recruiting.board');
-  const { items, total, isPending, isError, isRetrying, hasNextPage, isFetchingNextPage, loadMore, retry } = useRecruitingBoard(kind);
+  const list = useRecruitingBoard(kind);
 
   return (
     <PagedList
@@ -23,17 +23,10 @@ export const RecruitingBoard = ({ kind }: RecruitingBoardProps) => {
       errorDescription={t('errorDescription')}
       errorTitle={t('errorTitle')}
       getKey={(post) => post.id}
-      hasNextPage={hasNextPage}
-      header={t('count', { total })}
-      isError={isError}
-      isFetchingNextPage={isFetchingNextPage}
-      isPending={isPending}
-      isRetrying={isRetrying}
-      items={items}
+      header={t('count', { total: list.total })}
+      list={list}
       renderItem={(post) => <RecruitingCard post={post} />}
       skeletonHeight={160}
-      onLoadMore={loadMore}
-      onRetry={retry}
     />
   );
 };

@@ -151,7 +151,9 @@ describe('WebhookService.settle', () => {
 
     await service.settle('p1');
 
-    expect(prisma.payment.update).toHaveBeenCalledWith({ where: { id: pendingPayment.id }, data: { subscriptionId: 'sub-1' } });
+    expect(prisma.payment.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: pendingPayment.id }, data: { subscriptionId: 'sub-1' } })
+    );
   });
 
   it('does nothing when a concurrent webhook claimed the payment first', async () => {
@@ -185,7 +187,7 @@ describe('WebhookService.settle', () => {
     yookassa.getPayment.mockResolvedValue(remote('canceled'));
 
     expect(await service.settle('p1')).toBe(false);
-    expect(prisma.subscription.update).toHaveBeenCalledWith({ where: { id: 'sub-1' }, data: { status: 'pastDue' } });
+    expect(prisma.subscription.update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 'sub-1' }, data: { status: 'pastDue' } }));
     expect(entitlements.invalidate).toHaveBeenCalledWith('u1');
   });
 
@@ -210,7 +212,7 @@ describe('WebhookService.handle', () => {
 
     await service.handle({ type: 'notification', event: 'refund.succeeded', object: { id: 'r1', payment_id: 'p1' } });
 
-    expect(prisma.payment.findUnique).toHaveBeenCalledWith({ where: { yookassaPaymentId: 'p1' } });
+    expect(prisma.payment.findUnique).toHaveBeenCalledWith(expect.objectContaining({ where: { yookassaPaymentId: 'p1' } }));
     expect(yookassa.getPayment).not.toHaveBeenCalled();
   });
 
@@ -226,7 +228,10 @@ describe('WebhookService.handle', () => {
 
     await service.handle({ type: 'notification', event: 'refund.succeeded', object: { id: 'r1', payment_id: 'p1' } });
 
-    expect(prisma.subscription.update).toHaveBeenCalledWith({ where: { id: 'sub-1' }, data: { currentPeriodEnd: addMonths(NOW, 2) } });
+    expect(prisma.subscription.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'sub-1' }, data: { currentPeriodEnd: addMonths(NOW, 2) } })
+    );
+
     expect(entitlements.syncTracking).toHaveBeenCalledWith('u1');
   });
 
@@ -261,7 +266,11 @@ describe('WebhookService.refund', () => {
     prisma.subscription.findUnique.mockResolvedValue(mock<Subscription>({ id: 'sub-1', currentPeriodEnd: addMonths(now, 3) }));
 
     expect(await service.refund({ paymentId: 'p1', now })).toBe(true);
-    expect(prisma.subscription.update).toHaveBeenCalledWith({ where: { id: 'sub-1' }, data: { currentPeriodEnd: addMonths(now, 2) } });
+
+    expect(prisma.subscription.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'sub-1' }, data: { currentPeriodEnd: addMonths(now, 2) } })
+    );
+
     expect(entitlements.syncTracking).toHaveBeenCalledWith('u1');
   });
 

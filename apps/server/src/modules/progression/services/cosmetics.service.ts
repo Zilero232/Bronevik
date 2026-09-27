@@ -12,6 +12,8 @@ import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { NO_COSMETICS } from '../config';
 import { isCosmeticUsable, purchaseKey, visibleCosmetics } from '../lib';
+import { toCosmeticColumns, toEquippedCosmetics } from '../mappers';
+import { EQUIPPED_COSMETICS_SELECT } from '../selects';
 import { ShellLedgerService } from './shell-ledger.service';
 
 @Injectable()
@@ -27,7 +29,7 @@ export class CosmeticsService {
       this.entitlements.isPlus(userId),
       this.ledger.balance(userId),
       this.prisma.cosmeticOwnership.findMany({ where: { userId }, orderBy: { acquiredAt: 'asc' } }),
-      this.prisma.profileCosmetics.findUnique({ where: { userId } })
+      this.prisma.user.findUnique({ where: { id: userId }, select: EQUIPPED_COSMETICS_SELECT })
     ]);
 
     const acquired = new Map(owned.map((row) => [row.code, row.acquiredAt]));
@@ -40,7 +42,7 @@ export class CosmeticsService {
     return {
       isPlus,
       balance,
-      equipped: equipped ? { badge: equipped.badge, frame: equipped.frame, banner: equipped.banner } : NO_COSMETICS,
+      equipped: equipped ? toEquippedCosmetics(equipped) : NO_COSMETICS,
       items: [...catalogCosmetics(), ...seasonal].map((item) => {
         const acquiredAt = acquired.get(item.code) ?? null;
 
@@ -111,7 +113,7 @@ export class CosmeticsService {
       }
     }
 
-    await this.prisma.profileCosmetics.upsert({ where: { userId }, create: { userId, ...patch }, update: patch });
+    await this.prisma.user.update({ where: { id: userId }, data: toCosmeticColumns(patch) });
 
     return this.inventory(userId);
   }
@@ -131,13 +133,19 @@ export class CosmeticsService {
 
     const userIds = unique(links.map((link) => link.userId));
     const [equipped, owned, entitled] = await Promise.all([
-      this.prisma.profileCosmetics.findMany({ where: { userId: { in: userIds } } }),
+      this.prisma.user.findMany({
+        where: {
+          id: { in: userIds },
+          OR: [{ cosmeticBadge: { not: null } }, { cosmeticFrame: { not: null } }, { cosmeticBanner: { not: null } }]
+        },
+        select: { id: true, ...EQUIPPED_COSMETICS_SELECT }
+      }),
       this.prisma.cosmeticOwnership.findMany({ where: { userId: { in: userIds } }, select: { userId: true, code: true } }),
       this.prisma.subscription.findMany({ where: { ...entitledSubscriptionWhere(new Date()), userId: { in: userIds } }, select: { userId: true } })
     ]);
 
     const plusUsers = new Set(entitled.map((row) => row.userId));
-    const equippedOf = new Map(equipped.map((row) => [row.userId, row]));
+    const equippedOf = new Map(equipped.map((row) => [row.id, toEquippedCosmetics(row)]));
 
     return links.flatMap((link) => {
       const row = equippedOf.get(link.userId);
@@ -147,7 +155,7 @@ export class CosmeticsService {
       }
 
       const visible = visibleCosmetics({
-        equipped: { badge: row.badge, frame: row.frame, banner: row.banner },
+        equipped: row,
         owned: new Set(owned.filter((item) => item.userId === link.userId).map((item) => item.code)),
         isPlus: plusUsers.has(link.userId)
       });

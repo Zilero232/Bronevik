@@ -7,6 +7,7 @@ import { AppConflictException, AppNotFoundException } from '../../../common/exce
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { FEED } from '../config';
+import { clearFollowFlag, setFollowFlag } from '../lib';
 import { FOLLOW_KIND_FROM_DB } from '../lib/views';
 
 @Injectable()
@@ -17,7 +18,7 @@ export class FollowService {
   ) {}
 
   async list(userId: string): Promise<FollowView[]> {
-    const follows = await this.prisma.follow.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
+    const follows = await this.prisma.follow.findMany({ where: { userId, isFollowing: true }, orderBy: { createdAt: 'desc' } });
     const players = await this.prisma.player.findMany({
       where: { accountId: { in: follows.filter((follow) => follow.kind === 'player').map((follow) => follow.targetId) } },
       select: { accountId: true, nickname: true }
@@ -33,7 +34,7 @@ export class FollowService {
   }
 
   async create({ userId, kind, targetId }: CreateFollowInput): Promise<FollowView[]> {
-    const count = await this.prisma.follow.count({ where: { userId } });
+    const count = await this.prisma.follow.count({ where: { userId, isFollowing: true } });
 
     if (count >= FEED.maxFollows) {
       throw new AppConflictException('CONFLICT', 'Too many follows');
@@ -43,26 +44,22 @@ export class FollowService {
       await this.assertCanWatchTank({ userId, kind, targetId });
     }
 
-    await this.prisma.follow.upsert({
-      where: { userId_kind_targetId: { userId, kind, targetId: BigInt(targetId) } },
-      create: { userId, kind, targetId: BigInt(targetId) },
-      update: {}
-    });
+    await setFollowFlag({ prisma: this.prisma, flag: 'isFollowing', key: { userId, kind, targetId: BigInt(targetId) } });
 
     return this.list(userId);
   }
 
   async remove({ userId, id }: RemoveFollowInput): Promise<void> {
-    const { count } = await this.prisma.follow.deleteMany({ where: { id, userId } });
+    const removed = await clearFollowFlag({ prisma: this.prisma, flag: 'isFollowing', where: { id, userId } });
 
-    if (count === 0) {
+    if (!removed) {
       throw new AppNotFoundException('NOT_FOUND', `No follow ${id}`);
     }
   }
 
   async circle(userId: string): Promise<FollowCircle> {
     const [follows, links] = await Promise.all([
-      this.prisma.follow.findMany({ where: { userId, kind: 'player' }, select: { targetId: true } }),
+      this.prisma.follow.findMany({ where: { userId, kind: 'player', isFollowing: true }, select: { targetId: true } }),
       this.prisma.userLestaAccount.findMany({ where: { userId }, select: { accountId: true } })
     ]);
 
@@ -73,11 +70,14 @@ export class FollowService {
 
   private async assertCanWatchTank({ userId, kind, targetId }: CreateFollowInput): Promise<void> {
     const [existing, watched] = await Promise.all([
-      this.prisma.follow.findUnique({ where: { userId_kind_targetId: { userId, kind, targetId: BigInt(targetId) } }, select: { id: true } }),
-      this.prisma.follow.count({ where: { userId, kind } })
+      this.prisma.follow.findUnique({
+        where: { userId_kind_targetId: { userId, kind, targetId: BigInt(targetId) } },
+        select: { isFollowing: true }
+      }),
+      this.prisma.follow.count({ where: { userId, kind, isFollowing: true } })
     ]);
 
-    if (!existing) {
+    if (!existing?.isFollowing) {
       await this.entitlements.assertWithinLimit({ userId, key: 'watchedTanks', count: watched });
     }
   }

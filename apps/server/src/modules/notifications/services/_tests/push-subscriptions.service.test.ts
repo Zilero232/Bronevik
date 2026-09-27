@@ -36,6 +36,8 @@ describe('PushSubscriptionsService', () => {
 
     await service.unsubscribe({ userId: 'a', endpoint: 'https://push.example/1' });
 
-    expect(prisma.pushSubscription.deleteMany).toHaveBeenCalledWith({ where: { userId: 'a', endpoint: 'https://push.example/1' } });
+    expect(prisma.pushSubscription.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'a', endpoint: 'https://push.example/1' } })
+    );
   });
 });

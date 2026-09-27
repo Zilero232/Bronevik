@@ -22,7 +22,7 @@ export const useCoachList = () => {
   });
 
   return {
-    ...list,
+    list,
     vehicle: tankId === null ? null : (vehicleIndex(catalog)[tankId] ?? null),
     isFiltered: tankId !== null,
     onVehicleChange: (vehicle: VehicleSummary | null) => void setTankId(vehicle?.tankId ?? null),

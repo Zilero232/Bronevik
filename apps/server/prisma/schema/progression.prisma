@@ -14,33 +14,6 @@ enum CosmeticGrant {
   @@map("cosmetic_grant")
 }
 
-model TankProgress {
-  accountId BigInt @map("account_id")
-  tankId    Int    @map("tank_id")
-
-  xp      Int @default(0)
-  level   Int @default(1) @db.SmallInt
-  battles Int @default(0)
-
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-
-  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
-
-  @@id([accountId, tankId])
-  @@index([accountId, xp(sort: Desc)])
-  @@map("tank_progress")
-}
-
-model ProgressionCursor {
-  accountId BigInt @id @map("account_id")
-
-  processedUntil DateTime @map("processed_until") @db.Timestamptz(3)
-
-  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
-
-  @@map("progression_cursor")
-}
-
 model TankChallengeProgress {
   accountId BigInt   @map("account_id")
   tankId    Int      @map("tank_id")
@@ -104,18 +77,4 @@ model CosmeticOwnership {
 
   @@id([userId, code])
   @@map("cosmetic_ownership")
-}
-
-model ProfileCosmetics {
-  userId String @id @map("user_id")
-
-  badge  String?
-  frame  String?
-  banner String?
-
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("profile_cosmetics")
 }

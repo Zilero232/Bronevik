@@ -8,7 +8,7 @@ import { toIsoDate, toJsonValue, weekWindow } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../config';
-import { badgeCodeOf, challengeProgress } from '../lib';
+import { badgeCodeOf, challengeProgress, isChallengeBadgeCode } from '../lib';
 import { SnapshotEventsService } from './snapshot-events.service';
 
 @Injectable()
@@ -46,8 +46,6 @@ export class WeeklyChallengeService {
   }
 
   async evaluate(now: Date): Promise<number> {
-    await this.ensureBadges();
-
     const { start, end } = weekWindow(now);
     const links = await this.prisma.userLestaAccount.findMany({
       select: { accountId: true },
@@ -93,6 +91,11 @@ export class WeeklyChallengeService {
     }
 
     const badgeCode = badgeCodeOf(definition);
+
+    if (!isChallengeBadgeCode(badgeCode)) {
+      throw new Error(`Unknown challenge badge ${badgeCode}`);
+    }
+
     const badge = await this.prisma.accountBadge.findUnique({ where: { accountId_badgeCode: { accountId, badgeCode } } });
     const times =
       (typeof badge?.context === 'object' && badge.context && !Array.isArray(badge.context) && typeof badge.context.times === 'number'
@@ -157,17 +160,5 @@ export class WeeklyChallengeService {
     }
 
     return result;
-  }
-
-  private async ensureBadges(): Promise<void> {
-    await this.prisma.$transaction(
-      WEEKLY_CHALLENGES.map((definition, order) =>
-        this.prisma.badgeDefinition.upsert({
-          where: { code: badgeCodeOf(definition) },
-          create: { code: badgeCodeOf(definition), category: CHALLENGE_BADGES.category, criteria: toJsonValue(definition), order },
-          update: { criteria: toJsonValue(definition), order, isActive: true }
-        })
-      )
-    );
   }
 }

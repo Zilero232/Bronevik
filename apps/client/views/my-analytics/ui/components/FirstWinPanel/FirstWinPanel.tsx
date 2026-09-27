@@ -20,28 +20,28 @@ export const FirstWinPanel = () => {
     <Card className={s.root} padding='none'>
       <CardHeader action={data && !isNoGarage && <ResetCountdown nextResetAt={data.nextResetAt} />} title={t('title')} />
       <div className={s.body}>
-        <AnalyticsState data={data} isRetrying={isRetrying} status={status} onRetry={retry}>
-          {(value) =>
-            isNoGarage ? (
-              <EmptyState description={tState('noGarageText')} icon={<Warehouse size={16} />} title={tState('noGarageTitle')} />
-            ) : (
-              <>
-                <KeyFigures>
-                  <KeyFigure label={t('available')} tone='good' value={value.available} />
-                  <KeyFigure label={t('taken')} tone='steel' value={value.taken} />
-                </KeyFigures>
-                {tanks.length > 0 ? (
-                  <ul aria-label={t('tanksLabel')} className={s.list}>
-                    {tanks.map((tank) => (
-                      <FirstWinTank key={tank.vehicle.tankId} tank={tank} />
-                    ))}
-                  </ul>
-                ) : (
-                  <EmptyState isCompact title={t('empty')} />
-                )}
-              </>
-            )
-          }
+        <AnalyticsState
+          empty={<EmptyState description={tState('noGarageText')} icon={<Warehouse size={16} />} title={tState('noGarageTitle')} />}
+          isEmpty={() => isNoGarage}
+          state={{ data, status, isRetrying, retry }}
+        >
+          {(value) => (
+            <>
+              <KeyFigures>
+                <KeyFigure label={t('available')} tone='good' value={value.available} />
+                <KeyFigure label={t('taken')} tone='steel' value={value.taken} />
+              </KeyFigures>
+              {tanks.length > 0 ? (
+                <ul aria-label={t('tanksLabel')} className={s.list}>
+                  {tanks.map((tank) => (
+                    <FirstWinTank key={tank.vehicle.tankId} tank={tank} />
+                  ))}
+                </ul>
+              ) : (
+                <EmptyState isCompact title={t('empty')} />
+              )}
+            </>
+          )}
         </AnalyticsState>
       </div>
     </Card>

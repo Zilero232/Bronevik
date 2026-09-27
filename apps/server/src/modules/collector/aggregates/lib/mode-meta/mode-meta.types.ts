@@ -1,4 +1,4 @@
-import type { PlayMode } from '../../../../../../generated';
+import type { PlayMode } from '@otmetki/schemas';
 
 export type ModeSqlRow = {
   tank_id: number;

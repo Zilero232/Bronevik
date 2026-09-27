@@ -1,13 +1,18 @@
 import type { WebhookDelivery, WebhookEndpoint, WebhookEvent } from '@otmetki/schemas';
 
-import type { WebhookEvent as DbWebhookEvent } from '../../../../../generated';
+import type { NotificationEvent } from '../../../../../generated';
 import type { DeliveryRow, EndpointRow } from './webhook-view.types';
 
 import { toIso } from '../../../../common/lib';
 import { WEBHOOK_EVENT_FROM_DB } from '../../config';
 import { readWebhookFilter } from '../../lib/webhook-match';
+import { webhookDbEventSchema } from './webhook-view.schemas';
 
-export const webhookEventFromDb = (event: DbWebhookEvent): WebhookEvent | null => WEBHOOK_EVENT_FROM_DB[event];
+export const webhookEventFromDb = (event: NotificationEvent): WebhookEvent | null => {
+  const parsed = webhookDbEventSchema.safeParse(event);
+
+  return parsed.success ? WEBHOOK_EVENT_FROM_DB[parsed.data] : null;
+};
 
 export const toWebhookEndpoint = (row: EndpointRow): WebhookEndpoint => {
   const filter = readWebhookFilter(row.filter);

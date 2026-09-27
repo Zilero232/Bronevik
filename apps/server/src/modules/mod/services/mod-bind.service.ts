@@ -36,8 +36,8 @@ export class ModBindService {
     const expiresAt = addMinutes(new Date(), BIND_CODE.ttlMinutes);
 
     await this.prisma.$transaction([
-      this.prisma.modBindCode.deleteMany({ where: { userId, usedAt: null } }),
-      this.prisma.modBindCode.create({ data: { code, userId, accountId: link?.accountId ?? null, expiresAt } })
+      this.prisma.oneTimeCode.deleteMany({ where: { userId, purpose: 'modBind', usedAt: null } }),
+      this.prisma.oneTimeCode.create({ data: { code, purpose: 'modBind', userId, accountId: link?.accountId ?? null, expiresAt } })
     ]);
 
     return { code, accountId: link ? Number(link.accountId) : null, expiresAt: expiresAt.toISOString() };
@@ -57,7 +57,7 @@ export class ModBindService {
     }
 
     const request = parsed.data;
-    const stored = await this.prisma.modBindCode.findUnique({ where: { code: request.code } });
+    const stored = await this.prisma.oneTimeCode.findUnique({ where: { code: request.code, purpose: 'modBind' } });
 
     if (!stored) {
       throw new ModException({ status: HttpStatus.NOT_FOUND, error: 'code_not_found' });
@@ -78,7 +78,10 @@ export class ModBindService {
       throw new ModException({ status: HttpStatus.FORBIDDEN, error: 'account_mismatch' });
     }
 
-    const claimed = await this.prisma.modBindCode.updateMany({ where: { code: request.code, usedAt: null }, data: { usedAt: new Date() } });
+    const claimed = await this.prisma.oneTimeCode.updateMany({
+      where: { code: request.code, purpose: 'modBind', usedAt: null, expiresAt: { gt: new Date() } },
+      data: { usedAt: new Date() }
+    });
 
     if (claimed.count === 0) {
       throw new ModException({ status: HttpStatus.CONFLICT, error: 'code_used' });
@@ -98,7 +101,7 @@ export class ModBindService {
           gameVersion: request.client_version
         }
       }),
-      this.prisma.modBindCode.update({ where: { code: request.code }, data: { deviceId } })
+      this.prisma.oneTimeCode.update({ where: { code: request.code }, data: { deviceId } })
     ]);
 
     return { device_id: deviceId, secret, account_id: request.account_id, nickname: link.player.nickname };

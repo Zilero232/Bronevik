@@ -5,9 +5,9 @@ import { streamerCardSchema } from '@otmetki/schemas';
 import { Redis } from 'ioredis';
 import { z } from 'zod';
 
-import type { Prisma } from '../../../../generated';
 import type { StreamerDirectoryQueryView } from '../streamers.types';
 
+import { Prisma } from '../../../../generated';
 import { parseJsonText } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
 import { PROFILE_CARD_INCLUDE, STREAMERS } from '../config';
@@ -28,7 +28,7 @@ export class StreamerDirectoryService {
       ...(live ? { isLive: true } : {}),
       ...(platform ? { channels: { some: { platform } } } : {}),
       ...(tankId ? { liveTankId: tankId } : {}),
-      ...(hasSettings === undefined ? {} : { settings: hasSettings ? { isNot: null } : { is: null } })
+      ...(hasSettings === undefined ? {} : { settings: hasSettings ? { not: Prisma.DbNull } : { equals: Prisma.DbNull } })
     };
 
     const profiles = await this.prisma.streamerProfile.findMany({

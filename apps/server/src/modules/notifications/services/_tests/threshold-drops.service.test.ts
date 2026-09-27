@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Follow, MoeThreshold } from '../../../../../generated';
+import type { Follow, TankThreshold } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 import type { NotificationService } from '../notification.service';
 
+import { moeThresholdLevels } from '../../../reference';
 import { unknownVehicle } from '../../../reference/mappers';
 import { THRESHOLD_DROP } from '../../config';
 import { ThresholdDropsService } from '../threshold-drops.service';
@@ -13,16 +14,16 @@ import { ThresholdDropsService } from '../threshold-drops.service';
 const PREVIOUS_DATE = new Date('2026-09-19T00:00:00.000Z');
 const CURRENT_DATE = new Date('2026-09-26T00:00:00.000Z');
 
-const threshold = (date: Date, p95: number): MoeThreshold =>
-  mock<MoeThreshold>({ tankId: 1, source: 'otmetki', date, p65: 2000, p85: 2500, p95, p100: null });
+const threshold = (date: Date, p95: number): TankThreshold =>
+  mock<TankThreshold>({ kind: 'moe', tankId: 1, source: 'otmetki', date, ...moeThresholdLevels({ p65: 2000, p85: 2500, p95, p100: null }) });
 
-const createService = ({ current, previous }: { current: MoeThreshold | null; previous: MoeThreshold | null }) => {
+const createService = ({ current, previous }: { current: TankThreshold | null; previous: TankThreshold | null }) => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
   const notifications = mock<NotificationService>();
 
   prisma.follow.findMany.mockResolvedValue([mock<Follow>({ targetId: 1n })]);
-  prisma.moeThreshold.findFirst.mockResolvedValueOnce(current).mockResolvedValueOnce(previous);
+  prisma.tankThreshold.findFirst.mockResolvedValueOnce(current).mockResolvedValueOnce(previous);
   catalog.summary.mockResolvedValue({ ...unknownVehicle(1), shortName: 'IS-7' });
   notifications.notifyTankFollowers.mockResolvedValue(3);
 

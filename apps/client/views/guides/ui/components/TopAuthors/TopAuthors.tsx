@@ -3,9 +3,8 @@
 import { Heart } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { useId } from 'react';
-import { match } from 'ts-pattern';
 
-import { Avatar, Card, CardHeader, EmptyState, ErrorState } from '@/ui-kit';
+import { Avatar, Card, CardHeader, EmptyState, QueryState } from '@/ui-kit';
 
 import { useTopAuthors } from '../../../model/hooks';
 import { SideListSkeleton } from '../SideListSkeleton';
@@ -16,16 +15,19 @@ export const TopAuthors = () => {
   const t = useTranslations('guides.authors');
   const titleId = useId();
   const format = useFormatter();
-  const { authors, isPending, isError, isRetrying, retry } = useTopAuthors();
+  const query = useTopAuthors();
 
   return (
     <Card aria-labelledby={titleId} padding='none'>
       <CardHeader title={<span id={titleId}>{t('title')}</span>} />
-      {match({ isPending, isError, isEmpty: authors.length === 0 })
-        .with({ isPending: true }, () => <SideListSkeleton />)
-        .with({ isError: true }, () => <ErrorState isCompact isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />)
-        .with({ isEmpty: true }, () => <EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />)
-        .otherwise(() => (
+      <QueryState
+        isCompact
+        empty={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
+        errorTitle={t('errorTitle')}
+        query={query}
+        skeleton={<SideListSkeleton />}
+      >
+        {(authors) => (
           <ol className={s.list}>
             {authors.map(({ author, guides, likes }, index) => (
               <li key={author.id} className={s.row}>
@@ -42,7 +44,8 @@ export const TopAuthors = () => {
               </li>
             ))}
           </ol>
-        ))}
+        )}
+      </QueryState>
     </Card>
   );
 };

@@ -15,15 +15,16 @@ export const useTierList = () => {
 
   const params = { period, tier, type: filters.types.length === 1 ? filters.types[0] : undefined };
 
-  const { data, isLoading, isError, isFetching, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.tanks.tierList(params),
     queryFn: ({ signal }) => getTierList({ ...params, signal }),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    select: ({ entries }) => groupByRank(entries)
   });
 
   const onTierChange = (next: string) => {
     void setState({ tier: Number(next) });
   };
 
-  return { tier, groups: groupByRank(data?.entries ?? []), isLoading, isError, isFetching, refetch, onTierChange };
+  return { tier, query, onTierChange };
 };

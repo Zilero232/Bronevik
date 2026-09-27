@@ -69,8 +69,9 @@ describe('useCommentsThread', () => {
 
     await waitFor(() => expect(result.current.isPending).toBe(false));
 
-    expect(result.current.isSignedIn).toBe(true);
-    expect(result.current.viewerId).toBe(SESSION?.user.id);
+    expect(result.current.context.isSignedIn).toBe(true);
+    expect(result.current.context.viewerId).toBe(SESSION?.user.id);
+    expect(result.current.context.thread).toEqual(THREAD);
   });
 
   it('has no viewer for a guest', async () => {
@@ -80,8 +81,8 @@ describe('useCommentsThread', () => {
 
     await waitFor(() => expect(result.current.isPending).toBe(false));
 
-    expect(result.current.isSignedIn).toBe(false);
-    expect(result.current.viewerId).toBeNull();
+    expect(result.current.context.isSignedIn).toBe(false);
+    expect(result.current.context.viewerId).toBeNull();
     expect(result.current.nodes).toEqual([]);
     expect(result.current.count).toBe(0);
   });

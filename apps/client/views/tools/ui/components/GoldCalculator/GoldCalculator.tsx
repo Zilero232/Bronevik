@@ -32,8 +32,8 @@ export const GoldCalculator = () => {
               { key: 'credits', label: t('fields.credits'), ...GOLD.creditsRange },
               { key: 'xp', label: t('fields.xp'), ...GOLD.xpRange }
             ]}
+            field={field}
             values={values}
-            onChange={({ key, value }) => field(key)(value)}
           />
           <GoldBundles />
         </>

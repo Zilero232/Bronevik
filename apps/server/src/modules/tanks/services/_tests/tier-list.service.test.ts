@@ -88,9 +88,11 @@ describe('TierListService.tierList', () => {
 
     await service.tierList(query);
 
-    expect(prisma.tankServerStats.findMany).toHaveBeenCalledWith({
-      where: expect.objectContaining({ battles: { gte: TIER_LIST.defaultMinBattles } })
-    });
+    expect(prisma.tankServerStats.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ battles: { gte: TIER_LIST.defaultMinBattles } })
+      })
+    );
   });
 
   it('stamps the list with the newest computation time', async () => {

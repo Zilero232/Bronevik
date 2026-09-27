@@ -1,3 +1,5 @@
+import { sumBy } from 'remeda';
+
 import type { Comment } from '../../api';
 import type { CommentNode, RootIdOfInput } from './comment-tree.types';
 
@@ -58,4 +60,4 @@ export const buildCommentTree = (comments: readonly Comment[]): CommentNode[] =>
 };
 
 export const countComments = (nodes: readonly CommentNode[]): number =>
-  nodes.reduce((total, node) => total + node.replies.length + (isDeletedComment(node.comment) ? 0 : 1), 0);
+  sumBy(nodes, (node) => node.replies.length + (isDeletedComment(node.comment) ? 0 : 1));

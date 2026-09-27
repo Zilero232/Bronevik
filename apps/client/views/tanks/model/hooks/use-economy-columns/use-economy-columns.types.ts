@@ -1,7 +1,7 @@
-import type { EconomyAccount } from '@otmetki/schemas';
+import type { TankEconomyRow } from '@otmetki/schemas';
+
+import type { EconomyView } from '@/entities/tank/tank';
 
 export type UseEconomyColumnsInput = {
-  account: EconomyAccount;
-  withReserve: boolean;
-  withClanPayout: boolean;
+  view: (row: TankEconomyRow) => EconomyView | null;
 };

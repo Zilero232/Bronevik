@@ -101,9 +101,12 @@ export class GoalsService {
 
   private async baseline({ accountId, metric, tankId }: BaselineInput): Promise<number | null> {
     if (metric === 'moe') {
-      const progress = tankId === null ? null : await this.prisma.moeProgress.findUnique({ where: { accountId_tankId: { accountId, tankId } } });
+      const progress =
+        tankId === null
+          ? null
+          : await this.prisma.playerTank.findUnique({ where: { accountId_tankId: { accountId, tankId } }, select: { moePercent: true } });
 
-      return progress?.percent ?? null;
+      return progress?.moePercent ?? null;
     }
 
     const rating =

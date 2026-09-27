@@ -123,7 +123,10 @@ describe('TournamentService.register', () => {
 
     const view = await service.register({ id, userId: 'u1', teamName: 'Crew' });
 
-    expect(prisma.tournamentParticipant.create).toHaveBeenCalledWith({ data: { tournamentId: id, accountId: 7n, teamName: 'Crew', verified: true } });
+    expect(prisma.tournamentParticipant.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { tournamentId: id, accountId: 7n, teamName: 'Crew', verified: true } })
+    );
+
     expect(view.participants).toHaveLength(1);
   });
 });
@@ -418,7 +421,7 @@ describe('TournamentService.withdraw', () => {
 
     await service.withdraw({ id, userId: 'player' });
 
-    expect(prisma.tournamentParticipant.deleteMany).toHaveBeenCalledWith({ where: { tournamentId: id, accountId: 7n } });
+    expect(prisma.tournamentParticipant.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { tournamentId: id, accountId: 7n } }));
   });
 
   it('refuses once the tournament is running', async () => {

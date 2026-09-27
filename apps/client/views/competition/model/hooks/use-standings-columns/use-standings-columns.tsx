@@ -1,10 +1,11 @@
 'use client';
 
 import type { CompetitionTeam } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import type { UseStandingsColumnsInput } from './use-standings-columns.types';
 
@@ -13,7 +14,7 @@ import { MembersCell, TeamCell } from '../../../ui/components/StandingsTable/com
 
 const column = createColumnHelper<CompetitionTeam>();
 
-export const useStandingsColumns = ({ myTeamId, battlesPerPlayer }: UseStandingsColumnsInput): ColumnDef<CompetitionTeam, never>[] => {
+export const useStandingsColumns = ({ myTeamId, battlesPerPlayer }: UseStandingsColumnsInput): TableColumn<CompetitionTeam>[] => {
   const t = useTranslations('competitions.standings');
   const format = useFormatter();
 

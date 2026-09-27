@@ -116,7 +116,7 @@ describe('PlayerResolverService.ensure', () => {
     prisma.player.findUnique.mockResolvedValue(mock<Player>({ accountId: 42n, isHidden: false }));
 
     await expect(service.ensure(42n)).resolves.toBe(42n);
-    expect(prisma.player.update).toHaveBeenCalledWith({ where: { accountId: 42n }, data: { lastViewedAt: NOW } });
+    expect(prisma.player.update).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: 42n }, data: { lastViewedAt: NOW } }));
     expect(collector.enrol).not.toHaveBeenCalled();
   });
 

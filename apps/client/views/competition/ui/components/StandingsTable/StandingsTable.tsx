@@ -18,7 +18,13 @@ export const StandingsTable = ({ competition }: StandingsTableProps) => {
       {competition.standings.length === 0 ? (
         <EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />
       ) : (
-        <DataTable caption={t('caption')} columns={columns} data={competition.standings} getRowId={({ id }) => id} />
+        <DataTable
+          caption={t('caption')}
+          columns={columns}
+          data={competition.standings}
+          getRowId={({ id }) => id}
+          rowTint={({ id }) => (id === competition.myTeamId ? 'self' : null)}
+        />
       )}
     </Card>
   );

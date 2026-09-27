@@ -1,8 +1,8 @@
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
+
+import type { TableColumn } from '../../../DataTable.types';
 
 import { DataTable } from '../../../DataTable';
 
@@ -14,7 +14,7 @@ const ROWS: Row[] = [
   { name: 'Aurora', battles: 5400, note: 'c' }
 ];
 
-const COLUMNS: ColumnDef<Row, never>[] = [
+const COLUMNS: TableColumn<Row>[] = [
   { accessorKey: 'name', header: 'Nickname' },
   { accessorKey: 'battles', header: 'Battles' },
   { accessorKey: 'note', header: 'Note', enableSorting: false }

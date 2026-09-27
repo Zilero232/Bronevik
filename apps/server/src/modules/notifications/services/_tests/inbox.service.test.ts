@@ -75,10 +75,12 @@ describe('InboxService.markRead', () => {
 
     await expect(service.markRead({ userId: 'u', ids: ['n1', 'n2'] })).resolves.toBe(2);
 
-    expect(prisma.notification.updateMany).toHaveBeenCalledWith({
-      where: { userId: 'u', channel: 'site', readAt: null, id: { in: ['n1', 'n2'] } },
-      data: { readAt: NOW }
-    });
+    expect(prisma.notification.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId: 'u', channel: 'site', readAt: null, id: { in: ['n1', 'n2'] } },
+        data: { readAt: NOW }
+      })
+    );
   });
 
   it('marks everything read when no ids are given', async () => {

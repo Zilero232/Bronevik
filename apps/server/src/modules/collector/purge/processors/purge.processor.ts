@@ -4,12 +4,13 @@ import { Job } from 'bullmq';
 import { WORKER_CONCURRENCY } from '../../config';
 import { JOB, purgeAccountPayloadSchema, QUEUE } from '../../contracts';
 import { MetricsService } from '../../metrics';
-import { PurgeService } from '../services';
+import { JobMetricRetentionService, PurgeService } from '../services';
 
 @Processor(QUEUE.purge, { concurrency: WORKER_CONCURRENCY.purge })
 export class PurgeProcessor extends WorkerHost {
   constructor(
     private readonly purge: PurgeService,
+    private readonly jobMetrics: JobMetricRetentionService,
     private readonly metrics: MetricsService
   ) {
     super();
@@ -21,6 +22,10 @@ export class PurgeProcessor extends WorkerHost {
       run: async () => {
         if (job.name === JOB.purge.dispatch) {
           return { dispatched: await this.purge.dispatch() };
+        }
+
+        if (job.name === JOB.purge.jobMetrics) {
+          return { deleted: await this.jobMetrics.purgeExpired() };
         }
 
         await this.purge.purgeAccount(purgeAccountPayloadSchema.parse(job.data));

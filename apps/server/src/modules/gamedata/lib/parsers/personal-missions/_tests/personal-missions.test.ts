@@ -26,8 +26,7 @@ describe('parsePersonalMissions', () => {
       campaignId: 1,
       name: 'StuG IV',
       nextOperationIds: [2],
-      chainsCount: 5,
-      missionsPerChain: 15,
+      chainsToUnlockNext: 5,
       reward: { nation: 'germany', tag: 'G104_Stug_IV' }
     });
 

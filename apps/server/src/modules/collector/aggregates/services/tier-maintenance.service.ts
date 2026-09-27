@@ -42,15 +42,13 @@ export class TierMaintenanceService {
   }
 
   private async pinnedAccountIds(): Promise<bigint[]> {
-    const [favorites, follows, links, devices] = await Promise.all([
-      this.prisma.favorite.findMany({ where: { kind: 'player' }, select: { targetId: true }, distinct: ['targetId'] }),
+    const [follows, links, devices] = await Promise.all([
       this.prisma.follow.findMany({ where: { kind: 'player' }, select: { targetId: true }, distinct: ['targetId'] }),
       this.prisma.userLestaAccount.findMany({ select: { accountId: true } }),
       this.prisma.modDevice.findMany({ where: { revokedAt: null, accountId: { not: null } }, select: { accountId: true }, distinct: ['accountId'] })
     ]);
 
     const ids = new Set<bigint>([
-      ...favorites.map((favorite) => favorite.targetId),
       ...follows.map((follow) => follow.targetId),
       ...links.map((link) => link.accountId),
       ...devices.flatMap((device) => (device.accountId === null ? [] : [device.accountId]))

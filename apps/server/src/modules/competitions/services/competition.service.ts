@@ -1,7 +1,7 @@
 import type { CompetitionPage, CompetitionScoring, CompetitionSummary, Competition as CompetitionView } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { COMPETITION, competitionScoringSchema } from '@otmetki/schemas';
+import { COMPETITION, competitionScoringSchema, competitionVisibilitySchema } from '@otmetki/schemas';
 
 import type { Competition, Prisma } from '../../../../generated';
 import type {
@@ -247,7 +247,7 @@ export class CompetitionService {
       slug: row.slug,
       title: row.title,
       description: row.description,
-      visibility: row.visibility,
+      visibility: competitionVisibilitySchema.parse(row.visibility),
       mode: row.mode,
       battlesPerPlayer: row.battlesPerPlayer,
       minTier: row.minTier,

@@ -150,14 +150,6 @@
     "copyFailed": "Could not copy",
     "download": "Download JSON",
     "compare": "Compare",
-    "modKinds": {
-      "modpack": "Modpack",
-      "sight": "Sight",
-      "zoom": "Zoom",
-      "other": "Mod"
-    },
-    "onMost": "MOST",
-    "onMostHint": "The mod is checked and published on MOST, the official mod hub",
     "history": {
       "title": "Change history",
       "empty": "No changes yet",
@@ -206,13 +198,13 @@
       "fov": "FOV",
       "preset": "Preset",
       "zoomMax": "Max zoom",
-      "mods": "Modpack",
+      "mods": "Mods",
       "gpu": "GPU",
       "updated": "Updated"
     },
     "live": "live",
     "allPresets": "All presets",
-    "search": "Creator, GPU, modpack",
+    "search": "Creator, GPU",
     "preset": "Graphics preset",
     "reset": "Reset filters",
     "emptyTitle": "No settings yet",

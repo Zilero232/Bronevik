@@ -11,18 +11,11 @@ import { GUIDE_PAGE } from '../../../config';
 
 export const useGuidePage = (slug: string) => {
   const { data: session, isPending: isSessionPending } = useAuthSession();
-  const { data, isPending, isFetching, error, refetch } = useQuery({
+
+  return useQuery({
     queryKey: QUERY_KEYS.guides.detail({ viewerId: session?.user.id ?? null, slug }),
     queryFn: ({ signal }) => getGuide({ slug, signal }),
     enabled: !isSessionPending,
     retry: (failures, failure) => !isNotFoundError(failure) && failures < GUIDE_PAGE.retries
   });
-
-  return {
-    guide: data ?? null,
-    isPending,
-    isNotFound: isNotFoundError(error),
-    isRetrying: isFetching,
-    retry: () => void refetch()
-  };
 };

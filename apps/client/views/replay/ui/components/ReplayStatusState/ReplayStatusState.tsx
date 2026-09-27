@@ -7,12 +7,13 @@ import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, EmptyState, PageHeader } from '@/ui-kit';
 
-import type { ReplayStatusStateProps } from './ReplayStatusState.types';
+import { useReplay } from '../../../model/context';
 
 import s from './ReplayStatusState.module.scss';
 
-export const ReplayStatusState = ({ replay }: ReplayStatusStateProps) => {
+export const ReplayStatusState = () => {
   const t = useTranslations('replays.detail');
+  const replay = useReplay();
   const isFailed = replay.status === 'failed';
 
   return (

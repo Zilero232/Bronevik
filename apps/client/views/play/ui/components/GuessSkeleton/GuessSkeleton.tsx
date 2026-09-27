@@ -18,9 +18,7 @@ export const GuessSkeleton = () => {
       <div className={s.main}>
         <Skeleton height={64} width='100%' />
         <Skeleton height={36} width='100%' />
-        {Array.from({ length: GUESS_VIEW.skeletonRows }, (_, row) => (
-          <Skeleton key={row} height={36} width='100%' />
-        ))}
+        <Skeleton count={GUESS_VIEW.skeletonRows} height={36} width='100%' />
       </div>
     </div>
   );

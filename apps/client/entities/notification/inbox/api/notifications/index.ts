@@ -1,2 +1,3 @@
 export { getInbox, markInboxRead } from './notifications';
-export type { InboxPageInput } from './notifications.types';
+export { inboxQueries } from './notifications.queries';
+export type { InboxFeedQueryInput, InboxPageInput, InboxPreviewQueryInput } from './notifications.types';

@@ -18,13 +18,13 @@ import {
   DialogTrigger
 } from '@/ui-kit';
 
-import type { GuideOwnerActionsProps } from './GuideOwnerActions.types';
-
+import { useGuide } from '../../../../../model/context';
 import { useGuideDelete } from '../../../../../model/hooks';
 
-export const GuideOwnerActions = ({ guide }: GuideOwnerActionsProps) => {
+export const GuideOwnerActions = () => {
   const t = useTranslations('guides.detail');
-  const { isOpen, onOpenChange, remove, isPending } = useGuideDelete(guide);
+  const guide = useGuide();
+  const { isOpen, onOpenChange, remove, isPending } = useGuideDelete();
 
   return (
     <>

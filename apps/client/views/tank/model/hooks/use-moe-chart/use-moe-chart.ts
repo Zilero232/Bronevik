@@ -12,9 +12,9 @@ import { useMoeHistory } from '../use-moe-history';
 export const useMoeChart = () => {
   const t = useTranslations('tank.marks');
   const format = useFormatter();
-  const { data: history, isPending, isError, refetch } = useMoeHistory();
+  const query = useMoeHistory();
 
-  const { labels, series } = moeSeries(history ?? []);
+  const { labels, series } = moeSeries(query.data ?? []);
 
   const chart = {
     labels: labels.map((date) => format.dateTime(parseISO(date), { day: 'numeric', month: 'short' })),
@@ -23,5 +23,5 @@ export const useMoeChart = () => {
 
   const formatValue = (value: number) => format.number(value, { maximumFractionDigits: 0 });
 
-  return { chart, isEmpty: labels.length < 2, isPending, isError, refetch, formatValue };
+  return { query, chart, isEmpty: labels.length < 2, formatValue };
 };

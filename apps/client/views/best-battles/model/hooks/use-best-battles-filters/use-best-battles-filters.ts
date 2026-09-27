@@ -10,7 +10,7 @@ import type { BestBattleMetric, BestBattlePeriod } from '@/entities/battle/best-
 import type { SegmentedOption, SelectItem } from '@/ui-kit';
 
 import { BEST_BATTLE_METRICS, BEST_BATTLE_PERIODS, getBestBattleFacets } from '@/entities/battle/best-battle';
-import { listMaps } from '@/entities/map/map';
+import { mapQueries } from '@/entities/map/map';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -22,7 +22,7 @@ export const useBestBattlesFilters = () => {
   const t = useTranslations('bestBattles');
   const [state, setState] = useBestBattlesState();
   const catalog = useVehicleCatalog();
-  const maps = useQuery({ queryKey: QUERY_KEYS.maps.list, queryFn: ({ signal }) => listMaps({ signal }) });
+  const maps = useQuery(mapQueries.list());
   const facets = useQuery({
     queryKey: QUERY_KEYS.bestBattles.facets(state.period),
     queryFn: ({ signal }) => getBestBattleFacets({ period: state.period, signal }),

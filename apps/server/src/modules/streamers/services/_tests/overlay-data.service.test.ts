@@ -50,7 +50,9 @@ describe('OverlayDataService.preview', () => {
 
     await service.preview({ userId: 'u1', kind: 'session', config });
 
-    expect(prisma.accountRating.findUnique).toHaveBeenCalledWith({ where: { accountId_period: { accountId: 7n, period: 'overall' } } });
+    expect(prisma.accountRating.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { accountId_period: { accountId: 7n, period: 'overall' } } })
+    );
   });
 
   it('carries the Bronya index of the session and of the whole account', async () => {

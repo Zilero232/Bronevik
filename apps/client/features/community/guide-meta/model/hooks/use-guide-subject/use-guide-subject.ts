@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { listMaps } from '@/entities/map/map';
+import { mapQueries } from '@/entities/map/map';
 import { listVehicles, vehicleIndex } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -19,8 +19,7 @@ export const useGuideSubject = ({ tankId, arenaId }: UseGuideSubjectInput) => {
   });
 
   const { data: maps } = useQuery({
-    queryKey: QUERY_KEYS.maps.list,
-    queryFn: ({ signal }) => listMaps({ signal }),
+    ...mapQueries.list(),
     staleTime: GUIDE_SUBJECT.mapsStaleMs,
     enabled: arenaId !== null
   });

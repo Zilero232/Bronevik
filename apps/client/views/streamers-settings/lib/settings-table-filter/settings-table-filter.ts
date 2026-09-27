@@ -3,7 +3,7 @@ import type { SettingsTableRow } from '@otmetki/schemas';
 import type { SettingsTableFilterInput } from './settings-table-filter.types';
 
 const haystack = (row: SettingsTableRow): string =>
-  [row.displayName, row.slug, row.gpu, row.modpack]
+  [row.displayName, row.slug, row.gpu]
     .filter((part): part is string => Boolean(part))
     .join(' ')
     .toLowerCase();

@@ -3,10 +3,10 @@ import type { TankEconomy, TankLearning, TankObtain } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { MoeThreshold, VehicleProfile } from '../../../../../generated';
+import type { VehicleProfile } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { SweatIndexService } from '../../../marks';
-import type { CatalogEntry, ThresholdsService, VehicleCatalogService } from '../../../reference';
+import type { CatalogEntry, MoeThresholdRecord, ThresholdsService, VehicleCatalogService } from '../../../reference';
 import type { TankEconomyReportService } from '../tank-economy-report.service';
 import type { TankLearningService } from '../tank-learning.service';
 import type { TankObtainService } from '../tank-obtain.service';
@@ -48,7 +48,7 @@ const profile = (profileId: string, maxHealth: number): VehicleProfile => ({
   updatedAt: new Date('2026-09-20T00:00:00Z')
 });
 
-const moe: MoeThreshold = {
+const moe: MoeThresholdRecord = {
   tankId: 1,
   date: new Date('2026-09-20T00:00:00Z'),
   source: 'otmetki',

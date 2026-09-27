@@ -1,4 +1,3 @@
-export { DropsPanel } from './DropsPanel';
-export { EventGroup } from './EventGroup';
-export { EventTimeline } from './EventTimeline';
-export { NowCard } from './NowCard';
+export { EventsNow } from './EventsNow';
+export { EventsPast } from './EventsPast';
+export { EventsUpcoming } from './EventsUpcoming';

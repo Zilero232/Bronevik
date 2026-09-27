@@ -1,10 +1,11 @@
 'use client';
 
 import type { ClanListItem } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { RatingValue } from '@/entities/player/stats';
 import { WinRateCell } from '@/entities/tank/tank';
@@ -13,7 +14,7 @@ import { ActivityCell, ClanCell } from '../../../ui/components/ClanRating/compon
 
 const column = createColumnHelper<ClanListItem>();
 
-export const useClanColumns = (): ColumnDef<ClanListItem, never>[] => {
+export const useClanColumns = (): TableColumn<ClanListItem>[] => {
   const t = useTranslations('clans.rating');
   const format = useFormatter();
 

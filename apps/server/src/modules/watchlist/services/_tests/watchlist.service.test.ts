@@ -5,7 +5,7 @@ import { subHours } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountRating, Clan, Follow, Player, WatchlistSettings } from '../../../../../generated';
+import type { AccountRating, Clan, Follow, NotificationSettings, Player } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 import type { CollectorProducerService } from '../../../collector';
@@ -13,6 +13,7 @@ import type { PlayerActivityRow } from '../../watchlist.types';
 import type { WatchlistActivityService } from '../watchlist-activity.service';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
+import { NOTIFICATION_DEFAULTS } from '../../../me';
 import { WatchlistService } from '../watchlist.service';
 
 const now = new Date('2026-09-26T10:00:00Z');
@@ -34,7 +35,8 @@ const setup = () => {
   prisma.follow.findMany.mockResolvedValue([]);
   prisma.player.findMany.mockResolvedValue([]);
   prisma.accountRating.findMany.mockResolvedValue([]);
-  prisma.watchlistSettings.findUnique.mockResolvedValue(null);
+  prisma.notificationSettings.findUnique.mockResolvedValue(null);
+  prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
   activity.activity.mockResolvedValue(new Map());
   entitlements.limit.mockResolvedValue(10);
 
@@ -142,8 +144,21 @@ describe('WatchlistService.add', () => {
     await service.add({ userId: 'u1', accountId: 7 });
 
     expect(entitlements.assertWithinLimit).toHaveBeenCalledWith(expect.objectContaining({ userId: 'u1', key: 'watchedPlayers', count: 3 }));
-    expect(prisma.follow.create).toHaveBeenCalled();
+    expect(prisma.follow.upsert).toHaveBeenCalledWith(expect.objectContaining({ update: { isFollowing: true } }));
     expect(collector.enrol).toHaveBeenCalledWith(expect.objectContaining({ accountId: 7, priority: 'high' }));
+  });
+
+  it('follows a player who is only a favourite, counting only followed players against the limit', async () => {
+    const { prisma, entitlements, service } = setup();
+
+    prisma.follow.findUnique.mockResolvedValue(mock<Follow>({ id: 'f7', isFollowing: false, isFavorite: true }));
+    prisma.follow.count.mockResolvedValue(3);
+
+    await service.add({ userId: 'u1', accountId: 7 });
+
+    expect(prisma.follow.count).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'u1', kind: 'player', isFollowing: true } }));
+    expect(entitlements.assertWithinLimit).toHaveBeenCalled();
+    expect(prisma.follow.upsert).toHaveBeenCalled();
   });
 
   it('does not follow or enrol a player once the free limit is reached', async () => {
@@ -154,27 +169,27 @@ describe('WatchlistService.add', () => {
     entitlements.assertWithinLimit.mockRejectedValue(new AppForbiddenException('SUBSCRIPTION_REQUIRED', 'limit'));
 
     await expect(service.add({ userId: 'u1', accountId: 7 })).rejects.toMatchObject({ status: 403 });
-    expect(prisma.follow.create).not.toHaveBeenCalled();
+    expect(prisma.follow.upsert).not.toHaveBeenCalled();
     expect(collector.enrol).not.toHaveBeenCalled();
   });
 
   it('treats a player already on the list as a no-op even at the limit', async () => {
     const { prisma, entitlements, collector, service } = setup();
 
-    prisma.follow.findUnique.mockResolvedValue(mock<Follow>({ id: 'f7' }));
+    prisma.follow.findUnique.mockResolvedValue(mock<Follow>({ id: 'f7', isFollowing: true }));
     prisma.follow.count.mockResolvedValue(10);
 
     await service.add({ userId: 'u1', accountId: 7 });
 
     expect(entitlements.assertWithinLimit).not.toHaveBeenCalled();
-    expect(prisma.follow.create).not.toHaveBeenCalled();
+    expect(prisma.follow.upsert).not.toHaveBeenCalled();
     expect(collector.enrol).not.toHaveBeenCalled();
   });
 
   it('returns the list for the default period', async () => {
     const { prisma, service } = setup();
 
-    prisma.follow.findUnique.mockResolvedValue(mock<Follow>({ id: 'f7' }));
+    prisma.follow.findUnique.mockResolvedValue(mock<Follow>({ id: 'f7', isFollowing: true }));
 
     expect((await service.add({ userId: 'u1', accountId: 7 })).period).toBe(WATCHLIST.defaultPeriod);
   });
@@ -185,6 +200,7 @@ describe('WatchlistService.remove', () => {
     const { prisma, service } = setup();
 
     prisma.follow.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.follow.updateMany.mockResolvedValue({ count: 0 });
 
     await expect(service.remove({ userId: 'u1', accountId: 7 })).rejects.toMatchObject({ status: 404 });
   });
@@ -195,6 +211,19 @@ describe('WatchlistService.remove', () => {
     prisma.follow.deleteMany.mockResolvedValue({ count: 1 });
 
     await expect(service.remove({ userId: 'u1', accountId: 7 })).resolves.toBeUndefined();
+  });
+
+  it('keeps a watched player who is also a favourite, only unfollowing them', async () => {
+    const { prisma, service } = setup();
+
+    prisma.follow.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.follow.updateMany.mockResolvedValue({ count: 1 });
+
+    await expect(service.remove({ userId: 'u1', accountId: 7 })).resolves.toBeUndefined();
+
+    expect(prisma.follow.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'u1', kind: 'player', targetId: 7n, isFollowing: true } })
+    );
   });
 });
 
@@ -208,7 +237,7 @@ describe('WatchlistService.settings', () => {
   it('returns the saved digest and when it was last sent', async () => {
     const { prisma, service } = setup();
 
-    prisma.watchlistSettings.findUnique.mockResolvedValue(mock<WatchlistSettings>({ digest: 'weekly', lastDigestAt: now }));
+    prisma.notificationSettings.findUnique.mockResolvedValue(mock<NotificationSettings>({ watchlistDigest: 'weekly', watchlistDigestAt: now }));
 
     expect(await service.settings('u1')).toEqual({ digest: 'weekly', lastDigestAt: now.toISOString() });
   });
@@ -221,13 +250,13 @@ describe('WatchlistService.updateSettings', () => {
     entitlements.assertFeature.mockRejectedValue(new AppForbiddenException('SUBSCRIPTION_REQUIRED', 'Plus'));
 
     await expect(service.updateSettings({ userId: 'u1', digest: 'hourly' })).rejects.toMatchObject({ status: 403 });
-    expect(prisma.watchlistSettings.upsert).not.toHaveBeenCalled();
+    expect(prisma.notificationSettings.upsert).not.toHaveBeenCalled();
   });
 
   it('lets a free user pick a daily, weekly or no digest', async () => {
     const { prisma, entitlements, service } = setup();
 
-    prisma.watchlistSettings.upsert.mockResolvedValue(mock<WatchlistSettings>({ digest: 'off', lastDigestAt: null }));
+    prisma.notificationSettings.upsert.mockResolvedValue(mock<NotificationSettings>({ watchlistDigest: 'off', watchlistDigestAt: null }));
 
     const digests: WatchlistDigest[] = ['daily', 'weekly', 'off'];
 
@@ -236,6 +265,25 @@ describe('WatchlistService.updateSettings', () => {
     }
 
     expect(entitlements.assertFeature).not.toHaveBeenCalled();
-    expect(prisma.watchlistSettings.upsert).toHaveBeenCalledTimes(3);
+    expect(prisma.notificationSettings.upsert).toHaveBeenCalledTimes(3);
+  });
+
+  it('creates missing notification settings with the notification defaults', async () => {
+    const { prisma, service } = setup();
+
+    prisma.notificationSettings.upsert.mockResolvedValue(mock<NotificationSettings>({ watchlistDigest: 'weekly', watchlistDigestAt: null }));
+
+    await service.updateSettings({ userId: 'u1', digest: 'weekly' });
+
+    expect(prisma.notificationSettings.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          channels: [...NOTIFICATION_DEFAULTS.channels],
+          events: [...NOTIFICATION_DEFAULTS.events],
+          watchlistDigest: 'weekly'
+        }),
+        update: { watchlistDigest: 'weekly' }
+      })
+    );
   });
 });

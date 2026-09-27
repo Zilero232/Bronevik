@@ -1,10 +1,11 @@
 'use client';
 
 import type { MyBattle } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { TankCell } from '@/entities/tank/tank';
 import { NumberCell } from '@/ui-kit';
@@ -14,7 +15,7 @@ import { DateCell } from '../../../ui/components/SessionsTable/components';
 
 const column = createColumnHelper<MyBattle>();
 
-export const useMyBattlesColumns = (): ColumnDef<MyBattle, never>[] => {
+export const useMyBattlesColumns = (): TableColumn<MyBattle>[] => {
   const t = useTranslations('analytics.columns');
 
   return [

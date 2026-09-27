@@ -1,4 +1,4 @@
-export { bonusTypesOfMode, GAME_MODE_BONUS_TYPES, gameModeOfBonusType } from './bonus-type';
+export { ARENA_BONUS_TYPE, bonusTypesOfMode, GAME_MODE_BONUS_TYPES, gameModeOfBonusType } from './bonus-type';
 export { clanInfoFields } from './clan-info';
 export { clanEmblem } from './emblem';
 export { accessEndsAt, entitledSubscriptionWhere, isEntitled, PLUS_SUBSCRIPTION } from './entitlement';

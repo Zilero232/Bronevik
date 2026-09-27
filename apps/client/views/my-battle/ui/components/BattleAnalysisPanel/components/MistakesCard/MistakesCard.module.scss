@@ -1,0 +1,17 @@
+@use '@/shared/styles/mixins' as *;
+
+.list {
+  @include stack(1px);
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  padding: var(--space-2) var(--space-3);
+  border-left: 2px solid var(--color-warning);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+}

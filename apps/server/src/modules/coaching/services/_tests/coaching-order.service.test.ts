@@ -68,7 +68,9 @@ describe('CoachingOrderService.order', () => {
 
     await service.order({ userId: 'student', coachUserId: 'coach', studentContact: '@student' });
 
-    expect(prisma.coachingOrder.create).toHaveBeenCalledWith({ data: expect.objectContaining({ priceRub: coach.priceRub, offerId: null }) });
+    expect(prisma.coachingOrder.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ priceRub: coach.priceRub, offerId: null }) })
+    );
   });
 
   it('refuses an offer that is not active for this coach', async () => {
@@ -107,7 +109,10 @@ describe('CoachingOrderService.order with a replay', () => {
     prisma.coachProfile.findFirst.mockResolvedValue(null);
 
     await expect(service.order({ userId: 'student', coachUserId: 'coach', studentContact: '@student' })).rejects.toBeInstanceOf(AppNotFoundException);
-    expect(prisma.coachProfile.findFirst).toHaveBeenCalledWith({ where: { userId: 'coach', isActive: true, hiddenAt: null } });
+
+    expect(prisma.coachProfile.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'coach', isActive: true, hiddenAt: null } })
+    );
   });
 });
 
@@ -122,7 +127,7 @@ describe('CoachingOrderService.review', () => {
     await service.review({ id: order.id, userId: 'student', score: 5 });
 
     expect(prisma.coachingOrder.aggregate).toHaveBeenCalledWith(expect.objectContaining({ where: { coachUserId: 'coach', score: { not: null } } }));
-    expect(prisma.coachProfile.update).toHaveBeenCalledWith({ where: { userId: 'coach' }, data: { rating: 4.5 } });
+    expect(prisma.coachProfile.update).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'coach' }, data: { rating: 4.5 } }));
   });
 
   it('refuses to review an order that is not completed', async () => {

@@ -11,9 +11,7 @@ export const CodeList = ({ codes, isPending, emptyTitle }: CodeListProps) => {
   if (isPending) {
     return (
       <div className={s.root}>
-        {Array.from({ length: CODES.skeletons }, (_, index) => (
-          <Skeleton key={index} height={132} shape='block' />
-        ))}
+        <Skeleton count={CODES.skeletons} height={132} shape='block' />
       </div>
     );
   }

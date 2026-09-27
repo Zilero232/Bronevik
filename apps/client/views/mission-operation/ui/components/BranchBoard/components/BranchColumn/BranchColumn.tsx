@@ -1,3 +1,5 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 
 import { ClassIcon, ProgressRing } from '@/ui-kit';
@@ -5,12 +7,14 @@ import { ClassIcon, ProgressRing } from '@/ui-kit';
 import type { BranchColumnProps } from './BranchColumn.types';
 
 import { MISSION_BOARD } from '../../../../../config';
+import { useMissionProgress } from '../../../../../model/hooks';
 import { MissionNode } from '../MissionNode';
 
 import s from './BranchColumn.module.scss';
 
-export const BranchColumn = ({ column, selectedId, isTracked, onSelect }: BranchColumnProps) => {
+export const BranchColumn = ({ column }: BranchColumnProps) => {
   const t = useTranslations('missions.board');
+  const { isTracked } = useMissionProgress();
   const { branch, label, nodes, done } = column;
 
   return (
@@ -40,7 +44,7 @@ export const BranchColumn = ({ column, selectedId, isTracked, onSelect }: Branch
       <ol className={s.list}>
         {nodes.map((node) => (
           <li key={node.mission.questId} className={s.item}>
-            <MissionNode isSelected={node.mission.questId === selectedId} node={node} onSelect={onSelect} />
+            <MissionNode node={node} />
           </li>
         ))}
       </ol>

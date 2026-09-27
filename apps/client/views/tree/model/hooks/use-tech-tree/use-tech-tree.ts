@@ -3,37 +3,25 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { getTechTree } from '@/entities/tank/tree';
-import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
+
+import type { TreeContextValue } from '../../context';
 
 import { layoutTree } from '../../../lib/tree-layout';
 import { splitTree } from '../../../lib/tree-split';
+import { useTreeParams } from '../use-tree-params';
 
-export const useTechTree = (nation: string) => {
-  const {
-    data: tree,
-    isLoading,
-    isFetching,
-    isError,
-    error,
-    refetch
-  } = useQuery({
+export const useTechTree = () => {
+  const { nation } = useTreeParams();
+
+  return useQuery({
     queryKey: QUERY_KEYS.tree(nation),
     queryFn: ({ signal }) => getTechTree({ nation, signal }),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    select: (tree): TreeContextValue => {
+      const split = splitTree(tree);
+
+      return { ...split, layout: layoutTree({ nodes: split.tree.nodes, edges: split.tree.edges }) };
+    }
   });
-
-  const split = tree ? splitTree(tree) : null;
-  const layout = split ? layoutTree({ nodes: split.tree.nodes, edges: split.tree.edges }) : null;
-
-  return {
-    tree: split?.tree,
-    premiums: split?.premiums ?? [],
-    layout,
-    isLoading,
-    isFetching,
-    isError: isError && !isNotFoundError(error),
-    isEmpty: (tree !== undefined && tree.nodes.length === 0) || isNotFoundError(error),
-    refetch
-  };
 };

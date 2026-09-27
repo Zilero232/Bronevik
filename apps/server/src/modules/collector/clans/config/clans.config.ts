@@ -7,5 +7,7 @@ export const CLANS = {
     eloRating8: 'elo_8',
     eloRating10: 'elo_10'
   },
-  strongholdLevelKeys: ['stronghold_level', 'level']
+  strongholdLevelKeys: ['stronghold_level', 'level'],
+  battlesWindowHours: 24,
+  activeMemberDays: 7
 } as const;

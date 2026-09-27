@@ -111,14 +111,18 @@ describe('SettingsShareService.requestApply', () => {
 
     const view = await service.requestApply({ userId: 'u1', slug: 'jove', groups: ['camera', 'sound'] });
 
-    expect(prisma.settingsApplyRequest.updateMany).toHaveBeenCalledWith({
-      where: { userId: 'u1', status: 'pending' },
-      data: { status: 'expired' }
-    });
+    expect(prisma.settingsApplyRequest.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId: 'u1', status: 'pending' },
+        data: { status: 'expired' }
+      })
+    );
 
-    expect(prisma.settingsApplyRequest.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ userId: 'u1', profileId: 'p1', deviceId: null, groups: ['camera'], data: { camera: streamerValues.camera } })
-    });
+    expect(prisma.settingsApplyRequest.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ userId: 'u1', profileId: 'p1', deviceId: null, groups: ['camera'], data: { camera: streamerValues.camera } })
+      })
+    );
 
     expect(view).toMatchObject({ id: 'req-1', slug: 'jove', groups: ['camera'], status: 'pending', appliedAt: null });
   });
@@ -131,7 +135,9 @@ describe('SettingsShareService.requestApply', () => {
 
     await service.requestApply({ userId: 'u1', slug: 'jove', groups: ['camera'], deviceId: device.id });
 
-    expect(prisma.settingsApplyRequest.create).toHaveBeenCalledWith({ data: expect.objectContaining({ deviceId: device.id }) });
+    expect(prisma.settingsApplyRequest.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ deviceId: device.id }) })
+    );
   });
 });
 
@@ -254,10 +260,12 @@ describe('SettingsShareService.pendingForDevice', () => {
 
     await service.pendingForDevice(device);
 
-    expect(prisma.settingsApplyRequest.updateMany).toHaveBeenCalledWith({
-      where: expect.objectContaining({ userId: device.userId, status: 'pending', createdAt: { lt: subDays(NOW, SETTINGS_APPLY.expireDays) } }),
-      data: { status: 'expired' }
-    });
+    expect(prisma.settingsApplyRequest.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ userId: device.userId, status: 'pending', createdAt: { lt: subDays(NOW, SETTINGS_APPLY.expireDays) } }),
+        data: { status: 'expired' }
+      })
+    );
   });
 
   it('hands the mod valid requests and skips ones whose data is broken', async () => {

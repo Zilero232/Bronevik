@@ -3,7 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { PlusGate } from '@/features/plus/plus-gate';
-import { Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { Card, CardHeader, EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
 import { PROGRESS_PAGE } from '../../../config';
 import { useTankChallenges } from '../../../model/hooks';
@@ -14,7 +14,7 @@ import s from './ChallengesCard.module.scss';
 export const ChallengesCard = () => {
   const t = useTranslations('progression.challenges');
   const format = useFormatter();
-  const { sets, endsAt, isPending, isError, isRetrying, retry } = useTankChallenges();
+  const { query, sets, endsAt } = useTankChallenges();
 
   return (
     <Card className={s.root} padding='lg'>
@@ -24,16 +24,19 @@ export const ChallengesCard = () => {
       />
       <p className={s.description}>{t('description')}</p>
       <PlusGate feature='progression'>
-        {isPending && <Skeleton height={PROGRESS_PAGE.skeletonHeight} shape='block' />}
-        {isError && <ErrorState isCompact isRetrying={isRetrying} onRetry={retry} />}
-        {!isPending && !isError && sets.length === 0 && <EmptyState isCompact title={t('empty')} />}
-        {sets.length > 0 && (
+        <QueryState
+          isCompact
+          empty={<EmptyState isCompact title={t('empty')} />}
+          isEmpty={() => sets.length === 0}
+          query={query}
+          skeleton={<Skeleton height={PROGRESS_PAGE.skeletonHeight} shape='block' />}
+        >
           <div className={s.sets}>
             {sets.map((set) => (
               <ChallengeSet key={set.key} items={set.items} tankId={set.tankId} vehicle={set.vehicle} />
             ))}
           </div>
-        )}
+        </QueryState>
       </PlusGate>
     </Card>
   );

@@ -113,9 +113,8 @@ export class StreamerProfileService {
   }
 
   async toView(profile: StreamerProfile): Promise<StreamerProfileView> {
-    const [channels, settings, followers, live] = await Promise.all([
+    const [channels, followers, live] = await Promise.all([
       this.prisma.streamerChannel.findMany({ where: { profileId: profile.id }, orderBy: { createdAt: 'asc' } }),
-      this.prisma.streamerSettings.findUnique({ where: { profileId: profile.id }, select: { profileId: true } }),
       this.prisma.streamerFollow.count({ where: { profileId: profile.id } }),
       this.cards.live(profile)
     ]);
@@ -132,7 +131,7 @@ export class StreamerProfileService {
       channels: channels.map((channel) => this.cards.channelView(channel)),
       isLive: profile.isLive,
       live,
-      hasSettings: settings !== null,
+      hasSettings: profile.settings !== null,
       followers,
       latestVideos: youtube ? await this.videos(youtube.handle) : []
     };

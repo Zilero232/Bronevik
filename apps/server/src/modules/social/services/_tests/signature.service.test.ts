@@ -17,18 +17,15 @@ const player: Player = {
   accountId: 1n,
   nickname: 'Tanker',
   clanId: 100n,
-  globalRating: null,
   createdAt: null,
   lastBattleAt: null,
-  logoutAt: null,
-  lestaUpdatedAt: null,
   trackingTier: 'population',
   lastPolledAt: null,
   nextPollAt: null,
   lastViewedAt: null,
   isHidden: false,
   purgeAfter: null,
-  firstSeenAt: at,
+  progressionProcessedUntil: null,
   updatedAt: at
 };
 
@@ -56,13 +53,14 @@ const clan: Clan = {
   motto: null,
   description: null,
   emblems: null,
-  leaderId: null,
   membersCount: 1,
   isDisbanded: false,
   isTracked: false,
+  strongholdLevel: null,
+  stronghold: null,
+  strongholdUpdatedAt: null,
   createdAt: null,
   lastPolledAt: null,
-  firstSeenAt: at,
   updatedAt: at
 };
 

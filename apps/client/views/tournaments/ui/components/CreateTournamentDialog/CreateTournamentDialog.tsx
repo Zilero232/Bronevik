@@ -17,28 +17,12 @@ import s from './CreateTournamentDialog.module.scss';
 export const CreateTournamentDialog = () => {
   const t = useTranslations('tournaments.create');
   const id = useId();
-  const { form, isOpen, isPending, onOpenChange, onSubmit } = useCreateTournamentForm();
+  const dialog = useCreateTournamentForm();
+  const { form } = dialog;
   const { errors } = form.formState;
 
   return (
-    <FormDialog
-      trigger={
-        <>
-          <Plus size={14} />
-          {t('open')}
-        </>
-      }
-      cancelLabel={t('cancel')}
-      description={t('description')}
-      form={form}
-      isOpen={isOpen}
-      isPending={isPending}
-      requiresLesta={false}
-      submitLabel={t('submit')}
-      title={t('title')}
-      onOpenChange={onOpenChange}
-      onSubmit={onSubmit}
-    >
+    <FormDialog dialog={dialog} namespace='tournaments.create' requiresLesta={false} triggerIcon={Plus}>
       <FormField error={errors.title && t('titleError')} htmlFor={`${id}-title`} label={t('name')}>
         <Input id={`${id}-title`} isInvalid={Boolean(errors.title)} {...form.register('title')} />
       </FormField>

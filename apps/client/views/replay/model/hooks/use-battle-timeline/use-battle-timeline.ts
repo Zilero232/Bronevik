@@ -2,14 +2,15 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { Replay } from '@/entities/replay/replay';
 import type { ChartSeries } from '@/ui-kit';
 
 import { BATTLE_TIMELINE } from '../../../config';
 import { aliveSeries, formatClock, killEvents } from '../../../lib/battle-timeline';
 import { recorderTeamOf } from '../../../lib/team-split';
+import { useReplay } from '../../context';
 
-export const useBattleTimeline = (replay: Replay) => {
+export const useBattleTimeline = () => {
+  const replay = useReplay();
   const t = useTranslations('replays.timeline');
 
   const recorderTeam = recorderTeamOf(replay);

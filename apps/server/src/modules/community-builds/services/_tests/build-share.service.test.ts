@@ -32,7 +32,7 @@ const createService = (row: BuildRow | null = build) => {
   const prisma = mockDeep<PrismaService>();
 
   prisma.build.findUnique.mockResolvedValue(row);
-  prisma.buildLike.findMany.mockResolvedValue([]);
+  prisma.reaction.findMany.mockResolvedValue([]);
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
   return { service: new BuildShareService(prisma), prisma };
@@ -60,7 +60,7 @@ describe('BuildShareService.get', () => {
   it('marks a build the viewer liked', async () => {
     const { service, prisma } = createService();
 
-    prisma.buildLike.findMany.mockResolvedValue([{ buildId: build.id, userId: 'viewer', createdAt: new Date() }]);
+    prisma.reaction.findMany.mockResolvedValue([{ target: 'build', targetId: build.id, userId: 'viewer', createdAt: new Date() }]);
 
     expect((await service.get({ id: build.id, viewerUserId: 'viewer' })).likedByMe).toBe(true);
   });
@@ -70,33 +70,42 @@ describe('BuildShareService.like', () => {
   it('increments the counter only the first time a user likes', async () => {
     const { service, prisma } = createService();
 
-    prisma.buildLike.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({ buildId: build.id, userId: 'viewer', createdAt: new Date() });
+    prisma.reaction.createMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
     prisma.build.findUniqueOrThrow.mockResolvedValue({ ...build, likesCount: 4 });
 
     await service.like({ id: build.id, userId: 'viewer', liked: true });
     await service.like({ id: build.id, userId: 'viewer', liked: true });
 
-    expect(prisma.buildLike.create).toHaveBeenCalledTimes(1);
+    expect(prisma.reaction.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: [{ target: 'build', targetId: build.id, userId: 'viewer' }],
+        skipDuplicates: true
+      })
+    );
+
     expect(prisma.build.update).toHaveBeenCalledTimes(1);
-    expect(prisma.build.update).toHaveBeenCalledWith({ where: { id: build.id }, data: { likesCount: { increment: 1 } } });
+    expect(prisma.build.update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: build.id }, data: { likesCount: { increment: 1 } } }));
   });
 
   it('decrements only when the like existed', async () => {
     const { service, prisma } = createService();
 
-    prisma.buildLike.findUnique.mockResolvedValue(null);
+    prisma.reaction.deleteMany.mockResolvedValue({ count: 0 });
     prisma.build.findUniqueOrThrow.mockResolvedValue(build);
 
     await service.like({ id: build.id, userId: 'viewer', liked: false });
 
-    expect(prisma.buildLike.delete).not.toHaveBeenCalled();
+    expect(prisma.reaction.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { target: 'build', targetId: build.id, userId: 'viewer' } })
+    );
+
     expect(prisma.build.update).not.toHaveBeenCalled();
   });
 
   it('never reports a negative counter', async () => {
     const { service, prisma } = createService();
 
-    prisma.buildLike.findUnique.mockResolvedValue(null);
+    prisma.reaction.deleteMany.mockResolvedValue({ count: 0 });
     prisma.build.findUniqueOrThrow.mockResolvedValue({ ...build, likesCount: -1 });
 
     expect(await service.like({ id: build.id, userId: 'viewer', liked: false })).toEqual({ liked: false, likesCount: 0 });
@@ -155,6 +164,30 @@ describe('BuildShareService.update', () => {
 
     await service.update({ id: build.id, userId: 'author', title: 'New title' });
 
-    expect(prisma.build.update).toHaveBeenCalledWith({ where: { id: build.id }, data: { title: 'New title' } });
+    expect(prisma.build.update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: build.id }, data: { title: 'New title' } }));
+  });
+});
+
+describe('BuildShareService.remove', () => {
+  it('deletes the reactions and comments of the build together with it', async () => {
+    const { service, prisma } = createService();
+
+    prisma.build.findFirst.mockResolvedValue(build);
+
+    await service.remove({ id: build.id, userId: 'author' });
+
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+    expect(prisma.reaction.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { target: 'build', targetId: build.id } }));
+    expect(prisma.comment.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { target: 'build', targetId: build.id } }));
+    expect(prisma.build.delete).toHaveBeenCalledWith(expect.objectContaining({ where: { id: build.id } }));
+  });
+
+  it('refuses a build the user does not own', async () => {
+    const { service, prisma } = createService();
+
+    prisma.build.findFirst.mockResolvedValue(null);
+
+    await expect(service.remove({ id: build.id, userId: 'other' })).rejects.toBeInstanceOf(AppNotFoundException);
+    expect(prisma.reaction.deleteMany).not.toHaveBeenCalled();
   });
 });

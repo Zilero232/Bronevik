@@ -2,14 +2,13 @@
 
 import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { match, P } from 'ts-pattern';
 
 import { usePlayerProfile } from '@/entities/player/profile';
 import { isNotFoundError } from '@/shared/api/source';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { ratingTone, toneOfTier } from '@/shared/lib';
-import { buttonVariants, ErrorState, KeyFigure, SectionHeader, Skeleton } from '@/ui-kit';
+import { buttonVariants, KeyFigure, QueryState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import type { StreamerStatsProps } from './StreamerStats.types';
 
@@ -19,15 +18,18 @@ import s from './StreamerStats.module.scss';
 
 export const StreamerStats = ({ accountId }: StreamerStatsProps) => {
   const t = useTranslations('streamer.page.stats');
-  const { data: profile, isPending, isError, error, isFetching, refetch } = usePlayerProfile(String(accountId));
+  const query = usePlayerProfile(String(accountId));
 
   return (
     <section className={s.root}>
       <SectionHeader title={t('title')} />
-      {match({ profile, isPending, isFailed: isError && !isNotFoundError(error) })
-        .with({ profile: P.nonNullable }, ({ profile: { summary } }) => {
+      <QueryState
+        errorState={isNotFoundError(query.error) ? <p className={s.hidden}>{t('hidden')}</p> : undefined}
+        query={query}
+        skeleton={<Skeleton height={120} shape='block' />}
+      >
+        {({ summary }) => {
           const { battles, winRate, wn8, avgDamage } = summary.overall;
-          const { value: wn8Value, tier: wn8Tier } = wn8;
 
           return (
             <>
@@ -41,7 +43,7 @@ export const StreamerStats = ({ accountId }: StreamerStatsProps) => {
                   tone={winRate === null ? 'accent' : ratingTone({ scale: 'winRate', value: winRate })}
                   value={winRate ?? 0}
                 />
-                <KeyFigure isFramed label={t('wn8')} tone={wn8Tier ? toneOfTier(wn8Tier) : 'accent'} value={wn8Value ?? 0} />
+                <KeyFigure isFramed label={t('wn8')} tone={wn8.tier ? toneOfTier(wn8.tier) : 'accent'} value={wn8.value ?? 0} />
                 <KeyFigure isFramed label={t('avgDamage')} value={avgDamage ?? 0} />
               </div>
               <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.players.profile(summary.nickname)}>
@@ -50,12 +52,8 @@ export const StreamerStats = ({ accountId }: StreamerStatsProps) => {
               </Link>
             </>
           );
-        })
-        .with({ isPending: true }, () => <Skeleton height={120} shape='block' />)
-        .with({ isFailed: true }, () => <ErrorState isRetrying={isFetching} onRetry={() => void refetch()} />)
-        .otherwise(() => (
-          <p className={s.hidden}>{t('hidden')}</p>
-        ))}
+        }}
+      </QueryState>
     </section>
   );
 };

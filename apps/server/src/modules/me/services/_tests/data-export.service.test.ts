@@ -2,7 +2,7 @@ import { subDays } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountSnapshot, Player, TankProgress, UserLestaAccount } from '../../../../../generated';
+import type { AccountSnapshot, Player, PlayerTank, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { DATA_EXPORT } from '../../config';
@@ -21,7 +21,6 @@ const createService = (linked: bigint[]) => {
   prisma.accountSnapshot.findMany.mockResolvedValue([]);
   prisma.playSession.findMany.mockResolvedValue([]);
   prisma.battle.findMany.mockResolvedValue([]);
-  prisma.tankProgress.findMany.mockResolvedValue([]);
 
   return { service: new DataExportService(prisma), prisma };
 };
@@ -104,14 +103,23 @@ describe('DataExportService.analytics', () => {
   it('derives the tank level from its progression XP', async () => {
     const { service, prisma } = createService([7n]);
 
-    prisma.tankProgress.findMany.mockResolvedValue([
-      mock<TankProgress>({ accountId: 7n, tankId: 1, xp: 0, battles: 0 }),
-      mock<TankProgress>({ accountId: 7n, tankId: 2, xp: 1_000_000, battles: 500 })
+    prisma.playerTank.findMany.mockResolvedValue([
+      mock<PlayerTank>({ accountId: 7n, tankId: 1, progressXp: 0, progressBattles: 0 }),
+      mock<PlayerTank>({ accountId: 7n, tankId: 2, progressXp: 1_000_000, progressBattles: 500 })
     ]);
 
     const { tankProgress } = await service.analytics('user');
 
     expect(tankProgress[0]?.level).toBeLessThanOrEqual(tankProgress[1]?.level ?? 0);
     expect(tankProgress[1]?.level).toBeGreaterThan(tankProgress[0]?.level ?? 0);
+    expect(tankProgress[1]).toMatchObject({ xp: 1_000_000, battles: 500 });
+  });
+
+  it('exports progression only for tanks that earned XP', async () => {
+    const { service, prisma } = createService([7n]);
+
+    await service.analytics('user');
+
+    expect(prisma.playerTank.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: { in: [7n] }, progressXp: { gt: 0 } } }));
   });
 });

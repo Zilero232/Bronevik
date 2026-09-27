@@ -1,8 +1,5 @@
-import type { CommentThreadTarget } from '../../../lib/comment-form';
+import type { UseCommentFormInput } from '../../../model/hooks';
 
-export type CommentComposerProps = {
-  thread: CommentThreadTarget;
-  parentId?: string;
-  onDone?: () => void;
+export type CommentComposerProps = UseCommentFormInput & {
   onCancel?: () => void;
 };

@@ -1,32 +1,33 @@
 'use client';
 
+import type { CheckoutInput } from '@otmetki/schemas';
+
 import { useFormatter, useTranslations } from 'next-intl';
+import { useFormState } from 'react-hook-form';
 import { match } from 'ts-pattern';
 
 import { useLoginHref } from '@/entities/auth/session';
+import { useStartTrial } from '@/entities/plus/subscription';
+import { usePlus } from '@/features/plus/plus-gate';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants, Skeleton } from '@/ui-kit';
 
-import type { CheckoutActionProps } from './CheckoutAction.types';
+import { checkoutNote } from '../../../../../lib/checkout-note';
 
 import s from './CheckoutAction.module.scss';
 
-export const CheckoutAction = ({
-  isSignedIn,
-  isPlus,
-  isPending,
-  isSubmitting,
-  isCheckoutAvailable,
-  trialAvailable,
-  trialDays,
-  isStartingTrial,
-  note,
-  onStartTrial
-}: CheckoutActionProps) => {
+export const CheckoutAction = () => {
   const loginHref = useLoginHref();
   const t = useTranslations('plus');
   const format = useFormatter();
+  const access = usePlus();
+  const trial = useStartTrial();
+  const { isSubmitting, isSubmitSuccessful } = useFormState<CheckoutInput>();
+
+  const { isPending, isSignedIn, isPlus, isCheckoutAvailable, trialAvailable, trialDays } = access;
+  const isRedirecting = isSubmitting || isSubmitSuccessful;
+  const note = checkoutNote(access);
 
   return (
     <div className={s.root}>
@@ -45,13 +46,13 @@ export const CheckoutAction = ({
         .otherwise(() => (
           <>
             {trialAvailable && (
-              <Button disabled={isStartingTrial} type='button' variant={isCheckoutAvailable ? 'secondary' : 'primary'} onClick={onStartTrial}>
-                {isStartingTrial ? t('checkout.action.trialPending') : t('checkout.action.trial', { days: trialDays })}
+              <Button disabled={trial.isPending} type='button' variant={isCheckoutAvailable ? 'secondary' : 'primary'} onClick={() => trial.mutate()}>
+                {trial.isPending ? t('checkout.action.trialPending') : t('checkout.action.trial', { days: trialDays })}
               </Button>
             )}
             {isCheckoutAvailable ? (
-              <Button disabled={isSubmitting} type='submit'>
-                {isSubmitting ? t('checkout.action.redirecting') : t('checkout.action.buy')}
+              <Button disabled={isRedirecting} type='submit'>
+                {isRedirecting ? t('checkout.action.redirecting') : t('checkout.action.buy')}
               </Button>
             ) : (
               <Button disabled type='button' variant='secondary'>

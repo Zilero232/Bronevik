@@ -1,0 +1,1 @@
+export { MistakesCard } from './MistakesCard';

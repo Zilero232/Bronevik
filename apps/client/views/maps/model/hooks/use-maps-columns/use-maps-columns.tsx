@@ -1,10 +1,11 @@
 'use client';
 
 import type { MapSummary } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { useMapLabels } from '@/entities/map/map';
 
@@ -12,7 +13,7 @@ import { CamouflageCell, MapNameCell } from '../../../ui/components/MapsTable/co
 
 const column = createColumnHelper<MapSummary>();
 
-export const useMapsColumns = (): ColumnDef<MapSummary, never>[] => {
+export const useMapsColumns = (): TableColumn<MapSummary>[] => {
   const t = useTranslations('maps');
   const labels = useMapLabels();
 

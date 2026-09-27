@@ -1,20 +1,3 @@
-enum CompetitionVisibility {
-  public
-  private
-
-  @@map("competition_visibility")
-}
-
-enum CompetitionMode {
-  random
-  onslaught
-  frontline
-  ranked
-  steelHunter @map("steel_hunter")
-
-  @@map("competition_mode")
-}
-
 enum CompetitionSource {
   mod
   snapshots
@@ -26,16 +9,16 @@ enum CompetitionSource {
 model Competition {
   id String @id @default(dbgenerated("gen_random_uuid()"))
 
-  slug             String                @unique
-  ownerUserId      String                @map("owner_user_id")
+  slug             String     @unique
+  ownerUserId      String     @map("owner_user_id")
   title            String
   description      String?
-  visibility       CompetitionVisibility @default(public)
-  mode             CompetitionMode       @default(random)
-  battlesPerPlayer Int                   @map("battles_per_player") @db.SmallInt
-  minTier          Int?                  @map("min_tier") @db.SmallInt
+  visibility       Visibility @default(public)
+  mode             GameMode   @default(random)
+  battlesPerPlayer Int        @map("battles_per_player") @db.SmallInt
+  minTier          Int?       @map("min_tier") @db.SmallInt
   scoring          Json
-  inviteCode       String?               @unique @map("invite_code")
+  inviteCode       String?    @unique @map("invite_code")
 
   startsAt   DateTime  @map("starts_at") @db.Timestamptz(3)
   endsAt     DateTime  @map("ends_at") @db.Timestamptz(3)

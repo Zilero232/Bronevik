@@ -14,9 +14,7 @@ export const ProfileSkeleton = () => {
       <Skeleton height={PROFILE_SKELETON.headerHeight} shape='block' />
       <Skeleton height={PROFILE_SKELETON.tabsHeight} shape='block' />
       <div className={s.grid}>
-        {Array.from({ length: PROFILE_SKELETON.panels }, (_, index) => (
-          <Skeleton key={index} height={PROFILE_SKELETON.panelHeight} shape='block' />
-        ))}
+        <Skeleton count={PROFILE_SKELETON.panels} height={PROFILE_SKELETON.panelHeight} shape='block' />
       </div>
     </div>
   );

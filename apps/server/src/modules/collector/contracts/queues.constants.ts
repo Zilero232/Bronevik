@@ -33,7 +33,7 @@ export const JOB = {
     modeMeta: 'mode-meta'
   },
   news: { rss: 'rss' },
-  purge: { dispatch: 'dispatch', account: 'account' },
+  purge: { dispatch: 'dispatch', account: 'account', jobMetrics: 'job-metrics' },
   developerWebhooks: { deliver: 'deliver', closeSessions: 'close-sessions' }
 } as const;
 

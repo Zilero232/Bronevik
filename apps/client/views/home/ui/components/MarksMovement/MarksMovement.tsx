@@ -31,13 +31,13 @@ export const MarksMovement = () => {
               density='media'
               emptyState={<EmptyState isCompact title={t('empty')} />}
               getRowId={(row) => String(row.vehicle.tankId)}
+              getRowLink={({ vehicle }) => ({ href: ROUTES.tanks.detail(vehicle.slug), label: vehicle.name })}
               isLoading={isPending}
             />
           </Card>
           <div className={s.leaders}>
             <h3 className={s.subtitle}>{t('leaders')}</h3>
-            {isPending &&
-              Array.from({ length: HOME.marks.highlights }, (_, index) => <Skeleton key={index} className={s.skeleton} height={128} shape='block' />)}
+            {isPending && <Skeleton className={s.skeleton} count={HOME.marks.highlights} height={128} shape='block' />}
             {leaders.map((row) => (
               <TankShowcaseCard
                 key={row.vehicle.tankId}

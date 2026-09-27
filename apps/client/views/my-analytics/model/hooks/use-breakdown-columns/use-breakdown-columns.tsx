@@ -1,10 +1,11 @@
 'use client';
 
 import type { BreakdownRow } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import type { BreakdownDimension } from '../use-breakdown-panel/use-breakdown-panel.types';
 
@@ -13,7 +14,7 @@ import { useStatColumns } from '../use-stat-columns';
 
 const column = createColumnHelper<BreakdownRow>();
 
-export const useBreakdownColumns = (dimension: BreakdownDimension): ColumnDef<BreakdownRow, never>[] => {
+export const useBreakdownColumns = (dimension: BreakdownDimension): TableColumn<BreakdownRow>[] => {
   const t = useTranslations('analytics.columns');
   const stats = useStatColumns<BreakdownRow>();
 
@@ -27,13 +28,13 @@ export const useBreakdownColumns = (dimension: BreakdownDimension): ColumnDef<Br
       id: 'wn8',
       header: t('wn8'),
       cell: ({ row }) => <Wn8Cell value={row.original.wn8} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'md' }
     }),
     column.accessor((row) => row.survivalRate ?? -1, {
       id: 'survivalRate',
       header: t('survivalRate'),
       cell: ({ row }) => <PercentCell value={row.original.survivalRate} />,
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'lg' }
     })
   ];
 };

@@ -38,9 +38,7 @@ export const NewsPage = () => {
       {feed.isError && <ErrorState description={t('error.description')} isRetrying={feed.isRetrying} title={t('error.title')} onRetry={feed.retry} />}
       {feed.isPending && (
         <div className={s.list}>
-          {Array.from({ length: NEWS.skeletons }, (_, index) => (
-            <Skeleton key={index} height={96} shape='block' />
-          ))}
+          <Skeleton count={NEWS.skeletons} height={96} shape='block' />
         </div>
       )}
       {!feed.isPending && !feed.isError && feed.entries.length === 0 && (

@@ -59,3 +59,16 @@ export const clanAccountInfoSchema = z.looseObject({
   role_i18n: z.string().nullish(),
   clan: z.looseObject({}).nullish()
 });
+
+export const clanProvinceSchema = z.looseObject({
+  province_id: z.string(),
+  province_name: z.string(),
+  front_id: z.string(),
+  front_name: z.string().nullish(),
+  arena_id: z.string().nullish(),
+  arena_name: z.string().nullish(),
+  prime_time: z.string().nullish(),
+  daily_revenue: z.number().nullish(),
+  revenue_level: z.number().nullish(),
+  turns_owned: z.number().nullish()
+});

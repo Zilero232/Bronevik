@@ -4,7 +4,7 @@ import { TANK_CLASS_ICONS, toRoman } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { percentText } from '@/shared/lib';
+import { deltaVerdict, percentText } from '@/shared/lib';
 import { DeltaValue } from '@/ui-kit';
 
 import type { GroupBreakdownProps } from './GroupBreakdown.types';
@@ -25,7 +25,6 @@ export const GroupBreakdown = ({ kind, groups }: GroupBreakdownProps) => {
       <ul className={s.list}>
         {groups.map(({ key, battles, winRate, winRateDelta }) => {
           const delta = winRateDelta ?? 0;
-          const side = delta >= 0 ? 'up' : 'down';
           const group = groupKeyOf(key);
           const Icon = group.kind === 'class' ? TANK_CLASS_ICONS[group.type] : null;
 
@@ -40,7 +39,11 @@ export const GroupBreakdown = ({ kind, groups }: GroupBreakdownProps) => {
                   .exhaustive()}
               </span>
               <span aria-hidden className={s.bar}>
-                <span className={s.fill} data-side={side} style={{ '--fill': `${Math.min(Math.abs(delta) / GROUP_BREAKDOWN.scalePp, 1) * 50}%` }} />
+                <span
+                  className={s.fill}
+                  data-verdict={deltaVerdict({ value: delta, digits: 1 })}
+                  style={{ '--fill': `${Math.min(Math.abs(delta) / GROUP_BREAKDOWN.scalePp, 1) * 50}%` }}
+                />
               </span>
               <DeltaValue isSameShown className={s.value} format={{ maximumFractionDigits: 1 }} value={delta} />
               <span className={s.meta}>

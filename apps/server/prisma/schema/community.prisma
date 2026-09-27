@@ -70,25 +70,10 @@ model Build {
   author      User         @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
   vehicle     Vehicle      @relation(fields: [tankId], references: [tankId], onDelete: Cascade)
   gameVersion GameVersion? @relation(fields: [gameVersionId], references: [id], onDelete: SetNull)
-  likes       BuildLike[]
 
   @@index([tankId, status, likesCount(sort: Desc)])
   @@index([authorUserId])
   @@map("build")
-}
-
-model BuildLike {
-  buildId String @map("build_id")
-  userId  String @map("user_id")
-
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-
-  build Build @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([buildId, userId])
-  @@index([userId])
-  @@map("build_like")
 }
 
 model Guide {
@@ -109,8 +94,7 @@ model Guide {
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  author User        @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
-  likes  GuideLike[]
+  author User @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
 
   @@index([kind, status, publishedAt(sort: Desc)])
   @@index([tankId])
@@ -121,18 +105,18 @@ model Guide {
   @@map("guide")
 }
 
-model GuideLike {
-  guideId String @map("guide_id")
-  userId  String @map("user_id")
+model Reaction {
+  target   CommentTarget
+  targetId String        @map("target_id")
+  userId   String        @map("user_id")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
-  guide Guide @relation(fields: [guideId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([guideId, userId])
+  @@id([target, targetId, userId])
   @@index([userId])
-  @@map("guide_like")
+  @@map("reaction")
 }
 
 model Comment {

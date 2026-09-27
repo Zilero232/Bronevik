@@ -43,9 +43,9 @@ export class ProgressionRunService {
       take: PROGRESSION_RUN.maxAccountsPerRun
     });
 
-    await this.prisma.progressionCursor.updateMany({
-      where: { accountId: { notIn: links.map((link) => link.accountId) } },
-      data: { processedUntil: now }
+    await this.prisma.player.updateMany({
+      where: { accountId: { notIn: links.map((link) => link.accountId) }, progressionProcessedUntil: { not: null } },
+      data: { progressionProcessedUntil: now }
     });
 
     let processed = 0;
@@ -70,8 +70,8 @@ export class ProgressionRunService {
 
   private async runAccount({ userId, accountId, now }: AccountRunInput): Promise<void> {
     const { start } = weekWindow(now);
-    const cursor = await this.prisma.progressionCursor.findUnique({ where: { accountId } });
-    const from = cursor?.processedUntil ?? start;
+    const cursor = await this.prisma.player.findUnique({ where: { accountId }, select: { progressionProcessedUntil: true } });
+    const from = cursor?.progressionProcessedUntil ?? start;
     const fresh = await this.loadSamples({ accountId, from, to: now });
     const vehicles = await this.vehicles([...fresh.keys()]);
     const gains = new Map(
@@ -87,12 +87,16 @@ export class ProgressionRunService {
 
   private async applyXp({ userId, accountId, now, gains, vehicles }: ApplyXpInput): Promise<void> {
     const earned = [...gains].filter(([, gain]) => gain.xp > 0);
-    const current = await this.prisma.tankProgress.findMany({ where: { accountId, tankId: { in: earned.map(([tankId]) => tankId) } } });
+    const current = await this.prisma.playerTank.findMany({
+      where: { accountId, tankId: { in: earned.map(([tankId]) => tankId) } },
+      select: { tankId: true, progressXp: true, progressLevel: true }
+    });
+
     const before = new Map(current.map((row) => [row.tankId, row]));
     const updates = earned.map(([tankId, gain]) => {
       const row = before.get(tankId);
 
-      return { tankId, gain, previous: row?.level ?? 1, level: tankLevelOf((row?.xp ?? 0) + gain.xp).level };
+      return { tankId, gain, previous: row?.progressLevel ?? 1, level: tankLevelOf((row?.progressXp ?? 0) + gain.xp).level };
     });
 
     for (const { tankId, previous, level } of updates) {
@@ -124,13 +128,13 @@ export class ProgressionRunService {
 
     await this.prisma.$transaction([
       ...updates.map(({ tankId, gain, level }) =>
-        this.prisma.tankProgress.upsert({
+        this.prisma.playerTank.upsert({
           where: { accountId_tankId: { accountId, tankId } },
-          create: { accountId, tankId, xp: gain.xp, level, battles: gain.battles },
-          update: { xp: { increment: gain.xp }, level, battles: { increment: gain.battles } }
+          create: { accountId, tankId, progressXp: gain.xp, progressLevel: level, progressBattles: gain.battles },
+          update: { progressXp: { increment: gain.xp }, progressLevel: level, progressBattles: { increment: gain.battles } }
         })
       ),
-      this.prisma.progressionCursor.upsert({ where: { accountId }, create: { accountId, processedUntil: now }, update: { processedUntil: now } })
+      this.prisma.player.updateMany({ where: { accountId }, data: { progressionProcessedUntil: now } })
     ]);
   }
 

@@ -1,5 +1,5 @@
 export { CommunityCoreModule } from './community-core.module';
-export type { AccountOfInput, ById, IdViewer, LikeInput, LikeResult, Owned, OwnedById, Viewer } from './community-core.types';
+export type { AccountOfInput, ById, IdViewer, LikeInput, LikeResult, Owned, OwnedById, PurgeAuthoredInput, Viewer } from './community-core.types';
 export {
   arenaIdSchema,
   authorSchema,
@@ -16,4 +16,4 @@ export type { PlayerStats, StatRequirements } from './lib';
 export { toAuthorView, toPlayerStats } from './mappers';
 export type { AuthorUser, AuthorView, NamesById, StatsByAccount } from './mappers';
 export { AUTHOR_SELECT } from './selects';
-export { CommunityAccountsService } from './services';
+export { CommunityAccountsService, CommunityContentService } from './services';

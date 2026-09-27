@@ -37,10 +37,7 @@ model MissionOperation {
 
   name               String?
   description        String?
-  iconId             String? @map("icon_id")
   nextOperationIds   Int[]   @map("next_operation_ids")
-  chainsCount        Int     @map("chains_count") @db.SmallInt
-  missionsPerChain   Int     @map("missions_per_chain") @db.SmallInt
   chainsToUnlockNext Int     @map("chains_to_unlock_next") @db.SmallInt
   rewardTankId       Int?    @map("reward_tank_id")
   rewardTankTag      String? @map("reward_tank_tag")

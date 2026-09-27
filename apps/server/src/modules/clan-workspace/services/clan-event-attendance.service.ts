@@ -1,12 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { addHours, subHours } from 'date-fns';
+import { addHours, subHours, subMinutes } from 'date-fns';
 
 import type { ClanEventView, ClanItemScope, RsvpRequest, SetAttendanceRequest, SyncAttendanceInput } from '../clan-workspace.types';
-import type { BattleSample } from '../lib';
 
 import { toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { ATTENDANCE_MODES, CLAN_WORKSPACE } from '../config';
+import { ATTENDANCE_BONUS_TYPES, CLAN_WORKSPACE } from '../config';
 import { attendedAccounts, eventDataSchema } from '../lib';
 import { ClanAccessService } from './clan-access.service';
 import { ClanEventsService } from './clan-events.service';
@@ -60,7 +59,7 @@ export class ClanEventAttendanceService {
   }
 
   async syncFinished(now: Date): Promise<number> {
-    const endedBefore = subHours(now, CLAN_WORKSPACE.snapshotSlackHours / 4);
+    const endedBefore = subHours(now, CLAN_WORKSPACE.syncDelayHours);
     const endedAfter = subHours(now, CLAN_WORKSPACE.syncLookbackHours);
     const events = await this.prisma.clanEvent.findMany({
       where: {
@@ -90,36 +89,23 @@ export class ClanEventAttendanceService {
   }
 
   private async sync({ event, now }: SyncAttendanceInput): Promise<number> {
-    const modes = ATTENDANCE_MODES[event.kind];
+    const bonusTypes = ATTENDANCE_BONUS_TYPES[event.kind];
     const endsAt = event.endsAt ?? addHours(event.startsAt, CLAN_WORKSPACE.defaultEventHours);
 
-    if (modes.length === 0) {
+    if (bonusTypes.length === 0) {
       return 0;
     }
 
     const members = await this.prisma.clanMember.findMany({ where: { clanId: event.clanId }, select: { accountId: true } });
-    const snapshots = await this.prisma.accountSnapshot.findMany({
+    const battles = await this.prisma.battle.findMany({
       where: {
         accountId: { in: members.map((member) => member.accountId) },
-        mode: { in: [...modes] },
-        capturedAt: {
-          gte: subHours(event.startsAt, CLAN_WORKSPACE.snapshotSlackHours),
-          lte: addHours(endsAt, CLAN_WORKSPACE.snapshotSlackHours)
-        }
+        startedAt: { gte: subMinutes(event.startsAt, CLAN_WORKSPACE.battleLeadMinutes), lte: endsAt }
       },
-      select: { accountId: true, capturedAt: true, battles: true, mode: true }
+      select: { accountId: true, battleType: true }
     });
 
-    const totals = new Map<string, BattleSample>();
-
-    for (const snapshot of snapshots) {
-      const key = `${snapshot.accountId}:${snapshot.capturedAt.getTime()}`;
-      const current = totals.get(key);
-
-      totals.set(key, { accountId: snapshot.accountId, capturedAt: snapshot.capturedAt, battles: (current?.battles ?? 0) + snapshot.battles });
-    }
-
-    const attended = attendedAccounts({ samples: [...totals.values()], startsAt: event.startsAt, endsAt });
+    const attended = attendedAccounts({ battles, bonusTypes });
     const manual = await this.prisma.clanAttendance.findMany({
       where: { eventId: event.id, source: 'manual', status: { in: ['attended', 'absent'] } },
       select: { accountId: true }

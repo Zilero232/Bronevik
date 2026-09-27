@@ -34,5 +34,6 @@ export const TANKS_ECONOMY = {
   myDays: 30,
   myTanks: 5,
   mySkeletonHeight: 120,
-  accounts: ['premium', 'standard']
+  accounts: ['premium', 'standard'],
+  cardFigures: ['net', 'credits', 'xp']
 } as const;

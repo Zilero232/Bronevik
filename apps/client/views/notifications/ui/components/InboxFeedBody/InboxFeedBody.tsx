@@ -6,22 +6,20 @@ import { match } from 'ts-pattern';
 
 import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
-import type { InboxFeedBodyProps } from './InboxFeedBody.types';
-
 import { INBOX_FEED } from '../../../config';
+import { useInboxFeed } from '../../../model/hooks';
 import { InboxFeedDay } from '../InboxFeedDay';
 
 import s from './InboxFeedBody.module.scss';
 
-export const InboxFeedBody = ({ days, filter, isEmpty, isPending, isError, isRetrying, onRetry, onSelect }: InboxFeedBodyProps) => {
+export const InboxFeedBody = () => {
   const t = useTranslations('notifications.feed');
+  const { filter, days, isEmpty, isPending, isError, isRetrying, onRetry } = useInboxFeed();
 
   return match({ isPending, isError, isEmpty, filter })
     .with({ isPending: true }, () => (
       <div aria-busy className={s.skeleton}>
-        {Array.from({ length: INBOX_FEED.skeletonRows }, (_, index) => (
-          <Skeleton key={index} height={72} shape='block' />
-        ))}
+        <Skeleton count={INBOX_FEED.skeletonRows} height={72} shape='block' />
       </div>
     ))
     .with({ isError: true }, () => <ErrorState className={s.empty} isRetrying={isRetrying} title={t('error')} onRetry={onRetry} />)
@@ -39,7 +37,7 @@ export const InboxFeedBody = ({ days, filter, isEmpty, isPending, isError, isRet
     .otherwise(() => (
       <div className={s.days}>
         {days.map((day) => (
-          <InboxFeedDay key={day.key} day={day} onSelect={onSelect} />
+          <InboxFeedDay key={day.key} day={day} />
         ))}
       </div>
     ));

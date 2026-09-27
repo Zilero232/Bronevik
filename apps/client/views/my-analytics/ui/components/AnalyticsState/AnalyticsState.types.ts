@@ -1,14 +1,11 @@
 import type { PlusFeature } from '@otmetki/schemas';
-import type { ReactNode } from 'react';
 
-import type { AnalyticsStatus } from '../../../lib/analytics-status';
+import type { QueryStateProps } from '@/ui-kit';
 
-export type AnalyticsStateProps<T> = {
-  status: AnalyticsStatus;
-  data: T | undefined;
+import type { useAnalyticsQuery } from '../../../model/hooks/use-analytics-query';
+
+export type AnalyticsStateProps<T> = Pick<QueryStateProps<T>, 'children' | 'empty' | 'isEmpty'> & {
+  state: Pick<ReturnType<typeof useAnalyticsQuery<T>>, 'data' | 'isRetrying' | 'retry' | 'status'>;
   feature?: PlusFeature;
-  isRetrying: boolean;
   height?: number;
-  onRetry: () => void;
-  children: (data: T) => ReactNode;
 };

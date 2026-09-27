@@ -1,17 +1,13 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useBoolean } from '@siberiacancode/reactuse';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useForm, useWatch } from 'react-hook-form';
-import { toast } from 'sonner';
+import { useWatch } from 'react-hook-form';
 
 import { communityErrorKind } from '@/features/community/api-error';
+import { useFormDialog } from '@/features/community/form-dialog';
 import { QUERY_KEYS } from '@/shared/constants';
 
-import type { CreateRecruiting, RecruitingKind } from '../../../api';
-import type { RecruitingFormOutput, RecruitingFormValues } from '../../../lib/recruiting-form';
+import type { RecruitingKind } from '../../../api';
 
 import { createRecruiting } from '../../../api';
 import { RECRUITING_FORM_DEFAULTS } from '../../../config';
@@ -20,55 +16,32 @@ import { useViewerClans } from '../use-viewer-clans';
 
 export const useCreateRecruitingForm = (kind: RecruitingKind) => {
   const t = useTranslations('recruiting');
-  const queryClient = useQueryClient();
-  const [isOpen, setOpen] = useBoolean(false);
   const { officers, isPending: isClansPending } = useViewerClans();
-  const form = useForm<RecruitingFormValues, unknown, RecruitingFormOutput>({
-    resolver: zodResolver(recruitingFormSchema),
-    defaultValues: RECRUITING_FORM_DEFAULTS,
-    mode: 'onTouched'
-  });
-
-  const accountId = useWatch({ control: form.control, name: 'accountId' });
-  const create = useMutation({
-    mutationFn: (body: CreateRecruiting) => createRecruiting(body),
-    onSuccess: async () => {
-      toast.success(t('toast.created'));
-      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.recruiting.all });
-    },
-    onError: (error) => {
-      const kindOfError = communityErrorKind(error);
-
-      toast.error(kind === 'clan_seeks_player' && kindOfError === 'forbidden' ? t('errors.notOfficer') : t(`errors.${kindOfError}`));
-    }
-  });
-
   const isClan = kind === 'clan_seeks_player';
-  const clan = officers.find((officer) => String(officer.accountId) === accountId) ?? null;
-
-  const onOpenChange = (next: boolean) => {
-    setOpen(next);
-
-    form.reset({
+  const officerOf = (accountId: string) => officers.find((officer) => String(officer.accountId) === accountId) ?? null;
+  const dialog = useFormDialog({
+    schema: recruitingFormSchema,
+    defaults: {
       ...RECRUITING_FORM_DEFAULTS,
       accountId: isClan && officers[0] ? String(officers[0].accountId) : RECRUITING_FORM_DEFAULTS.accountId
-    });
-  };
+    },
+    mutationFn: (values) => createRecruiting(toCreateRecruiting({ values, kind, clanId: officerOf(values.accountId)?.clanId ?? null })),
+    successMessage: t('toast.created'),
+    errorMessage: (error) => {
+      const errorKind = communityErrorKind(error);
 
-  const onSubmit = form.handleSubmit((values) =>
-    create.mutate(toCreateRecruiting({ values, kind, clanId: clan?.clanId ?? null }), { onSuccess: () => onOpenChange(false) })
-  );
+      return isClan && errorKind === 'forbidden' ? t('errors.notOfficer') : t(`errors.${errorKind}`);
+    },
+    invalidate: QUERY_KEYS.recruiting.all
+  });
+
+  const accountId = useWatch({ control: dialog.form.control, name: 'accountId' });
 
   return {
-    form,
+    dialog,
     isClan,
-    isOpen,
     officers,
-    clan,
-    canSubmit: !isClan || clan !== null,
     isClansPending,
-    isPending: create.isPending,
-    onOpenChange,
-    onSubmit
+    canSubmit: !isClan || officerOf(accountId) !== null
   };
 };

@@ -4,16 +4,20 @@ import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { vehicleIdentity } from '@/entities/tank/tank';
+import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { NationBackdrop, TankImage, TierNumeral } from '@/ui-kit';
 
 import type { BuildStageProps } from './BuildStage.types';
 
+import { useBuildContext } from '../../../../../model/context';
+
 import s from './BuildStage.module.scss';
 
-export const BuildStage = ({ vehicle, tanksHref, toggle, left, right, stats, compare, notice, actions }: BuildStageProps) => {
+export const BuildStage = ({ toggle, left, right, stats, compare, notice, actions }: BuildStageProps) => {
   const t = useTranslations('builds.showcase');
   const tGame = useTranslations('game');
+  const { vehicle } = useBuildContext();
 
   const tank = vehicleIdentity(vehicle);
 
@@ -28,11 +32,11 @@ export const BuildStage = ({ vehicle, tanksHref, toggle, left, right, stats, com
             {vehicle.name}
           </h1>
           <nav className={s.path}>
-            <Link href={tanksHref.nation}>{tGame(`nations.${tank.nation}`)}</Link>
+            <Link href={{ pathname: ROUTES.tanks.list, query: { nations: vehicle.nation } }}>{tGame(`nations.${tank.nation}`)}</Link>
             <ChevronRight aria-hidden size={14} />
-            <Link href={tanksHref.type}>{tGame(`classes.${tank.type}`)}</Link>
+            <Link href={{ pathname: ROUTES.tanks.list, query: { types: vehicle.type } }}>{tGame(`classes.${tank.type}`)}</Link>
             <ChevronRight aria-hidden size={14} />
-            <Link href={tanksHref.tier}>
+            <Link href={{ pathname: ROUTES.tanks.list, query: { tiers: vehicle.tier } }}>
               <TierNumeral tier={tank.tier} />
             </Link>
           </nav>
@@ -48,7 +52,7 @@ export const BuildStage = ({ vehicle, tanksHref, toggle, left, right, stats, com
         {right}
         <div className={s.stats}>{stats}</div>
       </div>
-      {notice && <div className={s.notice}>{notice}</div>}
+      <div className={s.notice}>{notice}</div>
       <div className={s.actions}>{actions}</div>
     </section>
   );

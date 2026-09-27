@@ -1,2 +1,2 @@
 export { bonusTypesOfMode, gameModeOfBonusType } from './bonus-type';
-export { GAME_MODE_BONUS_TYPES } from './bonus-type.constants';
+export { ARENA_BONUS_TYPE, GAME_MODE_BONUS_TYPES } from './bonus-type.constants';

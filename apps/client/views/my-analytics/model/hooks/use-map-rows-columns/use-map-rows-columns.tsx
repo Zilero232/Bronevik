@@ -1,9 +1,9 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import type { MapClassRowView } from './use-map-rows-columns.types';
 
@@ -13,7 +13,7 @@ import { useStatColumns } from '../use-stat-columns';
 
 const column = createColumnHelper<MapClassRowView>();
 
-export const useMapRowsColumns = (): ColumnDef<MapClassRowView, never>[] => {
+export const useMapRowsColumns = (): TableColumn<MapClassRowView>[] => {
   const t = useTranslations('analytics.columns');
   const stats = useStatColumns<MapClassRowView>();
 

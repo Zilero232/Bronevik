@@ -117,6 +117,30 @@ describe('SubscriptionService.activate', () => {
     expect(upserted(prisma)?.update).not.toHaveProperty('savedCardId');
   });
 
+  it('does not auto-renew a subscriber without any card even when recurring payments are on', async () => {
+    const { service, prisma } = createService(true);
+
+    prisma.subscription.findUnique.mockResolvedValue(null);
+
+    await service.activate({ db: prisma, userId: 'u1', plan: 'monthly', method: null, now });
+
+    expect(upserted(prisma)?.create).toEqual(expect.objectContaining({ cancelAtPeriodEnd: true }));
+  });
+
+  it('auto-renews through the card stored on a lapsed cancelled subscription', async () => {
+    const { service, prisma } = createService(true);
+
+    prisma.subscription.findUnique.mockResolvedValue(
+      mock<Subscription>({ status: 'expired', currentPeriodEnd: addDays(now, -1), cancelAtPeriodEnd: true, savedCardId: 'card' })
+    );
+
+    await service.activate({ db: prisma, userId: 'u1', plan: 'monthly', method: null, now });
+
+    expect(upserted(prisma)?.update).toEqual(
+      expect.objectContaining({ cancelAtPeriodEnd: false, currentPeriodEnd: addMonths(now, PLUS_PLANS.monthly.months) })
+    );
+  });
+
   it('returns the id of the stored subscription', async () => {
     const { service, prisma } = createService(true);
 
@@ -160,6 +184,29 @@ describe('SubscriptionService.grantDays', () => {
     expect(upserted(prisma)?.create).toEqual(
       expect.objectContaining({ currentPeriodEnd: addDays(now, 30), status: 'active', cancelAtPeriodEnd: true })
     );
+  });
+
+  it('keeps the cancellation of a running subscription when days are granted', async () => {
+    const { service, prisma } = createService(true);
+    const currentPeriodEnd = addDays(now, 2);
+
+    prisma.subscription.findUnique.mockResolvedValue(mock<Subscription>({ status: 'active', currentPeriodEnd, cancelAtPeriodEnd: true }));
+
+    await service.grantDays({ db: prisma, userId: 'u1', days: 3, now });
+
+    expect(upserted(prisma)?.update).not.toHaveProperty('cancelAtPeriodEnd');
+  });
+
+  it('writes through the transaction client it is given', async () => {
+    const { service, prisma } = createService(true);
+    const db = mockDeep<PrismaService>();
+
+    db.subscription.findUnique.mockResolvedValue(null);
+
+    await service.grantDays({ db, userId: 'u1', days: 7, now });
+
+    expect(db.subscription.upsert).toHaveBeenCalledOnce();
+    expect(prisma.subscription.upsert).not.toHaveBeenCalled();
   });
 });
 
@@ -259,7 +306,20 @@ describe('SubscriptionService.setAutoRenew', () => {
 
     await service.setAutoRenew({ userId: 'u1', isEnabled: true });
 
-    expect(prisma.subscription.update).toHaveBeenCalledWith({ where: { id: 'sub-1' }, data: { cancelAtPeriodEnd: false } });
+    expect(prisma.subscription.update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 'sub-1' }, data: { cancelAtPeriodEnd: false } }));
+  });
+
+  it('returns the billing status refreshed after the change', async () => {
+    const { service, prisma, entitlements } = createService(true);
+
+    prisma.subscription.findUnique.mockResolvedValue(storedSubscription({ savedCardId: 'card', savedCardTitle: 'Visa 4242' }));
+    entitlements.refresh.mockResolvedValue(plusState('active'));
+
+    await expect(service.setAutoRenew({ userId: 'u1', isEnabled: true })).resolves.toEqual(
+      expect.objectContaining({ isPlus: true, card: 'Visa 4242' })
+    );
+
+    expect(entitlements.refresh).toHaveBeenCalledWith('u1');
   });
 
   it('lets a user cancel renewal without a card', async () => {
@@ -269,6 +329,6 @@ describe('SubscriptionService.setAutoRenew', () => {
 
     await service.setAutoRenew({ userId: 'u1', isEnabled: false });
 
-    expect(prisma.subscription.update).toHaveBeenCalledWith({ where: { id: 'sub-1' }, data: { cancelAtPeriodEnd: true } });
+    expect(prisma.subscription.update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 'sub-1' }, data: { cancelAtPeriodEnd: true } }));
   });
 });

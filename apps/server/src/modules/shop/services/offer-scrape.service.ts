@@ -108,7 +108,7 @@ export class OfferScrapeService {
     }
 
     const follows = await this.prisma.follow.findMany({
-      where: { kind: 'tank', targetId: BigInt(tankId), OR: [{ events: { has: 'tankReturned' } }, { events: { isEmpty: true } }] },
+      where: { kind: 'tank', targetId: BigInt(tankId), isFollowing: true, OR: [{ events: { has: 'tankReturned' } }, { events: { isEmpty: true } }] },
       select: { userId: true }
     });
 

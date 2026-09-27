@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Prisma, StreamerSettings } from '../../../../../generated';
+import type { Prisma } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { StreamerProfileService } from '../streamer-profile.service';
 
 import { StreamerSettingsService } from '../streamer-settings.service';
+import { streamerProfileRow } from './streamers.fixtures';
 
 const NOW = new Date('2026-09-26T12:00:00Z');
 
@@ -19,11 +20,7 @@ const createService = () => {
   return { service: new StreamerSettingsService(prisma, mock<StreamerProfileService>()), prisma };
 };
 
-const stored = (data: Prisma.JsonObject): StreamerSettings => ({
-  profileId: 'p1',
-  data,
-  updatedAt: new Date('2026-09-01T00:00:00Z')
-});
+const stored = (settings: Prisma.JsonObject | null) => streamerProfileRow({ settings });
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] });
@@ -39,7 +36,7 @@ describe('StreamerSettingsService.save', () => {
     const { service, prisma } = createService();
     const oldCamera = { fov: 95, source: 'editorial', sourceUrl: 'https://nidin.ru/game-settings', checkedAt: '2026-08-01T00:00:00.000Z' };
 
-    prisma.streamerSettings.findUnique.mockResolvedValue(stored({ camera: oldCamera }));
+    prisma.streamerProfile.findUniqueOrThrow.mockResolvedValue(stored({ camera: oldCamera }));
 
     await service.save({ profileId: 'p1', userId: 'u1', source: 'creator', values: { camera: { fov: 95 }, zoom: { steps: ['x2', 'x16'] } } });
 
@@ -56,7 +53,7 @@ describe('StreamerSettingsService.save', () => {
   it('records where each changed group was taken from', async () => {
     const { service, prisma } = createService();
 
-    prisma.streamerSettings.findUnique.mockResolvedValue(null);
+    prisma.streamerProfile.findUniqueOrThrow.mockResolvedValue(stored(null));
 
     await service.save({
       profileId: 'p1',
@@ -74,12 +71,35 @@ describe('StreamerSettingsService.save', () => {
   it('writes nothing when no group changed', async () => {
     const { service, prisma } = createService();
 
-    prisma.streamerSettings.findUnique.mockResolvedValue(
+    prisma.streamerProfile.findUniqueOrThrow.mockResolvedValue(
       stored({ camera: { fov: 90, source: 'creator', sourceUrl: null, checkedAt: '2026-08-01T00:00:00.000Z' } })
     );
 
     await service.save({ profileId: 'p1', userId: 'u1', source: 'creator', values: { camera: { fov: 90 } } });
 
     expect(prisma.streamerSettingsVersion.create).not.toHaveBeenCalled();
+  });
+});
+
+describe('StreamerSettingsService.table', () => {
+  it('lists profiles with settings, newest settings first, dated by the settings change', async () => {
+    const { service, prisma } = createService();
+    const settingsUpdatedAt = new Date('2026-09-10T00:00:00Z');
+
+    prisma.streamerProfile.findMany.mockResolvedValue([
+      streamerProfileRow({
+        isLive: true,
+        settings: { mods: { kind: 'modpack', source: 'creator', sourceUrl: null, checkedAt: '2026-08-01T00:00:00.000Z' } },
+        settingsUpdatedAt
+      }),
+      streamerProfileRow({ slug: 'broken', settings: { camera: { fov: 'wide' } }, settingsUpdatedAt })
+    ]);
+
+    const rows = await service.table();
+    const [query] = prisma.streamerProfile.findMany.mock.calls.map(([args]) => args);
+
+    expect(query?.orderBy).toEqual({ settingsUpdatedAt: { sort: 'desc', nulls: 'last' } });
+    expect(rows).toEqual([expect.objectContaining({ slug: 'jove', modsKind: 'modpack', updatedAt: settingsUpdatedAt.toISOString() })]);
+    expect(rows[0]).not.toHaveProperty('modpack');
   });
 });

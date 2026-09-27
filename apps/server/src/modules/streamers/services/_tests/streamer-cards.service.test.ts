@@ -20,9 +20,9 @@ const profileRow = (overrides: Partial<StreamerProfile> = {}): StreamerProfile =
   accountId: ACCOUNT,
   accountSourceUrl: null,
   bio: null,
-  avatar: null,
   links: null,
-  schedule: null,
+  settings: null,
+  settingsUpdatedAt: null,
   isLive: false,
   liveTankId: null,
   liveViewers: null,
@@ -39,7 +39,6 @@ const profileRow = (overrides: Partial<StreamerProfile> = {}): StreamerProfile =
 const cardProfile = (overrides: Partial<ProfileWithChannels> = {}): ProfileWithChannels => ({
   ...profileRow(),
   channels: [],
-  settings: null,
   ...overrides
 });
 
@@ -127,7 +126,7 @@ describe('StreamerCardsService.cards', () => {
   it('leaves stats and marks null for a streamer without a game account', async () => {
     const { service } = createService();
 
-    const [card] = await service.cards([cardProfile({ accountId: null, settings: { profileId: 'p1' } })]);
+    const [card] = await service.cards([cardProfile({ accountId: null, settings: {} })]);
 
     expect(card).toMatchObject({ stats: null, marks3: null, favouriteTanks: [], hasSettings: true });
   });

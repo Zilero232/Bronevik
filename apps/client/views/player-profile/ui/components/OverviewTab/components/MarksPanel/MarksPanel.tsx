@@ -4,7 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { MarkProgress } from '@/entities/player/marks';
 import { TankCell } from '@/entities/tank/tank';
-import { Band, EmptyState, ErrorState, ProgressRing, Skeleton } from '@/ui-kit';
+import { Band, EmptyState, ProgressRing, QueryState, Skeleton } from '@/ui-kit';
 
 import { OVERVIEW } from '../../../../../config';
 import { useOverviewMarks } from '../../../../../model/hooks';
@@ -15,7 +15,7 @@ import s from './MarksPanel.module.scss';
 export const MarksPanel = () => {
   const t = useTranslations('profile.overview');
   const format = useFormatter();
-  const { counts, closest, isPending, isError, isRetrying, retry } = useOverviewMarks();
+  const { counts, closest, query } = useOverviewMarks();
 
   return (
     <Band aria-labelledby='profile-marks-band' className={s.band} innerClassName={s.inner}>
@@ -38,10 +38,13 @@ export const MarksPanel = () => {
       </div>
       <div className={s.closest}>
         <h3 className={s.heading}>{t('closestTitle')}</h3>
-        {isPending && <Skeleton height={OVERVIEW.listSkeletonHeight} shape='block' />}
-        {isError && <ErrorState isCompact isRetrying={isRetrying} onRetry={retry} />}
-        {!isPending && !isError && closest.length === 0 && <EmptyState isCompact title={t('closestEmpty')} />}
-        {closest.length > 0 && (
+        <QueryState
+          isCompact
+          empty={<EmptyState isCompact title={t('closestEmpty')} />}
+          isEmpty={() => closest.length === 0}
+          query={query}
+          skeleton={<Skeleton height={OVERVIEW.listSkeletonHeight} shape='block' />}
+        >
           <ol className={s.grid}>
             {closest.map(({ vehicle, percent, damageToNext }) => (
               <MarkProgress
@@ -54,7 +57,7 @@ export const MarksPanel = () => {
               />
             ))}
           </ol>
-        )}
+        </QueryState>
       </div>
     </Band>
   );

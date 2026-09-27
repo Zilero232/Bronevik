@@ -1,3 +1,5 @@
-export { FormDialog } from './ui/FormDialog';
+export { useFormDialog } from './model/hooks';
+export type { FormDialogModel, UseFormDialogInput } from './model/hooks';
 
-export type { FormDialogProps } from './ui/FormDialog';
+export { FormDialog } from './ui/FormDialog';
+export type { FormDialogNamespace, FormDialogProps } from './ui/FormDialog';

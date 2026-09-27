@@ -15,3 +15,11 @@ export const REPLAY_LIST = {
   slugPattern: /^[\w-]{1,64}$/,
   hiddenModes: ['bootcamp', 'maps_training']
 } as const;
+
+export const REPLAY_CARD = {
+  figures: [
+    { id: 'damage', key: 'damageDealt' },
+    { id: 'assist', key: 'damageAssisted' },
+    { id: 'frags', key: 'frags' }
+  ]
+} as const;

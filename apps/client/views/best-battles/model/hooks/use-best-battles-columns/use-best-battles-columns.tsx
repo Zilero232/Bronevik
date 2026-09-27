@@ -1,11 +1,10 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
 import type { BestBattle } from '@/entities/battle/best-battle';
+import type { TableColumn } from '@/ui-kit';
 
 import { TankCell } from '@/entities/tank/tank';
 
@@ -15,7 +14,7 @@ import { MapCell, MedalsCell, MetricCell, PlayerCell, ReplayCell } from '../../.
 
 const column = createColumnHelper<BestBattle>();
 
-export const useBestBattlesColumns = ({ metric }: UseBestBattlesColumnsInput): ColumnDef<BestBattle, never>[] => {
+export const useBestBattlesColumns = ({ metric }: UseBestBattlesColumnsInput): TableColumn<BestBattle>[] => {
   const t = useTranslations('bestBattles');
 
   const rank = column.accessor('rank', {

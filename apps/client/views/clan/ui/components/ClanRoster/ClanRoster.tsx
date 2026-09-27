@@ -14,20 +14,13 @@ import s from './ClanRoster.module.scss';
 
 export const ClanRoster = ({ members, now }: ClanRosterProps) => {
   const t = useTranslations('clans.roster');
-  const { role, idle, rows, total, distribution, shares, isFiltered, setFilters, reset } = useRoster({ members, now });
+  const { rows, total, distribution, shares } = useRoster({ members, now });
   const columns = useRosterColumns();
 
   return (
     <div className={s.root}>
       <ActivityStrip distribution={distribution} shares={shares} />
-      <RosterFilters
-        idle={idle}
-        isFiltered={isFiltered}
-        role={role}
-        onIdleChange={(next) => void setFilters({ idle: next })}
-        onReset={() => void reset()}
-        onRoleChange={(next) => void setFilters({ role: next })}
-      />
+      <RosterFilters />
       <DataTable
         columns={columns}
         data={rows}

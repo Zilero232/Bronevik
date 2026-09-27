@@ -60,7 +60,6 @@ export type PollStorePort = {
   loadBaselines: (accountIds: readonly number[]) => Promise<Map<number, TankBaseline[]>>;
   latestTankSnapshots: (input: LatestTankSnapshotsInput) => Promise<TankSnapshotRow[]>;
   overallWn8: (accountId: number) => Promise<number | null>;
-  tankTiers: (tankIds: readonly number[]) => Promise<Map<number, number>>;
   writeAccountChanges: (changes: AccountChanges) => Promise<void>;
 };
 

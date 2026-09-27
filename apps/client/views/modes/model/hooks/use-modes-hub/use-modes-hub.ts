@@ -7,19 +7,9 @@ import { QUERY_KEYS } from '@/shared/constants';
 
 import { latestComputedAt, modePanels } from '../../../lib/mode-panels';
 
-export const useModesHub = () => {
-  const { data, isPending, isError, isFetching, refetch } = useQuery({
+export const useModesHub = () =>
+  useQuery({
     queryKey: QUERY_KEYS.modes.hub,
-    queryFn: ({ signal }) => getModesHub({ signal })
+    queryFn: ({ signal }) => getModesHub({ signal }),
+    select: ({ modes, windowDays }) => ({ panels: modePanels(modes), windowDays, computedAt: latestComputedAt(modes) })
   });
-
-  return {
-    panels: data ? modePanels(data.modes) : [],
-    windowDays: data?.windowDays ?? null,
-    computedAt: data ? latestComputedAt(data.modes) : null,
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    onRetry: () => void refetch()
-  };
-};

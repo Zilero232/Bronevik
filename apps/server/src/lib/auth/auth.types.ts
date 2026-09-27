@@ -12,12 +12,17 @@ export type PlaceholderEmailInput = {
   id: bigint | number | string;
 };
 
+export type UserContentStore = {
+  purgeAuthoredBy: (input: { userId: string }) => Promise<void>;
+};
+
 export type CreateAuthInput = {
   env: Env;
   prisma: PrismaClient;
   lesta: LestaClient;
   lestaStore: LestaAccountStore;
   telegramStore: TelegramAccountStore;
+  userContent: UserContentStore;
   logger: Pick<LoggerService, 'log'>;
 };
 

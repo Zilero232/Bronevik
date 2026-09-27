@@ -1,3 +1,3 @@
 export { FormDialog } from './FormDialog';
 
-export type { FormDialogProps } from './FormDialog.types';
+export type { FormDialogNamespace, FormDialogProps } from './FormDialog.types';

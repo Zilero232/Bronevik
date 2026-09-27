@@ -1,15 +1,22 @@
+'use client';
+
 import { EQUIP_CATEGORY_ICONS } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { EquipTile } from '@/entities/tank/build';
-import { SectionHeader } from '@/ui-kit';
+import { EmptyState, SectionHeader } from '@/ui-kit';
 
-import type { EquipmentMatrixProps } from './EquipmentMatrix.types';
+import { useShowcaseEquipment } from '../../../../../model/hooks';
 
 import s from './EquipmentMatrix.module.scss';
 
-export const EquipmentMatrix = ({ columns, isShares }: EquipmentMatrixProps) => {
+export const EquipmentMatrix = () => {
   const t = useTranslations('builds.showcase.equipment');
+  const { columns, isShares } = useShowcaseEquipment();
+
+  if (columns.length === 0) {
+    return <EmptyState title={t('empty')} />;
+  }
 
   return (
     <section className={s.root}>

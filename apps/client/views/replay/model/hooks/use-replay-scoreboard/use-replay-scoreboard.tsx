@@ -1,11 +1,10 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { Replay, ReplayPlayer } from '@/entities/replay/replay';
+import type { ReplayPlayer } from '@/entities/replay/replay';
+import type { TableColumn } from '@/ui-kit';
 
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
@@ -13,10 +12,12 @@ import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { formatClock } from '../../../lib/battle-timeline';
 import { hitRate, splitTeams, teamTotals } from '../../../lib/team-split';
 import { ScoreboardPlayerCell, ScoreboardTankCell } from '../../../ui/components/ReplayScoreboard/components';
+import { useReplay } from '../../context';
 
 const column = createColumnHelper<ReplayPlayer>();
 
-export const useReplayScoreboard = (replay: Replay) => {
+export const useReplayScoreboard = () => {
+  const replay = useReplay();
   const t = useTranslations('replays.scoreboard');
   const format = useFormatter();
   const { data: catalog } = useVehicleCatalog();
@@ -26,7 +27,7 @@ export const useReplayScoreboard = (replay: Replay) => {
   const numberOrDash = (value: number | null) => (value === null ? '—' : format.number(value));
   const numeric = { align: 'end', isNumeric: true } as const;
 
-  const columns: ColumnDef<ReplayPlayer, never>[] = [
+  const columns: TableColumn<ReplayPlayer>[] = [
     column.display({
       id: 'tank',
       header: t('columns.tank'),

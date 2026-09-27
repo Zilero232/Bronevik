@@ -23,7 +23,6 @@ const offer = (overrides: Partial<PremiumOffer>): PremiumOffer => ({
   contents: null,
   priceRub: null,
   priceGold: null,
-  oldPriceRub: null,
   discountPercent: null,
   startsAt: null,
   endsAt: null,

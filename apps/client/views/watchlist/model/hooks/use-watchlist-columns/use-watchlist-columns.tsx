@@ -1,10 +1,11 @@
 'use client';
 
 import type { WatchlistPlayer } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { PlayerNameCell } from '@/entities/player/player';
 import { RatingValue, scaledRating } from '@/entities/player/stats';
@@ -17,7 +18,7 @@ import { MarksCell, RemoveCell } from '../../../ui/components/WatchlistTable/com
 
 const column = createColumnHelper<WatchlistPlayer>();
 
-export const useWatchlistColumns = ({ isRemoving, onRemove }: UseWatchlistColumnsInput): ColumnDef<WatchlistPlayer, never>[] => {
+export const useWatchlistColumns = ({ isRemoving, onRemove }: UseWatchlistColumnsInput): TableColumn<WatchlistPlayer>[] => {
   const t = useTranslations('watchlist.table');
   const format = useFormatter();
 

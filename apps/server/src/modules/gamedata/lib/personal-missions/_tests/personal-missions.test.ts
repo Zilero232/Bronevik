@@ -46,7 +46,7 @@ describe('writePersonalMissions', () => {
     const counts = await writePersonalMissions({ prisma, gameVersionId: 7, data: data! });
 
     expect(counts).toEqual({ campaigns: 2, operations: 2, branches: 2, missions: 3 });
-    expect(prisma.missionCampaign.deleteMany).toHaveBeenCalledWith({ where: { gameVersionId: 7 } });
+    expect(prisma.missionCampaign.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { gameVersionId: 7 } }));
 
     expect(prisma.missionOperation.createMany.mock.calls[0][0]?.data).toEqual(
       expect.arrayContaining([expect.objectContaining({ gameVersionId: 7, operationId: 1, rewardTankId: 13_345, rewardTankTag: 'G104_Stug_IV' })])

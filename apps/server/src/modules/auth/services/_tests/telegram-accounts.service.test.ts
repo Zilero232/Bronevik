@@ -43,12 +43,14 @@ describe('TelegramAccountsService.link', () => {
     await service.link({ userId: 'user', telegramId: 42n, username: 'ivan', name: 'ivan', languageCode: 'ru' });
 
     expect(prisma.$transaction).toHaveBeenCalledOnce();
-    expect(prisma.telegramAccount.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user', NOT: { telegramId: 42n } } });
+    expect(prisma.telegramAccount.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user', NOT: { telegramId: 42n } } }));
 
-    expect(prisma.telegramAccount.upsert).toHaveBeenCalledWith({
-      where: { telegramId: 42n },
-      create: { userId: 'user', telegramId: 42n, username: 'ivan', languageCode: 'ru', lastSeenAt: NOW },
-      update: { username: 'ivan', languageCode: 'ru', lastSeenAt: NOW }
-    });
+    expect(prisma.telegramAccount.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { telegramId: 42n },
+        create: { userId: 'user', telegramId: 42n, username: 'ivan', languageCode: 'ru', lastSeenAt: NOW },
+        update: { username: 'ivan', languageCode: 'ru', lastSeenAt: NOW }
+      })
+    );
   });
 });

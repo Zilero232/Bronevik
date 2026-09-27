@@ -103,6 +103,7 @@ export class ModerationService {
       .with('coach', () => db.coachProfile.updateMany({ where: { userId: targetId }, data: { isActive: false, hiddenAt: new Date() } }))
       .with('tournament', () => db.tournament.updateMany({ where: { id: targetId }, data: { status: 'cancelled' } }))
       .with('tactic_board', () => db.tacticBoard.updateMany({ where: { id: targetId }, data: { visibility: 'private' } }))
+      .with('streamer_profile', () => db.streamerProfile.updateMany({ where: { id: targetId }, data: { hiddenAt: new Date(), isLive: false } }))
       .otherwise(() => ({ count: 0 }));
   }
 }

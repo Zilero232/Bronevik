@@ -1,10 +1,11 @@
 'use client';
 
 import type { ModeTank } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { ModeRankBadge } from '@/entities/mode/mode';
 import { TankCell, WinRateCell } from '@/entities/tank/tank';
@@ -14,7 +15,7 @@ import { MODE_TABLE } from '../../../config';
 
 const column = createColumnHelper<ModeTank>();
 
-export const useModeColumns = (): ColumnDef<ModeTank, never>[] => {
+export const useModeColumns = (): TableColumn<ModeTank>[] => {
   const t = useTranslations('modes.table');
   const format = useFormatter();
 
@@ -35,7 +36,11 @@ export const useModeColumns = (): ColumnDef<ModeTank, never>[] => {
       cell: (info) => <TankCell vehicle={info.row.original.vehicle} />,
       meta: { width: MODE_TABLE.tankWidth }
     }),
-    column.accessor('battles', { header: t('battles'), cell: (info) => format.number(info.getValue()), meta: MODE_TABLE.numeric }),
+    column.accessor('battles', {
+      header: t('battles'),
+      cell: (info) => format.number(info.getValue()),
+      meta: { ...MODE_TABLE.numeric, bar: { tone: 'steel' } }
+    }),
     column.accessor('players', {
       header: t('players'),
       cell: (info) => format.number(info.getValue()),

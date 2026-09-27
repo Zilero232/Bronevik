@@ -1,7 +1,7 @@
-export { getInbox, markInboxRead } from './api';
-export type { InboxPageInput } from './api';
+export { getInbox, inboxQueries, markInboxRead } from './api';
+export type { InboxFeedQueryInput, InboxPageInput, InboxPreviewQueryInput } from './api';
 export { INBOX_EVENT, INBOX_QUERY } from './config';
-export { useMarkInboxRead } from './model/hooks';
+export { useMarkInboxRead, useReadInboxItem } from './model/hooks';
 export { InboxEntry } from './ui/InboxEntry';
 export type { InboxEntryProps } from './ui/InboxEntry';
 export { InboxHeader } from './ui/InboxHeader';

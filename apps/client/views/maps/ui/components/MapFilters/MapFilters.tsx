@@ -8,14 +8,14 @@ import type { MapCamouflage, MapModeKind } from '@/entities/map/map';
 import { MAP_CAMOUFLAGES, MAP_MODE_KINDS } from '@/entities/map/map';
 import { Button, Input, ToggleChips } from '@/ui-kit';
 
-import type { MapFiltersProps } from './MapFilters.types';
+import { useMapFilters } from '../../../model/hooks';
+import { MapsShown } from './components';
 
 import s from './MapFilters.module.scss';
 
-export const MapFilters = ({ filters, shown, total, isFiltered, onChange, onReset }: MapFiltersProps) => {
+export const MapFilters = () => {
   const t = useTranslations('maps');
-
-  const { q, modes, camo } = filters;
+  const { filters, isFiltered, onQueryChange, onModesChange, onCamoChange, onReset } = useMapFilters();
 
   return (
     <div className={s.root}>
@@ -25,28 +25,26 @@ export const MapFilters = ({ filters, shown, total, isFiltered, onChange, onRese
         placeholder={t('filters.searchPlaceholder')}
         size='sm'
         type='search'
-        value={q}
+        value={filters.q}
         wrapperClassName={s.search}
-        onChange={(event) => onChange({ q: event.target.value })}
+        onChange={(event) => onQueryChange(event.target.value)}
       />
       <ToggleChips<MapModeKind>
         aria-label={t('filters.modes')}
         options={MAP_MODE_KINDS.map((value) => ({ value, label: t(`modes.${value}`) }))}
         size='sm'
-        value={modes}
-        onChange={(next) => onChange({ modes: next })}
+        value={filters.modes}
+        onChange={onModesChange}
       />
       <ToggleChips<MapCamouflage>
         aria-label={t('filters.camouflage')}
         options={MAP_CAMOUFLAGES.map((value) => ({ value, label: t(`camouflage.${value}`) }))}
         size='sm'
-        value={camo}
-        onChange={(next) => onChange({ camo: next })}
+        value={filters.camo}
+        onChange={onCamoChange}
       />
       <div className={s.status}>
-        <span aria-live='polite' className={s.count}>
-          {t('filters.shown', { shown, total })}
-        </span>
+        <MapsShown />
         {isFiltered && (
           <Button size='sm' variant='ghost' onClick={onReset}>
             <X size={14} />

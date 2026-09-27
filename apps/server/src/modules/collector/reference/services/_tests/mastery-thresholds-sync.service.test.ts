@@ -5,6 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Vehicle } from '../../../../../../generated';
 import type { LestaClients, PrismaService } from '../../../../../core';
 
+import { masteryThresholdLevels } from '../../../../reference';
 import { REFERENCE } from '../../config';
 import { MasteryThresholdsSyncService } from '../mastery-thresholds-sync.service';
 
@@ -52,7 +53,7 @@ describe('MasteryThresholdsSyncService.sync', () => {
 
     expect(await service.sync()).toEqual({ vehicles: 0 });
     expect(prisma.$transaction).not.toHaveBeenCalled();
-    expect(prisma.masteryThreshold.deleteMany).not.toHaveBeenCalled();
+    expect(prisma.tankThreshold.deleteMany).not.toHaveBeenCalled();
   });
 
   it('keeps today’s thresholds when no tank has a complete distribution', async () => {
@@ -86,10 +87,16 @@ describe('MasteryThresholdsSyncService.sync', () => {
       expect.objectContaining({ tankIds: [1, 2], distribution: REFERENCE.masteryDistribution })
     );
 
-    expect(prisma.masteryThreshold.deleteMany.mock.calls[0]?.[0]?.where).toEqual({ source: 'lesta', date: today });
+    expect(prisma.tankThreshold.deleteMany.mock.calls[0]?.[0]?.where).toEqual({ kind: 'mastery', source: 'lesta', date: today });
 
-    expect(prisma.masteryThreshold.createMany.mock.calls[0]?.[0]?.data).toEqual([
-      { tankId: 1, class3: 100, class2: 200, class1: 300, master: 400, date: today, source: 'lesta' }
+    expect(prisma.tankThreshold.createMany.mock.calls[0]?.[0]?.data).toEqual([
+      {
+        kind: 'mastery',
+        tankId: 1,
+        date: today,
+        source: 'lesta',
+        ...masteryThresholdLevels({ class3: 100, class2: 200, class1: 300, master: 400 })
+      }
     ]);
 
     expect(prisma.tankPercentile.createMany.mock.calls[0]?.[0]?.data).toEqual([

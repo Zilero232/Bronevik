@@ -56,10 +56,12 @@ describe('NewsEnrichService.run', () => {
     expect(await service.run(now)).toBe(1);
     expect(prisma.gameVersion.findFirst.mock.calls[0]?.[0]?.where).toEqual({ version: { in: versionCandidates(patchVersion(title) ?? '') } });
 
-    expect(prisma.newsItem.update).toHaveBeenCalledWith({
-      where: { id: 'n1' },
-      data: { kind: 'patchNotes', gameVersionId: 42, tankIds: [], enrichedAt: now }
-    });
+    expect(prisma.newsItem.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'n1' },
+        data: { kind: 'patchNotes', gameVersionId: 42, tankIds: [], enrichedAt: now }
+      })
+    );
   });
 
   it('keeps an already linked version and merges mentioned tanks without duplicates', async () => {

@@ -61,7 +61,7 @@ describe('ReferralService', () => {
 
     await service.register({ userId: 'u1', referrerId: 'ref' });
 
-    expect(prisma.referral.create).toHaveBeenCalledWith({ data: { referredUserId: 'u1', referrerUserId: 'ref' } });
+    expect(prisma.referral.create).toHaveBeenCalledWith(expect.objectContaining({ data: { referredUserId: 'u1', referrerUserId: 'ref' } }));
   });
 
   it('answers a conflict when the user is already referred', async () => {

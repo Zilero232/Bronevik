@@ -7,30 +7,30 @@ import { ReportButton } from '@/features/community/report-content';
 import { ROUTES } from '@/shared/constants';
 import { PageHeader } from '@/ui-kit';
 
-import type { GuideHeaderProps } from './GuideHeader.types';
-
+import { useGuide } from '../../../model/context';
 import { useGuideViewer } from '../../../model/hooks';
 import { GuideLikeButton, GuideMeta, GuideOwnerActions } from './components';
 
 import s from './GuideHeader.module.scss';
 
-export const GuideHeader = ({ guide }: GuideHeaderProps) => {
+export const GuideHeader = () => {
   const t = useTranslations('guides.detail');
-  const { isAuthor } = useGuideViewer(guide);
+  const guide = useGuide();
+  const { isAuthor } = useGuideViewer();
 
   return (
     <PageHeader
       actions={
         <div className={s.actions}>
-          <GuideLikeButton guide={guide} />
-          {isAuthor ? <GuideOwnerActions guide={guide} /> : <ReportButton targetId={guide.id} targetType='guide' />}
+          <GuideLikeButton />
+          {isAuthor ? <GuideOwnerActions /> : <ReportButton targetId={guide.id} targetType='guide' />}
         </div>
       }
       breadcrumbs={[{ label: t('breadcrumb'), href: ROUTES.guides.list }, { label: guide.title }]}
       meta={guide.status === 'published' ? undefined : <GuideStatusBadge status={guide.status} />}
       title={guide.title}
     >
-      <GuideMeta guide={guide} />
+      <GuideMeta />
     </PageHeader>
   );
 };

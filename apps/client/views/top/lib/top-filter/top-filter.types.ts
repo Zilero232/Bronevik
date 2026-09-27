@@ -1,15 +1,9 @@
-import type { LeaderboardScope, RatingKind, RatingPeriod, VehicleSummary, VehicleType } from '@otmetki/schemas';
+import type { LeaderboardScope, RatingKind } from '@otmetki/schemas';
+import type { inferParserType } from 'nuqs';
 
-export type TopTank = VehicleSummary;
+import type { TOP_PARAMS } from '../../config';
 
-export type TopFilterState = {
-  scope: LeaderboardScope;
-  metric: RatingKind;
-  period: RatingPeriod;
-  tier: 'all' | `${number}`;
-  type: 'all' | VehicleType;
-  tank: TopTank | null;
-};
+export type TopFilterState = inferParserType<typeof TOP_PARAMS>;
 
 export type MetricForInput = {
   scope: LeaderboardScope;

@@ -64,7 +64,13 @@ export const TopPlayers = () => {
           {!isPending && podium.length === 0 && <EmptyState isCompact title={t('empty')} />}
           {(isPending || rest.length > 0) && (
             <Card padding='none'>
-              <DataTable columns={columns} data={rest} getRowId={(entry) => `${entry.rank}-${entry.name}`} isLoading={isPending} />
+              <DataTable
+                columns={columns}
+                data={rest}
+                getRowId={(entry) => `${entry.rank}-${entry.name}`}
+                getRowLink={(entry) => ({ href: ROUTES.players.profile(entry.name), label: entry.name })}
+                isLoading={isPending}
+              />
             </Card>
           )}
         </>

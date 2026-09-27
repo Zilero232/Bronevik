@@ -5,13 +5,18 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { EquipTile } from '@/entities/tank/build';
 import { SectionHeader } from '@/ui-kit';
 
-import type { ShellMixProps } from './ShellMix.types';
+import { useShowcaseSupplies } from '../../../../../model/hooks';
 
 import s from './ShellMix.module.scss';
 
-export const ShellMix = ({ consumables, shells }: ShellMixProps) => {
+export const ShellMix = () => {
   const t = useTranslations('builds.showcase.supplies');
   const format = useFormatter();
+  const { consumables, shells } = useShowcaseSupplies();
+
+  if (consumables.length === 0 && shells.length === 0) {
+    return null;
+  }
 
   return (
     <section className={s.root}>

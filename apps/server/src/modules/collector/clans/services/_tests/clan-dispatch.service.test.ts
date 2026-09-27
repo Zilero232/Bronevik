@@ -3,7 +3,7 @@ import type { Queue } from 'bullmq';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { ClanWorkspace, Favorite, Follow, Player } from '../../../../../../generated';
+import type { ClanWorkspace, Follow, Player } from '../../../../../../generated';
 import type { PrismaService } from '../../../../../core';
 
 import { ClanDispatchService } from '../clan-dispatch.service';
@@ -13,8 +13,7 @@ const createDispatch = () => {
   const queue = mock<Queue>();
 
   prisma.$transaction.mockResolvedValue([]);
-  prisma.favorite.findMany.mockResolvedValue([mock<Favorite>({ targetId: 10n })]);
-  prisma.follow.findMany.mockResolvedValue([mock<Follow>({ targetId: 10n })]);
+  prisma.follow.findMany.mockResolvedValue([mock<Follow>({ targetId: 10n }), mock<Follow>({ targetId: 10n })]);
   prisma.clanWorkspace.findMany.mockResolvedValue([mock<ClanWorkspace>({ clanId: 20n })]);
   prisma.player.findMany.mockResolvedValue([mock<Player>({ clanId: 30n }), mock<Player>({ clanId: null })]);
 

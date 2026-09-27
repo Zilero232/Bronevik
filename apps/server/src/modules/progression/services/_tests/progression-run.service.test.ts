@@ -3,15 +3,7 @@ import { range } from 'remeda';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type {
-  Battle,
-  ProgressionCursor,
-  Subscription,
-  TankChallengeProgress,
-  TankProgress,
-  UserLestaAccount,
-  Vehicle
-} from '../../../../../generated';
+import type { Battle, Player, PlayerTank, Subscription, TankChallengeProgress, UserLestaAccount, Vehicle } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { NotificationService } from '../../../notifications';
 
@@ -38,7 +30,9 @@ const modBattle = (fields: Partial<Battle> = {}) =>
     ...fields
   });
 
-const progress = (fields: Pick<TankProgress, 'level' | 'xp'>) => Object.assign(mock<TankProgress>(), { tankId, ...fields });
+const progress = (fields: Pick<PlayerTank, 'progressLevel' | 'progressXp'>) => Object.assign(mock<PlayerTank>(), { tankId, ...fields });
+
+const cursor = (progressionProcessedUntil: Date) => Object.assign(mock<Player>(), { progressionProcessedUntil });
 
 const setup = () => {
   const prisma = mockDeep<PrismaService>();
@@ -48,12 +42,12 @@ const setup = () => {
 
   prisma.subscription.findMany.mockResolvedValue([Object.assign(mock<Subscription>(), { userId: 'u' })]);
   prisma.userLestaAccount.findMany.mockResolvedValue([link('u', 7n)]);
-  prisma.progressionCursor.findUnique.mockResolvedValue(null);
+  prisma.player.findUnique.mockResolvedValue(null);
   prisma.tankBattleDelta.findMany.mockResolvedValue([]);
   prisma.battle.findMany.mockResolvedValue([]);
   prisma.battle.count.mockResolvedValue(0);
   prisma.vehicle.findMany.mockResolvedValue([Object.assign(mock<Vehicle>(), { tankId, tier: 8, name: 'Object 140', shortName: 'Об. 140' })]);
-  prisma.tankProgress.findMany.mockResolvedValue([]);
+  prisma.playerTank.findMany.mockResolvedValue([]);
   prisma.tankChallengeProgress.findUnique.mockResolvedValue(null);
   ledger.grant.mockResolvedValue(true);
   seasons.claimRewards.mockResolvedValue(0);
@@ -68,11 +62,11 @@ describe('ProgressionRunService.run', () => {
   it('adds no XP and grants nothing when no battles arrived since the cursor', async () => {
     const { prisma, ledger, service } = setup();
 
-    prisma.progressionCursor.findUnique.mockResolvedValue(Object.assign(mock<ProgressionCursor>(), { processedUntil: now }));
-    prisma.tankProgress.findMany.mockResolvedValue([progress({ xp: 500, level: 3 })]);
+    prisma.player.findUnique.mockResolvedValue(cursor(now));
+    prisma.playerTank.findMany.mockResolvedValue([progress({ progressXp: 500, progressLevel: 3 })]);
 
     expect(await service.run(now)).toBe(1);
-    expect(prisma.tankProgress.upsert).not.toHaveBeenCalled();
+    expect(prisma.playerTank.upsert).not.toHaveBeenCalled();
     expect(ledger.grant).not.toHaveBeenCalled();
   });
 
@@ -81,7 +75,7 @@ describe('ProgressionRunService.run', () => {
     const first = setup();
     const next = setup();
 
-    next.prisma.progressionCursor.findUnique.mockResolvedValue(Object.assign(mock<ProgressionCursor>(), { processedUntil: cursorAt }));
+    next.prisma.player.findUnique.mockResolvedValue(cursor(cursorAt));
 
     await first.service.run(now);
     await next.service.run(now);
@@ -95,7 +89,22 @@ describe('ProgressionRunService.run', () => {
 
     await service.run(now);
 
-    expect(prisma.progressionCursor.upsert).toHaveBeenCalledWith(expect.objectContaining({ update: { processedUntil: now } }));
+    expect(prisma.player.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { accountId: 7n }, data: { progressionProcessedUntil: now } })
+    );
+  });
+
+  it('writes only the progress columns of the tank row so the collector and mod columns stay intact', async () => {
+    const { prisma, service } = setup();
+
+    prisma.battle.findMany.mockResolvedValue(range(0, 20).map(() => modBattle()));
+
+    await service.run(now);
+
+    const args = prisma.playerTank.upsert.mock.calls[0]?.[0];
+
+    expect(Object.keys(args?.update ?? {}).sort()).toEqual(['progressBattles', 'progressLevel', 'progressXp']);
+    expect(args?.create).toMatchObject({ accountId: 7n, tankId, progressBattles: 20 });
   });
 
   it('grants one level reward per level crossed, each under its own key', async () => {
@@ -105,7 +114,7 @@ describe('ProgressionRunService.run', () => {
 
     await service.run(now);
 
-    const xp = prisma.tankProgress.upsert.mock.calls[0]?.[0]?.create.xp ?? 0;
+    const xp = prisma.playerTank.upsert.mock.calls[0]?.[0]?.create.progressXp ?? 0;
     const levels = grantsFor(ledger, 'level').map((input) => input.context?.level);
     const keys = grantsFor(ledger, 'level').map((input) => input.key);
 
@@ -121,7 +130,7 @@ describe('ProgressionRunService.run', () => {
 
     await service.run(now);
 
-    const level = tankLevelOf(prisma.tankProgress.upsert.mock.calls[0]?.[0]?.create.xp ?? 0).level;
+    const level = tankLevelOf(prisma.playerTank.upsert.mock.calls[0]?.[0]?.create.progressXp ?? 0).level;
     const shells = grantsFor(ledger, 'level').reduce((sum, input) => sum + input.amount, 0);
 
     expect(notifications.notify).toHaveBeenCalledWith(
@@ -161,15 +170,15 @@ describe('ProgressionRunService.run', () => {
     const { prisma, ledger, service } = setup();
     const xp = 50_000;
 
-    prisma.tankProgress.findMany.mockResolvedValue([progress({ xp, level: tankLevelOf(xp).level })]);
+    prisma.playerTank.findMany.mockResolvedValue([progress({ progressXp: xp, progressLevel: tankLevelOf(xp).level })]);
     prisma.battle.findMany.mockResolvedValue([modBattle({ damageDealt: 0, frags: 0, spotted: 0, result: 'loss' })]);
 
     await service.run(now);
 
     expect(grantsFor(ledger, 'level')).toEqual([]);
 
-    expect(prisma.tankProgress.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ update: expect.objectContaining({ xp: { increment: expect.any(Number) } }) })
+    expect(prisma.playerTank.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ update: expect.objectContaining({ progressXp: { increment: expect.any(Number) } }) })
     );
   });
 
@@ -177,7 +186,7 @@ describe('ProgressionRunService.run', () => {
     const { prisma, ledger, service } = setup();
     const almost = tankLevelOf(Number.MAX_SAFE_INTEGER).levelXp - 1;
 
-    prisma.tankProgress.findMany.mockResolvedValue([progress({ xp: almost, level: TANK_LEVELS.max - 1 })]);
+    prisma.playerTank.findMany.mockResolvedValue([progress({ progressXp: almost, progressLevel: TANK_LEVELS.max - 1 })]);
     prisma.battle.findMany.mockResolvedValue([modBattle()]);
 
     await service.run(now);
@@ -224,7 +233,7 @@ describe('ProgressionRunService.run', () => {
 
     prisma.userLestaAccount.findMany.mockResolvedValue([link('u', 7n), link('u', 8n), link('v', 9n)]);
 
-    prisma.progressionCursor.findUnique.mockResolvedValueOnce(null).mockRejectedValueOnce(new Error('db down')).mockResolvedValueOnce(null);
+    prisma.player.findUnique.mockResolvedValueOnce(null).mockRejectedValueOnce(new Error('db down')).mockResolvedValueOnce(null);
 
     expect(await service.run(now)).toBe(2);
     expect(seasons.claimRewards.mock.calls.map(([input]) => input.userId)).toEqual(['u', 'v']);
@@ -235,9 +244,11 @@ describe('ProgressionRunService.run', () => {
 
     await service.run(now);
 
-    expect(prisma.progressionCursor.updateMany).toHaveBeenCalledWith({
-      where: { accountId: { notIn: [7n] } },
-      data: { processedUntil: now }
-    });
+    expect(prisma.player.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { accountId: { notIn: [7n] }, progressionProcessedUntil: { not: null } },
+        data: { progressionProcessedUntil: now }
+      })
+    );
   });
 });

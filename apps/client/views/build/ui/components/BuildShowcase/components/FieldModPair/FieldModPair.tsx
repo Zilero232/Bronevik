@@ -7,10 +7,13 @@ import { TierNumeral, Tooltip } from '@/ui-kit';
 
 import type { FieldModPairProps } from './FieldModPair.types';
 
+import { useShowcaseSource } from '../../../../../model/hooks';
+
 import s from './FieldModPair.module.scss';
 
-export const FieldModPair = ({ pair, isShares }: FieldModPairProps) => {
+export const FieldModPair = ({ pair }: FieldModPairProps) => {
   const format = useFormatter();
+  const { isShares } = useShowcaseSource();
 
   const hasPick = pair.options.some(({ isPicked }) => isPicked);
 

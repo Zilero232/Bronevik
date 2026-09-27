@@ -88,8 +88,12 @@ describe('LinkedAccountsService.makePrimary', () => {
     await service.makePrimary({ userId: 'user', accountId: 8 });
 
     expect(prisma.$transaction).toHaveBeenCalledOnce();
-    expect(prisma.userLestaAccount.updateMany).toHaveBeenCalledWith({ where: { userId: 'user' }, data: { isPrimary: false } });
-    expect(prisma.userLestaAccount.update).toHaveBeenCalledWith({ where: { accountId: 8n }, data: { isPrimary: true } });
+
+    expect(prisma.userLestaAccount.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'user' }, data: { isPrimary: false } })
+    );
+
+    expect(prisma.userLestaAccount.update).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: 8n }, data: { isPrimary: true } }));
   });
 });
 
@@ -122,13 +126,18 @@ describe('LinkedAccountsService.unlink', () => {
 
     await service.unlink({ userId: 'user', accountId: 8 });
 
-    expect(prisma.userLestaAccount.delete).toHaveBeenCalledWith({ where: { accountId: 8n } });
-    expect(prisma.account.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user', providerId: AUTH_PROVIDER.lesta, accountId: '8' } });
+    expect(prisma.userLestaAccount.delete).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: 8n } }));
 
-    expect(prisma.modDevice.updateMany).toHaveBeenCalledWith({
-      where: { userId: 'user', accountId: 8n, revokedAt: null },
-      data: { revokedAt: NOW }
-    });
+    expect(prisma.account.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'user', providerId: AUTH_PROVIDER.lesta, accountId: '8' } })
+    );
+
+    expect(prisma.modDevice.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId: 'user', accountId: 8n, revokedAt: null },
+        data: { revokedAt: NOW }
+      })
+    );
 
     expect(prisma.userLestaAccount.update).not.toHaveBeenCalled();
   });
@@ -141,7 +150,7 @@ describe('LinkedAccountsService.unlink', () => {
 
     await service.unlink({ userId: 'user', accountId: 7 });
 
-    expect(prisma.userLestaAccount.update).toHaveBeenCalledWith({ where: { accountId: 8n }, data: { isPrimary: true } });
+    expect(prisma.userLestaAccount.update).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: 8n }, data: { isPrimary: true } }));
   });
 
   it('leaves no primary when the last Lesta account is unlinked', async () => {

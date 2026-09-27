@@ -6,7 +6,7 @@ export type ResourceMissingProps = {
   reason: ResourceMissingReason;
   title: ReactNode;
   description?: ReactNode;
-  back: {
+  back?: {
     href: string;
     label: ReactNode;
   };

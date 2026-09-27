@@ -11,22 +11,14 @@ import { CoachAboutFields, CoachActiveField, CoachContactsFields, CoachTanksFiel
 
 export const CoachProfileDialog = () => {
   const t = useTranslations('coaching.profile');
-  const { form, accounts, hasProfile, isOpen, isLoading, isPending, onOpenChange, onSubmit } = useCoachProfileForm();
+  const { dialog, accounts, hasProfile, isLoading } = useCoachProfileForm();
 
   return (
     <FormDialog
-      cancelLabel={t('cancel')}
-      description={t('description')}
-      form={form}
-      isOpen={isOpen}
-      isPending={isPending}
+      dialog={dialog}
       isTriggerDisabled={isLoading}
-      submitLabel={t('save')}
-      title={hasProfile ? t('editTitle') : t('becomeTitle')}
-      trigger={hasProfile ? t('edit') : t('become')}
+      namespace={hasProfile ? 'coaching.profile.dialog.edit' : 'coaching.profile.dialog.become'}
       triggerClassName={buttonVariants({ size: 'sm', variant: hasProfile ? 'secondary' : 'primary' })}
-      onOpenChange={onOpenChange}
-      onSubmit={onSubmit}
     >
       <Controller
         render={({ field }) => (
@@ -37,7 +29,7 @@ export const CoachProfileDialog = () => {
             onValueChange={field.onChange}
           />
         )}
-        control={form.control}
+        control={dialog.form.control}
         name='accountId'
       />
       <CoachAboutFields />

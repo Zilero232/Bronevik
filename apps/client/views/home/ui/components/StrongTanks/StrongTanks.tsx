@@ -38,9 +38,7 @@ export const StrongTanks = () => {
       />
       {isPending && (
         <div className={s.grid}>
-          {Array.from({ length: HOME.strongTanks.cards }, (_, index) => (
-            <Skeleton key={index} className={s.skeleton} height={236} shape='block' />
-          ))}
+          <Skeleton className={s.skeleton} count={HOME.strongTanks.cards} height={236} shape='block' />
         </div>
       )}
       {isError && <ErrorState isCompact onRetry={retry} />}

@@ -2,13 +2,12 @@
 
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { match, P } from 'ts-pattern';
 
 import { PlusGate } from '@/features/plus/plus-gate';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Skeleton } from '@/ui-kit';
-import { ResourceMissing } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/resource-missing';
 
 import type { MyBattlePageProps } from './MyBattlePage.types';
 
@@ -20,7 +19,7 @@ import s from './MyBattlePage.module.scss';
 
 export const MyBattlePage = ({ id }: MyBattlePageProps) => {
   const t = useTranslations('analytics.battle');
-  const { battle, isPending, isNotFound, isRetrying, retry } = useMyBattle(id);
+  const query = useMyBattle(id);
 
   return (
     <div className={s.root}>
@@ -28,34 +27,22 @@ export const MyBattlePage = ({ id }: MyBattlePageProps) => {
         <ArrowLeft size={14} />
         {t('back')}
       </Link>
-      {match({ battle, isPending, isNotFound })
-        .with({ battle: P.nonNullable }, ({ battle: value }) => (
+      <ResourceGate
+        back={{ href: ROUTES.account.analytics, label: t('back') }}
+        error={{ title: t('errorTitle'), description: t('errorText') }}
+        notFound={{ title: t('notFoundTitle'), description: t('notFoundText') }}
+        query={query}
+        skeleton={<Skeleton height={MY_BATTLE.skeletonHeight} shape='block' />}
+      >
+        {(battle) => (
           <>
-            <BattleCard battle={value} />
+            <BattleCard battle={battle} />
             <PlusGate feature='battleAnalysis'>
               <BattleAnalysisPanel id={id} />
             </PlusGate>
           </>
-        ))
-        .with({ isPending: true }, () => <Skeleton height={MY_BATTLE.skeletonHeight} shape='block' />)
-        .with({ isNotFound: true }, () => (
-          <ResourceMissing
-            back={{ href: ROUTES.account.analytics, label: t('back') }}
-            description={t('notFoundText')}
-            reason='notFound'
-            title={t('notFoundTitle')}
-          />
-        ))
-        .otherwise(() => (
-          <ResourceMissing
-            back={{ href: ROUTES.account.analytics, label: t('back') }}
-            description={t('errorText')}
-            isRetrying={isRetrying}
-            reason='error'
-            title={t('errorTitle')}
-            onRetry={retry}
-          />
-        ))}
+        )}
+      </ResourceGate>
     </div>
   );
 };

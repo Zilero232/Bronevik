@@ -50,7 +50,6 @@ model GameVersion {
   notesUrl   String?    @map("notes_url")
 
   vehicleSpecs     VehicleSpecHistory[] @relation("VehicleSpecBuild")
-  vehicleSpecBases VehicleSpecHistory[] @relation("VehicleSpecBaseBuild")
   dataEntries      GameDataEntry[]
   newsItems        NewsItem[]
   builds           Build[]
@@ -84,7 +83,6 @@ model Vehicle {
   images      Json?
   priceCredit Int?  @map("price_credit")
   priceGold   Int?  @map("price_gold")
-  priceXp     Int?  @map("price_xp")
   specs       Json?
 
   prevTankIds Int[] @map("prev_tank_ids")
@@ -125,20 +123,16 @@ model VehicleSpecHistory {
   tankId        Int @map("tank_id")
   gameVersionId Int @map("game_version_id")
 
-  baseGameVersionId Int? @map("base_game_version_id")
-
   specs Json
   diff  Json?
 
   capturedAt DateTime @default(now()) @map("captured_at") @db.Timestamptz(3)
 
-  vehicle         Vehicle      @relation(fields: [tankId], references: [tankId], onDelete: Cascade)
-  gameVersion     GameVersion  @relation("VehicleSpecBuild", fields: [gameVersionId], references: [id], onDelete: Cascade)
-  baseGameVersion GameVersion? @relation("VehicleSpecBaseBuild", fields: [baseGameVersionId], references: [id], onDelete: SetNull)
+  vehicle     Vehicle     @relation(fields: [tankId], references: [tankId], onDelete: Cascade)
+  gameVersion GameVersion @relation("VehicleSpecBuild", fields: [gameVersionId], references: [id], onDelete: Cascade)
 
   @@id([tankId, gameVersionId])
   @@index([gameVersionId])
-  @@index([baseGameVersionId])
   @@map("vehicle_spec_history")
 }
 

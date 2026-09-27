@@ -7,6 +7,7 @@ import { Button, DataTable } from '@/ui-kit';
 import type { BestBattlesTableProps } from './BestBattlesTable.types';
 
 import { useBestBattlesColumns } from '../../../model/hooks';
+import { BestBattleCard } from './components';
 
 import s from './BestBattlesTable.module.scss';
 
@@ -32,6 +33,7 @@ export const BestBattlesTable = ({ battles, metric, emptyState, isLoading, hasNe
       emptyState={emptyState}
       getRowId={(row) => row.key}
       isLoading={isLoading}
+      renderCard={(row) => <BestBattleCard battle={row} metric={metric} />}
     />
   );
 };

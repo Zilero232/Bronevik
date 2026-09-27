@@ -1,10 +1,6 @@
 import type { Comment } from '../../../api';
-import type { CommentThreadTarget } from '../../../lib/comment-form';
+import type { UseCommentItemInput } from '../../../model/hooks';
 
-export type CommentItemProps = {
-  comment: Comment;
-  thread: CommentThreadTarget;
-  viewerId: string | null;
-  canReply: boolean;
+export type CommentItemProps = UseCommentItemInput & {
   replies?: Comment[];
 };

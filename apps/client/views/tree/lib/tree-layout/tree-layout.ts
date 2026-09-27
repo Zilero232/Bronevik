@@ -3,7 +3,7 @@ import { groupBy, range, sortBy } from 'remeda';
 
 import type { LayoutTreeInput, NodePosition, TreeLayout } from './tree-layout.types';
 
-import { TREE_LAYOUT } from '../../config';
+import { TREE_LAYOUT } from '../../config/tree-layout.constants';
 
 const { nodeWidth, nodeHeight, columnGap, rowGap } = TREE_LAYOUT;
 

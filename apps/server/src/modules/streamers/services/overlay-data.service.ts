@@ -174,11 +174,16 @@ export class OverlayDataService {
 
   private async moe({ accountId, tankId }: OverlayMoeInput) {
     const [progress, vehicle] = await Promise.all([
-      this.prisma.moeProgress.findUnique({ where: { accountId_tankId: { accountId, tankId } } }),
+      this.prisma.playerTank.findUnique({
+        where: { accountId_tankId: { accountId, tankId } },
+        select: { marksOnGun: true, moePercent: true }
+      }),
       this.catalog.summary(tankId)
     ]);
 
-    return progress ? { tankName: vehicle.shortName || vehicle.name, marks: progress.marks, percent: progress.percent } : null;
+    return !progress || progress.moePercent === null
+      ? null
+      : { tankName: vehicle.shortName || vehicle.name, marks: progress.marksOnGun ?? 0, percent: progress.moePercent };
   }
 
   private async challenge(streamerUserId: string) {

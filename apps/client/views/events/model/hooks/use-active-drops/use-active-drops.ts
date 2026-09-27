@@ -11,19 +11,13 @@ import { EVENTS } from '../../../config';
 import { eventTimeline } from '../../../lib/event-timeline';
 
 export const useActiveDrops = () => {
-  const { data, dataUpdatedAt, isPending, isError, isFetching, refetch } = useQuery({
+  const query = useQuery({
     ...eventsControllerDropsOptions(),
     staleTime: EVENTS.staleMs
   });
 
-  const grouped = eventTimeline({ events: data ?? [], now: new Date(dataUpdatedAt), openEndedDays: EVENTS.openEndedDays });
+  const grouped = eventTimeline({ events: query.data ?? [], now: new Date(query.dataUpdatedAt), openEndedDays: EVENTS.openEndedDays });
   const entries: EventView[] = [...grouped.current, ...grouped.upcoming].map((entry) => ({ ...entry, href: safeWebHref(entry.event.url) }));
 
-  return {
-    entries,
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    retry: () => void refetch()
-  };
+  return { query, entries };
 };

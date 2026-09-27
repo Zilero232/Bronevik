@@ -105,11 +105,16 @@ export class GuideService {
   }
 
   async remove({ id, userId }: OwnedById): Promise<void> {
-    const { count } = await this.prisma.guide.deleteMany({ where: { id, authorUserId: userId } });
+    await this.prisma.$transaction(async (tx) => {
+      const { count } = await tx.guide.deleteMany({ where: { id, authorUserId: userId } });
 
-    if (count === 0) {
-      throw new AppNotFoundException('NOT_FOUND', `No guide ${id} of yours`);
-    }
+      if (count === 0) {
+        throw new AppNotFoundException('NOT_FOUND', `No guide ${id} of yours`);
+      }
+
+      await tx.reaction.deleteMany({ where: { target: 'guide', targetId: id } });
+      await tx.comment.deleteMany({ where: { target: 'guide', targetId: id } });
+    });
   }
 
   async like({ id, userId, liked }: LikeInput): Promise<LikeResult> {
@@ -121,8 +126,8 @@ export class GuideService {
 
     return this.prisma.$transaction(async (tx) => {
       const changed = liked
-        ? await tx.guideLike.createMany({ data: [{ guideId: id, userId }], skipDuplicates: true })
-        : await tx.guideLike.deleteMany({ where: { guideId: id, userId } });
+        ? await tx.reaction.createMany({ data: [{ target: 'guide', targetId: id, userId }], skipDuplicates: true })
+        : await tx.reaction.deleteMany({ where: { target: 'guide', targetId: id, userId } });
 
       if (changed.count > 0) {
         await tx.guide.update({ where: { id }, data: { likesCount: liked ? { increment: 1 } : { decrement: 1 } } });
@@ -155,13 +160,13 @@ export class GuideService {
 
   private async views({ rows, viewerUserId }: GuideViewsInput): Promise<GuideView[]> {
     const liked = viewerUserId
-      ? await this.prisma.guideLike.findMany({
-          where: { userId: viewerUserId, guideId: { in: rows.map((row) => row.id) } },
-          select: { guideId: true }
+      ? await this.prisma.reaction.findMany({
+          where: { target: 'guide', userId: viewerUserId, targetId: { in: rows.map((row) => row.id) } },
+          select: { targetId: true }
         })
       : [];
 
-    const likedIds = new Set(liked.map((like) => like.guideId));
+    const likedIds = new Set(liked.map((like) => like.targetId));
 
     return rows.map((guide) => toGuideView({ guide, author: guide.author, likedByMe: likedIds.has(guide.id) }));
   }

@@ -5,15 +5,15 @@ import { useId } from 'react';
 
 import { Card, CardBody, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
-import type { ReplayHeatmapProps } from './ReplayHeatmap.types';
-
+import { useReplay } from '../../../model/context';
 import { useReplayHeatmap } from '../../../model/hooks';
 import { HeatmapControls } from './components';
 
 import s from './ReplayHeatmap.module.scss';
 
-export const ReplayHeatmap = ({ replay }: ReplayHeatmapProps) => {
+export const ReplayHeatmap = () => {
   const t = useTranslations('replays.heatmap');
+  const replay = useReplay();
   const titleId = useId();
   const format = useFormatter();
   const {
@@ -32,7 +32,7 @@ export const ReplayHeatmap = ({ replay }: ReplayHeatmapProps) => {
     setModeChoice,
     setScope,
     retry
-  } = useReplayHeatmap(replay);
+  } = useReplayHeatmap();
 
   return (
     <Card aria-labelledby={titleId} padding='none'>

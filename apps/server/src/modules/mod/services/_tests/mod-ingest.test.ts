@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { matches, mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Battle, MoeProgress } from '../../../../../generated';
+import type { Battle, PlayerTank } from '../../../../../generated';
 import type { PrismaService, WebhookEmitter } from '../../../../core';
 import type { ExpectedValuesService } from '../../../reference';
 import type { AuthenticatedDevice } from '../../mod.types';
@@ -138,11 +138,22 @@ describe('ModIngestService', () => {
 
     await service.ingest({ device, batch: { ...example, events: [event] } });
 
-    expect(prisma.moeProgress.upsert).toHaveBeenCalledWith(
+    expect(prisma.playerTank.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        update: expect.objectContaining({ marks: moe.marks_on_gun, percent: moePercent(moe.damage_rating) })
+        update: expect.objectContaining({ marksOnGun: moe.marks_on_gun, moePercent: moePercent(moe.damage_rating) })
       })
     );
+  });
+
+  it('updates only the MoE columns of the player tank', async () => {
+    const { service, prisma } = createService();
+    const { event } = moeBattle();
+
+    await service.ingest({ device, batch: { ...example, events: [event] } });
+
+    const update = prisma.playerTank.upsert.mock.calls[0]?.[0].update ?? {};
+
+    expect(Object.keys(update).sort()).toEqual(['marksOnGun', 'moeMovingDamage', 'moePercent', 'moeUpdatedAt']);
   });
 
   it('announces a mark the player did not have before', async () => {
@@ -150,7 +161,7 @@ describe('ModIngestService', () => {
     const { event, moe } = moeBattle();
     const previousMarks = moe.marks_on_gun - 1;
 
-    prisma.moeProgress.findUnique.mockResolvedValue(mock<MoeProgress>({ marks: previousMarks }));
+    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: previousMarks }));
 
     await service.ingest({ device, batch: { ...example, events: [event] } });
 
@@ -163,7 +174,7 @@ describe('ModIngestService', () => {
     const { service, prisma, webhooks } = createService();
     const { event, moe } = moeBattle();
 
-    prisma.moeProgress.findUnique.mockResolvedValue(mock<MoeProgress>({ marks: moe.marks_on_gun }));
+    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: moe.marks_on_gun }));
 
     await service.ingest({ device, batch: { ...example, events: [event] } });
 
@@ -174,7 +185,7 @@ describe('ModIngestService', () => {
     const { service, prisma, webhooks } = createService();
     const { event } = moeBattle();
 
-    prisma.moeProgress.findUnique.mockResolvedValue(null);
+    prisma.playerTank.findUnique.mockResolvedValue(null);
 
     await service.ingest({ device, batch: { ...example, events: [event] } });
 
@@ -195,7 +206,7 @@ describe('ModIngestService', () => {
     const snapshot = moeSnapshot();
     const batch = { ...example, events: [snapshot] };
 
-    prisma.moeProgress.upsert.mockRejectedValueOnce(new Error('db down'));
+    prisma.playerTank.upsert.mockRejectedValueOnce(new Error('db down'));
 
     await expect(service.ingest({ device, batch })).rejects.toThrow('db down');
     await expect(service.ingest({ device, batch })).resolves.toMatchObject({ accepted: 1, duplicates: 0 });

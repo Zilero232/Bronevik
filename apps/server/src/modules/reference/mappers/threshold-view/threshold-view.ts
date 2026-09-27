@@ -1,10 +1,10 @@
 import type { MasteryThreshold as MasteryThresholdDto, MoeThreshold as MoeThresholdDto } from '@otmetki/schemas';
 
-import type { MasteryThreshold, MoeThreshold } from '../../../../../generated';
+import type { MasteryThresholdRecord, MoeThresholdRecord } from '../../reference.types';
 
 import { isoDay } from '../../../../common/lib';
 
-export const toMoeThreshold = (row: MoeThreshold): MoeThresholdDto => ({
+export const toMoeThreshold = (row: MoeThresholdRecord): MoeThresholdDto => ({
   tankId: row.tankId,
   date: isoDay(row.date),
   source: row.source,
@@ -14,7 +14,7 @@ export const toMoeThreshold = (row: MoeThreshold): MoeThresholdDto => ({
   p100: row.p100
 });
 
-export const toMasteryThreshold = (row: MasteryThreshold): MasteryThresholdDto => ({
+export const toMasteryThreshold = (row: MasteryThresholdRecord): MasteryThresholdDto => ({
   tankId: row.tankId,
   date: isoDay(row.date),
   source: row.source,

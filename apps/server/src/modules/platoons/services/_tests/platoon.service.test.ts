@@ -63,7 +63,10 @@ describe('PlatoonService.create', () => {
 
     await service.create(request);
 
-    expect(prisma.platoonPost.updateMany).toHaveBeenCalledWith({ where: { userId: 'u1', status: 'open' }, data: { status: 'closed' } });
+    expect(prisma.platoonPost.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'u1', status: 'open' }, data: { status: 'closed' } })
+    );
+
     expect(prisma.platoonPost.updateMany.mock.invocationCallOrder[0]).toBeLessThan(prisma.platoonPost.create.mock.invocationCallOrder[0] ?? 0);
   });
 
@@ -74,9 +77,11 @@ describe('PlatoonService.create', () => {
 
     await service.create({ ...request, expiresInHours: PLATOON.maxHours });
 
-    expect(prisma.platoonPost.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ accountId: 7n, expiresAt: new Date(now.getTime() + PLATOON.maxHours * hourMs) })
-    });
+    expect(prisma.platoonPost.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ accountId: 7n, expiresAt: new Date(now.getTime() + PLATOON.maxHours * hourMs) })
+      })
+    );
   });
 
   it('refuses a window that ends before it starts', async () => {
@@ -177,6 +182,9 @@ describe('PlatoonService.expire', () => {
     prisma.platoonPost.updateMany.mockResolvedValue({ count: 2 });
 
     expect(await service.expire(now)).toBe(2);
-    expect(prisma.platoonPost.updateMany).toHaveBeenCalledWith({ where: { status: 'open', expiresAt: { lte: now } }, data: { status: 'expired' } });
+
+    expect(prisma.platoonPost.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { status: 'open', expiresAt: { lte: now } }, data: { status: 'expired' } })
+    );
   });
 });

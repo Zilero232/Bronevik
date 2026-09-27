@@ -1,9 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
-import { EmptyState, ErrorState, IconFilter, Skeleton } from '@/ui-kit';
+import { EmptyState, IconFilter, QueryState, Skeleton } from '@/ui-kit';
 
 import { TANKS_VIEW, TIER_LIST_TIERS } from '../../../config';
 import { useTierList } from '../../../model/hooks';
@@ -13,7 +12,7 @@ import s from './TierList.module.scss';
 
 export const TierList = () => {
   const t = useTranslations('tanks.tierList');
-  const { tier, groups, isLoading, isError, isFetching, refetch, onTierChange } = useTierList();
+  const { tier, query, onTierChange } = useTierList();
 
   return (
     <section aria-label={t('title')} className={s.root}>
@@ -29,17 +28,19 @@ export const TierList = () => {
         />
         <p className={s.hint}>{t('hint')}</p>
       </div>
-      {match({ isLoading, isError, isEmpty: groups.length === 0 })
-        .with({ isLoading: true }, () => <Skeleton height={TANKS_VIEW.tierListSkeleton} shape='block' width='100%' />)
-        .with({ isError: true }, () => <ErrorState isRetrying={isFetching} onRetry={() => void refetch()} />)
-        .with({ isEmpty: true }, () => <EmptyState title={t('emptyTitle')} />)
-        .otherwise(() => (
+      <QueryState
+        empty={<EmptyState title={t('emptyTitle')} />}
+        query={query}
+        skeleton={<Skeleton height={TANKS_VIEW.tierListSkeleton} shape='block' width='100%' />}
+      >
+        {(groups) => (
           <div className={s.bands}>
             {groups.map((group) => (
               <TierBand key={group.rank} group={group} />
             ))}
           </div>
-        ))}
+        )}
+      </QueryState>
     </section>
   );
 };

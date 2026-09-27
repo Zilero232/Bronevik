@@ -4,13 +4,18 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { DeltaValue } from '@/ui-kit';
 
-import type { ShowcaseCompareProps } from './ShowcaseCompare.types';
+import { useShowcaseComparison } from '../../../../../model/hooks';
 
 import s from './ShowcaseCompare.module.scss';
 
-export const ShowcaseCompare = ({ items, other }: ShowcaseCompareProps) => {
+export const ShowcaseCompare = () => {
   const t = useTranslations('builds.showcase');
   const format = useFormatter();
+  const { items, other, isShown } = useShowcaseComparison();
+
+  if (!isShown) {
+    return null;
+  }
 
   return (
     <dl className={s.root}>

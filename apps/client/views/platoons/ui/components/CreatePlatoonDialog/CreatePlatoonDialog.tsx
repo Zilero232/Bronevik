@@ -18,27 +18,12 @@ import s from './CreatePlatoonDialog.module.scss';
 export const CreatePlatoonDialog = () => {
   const t = useTranslations('platoons.create');
   const id = useId();
-  const { form, isOpen, isPending, onOpenChange, onSubmit } = useCreatePlatoonForm();
+  const dialog = useCreatePlatoonForm();
+  const { form } = dialog;
   const { errors } = form.formState;
 
   return (
-    <FormDialog
-      trigger={
-        <>
-          <Plus size={14} />
-          {t('open')}
-        </>
-      }
-      cancelLabel={t('cancel')}
-      description={t('description')}
-      form={form}
-      isOpen={isOpen}
-      isPending={isPending}
-      submitLabel={t('submit')}
-      title={t('title')}
-      onOpenChange={onOpenChange}
-      onSubmit={onSubmit}
-    >
+    <FormDialog dialog={dialog} namespace='platoons.create' triggerIcon={Plus}>
       <Controller control={form.control} name='accountId' render={({ field }) => <AccountSelect value={field.value} onChange={field.onChange} />} />
       <PlatoonScopeFields />
       <PlatoonTanksField />

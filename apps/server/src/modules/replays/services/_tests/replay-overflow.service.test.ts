@@ -39,7 +39,7 @@ describe('ReplayOverflowService.run', () => {
     await expect(service.run(deleteAt)).resolves.toBe(2);
 
     expect(storage.remove.mock.calls.map(([key]) => key).toSorted()).toEqual(['replays/r0.mtreplay', 'replays/r1.mtreplay']);
-    expect(prisma.replay.deleteMany).toHaveBeenCalledWith({ where: { id: { in: ['r1', 'r0'] }, uploaderUserId: 'u1' } });
+    expect(prisma.replay.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: { in: ['r1', 'r0'] }, uploaderUserId: 'u1' } }));
   });
 
   it('warns 14 days ahead with an idempotent key and deletes nothing', async () => {

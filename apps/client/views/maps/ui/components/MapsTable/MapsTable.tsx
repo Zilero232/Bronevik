@@ -2,35 +2,24 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Button, DataTable, EmptyState } from '@/ui-kit';
+import { DataTable, ErrorState, FilteredEmptyState } from '@/ui-kit';
 
-import type { MapsTableProps } from './MapsTable.types';
+import { useMapsCatalog, useMapsColumns } from '../../../model/hooks';
 
-import { useMapsColumns } from '../../../model/hooks';
-
-export const MapsTable = ({ maps, isPending, isFiltered, onReset }: MapsTableProps) => {
+export const MapsTable = () => {
   const t = useTranslations('maps.grid');
+  const { maps, isFiltered, isPending, isError, isRetrying, onReset, retry } = useMapsCatalog();
   const columns = useMapsColumns();
+
+  if (isError) {
+    return <ErrorState description={t('errorDescription')} isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />;
+  }
 
   return (
     <DataTable
-      emptyState={
-        isFiltered ? (
-          <EmptyState
-            isCompact
-            action={
-              <Button size='sm' variant='secondary' onClick={onReset}>
-                {t('reset')}
-              </Button>
-            }
-            title={t('noMatchTitle')}
-          />
-        ) : (
-          <EmptyState isCompact title={t('emptyTitle')} />
-        )
-      }
       columns={columns}
       data={maps}
+      emptyState={<FilteredEmptyState isCompact isFiltered={isFiltered} title={isFiltered ? t('noMatchTitle') : t('emptyTitle')} onReset={onReset} />}
       getRowId={(map) => map.arenaId}
       initialSorting={[{ id: 'name', desc: false }]}
       isLoading={isPending}

@@ -52,10 +52,7 @@ const operationRows = ({ missions, chains }: { missions: ReturnType<typeof missi
     campaignId: 1,
     name: 'StuG IV',
     description: null,
-    iconId: null,
     nextOperationIds: [],
-    chainsCount: chains.length,
-    missionsPerChain: 15,
     chainsToUnlockNext: chains.length,
     rewardTankId: null,
     rewardTankTag: null

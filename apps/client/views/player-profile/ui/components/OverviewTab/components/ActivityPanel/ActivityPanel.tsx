@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { CalendarHeatmap, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { CalendarHeatmap, EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
 import { OVERVIEW } from '../../../../../config';
 import { useActivity } from '../../../../../model/hooks';
@@ -11,14 +11,17 @@ import { ProfilePanel } from '../../../ProfilePanel';
 export const ActivityPanel = () => {
   const t = useTranslations('profile.overview');
   const format = useFormatter();
-  const { days, total, active, winRateOf, isPending, isError, isRetrying, retry } = useActivity();
+  const { days, total, active, winRateOf, query } = useActivity();
 
   return (
     <ProfilePanel meta={total > 0 ? t('activitySummary', { total, active }) : undefined} title={t('activityTitle')}>
-      {isPending && <Skeleton height={OVERVIEW.heatmapSkeletonHeight} shape='block' />}
-      {isError && <ErrorState isCompact isRetrying={isRetrying} onRetry={retry} />}
-      {!isPending && !isError && total === 0 && <EmptyState isCompact title={t('activityEmpty')} />}
-      {total > 0 && (
+      <QueryState
+        isCompact
+        empty={<EmptyState isCompact title={t('activityEmpty')} />}
+        isEmpty={() => total === 0}
+        query={query}
+        skeleton={<Skeleton height={OVERVIEW.heatmapSkeletonHeight} shape='block' />}
+      >
         <CalendarHeatmap
           renderReadout={(day) =>
             day
@@ -33,7 +36,7 @@ export const ActivityPanel = () => {
           days={days}
           legend={{ less: t('less'), more: t('more') }}
         />
-      )}
+      </QueryState>
     </ProfilePanel>
   );
 };

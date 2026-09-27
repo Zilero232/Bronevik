@@ -22,6 +22,10 @@ model User {
   locale   String @default("ru")
   timezone String @default("Europe/Moscow")
 
+  cosmeticBadge  String? @map("cosmetic_badge")
+  cosmeticFrame  String? @map("cosmetic_frame")
+  cosmeticBanner String? @map("cosmetic_banner")
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
@@ -29,22 +33,18 @@ model User {
   accounts      Account[]
   lestaAccounts UserLestaAccount[]
 
-  favorites            Favorite[]
   follows              Follow[]
   goals                Goal[]
   notificationSettings NotificationSettings?
   notifications        Notification[]
   pushSubscriptions    PushSubscription[]
   telegramAccount      TelegramAccount?
-  telegramCodes        TelegramLinkCode[]
-  telegramLogins       TelegramWebLogin[]
+  oneTimeCodes         OneTimeCode[]
 
-  modDevices   ModDevice[]
-  modBindCodes ModBindCode[]
+  modDevices ModDevice[]
 
   apiKeys          ApiKey[]
   webhookEndpoints WebhookEndpoint[]
-  developerApps    DeveloperApp[]
 
   subscriptions    Subscription[]
   payments         Payment[]
@@ -64,9 +64,8 @@ model User {
   replays Replay[]
 
   builds          Build[]
-  buildLikes      BuildLike[]
   guides          Guide[]
-  guideLikes      GuideLike[]
+  reactions       Reaction[]
   comments        Comment[]
   platoonPosts    PlatoonPost[]
   recruitingPosts RecruitingPost[]
@@ -79,19 +78,15 @@ model User {
   recruitCandidates RecruitCandidate[]
 
   bonusCodeReports BonusCodeReport[]
-  eventProgress    UserEventProgress[]
   missionProgress  UserMissionProgress[]
 
-  shellLedger      ShellLedgerEntry[]
-  seasonProgress   SeasonProgress[]
-  cosmetics        CosmeticOwnership[]
-  profileCosmetics ProfileCosmetics?
+  shellLedger    ShellLedgerEntry[]
+  seasonProgress SeasonProgress[]
+  cosmetics      CosmeticOwnership[]
 
-  auditLogs        AuditLog[]
-  contentReports   ContentReport[]
-  deletionRequests DataDeletionRequest[]
+  auditLogs      AuditLog[]
+  contentReports ContentReport[]
 
-  watchlistSettings  WatchlistSettings?
   competitions       Competition[]
   competitionEntries CompetitionEntry[]
 
@@ -172,6 +167,32 @@ model UserLestaAccount {
   player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
 
   @@index([userId])
-  @@index([tokenExpiresAt])
   @@map("user_lesta_account")
+}
+
+enum OneTimeCodePurpose {
+  telegramLink     @map("telegram_link")
+  telegramWebLogin @map("telegram_web_login")
+  modBind          @map("mod_bind")
+
+  @@map("one_time_code_purpose")
+}
+
+model OneTimeCode {
+  code String @id
+
+  purpose   OneTimeCodePurpose
+  userId    String             @map("user_id")
+  accountId BigInt?            @map("account_id")
+  deviceId  String?            @map("device_id")
+
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
+  @@map("one_time_code")
 }

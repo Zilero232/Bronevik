@@ -4,21 +4,22 @@ import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { LiveLamp } from '@/entities/streamer/broadcast';
+import { FollowStreamer } from '@/features/streamer/follow-streamer';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Avatar, buttonVariants } from '@/ui-kit';
 
-import type { StreamerHeroProps } from './StreamerHero.types';
-
 import { STREAMER_PAGE } from '../../../config';
-import { FollowPanel } from '../FollowPanel';
+import { useStreamer } from '../../../model/context';
 import { StreamerChannels } from '../StreamerChannels';
+import { FollowExtras } from './components';
 
 import s from './StreamerHero.module.scss';
 
-export const StreamerHero = ({ profile, channels }: StreamerHeroProps) => {
+export const StreamerHero = () => {
   const t = useTranslations('streamer.page');
   const tPublic = useTranslations('streamersDirectory.public');
+  const { profile, channels } = useStreamer();
   const { displayName, slug, bio, isLive, followers, hasSettings } = profile;
 
   return (
@@ -38,7 +39,7 @@ export const StreamerHero = ({ profile, channels }: StreamerHeroProps) => {
       {bio && <p className={s.bio}>{bio}</p>}
       <StreamerChannels channels={channels} />
       <div className={s.actions}>
-        <FollowPanel slug={slug} />
+        <FollowStreamer renderExtras={(state) => <FollowExtras state={state} />} slug={slug} />
         {hasSettings && (
           <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.streamers.settings.profile(slug)}>
             <SlidersHorizontal size={STREAMER_PAGE.iconSize} />

@@ -49,7 +49,7 @@ export type { UseDataTableStateInput } from './use-data-table-state';
 export { useHydrated } from './use-hydrated';
 export { useIconFilterTitle } from './use-icon-filter-title';
 export { useOffsetInfiniteList } from './use-offset-infinite-list';
-export type { OffsetListFetchInput, OffsetListPage, UseOffsetInfiniteListInput } from './use-offset-infinite-list';
+export type { OffsetInfiniteList, OffsetListFetchInput, OffsetListPage, UseOffsetInfiniteListInput } from './use-offset-infinite-list';
 export { RELATIVE_TIME, useRelativeTime } from './use-relative-time';
 export type { RelativeTimeValue, RelativeTimeView } from './use-relative-time';
 export { useRevealOnce } from './use-reveal-once';

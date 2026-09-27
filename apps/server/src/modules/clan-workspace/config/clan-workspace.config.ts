@@ -1,4 +1,6 @@
-import type { ClanEventKind, ClanRole, StatsMode } from '../../../../generated';
+import type { ClanEventKind, ClanRole } from '../../../../generated';
+
+import { ARENA_BONUS_TYPE } from '../../../common/lib';
 
 export const CLAN_WORKSPACE_QUEUE = {
   name: 'clan-workspace',
@@ -40,17 +42,18 @@ export const WORKSPACE_ROLES = {
   ] as const satisfies readonly ClanRole[]
 } as const;
 
-export const ATTENDANCE_MODES = {
-  stronghold: ['strongholdSkirmish', 'strongholdDefense'],
-  clanWars: ['globalmap'],
+export const ATTENDANCE_BONUS_TYPES = {
+  stronghold: [ARENA_BONUS_TYPE.strongholdSkirmish, ARENA_BONUS_TYPE.strongholdAdvance],
+  clanWars: [ARENA_BONUS_TYPE.globalMap],
   training: [],
   tournament: [],
   other: []
-} as const satisfies Record<ClanEventKind, readonly StatsMode[]>;
+} as const satisfies Record<ClanEventKind, readonly number[]>;
 
 export const CLAN_WORKSPACE = {
   defaultEventHours: 2,
-  snapshotSlackHours: 48,
+  syncDelayHours: 2,
+  battleLeadMinutes: 15,
   syncLookbackHours: 48,
   reminderLeadMinutes: 30,
   inactiveDays: 7,

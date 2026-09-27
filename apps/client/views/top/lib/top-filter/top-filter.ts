@@ -16,7 +16,7 @@ export const toLeaderboardFilter = ({ scope, metric, period, tier, type, tank }:
   scope,
   metric: metricFor({ scope, metric }),
   period,
-  tier: tier === 'all' ? undefined : Number(tier),
-  type: type === 'all' ? undefined : type,
-  tankId: tank && TOP_TANK_SCOPES.includes(scope) ? tank.tankId : undefined
+  tier: tier ?? undefined,
+  type: type ?? undefined,
+  tankId: tank !== null && TOP_TANK_SCOPES.includes(scope) ? tank : undefined
 });

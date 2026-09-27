@@ -60,8 +60,7 @@ describe('runPollPipeline', () => {
         ]
       },
       accountBattles: { 1: { all: 160, random: 150 } },
-      tankSnapshots: [previousSnapshot(10, 100, 'all'), previousSnapshot(10, 100, 'random'), previousSnapshot(20, 50, 'random')],
-      tiers: { 10: 8 }
+      tankSnapshots: [previousSnapshot(10, 100, 'all'), previousSnapshot(10, 100, 'random'), previousSnapshot(20, 50, 'random')]
     });
 
     const result = await runPollPipeline({ ports: { lesta, store }, accountIds: [1], tier: 'active', now });
@@ -74,8 +73,7 @@ describe('runPollPipeline', () => {
 
     expect(changes?.tankSnapshots.every((row) => row.tankId === 10)).toBe(true);
     expect(randomDelta?.battles).toBe(3);
-    expect(randomDelta?.tier).toBe(8);
-    expect(randomDelta?.previousCapturedAt).toEqual(earlier);
+    expect(randomDelta?.capturedAt).toEqual(now);
     expect(randomDelta?.accountWinRate).toBeGreaterThan(0);
     expect(randomDelta?.cohort).toBe(assignCohort({ battles: 153, winRate: randomDelta?.accountWinRate ?? 0, wn8: null }));
   });

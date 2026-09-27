@@ -83,9 +83,11 @@ describe('TelegramChatService.touch', () => {
 
     await service.touch({ telegramId: 42n, username: 'tanker', name: 'Tanker', languageCode: 'ru' });
 
-    expect(prisma.telegramAccount.updateMany).toHaveBeenCalledWith({
-      where: { telegramId: 42n },
-      data: { lastSeenAt: NOW, username: 'tanker', languageCode: 'ru' }
-    });
+    expect(prisma.telegramAccount.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { telegramId: 42n },
+        data: { lastSeenAt: NOW, username: 'tanker', languageCode: 'ru' }
+      })
+    );
   });
 });

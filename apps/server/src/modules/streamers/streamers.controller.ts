@@ -4,7 +4,7 @@ import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { CurrentUserId } from '../../common/decorators';
+import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { PROVIDER_FROM_PATH, STREAMERS } from './config';
 import {
   ActivateChallengeDto,
@@ -331,8 +331,8 @@ export class StreamersController {
   @Throttle({ default: STREAMERS.removalThrottle })
   @Post(':slug/removal-request')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removalRequest(@Param() { slug }: SlugParamsDto, @Body() body: RemovalRequestDto) {
-    await this.claims.requestRemoval({ ...body, slug });
+  async removalRequest(@Param() { slug }: SlugParamsDto, @Body() body: RemovalRequestDto, @OptionalUserId() userId: string | null) {
+    await this.claims.requestRemoval({ ...body, slug, userId });
   }
 
   @Put(':slug/follow')

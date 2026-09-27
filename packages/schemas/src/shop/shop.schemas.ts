@@ -40,7 +40,6 @@ export const premiumOfferSchema = z.object({
   image: z.url().nullable(),
   tankIds: z.array(tankIdSchema),
   priceRub: z.number().nonnegative().nullable(),
-  oldPriceRub: z.number().nonnegative().nullable(),
   priceGold: countSchema.nullable(),
   discountPercent: z.number().int().min(0).max(100).nullable(),
   startsAt: isoDateTimeSchema.nullable(),

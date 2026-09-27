@@ -1,9 +1,9 @@
 import type { MoeHistoryPoint } from '@otmetki/schemas';
 
-import type { MoeThreshold } from '../../../../../generated';
+import type { TankThreshold } from '../../../../../generated';
 
 export type HistorySourceRow = MoeHistoryPoint &
-  Pick<MoeThreshold, 'tankId'> & {
+  Pick<TankThreshold, 'tankId'> & {
     source: string;
   };
 

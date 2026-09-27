@@ -2,46 +2,34 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Button, Card, EmptyState, PagedList } from '@/ui-kit';
+import { Card, FilteredEmptyState, PagedList } from '@/ui-kit';
 
 import { usePlatoonBoard } from '../../../model/hooks';
 import { PlatoonCard } from './components';
 
 export const PlatoonBoard = () => {
   const t = useTranslations('platoons.board');
-  const { items, total, isFiltered, isPending, isError, isRetrying, hasNextPage, isFetchingNextPage, onReset, loadMore, retry } = usePlatoonBoard();
+  const { list, isFiltered, onReset } = usePlatoonBoard();
 
   return (
     <PagedList
       empty={
         <Card padding='none'>
-          <EmptyState
-            action={
-              isFiltered && (
-                <Button size='sm' variant='secondary' onClick={onReset}>
-                  {t('reset')}
-                </Button>
-              )
-            }
+          <FilteredEmptyState
             description={isFiltered ? t('emptyFilteredDescription') : t('emptyDescription')}
+            isFiltered={isFiltered}
             title={t('emptyTitle')}
+            onReset={onReset}
           />
         </Card>
       }
       errorDescription={t('errorDescription')}
       errorTitle={t('errorTitle')}
       getKey={(post) => post.id}
-      hasNextPage={hasNextPage}
-      header={t('count', { total })}
-      isError={isError}
-      isFetchingNextPage={isFetchingNextPage}
-      isPending={isPending}
-      isRetrying={isRetrying}
-      items={items}
+      header={t('count', { total: list.total })}
       label={t('title')}
+      list={list}
       renderItem={(post) => <PlatoonCard post={post} />}
-      onLoadMore={loadMore}
-      onRetry={retry}
     />
   );
 };

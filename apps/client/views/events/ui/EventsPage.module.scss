@@ -14,16 +14,6 @@
   width: min(320px, 100%);
 }
 
-.bandInner {
-  @include stack(var(--space-5));
-}
-
-.nowGrid {
-  display: grid;
-  gap: var(--space-5);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
-}
-
 .section {
   @include shell;
   @include stack(var(--space-5));

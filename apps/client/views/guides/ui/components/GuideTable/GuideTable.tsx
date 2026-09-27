@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
+import { ROUTES } from '@/shared/constants';
 import { Button, Card, CardHeader, DataTable, EmptyState, ErrorState } from '@/ui-kit';
 
 import { useGuideCatalog, useGuideColumns } from '../../../model/hooks';
@@ -56,6 +57,7 @@ export const GuideTable = () => {
           columns={columns}
           data={items}
           getRowId={(row) => row.id}
+          getRowLink={(row) => ({ href: ROUTES.guides.detail(row.slug), label: row.title })}
           isLoading={isPending}
           toolbar={<GuideFilters />}
         />

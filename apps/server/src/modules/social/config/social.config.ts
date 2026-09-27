@@ -46,7 +46,6 @@ export const WEEKLY_CHALLENGES = [
 
 export const CHALLENGE_BADGES = {
   prefix: 'weekly-',
-  category: 'weekly',
   maxAccountsPerRun: 5000
 } as const;
 

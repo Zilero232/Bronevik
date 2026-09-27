@@ -35,7 +35,6 @@ export const toOfferView = ({ offer, timesSeen }: OfferViewInput): PremiumOfferV
   image: httpUrl(offer.image),
   tankIds: offer.tankIds,
   priceRub: offer.priceRub === null ? null : Number(offer.priceRub),
-  oldPriceRub: offer.oldPriceRub === null ? null : Number(offer.oldPriceRub),
   priceGold: offer.priceGold,
   discountPercent: offer.discountPercent,
   startsAt: toIso(offer.startsAt),

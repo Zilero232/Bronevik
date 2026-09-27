@@ -12,6 +12,6 @@ export type FieldSpec<K extends string> = {
 
 export type FieldGridProps<K extends string> = {
   fields: readonly FieldSpec<K>[];
-  values: Record<K, number | null>;
-  onChange: (change: { key: K; value: number | null }) => void;
+  values: NoInfer<Record<K, number | null>>;
+  field: NoInfer<(key: K) => (value: number | null) => void>;
 };

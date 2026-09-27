@@ -30,7 +30,7 @@ export class BuildsCatalogService {
         SELECT DISTINCT ON (tank_id)
           tank_id AS "tankId", battles, players, win_rate AS "winRate", avg_damage AS "avgDamage", usage, computed_at AS "computedAt"
         FROM build_usage_aggregate
-        WHERE mode = ${mode}::build_mode AND cohort = ${cohort}::build_cohort
+        WHERE mode = ${mode}::game_mode AND cohort = ${cohort}::build_cohort
         ORDER BY tank_id, computed_at DESC
       `,
       difficulties?.length ? this.difficulty.matching(difficulties) : Promise.resolve(null)

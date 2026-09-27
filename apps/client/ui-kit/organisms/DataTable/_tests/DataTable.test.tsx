@@ -1,7 +1,7 @@
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+
+import type { TableColumn } from '../DataTable.types';
 
 import { DataTable } from '../DataTable';
 import { DATA_TABLE } from '../DataTable.constants';
@@ -14,7 +14,7 @@ const ROWS: Row[] = [
   { name: 'Novobranec', wn8: 388 }
 ];
 
-const COLUMNS: ColumnDef<Row, never>[] = [
+const COLUMNS: TableColumn<Row>[] = [
   { accessorKey: 'name', header: 'Nickname' },
   { accessorKey: 'wn8', header: 'WN8' }
 ];

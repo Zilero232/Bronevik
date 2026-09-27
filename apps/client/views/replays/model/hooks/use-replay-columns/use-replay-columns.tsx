@@ -1,36 +1,32 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import type { Replay } from '@/entities/replay/replay';
+import type { TableColumn } from '@/ui-kit';
 
-import { vehicleIndex } from '@/entities/tank/tank';
 import { ReplayResultBadge, useReplayModeLabel } from '@/features/community/replay-meta';
-import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { ROUTES } from '@/shared/constants';
 import { RelativeTime } from '@/ui-kit';
 
 import { ReplayMapCell, ReplayOwnerCell, ReplayTankCell } from '../../../ui/components/ReplayBrowser/components';
+import { useReplayVehicle } from '../use-replay-vehicle';
 
 const column = createColumnHelper<Replay>();
 
-export const useReplayColumns = (): ColumnDef<Replay, never>[] => {
+export const useReplayColumns = (): TableColumn<Replay>[] => {
   const t = useTranslations('replays.list');
   const format = useFormatter();
   const modeLabel = useReplayModeLabel();
-  const { data: catalog } = useVehicleCatalog();
-
-  const vehicles = vehicleIndex(catalog);
+  const vehicleOf = useReplayVehicle();
   const numberOrDash = (value: number | null) => (value === null ? '—' : format.number(value));
 
   return [
     column.display({
       id: 'tank',
       header: t('columns.tank'),
-      cell: ({ row: { original } }) => <ReplayTankCell vehicle={original.owner ? (vehicles[original.owner.tankId] ?? null) : null} />,
+      cell: ({ row: { original } }) => <ReplayTankCell vehicle={vehicleOf(original)} />,
       meta: { width: 220 }
     }),
     column.display({

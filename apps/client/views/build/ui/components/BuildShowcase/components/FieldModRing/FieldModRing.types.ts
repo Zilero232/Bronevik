@@ -1,6 +1,5 @@
-import type { FieldModPairView } from '../../../../../lib/showcase';
+import type { ShowcaseRingSide } from '../../../../../model/hooks';
 
 export type FieldModRingProps = {
-  pairs: readonly FieldModPairView[];
-  isShares: boolean;
+  side: ShowcaseRingSide;
 };

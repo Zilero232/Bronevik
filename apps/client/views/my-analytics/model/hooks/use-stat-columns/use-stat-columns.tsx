@@ -1,9 +1,9 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { WinRateCell } from '@/entities/tank/tank';
 import { DeltaCell, NumberCell } from '@/ui-kit';
@@ -12,7 +12,7 @@ import type { StatColumnsRow, WinRateDeltaHeader, WinRateDeltaRow } from './use-
 
 const NUMERIC = { align: 'end', isNumeric: true } as const;
 
-export const useStatColumns = <T extends StatColumnsRow>(): ColumnDef<T, never>[] => {
+export const useStatColumns = <T extends StatColumnsRow>(): TableColumn<T>[] => {
   const t = useTranslations('analytics.columns');
   const column = createColumnHelper<T>();
 
@@ -21,7 +21,7 @@ export const useStatColumns = <T extends StatColumnsRow>(): ColumnDef<T, never>[
       id: 'battles',
       header: t('battles'),
       cell: ({ row }) => <NumberCell value={row.original.battles} />,
-      meta: NUMERIC
+      meta: { ...NUMERIC, bar: { tone: 'steel' } }
     }),
     column.accessor((row) => row.winRate ?? -1, {
       id: 'winRate',
@@ -33,12 +33,12 @@ export const useStatColumns = <T extends StatColumnsRow>(): ColumnDef<T, never>[
       id: 'avgDamage',
       header: t('avgDamage'),
       cell: ({ row }) => <NumberCell value={row.original.avgDamage} />,
-      meta: NUMERIC
+      meta: { ...NUMERIC, hideBelow: 'sm' }
     })
   ];
 };
 
-export const useWinRateDeltaColumn = <T extends WinRateDeltaRow>(header: WinRateDeltaHeader): ColumnDef<T, never> => {
+export const useWinRateDeltaColumn = <T extends WinRateDeltaRow>(header: WinRateDeltaHeader): TableColumn<T> => {
   const t = useTranslations('analytics.columns');
   const column = createColumnHelper<T>();
 
@@ -46,6 +46,6 @@ export const useWinRateDeltaColumn = <T extends WinRateDeltaRow>(header: WinRate
     id: 'winRateDelta',
     header: t(header),
     cell: ({ row }) => <DeltaCell suffix={t('pointsSuffix')} value={row.original.winRateDelta} />,
-    meta: NUMERIC
+    meta: { ...NUMERIC, hideBelow: 'md' }
   });
 };

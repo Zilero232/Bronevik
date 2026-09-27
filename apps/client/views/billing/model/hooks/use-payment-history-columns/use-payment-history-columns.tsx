@@ -1,16 +1,17 @@
 'use client';
 
 import type { PaymentHistoryItem } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { AmountCell, ChargeCell, DateCell, PlanCell, PromoCell, StatusCell } from '../../../ui/components/PaymentHistory/components';
 
 const column = createColumnHelper<PaymentHistoryItem>();
 
-export const usePaymentHistoryColumns = (): ColumnDef<PaymentHistoryItem, never>[] => {
+export const usePaymentHistoryColumns = (): TableColumn<PaymentHistoryItem>[] => {
   const t = useTranslations('billing.history.columns');
 
   return [
@@ -27,7 +28,8 @@ export const usePaymentHistoryColumns = (): ColumnDef<PaymentHistoryItem, never>
     column.accessor((row) => row.plan ?? '', {
       id: 'plan',
       header: t('plan'),
-      cell: ({ row }) => <PlanCell plan={row.original.plan} />
+      cell: ({ row }) => <PlanCell plan={row.original.plan} />,
+      meta: { hideBelow: 'sm' }
     }),
     column.accessor('status', {
       header: t('status'),
@@ -35,12 +37,14 @@ export const usePaymentHistoryColumns = (): ColumnDef<PaymentHistoryItem, never>
     }),
     column.accessor('isAutoCharge', {
       header: t('charge'),
-      cell: ({ row }) => <ChargeCell isAutoCharge={row.original.isAutoCharge} />
+      cell: ({ row }) => <ChargeCell isAutoCharge={row.original.isAutoCharge} />,
+      meta: { hideBelow: 'lg' }
     }),
     column.accessor((row) => row.promoCode ?? '', {
       id: 'promo',
       header: t('promo'),
-      cell: ({ row }) => <PromoCell promoCode={row.original.promoCode} />
+      cell: ({ row }) => <PromoCell promoCode={row.original.promoCode} />,
+      meta: { hideBelow: 'md' }
     })
   ];
 };

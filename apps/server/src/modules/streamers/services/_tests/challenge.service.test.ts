@@ -53,17 +53,19 @@ describe('ChallengeService.handleDonation', () => {
 
     await service.handleDonation(donation);
 
-    expect(prisma.challenge.updateMany).toHaveBeenCalledWith({
-      where: { id: 'c1', status: 'pending' },
-      data: expect.objectContaining({
-        status: 'active',
-        donorName: 'Viewer',
-        donationSource: 'donationAlerts',
-        donationExternalId: 'd-1',
-        acceptedAt: NOW,
-        expiresAt: addMinutes(NOW, DURATION_MINUTES)
+    expect(prisma.challenge.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'c1', status: 'pending' },
+        data: expect.objectContaining({
+          status: 'active',
+          donorName: 'Viewer',
+          donationSource: 'donationAlerts',
+          donationExternalId: 'd-1',
+          acceptedAt: NOW,
+          expiresAt: addMinutes(NOW, DURATION_MINUTES)
+        })
       })
-    });
+    );
   });
 
   it('leaves challenges alone when the donation does not match', async () => {

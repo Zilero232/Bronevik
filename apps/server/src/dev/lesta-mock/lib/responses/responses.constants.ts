@@ -76,3 +76,11 @@ export const STRONGHOLD_BUILDINGS = [
 ] as const;
 
 export const STRONGHOLD_DIRECTIONS = ['A', 'B', 'C', 'D'] as const;
+
+export const GLOBALMAP_FRONTS = [
+  { id: 'basic_front', name: 'Основной фронт' },
+  { id: 'advanced_front', name: 'Продвинутый фронт' },
+  { id: 'elite_front', name: 'Элитный фронт' }
+] as const;
+
+export const GLOBALMAP_PRIME_TIMES = ['18:00', '19:00', '20:00', '21:00', '22:00'] as const;

@@ -12,7 +12,7 @@ import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/ui-kit';
 import type { StreamerSettingsPageProps } from './StreamerSettingsPage.types';
 
 import { useStreamerSettingsPage } from '../model/hooks';
-import { ModReferences, SettingsActions, SettingsGroupPanel, SettingsHistory } from './components';
+import { ModsFairPlay, SettingsActions, SettingsGroupPanel, SettingsHistory } from './components';
 
 import s from './StreamerSettingsPage.module.scss';
 
@@ -42,7 +42,7 @@ export const StreamerSettingsPage = ({ slug }: StreamerSettingsPageProps) => {
               <div className={s.groups}>
                 {groups.map((group) => (
                   <SettingsGroupPanel key={group.group} group={group}>
-                    {group.group === 'mods' && <ModReferences references={loaded.modReferences} />}
+                    {group.group === 'mods' && <ModsFairPlay />}
                   </SettingsGroupPanel>
                 ))}
               </div>

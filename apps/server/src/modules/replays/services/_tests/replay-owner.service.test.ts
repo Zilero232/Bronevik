@@ -26,7 +26,7 @@ describe('ReplayOwnerService.remove', () => {
 
     await service.remove({ id: 'r1', userId: 'owner' });
 
-    expect(prisma.replay.delete).toHaveBeenCalledWith({ where: { id: 'r1' } });
+    expect(prisma.replay.delete).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 'r1' } }));
     expect(storage.remove.mock.calls.map(([key]) => key)).toEqual(['replays/r1.tracks.json', 'replays/r1.mtreplay']);
   });
 

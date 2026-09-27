@@ -11,6 +11,7 @@ import { randomCode } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { AUTH_PROVIDER, isPlaceholderEmail } from '../../../lib/auth';
+import { CommunityContentService } from '../../community-core';
 import { LINK_CODE, SETTINGS_MENU, WEB_LOGIN } from '../config';
 import { normaliseLinkCode, siteUrl } from '../lib';
 import { TelegramIdentityService } from './telegram-identity.service';
@@ -20,7 +21,8 @@ export class TelegramLinkService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: AppConfigService,
-    private readonly identity: TelegramIdentityService
+    private readonly identity: TelegramIdentityService,
+    private readonly communityContent: CommunityContentService
   ) {}
 
   async issueCode(userId: string): Promise<TelegramLinkCode> {
@@ -29,8 +31,8 @@ export class TelegramLinkService {
     const botUsername = this.config.get('TELEGRAM_BOT_USERNAME');
 
     await this.prisma.$transaction([
-      this.prisma.telegramLinkCode.deleteMany({ where: { userId } }),
-      this.prisma.telegramLinkCode.create({ data: { code, userId, expiresAt } })
+      this.prisma.oneTimeCode.deleteMany({ where: { userId, purpose: 'telegramLink' } }),
+      this.prisma.oneTimeCode.create({ data: { code, purpose: 'telegramLink', userId, expiresAt } })
     ]);
 
     return { code, expiresAt: expiresAt.toISOString(), deepLink: botUsername ? `https://t.me/${botUsername}?start=${code}` : null };
@@ -41,8 +43,8 @@ export class TelegramLinkService {
     const { telegramId, username, languageCode } = identity;
 
     return this.prisma.$transaction(async (tx) => {
-      const claimed = await tx.telegramLinkCode.updateMany({
-        where: { code: normalised, usedAt: null, expiresAt: { gt: new Date() } },
+      const claimed = await tx.oneTimeCode.updateMany({
+        where: { code: normalised, purpose: 'telegramLink', usedAt: null, expiresAt: { gt: new Date() } },
         data: { usedAt: new Date() }
       });
 
@@ -50,7 +52,7 @@ export class TelegramLinkService {
         throw new AppBadRequestException('VALIDATION_FAILED', 'The link code is unknown, already used or expired');
       }
 
-      const { userId } = await tx.telegramLinkCode.findUniqueOrThrow({ where: { code: normalised }, select: { userId: true } });
+      const { userId } = await tx.oneTimeCode.findUniqueOrThrow({ where: { code: normalised }, select: { userId: true } });
       const taken = await tx.telegramAccount.findUnique({ where: { telegramId }, select: { userId: true } });
 
       if (taken && taken.userId !== userId) {
@@ -58,6 +60,7 @@ export class TelegramLinkService {
           throw new AppConflictException('CONFLICT', 'This Telegram account is linked to another user');
         }
 
+        await this.communityContent.purgeAuthoredBy({ userId: taken.userId, db: tx });
         await tx.user.delete({ where: { id: taken.userId } });
       }
 
@@ -65,8 +68,8 @@ export class TelegramLinkService {
 
       await tx.telegramAccount.upsert({
         where: { telegramId },
-        create: { userId, telegramId, username, languageCode, chatId: telegramId, lastSeenAt: new Date() },
-        update: { userId, username, languageCode, chatId: telegramId, lastSeenAt: new Date() }
+        create: { userId, telegramId, username, languageCode, lastSeenAt: new Date() },
+        update: { userId, username, languageCode, lastSeenAt: new Date() }
       });
 
       await tx.account.deleteMany({ where: { userId, providerId: AUTH_PROVIDER.telegram, NOT: { accountId: String(telegramId) } } });
@@ -114,8 +117,8 @@ export class TelegramLinkService {
     const expiresAt = addMinutes(new Date(), WEB_LOGIN.ttlMinutes);
 
     await this.prisma.$transaction([
-      this.prisma.telegramWebLogin.deleteMany({ where: { userId } }),
-      this.prisma.telegramWebLogin.create({ data: { code, userId, expiresAt } })
+      this.prisma.oneTimeCode.deleteMany({ where: { userId, purpose: 'telegramWebLogin' } }),
+      this.prisma.oneTimeCode.create({ data: { code, purpose: 'telegramWebLogin', userId, expiresAt } })
     ]);
 
     const url = new URL(siteUrl({ webUrl: this.config.get('WEB_URL'), path: WEB_LOGIN.path }));
@@ -126,8 +129,8 @@ export class TelegramLinkService {
   }
 
   async redeemWebLogin(code: string): Promise<string> {
-    const claimed = await this.prisma.telegramWebLogin.updateMany({
-      where: { code, usedAt: null, expiresAt: { gt: new Date() } },
+    const claimed = await this.prisma.oneTimeCode.updateMany({
+      where: { code, purpose: 'telegramWebLogin', usedAt: null, expiresAt: { gt: new Date() } },
       data: { usedAt: new Date() }
     });
 
@@ -135,7 +138,7 @@ export class TelegramLinkService {
       throw new AppBadRequestException('UNAUTHORIZED', 'The sign-in link is unknown, already used or expired');
     }
 
-    const { userId } = await this.prisma.telegramWebLogin.findUniqueOrThrow({ where: { code }, select: { userId: true } });
+    const { userId } = await this.prisma.oneTimeCode.findUniqueOrThrow({ where: { code }, select: { userId: true } });
 
     return this.identity.issueSessionToken(userId);
   }

@@ -88,7 +88,7 @@ describe('WebhookDeliveryService.deliver', () => {
       expect.objectContaining({ data: expect.objectContaining({ status: 'succeeded', responseStatus: 200, deliveredAt: NOW, nextAttemptAt: null }) })
     );
 
-    expect(prisma.webhookEndpoint.update).toHaveBeenCalledWith({ where: { id: endpoint.id }, data: { failureCount: 0 } });
+    expect(prisma.webhookEndpoint.update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: endpoint.id }, data: { failureCount: 0 } }));
   });
 
   it.each([

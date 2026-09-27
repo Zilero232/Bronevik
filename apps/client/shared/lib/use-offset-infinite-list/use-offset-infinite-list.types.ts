@@ -1,5 +1,7 @@
 import type { QueryKey } from '@tanstack/react-query';
 
+import type { useOffsetInfiniteList } from './use-offset-infinite-list';
+
 export type OffsetListPage<TItem> = {
   items: TItem[];
   total: number;
@@ -16,3 +18,5 @@ export type UseOffsetInfiniteListInput<TItem> = {
   queryFn: (input: OffsetListFetchInput) => Promise<OffsetListPage<TItem>>;
   isKeepingPrevious?: boolean;
 };
+
+export type OffsetInfiniteList<TItem> = ReturnType<typeof useOffsetInfiniteList<TItem>>;

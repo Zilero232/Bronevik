@@ -5,17 +5,15 @@ import { useId } from 'react';
 
 import { Card, CardBody, CardHeader, EmptyState, LineChart } from '@/ui-kit';
 
-import type { ReplayTimelineProps } from './ReplayTimeline.types';
-
 import { BATTLE_TIMELINE } from '../../../config';
 import { useBattleTimeline } from '../../../model/hooks';
 
 import s from './ReplayTimeline.module.scss';
 
-export const ReplayTimeline = ({ replay }: ReplayTimelineProps) => {
+export const ReplayTimeline = () => {
   const t = useTranslations('replays.timeline');
   const titleId = useId();
-  const { hasData, labels, series, yDomain, kills, formatValue } = useBattleTimeline(replay);
+  const { hasData, labels, series, yDomain, kills, formatValue } = useBattleTimeline();
 
   return (
     <Card aria-labelledby={titleId} padding='none'>

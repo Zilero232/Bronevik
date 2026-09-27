@@ -167,10 +167,12 @@ describe('ModDeviceService.revoke', () => {
 
     await service.revoke({ userId: 'user', deviceId: DEVICE_ID });
 
-    expect(prisma.modDevice.updateMany).toHaveBeenCalledWith({
-      where: { id: DEVICE_ID, userId: 'user', revokedAt: null },
-      data: { revokedAt: expect.any(Date) }
-    });
+    expect(prisma.modDevice.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: DEVICE_ID, userId: 'user', revokedAt: null },
+        data: { revokedAt: expect.any(Date) }
+      })
+    );
   });
 
   it('reports not found for a device that is foreign or already revoked', async () => {

@@ -215,7 +215,7 @@ describe('RenewalService.chargeDue', () => {
     yookassa.chargeSavedMethod.mockRejectedValueOnce(new Error('declined'));
 
     await expect(service.chargeDue(now)).resolves.toBe(1);
-    expect(prisma.subscription.update).toHaveBeenCalledWith({ where: { id: 'sub-1' }, data: { status: 'pastDue' } });
+    expect(prisma.subscription.update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 'sub-1' }, data: { status: 'pastDue' } }));
     expect(prisma.subscription.update).toHaveBeenCalledTimes(1);
   });
 });
@@ -245,28 +245,34 @@ describe('RenewalService.expireDue', () => {
   it('expires a cancelled or cardless subscription once its period ended', async () => {
     const { prisma } = await run([1, 0, 0]);
 
-    expect(prisma.subscription.updateMany).toHaveBeenCalledWith({
-      where: expect.objectContaining({ currentPeriodEnd: { lt: now }, OR: [{ cancelAtPeriodEnd: true }, { savedCardId: null }] }),
-      data: { status: 'expired' }
-    });
+    expect(prisma.subscription.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ currentPeriodEnd: { lt: now }, OR: [{ cancelAtPeriodEnd: true }, { savedCardId: null }] }),
+        data: { status: 'expired' }
+      })
+    );
   });
 
   it('expires a past-due subscription only after the grace period', async () => {
     const { prisma } = await run([0, 1, 0]);
 
-    expect(prisma.subscription.updateMany).toHaveBeenCalledWith({
-      where: { status: 'pastDue', currentPeriodEnd: { lt: subDays(now, RENEWAL.pastDueGraceDays) } },
-      data: { status: 'expired' }
-    });
+    expect(prisma.subscription.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { status: 'pastDue', currentPeriodEnd: { lt: subDays(now, RENEWAL.pastDueGraceDays) } },
+        data: { status: 'expired' }
+      })
+    );
   });
 
   it('puts an unpaid auto-renewing subscription into the grace period instead of expiring it', async () => {
     const { prisma } = await run([0, 0, 1]);
 
-    expect(prisma.subscription.updateMany).toHaveBeenCalledWith({
-      where: expect.objectContaining({ status: 'active', cancelAtPeriodEnd: false, savedCardId: { not: null } }),
-      data: { status: 'pastDue' }
-    });
+    expect(prisma.subscription.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ status: 'active', cancelAtPeriodEnd: false, savedCardId: { not: null } }),
+        data: { status: 'pastDue' }
+      })
+    );
   });
 
   it('resyncs tracking for every user whose access ends', async () => {

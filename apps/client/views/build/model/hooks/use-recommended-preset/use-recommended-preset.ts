@@ -1,14 +1,14 @@
 'use client';
 
-import { skipToken, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useQueryStates } from 'nuqs';
 import { useEffect } from 'react';
 import { match } from 'ts-pattern';
 
-import { BUILD_URL, getRecommendedBuild } from '@/entities/tank/build';
-import { QUERY_KEYS } from '@/shared/constants';
+import { BUILD_URL } from '@/entities/tank/build';
 
-import { BUILD_VIEW, PRESET_PARSERS } from '../../../config';
+import { buildQueries } from '../../../api';
+import { PRESET_PARSERS } from '../../../config';
 import { useBuildContext } from '../../context';
 
 export const useRecommendedPreset = () => {
@@ -16,12 +16,9 @@ export const useRecommendedPreset = () => {
   const [state, setState] = useQueryStates(PRESET_PARSERS, { history: 'replace' });
 
   const isRequested = state[BUILD_URL.preset] !== null;
-  const params = { tankId: vehicle.tankId, mode: state[BUILD_URL.mode], cohort: state[BUILD_URL.cohort] };
-
   const query = useQuery({
-    queryKey: QUERY_KEYS.builds.recommended(params),
-    queryFn: isRequested ? ({ signal }) => getRecommendedBuild({ ...params, signal }) : skipToken,
-    staleTime: BUILD_VIEW.staleMs
+    ...buildQueries.recommended({ tankId: vehicle.tankId, mode: state[BUILD_URL.mode], cohort: state[BUILD_URL.cohort] }),
+    enabled: isRequested
   });
 
   const loadout = query.data?.loadout ?? null;

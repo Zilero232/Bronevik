@@ -8,10 +8,9 @@ import { sortBy } from 'remeda';
 
 import type { SelectItem } from '@/ui-kit';
 
-import { listMaps } from '@/entities/map/map';
+import { mapQueries } from '@/entities/map/map';
 import { useReplayModeLabel } from '@/features/community/replay-meta';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ReplayResult, ReplaySort } from '../../../lib/replay-query';
 
@@ -25,7 +24,7 @@ export const useReplayFilterPanel = () => {
   const modeLabel = useReplayModeLabel();
   const { filters, playerDraft, update, reset } = useReplayFilters();
   const catalog = useVehicleCatalog();
-  const maps = useQuery({ queryKey: QUERY_KEYS.maps.list, queryFn: ({ signal }) => listMaps({ signal }) });
+  const maps = useQuery(mapQueries.list());
 
   const mapList = maps.data ?? [];
   const any = { value: REPLAY_LIST.anyValue, label: t('any') };

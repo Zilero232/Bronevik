@@ -18,11 +18,10 @@ export class PlayerTanksService {
   ) {}
 
   async list({ accountId, query }: PlayerTanksInput): Promise<Paginated<PlayerTankRow>> {
-    const [tanks, snapshots, ratings, progress, recent, eligible] = await Promise.all([
+    const [tanks, snapshots, ratings, recent, eligible] = await Promise.all([
       this.prisma.playerTank.findMany({ where: { accountId, battles: { gte: query.minBattles } } }),
       this.latestSnapshots(accountId),
       this.prisma.accountTankRating.findMany({ where: { accountId, period: 'overall' } }),
-      this.prisma.moeProgress.findMany({ where: { accountId } }),
       query.period
         ? this.prisma.accountTankRating.findMany({ where: { accountId, period: RATING_PERIOD_TO_DB[query.period] } })
         : Promise.resolve([]),
@@ -32,7 +31,6 @@ export class PlayerTanksService {
     const allowed = new Set(eligible.map((entry) => entry.summary.tankId));
     const snapshotOf = new Map(snapshots.map((row) => [row.tank_id, row]));
     const ratingOf = new Map(ratings.map((row) => [row.tankId, row]));
-    const progressOf = new Map(progress.map((row) => [row.tankId, row]));
     const recentOf = new Map(recent.map((row) => [row.tankId, row]));
 
     const rows = await Promise.all(
@@ -41,7 +39,6 @@ export class PlayerTanksService {
         .map(async (tank): Promise<PlayerTankRow> => {
           const snapshot = snapshotOf.get(tank.tankId);
           const rating = ratingOf.get(tank.tankId);
-          const moe = progressOf.get(tank.tankId);
           const period = recentOf.get(tank.tankId);
           const battles = snapshot?.battles ?? tank.battles;
 
@@ -55,8 +52,8 @@ export class PlayerTanksService {
             survivalRate: snapshot ? percentOf({ value: snapshot.survived_battles, by: snapshot.battles }) : null,
             wn8: rating ? ratingValue({ kind: 'wn8', value: rating.wn8 }) : emptyRating(),
             markOfMastery: Math.min(4, Math.max(0, tank.markOfMastery)),
-            marksOnGun: moe?.marks ?? tank.marksOnGun,
-            moePercent: moe ? Math.min(100, Math.max(0, moe.percent)) : null,
+            marksOnGun: tank.marksOnGun,
+            moePercent: tank.moePercent === null ? null : Math.min(100, Math.max(0, tank.moePercent)),
             damagePercentile: rating?.damagePercentile ?? null,
             maxFrags: snapshot?.max_frags ?? null,
             maxXp: snapshot?.max_xp ?? null,

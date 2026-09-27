@@ -1,10 +1,11 @@
 'use client';
 
 import type { PlayerSummary } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { PlayerIdentity } from '@/entities/player/player';
 
@@ -14,7 +15,7 @@ import { ValueCell } from '../../../ui/components/CompareTable/components';
 
 const column = createColumnHelper<CompareRow>();
 
-export const useCompareColumns = (players: PlayerSummary[]): ColumnDef<CompareRow, never>[] => {
+export const useCompareColumns = (players: PlayerSummary[]): TableColumn<CompareRow>[] => {
   const t = useTranslations('compare');
   const tMetrics = useTranslations('compare.metrics');
 

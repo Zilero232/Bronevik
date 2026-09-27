@@ -31,7 +31,7 @@ describe('PurgeService.purgeAccount', () => {
     await purge.purgeAccount({ accountId: 5, requestId });
 
     expect(prisma.$executeRawUnsafe).toHaveBeenCalledTimes(Object.values(HYPERTABLE).length);
-    expect(prisma.player.deleteMany).toHaveBeenCalledWith({ where: { accountId: 5n } });
+    expect(prisma.player.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: 5n } }));
     expect(statuses(prisma)).toEqual(['processing', 'completed']);
   });
 

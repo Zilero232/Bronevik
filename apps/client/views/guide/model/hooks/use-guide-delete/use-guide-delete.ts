@@ -5,14 +5,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { Guide } from '@/entities/guide/guide';
-
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
 import { removeGuide } from '../../../api';
+import { useGuide } from '../../context';
 
-export const useGuideDelete = (guide: Guide) => {
+export const useGuideDelete = () => {
+  const guide = useGuide();
   const t = useTranslations('guides.detail');
   const queryClient = useQueryClient();
   const router = useRouter();

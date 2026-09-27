@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { BattleStatsBlock } from '../../../../../../lib/lesta';
 
+import { Prisma } from '../../../../../../../generated';
 import { accountSnapshotRow, buildTankDelta, modeBlocks, shouldWriteSnapshot, tankSnapshotRow } from '../snapshots';
 
 const block = (battles: number, blocked = 200): BattleStatsBlock => ({
@@ -66,21 +67,35 @@ describe('buildTankDelta', () => {
       previous,
       current: row({ battles: 14, capturedAt: now, blocked: 250 }),
       cohort: 'good',
-      accountWinRate: 53,
-      tier: 8
+      accountWinRate: 53
     });
 
     expect(delta?.battles).toBe(4);
     expect(delta?.damageDealt).toBe(4 * 1500);
     expect(delta?.damageBlocked).toBe(14 * 250 - 10 * 200);
-    expect(delta?.previousCapturedAt).toEqual(earlier);
+    expect(delta?.capturedAt).toEqual(now);
   });
 
   it('has nothing to report without a previous snapshot', () => {
-    expect(buildTankDelta({ previous: undefined, current: previous, cohort: 'good', accountWinRate: 50, tier: 8 })).toBeNull();
+    expect(buildTankDelta({ previous: undefined, current: previous, cohort: 'good', accountWinRate: 50 })).toBeNull();
   });
 
   it('ignores a snapshot whose battle count did not grow', () => {
-    expect(buildTankDelta({ previous, current: row({ battles: 10, capturedAt: now }), cohort: 'good', accountWinRate: 50, tier: 8 })).toBeNull();
+    expect(buildTankDelta({ previous, current: row({ battles: 10, capturedAt: now }), cohort: 'good', accountWinRate: 50 })).toBeNull();
+  });
+});
+
+describe('snapshot rows', () => {
+  const columnsOf = (fields: Record<string, string>) => new Set(Object.values(fields));
+  const unknownKeys = (row: object, fields: Record<string, string>) => Object.keys(row).filter((key) => !columnsOf(fields).has(key));
+
+  it('write only the columns their tables keep', () => {
+    const current = row({ battles: 14, capturedAt: now });
+    const delta = buildTankDelta({ previous: row({ battles: 10, capturedAt: earlier }), current, cohort: 'good', accountWinRate: 50 });
+    const account = accountSnapshotRow({ accountId: 1n, capturedAt: now, mode: 'all', block: block(10), globalRating: 1 });
+
+    expect(unknownKeys(account, Prisma.AccountSnapshotScalarFieldEnum)).toEqual([]);
+    expect(unknownKeys(current, Prisma.TankSnapshotScalarFieldEnum)).toEqual([]);
+    expect(unknownKeys(delta ?? {}, Prisma.TankBattleDeltaScalarFieldEnum)).toEqual([]);
   });
 });

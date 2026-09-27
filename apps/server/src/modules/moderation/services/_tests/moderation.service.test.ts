@@ -62,6 +62,16 @@ describe('ModerationService.resolve', () => {
     );
   });
 
+  it('takes a streamer profile off the directory and off air when a removal request is upheld', async () => {
+    const { service, prisma } = createService({ ...report, targetType: 'streamer_profile', reason: 'other', details: 'mail@example.com' });
+
+    await service.resolve({ id: report.id, userId: 'moderator', status: 'resolved', hideTarget: true });
+
+    expect(prisma.streamerProfile.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: targetId }, data: { hiddenAt: expect.any(Date), isLive: false } })
+    );
+  });
+
   it('resolves the other open reports on the same target', async () => {
     const { service, prisma } = createService();
 
@@ -80,9 +90,11 @@ describe('ModerationService.resolve', () => {
 
     await service.resolve({ id: report.id, userId: 'moderator', status: 'resolved', hideTarget: true });
 
-    expect(prisma.auditLog.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ actorUserId: 'moderator', action: 'report.resolved', entityType: 'build', entityId: targetId })
-    });
+    expect(prisma.auditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ actorUserId: 'moderator', action: 'report.resolved', entityType: 'build', entityId: targetId })
+      })
+    );
   });
 
   it('hides the target in the same transaction that resolves the report', async () => {

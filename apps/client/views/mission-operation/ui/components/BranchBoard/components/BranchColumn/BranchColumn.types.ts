@@ -1,8 +1,5 @@
-import type { OperationColumn } from '../../../../../model/hooks';
+import type { OperationColumn } from '../../../../../lib/operation-board';
 
 export type BranchColumnProps = {
   column: OperationColumn;
-  selectedId: number | null;
-  isTracked: boolean;
-  onSelect: (questId: number) => void;
 };

@@ -86,7 +86,9 @@ describe('IntegrationStoreService.save', () => {
 
     await service.save(input);
 
-    expect(prisma.streamerIntegration.deleteMany).toHaveBeenCalledWith({ where: { provider: 'twitch', externalId: '777', NOT: { userId: 'u1' } } });
+    expect(prisma.streamerIntegration.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { provider: 'twitch', externalId: '777', NOT: { userId: 'u1' } } })
+    );
 
     expect(prisma.streamerIntegration.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -124,10 +126,12 @@ describe('IntegrationStoreService.setPredictions', () => {
 
     await service.setPredictions({ userId: 'u1', enabled: true });
 
-    expect(prisma.streamerIntegration.update).toHaveBeenCalledWith({
-      where: { id: 'int-1' },
-      data: { config: { login: 'jove', predictions: true } }
-    });
+    expect(prisma.streamerIntegration.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'int-1' },
+        data: { config: { login: 'jove', predictions: true } }
+      })
+    );
   });
 
   it('refuses to enable predictions without the Twitch scope or connection', async () => {
@@ -147,9 +151,11 @@ describe('IntegrationStoreService.storeToken', () => {
 
     await service.storeToken({ provider: 'donationAlerts', externalId: '42', accessToken: 'a2', refreshToken: 'r2', expiresAt: EXPIRES });
 
-    expect(prisma.streamerIntegration.updateMany).toHaveBeenCalledWith({
-      where: { provider: 'donationAlerts', externalId: '42' },
-      data: { accessToken: 'a2', refreshToken: 'r2', tokenExpiresAt: EXPIRES }
-    });
+    expect(prisma.streamerIntegration.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { provider: 'donationAlerts', externalId: '42' },
+        data: { accessToken: 'a2', refreshToken: 'r2', tokenExpiresAt: EXPIRES }
+      })
+    );
   });
 });

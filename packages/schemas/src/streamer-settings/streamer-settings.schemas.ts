@@ -54,8 +54,7 @@ export const controlsValuesSchema = z.object({
 });
 
 export const zoomValuesSchema = z.object({
-  steps: z.array(zoomStepSchema).max(STREAMER_SETTINGS.zoomSteps.length).optional(),
-  zoomModRef: uuidSchema.nullable().optional()
+  steps: z.array(zoomStepSchema).max(STREAMER_SETTINGS.zoomSteps.length).optional()
 });
 
 const sightModeSchema = z.object({
@@ -66,8 +65,7 @@ const sightModeSchema = z.object({
 
 export const sightValuesSchema = z.object({
   arcade: sightModeSchema.optional(),
-  sniper: sightModeSchema.optional(),
-  sightModRef: uuidSchema.nullable().optional()
+  sniper: sightModeSchema.optional()
 });
 
 const markerSetSchema = z.object({ base: z.array(markerFieldSchema).optional(), alt: z.array(markerFieldSchema).optional() });
@@ -117,9 +115,7 @@ export const hardwareValuesSchema = z.object({
 
 export const modsValuesSchema = z.object({
   kind: z.enum(STREAMER_SETTINGS.modsKinds).optional(),
-  modpackRef: uuidSchema.nullable().optional(),
-  preset: text.optional(),
-  modRefs: z.array(uuidSchema).max(20).optional()
+  preset: text.optional()
 });
 
 export const settingsValuesSchema = z.object({
@@ -156,22 +152,11 @@ export const saveStreamerSettingsSchema = z.object({
   sourceUrls: z.partialRecord(settingsGroupKeySchema, httpUrlSchema).optional()
 });
 
-export const modReferenceSchema = z.object({
-  id: uuidSchema,
-  kind: z.enum(STREAMER_SETTINGS.modReferenceKinds),
-  name: z.string(),
-  author: z.string(),
-  officialUrl: z.url(),
-  onMost: z.boolean(),
-  checkedAt: isoDateTimeSchema.nullable()
-});
-
 export const streamerSettingsViewSchema = z.object({
   slug: z.string(),
   displayName: z.string(),
   kind: z.enum(['claimed', 'editorial']),
   settings: streamerSettingsSchema,
-  modReferences: z.array(modReferenceSchema),
   updatedAt: isoDateTimeSchema.nullable()
 });
 
@@ -192,7 +177,6 @@ export const settingsTableRowSchema = z.object({
   fov: z.number().int().nullable(),
   preset: z.string().nullable(),
   zoomMax: zoomStepSchema.nullable(),
-  modpack: z.string().nullable(),
   modsKind: z.string().nullable(),
   gpu: z.string().nullable(),
   updatedAt: isoDateTimeSchema

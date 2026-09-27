@@ -57,7 +57,9 @@ describe('RecruitingService.create', () => {
 
     await service.create({ ...request, kind: 'clanSeeksPlayer', clanId });
 
-    expect(prisma.recruitingPost.create).toHaveBeenCalledWith({ data: expect.objectContaining({ clanId: BigInt(clanId), accountId: null }) });
+    expect(prisma.recruitingPost.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ clanId: BigInt(clanId), accountId: null }) })
+    );
   });
 
   it('refuses a rank-and-file member', async () => {
@@ -98,7 +100,10 @@ describe('RecruitingService.create', () => {
 
     const view = await service.create({ ...request, kind: 'playerSeeksClan', clanId });
 
-    expect(prisma.recruitingPost.create).toHaveBeenCalledWith({ data: expect.objectContaining({ accountId: 7n, clanId: null }) });
+    expect(prisma.recruitingPost.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ accountId: 7n, clanId: null }) })
+    );
+
     expect(prisma.clanMember.findUnique).not.toHaveBeenCalled();
     expect(view.accountId).toBe(7);
   });
@@ -113,10 +118,12 @@ describe('RecruitingService.expire', () => {
 
     expect(await service.expire(now)).toBe(3);
 
-    expect(prisma.recruitingPost.updateMany).toHaveBeenCalledWith({
-      where: { status: 'open', expiresAt: { lte: now } },
-      data: { status: 'expired' }
-    });
+    expect(prisma.recruitingPost.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { status: 'open', expiresAt: { lte: now } },
+        data: { status: 'expired' }
+      })
+    );
   });
 });
 
@@ -130,7 +137,9 @@ describe('RecruitingService.close', () => {
 
     await service.close({ id: row.id, userId: 'u2' });
 
-    expect(prisma.recruitingPost.updateMany).toHaveBeenCalledWith({ where: { id: row.id, status: 'open' }, data: { status: 'closed' } });
+    expect(prisma.recruitingPost.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: row.id, status: 'open' }, data: { status: 'closed' } })
+    );
   });
 
   it('refuses a clan member who is not an officer', async () => {

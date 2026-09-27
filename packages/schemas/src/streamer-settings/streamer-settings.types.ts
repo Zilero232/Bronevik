@@ -9,7 +9,6 @@ import type {
   modApplyListSchema,
   modApplyResultSchema,
   modDeviceRequestSchema,
-  modReferenceSchema,
   modSettingsExportSchema,
   saveStreamerSettingsSchema,
   settingsAggregatesSchema,
@@ -34,7 +33,6 @@ export type SettingsCohort = z.infer<typeof settingsCohortSchema>;
 export type SettingsValues = z.infer<typeof settingsValuesSchema>;
 export type StreamerSettings = z.infer<typeof streamerSettingsSchema>;
 export type SaveStreamerSettingsInput = z.input<typeof saveStreamerSettingsSchema>;
-export type ModReference = z.infer<typeof modReferenceSchema>;
 export type StreamerSettingsView = z.infer<typeof streamerSettingsViewSchema>;
 export type SettingsHistoryEntry = z.infer<typeof settingsHistoryEntrySchema>;
 export type SettingsTableRow = z.infer<typeof settingsTableRowSchema>;

@@ -1,7 +1,7 @@
-import type { ColumnDef } from '@tanstack/react-table';
-
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import type { TableColumn } from '../../../DataTable.types';
 
 import { DataTable } from '../../../DataTable';
 import { DATA_TABLE } from '../../../DataTable.constants';
@@ -15,7 +15,7 @@ const VIEWPORT = ROW_HEIGHT * 10;
 
 const ROWS: Row[] = Array.from({ length: TOTAL }, (_, index) => ({ name: `Player ${index}`, rank: index }));
 
-const COLUMNS: ColumnDef<Row, never>[] = [
+const COLUMNS: TableColumn<Row>[] = [
   { accessorKey: 'name', header: 'Nickname' },
   { id: 'action', header: 'Action', cell: () => <button type='button'>Watch</button> }
 ];

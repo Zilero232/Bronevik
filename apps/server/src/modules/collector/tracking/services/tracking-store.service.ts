@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { addDays, fromUnixTime } from 'date-fns';
 import { groupBy } from 'remeda';
 
-import type { StatsMode, TrackingTier } from '../../../../../generated';
+import type { Prisma, StatsMode, TrackingTier } from '../../../../../generated';
 import type { TankBaseline } from '../lib/account-diff';
 import type { AccountChanges, LatestTankSnapshotsInput, MarkSyncedInput, PollStorePort, StoredPlayer, UpsertPlayerInput } from '../lib/poll-pipeline';
 import type { SnapshotMode, TankSnapshotRow } from '../lib/snapshots';
@@ -50,12 +50,9 @@ export class TrackingStoreService implements PollStorePort {
     const identity = {
       nickname: info.nickname,
       clanId,
-      globalRating: info.global_rating,
       createdAt: fromUnixTime(info.created_at),
-      logoutAt: info.logout_at ? fromUnixTime(info.logout_at) : null,
-      lestaUpdatedAt: fromUnixTime(info.updated_at),
       trackingTier
-    };
+    } satisfies Prisma.PlayerUpdateInput;
 
     const clanChanged = previous ? previous.clanId !== info.clan_id : clanId !== null;
 
@@ -174,12 +171,6 @@ export class TrackingStoreService implements PollStorePort {
     });
 
     return rating?.wn8 ?? null;
-  }
-
-  async tankTiers(tankIds: readonly number[]): Promise<Map<number, number>> {
-    const vehicles = await this.prisma.vehicle.findMany({ where: { tankId: { in: [...tankIds] } }, select: { tankId: true, tier: true } });
-
-    return new Map(vehicles.map((vehicle) => [vehicle.tankId, vehicle.tier]));
   }
 
   async writeAccountChanges({ accountSnapshots, tankSnapshots, deltas, baseline }: AccountChanges): Promise<void> {

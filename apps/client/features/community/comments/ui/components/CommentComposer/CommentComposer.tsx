@@ -10,9 +10,9 @@ import { useCommentForm } from '../../../model/hooks';
 
 import s from './CommentComposer.module.scss';
 
-export const CommentComposer = ({ thread, parentId, onDone, onCancel }: CommentComposerProps) => {
+export const CommentComposer = ({ parentId, onDone, onCancel }: CommentComposerProps) => {
   const t = useTranslations('community.comments');
-  const { form, length, maxLength, isPending, onSubmit } = useCommentForm({ thread, parentId, onDone });
+  const { form, length, maxLength, isPending, onSubmit } = useCommentForm({ parentId, onDone });
   const { errors } = form.formState;
 
   return (

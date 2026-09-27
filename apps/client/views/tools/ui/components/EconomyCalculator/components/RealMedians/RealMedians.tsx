@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { EmptyState, Skeleton } from '@/ui-kit';
 
-import type { RealMediansProps } from '../../EconomyCalculator.types';
+import type { RealMediansProps } from './RealMedians.types';
 
 import { TOOLS_FORMAT, TOOLS_LAYOUT } from '../../../../../config';
 import { ResultFigure } from '../../../ResultFigure';

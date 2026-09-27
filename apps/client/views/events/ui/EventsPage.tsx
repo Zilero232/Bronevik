@@ -4,39 +4,25 @@ import { CalendarDays, CalendarPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import {
-  ActionStrip,
-  Band,
-  buttonVariants,
-  CopyField,
-  DataSourceNote,
-  EmptyState,
-  ErrorState,
-  KeyFigure,
-  PageHero,
-  SectionHeader,
-  Skeleton,
-  ToggleChips
-} from '@/ui-kit';
+import { ActionStrip, buttonVariants, CopyField, DataSourceNote, ErrorState, KeyFigure, PageHero, QueryState, Skeleton, ToggleChips } from '@/ui-kit';
 
 import { EVENTS_FEED } from '../api';
 import { EVENTS } from '../config';
 import { useEventCalendar } from '../model/hooks';
-import { DropsPanel, EventGroup, EventTimeline, NowCard } from './components';
+import { EventsNow, EventsPast, EventsUpcoming } from './components';
 
 import s from './EventsPage.module.scss';
 
 export const EventsPage = () => {
   const t = useTranslations('events');
-  const calendar = useEventCalendar();
-  const emptyKey = calendar.isFiltered ? 'empty.filtered' : null;
+  const { query, featured, kinds, setKinds } = useEventCalendar();
 
   return (
     <div className={s.root}>
       <PageHero
         art={{ kind: 'emblem', glyph: <CalendarDays size={480} strokeWidth={1.25} /> }}
         breadcrumbs={[{ label: t('head.home'), href: ROUTES.home }, { label: t('head.title') }]}
-        figures={calendar.featured[0] && <KeyFigure label={t('head.nowFigure')} value={calendar.featured[0].event.title} variant='compact' />}
+        figures={featured[0] && <KeyFigure label={t('head.nowFigure')} value={featured[0].event.title} variant='compact' />}
         lead={t('head.description')}
         title={t('head.title')}
       />
@@ -55,55 +41,38 @@ export const EventsPage = () => {
             aria-label={t('filters.label')}
             options={EVENTS.kinds.map((kind) => ({ value: kind, label: t(`kinds.${kind}`) }))}
             size='sm'
-            value={calendar.kinds}
-            onChange={calendar.setKinds}
+            value={kinds}
+            onChange={setKinds}
           />
         }
         className={s.strip}
       />
-      {calendar.isError && (
-        <div className={s.section}>
-          <ErrorState description={t('error.description')} isRetrying={calendar.isRetrying} title={t('error.title')} onRetry={calendar.retry} />
-        </div>
-      )}
-      {calendar.isPending && (
-        <div className={s.section}>
-          {Array.from({ length: EVENTS.skeletons }, (_, index) => (
-            <Skeleton key={index} height={160} shape='block' />
-          ))}
-        </div>
-      )}
-      {!calendar.isPending && !calendar.isError && (
-        <>
-          <Band innerClassName={s.bandInner}>
-            <SectionHeader count={calendar.timeline.current.length} title={t('groups.current')} variant='display' />
-            {calendar.featured.length === 0 ? (
-              <EmptyState isCompact title={t(emptyKey ?? 'empty.current')} />
-            ) : (
-              <div className={s.nowGrid}>
-                {calendar.featured.map((entry) => (
-                  <NowCard key={entry.event.id} entry={entry} />
-                ))}
-              </div>
-            )}
-            {calendar.timeline.current.length > calendar.featured.length && (
-              <EventGroup
-                emptyTitle={t(emptyKey ?? 'empty.current')}
-                entries={calendar.timeline.current.slice(calendar.featured.length)}
-                title={t('groups.alsoRunning')}
-              />
-            )}
-          </Band>
-          <section className={s.section}>
-            <SectionHeader count={calendar.timeline.upcoming.length} title={t('groups.upcoming')} variant='display' />
-            <EventTimeline emptyTitle={t(emptyKey ?? 'empty.upcoming')} weeks={calendar.upcomingWeeks} />
-          </section>
-          <section className={s.section}>
-            <DropsPanel />
-            <EventGroup emptyTitle={t(emptyKey ?? 'empty.past')} entries={calendar.timeline.past} title={t('groups.past')} />
-          </section>
-        </>
-      )}
+      <QueryState
+        errorState={
+          <div className={s.section}>
+            <ErrorState
+              description={t('error.description')}
+              isRetrying={query.isRefetching}
+              title={t('error.title')}
+              onRetry={() => void query.refetch()}
+            />
+          </div>
+        }
+        skeleton={
+          <div className={s.section}>
+            <Skeleton count={EVENTS.skeletons} height={160} shape='block' />
+          </div>
+        }
+        query={query}
+      >
+        <EventsNow />
+        <section className={s.section}>
+          <EventsUpcoming />
+        </section>
+        <section className={s.section}>
+          <EventsPast />
+        </section>
+      </QueryState>
       <div className={s.section}>
         <DataSourceNote />
       </div>

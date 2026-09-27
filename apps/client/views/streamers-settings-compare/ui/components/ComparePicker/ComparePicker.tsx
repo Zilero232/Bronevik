@@ -5,14 +5,14 @@ import { useTranslations } from 'next-intl';
 
 import { IconButton, Select, Switch } from '@/ui-kit';
 
-import type { ComparePickerProps } from './ComparePicker.types';
-
 import { COMPARE_SETTINGS_PAGE } from '../../../config';
+import { useComparePicker } from '../../../model/hooks';
 
 import s from './ComparePicker.module.scss';
 
-export const ComparePicker = ({ picked, addItems, canAdd, isMine, isSignedIn, onAdd, onRemove, onMineChange }: ComparePickerProps) => {
+export const ComparePicker = () => {
   const t = useTranslations('streamerSettings.compare');
+  const { picked, addItems, canAdd, isMine, isSignedIn, onAdd, onRemove, onMineChange } = useComparePicker();
 
   return (
     <div className={s.root}>

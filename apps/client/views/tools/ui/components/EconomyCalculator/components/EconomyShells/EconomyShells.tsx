@@ -4,13 +4,13 @@ import { useTranslations } from 'next-intl';
 
 import { NumberField } from '@/ui-kit';
 
-import type { EconomyShellsProps } from '../../EconomyCalculator.types';
+import type { EconomyShellsProps } from './EconomyShells.types';
 
 import { ECONOMY, SHELL_ICONS, SHELL_KINDS } from '../../../../../config';
 
 import s from './EconomyShells.module.scss';
 
-export const EconomyShells = ({ values, onChange }: EconomyShellsProps) => {
+export const EconomyShells = ({ values, field }: EconomyShellsProps) => {
   const t = useTranslations('tools.economy');
 
   return (
@@ -25,18 +25,8 @@ export const EconomyShells = ({ values, onChange }: EconomyShellsProps) => {
               <Icon aria-hidden size={16} />
               {t(`shellKinds.${kind}`)}
             </span>
-            <NumberField
-              {...ECONOMY.shellRange}
-              label={t('shellCount')}
-              value={values[kind]}
-              onValueChange={(value) => onChange({ key: kind, value })}
-            />
-            <NumberField
-              {...ECONOMY.priceRange}
-              label={t('shellPrice')}
-              value={values[`${kind}Price`]}
-              onValueChange={(value) => onChange({ key: `${kind}Price`, value })}
-            />
+            <NumberField {...ECONOMY.shellRange} label={t('shellCount')} value={values[kind]} onValueChange={field(kind)} />
+            <NumberField {...ECONOMY.priceRange} label={t('shellPrice')} value={values[`${kind}Price`]} onValueChange={field(`${kind}Price`)} />
           </div>
         );
       })}

@@ -8,21 +8,19 @@ import { IconButton } from '@/ui-kit';
 
 import type { InboxBellProps } from './InboxBell.types';
 
-import { useInboxPreview } from '../model/hooks';
-import { BellGlyph, InboxPanel } from './components';
+import { useInboxUnread } from '../model/hooks';
+import { BellGlyph, InboxPanel, InboxPanelProvider } from './components';
 
 import s from './InboxBell.module.scss';
 
 export const InboxBell = ({ className }: InboxBellProps) => {
   const t = useTranslations('inbox');
-  const { isSignedIn, page, isPending, isError, isRetrying, retry } = useInboxPreview();
+  const { isSignedIn, unread } = useInboxUnread();
   const [isOpen, toggleOpen] = useBoolean(false);
 
   if (!isSignedIn) {
     return null;
   }
-
-  const unread = page?.unread ?? 0;
 
   return (
     <Popover.Root open={isOpen} onOpenChange={(next) => toggleOpen(next)}>
@@ -34,14 +32,9 @@ export const InboxBell = ({ className }: InboxBellProps) => {
       <Popover.Portal>
         <Popover.Positioner align='end' className={s.positioner} sideOffset={10}>
           <Popover.Popup className={s.popup}>
-            <InboxPanel
-              isError={isError}
-              isPending={isPending}
-              isRetrying={isRetrying}
-              page={page}
-              onClose={() => toggleOpen(false)}
-              onRetry={() => void retry()}
-            />
+            <InboxPanelProvider value={{ close: () => toggleOpen(false) }}>
+              <InboxPanel />
+            </InboxPanelProvider>
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>

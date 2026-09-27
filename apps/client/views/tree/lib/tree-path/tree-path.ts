@@ -1,11 +1,6 @@
-import type { TechTreeEdge } from '@otmetki/schemas';
-
-import { firstBy, sumBy } from 'remeda';
+import { firstBy, groupBy, sumBy } from 'remeda';
 
 import type { PathCost, PathCostInput, PathRoute, PathToInput, RouteToInput } from './tree-path.types';
-
-const parentsOf = (edges: TechTreeEdge[]) =>
-  edges.reduce((parents, { from, to }) => parents.set(to, [...(parents.get(to) ?? []), from]), new Map<number, number[]>());
 
 export const pathTo = ({ nodes, edges, targetId }: PathToInput): number[] => {
   const xpOf = new Map(nodes.map(({ vehicle, xp }) => [vehicle.tankId, xp ?? 0]));
@@ -14,7 +9,7 @@ export const pathTo = ({ nodes, edges, targetId }: PathToInput): number[] => {
     return [];
   }
 
-  const parents = parentsOf(edges);
+  const parents = groupBy(edges, ({ to }) => to);
   const routes = new Map<number, PathRoute>();
 
   const routeTo = ({ id, visiting }: RouteToInput): PathRoute => {
@@ -24,7 +19,7 @@ export const pathTo = ({ nodes, edges, targetId }: PathToInput): number[] => {
       return known;
     }
 
-    const candidates = (parents.get(id) ?? []).filter((parent) => xpOf.has(parent) && !visiting.has(parent));
+    const candidates = (parents[id] ?? []).map(({ from }) => from).filter((parent) => xpOf.has(parent) && !visiting.has(parent));
     const best = firstBy(
       candidates.map((parent) => routeTo({ id: parent, visiting: new Set([...visiting, id]) })),
       ({ cost }) => cost

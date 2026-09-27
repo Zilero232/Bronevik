@@ -9,8 +9,8 @@ export {
 export type { AccountAchievements, AccountInfo, AccountListItem, AccountStatistics, AccountTank } from './account.types';
 export { loginCallbackSchema, loginLocationSchema, prolongateSchema } from './auth.schemas';
 export type { ProlongateResult } from './auth.types';
-export { clanAccountInfoSchema, clanInfoSchema, clanListItemSchema, clanMemberHistoryEntrySchema } from './clans.schemas';
-export type { ClanAccountInfo, ClanInfo, ClanListItem, ClanMember, ClanMemberHistoryEntry } from './clans.types';
+export { clanAccountInfoSchema, clanInfoSchema, clanListItemSchema, clanMemberHistoryEntrySchema, clanProvinceSchema } from './clans.schemas';
+export type { ClanAccountInfo, ClanInfo, ClanListItem, ClanMember, ClanMemberHistoryEntry, ClanProvince } from './clans.types';
 export { idMapOf, lestaEnvelopeSchema, looseMapSchema } from './common.schemas';
 
 export type { LestaEnvelope, LestaMeta } from './common.types';

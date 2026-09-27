@@ -3,15 +3,11 @@
 import { useNicknameHistory } from '../use-profile-queries';
 
 export const useHistoryTab = () => {
-  const { data: history, isPending, isError, isRefetching, refetch } = useNicknameHistory();
+  const query = useNicknameHistory();
 
   return {
-    nicknames: history?.filter(({ kind }) => kind === 'nickname') ?? [],
-    clans: history?.filter(({ kind }) => kind === 'clan') ?? [],
-    isEmpty: history?.length === 0,
-    isPending,
-    isError,
-    isRetrying: isRefetching,
-    retry: () => void refetch()
+    query,
+    nicknames: query.data?.filter(({ kind }) => kind === 'nickname') ?? [],
+    clans: query.data?.filter(({ kind }) => kind === 'clan') ?? []
   };
 };

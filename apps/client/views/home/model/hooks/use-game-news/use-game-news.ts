@@ -6,11 +6,9 @@ import { shopControllerListNewsOptions } from '@/shared/api/query-options';
 
 import { HOME } from '../../../config';
 
-export const useGameNews = () => {
-  const { data, isPending, isError, refetch } = useQuery({
+export const useGameNews = () =>
+  useQuery({
     ...shopControllerListNewsOptions({ query: { limit: HOME.news.limit } }),
-    staleTime: HOME.staleMs
+    staleTime: HOME.staleMs,
+    select: ({ items }) => items
   });
-
-  return { items: data?.items ?? [], isPending, isError, retry: () => void refetch() };
-};

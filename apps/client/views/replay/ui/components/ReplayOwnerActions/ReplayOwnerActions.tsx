@@ -19,16 +19,14 @@ import {
   SegmentedControl
 } from '@/ui-kit';
 
-import type { ReplayOwnerActionsProps } from './ReplayOwnerActions.types';
-
 import { REPLAY_VISIBILITY_OPTIONS } from '../../../config';
 import { useReplayOwnerActions } from '../../../model/hooks';
 
 import s from './ReplayOwnerActions.module.scss';
 
-export const ReplayOwnerActions = ({ replay }: ReplayOwnerActionsProps) => {
+export const ReplayOwnerActions = () => {
   const t = useTranslations('replays.owner');
-  const { canManage, visibility, isDeleting, onVisibilityChange, onDelete } = useReplayOwnerActions(replay);
+  const { canManage, visibility, isDeleting, onVisibilityChange, onDelete } = useReplayOwnerActions();
   const [isOpen, toggleOpen] = useBoolean(false);
 
   if (!canManage) {

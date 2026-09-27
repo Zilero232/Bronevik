@@ -9,9 +9,7 @@ export const BuildSkeleton = () => (
     <Skeleton height={120} />
     <Skeleton height={36} />
     <div className={s.presets}>
-      {BUILD_SKELETON.presets.map((preset) => (
-        <Skeleton key={preset} height={120} />
-      ))}
+      <Skeleton count={BUILD_SKELETON.presets} height={120} />
     </div>
     <div className={s.layout}>
       <div className={s.panels}>
@@ -20,9 +18,7 @@ export const BuildSkeleton = () => (
         ))}
       </div>
       <div className={s.stats}>
-        {BUILD_SKELETON.statLines.map((line) => (
-          <Skeleton key={line} height={28} />
-        ))}
+        <Skeleton count={BUILD_SKELETON.statLines} height={28} />
       </div>
     </div>
   </div>

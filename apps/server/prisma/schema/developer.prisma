@@ -1,12 +1,3 @@
-enum WebhookEvent {
-  moeGained           @map("moe_gained")
-  sessionFinished     @map("session_finished")
-  clanRosterChanged   @map("clan_roster_changed")
-  moeThresholdDropped @map("moe_threshold_dropped")
-
-  @@map("webhook_event")
-}
-
 enum DeliveryStatus {
   pending
   succeeded
@@ -55,7 +46,6 @@ model ApiKey {
   user   User            @relation(fields: [referenceId], references: [id], onDelete: Cascade)
   usage  ApiUsageDaily[]
   errors ApiErrorLog[]
-  apps   DeveloperApp[]
 
   @@index([referenceId])
   @@index([configId])
@@ -100,10 +90,10 @@ model ApiErrorLog {
 model WebhookEndpoint {
   id String @id @default(dbgenerated("gen_random_uuid()"))
 
-  userId String         @map("user_id")
+  userId String              @map("user_id")
   url    String
   secret String
-  events WebhookEvent[]
+  events NotificationEvent[]
   filter Json?
 
   isActive     Boolean   @default(true) @map("is_active")
@@ -124,11 +114,11 @@ model WebhookEndpoint {
 model WebhookDelivery {
   id String @id @default(dbgenerated("gen_random_uuid()"))
 
-  endpointId String         @map("endpoint_id")
-  event      WebhookEvent
+  endpointId String            @map("endpoint_id")
+  event      NotificationEvent
   payload    Json
-  status     DeliveryStatus @default(pending)
-  attempt    Int            @default(0)
+  status     DeliveryStatus    @default(pending)
+  attempt    Int               @default(0)
 
   responseStatus Int?      @map("response_status") @db.SmallInt
   responseBody   String?   @map("response_body")
@@ -141,26 +131,4 @@ model WebhookDelivery {
   @@index([endpointId, createdAt(sort: Desc)])
   @@index([status, nextAttemptAt])
   @@map("webhook_delivery")
-}
-
-model DeveloperApp {
-  id String @id @default(dbgenerated("gen_random_uuid()"))
-
-  userId      String           @map("user_id")
-  apiKeyId    String?          @map("api_key_id")
-  name        String
-  slug        String           @unique
-  url         String?
-  description String?
-  logo        String?
-  status      ModerationStatus @default(pending)
-
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  apiKey ApiKey? @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
-
-  @@index([status])
-  @@map("developer_app")
 }

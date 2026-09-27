@@ -30,7 +30,7 @@ export class StreamerStatsService {
   async reply({ streamerUserId, command }: ChatReplyInput): Promise<string | null> {
     const profile = await this.prisma.streamerProfile.findUnique({
       where: { userId: streamerUserId },
-      select: { id: true, slug: true, accountId: true, displayName: true }
+      select: { slug: true, accountId: true, displayName: true, settings: true }
     });
 
     if (!profile) {
@@ -38,16 +38,13 @@ export class StreamerStatsService {
     }
 
     if (command === 'settings') {
-      const [locale, saved] = await Promise.all([
-        this.chatLocale(streamerUserId),
-        this.prisma.streamerSettings.count({ where: { profileId: profile.id } })
-      ]);
+      const locale = await this.chatLocale(streamerUserId);
 
       const url = new URL(`${CHAT_LINKS.streamer}/${encodeURIComponent(profile.slug)}/${CHAT_LINKS.settings}`, this.config.get('WEB_URL')).toString();
 
       return chatText({
         locale,
-        message: saved > 0 ? CHAT_COPY.messages.settings : CHAT_COPY.messages.settingsNone,
+        message: profile.settings !== null ? CHAT_COPY.messages.settings : CHAT_COPY.messages.settingsNone,
         values: { name: profile.displayName, url }
       });
     }

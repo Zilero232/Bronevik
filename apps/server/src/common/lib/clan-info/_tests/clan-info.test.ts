@@ -9,14 +9,10 @@ const info: ClanInfo = { clan_id: 1, name: 'Clan', tag: 'CLN', created_at: 1_600
 
 describe('clanInfoFields', () => {
   it('stores missing optional fields as null', () => {
-    expect(clanInfoFields(info)).toMatchObject({ color: null, motto: null, description: null, leaderId: null });
+    expect(clanInfoFields(info)).toMatchObject({ color: null, motto: null, description: null });
   });
 
-  it('converts the leader id and creation time', () => {
-    expect(clanInfoFields({ ...info, leader_id: 42 })).toMatchObject({ leaderId: 42n, createdAt: fromUnixTime(info.created_at) });
-  });
-
-  it('treats a zero leader id as no leader', () => {
-    expect(clanInfoFields({ ...info, leader_id: 0 }).leaderId).toBeNull();
+  it('converts the creation time', () => {
+    expect(clanInfoFields(info).createdAt).toEqual(fromUnixTime(info.created_at));
   });
 });

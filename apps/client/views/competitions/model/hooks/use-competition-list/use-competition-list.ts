@@ -29,7 +29,7 @@ export const useCompetitionList = () => {
   });
 
   return {
-    ...list,
+    list,
     filter,
     isMine,
     isSignedIn,

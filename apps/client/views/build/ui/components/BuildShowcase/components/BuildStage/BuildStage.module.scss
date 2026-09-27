@@ -137,6 +137,10 @@
 .notice {
   grid-area: notice;
   text-align: center;
+
+  &:empty {
+    display: none;
+  }
 }
 
 .actions {

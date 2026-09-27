@@ -1,3 +1,5 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 
 import { vehicleIdentity } from '@/entities/tank/tank';
@@ -7,11 +9,13 @@ import { KeyFigure, KeyFigures, PageHeader, ProgressRing, TankImage } from '@/ui
 import type { OperationHeaderProps } from './OperationHeader.types';
 
 import { MISSION_BOARD } from '../../../config';
+import { useOperationColumns } from '../../../model/hooks';
 
 import s from './OperationHeader.module.scss';
 
-export const OperationHeader = ({ data, totals }: OperationHeaderProps) => {
+export const OperationHeader = ({ data }: OperationHeaderProps) => {
   const t = useTranslations('missions');
+  const { totals } = useOperationColumns();
 
   const { campaign, operation } = data;
   const campaignName = campaign.name ?? t('hub.campaign', { id: campaign.campaignId });

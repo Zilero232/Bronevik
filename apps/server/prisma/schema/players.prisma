@@ -9,25 +9,22 @@ enum TrackingTier {
 model Player {
   accountId BigInt @id @map("account_id")
 
-  nickname     String
-  clanId       BigInt? @map("clan_id")
-  globalRating Int?    @map("global_rating")
+  nickname String
+  clanId   BigInt? @map("clan_id")
 
-  createdAt      DateTime? @map("created_at") @db.Timestamptz(3)
-  lastBattleAt   DateTime? @map("last_battle_at") @db.Timestamptz(3)
-  logoutAt       DateTime? @map("logout_at") @db.Timestamptz(3)
-  lestaUpdatedAt DateTime? @map("lesta_updated_at") @db.Timestamptz(3)
+  createdAt    DateTime? @map("created_at") @db.Timestamptz(3)
+  lastBattleAt DateTime? @map("last_battle_at") @db.Timestamptz(3)
 
-  trackingTier TrackingTier @default(population) @map("tracking_tier")
-  lastPolledAt DateTime?    @map("last_polled_at") @db.Timestamptz(3)
-  nextPollAt   DateTime?    @map("next_poll_at") @db.Timestamptz(3)
-  lastViewedAt DateTime?    @map("last_viewed_at") @db.Timestamptz(3)
+  trackingTier              TrackingTier @default(population) @map("tracking_tier")
+  lastPolledAt              DateTime?    @map("last_polled_at") @db.Timestamptz(3)
+  nextPollAt                DateTime?    @map("next_poll_at") @db.Timestamptz(3)
+  progressionProcessedUntil DateTime?    @map("progression_processed_until") @db.Timestamptz(3)
+  lastViewedAt              DateTime?    @map("last_viewed_at") @db.Timestamptz(3)
 
   isHidden   Boolean   @default(false) @map("is_hidden")
   purgeAfter DateTime? @map("purge_after") @db.Timestamptz(3)
 
-  firstSeenAt DateTime @default(now()) @map("first_seen_at") @db.Timestamptz(3)
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   lestaLinks     UserLestaAccount[]
   nicknames      PlayerNickname[]
@@ -36,17 +33,13 @@ model Player {
   ratings        AccountRating[]
   tankRatings    AccountTankRating[]
   badges         AccountBadge[]
-  moeProgress    MoeProgress[]
   clanMembership ClanMember?
   playSessions   PlaySession[]
   battles        Battle[]
-  tankProgress   TankProgress[]
-  progression    ProgressionCursor?
   achievementSet AccountAchievements?
   tankChallenges TankChallengeProgress[]
 
   @@index([nickname(ops: raw("gin_trgm_ops"))], type: Gin, map: "player_nickname_trgm_idx")
-  @@index([nickname])
   @@index([clanId])
   @@index([trackingTier, nextPollAt])
   @@index([lastBattleAt])
@@ -96,6 +89,14 @@ model PlayerTank {
   marksOnGun    Int?     @map("marks_on_gun") @db.SmallInt
   inGarage      Boolean? @map("in_garage")
 
+  moePercent      Float?    @map("moe_percent")
+  moeMovingDamage Float?    @map("moe_moving_damage")
+  moeUpdatedAt    DateTime? @map("moe_updated_at") @db.Timestamptz(3)
+
+  progressXp      Int @default(0) @map("progress_xp")
+  progressLevel   Int @default(1) @map("progress_level") @db.SmallInt
+  progressBattles Int @default(0) @map("progress_battles")
+
   lastBattleAt DateTime? @map("last_battle_at") @db.Timestamptz(3)
   updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
@@ -103,5 +104,6 @@ model PlayerTank {
 
   @@id([accountId, tankId])
   @@index([tankId])
+  @@index([accountId, progressXp(sort: Desc)])
   @@map("player_tank")
 }

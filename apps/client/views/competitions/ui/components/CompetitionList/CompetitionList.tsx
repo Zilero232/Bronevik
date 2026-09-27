@@ -12,21 +12,7 @@ import s from './CompetitionList.module.scss';
 
 export const CompetitionList = () => {
   const t = useTranslations('competitions');
-  const {
-    filter,
-    isMine,
-    isSignedIn,
-    items,
-    isPending,
-    isError,
-    isRetrying,
-    hasNextPage,
-    isFetchingNextPage,
-    onFilterChange,
-    onMineChange,
-    loadMore,
-    retry
-  } = useCompetitionList();
+  const { filter, isMine, isSignedIn, list, onFilterChange, onMineChange } = useCompetitionList();
 
   return (
     <Card padding='none'>
@@ -52,17 +38,10 @@ export const CompetitionList = () => {
         errorDescription={t('list.errorDescription')}
         errorTitle={t('list.errorTitle')}
         getKey={(competition) => competition.id}
-        hasNextPage={hasNextPage}
-        isError={isError}
-        isFetchingNextPage={isFetchingNextPage}
-        isPending={isPending}
-        isRetrying={isRetrying}
-        items={items}
         layout='rows'
+        list={list}
         renderItem={(competition) => <CompetitionRow competition={competition} />}
         skeletonHeight={COMPETITION_LIST.skeletonHeight}
-        onLoadMore={loadMore}
-        onRetry={retry}
       />
     </Card>
   );

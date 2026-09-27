@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { toIsoDate } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { VehicleCatalogService } from '../../reference';
+import { toMoeThresholdRecord, VehicleCatalogService } from '../../reference';
 import { THRESHOLD_DROP } from '../config';
 import { thresholdDrops } from '../lib';
 import { NotificationService } from './notification.service';
@@ -17,7 +17,7 @@ export class ThresholdDropsService {
 
   async run(): Promise<number> {
     const followed = await this.prisma.follow.findMany({
-      where: { kind: 'tank', OR: [{ events: { has: 'moeThresholdDropped' } }, { events: { isEmpty: true } }] },
+      where: { kind: 'tank', isFollowing: true, OR: [{ events: { has: 'moeThresholdDropped' } }, { events: { isEmpty: true } }] },
       distinct: ['targetId'],
       select: { targetId: true }
     });
@@ -32,14 +32,14 @@ export class ThresholdDropsService {
   }
 
   private async checkTank(tankId: number): Promise<number> {
-    const current = await this.prisma.moeThreshold.findFirst({ where: { tankId }, orderBy: { date: 'desc' } });
+    const current = await this.prisma.tankThreshold.findFirst({ where: { kind: 'moe', tankId }, orderBy: { date: 'desc' } });
 
     if (!current) {
       return 0;
     }
 
-    const previous = await this.prisma.moeThreshold.findFirst({
-      where: { tankId, source: current.source, date: { lt: current.date } },
+    const previous = await this.prisma.tankThreshold.findFirst({
+      where: { kind: 'moe', tankId, source: current.source, date: { lt: current.date } },
       orderBy: { date: 'desc' }
     });
 
@@ -47,7 +47,11 @@ export class ThresholdDropsService {
       return 0;
     }
 
-    const drops = thresholdDrops({ previous, current, minDropPercent: THRESHOLD_DROP.minDropPercent });
+    const drops = thresholdDrops({
+      previous: toMoeThresholdRecord(previous),
+      current: toMoeThresholdRecord(current),
+      minDropPercent: THRESHOLD_DROP.minDropPercent
+    });
 
     if (drops.length === 0) {
       return 0;

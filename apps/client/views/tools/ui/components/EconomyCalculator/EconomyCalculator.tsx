@@ -40,10 +40,10 @@ export const EconomyCalculator = () => {
               { key: 'standard', label: t('fields.standard'), ...ECONOMY.consumableRange },
               { key: 'premium', label: t('fields.premium'), ...ECONOMY.consumableRange }
             ]}
+            field={field}
             values={values}
-            onChange={({ key, value }) => field(key)(value)}
           />
-          <EconomyShells values={values} onChange={({ key, value }) => field(key)(value)} />
+          <EconomyShells field={field} values={values} />
         </>
       }
       results={

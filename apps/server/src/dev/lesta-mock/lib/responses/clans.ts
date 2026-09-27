@@ -6,7 +6,14 @@ import { selectFields } from '../fields';
 import { clanMembersAt, stintAt } from '../world';
 import { playerAt } from './account';
 import { fail, idList, intParam, ok } from './envelope';
-import { CLAN_ROLE_TITLES, RESPONSES, STRONGHOLD_BUILDINGS, STRONGHOLD_DIRECTIONS } from './responses.constants';
+import {
+  CLAN_ROLE_TITLES,
+  GLOBALMAP_FRONTS,
+  GLOBALMAP_PRIME_TIMES,
+  RESPONSES,
+  STRONGHOLD_BUILDINGS,
+  STRONGHOLD_DIRECTIONS
+} from './responses.constants';
 
 const ROLE_TITLES: ReadonlyMap<string, string> = new Map(Object.entries(CLAN_ROLE_TITLES));
 
@@ -174,6 +181,9 @@ export const clansMemberHistory: MockRoute = (context) => {
 export const clansGlossary: MockRoute = () =>
   ok({ clans_roles: CLAN_ROLE_TITLES, settings: { max_members_count: 100 }, languages: { ru: 'Русский', en: 'English' } });
 
+const provincesCount = (context: MockContext, clan: MockClan): number =>
+  clanElo(context.world.seed, clan, context.now) && clan.tier === 'top' ? 1 + (clan.index % 4) : 0;
+
 export const globalmapClanInfo: MockRoute = (context) =>
   clansByIds(context, (clan) => {
     const elo = clanElo(context.world.seed, clan, context.now);
@@ -191,13 +201,37 @@ export const globalmapClanInfo: MockRoute = (context) =>
       statistics: {
         battles: elo ? Math.round((skirmish.total_10 ?? 0) * 0.3) : 0,
         wins: elo ? Math.round((skirmish.win_10 ?? 0) * 0.3) : 0,
-        provinces_count: elo && clan.tier === 'top' ? 1 + (clan.index % 4) : 0,
+        provinces_count: provincesCount(context, clan),
         captures: elo ? Math.round((skirmish.win_10 ?? 0) * 0.05) : 0
       }
     };
   });
 
-export const globalmapClanProvinces: MockRoute = (context) => clansByIds(context, () => []);
+export const globalmapClanProvinces: MockRoute = (context) =>
+  clansByIds(context, (clan) => {
+    const arenas = context.world.catalog.arenas.filter((arena) => arena.modes.includes('ctf'));
+    const count = provincesCount(context, clan);
+
+    return count === 0
+      ? null
+      : Array.from({ length: count }, (_, index) => {
+          const arena = arenas[(clan.index + index) % Math.max(1, arenas.length)];
+          const front = GLOBALMAP_FRONTS[index % GLOBALMAP_FRONTS.length];
+
+          return {
+            province_id: `${front.id}_${clan.clanId}_${index + 1}`,
+            province_name: `${arena?.name ?? front.name} ${index + 1}`,
+            front_id: front.id,
+            front_name: front.name,
+            arena_id: arena?.arenaId ?? null,
+            arena_name: arena?.name ?? null,
+            prime_time: GLOBALMAP_PRIME_TIMES[(clan.index + index) % GLOBALMAP_PRIME_TIMES.length],
+            daily_revenue: 150 + ((clan.clanId + index * 37) % 8) * 50,
+            revenue_level: index % 4,
+            turns_owned: 1 + ((clan.clanId + index) % 30)
+          };
+        });
+  });
 
 export const strongholdClanInfo: MockRoute = (context) =>
   clansByIds(context, (clan) => {

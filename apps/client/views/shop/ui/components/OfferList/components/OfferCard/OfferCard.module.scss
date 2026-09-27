@@ -58,12 +58,6 @@
   color: var(--color-text);
 }
 
-.old {
-  @include numeric(var(--text-sm));
-
-  color: var(--color-text-dim);
-}
-
 .meta {
   @include stack(0);
 

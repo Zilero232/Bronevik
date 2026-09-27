@@ -5,6 +5,7 @@ import { startOfDay } from 'date-fns';
 import { FEATURES, SOURCES } from '../../../../config';
 import { PrismaService } from '../../../../core';
 import { http } from '../../../../lib/http';
+import { moeThresholdLevels } from '../../../reference';
 import { parsePoliroidMoe } from '../lib/community-data';
 
 @Injectable()
@@ -20,8 +21,16 @@ export class MoeThresholdsSyncService {
     const date = startOfDay(new Date(), { in: utc });
 
     await this.prisma.$transaction([
-      this.prisma.moeThreshold.deleteMany({ where: { source: 'poliroid', date } }),
-      this.prisma.moeThreshold.createMany({ data: rows.map((row) => ({ ...row, date, source: 'poliroid' as const })) })
+      this.prisma.tankThreshold.deleteMany({ where: { kind: 'moe', source: 'poliroid', date } }),
+      this.prisma.tankThreshold.createMany({
+        data: rows.map(({ tankId, ...levels }) => ({
+          kind: 'moe' as const,
+          tankId,
+          date,
+          source: 'poliroid' as const,
+          ...moeThresholdLevels({ ...levels, p100: null })
+        }))
+      })
     ]);
 
     return { vehicles: rows.length };

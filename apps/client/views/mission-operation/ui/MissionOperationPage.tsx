@@ -1,62 +1,38 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { match, P } from 'ts-pattern';
 
-import { isNotFoundError } from '@/shared/api/source';
 import { ROUTES } from '@/shared/constants';
-import { DataSourceNote, EmptyState, Skeleton } from '@/ui-kit';
-import { ResourceMissing } from '@/widgets/resource-missing';
+import { DataSourceNote, Skeleton } from '@/ui-kit';
+import { ResourceGate } from '@/widgets/resource-missing';
 
-import { useMissionOperation } from '../model/hooks';
+import { useOperationDetail } from '../model/hooks';
 import { BranchBoard, MissionDetail, MissionPlan, OperationHeader } from './components';
 
 import s from './MissionOperationPage.module.scss';
 
 export const MissionOperationPage = () => {
   const t = useTranslations('missions');
-  const { detail, columns, mission, totals, isSignedIn, isTracked, isSaving, progressOf, selectMission, setProgress } = useMissionOperation();
+  const detail = useOperationDetail();
 
   return (
     <div className={s.root}>
-      {match(detail)
-        .with({ data: P.nonNullable }, ({ data }) => (
+      <ResourceGate
+        back={{ href: ROUTES.missions.hub, label: t('operation.back') }}
+        error={{ title: t('operation.errorTitle'), description: t('operation.errorDescription') }}
+        notFound={{ title: t('operation.notFoundTitle'), description: t('operation.notFoundDescription') }}
+        query={detail}
+        skeleton={<Skeleton height={480} shape='block' />}
+      >
+        {(data) => (
           <>
-            <OperationHeader data={data} totals={isSignedIn ? totals : null} />
-            <BranchBoard columns={columns} isTracked={isTracked} selectedId={mission?.questId ?? null} onSelect={selectMission} />
-            {mission ? (
-              <MissionDetail
-                isSaving={isSaving}
-                isSignedIn={isSignedIn}
-                mission={mission}
-                progress={progressOf(mission.questId)}
-                onProgress={setProgress}
-              />
-            ) : (
-              <EmptyState title={t('mission.select')} />
-            )}
+            <OperationHeader data={data} />
+            <BranchBoard />
+            <MissionDetail />
             <MissionPlan operation={data.operation.operationId} />
           </>
-        ))
-        .with({ isPending: true }, () => <Skeleton height={480} shape='block' />)
-        .with({ error: P.when(isNotFoundError) }, () => (
-          <ResourceMissing
-            back={{ href: ROUTES.missions.hub, label: t('operation.back') }}
-            description={t('operation.notFoundDescription')}
-            reason='notFound'
-            title={t('operation.notFoundTitle')}
-          />
-        ))
-        .otherwise(() => (
-          <ResourceMissing
-            back={{ href: ROUTES.missions.hub, label: t('operation.back') }}
-            description={t('operation.errorDescription')}
-            isRetrying={detail.isFetching}
-            reason='error'
-            title={t('operation.errorTitle')}
-            onRetry={() => void detail.refetch()}
-          />
-        ))}
+        )}
+      </ResourceGate>
       <DataSourceNote />
     </div>
   );

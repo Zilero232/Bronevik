@@ -3,11 +3,13 @@ import type { ClanStronghold } from '@otmetki/schemas';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import type { LestaClient } from '../../../lib/lesta';
+import type { StoredStronghold } from '../selects';
 
 import { errorMessage, readNumber, readRecord, toJsonValue, toNumber } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { STRONGHOLD_FETCH } from '../config';
 import { toStronghold } from '../mappers';
+import { CLAN_STRONGHOLD_SELECT } from '../selects';
 
 @Injectable()
 export class ClanStrongholdService {
@@ -19,8 +21,8 @@ export class ClanStrongholdService {
   ) {}
 
   async stronghold(clanId: bigint): Promise<ClanStronghold> {
-    const [stored, snapshot, provinces] = await Promise.all([
-      this.prisma.clanStronghold.findUnique({ where: { clanId } }),
+    const [clan, snapshot, provinces] = await Promise.all([
+      this.prisma.clan.findUnique({ where: { clanId }, select: CLAN_STRONGHOLD_SELECT }),
       this.prisma.clanSnapshot.findFirst({
         where: { clanId },
         orderBy: { capturedAt: 'desc' },
@@ -33,15 +35,16 @@ export class ClanStrongholdService {
       })
     ]);
 
-    const row = stored ?? (await this.fetch(clanId));
+    const row = clan?.strongholdUpdatedAt ? clan : await this.fetch(clanId);
+    const stored = readRecord(row?.stronghold);
 
     return toStronghold({
       clanId: toNumber(clanId),
-      level: row?.level ?? null,
-      stats: row?.stats ?? null,
-      buildings: row?.buildings ?? null,
-      reserves: row?.reserves ?? null,
-      updatedAt: row?.updatedAt ?? null,
+      level: row?.strongholdLevel ?? null,
+      stats: stored.stats ?? null,
+      buildings: stored.buildings ?? null,
+      reserves: stored.reserves ?? null,
+      updatedAt: row?.strongholdUpdatedAt ?? null,
       elo: {
         eloRating6: snapshot?.eloRating6 ?? null,
         eloRating8: snapshot?.eloRating8 ?? null,
@@ -51,7 +54,7 @@ export class ClanStrongholdService {
     });
   }
 
-  private async fetch(clanId: bigint) {
+  private async fetch(clanId: bigint): Promise<StoredStronghold | null> {
     try {
       const response = await this.lesta.stronghold.claninfo({ ids: [Number(clanId)] });
       const info = response[String(clanId)];
@@ -63,10 +66,10 @@ export class ClanStrongholdService {
       const record = readRecord(info);
       const level = STRONGHOLD_FETCH.levelKeys.map((key) => readNumber(record[key])).find((value) => value !== null) ?? null;
 
-      return await this.prisma.clanStronghold.upsert({
+      return await this.prisma.clan.update({
         where: { clanId },
-        create: { clanId, level, stats: toJsonValue(info) },
-        update: { level, stats: toJsonValue(info) }
+        data: { strongholdLevel: level, stronghold: toJsonValue({ stats: info }), strongholdUpdatedAt: new Date() },
+        select: CLAN_STRONGHOLD_SELECT
       });
     } catch (error) {
       this.logger.warn(`stronghold of clan ${clanId} not fetched: ${errorMessage(error)}`);

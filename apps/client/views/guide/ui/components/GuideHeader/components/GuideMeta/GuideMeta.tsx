@@ -5,12 +5,13 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { GuideSubject } from '@/features/community/guide-meta';
 import { Avatar } from '@/ui-kit';
 
-import type { GuideMetaProps } from './GuideMeta.types';
+import { useGuide } from '../../../../../model/context';
 
 import s from './GuideMeta.module.scss';
 
-export const GuideMeta = ({ guide }: GuideMetaProps) => {
+export const GuideMeta = () => {
   const t = useTranslations('guides');
+  const guide = useGuide();
   const format = useFormatter();
 
   return (

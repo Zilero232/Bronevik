@@ -2,7 +2,7 @@ import { addDays, fromUnixTime } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountRating, Player, PlayerTank, TankSnapshot, Vehicle } from '../../../../../../generated';
+import type { AccountRating, Player, PlayerTank, TankSnapshot } from '../../../../../../generated';
 import type { PrismaService } from '../../../../../core';
 import type { StoredPlayer } from '../../lib/poll-pipeline';
 import type { TankSnapshotRow } from '../../lib/snapshots';
@@ -83,21 +83,21 @@ describe('TrackingStoreService.upsertPlayer', () => {
     expect(prisma.player.upsert.mock.calls[0]?.[0].create).toMatchObject({ trackingTier: 'population' });
   });
 
-  it('stores a zero logout time as null instead of the epoch', async () => {
+  it('converts the account creation time from unix seconds', async () => {
     const { prisma, store } = createStore();
+    const current = info(null);
 
-    await store.upsertPlayer({ info: { ...info(null), logout_at: 0 }, previous: undefined, tier: 'population', promote: false, now: NOW });
+    await store.upsertPlayer({ info: current, previous: undefined, tier: 'population', promote: false, now: NOW });
 
-    expect(prisma.player.upsert.mock.calls[0]?.[0].update).toMatchObject({ logoutAt: null });
+    expect(prisma.player.upsert.mock.calls[0]?.[0].create).toMatchObject({ createdAt: fromUnixTime(current.created_at) });
   });
 
-  it('converts a real logout time from unix seconds', async () => {
+  it('writes only the identity columns the player row keeps', async () => {
     const { prisma, store } = createStore();
-    const logoutAt = 1_700_000_500;
 
-    await store.upsertPlayer({ info: { ...info(null), logout_at: logoutAt }, previous: undefined, tier: 'population', promote: false, now: NOW });
+    await store.upsertPlayer({ info: info(null), previous: undefined, tier: 'population', promote: false, now: NOW });
 
-    expect(prisma.player.upsert.mock.calls[0]?.[0].update).toMatchObject({ logoutAt: fromUnixTime(logoutAt) });
+    expect(Object.keys(prisma.player.upsert.mock.calls[0]?.[0].update ?? {}).sort()).toEqual(['clanId', 'createdAt', 'nickname', 'trackingTier']);
   });
 
   it('refreshes the nickname last-seen time on every poll', async () => {
@@ -291,16 +291,6 @@ describe('TrackingStoreService.overallWn8', () => {
     prisma.accountRating.findUnique.mockResolvedValue(mock<AccountRating>({ wn8: 0 }));
 
     expect(await store.overallWn8(1)).toBe(0);
-  });
-});
-
-describe('TrackingStoreService.tankTiers', () => {
-  it('maps each known tank to its tier', async () => {
-    const { prisma, store } = createStore();
-
-    prisma.vehicle.findMany.mockResolvedValue([mock<Vehicle>({ tankId: 10, tier: 8 }), mock<Vehicle>({ tankId: 11, tier: 10 })]);
-
-    expect(Object.fromEntries(await store.tankTiers([10, 11, 12]))).toEqual({ 10: 8, 11: 10 });
   });
 });
 

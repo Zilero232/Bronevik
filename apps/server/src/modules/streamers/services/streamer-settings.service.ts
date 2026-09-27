@@ -8,20 +8,12 @@ import type {
 } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import {
-  changedGroups,
-  modReferenceSchema,
-  settingsGroupKeySchema,
-  settingsSourceSchema,
-  streamerSettingsSchema,
-  toSettingsValues,
-  zoomMax
-} from '@otmetki/schemas';
-import { indexBy, unique } from 'remeda';
+import { changedGroups, settingsGroupKeySchema, settingsSourceSchema, streamerSettingsSchema, toSettingsValues, zoomMax } from '@otmetki/schemas';
 
 import type { StreamerProfile } from '../../../../generated';
 import type { SaveMySettingsInput, SaveSettingsRequest } from '../streamers.types';
 
+import { Prisma } from '../../../../generated';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
@@ -79,12 +71,12 @@ export class StreamerSettingsService {
 
     await this.save({ ...input, userId, profileId: profile.id });
 
-    return this.view(profile);
+    return this.mine(userId);
   }
 
   async save({ profileId, userId, source, values, sourceUrls }: SaveSettingsRequest): Promise<void> {
-    const current = await this.prisma.streamerSettings.findUnique({ where: { profileId } });
-    const previous = current ? streamerSettingsSchema.parse(current.data) : null;
+    const current = await this.prisma.streamerProfile.findUniqueOrThrow({ where: { id: profileId }, select: { settings: true } });
+    const previous = current.settings === null ? null : streamerSettingsSchema.parse(current.settings);
     const previousValues = previous ? toSettingsValues(previous) : null;
     const changed = changedGroups({ previous: previousValues, next: values });
     const checkedAt = new Date().toISOString();
@@ -104,47 +96,43 @@ export class StreamerSettingsService {
 
     const data = streamerSettingsSchema.parse(next);
 
-    if (changed.length === 0 && current) {
+    if (changed.length === 0 && previous) {
       return;
     }
 
     await this.prisma.$transaction([
-      this.prisma.streamerSettings.upsert({ where: { profileId }, create: { profileId, data }, update: { data } }),
+      this.prisma.streamerProfile.update({ where: { id: profileId }, data: { settings: data, settingsUpdatedAt: new Date() } }),
       this.prisma.streamerSettingsVersion.create({ data: { profileId, data, source, changedGroups: changed, createdBy: userId } })
     ]);
   }
 
   async table(): Promise<SettingsTableRow[]> {
-    const rows = await this.prisma.streamerSettings.findMany({
-      where: { profile: { hiddenAt: null, ...(STREAMERS.editorialEnabled ? {} : { kind: 'claimed' }) } },
-      include: { profile: { select: { slug: true, displayName: true, isLive: true } } },
-      orderBy: { updatedAt: 'desc' }
+    const rows = await this.prisma.streamerProfile.findMany({
+      where: { hiddenAt: null, settings: { not: Prisma.DbNull }, ...(STREAMERS.editorialEnabled ? {} : { kind: 'claimed' }) },
+      select: { slug: true, displayName: true, isLive: true, settings: true, settingsUpdatedAt: true },
+      orderBy: { settingsUpdatedAt: { sort: 'desc', nulls: 'last' } }
     });
 
-    const settings = rows.map((row) => ({ row, data: streamerSettingsSchema.safeParse(row.data) }));
-    const refIds = unique(settings.flatMap(({ data }) => (data.success && data.data.mods?.modpackRef ? [data.data.mods.modpackRef] : [])));
-    const refs = indexBy(await this.prisma.modReference.findMany({ where: { id: { in: refIds }, fairPlay: 'published' } }), (ref) => ref.id);
+    return rows.flatMap((row) => {
+      const parsed = streamerSettingsSchema.safeParse(row.settings);
 
-    return settings.flatMap(({ row, data }) => {
-      if (!data.success) {
+      if (!parsed.success || !row.settingsUpdatedAt) {
         return [];
       }
 
-      const values = data.data;
-      const modpackRef = values.mods?.modpackRef;
+      const values = parsed.data;
 
       return {
-        slug: row.profile.slug,
-        displayName: row.profile.displayName,
-        isLive: row.profile.isLive,
+        slug: row.slug,
+        displayName: row.displayName,
+        isLive: row.isLive,
         sniperSensitivity: values.controls?.sensitivity?.sniper ?? null,
         fov: values.camera?.fov ?? null,
         preset: values.display?.preset ?? null,
         zoomMax: zoomMax(values.zoom?.steps),
-        modpack: modpackRef ? (refs[modpackRef]?.name ?? null) : null,
         modsKind: values.mods?.kind ?? null,
         gpu: values.hardware?.gpu ?? null,
-        updatedAt: row.updatedAt.toISOString()
+        updatedAt: row.settingsUpdatedAt.toISOString()
       };
     });
   }
@@ -160,38 +148,20 @@ export class StreamerSettingsService {
   }
 
   async valuesOf(profileId: string): Promise<SettingsValues | null> {
-    const current = await this.prisma.streamerSettings.findUnique({ where: { profileId } });
+    const current = await this.prisma.streamerProfile.findUnique({ where: { id: profileId }, select: { settings: true } });
 
-    return current ? toSettingsValues(streamerSettingsSchema.parse(current.data)) : null;
+    return current?.settings ? toSettingsValues(streamerSettingsSchema.parse(current.settings)) : null;
   }
 
   private async view(profile: StreamerProfile): Promise<StreamerSettingsView> {
-    const current = await this.prisma.streamerSettings.findUnique({ where: { profileId: profile.id } });
-    const settings: StreamerSettings = current ? streamerSettingsSchema.parse(current.data) : {};
-    const refIds = unique([
-      ...(settings.mods?.modpackRef ? [settings.mods.modpackRef] : []),
-      ...(settings.mods?.modRefs ?? []),
-      ...(settings.sight?.sightModRef ? [settings.sight.sightModRef] : []),
-      ...(settings.zoom?.zoomModRef ? [settings.zoom.zoomModRef] : [])
-    ]);
-
-    const refs = await this.prisma.modReference.findMany({ where: { id: { in: refIds }, fairPlay: 'published' } });
+    const settings: StreamerSettings = profile.settings === null ? {} : streamerSettingsSchema.parse(profile.settings);
 
     return {
       slug: profile.slug,
       displayName: profile.displayName,
       kind: profile.kind,
       settings,
-      modReferences: refs.map((ref) => ({
-        id: ref.id,
-        kind: modReferenceSchema.shape.kind.parse(ref.kind),
-        name: ref.name,
-        author: ref.author,
-        officialUrl: ref.officialUrl,
-        onMost: ref.onMost,
-        checkedAt: toIso(ref.checkedAt)
-      })),
-      updatedAt: toIso(current?.updatedAt)
+      updatedAt: toIso(profile.settingsUpdatedAt)
     };
   }
 

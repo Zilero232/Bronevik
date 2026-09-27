@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { mock } from 'vitest-mock-extended';
 
-import type { MoeThreshold } from '../../../../../../generated';
+import type { TankThreshold } from '../../../../../../generated';
 
 import { THRESHOLD_SOURCE_PRIORITY } from '../../../config';
 import { preferredBySource } from '../thresholds';
 
-const row = (tankId: number, source: MoeThreshold['source']): MoeThreshold => mock<MoeThreshold>({ tankId, source });
+const row = (tankId: number, source: TankThreshold['source']): Pick<TankThreshold, 'source' | 'tankId'> => ({ tankId, source });
 
 describe('preferredBySource', () => {
   it('keeps one row per tank from the highest-priority source', () => {

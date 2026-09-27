@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import type { Guide } from '@/entities/guide/guide';
 
 import { useAuthSession } from '@/entities/auth/session';
-import { listMaps } from '@/entities/map/map';
+import { mapQueries } from '@/entities/map/map';
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
@@ -39,8 +39,7 @@ export const useGuideEditorForm = (guide: Guide | null) => {
   const [kind, tankId, arenaId, title] = useWatch({ control: form.control, name: ['kind', 'tankId', 'arenaId', 'title'] });
 
   const { data: maps } = useQuery({
-    queryKey: QUERY_KEYS.maps.list,
-    queryFn: ({ signal }) => listMaps({ signal }),
+    ...mapQueries.list(),
     enabled: kind === 'map'
   });
 

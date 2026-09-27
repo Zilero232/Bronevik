@@ -24,10 +24,10 @@ import { useRemovalForm } from '../../../../../model/hooks';
 
 import s from './RemovalDialog.module.scss';
 
-export const RemovalDialog = ({ slug, open, onOpenChange }: RemovalDialogProps) => {
+export const RemovalDialog = ({ open, onOpenChange }: RemovalDialogProps) => {
   const t = useTranslations('streamersDirectory.public.removal');
   const id = useId();
-  const { register, errors, isSubmitting, onSubmit } = useRemovalForm({ slug, onSent: () => onOpenChange(false) });
+  const { register, errors, isSubmitting, onSubmit } = useRemovalForm(() => onOpenChange(false));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

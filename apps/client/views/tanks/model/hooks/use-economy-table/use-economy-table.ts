@@ -1,8 +1,10 @@
 'use client';
 
+import type { TankEconomyRow } from '@otmetki/schemas';
+
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-import { ECONOMY_VIEW, listTankEconomy } from '@/entities/tank/tank';
+import { ECONOMY_VIEW, economyView, listTankEconomy } from '@/entities/tank/tank';
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -13,7 +15,8 @@ import { useTanksState } from '../use-tanks-state';
 export const useEconomyTable = () => {
   const [{ statuses, roles, difficulties, account, reserve, clanPayout }, setState] = useTanksState();
   const { query, reset, isActive } = useVehicleFilters();
-  const columns = useEconomyColumns({ account, withReserve: reserve, withClanPayout: clanPayout });
+  const view = (row: TankEconomyRow) => economyView({ economy: row.economy, account, withReserve: reserve, withClanPayout: clanPayout });
+  const columns = useEconomyColumns({ view });
 
   const params = { ...query, statuses, roles, difficulties, account, limit: TANKS_ECONOMY.limit };
 
@@ -46,6 +49,7 @@ export const useEconomyTable = () => {
 
   return {
     columns,
+    view,
     rows: data?.items ?? [],
     total: data?.total ?? 0,
     account,

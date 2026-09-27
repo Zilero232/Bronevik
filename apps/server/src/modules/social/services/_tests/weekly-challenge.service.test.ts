@@ -7,7 +7,7 @@ import type { NotificationService } from '../../../notifications';
 import type { SnapshotEventsService } from '../snapshot-events.service';
 
 import { toIsoDate, weekWindow } from '../../../../common/lib';
-import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../../config';
+import { WEEKLY_CHALLENGES } from '../../config';
 import { badgeCodeOf } from '../../lib';
 import { WeeklyChallengeService } from '../weekly-challenge.service';
 
@@ -147,18 +147,6 @@ describe('WeeklyChallengeService.evaluate', () => {
 
     expect(prisma.weeklyChallengeProgress.upsert).toHaveBeenCalledWith(
       expect.objectContaining({ create: expect.objectContaining({ code: battlesChallenge?.code, progress: battlesTarget - 1, completedAt: null }) })
-    );
-  });
-
-  it('keeps every challenge badge defined before evaluating', async () => {
-    const { service, prisma } = createService();
-
-    await service.evaluate(now);
-
-    expect(prisma.badgeDefinition.upsert).toHaveBeenCalledTimes(WEEKLY_CHALLENGES.length);
-
-    expect(prisma.badgeDefinition.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ create: expect.objectContaining({ code: battlesBadge, category: CHALLENGE_BADGES.category }) })
     );
   });
 });

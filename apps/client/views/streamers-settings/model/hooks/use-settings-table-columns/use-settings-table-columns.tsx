@@ -1,10 +1,11 @@
 'use client';
 
 import type { SettingsTableRow } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useFormatter, useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { SETTINGS_FORMAT, useSettingsFormatter } from '@/entities/streamer/settings';
 
@@ -13,7 +14,7 @@ import { CreatorCell } from '../../../ui/components/SettingsTable/components';
 
 const column = createColumnHelper<SettingsTableRow>();
 
-export const useSettingsTableColumns = (): ColumnDef<SettingsTableRow, never>[] => {
+export const useSettingsTableColumns = (): TableColumn<SettingsTableRow>[] => {
   const t = useTranslations('streamerSettings');
   const format = useFormatter();
   const { optionLabel, numberText } = useSettingsFormatter();
@@ -45,29 +46,32 @@ export const useSettingsTableColumns = (): ColumnDef<SettingsTableRow, never>[] 
     column.accessor((row) => row.preset ?? '', {
       id: 'preset',
       header: t('table.columns.preset'),
-      cell: (info) => optional(info.row.original.preset)
+      cell: (info) => optional(info.row.original.preset),
+      meta: { hideBelow: 'md' }
     }),
     column.accessor((row) => (row.zoomMax ? Number.parseInt(row.zoomMax.slice(1), 10) : -1), {
       id: 'zoomMax',
       header: t('table.columns.zoomMax'),
       cell: (info) => optional(info.row.original.zoomMax),
-      meta: { align: 'end', isNumeric: true }
+      meta: { align: 'end', isNumeric: true, hideBelow: 'lg' }
     }),
-    column.accessor((row) => row.modpack ?? row.modsKind ?? '', {
+    column.accessor((row) => row.modsKind ?? '', {
       id: 'mods',
       header: t('table.columns.mods'),
-      cell: (info) => info.row.original.modpack ?? optional(info.row.original.modsKind)
+      cell: (info) => optional(info.row.original.modsKind),
+      meta: { hideBelow: 'lg' }
     }),
     column.accessor((row) => row.gpu ?? '', {
       id: 'gpu',
       header: t('table.columns.gpu'),
-      cell: (info) => info.row.original.gpu ?? SETTINGS_FORMAT.missing
+      cell: (info) => info.row.original.gpu ?? SETTINGS_FORMAT.missing,
+      meta: { hideBelow: 'xl' }
     }),
     column.accessor((row) => Date.parse(row.updatedAt), {
       id: 'updated',
       header: t('table.columns.updated'),
       cell: (info) => format.dateTime(new Date(info.row.original.updatedAt), 'date'),
-      meta: { align: 'end' }
+      meta: { align: 'end', hideBelow: 'md' }
     })
   ];
 };

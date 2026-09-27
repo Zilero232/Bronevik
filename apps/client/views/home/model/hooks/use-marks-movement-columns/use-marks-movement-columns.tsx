@@ -1,17 +1,18 @@
 'use client';
 
 import type { MoeRow } from '@otmetki/schemas';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+
+import type { TableColumn } from '@/ui-kit';
 
 import { TankCell } from '@/entities/tank/tank';
 import { DeltaCell, NumberCell } from '@/ui-kit';
 
 const column = createColumnHelper<MoeRow>();
 
-export const useMarksMovementColumns = (): ColumnDef<MoeRow, never>[] => {
+export const useMarksMovementColumns = (): TableColumn<MoeRow>[] => {
   const t = useTranslations('home.columns');
 
   return [

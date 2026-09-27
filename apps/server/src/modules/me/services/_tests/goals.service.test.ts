@@ -2,7 +2,7 @@ import { addDays } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { AccountRating, AccountTankRating, Goal, MoeProgress, UserLestaAccount } from '../../../../../generated';
+import type { AccountRating, AccountTankRating, Goal, PlayerTank, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 
@@ -40,7 +40,7 @@ const createService = () => {
   prisma.goal.create.mockResolvedValue(goalRow());
   prisma.accountRating.findUnique.mockResolvedValue(null);
   prisma.accountTankRating.findUnique.mockResolvedValue(null);
-  prisma.moeProgress.findUnique.mockResolvedValue(null);
+  prisma.playerTank.findUnique.mockResolvedValue(null);
 
   return { service: new GoalsService(prisma, entitlements), prisma, entitlements };
 };
@@ -132,7 +132,7 @@ describe('GoalsService.create', () => {
   it('takes a MoE baseline from the mark progress and none without a tank', async () => {
     const { service, prisma } = createService();
 
-    prisma.moeProgress.findUnique.mockResolvedValue(mock<MoeProgress>({ percent: 72.5 }));
+    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ moePercent: 72.5 }));
 
     await service.create({ userId: 'user', accountId: 7, metric: 'moe', tankId: 1, target: 85, endsAt: ENDS_AT });
     await service.create({ userId: 'user', accountId: 7, metric: 'moe', target: 85, endsAt: ENDS_AT });

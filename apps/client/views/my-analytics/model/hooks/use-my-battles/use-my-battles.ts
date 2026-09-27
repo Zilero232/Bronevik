@@ -27,6 +27,7 @@ export const useMyBattles = () => {
     battleLink: (row: MyBattle) => ({
       href: ROUTES.account.battle(row.id),
       label: `${row.vehicle?.name ?? row.tankId} · ${row.mapName ?? row.arenaId}`
-    })
+    }),
+    battleTint: (row: MyBattle) => (row.result === 'draw' ? null : row.result)
   };
 };

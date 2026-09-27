@@ -16,5 +16,5 @@ export const usePlatoonBoard = () => {
     queryFn: ({ offset, signal }) => listPlatoons({ ...query, limit: PLATOON_BOARD.pageSize, offset, signal })
   });
 
-  return { ...list, isFiltered, onReset };
+  return { list, isFiltered, onReset };
 };

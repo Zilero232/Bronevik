@@ -2,7 +2,7 @@ import { subDays } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { Favorite, Follow, ModDevice, UserLestaAccount } from '../../../../../../generated';
+import type { Follow, ModDevice, UserLestaAccount } from '../../../../../../generated';
 
 import { TIER_MAINTENANCE } from '../../config';
 import { TierMaintenanceService } from '../tier-maintenance.service';
@@ -13,8 +13,7 @@ const NOW = new Date('2026-09-26T12:00:00Z');
 const createMaintenance = () => {
   const prisma = createPrisma();
 
-  prisma.favorite.findMany.mockResolvedValue([mock<Favorite>({ targetId: 1n }), mock<Favorite>({ targetId: 2n })]);
-  prisma.follow.findMany.mockResolvedValue([mock<Follow>({ targetId: 2n })]);
+  prisma.follow.findMany.mockResolvedValue([mock<Follow>({ targetId: 1n }), mock<Follow>({ targetId: 2n }), mock<Follow>({ targetId: 2n })]);
   prisma.userLestaAccount.findMany.mockResolvedValue([mock<UserLestaAccount>({ accountId: 3n })]);
   prisma.modDevice.findMany.mockResolvedValue([mock<ModDevice>({ accountId: null }), mock<ModDevice>({ accountId: 4n })]);
   prisma.player.updateMany.mockResolvedValue({ count: 0 });

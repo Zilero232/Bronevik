@@ -137,5 +137,6 @@ model Battle {
   @@index([tankId, startedAt(sort: Desc)])
   @@index([arenaId])
   @@index([battleType, startedAt(sort: Desc)])
+  @@index([receivedAt])
   @@map("battle")
 }

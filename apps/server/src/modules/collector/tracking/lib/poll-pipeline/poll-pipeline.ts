@@ -40,7 +40,6 @@ const processAccount = async ({ ports, info, tanks, baseline, tier, now }: Proce
     const reference = info.statistics.random ?? info.statistics.all;
     const accountWinRate = winRate(reference);
     const cohort = assignCohort({ battles: reference.battles, winRate: accountWinRate, wn8: await store.overallWn8(accountId) });
-    const tiers = await store.tankTiers(stats.map((stat) => stat.tank_id));
 
     for (const stat of stats) {
       statsTankIds.add(stat.tank_id);
@@ -55,7 +54,7 @@ const processAccount = async ({ ports, info, tanks, baseline, tier, now }: Proce
 
         tankSnapshots.push(row);
 
-        const delta = buildTankDelta({ previous: before, current: row, cohort, accountWinRate, tier: tiers.get(stat.tank_id) ?? null });
+        const delta = buildTankDelta({ previous: before, current: row, cohort, accountWinRate });
 
         if (delta) {
           deltas.push(delta);

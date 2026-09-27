@@ -1,13 +1,11 @@
 import type { RowData } from '@tanstack/react-table';
 
-import type { FORMATS, Locale, Messages } from '@/shared/i18n';
-
 declare module 'next-intl' {
   // eslint-disable-next-line ts/consistent-type-definitions -- next-intl reads its typed config through interface merging
   interface AppConfig {
-    Formats: typeof FORMATS;
-    Locale: Locale;
-    Messages: Messages;
+    Formats: typeof import('@/shared/i18n').FORMATS;
+    Locale: import('@/shared/i18n').Locale;
+    Messages: import('@/shared/i18n').Messages;
   }
 }
 
@@ -22,7 +20,7 @@ declare module '@tanstack/react-table' {
   // eslint-disable-next-line ts/consistent-type-definitions -- column meta is typed by interface merging and must keep the library's generics
   interface ColumnMeta<TData extends RowData, TValue> {
     align?: 'center' | 'end' | 'start';
-    bar?: { tone?: import('@/shared/lib/rating-tone/rating-tone.types').RatingTone | 'accent' | 'steel'; max?: number };
+    bar?: ColumnBarMeta;
     hideBelow?: 'lg' | 'md' | 'sm' | 'xl';
     isMedia?: boolean;
     isNumeric?: boolean;
@@ -30,4 +28,9 @@ declare module '@tanstack/react-table' {
     isSticky?: boolean;
     width?: number | string;
   }
+
+  type ColumnBarMeta = {
+    max?: number;
+    tone?: import('@/ui-kit/atoms/ProgressBar/ProgressBar.types').ProgressTone;
+  };
 }

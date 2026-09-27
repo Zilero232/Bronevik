@@ -74,6 +74,17 @@ const createService = () => {
 };
 
 describe('BuildsCatalogService.catalog', () => {
+  it('casts the mode to the shared game mode enum', async () => {
+    const { service, prisma } = createService();
+
+    await service.catalog(query);
+
+    const [statement] = prisma.$queryRaw.mock.calls[0] ?? [];
+    const sql = statement ? ('strings' in statement ? statement.strings : statement).join('') : '';
+
+    expect(sql).toContain('::game_mode');
+  });
+
   it('lists a tank without usage as empty and not enough', async () => {
     const { service } = createService();
 

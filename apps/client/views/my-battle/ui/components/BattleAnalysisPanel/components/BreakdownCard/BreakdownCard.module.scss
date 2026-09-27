@@ -1,0 +1,9 @@
+@use '@/shared/styles/mixins' as *;
+
+.bars {
+  @include stack(var(--space-2));
+
+  padding: var(--space-3);
+  margin: 0;
+  list-style: none;
+}

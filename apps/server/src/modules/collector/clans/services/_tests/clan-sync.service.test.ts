@@ -45,6 +45,8 @@ const createSync = ({ info, exists, stored = [], blocked = [] }: Setup) => {
   clients.bulk.clans.info.mockResolvedValue({ [String(CLAN_ID)]: info });
   clients.bulk.globalmap.claninfo.mockResolvedValue({});
   clients.bulk.stronghold.claninfo.mockResolvedValue({});
+  clients.bulk.globalmap.clanprovinces.mockResolvedValue({});
+  prisma.$queryRaw.mockResolvedValue([]);
 
   return { prisma, clients, webhooks, sync: new ClanSyncService(prisma, guard, clients, webhooks) };
 };
@@ -165,7 +167,10 @@ describe('ClanSyncService.refresh', () => {
       membersCount: clanInfo().members_count
     });
 
-    expect(prisma.clanStronghold.upsert.mock.calls[0]?.[0].update).toMatchObject({ level: 7 });
+    expect(prisma.clan.update.mock.calls[0]?.[0]).toMatchObject({
+      where: { clanId: BigInt(CLAN_ID) },
+      data: { strongholdLevel: 7, stronghold: { stats: { [levelKey]: 7 } } }
+    });
   });
 
   it('still snapshots the clan when the global map and stronghold requests fail', async () => {
@@ -173,10 +178,78 @@ describe('ClanSyncService.refresh', () => {
 
     clients.bulk.globalmap.claninfo.mockRejectedValue(new Error('SOURCE_NOT_AVAILABLE'));
     clients.bulk.stronghold.claninfo.mockRejectedValue(new Error('SOURCE_NOT_AVAILABLE'));
+    clients.bulk.globalmap.clanprovinces.mockRejectedValue(new Error('SOURCE_NOT_AVAILABLE'));
 
     await sync.refresh({ clanIds: [CLAN_ID], snapshot: true });
 
     expect(prisma.clanSnapshot.upsert.mock.calls[0]?.[0].create).toMatchObject({ eloRating6: null, eloRating8: null, eloRating10: null });
-    expect(prisma.clanStronghold.upsert).not.toHaveBeenCalled();
+    expect(prisma.clan.update).not.toHaveBeenCalled();
+    expect(prisma.globalMapProvince.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('writes the battles and averages of the members into the snapshot', async () => {
+    const { prisma, sync } = createSync({ info: clanInfo(), exists: true });
+
+    prisma.$queryRaw.mockResolvedValue([{ clanId: BigInt(CLAN_ID), battlesDelta: 42, avgWn8: 1500, avgWinRate: 52.5, activeMembers7d: 2 }]);
+
+    await sync.refresh({ clanIds: [CLAN_ID], snapshot: true });
+
+    expect(prisma.clanSnapshot.upsert.mock.calls[0]?.[0].create).toMatchObject({
+      battlesDelta: 42,
+      avgWn8: 1500,
+      avgWinRate: 52.5,
+      activeMembers7d: 2
+    });
+  });
+
+  it('leaves the member figures empty for a clan without member activity', async () => {
+    const { prisma, sync } = createSync({ info: clanInfo(), exists: true });
+
+    await sync.refresh({ clanIds: [CLAN_ID], snapshot: true });
+
+    expect(prisma.clanSnapshot.upsert.mock.calls[0]?.[0].create).toMatchObject({ battlesDelta: null, avgWn8: null, activeMembers7d: null });
+  });
+
+  it('replaces the provinces the clan owns', async () => {
+    const { prisma, clients, sync } = createSync({ info: clanInfo(), exists: true });
+
+    clients.bulk.globalmap.clanprovinces.mockResolvedValue({
+      [String(CLAN_ID)]: [{ province_id: 'TA_12', province_name: 'Province', front_id: 'front', prime_time: '19:00', daily_revenue: 300 }]
+    });
+
+    await sync.refresh({ clanIds: [CLAN_ID], snapshot: true });
+
+    expect(prisma.globalMapProvince.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { ownerClanId: BigInt(CLAN_ID), provinceId: { notIn: ['TA_12'] } } })
+    );
+
+    expect(prisma.globalMapProvince.upsert.mock.calls[0]?.[0]).toMatchObject({
+      where: { provinceId: 'TA_12' },
+      create: { provinceId: 'TA_12', frontId: 'front', name: 'Province', primeTime: '19:00', dailyRevenue: 300, ownerClanId: BigInt(CLAN_ID) }
+    });
+  });
+
+  it('clears the provinces of a clan that lost them all', async () => {
+    const { prisma, clients, sync } = createSync({ info: clanInfo(), exists: true });
+
+    clients.bulk.globalmap.clanprovinces.mockResolvedValue({ [String(CLAN_ID)]: null });
+
+    await sync.refresh({ clanIds: [CLAN_ID], snapshot: true });
+
+    expect(prisma.globalMapProvince.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { ownerClanId: BigInt(CLAN_ID), provinceId: { notIn: [] } } })
+    );
+
+    expect(prisma.globalMapProvince.upsert).not.toHaveBeenCalled();
+  });
+
+  it('keeps the stored provinces when the payload is malformed', async () => {
+    const { prisma, clients, sync } = createSync({ info: clanInfo(), exists: true });
+
+    clients.bulk.globalmap.clanprovinces.mockResolvedValue({ [String(CLAN_ID)]: { province_id: 'TA_12' } });
+
+    await sync.refresh({ clanIds: [CLAN_ID], snapshot: true });
+
+    expect(prisma.globalMapProvince.deleteMany).not.toHaveBeenCalled();
   });
 });

@@ -29,11 +29,8 @@ export const useBattleAnalysis = (id: string) => {
   const number = (value: number | null) => (value === null ? '—' : format.number(value, { maximumFractionDigits: 1 }));
 
   return {
-    data,
+    query,
     needsPlus,
-    isError: query.isError && !needsPlus,
-    isRetrying: query.isFetching,
-    retry: () => void query.refetch(),
     efficiency: EFFICIENCY_KEYS.map((key) => {
       const value = data?.efficiency[key] ?? null;
 

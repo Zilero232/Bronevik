@@ -3,9 +3,7 @@
 import { ReactFlow, ViewportPortal } from '@xyflow/react';
 
 import { TREE_FLOW_TYPES, TREE_VIEW } from '../../../config';
-import { toFlowElements } from '../../../lib/tree-flow';
-import { useTree } from '../../../model/context';
-import { usePathSelection } from '../../../model/hooks';
+import { useTreeFlow } from '../../../model/hooks';
 import { TierRuler } from '../TierRuler';
 import { TreeControls } from '../TreeControls';
 
@@ -14,15 +12,12 @@ import s from './TreeFlow.module.scss';
 import '@xyflow/react/dist/base.css';
 
 export const TreeFlow = () => {
-  const { tree, layout } = useTree();
-  const { path, onClear } = usePathSelection();
-
-  const { nodes, edges } = toFlowElements({ tree, layout, path });
+  const { nation, nodes, edges, onClear } = useTreeFlow();
 
   return (
     <ReactFlow
       fitView
-      key={tree.nation}
+      key={nation}
       className={s.root}
       edges={edges}
       edgeTypes={TREE_FLOW_TYPES.edges}
@@ -39,7 +34,7 @@ export const TreeFlow = () => {
       onPaneClick={onClear}
     >
       <ViewportPortal>
-        <TierRuler height={layout.height} tiers={layout.tiers} />
+        <TierRuler />
       </ViewportPortal>
       <TreeControls />
     </ReactFlow>

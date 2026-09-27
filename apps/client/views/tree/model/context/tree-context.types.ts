@@ -1,14 +1,6 @@
-import type { TechTree, TechTreeNode } from '@otmetki/schemas';
-import type { ReactNode } from 'react';
-
 import type { TreeLayout } from '../../lib/tree-layout';
+import type { TreeSplit } from '../../lib/tree-split';
 
-export type TreeContextValue = {
-  tree: TechTree;
+export type TreeContextValue = TreeSplit & {
   layout: TreeLayout;
-  premiums: TechTreeNode[];
-};
-
-export type TreeProviderProps = TreeContextValue & {
-  children: ReactNode;
 };

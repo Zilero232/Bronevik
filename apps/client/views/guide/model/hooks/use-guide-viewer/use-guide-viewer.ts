@@ -1,10 +1,11 @@
 'use client';
 
-import type { Guide } from '@/entities/guide/guide';
-
 import { useAuthSession } from '@/entities/auth/session';
 
-export const useGuideViewer = (guide: Guide) => {
+import { useGuide } from '../../context';
+
+export const useGuideViewer = () => {
+  const guide = useGuide();
   const { data: session } = useAuthSession();
 
   return {

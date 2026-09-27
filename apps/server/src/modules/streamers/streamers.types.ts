@@ -199,7 +199,6 @@ export type CachedToken = {
 
 export type ProfileWithChannels = StreamerProfile & {
   channels: StreamerChannel[];
-  settings: { profileId: string } | null;
 };
 
 export type ChannelInput = {
@@ -233,6 +232,7 @@ export type RemovalRequestInput = {
   slug: string;
   contact: string;
   reason?: string;
+  userId: string | null;
 };
 
 export type SaveSettingsRequest = {

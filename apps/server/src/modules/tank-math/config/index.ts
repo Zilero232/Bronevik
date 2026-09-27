@@ -1,1 +1,1 @@
-export { TANK_MATH } from './tank-math.config';
+export { TANK_MATH } from './tank-math.constants';

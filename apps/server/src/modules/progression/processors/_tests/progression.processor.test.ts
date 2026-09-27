@@ -2,9 +2,13 @@ import { Job } from 'bullmq';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
+import type { MetricsService } from '../../../collector/metrics';
+
 import { PROGRESSION_QUEUE } from '../../config';
 import { ProgressionRunService } from '../../services';
 import { ProgressionProcessor } from '../progression.processor';
+
+const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });
 
 const now = new Date('2026-09-26T10:00:00Z');
 
@@ -25,14 +29,14 @@ describe('ProgressionProcessor.process', () => {
 
     runs.run.mockResolvedValue(3);
 
-    expect(await new ProgressionProcessor(runs).process(job(PROGRESSION_QUEUE.jobs.run))).toBe(3);
+    expect(await new ProgressionProcessor(runs, trackingMetrics()).process(job(PROGRESSION_QUEUE.jobs.run))).toBe(3);
     expect(runs.run).toHaveBeenCalledWith(now);
   });
 
   it('ignores unknown jobs', async () => {
     const runs = mock<ProgressionRunService>();
 
-    expect(await new ProgressionProcessor(runs).process(job('unknown'))).toBeNull();
+    expect(await new ProgressionProcessor(runs, trackingMetrics()).process(job('unknown'))).toBeNull();
     expect(runs.run).not.toHaveBeenCalled();
   });
 });

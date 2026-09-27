@@ -10,8 +10,8 @@ import type { TelegramAccountStore, WidgetPayload } from '../telegram-login.type
 
 import { AUTH_PROVIDER } from '../../auth.constants';
 import { telegramLogin } from '../telegram-login.plugin';
-import { WEBAPP_AUTH } from '../webapp-auth.constants';
-import { WIDGET_AUTH } from '../widget-auth.constants';
+import { WEBAPP_AUTH } from '../webapp-auth/webapp-auth.constants';
+import { WIDGET_AUTH } from '../widget-auth/widget-auth.constants';
 
 const API_URL = 'http://localhost:4000';
 const WEB_URL = 'http://localhost:3000';

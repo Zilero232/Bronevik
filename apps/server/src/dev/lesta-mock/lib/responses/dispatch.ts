@@ -90,7 +90,7 @@ export const createLestaMockHandler =
       now,
       fields: parseFields(params.fields),
       extra: parseFields(params.extra),
-      tokenAccountId: accountOfToken(world.seed, params.access_token),
+      tokenAccountId: accountOfToken({ seed: world.seed, token: params.access_token }),
       hasToken: Boolean(params.access_token),
       loginUrl
     });

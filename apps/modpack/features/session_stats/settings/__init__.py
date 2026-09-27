@@ -1,4 +1,5 @@
-"""Companion config keys this feature reads. Their defaults, limits and labels stay in the companion
-schema (packages/companion/config.py) so config.json keeps them while the feature is not installed."""
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-SETTINGS = ('hangar_session_panel', 'session_idle_minutes')
+from .constants import GROUP, IDLE_MINUTES, SWITCH  # noqa: F401
+
+SETTINGS = (SWITCH, IDLE_MINUTES)

@@ -7,7 +7,7 @@ client (2.4.1+), so on Lesta it works only with an older compatible release. A G
 `refresh()`, and a view calls back `app.config`, `app.translate`, `app.status_text()`,
 `app.save_config()` and `app.bind(code)`.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.log import log, safe
 from .. import BIND_CODE_VAR, LINKAGE, build_template, settings_to_config
@@ -19,7 +19,6 @@ except ImportError:
 
 
 class SettingsView(object):
-    """The interface: a settings window the app registers once and refreshes when its status changes."""
 
     name = 'none'
 
@@ -37,7 +36,6 @@ class SettingsView(object):
         pass
 
     def apply(self, values):
-        """Merge values from the window into config.json (unknown keys and bad values are ignored)."""
         if self.app.config.update(settings_to_config(values)):
             self.app.save_config()
 
@@ -94,7 +92,6 @@ class ModsSettingsApiView(SettingsView):
             self.app.bind(value)
 
 
-# Tried in order; the first available view wins.
 VIEWS = (ModsSettingsApiView,)
 
 
@@ -106,7 +103,6 @@ def create_settings_ui(app, views=VIEWS):
 
 
 class CompositeSettingsView(SettingsView):
-    """Several settings windows side by side (the Gameface window next to ModsSettingsAPI)."""
 
     name = 'composite'
 
@@ -123,8 +119,6 @@ class CompositeSettingsView(SettingsView):
 
 
 def add_settings_view(app, view):
-    """Adds a window that attaches after the app started (the ui package registers through the core
-    registry); the app keeps calling `app.settings_ui.refresh()` and reaches both."""
     current = app.settings_ui
     if isinstance(current, CompositeSettingsView):
         views = current.views + [view]

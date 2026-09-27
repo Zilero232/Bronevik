@@ -1,27 +1,72 @@
-export type { AnimatedLogoMarkProps, AnimatedLogoProps, AnimatedMarkOfExcellenceProps, AnimatedMasteryProps } from './animated/animated.types';
-export { AnimatedCrosshair } from './animated/AnimatedCrosshair';
-export { AnimatedLogo } from './animated/AnimatedLogo';
-export { AnimatedLogoMark } from './animated/AnimatedLogoMark';
-export { AnimatedMarkOfExcellence } from './animated/AnimatedMarkOfExcellence';
-export { AnimatedMastery } from './animated/AnimatedMastery';
-
+export { AnimatedCrosshair, AnimatedLogo, AnimatedLogoMark, AnimatedMarkOfExcellence, AnimatedMastery } from './animated';
+export type { AnimatedLogoMarkProps, AnimatedLogoProps, AnimatedMarkOfExcellenceProps, AnimatedMasteryProps } from './animated';
 export {
-  HeavyTankSilhouetteIcon,
-  LightTankSilhouetteIcon,
-  MediumTankSilhouetteIcon,
-  SpgSilhouetteIcon,
-  TankDestroyerSilhouetteIcon
-} from './icons/class-silhouettes';
-export { AssaultSpgIcon, HeavyTankIcon, LightTankIcon, MediumTankIcon, SpgIcon, TankClassIcon, TankDestroyerIcon } from './icons/classes';
-export { CrewCommanderIcon, CrewDriverIcon, CrewGunnerIcon, CrewLoaderIcon, CrewRadiomanIcon } from './icons/crew-roles';
-export {
+  ArmorIcon,
+  AssaultSpgIcon,
+  ChinaIcon,
+  CrewCommanderIcon,
+  CrewDriverIcon,
+  CrewGunnerIcon,
+  CrewLoaderIcon,
+  CrewRadiomanIcon,
+  CrosshairIcon,
+  CzechIcon,
   EquipBondsIcon,
   EquipConsumableIcon,
   EquipDirectiveIcon,
   EquipExperimentalIcon,
   EquipStandardIcon,
-  EquipTrophyIcon
-} from './icons/equip-category';
+  EquipTrophyIcon,
+  FranceIcon,
+  FrontlineIcon,
+  GermanyIcon,
+  GlobalMapIcon,
+  HeavyTankIcon,
+  HeavyTankSilhouetteIcon,
+  IntUnionIcon,
+  ItalyIcon,
+  JapanIcon,
+  LightTankIcon,
+  LightTankSilhouetteIcon,
+  LOGO_SHAPES,
+  Mark1Icon,
+  Mark2Icon,
+  Mark3Icon,
+  MarkOfExcellenceIcon,
+  MasteryFirstIcon,
+  MasteryIcon,
+  MasteryMasterIcon,
+  MasterySecondIcon,
+  MasteryThirdIcon,
+  MediumTankIcon,
+  MediumTankSilhouetteIcon,
+  NationFlag,
+  NationIcon,
+  OnslaughtIcon,
+  OtmetkiLogoIcon,
+  PolandIcon,
+  RadioIcon,
+  RandomBattleIcon,
+  RankedBattleIcon,
+  ShellApcrIcon,
+  ShellApIcon,
+  ShellHeatIcon,
+  ShellHeIcon,
+  SpgIcon,
+  SpgSilhouetteIcon,
+  SpottingIcon,
+  StrongholdIcon,
+  SwedenIcon,
+  TankClassIcon,
+  TankDestroyerIcon,
+  TankDestroyerSilhouetteIcon,
+  TierIcon,
+  TracerIcon,
+  TrainingIcon,
+  UkIcon,
+  UsaIcon,
+  UssrIcon
+} from './icons';
 export type {
   MarkCount,
   MarkOfExcellenceIconProps,
@@ -37,34 +82,9 @@ export type {
   TankClassKind,
   TankClassVariant,
   TierIconProps
-} from './icons/icons.types';
-export { OtmetkiLogoIcon } from './icons/logo';
-export { LOGO_SHAPES } from './icons/logo.shapes';
-export { Mark1Icon, Mark2Icon, Mark3Icon, MarkOfExcellenceIcon } from './icons/marks';
-export { MasteryFirstIcon, MasteryIcon, MasteryMasterIcon, MasterySecondIcon, MasteryThirdIcon } from './icons/mastery';
-export { ArmorIcon, CrosshairIcon, RadioIcon, ShellApcrIcon, ShellApIcon, ShellHeatIcon, ShellHeIcon, SpottingIcon, TracerIcon } from './icons/misc';
-export { FrontlineIcon, GlobalMapIcon, OnslaughtIcon, RandomBattleIcon, RankedBattleIcon, StrongholdIcon, TrainingIcon } from './icons/modes';
-export {
-  ChinaIcon,
-  CzechIcon,
-  FranceIcon,
-  GermanyIcon,
-  IntUnionIcon,
-  ItalyIcon,
-  JapanIcon,
-  NationFlag,
-  NationIcon,
-  PolandIcon,
-  SwedenIcon,
-  UkIcon,
-  UsaIcon,
-  UssrIcon
-} from './icons/nations';
-export { TierIcon } from './icons/tier';
-
+} from './icons';
 export { createIcon, ICON_DEFAULTS, IconBase, starPath, tierGlyphs, TIERS, toRoman } from './lib';
 export type { IconBaseProps, IconComponent, IconProps, Tier } from './lib';
-
 export {
   CREW_ROLE_ICONS,
   EQUIP_CATEGORY_ICONS,

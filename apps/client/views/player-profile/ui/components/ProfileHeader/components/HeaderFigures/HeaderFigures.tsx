@@ -13,6 +13,7 @@ import s from './HeaderFigures.module.scss';
 
 export const HeaderFigures = ({ stats, ring }: HeaderFiguresProps) => {
   const t = useTranslations('profile.header');
+  const tCommon = useTranslations('common');
   const format = useFormatter();
   const tone = ratingValueTone(stats.wn8);
 
@@ -28,7 +29,7 @@ export const HeaderFigures = ({ stats, ring }: HeaderFiguresProps) => {
           value={ring.value}
         >
           <span className={s.ringValue}>{stats.wn8.value === null ? '—' : format.number(stats.wn8.value, FIGURE_FORMAT.integer)}</span>
-          <span className={s.ringLabel}>WN8</span>
+          <span className={s.ringLabel}>{tCommon('ratings.wn8')}</span>
         </ProgressRing>
       </div>
       <div className={s.figures}>

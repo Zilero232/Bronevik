@@ -1,7 +1,7 @@
 import { sortBy } from 'remeda';
 
-import type { MockPlayer, MockPlayerState, MockWorld } from '../../lesta-mock.types';
-import type { RankField, Ranking, RankingInput } from './rankings.types';
+import type { MockPlayer } from '../../lesta-mock.types';
+import type { EligibleInput, EstimateInput, ExactValueInput, RankField, Ranking, RankingInput, RatioInput } from './rankings.types';
 
 import { MOCK_TIME } from '../../config';
 import { accountTotals, globalRating } from '../profile';
@@ -15,9 +15,9 @@ const RANK_FIELD_SET: ReadonlySet<string> = new Set(RANK_FIELDS);
 
 export const isRankField = (value: string): value is RankField => RANK_FIELD_SET.has(value);
 
-const ratio = (value: number, by: number, digits = 2): number => (by > 0 ? Number((value / by).toFixed(digits)) : 0);
+const ratio = ({ value, by, digits = 2 }: RatioInput): number => (by > 0 ? Number((value / by).toFixed(digits)) : 0);
 
-export const exactValue = (field: RankField, state: MockPlayerState): number => {
+export const exactValue = ({ field, state }: ExactValueInput): number => {
   const { random } = accountTotals(state);
 
   switch (field) {
@@ -26,35 +26,35 @@ export const exactValue = (field: RankField, state: MockPlayerState): number => 
     case 'battles_count':
       return random.battles;
     case 'wins_ratio':
-      return ratio(random.wins * 100, random.battles);
+      return ratio({ value: random.wins * 100, by: random.battles });
     case 'damage_avg':
-      return ratio(random.damageDealt, random.battles);
+      return ratio({ value: random.damageDealt, by: random.battles });
     case 'damage_dealt':
       return random.damageDealt;
     case 'frags_avg':
-      return ratio(random.frags, random.battles);
+      return ratio({ value: random.frags, by: random.battles });
     case 'frags_count':
       return random.frags;
     case 'xp_avg':
-      return ratio(random.xp, random.battles);
+      return ratio({ value: random.xp, by: random.battles });
     case 'xp_amount':
       return random.xp;
     case 'xp_max':
       return random.maxXp;
     case 'spotted_avg':
-      return ratio(random.spotted, random.battles);
+      return ratio({ value: random.spotted, by: random.battles });
     case 'spotted_count':
       return random.spotted;
     case 'survived_ratio':
-      return ratio(random.survived * 100, random.battles);
+      return ratio({ value: random.survived * 100, by: random.battles });
     case 'hits_ratio':
-      return ratio(random.hits * 100, random.shots);
+      return ratio({ value: random.hits * 100, by: random.shots });
     case 'capture_points':
       return random.capturePoints;
   }
 };
 
-const estimate = (field: RankField, player: MockPlayer, at: number): number => {
+const estimate = ({ field, player, at }: EstimateInput): number => {
   const days = Math.max(0, (at - MOCK_TIME.anchor) / MOCK_TIME.daySec);
   const battles = player.careerBattles + days * player.dayChance * player.sessionBattles;
   const skill = damageRatio(player);
@@ -77,7 +77,7 @@ const estimate = (field: RankField, player: MockPlayer, at: number): number => {
   }
 };
 
-const eligible = (world: MockWorld, at: number): MockPlayer[] =>
+const eligible = ({ world, at }: EligibleInput): MockPlayer[] =>
   world.players.filter((player) => player.createdAt < at && player.activity !== 'lapsed' && player.careerBattles >= RANKINGS.minBattles);
 
 export const ranking = ({ world, field, at, depth }: RankingInput): Ranking => {
@@ -91,14 +91,14 @@ export const ranking = ({ world, field, at, depth }: RankingInput): Ranking => {
 
   const date = day * MOCK_TIME.daySec;
   const estimated = sortBy(
-    eligible(world, date).map((player) => ({ player, value: estimate(field, player, date) })),
+    eligible({ world, at: date }).map((player) => ({ player, value: estimate({ field, player, at: date }) })),
     [({ value }) => value, 'desc']
   );
 
   const exact = sortBy(
     estimated
       .slice(0, Math.min(depth, RANKINGS.exactCandidates))
-      .map(({ player }) => ({ player, value: exactValue(field, playerStateAt(world, player, date)) })),
+      .map(({ player }) => ({ player, value: exactValue({ field, state: playerStateAt({ world, player, at: date }) }) })),
     [({ value }) => value, 'desc']
   );
 

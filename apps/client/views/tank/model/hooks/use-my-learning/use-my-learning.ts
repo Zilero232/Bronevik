@@ -11,19 +11,19 @@ import { useTank } from '../../context';
 
 export const useMyLearning = () => {
   const { tankId, detail } = useTank();
-  const query = useQuery({
+  const { data, error, isError, isFetching, refetch } = useQuery({
     queryKey: QUERY_KEYS.tanks.myLearning(tankId),
     queryFn: ({ signal }) => getMyTankLearning({ tankId, signal })
   });
 
-  const bucket = query.data ? detail.learning.buckets[query.data.bucket] : undefined;
+  const bucket = data ? detail.learning.buckets[data.bucket] : undefined;
 
   return {
     query: {
-      data: isNotFoundError(query.error) ? null : query.data,
-      isError: query.isError,
-      isRefetching: query.isFetching,
-      refetch: query.refetch
+      data: isNotFoundError(error) ? null : data,
+      isError,
+      isRefetching: isFetching,
+      refetch
     },
     bucketLabel: bucket ? bucketLabel(bucket) : null
   };

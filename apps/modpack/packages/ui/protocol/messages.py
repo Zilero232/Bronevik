@@ -4,18 +4,15 @@ import json
 
 from ...core.codec import canonical_json
 from ...core.compat import string_types, to_text
+from ...core.errors import ReasonError
 from .constants import COMMANDS, MAX_MESSAGE_CHARS, PROTOCOL_VERSION, REQUIRED
 
 
-class ProtocolError(ValueError):
-
-    def __init__(self, reason):
-        ValueError.__init__(self, reason)
-        self.reason = reason
+class ProtocolError(ReasonError):
+    pass
 
 
 def decode_message(raw):
-    """A JS message (JSON text) as a dict with a known `type` and its required keys, else ProtocolError."""
     if not isinstance(raw, string_types):
         raise ProtocolError('not_text')
     text = to_text(raw)

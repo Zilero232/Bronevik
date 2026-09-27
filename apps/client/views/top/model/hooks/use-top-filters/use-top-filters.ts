@@ -2,17 +2,25 @@
 
 import type { RatingKind, RatingPeriod, VehicleSummary, VehicleType } from '@otmetki/schemas';
 
-import { TOP_BOARD, TOP_TANK_SCOPES } from '../../../config';
+import { TIERS, toRoman } from '@otmetki/icons';
+import { useTranslations } from 'next-intl';
+
+import { TOP_BOARD, TOP_METRICS, TOP_PERIODS, TOP_TANK_SCOPES } from '../../../config';
 import { metricFor } from '../../../lib/top-filter';
 import { useTopParams } from '../use-top-params';
 import { useTopTank } from '../use-top-tank';
 
 export const useTopFilters = () => {
+  const t = useTranslations('top');
+  const tPeriods = useTranslations('periods');
   const [{ scope, metric, period, tier, type }, setParams] = useTopParams();
   const tank = useTopTank();
 
   return {
     scope,
+    metrics: TOP_METRICS[scope].map((value) => ({ value, label: t(`metrics.${value}`) })),
+    periods: TOP_PERIODS.map((value) => ({ value, label: tPeriods(value) })),
+    tiers: [{ value: TOP_BOARD.anyOption, label: t('allTiers') }, ...TIERS.map((value) => ({ value: String(value), label: toRoman(value) }))],
     metric: metricFor({ scope, metric }),
     period,
     tier: tier === null ? TOP_BOARD.anyOption : String(tier),

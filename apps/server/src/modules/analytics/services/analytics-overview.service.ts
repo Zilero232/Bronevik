@@ -11,7 +11,8 @@ import { TIME } from '../../../config';
 import { PrismaService } from '../../../core';
 import { ExpectedValuesService, VehicleCatalogService } from '../../reference';
 import { ANALYTICS_SQL, ANALYTICS_WINDOW } from '../config';
-import { breakdown, periodStart, splitPlaytime, statLine, tilt, toAggregateRow, trendGranularity, trendPoints } from '../lib';
+import { breakdown, periodStart, splitPlaytime, statLine, tilt, trendGranularity, trendPoints } from '../lib';
+import { toAggregateRow } from '../mappers';
 import { OwnAccountService } from './own-account.service';
 
 @Injectable()

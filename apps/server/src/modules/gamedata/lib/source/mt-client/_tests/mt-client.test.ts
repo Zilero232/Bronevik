@@ -4,7 +4,6 @@ import { assertMtClient, compareEncyclopediaVersion } from '../mt-client';
 import { MT_CLIENT } from '../mt-client.constants';
 import { ForeignClientError } from '../mt-client.errors';
 
-// Headers of the real mirror READMEs: unicum-gg/wot.src@RU and @EU, 2026-09-27.
 const MT_README = '# MT.RU.PRODUCTION\n\nDecompiled World of Tanks sources for `MT.RU.PRODUCTION`, currently 1.45.0.5231.\n';
 const WG_README = '# WOT.EU.PRODUCTION\n\nDecompiled World of Tanks sources for `WOT.EU.PRODUCTION`, currently 2.4.0.5450.\n';
 const guid = MT_CLIENT.guids.release;

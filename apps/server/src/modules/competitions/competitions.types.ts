@@ -1,8 +1,8 @@
 import type { CompetitionsQuery, CreateCompetition, JoinCompetitionInput } from '@otmetki/schemas';
 
-import type { Competition, CompetitionSource, Prisma } from '../../../generated';
-import type { ParticipantScore } from './lib/competition-scoring';
-import type { COMPETITION_SUMMARY_INCLUDE } from './selects';
+import type { Competition, CompetitionSource } from '../../../generated';
+import type { ParticipantScore } from './lib';
+import type { CompetitionWithSummary } from './selects';
 
 export type CompetitionListInput = {
   query: CompetitionsQuery;
@@ -54,13 +54,6 @@ export type TeamLookupInput = {
 export type NewTeamInput = {
   competitionId: string;
   name: string;
-};
-
-export type CompetitionWithSummary = Prisma.CompetitionGetPayload<{ include: typeof COMPETITION_SUMMARY_INCLUDE }>;
-
-export type ToSummaryInput = {
-  row: CompetitionWithSummary;
-  now: Date;
 };
 
 export type ToViewInput = {

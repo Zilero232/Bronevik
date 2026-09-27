@@ -31,14 +31,14 @@ export const useReplayUpload = () => {
 
   const uploadedId = upload.data?.id ?? null;
 
-  const status = useQuery({
+  const { data: uploaded } = useQuery({
     queryKey: QUERY_KEYS.replays.detail(uploadedId ?? ''),
     queryFn: ({ signal }) => getReplay({ id: uploadedId ?? '', signal }),
     enabled: uploadedId !== null,
     refetchInterval: (query) => (isSettledStatus(query.state.data?.status) ? false : REPLAY_UPLOAD.pollIntervalMs)
   });
 
-  const replayStatus = status.data?.status ?? upload.data?.status;
+  const replayStatus = uploaded?.status ?? upload.data?.status;
   const isSettled = isSettledStatus(replayStatus);
 
   useEffect(() => {
@@ -84,7 +84,7 @@ export const useReplayUpload = () => {
     visibility,
     uploadedId,
     uploadError: upload.isError ? replayUploadErrorKind(upload.error) : null,
-    parseError: status.data?.status === 'failed',
+    parseError: uploaded?.status === 'failed',
     maxMegabytes: REPLAY_UPLOAD.maxBytes / REPLAY_UPLOAD.bytesPerMegabyte,
     setVisibility,
     onInputChange: (event: ChangeEvent<HTMLInputElement>) => {

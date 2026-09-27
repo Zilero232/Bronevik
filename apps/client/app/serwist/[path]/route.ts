@@ -1,9 +1,9 @@
 import { createSerwistRoute } from '@serwist/turbopack';
 import { extname } from 'node:path';
 
-import { PWA_ICONS, PWA_PRECACHE } from '@/shared/config';
+import { env, PWA_ICONS, PWA_PRECACHE } from '@/shared/config';
 
-const REVISION = [process.env.NEXT_PUBLIC_APP_VERSION ?? '0.0.0', process.env.GIT_COMMIT_SHA].filter(Boolean).join('-');
+const REVISION = [env.NEXT_PUBLIC_APP_VERSION, env.GIT_COMMIT_SHA].filter(Boolean).join('-');
 
 const CONTENT_TYPES: Record<string, string> = {
   '.js': 'application/javascript; charset=utf-8',

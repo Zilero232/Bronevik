@@ -1,12 +1,13 @@
-"""Own shots for the "Honest RNG" data: shell kind, nominal damage of the own shell, the shot record."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from ...core.compat import is_int, is_number
 from ...core.shells import shell_code
 from .constants import KIND_BY_CODE, MAX_DAMAGE, MAX_DISTANCE_M, MAX_SHOTS, OUTCOMES, SHELL_KINDS, UNKNOWN_SHELL  # noqa: F401
 
 
+# A client shell type arrives as the battle feedback's BATTLE_LOG_SHELL_TYPES member (RU 1.45), its name or
+# index, or a vehicle descriptor's shell kind string; anything else is 'unknown'.
 def normalize_shell(raw):
-    """The contract's shell kind of a client shell type: the battle feedback's BATTLE_LOG_SHELL_TYPES
-    member (1.45), its name or index, or a vehicle descriptor's shell kind string; 'unknown' otherwise."""
     return KIND_BY_CODE.get(shell_code(raw), UNKNOWN_SHELL)
 
 

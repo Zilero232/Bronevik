@@ -1,7 +1,7 @@
-import type { UiComponent, UiState } from '../../protocol/protocol.types';
+import type { UiComponent, UiState } from '../../protocol';
 import type { ComponentGroup, View } from '../store.types';
 
-import { PROTOCOL } from '../../protocol/protocol.constants';
+import { PROTOCOL } from '../../protocol';
 
 const groupOrder = (group: string): number => {
   const index = PROTOCOL.groups.findIndex((known) => known === group);

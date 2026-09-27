@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import type { QueryStateProps, QueryStateSource } from '@/ui-kit';
 
-import type { ResourceMissingProps } from '../ResourceMissing.types';
+import type { ResourceMissingProps } from '../ResourceMissing';
 
 export type ResourceGateMessage = Pick<ResourceMissingProps, 'description' | 'title'>;
 

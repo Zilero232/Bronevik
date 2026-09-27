@@ -6,8 +6,8 @@ from ...core.log import log, safe
 
 
 @safe
+# BigWorld.wg_openWebBrowser is UNVERIFIED on Lesta 1.45; the system browser is the fallback.
 def open_url(url):
-    """The player's browser (BigWorld.wg_openWebBrowser, UNVERIFIED on Lesta 1.45), else the system one."""
     opener = getattr(BigWorld, 'wg_openWebBrowser', None)
     if opener is not None:
         opener(url)

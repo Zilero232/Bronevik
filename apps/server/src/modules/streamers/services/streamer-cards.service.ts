@@ -1,22 +1,19 @@
-import type { StreamerCard, StreamerChannel as StreamerChannelView, StreamerLive } from '@otmetki/schemas';
+import type { StreamerCard, StreamerLive } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { groupBy, indexBy, unique } from 'remeda';
 
-import type { StreamerChannel, StreamerProfile } from '../../../../generated';
+import type { StreamerProfile } from '../../../../generated';
 import type { ProfileWithChannels } from '../streamers.types';
 
 import { toIso, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { STREAMERS } from '../config';
+import { toStreamerCard } from '../mappers';
 
 @Injectable()
 export class StreamerCardsService {
   constructor(private readonly prisma: PrismaService) {}
-
-  channelView(channel: StreamerChannel): StreamerChannelView {
-    return { platform: channel.platform, handle: channel.handle, url: channel.url, verified: channel.verifiedAt !== null };
-  }
 
   async live(profile: StreamerProfile): Promise<StreamerLive | null> {
     if (!profile.isLive || !profile.livePlatform) {
@@ -67,32 +64,14 @@ export class StreamerCardsService {
 
     return profiles.map((profile) => {
       const key = profile.accountId === null ? null : String(profile.accountId);
-      const rating = key ? ratingOf[key] : undefined;
 
-      return {
-        slug: profile.slug,
-        displayName: profile.displayName,
-        kind: profile.kind,
-        channels: profile.channels.map((channel) => this.channelView(channel)),
-        live:
-          profile.isLive && profile.livePlatform
-            ? {
-                platform: profile.livePlatform,
-                viewers: profile.liveViewers,
-                tankId: profile.liveTankId,
-                tankName: profile.liveTankId ? (vehicles[String(profile.liveTankId)]?.name ?? null) : null,
-                checkedAt: toIso(profile.liveCheckedAt)
-              }
-            : null,
-        stats: rating ? { battles: rating.battles, winRate: rating.winRate, wn8: rating.wn8 } : null,
+      return toStreamerCard({
+        profile,
+        rating: key ? ratingOf[key] : undefined,
         marks3: key ? (marksOf[key]?._count._all ?? 0) : null,
-        favouriteTanks: (key ? (favourites[key] ?? []) : []).map((row) => ({
-          tankId: row.tankId,
-          name: vehicles[String(row.tankId)]?.name ?? null,
-          battles: row.battles
-        })),
-        hasSettings: profile.settings !== null
-      };
+        favourites: key ? (favourites[key] ?? []) : [],
+        vehicles
+      });
     });
   }
 

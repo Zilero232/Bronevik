@@ -3,12 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { format, subDays } from 'date-fns';
 
-import type { Digest, DigestPayload } from '../contracts';
+import type { Digest, DigestPayload } from '../config';
 import type { DigestOfInput } from '../notifications.types';
 
 import { PrismaService } from '../../../core';
-import { WEEKLY_DIGEST } from '../config';
-import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../contracts';
+import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE, WEEKLY_DIGEST } from '../config';
 
 @Injectable()
 export class WeeklyDigestService {

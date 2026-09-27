@@ -26,7 +26,11 @@ vi.mock('@/entities/plus/subscription/api/billing/billing', () => ({
   startPlusTrial: vi.fn()
 }));
 
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: 1001 };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: 1001
+};
+
 const KEY: PlusCountKey = 'goals';
 const FREE = PLUS_LIMITS[KEY].free;
 const PLUS = PLUS_LIMITS[KEY].plus;

@@ -34,6 +34,11 @@ def native_values(values, fields):
     return result
 
 
+def setting_names(fields):
+    """The client setting names a `fields` table can write, sorted."""
+    return tuple(sorted(name for name, _ in fields.values()))
+
+
 def merge_value(current, value):
     """A dict setting (a reticle's parts) keeps the parts the new value does not mention."""
     if isinstance(current, dict) and isinstance(value, dict):

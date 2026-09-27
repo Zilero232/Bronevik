@@ -1,14 +1,14 @@
 import { sortBy } from 'remeda';
 
 import type { BestBattleRow } from '../../best-battles.types';
-import type { BattleKeyInput, MergedFeed, MergeFeedInput, SortByMetricInput } from './feed-merge.types';
+import type { BattleKeyInput, MergedFeed, MergeFeedInput, MergePairInput, SortByMetricInput } from './feed-merge.types';
 
 import { BEST_BATTLES } from '../../config';
 
 export const battleKey = ({ source, battle_id, account_id, arena_unique_id }: BattleKeyInput): string =>
   arena_unique_id === null ? `${source}:${battle_id}` : `${account_id}:${arena_unique_id}`;
 
-const mergePair = (current: BestBattleRow, next: BestBattleRow): BestBattleRow => {
+const mergePair = ({ current, next }: MergePairInput): BestBattleRow => {
   const [primary, secondary] = current.source === 'mod' || next.source !== 'mod' ? [current, next] : [next, current];
   const replayId = primary.replay_id ?? (secondary.source === 'replay' ? secondary.battle_id : secondary.replay_id);
 
@@ -22,7 +22,7 @@ export const dedupeBattles = (rows: readonly BestBattleRow[]): BestBattleRow[] =
     const key = battleKey(row);
     const current = merged.get(key);
 
-    merged.set(key, current ? mergePair(current, row) : row);
+    merged.set(key, current ? mergePair({ current, next: row }) : row);
   }
 
   return [...merged.values()];

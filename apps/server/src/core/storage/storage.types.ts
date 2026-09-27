@@ -1,3 +1,5 @@
+import type { S3Client } from '@aws-sdk/client-s3';
+
 import type { Env } from '../../config';
 
 export type PutObjectInput = {
@@ -14,6 +16,8 @@ export type CreateObjectStorageInput = {
   prefix?: string;
 };
 
+export type S3Sender = Pick<S3Client, 'send'>;
+
 export type S3StorageOptions = {
   bucket: string;
   prefix: string;
@@ -21,6 +25,7 @@ export type S3StorageOptions = {
   endpoint: string;
   accessKeyId: string;
   secretAccessKey: string;
+  client?: S3Sender;
 };
 
 export type ObjectStorageModuleOptions = {

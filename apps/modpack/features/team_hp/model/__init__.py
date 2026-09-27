@@ -5,11 +5,11 @@ from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number
 from ....core.templates import render
 from .constants import BAR_CHAR
 
+# Fair play: only what the client already shows. Max HP from the arena data behind the player panels, current HP
+# from the health updates the client receives (an unseen enemy keeps its last known HP, as on its marker).
+
 
 class TeamHp(object):
-    """HP of both teams from what the client already shows: max HP from the arena data behind the player
-    panels, current HP from the health updates the client receives (an unseen enemy keeps its last
-    known HP, as on its marker), deaths from the arena."""
 
     def __init__(self, own_team):
         self.own_team = own_team

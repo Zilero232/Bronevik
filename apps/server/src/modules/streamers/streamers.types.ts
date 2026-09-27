@@ -1,5 +1,4 @@
 import type { DonationAlertsDonationEvent, EventsListener } from '@donation-alerts/events';
-import type { RawBodyRequest } from '@nestjs/common';
 import type {
   ClaimMethod,
   CreateApplyRequestInput,
@@ -20,8 +19,7 @@ import type {
   upsertStreamerProfileSchema
 } from '@otmetki/schemas';
 import type { ChatClient } from '@twurple/chat';
-import type { Request } from 'express';
-import type { z, ZodType } from 'zod';
+import type { z } from 'zod';
 
 import type {
   Challenge,
@@ -315,16 +313,6 @@ export type ApplyViewInput = Pick<SettingsApplyRequest, 'appliedAt' | 'createdAt
 };
 
 export type ClaimTarget = { profile: null; invitation: StreamerInvitation } | { profile: StreamerProfile; invitation: null };
-
-export type SignedModInput<T> = {
-  request: RawBodyRequest<Request>;
-  schema: ZodType<T>;
-};
-
-export type SignedModResult<T> = {
-  device: AuthenticatedDevice;
-  body: T;
-};
 
 export type SetPredictionsInput = UpdatePredictionsInput & {
   userId: string;

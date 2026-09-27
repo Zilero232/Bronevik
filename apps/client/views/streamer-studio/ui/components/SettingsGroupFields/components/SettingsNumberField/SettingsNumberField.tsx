@@ -7,15 +7,13 @@ import { NumberField } from '@/ui-kit';
 
 import type { SettingsNumberFieldProps } from './SettingsNumberField.types';
 
-import { fieldLabelKey } from '../../../../../lib/settings-form';
 import { useSettingsField } from '../../../../../model/hooks';
 
 import s from './SettingsNumberField.module.scss';
 
 export const SettingsNumberField = ({ field }: SettingsNumberFieldProps) => {
-  const t = useTranslations('streamerSettings');
   const tf = useTranslations('streamer.settings');
-  const { control, isInvalid } = useSettingsField(field.path);
+  const { control, isInvalid, label } = useSettingsField(field.path);
 
   return (
     <Controller
@@ -26,7 +24,7 @@ export const SettingsNumberField = ({ field }: SettingsNumberFieldProps) => {
               {tf('range', { min: field.min, max: field.max })}
             </span>
           }
-          label={t(fieldLabelKey(field.path))}
+          label={label}
           max={field.max}
           min={field.min}
           step={field.step}

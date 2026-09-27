@@ -12,4 +12,7 @@ DEFAULTS = {
     'colored': True,
     'bonus_types': 'all',
     'template': '',
+    'history_size': 30,
 }
+
+LIMITS = {'history_size': (10, 100)}

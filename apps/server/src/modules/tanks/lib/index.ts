@@ -1,5 +1,5 @@
 export { bucketOf } from './learning-curve';
-export { patchVerdict, readSpecChanges, toPatchChanges } from './spec-patches';
+export { changeEffect, patchVerdict, readSpecChanges } from './spec-patches';
 export type { SpecChange } from './spec-patches';
 export { statsRankValue, statsSampleFloor } from './stats-ranking';
 export { accountEconomy } from './tank-economy';

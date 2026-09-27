@@ -1,9 +1,18 @@
 import type { ModBattleLoadout } from '@otmetki/schemas';
 
 import type { BattleResultEvent } from '../../../../modules/mod';
-import type { MockProvision, MockVehicle } from '../../lesta-mock.types';
-import type { MockRng } from '../random';
-import type { BattleEventInput, LoadoutInput } from './battles.types';
+import type { MockProvision } from '../../lesta-mock.types';
+import type {
+  BattleEventInput,
+  ByTagInput,
+  CrewOfInput,
+  FitsInput,
+  LoadoutInput,
+  PickConsumablesInput,
+  PickDevicesInput,
+  ShellCostInput,
+  VariantScoreInput
+} from './battles.types';
 
 import { MOCK_SALT } from '../../config';
 import { mockArenaWeight, mockMedals, mockQueueSec, mockShots } from '../battle-extras';
@@ -18,9 +27,9 @@ const CREW_PRIORITY_MAP: ReadonlyMap<string, readonly string[]> = new Map(Object
 
 const normalizeTag = (provision: MockProvision): string => (provision.tag ?? provision.name).toLowerCase().replaceAll(/[^a-z0-9]/g, '');
 
-const fits = (provision: MockProvision, vehicle: MockVehicle): boolean => provision.tankIds.includes(vehicle.tankId);
+const fits = ({ provision, vehicle }: FitsInput): boolean => provision.tankIds.includes(vehicle.tankId);
 
-const variantScore = (tag: string, skilled: boolean): number => {
+const variantScore = ({ tag, skilled }: VariantScoreInput): number => {
   if (tag.includes('trophyupgraded') || tag.includes('delux') || tag.includes('modernized')) {
     return skilled ? 3 : 0.5;
   }
@@ -32,7 +41,7 @@ const variantScore = (tag: string, skilled: boolean): number => {
   return skilled ? 1 : 3;
 };
 
-const pickDevices = (rng: MockRng, devices: readonly MockProvision[], vehicle: MockVehicle, skilled: boolean): number[] => {
+const pickDevices = ({ rng, devices, vehicle, skilled }: PickDevicesInput): number[] => {
   const families = [...LOADOUT_FAMILIES[vehicle.type]];
 
   if (families.length > 3 && rng.chance(0.2)) {
@@ -50,28 +59,28 @@ const pickDevices = (rng: MockRng, devices: readonly MockProvision[], vehicle: M
     const candidates = devices.filter((device) => keywords.some((keyword) => normalizeTag(device).includes(keyword)));
 
     if (candidates.length > 0) {
-      chosen.push(rng.weighted(candidates, (device) => variantScore(normalizeTag(device), skilled)).provisionId);
+      chosen.push(rng.weighted({ items: candidates, weight: (device) => variantScore({ tag: normalizeTag(device), skilled }) }).provisionId);
     }
   }
 
   return chosen;
 };
 
-const byTag = (provisions: readonly MockProvision[], tag: string): MockProvision | undefined =>
+const byTag = ({ provisions, tag }: ByTagInput): MockProvision | undefined =>
   provisions.find((provision) => (provision.tag ?? '').toLowerCase() === tag.toLowerCase()) ??
   provisions.find((provision) => (provision.tag ?? '').toLowerCase().startsWith(tag.toLowerCase()));
 
-const pickConsumables = (rng: MockRng, equipment: readonly MockProvision[], skilled: boolean): number[] => {
+const pickConsumables = ({ rng, equipment, skilled }: PickConsumablesInput): number[] => {
   const wanted = skilled || rng.chance(0.35) ? [...CONSUMABLES.premium, rng.pick(CONSUMABLES.third)] : [...CONSUMABLES.basic];
 
   return wanted.flatMap((tag) => {
-    const provision = byTag(equipment, tag);
+    const provision = byTag({ provisions: equipment, tag });
 
     return provision ? [provision.provisionId] : [];
   });
 };
 
-const crewOf = (world: LoadoutInput['world'], vehicle: MockVehicle, skills: number): ModBattleLoadout['crew'] => {
+const crewOf = ({ world, vehicle, skills }: CrewOfInput): ModBattleLoadout['crew'] => {
   const known = new Set(world.catalog.crewSkills.map((skill) => skill.skill));
 
   return vehicle.crew.map((member) => {
@@ -84,7 +93,7 @@ const crewOf = (world: LoadoutInput['world'], vehicle: MockVehicle, skills: numb
 export const buildMockLoadout = ({ world, player, vehicle }: LoadoutInput): ModBattleLoadout => {
   const rng = createRng(world.seed, MOCK_SALT.loadout, player.index, vehicle.tankId);
   const skilled = damageRatio(player) > 1.05;
-  const compatible = world.catalog.provisions.filter((provision) => fits(provision, vehicle));
+  const compatible = world.catalog.provisions.filter((provision) => fits({ provision, vehicle }));
   const devices = compatible.filter((provision) => provision.type === 'optional_device');
   const equipment = compatible.filter((provision) => provision.type === 'equipment');
   const directives = compatible.filter((provision) => provision.type === 'directive');
@@ -101,17 +110,17 @@ export const buildMockLoadout = ({ world, player, vehicle }: LoadoutInput): ModB
   const skills = Math.min(6, Math.max(1, Math.round(1 + Math.log2(1 + player.careerBattles / 2000))));
 
   return {
-    optional_devices: pickDevices(rng, devices, vehicle, skilled),
-    consumables: pickConsumables(rng, equipment, skilled),
+    optional_devices: pickDevices({ rng, devices, vehicle, skilled }),
+    consumables: pickConsumables({ rng, equipment, skilled }),
     directives: skilled && directives.length > 0 && rng.chance(0.6) ? [rng.pick(directives).provisionId] : [],
     shells: shells.slice(0, 4),
     field_modifications: [],
-    crew: crewOf(world, vehicle, skills),
+    crew: crewOf({ world, vehicle, skills }),
     gameplay_id: null
   };
 };
 
-const shellCost = (vehicle: MockVehicle, loadout: ModBattleLoadout, shots: number): number => {
+const shellCost = ({ vehicle, loadout, shots }: ShellCostInput): number => {
   const total = loadout.shells.reduce((sum, shell) => sum + shell.count, 0);
 
   return Math.round(
@@ -145,17 +154,20 @@ export const toBattleEvent = ({ world, player, battle, platoonMates }: BattleEve
       (premiumTank ? ECONOMY.premiumTankRepair : 1)
   );
 
-  const ammo = shellCost(vehicle, loadout, battle.shots);
+  const ammo = shellCost({ vehicle, loadout, shots: battle.shots });
   const premiumKit = loadout.consumables.length > 0 && loadout.consumables.length < 3;
   const consumables = premiumKit
-    ? Math.round(ECONOMY.premiumKitPrice * (battle.survived ? rng.int(0, 2) : rng.int(1, 3)))
-    : Math.round(ECONOMY.basicKitPrice * (battle.survived ? rng.int(0, 1) : rng.int(1, 2)));
+    ? Math.round(ECONOMY.premiumKitPrice * (battle.survived ? rng.int({ min: 0, max: 2 }) : rng.int({ min: 1, max: 3 })))
+    : Math.round(ECONOMY.basicKitPrice * (battle.survived ? rng.int({ min: 0, max: 1 }) : rng.int({ min: 1, max: 2 })));
 
   const xp = Math.round(battle.xp * (battle.premiumAccount ? ECONOMY.premiumAccount : 1));
   const arenas = world.catalog.arenas.filter((arena) => arena.modes.includes(battle.mode === 'frontline' ? 'epic' : 'ctf'));
   const arena =
     arenas.length > 0
-      ? rng.weighted(arenas, (candidate) => mockArenaWeight({ seed: world.seed, index: world.catalog.arenas.indexOf(candidate), tier: vehicle.tier }))
+      ? rng.weighted({
+          items: arenas,
+          weight: (candidate) => mockArenaWeight({ seed: world.seed, index: world.catalog.arenas.indexOf(candidate), tier: vehicle.tier })
+        })
       : undefined;
 
   const arenaUniqueId = BigInt(battle.endedAt) * 1_000_000n + BigInt(hashSeed(world.seed, player.index, battle.endedAt, battle.tankId) % 1_000_000);
@@ -201,7 +213,7 @@ export const toBattleEvent = ({ world, player, battle, platoonMates }: BattleEve
       factual_credits: credits - repair - ammo - consumables,
       life_time_s: battle.lifetimeSec,
       is_alive: battle.survived,
-      death_reason: battle.survived ? -1 : rng.int(0, 3),
+      death_reason: battle.survived ? -1 : rng.int({ min: 0, max: 3 }),
       is_premium: battle.premiumAccount,
       free_xp: Math.round(xp * ECONOMY.freeXpShare),
       repair_cost: repair,

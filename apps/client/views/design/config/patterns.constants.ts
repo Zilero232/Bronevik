@@ -10,6 +10,11 @@ export const PATTERN_SPECIMENS = {
     { id: 'third', percent: 93.1, damageToNext: 95 }
   ],
   doneMark: 96.2,
+  ribbons: [
+    { id: 'expiring', shape: 'corner', tone: 'accent', caption: 'cornerRibbon' },
+    { id: 'new', shape: 'corner', tone: 'steel', caption: 'cornerRibbon' },
+    { id: 'premium', shape: 'ribbon', tone: 'premium', caption: 'edgeRibbon' }
+  ],
   timeline: [
     { id: 'buff', tone: 'success' },
     { id: 'nerf', tone: 'danger' },

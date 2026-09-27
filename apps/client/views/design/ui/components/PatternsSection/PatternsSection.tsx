@@ -67,24 +67,14 @@ export const PatternsSection = () => {
         />
       </DesignRow>
       <DesignRow label={t('ribbons')}>
-        <div className={s.ribbonCard}>
-          <Badge shape='corner' tone='accent'>
-            {t('expiring')}
-          </Badge>
-          {t('cornerRibbon')}
-        </div>
-        <div className={s.ribbonCard}>
-          <Badge shape='corner' tone='steel'>
-            {t('new')}
-          </Badge>
-          {t('cornerRibbon')}
-        </div>
-        <div className={s.ribbonCard}>
-          <Badge shape='ribbon' tone='premium'>
-            {t('premium')}
-          </Badge>
-          {t('edgeRibbon')}
-        </div>
+        {PATTERN_SPECIMENS.ribbons.map(({ id, shape, tone, caption }) => (
+          <div key={id} className={s.ribbonCard}>
+            <Badge shape={shape} tone={tone}>
+              {t(id)}
+            </Badge>
+            {t(caption)}
+          </div>
+        ))}
       </DesignRow>
       <DesignRow label={t('mediaCard')}>
         <div className={s.media}>

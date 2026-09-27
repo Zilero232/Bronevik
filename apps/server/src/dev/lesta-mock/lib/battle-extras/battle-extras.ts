@@ -59,7 +59,7 @@ export const mockShots = ({ battle, vehicle, rng }: BattleExtrasInput): MockShot
     range(0, total).map((index): MockShot => {
       const shell = index < pierced && premium?.damage && rng.chance(MOCK_SHOTS.premiumPierceShare) ? premium : main;
       const nominal = shell.damage ?? main.damage ?? 1;
-      const distance = rng.int(nearest, farthest);
+      const distance = rng.int({ min: nearest, max: farthest });
 
       if (index >= hits) {
         return { damage: 0, nominal, shell: shellOf(shell), outcome: 'miss', distance_m: distance, fatal: false };
@@ -69,7 +69,7 @@ export const mockShots = ({ battle, vehicle, rng }: BattleExtrasInput): MockShot
         return { damage: 0, nominal, shell: shellOf(shell), outcome: 'no_damage', distance_m: distance, fatal: false };
       }
 
-      const roll = 1 + clamp(rng.normal(0, MOCK_SHOTS.rollDeviation), { min: -MOCK_SHOTS.spread, max: MOCK_SHOTS.spread });
+      const roll = 1 + clamp(rng.normal({ mean: 0, deviation: MOCK_SHOTS.rollDeviation }), { min: -MOCK_SHOTS.spread, max: MOCK_SHOTS.spread });
       const damage = Math.round(nominal * roll);
       const isFatal = fatal.has(index);
 
@@ -90,7 +90,7 @@ export const mockQueueSec = ({ battle, vehicle, rng }: BattleExtrasInput): numbe
   const base = MOCK_QUEUE.tierBaseSec[vehicle.tier] ?? MOCK_QUEUE.tierBaseSec[0];
   const factor = (MOCK_QUEUE.hourFactor[hour] ?? 1) * MOCK_QUEUE.modeFactor[battle.mode];
 
-  return clamp(Math.round(rng.logNormal(base * factor, MOCK_QUEUE.sigma)), { min: MOCK_QUEUE.minSec, max: MOCK_QUEUE.maxSec });
+  return clamp(Math.round(rng.logNormal({ median: base * factor, sigma: MOCK_QUEUE.sigma })), { min: MOCK_QUEUE.minSec, max: MOCK_QUEUE.maxSec });
 };
 
 export const mockArenaWeight = ({ seed, index, tier }: ArenaWeightInput): number => {

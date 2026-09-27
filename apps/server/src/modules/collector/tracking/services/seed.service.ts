@@ -1,7 +1,6 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
-import { fromUnixTime } from 'date-fns';
 
 import type { LestaClients } from '../../../../core';
 import type { ClanRefreshPayload } from '../../contracts';
@@ -14,6 +13,7 @@ import { JOB, QUEUE } from '../../contracts';
 import { PurgeGuardService } from '../../purge';
 import { TRACKING } from '../config';
 import { collectIds } from '../lib/seed';
+import { toClanRecord } from '../mappers';
 import { DispatchService } from './dispatch.service';
 
 @Injectable()
@@ -82,14 +82,7 @@ export class SeedService {
       }
 
       await this.prisma.clan.createMany({
-        data: page.map((clan) => ({
-          clanId: BigInt(clan.clan_id),
-          tag: clan.tag,
-          name: clan.name,
-          color: clan.color ?? null,
-          membersCount: clan.members_count,
-          createdAt: fromUnixTime(clan.created_at)
-        })),
+        data: page.map(toClanRecord),
         skipDuplicates: true
       });
 

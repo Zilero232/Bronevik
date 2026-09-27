@@ -1,7 +1,7 @@
 import type { TranslationVariables } from '@grammyjs/i18n';
 
-import type { NOTIFICATION_COPY } from '../../config/copy.config';
-import type { Digest, ParsedNotification } from '../../contracts';
+import type { Digest, ParsedNotification } from '../../config';
+import type { NOTIFICATION_COPY } from '../../config/copy.constants';
 
 export type NotificationLocale = (typeof NOTIFICATION_COPY.locales)[number];
 

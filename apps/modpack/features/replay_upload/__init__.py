@@ -1,4 +1,4 @@
-"""Feature: opt-in replay auto-upload (`upload_replays`, `publish_replays`). Depends on the core and the companion."""
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'replay_upload'
 PACKAGE_ID = 'net.triotmetki.replay_upload'
@@ -12,6 +12,5 @@ def create(app):
 
 
 def register():
-    """Called by the feature's mod_* entry script; safe in any load order (see core.registry)."""
     from ...core.registry import registry
     return registry().register(FEATURE_ID, create)

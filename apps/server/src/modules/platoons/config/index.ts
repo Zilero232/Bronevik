@@ -1,1 +1,1 @@
-export { PLATOON } from './platoons.config';
+export { PLATOON } from './platoons.constants';

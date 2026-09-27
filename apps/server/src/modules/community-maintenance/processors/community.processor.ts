@@ -2,6 +2,7 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
+import { MetricsService } from '../../collector/metrics';
 import { PlatoonService } from '../../platoons';
 import { RecruitingService } from '../../recruiting';
 import { COMMUNITY_QUEUE } from '../config';
@@ -10,12 +11,17 @@ import { COMMUNITY_QUEUE } from '../config';
 export class CommunityProcessor extends WorkerHost {
   constructor(
     private readonly platoons: PlatoonService,
-    private readonly recruiting: RecruitingService
+    private readonly recruiting: RecruitingService,
+    private readonly metrics: MetricsService
   ) {
     super();
   }
 
   async process(job: Job): Promise<unknown> {
+    return this.metrics.track({ job, run: () => this.handle(job) });
+  }
+
+  private async handle(job: Job): Promise<unknown> {
     const now = new Date();
 
     return match(job.name)

@@ -2,7 +2,7 @@ import { Job } from 'bullmq';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { MetricsService } from '../../../collector';
+import type { MetricsService } from '../../../collector/metrics';
 import type { SessionCloseService, WebhookDeliveryService, WebhookRedriveService } from '../../services';
 
 import { JOB } from '../../../collector';

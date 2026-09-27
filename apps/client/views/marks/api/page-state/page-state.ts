@@ -7,7 +7,7 @@ import { loadVehicleFilters, vehicleQuery } from '@/features/tank/filter-vehicle
 import { prefetchState } from '@/shared/api/prefetch-state';
 import { PREFETCH_CACHE_LIFE } from '@/shared/api/query-client';
 
-import type { MoeFeedParams } from '../marks-queries';
+import type { MoeFeedInput } from '../marks-queries';
 
 import { MARKS_URL_PARSERS } from '../../config';
 import { moeFeedParams } from '../../lib/moe-feed-params';
@@ -15,7 +15,7 @@ import { marksQueries } from '../marks-queries';
 
 const loadMarksState = createLoader(MARKS_URL_PARSERS);
 
-const prefetchFeed = async (params: MoeFeedParams) => {
+const prefetchFeed = async (params: MoeFeedInput) => {
   'use cache';
   cacheLife(PREFETCH_CACHE_LIFE);
 

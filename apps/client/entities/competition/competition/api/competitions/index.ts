@@ -1,2 +1,2 @@
 export { getCompetition, listCompetitions } from './competitions';
-export type { GetCompetitionInput, JoinCompetitionRequest, ListCompetitionsInput } from './competitions.types';
+export type { GetCompetitionInput, JoinCompetitionInput, ListCompetitionsInput } from './competitions.types';

@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import time
 
@@ -11,8 +11,6 @@ from .dossier import current_vehicle_moe
 
 
 class MarksCapture(object):
-    """Marks-of-excellence data for the API: hangar MoE snapshots (sent when they change) and the MoE
-    damage distribution (once per vehicle per day). Emits `vehicle_moe(snapshot)` for the features."""
 
     def __init__(self, app):
         self.app = app
@@ -33,7 +31,6 @@ class MarksCapture(object):
         self._request_distribution(tank_id)
 
     def after_battle(self, tank_id, moe):
-        """Post-battle MoE from the battle results replaces the hangar snapshot of that vehicle."""
         if moe is not None and tank_id in self.hangar_moe:
             self.hangar_moe[tank_id].update({
                 'damage_rating': moe['damage_rating'],

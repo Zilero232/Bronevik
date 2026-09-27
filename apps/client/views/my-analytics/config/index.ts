@@ -1,3 +1,4 @@
+export { ANALYTICS_COLUMNS } from './analytics-columns.constants';
 export { ANALYTICS_TAB_PARAM, ANALYTICS_TABS } from './analytics-tabs.constants';
 export type { AnalyticsTab } from './analytics-tabs.constants';
 export { ANALYTICS_TANK } from './analytics-tank.constants';

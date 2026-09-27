@@ -16,8 +16,8 @@ import { REDIS } from '../../../core';
 import { ApiKeysService } from '../../developer';
 import { LeaderboardService } from '../../leaderboards';
 import { API_RATE_LIMIT } from '../config';
-import { ApiKeyGuard } from '../guards/api-key.guard';
-import { ApiUsageInterceptor } from '../interceptors/api-usage.interceptor';
+import { ApiKeyGuard } from '../guards/api-key/api-key.guard';
+import { ApiUsageInterceptor } from '../interceptors/api-usage/api-usage.interceptor';
 import { ApiRateLimitService, ApiUsageService } from '../services';
 import { V1LeaderboardsController } from '../v1-leaderboards.controller';
 

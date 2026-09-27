@@ -30,7 +30,10 @@ vi.mock('../../../../api/moderation/moderation', () => ({ createReport: vi.fn() 
 
 const TEXT = messages.en.community.report;
 const TARGET: ReportTarget = { targetType: 'comment', targetId: 'comment-1' };
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: null };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: null
+};
 
 const REPORT: ContentReport = {
   id: '00000000-0000-4000-8000-000000000001',

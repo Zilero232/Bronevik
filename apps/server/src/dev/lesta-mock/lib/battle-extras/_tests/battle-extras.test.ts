@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import type { MockBattle } from '../../../lesta-mock.types';
 
-import { DAY, fixtureWorld } from '../../../_tests/fixtures';
 import { MOCK_SALT, MOCK_TIME } from '../../../config';
 import { createRng } from '../../random';
 import { battlesBetween } from '../../simulation';
+import { DAY, fixtureWorld } from '../../world/_tests/fixtures';
 import { mockArenaWeight, mockMedals, mockQueueSec, mockShots } from '../battle-extras';
 import { MOCK_ARENA_WEIGHT, MOCK_MEDALS, MOCK_QUEUE, MOCK_SHOTS } from '../battle-extras.constants';
 

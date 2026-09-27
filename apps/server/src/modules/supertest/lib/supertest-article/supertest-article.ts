@@ -16,8 +16,8 @@ import { matchTankNames } from '../../../shop';
 import { SUPERTEST_ARTICLE, SUPERTEST_SCRAPE } from '../../config';
 import { paramOf } from '../param-key';
 import { parseParamLine, parseValueCell } from '../param-line';
+import { SUPERTEST_ARTICLE_PARAMS } from './supertest-article.constants';
 
-const ANGLE_PARAMS = new Set<string>(['depression', 'elevation']);
 const CHANGE_VERB = /увелич|уменьш|измен|улучш|ухудш|сниж|повыш|сокращ|ускор|замедл|добавл|убран/iu;
 const CLOSING_PUNCTUATION = /[.:!?,;]$/u;
 
@@ -28,7 +28,8 @@ const clean = (line: string): string => line.replace(SUPERTEST_ARTICLE.bullet, '
 const isShort = (line: string): boolean =>
   line.length <= SUPERTEST_ARTICLE.maxHeadingLength && line.split(' ').length <= SUPERTEST_ARTICLE.maxHeadingWords;
 
-const normalise = ({ param, value }: NormaliseInput): number => (param !== null && ANGLE_PARAMS.has(param) ? Math.abs(value) : value);
+const normalise = ({ param, value }: NormaliseInput): number =>
+  param !== null && SUPERTEST_ARTICLE_PARAMS.angleParams.has(param) ? Math.abs(value) : value;
 
 const toParsedChange = (entry: ParamLine): ParsedChange => {
   const meta = paramOf(entry.label);

@@ -5,7 +5,11 @@ Part of the [style guide](../../README.md).
 ## 14. Shared schemas — `@otmetki/schemas`
 
 Zod schemas and the types shared between the client and the server app
-live in `packages/schemas`.
+live in `packages/schemas`. A schema is shared as soon as the client reads or sends
+that shape. A request schema only the server validates (an admin body, a query no
+client code builds) and the stored-JSON shapes the server parses may live in the
+module's `dto/<module>.schemas.ts`; the client then gets the type through the OpenAPI
+codegen (`@otmetki/sdk`), never by redeclaring it.
 
 Each domain is a folder, and a domain wide enough to hold several concerns
 splits again — one folder per concern, never one file holding schemas,
@@ -48,6 +52,14 @@ type SearchResponse = { query: string; results: ... };
 
 `@/shared/api` exports the axios instance and the query client only; request wrappers are
 imported from the slice that owns them.
+
+**Generated schemas.** The hey-api client also generates a Zod schema per contract
+(`shared/api/generated/zod.gen.ts`, `zCreateClanEvent`, `zUpsertCoach`, …) and a type per
+request (`ClansControllerListData`). A slice `api/` re-exports the ones it uses. Client
+code derives from them rather than retyping: a request input is
+`NonNullable<ClansControllerListData['query']> & { signal?: AbortSignal }`, and a form schema
+reads its field constraints off `zX.shape.field` ([forms](../client/forms.md)). Types from a
+library come from the library too — `AuthUser` is `typeof authClient.$Infer.Session['user']`.
 
 **Input vs output types.** One Zod schema can yield two types: `.default()`,
 `.coerce` and `.transform()` make `z.input` and `z.output` incompatible.

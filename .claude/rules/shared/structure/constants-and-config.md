@@ -30,9 +30,19 @@ export const SEARCH_REQUEST = {
 ```
 
 A `config/` folder holds one file per concern — `player-lookup.constants.ts`,
-`player-stats.constants.ts` in the client (the server keeps `*.config.ts`) — not one `<module>.config.ts` that accumulates
-everything the module ever needed. The barrel re-exports them, so a call site
+`player-stats.constants.ts` in the client, `queue.constants.ts`, `schedules.constants.ts` in a
+server module — not one `<module>.constants.ts` that accumulates everything the module
+ever needed. Both apps use the `.constants.ts` suffix; there is no `*.config.ts` in a
+`config/` folder. The barrel re-exports them, so a call site
 still imports from `../config` and never learns the file names.
 
 Two things stay flat: a single value with no siblings, and a name that is part
 of a package's public API, where grouping would rename it for every consumer.
+
+A module-level `const` holding a literal value outside `config/` (or a server
+`*.constants.ts`) is a finding. Two exceptions:
+- the TanStack column helper `const column = createColumnHelper<Row>()` at the top of a
+  `use-<x>-columns.tsx`, which is a stateless factory and not a value anyone reads;
+- a lookup derived from constants (`new Set(CONFIG.list)`, `new Map(...)`, an index built
+  from a constants object) placed next to the code that uses it. Its literals still live
+  in the constants file.

@@ -1,11 +1,11 @@
-"""Cleaning raw values against the whitelist, the contract's grouped form and the apply plan."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from ...core.compat import is_int, is_number, string_types, to_text
 from .constants import APPLICABLE_GROUPS, RESOLUTION_FIELDS, RESOLUTION_RE, TEXT_MAX
 from .fields import BY_PATH, BY_RAW, FIELDS, TEXT
 
 
 def _clean(kind, value):
-    """Return the contract value, or None when the value is invalid or unknown."""
     tag = kind[0]
     if tag == 'bool':
         return value if isinstance(value, bool) else None
@@ -58,7 +58,6 @@ def _clean(kind, value):
 
 
 def clean_values(raw):
-    """Whitelist a flat dict of raw keys; unknown or invalid values are dropped."""
     result = {}
     if not isinstance(raw, dict):
         return result
@@ -73,7 +72,6 @@ def clean_values(raw):
 
 
 def build_export(raw_settings):
-    """Flat raw values -> contract `settings` object (groups display..battleUi only)."""
     settings = {}
     values = clean_values(raw_settings)
     for raw_key, group, field, _ in FIELDS:
@@ -88,7 +86,6 @@ def build_export(raw_settings):
 
 
 def flatten_settings(settings):
-    """Contract `settings` object -> whitelisted flat raw values (inverse of build_export)."""
     raw = {}
     if not isinstance(settings, dict):
         return raw
@@ -106,10 +103,6 @@ def is_hardware_specific(group, field):
 
 
 def plan_apply(current, request, include_resolution=False, include_sensitivity=False):
-    """List of (group, field, old, new) for the requested groups that differ from `current`.
-
-    Resolution/refresh rate/window mode and sensitivity are left out unless opted in.
-    """
     groups = [g for g in (request or {}).get('groups') or () if g in APPLICABLE_GROUPS]
     target = flatten_settings((request or {}).get('settings'))
     mine = clean_values(current)
@@ -132,7 +125,6 @@ def raw_key_of(group, field):
 
 
 def changes_to_values(changes):
-    """Flat raw values to write for a plan."""
     values = {}
     for group, field, _, new in changes:
         key = raw_key_of(group, field)

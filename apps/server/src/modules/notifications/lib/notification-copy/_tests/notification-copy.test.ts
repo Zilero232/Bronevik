@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import type { ParsedNotification } from '../../../contracts';
+import type { ParsedNotification } from '../../../config';
 
 import { NOTIFICATION_COPY } from '../../../config';
 import { notificationText, renderDigest, renderNotification, resolveNotificationLocale } from '../notification-copy';

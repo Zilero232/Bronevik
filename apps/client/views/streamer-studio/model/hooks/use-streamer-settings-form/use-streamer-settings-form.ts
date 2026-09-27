@@ -30,7 +30,7 @@ export const useStreamerSettingsForm = (view: StreamerSettingsView) => {
   const onImport = ({ values, found }: PreferencesImport) => {
     for (const field of SETTINGS_FIELDS) {
       if (found.includes(field.path)) {
-        form.setValue(field.path, toFormLeaf({ field, value: readPath(values, field.path) }), { shouldDirty: true });
+        form.setValue(field.path, toFormLeaf({ field, value: readPath({ source: values, path: field.path }) }), { shouldDirty: true });
       }
     }
 

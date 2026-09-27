@@ -28,7 +28,6 @@ def relative(path):
 
 
 def is_client_glue(path):
-    """Glue may import the client: anything under a client/ or entry/ folder, and a feature's client.py."""
     parts = relative(path).split('/')
     return 'client' in parts[:-1] or 'entry' in parts[:-1] or parts[-1] == 'client.py'
 
@@ -57,8 +56,6 @@ def guarded(tree, node):
 class Py27CompatTest(unittest.TestCase):
 
     def test_sources_compile(self):
-        """On Python 2.7 this is the real syntax check (the vendored libraries included: the release build
-        compiles them too); on Python 3 the AST scan below covers the mod's own sources."""
         for path in source_files() + _support.vendor_files():
             with io.open(path, 'rb') as handle:
                 compile(handle.read(), path, 'exec')

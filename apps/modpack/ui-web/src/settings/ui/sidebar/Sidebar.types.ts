@@ -1,4 +1,4 @@
-import type { ComponentGroup, View } from '../../model/store/store.types';
+import type { ComponentGroup, View } from '../../model/store';
 
 export type SidebarProps = {
   groups: ComponentGroup[];

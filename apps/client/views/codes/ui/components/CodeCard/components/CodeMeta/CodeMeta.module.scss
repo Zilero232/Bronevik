@@ -1,0 +1,39 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(0);
+
+  margin: 0;
+}
+
+.row {
+  @include data-list-row;
+
+  justify-content: space-between;
+  font-size: var(--text-xs);
+
+  dt {
+    @include label;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+}
+
+.source {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-steel);
+  gap: var(--space-1);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

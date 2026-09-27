@@ -7,13 +7,14 @@ import { sortBy } from 'remeda';
 import type { BucketTankRow, HistoryWindowPolicy } from '../lib';
 import type { ActivityInput, ActivityRow, HistoryInput, HistoryPolicyInput } from '../players.types';
 
-import { moscowDay, moscowDayStart, percentOf, toIso } from '../../../common/lib';
+import { moscowDay, moscowDayStart, percentOf } from '../../../common/lib';
 import { TIME } from '../../../config';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { BronyaReferencesService, ExpectedValuesService, VehicleCatalogService } from '../../reference';
 import { HISTORY_WINDOW } from '../config';
 import { historyWindow, seriesPoints } from '../lib';
+import { toClanHistoryEntry, toNicknameHistoryEntry } from '../mappers';
 
 @Injectable()
 export class PlayerHistoryService {
@@ -108,18 +109,8 @@ export class PlayerHistoryService {
     const tagOf = new Map(tags.map((clan) => [clan.clanId, clan.tag]));
 
     const entries: PlayerHistoryEntry[] = [
-      ...nicknames.map((entry) => ({
-        kind: 'nickname' as const,
-        value: entry.nickname,
-        from: toIso(entry.firstSeenAt),
-        to: toIso(entry.lastSeenAt)
-      })),
-      ...clans.map((entry) => ({
-        kind: 'clan' as const,
-        value: tagOf.get(entry.clanId) ?? String(entry.clanId),
-        from: toIso(entry.joinedAt),
-        to: toIso(entry.leftAt)
-      }))
+      ...nicknames.map(toNicknameHistoryEntry),
+      ...clans.map((entry) => toClanHistoryEntry({ entry, tag: tagOf.get(entry.clanId) }))
     ];
 
     return sortBy(entries, [(entry) => entry.from ?? '', 'desc']);

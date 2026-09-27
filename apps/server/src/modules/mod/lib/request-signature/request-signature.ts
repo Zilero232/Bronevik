@@ -1,8 +1,7 @@
 import type { FreshTimestampInput, SignedMessageInput } from './request-signature.types';
 
 import { MOD_REQUEST } from '../../config';
-
-const TIMESTAMP_SHAPE = /^\d{1,12}$/u;
+import { REQUEST_SIGNATURE } from './request-signature.constants';
 
 export const signedMessage = ({ method, path, timestamp, nonce, headers = [], body }: SignedMessageInput): Buffer => {
   const lines = [
@@ -18,7 +17,9 @@ export const signedMessage = ({ method, path, timestamp, nonce, headers = [], bo
 };
 
 export const isFreshTimestamp = ({ timestamp, now }: FreshTimestampInput): boolean =>
-  timestamp !== undefined && TIMESTAMP_SHAPE.test(timestamp) && Math.abs(Number(timestamp) - now.getTime() / 1000) <= MOD_REQUEST.maxSkewSeconds;
+  timestamp !== undefined &&
+  REQUEST_SIGNATURE.timestampShape.test(timestamp) &&
+  Math.abs(Number(timestamp) - now.getTime() / 1000) <= MOD_REQUEST.maxSkewSeconds;
 
 export const isNonce = (nonce: string | undefined): nonce is string => nonce !== undefined && MOD_REQUEST.noncePattern.test(nonce);
 

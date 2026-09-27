@@ -10,11 +10,17 @@ paths:
 
 ## Verify before claiming anything works
 
-`bun run verify` — typecheck, ESLint, Prettier, Stylelint. `bun run test` is
-separate; bare `bun test` is Bun's own runner and fails the suite. There is no
-per-push CI: the manual deploy workflow (`.github/workflows/deploy.yml`, `checks`
-job) runs both before any image is built.
+A change is verified with **typecheck, lint and the tests it touches**:
+`bun run verify` (typecheck, ESLint, Prettier, Stylelint, encoding) plus
+`bun run test` — or the targeted form, `bun run typecheck`, `eslint <path>` and
+`bunx vitest run --project <workspace>`. Bare `bun test` is Bun's own runner and
+fails the suite. There is no per-push CI: the manual deploy workflow
+(`.github/workflows/deploy.yml`, `checks` job) runs both before any image is built.
 
-Neither catches SSR breakage. `bun --filter @otmetki/client build` is the only
-check that does — it is where a page that typechecks but throws during prerender
-fails, and where a missing translation key surfaces as `MISSING_MESSAGE`.
+**No production build unless the owner asks for one.** `bun --filter @otmetki/client build`
+is slow and is not part of routine verification. It is still the only check that
+catches prerender breakage — a page that typechecks but throws during SSR, or a
+missing translation key surfacing as `MISSING_MESSAGE` — so when a build is asked for,
+the first one after client work is where to watch the prerender output, and a change
+that could affect prerendering is called out in the report instead of being built on
+the side.

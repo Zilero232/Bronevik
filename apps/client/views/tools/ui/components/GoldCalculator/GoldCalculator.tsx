@@ -1,12 +1,9 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
-
-import type { GoldValues } from './GoldCalculator.types';
+import { useTranslations } from 'next-intl';
 
 import { GOLD } from '../../../config';
-import { creditsToGold, freeXpToGold, goldToCredits, goldToFreeXp } from '../../../lib/gold-conversion';
-import { useCalcState } from '../../../model/hooks';
+import { useGoldCalculator } from '../../../model/hooks';
 import { CalcShell } from '../CalcShell';
 import { FieldGrid } from '../FieldGrid';
 import { ResultFigure } from '../ResultFigure';
@@ -15,12 +12,7 @@ import { GoldBundles } from './components';
 
 export const GoldCalculator = () => {
   const t = useTranslations('tools.gold');
-  const format = useFormatter();
-  const { values, field } = useCalcState<GoldValues>({ ...GOLD.defaults });
-
-  const gold = values.gold ?? 0;
-  const credits = values.credits ?? 0;
-  const xp = values.xp ?? 0;
+  const { values, field, credits, creditsHint, conversions } = useGoldCalculator();
 
   return (
     <CalcShell
@@ -40,14 +32,8 @@ export const GoldCalculator = () => {
       }
       results={
         <>
-          <ResultFigure hint={t('goldToCreditsHint', { gold: format.number(gold) })} label={t('goldToCredits')} value={goldToCredits(gold)} />
-          <ResultList
-            items={[
-              { key: 'goldToXp', label: t('goldToXp'), value: format.number(goldToFreeXp(gold)) },
-              { key: 'creditsToGold', label: t('creditsToGold', { credits: format.number(credits) }), value: format.number(creditsToGold(credits)) },
-              { key: 'xpToGold', label: t('xpToGold', { xp: format.number(xp) }), value: format.number(freeXpToGold(xp)) }
-            ]}
-          />
+          <ResultFigure hint={creditsHint} label={t('goldToCredits')} value={credits} />
+          <ResultList items={conversions} />
         </>
       }
       description={t('description')}

@@ -1,4 +1,5 @@
-"""One upload at a time: the worker-thread job (locate, read, sign, post) and its main-thread driver."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import io
 import os
 
@@ -8,6 +9,10 @@ from .constants import MAX_BYTES, SETTLE_S, VISIBILITY_HEADER, VISIBILITY_PRIVAT
 from .files import build_multipart
 from .queue import uploaded_replay_id
 
+# upload_job runs on the worker thread: its transport must answer inside request() (transport.SyncTransport), so
+# the 428 clock-skew retry of signing.signed_request happens there too. ReplayUploader drives it from the main
+# thread, one upload in flight.
+
 
 def _read_file(path, limit):
     with io.open(path, 'rb') as handle:
@@ -15,13 +20,6 @@ def _read_file(path, limit):
 
 
 def upload_job(item, credentials, transport, url, user_agent, finder, now, read_file=None, visibility=VISIBILITY_PRIVATE):
-    """Runs on the worker thread: locate, size-check, read, sign and post one replay synchronously.
-
-    `visibility` (private or public) goes in the signed X-Otmetki-Visibility header.
-
-    `transport` must answer inside request() (transport.SyncTransport), so the 428 clock-skew
-    retry in signing.signed_request happens here too. Returns a result dict for ReplayQueue.complete.
-    """
     found = finder(item)
     if not found:
         return {'result': JobResult.MISSING}
@@ -51,7 +49,6 @@ def upload_job(item, credentials, transport, url, user_agent, finder, now, read_
 
 
 class ReplayUploader(object):
-    """Main-thread driver: at most one upload in flight, the job itself runs on `runner`."""
 
     def __init__(self, queue, credentials, runner, transport, url, user_agent, finder, clock,
                  on_auth_failed=None, on_uploaded=None, read_file=None, visibility=VISIBILITY_PRIVATE, on_replay_id=None):

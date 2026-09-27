@@ -1,14 +1,12 @@
 import clsx from 'clsx';
 
-import type { StringKey } from '../../../shared/i18n/i18n.types';
 import type { SidebarProps } from './Sidebar.types';
 
-import { toggleSwitch } from '../../model/actions/actions';
-import { useT } from '../../model/hooks/use-t/use-t';
-import { openComponent, openSection } from '../../model/store/store';
-import { Toggle } from '../toggle/Toggle';
-
-const GROUP_TITLES: Record<string, StringKey> = { data: 'groupData', hangar: 'groupHangar', battle: 'groupBattle' };
+import { SIDEBAR } from '../../config';
+import { toggleSwitch } from '../../model/actions';
+import { useT } from '../../model/hooks/use-t';
+import { openComponent, openSection } from '../../model/store';
+import { Toggle } from '../toggle';
 
 export const Sidebar = ({ groups, view, selectedId }: SidebarProps) => {
   const t = useT();
@@ -18,7 +16,7 @@ export const Sidebar = ({ groups, view, selectedId }: SidebarProps) => {
       <div className='sidebar__scroll'>
         {groups.map((group) => (
           <section key={group.id} className='sidebar__group'>
-            <h3 className='sidebar__group-title'>{t(GROUP_TITLES[group.id] ?? 'groupOther')}</h3>
+            <h3 className='sidebar__group-title'>{t(SIDEBAR.groupTitles[group.id] ?? SIDEBAR.otherGroupTitle)}</h3>
             {group.components.map((component) => (
               <div key={component.id} className={clsx('nav-item', view.section === 'components' && selectedId === component.id && 'nav-item--on')}>
                 <button className='nav-item__title' type='button' onClick={() => openComponent(component.id)}>

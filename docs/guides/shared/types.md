@@ -24,34 +24,19 @@ export const searchResultSchema = z.discriminatedUnion('kind', [
 ]);
 ```
 
-### 8.1 Field order in Props and destructuring
+### 8.1 Props order
 
-One order in two places: **`type Props`** and **the parameter destructuring**. That way the eye looks for the same thing the same way.
+There is no required field order in a Props type or its destructuring; group what
+reads well together. **The JSX call site is sorted by ESLint**, not by hand:
+`perfectionist/sort-jsx-props` puts shorthand props first, then `key`/`ref`, then the
+rest alphabetically, and every `on<Event>` callback last. `bun lint:fix` applies it.
 
-The order:
+### 8.2 Derive, don't retype
 
-1. **Data** — strings, numbers, booleans, objects, refs, `children`.
-2. **Identifiers / styles** — `id`, `className`, `style`.
-3. **Event handlers** — `onClick`, `onChange`, any `on<Event>`.
-
-```ts
-// ✓ OK
-export type PeriodSwitcherProps = {
-  value: RecentPeriod;
-  size?: 'md' | 'sm';
-  className?: string;
-  onChange: (value: RecentPeriod) => void;
-};
-
-export const PeriodSwitcher = ({ value, size = 'md', className, onChange }: PeriodSwitcherProps) => {
-  ...
-};
-```
-
-The logic: "what we show" → "how it looks" → "what it does". Meaning first, then form, then behaviour.
-
-Within each group the order is free, but **it must match between the Props type and the destructuring**. A mismatch is caught at review.
-
-**The JSX call site is sorted by ESLint**, not by hand: `perfectionist/sort-jsx-props` puts
-shorthand props first, then `key`/`ref`, then the rest alphabetically, and every `on<Event>`
-callback last. `bun lint:fix` applies it.
+A type that already exists somewhere is derived from it, never written out again: from a
+Zod schema (`z.infer`, `z.input`), from Prisma, from the generated API types
+(`NonNullable<ClansControllerListData['query']>`), from a library (`typeof
+authClient.$Infer.Session['user']`, TanStack `TableOptions<T>['columns']`) or from a
+neighbour's type (`Pick<StreamerChallenge, 'amount' | 'currency'>`). A hook's return shape
+that other code needs gets a named type in the hook's `.types.ts` rather than
+`ReturnType<typeof useX>` threaded through Props ([shared state](../client/drill-cleanup.md)).

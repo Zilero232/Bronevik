@@ -18,6 +18,7 @@ const column = createColumnHelper<RosterRow>();
 
 export const useRosterColumns = (): TableColumn<RosterRow>[] => {
   const t = useTranslations('clans.roster');
+  const tCommon = useTranslations('common');
   const format = useFormatter();
 
   return [
@@ -58,7 +59,7 @@ export const useRosterColumns = (): TableColumn<RosterRow>[] => {
     }),
     column.accessor((row) => row.wn8.value ?? 0, {
       id: 'wn8',
-      header: 'WN8',
+      header: tCommon('ratings.wn8'),
       cell: (info) => <RatingValue rating={info.row.original.wn8} />,
       meta: { align: 'end', isNumeric: true }
     }),

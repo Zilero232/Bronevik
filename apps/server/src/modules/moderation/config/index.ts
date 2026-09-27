@@ -1,1 +1,1 @@
-export { MODERATION } from './moderation.config';
+export { MODERATION } from './moderation.constants';

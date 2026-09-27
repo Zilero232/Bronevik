@@ -11,9 +11,9 @@ import type {
   ScoreTotalsInput
 } from './competition-scoring.types';
 
-const SCORE_DIGITS = 10;
+import { COMPETITION_SCORE } from './competition-scoring.constants';
 
-const round = (value: number): number => Math.round(value * SCORE_DIGITS) / SCORE_DIGITS;
+const round = (value: number): number => Math.round(value * COMPETITION_SCORE.digits) / COMPETITION_SCORE.digits;
 
 export const scoreLine = ({ line, scoring }: ScoreLineInput): number =>
   line.damage * scoring.damage +

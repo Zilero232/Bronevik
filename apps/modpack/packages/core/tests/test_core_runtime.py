@@ -1,21 +1,27 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import importlib
 import itertools
 import os
 import shutil
+import sys
 import tempfile
+import types
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core import hooks, registry
+from otmetki.core import hooks, log, registry
+from otmetki.core.client.game import values_by_name
+from otmetki.core.errors import ReasonError
 from otmetki.core.events import EventBus
 from otmetki.core.i18n import Catalog, Translator, resolve_language
-from otmetki.core.format import format_number, format_percent
+from otmetki.core.format import format_number, format_percent, single_spaces, strip_tags
 from otmetki.core.settings import Schema, Settings
 from otmetki.core.storage import JsonFile
 
 
 class FakeEvent(object):
-    """The client's Event: += and -= handlers, calling it fires them."""
 
     def __init__(self):
         self.handlers = []
@@ -116,9 +122,142 @@ class HooksTest(unittest.TestCase):
         self.assertNotIn('value', Child.__dict__)
 
 
+class HookGuardTest(unittest.TestCase):
+
+    def setUp(self):
+        self.logged = []
+        self.saved = hooks.log_exception, log.log_exception
+        hooks.log_exception = log.log_exception = self.logged.append
+
+    def tearDown(self):
+        hooks.log_exception, log.log_exception = self.saved
+
+    def test_a_failing_subscriber_is_logged_and_the_rest_still_run(self):
+        class Owner(object):
+            onChanged = FakeEvent()
+
+        calls = []
+
+        def broken(value):
+            raise RuntimeError(value)
+
+        guarded = hooks.subscribe(Owner, 'onChanged', broken)
+        hooks.subscribe(Owner, 'onChanged', calls.append)
+        Owner.onChanged(1)
+        self.assertEqual(calls, [1])
+        self.assertEqual(len(self.logged), 1)
+        self.assertTrue(hooks.unsubscribe(Owner, 'onChanged', guarded))
+        self.assertEqual(len(Owner.onChanged.handlers), 1)
+
+    def test_override_failing_before_the_original_calls_it(self):
+        class Target(object):
+            def value(self):
+                return 7
+
+        def broken(original, target):
+            raise RuntimeError('before')
+
+        hooks.override(Target, 'value')(broken)
+        self.assertEqual(Target().value(), 7)
+        self.assertEqual(self.logged, ['override value'])
+
+    def test_override_failing_after_the_original_keeps_its_result(self):
+        calls = []
+
+        class Target(object):
+            def value(self):
+                calls.append(1)
+                return 7
+
+        def broken(original, target):
+            original(target)
+            raise RuntimeError('after')
+
+        hooks.override(Target, 'value')(broken)
+        self.assertEqual(Target().value(), 7)
+        self.assertEqual(calls, [1])
+
+    def test_override_lets_the_original_raise(self):
+        class Target(object):
+            def value(self):
+                raise KeyError('client')
+
+        hooks.override(Target, 'value')(lambda original, target: original(target))
+        self.assertRaises(KeyError, Target().value)
+        self.assertEqual(self.logged, [])
+
+
+class TickerTest(unittest.TestCase):
+
+    def setUp(self):
+        self.callbacks = []
+        self.saved = dict((name, sys.modules.get(name)) for name in ('BigWorld', 'otmetki.core.client.timer'))
+        stub = types.ModuleType(str('BigWorld'))
+        stub.callback = lambda delay, fn: self.callbacks.append(fn)
+        sys.modules['BigWorld'] = stub
+        sys.modules.pop('otmetki.core.client.timer', None)
+        self.timer = importlib.import_module('otmetki.core.client.timer')
+        self.saved_log = self.timer.log_exception
+        self.timer.log_exception = lambda context: None
+
+    def tearDown(self):
+        self.timer.log_exception = self.saved_log
+        for name, module in self.saved.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
+
+    def run_callbacks(self):
+        pending, self.callbacks = self.callbacks, []
+        for callback in pending:
+            callback()
+
+    def test_ticks_until_the_handler_returns_false_and_survives_errors(self):
+        ticks = []
+
+        def on_tick():
+            ticks.append(1)
+            if len(ticks) == 1:
+                raise RuntimeError('tick')
+            return len(ticks) < 3
+
+        ticker = self.timer.Ticker(1.0, on_tick)
+        ticker.start()
+        for _ in range(5):
+            self.run_callbacks()
+        self.assertEqual(len(ticks), 3)
+        self.assertFalse(ticker.running)
+
+    def test_a_restart_never_runs_two_chains(self):
+        ticks = []
+        ticker = self.timer.Ticker(1.0, lambda: ticks.append(1))
+        ticker.start()
+        ticker.stop()
+        ticker.start()
+        self.run_callbacks()
+        self.run_callbacks()
+        self.assertEqual(len(ticks), 2)
+
+
+class CoreHelpersTest(unittest.TestCase):
+
+    def test_values_by_name_skips_names_the_client_lacks(self):
+        holder = type(str('KINDS'), (object,), {'DAMAGE': 1, 'TANKING': 7})
+        self.assertEqual(values_by_name(holder, (('DAMAGE', 'damage'), ('STUN', 'stun'), ('TANKING', 'blocked'))), {1: 'damage', 7: 'blocked'})
+        self.assertEqual(values_by_name(None, (('DAMAGE', 'damage'),)), {})
+
+    def test_text_helpers(self):
+        self.assertEqual(strip_tags(u'<font color="#fff">a</font>b', u' '), u' a b')
+        self.assertEqual(single_spaces(u'  a \n\t b  '), u'a b')
+
+    def test_reason_error(self):
+        error = ReasonError('code')
+        self.assertEqual(error.reason, 'code')
+        self.assertIsInstance(error, ValueError)
+
+
 class RegistryTest(unittest.TestCase):
-    """The client imports mod_*.pyc in hash order: any order of host start and feature entries must end
-    with every feature attached exactly once to the one host."""
 
     def setUp(self):
         self.saved = registry.log, registry.log_exception
@@ -147,7 +286,6 @@ class RegistryTest(unittest.TestCase):
                     self.assertTrue(registry.registry().bind(host))
                 else:
                     self.assertTrue(registry.registry().register(step, factory_for(step)))
-            # A second import of an entry, or a second host start, changes nothing.
             self.assertFalse(registry.registry().register('marks_panel', factory_for('marks_panel')))
             self.assertTrue(registry.registry().bind(host))
             self.assertFalse(registry.registry().bind(object()))

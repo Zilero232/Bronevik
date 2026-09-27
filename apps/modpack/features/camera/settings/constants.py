@@ -6,14 +6,17 @@ SWITCH = 'camera_tweaks'
 GROUP = 'battle'
 
 ZOOM_PRESETS = (NATIVE, 'x2_x8', 'x2_x16', 'x2_x25', 'x4_x25')
+CAMERA_PRESETS = (NATIVE, 'sniper', 'balanced', 'dynamic')
 
 DEFAULTS = {
+    'preset': NATIVE,
     'zoom_steps': NATIVE,
     'dynamic_camera': NATIVE,
     'horizontal_stabilization': NATIVE,
 }
 
 CHOICES = {
+    'preset': CAMERA_PRESETS,
     'zoom_steps': ZOOM_PRESETS,
     'dynamic_camera': TRI_STATE,
     'horizontal_stabilization': TRI_STATE,

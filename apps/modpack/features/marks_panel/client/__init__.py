@@ -1,32 +1,25 @@
-"""In-battle MoE panel: thresholds for the hangar vehicle, own damage/assist during the battle, the
-projected percentage and the damage still needed for the next mark (switch `battle_moe_panel`)."""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import time
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.client.battle import BattleHooks, controls_own_vehicle, feedback, is_enemy
-from ....core.client.game import player_tank_id
+from ....core.client.game import player_tank_id, values_by_name
 from ....core.codec import parse_json_body
 from ....core.log import safe
 from ....core.net.signing import DEVICE_HEADER
 from ..i18n import STRINGS
 from ..model import BattleTotals, ThresholdCurve, format_moe_panel, project, rating_to_percent
-from .constants import BATTLE_PANEL, LAYOUT, MOE_PATH, THRESHOLD_ERROR_TTL_S, THRESHOLD_TTL_S
-
-KIND_BY_EVENT = {
-    BATTLE_EVENT_TYPE.DAMAGE: 'damage',
-    BATTLE_EVENT_TYPE.RADIO_ASSIST: 'radio',
-    BATTLE_EVENT_TYPE.TRACK_ASSIST: 'track',
-    BATTLE_EVENT_TYPE.STUN_ASSIST: 'stun',
-}
+from ..settings import SWITCH
+from .constants import BATTLE_PANEL, KIND_BY_EVENT, LAYOUT, MOE_PATH, THRESHOLD_ERROR_TTL_S, THRESHOLD_TTL_S
 
 
 class BattleMoeTracker(object):
 
     def __init__(self, on_update):
         self.on_update = on_update
+        self.kinds = values_by_name(BATTLE_EVENT_TYPE, KIND_BY_EVENT)
         self.totals = None
         self.hooks = BattleHooks()
         self.active = False
@@ -42,13 +35,12 @@ class BattleMoeTracker(object):
         self.active = False
         self.hooks.clear()
 
-    @safe
     def _on_feedback(self, events):
         if not self.active or self.totals is None or not controls_own_vehicle():
             return
         changed = False
         for event in events:
-            kind = KIND_BY_EVENT.get(event.getBattleEventType())
+            kind = self.kinds.get(event.getBattleEventType())
             if kind is None:
                 continue
             extra = event.getExtra()
@@ -104,7 +96,7 @@ class MarksPanel(object):
         app.transport.request('GET', app.config.endpoint(MOE_PATH % tank_id), headers, None, done)
 
     def _on_battle_ready(self, player):
-        if not self.app.config.is_enabled('battle_moe_panel'):
+        if not self.app.config.is_enabled(SWITCH):
             return
         tank_id = player_tank_id(player)
         snapshot = self.app.marks.hangar_moe.get(tank_id)

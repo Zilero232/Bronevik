@@ -21,22 +21,23 @@ export const useBestBattles = () => {
     staleTime: BEST_BATTLES_VIEW.staleMs
   });
 
-  const facets = useQuery({
+  const { data: facets } = useQuery({
     queryKey: QUERY_KEYS.bestBattles.facets(state.period),
     queryFn: ({ signal }) => getBestBattleFacets({ period: state.period, signal }),
     staleTime: BEST_BATTLES_VIEW.staleMs
   });
 
-  const battles = feed.data?.pages.flatMap((page) => page.items) ?? [];
+  const { data: feedData, fetchNextPage } = feed;
+  const battles = feedData?.pages.flatMap((page) => page.items) ?? [];
 
   return {
     metric: state.metric,
     battles,
     podium: battles.slice(0, BEST_BATTLES_VIEW.podiumSize),
-    facets: facets.data ?? null,
+    facets: facets ?? null,
     isFiltered: hasBattleFilters(state),
     feed,
-    loadMore: () => void feed.fetchNextPage(),
+    loadMore: () => void fetchNextPage(),
     reset: () => void setState({ tank: null, map: null, medal: null })
   };
 };

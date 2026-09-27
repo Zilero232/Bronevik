@@ -6,16 +6,12 @@ from .constants import EXCLUDED_CONFIG_KEYS
 
 
 def take_snapshot(config, component_config=None):
-    """The settings a profile carries: config.json without the connection and one-shot keys, and every
-    components.json section (sections of components that are not installed included)."""
     values = dict((key, value) for key, value in config.to_dict().items() if key not in EXCLUDED_CONFIG_KEYS)
     sections = copy.deepcopy(component_config.data) if component_config is not None else {}
     return {'config': values, 'components': sections}
 
 
 def apply_snapshot(snapshot, config, save_config, component_config=None, layer=None):
-    """Applies a profile. Returns {component id or 'config': changed keys}. A section of a component
-    that is not installed is stored as is and merged through its schema once the component registers."""
     changes = {}
     values = dict((key, value) for key, value in (snapshot.get('config') or {}).items() if key not in EXCLUDED_CONFIG_KEYS)
     changed = config.update(values)

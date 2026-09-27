@@ -1,5 +1,5 @@
 import type { LestaMockEnvelope, MockTankState } from '../../lesta-mock.types';
-import type { MockContext, MockRoute } from './responses.types';
+import type { MockContext, MockRoute, TanksOfInput, TankStatsInput } from './responses.types';
 
 import { tankAchievements } from '../achievements';
 import { selectFields } from '../fields';
@@ -23,24 +23,24 @@ const singleAccount = (context: MockContext): { accountId: number } | { error: L
   return { accountId: Number(raw) };
 };
 
-const tanksOf = (context: MockContext, accountId: number): MockTankState[] | null => {
-  const player = playerAt(context, accountId);
-  const filter = new Set(listOf(context.params, 'tank_id').map(Number));
+const tanksOf = ({ context, accountId }: TanksOfInput): MockTankState[] | null => {
+  const player = playerAt({ context, accountId });
+  const filter = new Set(listOf({ params: context.params, key: 'tank_id' }).map(Number));
 
   if (!player) {
     return null;
   }
 
-  return [...stateOf(context, player).tanks.values()].filter((tank) => filter.size === 0 || filter.has(tank.vehicle.tankId));
+  return [...stateOf({ context, player }).tanks.values()].filter((tank) => filter.size === 0 || filter.has(tank.vehicle.tankId));
 };
 
-const tankStats = (context: MockContext, accountId: number, tank: MockTankState) => {
-  const all = mergeTotals({ ...tank.random }, tank.other);
+const tankStats = ({ context, accountId, tank }: TankStatsInput) => {
+  const all = mergeTotals({ target: { ...tank.random }, source: tank.other });
 
   return {
     tank_id: tank.vehicle.tankId,
     account_id: accountId,
-    mark_of_mastery: masteryOf(context, tank),
+    mark_of_mastery: masteryOf({ context, tank }),
     max_frags: all.maxFrags,
     max_xp: all.maxXp,
     in_garage: context.tokenAccountId === accountId ? true : null,
@@ -48,7 +48,7 @@ const tankStats = (context: MockContext, accountId: number, tank: MockTankState)
     all: toStatsBlock(all),
     stronghold_skirmish: toStatsBlock(tank.other),
     ...Object.fromEntries(ZERO_BLOCK_KEYS.tank.map((key) => [key, toStatsBlock(emptyTotals())])),
-    ...(hasExtra(context, 'random') ? { random: toStatsBlock(tank.random) } : {})
+    ...(hasExtra({ context, extra: 'random' }) ? { random: toStatsBlock(tank.random) } : {})
   };
 };
 
@@ -59,10 +59,11 @@ export const tanksStats: MockRoute = (context) => {
     return account.error;
   }
 
-  const tanks = tanksOf(context, account.accountId);
-  const data = tanks?.map((tank) => selectFields(tankStats(context, account.accountId, tank), context.fields)) ?? null;
+  const tanks = tanksOf({ context, accountId: account.accountId });
+  const data =
+    tanks?.map((tank) => selectFields({ value: tankStats({ context, accountId: account.accountId, tank }), fields: context.fields })) ?? null;
 
-  return ok({ [String(account.accountId)]: data }, { count: 1 });
+  return ok({ data: { [String(account.accountId)]: data }, meta: { count: 1 } });
 };
 
 export const tanksAchievements: MockRoute = (context) => {
@@ -72,17 +73,20 @@ export const tanksAchievements: MockRoute = (context) => {
     return account.error;
   }
 
-  const player = playerAt(context, account.accountId);
-  const tanks = tanksOf(context, account.accountId);
-  const data = player && tanks ? tanks.map((tank) => selectFields(tankAchievements({ world: context.world, player, tank }), context.fields)) : null;
+  const player = playerAt({ context, accountId: account.accountId });
+  const tanks = tanksOf({ context, accountId: account.accountId });
+  const data =
+    player && tanks
+      ? tanks.map((tank) => selectFields({ value: tankAchievements({ world: context.world, player, tank }), fields: context.fields }))
+      : null;
 
-  return ok({ [String(account.accountId)]: data }, { count: 1 });
+  return ok({ data: { [String(account.accountId)]: data }, meta: { count: 1 } });
 };
 
 export const tanksMastery: MockRoute = (context) => {
   const parsed = idList({ params: context.params, field: 'tank_id' });
   const distribution = context.params.distribution ?? 'xp';
-  const percentiles = listOf(context.params, 'percentile').map(Number);
+  const percentiles = listOf({ params: context.params, key: 'percentile' }).map(Number);
 
   if ('error' in parsed) {
     return parsed.error;
@@ -100,18 +104,21 @@ export const tanksMastery: MockRoute = (context) => {
         return [];
       }
 
-      const sample = populationSample(context.world.seed, vehicle)[distribution];
+      const sample = populationSample({ seed: context.world.seed, vehicle })[distribution];
 
       return [
         [
           String(tankId),
           Object.fromEntries(
-            (percentiles.length > 0 ? percentiles : [50, 80, 95, 99]).map((percentile) => [String(percentile), percentileOf(sample, percentile)])
+            (percentiles.length > 0 ? percentiles : [50, 80, 95, 99]).map((percentile) => [
+              String(percentile),
+              percentileOf({ sorted: sample, percentile })
+            ])
           )
         ]
       ];
     })
   );
 
-  return ok({ distribution: data }, { count: Object.keys(data).length });
+  return ok({ data: { distribution: data }, meta: { count: Object.keys(data).length } });
 };

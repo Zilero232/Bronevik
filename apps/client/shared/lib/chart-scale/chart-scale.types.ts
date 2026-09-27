@@ -11,6 +11,13 @@ export type ChartLayoutInput = {
   includeZero?: boolean;
 };
 
+export type SparklineLayoutInput = {
+  data: readonly number[];
+  width: number;
+  height: number;
+  pad: number;
+};
+
 export type ClampIndexInput = {
   value: number;
   count: number;

@@ -8,6 +8,15 @@ Part of the [style guide](../../README.md).
 
 `@/` → the `apps/client/` root. Used for everything except relatives inside the same slice.
 
+The server app (`apps/server`) and the packages have no alias: every internal import is
+relative. Inside a module relative paths reach any file; across modules, and into
+`core/`, `common/`, `config/` and `lib/`, an import stops at the barrel
+(`../../core`, `../../common/lib`, `../billing`), never at a file behind it. Every
+segment of a server module (`services/`, `mappers/`, `selects/`, `queries/`, `lib/`,
+`config/`, `providers/`, `processors/`) has an `index.ts`, so a sibling segment imports
+`../mappers`, not `../mappers/goal-view/goal-view`. The one sanctioned sub-barrel across a
+module boundary is `modules/collector/metrics` for `MetricsService`.
+
 ### Group order
 
 `perfectionist/sort-imports` (`bun lint:fix`) sorts imports into groups in this order, **with a blank line between groups**:
@@ -63,7 +72,15 @@ import { CommandPalette } from '@/features/search/command-palette';
 import { Button } from '@/ui-kit';
 ```
 
-`ui-kit` has a single root barrel, `@/ui-kit` (the atomic layer sits under it). Inside a slice, relative imports are fine.
+`ui-kit` has a single root barrel, `@/ui-kit` (the atomic layer sits under it), and may itself import `@/shared/*`. Inside a slice, relative imports are fine — through the nearest barrel (`../hooks`, `./components`), with sibling hooks and components importing each other by folder (`../use-x`).
+
+**Tests** use the `@/` alias and the public API. The only deep import a test may make is the module it mocks or spies on, since `vi.mock` must name the module actually loaded:
+
+```ts
+import { search } from '@/entities/search/search/api/search/search';
+
+vi.mock('@/entities/search/search/api/search/search', () => ({ search: vi.fn() }));
+```
 
 ESLint does not check FSD boundaries — those are caught at review.
 
@@ -102,3 +119,7 @@ export { CommandPaletteProvider } from './CommandPaletteProvider';
 ```
 
 Wildcard exports (`export * from`) are forbidden. Explicit named exports only.
+
+**A server segment:** the segment barrel re-exports each item folder's barrel
+(`mappers/index.ts` → `./leaderboard-entry`), and a module's root `index.ts` exports only
+the module class and what other modules inject or call.

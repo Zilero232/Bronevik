@@ -1,7 +1,7 @@
-import type { CompetitionPage, CompetitionScoring, CompetitionSummary, Competition as CompetitionView } from '@otmetki/schemas';
+import type { CompetitionPage, CompetitionScoring, Competition as CompetitionView } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { COMPETITION, competitionScoringSchema, competitionVisibilitySchema } from '@otmetki/schemas';
+import { COMPETITION, competitionScoringSchema } from '@otmetki/schemas';
 
 import type { Competition, Prisma } from '../../../../generated';
 import type {
@@ -13,7 +13,6 @@ import type {
   CompetitionOwnedInput,
   NewTeamInput,
   TeamLookupInput,
-  ToSummaryInput,
   ToViewInput
 } from '../competitions.types';
 
@@ -23,7 +22,8 @@ import { isUniqueViolation, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { titleSlug } from '../../community-core';
 import { COMPETITION_RUN } from '../config';
-import { competitionStatus, rankTeams } from '../lib/competition-scoring';
+import { competitionStatus, rankTeams } from '../lib';
+import { toCompetitionStanding, toCompetitionSummary } from '../mappers';
 import { COMPETITION_SUMMARY_INCLUDE } from '../selects';
 
 @Injectable()
@@ -68,7 +68,7 @@ export class CompetitionService {
       this.prisma.competition.count({ where })
     ]);
 
-    return { items: rows.map((row) => this.toSummary({ row, now })), total, limit: query.limit, offset: query.offset };
+    return { items: rows.map((row) => toCompetitionSummary({ row, now })), total, limit: query.limit, offset: query.offset };
   }
 
   async get({ slug, viewerUserId, code }: CompetitionGetInput): Promise<CompetitionView> {
@@ -241,26 +241,6 @@ export class CompetitionService {
     return (await this.prisma.competitionEntry.count({ where: { competitionId: competition.id, userId: viewerUserId } })) > 0;
   }
 
-  private toSummary({ row, now }: ToSummaryInput): CompetitionSummary {
-    return {
-      id: row.id,
-      slug: row.slug,
-      title: row.title,
-      description: row.description,
-      visibility: competitionVisibilitySchema.parse(row.visibility),
-      mode: row.mode,
-      battlesPerPlayer: row.battlesPerPlayer,
-      minTier: row.minTier,
-      status: competitionStatus({ startsAt: row.startsAt, endsAt: row.endsAt, now }),
-      startsAt: row.startsAt.toISOString(),
-      endsAt: row.endsAt.toISOString(),
-      teams: row._count.teams,
-      participants: row._count.entries,
-      organizer: row.owner.name || null,
-      leader: row.teams[0] && row.teams[0].score > 0 ? row.teams[0].name : null
-    };
-  }
-
   private async toView({ row, viewerUserId }: ToViewInput): Promise<CompetitionView> {
     const teams = await this.prisma.competitionTeam.findMany({
       where: { competitionId: row.id },
@@ -276,7 +256,7 @@ export class CompetitionService {
     const myTeam = viewerUserId ? teams.find((team) => team.entries.some((entry) => entry.userId === viewerUserId)) : undefined;
 
     return {
-      ...this.toSummary({ row, now: new Date() }),
+      ...toCompetitionSummary({ row, now: new Date() }),
       scoring: this.scoringOf(row),
       maxTeamSize: COMPETITION.maxTeamSize,
       isOwner,
@@ -284,20 +264,7 @@ export class CompetitionService {
       inviteCode: isOwner ? row.inviteCode : null,
       scoredAt: row.scoredAt?.toISOString() ?? null,
       standings: teams
-        .map((team) => ({
-          id: team.id,
-          name: team.name,
-          rank: ranks.get(team.id) ?? teams.length,
-          score: team.score,
-          battles: team.battles,
-          members: team.entries.map((entry) => ({
-            accountId: Number(entry.accountId),
-            nickname: nicknameOf.get(entry.accountId) ?? null,
-            battles: entry.battles,
-            score: entry.score,
-            source: entry.source
-          }))
-        }))
+        .map((team) => toCompetitionStanding({ team, rank: ranks.get(team.id) ?? teams.length, nicknameOf }))
         .sort((left, right) => left.rank - right.rank)
     };
   }

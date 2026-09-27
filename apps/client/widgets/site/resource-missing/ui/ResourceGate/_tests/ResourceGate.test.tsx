@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 
-import { NotFoundError } from '@/shared/api/source/source.errors';
+import { NotFoundError } from '@/shared/api/source';
 import { messages } from '@/shared/i18n';
 
 import type { ResourceGateProps } from '../ResourceGate.types';

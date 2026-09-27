@@ -78,3 +78,9 @@ Where inlining would genuinely hurt readability — a multi-line filter, a
 `useMemo` argument built from several steps — leave the `const` above the hook.
 The rule orders declarations; it does not ask you to bury a dependency to
 satisfy a layout.
+
+**Pure lookups may stay in the component.** A single expression that reads one value
+from props or config — `const Icon = ICONS[kind]`, `const { width, height } = TANK_IMAGE[size]`,
+one helper call destructured — sits after the hooks. A hook per lookup would be ceremony.
+What goes back to the model hook is derivation in several steps: values that feed each
+other, formatting, filtering, geometry.

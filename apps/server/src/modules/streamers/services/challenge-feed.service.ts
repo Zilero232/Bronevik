@@ -6,11 +6,11 @@ import { unique } from 'remeda';
 import type { EvaluatedBattle } from '../lib';
 import type { EvaluateInput, ResolveChallengeInput } from '../streamers.types';
 
-import { readRecord } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { VehicleCatalogService } from '../../reference';
 import { CHALLENGE, CHAT_COPY } from '../config';
+import { storedChallengeProgressSchema } from '../dto';
 import { evaluateChallenge } from '../lib';
 import { ChatAnnouncerService } from './chat-announcer.service';
 import { OverlayPublisherService } from './overlay-publisher.service';
@@ -139,7 +139,7 @@ export class ChallengeFeedService {
     if (verdict.status === 'active') {
       await this.prisma.challenge.update({
         where: { id: challenge.id },
-        data: { progress: { ...readRecord(challenge.progress), ...verdict.progress } }
+        data: { progress: { ...storedChallengeProgressSchema.parse(challenge.progress ?? {}), ...verdict.progress } }
       });
 
       return false;
@@ -156,7 +156,7 @@ export class ChallengeFeedService {
         status: isSucceeded ? 'succeeded' : 'failed',
         resolvedAt: now,
         battleId: verdict.decidingBattleId,
-        progress: { ...readRecord(challenge.progress), ...verdict.progress }
+        progress: { ...storedChallengeProgressSchema.parse(challenge.progress ?? {}), ...verdict.progress }
       }
     });
 

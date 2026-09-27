@@ -11,31 +11,19 @@ import s from './MapRotationPanel.module.scss';
 
 export const MapRotationPanel = () => {
   const t = useTranslations('mapStats');
-  const { filters, formatWait, rotation, queue } = useMapRotationPanel();
+  const { rotation, queue, figures, rotationMeta, queueMeta } = useMapRotationPanel();
 
   return (
     <div className={s.root}>
-      <StatsFilters filters={filters} />
+      <StatsFilters />
       <KeyFigures isFramed>
-        <KeyFigure
-          hint={rotation.data ? t('figures.battlesHint', { days: rotation.data.windowDays }) : undefined}
-          label={t('figures.battles')}
-          value={rotation.data?.battles ?? null}
-        />
-        <KeyFigure label={t('figures.maps')} value={rotation.data?.rows.length ?? null} />
-        <KeyFigure
-          hint={queue.data ? t('figures.waitNowHint', { hour: queue.data.now.hour, timezone: queue.data.timezone }) : undefined}
-          label={t('figures.waitNow')}
-          value={queue.data?.now.selected ? formatWait(queue.data.now.selected.medianSec) : null}
-        />
-        <KeyFigure
-          hint={queue.data?.now.fastest ? t('figures.fastestHint', { wait: formatWait(queue.data.now.fastest.medianSec) }) : undefined}
-          label={t('figures.fastest')}
-          value={queue.data?.now.fastest ? t('figures.hour', { hour: queue.data.now.fastest.hour }) : null}
-        />
+        <KeyFigure hint={figures.battlesHint} label={t('figures.battles')} value={figures.battles} />
+        <KeyFigure label={t('figures.maps')} value={figures.maps} />
+        <KeyFigure hint={figures.waitNowHint} label={t('figures.waitNow')} value={figures.waitNow} />
+        <KeyFigure hint={figures.fastestHint} label={t('figures.fastest')} value={figures.fastest} />
       </KeyFigures>
       <Card padding='none'>
-        <CardHeader meta={rotation.data ? t('rotation.meta', { days: rotation.data.windowDays }) : undefined} title={t('rotation.title')} />
+        <CardHeader meta={rotationMeta} title={t('rotation.title')} />
         <QueryState
           isCompact
           empty={<EmptyState isCompact description={t('rotation.emptyDescription')} title={t('rotation.empty')} />}
@@ -49,10 +37,7 @@ export const MapRotationPanel = () => {
         </QueryState>
       </Card>
       <Card padding='none'>
-        <CardHeader
-          meta={queue.data ? t('queue.meta', { days: queue.data.windowDays, timezone: queue.data.timezone }) : undefined}
-          title={t('queue.title')}
-        />
+        <CardHeader meta={queueMeta} title={t('queue.title')} />
         <QueryState
           isCompact
           empty={<EmptyState isCompact description={t('queue.emptyDescription')} title={t('queue.empty')} />}

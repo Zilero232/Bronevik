@@ -1,3 +1,2 @@
-export { useWorkspace } from './board-workspace-context';
-export type { BoardWorkspaceContextValue, BoardWorkspaceProviderProps } from './board-workspace-context.types';
-export { BoardWorkspaceProvider } from './BoardWorkspaceProvider';
+export { BoardWorkspaceContext, useWorkspace } from './board-workspace';
+export type { BoardWorkspaceContextValue } from './board-workspace';

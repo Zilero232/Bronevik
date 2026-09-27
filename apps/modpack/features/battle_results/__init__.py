@@ -1,4 +1,3 @@
-"""Feature: extended post-battle summary in hangar notifications. Depends on the core and the companion."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'battle_results'

@@ -2,36 +2,18 @@
 
 import { MonitorCog } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Controller } from 'react-hook-form';
 
-import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
-import {
-  Badge,
-  Button,
-  buttonVariants,
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  Switch,
-  ToggleChips
-} from '@/ui-kit';
+import { buttonVariants, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/ui-kit';
 
 import type { ApplySettingsProps } from './ApplySettings.types';
 
 import { useApplySettingsForm } from '../model/hooks';
-
-import s from './ApplySettings.module.scss';
+import { ApplyRequestResult, ApplySettingsForm } from './components';
 
 export const ApplySettings = ({ slug, settings, className }: ApplySettingsProps) => {
-  const loginHref = useLoginHref();
   const t = useTranslations('streamerSettings.apply');
-  const { form, isSignedIn, isSessionPending, isAvailable, isOpen, isPending, request, groupOptions, options, onOpenChange, onSubmit } =
+  const { form, loginHref, isSignedIn, isSessionPending, isAvailable, isOpen, isPending, request, groupOptions, options, onOpenChange, onSubmit } =
     useApplySettingsForm({ slug, settings });
 
   if (!isAvailable) {
@@ -59,56 +41,9 @@ export const ApplySettings = ({ slug, settings, className }: ApplySettingsProps)
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         {request ? (
-          <div className={s.result}>
-            <Badge tone={request.status === 'pending' ? 'accent' : 'neutral'}>{t(`status.${request.status}`)}</Badge>
-            <p className={s.hint}>{t('sent')}</p>
-            <DialogFooter>
-              <DialogClose className={buttonVariants({ size: 'sm' })}>{t('done')}</DialogClose>
-            </DialogFooter>
-          </div>
+          <ApplyRequestResult status={request.status} />
         ) : (
-          <form noValidate className={s.root} onSubmit={onSubmit}>
-            <Controller
-              render={({ field }) => (
-                <div className={s.field}>
-                  <span className={s.label}>{t('groups')}</span>
-                  <ToggleChips aria-label={t('groups')} options={groupOptions} size='sm' value={field.value} onChange={field.onChange} />
-                  {form.formState.errors.groups && <span className={s.error}>{t('groupsError')}</span>}
-                </div>
-              )}
-              control={form.control}
-              name='groups'
-            />
-            {options.hasResolution && (
-              <Controller
-                render={({ field }) => (
-                  <Switch checked={field.value} description={t('resolutionHint')} label={t('includeResolution')} onCheckedChange={field.onChange} />
-                )}
-                control={form.control}
-                name='includeResolution'
-              />
-            )}
-            {options.hasSensitivity && (
-              <Controller
-                render={({ field }) => (
-                  <Switch checked={field.value} description={t('sensitivityHint')} label={t('includeSensitivity')} onCheckedChange={field.onChange} />
-                )}
-                control={form.control}
-                name='includeSensitivity'
-              />
-            )}
-            <ul className={s.notes}>
-              <li>{t('notes.hangar')}</li>
-              <li>{t('notes.backup')}</li>
-              <li>{t('notes.restore')}</li>
-            </ul>
-            <DialogFooter>
-              <DialogClose className={buttonVariants({ variant: 'ghost', size: 'sm' })}>{t('cancel')}</DialogClose>
-              <Button disabled={isPending} size='sm' type='submit'>
-                {t('submit')}
-              </Button>
-            </DialogFooter>
-          </form>
+          <ApplySettingsForm form={form} groupOptions={groupOptions} isPending={isPending} options={options} onSubmit={onSubmit} />
         )}
       </DialogContent>
     </Dialog>

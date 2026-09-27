@@ -1,8 +1,19 @@
 import { sortBy } from 'remeda';
 
 import type { MockActivity, MockClan, MockClanStint, MockClanTier, MockPlayer, MockWorld } from '../../lesta-mock.types';
-import type { MockRng } from '../random';
-import type { AssignMembersInput, BuildClansInput, CreateMockWorldInput, OfficerSlots } from './world.types';
+import type {
+  AccountExistsAtInput,
+  AddStintInput,
+  AssignMembersInput,
+  BetweenInput,
+  BuildClansInput,
+  ClanMembersAtInput,
+  CreateMockWorldInput,
+  JoinedAtForInput,
+  LastBattleBeforeAnchorInput,
+  OfficerRolesInput,
+  StintAtInput
+} from './world.types';
 
 import { MOCK_ACTIVITY, MOCK_CAREER, MOCK_CLANS, MOCK_SALT, MOCK_SKILL, MOCK_TIME, MOCK_WORLD } from '../../config';
 import { clanIdentity, uniqueNickname } from '../names';
@@ -13,7 +24,7 @@ const DAY = MOCK_TIME.daySec;
 const YEAR = 365.25 * DAY;
 const ACTIVITIES: readonly MockActivity[] = ['regular', 'casual', 'lapsed'];
 
-const between = (rng: MockRng, range: readonly [number, number]): number => range[0] + rng.float() * (range[1] - range[0]);
+const between = ({ rng, range }: BetweenInput): number => range[0] + rng.float() * (range[1] - range[0]);
 
 const accountIdAt = (createdAt: number): number => {
   const knots = MOCK_WORLD.accountIdKnots;
@@ -37,19 +48,19 @@ const creationDates = ({ seed, count }: { seed: number; count: number }): number
     Array.from({ length: count }, () =>
       Math.round(
         rng.chance(MOCK_WORLD.earlyShare)
-          ? between(rng, [MOCK_WORLD.firstAccountAt, MOCK_WORLD.earlyUntil])
-          : between(rng, [MOCK_WORLD.earlyUntil, MOCK_WORLD.lastAccountAt])
+          ? between({ rng, range: [MOCK_WORLD.firstAccountAt, MOCK_WORLD.earlyUntil] })
+          : between({ rng, range: [MOCK_WORLD.earlyUntil, MOCK_WORLD.lastAccountAt] })
       )
     ),
     (value) => value
   );
 };
 
-const lastBattleBeforeAnchor = (rng: MockRng, activity: MockActivity, createdAt: number): number => {
+const lastBattleBeforeAnchor = ({ rng, activity, createdAt }: LastBattleBeforeAnchorInput): number => {
   const gap =
     activity === 'lapsed' ? MOCK_ACTIVITY.lapsedGapDays : activity === 'casual' ? MOCK_ACTIVITY.casualGapDays : MOCK_ACTIVITY.regularGapDays;
 
-  const at = MOCK_TIME.anchor - Math.round(between(rng, gap) * DAY) - rng.int(0, DAY - 1);
+  const at = MOCK_TIME.anchor - Math.round(between({ rng, range: gap }) * DAY) - rng.int({ min: 0, max: DAY - 1 });
 
   return Math.max(createdAt + 7 * DAY, at);
 };
@@ -71,14 +82,19 @@ const createPlayer = ({
   const ageYears = (MOCK_TIME.anchor - createdAt) / YEAR;
   const skill = rng.normal() + MOCK_SKILL.ageBoostPerYear * ageYears;
   const winSkill = MOCK_SKILL.winCorrelation * skill + Math.sqrt(1 - MOCK_SKILL.winCorrelation ** 2) * rng.normal();
-  const activity = rng.weighted(ACTIVITIES, (key) => MOCK_ACTIVITY.shares[key]);
+  const activity = rng.weighted({ items: ACTIVITIES, weight: (key) => MOCK_ACTIVITY.shares[key] });
   const ageFactor = Math.min(1.6, (Math.max(ageYears, 0.1) / MOCK_CAREER.ageMedianYears) ** 0.6);
   const cap = ((MOCK_TIME.anchor - createdAt) / DAY) * MOCK_CAREER.battlesPerDayCap;
   const career =
-    rng.logNormal(MOCK_CAREER.battlesMedian * ageFactor, MOCK_CAREER.battlesSigma) * Math.exp(0.15 * skill) * (activity === 'lapsed' ? 0.6 : 1);
+    rng.logNormal({ median: MOCK_CAREER.battlesMedian * ageFactor, sigma: MOCK_CAREER.battlesSigma }) *
+    Math.exp(0.15 * skill) *
+    (activity === 'lapsed' ? 0.6 : 1);
 
-  const chronotype = rng.weighted(MOCK_ACTIVITY.chronotypes, (entry) => entry.share);
-  const sessionHour = Math.min(MOCK_ACTIVITY.latestHour - 2, Math.max(MOCK_ACTIVITY.earliestHour, rng.normal(chronotype.mean, chronotype.sigma)));
+  const chronotype = rng.weighted({ items: MOCK_ACTIVITY.chronotypes, weight: (entry) => entry.share });
+  const sessionHour = Math.min(
+    MOCK_ACTIVITY.latestHour - 2,
+    Math.max(MOCK_ACTIVITY.earliestHour, rng.normal({ mean: chronotype.mean, deviation: chronotype.sigma }))
+  );
 
   return {
     index,
@@ -87,13 +103,13 @@ const createPlayer = ({
     createdAt,
     skill,
     winSkill,
-    drift: rng.normal(MOCK_SKILL.driftMean, MOCK_SKILL.driftSigma),
+    drift: rng.normal({ mean: MOCK_SKILL.driftMean, deviation: MOCK_SKILL.driftSigma }),
     careerBattles: Math.round(Math.max(MOCK_CAREER.minBattles, Math.min(cap, career))),
     activity,
-    dayChance: between(rng, MOCK_ACTIVITY.dayChance[activity]),
-    sessionBattles: rng.logNormal(MOCK_ACTIVITY.sessionMedian[activity], 0.35),
+    dayChance: between({ rng, range: MOCK_ACTIVITY.dayChance[activity] }),
+    sessionBattles: rng.logNormal({ median: MOCK_ACTIVITY.sessionMedian[activity], sigma: 0.35 }),
     sessionHour,
-    lastBattleBeforeAnchor: lastBattleBeforeAnchor(rng, activity, createdAt),
+    lastBattleBeforeAnchor: lastBattleBeforeAnchor({ rng, activity, createdAt }),
     premiumShare: Math.min(MOCK_CAREER.premiumShare[1], Math.max(MOCK_CAREER.premiumShare[0], rng.float() + 0.1 * skill)),
     stints: []
   };
@@ -105,7 +121,7 @@ const createPlayers = ({ seed, count }: { seed: number; count: number }): MockPl
   let previousId = 0;
 
   return creationDates({ seed, count }).map((createdAt, index) => {
-    const accountId = Math.max(previousId + idRng.int(1, 900), accountIdAt(createdAt) + idRng.int(-400, 400));
+    const accountId = Math.max(previousId + idRng.int({ min: 1, max: 900 }), accountIdAt(createdAt) + idRng.int({ min: -400, max: 400 }));
 
     previousId = accountId;
 
@@ -133,9 +149,11 @@ const buildClans = ({ seed, count }: BuildClansInput): MockClan[] => {
     const parent = isAcademy ? clans[index - MOCK_CLANS.tiers.top] : undefined;
     const identity = clanIdentity({ rng, takenTags, parent });
     const renamed = rng.chance(MOCK_CLANS.renameChance);
-    const createdAt = Math.round(between(rng, [MOCK_CLANS.createdFrom, tier === 'top' ? MOCK_CLANS.createdFrom + 4 * YEAR : MOCK_CLANS.createdTo]));
+    const createdAt = Math.round(
+      between({ rng, range: [MOCK_CLANS.createdFrom, tier === 'top' ? MOCK_CLANS.createdFrom + 4 * YEAR : MOCK_CLANS.createdTo] })
+    );
 
-    clanId += rng.int(MOCK_WORLD.clanIdStep[0], MOCK_WORLD.clanIdStep[1]);
+    clanId += rng.int({ min: MOCK_WORLD.clanIdStep[0], max: MOCK_WORLD.clanIdStep[1] });
 
     clans.push({
       index,
@@ -143,16 +161,16 @@ const buildClans = ({ seed, count }: BuildClansInput): MockClan[] => {
       ...identity,
       createdAt,
       tier,
-      strongholdLevel: rng.int(MOCK_CLANS.stronghold[tier][0], MOCK_CLANS.stronghold[tier][1]),
+      strongholdLevel: rng.int({ min: MOCK_CLANS.stronghold[tier][0], max: MOCK_CLANS.stronghold[tier][1] }),
       onGlobalMap: rng.chance(MOCK_CLANS.globalMapChance[tier]),
       elo: {
-        6: Math.round(between(rng, MOCK_CLANS.elo[tier]) * 0.92),
-        8: Math.round(between(rng, MOCK_CLANS.elo[tier]) * 0.97),
-        10: Math.round(between(rng, MOCK_CLANS.elo[tier]))
+        6: Math.round(between({ rng, range: MOCK_CLANS.elo[tier] }) * 0.92),
+        8: Math.round(between({ rng, range: MOCK_CLANS.elo[tier] }) * 0.97),
+        10: Math.round(between({ rng, range: MOCK_CLANS.elo[tier] }))
       },
-      oldTag: renamed ? `${identity.tag.slice(0, 3)}${rng.int(1, 9)}` : null,
-      oldName: renamed ? `${identity.name} ${rng.int(2, 9)}` : null,
-      renamedAt: renamed ? Math.round(between(rng, [createdAt + YEAR, MOCK_TIME.anchor - 30 * DAY])) : null,
+      oldTag: renamed ? `${identity.tag.slice(0, 3)}${rng.int({ min: 1, max: 9 })}` : null,
+      oldName: renamed ? `${identity.name} ${rng.int({ min: 2, max: 9 })}` : null,
+      renamedAt: renamed ? Math.round(between({ rng, range: [createdAt + YEAR, MOCK_TIME.anchor - 30 * DAY] })) : null,
       acceptsJoinRequests: rng.chance(tier === 'top' ? 0.3 : 0.75),
       memberships: []
     });
@@ -161,20 +179,20 @@ const buildClans = ({ seed, count }: BuildClansInput): MockClan[] => {
   return clans;
 };
 
-const officerRoles = (rng: MockRng, slots: OfficerSlots): string[] =>
-  Object.entries(slots).flatMap(([role, range]) => Array.from<string>({ length: rng.int(range[0], range[1]) }).fill(role));
+const officerRoles = ({ rng, slots }: OfficerRolesInput): string[] =>
+  Object.entries(slots).flatMap(([role, range]) => Array.from<string>({ length: rng.int({ min: range[0], max: range[1] }) }).fill(role));
 
-const joinedAtFor = (rng: MockRng, clan: MockClan, player: MockPlayer): number => {
+const joinedAtFor = ({ rng, clan, player }: JoinedAtForInput): number => {
   const from = Math.max(clan.createdAt, player.createdAt + 14 * DAY);
 
   if (rng.chance(MOCK_CLANS.windowJoinShare)) {
-    return Math.round(between(rng, [MOCK_TIME.anchor, MOCK_TIME.anchor + MOCK_TIME.horizonDays * DAY]));
+    return Math.round(between({ rng, range: [MOCK_TIME.anchor, MOCK_TIME.anchor + MOCK_TIME.horizonDays * DAY] }));
   }
 
-  return Math.round(between(rng, [from, Math.max(from + DAY, MOCK_TIME.anchor - DAY)]));
+  return Math.round(between({ rng, range: [from, Math.max(from + DAY, MOCK_TIME.anchor - DAY)] }));
 };
 
-const addStint = (clan: MockClan, player: MockPlayer, stint: MockClanStint) => {
+const addStint = ({ clan, player, stint }: AddStintInput) => {
   player.stints.push(stint);
   clan.memberships.push({ player, stint });
 };
@@ -186,7 +204,7 @@ const assignMembers = ({ seed, clans, players }: AssignMembersInput) => {
   );
 
   const ranked = sortBy(
-    candidates.map((player) => ({ player, score: player.skill + rng.normal(0, 0.6) })),
+    candidates.map((player) => ({ player, score: player.skill + rng.normal({ mean: 0, deviation: 0.6 }) })),
     [({ score }) => score, 'desc']
   ).map(({ player }) => player);
 
@@ -198,7 +216,7 @@ const assignMembers = ({ seed, clans, players }: AssignMembersInput) => {
       pool.splice(0, pool.length, ...rng.shuffle(pool));
     }
 
-    const size = rng.int(MOCK_CLANS.size[clan.tier][0], MOCK_CLANS.size[clan.tier][1]);
+    const size = rng.int({ min: MOCK_CLANS.size[clan.tier][0], max: MOCK_CLANS.size[clan.tier][1] });
     const members: MockPlayer[] = [];
     const skipped: MockPlayer[] = [];
 
@@ -226,13 +244,13 @@ const assignMembers = ({ seed, clans, players }: AssignMembersInput) => {
 
     clan.createdAt = Math.min(MOCK_TIME.anchor - 30 * DAY, Math.max(clan.createdAt, founder.createdAt + 30 * DAY));
 
-    const officers = officerRoles(rng, MOCK_CLANS.officers);
+    const officers = officerRoles({ rng, slots: MOCK_CLANS.officers });
     const joined = sortBy(
-      members.filter((member) => member !== founder).map((member) => ({ member, joinedAt: joinedAtFor(rng, clan, member) })),
+      members.filter((member) => member !== founder).map((member) => ({ member, joinedAt: joinedAtFor({ rng, clan, player: member }) })),
       ({ joinedAt }) => joinedAt
     );
 
-    addStint(clan, founder, { clanId: clan.clanId, joinedAt: clan.createdAt, leftAt: null, role: 'commander' });
+    addStint({ clan, player: founder, stint: { clanId: clan.clanId, joinedAt: clan.createdAt, leftAt: null, role: 'commander' } });
 
     for (const [position, { member, joinedAt }] of joined.entries()) {
       const officer = joinedAt < MOCK_TIME.anchor ? officers[position] : undefined;
@@ -249,10 +267,10 @@ const assignMembers = ({ seed, clans, players }: AssignMembersInput) => {
 
       const leaves = !officer && rng.chance(MOCK_CLANS.leaveChance);
       const leftAt = leaves
-        ? Math.round(between(rng, [Math.max(joinedAt, MOCK_TIME.anchor) + DAY, MOCK_TIME.anchor + MOCK_TIME.horizonDays * DAY]))
+        ? Math.round(between({ rng, range: [Math.max(joinedAt, MOCK_TIME.anchor) + DAY, MOCK_TIME.anchor + MOCK_TIME.horizonDays * DAY] }))
         : null;
 
-      addStint(clan, member, { clanId: clan.clanId, joinedAt, leftAt, role });
+      addStint({ clan, player: member, stint: { clanId: clan.clanId, joinedAt, leftAt, role } });
     }
   }
 
@@ -264,13 +282,17 @@ const assignMembers = ({ seed, clans, players }: AssignMembersInput) => {
     if (current?.leftAt && rng.chance(MOCK_CLANS.hopChance)) {
       const target = rng.pick(hopTargets.filter((clan) => clan.clanId !== current.clanId));
 
-      addStint(target, player, { clanId: target.clanId, joinedAt: current.leftAt + rng.int(1, 30) * DAY, leftAt: null, role: 'private' });
+      addStint({
+        clan: target,
+        player,
+        stint: { clanId: target.clanId, joinedAt: current.leftAt + rng.int({ min: 1, max: 30 }) * DAY, leftAt: null, role: 'private' }
+      });
     }
 
     const firstJoin = current?.joinedAt ?? MOCK_TIME.anchor - 60 * DAY;
     const hasPast = rng.chance(current ? MOCK_CLANS.pastStintChance : MOCK_CLANS.clanlessPastChance);
-    const pastEnd = firstJoin - rng.int(1, 200) * DAY;
-    const pastStart = pastEnd - rng.int(30, 900) * DAY;
+    const pastEnd = firstJoin - rng.int({ min: 1, max: 200 }) * DAY;
+    const pastStart = pastEnd - rng.int({ min: 30, max: 900 }) * DAY;
 
     const pastTargets =
       hasPast && pastStart > player.createdAt + 14 * DAY
@@ -280,7 +302,7 @@ const assignMembers = ({ seed, clans, players }: AssignMembersInput) => {
     if (pastTargets.length > 0) {
       const target = rng.pick(pastTargets);
 
-      addStint(target, player, { clanId: target.clanId, joinedAt: pastStart, leftAt: pastEnd, role: 'private' });
+      addStint({ clan: target, player, stint: { clanId: target.clanId, joinedAt: pastStart, leftAt: pastEnd, role: 'private' } });
     }
 
     player.stints.sort((left, right) => left.joinedAt - right.joinedAt);
@@ -318,10 +340,10 @@ export const createMockWorld = ({
   };
 };
 
-export const stintAt = (player: MockPlayer, at: number): MockClanStint | null =>
+export const stintAt = ({ player, at }: StintAtInput): MockClanStint | null =>
   player.stints.find((stint) => stint.joinedAt <= at && (stint.leftAt === null || stint.leftAt > at)) ?? null;
 
-export const clanMembersAt = (clan: MockClan, at: number) =>
+export const clanMembersAt = ({ clan, at }: ClanMembersAtInput) =>
   clan.memberships.filter(({ stint }) => stint.joinedAt <= at && (stint.leftAt === null || stint.leftAt > at));
 
-export const accountExistsAt = (player: MockPlayer, at: number): boolean => player.createdAt <= at;
+export const accountExistsAt = ({ player, at }: AccountExistsAtInput): boolean => player.createdAt <= at;

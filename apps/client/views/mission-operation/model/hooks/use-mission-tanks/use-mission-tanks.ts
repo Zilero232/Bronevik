@@ -29,8 +29,10 @@ export const useMissionTanks = ({ questId, metric }: UseMissionTanksInput) => {
     retry: false
   });
 
+  const { data: tanksData } = tanks;
+  const { data: garageData } = garage;
   const isSignedIn = Boolean(session);
-  const garageNotice = match({ isSignedIn, state: garage.data?.state })
+  const garageNotice = match({ isSignedIn, state: garageData?.state })
     .with({ isSignedIn: false }, () => GARAGE_NOTICE.signIn)
     .with({ state: 'noLink' }, () => GARAGE_NOTICE.noLink)
     .with({ state: 'noPrivateData' }, () => GARAGE_NOTICE.noPrivateData)
@@ -40,9 +42,9 @@ export const useMissionTanks = ({ questId, metric }: UseMissionTanksInput) => {
     columns,
     garageColumns,
     tanks,
-    showcase: (tanks.data?.tanks ?? []).slice(0, MISSION_BOARD.showcaseLimit),
+    showcase: (tanksData?.tanks ?? []).slice(0, MISSION_BOARD.showcaseLimit),
     garage,
     garageNotice,
-    garageTanks: (garage.data?.tanks ?? []).slice(0, MISSION_TANKS_VIEW.garageLimit)
+    garageTanks: (garageData?.tanks ?? []).slice(0, MISSION_TANKS_VIEW.garageLimit)
   };
 };

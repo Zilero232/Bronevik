@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 REALM = 'RU'
 MAX_PLATOON_MATES = 2
 MAX_ACHIEVEMENTS = 64

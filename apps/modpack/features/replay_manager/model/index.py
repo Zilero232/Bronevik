@@ -5,8 +5,6 @@ from .constants import INDEX_MAX
 
 
 class UploadedIndex(object):
-    """The site ids of replays the mod uploaded, by arenaUniqueID (from the replay upload's
-    `replay_uploaded` event), persisted per account; the oldest are forgotten after INDEX_MAX."""
 
     def __init__(self, store):
         self.store = store

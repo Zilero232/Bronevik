@@ -1,0 +1,1 @@
+export { writeEntries } from './entries';

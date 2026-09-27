@@ -25,6 +25,7 @@ import { DesignRow } from '../DesignRow';
 
 export const OverlaysSection = () => {
   const t = useTranslations('design.overlays');
+  const tCommon = useTranslations('common');
 
   return (
     <DesignBlock id='overlays' title={t('title')}>
@@ -35,7 +36,7 @@ export const OverlaysSection = () => {
           </IconButton>
         </Tooltip>
         <Tooltip content={t('wn8Hint')} side='right'>
-          <RatingBadge label='WN8' tone='unicum' value='3 412' />
+          <RatingBadge label={tCommon('ratings.wn8')} tone='unicum' value='3 412' />
         </Tooltip>
       </DesignRow>
       <DesignRow label={t('popover')}>

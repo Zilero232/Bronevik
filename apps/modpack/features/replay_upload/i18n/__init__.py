@@ -1,4 +1,4 @@
-"""Replay auto-upload strings. The two switch labels live with the companion schema (see settings.py)."""
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 STRINGS = {
     'ru': {},

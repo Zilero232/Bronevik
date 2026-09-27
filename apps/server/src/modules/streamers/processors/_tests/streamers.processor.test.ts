@@ -3,10 +3,13 @@ import type { Job } from 'bullmq';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
+import type { MetricsService } from '../../../collector/metrics';
 import type { ChallengeFeedService, LiveStatusService, SettingsAggregateService, TwitchPredictionsService } from '../../services';
 
 import { STREAMERS_QUEUE } from '../../config';
 import { StreamersProcessor } from '../streamers.processor';
+
+const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });
 
 const createProcessor = () => {
   const feed = mock<ChallengeFeedService>();
@@ -21,7 +24,7 @@ const createProcessor = () => {
   predictions.settleAll.mockResolvedValue(0);
   predictions.openFromJob.mockResolvedValue(1);
 
-  return { processor: new StreamersProcessor(feed, live, aggregates, predictions), feed, live, aggregates, predictions };
+  return { processor: new StreamersProcessor(feed, live, aggregates, predictions, trackingMetrics()), feed, live, aggregates, predictions };
 };
 
 const job = (name: string, data: object = {}) => mock<Job>({ name, data });

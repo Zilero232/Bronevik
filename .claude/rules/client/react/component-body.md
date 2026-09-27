@@ -12,7 +12,10 @@ paths:
 
 Hooks first, then the JSX. Every hook sits above the first `const` that is not
 one, so the dependency order is the reading order. Handlers and derived values
-come back from the component's model hook rather than being declared here.
+come back from the component's model hook rather than being declared here. A pure
+single-expression lookup from props or config may stay in the component, after the
+hooks (`const Icon = ICONS[kind]`, `const { width } = TANK_IMAGE[size]`); anything
+derived in more than one step does not.
 
 ```tsx
 const t = useTranslations('search');
@@ -22,7 +25,11 @@ return ( ... );
 ```
 
 The same ordering applies inside a hook: hooks, then derived values, then handlers,
-then the returned object.
+then the returned object. Hooks keep the group order of `docs/guides/client/react.md`
+§10.1 (i18n/navigation → context → data → state → ref → memo → effects) unless a
+dependency forces otherwise. Query results are destructured where they are read; a
+query handed whole to `QueryState` / `ResourceGate` stays an object, and the fields the
+hook reads from it are destructured from that object once.
 
 React already forbids a conditional hook; this keeps them visually grouped too,
 so a hook added later cannot drift below a branch by accident.

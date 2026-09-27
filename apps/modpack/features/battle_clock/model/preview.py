@@ -5,5 +5,4 @@ from .constants import PREVIEW_PERIOD, PREVIEW_SECONDS_LEFT
 
 
 def preview_text(settings, translate, moment):
-    """The clock at `moment` (the local time tuple) with a running battle timer."""
     return format_battle_clock(clock_values(moment, settings, PREVIEW_PERIOD, PREVIEW_SECONDS_LEFT), settings, translate)

@@ -16,7 +16,6 @@ def field_type(schema, key):
 
 
 def describe_field(settings, key, component_id, labels):
-    """One editable value of a `Settings` object, described from its schema (type, limits, choices)."""
     schema = settings.schema
     kind = field_type(schema, key)
     if kind is None:

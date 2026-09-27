@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { ReferenceProcessor } from './processors/reference.processor';
+import { HttpModule } from '../../../core';
+import { ReferenceProcessor } from './processors';
 import {
   CatalogSyncService,
   EncyclopediaSyncService,
@@ -12,6 +13,7 @@ import {
 } from './services';
 
 @Module({
+  imports: [HttpModule],
   providers: [
     EncyclopediaSyncService,
     VehicleSyncService,

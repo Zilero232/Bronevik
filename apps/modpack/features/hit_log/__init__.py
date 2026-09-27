@@ -1,4 +1,3 @@
-"""Feature: battle hit log panel (own shots: penetration, ricochet, no-pen, crits, as the client reports them). Depends on the core and the companion."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'hit_log'

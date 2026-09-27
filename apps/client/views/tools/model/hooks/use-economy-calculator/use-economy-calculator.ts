@@ -24,13 +24,17 @@ export const useEconomyCalculator = () => {
 
   const tankId = vehicle?.tankId ?? 0;
 
-  const medians = useQuery({
+  const {
+    data: medians,
+    isPending: isMediansLoading,
+    isError: isMediansError
+  } = useQuery({
     queryKey: QUERY_KEYS.tanks.tankEconomy(tankId),
     queryFn: ({ signal }) => getTankEconomy({ tankId, signal }),
     enabled: vehicle !== null
   });
 
-  const economy = vehicle ? (medians.data ?? null) : null;
+  const economy = vehicle ? (medians ?? null) : null;
   const premium = economy ? economyView({ economy, account: 'premium', withReserve: false }) : null;
   const standard = economy ? economyView({ economy, account: 'standard', withReserve: false }) : null;
 
@@ -51,7 +55,7 @@ export const useEconomyCalculator = () => {
     vehicle,
     onVehicleChange,
     medians: { premium, standard, windowDays: economy?.windowDays ?? 0 },
-    isMediansPending: vehicle !== null && medians.isPending,
-    isMediansError: medians.isError
+    isMediansPending: vehicle !== null && isMediansLoading,
+    isMediansError
   };
 };

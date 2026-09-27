@@ -1,5 +1,5 @@
-import type { RunActionInput } from '../../model/hooks/use-actions/use-actions.types';
-import type { UiPage } from '../../model/protocol/protocol.types';
+import type { RunActionInput } from '../../model/hooks/use-actions';
+import type { UiPage } from '../../model/protocol';
 
 export type ListPageProps = {
   page: UiPage;

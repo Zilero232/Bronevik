@@ -9,7 +9,7 @@ import { Button, Card, CardHeader, DataTable, FilteredEmptyState, QueryState, Ta
 import type { ReplayTab } from './ReplayBrowser.types';
 
 import { REPLAY_TABS } from '../../../config';
-import { useReplayColumns, useReplaysFeed, useReplayVehicle } from '../../../model/hooks';
+import { useReplayBrowser } from '../../../model/hooks/use-replay-browser';
 import { ReplayFilters } from '../ReplayFilters';
 import { ReplayCard } from './components';
 
@@ -18,10 +18,8 @@ import s from './ReplayBrowser.module.scss';
 export const ReplayBrowser = () => {
   const t = useTranslations('replays.list');
   const titleId = useId();
-  const { tab, isSignedIn, isMine, query, total, pager, isFiltered, empty, setTab, resetFilters, goPrev, goNext } = useReplaysFeed();
-
-  const columns = useReplayColumns();
-  const vehicleOf = useReplayVehicle();
+  const { tab, isSignedIn, isMine, query, total, pager, isFiltered, isPaging, empty, columns, vehicleOf, setTab, resetFilters, goPrev, goNext } =
+    useReplayBrowser();
 
   return (
     <Card aria-labelledby={titleId} className={s.root} padding='none'>
@@ -56,11 +54,11 @@ export const ReplayBrowser = () => {
             footer={
               pager.pages > 1 && (
                 <div className={s.pager}>
-                  <Button disabled={pager.prevOffset === null || query.isFetching} size='sm' variant='secondary' onClick={goPrev}>
+                  <Button disabled={pager.prevOffset === null || isPaging} size='sm' variant='secondary' onClick={goPrev}>
                     {t('prev')}
                   </Button>
                   <span className={s.page}>{t('page', { page: pager.page, pages: pager.pages })}</span>
-                  <Button disabled={pager.nextOffset === null || query.isFetching} size='sm' variant='secondary' onClick={goNext}>
+                  <Button disabled={pager.nextOffset === null || isPaging} size='sm' variant='secondary' onClick={goNext}>
                     {t('next')}
                   </Button>
                 </div>

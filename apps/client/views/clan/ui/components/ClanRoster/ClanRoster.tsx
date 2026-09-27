@@ -7,7 +7,8 @@ import { DataTable, EmptyState } from '@/ui-kit';
 
 import type { ClanRosterProps } from './ClanRoster.types';
 
-import { useRoster, useRosterColumns } from '../../../model/hooks';
+import { useRoster } from '../../../model/hooks';
+import { useRosterColumns } from '../../../model/hooks/use-roster-columns';
 import { ActivityStrip, RosterFilters } from './components';
 
 import s from './ClanRoster.module.scss';

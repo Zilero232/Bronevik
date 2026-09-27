@@ -1,1 +1,1 @@
-export { TRACKING } from './tracking.config';
+export { TRACKING } from './tracking.constants';

@@ -1,12 +1,15 @@
-import type { Rect } from '../../hud/geometry.types';
-import type { UiPanel } from '../../protocol/protocol.types';
+import type { Rect, StageBox } from '../../lib/geometry';
+import type { UiPanel } from '../../protocol';
 
-export type Drag = {
+export type LiveRect = {
   id: string;
+  rect: Rect;
+};
+
+export type Drag = LiveRect & {
   mouseX: number;
   mouseY: number;
   scale: number;
-  rect: Rect;
 };
 
 export type StartDragInput = {
@@ -22,11 +25,9 @@ export type NudgeInput = {
 
 export type PlacedPanel = {
   panel: UiPanel;
-  rect: Rect;
+  box: StageBox;
 };
 
-export type MoveInput = {
-  id: string;
-  rect: Rect;
+export type MoveInput = LiveRect & {
   final: boolean;
 };

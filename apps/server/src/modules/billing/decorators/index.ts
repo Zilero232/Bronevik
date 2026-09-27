@@ -1,1 +1,1 @@
-export { RequiresPlus } from './requires-plus.decorator';
+export { RequiresPlus } from './requires-plus';

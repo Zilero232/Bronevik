@@ -13,7 +13,7 @@ import { useResetUserQueries } from '../use-reset-user-queries';
 
 export const useAuthSession = (): AuthSessionQuery => {
   const isHydrated = useHydrated();
-  const query = useQuery({
+  const { data, error, isPending, isFetching, refetch } = useQuery({
     queryKey: QUERY_KEYS.auth.session,
     queryFn: getAuthSession,
     staleTime: AUTH_SESSION.staleMs,
@@ -21,11 +21,11 @@ export const useAuthSession = (): AuthSessionQuery => {
   });
 
   return {
-    data: isHydrated ? query.data : undefined,
-    error: isHydrated ? query.error : null,
-    isPending: !isHydrated || query.isPending,
-    isFetching: isHydrated && query.isFetching,
-    refetch: query.refetch
+    data: isHydrated ? data : undefined,
+    error: isHydrated ? error : null,
+    isPending: !isHydrated || isPending,
+    isFetching: isHydrated && isFetching,
+    refetch
   };
 };
 

@@ -12,14 +12,15 @@ import { operationProgress } from '../../../lib/operation-progress';
 export const useMissionsHub = () => {
   const { data: session } = useAuthSession();
   const campaigns = useQuery({ queryKey: QUERY_KEYS.missions.campaigns, queryFn: ({ signal }) => getMissionCampaigns({ signal }) });
-  const progress = useQuery(missionQueries.progress(Boolean(session)));
+  const { data: progress } = useQuery(missionQueries.progress(Boolean(session)));
 
+  const { data: hub } = campaigns;
   const isSignedIn = Boolean(session);
-  const items = progress.data?.items ?? [];
+  const items = progress?.items ?? [];
 
   return {
     campaigns,
-    operationsCount: campaigns.data ? sumBy(campaigns.data.campaigns, (campaign) => campaign.operations.length) : null,
+    operationsCount: hub ? sumBy(hub.campaigns, (campaign) => campaign.operations.length) : null,
     progressOf: (questIds: readonly number[]) => (isSignedIn ? operationProgress({ questIds, items }) : null)
   };
 };

@@ -1,5 +1,7 @@
-import type { STAGE_METRICS } from '../../config';
-import type { MockPlayer, MockPlayerState, MockTankState, MockWorld } from '../../lesta-mock.types';
+import type { VehicleType } from '@otmetki/schemas';
+
+import type { MOCK_SERIES, STAGE_METRICS } from '../../config';
+import type { MockPlayer, MockPlayerState, MockTankState, MockTotals, MockWorld } from '../../lesta-mock.types';
 
 export type StageMetric = (typeof STAGE_METRICS)[number];
 
@@ -18,4 +20,28 @@ export type TankAchievementsInput = {
 export type AchievementCounts = {
   achievements: Record<string, number>;
   max_series: Record<string, number>;
+};
+
+export type JitterInput = {
+  seed: number;
+  index: number;
+  key: number;
+};
+
+export type BattlesOfTypeInput = {
+  state: MockPlayerState;
+  type: VehicleType | undefined;
+};
+
+export type StageMetricsInput = {
+  state: MockPlayerState;
+  totals: MockTotals;
+  heroes: number;
+};
+
+export type SeriesValueInput = {
+  series: keyof typeof MOCK_SERIES;
+  perf: number;
+  battles: number;
+  spread: number;
 };

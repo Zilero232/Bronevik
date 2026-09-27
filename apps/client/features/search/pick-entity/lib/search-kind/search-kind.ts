@@ -1,6 +1,6 @@
 import type { SearchResult } from '@otmetki/schemas';
 
-import type { PickableKind, PickableResult } from '../../model/hooks/use-entity-search';
+import type { PickableKind, PickableResult } from './search-kind.types';
 
 export const isKind =
   <K extends PickableKind>(kind: K) =>

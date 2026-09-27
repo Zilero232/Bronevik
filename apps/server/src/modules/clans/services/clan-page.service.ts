@@ -1,16 +1,17 @@
 import type { ClanMember, ClanMemberEvent, ClanPage, Paginated } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { differenceInDays, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 
 import type { ClanEventsInput } from '../clans.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { clampPercent, CLAN_ROLE_FROM_DB, emptyRating, ratingValue, toIso, toNumber } from '../../../common/lib';
+import { clampPercent, ratingValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { CLAN_PAGE } from '../config';
 import { avgBattlesPerDay } from '../lib';
-import { toClanSummary } from '../mappers';
+import { toClanEvent, toClanMember, toClanSummary } from '../mappers';
+import { CLAN_MEMBER_INCLUDE } from '../selects';
 
 @Injectable()
 export class ClanPageService {
@@ -54,37 +55,12 @@ export class ClanPageService {
   async members(clanId: bigint): Promise<ClanMember[]> {
     const rows = await this.prisma.clanMember.findMany({
       where: { clanId },
-      include: {
-        player: {
-          select: {
-            nickname: true,
-            lastBattleAt: true,
-            ratings: { where: { period: { in: ['overall', CLAN_PAGE.recentPeriod] } } }
-          }
-        }
-      }
+      include: CLAN_MEMBER_INCLUDE
     });
 
     const now = new Date();
 
-    return rows.map((row) => {
-      const overall = row.player.ratings.find((rating) => rating.period === 'overall');
-      const recent = row.player.ratings.find((rating) => rating.period === CLAN_PAGE.recentPeriod);
-      const lastBattleAt = row.player.lastBattleAt;
-
-      return {
-        accountId: toNumber(row.accountId),
-        nickname: row.player.nickname,
-        role: CLAN_ROLE_FROM_DB[row.role],
-        joinedAt: toIso(row.joinedAt),
-        lastBattleAt: toIso(lastBattleAt),
-        inactiveDays: lastBattleAt ? Math.max(0, differenceInDays(now, lastBattleAt)) : null,
-        battles: overall?.battles ?? null,
-        winRate: clampPercent(overall?.winRate),
-        wn8: overall ? ratingValue({ kind: 'wn8', value: overall.wn8 }) : emptyRating(),
-        recentWn8: recent ? ratingValue({ kind: 'wn8', value: recent.wn8 }) : emptyRating()
-      };
-    });
+    return rows.map((row) => toClanMember({ row, now }));
   }
 
   async events({ clanId, limit, offset }: ClanEventsInput): Promise<Paginated<ClanMemberEvent>> {
@@ -101,14 +77,7 @@ export class ClanPageService {
     const nicknameOf = new Map(players.map((player) => [player.accountId, player.nickname]));
 
     return {
-      items: rows.map((row) => ({
-        accountId: toNumber(row.accountId),
-        nickname: nicknameOf.get(row.accountId) ?? null,
-        type: row.type === 'roleChanged' ? 'role_changed' : row.type,
-        oldRole: row.oldRole ? CLAN_ROLE_FROM_DB[row.oldRole] : null,
-        newRole: row.newRole ? CLAN_ROLE_FROM_DB[row.newRole] : null,
-        occurredAt: row.occurredAt.toISOString()
-      })),
+      items: rows.map((row) => toClanEvent({ row, nickname: nicknameOf.get(row.accountId) ?? null })),
       total,
       limit,
       offset

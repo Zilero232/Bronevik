@@ -9,6 +9,7 @@ import type { PlayerTankCardProps } from './PlayerTankCard.types';
 
 export const PlayerTankCard = ({ row: { vehicle, battles, winRate, wn8, markOfMastery, marksOnGun } }: PlayerTankCardProps) => {
   const t = useTranslations('profile.tanks.columns');
+  const tCommon = useTranslations('common');
   const format = useFormatter();
 
   return (
@@ -16,7 +17,7 @@ export const PlayerTankCard = ({ row: { vehicle, battles, winRate, wn8, markOfMa
       figures={[
         { id: 'battles', label: t('battles'), value: format.number(battles) },
         { id: 'winRate', label: t('winRate'), value: <WinRateCell value={winRate} /> },
-        { id: 'wn8', label: 'WN8', value: <RatingValue rating={wn8} /> }
+        { id: 'wn8', label: tCommon('ratings.wn8'), value: <RatingValue rating={wn8} /> }
       ]}
       footer={<TankAwards markOfMastery={markOfMastery} marksOnGun={marksOnGun} />}
       layout='row'

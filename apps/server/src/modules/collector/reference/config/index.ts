@@ -1,1 +1,1 @@
-export { REFERENCE } from './reference.config';
+export { REFERENCE } from './reference.constants';

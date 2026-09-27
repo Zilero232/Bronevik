@@ -5,14 +5,15 @@ import { shotSchema } from '@otmetki/schemas';
 import { firstBy, groupBy, sumBy } from 'remeda';
 import { z } from 'zod';
 
-import type { Battle, PlaySession } from '../../../../generated';
+import type { Battle } from '../../../../generated';
 import type { SessionBattleInput, SessionDetailInput, SessionsInput } from '../players.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { ratio, toIso, toIsoDate, toNumber } from '../../../common/lib';
+import { ratio, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { statsBlockFromTotals } from '../lib';
+import { toSessionListItem } from '../mappers';
 
 @Injectable()
 export class PlayerSessionsService {
@@ -27,7 +28,7 @@ export class PlayerSessionsService {
       this.prisma.playSession.count({ where: { accountId } })
     ]);
 
-    return { items: items.map((session) => this.listItem(session)), total, limit, offset };
+    return { items: items.map((session) => toSessionListItem(session)), total, limit, offset };
   }
 
   async detail({ accountId, sessionId }: SessionDetailInput): Promise<Session> {
@@ -51,38 +52,13 @@ export class PlayerSessionsService {
     const rated = tanks.filter((tank) => tank.stats.avgDamage !== null);
 
     return {
-      ...this.listItem(session),
+      ...toSessionListItem(session),
       accountId: toNumber(session.accountId),
       credits: session.credits,
       tanks,
       battles: session.source === 'mod' ? battles : null,
       best: firstBy(rated, [(tank) => tank.stats.avgDamage ?? 0, 'desc']) ?? null,
       worst: rated.length > 1 ? (firstBy(rated, [(tank) => tank.stats.avgDamage ?? 0, 'asc']) ?? null) : null
-    };
-  }
-
-  private listItem(session: PlaySession): SessionListItem {
-    return {
-      id: session.id,
-      kind: session.kind,
-      source: session.source,
-      isLive: session.kind === 'live' && session.status === 'open',
-      day: toIsoDate(session.day),
-      startedAt: session.startedAt.toISOString(),
-      endedAt: toIso(session.endedAt),
-      stats: statsBlockFromTotals({
-        battles: session.battles,
-        wins: session.wins,
-        damageDealt: session.damageDealt,
-        frags: session.frags,
-        spotted: session.spotted,
-        xp: session.xp,
-        survived: session.survived,
-        avgBlocked: ratio({ value: session.damageBlocked, by: session.battles }),
-        avgAssisted: ratio({ value: session.damageAssisted, by: session.battles }),
-        wn8: session.wn8,
-        broneIndex: session.broneIndex
-      })
     };
   }
 

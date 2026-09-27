@@ -9,12 +9,17 @@ import { InsightsTab } from '../InsightsTab';
 import { MarksTab } from '../MarksTab';
 import { OverviewTab } from '../OverviewTab';
 import { SessionsTab } from '../SessionsTab';
+import { TanksFilterProvider } from '../TanksFilterProvider';
 import { TanksTab } from '../TanksTab';
 
 export const ProfileTabContent = ({ tab }: ProfileTabContentProps) =>
   match(tab)
     .with('overview', () => <OverviewTab />)
-    .with('tanks', () => <TanksTab />)
+    .with('tanks', () => (
+      <TanksFilterProvider>
+        <TanksTab />
+      </TanksFilterProvider>
+    ))
     .with('sessions', () => <SessionsTab />)
     .with('marks', () => <MarksTab />)
     .with('achievements', () => <AchievementsTab />)

@@ -17,7 +17,10 @@ vi.hoisted(() => vi.resetModules());
 
 vi.mock('@/entities/notification/inbox/api/notifications/notifications', () => ({ getInbox: vi.fn(), markInboxRead: vi.fn() }));
 
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: null };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: null
+};
 
 const PAGE: InboxPage = { items: [], unread: 3 };
 

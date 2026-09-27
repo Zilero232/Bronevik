@@ -1,6 +1,5 @@
-import { PLUS } from '@otmetki/schemas';
 import { addDays, addHours, subDays } from 'date-fns';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Subscription } from '../../../../../generated';
@@ -13,9 +12,6 @@ import type { WebhookService } from '../webhook.service';
 import { RENEWAL } from '../../config';
 import { planPrice, renewalIdempotenceKey } from '../../lib';
 import { RenewalService } from '../renewal.service';
-
-const initialCheckout = PLUS.checkoutEnabled;
-const setCheckoutEnabled = (isEnabled: boolean) => Reflect.set(PLUS, 'checkoutEnabled', isEnabled);
 
 const now = new Date('2026-09-25T12:00:00Z');
 const periodEnd = addHours(now, 2);
@@ -41,12 +37,13 @@ const remote = (status: YooKassaPayment['status'], id = 'pay-1'): YooKassaPaymen
 type Options = {
   isRecurring?: boolean;
   isConfigured?: boolean;
+  isCheckout?: boolean;
 };
 
-const createService = ({ isRecurring = true, isConfigured = true }: Options = {}) => {
+const createService = ({ isRecurring = true, isConfigured = true, isCheckout = true }: Options = {}) => {
   const prisma = mockDeep<PrismaService>();
   const yookassa = mock<YooKassaClient>({ isConfigured });
-  const subscriptions = mock<SubscriptionService>({ isRecurringEnabled: isRecurring });
+  const subscriptions = mock<SubscriptionService>({ isRecurringEnabled: isRecurring, isCheckoutEnabled: isCheckout });
   const webhooks = mock<WebhookService>();
   const entitlements = mock<EntitlementsService>();
 
@@ -59,18 +56,9 @@ const createService = ({ isRecurring = true, isConfigured = true }: Options = {}
   return { service, prisma, yookassa, webhooks, entitlements };
 };
 
-beforeEach(() => {
-  setCheckoutEnabled(true);
-});
-
-afterEach(() => {
-  setCheckoutEnabled(initialCheckout);
-});
-
 describe('RenewalService.chargeDue', () => {
   it('charges nobody while paid checkout is closed', async () => {
-    setCheckoutEnabled(false);
-    const { service, prisma } = createService();
+    const { service, prisma } = createService({ isCheckout: false });
 
     await expect(service.chargeDue(now)).resolves.toBe(0);
     expect(prisma.subscription.findMany).not.toHaveBeenCalled();

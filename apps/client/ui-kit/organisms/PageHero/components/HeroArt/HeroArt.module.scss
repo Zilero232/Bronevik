@@ -65,8 +65,8 @@
 
 .root[data-kind='emblem'] {
   background:
-    radial-gradient(600px 300px at 80% 20%, rgb(255 122 26 / 10%), transparent 70%),
-    radial-gradient(500px 300px at 95% 90%, rgb(60 95 138 / 12%), transparent 70%);
+    radial-gradient(600px 300px at 80% 20%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 70%),
+    radial-gradient(500px 300px at 95% 90%, color-mix(in srgb, var(--color-steel-blue) 12%, transparent), transparent 70%);
 }
 
 .clan {

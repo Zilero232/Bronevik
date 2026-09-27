@@ -16,3 +16,7 @@ export const BUILD_USAGE_AGGREGATE = {
   maxPicks: 12,
   unknownVersion: 'unknown'
 } as const;
+
+export const BUILD_USAGE_SHARE = {
+  digits: 10_000
+} as const;

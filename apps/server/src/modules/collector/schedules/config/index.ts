@@ -1,1 +1,1 @@
-export { SCHEDULES } from './schedules.config';
+export { SCHEDULES } from './schedules.constants';

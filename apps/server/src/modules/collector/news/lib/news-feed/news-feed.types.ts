@@ -9,11 +9,6 @@ export type FeedItem = {
   enclosure?: { url?: string };
 };
 
-export type ToNewsItemsInput = {
-  items: readonly FeedItem[];
-  now: Date;
-};
-
 export type PublishedAtInput = {
   item: FeedItem;
   now: Date;

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""In-battle MoE panel strings."""
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 STRINGS = {
     'ru': {

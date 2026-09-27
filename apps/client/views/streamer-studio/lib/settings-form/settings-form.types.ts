@@ -29,6 +29,7 @@ export type MergeSettingsInput = {
   edited: SettingsValues;
 };
 
-type Underscored<S extends string> = S extends `${infer Head}.${infer Tail}` ? `${Head}_${Underscored<Tail>}` : S;
-
-export type SettingsFieldLabelKey = `fields.${Underscored<SettingsField['path']>}`;
+export type ReadPathInput = {
+  source: unknown;
+  path: string;
+};

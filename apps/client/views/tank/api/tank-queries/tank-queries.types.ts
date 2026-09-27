@@ -1,3 +1,3 @@
 import type { TankDetailInput } from '@/entities/tank/tank';
 
-export type TankDetailParams = Omit<TankDetailInput, 'signal'>;
+export type TankDetailQueryInput = Omit<TankDetailInput, 'signal'>;

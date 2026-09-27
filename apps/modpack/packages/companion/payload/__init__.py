@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import uuid
 
 from ...core.compat import as_int, is_int, is_number, string_types, to_text

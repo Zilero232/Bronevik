@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.format import COLOR_DOWN, COLOR_UP
+
 SWITCH = 'battle_team_hp'
 PANEL_ID = 'team_hp'
 STYLES = ('full', 'numbers', 'bars', 'compact')
@@ -14,7 +16,7 @@ DEFAULTS = {
     'bar_width': 30,
     'show_score': True,
     'show_diff': True,
-    'ally_color': '#7CD35B',
-    'enemy_color': '#E3564A',
+    'ally_color': COLOR_UP,
+    'enemy_color': COLOR_DOWN,
     'template': '',
 }

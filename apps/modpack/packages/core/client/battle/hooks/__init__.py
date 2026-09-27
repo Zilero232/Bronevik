@@ -28,8 +28,7 @@ class BattleHooks(object):
         try:
             owner = resolve()
             if owner is not None:
-                subscribe(owner, name, handler)
-                self.items.append((owner, name, handler))
+                self.items.append((owner, name, subscribe(owner, name, handler)))
                 return
         except Exception:
             log_exception('hook %s' % name)

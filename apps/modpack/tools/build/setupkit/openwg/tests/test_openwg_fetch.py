@@ -23,7 +23,6 @@ def zip_bytes(members):
 
 
 class FakeOpener(object):
-    """urlopen stand-in: serves bytes per URL and counts calls."""
 
     def __init__(self, payloads):
         self.payloads = payloads

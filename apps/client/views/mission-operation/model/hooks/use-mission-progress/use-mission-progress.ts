@@ -17,7 +17,7 @@ export const useMissionProgress = () => {
   const queryClient = useQueryClient();
   const { data: session } = useAuthSession();
   const isSignedIn = Boolean(session);
-  const progress = useQuery(missionQueries.progress(isSignedIn));
+  const { data: progress, isSuccess } = useQuery(missionQueries.progress(isSignedIn));
 
   const save = useMutation({
     mutationFn: updateMissionProgress,
@@ -31,12 +31,12 @@ export const useMissionProgress = () => {
     onError: () => toast.error(t('saveFailed'))
   });
 
-  const items = new Map((progress.data?.items ?? []).map((item) => [item.questId, item]));
+  const items = new Map((progress?.items ?? []).map((item) => [item.questId, item]));
 
   return {
     items,
     isSignedIn,
-    isTracked: isSignedIn && progress.isSuccess,
+    isTracked: isSignedIn && isSuccess,
     isSaving: save.isPending,
     progressOf: (questId: number) => items.get(questId) ?? null,
     setProgress: save.mutate

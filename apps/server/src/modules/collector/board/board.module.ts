@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { BoardService } from './services/board.service';
+import { BoardService } from './services';
 
 @Module({
   providers: [BoardService]

@@ -1,4 +1,4 @@
-"""Feature: in-battle MoE panel. Depends on the core and the companion (hangar MoE snapshots)."""
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'marks_panel'
 PACKAGE_ID = 'net.triotmetki.marks_panel'
@@ -12,6 +12,5 @@ def create(app):
 
 
 def register():
-    """Called by the feature's mod_* entry script; safe in any load order (see core.registry)."""
     from ...core.registry import registry
     return registry().register(FEATURE_ID, create)

@@ -1,4 +1,5 @@
 export const STREAMER_SETTINGS = {
+  provenanceKeys: new Set(['source', 'sourceUrl', 'checkedAt']),
   groups: ['display', 'camera', 'controls', 'zoom', 'sight', 'markers', 'minimap', 'sound', 'battleUi', 'hardware', 'mods'],
   sources: ['creator', 'editorial', 'mod', 'preferences'],
   windowModes: ['fullscreen', 'borderless', 'windowed'],

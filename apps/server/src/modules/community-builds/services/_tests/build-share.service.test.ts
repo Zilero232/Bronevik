@@ -3,7 +3,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { GameVersion, Vehicle } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { BuildRow } from '../../community-builds.types';
+import type { BuildRow } from '../../selects';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { BuildShareService } from '../build-share.service';

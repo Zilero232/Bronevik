@@ -5,19 +5,16 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { PREFERENCES_FILE } from '@/entities/streamer/preferences';
-import { isKnownField } from '@/entities/streamer/settings';
 import { Button, buttonVariants } from '@/ui-kit';
 
 import type { SettingsImportXmlProps } from './SettingsImportXml.types';
 
-import { fieldLabelKey } from '../../../lib/settings-form';
 import { useSettingsImportXml } from '../../../model/hooks';
 
 import s from './SettingsImportXml.module.scss';
 
 export const SettingsImportXml = ({ onImport }: SettingsImportXmlProps) => {
   const t = useTranslations('streamer.settings.xml');
-  const tf = useTranslations('streamerSettings');
   const id = useId();
   const { status, found, onFileChange, onApply } = useSettingsImportXml({ onImport });
 
@@ -50,9 +47,9 @@ export const SettingsImportXml = ({ onImport }: SettingsImportXmlProps) => {
         <div className={s.result}>
           <p className={s.text}>{t('found', { count: found.length })}</p>
           <ul className={s.found}>
-            {found.map((path) => (
+            {found.map(({ path, label }) => (
               <li key={path} className={s.chip}>
-                {isKnownField(path) ? tf(fieldLabelKey(path)) : path}
+                {label}
               </li>
             ))}
           </ul>

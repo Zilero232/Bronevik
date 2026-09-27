@@ -1,8 +1,7 @@
 import type { AbsoluteUrlInput, ListingItem, ParseListingInput } from './tanki-listing.types';
 
 import { fromUnixSeconds } from '../../../common/lib';
-
-const BACKGROUND_URL = /url\(\s*["']?([^"')]+)/;
+import { TANKI_LISTING } from './tanki-listing.constants';
 
 export const absoluteUrl = ({ href, baseUrl }: AbsoluteUrlInput): string | null => {
   try {
@@ -31,7 +30,7 @@ export const parseTankiListing = ({ $, baseUrl }: ParseListingInput): ListingIte
 
       seen.add(url);
 
-      const background = BACKGROUND_URL.exec(item.find('.preview_image-holder').attr('style') ?? '')?.[1];
+      const background = TANKI_LISTING.backgroundUrl.exec(item.find('.preview_image-holder').attr('style') ?? '')?.[1];
       const timestamp = Number(item.find('[data-timestamp]').first().attr('data-timestamp'));
 
       return [

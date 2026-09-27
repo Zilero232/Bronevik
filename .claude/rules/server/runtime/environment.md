@@ -10,8 +10,13 @@ paths:
 
 ## Environment
 
-`config/env/env.schema.ts` validates on boot and **throws** on a missing or malformed
+`config/env/env.schemas.ts` (the schema) and `env.ts` (`validateEnv`, `isProduction`) validate on boot and **throws** on a missing or malformed
 variable. Only secrets, addresses, ports and connection strings are env; every
 tunable is an `as const` object in `config/*.constants.ts` (`FEATURES`, `SOURCES`,
 `LESTA`, `TIMESCALE`, `BULL_BOARD`). Schedules run by default; `FEATURES` holds
 only flags that are actually switched off (`moePoliroid`), not always-true switches.
+`FEATURES` is for switches read across modules; a flag only one module reads lives in
+that module's `config/` (`PLUS.checkoutEnabled` from `@otmetki/schemas`,
+`STREAMERS.editorialEnabled`) and reaches its services through DI
+(`SubscriptionService.isCheckoutEnabled`, `NOTIFICATION_TOKENS.plusCheckoutEnabled`)
+so a test passes the value instead of mutating the constant.

@@ -3,6 +3,8 @@
 The type aliases are six's; `to_text` / `to_bytes` / `to_native` are six's `ensure_*` that also take a
 non-string (a number, None) by converting it to text first, which is what the mod's callers rely on.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from ..vendor import six
 
 PY2 = six.PY2

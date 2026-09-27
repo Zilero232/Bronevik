@@ -1,19 +1,17 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 
-import type { Rect } from '../../hud/geometry.types';
-import type { UiPanel } from '../../protocol/protocol.types';
-import type { Drag, MoveInput, NudgeInput, PlacedPanel, StartDragInput } from './use-hud-editor.types';
+import type { UiPanel } from '../../protocol';
+import type { Drag, LiveRect, MoveInput, NudgeInput, PlacedPanel, StartDragInput } from './use-hud-editor.types';
 
-import { gameface } from '../../../../shared/gameface/gameface';
-import { dragRect, panelRect, placementOf, stageScale } from '../../hud/geometry';
-import { GEOMETRY } from '../../hud/geometry.constants';
-import { send } from '../../protocol/protocol';
+import { gameface } from '../../../../shared/gameface';
+import { dragRect, GEOMETRY, panelRect, placementOf, stageBox, stageScale } from '../../lib/geometry';
+import { send } from '../../protocol';
 
 export const useHudEditor = (panels: UiPanel[]) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<Drag | null>(null);
   const lastSentRef = useRef(0);
-  const [live, setLive] = useState<{ id: string; rect: Rect } | null>(null);
+  const [live, setLive] = useState<LiveRect | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const screen = gameface.clientSize() ?? GEOMETRY.defaultScreen;
 
@@ -28,7 +26,7 @@ export const useHudEditor = (panels: UiPanel[]) => {
     send({ type: 'hud_move', panel: id, ...placementOf({ rect, screen }) });
   };
 
-  const dragged = (event: MouseEvent): { id: string; rect: Rect } | null => {
+  const dragged = (event: MouseEvent): LiveRect | null => {
     const current = dragRef.current;
 
     if (!current || current.scale <= 0) {
@@ -73,12 +71,11 @@ export const useHudEditor = (panels: UiPanel[]) => {
 
   const placed: PlacedPanel[] = panels.map((panel) => ({
     panel,
-    rect: live?.id === panel.id ? live.rect : panelRect({ panel, screen })
+    box: stageBox({ rect: live?.id === panel.id ? live.rect : panelRect({ panel, screen }), screen })
   }));
 
   return {
     stageRef,
-    screen,
     placed,
     selected,
     startDrag: ({ id, mouseX, mouseY }: StartDragInput) => {

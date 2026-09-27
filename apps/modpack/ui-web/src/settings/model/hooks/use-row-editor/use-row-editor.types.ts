@@ -1,4 +1,4 @@
-import type { UiAction } from '../../protocol/protocol.types';
+import type { UiAction } from '../../protocol';
 
 export type RowChoice = {
   row: string;

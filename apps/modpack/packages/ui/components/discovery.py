@@ -13,8 +13,6 @@ def _import(name):
 
 
 def load_features(root_package, instances, skip=()):
-    """FeatureInfo of every attached feature (registry instances), in id order, with its settings module
-    `<root>.features.<id>.settings` and its package's PACKAGE_NAME as the fallback title."""
     features = []
     for feature_id in sorted(instances):
         if feature_id in skip:
@@ -27,5 +25,4 @@ def load_features(root_package, instances, skip=()):
 
 
 def root_package(module_name, marker='.ui.'):
-    """`gui.mods.otmetki` in the client, `otmetki` in the tests: the part of a ui module name before `.ui.`."""
     return module_name.split(marker, 1)[0]

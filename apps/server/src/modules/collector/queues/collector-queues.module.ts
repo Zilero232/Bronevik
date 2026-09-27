@@ -1,15 +1,12 @@
-import { BullModule } from '@nestjs/bullmq';
 import { Global, Module } from '@nestjs/common';
 
-import { QUEUE } from '../contracts';
+import { collectorQueues } from './providers';
 import { QueueRegistryService } from './queue-registry.service';
-
-const queues = BullModule.registerQueue(...Object.values(QUEUE).map((name) => ({ name })));
 
 @Global()
 @Module({
-  imports: [queues],
+  imports: [collectorQueues],
   providers: [QueueRegistryService],
-  exports: [queues, QueueRegistryService]
+  exports: [collectorQueues, QueueRegistryService]
 })
 export class CollectorQueuesModule {}

@@ -1,2 +1,2 @@
-export { PlusGuard } from './plus.guard';
-export { WebhookIpGuard } from './webhook-ip.guard';
+export { PlusGuard } from './plus';
+export { WebhookIpGuard } from './webhook-ip';

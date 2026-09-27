@@ -1,13 +1,13 @@
 'use client';
 
-import { getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { clsx } from 'clsx';
 
-import { columnMax, useDataTableState } from '@/shared/lib';
+import { useDataTable } from '@/shared/lib';
 
 import type { DataTableProps } from '../../DataTable.types';
 
 import { DATA_TABLE } from '../../DataTable.constants';
+import { DataTableCards } from '../DataTableCards';
 import { DataTableHead } from '../DataTableHead';
 import { DataTableRows } from '../DataTableRows';
 import { DataTableSkeleton } from '../DataTableSkeleton';
@@ -40,29 +40,15 @@ export const DataTableContent = <T,>({
 }: DataTableProps<T>) => {
   'use no memo';
 
-  const { scrollNode, setScrollNode, sorting, setSorting } = useDataTableState({ initialSorting });
-
-  const table = useReactTable({
+  const { table, rows, scrollNode, setScrollNode, barMax, columnCount, isVirtual, isEmpty, hasCards } = useDataTable({
     data,
     columns,
-    state: { sorting },
     getRowId,
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel()
+    initialSorting,
+    virtualizeAfter,
+    isLoading,
+    hasCards: Boolean(renderCard)
   });
-
-  const { rows } = table.getRowModel();
-  const isVirtual = rows.length > virtualizeAfter;
-  const hasCards = Boolean(renderCard) && !isLoading && rows.length > 0;
-  const columnCount = table.getVisibleLeafColumns().length;
-  const barMax = Object.fromEntries(
-    table.getVisibleLeafColumns().flatMap((column) => {
-      const bar = column.columnDef.meta?.bar;
-
-      return bar ? [[column.id, columnMax({ rows, value: (row) => row.getValue<number | null>(column.id) })]] : [];
-    })
-  );
 
   return (
     <div
@@ -95,17 +81,9 @@ export const DataTableContent = <T,>({
             <DataTableRows barMax={barMax} getRowClass={getRowClass} getRowLink={getRowLink} rows={rows} rowTint={rowTint} onRowClick={onRowClick} />
           )}
         </table>
-        {!isLoading && rows.length === 0 && emptyState}
+        {isEmpty && emptyState}
       </div>
-      {hasCards && renderCard && (
-        <ul className={s.cards}>
-          {rows.map((row) => (
-            <li key={row.id} className={s.card}>
-              {renderCard(row.original)}
-            </li>
-          ))}
-        </ul>
-      )}
+      {hasCards && renderCard && <DataTableCards renderCard={renderCard} rows={rows} />}
       {footer && <div className={s.footer}>{footer}</div>}
     </div>
   );

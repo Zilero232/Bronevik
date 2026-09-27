@@ -89,11 +89,13 @@
   "devDependencies": {
     "@hey-api/openapi-ts": "catalog:",
     "@types/canvas-confetti": "^1.9.0",
+    "@types/madge": "^5.0.3",
     "@types/node": "^26.6.2",
     "@types/react": "catalog:",
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.186.0",
     "esbuild": "catalog:",
+    "madge": "^8.0.0",
     "sass-embedded": "^1.105.0",
     "serwist": "^9.5.12",
     "typescript": "catalog:"

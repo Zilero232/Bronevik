@@ -1,1 +1,4 @@
-export { ATTENDANCE_BONUS_TYPES, CLAN_WORKSPACE, CLAN_WORKSPACE_QUEUE, CLAN_WORKSPACE_SCHEDULES, WORKSPACE_ROLES } from './clan-workspace.config';
+export { ATTENDANCE_BONUS_TYPES } from './attendance.constants';
+export { CLAN_WORKSPACE_QUEUE, CLAN_WORKSPACE_SCHEDULES } from './queue.constants';
+export { WORKSPACE_ROLES } from './roles.constants';
+export { CLAN_WORKSPACE } from './workspace.constants';

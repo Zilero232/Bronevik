@@ -4,9 +4,7 @@ import type { PlaytimeRow } from '../../../players';
 import type { CellTotals, PlaytimeSplit } from './playtime-split.types';
 
 import { percentOf } from '../../../../common/lib';
-
-const HOURS = 24;
-const WEEKDAYS = 7;
+import { PLAYTIME_GRID } from './playtime-split.constants';
 
 const totals = (cells: readonly PlaytimeRow[]): CellTotals => ({
   battles: sumBy(cells, (cell) => cell.battles),
@@ -21,6 +19,6 @@ const stat = ({ battles, wins, damage }: CellTotals) => ({
 });
 
 export const splitPlaytime = (cells: readonly PlaytimeRow[]): PlaytimeSplit => ({
-  hours: range(0, HOURS).map((hour) => ({ hour, ...stat(totals(cells.filter((cell) => cell.hour === hour))) })),
-  weekdays: range(0, WEEKDAYS).map((weekday) => ({ weekday, ...stat(totals(cells.filter((cell) => cell.weekday === weekday))) }))
+  hours: range(0, PLAYTIME_GRID.hours).map((hour) => ({ hour, ...stat(totals(cells.filter((cell) => cell.hour === hour))) })),
+  weekdays: range(0, PLAYTIME_GRID.weekdays).map((weekday) => ({ weekday, ...stat(totals(cells.filter((cell) => cell.weekday === weekday))) }))
 });

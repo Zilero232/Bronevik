@@ -20,13 +20,13 @@ import { boardPeers } from '../../../lib/board-peers';
 import { boardDocumentName, boardSocketToken, boardSocketUrl } from '../../../lib/board-socket';
 
 export const useBoardDocument = ({ board, urlToken, userName }: UseBoardDocumentInput) => {
-  const sessionRef = useRef<BoardSession | null>(null);
   const [layers, setLayers] = useState<TacticLayer[]>(board.data.layers);
   const [status, setStatus] = useState<BoardConnection>('connecting');
   const [isSynced, setIsSynced] = useState(false);
   const [isWritable, setIsWritable] = useState(false);
   const [history, setHistory] = useState<BoardHistory>({ canUndo: false, canRedo: false });
   const [peers, setPeers] = useState<BoardPeer[]>([]);
+  const sessionRef = useRef<BoardSession | null>(null);
   const setCursor = useThrottleCallback(
     (point: BoardPoint | null) => sessionRef.current?.provider.setAwarenessField('cursor', point),
     BOARD.cursorThrottleMs

@@ -224,6 +224,12 @@
         "rows": [
           {
             "actions": [],
+            "details": [
+              {
+                "label": "Map",
+                "value": "Prokhorovka"
+              }
+            ],
             "id": "a.mtreplay",
             "title": "A"
           }

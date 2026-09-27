@@ -17,8 +17,11 @@ Tests live in a `_tests/` folder beside what they test
 (`shared/lib/rating-tone/_tests/rating-tone.test.ts`); the Playwright specs are in
 `e2e/`, and the game modpack's Python suites are in the `tests/` folder of each package under `apps/modpack/` (`bun run test:modpack`).
 
-A change that can break prerendering also needs `bun --filter @otmetki/client build` —
-typecheck passes on code that throws during SSR.
+Typecheck, lint and tests are the routine check; the production build
+(`bun --filter @otmetki/client build`) runs only when the owner asks for one. It is the
+only check that catches a page throwing during prerender, so a change that could affect
+SSR is called out in the report, and the first build after client work is where the
+prerender output gets read.
 
 `bun run fix` does not fix: hook order ([section 10.1](../client/react.md)) or FSD import boundaries
 (→ [`docs/architecture/fsd.md`](../../architecture/fsd.md)).

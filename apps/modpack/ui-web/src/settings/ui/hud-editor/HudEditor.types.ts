@@ -1,4 +1,4 @@
-import type { UiPanel } from '../../model/protocol/protocol.types';
+import type { UiPanel } from '../../model/protocol';
 
 export type HudEditorProps = {
   panels: UiPanel[];

@@ -1,2 +1,2 @@
 export { buildQueries } from './build-queries';
-export type { RecommendedBuildParams, TankDetailParams } from './build-queries.types';
+export type { RecommendedBuildQueryInput, TankDetailQueryInput } from './build-queries.types';

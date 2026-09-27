@@ -3,7 +3,7 @@ import pino from 'pino';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { REDACTION } from '../logger.constants';
-import { resolveLevel, resolveTransport, wantsJson } from '../logger.helpers';
+import { resolveLevel, resolveTransport, wantsJson } from '../logger.transport';
 
 const setEnv = (env: Record<string, string | undefined>) => {
   for (const [key, value] of Object.entries(env)) {

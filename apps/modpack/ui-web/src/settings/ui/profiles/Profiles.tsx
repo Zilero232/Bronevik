@@ -2,9 +2,10 @@ import clsx from 'clsx';
 
 import type { ProfilesProps } from './Profiles.types';
 
-import { useProfiles } from '../../model/hooks/use-profiles/use-profiles';
-import { useT } from '../../model/hooks/use-t/use-t';
-import { Confirm } from '../confirm/Confirm';
+import { INPUT_LIMITS } from '../../config';
+import { useProfiles } from '../../model/hooks/use-profiles';
+import { useT } from '../../model/hooks/use-t';
+import { Confirm } from '../confirm';
 
 export const Profiles = ({ profiles }: ProfilesProps) => {
   const t = useT();
@@ -21,7 +22,7 @@ export const Profiles = ({ profiles }: ProfilesProps) => {
       <div className='inline-form'>
         <input
           className='input input--wide'
-          maxLength={40}
+          maxLength={INPUT_LIMITS.profileName}
           placeholder={t('profileName')}
           value={model.name}
           onInput={(event) => model.setName(event.currentTarget.value)}
@@ -38,7 +39,7 @@ export const Profiles = ({ profiles }: ProfilesProps) => {
               <div className='row__edit'>
                 <input
                   className='input'
-                  maxLength={40}
+                  maxLength={INPUT_LIMITS.profileName}
                   value={model.renaming.name}
                   onInput={(event) => model.editRename(event.currentTarget.value)}
                 />

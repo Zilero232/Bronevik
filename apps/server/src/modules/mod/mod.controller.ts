@@ -8,7 +8,6 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
-import { ModException } from '../../common/exceptions';
 import { BIND_CODE, MOD_INGEST } from './config';
 import { BindCodeDto, BindCodeInputDto, BindRequestDto, BindResponseDto, DeviceParamsDto, IngestResponseDto, ModDevicesDto } from './dto';
 import { ingestBatchSchema } from './lib';
@@ -46,20 +45,11 @@ export class ModController {
   @HttpCode(HttpStatus.OK)
   @ZodResponse({ type: IngestResponseDto })
   async ingest(@Req() request: RawBodyRequest<Request>, @Res({ passthrough: true }) response: Response) {
-    const device = await this.devices.authenticate({ request, rawBody: request.rawBody });
-    const parsed = ingestBatchSchema.safeParse(request.body);
+    const { device, body: batch } = await this.devices.authenticateBody({ request, schema: ingestBatchSchema });
 
-    if (!parsed.success) {
-      throw new ModException({ status: HttpStatus.BAD_REQUEST, error: 'invalid_payload', message: parsed.error.issues[0]?.message });
-    }
+    const result = await this.ingestion.ingest({ device, batch });
 
-    if (parsed.data.device_id !== device.id || BigInt(parsed.data.account_id) !== device.accountId) {
-      throw new ModException({ status: HttpStatus.FORBIDDEN, error: 'account_mismatch' });
-    }
-
-    const result = await this.ingestion.ingest({ device, batch: parsed.data });
-
-    if (result.accepted === 0 && result.duplicates === parsed.data.events.length) {
+    if (result.accepted === 0 && result.duplicates === batch.events.length) {
       response.status(HttpStatus.CONFLICT);
     }
 

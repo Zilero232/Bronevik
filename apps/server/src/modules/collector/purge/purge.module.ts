@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { PurgeProcessor } from './processors/purge.processor';
+import { PurgeProcessor } from './processors';
 import { PurgeGuardModule } from './purge-guard.module';
 import { PurgeService, RetentionService } from './services';
 

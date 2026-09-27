@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { RetryButton } from '@/ui-kit';
 
-import type { PickableKind } from '../../model/hooks';
+import type { PickableKind } from '../../lib/search-kind';
 import type { EntityPickerProps } from './EntityPicker.types';
 
 import { entityId } from '../../lib/entity-id';

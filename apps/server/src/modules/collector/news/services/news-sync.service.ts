@@ -2,19 +2,21 @@ import { Injectable } from '@nestjs/common';
 import Parser from 'rss-parser';
 
 import { SOURCES } from '../../../../config';
-import { PrismaService } from '../../../../core';
-import { http } from '../../../../lib/http';
+import { HttpClientService, PrismaService } from '../../../../core';
 import { NEWS } from '../config';
-import { toNewsItems } from '../lib/news-feed';
+import { toNewsItems } from '../mappers';
 
 @Injectable()
 export class NewsSyncService {
   private readonly parser = new Parser();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly http: HttpClientService
+  ) {}
 
   async sync() {
-    const xml = await http.get(SOURCES.newsRss, { timeout: NEWS.timeoutMs, headers: { accept: NEWS.accept } }).text();
+    const xml = await this.http.getText({ url: SOURCES.newsRss, options: { timeout: NEWS.timeoutMs, headers: { accept: NEWS.accept } } });
     const feed = await this.parser.parseString(xml);
     const items = toNewsItems({ items: feed.items, now: new Date() });
     const { count } = await this.prisma.newsItem.createMany({ data: items, skipDuplicates: true });

@@ -12,6 +12,12 @@ paths:
 
 The code is expected to read on its own. Application code in `apps/` and
 `packages/` has zero comments and stays that way; the reasoning belongs in
-CLAUDE.md or the commit message. The exceptions: an `eslint-disable-next-line`
-carries its reason after `--`, and tool configs (`eslint.config.mjs`,
-`stylelint.config.mjs`) and `.github/**` YAML explain why a rule is bent.
+CLAUDE.md or the commit message. The exceptions:
+
+- an `eslint-disable-next-line` carries its reason after `--`;
+- tool and build configs explain why a rule is bent: `eslint.config.mjs`,
+  `stylelint.config.mjs`, every `vitest.config.ts`, `playwright.config.ts`, the client's `next.config.ts` and its `config/*.ts`
+  build helpers (security headers, CSP, redirects), and `.github/**` YAML;
+- a `/* glsl */` tag in front of a shader template string — it is a
+  syntax-highlighting marker, not prose;
+- pragmas the tools read (`// @vitest-environment`, `/// <reference lib>`).

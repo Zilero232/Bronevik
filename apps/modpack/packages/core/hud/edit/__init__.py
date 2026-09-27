@@ -1,7 +1,7 @@
 """A panel's side of the HUD edit protocol (the ui package's editor drives it on `app.bus`).
 
 `HudPreview(layer, panel_id, render_preview, ...).attach(bus)` answers `hud_describe(collect)` with the
-panel's preview text and size, and on `hud_edit(True)` shows the panel with that preview text (only
+panel's preview text and size (`collect(panel_id, preview, width, height, enabled)`), and on `hud_edit(True)` shows the panel with that preview text (only
 when its switch is on and the player is in the hangar) so it can be dragged into place; `hud_edit(False)`
 or `end()` (the panel's own battle start) hides the preview again.
 """

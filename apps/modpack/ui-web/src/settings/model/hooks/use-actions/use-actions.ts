@@ -1,11 +1,11 @@
 import { useState } from 'preact/hooks';
 
-import type { PendingAction, RunActionInput } from './use-actions.types';
+import type { RunActionInput } from './use-actions.types';
 
-import { send } from '../../protocol/protocol';
+import { send } from '../../protocol';
 
 export const useActions = (componentId: string) => {
-  const [pending, setPending] = useState<PendingAction | null>(null);
+  const [pending, setPending] = useState<RunActionInput | null>(null);
 
   const perform = ({ action, row, value }: RunActionInput): void => {
     setPending(null);

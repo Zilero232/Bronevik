@@ -1,12 +1,12 @@
 import type { ComponentViewProps } from './ComponentView.types';
 
-import { setSetting, toggleSwitch } from '../../model/actions/actions';
-import { useActions } from '../../model/hooks/use-actions/use-actions';
-import { useT } from '../../model/hooks/use-t/use-t';
-import { Confirm } from '../confirm/Confirm';
-import { Field } from '../field/Field';
-import { ListPage } from '../list-page/ListPage';
-import { Toggle } from '../toggle/Toggle';
+import { setSetting, toggleSwitch } from '../../model/actions';
+import { useActions } from '../../model/hooks/use-actions';
+import { useT } from '../../model/hooks/use-t';
+import { Confirm } from '../confirm';
+import { Field } from '../field';
+import { ListPage } from '../list-page';
+import { Toggle } from '../toggle';
 
 export const ComponentView = ({ component }: ComponentViewProps) => {
   const t = useT();

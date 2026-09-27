@@ -3,7 +3,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Guide, User } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { GuideRow } from '../../guides.types';
+import type { GuideRow } from '../../selects';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { GUIDES } from '../../config';

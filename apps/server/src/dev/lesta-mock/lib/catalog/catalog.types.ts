@@ -1,4 +1,7 @@
+import type { VehicleType } from '@otmetki/schemas';
+
 import type { CrewRole } from '../../../../../generated';
+import type { MockExpected } from '../../lesta-mock.types';
 
 export type CatalogVehicleRow = {
   tank_id: number;
@@ -101,4 +104,25 @@ export type CatalogRows = {
 
 export type CatalogQueryClient = {
   $queryRawUnsafe: <T>(query: string) => PromiseLike<T>;
+};
+
+export type KnownExpected = {
+  tier: number;
+  type: VehicleType;
+  expected: MockExpected;
+};
+
+export type FallbackExpectedInput = {
+  known: readonly KnownExpected[];
+  vehicle: KnownExpected;
+};
+
+export type OfInput = {
+  key: keyof MockExpected;
+  fallback: number;
+};
+
+export type HitPointsInput = {
+  row: CatalogVehicleRow;
+  type: VehicleType;
 };

@@ -1,2 +1,1 @@
-export { useReplay } from './replay-context';
-export { ReplayProvider } from './ReplayProvider';
+export { ReplayContext, useReplay } from './replay';

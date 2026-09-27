@@ -2,7 +2,7 @@ import { CHANNEL_HOSTS } from '@otmetki/schemas';
 
 import type { HandleOfInput, ParseChannelInput, ParsedChannel } from './channel-url.types';
 
-const HANDLE = /^[\w.@-]{2,64}$/u;
+import { CHANNEL_URL } from './channel-url.constants';
 
 const handleOf = ({ platform, url }: HandleOfInput): string | null => {
   const parts = url.pathname.split('/').filter(Boolean);
@@ -47,7 +47,7 @@ export const parseChannel = ({ platform, url }: ParseChannelInput): ParsedChanne
 
   const handle = handleOf({ platform, url: parsed });
 
-  if (!handle || !HANDLE.test(handle)) {
+  if (!handle || !CHANNEL_URL.handle.test(handle)) {
     return null;
   }
 

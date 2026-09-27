@@ -1,5 +1,3 @@
-"""The window's cards: the companion's data switches, every attached feature (its companion keys or its
-components.json section) and HUD panels, each rendered from its own schema."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .catalog import FeatureInfo, build_catalog, find  # noqa: F401

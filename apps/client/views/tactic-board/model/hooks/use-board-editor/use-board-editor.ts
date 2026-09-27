@@ -8,7 +8,7 @@ import type { TacticIcon, TacticIconKind, TacticLayer, TacticStroke } from '@/en
 
 import type { BoardPoint } from '../../../lib/board-geometry';
 import type { BoardTeam, BoardTool } from '../../../model/board-tools.types';
-import type { BoardItemRef, IconDragInput, LayerRecipe, RenameLayerRequest, StrokeDragInput } from '../../board.types';
+import type { BoardItemRef, IconDragInput, LayerRecipe, LayerRenameInput, StrokeDragInput } from '../../board.types';
 import type { UseBoardEditorInput } from './use-board-editor.types';
 
 import { BOARD_DEFAULTS, BOARD_LIMITS, BOARD_TEAMS } from '../../../config';
@@ -204,7 +204,7 @@ export const useBoardEditor = ({ document, role }: UseBoardEditorInput) => {
     }
   };
 
-  const onRenameLayer = ({ layerId, name }: RenameLayerRequest) => {
+  const onRenameLayer = ({ layerId, name }: LayerRenameInput) => {
     if (isEditable && name.trim().length > 0) {
       document.updateLayer({ layerId, recipe: (layer) => renameLayer({ layer, name }) });
     }

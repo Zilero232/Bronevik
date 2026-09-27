@@ -1,1 +1,1 @@
-export { MONITORING } from './monitoring.config';
+export { MONITORING } from './monitoring.constants';

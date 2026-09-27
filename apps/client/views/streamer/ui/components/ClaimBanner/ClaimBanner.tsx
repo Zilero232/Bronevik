@@ -1,8 +1,8 @@
 'use client';
 
+import { useBoolean } from '@siberiacancode/reactuse';
 import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
@@ -17,7 +17,7 @@ import s from './ClaimBanner.module.scss';
 export const ClaimBanner = () => {
   const t = useTranslations('streamersDirectory.public.claim');
   const { slug } = useStreamer().profile;
-  const [isRemovalOpen, setIsRemovalOpen] = useState(false);
+  const [isRemovalOpen, setRemovalOpen] = useBoolean(false);
 
   return (
     <section className={s.root}>
@@ -30,11 +30,11 @@ export const ClaimBanner = () => {
           {t('action')}
           <ArrowRight size={STREAMER_PAGE.iconSize} />
         </Link>
-        <Button size='sm' variant='ghost' onClick={() => setIsRemovalOpen(true)}>
+        <Button size='sm' variant='ghost' onClick={() => setRemovalOpen(true)}>
           {t('remove')}
         </Button>
       </div>
-      <RemovalDialog open={isRemovalOpen} onOpenChange={setIsRemovalOpen} />
+      <RemovalDialog open={isRemovalOpen} onOpenChange={setRemovalOpen} />
     </section>
   );
 };

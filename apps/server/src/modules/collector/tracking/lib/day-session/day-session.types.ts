@@ -28,3 +28,8 @@ export type BuildDaySessionInput = {
 export type DaySession = Prisma.PlaySessionUncheckedCreateInput & {
   day: Date;
 };
+
+export type TotalInput = {
+  rows: readonly DaySessionDelta[];
+  field: keyof Omit<DaySessionDelta, 'capturedAt' | 'tankId'>;
+};

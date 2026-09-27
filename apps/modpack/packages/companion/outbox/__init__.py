@@ -1,4 +1,5 @@
-"""The persistent per-account queue of ingest events: batching, retry backoff, auth pause, 413 shrink."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import random
 
 from ...core.net.backoff import backoff_delay

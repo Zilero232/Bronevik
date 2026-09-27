@@ -10,7 +10,8 @@ import type { TelegramIdentityService } from '../telegram-identity.service';
 
 import { AppBadRequestException, AppConflictException } from '../../../../common/exceptions';
 import { AUTH_PROVIDER, placeholderEmail } from '../../../../lib/auth';
-import { DISPOSABLE_USER_COUNTS, LINK_CODE, WEB_LOGIN } from '../../config';
+import { LINK_CODE, WEB_LOGIN } from '../../config';
+import { DISPOSABLE_USER_COUNTS } from '../../selects';
 import { TelegramLinkService } from '../telegram-link.service';
 
 const identity = { telegramId: 42n, username: 'ivan', name: 'ivan', languageCode: 'ru' };

@@ -2,15 +2,18 @@ import { Job } from 'bullmq';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
+import type { MetricsService } from '../../../collector/metrics';
 import type { WatchlistDigestService } from '../../services';
 
 import { WATCHLIST_QUEUE } from '../../config';
 import { WatchlistProcessor } from '../watchlist.processor';
 
+const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });
+
 describe('WatchlistProcessor.process', () => {
   it('sends digests for a digest job and ignores unknown jobs', async () => {
     const digests = mock<WatchlistDigestService>();
-    const processor = new WatchlistProcessor(digests);
+    const processor = new WatchlistProcessor(digests, trackingMetrics());
 
     digests.run.mockResolvedValue(3);
 

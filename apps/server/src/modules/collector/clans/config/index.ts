@@ -1,1 +1,1 @@
-export { CLANS } from './clans.config';
+export { CLANS } from './clans.constants';

@@ -1,4 +1,4 @@
-import type { PickableKind, PickableResult } from '../../model/hooks';
+import type { PickableKind, PickableResult } from '../../lib/search-kind';
 
 export type EntityPickerProps<K extends PickableKind> = {
   kind: K;

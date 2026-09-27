@@ -4,12 +4,10 @@ import { Suspense } from 'react';
 
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { env, EXTERNAL_LINKS, SITE } from '@/shared/config';
-import { ROUTES, SITE_FOOTER_GROUPS, SITE_LEGAL_LINKS, SITE_NAV } from '@/shared/constants';
+import { ROUTES, SITE_FOOTER_COLUMNS, SITE_LEGAL_LINKS } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
 import s from './SiteFooter.module.scss';
-
-const GROUPS = [...SITE_NAV.groups, ...SITE_FOOTER_GROUPS];
 
 export const SiteFooter = () => {
   const t = useTranslations('footer');
@@ -29,7 +27,7 @@ export const SiteFooter = () => {
             <p className={s.aboutText}>{t('about')}</p>
           </div>
           <nav aria-label={t('label')} className={s.columns}>
-            {GROUPS.map((group) => (
+            {SITE_FOOTER_COLUMNS.map((group) => (
               <section key={group.key} className={s.column} data-long={group.items.length > 8 || undefined}>
                 <h2 className={s.heading}>{tNav(`groups.${group.key}`)}</h2>
                 <ul className={s.list}>
@@ -65,7 +63,7 @@ export const SiteFooter = () => {
           <span>
             {t('dataSource')}{' '}
             <a className={s.link} href={EXTERNAL_LINKS.game} rel='noreferrer' target='_blank'>
-              tanki.su
+              {t('gameSite')}
             </a>
           </span>
           <span>{t('disclaimer')}</span>

@@ -6,9 +6,8 @@ import { ROUTES } from '@/shared/constants';
 import { useRouteParam } from '@/shared/lib';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
-import { BuildProvider } from '../model/context';
 import { useBuildData } from '../model/hooks';
-import { BuildScreen, BuildSkeleton } from './components';
+import { BuildProvider, BuildScreen, BuildSkeleton } from './components';
 
 import s from './BuildPage.module.scss';
 

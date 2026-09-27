@@ -3,8 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
+from otmetki.core.native_settings import setting_names
 from otmetki.core.settings import Settings
-from otmetki.features.camera.model import CLIENT_SETTINGS, to_native
+from otmetki.features.camera.model import FIELDS, to_native
 from otmetki.features.camera.settings import SCHEMA, SETTINGS
 
 
@@ -19,9 +20,17 @@ class CameraTest(unittest.TestCase):
         assert to_native(values) == {'zoomSteps': [2, 4, 8, 16, 25], 'dynamicCamera': False, 'horStabilizationSnp': True}
 
     def test_no_camera_config_overrides(self):
-        assert CLIENT_SETTINGS == ('dynamicCamera', 'horStabilizationSnp', 'zoomSteps')
-        assert set(SCHEMA.defaults) == set(['zoom_steps', 'dynamic_camera', 'horizontal_stabilization'])
+        assert setting_names(FIELDS) == ('dynamicCamera', 'horStabilizationSnp', 'zoomSteps')
+        assert set(SCHEMA.defaults) == set(['preset', 'zoom_steps', 'dynamic_camera', 'horizontal_stabilization'])
         assert Settings({'zoom_steps': 'x2_x50'}, SCHEMA).get('zoom_steps') == 'native'
+
+
+    def test_presets_fill_native_fields_only(self):
+        values = Settings({'preset': 'sniper'}, SCHEMA).to_dict()
+        assert to_native(values) == {'zoomSteps': [2, 4, 8, 16, 25], 'dynamicCamera': False, 'horStabilizationSnp': True}
+        values = Settings({'preset': 'dynamic', 'zoom_steps': 'x2_x16'}, SCHEMA).to_dict()
+        assert to_native(values) == {'zoomSteps': [2, 4, 8, 16], 'dynamicCamera': True, 'horStabilizationSnp': True}
+        assert Settings({'preset': 'pmod'}, SCHEMA).get('preset') == 'native'
 
 
 if __name__ == '__main__':

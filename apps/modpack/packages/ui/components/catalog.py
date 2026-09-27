@@ -1,13 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .component import Component, section_switch, switch_of
-from .constants import COMPANION_ID, COMPANION_KEYS, COMPANION_SWITCH, GROUP_BATTLE, GROUP_DATA, GROUP_HANGAR, HIDDEN_CONFIG_KEYS, KNOWN_GROUPS
+from .constants import COMPANION_ID, COMPANION_KEYS, COMPANION_SWITCH, GROUP_BATTLE, GROUP_DATA, GROUP_HANGAR, HIDDEN_CONFIG_KEYS
 from .sources import ConfigSource, SectionSource
 
 
 class FeatureInfo(object):
-    """What the catalog needs of an attached feature: its id, its settings module (`SETTINGS`: companion
-    keys it reads; `SCHEMA`: its components.json section; optional `GROUP`) and its instance."""
 
     def __init__(self, feature_id, settings_module=None, instance=None, title=None):
         self.id = feature_id
@@ -22,7 +20,7 @@ class FeatureInfo(object):
         declared = getattr(self.settings_module, 'GROUP', None)
         if declared:
             return declared
-        return KNOWN_GROUPS.get(self.id, GROUP_BATTLE if panel else GROUP_HANGAR)
+        return GROUP_BATTLE if panel else GROUP_HANGAR
 
 
 def _panels(layer):
@@ -52,8 +50,6 @@ def _feature_component(feature, config, save_config, component_config, layer, sw
 
 
 def build_catalog(config, save_config, features, component_config=None, layer=None, companion_instance=None, switch_keys=()):
-    """Cards in window order: the companion, every attached feature, then HUD panels no feature claims.
-    `switch_keys` are the companion's feature switches (config.FEATURES)."""
     claimed = set()
     for feature in features:
         claimed.update(feature.config_keys())

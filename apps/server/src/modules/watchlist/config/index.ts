@@ -1,1 +1,2 @@
-export { WATCH_COMMAND, WATCHLIST_DIGEST_RUN, WATCHLIST_QUEUE, WATCHLIST_SCHEDULES } from './watchlist.config';
+export { WATCHLIST_DIGEST_RUN, WATCHLIST_QUEUE, WATCHLIST_SCHEDULES } from './queue.constants';
+export { WATCH_COMMAND } from './watch-command.constants';

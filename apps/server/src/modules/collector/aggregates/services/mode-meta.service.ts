@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { MODE_META, PLAY_MODES } from '@otmetki/schemas';
 import { subDays } from 'date-fns';
 
-import type { ModeSqlRow } from '../lib/mode-meta';
+import type { ModeSqlRow } from '../mappers';
 
 import { bonusTypesOfMode } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
 import { MODE_META_AGGREGATE } from '../config';
-import { toModeRecord } from '../lib/mode-meta';
+import { toModeRecord } from '../mappers';
 
 @Injectable()
 export class ModeMetaService {

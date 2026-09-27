@@ -5,7 +5,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ClanListService, ClanPageService, ClanResolverService } from '../clans';
-import { PublicApi } from './decorators/public-api.decorator';
+import { PublicApi } from './decorators/public-api/public-api.decorator';
 import {
   V1ClanEventsPageDto,
   V1ClanEventsQueryDto,

@@ -10,7 +10,7 @@ import { STREAMER_SETTINGS_PAGE } from '../../config';
 
 export const settingsGroups = ({ settings }: Pick<StreamerSettingsView, 'settings'>): SettingsGroupView[] =>
   STREAMER_SETTINGS.groups.flatMap((group) => {
-    const rows = settingsRows(settings, group);
+    const rows = settingsRows({ settings, group });
     const content = settings[group];
 
     if (rows.length === 0) {

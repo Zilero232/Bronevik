@@ -1,7 +1,7 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { describe, expect, it } from 'vitest';
+import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { PrismaService } from '../../../../../core';
+import type { HttpClientService, PrismaService } from '../../../../../core';
 
 import { REFERENCE } from '../../config';
 import { ExpectedValuesSyncService } from '../expected-values-sync.service';
@@ -11,29 +11,20 @@ const xvm = {
   data: [{ IDNum: 1, expDef: 0.8, expFrag: 1.1, expSpot: 1.2, expDamage: 1500, expWinRate: 52 }]
 };
 
-const serve = (response: Response) => {
-  vi.stubGlobal(
-    'fetch',
-    vi.fn(async () => response)
-  );
-};
-
 const createSync = (inserted: number) => {
   const prisma = mockDeep<PrismaService>();
+  const http = mock<HttpClientService>();
 
   prisma.wn8ExpectedValue.createMany.mockResolvedValue({ count: inserted });
 
-  return { prisma, service: new ExpectedValuesSyncService(prisma) };
+  return { prisma, http, service: new ExpectedValuesSyncService(prisma, http) };
 };
 
 describe('ExpectedValuesSyncService.sync', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
   it('adds the table dated by the XVM header without touching earlier dates', async () => {
-    serve(Response.json(xvm));
-    const { prisma, service } = createSync(1);
+    const { prisma, http, service } = createSync(1);
+
+    http.getJson.mockResolvedValue(xvm);
 
     expect(await service.sync()).toEqual({ date: '2026-09-23', vehicles: 1, inserted: 1 });
 
@@ -46,8 +37,9 @@ describe('ExpectedValuesSyncService.sync', () => {
   });
 
   it('writes nothing when the source is down', async () => {
-    serve(new Response('down', { status: 502 }));
-    const { prisma, service } = createSync(0);
+    const { prisma, http, service } = createSync(0);
+
+    http.getJson.mockRejectedValue(new Error('HTTP 502'));
 
     await expect(service.sync()).rejects.toThrow();
     expect(prisma.wn8ExpectedValue.createMany).not.toHaveBeenCalled();

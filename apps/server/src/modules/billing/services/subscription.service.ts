@@ -9,6 +9,7 @@ import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS, PLUS_SUBSCRIPTION } from '../config';
 import { cancelsAtPeriodEnd, extendPeriod } from '../lib';
+import { toPaymentHistoryItem } from '../mappers';
 import { EntitlementsService } from './entitlements.service';
 
 @Injectable()
@@ -21,6 +22,10 @@ export class SubscriptionService {
 
   get isRecurringEnabled(): boolean {
     return this.config.get('YOOKASSA_RECURRING');
+  }
+
+  get isCheckoutEnabled(): boolean {
+    return PLUS.checkoutEnabled;
   }
 
   async activate({ db, userId, plan, method, now }: ActivateInput): Promise<string> {
@@ -79,7 +84,7 @@ export class SubscriptionService {
       cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
       card: subscription?.savedCardTitle ?? null,
       isRecurringAvailable: this.isRecurringEnabled,
-      isCheckoutAvailable: PLUS.checkoutEnabled,
+      isCheckoutAvailable: this.isCheckoutEnabled,
       plus,
       plans: this.plans()
     };
@@ -92,17 +97,7 @@ export class SubscriptionService {
   async history(userId: string): Promise<PaymentHistoryItem[]> {
     const payments = await this.prisma.payment.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
 
-    return payments.map((payment) => ({
-      id: payment.id,
-      amount: payment.amount.toNumber(),
-      currency: payment.currency,
-      status: payment.status,
-      plan: payment.plan,
-      isAutoCharge: payment.isAutoCharge,
-      promoCode: payment.promoCode,
-      createdAt: payment.createdAt.toISOString(),
-      paidAt: toIso(payment.paidAt)
-    }));
+    return payments.map(toPaymentHistoryItem);
   }
 
   async setAutoRenew({ userId, isEnabled }: SetAutoRenewInput): Promise<BillingStatus> {

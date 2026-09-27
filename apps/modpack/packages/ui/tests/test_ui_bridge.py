@@ -26,7 +26,6 @@ UI_WEB = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'settings', 'model'
 STATE_FIXTURE = os.path.join(UI_WEB, '_tests', 'fixtures', 'state.sample.json')
 
 
-# A panel section as core/hud builds one, spelt out so the state fixture does not follow PANEL_DEFAULTS.
 PANEL_SCHEMA = Schema(
     {'enabled': True, 'x': 10, 'y': 0, 'align_x': 'center', 'align_y': 'top', 'alpha': 100, 'font_size': 14, 'drag': True, 'border': False,
      'lines': 5},
@@ -71,7 +70,8 @@ class ReplayPage(object):
         return [{'id': 'refresh', 'label': 'Refresh', 'confirm': None}]
 
     def ui_page(self):
-        return {'kind': 'list', 'empty': 'none', 'rows': [{'id': 'a.mtreplay', 'title': 'A', 'actions': []}]}
+        return {'kind': 'list', 'empty': 'none', 'rows': [{'id': 'a.mtreplay', 'title': 'A', 'actions': [],
+                                                           'details': [{'label': 'Map', 'value': 'Prokhorovka'}]}]}
 
     def ui_action(self, action, row, value):
         self.actions.append((action, row, value))
@@ -127,8 +127,8 @@ class FakeContext(object):
 
     def features(self):
         return [
-            FeatureInfo('marks_panel', settings_module(SETTINGS=('battle_moe_panel',))),
-            FeatureInfo('session_stats', settings_module(SETTINGS=('hangar_session_panel', 'session_idle_minutes'))),
+            FeatureInfo('marks_panel', settings_module(SETTINGS=('battle_moe_panel',), GROUP='battle')),
+            FeatureInfo('session_stats', settings_module(SETTINGS=('hangar_session_panel', 'session_idle_minutes'), GROUP='hangar')),
             FeatureInfo('minimap', settings_module(SETTINGS=(), GROUP='battle')),
             FeatureInfo('replay_manager', settings_module(SETTINGS=()), instance=self.page),
             FeatureInfo('damage_log', settings_module(SETTINGS=('upload_replays',))),
@@ -392,8 +392,6 @@ class DiscoveryAndLinksTest(unittest.TestCase):
 
 
 class PageContractTest(unittest.TestCase):
-    """The page (ui-web) parses exactly this state: its zod schema test reads the same fixture.
-    OTMETKI_UPDATE_FIXTURES=1 rewrites the fixture after an intended protocol change."""
 
     def sample_state(self):
         context = FakeContext()

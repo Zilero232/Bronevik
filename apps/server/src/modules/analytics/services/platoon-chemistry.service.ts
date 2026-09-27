@@ -7,7 +7,8 @@ import type { AnalyticsInput, MateRow, SizedRow } from '../analytics.types';
 import { PrismaService } from '../../../core';
 import { ExpectedValuesService } from '../../reference';
 import { ANALYTICS_SQL, PLATOON_CHEMISTRY } from '../config';
-import { periodStart, statLine, toAggregateRow, winRateDelta } from '../lib';
+import { periodStart, statLine, winRateDelta } from '../lib';
+import { toAggregateRow } from '../mappers';
 import { OwnAccountService } from './own-account.service';
 
 @Injectable()

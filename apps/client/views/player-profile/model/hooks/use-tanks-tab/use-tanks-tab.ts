@@ -1,15 +1,14 @@
 'use client';
 
+import { useTanksFilterContext } from '../../context';
 import { usePlayerTanks } from '../use-profile-queries';
-import { useTanksFilter } from '../use-tanks-filter';
 
 export const useTanksTab = () => {
-  const filters = useTanksFilter();
-  const query = usePlayerTanks(filters.request);
+  const { request, matches } = useTanksFilterContext();
+  const query = usePlayerTanks(request);
 
   return {
-    filters,
     query,
-    rows: query.data?.items.filter(({ vehicle }) => filters.matches(vehicle.name)) ?? []
+    rows: query.data?.items.filter(({ vehicle }) => matches(vehicle.name)) ?? []
   };
 };

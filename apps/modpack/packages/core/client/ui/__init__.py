@@ -1,6 +1,6 @@
 """Hangar panels and notifications for the companion and the hangar features: labels drawn through the
 HUD backend (GUIFlash when installed), each placed by its own layout, and the game's system messages."""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...log import log, safe
 from ..hud import create_backend

@@ -5,6 +5,7 @@ import type { SettingsValues } from '@otmetki/schemas';
 import { diffSettings, STREAMER_SETTINGS } from '@otmetki/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { match } from 'ts-pattern';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { getSettingsShare } from '@/entities/streamer/streamer';
@@ -21,11 +22,23 @@ export const useCompareResult = () => {
   const { slugs, isMine } = useCompareParams();
   const { data: session } = useAuthSession();
   const isSignedIn = Boolean(session);
-  const compare = useQuery(settingsCompareQueries.bySlugs(slugs));
-  const share = useQuery({ queryKey: QUERY_KEYS.me.streamer.settingsShare, queryFn: getSettingsShare, enabled: isSignedIn && isMine });
+  const {
+    data: compared,
+    isError: isCompareError,
+    isRefetching: isCompareRefetching,
+    refetch: refetchCompare
+  } = useQuery(settingsCompareQueries.bySlugs(slugs));
 
-  const views = slugs.flatMap((slug) => compare.data?.filter((view) => view.slug.toLowerCase() === slug) ?? []);
-  const mine: SettingsValues | null = isMine ? (share.data?.values ?? null) : null;
+  const {
+    data: share,
+    isSuccess: isShareReady,
+    isError: isShareError,
+    isRefetching: isShareRefetching,
+    refetch: refetchShare
+  } = useQuery({ queryKey: QUERY_KEYS.me.streamer.settingsShare, queryFn: getSettingsShare, enabled: isSignedIn && isMine });
+
+  const views = slugs.flatMap((slug) => compared?.filter((view) => view.slug.toLowerCase() === slug) ?? []);
+  const mine: SettingsValues | null = isMine ? (share?.values ?? null) : null;
   const columns: CompareColumn[] = [
     ...views.map((view) => ({ id: view.slug, label: view.displayName, slug: view.slug })),
     ...(mine ? [{ id: 'me', label: t('mine'), slug: null }] : [])
@@ -36,21 +49,19 @@ export const useCompareResult = () => {
   return {
     columns,
     isComparable,
-    isShareMissing: isMine && isSignedIn && share.isSuccess && share.data === null,
+    isShareMissing: isMine && isSignedIn && isShareReady && share === null,
     query: {
-      data:
-        slugs.length === 0 || compare.data
-          ? isComparable
-            ? compareSections(diffSettings([...views.map(({ settings }) => settings), ...(mine ? [mine] : [])]))
-            : []
-          : undefined,
-      isError: compare.isError || share.isError,
-      isRefetching: compare.isRefetching || share.isRefetching,
+      data: match({ isLoaded: slugs.length === 0 || compared !== undefined, isComparable })
+        .with({ isLoaded: false }, () => undefined)
+        .with({ isComparable: false }, () => [])
+        .otherwise(() => compareSections(diffSettings([...views.map(({ settings }) => settings), ...(mine ? [mine] : [])]))),
+      isError: isCompareError || isShareError,
+      isRefetching: isCompareRefetching || isShareRefetching,
       refetch: () => {
-        void compare.refetch();
+        void refetchCompare();
 
         if (isMine) {
-          void share.refetch();
+          void refetchShare();
         }
       }
     }

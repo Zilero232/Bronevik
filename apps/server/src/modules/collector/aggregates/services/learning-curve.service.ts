@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 
-import type { LearningSqlRow } from '../lib/tank-economy';
+import type { LearningSqlRow } from '../mappers';
 
 import { PrismaService } from '../../../../core';
 import { LEARNING_CURVE_AGGREGATE } from '../config';
-import { toLearningRecord } from '../lib/tank-economy';
+import { toLearningRecord } from '../mappers';
 
 @Injectable()
 export class LearningCurveService {

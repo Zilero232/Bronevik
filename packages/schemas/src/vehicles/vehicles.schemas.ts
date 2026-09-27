@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { tankIdSchema } from '../common/primitives/primitives.schemas';
 import { booleanParam, listParam } from '../common/query/query.schemas';
-import { TANK_ROLES } from '../tanks/tank-insights.constants';
+import { TANK_ROLES } from '../tanks/insights/insights.constants';
 
 export const vehicleTypeSchema = z.enum(['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG']);
 

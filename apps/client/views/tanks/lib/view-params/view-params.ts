@@ -1,17 +1,17 @@
 import { match } from 'ts-pattern';
 
-import type { EconomyTableParams, TierListParams } from '../../api';
+import type { EconomyTableQueryInput, TierListQueryInput } from '../../api';
 import type { ActiveViewParamsInput, EconomyParamsInput, TierListParamsInput } from './view-params.types';
 
 import { TANKS_ECONOMY } from '../../config';
 
-export const tierListParams = ({ state: { period, tier }, filters: { types } }: TierListParamsInput): TierListParams => ({
+export const tierListParams = ({ state: { period, tier }, filters: { types } }: TierListParamsInput): TierListQueryInput => ({
   period,
   tier,
   type: types.length === 1 ? types[0] : undefined
 });
 
-export const economyParams = ({ state: { statuses, roles, difficulties, account }, vehicle }: EconomyParamsInput): EconomyTableParams => ({
+export const economyParams = ({ state: { statuses, roles, difficulties, account }, vehicle }: EconomyParamsInput): EconomyTableQueryInput => ({
   ...vehicle,
   statuses,
   roles,

@@ -10,10 +10,10 @@ import { HOME } from '../../../config';
 
 export const useForYou = () => {
   const { data: session } = useAuthSession();
-  const accounts = useLinkedAccounts({ enabled: Boolean(session) });
-  const lesta = accounts.data?.lesta ?? [];
+  const { data: accounts } = useLinkedAccounts({ enabled: Boolean(session) });
+  const lesta = accounts?.lesta ?? [];
   const primary = lesta.find(({ isPrimary }) => isPrimary) ?? lesta[0] ?? null;
-  const firstWin = useQuery({
+  const { data: firstWin } = useQuery({
     queryKey: QUERY_KEYS.me.analytics.firstWin({ account: undefined }),
     queryFn: ({ signal }) => getFirstWin({ signal }),
     enabled: primary !== null,
@@ -23,6 +23,6 @@ export const useForYou = () => {
   return {
     isVisible: Boolean(session),
     nickname: primary?.nickname ?? null,
-    firstWin: firstWin.data?.state === 'ready' ? { available: firstWin.data.available, taken: firstWin.data.taken } : null
+    firstWin: firstWin?.state === 'ready' ? { available: firstWin.available, taken: firstWin.taken } : null
   };
 };

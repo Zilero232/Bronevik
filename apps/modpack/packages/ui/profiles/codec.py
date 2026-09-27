@@ -11,14 +11,12 @@ from .errors import ProfileError
 
 
 def encode_profile(name, snapshot):
-    """A copy-paste code of a profile: prefix + base64url(zlib(JSON))."""
     raw = canonical_json({'name': name, 'data': snapshot})
     packed = base64.urlsafe_b64encode(zlib.compress(to_bytes(raw), 9))
     return CODE_PREFIX + to_text(packed).rstrip('=')
 
 
 def decode_profile(code):
-    """(name, snapshot) of a profile code, or ProfileError('code')."""
     if not isinstance(code, string_types):
         raise ProfileError(ERROR_CODE)
     code = to_text(code).strip()

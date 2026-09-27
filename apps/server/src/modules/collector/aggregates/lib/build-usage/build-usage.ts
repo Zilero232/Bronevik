@@ -18,15 +18,13 @@ import type {
 } from './build-usage.types';
 
 import { percentOf, ratio } from '../../../../../common/lib';
-import { BUILD_MODE_BONUS_TYPES, BUILD_USAGE_AGGREGATE } from './build-usage.constants';
+import { BUILD_MODE_BONUS_TYPES, BUILD_USAGE_AGGREGATE, BUILD_USAGE_SHARE } from './build-usage.constants';
 
 const MODE_BY_BONUS_TYPE = new Map<string, BuildMode>(
   entries(BUILD_MODE_BONUS_TYPES).flatMap(([mode, types]) => types.map((type) => [String(type), mode] as const))
 );
 
-const SHARE_DIGITS = 10_000;
-
-const share = (value: number): number => Math.min(1, Math.round(value * SHARE_DIGITS) / SHARE_DIGITS);
+const share = (value: number): number => Math.min(1, Math.round(value * BUILD_USAGE_SHARE.digits) / BUILD_USAGE_SHARE.digits);
 
 const emptyPick = (): PickAccumulator => ({ weight: 0, battles: 0, wins: 0, decided: 0, damage: 0 });
 

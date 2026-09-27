@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 import type { Env } from '../../config';
 import type { MockCatalog, MockWorld } from './lesta-mock.types';
 
-import { createPrismaClient } from '../../core/prisma/prisma.factory';
+import { createPrismaClient } from '../../core';
 import { loadMockCatalog } from './lib/catalog';
 import { createLoginRouter } from './lib/login';
 import { createLestaMockHandler } from './lib/responses';

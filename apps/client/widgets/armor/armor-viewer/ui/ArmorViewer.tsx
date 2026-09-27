@@ -4,7 +4,7 @@ import { ArmorInspectPanel, ArmorInspectProvider } from '@/features/armor/armor-
 
 import type { ArmorViewerProps } from './ArmorViewer.types';
 
-import { useArmorViewer } from '../model/hooks/use-armor-viewer';
+import { useArmorViewer } from '../model/hooks';
 import { ArmorStage, ViewerToolbar } from './components';
 
 import s from './ArmorViewer.module.scss';

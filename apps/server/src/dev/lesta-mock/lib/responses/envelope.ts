@@ -1,23 +1,23 @@
-import type { LestaMockEnvelope, LestaMockParams } from '../../lesta-mock.types';
-import type { FailInput, IdListInput, IdListResult, MockContext } from './responses.types';
+import type { LestaMockEnvelope } from '../../lesta-mock.types';
+import type { FailInput, HasExtraInput, IdListInput, IdListResult, IntParamInput, ListOfInput, OkInput } from './responses.types';
 
 import { RESPONSES } from './responses.constants';
 
-export const ok = (data: unknown, meta: Record<string, number> = {}): LestaMockEnvelope => ({ status: 'ok', meta, data });
+export const ok = ({ data, meta = {} }: OkInput): LestaMockEnvelope => ({ status: 'ok', meta, data });
 
 export const fail = ({ code, message, field = null, value = null }: FailInput): LestaMockEnvelope => ({
   status: 'error',
   error: { code, message, field, value }
 });
 
-export const listOf = (params: LestaMockParams, key: string): string[] =>
+export const listOf = ({ params, key }: ListOfInput): string[] =>
   (params[key] ?? '')
     .split(',')
     .map((part) => part.trim())
     .filter((part) => part.length > 0);
 
 export const idList = ({ params, field, required = true, limit = RESPONSES.maxIds }: IdListInput): IdListResult => {
-  const raw = listOf(params, field);
+  const raw = listOf({ params, key: field });
   const upper = field.toUpperCase();
 
   if (raw.length === 0) {
@@ -37,10 +37,10 @@ export const idList = ({ params, field, required = true, limit = RESPONSES.maxId
   return { ids: [...new Set(raw.map(Number))] };
 };
 
-export const intParam = (params: LestaMockParams, key: string, fallback: number): number => {
+export const intParam = ({ params, key, fallback }: IntParamInput): number => {
   const value = Number.parseInt(params[key] ?? '', 10);
 
   return Number.isFinite(value) ? value : fallback;
 };
 
-export const hasExtra = (context: MockContext, extra: string): boolean => context.extra.includes(extra);
+export const hasExtra = ({ context, extra }: HasExtraInput): boolean => context.extra.includes(extra);

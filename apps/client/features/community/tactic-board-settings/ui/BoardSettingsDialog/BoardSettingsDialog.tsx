@@ -4,7 +4,7 @@ import { buttonVariants, Dialog, DialogContent, DialogDescription, DialogHeader,
 
 import type { BoardSettingsDialogProps } from './BoardSettingsDialog.types';
 
-import { BoardSettingsForm } from '../BoardSettingsForm';
+import { BoardSettingsForm } from './components';
 
 export const BoardSettingsDialog = ({
   trigger,

@@ -2,15 +2,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...log import log_exception
 from ...native_settings import merge_value
+from ..game import service
 
 
 def settings_core():
     try:
-        from helpers import dependency
         from skeletons.account_helpers.settings_core import ISettingsCore
-        return dependency.instance(ISettingsCore)
-    except Exception:
+    except ImportError:
         return None
+    return service(ISettingsCore)
 
 
 def read_settings(names):

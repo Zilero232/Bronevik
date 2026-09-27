@@ -60,7 +60,7 @@
   padding: 6px 10px;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
-  background: rgb(14 14 16 / 72%);
+  background: color-mix(in srgb, var(--color-bg-deep) 72%, transparent);
   color: var(--color-text);
   font-family: var(--font-display);
   font-size: var(--text-xs);

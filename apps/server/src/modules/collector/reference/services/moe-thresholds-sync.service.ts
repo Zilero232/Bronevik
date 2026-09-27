@@ -3,21 +3,23 @@ import { Injectable } from '@nestjs/common';
 import { startOfDay } from 'date-fns';
 
 import { FEATURES, SOURCES } from '../../../../config';
-import { PrismaService } from '../../../../core';
-import { http } from '../../../../lib/http';
+import { HttpClientService, PrismaService } from '../../../../core';
 import { moeThresholdLevels } from '../../../reference';
 import { parsePoliroidMoe } from '../lib/community-data';
 
 @Injectable()
 export class MoeThresholdsSyncService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly http: HttpClientService
+  ) {}
 
   async sync() {
     if (!FEATURES.moePoliroid) {
       return { skipped: true };
     }
 
-    const rows = parsePoliroidMoe(await http.get(SOURCES.poliroidMoe).json());
+    const rows = parsePoliroidMoe(await this.http.getJson({ url: SOURCES.poliroidMoe }));
     const date = startOfDay(new Date(), { in: utc });
 
     await this.prisma.$transaction([

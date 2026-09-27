@@ -1,8 +1,7 @@
 import type { ChangeBaselineInput, ChangeVerdict, ChangeVerdictInput } from './change-verdict.types';
 
 import { paramMeta } from '../param-key';
-
-const EPSILON = 1e-9;
+import { CHANGE_VERDICT } from './change-verdict.constants';
 
 export const changeBaseline = ({ from, live }: ChangeBaselineInput): number | null => from ?? live;
 
@@ -10,7 +9,7 @@ export const changeVerdict = ({ param, from, to, live }: ChangeVerdictInput): Ch
   const meta = paramMeta(param);
   const before = changeBaseline({ from, live });
 
-  if (!meta || before === null || to === null || Math.abs(to - before) < EPSILON) {
+  if (!meta || before === null || to === null || Math.abs(to - before) < CHANGE_VERDICT.epsilon) {
     return 'neutral';
   }
 

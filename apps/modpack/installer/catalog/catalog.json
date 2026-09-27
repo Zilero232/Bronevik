@@ -49,7 +49,7 @@
     {
       "id": "hangar",
       "title": { "ru": "Ангар", "en": "Hangar" },
-      "description": { "ru": "Статистика и итоги боёв в ангаре.", "en": "Stats and battle results in the hangar." }
+      "description": { "ru": "Статистика, итоги боёв и удобства ангара.", "en": "Stats, battle results and hangar conveniences." }
     },
     {
       "id": "data",
@@ -95,10 +95,7 @@
       "category": "base",
       "required": true,
       "title": { "ru": "Интерфейс в игре", "en": "In-game UI" },
-      "description": {
-        "ru": "Окно настроек и панели «Три отметки» в игре.",
-        "en": "The Three Marks settings window and panels in the game."
-      },
+      "description": { "ru": "Окно настроек и панели «Три отметки» в игре.", "en": "The Three Marks settings window and panels in the game." },
       "fairPlay": { "ru": "Показывает только то, что передают другие компоненты.", "en": "Shows only what the other components provide." },
       "preview": { "image": "previews/base.svg" }
     },
@@ -213,14 +210,37 @@
       "presets": ["recommended"],
       "title": { "ru": "Зум и камера", "en": "Zoom and camera" },
       "description": {
-        "ru": "Шаги снайперского зума, динамическая камера и горизонтальная стабилизация: стандартные настройки игры, выставляемые из окна мода.",
-        "en": "Sniper zoom steps, the dynamic camera and horizontal stabilisation: the game's own settings, set from the mod window."
+        "ru": "Пресеты камеры, шаги снайперского зума, динамическая камера и горизонтальная стабилизация: стандартные настройки игры, выставляемые из окна мода.",
+        "en": "Camera presets, sniper zoom steps, the dynamic camera and horizontal stabilisation: the game's own settings, set from the mod window."
+      },
+      "fairPlay": { "ru": "Меняет только вашу камеру в пределах правил Lesta.", "en": "Changes only your own camera, within Lesta's rules." },
+      "preview": { "image": "previews/camera.svg" }
+    },
+    {
+      "id": "chat_filter",
+      "category": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Фильтр чата", "en": "Chat filter" },
+      "description": {
+        "ru": "Время у сообщений в чате боя, скрытие повторов, флуда, спама быстрыми командами и сообщений с выбранными словами.",
+        "en": "Message times in the battle chat, hiding repeats, flood, quick-command spam and messages with chosen words."
       },
       "fairPlay": {
-        "ru": "Меняет только вашу камеру в пределах правил Lesta.",
-        "en": "Changes only your own camera, within Lesta's rules."
+        "ru": "Только скрывает или подписывает сообщения, которые игра уже показала.",
+        "en": "Only hides or stamps messages the game already shows."
       },
-      "preview": { "image": "previews/camera.svg" }
+      "preview": { "image": "previews/chat_filter.svg" }
+    },
+    {
+      "id": "battle_sounds",
+      "category": "battle",
+      "title": { "ru": "Звуки событий", "en": "Event sounds" },
+      "description": {
+        "ru": "Свой звук на пожар, криты модулей и боеукладки, контузию экипажа, первую кровь, свой фраг и уничтожение своего танка. Нужен звуковой мод с событиями Wwise.",
+        "en": "Your own sound for fire, module and ammo rack crits, injured crew, first blood, your frag and your tank's destruction. Needs a sound mod with Wwise events."
+      },
+      "fairPlay": { "ru": "Только события вашего танка и общая лента уничтожений.", "en": "Only your own tank's events and the public kill feed." },
+      "preview": { "image": "previews/battle_sounds.svg" }
     },
     {
       "id": "session_stats",
@@ -240,8 +260,8 @@
       "presets": ["recommended"],
       "title": { "ru": "Итоги боя", "en": "Battle summary" },
       "description": {
-        "ru": "Короткая сводка после боя и ссылка на разбор боя на сайте.",
-        "en": "A short summary after each battle and a link to its breakdown on the site."
+        "ru": "Сводка после каждого боя в уведомлениях и список боёв сессии в окне мода: урон, помощь, экономика с ремонтом, выстрелы, отметка.",
+        "en": "A summary after each battle in the notifications and the session battles in the mod window: damage, assist, economy with repair costs, shots, MoE."
       },
       "fairPlay": { "ru": "Только ваш блок итогов боя.", "en": "Only your own block of battle results." },
       "preview": { "image": "previews/battle_results.svg" }
@@ -252,8 +272,8 @@
       "presets": ["recommended", "streamer"],
       "title": { "ru": "Удобный ангар", "en": "Hangar tweaks" },
       "description": {
-        "ru": "Карусель в один или два ряда и размер карточек из настроек игры, быстрые действия: снять снимаемое оборудование и отправить экипаж в казарму.",
-        "en": "A one- or two-row carousel and tile size from the game's settings, and quick actions: demount removable equipment and send the crew to the barracks."
+        "ru": "Карусель в один или два ряда и размер карточек из настроек игры, быстрые действия: снять снимаемое оборудование, экипаж в казарму и вернуть прежний экипаж.",
+        "en": "A one- or two-row carousel and tile size from the game's settings, and quick actions: demount removable equipment, crew to the barracks and return the previous crew."
       },
       "fairPlay": { "ru": "Работает только в ангаре.", "en": "Works in the hangar only." },
       "preview": { "image": "previews/hangar_tweaks.svg" }
@@ -264,11 +284,77 @@
       "presets": ["recommended"],
       "title": { "ru": "Менеджер реплеев", "en": "Replay manager" },
       "description": {
-        "ru": "Список ваших реплеев прямо в ангаре; загруженные на сайт открываются по ссылке.",
-        "en": "Your replays right in the hangar; the uploaded ones open on the site."
+        "ru": "Список ваших реплеев прямо в ангаре, загруженные на сайт открываются по ссылке; по желанию реплеи новых боёв сами получают понятные имена.",
+        "en": "Your replays right in the hangar, the uploaded ones open on the site; optionally the replays of new battles get readable names by themselves."
       },
       "fairPlay": { "ru": "Только ваши реплеи из папки клиента.", "en": "Only your own replays from the client folder." },
       "preview": { "image": "previews/replay_manager.svg" }
+    },
+    {
+      "id": "marks_history",
+      "category": "hangar",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "История отметок", "en": "Marks history" },
+      "description": {
+        "ru": "Процент отметки после каждого боя по каждому танку, тренд за последние бои и дата получения каждой отметки: панель в ангаре и список в окне мода.",
+        "en": "The MoE percent after each battle per tank, the trend over the last battles and the date each mark was reached: a hangar panel and a list in the mod window."
+      },
+      "fairPlay": {
+        "ru": "Только ваши итоги боёв и досье, хранится у вас на компьютере.",
+        "en": "Only your own battle results and dossier, stored on your computer."
+      },
+      "preview": { "image": "previews/marks_history.svg" }
+    },
+    {
+      "id": "hangar_info",
+      "category": "hangar",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Часы и сервер в ангаре", "en": "Hangar clock and server" },
+      "description": {
+        "ru": "Время и дата, ваш сервер, пинг до него и онлайн в углу ангара.",
+        "en": "Time and date, your server, the ping to it and the online count in a corner of the hangar."
+      },
+      "fairPlay": { "ru": "Работает только в ангаре и читает только ваше подключение.", "en": "Hangar only, reads only your own connection." },
+      "preview": { "image": "previews/hangar_info.svg" }
+    },
+    {
+      "id": "auto_resupply",
+      "category": "hangar",
+      "presets": ["recommended"],
+      "title": { "ru": "Автопополнение", "en": "Auto resupply" },
+      "description": {
+        "ru": "Автоматический ремонт, пополнение снарядов, снаряжения и инструкций одной кнопкой для выбранного танка или сразу для всего ангара.",
+        "en": "Auto repair and auto-resupply of shells, consumables and directives with one button for the selected tank or the whole garage."
+      },
+      "fairPlay": {
+        "ru": "Те же флажки, что в панели снаряжения игры; только в ангаре.",
+        "en": "The same flags as the game's ammunition panel; hangar only."
+      },
+      "preview": { "image": "previews/auto_resupply.svg" }
+    },
+    {
+      "id": "notification_filter",
+      "category": "hangar",
+      "presets": ["recommended", "streamer"],
+      "title": { "ru": "Фильтр уведомлений", "en": "Notification filter" },
+      "description": {
+        "ru": "Скрывает рекламу, акции и аукционы в центре уведомлений, по желанию напоминания, заявки в друзья и клановые приглашения.",
+        "en": "Hides ads, offers and auctions in the notification centre, and optionally reminders, friend requests and clan invites."
+      },
+      "fairPlay": { "ru": "Только в ангаре, только скрывает уведомления.", "en": "Hangar only, it only hides notifications." },
+      "preview": { "image": "previews/notification_filter.svg" }
+    },
+    {
+      "id": "hangar_cleaner",
+      "category": "hangar",
+      "presets": ["recommended", "minimal", "streamer"],
+      "title": { "ru": "Чистый ангар", "en": "Clean hangar" },
+      "description": {
+        "ru": "Без промо-тизера и баннеров предложений, по желанию без входов в события в карусели.",
+        "en": "No promo teaser or offer banners, optionally no event entry points in the carousel."
+      },
+      "fairPlay": { "ru": "Только внешний вид ангара.", "en": "Only the look of the hangar." },
+      "preview": { "image": "previews/hangar_cleaner.svg" }
     },
     {
       "id": "replay_upload",

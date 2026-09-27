@@ -6,5 +6,3 @@ export type { OptionInput } from './interaction-options';
 export { inviteUrl } from './invite-url';
 export { desiredRoles, readTierRoles, roleChanges } from './member-roles';
 export type { DesiredRolesInput, MemberStanding, RoleBinding, RoleChanges, RoleChangesInput, TierRoles } from './member-roles';
-export { toMessage } from './reply-message';
-export type { ToMessageInput } from './reply-message';

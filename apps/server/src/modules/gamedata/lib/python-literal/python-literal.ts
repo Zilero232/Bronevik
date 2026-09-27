@@ -1,10 +1,6 @@
 import type { ParsedLiteral, ParseLiteralAtInput, PyDict, PyValue, ReadAssignmentInput, ReadSequenceInput } from './python-literal.types';
 
-import { PY_CLOSERS, PY_ESCAPES, PY_KEYWORDS } from './python-literal.constants';
-
-const IDENTIFIER_START = /[A-Z_]/i;
-const IDENTIFIER_PART = /[\w.]/;
-const NUMBER = /^-?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?/i;
+import { PY_CLOSERS, PY_ESCAPES, PY_KEYWORDS, PYTHON_LITERAL } from './python-literal.constants';
 
 const isKeyword = (word: string): word is keyof typeof PY_KEYWORDS => Object.hasOwn(PY_KEYWORDS, word);
 
@@ -74,7 +70,7 @@ export const parseLiteralAt = ({ source, start }: ParseLiteralAtInput): ParsedLi
   const readWord = (): string => {
     const from = pos;
 
-    while (pos < source.length && IDENTIFIER_PART.test(source[pos])) {
+    while (pos < source.length && PYTHON_LITERAL.identifierPart.test(source[pos])) {
       pos += 1;
     }
 
@@ -135,7 +131,7 @@ export const parseLiteralAt = ({ source, start }: ParseLiteralAtInput): ParsedLi
       return readString();
     }
 
-    const number = NUMBER.exec(source.slice(pos, pos + 32));
+    const number = PYTHON_LITERAL.number.exec(source.slice(pos, pos + 32));
 
     if (number) {
       pos += number[0].length;
@@ -143,7 +139,7 @@ export const parseLiteralAt = ({ source, start }: ParseLiteralAtInput): ParsedLi
       return Number(number[0]);
     }
 
-    if (!IDENTIFIER_START.test(char ?? '')) {
+    if (!PYTHON_LITERAL.identifierStart.test(char ?? '')) {
       return fail(`unexpected "${char ?? 'end of input'}"`);
     }
 
@@ -170,7 +166,7 @@ export const parseLiteralAt = ({ source, start }: ParseLiteralAtInput): ParsedLi
         skip();
 
         const mark = pos;
-        const key = IDENTIFIER_START.test(source[pos] ?? '') ? readWord() : '';
+        const key = PYTHON_LITERAL.identifierStart.test(source[pos] ?? '') ? readWord() : '';
 
         skip();
 

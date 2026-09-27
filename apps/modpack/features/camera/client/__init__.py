@@ -8,5 +8,4 @@ from ..settings import SCHEMA, SWITCH
 
 
 def create_camera(app):
-    app.translate.catalog.add(STRINGS)
-    return NativeSettingsComponent(app, FEATURE_ID, SCHEMA, SWITCH, to_native)
+    return NativeSettingsComponent(app, FEATURE_ID, SCHEMA, SWITCH, STRINGS, to_native)

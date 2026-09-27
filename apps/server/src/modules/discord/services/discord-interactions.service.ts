@@ -16,7 +16,8 @@ import { AppConfigService } from '../../../config';
 import { AUTH_PROVIDER } from '../../../lib/auth';
 import { BotAccountsService, BotRepliesService, isPublicUrl, resolveBotLocale, SHARED_COMMANDS, SITE_LINKS, siteUrl } from '../../bot-commands';
 import { DISCORD_OPTIONS, DISCORD_OWN_COMMANDS, DISCORD_TOKENS } from '../config';
-import { stringOption, toMessage } from '../lib';
+import { stringOption } from '../lib';
+import { toMessage } from '../mappers';
 import { DiscordCopyService } from './discord-copy.service';
 import { DiscordGuildsService } from './discord-guilds.service';
 

@@ -7,6 +7,7 @@ import { AppBadRequestException, AppConflictException, AppNotFoundException } fr
 import { readRecord, toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { PREDICTIONS } from '../config';
+import { storedIntegrationConfigSchema } from '../dto';
 
 @Injectable()
 export class IntegrationStoreService {
@@ -41,7 +42,7 @@ export class IntegrationStoreService {
     }
 
     const existing = await this.prisma.streamerIntegration.findUnique({ where: { userId_provider: { userId, provider } }, select: { config: true } });
-    const merged = config ? toJsonValue({ ...readRecord(existing?.config), ...config }) : undefined;
+    const merged = config ? toJsonValue({ ...storedIntegrationConfigSchema.parse(existing?.config ?? {}), ...config }) : undefined;
     const data = { externalId, accessToken, refreshToken, tokenExpiresAt: expiresAt, scope, config: merged };
 
     await this.prisma.streamerIntegration.upsert({
@@ -64,7 +65,7 @@ export class IntegrationStoreService {
 
     await this.prisma.streamerIntegration.update({
       where: { id: integration.id },
-      data: { config: toJsonValue({ ...readRecord(integration.config), predictions: enabled }) }
+      data: { config: toJsonValue({ ...storedIntegrationConfigSchema.parse(integration.config ?? {}), predictions: enabled }) }
     });
 
     return this.list(userId);

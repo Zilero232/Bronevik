@@ -2,8 +2,7 @@
 
 import type { MyAnalyticsTankPageProps } from './MyAnalyticsTankPage.types';
 
-import { AnalyticsFiltersProvider } from '../../model/context';
-import { TankTrend } from '../components';
+import { AnalyticsFiltersProvider, TankTrend } from '../components';
 
 export const MyAnalyticsTankPage = ({ tankId }: MyAnalyticsTankPageProps) => (
   <AnalyticsFiltersProvider>

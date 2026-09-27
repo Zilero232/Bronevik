@@ -27,7 +27,8 @@ export const useNewsFeed = () => {
     staleTime: NEWS.staleMs
   });
 
-  const entries: NewsEntry[] = (query.data?.pages.flatMap(({ items }) => items) ?? []).map((item) => ({
+  const { data: feed, fetchNextPage } = query;
+  const entries: NewsEntry[] = (feed?.pages.flatMap(({ items }) => items) ?? []).map((item) => ({
     item,
     href: safeWebHref(item.url),
     vehicles: pickVehicles({ tankIds: item.tankIds, catalog })
@@ -38,11 +39,11 @@ export const useNewsFeed = () => {
     vehicle: tankId === null ? null : (vehicleIndex(catalog)[tankId] ?? null),
     isTankFiltered: tankId !== null,
     entries,
-    total: query.data?.pages[0]?.total ?? 0,
+    total: feed?.pages[0]?.total ?? 0,
     query,
     setKind: (next: NewsFilter) => void setKind(next),
     setVehicle: (next: VehicleSummary | null) => void setTankId(next?.tankId ?? null),
     clearVehicle: () => void setTankId(null),
-    loadMore: () => void query.fetchNextPage()
+    loadMore: () => void fetchNextPage()
   };
 };

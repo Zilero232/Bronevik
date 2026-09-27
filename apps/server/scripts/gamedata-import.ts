@@ -1,4 +1,5 @@
 import { NATIONS } from '@otmetki/gamedata';
+import { Redis } from 'ioredis';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -6,9 +7,9 @@ import { z } from 'zod';
 
 import type { CollectedArmorModels } from '../src/modules/gamedata';
 
-import { ARMOR_VIEWER } from '../src/config';
-import { createPrismaClient } from '../src/core/prisma/prisma.factory';
-import { createLestaClient } from '../src/lib/lesta';
+import { ARMOR_VIEWER, envSchema, LESTA } from '../src/config';
+import { createLestaClients } from '../src/core/lesta';
+import { createPrismaClient } from '../src/core/prisma';
 import {
   ArmorVersionMismatchError,
   buildGameData,
@@ -86,7 +87,10 @@ const checkEncyclopediaVersion = async (): Promise<void> => {
     return;
   }
 
-  const info = await createLestaClient({ applicationId }).encyclopedia.info();
+  const { REDIS_URL, LESTA_RPS } = envSchema.pick({ REDIS_URL: true, LESTA_RPS: true }).parse(process.env);
+  const redis = new Redis(REDIS_URL);
+  const lesta = createLestaClients({ applicationId, redis, budget: { requestsPerSecond: LESTA_RPS, reserve: LESTA.tierAReserve } });
+  const info = await lesta.priority.encyclopedia.info().finally(() => redis.quit());
   const check = compareEncyclopediaVersion({ clientVersion: data.version, encyclopediaVersion: info.game_version });
 
   if (check.matches) {

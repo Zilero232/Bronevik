@@ -4,9 +4,9 @@ import time
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.client.battle import BattleHooks, call, controls_own_vehicle, feedback, is_enemy, vehicle_name
-from ....core.client.hud import hud_layer
-from ....core.hud import HudPreview
+from ....core.client.battle import call, controls_own_vehicle, feedback, is_enemy, vehicle_name
+from ....core.client.game import values_by_name
+from ....core.client.hud.panel import BattlePanel
 from ....core.log import safe
 from ....core.shells import shell_code
 from ..i18n import STRINGS
@@ -22,47 +22,23 @@ except ImportError:
     FEEDBACK_EVENT_ID = None
 
 
-def outcome_by_feedback():
-    outcomes = {}
-    for name, outcome in OUTCOME_BY_FEEDBACK:
-        value = getattr(FEEDBACK_EVENT_ID, name, None)
-        if value is not None:
-            outcomes[value] = outcome
-    return outcomes
-
-
-class HitLogPanel(object):
+class HitLogPanel(BattlePanel):
 
     def __init__(self, app):
-        self.app = app
-        app.translate.catalog.add(STRINGS)
-        self.hud = hud_layer(app)
-        self.settings = self.hud.register(PANEL_ID, SCHEMA)
-        self.preview = HudPreview(self.hud, PANEL_ID, self._preview, lambda: app.config.is_enabled(SWITCH), lambda: not app.in_battle,
-                                  PREVIEW_SIZE).attach(app.bus)
-        self.outcomes = outcome_by_feedback()
+        self.outcomes = values_by_name(FEEDBACK_EVENT_ID, OUTCOME_BY_FEEDBACK)
         self.health_event = getattr(FEEDBACK_EVENT_ID, 'VEHICLE_HEALTH', None)
-        self.hooks = BattleHooks()
         self.log = None
-        app.bus.on('battle_ready', self._on_battle_ready)
-        app.bus.on('battle_leave', self._on_battle_leave)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
 
-    def _on_battle_ready(self, player):
-        self._on_battle_leave()
-        if not self.app.config.is_enabled(SWITCH):
-            return
+    def start(self, player):
         self.log = HitLog()
         self.hooks.add(feedback, 'onVehicleFeedbackReceived', self._on_vehicle_feedback)
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_player_feedback)
         self.render()
 
-    def _on_battle_leave(self):
-        self.preview.end()
-        self.hooks.clear()
+    def stop(self):
         self.log = None
-        self.hud.hide(PANEL_ID)
 
-    @safe
     def _on_vehicle_feedback(self, event_id, vehicle_id, value):
         if self.log is None or not controls_own_vehicle():
             return
@@ -76,7 +52,6 @@ class HitLogPanel(object):
         if outcome is not None and is_enemy(vehicle_id) and self.log.add_result(vehicle_id, outcome, now, vehicle_name(vehicle_id)):
             self.render()
 
-    @safe
     def _on_player_feedback(self, events):
         if self.log is None or not controls_own_vehicle():
             return
@@ -96,10 +71,7 @@ class HitLogPanel(object):
         if changed:
             self.render()
 
-    def _preview(self):
-        return preview_text(self.settings, self.app.translate)
-
     @safe
     def render(self):
         if self.log is not None:
-            self.hud.show(PANEL_ID, format_hit_log(self.log, self.settings, self.app.translate))
+            self.show(format_hit_log(self.log, self.settings, self.app.translate))

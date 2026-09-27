@@ -4,7 +4,8 @@ import { Injectable } from '@nestjs/common';
 import { sortBy } from 'remeda';
 
 import { PrismaService } from '../../../core';
-import { patchVerdict, readSpecChanges, toPatchChanges } from '../lib';
+import { patchVerdict, readSpecChanges } from '../lib';
+import { toPatchChanges } from '../mappers';
 
 @Injectable()
 export class TankPatchesService {

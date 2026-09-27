@@ -15,21 +15,27 @@ import { myModeStatus, shouldRetryMyMode } from '../../../lib/my-mode-status';
 export const useMyModeStats = (mode: PlayMode) => {
   const { data: session, isPending: isSessionPending } = useAuthSession();
   const { isPlus } = usePlus();
-  const query = useQuery({
+  const {
+    data: stats,
+    isPending,
+    error,
+    isFetching,
+    refetch
+  } = useQuery({
     queryKey: QUERY_KEYS.modes.mine(MY_MODE.days),
     queryFn: ({ signal }) => getMyModeStats({ days: MY_MODE.days, signal }),
     enabled: Boolean(session) && isPlus,
-    retry: (failureCount, error) => shouldRetryMyMode({ failureCount, error })
+    retry: (failureCount, queryError) => shouldRetryMyMode({ failureCount, error: queryError })
   });
 
-  const line = query.data?.modes.find((item) => item.mode === mode) ?? null;
+  const line = stats?.modes.find((item) => item.mode === mode) ?? null;
 
   return {
-    status: myModeStatus({ isSignedIn: Boolean(session), isSessionPending, isPending: query.isPending, error: query.error, line }),
+    status: myModeStatus({ isSignedIn: Boolean(session), isSessionPending, isPending, error, line }),
     line,
     tanks: line?.tanks.slice(0, MY_MODE.tanks) ?? [],
-    days: query.data?.days ?? MY_MODE.days,
-    isRetrying: query.isFetching,
-    onRetry: () => void query.refetch()
+    days: stats?.days ?? MY_MODE.days,
+    isRetrying: isFetching,
+    onRetry: () => void refetch()
   };
 };

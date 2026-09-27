@@ -1,7 +1,6 @@
 import type { CheckoutResult } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { PLUS } from '@otmetki/schemas';
 
 import type { CheckoutInput } from '../billing.types';
 
@@ -24,7 +23,7 @@ export class CheckoutService {
   ) {}
 
   async createCheckout({ userId, plan, promoCode }: CheckoutInput): Promise<CheckoutResult> {
-    if (!PLUS.checkoutEnabled) {
+    if (!this.subscriptions.isCheckoutEnabled) {
       throw new AppForbiddenException('CHECKOUT_UNAVAILABLE', 'Paid checkout is not open yet');
     }
 

@@ -8,7 +8,8 @@ import type { AnalyticsInput, MapRow } from '../analytics.types';
 import { PrismaService } from '../../../core';
 import { ExpectedValuesService, VehicleCatalogService } from '../../reference';
 import { ANALYTICS_SQL } from '../config';
-import { mapHighlights, periodStart, statLine, toAggregateRow, winRateDelta } from '../lib';
+import { mapHighlights, periodStart, statLine, winRateDelta } from '../lib';
+import { toAggregateRow } from '../mappers';
 import { OwnAccountService } from './own-account.service';
 
 @Injectable()

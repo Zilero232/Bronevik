@@ -1,10 +1,10 @@
-import type { StreamerDirectoryFilters } from '@/entities/streamer/streamer';
+import type { StreamerDirectoryInput } from '@/entities/streamer/streamer';
 
 import type { DirectoryFilterState, DirectoryToggle } from './directory-query.types';
 
 import { DIRECTORY, DIRECTORY_TOGGLES } from '../../config';
 
-export const directoryQuery = ({ live, platform, settings }: DirectoryFilterState): StreamerDirectoryFilters => ({
+export const directoryQuery = ({ live, platform, settings }: DirectoryFilterState): StreamerDirectoryInput => ({
   ...(live ? { live: 'true' } : {}),
   ...(platform ? { platform } : {}),
   ...(settings ? { hasSettings: 'true' } : {}),

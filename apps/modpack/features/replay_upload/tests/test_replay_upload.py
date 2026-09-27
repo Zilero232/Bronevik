@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import io
 import json
 import os
@@ -46,9 +48,9 @@ def replay_bytes(player_id=ACCOUNT, arena_unique_id=ARENA, started=STARTED, stre
     if arena_unique_id is not None:
         results = [{'arenaUniqueID': arena_unique_id, 'personal': {}}, {}, {}]
         blocks.append(json.dumps(results).encode('utf-8'))
-    data = struct.pack('<II', MAGIC, len(blocks))
+    data = struct.pack(str('<II'), MAGIC, len(blocks))
     for block in blocks:
-        data += struct.pack('<I', len(block)) + block
+        data += struct.pack(str('<I'), len(block)) + block
     return data + stream
 
 
@@ -57,7 +59,6 @@ def creds():
 
 
 class SyncFakeTransport(object):
-    """Answers inside request(), like transport.SyncTransport."""
 
     def __init__(self, *responses):
         self.responses = list(responses)
@@ -576,7 +577,6 @@ class ReplayContractTest(unittest.TestCase):
         if validator is None:
             self.skipTest('jsonschema not installed')
         validator.validate({'id': '0b0f9a6e-9a36-4f59-8a61-1d1a4b6a0c11', 'status': 'uploaded'})
-
 
 
 class UploadedReplayIdTest(unittest.TestCase):

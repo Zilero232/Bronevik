@@ -1,4 +1,4 @@
-import type { MockPlayer, MockWorld } from '../../lesta-mock.types';
+import type { MockPlayer, MockPlayerState, MockWorld } from '../../lesta-mock.types';
 import type { RANK_FIELDS } from './rankings.constants';
 
 export type RankField = (typeof RANK_FIELDS)[number];
@@ -20,4 +20,26 @@ export type RankingInput = {
   field: RankField;
   at: number;
   depth: number;
+};
+
+export type RatioInput = {
+  value: number;
+  by: number;
+  digits?: number;
+};
+
+export type ExactValueInput = {
+  field: RankField;
+  state: MockPlayerState;
+};
+
+export type EstimateInput = {
+  field: RankField;
+  player: MockPlayer;
+  at: number;
+};
+
+export type EligibleInput = {
+  world: MockWorld;
+  at: number;
 };

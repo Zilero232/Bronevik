@@ -1,7 +1,7 @@
 import { COMPETITION } from '@otmetki/schemas';
 import { range } from 'remeda';
 
-import type { CompetitionFormValues } from '../lib/competition-form/competition-form.types';
+import type { CompetitionFormValues } from '../lib/competition-form';
 
 export const COMPETITION_FORM = {
   anyTier: 'any',

@@ -16,12 +16,16 @@ export const useRecommendedPreset = () => {
   const [state, setState] = useQueryStates(PRESET_PARSERS, { history: 'replace' });
 
   const isRequested = state[BUILD_URL.preset] !== null;
-  const query = useQuery({
+  const {
+    data: recommended,
+    isPending,
+    isError
+  } = useQuery({
     ...buildQueries.recommended({ tankId: vehicle.tankId, mode: state[BUILD_URL.mode], cohort: state[BUILD_URL.cohort] }),
     enabled: isRequested
   });
 
-  const loadout = query.data?.loadout ?? null;
+  const loadout = recommended?.loadout ?? null;
 
   useEffect(() => {
     if (!isRequested || !loadout) {
@@ -32,7 +36,7 @@ export const useRecommendedPreset = () => {
     void setState({ [BUILD_URL.preset]: null, [BUILD_URL.mode]: null, [BUILD_URL.cohort]: null });
   }, [edit, isRequested, loadout, setState]);
 
-  const status = match({ isRequested, isPending: query.isPending, isError: query.isError, loadout })
+  const status = match({ isRequested, isPending, isError, loadout })
     .with({ isRequested: false }, () => null)
     .with({ isError: true }, () => 'error' as const)
     .with({ isPending: true }, () => 'loading' as const)
@@ -43,5 +47,5 @@ export const useRecommendedPreset = () => {
     void setState({ [BUILD_URL.preset]: null, [BUILD_URL.mode]: null, [BUILD_URL.cohort]: null });
   };
 
-  return { status, battles: query.data?.usage.battles ?? 0, minSample: query.data?.usage.minSample ?? 0, onDismiss };
+  return { status, battles: recommended?.usage.battles ?? 0, minSample: recommended?.usage.minSample ?? 0, onDismiss };
 };

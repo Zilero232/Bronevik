@@ -1,11 +1,3 @@
-"""The installer's Pascal units, run for real: harness.iss compiled with ISCC, run against fixture clients.
-
-Covers client detection through OpenWG.Utils (fixture game folders: Lesta release, common test, a
-Cyrillic path, a paths.xml without mods, WG, too old, not a client), the version rule, the dependency
-closure of the component table, and the state helpers (manifest, clean-up of our files only, the other
-mods list, snapshot / restore / prune). Skipped without ISCC (Inno Setup 6.7) or the OpenWG.Utils release
-(fetched once into apps/modpack/.cache; CI installs ISCC in the release job).
-"""
 import configparser
 import io
 import os
@@ -63,7 +55,6 @@ def write(path, content):
 
 
 def make_client(root, realm='RU', version='1.45.0.0', exe='Tanki.exe', mods_in_paths=True, suffix=''):
-    """A fixture game folder with what OpenWG checks: app_type.xml, version.xml, paths.xml, the exe (root and win64)."""
     write(os.path.join(root, 'app_type.xml'), APP_TYPE)
     write(os.path.join(root, 'version.xml'),
           '<version.xml><version> v.%s%s #5231</version><meta><realm>%s</realm></meta></version.xml>\n' % (version, suffix, realm))
@@ -72,7 +63,7 @@ def make_client(root, realm='RU', version='1.45.0.0', exe='Tanki.exe', mods_in_p
         paths.append('<Path>./mods/%s</Path>' % version)
     write(os.path.join(root, 'paths.xml'), '<root><Paths>%s<Packages><Package>./res/packages/gui.pkg</Package></Packages></Paths></root>\n'
           % ''.join(paths))
-    write(os.path.join(root, exe), 'MZ')  # OpenWG requires the exe in the client root
+    write(os.path.join(root, exe), 'MZ')
     write(os.path.join(root, 'win64', exe), 'MZ')
     write(os.path.join(root, 'game_info.xml'), '<protocol><game><id>%s.PRODUCTION</id></game></protocol>\n' % ('MT.RPT' if realm == 'RPT' else 'MT.RU'))
     return root
@@ -83,7 +74,7 @@ def openwg_dir():
     target = os.path.join(MODPACK_DIR, '.cache', 'openwg-files')
     try:
         return fetch(target, os.path.join(MODPACK_DIR, '.cache', 'openwg'))
-    except Exception as error:  # offline: the harness cannot be built
+    except Exception as error:
         raise unittest.SkipTest('OpenWG.Utils not available: %s' % error)
 
 

@@ -22,10 +22,6 @@ export class TankArmorService {
   ) {}
 
   async armor(tankId: number): Promise<ArmorModelResponse> {
-    if (!ARMOR_VIEWER.enabled) {
-      throw new AppNotFoundException('ARMOR_MODEL_NOT_FOUND', 'The armor viewer is switched off');
-    }
-
     const [entry, row] = await Promise.all([this.catalog.find(tankId), this.prisma.vehicleArmorModel.findUnique({ where: { tankId } })]);
 
     if (!entry || !row) {

@@ -14,6 +14,7 @@ import s from './CommandPaletteTrigger.module.scss';
 
 export const CommandPaletteTrigger = ({ variant = 'bar', className, onOpen }: CommandPaletteTriggerProps) => {
   const t = useTranslations('search');
+  const tCommon = useTranslations('common');
   const open = useCommandPaletteTrigger(onOpen);
 
   if (variant === 'icon') {
@@ -29,7 +30,7 @@ export const CommandPaletteTrigger = ({ variant = 'bar', className, onOpen }: Co
       <Search aria-hidden className={s.icon} size={variant === 'hero' ? 20 : 14} />
       <span className={s.label}>{variant === 'hero' ? t('heroPlaceholder') : t('trigger')}</span>
       <span className={s.keys}>
-        <Kbd>Ctrl</Kbd>
+        <Kbd>{tCommon('kbd.ctrl')}</Kbd>
         <Kbd>K</Kbd>
       </span>
     </button>

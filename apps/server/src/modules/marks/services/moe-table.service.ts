@@ -7,11 +7,12 @@ import { match } from 'ts-pattern';
 import type { ModMoeThresholds, MoeHistoryBatchInput, MoeHistoryInput } from '../marks.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { page, sortRows, toIsoDate } from '../../../common/lib';
+import { page, sortRows } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { ThresholdsService, toMasteryThreshold, toMoeThreshold, toMoeThresholdRecord, VehicleCatalogService } from '../../reference';
 import { MOE_TABLE } from '../config';
 import { EMPTY_SWEAT, historySeries } from '../lib';
+import { toHistorySourceRow } from '../mappers';
 import { SweatIndexService } from './sweat-index.service';
 
 @Injectable()
@@ -104,15 +105,7 @@ export class MoeTableService {
       days,
       series: historySeries({
         tankIds,
-        rows: rows.map(toMoeThresholdRecord).map((row) => ({
-          tankId: row.tankId,
-          date: toIsoDate(row.date) ?? '',
-          source: row.source,
-          p65: row.p65,
-          p85: row.p85,
-          p95: row.p95,
-          p100: row.p100
-        }))
+        rows: rows.map(toMoeThresholdRecord).map(toHistorySourceRow)
       })
     };
   }

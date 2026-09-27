@@ -1,4 +1,4 @@
-import type { PickableKind, PickableResult } from '../use-entity-search';
+import type { PickableKind, PickableResult } from '../../../lib/search-kind';
 
 export type UseEntityPickerInput<K extends PickableKind> = {
   kind: K;

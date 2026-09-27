@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { computeAverages, sumTotals, winRate } from '..';
-import { makeTank } from '../../_tests/fixtures';
+import { makeTank } from './fixtures';
 
 describe('stats', () => {
   it('computes win rate as a percentage and zero without battles', () => {

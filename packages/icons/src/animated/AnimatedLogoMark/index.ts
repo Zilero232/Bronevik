@@ -1,0 +1,1 @@
+export { AnimatedLogoMark } from './AnimatedLogoMark';

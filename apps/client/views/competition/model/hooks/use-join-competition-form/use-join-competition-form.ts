@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { parseAsString, useQueryState } from 'nuqs';
 import { useForm, useWatch } from 'react-hook-form';
 
-import type { JoinCompetitionRequest } from '@/entities/competition/competition';
+import type { JoinCompetitionInput } from '@/entities/competition/competition';
 
 import { useCommunityViewer } from '@/entities/auth/session';
 
@@ -26,7 +26,7 @@ export const useJoinCompetitionForm = (competition: Competition) => {
   });
 
   const [accountValue, teamId] = useWatch({ control: form.control, name: ['accountId', 'teamId'] });
-  const join = useCompetitionMutation({ mutationFn: (input: JoinCompetitionRequest) => joinCompetition(input), successKey: 'joined' });
+  const join = useCompetitionMutation({ mutationFn: (input: JoinCompetitionInput) => joinCompetition(input), successKey: 'joined' });
   const leave = useCompetitionMutation({ mutationFn: (id: string) => leaveCompetition(id), successKey: 'left' });
 
   const accountIds = accounts.map(({ accountId }) => accountId);

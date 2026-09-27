@@ -24,6 +24,7 @@ import { buildDaySession } from '../lib/day-session';
 import { gainedMarks, snapshotMarks } from '../lib/marks-gain';
 import { nextPollAt } from '../lib/poll-schedule';
 import { isSnapshotMode, SNAPSHOT_MODES } from '../lib/snapshots';
+import { toStoredPlayer } from '../mappers';
 import { markSyncedSql, updateMarksSql, upsertLatestTanksSql, upsertPlayerTanksSql } from '../queries';
 import { TrackingAnnounceService } from './tracking-announce.service';
 
@@ -46,13 +47,7 @@ export class TrackingStoreService implements PollStorePort {
       select: { accountId: true, clanId: true, lastBattleAt: true, lastPolledAt: true, trackingTier: true }
     });
 
-    return players.map((player) => ({
-      accountId: Number(player.accountId),
-      clanId: player.clanId === null ? null : Number(player.clanId),
-      lastBattleAt: player.lastBattleAt,
-      lastPolledAt: player.lastPolledAt,
-      trackingTier: player.trackingTier
-    }));
+    return players.map(toStoredPlayer);
   }
 
   async upsertPlayer({ info, previous, tier, promote, now }: UpsertPlayerInput): Promise<void> {

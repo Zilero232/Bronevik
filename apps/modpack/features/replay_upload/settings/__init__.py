@@ -1,4 +1,5 @@
-"""Companion config keys this feature reads. Their defaults, limits and labels stay in the companion
-schema (packages/companion/config.py) so config.json keeps them while the feature is not installed."""
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-SETTINGS = ('upload_replays', 'publish_replays')
+from .constants import GROUP, PUBLISH, SWITCH  # noqa: F401
+
+SETTINGS = (SWITCH, PUBLISH)

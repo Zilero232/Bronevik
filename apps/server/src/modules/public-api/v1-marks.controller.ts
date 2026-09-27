@@ -5,7 +5,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { MoeTableService } from '../marks';
-import { PublicApi } from './decorators/public-api.decorator';
+import { PublicApi } from './decorators/public-api/public-api.decorator';
 import {
   V1MoeHistoryBatchDto,
   V1MoeHistoryBatchQueryDto,

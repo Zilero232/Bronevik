@@ -1,4 +1,3 @@
-"""Feature: battle clock panel (local time and the battle timer). Depends on the core and the companion."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'battle_clock'

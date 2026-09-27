@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { countSchema, isoDateTimeSchema, percentSchema, ratioSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
 import { listParam } from '../common/query/query.schemas';
 import { loadoutSchema } from '../community/community.schemas';
-import { learningDifficultySchema } from '../tanks/tank-insights.schemas';
+import { learningDifficultySchema } from '../tanks/insights/insights.schemas';
 import { nationSchema, tierSchema, vehicleSummarySchema, vehicleTypeSchema } from '../vehicles/vehicles.schemas';
 import { BUILD_OPTIONS, BUILD_USAGE, POPULAR_BUILDS } from './builds.constants';
 

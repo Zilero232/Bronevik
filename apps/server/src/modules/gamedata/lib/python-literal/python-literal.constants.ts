@@ -18,3 +18,9 @@ export const PY_CLOSERS = {
   '[': ']',
   '(': ')'
 } as const;
+
+export const PYTHON_LITERAL = {
+  identifierStart: /[A-Z_]/i,
+  identifierPart: /[\w.]/,
+  number: /^-?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?/i
+} as const;

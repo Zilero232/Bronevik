@@ -3,26 +3,30 @@ import type { Leaderboard, LeaderboardQuery } from '@otmetki/schemas';
 import { Injectable } from '@nestjs/common';
 import { match } from 'ts-pattern';
 
-import type { PlayersSqlInput, RankedRow } from '../leaderboards.types';
+import type { RankedRow } from '../leaderboards.types';
 
-import { Prisma } from '../../../../generated';
-import { RATING_PERIOD_SQL, ratingValue, toNumber } from '../../../common/lib';
+import { toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { ACCOUNT_RATING_COLUMN, CLAN_SNAPSHOT_COLUMN, LEADERBOARD_MIN_BATTLES, RISING_STARS, TANK_RATING_COLUMN } from '../config';
+import { LEADERBOARD_MIN_BATTLES, RISING_STARS } from '../config';
+import { toLeaderboardEntry } from '../mappers';
+import { clansSql, marksSql, playersSql, risingStarsSql, streamersFilterSql, tankPlayersSql } from '../queries';
 
 @Injectable()
 export class LeaderboardService {
   constructor(private readonly prisma: PrismaService) {}
 
   async leaderboard(query: LeaderboardQuery): Promise<Leaderboard> {
+    const minBattles = this.minBattles(query);
     const sql = match(query.scope)
-      .with('players', () => (query.tankId || query.tier || query.type ? this.byTanks(query) : this.players({ query })))
-      .with('clans', () => this.clans(query))
-      .with('risingStars', () => this.risingStars(query))
-      .with('marks', () => this.marks(query))
-      .with('streamers', () =>
-        this.players({ query, filter: Prisma.sql`AND ar.account_id IN (SELECT account_id FROM streamer_profile WHERE account_id IS NOT NULL)` })
-      )
+      .with('players', () => (query.tankId || query.tier || query.type ? tankPlayersSql({ query, minBattles }) : playersSql({ query, minBattles })))
+      .with('clans', () => clansSql(query))
+      .with('risingStars', () => {
+        const period = this.risingStarsPeriod(query);
+
+        return risingStarsSql({ query, period, minBattles: query.minBattles ?? LEADERBOARD_MIN_BATTLES[period] });
+      })
+      .with('marks', () => marksSql(query))
+      .with('streamers', () => playersSql({ query, minBattles, filter: streamersFilterSql }))
       .exhaustive();
 
     const rows = await this.prisma.$queryRaw<RankedRow[]>(sql);
@@ -34,18 +38,7 @@ export class LeaderboardService {
       period: query.period,
       total: rows[0] ? toNumber(rows[0].total) : 0,
       minBattles: this.appliedMinBattles(query),
-      entries: rows.map((row, index) => ({
-        rank: query.offset + index + 1,
-        accountId: row.accountId === null ? null : toNumber(row.accountId),
-        clanId: row.clanId === null ? null : toNumber(row.clanId),
-        name: row.name,
-        clanTag: row.clanTag,
-        color: row.color,
-        value: row.value ?? 0,
-        tier: scale && scale !== 'avgDamage' ? ratingValue({ kind: scale, value: row.value }).tier : null,
-        battles: Math.max(0, Math.round(row.battles)),
-        delta: row.delta
-      }))
+      entries: rows.map((row, index) => toLeaderboardEntry({ row, rank: query.offset + index + 1, scale }))
     };
   }
 
@@ -63,100 +56,5 @@ export class LeaderboardService {
 
   private minBattles(query: LeaderboardQuery): number {
     return query.minBattles ?? LEADERBOARD_MIN_BATTLES[query.period];
-  }
-
-  private players({ query, filter = Prisma.empty }: PlayersSqlInput): Prisma.Sql {
-    const column = Prisma.raw(`ar.${ACCOUNT_RATING_COLUMN[query.metric]}`);
-
-    return Prisma.sql`
-      SELECT ar.account_id AS "accountId", NULL::bigint AS "clanId", coalesce(sp.display_name, p.nickname) AS name, c.tag AS "clanTag", NULL::text AS color,
-             ${column}::float8 AS value, ar.battles::float8 AS battles, NULL::float8 AS delta, count(*) OVER () AS total
-      FROM account_rating ar
-      JOIN player p ON p.account_id = ar.account_id AND NOT p.is_hidden
-      LEFT JOIN clan c ON c.clan_id = p.clan_id
-      LEFT JOIN streamer_profile sp ON sp.account_id = ar.account_id
-      WHERE ar.period = ${RATING_PERIOD_SQL[query.period]}::rating_period AND ar.battles >= ${this.minBattles(query)} AND ${column} IS NOT NULL ${filter}
-      ORDER BY ${column} DESC
-      LIMIT ${query.limit} OFFSET ${query.offset}
-    `;
-  }
-
-  private byTanks(query: LeaderboardQuery): Prisma.Sql {
-    const column = Prisma.raw(TANK_RATING_COLUMN[query.metric]);
-    const type = query.type ?? null;
-
-    return Prisma.sql`
-      WITH agg AS (
-        SELECT atr.account_id,
-               sum(atr.battles)::float8 AS battles,
-               (sum(atr.${column} * atr.battles) FILTER (WHERE atr.${column} IS NOT NULL)
-                 / nullif(sum(atr.battles) FILTER (WHERE atr.${column} IS NOT NULL), 0))::float8 AS value
-        FROM account_tank_rating atr
-        JOIN vehicle v ON v.tank_id = atr.tank_id
-        WHERE atr.period = ${RATING_PERIOD_SQL[query.period]}::rating_period
-          AND (${query.tankId ?? null}::int IS NULL OR atr.tank_id = ${query.tankId ?? null}::int)
-          AND (${query.tier ?? null}::int IS NULL OR v.tier = ${query.tier ?? null}::int)
-          AND (${type}::text IS NULL OR v.type::text = ${type}::text)
-        GROUP BY atr.account_id
-        HAVING sum(atr.battles) >= ${this.minBattles(query)}
-      )
-      SELECT agg.account_id AS "accountId", NULL::bigint AS "clanId", p.nickname AS name, c.tag AS "clanTag", NULL::text AS color,
-             agg.value, agg.battles, NULL::float8 AS delta, count(*) OVER () AS total
-      FROM agg
-      JOIN player p ON p.account_id = agg.account_id AND NOT p.is_hidden
-      LEFT JOIN clan c ON c.clan_id = p.clan_id
-      WHERE agg.value IS NOT NULL
-      ORDER BY agg.value DESC
-      LIMIT ${query.limit} OFFSET ${query.offset}
-    `;
-  }
-
-  private clans(query: LeaderboardQuery): Prisma.Sql {
-    const column = Prisma.raw(`s.${CLAN_SNAPSHOT_COLUMN[query.metric]}`);
-
-    return Prisma.sql`
-      WITH latest AS (
-        SELECT DISTINCT ON (clan_id) * FROM clan_snapshot ORDER BY clan_id, captured_at DESC
-      )
-      SELECT NULL::bigint AS "accountId", c.clan_id AS "clanId", c.name, c.tag AS "clanTag", c.color,
-             ${column}::float8 AS value, coalesce(s.battles_delta, 0)::float8 AS battles, NULL::float8 AS delta, count(*) OVER () AS total
-      FROM latest s
-      JOIN clan c ON c.clan_id = s.clan_id AND NOT c.is_disbanded
-      WHERE ${column} IS NOT NULL
-      ORDER BY ${column} DESC
-      LIMIT ${query.limit} OFFSET ${query.offset}
-    `;
-  }
-
-  private risingStars(query: LeaderboardQuery): Prisma.Sql {
-    const period = this.risingStarsPeriod(query);
-    const column = Prisma.raw(ACCOUNT_RATING_COLUMN[query.metric]);
-
-    return Prisma.sql`
-      SELECT r.account_id AS "accountId", NULL::bigint AS "clanId", p.nickname AS name, c.tag AS "clanTag", NULL::text AS color,
-             r.${column}::float8 AS value, r.battles::float8 AS battles, (r.${column} - o.${column})::float8 AS delta, count(*) OVER () AS total
-      FROM account_rating r
-      JOIN account_rating o ON o.account_id = r.account_id AND o.period = 'overall'::rating_period
-      JOIN player p ON p.account_id = r.account_id AND NOT p.is_hidden
-      LEFT JOIN clan c ON c.clan_id = p.clan_id
-      WHERE r.period = ${RATING_PERIOD_SQL[period]}::rating_period AND r.battles >= ${query.minBattles ?? LEADERBOARD_MIN_BATTLES[period]}
-        AND r.${column} IS NOT NULL AND o.${column} IS NOT NULL
-      ORDER BY delta DESC
-      LIMIT ${query.limit} OFFSET ${query.offset}
-    `;
-  }
-
-  private marks(query: LeaderboardQuery): Prisma.Sql {
-    return Prisma.sql`
-      SELECT pt.account_id AS "accountId", NULL::bigint AS "clanId", p.nickname AS name, c.tag AS "clanTag", NULL::text AS color,
-             count(*)::float8 AS value, sum(pt.battles)::float8 AS battles, NULL::float8 AS delta, count(*) OVER () AS total
-      FROM player_tank pt
-      JOIN player p ON p.account_id = pt.account_id AND NOT p.is_hidden
-      LEFT JOIN clan c ON c.clan_id = p.clan_id
-      WHERE pt.marks_on_gun = 3
-      GROUP BY pt.account_id, p.nickname, c.tag
-      ORDER BY value DESC
-      LIMIT ${query.limit} OFFSET ${query.offset}
-    `;
   }
 }

@@ -2,7 +2,7 @@
 
 import type { RatingKind, RatingPeriod, VehicleType } from '@otmetki/schemas';
 
-import { TANK_CLASS_ICONS, TANK_CLASSES, TIERS, toRoman } from '@otmetki/icons';
+import { TANK_CLASS_ICONS, TANK_CLASSES } from '@otmetki/icons';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -10,21 +10,30 @@ import { TankIdentity, vehicleIdentity } from '@/entities/tank/tank';
 import { EntityPicker } from '@/features/search/pick-entity';
 import { IconButton, Select } from '@/ui-kit';
 
-import { TOP_METRICS, TOP_PERIODS } from '../../../config';
 import { useTopFilters } from '../../../model/hooks';
 
 import s from './TopFilters.module.scss';
 
 export const TopFilters = () => {
   const t = useTranslations('top');
-  const tPeriods = useTranslations('periods');
   const tGame = useTranslations('game.classes');
-  const { scope, metric, period, tier, type, tank, hasTank, onMetricChange, onPeriodChange, onTierChange, onTypeChange, onTankChange } =
-    useTopFilters();
+  const {
+    metrics,
+    periods,
+    tiers,
+    metric,
+    period,
+    tier,
+    type,
+    tank,
+    hasTank,
+    onMetricChange,
+    onPeriodChange,
+    onTierChange,
+    onTypeChange,
+    onTankChange
+  } = useTopFilters();
 
-  const metrics = TOP_METRICS[scope].map((value) => ({ value, label: t(`metrics.${value}`) }));
-  const periods = TOP_PERIODS.map((value) => ({ value, label: tPeriods(value) }));
-  const tiers = [{ value: 'all' as const, label: t('allTiers') }, ...TIERS.map((value) => ({ value: `${value}` as const, label: toRoman(value) }))];
   const types = [
     { value: 'all' as const, label: t('allTypes') },
     ...TANK_CLASSES.map((value) => {

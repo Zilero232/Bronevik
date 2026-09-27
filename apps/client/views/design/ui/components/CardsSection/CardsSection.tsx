@@ -16,6 +16,7 @@ import s from './CardsSection.module.scss';
 
 export const CardsSection = () => {
   const t = useTranslations('design.cards');
+  const tCommon = useTranslations('common');
   const format = useFormatter();
   const { data } = useDesignTankStats();
   const { tiers, setTiers, classes, setClasses, nations, setNations } = usePatternFilters();
@@ -31,7 +32,7 @@ export const CardsSection = () => {
               key={rank}
               glyph={<MasteryIcon level='master' />}
               meta={t('battles', { count: battles })}
-              metricLabel='WN8'
+              metricLabel={tCommon('ratings.wn8')}
               name={name}
               rank={rank}
               rankLabel={t('place', { rank })}

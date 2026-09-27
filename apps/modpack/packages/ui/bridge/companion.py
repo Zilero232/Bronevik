@@ -4,8 +4,6 @@ from ..components import ACTION_SETTINGS_EXPORT, ACTION_SETTINGS_RESTORE
 
 
 class CompanionActions(object):
-    """The companion card's buttons: the settings share export and "Restore mine" (both hangar-only, run by
-    the companion's SettingsShare)."""
 
     def __init__(self, config, labels):
         self.config = config

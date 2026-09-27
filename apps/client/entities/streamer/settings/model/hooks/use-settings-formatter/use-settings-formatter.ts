@@ -17,7 +17,11 @@ export const useSettingsFormatter = () => {
 
   const groupLabel = (group: SettingsGroupKey): string => t(`groups.${group}`);
 
-  const fieldLabel = (path: string): string => t(`fields.${fieldMessage(path)}`);
+  const fieldLabel = (path: string): string => {
+    const message = fieldMessage(path);
+
+    return message ? t(`fields.${message}`) : path;
+  };
 
   const label = (key: string): string => (isSettingsGroup(key) ? groupLabel(key) : fieldLabel(key));
 

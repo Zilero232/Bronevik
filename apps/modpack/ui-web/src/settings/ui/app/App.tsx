@@ -1,14 +1,14 @@
 import { useStore } from '@nanostores/preact';
 
-import { useBridge } from '../../model/hooks/use-bridge/use-bridge';
-import { useT } from '../../model/hooks/use-t/use-t';
-import { $groups, $invalid, $selected, $state, $view } from '../../model/store/store';
-import { ComponentView } from '../component-view/ComponentView';
-import { Header } from '../header/Header';
-import { HudEditor } from '../hud-editor/HudEditor';
-import { Notice } from '../notice/Notice';
-import { Profiles } from '../profiles/Profiles';
-import { Sidebar } from '../sidebar/Sidebar';
+import { useBridge } from '../../model/hooks/use-bridge';
+import { useT } from '../../model/hooks/use-t';
+import { $groups, $invalid, $selected, $state, $view } from '../../model/store';
+import { ComponentView } from '../component-view';
+import { Header } from '../header';
+import { HudEditor } from '../hud-editor';
+import { Notice } from '../notice';
+import { Profiles } from '../profiles';
+import { Sidebar } from '../sidebar';
 
 export const App = () => {
   useBridge();

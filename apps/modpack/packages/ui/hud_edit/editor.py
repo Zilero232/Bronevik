@@ -1,13 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import re
-
 from ...core.compat import is_number, string_types, to_text
+from ...core.format import strip_tags
 from ...core.hud import EVENT_DESCRIBE, EVENT_EDIT
 from ..components import PANEL_POSITION_KEYS
 from .constants import DEFAULT_HEIGHT, DEFAULT_WIDTH, MAX_SIZE, POSITION_ALIGNS, POSITION_NUMBERS, PREVIEW_MAX_CHARS
-
-_TAGS = re.compile(r'<[^>]*>')
 
 
 def _size(value, default):
@@ -17,15 +14,12 @@ def _size(value, default):
 
 
 def plain_preview(text):
-    """Panel text without the GUIFlash HTML subset, for the editor's miniature."""
     if not isinstance(text, string_types):
         return None
-    return _TAGS.sub('', to_text(text)).replace('&nbsp;', ' ')[:PREVIEW_MAX_CHARS]
+    return strip_tags(text).replace('&nbsp;', ' ')[:PREVIEW_MAX_CHARS]
 
 
 def move_values(message):
-    """The position part of a hud_move message: numbers for x/y, strings for the aligns (the panel's
-    schema clamps and validates them)."""
     values = {}
     for key in POSITION_NUMBERS:
         if is_number(message.get(key)) and not isinstance(message.get(key), bool):
@@ -37,8 +31,6 @@ def move_values(message):
 
 
 class HudEditor(object):
-    """HUD edit mode on the window side: panel positions from the HUD layer's sections, moves written back
-    through the layer (a shown panel moves at once, which is the live preview), on-screen mode on the bus."""
 
     def __init__(self, bus, layer=None):
         self.bus = bus

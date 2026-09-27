@@ -21,3 +21,8 @@ export type ValueCell = {
   value: number;
   unit: string | null;
 };
+
+export type ToChangeInput = {
+  found: RegExpExecArray | null;
+  raw: string;
+};

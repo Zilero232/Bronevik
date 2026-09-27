@@ -10,9 +10,8 @@ import { ResourceGate } from '@/widgets/site/resource-missing';
 import type { GuidePageProps } from './GuidePage.types';
 
 import { GUIDE_PAGE } from '../config';
-import { GuideProvider } from '../model/context';
 import { useGuidePage } from '../model/hooks';
-import { GuideHeader } from './components';
+import { GuideHeader, GuideProvider } from './components';
 
 import s from './GuidePage.module.scss';
 

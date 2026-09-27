@@ -1,1 +1,1 @@
-export { HEALTH } from './health.config';
+export { HEALTH } from './health.constants';

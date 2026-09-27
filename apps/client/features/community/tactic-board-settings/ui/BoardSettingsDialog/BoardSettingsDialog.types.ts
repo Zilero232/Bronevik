@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import type { ButtonVariantProps } from '@/ui-kit';
 
-import type { BoardSettingsFormProps } from '../BoardSettingsForm.types';
+import type { BoardSettingsFormProps } from './components';
 
 export type BoardSettingsDialogProps = BoardSettingsFormProps & {
   trigger: ReactNode;

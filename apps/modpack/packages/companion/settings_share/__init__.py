@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Streamer settings: export own standard client settings and apply a creator's.
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-The client glue reads the game's settings core into a flat dict keyed by the raw
-keys of FIELDS (e.g. 'fov', 'sniperSens'). Everything here is a whitelist:
-anything not in FIELDS (login, account, hardware, mods, unknown keys) is dropped.
-"""
 from ...core.codec import encode_json
 from ...core.compat import string_types, to_text
 from ...core.net.signing import signed_request
@@ -57,7 +53,6 @@ def result_path(request_id):
 
 
 def parse_poll_response(data):
-    """Validated apply requests from a poll response; malformed items are dropped."""
     items = data.get('requests') if isinstance(data, dict) else None
     requests = []
     for item in items if isinstance(items, list) else ():
@@ -80,5 +75,4 @@ def parse_poll_response(data):
 
 
 def signed_post(transport, url, credentials, payload, user_agent, callback):
-    """POST `payload` signed exactly like /mod/ingest."""
     signed_request(transport, 'POST', url, credentials.device_id, credentials.secret, encode_json(payload), user_agent, callback)

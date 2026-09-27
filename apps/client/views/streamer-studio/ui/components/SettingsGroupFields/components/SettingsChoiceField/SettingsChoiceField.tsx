@@ -8,13 +8,12 @@ import { Select } from '@/ui-kit';
 import type { SettingsChoiceFieldProps } from './SettingsChoiceField.types';
 
 import { SETTINGS_FORM } from '../../../../../config';
-import { fieldLabelKey } from '../../../../../lib/settings-form';
 import { useSettingsField } from '../../../../../model/hooks';
 
 export const SettingsChoiceField = ({ field }: SettingsChoiceFieldProps) => {
   const t = useTranslations('streamerSettings');
   const tf = useTranslations('streamer.settings');
-  const { control } = useSettingsField(field.path);
+  const { control, label } = useSettingsField(field.path);
 
   const options = field.kind === 'boolean' ? SETTINGS_FORM.booleans : field.options;
   const items = [{ value: SETTINGS_FORM.unset, label: tf('unset') }, ...options.map((option) => ({ value: option, label: t(`options.${option}`) }))];
@@ -24,7 +23,7 @@ export const SettingsChoiceField = ({ field }: SettingsChoiceFieldProps) => {
       render={({ field: input }) => (
         <Select<string>
           items={items}
-          label={t(fieldLabelKey(field.path))}
+          label={label}
           value={typeof input.value === 'string' ? input.value : SETTINGS_FORM.unset}
           onValueChange={input.onChange}
         />

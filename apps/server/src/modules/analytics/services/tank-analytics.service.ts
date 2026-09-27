@@ -7,7 +7,8 @@ import type { TankAnalyticsInput } from '../analytics.types';
 import { PrismaService } from '../../../core';
 import { ExpectedValuesService, VehicleCatalogService } from '../../reference';
 import { TANK_ANALYTICS } from '../config';
-import { statLine, toAggregateRow, trendPoints } from '../lib';
+import { statLine, trendPoints } from '../lib';
+import { toAggregateRow } from '../mappers';
 import { AnalyticsOverviewService } from './analytics-overview.service';
 import { OwnAccountService } from './own-account.service';
 

@@ -1,13 +1,19 @@
-"""Helpers for hooking into the game client: client events and method overrides."""
-from .constants import RESTORE_ATTR  # noqa: F401
+"""Hooks into the game client: client events and method overrides. Every handler runs guarded: an
+exception is logged and never reaches the client's own code."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from ..log import log_exception, safe
+from .constants import RESTORE_ATTR
 
 
 def subscribe(owner, name, handler):
-    """`owner.name += handler` for a client `Event`, spelt as a call so it can be undone with `unsubscribe`."""
+    """`owner.name += handler` for a client `Event`, spelt as a call so it can be undone with `unsubscribe`.
+    Returns the guarded handler that was subscribed: pass that one to `unsubscribe`."""
+    guarded = safe(handler)
     event = getattr(owner, name)
-    event += handler
+    event += guarded
     setattr(owner, name, event)
-    return handler
+    return guarded
 
 
 def unsubscribe(owner, name, handler):
@@ -29,9 +35,9 @@ class Subscriptions(object):
         self.items = []
 
     def add(self, owner, name, handler):
-        subscribe(owner, name, handler)
-        self.items.append((owner, name, handler))
-        return handler
+        guarded = subscribe(owner, name, handler)
+        self.items.append((owner, name, guarded))
+        return guarded
 
     def clear(self):
         while self.items:
@@ -39,8 +45,25 @@ class Subscriptions(object):
             unsubscribe(owner, name, handler)
 
 
+class OriginalCall(object):
+
+    def __init__(self, original):
+        self.original = original
+        self.returned = False
+        self.raised = False
+        self.result = None
+
+    def __call__(self, *args, **kwargs):
+        try:
+            self.result = self.original(*args, **kwargs)
+        except Exception:
+            self.raised = True
+            raise
+        self.returned = True
+        return self.result
+
+
 def _own_value(owner, name):
-    """(defined on owner itself, the raw attribute: a staticmethod stays a staticmethod, found through the MRO)."""
     namespace = getattr(owner, '__dict__', {})
     if name in namespace:
         return True, namespace[name]
@@ -54,7 +77,9 @@ def override(owner, name):
     """Replace `owner.name` with a wrapper that calls `handler(original, *args, **kwargs)`.
 
     Works for module functions and for class methods (the wrapper receives `self` as the first argument
-    after `original`). `restore(owner, name)` puts the original back.
+    after `original`). A handler that raises is logged; the client then gets the original's result, or
+    the original is called for it when the handler failed before calling it. An exception raised by the
+    original itself propagates as it would without the mod. `restore(owner, name)` puts the original back.
     """
     def decorator(handler):
         had_own, raw = _own_value(owner, name)
@@ -63,9 +88,16 @@ def override(owner, name):
         original = getattr(owner, name)
 
         def wrapper(*args, **kwargs):
-            return handler(original, *args, **kwargs)
+            call = OriginalCall(original)
+            try:
+                return handler(call, *args, **kwargs)
+            except Exception:
+                if call.raised:
+                    raise
+                log_exception('override %s' % name)
+                return call.result if call.returned else original(*args, **kwargs)
 
-        wrapper.__name__ = getattr(handler, '__name__', name)
+        wrapper.__name__ = getattr(handler, '__name__', str(name))
         setattr(wrapper, RESTORE_ATTR, (had_own, raw))
         if isinstance(raw, (staticmethod, classmethod)):
             setattr(owner, name, staticmethod(wrapper))

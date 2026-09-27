@@ -7,9 +7,9 @@ import { NextIntlClientProvider } from 'next-intl';
 import { toast } from 'sonner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { getNotificationSettings, updateNotificationSettings } from '@/features/notifications/notification-settings/api/me/me';
 import { messages } from '@/shared/i18n';
 
-import { getNotificationSettings, updateNotificationSettings } from '../../../../../../features/notifications/notification-settings/api';
 import { CHECKOUT_NOTIFY } from '../../../../config';
 import { useCheckoutNotify } from '../use-checkout-notify';
 
@@ -17,7 +17,7 @@ vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
 vi.mock('@/entities/auth/session', () => ({ useAuthSession: () => ({ data: { user: { id: 'user-1' } }, isPending: false }) }));
 
-vi.mock('../../../../../../features/notifications/notification-settings/api', () => ({
+vi.mock('@/features/notifications/notification-settings/api/me/me', () => ({
   getNotificationSettings: vi.fn(),
   updateNotificationSettings: vi.fn()
 }));

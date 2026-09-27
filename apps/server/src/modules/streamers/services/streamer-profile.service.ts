@@ -13,6 +13,7 @@ import { parseJsonText } from '../../../common/lib';
 import { isUniqueViolation, PrismaService, REDIS } from '../../../core';
 import { STREAMERS } from '../config';
 import { parseChannel } from '../lib';
+import { toChannelView } from '../mappers';
 import { LivePlatformsService } from './live-platforms.service';
 import { StreamerCardsService } from './streamer-cards.service';
 
@@ -128,7 +129,7 @@ export class StreamerProfileService {
       accountId: this.cards.accountIdOf(profile),
       accountSourceUrl: profile.accountSourceUrl,
       bio: profile.bio,
-      channels: channels.map((channel) => this.cards.channelView(channel)),
+      channels: channels.map(toChannelView),
       isLive: profile.isLive,
       live,
       hasSettings: profile.settings !== null,

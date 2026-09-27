@@ -1,0 +1,47 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from ....core.client.game import service
+from ....core.client.garage import is_locked, run_processor
+from ....core.log import log_exception
+from .constants import PROCESSORS, READERS
+
+# RU 1.45 client source: gui.shared.gui_items.Vehicle (isAutoRepair / isAutoLoad / isAutoEquip properties,
+# isAutoBattleBoosterEquip()), gui.shared.gui_items.processors.vehicle (VehicleAuto*Processor(vehicle, value)),
+# IItemsCache.items.getVehicles(REQ_CRITERIA.INVENTORY).
+
+
+def _flag(vehicle, name):
+    value = getattr(vehicle, name, None)
+    if hasattr(value, '__call__'):
+        try:
+            value = value()
+        except Exception:
+            return None
+    return bool(value) if value is not None else None
+
+
+def summary(vehicle):
+    return {
+        'inv_id': getattr(vehicle, 'invID', None),
+        'locked': is_locked(vehicle),
+        'flags': dict((flag, _flag(vehicle, name)) for flag, name in READERS.items()),
+    }
+
+
+def garage_vehicles():
+    try:
+        from skeletons.gui.shared import IItemsCache
+        from gui.shared.utils.requesters import REQ_CRITERIA
+        return list(service(IItemsCache).items.getVehicles(REQ_CRITERIA.INVENTORY).values())
+    except Exception:
+        log_exception('garage vehicles')
+        return []
+
+
+def _processor(vehicle, flag, value):
+    from gui.shared.gui_items.processors import vehicle as processors
+    return getattr(processors, PROCESSORS[flag])(vehicle, value)
+
+
+def send(vehicle, flag, value, done):
+    run_processor(lambda: _processor(vehicle, flag, value), done, 'auto resupply %s' % flag)

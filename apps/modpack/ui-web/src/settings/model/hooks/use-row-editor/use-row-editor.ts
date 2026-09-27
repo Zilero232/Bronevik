@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 
-import type { RunActionInput } from '../use-actions/use-actions.types';
+import type { RunActionInput } from '../use-actions';
 import type { RowChoice, RowDraft } from './use-row-editor.types';
 
 export const useRowEditor = (onRun: (input: RunActionInput) => void) => {

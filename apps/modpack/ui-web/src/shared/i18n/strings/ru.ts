@@ -21,6 +21,8 @@ export const RU = {
   confirm: 'Подтвердить',
   cancel: 'Отмена',
   save: 'Сохранить',
+  details: 'Подробнее',
+  hideDetails: 'Свернуть',
   profileName: 'Название профиля',
   profileSaveNew: 'Сохранить текущие как новый',
   profileOverwrite: 'Перезаписать текущими',

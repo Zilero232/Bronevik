@@ -4,8 +4,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { CACHE_TTL, ViewerCacheInterceptor } from '../../common/cache';
+import { CACHE_TTL } from '../../common/cache';
 import { CacheByViewer, OptionalUserId } from '../../common/decorators';
+import { ViewerCacheInterceptor } from '../../common/interceptors';
 import {
   ActivityDto,
   ActivityQueryDto,

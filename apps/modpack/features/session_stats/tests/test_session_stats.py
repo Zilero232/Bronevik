@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import unittest
 
 import _support  # noqa: F401
@@ -94,7 +96,6 @@ class SessionTest(unittest.TestCase):
         self.assertEqual(restored.summary(), session.summary())
         self.assertFalse(SessionAggregator().load({'session_id': 'x'}))
         self.assertFalse(SessionAggregator().load(None))
-
 
 
 class SessionPanelTest(unittest.TestCase):

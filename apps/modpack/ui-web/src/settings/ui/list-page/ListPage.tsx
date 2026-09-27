@@ -1,11 +1,13 @@
 import type { ListPageProps } from './ListPage.types';
 
-import { useRowEditor } from '../../model/hooks/use-row-editor/use-row-editor';
-import { useT } from '../../model/hooks/use-t/use-t';
+import { useRowDetails } from '../../model/hooks/use-row-details';
+import { useRowEditor } from '../../model/hooks/use-row-editor';
+import { useT } from '../../model/hooks/use-t';
 
 export const ListPage = ({ page, onRun }: ListPageProps) => {
   const t = useT();
   const editor = useRowEditor(onRun);
+  const details = useRowDetails();
 
   if (page.rows.length === 0) {
     return <p className='empty'>{page.empty}</p>;
@@ -22,6 +24,16 @@ export const ListPage = ({ page, onRun }: ListPageProps) => {
             </div>
             {row.subtitle && <span className='row__subtitle'>{row.subtitle}</span>}
             {row.meta && <span className='row__meta'>{row.meta}</span>}
+            {row.details && row.details.length > 0 && details.isOpen(row.id) && (
+              <dl className='row__details'>
+                {row.details.map((detail) => (
+                  <div key={`${detail.label}|${detail.value}`} className='row__detail'>
+                    {detail.label && <dt className='row__detail-label'>{detail.label}</dt>}
+                    <dd className='row__detail-value'>{detail.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
           </div>
           {editor.draft?.row === row.id ? (
             <div className='row__edit'>
@@ -35,6 +47,11 @@ export const ListPage = ({ page, onRun }: ListPageProps) => {
             </div>
           ) : (
             <div className='row__actions'>
+              {row.details && row.details.length > 0 && (
+                <button className='button button--small button--ghost' type='button' onClick={() => details.toggle(row.id)}>
+                  {details.isOpen(row.id) ? t('hideDetails') : t('details')}
+                </button>
+              )}
               {row.actions.map((action) => (
                 <button key={action.id} className='button button--small' type='button' onClick={() => editor.choose({ row: row.id, action })}>
                   {action.label}

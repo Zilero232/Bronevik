@@ -2,19 +2,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import binascii
 import os
-import re
 
 from ...core.compat import string_types, to_text
+from ...core.format import single_spaces
 from .constants import ERROR_LIMIT, ERROR_MISSING, ERROR_NAME, FILE_VERSION, MAX_PROFILES, NAME_MAX_LENGTH
 from .errors import ProfileError
-
-_SPACES = re.compile(r'\s+')
 
 
 def normalize_name(name):
     if not isinstance(name, string_types):
         raise ProfileError(ERROR_NAME)
-    name = _SPACES.sub(' ', to_text(name)).strip()[:NAME_MAX_LENGTH].strip()
+    name = single_spaces(name)[:NAME_MAX_LENGTH].strip()
     if not name:
         raise ProfileError(ERROR_NAME)
     return name
@@ -30,8 +28,6 @@ def _valid_profile(item):
 
 
 class ProfileStore(object):
-    """Named snapshots of the settings in profiles.json, at most MAX_PROFILES (the installer reads and
-    writes the same file). Invalid entries of a hand-edited file are dropped on load."""
 
     def __init__(self, store, clock, new_id=random_id):
         self.store = store
@@ -53,7 +49,6 @@ class ProfileStore(object):
         return None
 
     def save(self, name, data, profile_id=None):
-        """Overwrites `profile_id` when given, else adds a new profile. Returns the profile."""
         name = normalize_name(name)
         now = self.clock()
         if profile_id is not None:

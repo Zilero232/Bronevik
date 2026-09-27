@@ -5,7 +5,7 @@ import { parseArgs } from 'node:util';
 import { z } from 'zod';
 
 import { ARMOR_VIEWER } from '../src/config';
-import { createPrismaClient } from '../src/core/prisma/prisma.factory';
+import { createPrismaClient } from '../src/core/prisma';
 import { createArmorStorage, purgeArmorModels } from '../src/modules/gamedata';
 
 const { values } = parseArgs({

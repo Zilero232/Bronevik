@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import type { BestBattlesFacets, BestBattlesFacetsQuery } from '../best-battles.types';
+import type { BestBattlesFacets, FacetsInput } from '../best-battles.types';
 import type { FacetCountRow, FacetTotalsRow } from '../queries';
 
 import { PrismaService } from '../../../core';
@@ -17,7 +17,7 @@ export class BestBattlesFacetsService {
     private readonly lookups: BestBattleLookupsService
   ) {}
 
-  async facets({ period }: BestBattlesFacetsQuery, now: Date): Promise<BestBattlesFacets> {
+  async facets({ query: { period }, now }: FacetsInput): Promise<BestBattlesFacets> {
     const since = periodSince({ period, now });
     const scope = { since, battleTypes: BEST_BATTLES.battleTypes };
     const [totals, medalRows, tankRows, arenaRows] = await Promise.all([

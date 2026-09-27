@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { challengeConditionSchema } from '@otmetki/schemas';
 import { addMinutes } from 'date-fns';
 import pRetry from 'p-retry';
 
@@ -14,10 +13,11 @@ import type {
 } from '../streamers.types';
 
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
-import { randomCode, readRecord, toIso } from '../../../common/lib';
+import { randomCode, readRecord } from '../../../common/lib';
 import { isUniqueViolation, PrismaService } from '../../../core';
 import { CHALLENGE } from '../config';
 import { matchDonation } from '../lib';
+import { toChallengeView } from '../mappers';
 
 @Injectable()
 export class ChallengeService {
@@ -30,7 +30,7 @@ export class ChallengeService {
       take: CHALLENGE.listLimit
     });
 
-    return challenges.map((challenge) => this.toView(challenge));
+    return challenges.map(toChallengeView);
   }
 
   async create({ userId, title, condition, amount, expiresInMinutes }: CreateStreamerChallengeInput): Promise<StreamerChallengeView> {
@@ -67,7 +67,7 @@ export class ChallengeService {
         { retries: CHALLENGE.codeAttempts - 1, minTimeout: 0, shouldRetry: ({ error }) => isUniqueViolation(error) }
       );
 
-      return this.toView(challenge);
+      return toChallengeView(challenge);
     } catch (error) {
       if (isUniqueViolation(error)) {
         throw new AppConflictException('CONFLICT', 'Could not allocate a challenge code');
@@ -89,7 +89,7 @@ export class ChallengeService {
       throw new AppConflictException('CONFLICT', 'The challenge is already resolved');
     }
 
-    return this.toView(await this.prisma.challenge.findUniqueOrThrow({ where: { id } }));
+    return toChallengeView(await this.prisma.challenge.findUniqueOrThrow({ where: { id } }));
   }
 
   async activateByStreamer({ userId, id, donorName }: ActivateByStreamerInput): Promise<StreamerChallengeView> {
@@ -101,7 +101,7 @@ export class ChallengeService {
       throw new AppConflictException('CONFLICT', 'Only a pending challenge can be activated');
     }
 
-    return this.toView(activated);
+    return toChallengeView(activated);
   }
 
   async activate({ challengeId, donorName, donorMessage, source, externalId, now }: ActivateChallengeInput): Promise<Challenge | null> {
@@ -163,26 +163,6 @@ export class ChallengeService {
       externalId,
       now: new Date()
     });
-  }
-
-  toView(challenge: Challenge): StreamerChallengeView {
-    const progress = readRecord(challenge.progress);
-
-    return {
-      id: challenge.id,
-      code: challenge.code,
-      title: challenge.title,
-      condition: challengeConditionSchema.parse(challenge.condition),
-      amount: challenge.amount.toNumber(),
-      currency: challenge.currency,
-      status: challenge.status,
-      donorName: challenge.donorName,
-      progress:
-        typeof progress.battles === 'number' && typeof progress.value === 'number' ? { battles: progress.battles, value: progress.value } : null,
-      createdAt: challenge.createdAt.toISOString(),
-      expiresAt: toIso(challenge.expiresAt),
-      resolvedAt: toIso(challenge.resolvedAt)
-    };
   }
 
   private async owned({ userId, id }: OwnedInput): Promise<Challenge> {

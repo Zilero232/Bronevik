@@ -5,7 +5,6 @@ FILE_VERSION = 1
 MAX_PROFILES = 12
 NAME_MAX_LENGTH = 40
 
-# config.json keys a profile never carries: the connection and one-shot actions.
 EXCLUDED_CONFIG_KEYS = ('server_url', 'bind_code', 'settings_action')
 
 CODE_PREFIX = 'TM1.'

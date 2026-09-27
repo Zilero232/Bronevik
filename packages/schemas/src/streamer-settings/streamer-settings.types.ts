@@ -69,3 +69,9 @@ export type ChangedGroupsInput = {
   previous: SettingsValues | StreamerSettings | null;
   next: SettingsValues | StreamerSettings;
 };
+
+export type FlattenInput = {
+  value: unknown;
+  prefix: string;
+  target: FlatSettings;
+};

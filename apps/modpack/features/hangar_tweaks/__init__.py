@@ -1,4 +1,3 @@
-"""Feature: hangar tweaks (carousel options of the client, free quick actions). Depends on the core and the companion."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'hangar_tweaks'

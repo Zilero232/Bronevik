@@ -12,7 +12,7 @@ paths:
 
 Vendored under `core/vendor` with pinned py2.7-compatible versions: `six` (text/bytes,
 iteration, metaclasses), `blinker` (signals/event bus), `attrs` (data models),
-`enum34` (enums), `typing` (type comments). Use the standard library otherwise
+`enum34` (enums). `typing` is not vendored: type comments need no import. Use the standard library otherwise
 (`json`, `logging`, `collections`, `functools`, `itertools`). Do not hand-roll what
 these do. Add a new vendored lib only with a pinned version that supports 2.7 and
 a licence that allows redistribution.

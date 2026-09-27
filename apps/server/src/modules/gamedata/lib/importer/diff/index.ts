@@ -1,0 +1,1 @@
+export { diffSpecs } from './diff';

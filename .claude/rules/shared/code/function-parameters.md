@@ -22,3 +22,10 @@ search(query, signal);
 
 NestJS constructors are not this: injecting collaborators positionally is the
 framework's own convention and is used throughout the server app and the collector.
+Nor is a signature the framework calls: an exception filter's `catch(exception, host)`,
+an interceptor's `intercept(context, next)`, a BullMQ processor's `process(job, token)`,
+Express middleware `(request, response, next)`, Nest lifecycle hooks, a provider's
+`useFactory(...)` and a controller handler whose every parameter is a Nest parameter
+decorator (`@CurrentUserId() userId, @Param() { id }, @Body() body`).
+Neither is a signature a library fixes — a `useReducer` reducer `(state, action)`, an
+`Array.prototype.sort` comparator, a TanStack `retry: (failureCount, error)` callback.

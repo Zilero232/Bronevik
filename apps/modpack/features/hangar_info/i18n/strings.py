@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+STRINGS = {
+    'ru': {
+        'component_hangar_info': u'Часы и сервер в ангаре',
+        'component_hangar_info_hint': u'Время, дата, ваш сервер, пинг до него и онлайн, как в шапке ангара. Нужен GUIFlash.',
+        'hangar_info_clock_format': u'Формат времени',
+        'hangar_info_date_format': u'Формат даты',
+        'hangar_info_date_format_': u'Без даты',
+        'hangar_info_show_server': u'Показывать сервер',
+        'hangar_info_show_ping': u'Показывать пинг',
+        'hangar_info_show_online': u'Показывать онлайн',
+        'hangar_info_template': u'Свой шаблон',
+        'hangar_info_template_hint': u'Макросы: {time}, {date}, {server}, {ping}, {online}, {region_online}. Пусто — стандартный вид.',
+        'hangar_info_font_size': u'Размер шрифта',
+        'hangar_info_x': u'Отступ по горизонтали',
+        'hangar_info_y': u'Отступ по вертикали',
+        'hangar_info_align_x': u'Привязка по горизонтали',
+        'hangar_info_align_y': u'Привязка по вертикали',
+        'hangar_info_ms': u'{ping} мс',
+        'hangar_info_online': u'онлайн {online}',
+    },
+    'en': {
+        'component_hangar_info': u'Hangar clock and server',
+        'component_hangar_info_hint': u'Time, date, your server, the ping to it and the online count, as in the hangar header. Needs GUIFlash.',
+        'hangar_info_clock_format': u'Time format',
+        'hangar_info_date_format': u'Date format',
+        'hangar_info_date_format_': u'No date',
+        'hangar_info_show_server': u'Show the server',
+        'hangar_info_show_ping': u'Show the ping',
+        'hangar_info_show_online': u'Show the online count',
+        'hangar_info_template': u'Custom template',
+        'hangar_info_template_hint': u'Macros: {time}, {date}, {server}, {ping}, {online}, {region_online}. Empty: the built-in look.',
+        'hangar_info_font_size': u'Font size',
+        'hangar_info_x': u'Horizontal offset',
+        'hangar_info_y': u'Vertical offset',
+        'hangar_info_align_x': u'Horizontal anchor',
+        'hangar_info_align_y': u'Vertical anchor',
+        'hangar_info_ms': u'{ping} ms',
+        'hangar_info_online': u'online {online}',
+    },
+}

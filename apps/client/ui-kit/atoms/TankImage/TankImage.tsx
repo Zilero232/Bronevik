@@ -1,9 +1,10 @@
 'use client';
 
 import { toRoman } from '@otmetki/icons';
-import { useBoolean } from '@siberiacancode/reactuse';
 import { clsx } from 'clsx';
 import Image from 'next/image';
+
+import { useImageFallback } from '@/shared/lib';
 
 import type { TankImageProps } from './TankImage.types';
 
@@ -21,13 +22,11 @@ export const TankImage = ({
   withFallback = true,
   className
 }: TankImageProps) => {
-  const [hasFailed, setFailed] = useBoolean(false);
+  const { image, onError } = useImageFallback(tank.images?.[size] ?? null);
 
-  const src = tank.images?.[size] ?? null;
   const { width, height, glyph } = TANK_IMAGE[size];
-  const isImage = src !== null && !hasFailed;
 
-  if (!isImage && !withFallback) {
+  if (!image && !withFallback) {
     return null;
   }
 
@@ -36,19 +35,19 @@ export const TankImage = ({
       className={clsx(s.root, s[size], className)}
       data-nation={tank.nation}
       data-premium={tank.isPremium || undefined}
-      data-state={isImage ? 'image' : 'fallback'}
+      data-state={image ? 'image' : 'fallback'}
       data-tint={withTint || undefined}
     >
-      {isImage ? (
+      {image ? (
         <Image
           alt={isDecorative ? '' : tank.name}
           className={s.image}
           height={height}
           priority={isPriority}
-          src={src}
+          src={image}
           unoptimized={size !== 'big'}
           width={width}
-          onError={() => setFailed(true)}
+          onError={onError}
         />
       ) : (
         <span

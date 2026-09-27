@@ -1,8 +1,7 @@
 import type { FitCandidate, RankedCandidate, RankTanksInput, ToCandidateInput } from './tank-fit.types';
 
 import { MISSION_METRIC_FIELD } from '../../config';
-
-const SCORE_PRECISION = 10;
+import { TANK_FIT } from './tank-fit.constants';
 
 export const toCandidate = ({ row, metric }: ToCandidateInput): FitCandidate => ({
   tankId: row.tankId,
@@ -16,7 +15,7 @@ export const rankTanks = ({ candidates, limit }: RankTanksInput): RankedCandidat
   const last = Math.max(1, sorted.length - 1);
   const ranked = sorted.map((candidate, index) => ({
     ...candidate,
-    score: sorted.length === 1 ? 100 : Math.round(((last - index) / last) * 100 * SCORE_PRECISION) / SCORE_PRECISION
+    score: sorted.length === 1 ? 100 : Math.round(((last - index) / last) * 100 * TANK_FIT.scorePrecision) / TANK_FIT.scorePrecision
   }));
 
   return limit === undefined ? ranked : ranked.slice(0, limit);

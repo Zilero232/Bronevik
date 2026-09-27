@@ -1,1 +1,1 @@
-export { TOURNAMENT } from './tournaments.config';
+export { TOURNAMENT } from './tournaments.constants';

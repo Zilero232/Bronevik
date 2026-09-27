@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { PACKET_SUPPORT, WG_VEHICLE_METHOD_IDS } from '../packets.constants';
-import { compareVersions, htmlToText, resolveSupport, wgVehicleMethodIds } from '../packets.helpers';
+import { compareVersions, htmlToText, resolveSupport, wgVehicleMethodIds } from '../packets.support';
 
 describe('packet helpers', () => {
   it('compares versions segment by segment, treating missing segments as zero', () => {

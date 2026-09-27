@@ -24,7 +24,12 @@ export const useClanWorkspace = (tag: string) => {
   const clan = useQuery({ ...workspaceQueries.clan(tag), retry: (failures, error) => !isNotFoundError(error) && failures < 1 });
   const clanId = clan.data?.clan.clanId ?? 0;
   const clanRole = viewerClanRole({ members: clan.data?.members ?? [], accountIds: viewer.accounts.map(({ accountId }) => accountId) });
-  const workspace = useQuery({
+  const {
+    data: workspace,
+    error,
+    isFetching,
+    refetch
+  } = useQuery({
     ...workspaceQueries.workspace(clanId),
     enabled: clanId > 0 && viewer.isSignedIn && clanRole !== null,
     retry: false
@@ -37,30 +42,24 @@ export const useClanWorkspace = (tag: string) => {
       toast.success(t('missing.created'));
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.clanWorkspace.all(clanId) });
     },
-    onError: (error) => toast.error(t(`errors.${communityErrorKind(error)}`))
+    onError: (createError) => toast.error(t(`errors.${communityErrorKind(createError)}`))
   });
 
-  const isOfficer = workspace.data?.role === 'officer';
+  const isOfficer = workspace?.role === 'officer';
 
   return {
     clan,
-    workspace: workspace.data ?? null,
-    status: workspaceStatus({
-      isViewerPending: viewer.isPending,
-      isSignedIn: viewer.isSignedIn,
-      clanRole,
-      workspace: workspace.data,
-      error: workspace.error
-    }),
+    workspace: workspace ?? null,
+    status: workspaceStatus({ isViewerPending: viewer.isPending, isSignedIn: viewer.isSignedIn, clanRole, workspace, error }),
     isOfficer,
-    recruits: sum(Object.values(workspace.data?.candidates ?? {})),
+    recruits: sum(Object.values(workspace?.candidates ?? {})),
     canCreate: canOwnWorkspace(clanRole),
     isCreating: create.isPending,
-    isRetrying: workspace.isFetching,
+    isRetrying: isFetching,
     loginHref,
     tab: tab === 'candidates' && !isOfficer ? WORKSPACE_TAB_PARSER.defaultValue : tab,
     onTabChange: (next: typeof tab) => void setTab(next),
     onCreate: () => create.mutate(),
-    onRetry: () => void workspace.refetch()
+    onRetry: () => void refetch()
   };
 };

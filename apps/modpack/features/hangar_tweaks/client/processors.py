@@ -1,39 +1,34 @@
-"""The client's own item processors, the same requests its hangar buttons send. Names follow the WoT-era
-client (gui.shared.gui_items.processors) and are UNVERIFIED on Lesta 1.45: an import or call failure is
-logged and reported to the player, nothing else happens."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.log import log_exception
+from ....core.client.garage import run_processor
+
+# The requests the hangar's own buttons send, RU 1.45 client source: gui.shared.gui_items.processors
+# module.getInstallerProcessor(vehicle, item, slotIdx, install=False), tankman.TankmanUnload(vehicleInvID),
+# tankman.TankmanReturn(vehicle).
 
 
-def _run(processor, done):
-    def finished(result):
-        done(bool(getattr(result, 'success', False)))
+def _installer(vehicle, device, slot):
+    from gui.shared.gui_items.processors.module import getInstallerProcessor
+    return getInstallerProcessor(vehicle, device, slot, install=False)
 
-    try:
-        processor.request(finished)
-    except Exception:
-        log_exception('hangar quick action')
-        done(False)
+
+def _unload(vehicle):
+    from gui.shared.gui_items.processors.tankman import TankmanUnload
+    return TankmanUnload(vehicle.invID)
+
+
+def _return(vehicle):
+    from gui.shared.gui_items.processors.tankman import TankmanReturn
+    return TankmanReturn(vehicle)
 
 
 def demount(vehicle, device, slot, done):
-    try:
-        from gui.shared.gui_items.processors.module import getInstallerProcessor
-        processor = getInstallerProcessor(vehicle, device, slot, install=False)
-    except Exception:
-        log_exception('demount processor')
-        done(False)
-        return
-    _run(processor, done)
+    run_processor(lambda: _installer(vehicle, device, slot), done, 'demount')
 
 
 def unload_crew(vehicle, done):
-    try:
-        from gui.shared.gui_items.processors.tankman import TankmanUnload
-        processor = TankmanUnload(vehicle)
-    except Exception:
-        log_exception('crew unload processor')
-        done(False)
-        return
-    _run(processor, done)
+    run_processor(lambda: _unload(vehicle), done, 'crew unload')
+
+
+def return_crew(vehicle, done):
+    run_processor(lambda: _return(vehicle), done, 'crew return')

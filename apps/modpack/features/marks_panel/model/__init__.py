@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-"""MoE maths (EMA, threshold curve, projection) and the in-battle panel text. Pure, Python 2/3."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import math
 
 from ....core.compat import is_number
 from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_number, format_percent
-
-EMA_WINDOW = 100
-EMA_K = 2.0 / (EMA_WINDOW + 1)
-MARK_LEVELS = (65.0, 85.0, 95.0)
+from .constants import EMA_K, EMA_WINDOW, MARK_LEVELS  # noqa: F401
 
 
 def combined_damage(damage, radio, track, stun):

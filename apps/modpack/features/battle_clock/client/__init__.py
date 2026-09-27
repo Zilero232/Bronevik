@@ -2,11 +2,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import time
 
-import BigWorld
-
 from ....core.client.battle import arena, server_time
-from ....core.client.hud import hud_layer
-from ....core.hud import HudPreview
+from ....core.client.game import values_by_name
+from ....core.client.hud.panel import BattlePanel
+from ....core.client.timer import Ticker
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import clock_values, format_battle_clock, timer_seconds
@@ -21,46 +20,23 @@ except ImportError:
     ARENA_PERIOD = None
 
 
-def period_names():
-    names = {}
-    for attr, name in PERIOD_NAMES:
-        value = getattr(ARENA_PERIOD, attr, None)
-        if value is not None:
-            names[value] = name
-    return names
+class BattleClockPanel(BattlePanel):
 
-
-class BattleClockPanel(object):
+    start_event = 'battle_enter'
 
     def __init__(self, app):
-        self.app = app
-        app.translate.catalog.add(STRINGS)
-        self.hud = hud_layer(app)
-        self.settings = self.hud.register(PANEL_ID, SCHEMA)
-        self.preview = HudPreview(self.hud, PANEL_ID, self._preview, lambda: app.config.is_enabled(SWITCH), lambda: not app.in_battle,
-                                  PREVIEW_SIZE).attach(app.bus)
-        self.periods = period_names()
-        self.running = False
-        app.bus.on('battle_enter', self._on_battle_enter)
-        app.bus.on('battle_leave', self._on_battle_leave)
+        self.periods = values_by_name(ARENA_PERIOD, PERIOD_NAMES)
+        self.ticker = Ticker(TICK_S, self.render)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE)
 
-    def _on_battle_enter(self):
-        self.preview.end()
-        if self.app.config.is_enabled(SWITCH) and not self.running:
-            self.running = True
-            self._tick()
-
-    def _on_battle_leave(self):
-        self.running = False
-        self.hud.hide(PANEL_ID)
-
-    def _tick(self):
-        if not self.running:
-            return
+    def start(self):
         self.render()
-        BigWorld.callback(TICK_S, self._tick)
+        self.ticker.start()
 
-    def _preview(self):
+    def stop(self):
+        self.ticker.stop()
+
+    def preview_text(self):
         return preview_text(self.settings, self.app.translate, time.localtime())
 
     @safe
@@ -69,4 +45,4 @@ class BattleClockPanel(object):
         period = self.periods.get(getattr(current, 'period', None))
         seconds = timer_seconds(period, getattr(current, 'periodEndTime', None), server_time())
         values = clock_values(time.localtime(), self.settings, period, seconds)
-        self.hud.show(PANEL_ID, format_battle_clock(values, self.settings, self.app.translate))
+        self.show(format_battle_clock(values, self.settings, self.app.translate))

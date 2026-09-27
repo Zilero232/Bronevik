@@ -24,3 +24,28 @@ never a fat `x.service.ts` at the module root.
 
 There is no facade: a consumer injects the specific domain service it uses, and
 the module `exports` only what other modules legitimately call.
+
+## Segments beyond the basics
+
+- `processors/` — BullMQ processors and the module's `*-schedules.service.ts`
+  (the `createJobSchedules` registration lives beside the processor it feeds).
+- `providers/` — Nest custom providers and queue registrations, one flat
+  `<name>.provider.ts` each (`yooKassaProvider`, `armorStorageProvider`,
+  `notificationQueues`); a module file declares nothing at the top level.
+- `templates/` — rendered message templates (`notifications/templates`);
+  `assets/` — static files a service reads at runtime (`social/assets` fonts).
+- `contracts/` — the collector's shared queue contract only (`QUEUE`, `JOB`,
+  payload schemas); any other module keeps its queue in `config/`.
+- The collector is a module of sub-modules (`tracking`, `clans`, `reference`,
+  `aggregates`, `news`, `purge`, `metrics`, `producer`, `queues`,
+  `schedules`, `board`, `monitoring`); each follows this shape, and a
+  sub-module with a single service keeps it at its root
+  (`metrics/metrics.service.ts`, `producer/collector-producer.service.ts`).
+
+## DTO schemas
+
+A contract the client reads or sends lives in `@otmetki/schemas` and the DTO
+wraps it (`createZodDto(searchQuerySchema)`). A request schema only the server
+validates — an admin body, a query shape no client code builds — may live in the
+module's `dto/<module>.schemas.ts`; the client still gets its type through the
+OpenAPI codegen. Stored-JSON shapes the server parses on read and write sit there too.

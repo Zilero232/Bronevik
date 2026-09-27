@@ -3,6 +3,8 @@
 A value of the wrong type, an unknown key or a value a normalizer rejects is ignored, so a hand-edited
 config.json can never put the mod into a state its schema does not describe.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from ..compat import is_int, is_number, string_types, to_text
 
 

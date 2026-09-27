@@ -1,2 +1,2 @@
-export { deltaDigits, deltaVerdict } from './delta-verdict';
-export type { DeltaVerdict, DeltaVerdictInput } from './delta-verdict.types';
+export { deltaDigits, deltaVerdict, deltaView } from './delta-verdict';
+export type { DeltaVerdict, DeltaVerdictInput, DeltaView, DeltaViewInput } from './delta-verdict.types';

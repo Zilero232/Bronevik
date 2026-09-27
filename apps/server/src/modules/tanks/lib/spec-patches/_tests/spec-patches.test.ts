@@ -3,7 +3,7 @@ import type { TankPatchChange } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { SPEC_DIRECTION } from '../../../config';
-import { changeEffect, patchVerdict, readSpecChanges, toPatchChanges } from '../spec-patches';
+import { changeEffect, patchVerdict, readSpecChanges } from '../spec-patches';
 
 const [higher = ''] = SPEC_DIRECTION.higher;
 const [lower = ''] = SPEC_DIRECTION.lower;
@@ -52,19 +52,6 @@ describe('readSpecChanges', () => {
   it('returns null for malformed input', () => {
     expect(readSpecChanges({ path: higher })).toBeNull();
     expect(readSpecChanges([{ path: higher, before: {} }])).toBeNull();
-  });
-});
-
-describe('toPatchChanges', () => {
-  it('fills a missing side with null and attaches the effect', () => {
-    expect(toPatchChanges([{ path: higher, after: 2 }])).toEqual([{ key: higher, before: null, after: 2, effect: 'neutral' }]);
-  });
-
-  it('keeps a zero value as zero', () => {
-    const [change] = toPatchChanges([{ path: higher, before: 0, after: 1 }]);
-
-    expect(change?.before).toBe(0);
-    expect(change?.effect).toBe('better');
   });
 });
 

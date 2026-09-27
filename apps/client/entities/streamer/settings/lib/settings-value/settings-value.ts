@@ -1,6 +1,6 @@
 import type { FlatValue, SettingsGroupKey } from '@otmetki/schemas';
 
-import { STREAMER_SETTINGS } from '@otmetki/schemas';
+import { STREAMER_SETTINGS, STREAMER_SETTINGS_AGGREGATE_FIELDS } from '@otmetki/schemas';
 
 import type { SettingsRow } from '../settings-format';
 import type { SettingsFieldMessage, SettingsOption, SettingsValueView } from './settings-value.types';
@@ -19,7 +19,17 @@ const GROUP_KEYS: ReadonlySet<string> = new Set(STREAMER_SETTINGS.groups);
 
 export const isSettingsGroup = (key: string): key is SettingsGroupKey => GROUP_KEYS.has(key);
 
-export const fieldMessage = (path: string): SettingsFieldMessage => fieldKey(path) as SettingsFieldMessage;
+const FIELD_MESSAGES: ReadonlySet<string> = new Set(
+  [...SETTINGS_FIELDS.map((field) => field.path), ...STREAMER_SETTINGS_AGGREGATE_FIELDS.map((field) => field.field)].map(fieldKey)
+);
+
+const isFieldMessage = (key: string): key is SettingsFieldMessage => FIELD_MESSAGES.has(key);
+
+export const fieldMessage = (path: string): SettingsFieldMessage | null => {
+  const key = fieldKey(path);
+
+  return isFieldMessage(key) ? key : null;
+};
 
 const listItems = (value: FlatValue): string[] =>
   String(value)

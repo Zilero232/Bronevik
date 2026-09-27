@@ -3,21 +3,18 @@
 import { TANK_CLASS_SILHOUETTES } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { TankIdentity, TankImage, vehicleIdentity } from '@/entities/tank/tank';
-import { Card } from '@/ui-kit';
+import { TankIdentity } from '@/entities/tank/tank';
+import { Card, TankImage } from '@/ui-kit';
 
-import { silhouetteBlur } from '../../../lib/silhouette-blur';
-import { useGuessGame } from '../../../model/context';
+import { useMysteryTank } from '../../../model/hooks';
 
 import s from './MysteryTank.module.scss';
 
 export const MysteryTank = () => {
   const t = useTranslations('play.mystery');
-  const { target, clueCount, status } = useGuessGame();
+  const { status, isOver, identity, tankClass, blur } = useMysteryTank();
 
-  const Silhouette = TANK_CLASS_SILHOUETTES[target.type];
-  const identity = vehicleIdentity(target);
-  const isOver = status !== 'playing';
+  const Silhouette = TANK_CLASS_SILHOUETTES[tankClass];
 
   return (
     <Card className={s.root} data-status={status} variant='panel'>
@@ -25,7 +22,7 @@ export const MysteryTank = () => {
         {isOver ? (
           <TankImage size='big' tank={identity} />
         ) : (
-          <span aria-hidden className={s.silhouette} style={{ filter: `blur(${silhouetteBlur({ clueCount, isOver })}px)` }}>
+          <span aria-hidden className={s.silhouette} style={{ filter: blur }}>
             <Silhouette size={160} strokeWidth={1.25} />
           </span>
         )}

@@ -16,9 +16,11 @@ export const useWorkspaceEvents = ({ clanId, isEnabled }: UseWorkspaceEventsInpu
   const from = now ? subDays(now, WORKSPACE_VIEW.historyDays).toISOString() : undefined;
   const query = useQuery({ ...workspaceQueries.events({ clanId, from }), enabled: isEnabled && from !== undefined });
 
+  const { data: events = [] } = query;
+
   return {
     query,
-    events: query.data ?? [],
-    ...splitEvents({ events: query.data ?? [], now })
+    events,
+    ...splitEvents({ events, now })
   };
 };

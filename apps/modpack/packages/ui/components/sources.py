@@ -2,7 +2,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 
 class ConfigSource(object):
-    """Keys of the companion's config.json."""
 
     kind = 'config'
 
@@ -18,7 +17,6 @@ class ConfigSource(object):
 
 
 class SectionSource(object):
-    """One section of components.json. A panel goes through the HUD layer so a shown panel moves at once."""
 
     kind = 'section'
 

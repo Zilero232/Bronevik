@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 MAX_SHOTS = 200
 MAX_DAMAGE = 10000
 MAX_DISTANCE_M = 1500

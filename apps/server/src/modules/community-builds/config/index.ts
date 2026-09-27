@@ -1,1 +1,1 @@
-export { BUILD_SHARE, EMPTY_LOADOUT } from './community-builds.config';
+export { BUILD_SHARE, EMPTY_LOADOUT } from './community-builds.constants';

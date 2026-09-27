@@ -1,4 +1,4 @@
-import type { MockClan } from '../../lesta-mock.types';
+import type { ClanEloInput, SkirmishStatsInput } from './clan-activity.types';
 
 import { MOCK_CLANS, MOCK_SALT, MOCK_TIME } from '../../config';
 import { unitFloat } from '../random';
@@ -9,7 +9,7 @@ const SKIRMISH_RATE = { top: 14, mid: 6, small: 1.2 } as const;
 const SKIRMISH_SHARE = { 6: 0.25, 8: 0.35, 10: 1 } as const;
 const SKIRMISH_WIN = { top: 0.62, mid: 0.54, small: 0.47 } as const;
 
-export const clanElo = (seed: number, clan: MockClan, at: number) => {
+export const clanElo = ({ seed, clan, at }: ClanEloInput) => {
   const days = Math.max(0, dayOf(at) - dayOf(MOCK_TIME.anchor));
   const elo = { ...clan.elo };
 
@@ -32,7 +32,7 @@ export const clanElo = (seed: number, clan: MockClan, at: number) => {
   return elo;
 };
 
-export const skirmishStats = (seed: number, clan: MockClan, at: number) => {
+export const skirmishStats = ({ seed, clan, at }: SkirmishStatsInput) => {
   const days = Math.max(1, (at - clan.createdAt) / MOCK_TIME.daySec);
   const rate = SKIRMISH_RATE[clan.tier];
 

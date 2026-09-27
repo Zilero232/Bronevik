@@ -8,6 +8,7 @@ CAROUSEL_TILE_MODES = {'adaptive': 0, 'small': 1}
 
 ACTION_DEMOUNT = 'demount_removable'
 ACTION_CREW = 'crew_to_barracks'
+ACTION_RETURN = 'return_crew'
 
 REFUSE_LOCKED = 'locked'
 REFUSE_NOTHING = 'nothing'

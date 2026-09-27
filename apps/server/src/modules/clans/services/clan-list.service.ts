@@ -5,10 +5,10 @@ import { Injectable } from '@nestjs/common';
 import type { ClanListRow } from '../clans.types';
 
 import { Prisma } from '../../../../generated';
-import { clampPercent, ratingValue, toNumber } from '../../../common/lib';
+import { toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { CLAN_LIST_SORT } from '../config';
-import { toClanSummary } from '../mappers';
+import { toClanListItem } from '../mappers';
 
 @Injectable()
 export class ClanListService {
@@ -43,14 +43,7 @@ export class ClanListService {
     `;
 
     return {
-      items: rows.map((row) => ({
-        clan: toClanSummary(row),
-        avgWn8: ratingValue({ kind: 'wn8', value: row.avgWn8 }),
-        avgWinRate: clampPercent(row.avgWinRate),
-        activeMembers7d: row.activeMembers7d,
-        eloRating10: row.eloRating10,
-        strongholdLevel: row.strongholdLevel
-      })),
+      items: rows.map(toClanListItem),
       total: rows[0] ? toNumber(rows[0].total) : 0,
       limit: query.limit,
       offset: query.offset

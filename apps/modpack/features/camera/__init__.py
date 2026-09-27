@@ -1,4 +1,3 @@
-"""Feature: camera options the client supports, from the in-game window. Depends on the core and the companion."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'camera'

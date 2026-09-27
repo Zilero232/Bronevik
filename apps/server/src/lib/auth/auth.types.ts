@@ -17,8 +17,26 @@ export type AccountPurgeStore = {
   purgeAccount: (input: { userId: string }) => Promise<void>;
 };
 
+export type AuthEnv = Pick<
+  Env,
+  | 'API_URL'
+  | 'BETTER_AUTH_SECRET'
+  | 'CORS_ORIGINS'
+  | 'DISCORD_APPLICATION_ID'
+  | 'DISCORD_CLIENT_SECRET'
+  | 'NODE_ENV'
+  | 'TELEGRAM_BOT_TOKEN'
+  | 'TELEGRAM_BOT_USERNAME'
+  | 'TRUSTED_PROXIES'
+  | 'VK_ID_CLIENT_ID'
+  | 'VK_ID_CLIENT_SECRET'
+  | 'VK_MINI_APP_ID'
+  | 'VK_MINI_APP_SECRET'
+  | 'WEB_URL'
+>;
+
 export type CreateAuthInput = {
-  env: Env;
+  env: AuthEnv;
   prisma: PrismaClient;
   redis: Pick<Redis, 'multi'>;
   lesta: LestaClient;

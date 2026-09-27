@@ -1,8 +1,8 @@
 import { useEffect } from 'preact/hooks';
 
-import { gameface } from '../../../../shared/gameface/gameface';
-import { send } from '../../protocol/protocol';
-import { receiveState } from '../../store/store';
+import { gameface } from '../../../../shared/gameface';
+import { send } from '../../protocol';
+import { receiveState } from '../../store';
 
 export const useBridge = (): void => {
   useEffect(() => {

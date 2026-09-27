@@ -16,10 +16,10 @@ import { coachFormSchema, toCoachFormValues, toUpsertCoach } from '../../../lib/
 export const useCoachProfileForm = () => {
   const t = useTranslations('coaching');
   const { userId, accounts } = useCommunityViewer();
-  const own = useQuery({ ...coachQueries.detail(userId ?? ''), enabled: userId !== null });
+  const { data: own, isPending, isError, error } = useQuery({ ...coachQueries.detail(userId ?? ''), enabled: userId !== null });
   const dialog = useFormDialog({
     schema: coachFormSchema,
-    defaults: toCoachFormValues({ coach: own.data ?? null, fallbackAccountId: accounts[0]?.accountId ?? null }),
+    defaults: toCoachFormValues({ coach: own ?? null, fallbackAccountId: accounts[0]?.accountId ?? null }),
     mutationFn: (values) => saveCoachProfile(toUpsertCoach(values)),
     successMessage: t('profile.saved'),
     errorMessage: (error) => t(`errors.${communityErrorKind(error)}`),
@@ -29,7 +29,7 @@ export const useCoachProfileForm = () => {
   return {
     dialog,
     accounts,
-    hasProfile: Boolean(own.data),
-    isLoading: userId !== null && (own.isPending || (own.isError && !isNotFoundError(own.error)))
+    hasProfile: Boolean(own),
+    isLoading: userId !== null && (isPending || (isError && !isNotFoundError(error)))
   };
 };

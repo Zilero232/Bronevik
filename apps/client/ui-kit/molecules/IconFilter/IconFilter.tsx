@@ -4,7 +4,7 @@ import { Toggle } from '@base-ui/react/toggle';
 import { ToggleGroup } from '@base-ui/react/toggle-group';
 import { clsx } from 'clsx';
 
-import { useIconFilterTitle } from '@/shared/lib';
+import { useIconFilter } from '@/shared/lib';
 
 import type { IconFilterKind, IconFilterProps } from './IconFilter.types';
 
@@ -22,21 +22,15 @@ export const IconFilter = <K extends IconFilterKind>({
   'aria-label': ariaLabel,
   onChange
 }: IconFilterProps<K>) => {
-  const titleOf = useIconFilterTitle();
+  const { titleOf, selected, onValueChange } = useIconFilter({ options, value, isMultiple, onChange });
 
   return (
     <ToggleGroup
       aria-label={ariaLabel}
       className={clsx(s.root, s[kind], s[size], className)}
       multiple={isMultiple}
-      value={value.map(String)}
-      onValueChange={(next) => {
-        if (!isMultiple && next.length === 0) {
-          return;
-        }
-
-        onChange(options.filter((option) => next.includes(String(option))));
-      }}
+      value={selected}
+      onValueChange={onValueChange}
     >
       {options.map((option) => (
         <Toggle

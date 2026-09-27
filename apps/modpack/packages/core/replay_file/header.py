@@ -3,14 +3,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import io
 import json
 import os
-import re
 import struct
 import time
 
 from ..compat import is_int, string_types, to_text
-from .constants import EXTENSIONS, HEAD_FORMAT, MAGIC, MAX_BLOCKS, MAX_HEADER_BLOCK_BYTES, RECORDING_NAMES, SIZE_FORMAT
-
-_DATE_TIME = re.compile(r'^\s*(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s*$')
+from .constants import DATE_TIME, EXTENSIONS, HEAD_FORMAT, MAGIC, MAX_BLOCKS, MAX_HEADER_BLOCK_BYTES, RECORDING_NAMES, SIZE_FORMAT
 
 
 def is_replay_name(name):
@@ -58,7 +55,7 @@ def parse_date_time(value):
     """The arena block's local "dd.mm.YYYY HH:MM:SS" as epoch seconds (local clock), or None."""
     if not isinstance(value, string_types):
         return None
-    match = _DATE_TIME.match(to_text(value))
+    match = DATE_TIME.match(to_text(value))
     if match is None:
         return None
     day, month, year, hour, minute, second = [int(part) for part in match.groups()]

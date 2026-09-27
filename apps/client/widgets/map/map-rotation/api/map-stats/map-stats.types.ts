@@ -4,9 +4,9 @@ export type { MapQueue, MapRotation } from '@/shared/api/generated';
 
 export type MapStatsMode = MapRotation['mode'];
 
-export type MapStatsParams = Required<NonNullable<MapStatsControllerRotationData['query']>>;
+export type MapStatsQueryInput = Required<NonNullable<MapStatsControllerRotationData['query']>>;
 
-export type MapStatsInput = MapStatsParams & {
+export type MapStatsInput = MapStatsQueryInput & {
   signal?: AbortSignal;
 };
 

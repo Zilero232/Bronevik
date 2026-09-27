@@ -1,8 +1,8 @@
-import type { Competition, CompetitionTeam } from '@otmetki/schemas';
+import type { Competition, CompetitionTeam, JoinCompetitionInput } from '@otmetki/schemas';
 
 import { COMPETITION } from '@otmetki/schemas';
 
-import type { ChosenAccountInput, JoinCompetitionView, JoinRequest, JoinState, ToJoinInput } from './join-form.types';
+import type { ChosenAccountInput, JoinCompetitionView, JoinState, ToJoinInput } from './join-form.types';
 
 import { JOIN_FORM } from '../../config/competition-page.constants';
 
@@ -31,7 +31,7 @@ export const joinState = (competition: JoinCompetitionView): JoinState => {
   return openTeams(competition).length === 0 && competition.standings.length >= COMPETITION.maxTeams ? 'full' : 'open';
 };
 
-export const toJoinInput = ({ values, accountIds, inviteCode }: ToJoinInput): JoinRequest | null => {
+export const toJoinInput = ({ values, accountIds, inviteCode }: ToJoinInput): JoinCompetitionInput | null => {
   const accountId = chosenAccount({ value: values.accountId, accountIds });
 
   if (accountId === null) {

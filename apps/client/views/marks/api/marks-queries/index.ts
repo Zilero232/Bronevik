@@ -1,2 +1,2 @@
 export { marksQueries } from './marks-queries';
-export type { MoeFeedParams } from './marks-queries.types';
+export type { MoeFeedInput } from './marks-queries.types';

@@ -19,16 +19,18 @@ export const useTankChallenges = () => {
     enabled: isPlus
   });
 
-  const vehicles = vehicleIndex(catalog);
+  const { data: challenges } = query;
 
   useCelebrateGain({
-    key: query.data ? `challenges:${query.data.weekStart}` : null,
-    value: query.data?.sets.flatMap((set) => set.items).filter((item) => item.completedAt !== null).length
+    key: challenges ? `challenges:${challenges.weekStart}` : null,
+    value: challenges?.sets.flatMap((set) => set.items).filter((item) => item.completedAt !== null).length
   });
+
+  const vehicles = vehicleIndex(catalog);
 
   return {
     query,
-    endsAt: query.data?.endsAt ?? null,
-    sets: (query.data?.sets ?? []).map((set) => ({ ...set, key: `${set.accountId}-${set.tankId}`, vehicle: vehicles[set.tankId] ?? null }))
+    endsAt: challenges?.endsAt ?? null,
+    sets: (challenges?.sets ?? []).map((set) => ({ ...set, key: `${set.accountId}-${set.tankId}`, vehicle: vehicles[set.tankId] ?? null }))
   };
 };

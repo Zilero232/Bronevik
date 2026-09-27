@@ -1,6 +1,6 @@
 import { eventsControllerCalendar } from '@/shared/api/generated';
 import { fromSdk } from '@/shared/api/source';
 
-import type { CalendarRequest } from './calendar.types';
+import type { CalendarQueryInput } from './calendar.types';
 
-export const getEventCalendar = ({ signal }: CalendarRequest = {}) => fromSdk(() => eventsControllerCalendar({ signal }));
+export const getEventCalendar = ({ signal }: CalendarQueryInput = {}) => fromSdk(() => eventsControllerCalendar({ signal }));

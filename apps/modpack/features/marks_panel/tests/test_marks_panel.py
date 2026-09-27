@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import unittest
 
 import _support  # noqa: F401
@@ -109,7 +111,6 @@ class ProjectionTest(unittest.TestCase):
         self.assertIsNone(result['projected_percent'])
         self.assertIsNone(result['damage_remaining'])
         self.assertEqual(result['combined_damage'], 100)
-
 
 
 def translator(language):

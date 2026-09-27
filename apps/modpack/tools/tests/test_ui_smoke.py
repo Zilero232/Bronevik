@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-"""Import smoke of the in-game UI against stubbed client modules: OpenWG Gameface (frameworks.wulf,
-gui.impl.pub, openwg_gameface), ModsList, the InputHandler and the settings core.
-
-The entry scripts load in shuffled orders; then the window opens from the ModsList entry, receives the
-state JSON, and page messages go through the real bridge into the features (a minimap choice becomes a
-client setting, a HUD-free build still works). Everything the stubs model is UNVERIFIED client API.
-"""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import json

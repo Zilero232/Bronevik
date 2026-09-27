@@ -1,18 +1,19 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { WebhookEndpoint } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { HostLookupService } from '../host-lookup.service';
 
 import { API_TIERS, WEBHOOK_EVENT_TO_DB } from '../../config';
 import { ApiTierService } from '../api-tier.service';
 import { WebhookEndpointsService } from '../webhook-endpoints.service';
 
-const lookup = vi.hoisted(() => vi.fn<(host: string) => Promise<{ address: string; family: number }[]>>());
+const hosts = mock<HostLookupService>();
 
 beforeEach(() => {
-  lookup.mockReset();
-  lookup.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
+  hosts.resolve.mockReset();
+  hosts.resolve.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
 });
 
 const endpoint = (overrides: Partial<WebhookEndpoint> = {}): WebhookEndpoint => ({
@@ -37,7 +38,7 @@ const createService = () => {
   tiers.tierFor.mockResolvedValue('free');
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
-  return { service: new WebhookEndpointsService(prisma, tiers, { resolve: lookup }), prisma };
+  return { service: new WebhookEndpointsService(prisma, tiers, hosts), prisma };
 };
 
 const input = { userId: 'user', url: 'https://hooks.example.com/otmetki', events: ['mark.gained' as const], filter: { accountIds: [1] } };
@@ -87,7 +88,7 @@ describe('WebhookEndpointsService.create', () => {
   it('refuses a public name that resolves into a private network', async () => {
     const { service, prisma } = createService();
 
-    lookup.mockResolvedValue([{ address: '127.0.0.1', family: 4 }]);
+    hosts.resolve.mockResolvedValue([{ address: '127.0.0.1', family: 4 }]);
 
     await expect(service.create(input)).rejects.toMatchObject({ response: { code: 'VALIDATION_FAILED' } });
     expect(prisma.webhookEndpoint.create).not.toHaveBeenCalled();

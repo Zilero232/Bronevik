@@ -3,7 +3,6 @@ export { useAttendanceEditor } from './use-attendance-editor';
 export type { UseAttendanceEditorInput } from './use-attendance-editor';
 export { useCandidateActions } from './use-candidate-actions';
 export type { UseCandidateActionsInput } from './use-candidate-actions';
-export { useCandidateColumns } from './use-candidate-columns';
 export { useCandidateNotesForm } from './use-candidate-notes-form';
 export { useClanWorkspace } from './use-clan-workspace';
 export { useCreateEventForm } from './use-create-event-form';

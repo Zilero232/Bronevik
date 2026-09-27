@@ -1,9 +1,3 @@
-"""End to end: build the real installer, install silently into a fixture client, then uninstall.
-
-Opt-in (OTMETKI_INSTALLER_E2E=1): a real install registers the uninstaller for the current user
-(HKCU ...\\Uninstall), which the uninstall step removes again. CI runs it in the release job on a
-throwaway Windows runner. Needs ISCC, resvg-py + pillow (artwork) and the OpenWG.Utils release.
-"""
 import configparser
 import io
 import json

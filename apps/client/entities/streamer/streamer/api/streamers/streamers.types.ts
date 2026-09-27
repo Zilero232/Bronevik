@@ -1,10 +1,12 @@
 import type {
   ActivateChallengeInput as ActivateChallengeBody,
-  RemovalRequestInput,
-  StartClaimInput,
-  StreamerPlatform,
+  FollowStreamerInput as FollowStreamerBody,
+  RemovalRequestInput as RemovalRequestBody,
+  StartClaimInput as StartClaimBody,
   UpdateOverlayInput as UpdateOverlayBody
 } from '@otmetki/schemas';
+
+import type { StreamersControllerListData } from '@/shared/api/generated';
 
 export type {
   ConnectableProvider,
@@ -24,20 +26,10 @@ export type UpdateOverlayInput = UpdateOverlayBody & {
   id: string;
 };
 
-export type FollowStreamerRequest = {
-  slug: string;
-  tankId?: number | null;
-};
+export type FollowStreamerInput = FollowStreamerBody & { slug: string };
 
-export type StartClaimRequest = StartClaimInput & { slug: string };
+export type StartClaimInput = StartClaimBody & { slug: string };
 
-export type RemovalRequest = RemovalRequestInput & { slug: string };
+export type RemovalRequestInput = RemovalRequestBody & { slug: string };
 
-export type StreamerDirectoryFilters = {
-  live?: 'false' | 'true';
-  platform?: StreamerPlatform;
-  tankId?: number;
-  hasSettings?: 'false' | 'true';
-  cursor?: number;
-  limit?: number;
-};
+export type StreamerDirectoryInput = NonNullable<StreamersControllerListData['query']>;

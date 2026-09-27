@@ -1,5 +1,5 @@
 import type { NotificationChannel, NotificationEvent, TargetKind } from '../../../generated';
-import type { AppNotification, DeliverPayload, Digest, ParsedNotification } from './contracts';
+import type { AppNotification, DeliverPayload, Digest, ParsedNotification } from './config';
 import type { MarkBattle, NotificationLocale, RenderedNotification } from './lib';
 
 export type NotifyInput = {

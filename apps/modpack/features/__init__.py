@@ -1,1 +1,1 @@
-"""Feature packages: each `features/<id>` ships as its own package and registers through core.registry."""
+from __future__ import absolute_import, division, print_function, unicode_literals

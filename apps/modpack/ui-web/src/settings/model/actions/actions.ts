@@ -1,7 +1,7 @@
-import type { UiComponent } from '../protocol/protocol.types';
+import type { UiComponent } from '../protocol';
 import type { SetSettingInput } from './actions.types';
 
-import { send } from '../protocol/protocol';
+import { send } from '../protocol';
 
 export const setSetting = ({ component, key, value }: SetSettingInput): void => {
   send({ type: 'set', component, key, value });

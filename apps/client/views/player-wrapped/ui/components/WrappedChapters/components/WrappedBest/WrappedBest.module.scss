@@ -1,0 +1,18 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+
+  align-items: flex-start;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-7);
+
+  @include below(md) {
+    gap: var(--space-5);
+  }
+}

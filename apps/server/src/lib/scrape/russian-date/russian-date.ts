@@ -1,10 +1,7 @@
 import type { MoscowDateInput, RussianDateInput, YearForInput } from './russian-date.types';
 
 import { RUSSIAN_MONTHS, SCRAPE } from '../scrape.constants';
-
-const MONTH_PATTERN = Object.keys(RUSSIAN_MONTHS).join('|');
-const DEADLINE = new RegExp(`до\\s+(\\d{1,2})\\s+(${MONTH_PATTERN})(?:\\s+(\\d{4}))?(?:\\s*(?:г\\.?)?\\s*,?\\s*(\\d{1,2})[:.](\\d{2}))?`, 'giu');
-const DAY = new RegExp(`(\\d{1,2})\\s+(${MONTH_PATTERN})(?:\\s+(\\d{4}))?`, 'iu');
+import { RUSSIAN_DATE } from './russian-date.constants';
 
 const isMonth = (value: string): value is keyof typeof RUSSIAN_MONTHS => value in RUSSIAN_MONTHS;
 
@@ -22,7 +19,7 @@ const yearFor = ({ month, reference, explicit }: YearForInput): number => {
 };
 
 export const parseRussianDeadlines = ({ text, reference }: RussianDateInput): Date[] =>
-  [...text.matchAll(DEADLINE)].flatMap((found) => {
+  [...text.matchAll(RUSSIAN_DATE.deadline)].flatMap((found) => {
     const monthName = found[2]?.toLowerCase() ?? '';
 
     if (!isMonth(monthName)) {
@@ -48,7 +45,7 @@ export const latestDeadline = (input: RussianDateInput): Date | null => {
 };
 
 export const parseRussianDay = ({ text, reference }: RussianDateInput): Date | null => {
-  const found = DAY.exec(text);
+  const found = RUSSIAN_DATE.day.exec(text);
   const monthName = found?.[2]?.toLowerCase() ?? '';
 
   if (!found || !isMonth(monthName)) {

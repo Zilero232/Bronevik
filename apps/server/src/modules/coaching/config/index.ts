@@ -1,1 +1,1 @@
-export { COACHING } from './coaching.config';
+export { COACHING } from './coaching.constants';

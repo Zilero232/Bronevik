@@ -15,9 +15,8 @@ const { queryKey, mutationKey } = NOTIFICATION_SETTINGS;
 
 export const useNotificationSettings = ({ onSuccess, onError }: UseNotificationSettingsInput = {}) => {
   const queryClient = useQueryClient();
-  const session = useAuthSession();
-  const isSignedIn = Boolean(session.data);
-  const query = useQuery({ queryKey, queryFn: getNotificationSettings, enabled: isSignedIn });
+  const { data: session, isPending: isSessionPending } = useAuthSession();
+  const query = useQuery({ queryKey, queryFn: getNotificationSettings, enabled: Boolean(session) });
   const save = useMutation({
     mutationKey,
     mutationFn: updateNotificationSettings,
@@ -30,11 +29,14 @@ export const useNotificationSettings = ({ onSuccess, onError }: UseNotificationS
     onSettled: () => (queryClient.isMutating({ mutationKey }) === 1 ? queryClient.invalidateQueries({ queryKey }) : undefined)
   });
 
+  const { data: settings, isPending: isSettingsPending } = query;
+  const isSignedIn = Boolean(session);
+
   return {
     query,
-    settings: query.data,
+    settings,
     isSignedIn,
-    isPending: session.isPending || (isSignedIn && query.isPending),
+    isPending: isSessionPending || (isSignedIn && isSettingsPending),
     onPatch: (patch: Partial<NotificationSettings>) => save.mutate(patch)
   };
 };

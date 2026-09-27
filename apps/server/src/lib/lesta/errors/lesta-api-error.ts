@@ -1,6 +1,6 @@
 import type { LestaApiErrorInput, LestaHttpErrorInput, LestaNetworkErrorInput, LestaQueueFullErrorInput } from './errors.types';
 
-import { errorMessage } from '../../../common/lib/errors';
+import { errorMessage } from '../../../common/lib';
 import { RETRYABLE_HTTP_STATUS, RETRYABLE_LESTA_CODES } from './errors.constants';
 
 export class LestaApiError extends Error {

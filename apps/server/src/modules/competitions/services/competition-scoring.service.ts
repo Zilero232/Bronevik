@@ -12,7 +12,8 @@ import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { VehicleCatalogService } from '../../reference';
 import { COMPETITION_RUN } from '../config';
-import { rankTeams, scoreBattles, scoreTotals } from '../lib/competition-scoring';
+import { rankTeams, scoreBattles, scoreTotals } from '../lib';
+import { toScoredLine } from '../mappers';
 import { competitionBattlesSql } from '../queries';
 
 @Injectable()
@@ -105,16 +106,7 @@ export class CompetitionScoringService {
     const eligible = battles.filter((battle) => !catalog || (catalog.get(battle.tankId)?.summary.tier ?? 0) >= (competition.minTier ?? 0));
 
     if (eligible.length > 0) {
-      const lines = eligible.map((battle) => ({
-        damage: battle.damageDealt,
-        assist: battle.damageAssistedRadio + battle.damageAssistedTrack,
-        blocked: battle.damageBlocked,
-        frags: battle.frags,
-        spotted: battle.spotted,
-        xp: battle.xp,
-        wins: battle.result === 'win' ? 1 : 0,
-        survived: battle.survived ? 1 : 0
-      }));
+      const lines = eligible.map(toScoredLine);
 
       return { ...scoreBattles({ battles: lines, scoring, limit }), source: 'mod' };
     }

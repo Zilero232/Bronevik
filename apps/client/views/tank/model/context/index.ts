@@ -1,3 +1,2 @@
-export { useTank } from './tank-context';
-export type { TankContextValue } from './tank-context.types';
-export { TankProvider } from './TankProvider';
+export { TankContext, useTank } from './tank';
+export type { TankContextValue } from './tank';

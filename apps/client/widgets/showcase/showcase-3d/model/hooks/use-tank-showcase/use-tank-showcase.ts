@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react';
 
 import { vehicleIdentity } from '@/entities/tank/tank';
 
-import type { ShowcaseTank } from '../../showcase.types';
 import type { UseTankShowcaseInput } from './use-tank-showcase.types';
 
 import { SHOWCASE_ROTATION } from '../../../config';
@@ -14,18 +13,16 @@ import { rotationStep } from '../../../lib/rotation-cycle';
 import { useShowcaseDrag } from '../use-showcase-drag';
 import { useShowcaseMode } from '../use-showcase-mode';
 
-const NONE: readonly ShowcaseTank[] = [];
-
 export const useTankShowcase = ({ tank, tanks: list }: UseTankShowcaseInput) => {
-  const tanks = list ?? (tank ? [tank] : NONE);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(rootRef, { margin: '80px' });
-  const isPageVisible = useDocumentVisibility() !== 'hidden';
   const mode = useShowcaseMode();
   const { drag, handlers } = useShowcaseDrag();
   const [picked, setPicked] = useState(0);
   const [readySlug, setReadySlug] = useState<string | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(rootRef, { margin: '80px' });
+  const isPageVisible = useDocumentVisibility() !== 'hidden';
 
+  const tanks = list ?? (tank ? [tank] : []);
   const index = picked < tanks.length ? picked : 0;
   const current = tanks.at(index);
   const isActive = isInView && isPageVisible;

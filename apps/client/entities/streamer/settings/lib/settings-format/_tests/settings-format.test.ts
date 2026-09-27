@@ -13,12 +13,12 @@ const settings: StreamerSettings = {
 
 describe('settingsRows', () => {
   it('lists known fields of a group in declaration order', () => {
-    expect(settingsRows(settings, 'camera')).toEqual([
+    expect(settingsRows({ settings, group: 'camera' })).toEqual([
       { path: 'camera.fov', value: 95 },
       { path: 'camera.postMortem', value: false }
     ]);
 
-    expect(settingsRows(settings, 'display')).toEqual([]);
+    expect(settingsRows({ settings, group: 'display' })).toEqual([]);
   });
 });
 

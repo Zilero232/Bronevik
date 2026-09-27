@@ -1,23 +1,15 @@
-import type {
-  SettingsHistoryEntry,
-  SettingsProvenance,
-  SettingsTableRow,
-  SettingsValues,
-  StreamerSettings,
-  StreamerSettingsView
-} from '@otmetki/schemas';
+import type { SettingsHistoryEntry, SettingsProvenance, SettingsTableRow, SettingsValues, StreamerSettingsView } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { changedGroups, settingsGroupKeySchema, settingsSourceSchema, streamerSettingsSchema, toSettingsValues, zoomMax } from '@otmetki/schemas';
+import { changedGroups, settingsGroupKeySchema, streamerSettingsSchema, toSettingsValues, zoomMax } from '@otmetki/schemas';
 
-import type { StreamerProfile } from '../../../../generated';
 import type { SaveMySettingsInput, SaveSettingsRequest } from '../streamers.types';
 
 import { Prisma } from '../../../../generated';
 import { AppNotFoundException } from '../../../common/exceptions';
-import { toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { STREAMERS } from '../config';
+import { SETTINGS_HISTORY, STREAMERS } from '../config';
+import { toSettingsHistoryEntry, toSettingsView } from '../mappers';
 import { StreamerProfileService } from './streamer-profile.service';
 
 @Injectable()
@@ -28,7 +20,7 @@ export class StreamerSettingsService {
   ) {}
 
   async bySlug(slug: string): Promise<StreamerSettingsView> {
-    return this.view(await this.profiles.publicBySlug(slug));
+    return toSettingsView(await this.profiles.publicBySlug(slug));
   }
 
   async mine(userId: string): Promise<StreamerSettingsView> {
@@ -38,7 +30,7 @@ export class StreamerSettingsService {
       throw new AppNotFoundException('NOT_FOUND', 'No streamer profile yet');
     }
 
-    return this.view(profile);
+    return toSettingsView(profile);
   }
 
   async history(slug: string): Promise<SettingsHistoryEntry[]> {
@@ -46,20 +38,11 @@ export class StreamerSettingsService {
     const versions = await this.prisma.streamerSettingsVersion.findMany({
       where: { profileId: profile.id },
       orderBy: { createdAt: 'desc' },
-      take: 50,
+      take: SETTINGS_HISTORY.limit,
       select: { id: true, source: true, changedGroups: true, createdAt: true }
     });
 
-    return versions.map((version) => ({
-      id: version.id,
-      source: settingsSourceSchema.parse(version.source),
-      changedGroups: version.changedGroups.flatMap((group) => {
-        const parsed = settingsGroupKeySchema.safeParse(group);
-
-        return parsed.success ? [parsed.data] : [];
-      }),
-      createdAt: version.createdAt.toISOString()
-    }));
+    return versions.map(toSettingsHistoryEntry);
   }
 
   async saveMine({ userId, ...input }: SaveMySettingsInput): Promise<StreamerSettingsView> {
@@ -151,18 +134,6 @@ export class StreamerSettingsService {
     const current = await this.prisma.streamerProfile.findUnique({ where: { id: profileId }, select: { settings: true } });
 
     return current?.settings ? toSettingsValues(streamerSettingsSchema.parse(current.settings)) : null;
-  }
-
-  private async view(profile: StreamerProfile): Promise<StreamerSettingsView> {
-    const settings: StreamerSettings = profile.settings === null ? {} : streamerSettingsSchema.parse(profile.settings);
-
-    return {
-      slug: profile.slug,
-      displayName: profile.displayName,
-      kind: profile.kind,
-      settings,
-      updatedAt: toIso(profile.settingsUpdatedAt)
-    };
   }
 
   private provenanceOf(group: SettingsProvenance | undefined) {

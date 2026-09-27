@@ -1,10 +1,8 @@
-"""The player's own shots in the current battle, from the battle feedback the damage log also reads."""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.client.battle import BattleHooks, call, controls_own_vehicle, feedback, is_enemy, player
-from ....core.log import safe
 from .. import ShotLog, build_shot, nominal_for, normalize_shell
 
 
@@ -48,7 +46,6 @@ class ShotTracker(object):
         self.stop()
         return self.log.take()
 
-    @safe
     def _on_feedback(self, events):
         if not self.active or not controls_own_vehicle():
             return

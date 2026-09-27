@@ -12,8 +12,9 @@ import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { AUTH_PROVIDER, isPlaceholderEmail } from '../../../lib/auth';
 import { CommunityContentService } from '../../community-core';
-import { DISPOSABLE_USER_COUNTS, LINK_CODE, SETTINGS_MENU, WEB_LOGIN } from '../config';
+import { LINK_CODE, SETTINGS_MENU, WEB_LOGIN } from '../config';
 import { normaliseLinkCode, siteUrl } from '../lib';
+import { DISPOSABLE_USER_COUNTS } from '../selects';
 import { TelegramIdentityService } from './telegram-identity.service';
 
 @Injectable()

@@ -1,1 +1,1 @@
-"""The player's own battles for the API (queue times, battle start, results); the capture is in `client/`."""
+from __future__ import absolute_import, division, print_function, unicode_literals

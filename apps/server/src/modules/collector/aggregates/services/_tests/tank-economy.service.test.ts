@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { EconomySqlRow } from '../../lib/tank-economy';
+import type { EconomySqlRow } from '../../mappers';
 
 import { TANK_ECONOMY_AGGREGATE } from '../../config';
 import { TankEconomyService } from '../tank-economy.service';

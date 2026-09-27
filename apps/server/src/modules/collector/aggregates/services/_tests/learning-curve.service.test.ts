@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { LearningSqlRow } from '../../lib/tank-economy';
+import type { LearningSqlRow } from '../../mappers';
 
 import { LEARNING_CURVE_AGGREGATE } from '../../config';
 import { LearningCurveService } from '../learning-curve.service';

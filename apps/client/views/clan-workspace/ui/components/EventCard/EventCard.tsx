@@ -7,7 +7,7 @@ import { Badge, Button, ConfirmDialog, IconButton } from '@/ui-kit';
 
 import type { EventCardProps } from './EventCard.types';
 
-import { ATTENDANCE_STATUSES, ATTENDANCE_TONES, EVENT_KIND_TONES } from '../../../config';
+import { ATTENDANCE_TONES, EVENT_KIND_TONES } from '../../../config';
 import { useEventActions } from '../../../model/hooks';
 import { AttendanceDialog, EditEventDialog } from './components';
 
@@ -16,7 +16,10 @@ import s from './EventCard.module.scss';
 export const EventCard = ({ clanId, event, isOfficer, members }: EventCardProps) => {
   const t = useTranslations('clanWorkspace');
   const format = useFormatter();
-  const actions = useEventActions({ clanId, event });
+  const { attendance, reminder, myStatus, hasStarted, isRsvpPending, isRemoving, isSyncing, onRsvp, onRemove, onSync } = useEventActions({
+    clanId,
+    event
+  });
 
   return (
     <article className={s.root} data-kind={event.kind}>
@@ -32,39 +35,30 @@ export const EventCard = ({ clanId, event, isOfficer, members }: EventCardProps)
       </header>
       <p className={s.reminder}>
         <BellRing aria-hidden size={14} />
-        {event.remindedAt
-          ? t('events.reminderSent', { time: format.dateTime(new Date(event.remindedAt), 'dateTime') })
-          : event.remindAt
-            ? t('events.reminderAt', { time: format.dateTime(new Date(event.remindAt), 'dateTime') })
-            : t('events.noReminder')}
+        {reminder}
       </p>
       <ul aria-label={t('attendance.summary')} className={s.counts}>
-        {ATTENDANCE_STATUSES.filter((status) => actions.counts[status] > 0).map((status) => (
+        {attendance.map(({ status, count }) => (
           <li key={status}>
             <Badge shape='pill' tone={ATTENDANCE_TONES[status]}>
-              {t('attendance.count', { status: t(`attendance.statuses.${status}`), count: actions.counts[status] })}
+              {t('attendance.count', { status: t(`attendance.statuses.${status}`), count })}
             </Badge>
           </li>
         ))}
       </ul>
       <footer className={s.actions}>
-        {!actions.hasStarted && (
+        {!hasStarted && (
           <div aria-label={t('events.rsvp')} className={s.rsvp} role='group'>
             <Button
-              disabled={actions.isRsvpPending}
+              disabled={isRsvpPending}
               size='sm'
-              variant={actions.myStatus === 'confirmed' ? 'primary' : 'secondary'}
-              onClick={() => actions.onRsvp('confirmed')}
+              variant={myStatus === 'confirmed' ? 'primary' : 'secondary'}
+              onClick={() => onRsvp('confirmed')}
             >
               <Check aria-hidden size={14} />
               {t('events.going')}
             </Button>
-            <Button
-              disabled={actions.isRsvpPending}
-              size='sm'
-              variant={actions.myStatus === 'declined' ? 'primary' : 'ghost'}
-              onClick={() => actions.onRsvp('declined')}
-            >
+            <Button disabled={isRsvpPending} size='sm' variant={myStatus === 'declined' ? 'primary' : 'ghost'} onClick={() => onRsvp('declined')}>
               <X aria-hidden size={14} />
               {t('events.notGoing')}
             </Button>
@@ -74,8 +68,8 @@ export const EventCard = ({ clanId, event, isOfficer, members }: EventCardProps)
           <div className={s.officer}>
             <EditEventDialog clanId={clanId} event={event} />
             <AttendanceDialog clanId={clanId} event={event} members={members} />
-            {actions.hasStarted && (
-              <IconButton aria-label={t('events.sync')} disabled={actions.isSyncing} size='sm' variant='outline' onClick={actions.onSync}>
+            {hasStarted && (
+              <IconButton aria-label={t('events.sync')} disabled={isSyncing} size='sm' variant='outline' onClick={onSync}>
                 <RefreshCw size={14} />
               </IconButton>
             )}
@@ -87,10 +81,10 @@ export const EventCard = ({ clanId, event, isOfficer, members }: EventCardProps)
               }
               cancelLabel={t('events.cancel')}
               confirmLabel={t('events.remove')}
-              isPending={actions.isRemoving}
+              isPending={isRemoving}
               title={t('events.removeTitle', { title: event.title })}
               tone='danger'
-              onConfirm={actions.onRemove}
+              onConfirm={onRemove}
             />
           </div>
         )}

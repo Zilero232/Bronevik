@@ -1,9 +1,12 @@
 export { BATTLE_EVENTS } from './battle-events';
 export type { BattleEventsSink, BattleStartedEvent } from './battle-events';
-export { bulkRequestsPerSecond, LESTA_CLIENT, LESTA_CLIENTS, LESTA_OUTCOME_RECORDER, LestaModule } from './lesta';
+export { HttpClientService, HttpModule } from './http';
+export type { HttpGetInput } from './http';
+export { bulkRequestsPerSecond, createLestaClients, LESTA_CLIENT, LESTA_CLIENTS, LESTA_OUTCOME_RECORDER, LestaModule } from './lesta';
 export type { LestaClients, LestaOutcomeRecorder, RecordLestaInput } from './lesta';
 export { AppLoggerModule, LOGGER } from './logger';
 export {
+  createPrismaClient,
   HYPERTABLE,
   isPrismaRequestError,
   isTransactionConflict,

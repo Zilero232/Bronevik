@@ -10,7 +10,8 @@ Part of the [style guide](../../README.md).
 - Deep imports past a barrel.
 - Cross-imports between slices of the same layer.
 - CSS-in-JS. SCSS modules only (`cva` maps module classes, it does not style).
-- Duplicating a schema between client and server. Only `@otmetki/schemas`.
+- Duplicating a schema between client and server. A shared contract lives only in
+  `@otmetki/schemas`; a server-only request schema lives in the module's `dto/`.
 - `useState` for form fields. Only `react-hook-form`, inside a `use-<x>-form` hook.
 - Logic in a component: queries, effects, memoised or derived data, handlers with more
   than one statement. They go to `model/hooks/use-<x>/`.

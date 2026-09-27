@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PLUS } from '@otmetki/schemas';
 import { addHours, subDays } from 'date-fns';
 
 import type { Subscription } from '../../../../generated';
@@ -25,7 +24,7 @@ export class RenewalService {
   ) {}
 
   async chargeDue(now = new Date()): Promise<number> {
-    if (!PLUS.checkoutEnabled || !this.subscriptions.isRecurringEnabled || !this.yookassa.isConfigured) {
+    if (!this.subscriptions.isCheckoutEnabled || !this.subscriptions.isRecurringEnabled || !this.yookassa.isConfigured) {
       return 0;
     }
 

@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.game import client_version
 from ....core.codec import encode_json, parse_json_body
@@ -9,7 +9,6 @@ from .. import BIND_PATH, BindError, build_bind_request, parse_bind_response
 
 
 class Binder(object):
-    """Binding the mod to the site account: a one-time code in, per-account device credentials out."""
 
     def __init__(self, app):
         self.app = app

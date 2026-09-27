@@ -87,7 +87,7 @@ const parseOperations = ({ root, localize }: ParseOperationsInput): PersonalOper
         description: localize(text(value.description)) ?? null,
         nextOperationIds: nums(value.nextTileIDs),
         chainsToUnlockNext: num(value.chainsCountToUnlockNext) ?? num(value.chainsCount) ?? 1,
-        reward: rewards.get(PERSONAL_MISSION_KEYS.operationReward(campaignId, operationId)) ?? null
+        reward: rewards.get(PERSONAL_MISSION_KEYS.operationReward({ seasonId: campaignId, tileId: operationId })) ?? null
       }
     ];
   });

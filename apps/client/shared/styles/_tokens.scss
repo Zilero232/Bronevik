@@ -139,6 +139,8 @@
   --rating-tier-unicum: var(--rating-unicum);
   --rating-tier-super-unicum: var(--rating-unicum);
   --color-steel-soft: color-mix(in srgb, var(--color-steel) 12%, transparent);
+  --color-shade: #000;
+  --color-on-media: #fff;
 }
 
 :root,

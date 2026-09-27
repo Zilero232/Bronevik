@@ -2,11 +2,11 @@ import type { TankObtain } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 
-import { toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { TANK_OBTAIN } from '../config';
 import { researchXp, tankSources } from '../lib';
+import { toTankNewsLinks, toTankOffer } from '../mappers';
 import { TankTraitsService } from './tank-traits.service';
 import { VehicleSourcesService } from './vehicle-sources.service';
 
@@ -55,20 +55,9 @@ export class TankObtainService {
       researchFrom,
       offers: {
         total,
-        items: offers.map((offer) => ({
-          title: offer.title,
-          url: offer.url && URL.canParse(offer.url) ? offer.url : null,
-          startsAt: toIso(offer.startsAt),
-          endsAt: toIso(offer.endsAt),
-          lastSeenAt: offer.lastSeenAt.toISOString(),
-          priceRub: offer.priceRub === null ? null : offer.priceRub.toNumber(),
-          priceGold: offer.priceGold,
-          discountPercent: offer.discountPercent
-        }))
+        items: offers.map(toTankOffer)
       },
-      news: news.flatMap((item) =>
-        URL.canParse(item.url) ? [{ title: item.title, url: item.url, publishedAt: item.publishedAt.toISOString() }] : []
-      ),
+      news: news.flatMap(toTankNewsLinks),
       missions,
       editorial
     };

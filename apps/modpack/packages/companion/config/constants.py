@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 DEFAULT_SERVER_URL = 'https://api.triotmetki.ru'
 FEATURES = (
     'send_battle_results',
@@ -19,11 +21,17 @@ FEATURES = (
     'minimap_tweaks',
     'camera_tweaks',
     'crosshair_presets',
+    'hangar_info',
+    'battle_sounds',
+    'battle_chat_filter',
+    'hangar_auto_resupply',
+    'hangar_notification_filter',
+    'hangar_cleaner',
+    'hangar_marks_history',
     'share_settings',
     'upload_replays',
     'publish_replays',
 )
-# Switches that stay off until the player turns them on.
 OPT_IN_FEATURES = ('upload_replays', 'publish_replays')
 DEFAULTS = {
     'enabled': True,
@@ -51,6 +59,13 @@ DEFAULTS = {
     'minimap_tweaks': True,
     'camera_tweaks': True,
     'crosshair_presets': True,
+    'hangar_info': True,
+    'battle_sounds': True,
+    'battle_chat_filter': True,
+    'hangar_auto_resupply': True,
+    'hangar_notification_filter': True,
+    'hangar_cleaner': True,
+    'hangar_marks_history': True,
     'share_settings': True,
     'upload_replays': False,
     'publish_replays': False,

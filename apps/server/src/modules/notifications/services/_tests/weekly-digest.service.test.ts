@@ -6,7 +6,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Notification, NotificationSettings, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { DigestPayload } from '../../contracts';
+import type { DigestPayload } from '../../config';
 
 import { WEEKLY_DIGEST } from '../../config';
 import { WeeklyDigestService } from '../weekly-digest.service';

@@ -1,1 +1,1 @@
-export { ModDeviceGuard } from './mod-device.guard';
+export { ModDeviceGuard } from './mod-device';

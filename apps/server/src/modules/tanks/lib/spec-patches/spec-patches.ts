@@ -1,4 +1,4 @@
-import type { TankPatchChange, TankPatchVerdict } from '@otmetki/schemas';
+import type { TankPatchVerdict } from '@otmetki/schemas';
 
 import { isNumber } from 'remeda';
 
@@ -37,14 +37,6 @@ export const readSpecChanges = (value: unknown): SpecChange[] | null => {
 
   return parsed.success ? parsed.data : null;
 };
-
-export const toPatchChanges = (changes: readonly SpecChange[]): TankPatchChange[] =>
-  changes.map((change) => ({
-    key: change.path,
-    before: change.before ?? null,
-    after: change.after ?? null,
-    effect: changeEffect(change)
-  }));
 
 export const patchVerdict = ({ changes, isFirst }: PatchVerdictInput): TankPatchVerdict => {
   if (isFirst) {

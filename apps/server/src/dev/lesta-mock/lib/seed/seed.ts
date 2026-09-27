@@ -1,7 +1,7 @@
 import { sortBy, unique } from 'remeda';
 
-import type { MockPlayer, MockWorld } from '../../lesta-mock.types';
-import type { SeedSelection, SeedSelectionInput, SeedStepsInput } from './seed.types';
+import type { MockPlayer } from '../../lesta-mock.types';
+import type { ClansOfInput, SeedSelection, SeedSelectionInput, SeedStepsInput } from './seed.types';
 
 import { MOCK_TIME } from '../../config';
 import { createRng } from '../random';
@@ -44,7 +44,9 @@ export const seedSteps = ({ now, days }: SeedStepsInput): number[] => {
   return unique(steps.filter((at) => at <= now && at > now - (days + 1) * MOCK_TIME.daySec)).sort((left, right) => left - right);
 };
 
-export const clansOf = (world: MockWorld, accounts: readonly MockPlayer[], at: number): number[] =>
+export const clansOf = ({ world, accounts, at }: ClansOfInput): number[] =>
   unique(
-    accounts.flatMap((player) => player.stints.map((stint) => stint.clanId)).concat(accounts.flatMap((player) => stintAt(player, at)?.clanId ?? []))
+    accounts
+      .flatMap((player) => player.stints.map((stint) => stint.clanId))
+      .concat(accounts.flatMap((player) => stintAt({ player, at })?.clanId ?? []))
   ).filter((clanId) => world.clanById.has(clanId));

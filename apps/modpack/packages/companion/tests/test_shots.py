@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import unittest
 
 import _support  # noqa: F401
@@ -5,7 +7,6 @@ from otmetki.companion.shots import MAX_SHOTS, ShotLog, build_shot, nominal_for,
 from otmetki.core.shells.constants import BATTLE_LOG_SHELL_NAMES
 from otmetki.core.vendor.enum34 import IntEnum
 
-# The RU 1.45 client's constants.BATTLE_LOG_SHELL_TYPES: what extra.getShellType() returns.
 BATTLE_LOG_SHELL_TYPES = IntEnum('BATTLE_LOG_SHELL_TYPES', [(name, index) for index, name in enumerate(BATTLE_LOG_SHELL_NAMES)])
 
 OPTIONS = [('ARMOR_PIERCING', 390, False), ('ARMOR_PIERCING_CR', 390, True), ('HIGH_EXPLOSIVE', 510, False)]

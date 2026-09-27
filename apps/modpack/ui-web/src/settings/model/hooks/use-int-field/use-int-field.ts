@@ -2,7 +2,7 @@ import { useState } from 'preact/hooks';
 
 import type { IntFieldInput } from './use-int-field.types';
 
-import { clampInt } from '../../lib/clamp-int/clamp-int';
+import { clampInt } from '../../lib/clamp-int';
 
 export const useIntField = ({ value, min, max, onCommit }: IntFieldInput) => {
   const [draft, setDraft] = useState<string | null>(null);

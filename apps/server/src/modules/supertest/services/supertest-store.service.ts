@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import type { ChangeRowInput, StoreAnnouncementInput } from '../supertest.types';
+import type { StoreAnnouncementInput } from '../supertest.types';
 
 import { PrismaService } from '../../../core';
 import { readVehicleStats } from '../../reference';
 import { SUPERTEST_VIEW } from '../config';
-import { liveValue } from '../lib';
+import { toChangeRows } from '../mappers';
 
 @Injectable()
 export class SupertestStoreService {
@@ -20,25 +20,7 @@ export class SupertestStoreService {
 
     const stats = new Map(profiles.map((profile) => [profile.tankId, readVehicleStats(profile.data)]));
 
-    const rows = tanks.flatMap((tank): ChangeRowInput[] => {
-      const base = { tankId: tank.tankId, tankName: tank.name, isNewVehicle: tank.isNewVehicle };
-      const tankStats = tank.tankId === null ? null : (stats.get(tank.tankId) ?? null);
-
-      if (tank.changes.length === 0) {
-        return [{ ...base, param: null, label: '', raw: tank.name }];
-      }
-
-      return tank.changes.map((change) => ({
-        ...base,
-        param: change.param,
-        label: change.label,
-        fromValue: change.from,
-        toValue: change.to,
-        liveValue: tank.isNewVehicle ? null : liveValue({ param: change.param, label: change.label, stats: tankStats }),
-        unit: change.unit,
-        raw: change.raw
-      }));
-    });
+    const rows = tanks.flatMap((tank) => toChangeRows({ tank, stats: tank.tankId === null ? null : (stats.get(tank.tankId) ?? null) }));
 
     await this.prisma.$transaction(async (tx) => {
       const { id } = await tx.supertestAnnouncement.upsert({

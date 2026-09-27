@@ -33,5 +33,12 @@
     "point": "Точка",
     "showTable": "Показать таблицей",
     "showChart": "Показать график"
+  },
+  "ratings": {
+    "wn8": "WN8"
+  },
+  "kbd": {
+    "ctrl": "Ctrl",
+    "esc": "Esc"
   }
 }

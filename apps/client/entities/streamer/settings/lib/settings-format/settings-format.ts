@@ -1,18 +1,18 @@
-import type { SettingsGroupKey, StreamerSettings } from '@otmetki/schemas';
+import type { SettingsGroupKey } from '@otmetki/schemas';
 
-import { flattenSettings } from '@otmetki/schemas';
+import { flattenSettings, STREAMER_SETTINGS } from '@otmetki/schemas';
 
-import type { SettingsFieldPath, SettingsRow, SettingsTextInput } from './settings-format.types';
+import type { SettingsFieldPath, SettingsRow, SettingsRowsInput, SettingsTextInput } from './settings-format.types';
 
 import { SETTINGS_FIELDS } from '../../config';
 
 export const fieldKey = (path: string): string => path.replaceAll('.', '_');
 
-export const groupOfPath = (path: string): SettingsGroupKey => path.split('.')[0] as SettingsGroupKey;
-
 export const isKnownField = (path: string): path is SettingsFieldPath => SETTINGS_FIELDS.some((field) => field.path === path);
 
-export const settingsRows = (settings: StreamerSettings, group: SettingsGroupKey): SettingsRow[] => {
+export const groupOfPath = (path: SettingsFieldPath): SettingsGroupKey | null => SETTINGS_FIELDS.find((field) => field.path === path)?.group ?? null;
+
+export const settingsRows = ({ settings, group }: SettingsRowsInput): SettingsRow[] => {
   const flat = flattenSettings({ [group]: settings[group] });
 
   return SETTINGS_FIELDS.flatMap((field) => {
@@ -25,8 +25,8 @@ export const settingsRows = (settings: StreamerSettings, group: SettingsGroupKey
 export const settingsAsText = ({ displayName, settings, label, value }: SettingsTextInput): string => {
   const lines = [displayName];
 
-  for (const group of Object.keys(settings) as SettingsGroupKey[]) {
-    const rows = settingsRows(settings, group);
+  for (const group of STREAMER_SETTINGS.groups) {
+    const rows = settingsRows({ settings, group });
 
     if (rows.length > 0) {
       lines.push('', `[${label(group)}]`, ...rows.map((row) => `${label(row.path)}: ${value(row)}`));

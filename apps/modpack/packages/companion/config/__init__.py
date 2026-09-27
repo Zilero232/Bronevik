@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from ...core.compat import string_types
 from ...core.settings import Schema, Settings
 from .constants import CHOICES, DEFAULTS, DEFAULT_SERVER_URL, FEATURES, LIMITS, LOCAL_HOSTS, OPT_IN_FEATURES  # noqa: F401
@@ -23,8 +25,6 @@ SCHEMA = Schema(DEFAULTS, choices=CHOICES, limits=LIMITS, normalizers={'server_u
 
 
 class Config(Settings):
-    """The companion's config.json. The schema lists every switch, the features' included, so a switch
-    survives a save while its feature package is not installed."""
 
     schema = SCHEMA
 

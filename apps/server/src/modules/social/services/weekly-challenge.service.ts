@@ -10,7 +10,7 @@ import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../config';
 import { badgeCodeOf, challengeProgress, isChallengeBadgeCode } from '../lib';
-import { toChallengeRule } from '../mappers';
+import { toWeeklyChallengeView } from '../mappers';
 import { challengeBattlesSql } from '../queries';
 import { SnapshotEventsService } from './snapshot-events.service';
 
@@ -34,13 +34,7 @@ export class WeeklyChallengeService {
     return {
       weekStart: toIsoDate(weekStart) ?? '',
       endsAt: end.toISOString(),
-      challenges: WEEKLY_CHALLENGES.map((definition) => ({
-        ...toChallengeRule(definition),
-        badgeCode: badgeCodeOf(definition),
-        progress: progress
-          .filter((row) => row.code === definition.code)
-          .map((row) => ({ accountId: Number(row.accountId), value: row.progress, completedAt: row.completedAt?.toISOString() ?? null }))
-      }))
+      challenges: WEEKLY_CHALLENGES.map((definition) => toWeeklyChallengeView({ definition, progress }))
     };
   }
 

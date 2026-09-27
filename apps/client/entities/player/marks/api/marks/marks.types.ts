@@ -1,22 +1,10 @@
-import type { MoeSortField, SortOrder, ThresholdSource, VehicleType } from '@otmetki/schemas';
+import type { MarksControllerHistoryData, MarksControllerListData } from '@/shared/api/generated';
 
-export type MoeListInput = {
-  tiers?: number[];
-  types?: VehicleType[];
-  nations?: string[];
-  premium?: boolean;
-  search?: string;
-  sort?: MoeSortField;
-  order?: SortOrder;
-  limit?: number;
-  offset?: number;
+export type MoeListInput = NonNullable<MarksControllerListData['query']> & {
   signal?: AbortSignal;
 };
 
-export type MoeHistoryInput = {
-  tankId: number;
-  from?: string;
-  to?: string;
-  source?: ThresholdSource;
-  signal?: AbortSignal;
-};
+export type MoeHistoryInput = MarksControllerHistoryData['path'] &
+  NonNullable<MarksControllerHistoryData['query']> & {
+    signal?: AbortSignal;
+  };

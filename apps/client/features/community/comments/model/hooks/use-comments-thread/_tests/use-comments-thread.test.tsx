@@ -23,7 +23,10 @@ afterAll(() => {
 vi.mock('../../../../api/comments/comments', () => ({ listComments: vi.fn(), createComment: vi.fn(), removeComment: vi.fn() }));
 
 const THREAD: CommentThreadTarget = { target: 'build', targetId: 'build-1' };
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: null };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: null
+};
 
 const ROOT: Comment = {
   id: '00000000-0000-4000-8000-000000000001',

@@ -1,5 +1,5 @@
 export { resolveLocale } from './locale';
+export { LOCALE_LABELS } from './locale-labels';
 export { DEFAULT_LOCALE, LOCALES, TIME_ZONE } from './locale.constants';
-export { LOCALE_LABELS } from './locale.labels';
 
 export type { Locale } from './locale.types';

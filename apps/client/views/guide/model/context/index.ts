@@ -1,2 +1,1 @@
-export { useGuide } from './guide-context';
-export { GuideProvider } from './GuideProvider';
+export { GuideContext, useGuide } from './guide';

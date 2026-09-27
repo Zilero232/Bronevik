@@ -52,6 +52,8 @@ export {
 } from './streamers.dto';
 export {
   invitationChannelsSchema,
+  storedChallengeProgressSchema,
+  storedIntegrationConfigSchema,
   twitchStreamsSchema,
   twitchUsersSchema,
   vkChannelsSchema,

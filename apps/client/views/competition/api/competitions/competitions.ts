@@ -1,12 +1,12 @@
 import type { Competition } from '@otmetki/schemas';
 
-import type { JoinCompetitionRequest } from '@/entities/competition/competition';
+import type { JoinCompetitionInput } from '@/entities/competition/competition';
 
 import { competitionsControllerJoin, competitionsControllerLeave, competitionsControllerRemove } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
 import { fromSdk } from '@/shared/api/source';
 
-export const joinCompetition = ({ id, ...body }: JoinCompetitionRequest): Promise<Competition> =>
+export const joinCompetition = ({ id, ...body }: JoinCompetitionInput): Promise<Competition> =>
   fromSdk(() => competitionsControllerJoin({ ...SESSION_REQUEST, path: { id }, body }));
 
 export const leaveCompetition = (id: string): Promise<Competition> =>

@@ -3,9 +3,8 @@
 import { Progress } from '@base-ui/react/progress';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
-import { clamp } from 'remeda';
 
-import { useRevealOnce } from '@/shared/lib';
+import { ringGeometry, useRevealOnce } from '@/shared/lib';
 
 import type { ProgressRingProps } from './ProgressRing.types';
 
@@ -25,9 +24,7 @@ export const ProgressRing = ({
   const locale = useLocale();
   const { ref, isRevealed } = useRevealOnce<HTMLDivElement>();
 
-  const ratio = max > 0 ? clamp(value / max, { min: 0, max: 1 }) : 0;
-  const radius = (size - thickness) / 2;
-  const center = size / 2;
+  const { ratio, radius, center } = ringGeometry({ value, max, size, thickness });
 
   return (
     <Progress.Root

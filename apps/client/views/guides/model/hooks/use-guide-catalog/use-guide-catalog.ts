@@ -25,12 +25,13 @@ export const useGuideCatalog = () => {
     placeholderData: keepPreviousData
   });
 
-  const total = query.data?.total ?? 0;
+  const { data: list } = query;
+  const total = list?.total ?? 0;
   const pages = pageCount({ total, pageSize: GUIDE_LIST.pageSize });
   const page = clamp(queryPage, { min: GUIDE_LIST.firstPage, max: pages });
 
-  if (query.data && query.data.total !== knownTotal) {
-    setKnownTotal(query.data.total);
+  if (list && list.total !== knownTotal) {
+    setKnownTotal(list.total);
   }
 
   return {

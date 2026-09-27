@@ -17,6 +17,7 @@ const column = createColumnHelper<PlayerTankRow>();
 
 export const useTanksTableColumns = (): TableColumn<PlayerTankRow>[] => {
   const t = useTranslations('profile.tanks.columns');
+  const tCommon = useTranslations('common');
   const format = useFormatter();
 
   return [
@@ -39,7 +40,7 @@ export const useTanksTableColumns = (): TableColumn<PlayerTankRow>[] => {
     }),
     column.accessor((row) => row.wn8.value ?? 0, {
       id: 'wn8',
-      header: 'WN8',
+      header: tCommon('ratings.wn8'),
       cell: (info) => <RatingValue rating={info.row.original.wn8} />,
       meta: { align: 'end', isNumeric: true, hideBelow: 'sm' }
     }),

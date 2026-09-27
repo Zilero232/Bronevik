@@ -1,11 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { fromUnixTime } from 'date-fns';
 
 import type { LestaClients } from '../../../../core';
 import type { AccountBatchPayload } from '../../contracts';
 
-import { clanRoleToDb } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
+import { toClanHistoryRecord } from '../mappers';
 
 @Injectable()
 export class ClanHistoryService {
@@ -31,13 +30,7 @@ export class ClanHistoryService {
       await this.prisma.$transaction([
         this.prisma.playerClanHistory.deleteMany({ where: { accountId, leftAt: { not: null } } }),
         this.prisma.playerClanHistory.createMany({
-          data: entries.map((entry) => ({
-            accountId,
-            clanId: BigInt(entry.clan_id),
-            role: entry.role ? clanRoleToDb(entry.role) : null,
-            joinedAt: fromUnixTime(entry.joined_at),
-            leftAt: entry.left_at ? fromUnixTime(entry.left_at) : null
-          }))
+          data: entries.map((entry) => toClanHistoryRecord({ accountId, entry }))
         })
       ]);
 

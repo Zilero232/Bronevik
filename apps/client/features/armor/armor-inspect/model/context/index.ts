@@ -1,3 +1,2 @@
-export { useArmorInspect } from './armor-inspect-context';
-export type { ArmorInspectContextValue, ArmorInspectProviderProps, ArmorLayerKey } from './armor-inspect-context.types';
-export { ArmorInspectProvider } from './ArmorInspectProvider';
+export { ArmorInspectContext, useArmorInspect } from './armor-inspect';
+export type { ArmorInspectContextValue, ArmorLayerKey } from './armor-inspect';

@@ -1,4 +1,4 @@
-import type { LestaMockEnvelope, LestaMockParams, MockWorld } from '../../lesta-mock.types';
+import type { LestaMockEnvelope, LestaMockParams, MockClan, MockPlayer, MockTankState, MockVehicle, MockWorld } from '../../lesta-mock.types';
 
 export type MockContext = {
   world: MockWorld;
@@ -29,3 +29,111 @@ export type IdListInput = {
 };
 
 export type IdListResult = { error: LestaMockEnvelope } | { ids: number[] };
+
+export type PlayerAtInput = {
+  context: MockContext;
+  accountId: number;
+};
+
+export type StateOfInput = {
+  context: MockContext;
+  player: MockPlayer;
+};
+
+export type MasteryOfInput = {
+  context: MockContext;
+  tank: MockTankState;
+};
+
+export type RecordTankInput = {
+  tanks: readonly MockTankState[];
+  pick: (tank: MockTankState) => number;
+};
+
+export type AccountBlockInput = {
+  tanks: readonly MockTankState[];
+  mode: 'all' | 'random';
+};
+
+export type AccountInfoInput = {
+  context: MockContext;
+  player: MockPlayer;
+};
+
+export type ClanExistsInput = {
+  clan: MockClan;
+  at: number;
+};
+
+export type NameAtInput = {
+  clan: MockClan;
+  at: number;
+};
+
+export type ListItemInput = {
+  clan: MockClan;
+  at: number;
+};
+
+export type ClanInfoInput = {
+  context: MockContext;
+  clan: MockClan;
+};
+
+export type ClansByIdsInput = {
+  context: MockContext;
+  render: (clan: MockClan) => unknown;
+};
+
+export type ProvincesCountInput = {
+  context: MockContext;
+  clan: MockClan;
+};
+
+export type AchievementImageInput = {
+  name: string;
+  big?: boolean;
+};
+
+export type ByTypeInput = {
+  context: MockContext;
+  vehicle: MockVehicle;
+  type: string;
+};
+
+export type VehicleEntryInput = {
+  context: MockContext;
+  vehicle: MockVehicle;
+};
+
+export type OkInput = {
+  data: unknown;
+  meta?: Record<string, number>;
+};
+
+export type ListOfInput = {
+  params: LestaMockParams;
+  key: string;
+};
+
+export type IntParamInput = {
+  params: LestaMockParams;
+  key: string;
+  fallback: number;
+};
+
+export type HasExtraInput = {
+  context: MockContext;
+  extra: string;
+};
+
+export type TanksOfInput = {
+  context: MockContext;
+  accountId: number;
+};
+
+export type TankStatsInput = {
+  context: MockContext;
+  accountId: number;
+  tank: MockTankState;
+};

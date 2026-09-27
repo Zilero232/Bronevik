@@ -14,6 +14,7 @@ const column = createColumnHelper<PopularPlayer>();
 
 export const usePopularColumns = (): TableColumn<PopularPlayer>[] => {
   const t = useTranslations('players.columns');
+  const tCommon = useTranslations('common');
   const format = useFormatter();
 
   return [
@@ -35,7 +36,7 @@ export const usePopularColumns = (): TableColumn<PopularPlayer>[] => {
     }),
     column.accessor((row) => row.wn8.value, {
       id: 'wn8',
-      header: 'WN8',
+      header: tCommon('ratings.wn8'),
       cell: (info) => <RatingValue rating={info.row.original.wn8} />,
       meta: { align: 'end', isNumeric: true }
     })

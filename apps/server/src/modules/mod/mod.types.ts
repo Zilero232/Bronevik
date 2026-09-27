@@ -1,4 +1,7 @@
-import type { BindCode, BindCodeInput as BindCodeBody, ModDevice as ModDeviceView } from '@otmetki/schemas';
+import type { RawBodyRequest } from '@nestjs/common';
+import type { BindCode, BindCodeInput as BindCodeBody, ModDeviceRequest, ModDevice as ModDeviceView } from '@otmetki/schemas';
+import type { Request } from 'express';
+import type { ZodType } from 'zod';
 
 import type { ModDevice } from '../../../generated';
 import type { BattleResultEvent, IngestBatch, IngestEvent } from './lib';
@@ -77,4 +80,18 @@ export type MarkGainedInput = {
   marks: number;
   previous: number | null;
   percent: number;
+};
+
+export type SignedDeviceBody = Pick<ModDeviceRequest, 'account_id'> & {
+  device_id: string;
+};
+
+export type AuthenticateBodyInput<T> = {
+  request: RawBodyRequest<Request>;
+  schema: ZodType<T>;
+};
+
+export type AuthenticatedBody<T> = {
+  device: AuthenticatedDevice;
+  body: T;
 };

@@ -3,7 +3,7 @@
 import { curveMonotoneX } from '@visx/curve';
 import { AreaClosed, LinePath } from '@visx/shape';
 
-import { clampIndex, linearLayout, seriesTone, useChartHover } from '@/shared/lib';
+import { seriesTone, useLineChartLayout } from '@/shared/lib';
 
 import type { LineChartPlotProps } from '../../LineChart.types';
 
@@ -12,14 +12,9 @@ import { ChartCanvas } from '../../../ChartKit';
 import s from '../../../ChartKit/ChartKit.module.scss';
 
 export const LineChartPlot = ({ labels, series, width, height, yDomain, withArea = false, formatValue }: LineChartPlotProps) => {
-  const layout = linearLayout({ width, height, labels, series, yDomain });
-  const { innerHeight, xScale, yScale } = layout;
-  const pointer = useChartHover({
-    count: labels.length,
-    toIndex: (x) => clampIndex({ value: xScale.invert(x), count: labels.length }),
-    toPosition: (index) => ({ left: xScale(index), top: yScale(series[0]?.values[index] ?? 0) })
-  });
+  const { layout, pointer } = useLineChartLayout({ width, height, labels, series, yDomain });
 
+  const { innerHeight, xScale, yScale } = layout;
   const { hover } = pointer;
 
   return (

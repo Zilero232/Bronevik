@@ -5,7 +5,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { TankDetailService, TankStatsService, TierListService } from '../tanks';
-import { PublicApi } from './decorators/public-api.decorator';
+import { PublicApi } from './decorators/public-api/public-api.decorator';
 import {
   V1TankDetailDto,
   V1TankDetailQueryDto,

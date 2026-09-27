@@ -16,7 +16,10 @@ vi.hoisted(() => vi.resetModules());
 
 vi.mock('@/shared/i18n/navigation', () => ({ usePathname: () => '/me/watchlist' }));
 
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Grom' }, lestaAccountId: 42 };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Grom', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: 42
+};
 
 const renderShell = () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });

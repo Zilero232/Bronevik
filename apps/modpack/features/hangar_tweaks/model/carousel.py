@@ -10,6 +10,4 @@ FIELDS = {
 
 
 def to_native(values):
-    """The carousel options of the game's own settings window (one or two rows, tile size). Three rows
-    are not a client option (they need patching the Flash carousel) and are left out."""
     return native_values(values, FIELDS)

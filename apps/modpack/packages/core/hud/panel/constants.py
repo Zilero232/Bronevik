@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import re
+
 ALIAS_PREFIX = 'otmetki.hud.'
 
 PANEL_DEFAULTS = {
@@ -26,3 +28,7 @@ PANEL_LIMITS = {
 }
 
 LAYOUT_KEYS = ('x', 'y', 'align_x', 'align_y', 'alpha', 'drag', 'border')
+
+HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
+SOUND_EVENT = re.compile(r'^[A-Za-z0-9_]*$')
+MAX_SOUND_EVENT = 64

@@ -2,7 +2,7 @@ import { WEBHOOK } from '@otmetki/schemas';
 import { addMilliseconds } from 'date-fns';
 import { Webhook } from 'standardwebhooks';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { WebhookDelivery, WebhookEndpoint } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
@@ -13,9 +13,9 @@ import { WEBHOOK_DELIVERY } from '../../config';
 import { generateWebhookSecret, WebhookResponseError } from '../../lib';
 import { WebhookDeliveryService } from '../webhook-delivery.service';
 
-const post = vi.fn<WebhookPosterService['post']>();
+const poster = mock<WebhookPosterService>();
 
-const lookup = vi.fn<HostLookupService['resolve']>();
+const hosts = mock<HostLookupService>();
 
 const NOW = new Date('2026-09-26T12:00:00Z');
 
@@ -55,16 +55,16 @@ const createService = () => {
 
   prisma.webhookDelivery.findUnique.mockResolvedValue(delivery);
 
-  return { service: new WebhookDeliveryService(prisma, { resolve: lookup }, { post }), prisma };
+  return { service: new WebhookDeliveryService(prisma, hosts, poster), prisma };
 };
 
 describe('WebhookDeliveryService.deliver', () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(NOW);
-    post.mockReset();
-    lookup.mockReset();
-    lookup.mockResolvedValue(PUBLIC_ADDRESS);
+    poster.post.mockReset();
+    hosts.resolve.mockReset();
+    hosts.resolve.mockResolvedValue(PUBLIC_ADDRESS);
   });
 
   afterEach(() => {
@@ -74,11 +74,11 @@ describe('WebhookDeliveryService.deliver', () => {
   it('signs the body and records the success', async () => {
     const { service, prisma } = createService();
 
-    post.mockResolvedValue({ status: 200, body: 'ok' });
+    poster.post.mockResolvedValue({ status: 200, body: 'ok' });
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).resolves.toBe('delivered');
 
-    const [options] = post.mock.calls[0] ?? [];
+    const [options] = poster.post.mock.calls[0] ?? [];
 
     expect(options?.address).toBe(PUBLIC_ADDRESS[0]?.address);
     expect(options?.headers).toMatchObject({ [WEBHOOK.eventHeader]: 'mark.gained' });
@@ -101,7 +101,7 @@ describe('WebhookDeliveryService.deliver', () => {
     prisma.webhookDelivery.findUnique.mockResolvedValue(row);
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).resolves.toBe('skipped');
-    expect(post).not.toHaveBeenCalled();
+    expect(poster.post).not.toHaveBeenCalled();
   });
 
   it('closes a pending delivery of a retired event so the redrive stops requeueing it', async () => {
@@ -120,11 +120,11 @@ describe('WebhookDeliveryService.deliver', () => {
   it('fails a delivery for good when the host now resolves to a private address', async () => {
     const { service, prisma } = createService();
 
-    lookup.mockResolvedValue([{ address: '10.0.0.5', family: 4 }]);
+    hosts.resolve.mockResolvedValue([{ address: '10.0.0.5', family: 4 }]);
     prisma.webhookEndpoint.update.mockResolvedValue({ ...endpoint, failureCount: 1 });
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).resolves.toBe('skipped');
-    expect(post).not.toHaveBeenCalled();
+    expect(poster.post).not.toHaveBeenCalled();
 
     expect(prisma.webhookDelivery.update.mock.calls[0]?.[0].data).toMatchObject({
       status: 'failed',
@@ -140,13 +140,13 @@ describe('WebhookDeliveryService.deliver', () => {
     prisma.webhookDelivery.findUnique.mockResolvedValue(disabled);
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).resolves.toBe('skipped');
-    expect(post).not.toHaveBeenCalled();
+    expect(poster.post).not.toHaveBeenCalled();
   });
 
   it('keeps a failed attempt pending with the error as the response and rethrows so the queue retries it', async () => {
     const { service, prisma } = createService();
 
-    post.mockRejectedValue(new Error('timeout'));
+    poster.post.mockRejectedValue(new Error('timeout'));
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).rejects.toThrow('timeout');
 
@@ -167,7 +167,7 @@ describe('WebhookDeliveryService.deliver', () => {
   ])('schedules attempt %i to retry after %i× the base backoff', async (attempt, multiple) => {
     const { service, prisma } = createService();
 
-    post.mockRejectedValue(new Error('timeout'));
+    poster.post.mockRejectedValue(new Error('timeout'));
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt, isFinal: false })).rejects.toThrow();
 
@@ -179,7 +179,7 @@ describe('WebhookDeliveryService.deliver', () => {
   it('stores the status and a truncated body of an error response', async () => {
     const { service, prisma } = createService();
 
-    post.mockRejectedValue(new WebhookResponseError({ status: 502, body: 'x'.repeat(WEBHOOK_DELIVERY.responseBodyMaxLength + 1) }));
+    poster.post.mockRejectedValue(new WebhookResponseError({ status: 502, body: 'x'.repeat(WEBHOOK_DELIVERY.responseBodyMaxLength + 1) }));
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).rejects.toThrow();
 
@@ -192,7 +192,7 @@ describe('WebhookDeliveryService.deliver', () => {
   it('keeps the endpoint on one failure short of the limit', async () => {
     const { service, prisma } = createService();
 
-    post.mockRejectedValue(new Error('timeout'));
+    poster.post.mockRejectedValue(new Error('timeout'));
     prisma.webhookEndpoint.update.mockResolvedValue({ ...endpoint, failureCount: WEBHOOK_DELIVERY.disableAfterFailures - 1 });
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: WEBHOOK_DELIVERY.maxAttempts, isFinal: true })).rejects.toThrow();
@@ -203,7 +203,7 @@ describe('WebhookDeliveryService.deliver', () => {
   it('switches the endpoint off after too many failed deliveries', async () => {
     const { service, prisma } = createService();
 
-    post.mockRejectedValue(new Error('timeout'));
+    poster.post.mockRejectedValue(new Error('timeout'));
     prisma.webhookEndpoint.update.mockResolvedValue({ ...endpoint, failureCount: WEBHOOK_DELIVERY.disableAfterFailures });
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: WEBHOOK_DELIVERY.maxAttempts, isFinal: true })).rejects.toThrow();

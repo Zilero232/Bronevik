@@ -28,7 +28,10 @@ vi.mock('../../../../api', () => ({ getClaimStatus: vi.fn(), startClaim: vi.fn()
 
 const TEXT = messages.en.streamersDirectory.claim;
 const SLUG = 'jove';
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: null };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: null
+};
 
 const OPEN_CODE_CLAIM: StreamerClaim = {
   id: '00000000-0000-4000-8000-000000000001',

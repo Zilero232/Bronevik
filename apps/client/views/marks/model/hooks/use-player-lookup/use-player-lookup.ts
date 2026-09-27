@@ -1,28 +1,29 @@
 'use client';
 
-import type { ChangeEvent, SubmitEvent } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, useWatch } from 'react-hook-form';
 
-import { useState } from 'react';
-
+import type { PlayerLookupFormValues } from '../../../lib/player-lookup-form';
 import type { UsePlayerLookupInput } from './use-player-lookup.types';
 
+import { playerLookupFormSchema } from '../../../lib/player-lookup-form';
 import { usePlayerSuggestions } from '../use-player-suggestions';
 
 export const usePlayerLookup = ({ player, onPick }: UsePlayerLookupInput) => {
-  const [input, setInput] = useState(player);
+  const { control, register, setValue, handleSubmit } = useForm<PlayerLookupFormValues>({
+    resolver: zodResolver(playerLookupFormSchema),
+    defaultValues: { player }
+  });
+
+  const input = useWatch({ control, name: 'player' });
   const { players } = usePlayerSuggestions(input === player ? '' : input);
 
   const pick = (value: string) => {
-    setInput(value);
+    setValue('player', value);
     onPick(value.trim());
   };
 
-  const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    pick(input);
-  };
+  const onSubmit = handleSubmit((values) => pick(values.player));
 
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => setInput(event.target.value);
-
-  return { input, players, canSubmit: input.trim().length > 0, pick, onSubmit, onChange };
+  return { field: register('player'), players, canSubmit: input.trim().length > 0, pick, onSubmit };
 };

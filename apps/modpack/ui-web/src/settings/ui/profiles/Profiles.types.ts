@@ -1,4 +1,4 @@
-import type { UiState } from '../../model/protocol/protocol.types';
+import type { UiState } from '../../model/protocol';
 
 export type ProfilesProps = {
   profiles: UiState['profiles'];

@@ -10,7 +10,7 @@ import {
   parseDateTime,
   toPlayerResult,
   unixToIso
-} from './summary.helpers';
+} from './summary.fields';
 import { replaySummarySchema } from './summary.schemas';
 
 const withPersonal = ({ result, personal }: WithPersonalInput) => {

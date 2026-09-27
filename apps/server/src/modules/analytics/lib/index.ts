@@ -9,7 +9,7 @@ export type { PlaylistCandidate, PlaylistPick } from './playlist';
 export { splitPlaytime } from './playtime-split';
 export { shotRolls, summarizeRolls } from './rolls';
 export type { RollSummary } from './rolls';
-export { breakdown, statLine, toAggregateRow, trendPoints } from './stat-line';
+export { breakdown, statLine, trendPoints } from './stat-line';
 export type { AggregateRow, BreakdownVehicle, BucketedRow, RawTankRow } from './stat-line';
 export { readStoredShots } from './stored-shots';
 export type { StoredShot } from './stored-shots';

@@ -1,9 +1,9 @@
 import { useState } from 'preact/hooks';
 
-import type { UiState } from '../../protocol/protocol.types';
+import type { UiState } from '../../protocol';
 import type { RenameDraft } from './use-profiles.types';
 
-import { send } from '../../protocol/protocol';
+import { send } from '../../protocol';
 
 export const useProfiles = (profiles: UiState['profiles']) => {
   const [name, setName] = useState('');

@@ -5,3 +5,9 @@ export type ProfileInput = {
   player: MockPlayer;
   state: MockPlayerState;
 };
+
+export type IsPremiumAtInput = {
+  seed: number;
+  player: MockPlayer;
+  at: number;
+};

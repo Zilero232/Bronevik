@@ -17,7 +17,8 @@ export const useClanMoves = ({ clanId, now }: UseClanMovesInput) => {
     queryFn: ({ signal }) => listClanEvents({ clanId, limit: CLAN_EVENTS.chartSample, offset: 0, signal })
   });
 
-  const moves = query.data ? weeklyMoves({ events: query.data.items, now, weeks: CLAN_EVENTS.chartWeeks }) : [];
+  const { data: events } = query;
+  const moves = events ? weeklyMoves({ events: events.items, now, weeks: CLAN_EVENTS.chartWeeks }) : [];
   const joined = sumBy(moves, (week) => week.joined);
   const left = sumBy(moves, (week) => week.left);
 

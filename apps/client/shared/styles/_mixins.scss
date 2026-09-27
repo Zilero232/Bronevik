@@ -441,11 +441,11 @@
 }
 
 @mixin premium-surface {
-  border-color: color-mix(in srgb, var(--color-gold) 60%, #000);
+  border-color: color-mix(in srgb, var(--color-gold) 60%, var(--color-shade));
   background: var(--gradient-premium);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 45%),
-    0 0 0 1px rgb(0 0 0 / 20%),
+    inset 0 1px 0 color-mix(in srgb, var(--color-on-media) 45%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-shade) 20%, transparent),
     0 4px 14px var(--color-gold-soft);
   color: var(--color-gold-contrast);
 }

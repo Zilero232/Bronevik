@@ -1,1 +1,1 @@
-export { COMMUNITY_QUEUE, COMMUNITY_SCHEDULES } from './community-maintenance.config';
+export { COMMUNITY_QUEUE, COMMUNITY_SCHEDULES } from './community-maintenance.constants';

@@ -17,6 +17,7 @@ import { toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { TACTICS } from '../config';
 import { boardRole, canEdit, readBoardData } from '../lib';
+import { toTacticBoardView } from '../mappers';
 import { BoardLiveService } from './board-live.service';
 
 @Injectable()
@@ -29,7 +30,7 @@ export class TacticBoardService {
   async mine(userId: string): Promise<TacticBoardView[]> {
     const boards = await this.prisma.tacticBoard.findMany({ where: { ownerUserId: userId }, orderBy: { updatedAt: 'desc' } });
 
-    return boards.map((board) => this.view({ board, role: 'owner' }));
+    return boards.map((board) => toTacticBoardView({ board, role: 'owner' }));
   }
 
   async create({ userId, title, arenaId, mode, visibility, data }: CreateTacticBoardRequest): Promise<TacticBoardView> {
@@ -43,13 +44,13 @@ export class TacticBoardService {
       data: { ownerUserId: userId, title, arenaId: arenaId ?? null, mode: mode ?? null, visibility, data: toJsonValue(data) }
     });
 
-    return this.view({ board, role: 'owner' });
+    return toTacticBoardView({ board, role: 'owner' });
   }
 
   async open({ id, userId, token }: OpenBoardInput): Promise<TacticBoardView> {
     const { board, role } = await this.access({ id, userId, token });
 
-    return this.view({ board, role });
+    return toTacticBoardView({ board, role });
   }
 
   async update({ id, userId, token, title, arenaId, mode, visibility, data }: UpdateTacticBoardRequest): Promise<TacticBoardView> {
@@ -68,7 +69,7 @@ export class TacticBoardService {
       this.live.close(id);
     }
 
-    return this.view({ board, role });
+    return toTacticBoardView({ board, role });
   }
 
   async remove({ id, userId }: OwnedById): Promise<void> {
@@ -118,20 +119,5 @@ export class TacticBoardService {
       where: { id },
       data: { document: Buffer.from(state), ...(snapshot ? { data: toJsonValue(snapshot) } : {}) }
     });
-  }
-
-  private view({ board, role }: BoardAccess): TacticBoardView {
-    return {
-      id: board.id,
-      title: board.title,
-      arenaId: board.arenaId,
-      mode: board.mode,
-      visibility: board.visibility,
-      data: readBoardData(board.data),
-      role,
-      shareToken: role === 'owner' ? board.shareToken : null,
-      editToken: role === 'owner' || role === 'edit' ? board.editToken : null,
-      updatedAt: board.updatedAt.toISOString()
-    };
   }
 }

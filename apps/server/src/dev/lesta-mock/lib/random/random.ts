@@ -2,7 +2,7 @@ import { uniformFloat64 } from 'pure-rand/distribution/uniformFloat64';
 import { uniformInt } from 'pure-rand/distribution/uniformInt';
 import { xoroshiro128plus } from 'pure-rand/generator/xoroshiro128plus';
 
-import type { MockRng } from './random.types';
+import type { MockRng, NormalInput, WeightedInput } from './random.types';
 
 const MIX = { a: 2_246_822_507, b: 3_266_489_909, golden: 2_654_435_769 } as const;
 
@@ -74,7 +74,7 @@ export const createRng = (...parts: readonly number[]): MockRng => {
   const generator = xoroshiro128plus(hashSeed(...parts) | 0);
   const float = () => uniformFloat64(generator);
 
-  const normal = (mean = 0, deviation = 1) => {
+  const normal = ({ mean = 0, deviation = 1 }: NormalInput = {}) => {
     const u = Math.max(float(), Number.EPSILON);
 
     return mean + deviation * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * float());
@@ -86,7 +86,7 @@ export const createRng = (...parts: readonly number[]): MockRng => {
     }
 
     if (mean > 30) {
-      return Math.max(0, Math.round(normal(mean, Math.sqrt(mean))));
+      return Math.max(0, Math.round(normal({ mean, deviation: Math.sqrt(mean) })));
     }
 
     const limit = Math.exp(-mean);
@@ -111,7 +111,7 @@ export const createRng = (...parts: readonly number[]): MockRng => {
     return item;
   };
 
-  const weighted = <T>(items: readonly T[], weight: (item: T) => number): T => {
+  const weighted = <T>({ items, weight }: WeightedInput<T>): T => {
     const total = items.reduce((sum, item) => sum + Math.max(0, weight(item)), 0);
     let target = float() * total;
 
@@ -145,10 +145,10 @@ export const createRng = (...parts: readonly number[]): MockRng => {
 
   return {
     float,
-    int: (min, max) => uniformInt(generator, Math.ceil(min), Math.floor(max)),
+    int: ({ min, max }) => uniformInt(generator, Math.ceil(min), Math.floor(max)),
     chance: (probability) => float() < probability,
     normal,
-    logNormal: (median, sigma) => median * Math.exp(normal(0, sigma)),
+    logNormal: ({ median, sigma }) => median * Math.exp(normal({ mean: 0, deviation: sigma })),
     poisson,
     pick,
     weighted,

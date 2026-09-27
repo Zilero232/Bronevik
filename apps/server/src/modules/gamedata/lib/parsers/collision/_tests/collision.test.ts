@@ -54,9 +54,7 @@ describe('parseModelIndex', () => {
   });
 });
 
-// Real «Мир танков» data: unicum-gg/wot.models@Lesta 63471c1 (1.45.0.5231), R230_Maus trimmed to hull and chassis.
-// The thicknesses are the ones in wot.src@RU ussr/R230_Maus.xml; R230_Maus and the other Lesta-only tags do not exist in the Wargaming client.
-describe('Мир танков collision data', () => {
+describe('Мир танков collision data (wot.models@Lesta 63471c1, R230_Maus hull and chassis)', () => {
   it('parses a Lesta-only vehicle and names every hull group after an XML plate', () => {
     const collision = parseCollision(readFixture(COLLISION_FIXTURES.mtCollision));
     const plates = new Set(collision.parts.Hull?.groups.map((group) => group.name));

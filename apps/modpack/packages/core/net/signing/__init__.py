@@ -1,4 +1,6 @@
 """HMAC-SHA256 request signing (v2) shared with the server, and the clock offset its 428 answers correct."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import binascii
 import hashlib
 import hmac

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 
 from .values import clean_values, raw_key_of
@@ -8,12 +10,9 @@ def backup_path(config_dir, account_id):
     return os.path.join(config_dir, 'settings_backup_%d.json' % int(account_id))
 
 
+# A second apply keeps the values the first one saved, so a restore returns to the settings the player had
+# before the first apply.
 class SettingsBackup(object):
-    """The player's own values of every key an apply touched ("Вернуть мои").
-
-    A second apply keeps the values saved by the first one, so restore always
-    returns to the settings the player had before the first apply.
-    """
 
     def __init__(self, storage):
         self.storage = storage

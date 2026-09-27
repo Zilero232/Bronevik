@@ -19,15 +19,16 @@ export const useWeeklyChallenges = () => {
     staleTime: CHALLENGES_VIEW.staleMs
   });
 
-  const endsAt = query.data?.endsAt ?? null;
+  const { data: weekly } = query;
+  const endsAt = weekly?.endsAt ?? null;
   const countdown = useCountdown({ seconds: (now) => (endsAt ? secondsUntil({ endsAt, now }) : 0) });
 
-  const rows = challengeRows(query.data?.challenges ?? []);
+  const rows = challengeRows(weekly?.challenges ?? []);
 
   return {
     query,
     rows,
-    summary: query.data ? challengeSummary(rows) : null,
+    summary: weekly ? challengeSummary(rows) : null,
     needsLesta: viewer.isSignedIn && !viewer.isPending && !viewer.hasLesta,
     timeLeft:
       endsAt && countdown.left > 0

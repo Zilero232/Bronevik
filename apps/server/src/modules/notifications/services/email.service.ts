@@ -9,7 +9,7 @@ import { AppConfigService } from '../../../config';
 import { isPlaceholderEmail } from '../../../lib/auth';
 import { SMTP_TIMEOUTS } from '../config';
 import { notificationText } from '../lib';
-import { DigestEmail } from '../templates/digest-email';
+import { DigestEmail } from '../templates';
 import { MailTransportService } from './mail-transport.service';
 
 @Injectable()

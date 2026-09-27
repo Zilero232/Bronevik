@@ -1,5 +1,6 @@
 import * as z from 'zod/mini';
 
+import { LANGUAGES } from '../../../shared/i18n';
 import { PROTOCOL } from './protocol.constants';
 
 const text = z.string();
@@ -35,6 +36,8 @@ export const actionSchema = z.object({
   input: optionalText
 });
 
+const detailSchema = z.object({ label: text, value: text });
+
 const rowSchema = z.object({
   id: text,
   title: text,
@@ -42,6 +45,7 @@ const rowSchema = z.object({
   meta: optionalText,
   badge: optionalText,
   link: optionalText,
+  details: z.optional(z.array(detailSchema)),
   actions: z.array(actionSchema)
 });
 
@@ -81,7 +85,7 @@ export const noticeSchema = z.object({
 export const stateSchema = z.object({
   v: z.literal(PROTOCOL.version),
   revision: z.number(),
-  language: z.enum(['ru', 'en']),
+  language: z.enum(LANGUAGES),
   language_setting: text,
   languages: z.array(text),
   status: z.object({ bound: z.boolean(), auth_failed: z.boolean(), account_id: z.nullable(z.number()), text }),
@@ -102,7 +106,7 @@ export const messageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('close') }),
   z.object({ type: z.literal('set'), component: text, key: text, value: settingValue }),
   z.object({ type: z.literal('action'), component: text, action: text, row: z.optional(text), value: z.optional(text) }),
-  z.object({ type: z.literal('language'), language: z.enum(['auto', 'ru', 'en']) }),
+  z.object({ type: z.literal('language'), language: z.enum(['auto', ...LANGUAGES] as const) }),
   z.object({ type: z.literal('bind'), code: text }),
   z.object({ type: z.literal('open'), path: text }),
   z.object({ type: z.literal('profile_save'), name: text, id: z.optional(text) }),

@@ -12,10 +12,12 @@ export const useTopBoard = () => {
   const filter = toLeaderboardFilter(params);
   const query = useQuery({ ...topQueries.board(filter), placeholderData: keepPreviousData });
 
+  const { data: board, isError, isPlaceholderData } = query;
+
   return {
     filter,
     query,
-    podium: query.isError ? [] : (query.data?.entries.slice(0, TOP_BOARD.podiumSize) ?? []),
-    isRefreshing: query.isPlaceholderData
+    podium: isError ? [] : (board?.entries.slice(0, TOP_BOARD.podiumSize) ?? []),
+    isRefreshing: isPlaceholderData
   };
 };

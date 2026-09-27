@@ -8,12 +8,15 @@ import type { SpecChange, SpecDiffInput, VehicleSlugsInput } from './encyclopedi
 import { readRecord, slugify, VEHICLE_TYPE_TO_DB } from '../../../../../common/lib';
 import { MODULE_TYPES, PROVISION_TYPES, SPEC_DIFF } from './encyclopedia.constants';
 
-const isKey = <T extends object>(table: T, key: string): key is Extract<keyof T, string> => Object.hasOwn(table, key);
+const keyOf =
+  <T extends object>(table: T) =>
+  (key: string): key is Extract<keyof T, string> =>
+    Object.hasOwn(table, key);
 
-export const toVehicleType = (value: string): VehicleType | null => (isKey(VEHICLE_TYPE_TO_DB, value) ? VEHICLE_TYPE_TO_DB[value] : null);
+export const toVehicleType = (value: string): VehicleType | null => (keyOf(VEHICLE_TYPE_TO_DB)(value) ? VEHICLE_TYPE_TO_DB[value] : null);
 
 export const toProvisionType = (value: string | null | undefined): ProvisionType | null =>
-  value && isKey(PROVISION_TYPES, value) ? PROVISION_TYPES[value] : null;
+  value && keyOf(PROVISION_TYPES)(value) ? PROVISION_TYPES[value] : null;
 
 export const toModuleType = (value: string | null | undefined): ModuleType | null => MODULE_TYPES.find((type) => type === value) ?? null;
 

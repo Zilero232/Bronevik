@@ -3,12 +3,11 @@ import type { RngBucket } from '@otmetki/schemas';
 import { HONEST_RNG } from '@otmetki/schemas';
 
 import type { RngLuck } from '../../honest-rng.types';
-import type { LuckInput } from './rng-theory.types';
+import type { LuckInput, NormalCdfInput } from './rng-theory.types';
 
 import { summarizeRolls } from '../../../analytics';
 import { RNG_LUCK, RNG_THEORY } from '../../config';
-
-const ERF = { p: 0.327_591_1, a: [0.254_829_592, -0.284_496_736, 1.421_413_741, -1.453_152_027, 1.061_405_429] } as const;
+import { ERF } from './rng-theory.constants';
 
 export const erf = (x: number): number => {
   const sign = Math.sign(x);
@@ -19,15 +18,15 @@ export const erf = (x: number): number => {
   return sign * (1 - polynomial * Math.exp(-value * value));
 };
 
-const normalCdf = (x: number, sigma: number): number => 0.5 * (1 + erf(x / (sigma * Math.SQRT2)));
+const normalCdf = ({ x, sigma }: NormalCdfInput): number => 0.5 * (1 + erf(x / (sigma * Math.SQRT2)));
 
 export const theoryBuckets = (): RngBucket[] => {
   const sigma = HONEST_RNG.spread * RNG_THEORY.sigmaShare;
-  const mass = normalCdf(HONEST_RNG.spread, sigma) - normalCdf(-HONEST_RNG.spread, sigma);
+  const mass = normalCdf({ x: HONEST_RNG.spread, sigma }) - normalCdf({ x: -HONEST_RNG.spread, sigma });
 
   return summarizeRolls([]).buckets.map((bucket) => ({
     ...bucket,
-    share: ((normalCdf(bucket.to, sigma) - normalCdf(bucket.from, sigma)) / mass) * 100
+    share: ((normalCdf({ x: bucket.to, sigma }) - normalCdf({ x: bucket.from, sigma })) / mass) * 100
   }));
 };
 

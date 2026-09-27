@@ -6,6 +6,7 @@ import { ReferenceCoreModule } from '../reference';
 import { TelegramCoreModule } from '../telegram';
 import { NotificationsProducerModule } from './notifications-producer.module';
 import { DeliverProcessor, NotificationEventsProcessor, NotificationSchedulesService } from './processors';
+import { plusCheckoutProvider } from './providers';
 import {
   DeliveryService,
   EmailService,
@@ -35,6 +36,7 @@ import {
     ThresholdDropsService,
     WeeklyDigestService,
     PlusLaunchService,
+    plusCheckoutProvider,
     DeliverProcessor,
     NotificationEventsProcessor,
     NotificationSchedulesService

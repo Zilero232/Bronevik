@@ -4,7 +4,6 @@ OUTCOMES = ('pen', 'crit', 'no_pen', 'ricochet', 'spaced', 'tracks', 'missed_arm
 MERGE_WINDOW_S = 2.0
 MAX_ENTRIES = 60
 
-# The HUD editor's miniature and the hangar preview (hud_edit): (target, vehicle, outcome, damage, shell, remaining HP).
 PREVIEW_HITS = (
     (1, 'Pz. IV', 'pen', 390, 'ap', 510),
     (2, 'T-34', 'ricochet', None, None, None),

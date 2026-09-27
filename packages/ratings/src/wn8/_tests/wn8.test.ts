@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { TankTotals } from '../../stats';
 
 import { accountWn8, tankWn8, WN8, wn8FromRatios } from '..';
-import { makeTank, UNIT_EXPECTED } from '../../_tests/fixtures';
+import { makeTank, UNIT_EXPECTED } from '../../stats/_tests/fixtures';
 
 const EXPECTED = UNIT_EXPECTED;
 

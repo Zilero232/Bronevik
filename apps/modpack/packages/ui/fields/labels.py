@@ -4,10 +4,6 @@ from ...core.compat import to_text
 
 
 class Labels(object):
-    """Label lookup over the shared string catalog, most specific key first:
-    component title `component_<id>`; field `<component>_<key>`, `setting_<key>`, then `<key>` (the
-    companion labels its switches by key); hints the same with `_hint`; choices `<component>_<key>_<value>`
-    then `choice_<value>`."""
 
     def __init__(self, catalog, language):
         self.catalog = catalog

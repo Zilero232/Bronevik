@@ -1,2 +1,4 @@
-export { VK_LOCALE_FILES } from './locales.config';
-export { VK_BOT, VK_COMMAND_ALIASES, VK_COMMAND_PATTERN, VK_TOKENS } from './vk.constants';
+export { VK_BOT } from './bot.constants';
+export { VK_COMMAND_ALIASES, VK_COMMAND_PATTERN } from './commands.constants';
+export { VK_LOCALE_FILES } from './locales.constants';
+export { VK_TOKENS } from './tokens.constants';

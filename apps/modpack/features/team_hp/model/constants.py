@@ -2,7 +2,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 BAR_CHAR = '|'
 
-# The HUD editor's miniature and the hangar preview (hud_edit): (vehicle id, team, max HP, HP, alive); own team 1.
 PREVIEW_TEAM = 1
 PREVIEW_VEHICLES = (
     (1, 1, 1800, 1200, True),

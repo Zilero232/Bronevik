@@ -1,7 +1,7 @@
 import { PLAY_MODES } from '@otmetki/schemas';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { ModeSqlRow } from '../../lib/mode-meta';
+import type { ModeSqlRow } from '../../mappers';
 
 import { MODE_META_AGGREGATE } from '../../config';
 import { ModeMetaService } from '../mode-meta.service';

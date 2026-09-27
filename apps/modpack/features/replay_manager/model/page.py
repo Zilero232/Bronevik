@@ -9,7 +9,6 @@ def _megabytes(size):
 
 
 def _vehicle_label(vehicle):
-    """`ussr-R04_T-34` -> `T-34` (the header's vehicle name without the nation and item prefix)."""
     if not vehicle:
         return None
     name = vehicle.split('-', 1)[-1]

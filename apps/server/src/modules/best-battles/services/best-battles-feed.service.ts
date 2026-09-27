@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import type { BestBattle, BestBattleRow, BestBattlesPage, BestBattlesQuery, TankScopeInput } from '../best-battles.types';
+import type { BestBattle, BestBattleRow, BestBattlesPage, FeedPageInput, TankScopeInput } from '../best-battles.types';
 
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
@@ -18,7 +18,7 @@ export class BestBattlesFeedService {
     private readonly lookups: BestBattleLookupsService
   ) {}
 
-  async page(query: BestBattlesQuery, now: Date): Promise<BestBattlesPage> {
+  async page({ query, now }: FeedPageInput): Promise<BestBattlesPage> {
     const { period, metric, arenaId, medal, limit } = query;
     const since = periodSince({ period, now });
     const offset = Number(query.cursor ?? 0);

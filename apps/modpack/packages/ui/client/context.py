@@ -11,7 +11,6 @@ from .browser import open_url
 
 
 def _hud():
-    """(component config, HUD layer) of the core HUD layer, or (None, None) while it is not installed."""
     try:
         from ...core.client.hud import component_config, hud_layer
     except ImportError:
@@ -20,7 +19,6 @@ def _hud():
 
 
 class UiContext(object):
-    """The bridge's view of the running mod (see ui/bridge/bridge.py)."""
 
     switch_keys = FEATURES
 

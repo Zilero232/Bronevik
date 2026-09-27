@@ -24,7 +24,6 @@ def _hotkey(on_press):
 
 
 class GamefaceSettingsView(SettingsView):
-    """The Gameface window behind the companion's SettingsView interface (next to ModsSettingsAPI)."""
 
     name = 'gameface'
 
@@ -105,7 +104,6 @@ class UiHost(object):
             self.push()
 
     def on_hud_editing(self, active):
-        """The on-screen mode: the window steps aside so the real panels can be dragged in the hangar."""
         self.on_screen_editing = active
         if active:
             self.close()

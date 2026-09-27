@@ -1,7 +1,8 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
-import { JOB, MetricsService, QUEUE, webhookDeliverPayloadSchema, WORKER_CONCURRENCY } from '../../collector';
+import { JOB, QUEUE, webhookDeliverPayloadSchema, WORKER_CONCURRENCY } from '../../collector';
+import { MetricsService } from '../../collector/metrics';
 import { SessionCloseService, WebhookDeliveryService, WebhookRedriveService } from '../services';
 
 @Processor(QUEUE.developerWebhooks, { concurrency: WORKER_CONCURRENCY.developerWebhooks })

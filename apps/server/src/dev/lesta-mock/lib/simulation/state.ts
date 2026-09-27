@@ -1,7 +1,14 @@
 import { LRUCache } from 'lru-cache';
 
-import type { MockBattle, MockGarageTank, MockPlayer, MockPlayerState, MockTankState, MockWorld } from '../../lesta-mock.types';
-import type { AdvanceInput, BattlesBetweenInput } from './simulation.types';
+import type { MockBattle, MockPlayerState, MockTankState } from '../../lesta-mock.types';
+import type {
+  AdvanceInput,
+  BaseStateInput,
+  BaseTankStateInput,
+  BattlesBetweenInput,
+  CheckpointForInput,
+  PlayerStateAtInput
+} from './simulation.types';
 
 import { MOCK_CACHE, MOCK_MOE, MOCK_SALT, MOCK_TIME } from '../../config';
 import { buildGarage } from '../garage';
@@ -26,15 +33,15 @@ const cloneState = (state: MockPlayerState): MockPlayerState => ({
   )
 });
 
-const baseTankState = (world: MockWorld, player: MockPlayer, tank: MockGarageTank): MockTankState => {
+const baseTankState = ({ world, player, tank }: BaseTankStateInput): MockTankState => {
   const rng = createRng(world.seed, MOCK_SALT.base, player.index, tank.vehicle.tankId);
-  const odds = baseOddsFor(player, tank.vehicle, tank.affinity, tank.baseBattles);
+  const odds = baseOddsFor({ player, vehicle: tank.vehicle, affinity: tank.affinity, battles: tank.baseBattles });
   const random = aggregateBattles({ rng, vehicle: tank.vehicle, battles: tank.baseBattles, ...odds });
   const otherBattles = Math.round(tank.baseBattles * tank.otherShare);
   const other = aggregateBattles({ rng, vehicle: tank.vehicle, battles: otherBattles, ...odds, winChance: Math.min(0.8, odds.winChance + 0.03) });
   const ramp = 1 - (1 - moeAlpha()) ** tank.baseBattles;
   const ema = combinedExpected(tank.vehicle) * odds.perf * ramp;
-  const recency = tank.weight > 0 ? Math.round(rng.float() ** 3 * 600) : rng.int(30, 2000);
+  const recency = tank.weight > 0 ? Math.round(rng.float() ** 3 * 600) : rng.int({ min: 30, max: 2000 });
 
   return {
     vehicle: tank.vehicle,
@@ -46,13 +53,13 @@ const baseTankState = (world: MockWorld, player: MockPlayer, tank: MockGarageTan
   };
 };
 
-export const baseState = (world: MockWorld, player: MockPlayer): MockPlayerState => {
-  const garage = buildGarage(world, player);
+export const baseState = ({ world, player }: BaseStateInput): MockPlayerState => {
+  const garage = buildGarage({ world, player });
   const tanks = new Map<number, MockTankState>();
 
   for (const tank of garage.tanks) {
     if (tank.baseBattles > 0) {
-      tanks.set(tank.vehicle.tankId, baseTankState(world, player, tank));
+      tanks.set(tank.vehicle.tankId, baseTankState({ world, player, tank }));
     }
   }
 
@@ -83,7 +90,14 @@ export const advanceState = ({ world, player, garage, state, fromDay, toDay, aft
         bestMoePercent: 0
       };
 
-      const odds = oddsFor(player, tank.vehicle, tank.affinity, current.random.battles + current.other.battles, planned.endedAt);
+      const odds = oddsFor({
+        player,
+        vehicle: tank.vehicle,
+        affinity: tank.affinity,
+        battlesOnTank: current.random.battles + current.other.battles,
+        at: planned.endedAt
+      });
+
       const rng = createRng(world.seed, MOCK_SALT.battle, player.index, day, planned.sequence);
       const premiumAccount = unitFloat(world.seed, MOCK_SALT.economy, player.index, day) < player.premiumShare;
       const simulated = simulateBattle({
@@ -112,7 +126,7 @@ export const advanceState = ({ world, player, garage, state, fromDay, toDay, aft
         marksOnGun: marksFor(current.bestMoePercent)
       };
 
-      addBattle(isRandom ? current.random : current.other, battle);
+      addBattle({ totals: isRandom ? current.random : current.other, battle });
       current.lastBattle = Math.max(current.lastBattle, planned.endedAt);
       state.tanks.set(planned.tankId, current);
       state.lastBattle = Math.max(state.lastBattle, planned.endedAt);
@@ -123,17 +137,19 @@ export const advanceState = ({ world, player, garage, state, fromDay, toDay, aft
   return state;
 };
 
-const checkpointFor = (world: MockWorld, player: MockPlayer, day: number): Checkpoint => {
+const checkpointFor = ({ world, player, day }: CheckpointForInput): Checkpoint => {
   const key = `${world.seed}:${player.index}`;
   const cached = checkpoints.get(key);
-  const garage = buildGarage(world, player);
+  const garage = buildGarage({ world, player });
 
   if (cached && cached.day === day) {
     return cached;
   }
 
   const start =
-    cached && cached.day < day ? { day: cached.day, state: cloneState(cached.state) } : { day: world.anchorDay - 1, state: baseState(world, player) };
+    cached && cached.day < day
+      ? { day: cached.day, state: cloneState(cached.state) }
+      : { day: world.anchorDay - 1, state: baseState({ world, player }) };
 
   const state = advanceState({ world, player, garage, state: start.state, fromDay: start.day + 1, toDay: day, after: -Infinity, until: Infinity });
   const checkpoint = { day, state };
@@ -143,30 +159,40 @@ const checkpointFor = (world: MockWorld, player: MockPlayer, day: number): Check
   return checkpoint;
 };
 
-export const playerStateAt = (world: MockWorld, player: MockPlayer, at: number): MockPlayerState => {
+export const playerStateAt = ({ world, player, at }: PlayerStateAtInput): MockPlayerState => {
   const day = dayOf(at);
 
   if (day < world.anchorDay) {
-    return { ...baseState(world, player), at };
+    return { ...baseState({ world, player }), at };
   }
 
-  const checkpoint = checkpointFor(world, player, Math.max(world.anchorDay - 1, day - 2));
+  const checkpoint = checkpointFor({ world, player, day: Math.max(world.anchorDay - 1, day - 2) });
   const state = cloneState(checkpoint.state);
 
-  advanceState({ world, player, garage: buildGarage(world, player), state, fromDay: checkpoint.day + 1, toDay: day, after: -Infinity, until: at });
+  advanceState({
+    world,
+    player,
+    garage: buildGarage({ world, player }),
+    state,
+    fromDay: checkpoint.day + 1,
+    toDay: day,
+    after: -Infinity,
+    until: at
+  });
+
   state.at = at;
 
   return state;
 };
 
 export const battlesBetween = ({ world, player, from, to }: BattlesBetweenInput): MockBattle[] => {
-  const state = playerStateAt(world, player, from);
+  const state = playerStateAt({ world, player, at: from });
   const battles: MockBattle[] = [];
 
   advanceState({
     world,
     player,
-    garage: buildGarage(world, player),
+    garage: buildGarage({ world, player }),
     state,
     fromDay: dayOf(from) - 1,
     toDay: dayOf(to),

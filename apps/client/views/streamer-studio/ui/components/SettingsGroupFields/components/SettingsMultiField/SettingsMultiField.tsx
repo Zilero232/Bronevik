@@ -9,14 +9,12 @@ import { FormField, ToggleChips } from '@/ui-kit';
 
 import type { SettingsMultiFieldProps } from './SettingsMultiField.types';
 
-import { fieldLabelKey } from '../../../../../lib/settings-form';
 import { useSettingsField } from '../../../../../model/hooks';
 
 export const SettingsMultiField = ({ field }: SettingsMultiFieldProps) => {
   const t = useTranslations('streamerSettings');
-  const { control } = useSettingsField(field.path);
+  const { control, label } = useSettingsField(field.path);
 
-  const label = t(fieldLabelKey(field.path));
   const options = field.options.map((option) => ({
     value: option,
     label: isIncludedIn(option, STREAMER_SETTINGS.zoomSteps) ? option : t(`options.${option}`)

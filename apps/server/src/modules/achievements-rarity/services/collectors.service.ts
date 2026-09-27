@@ -8,7 +8,7 @@ import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { ACHIEVEMENTS_AGGREGATE, ACHIEVEMENTS_VIEW } from '../config';
 import { byRarity, heldNames, readCounts, seriesProgress, standing } from '../lib';
-import { toCollectorRow } from '../mappers';
+import { toCollectorRow, toSeriesView } from '../mappers';
 import { COLLECTOR_ROW_SELECT, RANKED_COLLECTORS } from '../selects';
 import { AchievementCatalogService } from './achievement-catalog.service';
 
@@ -102,11 +102,7 @@ export class CollectorsService {
       topPercent: position.topPercent,
       sample: ranked,
       rarest: held.slice(0, ACHIEVEMENTS_VIEW.rarestHeld),
-      series: seriesProgress(readCounts(set?.maxSeries ?? {})).map((row) => ({
-        ...row,
-        title: items.get(row.name)?.title ?? row.name,
-        image: items.get(row.name)?.image ?? null
-      })),
+      series: seriesProgress(readCounts(set?.maxSeries ?? {})).map((row) => toSeriesView({ row, items })),
       showcase: isPlus ? held.slice(0, ACHIEVEMENTS_VIEW.showcaseSize) : null,
       viewerIsOwner: viewerUserId !== null && ownerId === viewerUserId
     };

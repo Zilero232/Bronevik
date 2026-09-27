@@ -13,6 +13,7 @@ import s from './FavoriteTanksPanel.module.scss';
 
 export const FavoriteTanksPanel = () => {
   const t = useTranslations('profile.overview');
+  const tCommon = useTranslations('common');
   const format = useFormatter();
   const { query, rows } = useFavoriteTanks();
 
@@ -35,7 +36,7 @@ export const FavoriteTanksPanel = () => {
                 figures={[
                   { id: 'battles', label: t('battles'), value: format.number(battles) },
                   { id: 'winRate', label: t('winRate'), value: <WinRateCell digits={1} value={winRate} /> },
-                  { id: 'wn8', label: 'WN8', value: <RatingValue rating={wn8} /> }
+                  { id: 'wn8', label: tCommon('ratings.wn8'), value: <RatingValue rating={wn8} /> }
                 ]}
                 footer={<TankAwards markOfMastery={markOfMastery} marksOnGun={marksOnGun} />}
                 vehicle={vehicle}

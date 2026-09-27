@@ -7,7 +7,7 @@ import _support
 from otmetki.companion.payload import build_battle_event
 from otmetki.core.settings import Settings
 from otmetki.features.battle_results.i18n import STRINGS
-from otmetki.features.battle_results.model import build_summary, counts, format_summary, signed
+from otmetki.features.battle_results.model import build_page, build_summary, compact, counts, format_summary, page_actions, session_of, signed
 from otmetki.features.battle_results.settings import SCHEMA
 
 BEFORE = {'tank_id': 1, 'damage_rating': 8600, 'moving_avg_damage': 2550, 'marks_on_gun': 1}
@@ -82,6 +82,45 @@ class FormatTest(unittest.TestCase):
 
     def test_strings_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+
+class PageTest(unittest.TestCase):
+
+    def entries(self):
+        battle = event()
+        battle['stats'].update({'repair_cost': 4200, 'ammo_cost': 1800, 'consumables_cost': 3000})
+        first = compact(build_summary(battle, BEFORE, 'Малиновка'))
+        second = dict(first, arena='2', time=first['time'] + 7200, result='loss', damage=300, moe_delta=-0.4)
+        return [first, second]
+
+    def test_extended_summary(self):
+        battle = event()
+        battle['stats'].update({'repair_cost': 4200, 'ammo_cost': 1800, 'consumables_cost': 3000, 'free_xp': 57})
+        entry = compact(build_summary(battle, BEFORE, 'Малиновка'))
+        assert entry['net_credits'] == 48000 - 4200 - 1800 - 3000
+        assert (entry['shots'], entry['hits'], entry['pens'], entry['free_xp']) == (12, 9, 7, 57)
+        assert 'players' not in entry and 'vehicles' not in entry
+
+    def test_session_split_by_idle_gap(self):
+        entries = self.entries()
+        assert session_of(entries, 3600) == entries[1:]
+        assert session_of(entries, 3 * 3600) == entries
+        assert session_of([], 60) == []
+
+    def test_page(self):
+        page = build_page(self.entries(), translator(), 3600)
+        rows = page['rows']
+        assert [row['id'] for row in rows] == ['session', '2', event()['arena_unique_id']]
+        assert rows[0]['title'] == 'Сессия: 1 боёв'
+        assert rows[1]['badge'] == '-0.40%' and rows[1]['title'].startswith('поражение')
+        details = dict((item['label'], item['value']) for item in rows[2]['details'])
+        assert details['Кредиты за вычетом расходов'] == '39 000'
+        assert details['Отметка'] == '87.12% (+1.12%)'
+        assert build_page([], translator('en'), 3600)['rows'] == []
+        assert [action['id'] for action in page_actions(translator())] == ['site', 'clear']
+
+    def test_history_size_limits(self):
+        assert Settings({'history_size': 1000}, SCHEMA).get('history_size') == 100
 
 
 if __name__ == '__main__':

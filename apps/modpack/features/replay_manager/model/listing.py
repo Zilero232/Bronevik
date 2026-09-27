@@ -7,7 +7,6 @@ from .constants import SCAN_MAX_FILES
 
 
 class HeaderCache(object):
-    """Replay headers by path, re-read only when the file's size or mtime changes."""
 
     def __init__(self, read=None):
         self.read = read or read_header
@@ -26,8 +25,6 @@ class HeaderCache(object):
 
 
 def own_replays(folder, account_id, cache, listdir=None, stat=None):
-    """The player's own replays in `folder`, newest first: the header's recorder must be `account_id`.
-    [{name, path, size, mtime, header}]; nothing without an account."""
     if account_id is None:
         return []
     listdir = listdir or os.listdir

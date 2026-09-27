@@ -1,9 +1,6 @@
-import type { Language, StringKey, Strings } from './i18n.types';
+import type { Language, StringKey } from './i18n.types';
 
-import { EN } from './strings/en';
-import { RU } from './strings/ru';
-
-const CATALOG: Record<Language, Strings> = { ru: RU, en: EN };
+import { CATALOG } from './i18n.constants';
 
 export const translator =
   (language: Language) =>

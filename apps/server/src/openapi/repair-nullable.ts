@@ -1,17 +1,15 @@
-import type { OpenAPIObject, ReferenceObject, SchemaObject } from '@nestjs/swagger';
+import type { OpenAPIObject, SchemaObject } from '@nestjs/swagger';
 
 import { mapValues } from 'remeda';
 
-import type { RepairNullableInput } from './openapi.types';
+import type { OpenApiSchema, RepairNullableInput, RepairPropertyInput } from './openapi.types';
 
 import { OPENAPI } from './openapi.constants';
 
-type Schema = ReferenceObject | SchemaObject;
-
-const isBrokenNullable = (schema: Schema): schema is SchemaObject & { items: Schema } =>
+const isBrokenNullable = (schema: OpenApiSchema): schema is SchemaObject & { items: OpenApiSchema } =>
   !('$ref' in schema) && Reflect.get(schema, OPENAPI.emptyTypeKey) === true && schema.type === 'array' && schema.items !== undefined;
 
-const repairProperty = (property: Schema, version: RepairNullableInput['version']): Schema => {
+const repairProperty = ({ property, version }: RepairPropertyInput): OpenApiSchema => {
   if (!isBrokenNullable(property)) {
     return property;
   }
@@ -28,7 +26,7 @@ export const repairNullable = ({ document, version }: RepairNullableInput): Open
     schemas: mapValues(document.components?.schemas ?? {}, (schema) =>
       '$ref' in schema || !schema.properties
         ? schema
-        : { ...schema, properties: mapValues(schema.properties, (property) => repairProperty(property, version)) }
+        : { ...schema, properties: mapValues(schema.properties, (property) => repairProperty({ property, version })) }
     )
   }
 });

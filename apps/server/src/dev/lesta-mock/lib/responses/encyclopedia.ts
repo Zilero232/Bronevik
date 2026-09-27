@@ -1,5 +1,5 @@
-import type { MockCatalog, MockModule, MockVehicle } from '../../lesta-mock.types';
-import type { MockContext, MockRoute } from './responses.types';
+import type { MockCatalog, MockModule } from '../../lesta-mock.types';
+import type { AchievementImageInput, ByTypeInput, MockRoute, VehicleEntryInput } from './responses.types';
 
 import { vehicleImages } from '../../../../lib/lesta';
 import { ACHIEVEMENT_IMAGES, ACHIEVEMENT_SECTIONS, MOCK_ACHIEVEMENTS } from '../../config';
@@ -27,12 +27,13 @@ const moduleIndex = (catalog: MockCatalog): ReadonlyMap<number, MockModule> => {
   return created;
 };
 
-const achievementImage = (name: string, big = false): string => `${ACHIEVEMENT_IMAGES.base}/${big ? `${ACHIEVEMENT_IMAGES.big}/` : ''}${name}.png`;
+const achievementImage = ({ name, big = false }: AchievementImageInput): string =>
+  `${ACHIEVEMENT_IMAGES.base}/${big ? `${ACHIEVEMENT_IMAGES.big}/` : ''}${name}.png`;
 
-const byType = (context: MockContext, vehicle: MockVehicle, type: string): number[] =>
+const byType = ({ context, vehicle, type }: ByTypeInput): number[] =>
   vehicle.moduleIds.filter((moduleId) => moduleIndex(context.world.catalog).get(moduleId)?.type === type);
 
-const vehicleEntry = (context: MockContext, vehicle: MockVehicle) => ({
+const vehicleEntry = ({ context, vehicle }: VehicleEntryInput) => ({
   tank_id: vehicle.tankId,
   name: vehicle.name,
   short_name: vehicle.shortName,
@@ -60,11 +61,11 @@ const vehicleEntry = (context: MockContext, vehicle: MockVehicle) => ({
       return module ? [[String(moduleId), { module_id: moduleId, name: module.name, type: module.type, price_credit: module.priceCredit }]] : [];
     })
   ),
-  guns: byType(context, vehicle, 'vehicleGun'),
-  turrets: byType(context, vehicle, 'vehicleTurret'),
-  engines: byType(context, vehicle, 'vehicleEngine'),
-  radios: byType(context, vehicle, 'vehicleRadio'),
-  suspensions: byType(context, vehicle, 'vehicleChassis'),
+  guns: byType({ context, vehicle, type: 'vehicleGun' }),
+  turrets: byType({ context, vehicle, type: 'vehicleTurret' }),
+  engines: byType({ context, vehicle, type: 'vehicleEngine' }),
+  radios: byType({ context, vehicle, type: 'vehicleRadio' }),
+  suspensions: byType({ context, vehicle, type: 'vehicleChassis' }),
   next_tanks: Object.fromEntries(
     context.world.catalog.vehicles
       .filter((next) => next.prevTankIds.includes(vehicle.tankId))
@@ -74,9 +75,9 @@ const vehicleEntry = (context: MockContext, vehicle: MockVehicle) => ({
 });
 
 export const encyclopediaInfo: MockRoute = (context) =>
-  ok(
-    selectFields(
-      {
+  ok({
+    data: selectFields({
+      value: {
         game_version: context.world.catalog.gameVersion,
         tanks_updated_at: context.world.catalog.tanksUpdatedAt,
         languages: ENCYCLOPEDIA_LABELS.languages,
@@ -85,9 +86,9 @@ export const encyclopediaInfo: MockRoute = (context) =>
         vehicle_crew_roles: ENCYCLOPEDIA_LABELS.crewRoles,
         achievement_sections: Object.fromEntries(Object.entries(ACHIEVEMENT_SECTIONS).map(([key, section]) => [key, section]))
       },
-      context.fields
-    )
-  );
+      fields: context.fields
+    })
+  });
 
 export const encyclopediaVehicles: MockRoute = (context) => {
   const parsed = idList({ params: context.params, field: 'tank_id', required: false });
@@ -96,12 +97,12 @@ export const encyclopediaVehicles: MockRoute = (context) => {
     return parsed.error;
   }
 
-  const nations = new Set(listOf(context.params, 'nation'));
-  const types = new Set(listOf(context.params, 'type'));
-  const tiers = new Set(listOf(context.params, 'tier').map(Number));
+  const nations = new Set(listOf({ params: context.params, key: 'nation' }));
+  const types = new Set(listOf({ params: context.params, key: 'type' }));
+  const tiers = new Set(listOf({ params: context.params, key: 'tier' }).map(Number));
   const ids = new Set(parsed.ids);
-  const limit = Math.min(RESPONSES.maxListLimit, Math.max(1, intParam(context.params, 'limit', RESPONSES.maxListLimit)));
-  const page = Math.max(1, intParam(context.params, 'page_no', 1));
+  const limit = Math.min(RESPONSES.maxListLimit, Math.max(1, intParam({ params: context.params, key: 'limit', fallback: RESPONSES.maxListLimit })));
+  const page = Math.max(1, intParam({ params: context.params, key: 'page_no', fallback: 1 }));
   const matching = context.world.catalog.vehicles.filter(
     (vehicle) =>
       (ids.size === 0 || ids.has(vehicle.tankId)) &&
@@ -117,9 +118,11 @@ export const encyclopediaVehicles: MockRoute = (context) => {
   }
 
   const slice = ids.size > 0 ? matching : matching.slice((page - 1) * limit, page * limit);
-  const data = Object.fromEntries(slice.map((vehicle) => [String(vehicle.tankId), selectFields(vehicleEntry(context, vehicle), context.fields)]));
+  const data = Object.fromEntries(
+    slice.map((vehicle) => [String(vehicle.tankId), selectFields({ value: vehicleEntry({ context, vehicle }), fields: context.fields })])
+  );
 
-  return ok(data, { count: slice.length, page_total: ids.size > 0 ? 1 : pageTotal, total: matching.length, limit, page });
+  return ok({ data, meta: { count: slice.length, page_total: ids.size > 0 ? 1 : pageTotal, total: matching.length, limit, page } });
 };
 
 export const encyclopediaModules: MockRoute = (context) => {
@@ -135,8 +138,8 @@ export const encyclopediaModules: MockRoute = (context) => {
       .filter((module) => ids.size === 0 || ids.has(module.moduleId))
       .map((module) => [
         String(module.moduleId),
-        selectFields(
-          {
+        selectFields({
+          value: {
             module_id: module.moduleId,
             name: module.name,
             type: module.type,
@@ -147,12 +150,12 @@ export const encyclopediaModules: MockRoute = (context) => {
             image: null,
             tanks: module.tankIds
           },
-          context.fields
-        )
+          fields: context.fields
+        })
       ])
   );
 
-  return ok(data, { count: Object.keys(data).length });
+  return ok({ data, meta: { count: Object.keys(data).length } });
 };
 
 export const encyclopediaProvisions: MockRoute = (context) => {
@@ -168,8 +171,8 @@ export const encyclopediaProvisions: MockRoute = (context) => {
       .filter((provision) => ids.size === 0 || ids.has(provision.provisionId))
       .map((provision) => [
         String(provision.provisionId),
-        selectFields(
-          {
+        selectFields({
+          value: {
             provision_id: provision.provisionId,
             name: provision.name,
             tag: provision.tag,
@@ -181,20 +184,20 @@ export const encyclopediaProvisions: MockRoute = (context) => {
             weight: provision.weight,
             tanks: provision.tankIds
           },
-          context.fields
-        )
+          fields: context.fields
+        })
       ])
   );
 
-  return ok(data, { count: Object.keys(data).length });
+  return ok({ data, meta: { count: Object.keys(data).length } });
 };
 
 export const encyclopediaAchievements: MockRoute = (context) => {
   const data = Object.fromEntries(
     MOCK_ACHIEVEMENTS.map((achievement, order) => [
       achievement.name,
-      selectFields(
-        {
+      selectFields({
+        value: {
           name: achievement.name,
           name_i18n: achievement.title,
           section: achievement.section,
@@ -202,47 +205,47 @@ export const encyclopediaAchievements: MockRoute = (context) => {
           type: achievement.type,
           description: achievement.description,
           condition: achievement.description,
-          image: achievementImage(achievement.name),
-          image_big: achievementImage(achievement.name, true),
+          image: achievementImage({ name: achievement.name }),
+          image_big: achievementImage({ name: achievement.name, big: true }),
           order,
           outdated: false,
           options:
             achievement.type === 'class'
               ? [1, 2, 3, 4].map((stage) => ({
                   name_i18n: `${achievement.title} ${['I', 'II', 'III', 'IV'][stage - 1] ?? ''} степени`,
-                  image: achievementImage(`${achievement.name}${stage}`),
-                  image_big: achievementImage(`${achievement.name}${stage}`, true)
+                  image: achievementImage({ name: `${achievement.name}${stage}` }),
+                  image_big: achievementImage({ name: `${achievement.name}${stage}`, big: true })
                 }))
               : null
         },
-        context.fields
-      )
+        fields: context.fields
+      })
     ])
   );
 
-  return ok(data, { count: MOCK_ACHIEVEMENTS.length });
+  return ok({ data, meta: { count: MOCK_ACHIEVEMENTS.length } });
 };
 
 export const encyclopediaArenas: MockRoute = (context) =>
-  ok(
-    Object.fromEntries(
+  ok({
+    data: Object.fromEntries(
       context.world.catalog.arenas.map((arena) => [
         arena.arenaId,
-        selectFields(
-          { arena_id: arena.arenaId, name_i18n: arena.name, camouflage_type: arena.camouflageType, description: arena.description },
-          context.fields
-        )
+        selectFields({
+          value: { arena_id: arena.arenaId, name_i18n: arena.name, camouflage_type: arena.camouflageType, description: arena.description },
+          fields: context.fields
+        })
       ])
     )
-  );
+  });
 
 export const encyclopediaCrewSkills: MockRoute = (context) =>
-  ok(
-    Object.fromEntries(
+  ok({
+    data: Object.fromEntries(
       context.world.catalog.crewSkills.map((skill) => [
         skill.skill,
-        selectFields(
-          {
+        selectFields({
+          value: {
             name: skill.name,
             type: skill.type,
             roles: skill.roles,
@@ -250,15 +253,18 @@ export const encyclopediaCrewSkills: MockRoute = (context) =>
             description: skill.description,
             image_url: { small_icon: null, big_icon: null }
           },
-          context.fields
-        )
+          fields: context.fields
+        })
       ])
     )
-  );
+  });
 
 export const encyclopediaCrewRoles: MockRoute = (context) =>
-  ok(
-    Object.fromEntries(
-      context.world.catalog.crewRoles.map((role) => [role.role, selectFields({ name: role.name, skills: role.skills }, context.fields)])
+  ok({
+    data: Object.fromEntries(
+      context.world.catalog.crewRoles.map((role) => [
+        role.role,
+        selectFields({ value: { name: role.name, skills: role.skills }, fields: context.fields })
+      ])
     )
-  );
+  });

@@ -1,10 +1,9 @@
-export type AuthUser = {
-  id: string;
-  name: string;
-  email?: string | null;
-  image?: string | null;
-};
+import type { SessionExtras } from '@otmetki/schemas';
 
-export type AuthSession = { user: AuthUser; lestaAccountId: number | null } | null;
+import type { authClient } from '@/shared/api/auth';
+
+export type AuthUser = (typeof authClient.$Infer.Session)['user'];
+
+export type AuthSession = (Pick<SessionExtras, 'lestaAccountId'> & { user: AuthUser }) | null;
 
 export type DeleteAccountOutcome = 'deleted' | 'reauthenticate';

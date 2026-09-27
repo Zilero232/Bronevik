@@ -1,33 +1,23 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import time
 
+from ....core.client.native import read_settings
 from ....core.client.replays import DEFAULT_REPLAY_DIR, replay_dir
+from ....core.events import EVENT_REPLAY_UPLOADED
 from ....core.log import log, safe
 from ....core.net.signing import clock_offset
 from ....core.net.transport import BackgroundRunner, SyncTransport
 from ....core.storage import JsonFile
 from ..model import ReplayQueue, ReplayUploader, find_replay
 from ..model.constants import UPLOAD_PATH, VISIBILITY_PRIVATE, VISIBILITY_PUBLIC
-
-REPLAY_UPLOADED_EVENT = 'replay_uploaded'
-
-UPLOAD_TIMEOUT_S = 120.0
-STARTED_KEEP = 20
-# account_helpers.settings_core.settings_constants.GAME.REPLAY_ENABLED: 0 off, 1 last battle, 2 all.
-# UNVERIFIED on Lesta 1.45; an unknown name reads as None and the mod then just looks for a file.
-REPLAY_SETTING = 'replayEnabled'
+from ..settings import PUBLISH, SWITCH
+from .constants import REPLAY_SETTING, STARTED_KEEP, UPLOAD_TIMEOUT_S
 
 
 def game_records_replays():
-    """False only when the game's own replay setting is known to be off; None when it can't be read."""
-    try:
-        from helpers import dependency
-        from skeletons.account_helpers.settings_core import ISettingsCore
-        value = dependency.instance(ISettingsCore).getSetting(REPLAY_SETTING)
-    except Exception:
-        return None
+    value = (read_settings((REPLAY_SETTING,)) or {}).get(REPLAY_SETTING)
     if value is None:
         return None
     try:
@@ -36,9 +26,9 @@ def game_records_replays():
         return None
 
 
+# Never turns replay recording on: it uploads files the client already wrote, for battles of the bound
+# account, in the hangar, while the opt-in `upload_replays` switch is on.
 class ReplayAutoUpload(object):
-    """Glue for the opt-in `upload_replays` switch. It never turns replay recording on: it only
-    uploads files the client already wrote, for battles of the bound account, in the hangar."""
 
     def __init__(self, app):
         self.app = app
@@ -59,7 +49,7 @@ class ReplayAutoUpload(object):
             self.on_account(app.account_id)
 
     def _enabled(self):
-        return self.app.config.is_enabled('upload_replays') and self.app.is_bound() and not self.app.auth_failed
+        return self.app.config.is_enabled(SWITCH) and self.app.is_bound() and not self.app.auth_failed
 
     def on_account(self, account_id):
         self.queue = ReplayQueue(JsonFile(os.path.join(self.config_dir, 'replays_%d.json' % account_id)))
@@ -81,14 +71,12 @@ class ReplayAutoUpload(object):
         if self.queue is not None:
             self.queue.unblock()
 
-    @safe
     def on_battle_start(self, arena_unique_id):
         if arena_unique_id:
             self.started[arena_unique_id] = time.time()
             for stale in sorted(self.started, key=self.started.get)[:-STARTED_KEEP]:
                 del self.started[stale]
 
-    @safe
     def on_battle_result(self, arena_unique_id, results):
         started_at = self.started.pop(arena_unique_id, None)
         if self.queue is None or not self._enabled():
@@ -102,7 +90,7 @@ class ReplayAutoUpload(object):
             log('replay queued for upload: %s' % arena_unique_id)
 
     def _find(self, item):
-        # Runs on the worker thread: only the folder resolved on the main thread, plain file access.
+        # Runs on the worker thread: plain file access in the folder the main thread resolved.
         return find_replay(self.folder, item['account_id'], item['arena_unique_id'], item.get('started_at'))
 
     @safe
@@ -111,15 +99,14 @@ class ReplayAutoUpload(object):
 
     @safe
     def _on_replay_id(self, arena_unique_id, replay_id):
-        self.app.bus.emit(REPLAY_UPLOADED_EVENT, arena_unique_id, replay_id)
+        self.app.bus.emit(EVENT_REPLAY_UPLOADED, arena_unique_id, replay_id)
 
     def tick(self, now):
-        """Hangar only: hand finished jobs back to the main thread and start the next upload."""
         self.runner.poll()
         if self.uploader is None or not self._enabled():
             return
         self.uploader.credentials = self.app.current_credentials()
         self.uploader.url = self.app.config.endpoint(UPLOAD_PATH)
-        self.uploader.visibility = VISIBILITY_PUBLIC if self.app.config.is_enabled('publish_replays') else VISIBILITY_PRIVATE
+        self.uploader.visibility = VISIBILITY_PUBLIC if self.app.config.is_enabled(PUBLISH) else VISIBILITY_PRIVATE
         self.folder = replay_dir()
         self.uploader.tick(now)

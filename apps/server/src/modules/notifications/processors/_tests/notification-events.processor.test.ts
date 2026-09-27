@@ -3,10 +3,13 @@ import type { Job } from 'bullmq';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
+import type { MetricsService } from '../../../collector/metrics';
 import type { FirstWinRemindersService, MarksWatchService, SessionReportsService, ThresholdDropsService, WeeklyDigestService } from '../../services';
 
-import { NOTIFICATIONS_JOB } from '../../contracts';
+import { NOTIFICATIONS_JOB } from '../../config';
 import { NotificationEventsProcessor } from '../notification-events.processor';
+
+const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });
 
 const createProcessor = () => {
   const services = {
@@ -23,7 +26,14 @@ const createProcessor = () => {
   services.digest.run.mockResolvedValue(4);
   services.firstWin.run.mockResolvedValue(5);
 
-  const processor = new NotificationEventsProcessor(services.marks, services.sessions, services.thresholds, services.digest, services.firstWin);
+  const processor = new NotificationEventsProcessor(
+    services.marks,
+    services.sessions,
+    services.thresholds,
+    services.digest,
+    services.firstWin,
+    trackingMetrics()
+  );
 
   return { processor, services };
 };

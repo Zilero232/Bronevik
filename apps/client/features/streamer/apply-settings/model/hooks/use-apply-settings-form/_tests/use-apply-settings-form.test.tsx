@@ -27,7 +27,11 @@ vi.mock('../../../../api', () => ({ requestSettingsApply: vi.fn() }));
 
 const SLUG = 'jove';
 const TEXT = messages.en.streamerSettings;
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: null };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: null
+};
+
 const PROVENANCE = { source: 'creator', sourceUrl: null, checkedAt: '2026-09-26T10:00:00.000Z' } as const;
 
 const SETTINGS: StreamerSettings = {

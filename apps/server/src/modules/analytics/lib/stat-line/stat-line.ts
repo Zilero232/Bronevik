@@ -3,7 +3,7 @@ import type { AnalyticsBreakdown, BreakdownRow, StatLine, TrendPoint } from '@ot
 import { accountWn8 } from '@otmetki/ratings';
 import { groupBy, sortBy, sumBy } from 'remeda';
 
-import type { AggregateRow, BreakdownInput, GroupRowsInput, RawTankRow, StatLineInput, TrendPointsInput } from './stat-line.types';
+import type { AggregateRow, BreakdownInput, GroupRowsInput, StatLineInput, TrendPointsInput } from './stat-line.types';
 
 import { percentOf } from '../../../../common/lib';
 
@@ -34,18 +34,6 @@ export const breakdown = (input: BreakdownInput): AnalyticsBreakdown => ({
   byTier: sortBy(groupRows({ ...input, keyOf: (vehicle) => String(vehicle.tier) }), [(row) => Number(row.key), 'desc']),
   byClass: sortBy(groupRows({ ...input, keyOf: (vehicle) => vehicle.type }), [(row) => row.battles, 'desc']),
   byNation: sortBy(groupRows({ ...input, keyOf: (vehicle) => vehicle.nation }), [(row) => row.battles, 'desc'])
-});
-
-export const toAggregateRow = (row: RawTankRow): AggregateRow => ({
-  tankId: row.tank_id,
-  battles: row.battles,
-  wins: row.wins,
-  damageDealt: row.damage,
-  frags: row.frags,
-  spotted: row.spotted,
-  capturePoints: row.cap,
-  droppedCapturePoints: row.def,
-  survivedBattles: row.survived
 });
 
 export const trendPoints = ({ rows, expected }: TrendPointsInput): TrendPoint[] => {

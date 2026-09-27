@@ -1,4 +1,13 @@
-import type { MockBattle, MockBattleMode, MockGarage, MockPlayer, MockPlayerState, MockVehicle, MockWorld } from '../../lesta-mock.types';
+import type {
+  MockBattle,
+  MockBattleMode,
+  MockGarage,
+  MockGarageTank,
+  MockPlayer,
+  MockPlayerState,
+  MockVehicle,
+  MockWorld
+} from '../../lesta-mock.types';
 import type { MockRng } from '../random';
 
 export type BattleOdds = {
@@ -74,4 +83,101 @@ export type MasteryThresholds = {
   second: number;
   first: number;
   ace: number;
+};
+
+export type ClampInput = {
+  value: number;
+  min: number;
+  max: number;
+};
+
+export type SurvivalChanceInput = {
+  vehicle: MockVehicle;
+  perf: number;
+  won: boolean;
+};
+
+export type AccuracyInput = {
+  vehicle: MockVehicle;
+  perf: number;
+};
+
+export type MoeThresholdDamageInput = {
+  vehicle: MockVehicle;
+  percent: number;
+};
+
+export type OddsForInput = {
+  player: MockPlayer;
+  vehicle: MockVehicle;
+  affinity: number;
+  battlesOnTank: number;
+  at: number;
+};
+
+export type BaseOddsForInput = {
+  player: MockPlayer;
+  vehicle: MockVehicle;
+  affinity: number;
+  battles: number;
+};
+
+export type ScaledInput = {
+  rng: AggregateInput['rng'];
+  count: number;
+  mean: number;
+  cv: number;
+};
+
+export type OutcomeInput = {
+  win: number;
+  loss: number;
+};
+
+export type PercentileOfInput = {
+  sorted: readonly number[];
+  percentile: number;
+};
+
+export type PopulationSampleInput = {
+  seed: number;
+  vehicle: MockVehicle;
+};
+
+export type MasteryThresholdsInput = {
+  seed: number;
+  vehicle: MockVehicle;
+};
+
+export type MasteryLevelInput = {
+  thresholds: MasteryThresholds;
+  maxXp: number;
+};
+
+export type FocusOfInput = {
+  input: DayPlanInput;
+  available: readonly MockGarageTank[];
+};
+
+export type BaseTankStateInput = {
+  world: MockWorld;
+  player: MockPlayer;
+  tank: MockGarageTank;
+};
+
+export type BaseStateInput = {
+  world: MockWorld;
+  player: MockPlayer;
+};
+
+export type CheckpointForInput = {
+  world: MockWorld;
+  player: MockPlayer;
+  day: number;
+};
+
+export type PlayerStateAtInput = {
+  world: MockWorld;
+  player: MockPlayer;
+  at: number;
 };

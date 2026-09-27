@@ -1,7 +1,7 @@
-import type { EconomyTableParams, TankStatsParams, TierListParams } from '../tanks-queries';
+import type { EconomyTableQueryInput, TankStatsQueryInput, TierListQueryInput } from '../tanks-queries';
 
 export type TanksPrefetchInput = {
-  stats: TankStatsParams;
-  tierList?: TierListParams;
-  economy?: EconomyTableParams;
+  stats: TankStatsQueryInput;
+  tierList?: TierListQueryInput;
+  economy?: EconomyTableQueryInput;
 };

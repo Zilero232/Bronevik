@@ -21,3 +21,8 @@ export type MergedFeed = {
   rows: RankedBattleRow[];
   nextOffset: number | null;
 };
+
+export type MergePairInput = {
+  current: BestBattleRow;
+  next: BestBattleRow;
+};

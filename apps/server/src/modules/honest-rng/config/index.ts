@@ -1,1 +1,3 @@
-export { HONEST_RNG_AGGREGATE, HONEST_RNG_QUEUE, HONEST_RNG_SCHEDULES, RNG_LUCK, RNG_PERIODS, RNG_THEORY } from './honest-rng.config';
+export { HONEST_RNG_AGGREGATE, RNG_PERIODS } from './aggregate.constants';
+export { HONEST_RNG_QUEUE, HONEST_RNG_SCHEDULES } from './queue.constants';
+export { RNG_LUCK, RNG_THEORY } from './theory.constants';

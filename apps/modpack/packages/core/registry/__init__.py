@@ -5,6 +5,8 @@ feature's entry script calls `registry().register(...)` whenever it runs; the ho
 calls `registry().bind(host)` when it starts. A feature registered before the host is attached on
 `bind`, one registered after is attached at once. Both calls are idempotent.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from ..log import log, log_exception
 
 

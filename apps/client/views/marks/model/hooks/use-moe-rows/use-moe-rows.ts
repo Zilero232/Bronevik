@@ -18,11 +18,12 @@ export const useMoeRows = () => {
 
   useFetchAllPages(query);
 
-  const all = query.data?.pages.flatMap(({ items }) => items) ?? [];
+  const { data: feed } = query;
+  const all = feed?.pages.flatMap(({ items }) => items) ?? [];
 
   return {
     rows: filterByName({ rows: all, query: q }),
-    total: query.data?.pages[0]?.total ?? 0,
+    total: feed?.pages[0]?.total ?? 0,
     updatedAt: latestUpdate(all),
     query
   };

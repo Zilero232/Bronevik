@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { useAuthSession } from '@/entities/auth/session';
+import { useAuthSession, useLoginHref } from '@/entities/auth/session';
 import { useSettingsFormatter } from '@/entities/streamer/settings';
 
 import type { ApplyFormValues } from '../../../lib/apply-form';
@@ -20,11 +20,12 @@ import { applicableGroups, applyFormSchema, hardwareOptions, toApplyRequest } fr
 export const useApplySettingsForm = ({ slug, settings }: UseApplySettingsFormInput) => {
   const t = useTranslations('streamerSettings.apply');
   const { data: session, isPending: isSessionPending } = useAuthSession();
+  const loginHref = useLoginHref();
   const { groupLabel } = useSettingsFormatter();
   const [isOpen, setOpen] = useBoolean(false);
   const form = useForm<ApplyFormValues>({
     resolver: zodResolver(applyFormSchema),
-    defaultValues: { ...APPLY_SETTINGS_DEFAULTS, groups: [] }
+    defaultValues: APPLY_SETTINGS_DEFAULTS
   });
 
   const pickedGroups = useWatch({ control: form.control, name: 'groups' });
@@ -41,7 +42,7 @@ export const useApplySettingsForm = ({ slug, settings }: UseApplySettingsFormInp
     setOpen(next);
 
     if (!next) {
-      form.reset({ ...APPLY_SETTINGS_DEFAULTS, groups: [] });
+      form.reset(APPLY_SETTINGS_DEFAULTS);
       apply.reset();
     }
   };
@@ -50,6 +51,7 @@ export const useApplySettingsForm = ({ slug, settings }: UseApplySettingsFormInp
 
   return {
     form,
+    loginHref,
     isSignedIn: Boolean(session),
     isSessionPending,
     isAvailable: groups.length > 0,

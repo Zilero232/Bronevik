@@ -1,4 +1,5 @@
-import type { MockBattle, MockTotals } from '../../lesta-mock.types';
+import type { MockTotals } from '../../lesta-mock.types';
+import type { AddBattleInput, AverageInput, MergeTotalsInput } from './stats.types';
 
 export const emptyTotals = (): MockTotals => ({
   battles: 0,
@@ -32,7 +33,7 @@ export const emptyTotals = (): MockTotals => ({
   maxXp: 0
 });
 
-export const addBattle = (totals: MockTotals, battle: MockBattle): void => {
+export const addBattle = ({ totals, battle }: AddBattleInput): void => {
   const won = battle.result === 'win';
 
   totals.battles += 1;
@@ -96,7 +97,7 @@ const SUM_KEYS = [
 
 const MAX_KEYS = ['maxDamage', 'maxFrags', 'maxXp'] as const satisfies readonly (keyof MockTotals)[];
 
-export const mergeTotals = (target: MockTotals, source: MockTotals): MockTotals => {
+export const mergeTotals = ({ target, source }: MergeTotalsInput): MockTotals => {
   for (const key of SUM_KEYS) {
     target[key] += source[key];
   }
@@ -108,11 +109,12 @@ export const mergeTotals = (target: MockTotals, source: MockTotals): MockTotals 
   return target;
 };
 
-export const sumTotals = (list: readonly MockTotals[]): MockTotals => list.reduce((sum, totals) => mergeTotals(sum, totals), emptyTotals());
+export const sumTotals = (list: readonly MockTotals[]): MockTotals =>
+  list.reduce((sum, totals) => mergeTotals({ target: sum, source: totals }), emptyTotals());
 
 export const cloneTotals = (totals: MockTotals): MockTotals => ({ ...totals });
 
-const average = (value: number, battles: number, digits = 2): number => (battles > 0 ? Number((value / battles).toFixed(digits)) : 0);
+const average = ({ value, battles, digits = 2 }: AverageInput): number => (battles > 0 ? Number((value / battles).toFixed(digits)) : 0);
 
 export const toStatsBlock = (totals: MockTotals) => ({
   battles: totals.battles,
@@ -120,7 +122,7 @@ export const toStatsBlock = (totals: MockTotals) => ({
   losses: totals.losses,
   draws: totals.draws,
   xp: totals.xp,
-  battle_avg_xp: Math.round(average(totals.xp, totals.battles)),
+  battle_avg_xp: Math.round(average({ value: totals.xp, battles: totals.battles })),
   damage_dealt: totals.damageDealt,
   damage_received: totals.damageReceived,
   frags: totals.frags,
@@ -137,11 +139,11 @@ export const toStatsBlock = (totals: MockTotals) => ({
   explosion_hits_received: totals.explosionHitsReceived,
   direct_hits_received: totals.directHitsReceived,
   no_damage_direct_hits_received: totals.noDamageDirectHitsReceived,
-  avg_damage_blocked: average(totals.damageBlocked, totals.battles),
-  avg_damage_assisted: average(totals.assistedRadio + totals.assistedTrack, totals.battles),
-  avg_damage_assisted_radio: average(totals.assistedRadio, totals.battles),
-  avg_damage_assisted_track: average(totals.assistedTrack, totals.battles),
-  avg_damage_assisted_stun: average(totals.stunAssisted, totals.battles),
+  avg_damage_blocked: average({ value: totals.damageBlocked, battles: totals.battles }),
+  avg_damage_assisted: average({ value: totals.assistedRadio + totals.assistedTrack, battles: totals.battles }),
+  avg_damage_assisted_radio: average({ value: totals.assistedRadio, battles: totals.battles }),
+  avg_damage_assisted_track: average({ value: totals.assistedTrack, battles: totals.battles }),
+  avg_damage_assisted_stun: average({ value: totals.stunAssisted, battles: totals.battles }),
   stun_number: totals.stunNumber,
   stun_assisted_damage: totals.stunAssisted,
   tanking_factor:

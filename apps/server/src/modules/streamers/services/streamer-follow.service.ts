@@ -7,6 +7,7 @@ import type { FollowInput, SlugOwnerInput } from '../streamers.types';
 import { AppForbiddenException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
+import { toStreamerFollowView } from '../mappers';
 import { StreamerProfileService } from './streamer-profile.service';
 
 @Injectable()
@@ -24,13 +25,7 @@ export class StreamerFollowService {
       orderBy: { createdAt: 'desc' }
     });
 
-    return follows.map((follow) => ({
-      slug: follow.profile.slug,
-      displayName: follow.profile.displayName,
-      tankId: follow.tankId,
-      isLive: follow.profile.isLive,
-      createdAt: follow.createdAt.toISOString()
-    }));
+    return follows.map(toStreamerFollowView);
   }
 
   async follow({ userId, slug, tankId }: FollowInput): Promise<StreamerFollow[]> {

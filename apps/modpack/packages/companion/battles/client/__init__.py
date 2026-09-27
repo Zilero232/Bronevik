@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import time
 
@@ -17,13 +17,6 @@ from ..constants import RESULTS_POLL_ATTEMPTS, RESULTS_POLL_EVERY_S, SEEN_ARENAS
 
 
 class BattleCapture(object):
-    """The player's own battles for the API: queue times, battle start, and the battle result with the
-    loadout and own shots attached. Results come from `onBattleResultsReceived`, with polling of the
-    battle results cache as the fallback.
-
-    Emits `battle_start(arena_id)`, `battle_results(arena_id, results)`, `battle_event(event, now)` (a
-    feature may fill fields such as `session_id`) and `battle_recorded()`.
-    """
 
     def __init__(self, app):
         self.app = app
@@ -64,7 +57,6 @@ class BattleCapture(object):
             app.flush_requested = True
 
     def on_battle_ready(self, player):
-        """The player's own battle (never a replay playback) has started."""
         arena_id = getattr(player, 'arenaUniqueID', None)
         wait = self.queue_timer.take_last_wait()
         if not arena_id:

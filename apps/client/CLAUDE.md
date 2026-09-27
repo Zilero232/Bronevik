@@ -37,26 +37,26 @@ ui-kit/       # the design system: atoms/ molecules/ organisms/ (ChartKit + char
 config/       # build-time helpers for next.config.ts (security headers / CSP, redirects, root env, panel script) — not imported by the app
 ```
 
-Inside a slice: `index.ts`, `ui/`, `model/hooks/`, `model/context/`, `api/<resource>/` (+ `api/mappers/<name>/`), `lib/<concern>/`, `config/`.
+Inside a slice: `index.ts`, `ui/`, `model/hooks/`, `model/context/<name>/` (context + `useX` consumer; the Provider is a `ui/` component fed by `model/hooks/use-<x>-state/`), `api/<resource>/` (+ `api/mappers/<name>/`), `lib/<concern>/`, `config/`. No runtime import cycles — `_tests/import-cycles.test.ts` (madge) guards it; rules in [client/structure/fsd-layers.md](../../.claude/rules/client/structure/fsd-layers.md).
 
 **Every thing is a folder.** A file with companions (`x.ts` + `x.types.ts` / `x.constants.ts` / `_tests/`) lives in its own `x/` with an `index.ts`; nothing lies flat next to another concern. `shared/lib` is flat, one folder per concern — helpers `shared/lib/<concern>/`, hooks `shared/lib/use-<x>/` — and `shared/constants` is `routes/`, `site-nav/`, `account-nav/`, `query-keys/`, `storage-keys/`. `ROUTES` is nested per page family (`ROUTES.tanks.detail(slug)`, `ROUTES.players.session({ nickname, sessionId })`, `ROUTES.account.overview`). Details: [fsd.md §4](../../docs/architecture/fsd.md).
 
-Imports go downward only: `app → views → widgets → features → entities → shared`. `ui-kit` sits beside `shared` and every layer may import it. Alias `@/*` → `apps/client/*`.
+Imports go downward only: `app → views → widgets → features → entities → shared`. `ui-kit` sits beside `shared`: every layer may import it, and it may import `@/shared/*`. Alias `@/*` → `apps/client/*`.
 
 ## Conventions that bite
 
 - **Public API**: import the slice (`@/features/search/command-palette`), never the domain group or past the barrel.
 - **`ui-kit`** has one root barrel — `@/ui-kit`.
 - **`model/` barrels** live in subfolders (`model/hooks/index.ts`), never a slice-level `model/index.ts`.
-- **Components only render.** A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts` if needed). State, effects, queries, handlers and derived data go to `model/hooks/use-<x>/use-<x>.ts` (+ `.types.ts`, `index.ts`), forms to `use-<x>-form/` (react-hook-form + zodResolver); pure helpers to `lib/<concern>/<concern>.ts` + `index.ts` + `_tests/`; constants to `config/<concern>.constants.ts`. Never `*.helpers.ts` / `*.utils.ts` / `*.constants.ts` inside a component folder. One component per folder; a `ui/` root has at most one flat component. Details: [guides/client/slice-ui.md §2](../../docs/guides/client/slice-ui.md).
+- **Components only render.** A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts` if needed). State, effects, queries, handlers and derived data go to `model/hooks/use-<x>/use-<x>.ts` (+ `.types.ts`, `index.ts`), forms to `use-<x>-form/` (react-hook-form + zodResolver); pure helpers to `lib/<concern>/<concern>.ts` + `index.ts` + `_tests/`; constants to `config/<concern>.constants.ts`. Never `*.helpers.ts` / `*.utils.ts` / `*.constants.ts` inside a component folder. One component per folder; a `ui/` root is either one flat main component plus `components/`, or a folder per exported component — never a flat component beside sibling folders. Details: [guides/client/slice-ui.md §2](../../docs/guides/client/slice-ui.md).
 - **No clock in render.** `cacheComponents` prerenders Client Components, so the current time comes from `useClientNow()` / `useCountdown` in `@/shared/lib` (`null` until the browser renders), never `Date.now()`, `new Date()` or next-intl's `useNow` during render. Details: [client/rendering/ssr.md](../../.claude/rules/client/rendering/ssr.md).
-- **Shared Zod schemas** come from `@otmetki/schemas`, icons from `@otmetki/icons` (next to `lucide-react`).
+- **Contracts** come from `@otmetki/schemas` or the generated `z*` schemas in `shared/api/generated/zod.gen.ts` (re-exported by the slice `api/`); a form schema builds on them (`zCreateClanEvent.shape.title`) rather than retyping limits. Icons come from `@otmetki/icons` (next to `lucide-react`).
 - **Styling** is SCSS modules; tokens (`_tokens.scss`), breakpoints (`xs` … `4xl`) and mixins live in `shared/styles/`. `stylelint` runs on every `*.scss`. No CSS-in-JS; `class-variance-authority` only maps variant props to module classes (`Button.variants.ts`).
 - **Two themes.** Dark (default) and light, switched by `next-themes` through `data-theme` on `<html>`. A colour token goes into both palettes in `_tokens.scss`; components read tokens and carry no theme code.
 - **Tank renders** come from the Lesta API (`images` on `VehicleSummary`) and are shown only through `TankImage` from `@/entities/tank/tank` (`contour` / `small` / `big`, native size, class-glyph fallback, nation-flag backdrop on `big`). Never upscale a render past 160 px wide; `api.tanki.su/static/**` is the only allowed remote image host.
 - **Rating colours** go through `ratingTone` / `toneOfTier` from `@/shared/lib` (nine `@otmetki/ratings` tiers → six tones) plus `data-tone` and `@include tone`. The display settings can swap the tones for the XVM scale (`data-rating-palette='xvm'` on `<html>`, overrides in `_tokens.scss`).
 - **Fonts**: Tektur (display, numbers), Onest (body), IBM Plex Mono (HUD labels), self-hosted in `shared/config/fonts`.
-- **`ui-kit`** wraps `@base-ui/react` primitives; charts are visx (`ChartKit`), the command palette is `cmdk`, `DataTable` is TanStack Table + Virtual and opts out of the React Compiler with `'use no memo'`. Generic hooks come from `@siberiacancode/reactuse`.
+- **`ui-kit`** wraps `@base-ui/react` primitives; charts are visx (`ChartKit`), the command palette is `cmdk`, `DataTable` is TanStack Table + Virtual and opts out of the React Compiler with `'use no memo'` (as do the three.js / R3F viewers). Generic hooks come from `@siberiacancode/reactuse`.
 
 ## Locales live in the URL
 

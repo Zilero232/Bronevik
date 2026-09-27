@@ -1,5 +1,7 @@
 """JSON on the standard library's `json`: the canonical form (sorted keys, no spaces, ASCII) the signed
 request bodies, the compact state files and the UI messages share, and the site's response bodies."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import json
 
 from ..compat import to_bytes, to_text

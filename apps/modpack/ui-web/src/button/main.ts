@@ -1,5 +1,5 @@
 import { BUTTON } from './button.constants';
-import { findButtonModel } from './find-model/find-model';
+import { findButtonModel } from './find-model';
 
 const open = (): void => {
   const model = findButtonModel(globalThis);

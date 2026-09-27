@@ -1,8 +1,8 @@
 import { useState } from 'preact/hooks';
 
-import type { Language } from '../../../../shared/i18n/i18n.types';
+import type { Language } from '../../../../shared/i18n';
 
-import { send } from '../../protocol/protocol';
+import { send } from '../../protocol';
 
 export const useHeader = () => {
   const [code, setCode] = useState('');

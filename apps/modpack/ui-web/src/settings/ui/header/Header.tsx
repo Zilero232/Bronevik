@@ -2,8 +2,10 @@ import clsx from 'clsx';
 
 import type { HeaderProps } from './Header.types';
 
-import { useHeader } from '../../model/hooks/use-header/use-header';
-import { useT } from '../../model/hooks/use-t/use-t';
+import { LANGUAGES } from '../../../shared/i18n';
+import { INPUT_LIMITS } from '../../config';
+import { useHeader } from '../../model/hooks/use-header';
+import { useT } from '../../model/hooks/use-t';
 
 export const Header = ({ state }: HeaderProps) => {
   const t = useT();
@@ -26,7 +28,7 @@ export const Header = ({ state }: HeaderProps) => {
         <div className='header__bind'>
           <input
             className='input input--code'
-            maxLength={16}
+            maxLength={INPUT_LIMITS.bindCode}
             placeholder={t('bindPlaceholder')}
             value={header.code}
             onInput={(event) => header.setCode(event.currentTarget.value)}
@@ -41,7 +43,7 @@ export const Header = ({ state }: HeaderProps) => {
           {t('openSite')}
         </button>
         <div className='segmented'>
-          {(['ru', 'en'] as const).map((language) => (
+          {LANGUAGES.map((language) => (
             <button
               key={language}
               className={clsx('segmented__item', state.language === language && 'segmented__item--on')}

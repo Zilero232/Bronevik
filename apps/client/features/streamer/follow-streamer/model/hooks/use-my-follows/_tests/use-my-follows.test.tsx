@@ -26,7 +26,10 @@ vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 vi.mock('../../../../api', () => ({ getMyFollows: vi.fn(), unfollowStreamer: vi.fn() }));
 
 const TEXT = messages.en.streamersDirectory.follows;
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: null };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: null
+};
 
 const FOLLOW: StreamerFollow = { slug: 'jove', displayName: 'Jove', tankId: null, isLive: false, createdAt: '2026-01-01T00:00:00.000Z' };
 

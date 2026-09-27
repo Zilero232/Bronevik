@@ -4,11 +4,12 @@ import { Redis } from 'ioredis';
 
 import type { LestaClient } from '../../lib/lesta';
 
-import { validateEnv } from '../../config';
+import { AppConfigService } from '../../config';
 import { LESTA_CLIENT, PrismaService, REDIS } from '../../core';
 import { createAuth } from '../../lib/auth';
 import { AuthStoresModule } from './auth-stores.module';
 import { AUTH_MODULE } from './config';
+import { authEnv } from './lib';
 import { AccountPurgeService, LestaAccountsService, TelegramAccountsService } from './services';
 
 @Module({
@@ -17,8 +18,9 @@ import { AccountPurgeService, LestaAccountsService, TelegramAccountsService } fr
     BetterAuthModule.forRootAsync({
       isGlobal: true,
       imports: [AuthStoresModule],
-      inject: [PrismaService, REDIS, LESTA_CLIENT, LestaAccountsService, TelegramAccountsService, AccountPurgeService],
+      inject: [AppConfigService, PrismaService, REDIS, LESTA_CLIENT, LestaAccountsService, TelegramAccountsService, AccountPurgeService],
       useFactory: (
+        config: AppConfigService,
         prisma: PrismaService,
         redis: Redis,
         lesta: LestaClient,
@@ -27,7 +29,7 @@ import { AccountPurgeService, LestaAccountsService, TelegramAccountsService } fr
         accountPurge: AccountPurgeService
       ) => ({
         auth: createAuth({
-          env: validateEnv(process.env),
+          env: authEnv(config),
           prisma,
           redis,
           lesta,

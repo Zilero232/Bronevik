@@ -1,5 +1,4 @@
-import { PLUS } from '@otmetki/schemas';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PromoCode } from '../../../../../generated';
@@ -13,8 +12,10 @@ import { BILLING_LINKS, PLUS_PLANS } from '../../config';
 import { planPrice } from '../../lib';
 import { CheckoutService } from '../checkout.service';
 
-const initialCheckout = PLUS.checkoutEnabled;
-const setCheckoutEnabled = (isEnabled: boolean) => Reflect.set(PLUS, 'checkoutEnabled', isEnabled);
+type ServiceOptions = {
+  isRecurring?: boolean;
+  isCheckout?: boolean;
+};
 
 const webUrl = 'https://otmetki.test';
 const confirmationUrl = 'https://yookassa.test/confirm';
@@ -26,12 +27,12 @@ const created = (confirmation: YooKassaPayment['confirmation'] = { confirmation_
   confirmation
 });
 
-const createService = (isRecurring = true) => {
+const createService = ({ isRecurring = true, isCheckout = true }: ServiceOptions = {}) => {
   const prisma = mockDeep<PrismaService>();
   const config = mock<AppConfigService>();
   const yookassa = mock<YooKassaClient>();
   const promos = mock<PromoService>();
-  const subscriptions = mock<SubscriptionService>({ isRecurringEnabled: isRecurring });
+  const subscriptions = mock<SubscriptionService>({ isRecurringEnabled: isRecurring, isCheckoutEnabled: isCheckout });
 
   config.get.mockReturnValue(webUrl);
   yookassa.createPayment.mockResolvedValue(created());
@@ -39,18 +40,9 @@ const createService = (isRecurring = true) => {
   return { service: new CheckoutService(prisma, config, yookassa, promos, subscriptions), prisma, yookassa, promos };
 };
 
-beforeEach(() => {
-  setCheckoutEnabled(true);
-});
-
-afterEach(() => {
-  setCheckoutEnabled(initialCheckout);
-});
-
 describe('CheckoutService.createCheckout', () => {
   it('refuses while paid checkout is closed', async () => {
-    setCheckoutEnabled(false);
-    const { service, yookassa } = createService();
+    const { service, yookassa } = createService({ isCheckout: false });
 
     await expect(service.createCheckout({ userId: 'u1', plan: 'monthly' })).rejects.toMatchObject({ response: { code: 'CHECKOUT_UNAVAILABLE' } });
     expect(yookassa.createPayment).not.toHaveBeenCalled();
@@ -116,7 +108,7 @@ describe('CheckoutService.createCheckout', () => {
   });
 
   it.each([true, false])('asks to save the card only when recurring payments are on (%s)', async (isRecurring) => {
-    const { service, yookassa } = createService(isRecurring);
+    const { service, yookassa } = createService({ isRecurring });
 
     await service.createCheckout({ userId: 'u1', plan: 'monthly' });
 

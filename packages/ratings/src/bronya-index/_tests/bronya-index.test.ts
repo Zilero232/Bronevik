@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { TankReference } from '..';
 
 import { BRONYA_INDEX, bronyaIndex, percentileOf } from '..';
-import { makeTank } from '../../_tests/fixtures';
+import { makeTank } from '../../stats/_tests/fixtures';
 
 const SPREAD = [0.5, 0.6, 0.8, 1, 1.2, 1.4, 1.5, 1.8];
 

@@ -9,7 +9,7 @@ import type { SignInTelegramInput, TelegramLoginOptions } from './telegram-login
 import { AUTH_PROVIDER } from '../auth.constants';
 import { placeholderEmail } from '../placeholder-email';
 import { verifyWebAppInitData } from './webapp-auth';
-import { WEBAPP_AUTH } from './webapp-auth.constants';
+import { WEBAPP_AUTH } from './webapp-auth/webapp-auth.constants';
 import { verifyWidgetPayload, widgetIdentity } from './widget-auth';
 
 const signInTelegram = async ({ ctx, identity, store }: SignInTelegramInput) => {

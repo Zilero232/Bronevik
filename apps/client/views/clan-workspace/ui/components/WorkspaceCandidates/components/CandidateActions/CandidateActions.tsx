@@ -8,7 +8,7 @@ import { ConfirmDialog, IconButton } from '@/ui-kit';
 import type { CandidateActionsProps } from './CandidateActions.types';
 
 import { useCandidateActions } from '../../../../../model/hooks';
-import { NotesDialog } from './components';
+import { NotesDialog } from '../NotesDialog';
 
 import s from './CandidateActions.module.scss';
 

@@ -16,8 +16,10 @@ export const useStreamerSettingsPage = (slug: string) => {
     retry: (failures, error) => !isNotFoundError(error) && failures < STREAMER_SETTINGS_PAGE.retries
   });
 
+  const { data: settings } = query;
+
   return {
     query,
-    groups: query.data ? settingsGroups(query.data) : []
+    groups: settings ? settingsGroups(settings) : []
   };
 };

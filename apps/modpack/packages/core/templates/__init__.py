@@ -37,8 +37,8 @@ def format_value(value):
     return to_text(value)
 
 
+# Unknown macros render as written on both Pythons: 2.7's safe_substitute would drop the `}`.
 class _Values(dict):
-    """Unknown macros render as written on both Pythons (2.7's safe_substitute would drop the `}`)."""
 
     def __missing__(self, key):
         return u'{%s}' % key

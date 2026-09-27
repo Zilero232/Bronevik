@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { diffTankTotals, diffTotals, PERIOD_WINDOWS, periodRatings, pickSnapshotPair, RECENT_PERIODS } from '..';
-import { makeTank, UNIT_EXPECTED } from '../../_tests/fixtures';
+import { makeTank, UNIT_EXPECTED } from '../../stats/_tests/fixtures';
 import { tankWn8 } from '../../wn8';
 
 const NOW = new Date('2026-09-24T12:00:00Z');

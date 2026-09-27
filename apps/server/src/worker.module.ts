@@ -24,8 +24,6 @@ import { StreamersWorkerModule } from './modules/streamers';
 import { SupertestWorkerModule } from './modules/supertest';
 import { WatchlistWorkerModule } from './modules/watchlist';
 
-const env = validateEnv(process.env);
-
 @Module({
   imports: [
     AppConfigModule,
@@ -36,7 +34,7 @@ const env = validateEnv(process.env);
     QueuesModule,
     LestaModule,
     DeveloperEventsModule,
-    CollectorModule.register({ hasLesta: env.LESTA_APPLICATION_ID !== '' }),
+    CollectorModule.register({ hasLesta: validateEnv(process.env).LESTA_APPLICATION_ID !== '' }),
     DeveloperWorkerModule,
     NotificationsWorkerModule,
     BillingWorkerModule,

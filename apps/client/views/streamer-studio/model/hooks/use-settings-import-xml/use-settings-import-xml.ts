@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import type { PreferencesImport } from '@/entities/streamer/preferences';
 
 import { parsePreferences, PREFERENCES_FILE } from '@/entities/streamer/preferences';
+import { useSettingsFormatter } from '@/entities/streamer/settings';
 
 import type { SettingsImportStatus, UseSettingsImportXmlInput } from './use-settings-import-xml.types';
 
@@ -16,6 +17,7 @@ export const useSettingsImportXml = ({ onImport }: UseSettingsImportXmlInput) =>
   const t = useTranslations('streamer.settings.xml');
   const [result, setResult] = useState<PreferencesImport | null>(null);
   const [status, setStatus] = useState<SettingsImportStatus>('idle');
+  const { fieldLabel } = useSettingsFormatter();
 
   const read = async (file: File) => {
     if (file.size > PREFERENCES_FILE.maxBytes) {
@@ -57,5 +59,7 @@ export const useSettingsImportXml = ({ onImport }: UseSettingsImportXmlInput) =>
     setStatus('idle');
   };
 
-  return { status, found: result?.found ?? [], onFileChange, onApply };
+  const found = (result?.found ?? []).map((path) => ({ path, label: fieldLabel(path) }));
+
+  return { status, found, onFileChange, onApply };
 };

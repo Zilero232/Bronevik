@@ -630,8 +630,17 @@ export type {
   MissionTanksQuery,
   UpdateMissionProgressInput
 } from './missions';
-export { bindCodeInputSchema, bindCodeSchema, MOD_LOADOUT, modBattleLoadoutSchema, modDeviceSchema, modDevicesSchema } from './mod';
-export type { BindCode, BindCodeInput, ModBattleLoadout, ModDevice, ModDevices } from './mod';
+export {
+  bindCodeInputSchema,
+  bindCodeSchema,
+  MOD_ERROR_CODES,
+  MOD_LOADOUT,
+  modBattleLoadoutSchema,
+  modDeviceSchema,
+  modDevicesSchema,
+  modErrorCodeSchema
+} from './mod';
+export type { BindCode, BindCodeInput, ModBattleLoadout, ModDevice, ModDevices, ModErrorCode } from './mod';
 export { MODE_META, MODE_RANKS, PLAY_MODES } from './modes';
 export {
   modeMetaQuerySchema,

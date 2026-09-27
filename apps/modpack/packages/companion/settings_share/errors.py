@@ -1,5 +1,7 @@
-class SettingsShareError(Exception):
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-    def __init__(self, reason):
-        Exception.__init__(self, reason)
-        self.reason = reason
+from ...core.errors import ReasonError
+
+
+class SettingsShareError(ReasonError):
+    pass

@@ -10,8 +10,8 @@ import { useWorkspace } from '../../context';
 
 export const useLayerRow = (layer: TacticLayer) => {
   const { isEditable, onSelectLayer, onRenameLayer, onToggleLayer, onRemoveLayer } = useWorkspace();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [draftName, setDraftName] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const isRenaming = draftName !== null;
 
   useEffect(() => {

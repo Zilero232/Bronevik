@@ -13,9 +13,9 @@ Guidance for the server app. Extends the root [../../CLAUDE.md](../../CLAUDE.md)
 src/
 ├── main.ts, app.module.ts        # the API
 ├── worker.ts, worker.module.ts   # the collector worker
-├── config/      # env/ (env.schema.ts: secrets, addresses, ports only) + *.constants.ts (every tunable; time.constants.ts: TIME.zone), cors/ (per-path CORS), proxy/ (TRUSTED_PROXIES → trust proxy), lesta-mock/
-├── core/        # prisma (factory, timescale, error guards, lib/advisory-lock: lockedTransaction), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (S3 / local-disk object storage), scrape (PageCrawlerService over lib/scrape), webhooks, battle-events
-├── common/      # exceptions, filters, guards (origin), middleware (api-helmet), decorators, cache, schedules (createJobSchedules factory), shared pure helpers in lib/
+├── config/      # env/ (env.schemas.ts: secrets, addresses, ports only; env.ts: validateEnv) + app-config/ (AppConfigModule, AppConfigService) + *.constants.ts (every tunable; time.constants.ts: TIME.zone), cors/ (per-path CORS), proxy/ (TRUSTED_PROXIES → trust proxy), lesta-mock/
+├── core/        # prisma (factory, timescale, error guards, lib/advisory-lock: lockedTransaction), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (S3 / local-disk object storage), scrape (PageCrawlerService over lib/scrape), http (HttpClientService over lib/http), webhooks, battle-events
+├── common/      # exceptions, filters, guards (origin), middleware (api-helmet), decorators, interceptors (viewer-cache), cache (TTL constants), schedules (createJobSchedules factory), shared pure helpers in lib/
 ├── lib/         # lesta (Lesta API client), replay (.mtreplay parser, NOTICE), http (ky), auth (better-auth), scrape (robots-aware cheerio crawl, tanki.su listings)
 ├── dev/         # lesta-mock: the generated Lesta API served in development while there is no key (see Lesta API mock)
 └── modules/
@@ -91,24 +91,28 @@ Server-side copy is Fluent .ftl through @grammyjs/i18n: the bot, notifications (
 
 `x.module.ts` + `x.controller.ts` (or `processors/` in the collector) + `services/`, plus the segments below as needed. One service per domain of work; nothing but the class in a service, processor or controller file — constants in `config/`, types in `*.types.ts`.
 
-| Segment                                   | Holds                                                                                                                 |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `dto/`                                    | `createZodDto(...)` request/response classes                                                                          |
-| `services/`                               | one service per domain of work                                                                                        |
-| `processors/`, `schedules/`               | BullMQ workers and their job schedules (collector)                                                                    |
-| `mappers/<name>/`                         | DB row / Prisma payload / Lesta payload → API DTO or view (every `to*View`, `to*Dto`, `toBattleData`-style converter) |
-| `selects/<name>/`                         | Prisma `select` / `include` constants with their `GetPayload` types                                                   |
-| `queries/<name>/`                         | standalone raw-SQL builders (`Prisma.sql` fragments)                                                                  |
-| `lib/<concern>/`                          | pure domain logic only — rules, calculations, parsing                                                                 |
-| `guards/`, `decorators/`, `interceptors/` | Nest enhancers, one folder each                                                                                       |
-| `config/`                                 | `<concern>.constants.ts` / `*.config.ts`                                                                              |
+| Segment                                   | Holds                                                                                                                  |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `dto/`                                    | `createZodDto(...)` request/response classes; server-only request and stored-JSON schemas in `dto/<module>.schemas.ts` |
+| `services/`                               | one service per domain of work                                                                                         |
+| `processors/`                             | BullMQ processors (each wraps `handle` in `MetricsService.track`) and the module's `*-schedules.service.ts`            |
+| `providers/`                              | custom providers and queue registrations, one flat `<name>.provider.ts` each                                           |
+| `templates/`, `assets/`                   | message templates (`notifications/templates`), static files read at runtime (`social/assets`)                          |
+| `contracts/`                              | the collector's shared queue contract only (`QUEUE`, `JOB`, payload schemas)                                           |
+| `mappers/<name>/`                         | DB row / Prisma payload / Lesta payload → API DTO or view (every `to*View`, `to*Dto`, `toBattleData`-style converter)  |
+| `selects/<name>/`                         | Prisma `select` / `include` constants with their `GetPayload` types                                                    |
+| `queries/<name>/`                         | standalone raw-SQL builders (`Prisma.sql` fragments)                                                                   |
+| `lib/<concern>/`                          | pure domain logic only — rules, calculations, parsing                                                                  |
+| `guards/`, `decorators/`, `interceptors/` | Nest enhancers, one folder each                                                                                        |
+| `config/`                                 | `<concern>.constants.ts` (`queue.constants.ts`, `schedules.constants.ts`, …); a concern with companions is a folder    |
 
 Every item is its own folder with `index.ts` (+ `.types.ts`, `_tests/`), every segment has a barrel, and a file that mixes kinds is split (`tanks/lib/vehicle-sources` keeps `rewardMissions`; `tanks/mappers/vehicle-source-view` takes `toVehicleSourceView`). The names follow what large Nest codebases converge on — a feature module owning `dto/`, `services/`, guards/interceptors/decorators and a dedicated `mappers/` layer between persistence and DTOs ([Encore: NestJS project structure](https://encore.dev/articles/nestjs-project-structure-best-practices), [CatsMiaow/nestjs-project-structure](https://github.com/CatsMiaow/nestjs-project-structure)); `selects/` and `queries/` are this repo's names for Prisma's query shapes, since there is no repository layer. On the client the same converters live in a slice's `api/mappers/`, per FSD's `api` segment ([Slices and segments](https://feature-sliced.design/docs/reference/slices-segments)). Import across modules only through a module's `index.ts`. The full digest is [.claude/rules/server/](../../.claude/rules/server/) (module shape: [structure/module-shape.md](../../.claude/rules/server/structure/module-shape.md), [structure/service-files.md](../../.claude/rules/server/structure/service-files.md)).
 
 ## Collector
 
 - **Queue contracts live once**, in `modules/collector/contracts` (`QUEUE`, `JOB`). Processors parse every payload with its schema; the API enqueues through `CollectorProducerService`. A module that owns its own queue (discord, streamers, notifications, progression, competitions, …) keeps that queue's name, job names and payload schema in its own `config/` — never a string literal at a call site, and never the collector barrel imported from another worker module (import cycles).
-- **Every processor wraps its work in `MetricsService.track({ job, run })`**, which counts the job and attributes the Lesta calls made inside it to the job's queue.
+- **Every processor wraps its work in `MetricsService.track({ job, run })`**, which counts the job and attributes the Lesta calls made inside it to the job's queue. `process(job)` delegates to a private `handle(job)`; a module outside the collector imports `MetricsService` from `modules/collector/metrics` (global, cycle-free), never from the collector barrel.
+- **Collector sub-modules**: `tracking`, `clans`, `reference`, `aggregates`, `news`, `purge` (processors), `metrics`, `producer`, `queues`, `schedules`, `board`, `monitoring` (infrastructure) — each shaped like a module; one with a single service keeps it at its root.
 - **Lesta goes through `core/lesta`**: `priority` for tier A and the API, `bulk` for sweeps, sharing one Redis bucket (`LESTA_RPS`) with the bulk lane capped at `1 - LESTA.tierAReserve`. The breaker (`metrics/circuit-breaker.service.ts`, cockatiel `SamplingBreaker`) only observes outcomes; while it is open the sweep worker pauses and sweep batches are delayed.
 - **Schedules** are `modules/collector/schedules/config`, on unless a schedule sets `enabled: false` (only `FEATURES.moePoliroid` does today) and off under `NODE_ENV=test`. Without `LESTA_APPLICATION_ID` (and with the mock off) the worker starts degraded: it logs a warning, loads no tracking or clan processors and registers no Lesta schedule. `realLestaOnly` schedules (the nightly encyclopedia sync, which would overwrite the imported game data) stay off while the mock is on. Every module registers its schedules through `createJobSchedules` (`common/schedules`) in Moscow time (`TIME.zone`); a scheduler whose id is no longer configured on its queue is removed on boot.
 - **Lanes and retries**: each lane queues on its own in-process limiter queue (`LESTA.request` / `LESTA.bulk`) against the same Redis buckets, so a sweep backlog never overflows the priority lane; a full local queue throws `LestaQueueFullError`, which is retryable. The bulk lane retries once inside the client and leaves the rest to BullMQ's job backoff. Failed jobs are kept a week for post-mortems but capped by count, so an outage that fails every poll cannot grow Redis (noeviction) without bound.
@@ -136,7 +140,7 @@ Until the Lesta key exists, development runs against a generated Lesta API (`src
 - `play_session` (`source`: api / mod, `kind`: day / live) holds the API day rollups and the mod's live sessions.
 - `tank_threshold` (`kind`: moe / mastery) holds both threshold histories; `game_data_entry` (`kind`, `key`) holds the imported game data; `comment` and `reaction` point at any `CommentTarget`.
 
-Retention is part of the schema contract: every table that grows with time has a rule — the Timescale policies (`TIMESCALE`) for hypertables, `RETENTION` in `modules/collector/purge/config` (batched deletes per table and column) for the rest, and the purge jobs for deletion requests. A new growing table gets a rule in the same change.
+Retention is part of the schema contract: every table that grows with time has a rule — the Timescale policies (`TIMESCALE`) for hypertables, `RETENTION` in `modules/collector/purge/config` (batched deletes per table and column) for the rest, and the purge jobs for deletion requests. A new growing table gets a rule in the same change. Kept on purpose, with no rule: `shell_ledger_entry` (the «Гильзы» balance is the sum of the ledger), `news_item` (the public news archive, a few rows a day), `vehicle_spec_history` (patch history per vehicle, one row per changed spec per game version) and `player_nickname` (nickname history shown on the player page; removed with the account by the purge jobs).
 
 Concurrency: writes that must not interleave go through `lockedTransaction({ prisma, scope, key, run })` (`core/prisma/lib/advisory-lock`, `pg_advisory_xact_lock`): scope `poll` per account in the collector, and `LIMIT_LOCK_SCOPE` (`apiKeys`, `webhooks`, `overlays`, `goals`, `replays`, `linkedAccounts`) around every "count then insert" quota check. Moscow time (`TIME.zone`) is the only calendar: day sessions, weekly windows (`common/lib/week`, `moscow-time`) and every cron `pattern` (`createJobSchedules` passes `tz: TIME.zone`).
 
@@ -149,3 +153,5 @@ bun run dev:server     # :4000 — curl localhost:4000/health, open /docs
 bun run dev:worker     # logs "registered N of M job schedulers"
 bun run test           # vitest; services are tested with vitest-mock-extended
 ```
+
+`src/_tests/import-cycles.test.ts` keeps the runtime import graph acyclic: a cycle through module barrels leaves a decorated class in its temporal dead zone when Nest reads the metadata ("Cannot access 'X' before initialization"), and whether it bites depends on which entry point loads the cycle first. Type-only imports are erased by Bun, so the check skips them.

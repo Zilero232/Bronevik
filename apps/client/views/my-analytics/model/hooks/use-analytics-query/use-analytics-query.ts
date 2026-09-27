@@ -4,25 +4,25 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { usePlus } from '@/features/plus/plus-gate';
 
-import type { UseAnalyticsQueryInput } from './use-analytics-query.types';
+import type { AnalyticsQuery, UseAnalyticsQueryInput } from './use-analytics-query.types';
 
 import { analyticsStatus, shouldRetryAnalytics } from '../../../lib/analytics-status';
 
-export const useAnalyticsQuery = <T>({ queryKey, queryFn, requiresPlus }: UseAnalyticsQueryInput<T>) => {
+export const useAnalyticsQuery = <T>({ queryKey, queryFn, requiresPlus }: UseAnalyticsQueryInput<T>): AnalyticsQuery<T> => {
   const { isPlus, isPending: isPlusPending } = usePlus();
-  const query = useQuery({
+  const { data, isPending, error, isFetching, refetch } = useQuery({
     queryKey,
     queryFn,
     enabled: !requiresPlus || isPlus,
     placeholderData: keepPreviousData,
-    retry: (failureCount, error) => shouldRetryAnalytics({ failureCount, error })
+    retry: (failureCount, queryError) => shouldRetryAnalytics({ failureCount, error: queryError })
   });
 
   return {
-    data: query.data,
-    status: analyticsStatus({ requiresPlus, isPlus, isPlusPending, isPending: query.isPending, error: query.error }),
+    data,
+    status: analyticsStatus({ requiresPlus, isPlus, isPlusPending, isPending, error }),
     isPlus,
-    isRetrying: query.isFetching,
-    retry: () => void query.refetch()
+    isRetrying: isFetching,
+    retry: () => void refetch()
   };
 };

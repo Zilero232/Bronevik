@@ -1,3 +1,3 @@
 import type { MoeListInput } from '@/entities/player/marks';
 
-export type MoeFeedParams = Omit<MoeListInput, 'offset' | 'signal'>;
+export type MoeFeedInput = Omit<MoeListInput, 'offset' | 'signal'>;

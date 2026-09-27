@@ -2,8 +2,8 @@ import { apiErrorSchema } from '@otmetki/schemas';
 import { isAxiosError } from 'axios';
 import { isIncludedIn } from 'remeda';
 
+import { NotFoundError, PlusRequiredError, UnauthorizedError } from './errors';
 import { HTTP_STATUS, PLUS_REQUIRED_CODES } from './source.constants';
-import { NotFoundError, PlusRequiredError, UnauthorizedError } from './source.errors';
 
 const plusRequiredOf = (body: unknown): PlusRequiredError | null => {
   const parsed = apiErrorSchema.safeParse(body);

@@ -14,6 +14,7 @@ import s from './StatGrid.module.scss';
 
 export const StatGrid = ({ stats }: StatGridProps) => {
   const t = useTranslations('tg.stats');
+  const tCommon = useTranslations('common');
 
   if (!stats) {
     return (
@@ -27,7 +28,7 @@ export const StatGrid = ({ stats }: StatGridProps) => {
 
   return (
     <div className={s.root}>
-      <KeyFigure isFramed label='WN8' tone={ratingValueTone(stats.wn8)} value={Math.round(stats.wn8.value ?? 0)} />
+      <KeyFigure isFramed label={tCommon('ratings.wn8')} tone={ratingValueTone(stats.wn8)} value={Math.round(stats.wn8.value ?? 0)} />
       <KeyFigure
         isFramed
         format={STAT_GRID.winRateFormat}

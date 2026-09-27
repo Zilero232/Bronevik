@@ -23,6 +23,8 @@ export const EN: Strings = {
   confirm: 'Confirm',
   cancel: 'Cancel',
   save: 'Save',
+  details: 'Details',
+  hideDetails: 'Collapse',
   profileName: 'Profile name',
   profileSaveNew: 'Save current as new',
   profileOverwrite: 'Overwrite with current',

@@ -1,9 +1,8 @@
+export { AppConfigModule, AppConfigService } from './app-config';
 export { ARMOR_VIEWER } from './armor.constants';
 export { BULL_BOARD } from './board.constants';
-export { AppConfigModule } from './config.module';
-export { AppConfigService } from './config.service';
 export { allowedOrigins, corsOptionsFor, guardedOrigins } from './cors';
-export { isProduction, validateEnv } from './env';
+export { envSchema, isProduction, validateEnv } from './env';
 export type { Env } from './env';
 export { FEATURES } from './features.constants';
 export { isLestaMock, lestaMockBaseUrl } from './lesta-mock';

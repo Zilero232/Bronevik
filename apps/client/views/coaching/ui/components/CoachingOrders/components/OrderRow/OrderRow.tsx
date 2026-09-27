@@ -8,7 +8,7 @@ import { Badge, Button, RelativeTime } from '@/ui-kit';
 import type { OrderRowProps } from './OrderRow.types';
 
 import { useOrderRow } from '../../../../../model/hooks';
-import { OrderReview } from './components';
+import { OrderReview } from '../OrderReview';
 
 import s from './OrderRow.module.scss';
 

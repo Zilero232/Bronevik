@@ -15,7 +15,11 @@ import { useAuthSession, useSignOut } from '../use-auth-session';
 
 vi.hoisted(() => vi.resetModules());
 
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Grom' }, lestaAccountId: 42 };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Grom', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: 42
+};
+
 const USER_SCOPED_KEY = [...QUERY_KEYS.userScoped[0], 'favorites'];
 const PUBLIC_KEY = ['tanks', 'list'];
 

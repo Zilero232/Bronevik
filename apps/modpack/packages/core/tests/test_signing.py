@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import unittest
 
 import time
@@ -9,7 +11,6 @@ from otmetki.core.net.signing import (DEVICE_HEADER, NONCE_HEADER, SERVER_TIME_H
                              verify, verify_request)
 
 
-# The same vector is asserted by apps/server/src/modules/mod/lib/request-signature/_tests/request-signature.test.ts.
 SERVER_SIGNATURE_VECTOR = '7c6576dee0e349dfbd5997cdc94ebf348ddd00ff669762e869f89074eb845078'
 
 

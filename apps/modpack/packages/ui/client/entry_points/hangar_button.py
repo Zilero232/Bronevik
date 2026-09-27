@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import importlib  # novermin
-
+from ....core.client.game import client_attr
 from ....core.hooks import override
 from ....core.log import log, safe
 from ..constants import BUTTON_HOSTS
@@ -10,19 +9,14 @@ from ..window import BUTTON_LAYOUT, HangarButtonView
 
 def _host_class():
     for module_name, class_name in BUTTON_HOSTS:
-        try:
-            module = importlib.import_module(module_name)
-        except ImportError:
-            continue
-        host = getattr(module, class_name, None)
+        host = client_attr(module_name, class_name)
         if host is not None:
             return host
     return None
 
 
+# UNVERIFIED on Lesta 1.45: the hangar host view names and setChildView.
 class HangarButton(object):
-    """The "Three Marks" button in the hangar: a child view of a hangar Gameface view whose injected
-    module (button.js) draws the button. UNVERIFIED on Lesta 1.45 (host view names, setChildView)."""
 
     def __init__(self, on_open):
         self.on_open = on_open
@@ -41,10 +35,7 @@ class HangarButton(object):
         @override(host, '_onLoading')
         def _on_loading(original, view, *args, **kwargs):
             result = original(view, *args, **kwargs)
-            try:
-                view.setChildView(BUTTON_LAYOUT(), HangarButtonView(on_open))
-            except Exception:
-                log('ui: hangar button not attached')
+            view.setChildView(BUTTON_LAYOUT(), HangarButtonView(on_open))
             return result
 
         self.host = host

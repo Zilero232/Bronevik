@@ -18,6 +18,7 @@ import s from './SessionCard.module.scss';
 
 export const SessionCard = ({ nickname, session }: SessionCardProps) => {
   const t = useTranslations('tg.session');
+  const tCommon = useTranslations('common');
   const format = useFormatter();
 
   return match(session)
@@ -49,7 +50,7 @@ export const SessionCard = ({ nickname, session }: SessionCardProps) => {
             <dd>{stats.avgDamage === null ? '—' : format.number(Math.round(stats.avgDamage))}</dd>
           </div>
           <div className={s.stat} data-tone={ratingValueTone(stats.wn8)}>
-            <dt>WN8</dt>
+            <dt>{tCommon('ratings.wn8')}</dt>
             <dd>{stats.wn8.value === null ? '—' : format.number(Math.round(stats.wn8.value))}</dd>
           </div>
         </dl>

@@ -1,6 +1,4 @@
-import { CHALLENGE } from '../../config';
-
-const CODE_TOKEN = new RegExp(String.raw`${CHALLENGE.codePrefix}?\b([${CHALLENGE.codeAlphabet}]{${CHALLENGE.codeLength}})\b`, 'gu');
+import { CHALLENGE_CODE } from './challenge-code.constants';
 
 export const extractChallengeCodes = (message: string): string[] =>
-  [...message.toUpperCase().matchAll(CODE_TOKEN)].flatMap((found) => (found[1] ? [found[1]] : []));
+  [...message.toUpperCase().matchAll(CHALLENGE_CODE.token)].flatMap((found) => (found[1] ? [found[1]] : []));

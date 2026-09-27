@@ -1,12 +1,11 @@
 import type { OnApplicationBootstrap } from '@nestjs/common';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { PLUS } from '@otmetki/schemas';
 import { Redis } from 'ioredis';
 
 import { errorMessage } from '../../../common/lib';
 import { REDIS } from '../../../core';
-import { PLUS_LAUNCH } from '../config';
+import { NOTIFICATION_TOKENS, PLUS_LAUNCH } from '../config';
 import { NotificationService } from './notification.service';
 
 @Injectable()
@@ -15,7 +14,8 @@ export class PlusLaunchService implements OnApplicationBootstrap {
 
   constructor(
     private readonly notifications: NotificationService,
-    @Inject(REDIS) private readonly redis: Redis
+    @Inject(REDIS) private readonly redis: Redis,
+    @Inject(NOTIFICATION_TOKENS.plusCheckoutEnabled) private readonly isCheckoutEnabled: boolean
   ) {}
 
   onApplicationBootstrap(): void {
@@ -32,7 +32,7 @@ export class PlusLaunchService implements OnApplicationBootstrap {
   }
 
   async announce(): Promise<number> {
-    if (!PLUS.checkoutEnabled) {
+    if (!this.isCheckoutEnabled) {
       return 0;
     }
 

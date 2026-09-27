@@ -2,7 +2,7 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
-import { MetricsService } from '../../collector';
+import { MetricsService } from '../../collector/metrics';
 import { ACHIEVEMENTS_RARITY_QUEUE } from '../config';
 import { AchievementsFetchService, RarityAggregateService } from '../services';
 

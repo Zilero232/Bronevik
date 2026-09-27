@@ -1,0 +1,1 @@
+export { AnimatedMastery } from './AnimatedMastery';

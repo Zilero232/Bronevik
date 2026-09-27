@@ -1,10 +1,9 @@
 import { accountWn8 } from '@otmetki/ratings';
 import { firstBy, groupBy, sumBy } from 'remeda';
 
-import type { BuildDaySessionInput, DaySession, DaySessionDelta } from './day-session.types';
+import type { BuildDaySessionInput, DaySession, TotalInput } from './day-session.types';
 
-const total = (rows: readonly DaySessionDelta[], field: keyof Omit<DaySessionDelta, 'capturedAt' | 'tankId'>): number =>
-  sumBy(rows, (row) => row[field]);
+const total = ({ rows, field }: TotalInput): number => sumBy(rows, (row) => row[field]);
 
 export const buildDaySession = ({ accountId, day, deltas, expected }: BuildDaySessionInput): DaySession | null => {
   const first = firstBy(deltas, (row) => row.capturedAt.getTime());
@@ -16,13 +15,13 @@ export const buildDaySession = ({ accountId, day, deltas, expected }: BuildDaySe
 
   const tanks = Object.values(groupBy(deltas, (row) => row.tankId)).map((rows) => ({
     tankId: rows[0].tankId,
-    battles: total(rows, 'battles'),
-    wins: total(rows, 'wins'),
-    damageDealt: total(rows, 'damageDealt'),
-    frags: total(rows, 'frags'),
-    spotted: total(rows, 'spotted'),
-    capturePoints: total(rows, 'capturePoints'),
-    droppedCapturePoints: total(rows, 'droppedCapturePoints')
+    battles: total({ rows, field: 'battles' }),
+    wins: total({ rows, field: 'wins' }),
+    damageDealt: total({ rows, field: 'damageDealt' }),
+    frags: total({ rows, field: 'frags' }),
+    spotted: total({ rows, field: 'spotted' }),
+    capturePoints: total({ rows, field: 'capturePoints' }),
+    droppedCapturePoints: total({ rows, field: 'droppedCapturePoints' })
   }));
 
   return {
@@ -36,14 +35,14 @@ export const buildDaySession = ({ accountId, day, deltas, expected }: BuildDaySe
     lastActivityAt: last.capturedAt,
     startCapturedAt: first.capturedAt,
     endCapturedAt: last.capturedAt,
-    battles: total(deltas, 'battles'),
-    wins: total(deltas, 'wins'),
-    damageDealt: total(deltas, 'damageDealt'),
-    damageBlocked: total(deltas, 'damageBlocked'),
-    frags: total(deltas, 'frags'),
-    spotted: total(deltas, 'spotted'),
-    xp: total(deltas, 'xp'),
-    survived: total(deltas, 'survived'),
+    battles: total({ rows: deltas, field: 'battles' }),
+    wins: total({ rows: deltas, field: 'wins' }),
+    damageDealt: total({ rows: deltas, field: 'damageDealt' }),
+    damageBlocked: total({ rows: deltas, field: 'damageBlocked' }),
+    frags: total({ rows: deltas, field: 'frags' }),
+    spotted: total({ rows: deltas, field: 'spotted' }),
+    xp: total({ rows: deltas, field: 'xp' }),
+    survived: total({ rows: deltas, field: 'survived' }),
     wn8: accountWn8({ tanks, expected }).wn8
   };
 };

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 
-import { CommandPaletteContext } from '../../../context/command-palette-context';
+import { CommandPaletteContext } from '../../../context';
 import { useCommandPaletteView } from '../use-command-palette-view';
 
 vi.hoisted(() => vi.resetModules());

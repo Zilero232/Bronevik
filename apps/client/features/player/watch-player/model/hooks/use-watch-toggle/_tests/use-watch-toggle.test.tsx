@@ -30,7 +30,10 @@ const WATCHED_ID = 1001;
 const OTHER_ID = 2002;
 const TEXT = messages.en.watchlist.button;
 
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: null };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: null
+};
 
 const WATCHLIST: Watchlist = {
   period: '24h',

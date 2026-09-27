@@ -1,6 +1,6 @@
 import type { UiMessage, UiState } from './protocol.types';
 
-import { gameface } from '../../../shared/gameface/gameface';
+import { gameface } from '../../../shared/gameface';
 import { stateSchema } from './protocol.schemas';
 
 export const parseState = (raw: string): UiState | null => {

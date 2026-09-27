@@ -13,6 +13,7 @@ import s from './PeriodRatingsPanel.module.scss';
 
 export const PeriodRatingsPanel = () => {
   const t = useTranslations('profile.overview');
+  const tCommon = useTranslations('common');
   const format = useFormatter();
   const rows = usePeriodRatings();
 
@@ -28,7 +29,7 @@ export const PeriodRatingsPanel = () => {
                 <th scope='col'>{t('period')}</th>
                 <th scope='col'>{t('battles')}</th>
                 <th scope='col'>{t('winRate')}</th>
-                <th scope='col'>WN8</th>
+                <th scope='col'>{tCommon('ratings.wn8')}</th>
                 <th scope='col'>{t('broneIndex')}</th>
                 <th scope='col'>{t('avgDamage')}</th>
               </tr>

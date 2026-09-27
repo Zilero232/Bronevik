@@ -10,7 +10,7 @@ import { TankImage } from '@/ui-kit';
 
 import type { TankShowcase3DProps } from './TankShowcase3D.types';
 
-import { useTankShowcase } from '../model/hooks/use-tank-showcase';
+import { useTankShowcase } from '../model/hooks';
 import { NamePlate } from './components';
 
 import s from './TankShowcase3D.module.scss';

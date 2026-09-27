@@ -5,7 +5,8 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Competition, CompetitionEntry, CompetitionTeam, Player, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
-import type { CompetitionCreateInput, CompetitionWithSummary } from '../../competitions.types';
+import type { CompetitionCreateInput } from '../../competitions.types';
+import type { CompetitionWithSummary } from '../../selects';
 
 import { Prisma } from '../../../../../generated';
 import { AppForbiddenException } from '../../../../common/exceptions';

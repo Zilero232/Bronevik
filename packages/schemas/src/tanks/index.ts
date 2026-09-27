@@ -1,21 +1,19 @@
 export {
-  ECONOMY_ACCOUNTS,
-  LEARNING_CURVE,
-  LEARNING_DIFFICULTIES,
-  TANK_ECONOMY,
-  TANK_ROLES,
-  TANK_SOURCES,
-  TANK_STATUSES
-} from './tank-insights.constants';
-export {
   accountEconomyQuerySchema,
   accountEconomySchema,
   accountEconomySplitSchema,
   accountEconomyTankSchema,
+  ECONOMY_ACCOUNTS,
   economyAccountSchema,
+  LEARNING_CURVE,
+  LEARNING_DIFFICULTIES,
   learningBucketSchema,
   learningDifficultySchema,
   myTankLearningSchema,
+  TANK_ECONOMY,
+  TANK_ROLES,
+  TANK_SOURCES,
+  TANK_STATUSES,
   tankEconomyFiguresSchema,
   tankEconomyPageSchema,
   tankEconomyQuerySchema,
@@ -31,7 +29,7 @@ export {
   tankStatusSchema,
   tankTraitsFilterSchema,
   tankTraitsSchema
-} from './tank-insights.schemas';
+} from './insights';
 export type {
   AccountEconomy,
   AccountEconomyQuery,
@@ -58,9 +56,10 @@ export type {
   TankStatus,
   TankTraits,
   TankTraitsFilter
-} from './tank-insights.types';
-export { PATCH_VERDICTS, TANK_TREND, TOP_PLAYERS_QUERY } from './tanks.constants';
+} from './insights';
 export {
+  PATCH_VERDICTS,
+  TANK_TREND,
   tankDetailQuerySchema,
   tankDetailSchema,
   tankPatchChangeSchema,
@@ -78,10 +77,11 @@ export {
   tierListQuerySchema,
   tierListRankSchema,
   tierListSchema,
+  TOP_PLAYERS_QUERY,
   topPlayersMetricSchema,
   topPlayersQuerySchema,
   topPlayersSchema
-} from './tanks.schemas';
+} from './tank';
 export type {
   TankDetail,
   TankDetailQuery,
@@ -108,14 +108,15 @@ export type {
   TopPlayersMetric,
   TopPlayersQuery,
   TopPlayersQueryInput
-} from './tanks.types';
-export { VEHICLE_SOURCE, VEHICLE_SOURCE_KINDS } from './vehicle-sources.constants';
+} from './tank';
 export {
   createVehicleSourceSchema,
+  VEHICLE_SOURCE,
+  VEHICLE_SOURCE_KINDS,
   vehicleSourceEventSchema,
   vehicleSourceIdParamsSchema,
   vehicleSourceKindSchema,
   vehicleSourceMissionSchema,
   vehicleSourceSchema
-} from './vehicle-sources.schemas';
-export type { CreateVehicleSourceInput, VehicleSource, VehicleSourceEvent, VehicleSourceKind, VehicleSourceMission } from './vehicle-sources.types';
+} from './vehicle-sources';
+export type { CreateVehicleSourceInput, VehicleSource, VehicleSourceEvent, VehicleSourceKind, VehicleSourceMission } from './vehicle-sources';

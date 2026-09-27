@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 
-import type { EconomySqlRow } from '../lib/tank-economy';
+import type { EconomySqlRow } from '../mappers';
 
 import { PrismaService } from '../../../../core';
 import { TANK_ECONOMY_AGGREGATE } from '../config';
-import { toEconomyRecord } from '../lib/tank-economy';
+import { toEconomyRecord } from '../mappers';
 
 @Injectable()
 export class TankEconomyService {

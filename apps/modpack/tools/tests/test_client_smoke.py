@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-"""Import smoke of the whole mod against stubbed client modules.
-
-The entry scripts are imported in shuffled orders, as the client does (hash order), under the real
-in-game package name gui.mods.otmetki. Then a login, a battle and its results run through the event
-hooks, checking the wiring end to end: the battle_result reaches the outbox, the session feature
-stamps it and keeps its state, and the session summary is shown after the battle.
-"""
 import os
 import random
 import shutil
@@ -20,10 +13,10 @@ from otmetki.core.shells.constants import BATTLE_LOG_SHELL_NAMES
 from otmetki.core.vendor.enum34 import IntEnum
 
 ACCOUNT = 12345678
-# The ui package (packages/ui) registers through the core registry like a feature.
 REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
-STUBBED = ('gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2', 'constants', 'SoundGroups')
+STUBBED = ('gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2', 'constants', 'SoundGroups',
+           'messenger', 'notification')
 
 
 class Event(object):
@@ -45,7 +38,6 @@ class Event(object):
 
 
 class Sink(object):
-    """Swallows the mod's [OTMETKI] log lines while the smoke test runs."""
 
     def write(self, text):
         pass
@@ -75,7 +67,6 @@ def package(name, path):
     return stub
 
 
-# The RU 1.45 client reports shell types as members of this IntEnum (constants.BATTLE_LOG_SHELL_TYPES).
 SHELL_TYPES = IntEnum('BATTLE_LOG_SHELL_TYPES', [(name, index) for index, name in enumerate(BATTLE_LOG_SHELL_NAMES)])
 SERVER_TIME = 1790000100.0
 OWN_VEHICLE = 101
@@ -167,7 +158,6 @@ class ArenaDP(object):
 
 
 class BattleSession(object):
-    """The parts of guiSessionProvider and the arena the HUD components hook."""
 
     def __init__(self):
         self.feedback = type('Feedback', (object,), {})()
@@ -318,7 +308,8 @@ class ClientSmokeTest(unittest.TestCase):
         package('gui.battle_control', [])
         feedback_ids = dict((name, index + 100) for index, name in enumerate(HIT_STATES))
         module('gui.battle_control.battle_constants', FEEDBACK_EVENT_ID=type('FEEDBACK_EVENT_ID', (object,), feedback_ids),
-               VEHICLE_VIEW_STATE=type('VEHICLE_VIEW_STATE', (object,), {'HEALTH': 4, 'OBSERVED_BY_ENEMY': 4096, 'SWITCHING': 16384}))
+               VEHICLE_VIEW_STATE=type('VEHICLE_VIEW_STATE', (object,), {'FIRE': 1, 'DEVICES': 2, 'HEALTH': 4, 'OBSERVED_BY_ENEMY': 4096,
+                                                                          'SWITCHING': 16384}))
         module('constants', ARENA_PERIOD=type('ARENA_PERIOD', (object,), {'WAITING': 1, 'PREBATTLE': 2, 'BATTLE': 3, 'AFTERBATTLE': 4}))
         module('SoundGroups', g_instance=type('Sounds', (object,), {'playSound2D': lambda sounds, name: test.sounds.append(name)})())
         return feedback_ids
@@ -345,6 +336,8 @@ class ClientSmokeTest(unittest.TestCase):
         self.events.onAccountShowGUI()
         hud = sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app)
         hud.update_settings('sixth_sense', {'sound_event': 'otmetki_lamp'})
+        sys.modules['gui.mods.otmetki.core.client.hud'].component_config(app).get('battle_sounds').update(
+            {'fire': 'otmetki_fire', 'ammo_rack': 'otmetki_ammo', 'first_blood': 'otmetki_first_blood'})
         app.marks.hangar_moe[1] = {'tank_id': 1, 'damage_rating': 8600, 'moving_avg_damage': 2550, 'marks_on_gun': 2}
 
         results = _support.battle_results()
@@ -361,6 +354,9 @@ class ClientSmokeTest(unittest.TestCase):
         feedback.onVehicleFeedbackReceived(ids['VEHICLE_HEALTH'], ENEMY_VEHICLE, (510, None, 0))
         feedback.onVehicleFeedbackReceived(ids['VEHICLE_RICOCHET'], ENEMY_VEHICLE, None)
         session.vehicle_state.onVehicleStateUpdated(4, 690)
+        session.vehicle_state.onVehicleStateUpdated(1, True)
+        session.vehicle_state.onVehicleStateUpdated(2, ('ammoBay', 'critical', 'critical'))
+        session.vehicle_state.onVehicleStateUpdated(2, ('engine', 'repaired', 'critical'))
         session.vehicle_state.onVehicleStateUpdated(4096, True)
         session.arena.onVehicleKilled(ALLY_VEHICLE, ENEMY_VEHICLE, 0, 0, 1)
 
@@ -382,7 +378,7 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertIn('690', team_hp)
         self.assertIn('510', team_hp)
         self.assertIn('0 : 1', team_hp)
-        self.assertEqual(self.sounds, ['otmetki_lamp'])
+        self.assertEqual(self.sounds, ['otmetki_fire', 'otmetki_ammo', 'otmetki_lamp', 'otmetki_first_blood'])
         session.vehicle_state.onVehicleStateUpdated(4096, False)
         self.assertNotIn('sixth_sense', self.hud_components())
 
@@ -411,7 +407,11 @@ class ClientSmokeTest(unittest.TestCase):
         self.player = Player(ACCOUNT)
         self.events.onAccountShowGUI()
         described = {}
-        app.bus.emit('hud_describe', lambda panel_id, preview=None, width=None, height=None, enabled=False: described.update({panel_id: (preview, width, enabled)}))
+
+        def collect(panel_id, preview=None, width=None, height=None, enabled=False):
+            described.update({panel_id: (preview, width, enabled)})
+
+        app.bus.emit('hud_describe', collect)
         self.assertEqual(sorted(described), ['battle_clock', 'damage_log', 'hit_log', 'sixth_sense', 'team_hp'])
         self.assertFalse(described['team_hp'][2])
         self.assertTrue(described['damage_log'][2])
@@ -426,6 +426,96 @@ class ClientSmokeTest(unittest.TestCase):
         self.enter_battle(1)
         self.assertNotIn('390', self.hud_components().get('damage_log', {}).get('text', ''))
         self.assertNotIn('sixth_sense', self.hud_components())
+
+    def install_client_class_stubs(self):
+        test = self
+        self.chat = []
+        self.notifications = []
+
+        class BattleLayout(object):
+
+            def addMessage(self, message, doFormatting=True):
+                test.chat.append(self._formatMessage(message, doFormatting)[1])
+                return True
+
+            def addCommand(self, command):
+                test.chat.append('command:%s' % command.getSenderID())
+
+        class ChannelController(BattleLayout):
+
+            def _formatMessage(self, message, doFormatting=True):
+                return False, message.text
+
+        class NotificationsModel(object):
+
+            def addNotification(self, notification):
+                test.notifications.append(notification.getType())
+
+        for name in ('messenger', 'messenger.gui', 'messenger.gui.Scaleform', 'messenger.gui.Scaleform.channels',
+                     'messenger.gui.Scaleform.channels.bw_chat2', 'messenger.ext', 'notification'):
+            package(name, [])
+        module('messenger.gui.Scaleform.channels.layout', BattleLayout=BattleLayout)
+        module('messenger.gui.Scaleform.channels.bw_chat2.battle_controllers', _ChannelController=ChannelController)
+        module('messenger.ext.player_helpers', isCurrentPlayer=lambda session_id: session_id == 'me')
+        module('notification.NotificationsModel', NotificationsModel=NotificationsModel)
+        module('notification.settings', NOTIFICATION_TYPE=type('NOTIFICATION_TYPE', (object,), {'MESSAGE': 1, 'NOTIFY_CENTER_POP_UP': 4,
+                                                                                               'RECRUIT_REMINDER': 13}))
+        return ChannelController, NotificationsModel
+
+    def test_chat_filter_and_notification_filter(self):
+        self.install_hud_stubs()
+        controller_class, model_class = self.install_client_class_stubs()
+        app = self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        model = model_class()
+        for kind in (1, 4, 13):
+            model.addNotification(type('Notification', (object,), {'getType': lambda item, kind=kind: kind})())
+        self.assertEqual(self.notifications, [1, 13])
+
+        self.enter_battle(1)
+        chat = controller_class()
+
+        def message(sender, text):
+            return type('Message', (object,), {'avatarSessionID': sender, 'text': text})()
+
+        command = type('Command', (object,), {'isSender': lambda item: False, 'getSenderID': lambda item: 'spammer'})()
+        for _ in range(3):
+            chat.addMessage(message('spammer', u'ALL TO BASE'))
+            chat.addMessage(message('me', u'ALL TO BASE'))
+        for _ in range(6):
+            chat.addCommand(command)
+        texts = [text for text in self.chat if not text.startswith('command:')]
+        self.assertEqual(len(texts), 4)
+        self.assertTrue(all(u'ALL TO BASE' in text and '[' in text for text in texts))
+        self.assertEqual(len([text for text in self.chat if text.startswith('command:')]), 4)
+
+        self.events.onAvatarBecomeNonPlayer()
+        del self.chat[:]
+        chat.addMessage(message('spammer', u'after battle'))
+        self.assertEqual(self.chat, [u'after battle'])
+        app.config.update({'hangar_notification_filter': False})
+        model.addNotification(type('Notification', (object,), {'getType': lambda item: 4})())
+        self.assertEqual(self.notifications, [1, 13, 4])
+
+    def test_new_features_have_cards_and_pages(self):
+        self.install_hud_stubs()
+        self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
+        for feature_id in ('marks_history', 'battle_results', 'auto_resupply'):
+            self.assertTrue(instances[feature_id].ui_actions(), feature_id)
+        self.assertEqual(instances['marks_history'].ui_page()['rows'], [])
+        self.assertEqual(instances['battle_results'].ui_page()['rows'], [])
+        self.events.onBattleResultsReceived(True, _support.battle_results())
+        rows = instances['battle_results'].ui_page()['rows']
+        self.assertEqual([row['id'] for row in rows][0], 'session')
+        self.assertTrue(rows[1]['details'])
+        refusal = instances['auto_resupply'].ui_action('apply_selected')
+        self.assertEqual(refusal['kind'], 'error')
+        instances['hangar_info'].render(SERVER_TIME)
+        self.assertIn('otmetki.hangar_info', self.components)
 
     def test_battle_hud_switched_off(self):
         self.install_hud_stubs()

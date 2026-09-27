@@ -31,13 +31,15 @@ export const GITHUB = {
   api: 'https://api.github.com',
   raw: 'https://raw.githubusercontent.com',
   apiVersion: '2022-11-28',
-  userAgent: 'otmetki-gamedata'
+  userAgent: 'otmetki-gamedata',
+  commitSha: /^[0-9a-f]{40}$/i
 } as const;
 
 export const FETCH = {
   concurrency: 16,
   retries: 4,
   retryDelayMs: 1000,
+  timeoutMs: 60_000,
   notFoundMarker: '.404'
 } as const;
 

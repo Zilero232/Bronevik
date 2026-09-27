@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 DEVICE_HEADER = 'X-Otmetki-Device'
 SIGNATURE_HEADER = 'X-Otmetki-Signature'
 TIMESTAMP_HEADER = 'X-Otmetki-Timestamp'

@@ -7,7 +7,8 @@ import { DataTable, EmptyState, QueryState, SectionHeader, SegmentedControl, Ske
 import type { WorkspaceCandidatesProps } from './WorkspaceCandidates.types';
 
 import { WORKSPACE_VIEW } from '../../../config';
-import { useCandidateColumns, useWorkspaceCandidates } from '../../../model/hooks';
+import { useWorkspaceCandidates } from '../../../model/hooks';
+import { useCandidateColumns } from '../../../model/hooks/use-candidate-columns';
 import { AddCandidate, CandidateCard } from './components';
 
 import s from './WorkspaceCandidates.module.scss';

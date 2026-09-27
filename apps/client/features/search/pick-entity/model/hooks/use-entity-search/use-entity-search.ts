@@ -2,7 +2,8 @@
 
 import { useDebouncedSearch } from '@/entities/search/search';
 
-import type { PickableKind, UseEntitySearchInput } from './use-entity-search.types';
+import type { PickableKind } from '../../../lib/search-kind';
+import type { UseEntitySearchInput } from './use-entity-search.types';
 
 import { isKind } from '../../../lib/search-kind';
 

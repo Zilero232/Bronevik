@@ -9,7 +9,8 @@ import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vites
 import { search } from '@/entities/search/search/api/search/search';
 import { SEARCH_REQUEST } from '@/entities/search/search/api/search/search.constants';
 
-import type { PickableKind, UseEntitySearchInput } from '../use-entity-search.types';
+import type { PickableKind } from '../../../../lib/search-kind';
+import type { UseEntitySearchInput } from '../use-entity-search.types';
 
 import { useEntitySearch } from '../use-entity-search';
 

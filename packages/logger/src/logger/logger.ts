@@ -5,7 +5,7 @@ import pino from 'pino';
 import type { CreateLoggerInput } from './logger.types';
 
 import { REDACTION } from './logger.constants';
-import { resolveLevel, resolveTransport } from './logger.helpers';
+import { resolveLevel, resolveTransport } from './logger.transport';
 
 export const createLogger = ({ service, pretty, level }: CreateLoggerInput): Logger =>
   pino({

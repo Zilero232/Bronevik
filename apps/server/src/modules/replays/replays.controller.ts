@@ -25,7 +25,7 @@ import { ZodResponse } from 'nestjs-zod';
 import type { UploadedReplayFile } from './replays.types';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
-import { REPLAY_UPLOAD, replayFileInterceptor } from './config';
+import { REPLAY_UPLOAD } from './config';
 import {
   BestOfWeekDto,
   BestOfWeekQueryDto,
@@ -43,6 +43,7 @@ import {
   UploadReplayDto
 } from './dto';
 import { ModDeviceGuard } from './guards';
+import { ReplayFileInterceptor } from './interceptors';
 import { HeatmapService, ReplayOwnerService, ReplayQueryService, ReplayUploadService } from './services';
 
 @ApiTags('replays')
@@ -57,7 +58,7 @@ export class ReplaysController {
 
   @Post()
   @Throttle({ default: REPLAY_UPLOAD.userThrottle })
-  @UseInterceptors(replayFileInterceptor)
+  @UseInterceptors(ReplayFileInterceptor)
   @ApiConsumes('multipart/form-data')
   @ZodResponse({ type: UploadedReplayDto, status: HttpStatus.CREATED })
   upload(@CurrentUserId() userId: string, @UploadedFile() file: UploadedReplayFile | undefined, @Body() { visibility }: UploadReplayDto) {
@@ -68,7 +69,7 @@ export class ReplaysController {
   @Post('mod')
   @Throttle({ default: REPLAY_UPLOAD.modThrottle })
   @UseGuards(ModDeviceGuard)
-  @UseInterceptors(replayFileInterceptor)
+  @UseInterceptors(ReplayFileInterceptor)
   @ApiConsumes('multipart/form-data')
   @ZodResponse({ type: UploadedReplayDto, status: HttpStatus.CREATED })
   uploadFromMod(@UploadedFile() file: UploadedReplayFile | undefined, @Req() request: Request) {

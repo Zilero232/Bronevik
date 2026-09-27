@@ -5,7 +5,7 @@ import { Redis } from 'ioredis';
 import { match } from 'ts-pattern';
 
 import type { NotificationSettings } from '../../../../generated';
-import type { DeliverPayload, DigestPayload } from '../contracts';
+import type { DeliverPayload, DigestPayload } from '../config';
 import type { ChannelAvailability, RoutingSettings } from '../lib';
 import type { ChannelSendInput, DeliverJob, DeliverToInput } from '../notifications.types';
 
@@ -13,8 +13,7 @@ import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { isUniqueViolation, PrismaService, REDIS } from '../../../core';
 import { TelegramSenderService } from '../../telegram';
-import { NOTIFICATION_DEFAULTS, WEEKLY_DIGEST } from '../config';
-import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../contracts';
+import { NOTIFICATION_DEFAULTS, NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE, WEEKLY_DIGEST } from '../config';
 import { quietDelayMs, renderDigest, renderNotification, resolveNotificationLocale, routeDigest, routeEvent, splitQuiet } from '../lib';
 import { EmailService } from './email.service';
 import { WebPushService } from './web-push.service';

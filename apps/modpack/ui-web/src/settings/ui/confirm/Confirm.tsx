@@ -1,6 +1,6 @@
 import type { ConfirmProps } from './Confirm.types';
 
-import { useT } from '../../model/hooks/use-t/use-t';
+import { useT } from '../../model/hooks/use-t';
 
 export const Confirm = ({ text, onConfirm, onCancel }: ConfirmProps) => {
   const t = useT();

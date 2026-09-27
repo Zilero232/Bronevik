@@ -32,19 +32,19 @@ const typeError = (context: MockContext) => {
 };
 
 const ratingDate = (context: MockContext): number => {
-  const date = intParam(context.params, 'date', context.now);
+  const date = intParam({ params: context.params, key: 'date', fallback: context.now });
 
   return Math.min(context.now, date);
 };
 
 export const ratingsTypes: MockRoute = () =>
-  ok(Object.fromEntries(RANKINGS.types.map((type) => [type, { type, threshold: RANKINGS.thresholds[type], rank_fields: RANK_FIELDS }])));
+  ok({ data: Object.fromEntries(RANKINGS.types.map((type) => [type, { type, threshold: RANKINGS.thresholds[type], rank_fields: RANK_FIELDS }])) });
 
 export const ratingsDates: MockRoute = (context) => {
   const today = Math.floor(context.now / MOCK_TIME.daySec) * MOCK_TIME.daySec;
   const dates = Array.from({ length: RANKINGS.datesKept }, (_, index) => today - index * MOCK_TIME.daySec);
 
-  return ok(Object.fromEntries(RANKINGS.types.map((type) => [type, { dates }])));
+  return ok({ data: Object.fromEntries(RANKINGS.types.map((type) => [type, { dates }])) });
 };
 
 export const ratingsTop: MockRoute = (context) => {
@@ -59,20 +59,20 @@ export const ratingsTop: MockRoute = (context) => {
     return invalidType;
   }
 
-  const limit = Math.min(1000, Math.max(1, intParam(context.params, 'limit', 10)));
-  const page = Math.max(1, intParam(context.params, 'page_no', 1));
+  const limit = Math.min(1000, Math.max(1, intParam({ params: context.params, key: 'limit', fallback: 10 })));
+  const page = Math.max(1, intParam({ params: context.params, key: 'page_no', fallback: 1 }));
   const table = ranking({ world: context.world, field: rank.field, at: ratingDate(context), depth: Math.ceil(page * limit * 1.3) + 50 });
   const data = table.entries.slice((page - 1) * limit, page * limit).map((entry, index) =>
-    selectFields(
-      {
+    selectFields({
+      value: {
         account_id: entry.player.accountId,
         [rank.field]: { value: entry.value, rank: (page - 1) * limit + index + 1, rank_delta: null }
       },
-      context.fields
-    )
+      fields: context.fields
+    })
   );
 
-  return ok(data, { count: data.length });
+  return ok({ data, meta: { count: data.length } });
 };
 
 export const ratingsAccounts: MockRoute = (context) => {
@@ -99,11 +99,14 @@ export const ratingsAccounts: MockRoute = (context) => {
         return entry && rank !== undefined ? [[field, { value: entry.value, rank, rank_delta: null }] as const] : [];
       });
 
-      return [String(accountId), ranked.length > 0 ? selectFields({ account_id: accountId, ...Object.fromEntries(ranked) }, context.fields) : null];
+      return [
+        String(accountId),
+        ranked.length > 0 ? selectFields({ value: { account_id: accountId, ...Object.fromEntries(ranked) }, fields: context.fields }) : null
+      ];
     })
   );
 
-  return ok(data, { count: parsed.ids.length });
+  return ok({ data, meta: { count: parsed.ids.length } });
 };
 
 export const ratingsNeighbors: MockRoute = (context) => {
@@ -116,10 +119,10 @@ export const ratingsNeighbors: MockRoute = (context) => {
 
   const table = ranking({ world: context.world, field: rank.field, at: ratingDate(context), depth: RATING_DEPTH });
   const position = table.rankOf.get(accountId);
-  const limit = Math.min(50, Math.max(1, intParam(context.params, 'limit', 5)));
+  const limit = Math.min(50, Math.max(1, intParam({ params: context.params, key: 'limit', fallback: 5 })));
 
   if (position === undefined) {
-    return ok([], { count: 0 });
+    return ok({ data: [], meta: { count: 0 } });
   }
 
   const from = Math.max(0, position - 1 - limit);
@@ -128,5 +131,5 @@ export const ratingsNeighbors: MockRoute = (context) => {
     [rank.field]: { value: entry.value, rank: from + index + 1, rank_delta: null }
   }));
 
-  return ok(data, { count: data.length });
+  return ok({ data, meta: { count: data.length } });
 };

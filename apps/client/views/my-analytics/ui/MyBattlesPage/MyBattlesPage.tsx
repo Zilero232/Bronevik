@@ -4,8 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { SectionHeader } from '@/ui-kit';
 
-import { AnalyticsFiltersProvider } from '../../model/context';
-import { AnalyticsToolbar, BattlesTab } from '../components';
+import { AnalyticsFiltersProvider, AnalyticsToolbar, BattlesTab } from '../components';
 
 import s from './MyBattlesPage.module.scss';
 

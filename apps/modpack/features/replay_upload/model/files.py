@@ -1,21 +1,14 @@
-"""Finding the player's own replay file of a battle and packing it for POST /replays/mod.
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-Pure logic: the replays folder, clock and file access are injected by the caller.
-"""
 import binascii
 import os
-import re
 
 from ....core.compat import to_bytes, to_text
 from ....core.replay_file import EXTENSIONS, is_replay_name, read_header
-from .constants import FILE_FIELD, MATCH_WINDOW_S, MAX_CANDIDATES
-
-_UNSAFE_NAME = re.compile(r'[^A-Za-z0-9._-]+')
+from .constants import FILE_FIELD, MATCH_WINDOW_S, MAX_CANDIDATES, UNSAFE_NAME_CHARS
 
 
 def matches(header, account_id, arena_unique_id, started_at):
-    """Own replay of this battle: the recorder is the bound account, and the results block names the
-    arena; without a results block (left early) the recording start must be within the match window."""
     if not header or header.get('player_id') is None or account_id is None:
         return False
     if int(header['player_id']) != int(account_id):
@@ -28,7 +21,6 @@ def matches(header, account_id, arena_unique_id, started_at):
 
 
 def find_replay(folder, account_id, arena_unique_id, started_at, listdir=None, stat=None, read=None):
-    """(path, size, mtime) of the newest replay in `folder` that matches the battle, or None."""
     listdir = listdir or os.listdir
     stat = stat or os.stat
     read = read or read_header
@@ -56,10 +48,9 @@ def find_replay(folder, account_id, arena_unique_id, started_at, listdir=None, s
 
 
 def upload_name(path):
-    """ASCII file name for the multipart part; keeps the extension the server checks."""
     base = os.path.basename(to_text(path))
     stem, extension = os.path.splitext(base)
-    stem = _UNSAFE_NAME.sub('_', stem).strip('_') or 'replay'
+    stem = UNSAFE_NAME_CHARS.sub('_', stem).strip('_') or 'replay'
     extension = extension.lower() if extension.lower() in EXTENSIONS else EXTENSIONS[-1]
     return stem[:200] + extension
 
@@ -69,7 +60,6 @@ def new_boundary():
 
 
 def build_multipart(file_name, data, boundary=None):
-    """(content_type, body) of a multipart/form-data request with one file part."""
     boundary = boundary or new_boundary()
     head = (
         '--%s\r\n'

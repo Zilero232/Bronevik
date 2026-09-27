@@ -1,13 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import re
-
-from ....core.hud import hex_color, matching, max_length, panel_schema
-from .constants import DEFAULTS, MAX_PATH, MAX_SOUND, MAX_TEXT, PANEL_ID, SWITCH
+from ....core.hud import hex_color, matching, max_length, panel_schema, sound_event
+from .constants import DEFAULTS, ICON_PATH, MAX_PATH, MAX_TEXT, PANEL_ID, SWITCH
 
 SETTINGS = (SWITCH,)
-SOUND_EVENT = re.compile(r'^[A-Za-z0-9_]*$')
-ICON_PATH = re.compile(r'^[A-Za-z0-9_./-]*$')
 
 SCHEMA = panel_schema(
     DEFAULTS,
@@ -16,7 +12,7 @@ SCHEMA = panel_schema(
         'text': max_length(MAX_TEXT),
         'color': hex_color,
         'icon': matching(ICON_PATH, MAX_PATH),
-        'sound_event': matching(SOUND_EVENT, MAX_SOUND),
+        'sound_event': sound_event,
     },
 )
 

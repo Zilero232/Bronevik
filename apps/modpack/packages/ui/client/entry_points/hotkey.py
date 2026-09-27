@@ -9,7 +9,6 @@ from ..constants import HOTKEY, HOTKEY_MODIFIERS
 
 
 class Hotkey(object):
-    """Ctrl+Shift+T through the client's InputHandler (hangar only; the callback decides)."""
 
     def __init__(self, on_press):
         self.on_press = on_press
@@ -30,7 +29,6 @@ class Hotkey(object):
             unsubscribe(InputHandler.g_instance, 'onKeyDown', self.handler)
             self.handler = None
 
-    @safe
     def _on_key_down(self, event):
         if getattr(event, 'key', None) != getattr(Keys, HOTKEY, None):
             return

@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import type { AccountLinkInput, LinkedAccounts } from '../me.types';
 
 import { AppConflictException, AppNotFoundException } from '../../../common/exceptions';
-import { toIso, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { AUTH_PROVIDER, isPlaceholderEmail } from '../../../lib/auth';
+import { toLinkedLestaAccount } from '../mappers';
 
 @Injectable()
 export class LinkedAccountsService {
@@ -25,13 +25,7 @@ export class LinkedAccountsService {
       userId: user.id,
       name: user.name,
       email: isPlaceholderEmail(user.email) ? null : user.email,
-      lesta: user.lestaAccounts.map((link) => ({
-        accountId: toNumber(link.accountId),
-        nickname: link.player.nickname,
-        isPrimary: link.isPrimary,
-        linkedAt: link.linkedAt.toISOString(),
-        tokenExpiresAt: toIso(link.tokenExpiresAt)
-      })),
+      lesta: user.lestaAccounts.map(toLinkedLestaAccount),
       telegram: user.telegramAccount ? { telegramId: user.telegramAccount.telegramId.toString(), username: user.telegramAccount.username } : null
     };
   }

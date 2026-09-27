@@ -1,4 +1,5 @@
 import type { MockPlayer } from '../../lesta-mock.types';
+import type { ProgressFactorInput } from './skill.types';
 
 import { MOCK_SKILL, MOCK_TIME } from '../../config';
 
@@ -13,8 +14,7 @@ export const targetWinRate = (player: Pick<MockPlayer, 'winSkill'>): number => {
   return Math.min(MOCK_SKILL.winMax, Math.max(MOCK_SKILL.winMin, value));
 };
 
-export const progressFactor = (player: Pick<MockPlayer, 'drift'>, at: number): number =>
-  Math.max(0.8, 1 + player.drift * ((at - MOCK_TIME.anchor) / YEAR_SEC));
+export const progressFactor = ({ player, at }: ProgressFactorInput): number => Math.max(0.8, 1 + player.drift * ((at - MOCK_TIME.anchor) / YEAR_SEC));
 
 export const learningFactor = (battlesOnTank: number): number =>
   battlesOnTank >= MOCK_SKILL.learningBattles ? 1 : 1 - MOCK_SKILL.learningPenalty * (1 - battlesOnTank / MOCK_SKILL.learningBattles);

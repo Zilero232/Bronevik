@@ -96,3 +96,18 @@ export type ParseMissionsInput = {
   localize: Localize;
   seasonOf: Map<number, number>;
 };
+
+export type OperationRewardInput = {
+  seasonId: number;
+  tileId: number;
+};
+
+export type ConditionTitleInput = {
+  mission: string;
+  progressId: string;
+};
+
+export type ConditionDescriptionInput = {
+  mission: string;
+  progressId: string;
+};

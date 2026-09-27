@@ -9,7 +9,7 @@ import type { Notification, NotificationSettings, User } from '../../../../../ge
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 import type { TelegramSenderService } from '../../../telegram';
-import type { DeliverPayload } from '../../contracts';
+import type { DeliverPayload } from '../../config';
 import type { DeliverJob } from '../../notifications.types';
 import type { EmailService } from '../email.service';
 import type { WebPushService } from '../web-push.service';

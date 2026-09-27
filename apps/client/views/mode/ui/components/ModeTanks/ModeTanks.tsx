@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { match } from 'ts-pattern';
 
 import { VehicleFilters } from '@/features/tank/filter-vehicles';
 import { ROUTES } from '@/shared/constants';
@@ -51,23 +52,22 @@ export const ModeTanks = ({ mode }: ModeTanksProps) => {
         errorTitle={t('errorTitle')}
         query={query}
       >
-        {view === 'table' ? (
-          <DataTable
-            caption={t('caption', { count: rows.length })}
-            columns={columns}
-            data={rows}
-            emptyState={emptyState}
-            getRowId={(row) => String(row.vehicle.tankId)}
-            getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
-            initialSorting={[{ id: 'score', desc: true }]}
-            renderCard={(row) => <ModeTankCard tank={row} />}
-            rowHeight={MODE_TABLE.rowHeight}
-          />
-        ) : groups.length > 0 ? (
-          <RankGroups groups={groups} />
-        ) : (
-          emptyState
-        )}
+        {match({ view, hasGroups: groups.length > 0 })
+          .with({ view: 'table' }, () => (
+            <DataTable
+              caption={t('caption', { count: rows.length })}
+              columns={columns}
+              data={rows}
+              emptyState={emptyState}
+              getRowId={(row) => String(row.vehicle.tankId)}
+              getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
+              initialSorting={[{ id: 'score', desc: true }]}
+              renderCard={(row) => <ModeTankCard tank={row} />}
+              rowHeight={MODE_TABLE.rowHeight}
+            />
+          ))
+          .with({ hasGroups: true }, () => <RankGroups groups={groups} />)
+          .otherwise(() => emptyState)}
       </QueryState>
       {minBattles !== null && <p className={s.note}>{t('rankNote', { battles: minBattles })}</p>}
     </section>

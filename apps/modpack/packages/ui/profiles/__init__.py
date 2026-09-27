@@ -1,5 +1,3 @@
-"""Settings profiles: named snapshots of config.json and components.json in profiles.json (shared with
-the installer), applied through each component's schema, and copy-paste profile codes."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .codec import decode_profile, encode_profile  # noqa: F401

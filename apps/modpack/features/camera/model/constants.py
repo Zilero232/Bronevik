@@ -7,6 +7,12 @@ ZOOM_STEPS = 'zoomSteps'
 DYNAMIC_CAMERA = 'dynamicCamera'
 HORIZONTAL_STABILIZATION = 'horStabilizationSnp'
 
+CAMERA_PRESETS = {
+    'sniper': {'zoom_steps': 'x2_x25', 'dynamic_camera': 'off', 'horizontal_stabilization': 'on'},
+    'balanced': {'zoom_steps': 'x2_x16', 'dynamic_camera': 'off', 'horizontal_stabilization': 'on'},
+    'dynamic': {'zoom_steps': 'x2_x8', 'dynamic_camera': 'on', 'horizontal_stabilization': 'on'},
+}
+
 ZOOM_STEP_PRESETS = {
     'x2_x8': [2, 4, 8],
     'x2_x16': [2, 4, 8, 16],

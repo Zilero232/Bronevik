@@ -1,2 +1,2 @@
-export { TreeContext, useTree } from './tree-context';
-export type { TreeContextValue } from './tree-context.types';
+export { TreeContext, useTree } from './tree';
+export type { TreeContextValue } from './tree';

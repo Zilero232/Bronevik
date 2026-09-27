@@ -16,3 +16,9 @@ export type SeedStepsInput = {
   now: number;
   days: number;
 };
+
+export type ClansOfInput = {
+  world: MockWorld;
+  accounts: readonly MockPlayer[];
+  at: number;
+};

@@ -11,6 +11,7 @@ import { RatingPaletteSync } from '@/features/app/rating-palette';
 import { RatingPatternsSync } from '@/features/app/rating-patterns';
 import { CommandPalette, CommandPaletteProvider } from '@/features/search/command-palette';
 import { getQueryClient } from '@/shared/api';
+import { env } from '@/shared/config';
 import { ROUTES, STORAGE_KEYS } from '@/shared/constants';
 import { FORMATS, messages, TIME_ZONE } from '@/shared/i18n';
 import { AppToaster, TooltipProvider } from '@/ui-kit';
@@ -32,7 +33,7 @@ export const AppProviders = ({ children, locale }: AppProvidersProps) => (
           <MotionConfig reducedMotion='user'>
             <TooltipProvider>
               <CommandPaletteProvider>
-                <SerwistProvider disable={process.env.NODE_ENV === 'development'} reloadOnOnline={false} swUrl={ROUTES.sw}>
+                <SerwistProvider disable={env.NODE_ENV === 'development'} reloadOnOnline={false} swUrl={ROUTES.sw}>
                   {children}
                 </SerwistProvider>
                 <CommandPalette />

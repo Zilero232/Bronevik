@@ -8,9 +8,8 @@ import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { PlayerProfilePageProps } from './PlayerProfilePage.types';
 
-import { ProfileProvider } from '../model/context';
 import { useProfilePage } from '../model/hooks';
-import { ProfileActionStrip, ProfileHeader, ProfileSkeleton, ProfileTabs } from './components';
+import { ProfileActionStrip, ProfileHeader, ProfileProvider, ProfileSkeleton, ProfileTabs } from './components';
 
 import s from './PlayerProfilePage.module.scss';
 

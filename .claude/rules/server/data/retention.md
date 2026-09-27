@@ -11,4 +11,7 @@ paths:
 ## Data retention is a Lesta term
 
 Purge jobs, deletion requests (`PurgeGuardService`) and the Timescale retention
-policies (`TIMESCALE` in `config/timescale.constants.ts`) are not optional.
+policies (`TIMESCALE` in `config/timescale.constants.ts`) are not optional. Every
+table that grows with time gets a `RETENTION.rules` entry
+(`modules/collector/purge/config`) in the same change, or is listed in
+`apps/server/CLAUDE.md` as kept on purpose with the reason.

@@ -1,5 +1,5 @@
 @use '@/shared/styles/mixins' as *;
-@use '../../../../styles/build' as *;
+@use '../../../../../config/build' as *;
 
 .root {
   @include category;

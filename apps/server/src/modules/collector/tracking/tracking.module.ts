@@ -2,9 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ReferenceCoreModule } from '../../reference';
 import { PurgeModule } from '../purge';
-import { EnrolProcessor } from './processors/enrol.processor';
-import { PollProcessor } from './processors/poll.processor';
-import { SweepProcessor } from './processors/sweep.processor';
+import { EnrolProcessor, PollProcessor, SweepProcessor } from './processors';
 import {
   DispatchService,
   EnrolService,

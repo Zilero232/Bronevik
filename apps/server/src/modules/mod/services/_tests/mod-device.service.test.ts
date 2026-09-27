@@ -1,8 +1,12 @@
+import type { RawBodyRequest } from '@nestjs/common';
+import type { Request } from 'express';
+
 import { HttpStatus } from '@nestjs/common';
 import RedisMock from 'ioredis-mock';
 import { createHmac } from 'node:crypto';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
+import { z } from 'zod';
 
 import type { ModDevice } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
@@ -258,6 +262,64 @@ describe('ModDeviceService.authenticate', () => {
     await expect(service.authenticate(signedRequest())).rejects.toMatchObject({
       status: HttpStatus.CONFLICT,
       response: { error: 'replayed_request' }
+    });
+  });
+});
+
+const bodySchema = z.object({ device_id: z.string(), account_id: z.number() });
+
+const bodyRequest = (payload: Record<string, unknown>) => {
+  const rawBody = Buffer.from(JSON.stringify(payload));
+  const { request } = signedRequest({ body: rawBody });
+
+  return Object.assign(mock<RawBodyRequest<Request>>(), { ...request, body: payload, rawBody });
+};
+
+describe('ModDeviceService.authenticateBody', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('returns the device with the parsed body when both ids match it', async () => {
+    const { service } = createService();
+    const payload = { device_id: DEVICE_ID, account_id: 12345 };
+
+    await expect(service.authenticateBody({ request: bodyRequest(payload), schema: bodySchema })).resolves.toMatchObject({
+      device: { id: DEVICE_ID },
+      body: payload
+    });
+  });
+
+  it('refuses a body that breaks the schema with the first issue as the message', async () => {
+    const { service } = createService();
+
+    await expect(service.authenticateBody({ request: bodyRequest({ device_id: DEVICE_ID }), schema: bodySchema })).rejects.toMatchObject({
+      status: HttpStatus.BAD_REQUEST,
+      response: { error: 'invalid_payload', message: expect.any(String) }
+    });
+  });
+
+  it('refuses a body signed by one device on behalf of another', async () => {
+    const { service } = createService();
+
+    await expect(
+      service.authenticateBody({ request: bodyRequest({ device_id: 'dev_other', account_id: 12345 }), schema: bodySchema })
+    ).rejects.toMatchObject({ status: HttpStatus.FORBIDDEN, response: { error: 'account_mismatch' } });
+  });
+
+  it('refuses a body for an account the device is not bound to', async () => {
+    const { service } = createService();
+
+    await expect(
+      service.authenticateBody({ request: bodyRequest({ device_id: DEVICE_ID, account_id: 1 }), schema: bodySchema })
+    ).rejects.toMatchObject({
+      status: HttpStatus.FORBIDDEN,
+      response: { error: 'account_mismatch' }
     });
   });
 });

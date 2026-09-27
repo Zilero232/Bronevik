@@ -1,11 +1,18 @@
-import type { Request, Response } from 'express';
-
 import { escapeUTF8 } from 'entities';
 import { Router } from 'express';
 import { sortBy } from 'remeda';
 
 import type { MockPlayer, MockWorld } from '../../lesta-mock.types';
-import type { LoginRouterInput, PickerRow } from './login.types';
+import type {
+  GuardInput,
+  IsAllowedRedirectInput,
+  LoginRouterInput,
+  PageInput,
+  PickerRow,
+  RedirectWithInput,
+  RowOfInput,
+  SearchInput
+} from './login.types';
 
 import { LESTA_MOCK } from '../../../../config';
 import { damageRatio, targetWinRate } from '../skill';
@@ -16,11 +23,11 @@ import { LOGIN } from './login.constants';
 
 const text = (value: unknown): string => (typeof value === 'string' ? value : '');
 
-const isAllowedRedirect = (redirectUri: string, apiUrl: string): boolean =>
+const isAllowedRedirect = ({ redirectUri, apiUrl }: IsAllowedRedirectInput): boolean =>
   URL.canParse(redirectUri) && new URL(redirectUri).origin === new URL(apiUrl).origin;
 
-const rowOf = (world: MockWorld, player: MockPlayer): PickerRow => {
-  const stint = stintAt(player, nowUnix());
+const rowOf = ({ world, player }: RowOfInput): PickerRow => {
+  const stint = stintAt({ player, at: nowUnix() });
 
   return {
     player,
@@ -40,19 +47,19 @@ const suggestions = (world: MockWorld): PickerRow[] => {
     ...ranked.slice(middle, middle + LOGIN.average),
     ...ranked.slice(-LOGIN.weak),
     ...sortBy(world.players, [(player) => player.createdAt, 'desc']).slice(0, LOGIN.fresh)
-  ].map((player) => rowOf(world, player));
+  ].map((player) => rowOf({ world, player }));
 };
 
-const search = (world: MockWorld, query: string): PickerRow[] => {
+const search = ({ world, query }: SearchInput): PickerRow[] => {
   const lower = query.toLowerCase();
 
   return world.nicknames
     .filter(([nickname]) => nickname.includes(lower))
     .slice(0, LOGIN.searchLimit)
-    .map(([, player]) => rowOf(world, player));
+    .map(([, player]) => rowOf({ world, player }));
 };
 
-const page = (request: Request, rows: readonly PickerRow[]): string => {
+const page = ({ request, rows }: PageInput): string => {
   const query = new URLSearchParams(Object.entries(request.query).map(([key, value]): [string, string] => [key, text(value)]));
   const confirm = (player: MockPlayer) => {
     const target = new URLSearchParams(query);
@@ -96,7 +103,7 @@ input{padding:6px 8px;width:60%}button{padding:6px 12px}.note{color:#999}</style
 <p><a href="confirm/?${escapeUTF8(cancel.toString())}">${LOGIN.cancel}</a></p></body></html>`;
 };
 
-const redirectWith = (redirectUri: string, values: Record<string, string>): string => {
+const redirectWith = ({ redirectUri, values }: RedirectWithInput): string => {
   const target = new URL(redirectUri);
 
   for (const [key, value] of Object.entries(values)) {
@@ -110,10 +117,10 @@ export const createLoginRouter = ({ world, apiUrl }: LoginRouterInput): Router =
   const base = `${LESTA_MOCK.mountPath}${LESTA_MOCK.gamePath}${LOGIN.path}`;
   const router = Router();
 
-  const guard = (request: Request, response: Response): string | null => {
+  const guard = ({ request, response }: GuardInput): string | null => {
     const redirectUri = text(request.query.redirect_uri);
 
-    if (text(request.query.application_id) !== LESTA_MOCK.applicationId || !isAllowedRedirect(redirectUri, apiUrl)) {
+    if (text(request.query.application_id) !== LESTA_MOCK.applicationId || !isAllowedRedirect({ redirectUri, apiUrl })) {
       response.status(400).type('text/plain').send(LOGIN.invalidRequest);
 
       return null;
@@ -123,24 +130,24 @@ export const createLoginRouter = ({ world, apiUrl }: LoginRouterInput): Router =
   };
 
   router.get(base, (request, response) => {
-    if (guard(request, response) === null) {
+    if (guard({ request, response }) === null) {
       return;
     }
 
     const query = text(request.query.q).trim();
 
-    response.type('html').send(page(request, query.length >= LOGIN.minQuery ? search(world, query) : suggestions(world)));
+    response.type('html').send(page({ request, rows: query.length >= LOGIN.minQuery ? search({ world, query }) : suggestions(world) }));
   });
 
   router.get(`${base}confirm/`, (request, response) => {
-    const redirectUri = guard(request, response);
+    const redirectUri = guard({ request, response });
 
     if (redirectUri === null) {
       return;
     }
 
     if (text(request.query.cancel) === '1') {
-      response.redirect(redirectWith(redirectUri, { status: 'error', code: 'AUTH_CANCEL', message: 'User not authorized' }));
+      response.redirect(redirectWith({ redirectUri, values: { status: 'error', code: 'AUTH_CANCEL', message: 'User not authorized' } }));
 
       return;
     }
@@ -156,12 +163,15 @@ export const createLoginRouter = ({ world, apiUrl }: LoginRouterInput): Router =
     const expiresAt = Number(text(request.query.expires_at)) || nowUnix() + LOGIN.tokenTtlSec;
 
     response.redirect(
-      redirectWith(redirectUri, {
-        status: 'ok',
-        access_token: mockAccessToken(world.seed, player.accountId),
-        nickname: player.nickname,
-        account_id: String(player.accountId),
-        expires_at: String(expiresAt)
+      redirectWith({
+        redirectUri,
+        values: {
+          status: 'ok',
+          access_token: mockAccessToken({ seed: world.seed, accountId: player.accountId }),
+          nickname: player.nickname,
+          account_id: String(player.accountId),
+          expires_at: String(expiresAt)
+        }
       })
     );
   });

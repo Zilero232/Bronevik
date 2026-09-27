@@ -3,19 +3,22 @@ import type { VehicleType } from '@otmetki/schemas';
 import { median } from 'remeda';
 
 import type { MockCatalog, MockExpected, MockVehicle } from '../../lesta-mock.types';
-import type { CatalogQueryClient, CatalogRows, CatalogVehicleRow, ExpectedRow, GameVersionRow } from './catalog.types';
+import type {
+  CatalogQueryClient,
+  CatalogRows,
+  ExpectedRow,
+  FallbackExpectedInput,
+  GameVersionRow,
+  HitPointsInput,
+  KnownExpected,
+  OfInput
+} from './catalog.types';
 
 import { MOCK_BATTLE } from '../../config';
 import { CATALOG_DEFAULTS, CATALOG_SQL } from './catalog.constants';
 import { crewSchema, modulesTreeSchema, shotsSchema } from './catalog.schemas';
 
 const VEHICLE_TYPES: readonly VehicleType[] = ['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG'];
-
-type KnownExpected = {
-  tier: number;
-  type: VehicleType;
-  expected: MockExpected;
-};
 
 const toVehicleType = (value: string): VehicleType | null => VEHICLE_TYPES.find((type) => type === value) ?? null;
 
@@ -27,21 +30,21 @@ const toExpected = (row: ExpectedRow): MockExpected => ({
   winRate: row.exp_win_rate
 });
 
-const fallbackExpected = (known: readonly KnownExpected[], vehicle: KnownExpected): MockExpected => {
+const fallbackExpected = ({ known, vehicle }: FallbackExpectedInput): MockExpected => {
   const peers = known.filter((entry) => entry.tier === vehicle.tier && entry.type === vehicle.type);
   const pool = (peers.length > 0 ? peers : known.filter((entry) => entry.tier === vehicle.tier)).map((entry) => entry.expected);
-  const of = (key: keyof MockExpected, fallback: number) => median(pool.map((expected) => expected[key])) ?? fallback;
+  const of = ({ key, fallback }: OfInput) => median(pool.map((expected) => expected[key])) ?? fallback;
 
   return {
-    damage: of('damage', 120 * vehicle.tier * vehicle.tier + 150),
-    frags: of('frags', 0.9),
-    spot: of('spot', 1.1),
-    def: of('def', 0.6),
-    winRate: of('winRate', 52)
+    damage: of({ key: 'damage', fallback: 120 * vehicle.tier * vehicle.tier + 150 }),
+    frags: of({ key: 'frags', fallback: 0.9 }),
+    spot: of({ key: 'spot', fallback: 1.1 }),
+    def: of({ key: 'def', fallback: 0.6 }),
+    winRate: of({ key: 'winRate', fallback: 52 })
   };
 };
 
-const hitPoints = (row: CatalogVehicleRow, type: VehicleType): number => {
+const hitPoints = ({ row, type }: HitPointsInput): number => {
   const total = (row.hull_hp ?? 0) + (row.turret_hp ?? 0);
 
   return total > 0 ? total : (MOCK_BATTLE.hpFallback[type][row.tier] ?? CATALOG_DEFAULTS.hp);
@@ -82,8 +85,9 @@ export const buildCatalog = (rows: CatalogRows): MockCatalog => {
       priceCredit: row.price_credit,
       priceGold: row.price_gold,
       description: row.description,
-      hp: hitPoints(row, type),
-      expected: expected ?? fallbackExpected(known, { tier: row.tier, type, expected: { damage: 0, frags: 0, spot: 0, def: 0, winRate: 0 } }),
+      hp: hitPoints({ row, type }),
+      expected:
+        expected ?? fallbackExpected({ known, vehicle: { tier: row.tier, type, expected: { damage: 0, frags: 0, spot: 0, def: 0, winRate: 0 } } }),
       crew: crewSchema.parse(row.crew),
       shells: shotsSchema.parse(row.shots).map((shot) => {
         const price = shellPrices.get(shot.shellId);

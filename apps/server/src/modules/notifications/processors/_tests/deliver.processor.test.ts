@@ -3,10 +3,13 @@ import type { Job } from 'bullmq';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
+import type { MetricsService } from '../../../collector/metrics';
 import type { DeliveryService } from '../../services';
 
-import { NOTIFICATIONS_JOB } from '../../contracts';
+import { NOTIFICATIONS_JOB } from '../../config';
 import { DeliverProcessor } from '../deliver.processor';
+
+const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });
 
 const DIGEST = { userId: 'u', weekKey: '2026-W40', digest: { battles: 1, wins: 1, damageDealt: 1, sessions: 1, marksGained: 0 } };
 
@@ -24,7 +27,7 @@ const createProcessor = () => {
   delivery.deliver.mockResolvedValue(1);
   delivery.deliverDigest.mockResolvedValue(1);
 
-  return { processor: new DeliverProcessor(delivery), delivery };
+  return { processor: new DeliverProcessor(delivery, trackingMetrics()), delivery };
 };
 
 describe('DeliverProcessor.process', () => {

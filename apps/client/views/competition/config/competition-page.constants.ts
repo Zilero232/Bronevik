@@ -1,4 +1,4 @@
-import type { JoinFormValues } from '../lib/join-form/join-form.types';
+import type { JoinFormValues } from '../lib/join-form';
 
 export const COMPETITION_PAGE = {
   skeletonHeights: [72, 120, 320],

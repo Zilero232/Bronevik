@@ -1,10 +1,4 @@
-import type { UiAction } from '../../protocol/protocol.types';
-
-export type PendingAction = {
-  action: UiAction;
-  row?: string;
-  value?: string;
-};
+import type { UiAction } from '../../protocol';
 
 export type RunActionInput = {
   action: UiAction;

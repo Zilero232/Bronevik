@@ -1,3 +1,2 @@
-export { useCommandPalette } from './command-palette-context';
-export type { CommandPaletteContextValue, CommandPaletteProviderProps } from './command-palette-context.types';
-export { CommandPaletteProvider } from './CommandPaletteProvider';
+export { CommandPaletteContext, useCommandPalette } from './command-palette';
+export type { CommandPaletteContextValue } from './command-palette';

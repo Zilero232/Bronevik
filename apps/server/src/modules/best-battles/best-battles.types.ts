@@ -55,3 +55,13 @@ export type LookupsInput = {
 };
 
 export type TankScopeInput = Pick<BestBattlesQuery, 'tankId' | 'tier' | 'type'>;
+
+export type FeedPageInput = {
+  query: BestBattlesQuery;
+  now: Date;
+};
+
+export type FacetsInput = {
+  query: BestBattlesFacetsQuery;
+  now: Date;
+};

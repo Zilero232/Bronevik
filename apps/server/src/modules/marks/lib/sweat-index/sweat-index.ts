@@ -3,11 +3,10 @@ import type { SweatIndex, SweatLevel } from '@otmetki/schemas';
 import type { BuildSweatIndexInput, QuantileInput, SweatCutoffs, SweatLevelInput, SweatRatioInput } from './sweat-index.types';
 
 import { SWEAT_INDEX } from '../../config';
-
-const RATIO_PRECISION = 100;
+import { SWEAT_RATIO } from './sweat-index.constants';
 
 export const sweatRatio = ({ threshold, baseline }: SweatRatioInput): number | null =>
-  threshold && baseline && threshold > 0 && baseline > 0 ? Math.round((threshold / baseline) * RATIO_PRECISION) / RATIO_PRECISION : null;
+  threshold && baseline && threshold > 0 && baseline > 0 ? Math.round((threshold / baseline) * SWEAT_RATIO.precision) / SWEAT_RATIO.precision : null;
 
 const quantile = ({ sorted, level }: QuantileInput): number => sorted[Math.floor(level * (sorted.length - 1))] ?? 0;
 

@@ -10,7 +10,8 @@ import type { StreamerDirectoryQueryView } from '../streamers.types';
 import { Prisma } from '../../../../generated';
 import { parseJsonText } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
-import { PROFILE_CARD_INCLUDE, STREAMERS } from '../config';
+import { STREAMERS } from '../config';
+import { PROFILE_CARD_INCLUDE } from '../selects';
 import { StreamerCardsService } from './streamer-cards.service';
 
 @Injectable()

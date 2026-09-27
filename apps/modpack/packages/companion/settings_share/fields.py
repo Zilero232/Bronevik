@@ -1,4 +1,5 @@
-"""The whitelist of shareable client settings: (raw key, group, dotted field inside the group, value kind)."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from .constants import CLIENTS, GRAPHICS_OPTIONS, GUN_MARKERS, MARKER_FIELDS, PRESETS, WINDOW_MODES, ZOOM_STEPS
 
 BOOL = ('bool',)
@@ -20,7 +21,6 @@ def _enum_list(choices):
 SENSITIVITY = ('num', 0.01, 3.0)
 VOLUME = _int(0, 100)
 
-# (raw key, group, dotted field inside the group, kind)
 FIELDS = (
     ('resolution', 'display', 'resolution', ('resolution',)),
     ('refreshRate', 'display', 'refreshRate', _int(30, 540)),

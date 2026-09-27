@@ -117,7 +117,7 @@
   left: 50%;
   width: 300px;
   height: 36px;
-  background: radial-gradient(closest-side, rgb(0 0 0 / 55%), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-shade) 55%, transparent), transparent);
   transform: translateX(-50%);
 }
 

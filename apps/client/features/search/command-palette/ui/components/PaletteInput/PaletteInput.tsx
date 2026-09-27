@@ -18,7 +18,7 @@ export const PaletteInput = ({ value, isFetching, onValueChange, onClose }: Pale
         <Search size={16} />
       </span>
       <Command.Input className={s.input} placeholder={t('placeholder')} value={value} onValueChange={onValueChange} />
-      <Kbd className={s.esc}>Esc</Kbd>
+      <Kbd className={s.esc}>{tCommon('kbd.esc')}</Kbd>
       <IconButton aria-label={tCommon('close')} className={s.close} size='lg' onClick={onClose}>
         <X size={18} />
       </IconButton>

@@ -5,9 +5,9 @@ import { uniqueBy } from 'remeda';
 
 import type { PlayerSearchOutcome, SearchInput, TermsInput } from '../search.types';
 
-import { clanEmblem, emptyRating, ratingValue, toNumber } from '../../../common/lib';
 import { VehicleCatalogService } from '../../reference';
 import { searchCandidates } from '../lib';
+import { toClanSearchResult, toDiscoveredPlayerResult, toMapSearchResult, toPlayerSearchResult } from '../mappers';
 import { LocalSearchService } from './local-search.service';
 import { PlayerDiscoveryService } from './player-discovery.service';
 
@@ -32,25 +32,7 @@ export class SearchService {
 
     const tankResults = await Promise.all(tanks.map(async (row) => ({ kind: 'tank' as const, vehicle: await this.catalog.summary(row.tankId) })));
 
-    const results: SearchResult[] = [
-      ...players.results,
-      ...clans.map((row) => ({
-        kind: 'clan' as const,
-        clanId: toNumber(row.clanId),
-        tag: row.tag,
-        name: row.name,
-        membersCount: row.membersCount,
-        emblem: clanEmblem(row.emblems)
-      })),
-      ...tankResults,
-      ...maps.map((row) => ({
-        kind: 'map' as const,
-        arenaId: row.arenaId,
-        slug: row.slug,
-        name: row.name,
-        image: row.image && URL.canParse(row.image) ? row.image : null
-      }))
-    ];
+    const results: SearchResult[] = [...players.results, ...clans.map(toClanSearchResult), ...tankResults, ...maps.map(toMapSearchResult)];
 
     return { query: q, correctedQuery: players.term && players.term !== q ? players.term : null, results };
   }
@@ -58,15 +40,7 @@ export class SearchService {
   private async players({ terms, limit }: TermsInput): Promise<PlayerSearchOutcome> {
     const rows = await this.local.players({ terms, limit });
 
-    const local: PlayerSearchResult[] = rows.map((row) => ({
-      kind: 'player',
-      accountId: toNumber(row.accountId),
-      nickname: row.nickname,
-      clanTag: row.clanTag,
-      matchedNickname: row.matchedNickname,
-      wn8: ratingValue({ kind: 'wn8', value: row.wn8 }),
-      battles: row.battles
-    }));
+    const local: PlayerSearchResult[] = rows.map(toPlayerSearchResult);
 
     const best = rows[0];
 
@@ -76,15 +50,7 @@ export class SearchService {
 
     const discovered = await this.discovery.discover(terms);
 
-    const remote: PlayerSearchResult[] = discovered.map((item) => ({
-      kind: 'player',
-      accountId: item.account_id,
-      nickname: item.nickname,
-      clanTag: null,
-      matchedNickname: null,
-      wn8: emptyRating(),
-      battles: null
-    }));
+    const remote: PlayerSearchResult[] = discovered.map(toDiscoveredPlayerResult);
 
     const exactRemote = remote.filter((item) => terms.some((term) => term.toLowerCase() === item.nickname.toLowerCase()));
     const merged = uniqueBy([...exactRemote, ...local, ...remote], (item) => item.accountId).slice(0, limit);

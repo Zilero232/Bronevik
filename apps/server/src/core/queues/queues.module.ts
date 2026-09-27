@@ -3,7 +3,7 @@ import { Global, Module } from '@nestjs/common';
 import { Redis } from 'ioredis';
 
 import { AppConfigService } from '../../config';
-import { QUEUE_DEFAULTS } from './queues.config';
+import { QUEUE_DEFAULTS } from './queues.constants';
 
 @Global()
 @Module({

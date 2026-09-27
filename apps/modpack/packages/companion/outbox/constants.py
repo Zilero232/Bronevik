@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from ...core.vendor.enum34 import Enum
 
 MAX_EVENTS = 2000
@@ -8,7 +10,6 @@ JITTER = 0.2
 
 
 class Outcome(Enum):
-    """What a finished ingest request means for its batch."""
 
     SENT = 'sent'
     RETRY = 'retry'

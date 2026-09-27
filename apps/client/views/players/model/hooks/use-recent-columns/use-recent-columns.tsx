@@ -14,6 +14,7 @@ const column = createColumnHelper<RecentPlayer>();
 
 export const useRecentColumns = (): TableColumn<RecentPlayer>[] => {
   const t = useTranslations('players.columns');
+  const tCommon = useTranslations('common');
 
   return [
     column.accessor('nickname', {
@@ -23,7 +24,7 @@ export const useRecentColumns = (): TableColumn<RecentPlayer>[] => {
       meta: { isSticky: true }
     }),
     column.accessor('wn8', {
-      header: 'WN8',
+      header: tCommon('ratings.wn8'),
       enableSorting: false,
       cell: (info) => <RatingValue rating={scaledRating({ scale: 'wn8', value: info.getValue() })} />,
       meta: { align: 'end', isNumeric: true }

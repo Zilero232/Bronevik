@@ -138,7 +138,7 @@ Inside a slice:
 | Segment | Holds |
 |---|---|
 | `ui/` | components — render only |
-| `model/` | `hooks/use-<x>/` (state, effects, queries, handlers, derived data; forms in `use-<x>-form/`), `context/`, model types |
+| `model/` | `hooks/use-<x>/` (state, effects, queries, handlers, derived data; forms in `use-<x>-form/`; a Provider's value in `use-<x>-state/`), `context/<name>/` (context object + `useX` consumer — the Provider component lives in `ui/`), model types |
 | `api/` | the slice's requests: `api/<resource>/<resource>.ts` + `.types.ts` / `.constants.ts` + `index.ts`, one `api/index.ts` barrel; API → UI model converters in `api/mappers/<name>/` |
 | `lib/` | pure domain logic, `lib/<concern>/<concern>.ts` + `index.ts` + `_tests/` |
 | `config/` | constants, `config/<concern>.constants.ts` + `index.ts` |
@@ -163,7 +163,7 @@ A file that has companions — `x.ts` with `x.types.ts`, `x.constants.ts`, `x.sc
 
 `ROUTES` is nested by page family: `ROUTES.players.{list, profile(nick), session({ nickname, sessionId }), signature(nick), compare}`, `ROUTES.tanks.{list, detail, armor, compare}`, `ROUTES.guides.{list, detail, create, edit}`, `ROUTES.streamers.{list, profile, claim, overlay, forStreamers, settings.{table, compare, profile}}`, `ROUTES.auth.{login, loginNext, telegram}`, `ROUTES.missions.{hub, operation}`, `ROUTES.legal.{privacy, terms, contacts}`, `ROUTES.account.{overview, analytics, analyticsTank(id), battles, …}`, `ROUTES.api.{playerCard, siteCard}`, `ROUTES.sw`. Single pages stay flat (`ROUTES.top`, `ROUTES.tree`, `ROUTES.supertest`, `ROUTES.mod`).
 
-A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts`); never `*.helpers.ts`, `*.utils.ts`, `*.constants.ts` or `hooks/`. One component per folder, and a `ui/` root holds at most one flat component. Full rules: [guides/client/slice-ui.md §2](../guides/client/slice-ui.md).
+A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts`); never `*.helpers.ts`, `*.utils.ts`, `*.constants.ts` or `hooks/`. One component per folder; a `ui/` root is either one flat main component plus `components/`, or a folder per exported component — never a flat component beside sibling folders. Full rules: [guides/client/slice-ui.md §2](../guides/client/slice-ui.md).
 
 ## 5. `ui-kit`
 

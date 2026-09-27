@@ -9,6 +9,7 @@ import { isoDay } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { API_TIERS, API_USAGE_REPORT } from '../config';
 import { topEndpoints, usagePointOf, usagePoints } from '../lib';
+import { toApiErrorLogEntry, toUsageRow } from '../mappers';
 import { ApiKeysService } from './api-keys.service';
 import { ApiTierService } from './api-tier.service';
 
@@ -27,14 +28,7 @@ export class ApiUsageReportService {
     const from = new Date(isoDay(subDays(new Date(), days - 1)));
     const rows = await this.prisma.apiUsageDaily.findMany({ where: { apiKeyId: id, day: { gte: from } }, orderBy: { day: 'asc' } });
 
-    const usageRows = rows.map((row) => ({
-      day: isoDay(row.day),
-      endpoint: row.endpoint,
-      requests: row.requests,
-      errors: row.errors,
-      throttled: row.throttled,
-      latencyMsTotal: Number(row.latencyMsTotal)
-    }));
+    const usageRows = rows.map(toUsageRow);
 
     return {
       apiKeyId: id,
@@ -55,14 +49,6 @@ export class ApiUsageReportService {
       take: API_USAGE_REPORT.errorLogLimit
     });
 
-    return rows.map((row) => ({
-      id: row.id,
-      method: row.method,
-      path: row.path,
-      status: row.status,
-      code: row.code,
-      message: row.message,
-      occurredAt: row.occurredAt.toISOString()
-    }));
+    return rows.map(toApiErrorLogEntry);
   }
 }

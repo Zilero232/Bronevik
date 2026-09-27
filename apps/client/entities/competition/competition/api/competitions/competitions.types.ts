@@ -1,4 +1,4 @@
-import type { CompetitionStatus, JoinCompetitionInput } from '@otmetki/schemas';
+import type { CompetitionStatus, JoinCompetitionInput as JoinCompetitionBody } from '@otmetki/schemas';
 
 export type ListCompetitionsInput = {
   status?: CompetitionStatus;
@@ -14,6 +14,6 @@ export type GetCompetitionInput = {
   signal?: AbortSignal;
 };
 
-export type JoinCompetitionRequest = JoinCompetitionInput & {
+export type JoinCompetitionInput = JoinCompetitionBody & {
   id: string;
 };

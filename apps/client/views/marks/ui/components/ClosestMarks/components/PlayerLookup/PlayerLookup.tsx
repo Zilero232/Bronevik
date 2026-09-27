@@ -13,7 +13,7 @@ import s from './PlayerLookup.module.scss';
 
 export const PlayerLookup = ({ player, onPick }: PlayerLookupProps) => {
   const t = useTranslations('marks.closest');
-  const { input, players, canSubmit, pick, onSubmit, onChange } = usePlayerLookup({ player, onPick });
+  const { field, players, canSubmit, pick, onSubmit } = usePlayerLookup({ player, onPick });
 
   return (
     <form className={s.root} role='search' onSubmit={onSubmit}>
@@ -23,9 +23,8 @@ export const PlayerLookup = ({ player, onPick }: PlayerLookupProps) => {
           autoComplete='off'
           icon={<Search size={14} />}
           placeholder={t('placeholder')}
-          value={input}
           wrapperClassName={s.input}
-          onChange={onChange}
+          {...field}
         />
         <Button disabled={!canSubmit} size='sm' type='submit' variant='secondary'>
           {t('submit')}

@@ -11,7 +11,10 @@ paths:
 ## React Compiler
 
 The compiler is on, so `useMemo`/`useCallback` are for semantic stability only.
-`'use no memo'` opts out a component that holds a mutable library instance — the
-TanStack Table components in `ui-kit/organisms/DataTable`. Nowhere else without
-that reason. Generic hooks come from `@siberiacancode/reactuse` (`useBoolean`,
+`'use no memo'` opts out a component or hook that holds a mutable library
+instance the compiler would memoise into staleness: TanStack Table and Virtual
+(`ui-kit/organisms/DataTable`, `shared/lib/use-data-table`,
+`shared/lib/use-table-virtualizer`) and three.js / React Three Fiber scenes, meshes
+and their hooks (`widgets/armor/armor-viewer`, `widgets/showcase/showcase-3d`).
+Nowhere else without that reason. Generic hooks come from `@siberiacancode/reactuse` (`useBoolean`,
 `useDebounceValue`, `useHotkeys`, `useLocalStorage`, `useInterval`).

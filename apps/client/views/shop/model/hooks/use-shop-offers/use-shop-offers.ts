@@ -20,17 +20,18 @@ export const useShopOffers = ({ isActiveOnly }: UseShopOffersInput) => {
     staleTime: SHOP.staleMs
   });
 
-  const offers: OfferEntry[] = (query.data?.pages.flatMap(({ items }) => items) ?? []).map((offer) => ({
+  const { data: feed, dataUpdatedAt, fetchNextPage } = query;
+  const offers: OfferEntry[] = (feed?.pages.flatMap(({ items }) => items) ?? []).map((offer) => ({
     offer,
     href: safeWebHref(offer.url),
     vehicles: pickVehicles({ tankIds: offer.tankIds, catalog }),
-    isRunning: offer.endsAt === null || new Date(offer.endsAt).getTime() > query.dataUpdatedAt
+    isRunning: offer.endsAt === null || new Date(offer.endsAt).getTime() > dataUpdatedAt
   }));
 
   return {
     offers,
-    total: query.data?.pages[0]?.total ?? 0,
+    total: feed?.pages[0]?.total ?? 0,
     query,
-    loadMore: () => void query.fetchNextPage()
+    loadMore: () => void fetchNextPage()
   };
 };

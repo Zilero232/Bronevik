@@ -7,9 +7,11 @@ import { z } from 'zod';
 
 import type { MockBattle, MockPlayer, MockWorld } from '../src/dev/lesta-mock';
 import type { BattleResultEvent } from '../src/modules/mod';
+import type { SeedPollInput } from './dev-seed.types';
 
 import { isLestaMock, LESTA_MOCK, lestaMockBaseUrl, validateEnv } from '../src/config';
-import { createPrismaClient } from '../src/core/prisma/prisma.factory';
+import { HttpClientService } from '../src/core/http';
+import { createPrismaClient } from '../src/core/prisma';
 import {
   battlesBetween,
   clansOf,
@@ -75,7 +77,7 @@ const webhooks = { emit: async () => 0 };
 
 if ((await prisma.wn8ExpectedValue.count()) === 0) {
   log('reference: no WN8 expected values (db:reset?), syncing them from XVM: the mock plays only tanks that have them');
-  log(`reference: ${JSON.stringify(await new ExpectedValuesSyncService(prisma).sync())}`);
+  log(`reference: ${JSON.stringify(await new ExpectedValuesSyncService(prisma, new HttpClientService()).sync())}`);
 }
 
 const world: MockWorld = await loadMockWorld(env.DATABASE_URL);
@@ -129,7 +131,7 @@ const seeded = new Set(
 const fresh = accountIds.filter((accountId) => !seeded.has(accountId));
 const limit = pLimit(SEED.concurrency);
 
-const poll = async (ids: readonly number[], at: number) => {
+const poll = async ({ ids, at }: SeedPollInput) => {
   clock = at;
 
   const results = await Promise.all(
@@ -154,7 +156,7 @@ log(`${seeded.size} accounts already have history, ${fresh.length} to backfill i
 
 for (const [index, at] of steps.entries()) {
   const ids = index === steps.length - 1 ? accountIds : fresh;
-  const { snapshots, deltas } = await poll(ids, at);
+  const { snapshots, deltas } = await poll({ ids, at });
 
   if (index % 10 === 0 || index === steps.length - 1) {
     log(`step ${index + 1}/${steps.length} ${fromUnixTime(at).toISOString()}: ${snapshots} snapshots, ${deltas} deltas`);
@@ -168,7 +170,7 @@ await prisma.player.updateMany({
   data: { trackingTier: 'active', lastViewedAt: fromUnixTime(now), nextPollAt: fromUnixTime(now) }
 });
 
-const clanIds = clansOf(world, selection.accounts, now);
+const clanIds = clansOf({ world, accounts: selection.accounts, at: now });
 
 log(`clans: syncing ${clanIds.length} clans with rosters, stronghold and global map`);
 

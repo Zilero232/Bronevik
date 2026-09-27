@@ -7,9 +7,8 @@ import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { StreamerPageProps } from './StreamerPage.types';
 
-import { StreamerProvider } from '../model/context';
 import { useStreamerPage } from '../model/hooks';
-import { ClaimBanner, LatestVideos, LiveBlock, StreamerHero, StreamerStats } from './components';
+import { ClaimBanner, LatestVideos, LiveBlock, StreamerHero, StreamerProvider, StreamerStats } from './components';
 
 import s from './StreamerPage.module.scss';
 

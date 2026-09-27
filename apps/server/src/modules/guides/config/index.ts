@@ -1,2 +1,2 @@
-export { COMMENT_TARGET_FROM_DB, COMMENT_TARGET_TO_DB } from './comment-target.config';
-export { COMMENTS, GUIDES } from './guides.config';
+export { COMMENT_TARGET_FROM_DB, COMMENT_TARGET_TO_DB } from './comment-target.constants';
+export { COMMENTS, GUIDES } from './guides.constants';

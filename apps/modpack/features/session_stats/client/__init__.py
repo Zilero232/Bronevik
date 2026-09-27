@@ -1,12 +1,10 @@
-"""Hangar session panel: battles, win rate, average damage and WN8 of the current session (switch
-`hangar_session_panel`); also stamps `session_id` on each battle_result event."""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import time
 
-from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import SessionAggregator, format_session_panel, format_session_plain
+from ..settings import IDLE_MINUTES, SWITCH
 from .constants import HANGAR_PANEL, LAYOUT, STATE_KEY
 
 
@@ -15,7 +13,7 @@ class SessionStats(object):
     def __init__(self, app):
         self.app = app
         app.translate.catalog.add(STRINGS)
-        self.session = SessionAggregator(idle_seconds=app.config.get('session_idle_minutes') * 60)
+        self.session = SessionAggregator(idle_seconds=app.config.get(IDLE_MINUTES) * 60)
         self.session.load(app.state.get(STATE_KEY))
         app.register_state(STATE_KEY, self.session.to_dict)
         bus = app.bus
@@ -37,7 +35,6 @@ class SessionStats(object):
     def _on_battle_recorded(self):
         self.show(True)
 
-    @safe
     def _on_ingest_response(self, data):
         summary = data.get('session')
         if isinstance(summary, dict) and self.session.set_server_summary(summary.get('session_id'), summary):
@@ -46,7 +43,7 @@ class SessionStats(object):
 
     def show(self, after_battle):
         app = self.app
-        if app.in_battle or not app.config.is_enabled('hangar_session_panel'):
+        if app.in_battle or not app.config.is_enabled(SWITCH):
             return
         if self.session.is_expired(time.time()):
             app.ui.hide(HANGAR_PANEL)

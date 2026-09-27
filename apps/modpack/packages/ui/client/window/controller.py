@@ -5,7 +5,6 @@ from .gameface import AVAILABLE, SettingsWindow
 
 
 class WindowController(object):
-    """Opens and closes the settings window and moves JSON between it and the bridge."""
 
     def __init__(self, on_message, current_state):
         self.on_message_cb = on_message

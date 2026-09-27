@@ -1,2 +1,2 @@
-export { useAnalyticsFilters } from './analytics-filters-context';
-export { AnalyticsFiltersProvider } from './AnalyticsFiltersProvider';
+export { AnalyticsFiltersContext, useAnalyticsFilters } from './analytics-filters';
+export type { AnalyticsFiltersValue } from './analytics-filters';

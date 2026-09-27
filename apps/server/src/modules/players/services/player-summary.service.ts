@@ -2,13 +2,12 @@ import type { PlayerProfile, PlayerSummary, RecentPeriods, StatsBlock } from '@o
 
 import { Injectable, Logger } from '@nestjs/common';
 
-import type { FromSnapshotInput } from '../players.types';
-
 import { AppNotFoundException } from '../../../common/exceptions';
 import { CLAN_ROLE_FROM_DB, clanEmblem, errorMessage, RATING_PERIOD_FROM_DB, RATING_PERIOD_TO_DB, toIso, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { PLAYER_STATS } from '../config';
 import { statsBlockFromRating, statsBlockFromTotals, totalsFromLestaBlock } from '../lib';
+import { toSnapshotStats } from '../mappers';
 import { PlayerResolverService } from './player-resolver.service';
 
 @Injectable()
@@ -65,7 +64,7 @@ export class PlayerSummaryService {
       lastBattleAt: toIso(player.lastBattleAt),
       updatedAt: (snapshot?.capturedAt ?? player.updatedAt).toISOString(),
       isTracked: player.trackingTier === 'active',
-      overall: snapshot ? this.fromSnapshot({ snapshot, rating: overall }) : await this.fromLesta(accountId),
+      overall: snapshot ? toSnapshotStats({ snapshot, rating: overall }) : await this.fromLesta(accountId),
       marks: { moe3: marksOf(3), moe2: marksOf(2), moe1: marksOf(1), mastery, tanksOwned }
     };
   }
@@ -84,26 +83,6 @@ export class PlayerSummaryService {
         to: toIso(rating?.toCapturedAt),
         stats: rating ? statsBlockFromRating(rating) : null
       };
-    });
-  }
-
-  private fromSnapshot({ snapshot, rating }: FromSnapshotInput): StatsBlock {
-    return statsBlockFromTotals({
-      battles: snapshot.battles,
-      wins: snapshot.wins,
-      damageDealt: toNumber(snapshot.damageDealt),
-      frags: snapshot.frags,
-      spotted: snapshot.spotted,
-      xp: toNumber(snapshot.xp),
-      survived: snapshot.survived,
-      hits: snapshot.hits,
-      shots: snapshot.shots,
-      avgBlocked: snapshot.avgDamageBlocked,
-      avgAssisted: snapshot.avgDamageAssisted,
-      avgTier: rating?.avgTier,
-      wn8: rating?.wn8,
-      eff: rating?.eff,
-      broneIndex: rating?.broneIndex
     });
   }
 

@@ -16,7 +16,7 @@ Events on `app.bus` (features subscribe to these; see CLAUDE.md for the host int
     ingest_response(data)        a 2xx body from /mod/ingest
     tick(now)                    once a second, hangar only
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import time
@@ -27,11 +27,12 @@ from CurrentVehicle import g_currentVehicle
 from PlayerEvents import g_playerEvents
 
 from ....core.client.game import client_language, client_version
+from ....core.client.timer import Ticker
 from ....core.client.transport import create_transport
 from ....core.client.ui import Ui
 from ....core.events import EventBus
 from ....core.hooks import Subscriptions
-from ....core.log import log, log_exception, safe
+from ....core.log import log, safe
 from ....core.registry import registry
 from ....core.storage import JsonFile
 from ...battles.client import BattleCapture
@@ -80,6 +81,7 @@ class OtmetkiApp(object):
         self.battles = BattleCapture(self)
         self.settings_ui = create_settings_ui(self)
         self.settings_share = SettingsShare(self, CONFIG_DIR)
+        self.ticker = Ticker(TICK_S, self._tick)
 
     def start(self):
         hooks = self.hooks
@@ -92,11 +94,9 @@ class OtmetkiApp(object):
         hooks.add(g_playerEvents, 'onBattleResultsReceived', self._on_battle_results)
         hooks.add(g_currentVehicle, 'onChanged', self._on_vehicle_changed)
         self.settings_ui.register()
-        BigWorld.callback(TICK_S, self._tick)
+        self.ticker.start()
         log('started %s' % VERSION)
         registry().bind(self)
-
-    # Host interface used by the capture modules and the features.
 
     def user_agent(self):
         return '%s/%s' % (MOD_ID, VERSION)
@@ -105,7 +105,6 @@ class OtmetkiApp(object):
         self.config_file.write(self.config.to_dict())
 
     def register_state(self, key, dump):
-        """`dump()` gives the value stored under `key` in state.json on every save."""
         self.state_parts.append((key, dump))
 
     def save_state(self):
@@ -164,8 +163,6 @@ class OtmetkiApp(object):
         self.ui.notify(self.translate('status_auth_failed'))
         self.settings_ui.refresh()
 
-    # Client events.
-
     def _switch_account(self, account_id):
         self.account_id = account_id
         self.outbox = Outbox(JsonFile(_path('outbox_%d.json' % account_id)))
@@ -173,23 +170,19 @@ class OtmetkiApp(object):
         self.rebuild_sender()
 
     def _tick(self):
-        try:
-            self.transport.poll()
-            now = time.time()
-            if not self.in_battle:
-                self.battles.poll_pending_results(now)
-                interval = self.config.get('flush_interval_seconds')
-                if self.sender is not None and (self.flush_requested or now - self.last_flush >= interval):
-                    self.flush_requested = False
-                    self.last_flush = now
-                    self.sender.tick(now)
-                self.settings_share.tick(now)
-                self.bus.emit('tick', now)
-        except Exception:
-            log_exception('tick')
-        BigWorld.callback(TICK_S, self._tick)
+        self.transport.poll()
+        if self.in_battle:
+            return
+        now = time.time()
+        self.battles.poll_pending_results(now)
+        interval = self.config.get('flush_interval_seconds')
+        if self.sender is not None and (self.flush_requested or now - self.last_flush >= interval):
+            self.flush_requested = False
+            self.last_flush = now
+            self.sender.tick(now)
+        self.settings_share.tick(now)
+        self.bus.emit('tick', now)
 
-    @safe
     def _on_account_show_gui(self, *args):
         account_id = getattr(BigWorld.player(), 'databaseID', None)
         if account_id and account_id != self.account_id:
@@ -209,19 +202,15 @@ class OtmetkiApp(object):
         if not self.in_battle:
             self.marks.on_vehicle_changed()
 
-    @safe
     def _on_enqueued(self, queue_type, *args):
         self.battles.on_enqueued(queue_type)
 
-    @safe
     def _on_dequeued(self, queue_type, *args):
         self.battles.on_dequeued()
 
-    @safe
     def _on_arena_created(self, *args):
         self.battles.on_arena_created()
 
-    @safe
     def _on_avatar_ready(self, *args):
         self.in_battle = True
         self.bus.emit('battle_enter')
@@ -231,13 +220,11 @@ class OtmetkiApp(object):
         self.battles.on_battle_ready(player)
         self.bus.emit('battle_ready', player)
 
-    @safe
     def _on_avatar_leave(self, *args):
         self.in_battle = False
         self.battles.on_battle_leave()
         self.bus.emit('battle_leave')
 
-    @safe
     def _on_battle_results(self, is_player_vehicle, results):
         self.battles.on_battle_results(is_player_vehicle, results)
 

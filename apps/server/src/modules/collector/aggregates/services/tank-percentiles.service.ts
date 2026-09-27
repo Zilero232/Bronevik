@@ -5,9 +5,9 @@ import { startOfDay, subDays } from 'date-fns';
 
 import type { PercentileRow } from '../aggregates.types';
 
-import { toJsonValue } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
-import { BRONYA_REFERENCE, bronyaReferencePayload } from '../../../reference';
+import { BRONYA_REFERENCE } from '../../../reference';
+import { toTankPercentileRecord } from '../mappers';
 import { ReferenceTablesService } from './reference-tables.service';
 
 @Injectable()
@@ -48,17 +48,7 @@ export class TankPercentilesService {
     await this.prisma.$transaction([
       this.prisma.tankPercentile.deleteMany({ where: { distribution: BRONYA_REFERENCE.distribution, date } }),
       this.prisma.tankPercentile.createMany({
-        data: rows.map((row) => ({
-          tankId: row.tank_id,
-          date,
-          distribution: BRONYA_REFERENCE.distribution,
-          percentiles: toJsonValue(
-            bronyaReferencePayload({
-              players: row.players,
-              components: { damage: row.damage, winRate: row.win_rate, frags: row.frags, spotted: row.spotted, defence: row.defence }
-            })
-          )
-        }))
+        data: rows.map((row) => toTankPercentileRecord({ row, date }))
       })
     ]);
 

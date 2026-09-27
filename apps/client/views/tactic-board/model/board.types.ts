@@ -24,7 +24,7 @@ export type IconDragInput = BoardItemRef & {
   y: number;
 };
 
-export type RenameLayerRequest = {
+export type LayerRenameInput = {
   layerId: string;
   name: string;
 };

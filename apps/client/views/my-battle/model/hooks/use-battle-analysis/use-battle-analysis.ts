@@ -23,8 +23,8 @@ export const useBattleAnalysis = (id: string) => {
     retry: false
   });
 
-  const data = query.data;
-  const needsPlus = isPlusRequiredError(query.error);
+  const { data, error } = query;
+  const needsPlus = isPlusRequiredError(error);
   const total = data ? sumBy(DAMAGE_BREAKDOWN, (key) => data.breakdown[key]) : 0;
   const number = (value: number | null) => (value === null ? '—' : format.number(value, { maximumFractionDigits: 1 }));
 

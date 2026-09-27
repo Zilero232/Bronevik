@@ -1,7 +1,8 @@
 import { curveMonotoneX } from '@visx/curve';
-import { scaleLinear } from '@visx/scale';
 import { AreaClosed, LinePath } from '@visx/shape';
 import { clsx } from 'clsx';
+
+import { sparklineLayout } from '@/shared/lib';
 
 import type { SparklineProps } from './Sparkline.types';
 
@@ -10,12 +11,7 @@ import { SPARKLINE } from './Sparkline.constants';
 import s from './Sparkline.module.scss';
 
 export const Sparkline = ({ data, width = 120, height = 36, tone = 'accent', withArea = false, label, className }: SparklineProps) => {
-  const values = data.length > 1 ? data : [data[0] ?? 0, data[0] ?? 0];
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const x = scaleLinear({ domain: [0, values.length - 1], range: [SPARKLINE.pad, width - SPARKLINE.pad] });
-  const y = scaleLinear({ domain: [min, max === min ? min + 1 : max], range: [height - SPARKLINE.pad, SPARKLINE.pad] });
-  const points = values.map((value, index) => ({ index, value }));
+  const { points, x, y } = sparklineLayout({ data, width, height, pad: SPARKLINE.pad });
 
   return (
     <svg

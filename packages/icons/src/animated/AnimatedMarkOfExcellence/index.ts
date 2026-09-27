@@ -1,0 +1,1 @@
+export { AnimatedMarkOfExcellence } from './AnimatedMarkOfExcellence';

@@ -2,10 +2,11 @@
 
 import { ReactFlow, ViewportPortal } from '@xyflow/react';
 
-import { TREE_FLOW_TYPES, TREE_VIEW } from '../../../config';
+import { TREE_VIEW } from '../../../config';
 import { useTreeFlow } from '../../../model/hooks';
 import { TierRuler } from '../TierRuler';
 import { TreeControls } from '../TreeControls';
+import { TREE_FLOW_TYPES } from './TreeFlow.constants';
 
 import s from './TreeFlow.module.scss';
 

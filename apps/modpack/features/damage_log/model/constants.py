@@ -9,7 +9,6 @@ LOG_KIND_FILTER = {
     'received': ('received',),
 }
 
-# The HUD editor's miniature and the hangar preview (hud_edit).
 PREVIEW_ENTRIES = (
     ('damage', 390, 'Pz. IV', 'ap'),
     ('radio', 480, None, None),

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { accountIdSchema, isoDateTimeSchema } from '../common/primitives/primitives.schemas';
-import { MOD_LOADOUT } from './mod.constants';
+import { MOD_ERROR_CODES, MOD_LOADOUT } from './mod.constants';
 
 export const bindCodeInputSchema = z.object({
   accountId: accountIdSchema.optional()
@@ -46,3 +46,5 @@ export const modBattleLoadoutSchema = z
   .describe(
     'The own vehicle loadout of one battle: item compact descriptors per slot, loaded shells, field modification names and crew skills in learning order'
   );
+
+export const modErrorCodeSchema = z.enum(MOD_ERROR_CODES);

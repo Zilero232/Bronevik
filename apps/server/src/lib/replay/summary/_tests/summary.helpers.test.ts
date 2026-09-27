@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { blankToNull, detectGame, findPersonalResult, parseClientVersion, parseDateTime, toPlayerResult, unixToIso } from '../summary.helpers';
+import { blankToNull, detectGame, findPersonalResult, parseClientVersion, parseDateTime, toPlayerResult, unixToIso } from '../summary.fields';
 
 describe('summary helpers', () => {
   it('detects the game from the client title', () => {

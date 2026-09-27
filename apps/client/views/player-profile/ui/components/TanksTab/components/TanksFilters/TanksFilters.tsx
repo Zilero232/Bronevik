@@ -12,14 +12,14 @@ import type { PremiumFilter } from '../../../../../lib/tanks-filter';
 import type { TanksFiltersProps } from './TanksFilters.types';
 
 import { TANKS_FILTER } from '../../../../../config';
+import { useTanksFilterContext } from '../../../../../model/context';
 
 import s from './TanksFilters.module.scss';
 
-export const TanksFilters = ({ filters, total }: TanksFiltersProps) => {
+export const TanksFilters = ({ total }: TanksFiltersProps) => {
   const t = useTranslations('profile.tanks');
   const tGame = useTranslations('game');
-
-  const { filter, isDirty, setTiers, setTypes, update, reset } = filters;
+  const { filter, isDirty, setTiers, setTypes, update, reset } = useTanksFilterContext();
 
   return (
     <div className={s.root}>

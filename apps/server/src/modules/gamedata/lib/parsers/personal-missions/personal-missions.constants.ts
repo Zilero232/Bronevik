@@ -1,3 +1,5 @@
+import type { ConditionDescriptionInput, ConditionTitleInput, OperationRewardInput } from './personal-missions.types';
+
 export const PERSONAL_MISSION_FILES = {
   seasons: 'seasons.xml',
   tiles: 'tiles.xml',
@@ -29,10 +31,10 @@ export const PERSONAL_MISSION_KEYS = {
   localizationPrefix: /^#[\w.-]+:/,
   missionName: /^(regular|pm2|pm3)_(\d+)_(\d+)_(\d+)$/,
   operationNode: /^(?:tail|tile)_\d+$/,
-  operationReward: (seasonId: number, tileId: number) => `pt_final_s${seasonId}_t${tileId}`,
+  operationReward: ({ seasonId, tileId }: OperationRewardInput) => `pt_final_s${seasonId}_t${tileId}`,
   campaignReward: (seasonId: number) => `pt_final_rewards_s${seasonId}`,
-  conditionTitle: (mission: string, progressId: string) => `${mission}_title_${progressId}`,
-  conditionDescription: (mission: string, progressId: string) => `${mission}_description_${progressId}`,
+  conditionTitle: ({ mission, progressId }: ConditionTitleInput) => `${mission}_title_${progressId}`,
+  conditionDescription: ({ mission, progressId }: ConditionDescriptionInput) => `${mission}_description_${progressId}`,
   placeholder: /%\((\w+)\)s/g,
   descriptionKind: /^DESCRIPTIONS\.(\w+)$/
 } as const;

@@ -33,7 +33,7 @@ A place where the code contradicts a written rule, plus the exact edit that fixe
 
 Check, in this order:
 
-**Comments.** The baseline is **zero comments** in application code under `apps/` and `packages/`, and the root CLAUDE.md says so outright. Report every comment added to TS or TSX. The exceptions: an `eslint-disable-next-line` with its reason after `--`, tool configs (`eslint.config.mjs`, `stylelint.config.mjs`) and `.github/**` YAML.
+**Comments.** The baseline is **zero comments** in application code under `apps/` and `packages/`, and the root CLAUDE.md says so outright. Report every comment added to TS or TSX. The exceptions: an `eslint-disable-next-line` with its reason after `--`, tool configs (`eslint.config.mjs`, `stylelint.config.mjs`, the client's `next.config.ts` and `config/*.ts`), `.github/**` YAML, and `/* glsl */` syntax tags on shader template strings.
 
 **Structure and layering** — FSD import direction (`app → views → widgets → features → entities → shared`, `ui-kit` beside `shared`), public-API/barrel rules, where types live. Cross-layer imports and reaching past a barrel compound, so they cost the most.
 
@@ -41,7 +41,7 @@ Check, in this order:
 
 **Signature conventions** — **2+ parameters → one object**, with the shape in a sibling `*.types.ts` as `<Fn>Input`. NestJS constructors injecting collaborators positionally are the framework's convention and are not a finding.
 
-**Folder shape** ([guides/client/slice-ui.md](../../docs/guides/client/slice-ui.md) §2, `client/structure/slice-layout.md` "Components only render") — a component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts`, nested `components/` (plus `.motion.ts` / `.variants.ts` / `_tests/`). Findings: a `*.helpers.ts`, `*.utils.ts`, `*.constants.ts`, `*.columns.tsx` or `hooks/` inside a component folder (→ `lib/<concern>/`, `config/<concern>.constants.ts`, `model/hooks/use-<x>/`; in `ui-kit` → `shared/lib/`, where only a primitive's own `<Name>.constants.ts` may stay); two flat components in one `ui/` root or two components in one file (→ `components/<Name>/`); a flat hook file in `model/hooks/` (→ `use-<x>/use-<x>.ts` + `index.ts`). Related helpers share one `lib/<concern>/` folder rather than one folder per function.
+**Folder shape** ([guides/client/slice-ui.md](../../docs/guides/client/slice-ui.md) §2, `client/structure/slice-layout.md` "Components only render") — a component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts`, nested `components/` (plus `.motion.ts` / `.variants.ts` / `_tests/`). Findings: a `*.helpers.ts`, `*.utils.ts`, `*.constants.ts`, `*.columns.tsx` or `hooks/` inside a component folder (→ `lib/<concern>/`, `config/<concern>.constants.ts`, `model/hooks/use-<x>/`; in `ui-kit` → `shared/lib/`, where only a primitive's own `<Name>.constants.ts` may stay); a flat main component beside sibling component folders in one `ui/` root, or two components in one file (→ `<Main>.tsx` + `components/<Name>/`, or a folder per exported component); a flat hook file in `model/hooks/` (→ `use-<x>/use-<x>.ts` + `index.ts`). Related helpers share one `lib/<concern>/` folder rather than one folder per function.
 
 **Logic in components** — a `.tsx` that runs `useQuery`/`useMutation`, `useEffect`, `useMemo`/`useCallback`/`useReducer`, two or more `useState`, `useForm`, timers, storage or clipboard, or declares a multi-statement or `async` handler, a helper function or a module-level constant. Fix: the component's own `model/hooks/use-<x>/` (forms: `use-<x>-form/`), `lib/<concern>/`, `config/`. One trivial UI flag (open/tab) may stay.
 
@@ -62,7 +62,7 @@ Check, in this order:
 - **A raw `@media` query** instead of `@include below(…)` / `@include from(…)` with a step from `_breakpoints.scss`.
 - **A hand-rolled CSS `transition` for something `motion` already drives**, or a motion preset inlined instead of living in a sibling `<Component>.motion.ts` or `shared/lib/motion`.
 - **`backdrop-filter` on an opaque surface** (menus, popovers, select lists on `--color-surface-raised`) — only translucent overlays and the sticky header keep a blur.
-- **`'use no memo'` without a mutable library instance to justify it** — it belongs to the TanStack Table components only.
+- **`'use no memo'` without a mutable library instance to justify it** — it belongs to TanStack Table / Virtual and three.js / R3F code only.
 - **A mock data layer** — mock files, fixture fallbacks, fake latency or a mocks switch in app code. Requests go through `fromServer`; screens show empty/error states. Test doubles inside `_tests/` are fine.
 - **A Prisma migration** (`prisma migrate`, a `migrations/` folder) before production — the schema is synced with `bun run db:push`.
 - **Slice-level `model/index.ts`** — barrels belong in `model/hooks/`, `model/context/`, not at the slice root.
@@ -91,7 +91,7 @@ Also not findings:
 
 Run `bun run verify` before reporting: typecheck across every workspace, ESLint, Prettier, Stylelint. Expect **0 errors**; note the warning count. If it fails, say what failed and paste the relevant lines. Never report clean without having run it.
 
-`verify` does not catch SSR breakage: for a client change that can affect prerendering, also run `bun --filter @otmetki/client build`. For a change under `apps/modpack`, run `bun run test:modpack`. If a check cannot run, say so rather than implying it passed.
+`verify` does not catch SSR breakage, and a production build is run only when the owner asks for one; say when a client change could affect prerendering so it gets checked on the next build. For a change under `apps/modpack`, run `bun run test:modpack`. If a check cannot run, say so rather than implying it passed.
 
 ## Output
 

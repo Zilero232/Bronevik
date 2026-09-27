@@ -1,7 +1,12 @@
 import type { NotificationChannel } from '../../../../../generated';
 import type { IsAvailableInput, RouteDigestInput, RouteEventInput, SplitChannels, SplitQuietInput } from './channel-routing.types';
 
-import { NOTIFICATION_ALWAYS_IN_INBOX, NOTIFICATION_EMAIL_EVENTS, NOTIFICATION_ROUTING, NOTIFICATION_SELF_OPTED } from '../../config/delivery.config';
+import {
+  NOTIFICATION_ALWAYS_IN_INBOX,
+  NOTIFICATION_EMAIL_EVENTS,
+  NOTIFICATION_ROUTING,
+  NOTIFICATION_SELF_OPTED
+} from '../../config/delivery.constants';
 
 const isAvailable = ({ channel, available }: IsAvailableInput): boolean => channel === 'site' || available[channel];
 

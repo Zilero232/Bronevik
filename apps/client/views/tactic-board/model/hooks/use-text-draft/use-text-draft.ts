@@ -8,8 +8,8 @@ import { useWorkspace } from '../../context';
 
 export const useTextDraft = () => {
   const { color, onTextSubmit, onTextCancel } = useWorkspace();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [text, setText] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();

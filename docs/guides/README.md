@@ -39,7 +39,7 @@ command — `bun run verify` (typecheck + ESLint + Prettier + Stylelint).
 
 - [Naming](shared/naming.md) — §5
 - [Imports and barrels](shared/imports-and-barrels.md) — §6, §7
-- [Types](shared/types.md) — §8, §8.1
+- [Types](shared/types.md) — §8, §8.1, §8.2
 - [Arrow functions and braces](shared/functions.md) — §9, §9.1
 - [Blank lines](shared/blank-lines.md) — §13
 - [Shared schemas](shared/schemas.md) — §14

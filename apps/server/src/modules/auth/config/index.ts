@@ -1,1 +1,1 @@
-export { AUTH_MODULE } from './auth-module.config';
+export { AUTH_MODULE } from './auth-module.constants';

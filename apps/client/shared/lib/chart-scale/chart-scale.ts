@@ -1,7 +1,7 @@
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { clamp, range } from 'remeda';
 
-import type { ChartLayoutInput, ClampIndexInput } from './chart-scale.types';
+import type { ChartLayoutInput, ClampIndexInput, SparklineLayoutInput } from './chart-scale.types';
 
 import { CHART } from './chart-scale.constants';
 
@@ -48,3 +48,15 @@ export const tickIndices = (count: number) => {
 };
 
 export const clampIndex = ({ value, count }: ClampIndexInput) => clamp(Math.round(value), { min: 0, max: count - 1 });
+
+export const sparklineLayout = ({ data, width, height, pad }: SparklineLayoutInput) => {
+  const values = data.length > 1 ? [...data] : [data[0] ?? 0, data[0] ?? 0];
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+
+  return {
+    points: values.map((value, index) => ({ index, value })),
+    x: scaleLinear({ domain: [0, values.length - 1], range: [pad, width - pad] }),
+    y: scaleLinear({ domain: [min, max === min ? min + 1 : max], range: [height - pad, pad] })
+  };
+};

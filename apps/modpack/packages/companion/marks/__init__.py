@@ -1,1 +1,1 @@
-"""Marks-of-excellence data for the API (hangar snapshots, damage distribution); the capture is in `client/`."""
+from __future__ import absolute_import, division, print_function, unicode_literals

@@ -9,7 +9,6 @@ from .constants import TIMED_PERIODS
 
 
 def timer_seconds(period, period_end, server_now):
-    """Seconds left in the current arena period, as the client's own battle timer counts them."""
     if period not in TIMED_PERIODS or not is_number(period_end) or not is_number(server_now) or period_end <= 0:
         return None
     return max(0, int(math.ceil(period_end - server_now)))

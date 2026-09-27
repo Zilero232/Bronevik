@@ -33,7 +33,8 @@ export const useHowToBuild = () => {
     placeholderData: keepPreviousData
   });
 
-  const usage = query.data?.usage;
+  const { data: recommended } = query;
+  const usage = recommended?.usage;
 
   return {
     mode,
@@ -46,7 +47,7 @@ export const useHowToBuild = () => {
     isLocked,
     usage,
     crew: usage ? orderCrew({ crew: usage.crew, skillsPerRole: HOW_TO_BUILD.skillsPerRole }) : [],
-    hasLoadout: Boolean(query.data?.loadout),
+    hasLoadout: Boolean(recommended?.loadout),
     href: recommendedBuildHref({ slug, mode, cohort }),
     query
   };

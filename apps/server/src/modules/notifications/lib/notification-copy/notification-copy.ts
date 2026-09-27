@@ -11,7 +11,7 @@ import type {
 } from './notification-copy.types';
 
 import { createFluentStore } from '../../../telegram';
-import { NOTIFICATION_COPY, NOTIFICATION_LINKS } from '../../config/copy.config';
+import { NOTIFICATION_COPY, NOTIFICATION_LINKS } from '../../config/copy.constants';
 
 const store = createFluentStore({ files: NOTIFICATION_COPY.files });
 

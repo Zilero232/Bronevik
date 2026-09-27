@@ -16,6 +16,10 @@ export const TREE_VIEW = {
   compactQuery: '(width <= 1100px)'
 } as const;
 
+export const TREE_EDGE = {
+  path: { borderRadius: 0, offset: 16 }
+} as const;
+
 export const TREE_FORMAT = {
   compact: { notation: 'compact', maximumFractionDigits: 1 }
 } as const satisfies Record<string, Intl.NumberFormatOptions>;

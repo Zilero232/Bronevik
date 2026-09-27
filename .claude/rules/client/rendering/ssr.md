@@ -46,5 +46,8 @@ during render breaks the prerender, not just a test.
 
 ## Verification
 
-`bun --filter @otmetki/client build` is the only check that catches SSR
-breakage — typecheck passes on code that throws during prerender.
+Typecheck passes on code that throws during prerender, and only
+`bun --filter @otmetki/client build` catches that. The build runs only when the
+owner asks for one (see `shared/verification.md`); until then, follow the rules
+above and flag a change that could affect prerendering in the report, so the next
+build's prerender output gets a look.

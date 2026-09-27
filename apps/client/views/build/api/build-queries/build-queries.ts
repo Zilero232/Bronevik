@@ -4,12 +4,12 @@ import { getBuildOptions, getRecommendedBuild, listPopularBuilds } from '@/entit
 import { getTank } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
-import type { RecommendedBuildParams, TankDetailParams } from './build-queries.types';
+import type { RecommendedBuildQueryInput, TankDetailQueryInput } from './build-queries.types';
 
 import { BUILD_VIEW } from '../../config';
 
 export const buildQueries = {
-  tank: (params: TankDetailParams) =>
+  tank: (params: TankDetailQueryInput) =>
     queryOptions({
       queryKey: QUERY_KEYS.tanks.detail(params),
       queryFn: ({ signal }) => getTank({ ...params, signal }),
@@ -27,7 +27,7 @@ export const buildQueries = {
       queryFn: ({ signal }) => listPopularBuilds({ tankId, signal }),
       staleTime: BUILD_VIEW.staleMs
     }),
-  recommended: (params: RecommendedBuildParams) =>
+  recommended: (params: RecommendedBuildQueryInput) =>
     queryOptions({
       queryKey: QUERY_KEYS.builds.recommended(params),
       queryFn: ({ signal }) => getRecommendedBuild({ ...params, signal }),

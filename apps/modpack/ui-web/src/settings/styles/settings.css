@@ -543,6 +543,32 @@ body {
   color: var(--color-text-dim);
 }
 
+.row__details {
+  display: flex;
+  flex-direction: column;
+  margin: 6rem 0 0;
+  padding: 6rem 0 0;
+  border-top: 1rem solid var(--color-border);
+}
+
+.row__detail {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 12rem;
+  line-height: 18rem;
+}
+
+.row__detail-label {
+  margin: 0 12rem 0 0;
+  color: var(--color-text-dim);
+}
+
+.row__detail-value {
+  margin: 0;
+  text-align: right;
+}
+
 .row__actions,
 .row__edit {
   display: flex;

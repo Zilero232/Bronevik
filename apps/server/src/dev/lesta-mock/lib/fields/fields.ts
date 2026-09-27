@@ -1,14 +1,14 @@
 import { isPlainObject } from 'remeda';
 
-type Json = unknown;
+import type { DeepMergeInput, DropPathInput, Json, PickPathInput, SelectFieldsInput } from './fields.types';
 
-const pickPath = (source: Json, path: readonly string[]): Json => {
+const pickPath = ({ source, path }: PickPathInput): Json => {
   if (path.length === 0) {
     return source;
   }
 
   if (Array.isArray(source)) {
-    return source.map((item: Json) => pickPath(item, path));
+    return source.map((item: Json) => pickPath({ source: item, path }));
   }
 
   if (!isPlainObject(source)) {
@@ -21,19 +21,19 @@ const pickPath = (source: Json, path: readonly string[]): Json => {
     return undefined;
   }
 
-  return { [head]: pickPath(source[head], rest) };
+  return { [head]: pickPath({ source: source[head], path: rest }) };
 };
 
-const deepMerge = (target: Json, source: Json): Json => {
+const deepMerge = ({ target, source }: DeepMergeInput): Json => {
   if (Array.isArray(target) && Array.isArray(source)) {
-    return target.map((item: Json, index) => deepMerge(item, source[index]));
+    return target.map((item: Json, index) => deepMerge({ target: item, source: source[index] }));
   }
 
   if (isPlainObject(target) && isPlainObject(source)) {
     const merged: Record<string, Json> = { ...target };
 
     for (const [key, value] of Object.entries(source)) {
-      merged[key] = key in merged ? deepMerge(merged[key], value) : value;
+      merged[key] = key in merged ? deepMerge({ target: merged[key], source: value }) : value;
     }
 
     return merged;
@@ -42,9 +42,9 @@ const deepMerge = (target: Json, source: Json): Json => {
   return source ?? target;
 };
 
-const dropPath = (source: Json, path: readonly string[]): Json => {
+const dropPath = ({ source, path }: DropPathInput): Json => {
   if (Array.isArray(source)) {
-    return source.map((item: Json) => dropPath(item, path));
+    return source.map((item: Json) => dropPath({ source: item, path }));
   }
 
   if (!isPlainObject(source) || path.length === 0) {
@@ -57,7 +57,7 @@ const dropPath = (source: Json, path: readonly string[]): Json => {
     return Object.fromEntries(Object.entries(source).filter(([key]) => key !== head));
   }
 
-  return head in source ? { ...source, [head]: dropPath(source[head], rest) } : source;
+  return head in source ? { ...source, [head]: dropPath({ source: source[head], path: rest }) } : source;
 };
 
 export const parseFields = (value: string | undefined): string[] =>
@@ -66,7 +66,7 @@ export const parseFields = (value: string | undefined): string[] =>
     .map((field) => field.trim())
     .filter((field) => field.length > 0);
 
-export const selectFields = (value: Json, fields: readonly string[]): Json => {
+export const selectFields = ({ value, fields }: SelectFieldsInput): Json => {
   if (fields.length === 0 || value === null || value === undefined) {
     return value;
   }
@@ -74,7 +74,12 @@ export const selectFields = (value: Json, fields: readonly string[]): Json => {
   const include = fields.filter((field) => !field.startsWith('-'));
   const exclude = fields.filter((field) => field.startsWith('-')).map((field) => field.slice(1));
   const picked =
-    include.length === 0 ? value : include.reduce<Json>((merged, field) => deepMerge(merged, pickPath(value, field.split('.'))), undefined);
+    include.length === 0
+      ? value
+      : include.reduce<Json>(
+          (merged, field) => deepMerge({ target: merged, source: pickPath({ source: value, path: field.split('.') }) }),
+          undefined
+        );
 
-  return exclude.reduce<Json>((current, field) => dropPath(current, field.split('.')), picked ?? {});
+  return exclude.reduce<Json>((current, field) => dropPath({ source: current, path: field.split('.') }), picked ?? {});
 };

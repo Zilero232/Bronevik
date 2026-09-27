@@ -1,4 +1,4 @@
-import type { FlatValue, StreamerSettings } from '@otmetki/schemas';
+import type { FlatValue, SettingsGroupKey, StreamerSettings } from '@otmetki/schemas';
 
 import type { SETTINGS_FIELDS } from '../../config';
 
@@ -16,4 +16,9 @@ export type SettingsTextInput = {
   settings: StreamerSettings;
   label: (key: string) => string;
   value: (row: SettingsRow) => string;
+};
+
+export type SettingsRowsInput = {
+  settings: StreamerSettings;
+  group: SettingsGroupKey;
 };

@@ -1,8 +1,14 @@
-"""Limits mirror contract/replay-upload.schema.json (#/definitions/limits)."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import re
+
 from ....core.vendor.enum34 import Enum
+
+# The limits mirror contract/replay-upload.schema.json (#/definitions/limits).
 
 UPLOAD_PATH = '/replays/mod'
 FILE_FIELD = 'file'
+UNSAFE_NAME_CHARS = re.compile(r'[^A-Za-z0-9._-]+')
 MAX_BYTES = 50 * 1024 * 1024
 VISIBILITY_HEADER = 'X-Otmetki-Visibility'
 VISIBILITY_PUBLIC = 'public'
@@ -28,7 +34,6 @@ QUOTA_CODE = 'SUBSCRIPTION_REQUIRED'
 
 
 class JobResult(Enum):
-    """What the worker-thread job found (see upload.upload_job)."""
 
     HTTP = 'http'
     MISSING = 'missing'
@@ -38,7 +43,6 @@ class JobResult(Enum):
 
 
 class Outcome(Enum):
-    """What a job result means for the queued battle."""
 
     DONE = 'done'
     DROP = 'drop'

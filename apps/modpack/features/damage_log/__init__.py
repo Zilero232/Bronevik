@@ -1,4 +1,3 @@
-"""Feature: battle damage log panel (dealt / blocked / assisted / received). Depends on the core and the companion."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'damage_log'

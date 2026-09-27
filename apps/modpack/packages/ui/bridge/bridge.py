@@ -12,9 +12,6 @@ from .links import site_link, site_url
 
 
 class SettingsBridge(object):
-    """Everything the settings window does, without the client: builds the window state and applies the
-    page's messages. `context` is the glue (see ui/client/context.py): config, catalog, bus, features,
-    component config, HUD layer, profiles, and the side effects (bind, open a link, close, export)."""
 
     def __init__(self, context):
         self.context = context
@@ -67,7 +64,6 @@ class SettingsBridge(object):
         }
 
     def handle(self, raw):
-        """Applies one page message. Returns True when the state changed (the glue pushes it again)."""
         self.notice = None
         try:
             message = decode_message(raw)

@@ -1,4 +1,6 @@
-import type { BuildCohort, BuildMode, LearningDifficulty, LoadoutRequest, VehicleType } from '@otmetki/schemas';
+import type { BuildCohort, BuildMode, LoadoutRequest } from '@otmetki/schemas';
+
+import type { BuildsCatalogControllerListData } from '@/shared/api/generated';
 
 export type BuildOptionsInput = {
   tankId: number;
@@ -26,11 +28,9 @@ export type RecommendedBuildInput = {
 
 export type BuildHistoryInput = RecommendedBuildInput;
 
-export type BuildsCatalogInput = {
-  mode: BuildMode;
-  tiers?: number[];
-  types?: VehicleType[];
-  nations?: string[];
-  difficulties?: LearningDifficulty[];
-  signal?: AbortSignal;
-};
+type BuildsCatalogQuery = NonNullable<BuildsCatalogControllerListData['query']>;
+
+export type BuildsCatalogInput = Omit<BuildsCatalogQuery, 'mode'> &
+  Required<Pick<BuildsCatalogQuery, 'mode'>> & {
+    signal?: AbortSignal;
+  };

@@ -1,3 +1,5 @@
+import type { ClientSize } from './gameface.types';
+
 import { GAMEFACE } from './gameface.constants';
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
@@ -26,7 +28,7 @@ const whenReady = (callback: () => void): void => {
   callback();
 };
 
-const readSize = (value: unknown): { width: number; height: number } | null => {
+const readSize = (value: unknown): ClientSize | null => {
   if (!isRecord(value) || typeof value.width !== 'number' || typeof value.height !== 'number') {
     return null;
   }
@@ -35,7 +37,7 @@ const readSize = (value: unknown): { width: number; height: number } | null => {
 };
 
 export const gameface = {
-  clientSize: (): { width: number; height: number } | null => readSize(call(readGlobal(GAMEFACE.viewEnvGlobal), GAMEFACE.clientSizeMethod, [])),
+  clientSize: (): ClientSize | null => readSize(call(readGlobal(GAMEFACE.viewEnvGlobal), GAMEFACE.clientSizeMethod, [])),
   state: (): string | null => {
     const state = readGlobal(GAMEFACE.modelGlobal)?.[GAMEFACE.stateProperty];
 

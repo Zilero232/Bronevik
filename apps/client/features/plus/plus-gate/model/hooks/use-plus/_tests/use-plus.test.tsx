@@ -27,7 +27,10 @@ vi.mock('@/entities/plus/subscription/api/billing/billing', () => ({
   startPlusTrial: vi.fn()
 }));
 
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: 1001 };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: 1001
+};
 
 const TRIAL_STATUS: BillingStatus = {
   isPlus: true,

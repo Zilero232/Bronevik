@@ -21,14 +21,14 @@ describe('toSettingsFormValues', () => {
 
   it('gives every editable field a controlled value', () => {
     for (const field of SETTINGS_FIELDS) {
-      expect(readPath(form, field.path)).not.toBeUndefined();
+      expect(readPath({ source: form, path: field.path })).not.toBeUndefined();
     }
   });
 
   it('marks missing enum and boolean fields as unset, keeping false apart from unset', () => {
-    expect(readPath(form, 'display.windowMode')).toBe(SETTINGS_FORM.unset);
-    expect(readPath(form, 'display.tripleBuffering')).toBe(SETTINGS_FORM.unset);
-    expect(readPath(form, 'display.vsync')).toBe(String(false));
+    expect(readPath({ source: form, path: 'display.windowMode' })).toBe(SETTINGS_FORM.unset);
+    expect(readPath({ source: form, path: 'display.tripleBuffering' })).toBe(SETTINGS_FORM.unset);
+    expect(readPath({ source: form, path: 'display.vsync' })).toBe(String(false));
   });
 });
 

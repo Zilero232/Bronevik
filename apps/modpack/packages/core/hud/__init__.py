@@ -18,7 +18,7 @@ from .backend import HudBackend, NullBackend
 from .config import ComponentConfig
 from .edit import EVENT_DESCRIBE, EVENT_EDIT, HudPreview
 from .layer import HudLayer
-from .panel import PANEL_DEFAULTS, alias_of, component_schema, hex_color, layout_props, matching, max_length, panel_schema
+from .panel import PANEL_DEFAULTS, alias_of, component_schema, hex_color, layout_props, matching, max_length, panel_schema, sound_event
 
 __all__ = ('ComponentConfig', 'EVENT_DESCRIBE', 'EVENT_EDIT', 'HudBackend', 'HudLayer', 'HudPreview', 'NullBackend', 'PANEL_DEFAULTS',
-           'alias_of', 'component_schema', 'hex_color', 'layout_props', 'matching', 'max_length', 'panel_schema')
+           'alias_of', 'component_schema', 'hex_color', 'layout_props', 'matching', 'max_length', 'panel_schema', 'sound_event')

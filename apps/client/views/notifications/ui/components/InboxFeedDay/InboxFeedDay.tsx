@@ -7,6 +7,7 @@ import { InboxEntry } from '@/entities/notification/inbox';
 import type { InboxFeedDayProps } from './InboxFeedDay.types';
 
 import { useInboxFeedDay } from '../../../model/hooks';
+import { INBOX_ENTRY_EXIT } from './InboxFeedDay.motion';
 
 import s from './InboxFeedDay.module.scss';
 
@@ -22,7 +23,7 @@ export const InboxFeedDay = ({ day }: InboxFeedDayProps) => {
       <motion.ul animate='visible' className={s.list} initial='hidden'>
         <AnimatePresence initial={false}>
           {day.items.map((item) => (
-            <motion.li layout key={item.id} exit={{ opacity: 0, height: 0 }}>
+            <motion.li layout key={item.id} {...INBOX_ENTRY_EXIT}>
               <InboxEntry item={item} onSelect={onSelect} />
             </motion.li>
           ))}

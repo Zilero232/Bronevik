@@ -8,8 +8,8 @@ import { AnimatedNumber } from '@/ui-kit';
 
 import type { OverlayValueProps } from './OverlayValue.types';
 
-import { OVERLAY_BOARD } from '../../../config';
 import { formatOverlayValue, OVERLAY_VALUE } from '../../../lib/overlay-metric';
+import { OVERLAY_FLASH } from './OverlayValue.motion';
 
 import s from './OverlayValue.module.scss';
 
@@ -20,14 +20,7 @@ export const OverlayValue = ({ value, kind, animate, className }: OverlayValuePr
     <span className={clsx(s.root, className)}>
       {animate && value !== null ? (
         <>
-          <motion.span
-            aria-hidden
-            key={value}
-            animate={{ opacity: 0, scale: 1.25 }}
-            className={s.flash}
-            initial={{ opacity: 0.55, scale: 1 }}
-            transition={{ duration: OVERLAY_BOARD.flashSeconds }}
-          />
+          <motion.span aria-hidden key={value} {...OVERLAY_FLASH} className={s.flash} />
           <AnimatedNumber format={OVERLAY_VALUE.format[kind]} suffix={OVERLAY_VALUE.suffix[kind]} value={value} />
         </>
       ) : (

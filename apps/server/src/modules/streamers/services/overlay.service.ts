@@ -1,7 +1,6 @@
 import type { Overlay as OverlayView } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
-import { overlayConfigSchema } from '@otmetki/schemas';
 
 import type { Overlay } from '../../../../generated';
 import type {
@@ -14,14 +13,14 @@ import type {
   UpdateOverlayInput
 } from '../streamers.types';
 
-import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
-import { toNumber } from '../../../common/lib';
+import { AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { CosmeticsService } from '../../progression';
-import { OVERLAY, OVERLAY_KIND_FROM_DB, OVERLAY_KIND_TO_DB } from '../config';
+import { OVERLAY_KIND_TO_DB } from '../config';
 import { pausedOverlayIds } from '../lib';
+import { toOverlayView } from '../mappers';
 import { OverlayDataService } from './overlay-data.service';
 
 @Injectable()
@@ -113,23 +112,8 @@ export class OverlayService {
     await this.prisma.overlay.delete({ where: { id } });
   }
 
-  toView({ overlay, isPaused }: OverlayViewInput): OverlayView {
-    const parsed = overlayConfigSchema.safeParse(overlay.config);
-
-    if (!parsed.success) {
-      throw new AppBadRequestException('VALIDATION_FAILED', `Overlay ${overlay.id} has an invalid config`);
-    }
-
-    return {
-      id: overlay.id,
-      name: overlay.name,
-      kind: OVERLAY_KIND_FROM_DB[overlay.kind],
-      accountId: overlay.accountId === null ? null : toNumber(overlay.accountId),
-      config: parsed.data,
-      publicUrl: new URL(OVERLAY.publicPath.replace('{publicKey}', overlay.publicKey), this.config.get('WEB_URL')).href,
-      isPaused,
-      updatedAt: overlay.updatedAt.toISOString()
-    };
+  private toView({ overlay, isPaused }: OverlayViewInput): OverlayView {
+    return toOverlayView({ overlay, isPaused, webUrl: this.config.get('WEB_URL') });
   }
 
   private async owned({ userId, id }: OwnedInput): Promise<Overlay> {

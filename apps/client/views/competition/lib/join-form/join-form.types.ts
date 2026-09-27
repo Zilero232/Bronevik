@@ -1,4 +1,4 @@
-import type { Competition, JoinCompetitionInput } from '@otmetki/schemas';
+import type { Competition } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { joinFormSchema } from './join-form.schemas';
@@ -12,8 +12,6 @@ export type ToJoinInput = {
   accountIds: readonly number[];
   inviteCode: string | null;
 };
-
-export type JoinRequest = JoinCompetitionInput;
 
 export type JoinState = 'closed' | 'full' | 'joined' | 'open';
 

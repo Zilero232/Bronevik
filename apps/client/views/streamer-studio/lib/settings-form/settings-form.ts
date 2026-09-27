@@ -5,14 +5,14 @@ import { isEmpty, mergeDeep } from 'remeda';
 
 import type { SettingsField } from '@/entities/streamer/settings';
 
-import { fieldKey, SETTINGS_FIELDS } from '@/entities/streamer/settings';
+import { SETTINGS_FIELDS } from '@/entities/streamer/settings';
 
 import type {
   AssignPathInput,
   CompactInput,
   LeafInput,
   MergeSettingsInput,
-  SettingsFieldLabelKey,
+  ReadPathInput,
   SettingsFormLeaf,
   SettingsFormValues
 } from './settings-form.types';
@@ -23,7 +23,7 @@ const EDITABLE = new Set<string>(SETTINGS_FIELDS.map((field) => field.path));
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
-export const readPath = (source: unknown, path: string): unknown =>
+export const readPath = ({ source, path }: ReadPathInput): unknown =>
   path.split('.').reduce<unknown>((node, key) => (isRecord(node) ? node[key] : undefined), source);
 
 const assignPath = ({ target, path, value }: AssignPathInput): void => {
@@ -110,7 +110,7 @@ export const toSettingsFormValues = (values: unknown): SettingsFormValues => {
   const form: SettingsFormValues = {};
 
   for (const field of SETTINGS_FIELDS) {
-    assignPath({ target: form, path: field.path, value: toFormLeaf({ field, value: readPath(values, field.path) }) });
+    assignPath({ target: form, path: field.path, value: toFormLeaf({ field, value: readPath({ source: values, path: field.path }) }) });
   }
 
   return form;
@@ -120,7 +120,7 @@ export const cleanSettingsForm = (form: unknown): unknown => {
   const values: Record<string, unknown> = {};
 
   for (const field of SETTINGS_FIELDS) {
-    const value = fromFormLeaf({ field, value: readPath(form, field.path) });
+    const value = fromFormLeaf({ field, value: readPath({ source: form, path: field.path }) });
 
     if (value !== undefined) {
       assignPath({ target: values, path: field.path, value });
@@ -137,5 +137,3 @@ export const mergeSettings = ({ base, edited }: MergeSettingsInput): SettingsVal
 };
 
 export const fieldsOfGroup = (group: SettingsGroupKey): SettingsField[] => SETTINGS_FIELDS.filter((field) => field.group === group);
-
-export const fieldLabelKey = (path: SettingsField['path']): SettingsFieldLabelKey => `fields.${fieldKey(path)}` as SettingsFieldLabelKey;

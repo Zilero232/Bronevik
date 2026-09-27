@@ -7,9 +7,8 @@ import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { ReplayPageProps } from './ReplayPage.types';
 
-import { ReplayProvider } from '../model/context';
 import { useReplayPage } from '../model/hooks';
-import { ReplayHeatmap, ReplayOverview, ReplayScoreboard, ReplayStatusState, ReplayTimeline } from './components';
+import { ReplayHeatmap, ReplayOverview, ReplayProvider, ReplayScoreboard, ReplayStatusState, ReplayTimeline } from './components';
 
 import s from './ReplayPage.module.scss';
 

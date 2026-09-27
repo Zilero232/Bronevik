@@ -88,3 +88,14 @@ export const vkChannelsSchema = z.object({
 export const youtubeLiveSchema = z.object({ items: z.array(z.object({ id: z.object({ videoId: z.string() }) })).catch([]) });
 
 export const youtubeChannelSchema = z.object({ items: z.array(z.object({ snippet: z.object({ description: z.string().catch('') }) })).catch([]) });
+
+export const storedChallengeProgressSchema = z.looseObject({
+  battles: z.number().optional(),
+  value: z.number().optional(),
+  battleIds: z.array(z.string()).optional()
+});
+
+export const storedIntegrationConfigSchema = z.looseObject({
+  login: z.string().optional(),
+  predictions: z.boolean().optional()
+});

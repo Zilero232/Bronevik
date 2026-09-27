@@ -1,1 +1,1 @@
-export { COMPETITION_QUEUE, COMPETITION_RUN, COMPETITION_SCHEDULES } from './competitions.config';
+export { COMPETITION_QUEUE, COMPETITION_RUN, COMPETITION_SCHEDULES } from './competitions.constants';

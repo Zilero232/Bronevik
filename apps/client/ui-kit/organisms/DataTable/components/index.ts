@@ -1,3 +1,4 @@
+export { DataTableCards } from './DataTableCards';
 export { DataTableCells } from './DataTableCells';
 export { DataTableContent } from './DataTableContent';
 export { DataTableFallback } from './DataTableFallback';

@@ -1,9 +1,9 @@
-import type { TankStatsParams } from '../../api';
+import type { TankStatsQueryInput } from '../../api';
 import type { StatsParamsInput } from './stats-params.types';
 
 import { TANKS_VIEW } from '../../config';
 
-export const statsParams = ({ state: { period, cohort, statuses, roles, difficulties }, vehicle }: StatsParamsInput): TankStatsParams => ({
+export const statsParams = ({ state: { period, cohort, statuses, roles, difficulties }, vehicle }: StatsParamsInput): TankStatsQueryInput => ({
   period,
   cohort,
   ...vehicle,

@@ -34,7 +34,7 @@ const createController = () => {
   const devices = mock<ModDeviceService>();
   const ingestion = mock<ModIngestService>();
 
-  devices.authenticate.mockResolvedValue(device);
+  devices.authenticateBody.mockImplementation(async ({ request }) => ({ device, body: ingestBatchSchema.parse(request.body) }));
   ingestion.ingest.mockResolvedValue({ accepted: example.events.length, duplicates: 0 });
 
   return { controller: new ModController(mock<ModBindService>(), devices, ingestion), devices, ingestion };
@@ -53,48 +53,19 @@ const rejection = async (run: Promise<unknown>) => {
 };
 
 describe('ModController.ingest', () => {
-  it('authenticates the device against the raw body before anything else', async () => {
+  it('authenticates the device and parses the batch against the ingest contract before anything else', async () => {
     const { controller, devices, ingestion } = createController();
     const request = requestWith(example);
 
-    devices.authenticate.mockRejectedValue(new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' }));
+    devices.authenticateBody.mockRejectedValue(new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' }));
 
     expect(await rejection(controller.ingest(request, mock<Response>()))).toEqual({
       status: HttpStatus.UNAUTHORIZED,
       body: { error: 'bad_signature' }
     });
 
-    expect(devices.authenticate).toHaveBeenCalledWith({ request, rawBody: request.rawBody });
+    expect(devices.authenticateBody).toHaveBeenCalledWith({ request, schema: ingestBatchSchema });
     expect(ingestion.ingest).not.toHaveBeenCalled();
-  });
-
-  it('refuses a payload that breaks the contract with the first issue as the message', async () => {
-    const { controller, ingestion } = createController();
-
-    const { status, body } = await rejection(controller.ingest(requestWith({ ...example, realm: 'EU' }), mock<Response>()));
-
-    expect(status).toBe(HttpStatus.BAD_REQUEST);
-    expect(body).toEqual({ error: 'invalid_payload', message: expect.any(String) });
-    expect(ingestion.ingest).not.toHaveBeenCalled();
-  });
-
-  it('refuses a batch signed by one device on behalf of another', async () => {
-    const { controller, ingestion } = createController();
-
-    expect(await rejection(controller.ingest(requestWith({ ...example, device_id: 'other-device' }), mock<Response>()))).toEqual({
-      status: HttpStatus.FORBIDDEN,
-      body: { error: 'account_mismatch' }
-    });
-
-    expect(ingestion.ingest).not.toHaveBeenCalled();
-  });
-
-  it('refuses a batch for an account the device is not bound to', async () => {
-    const { controller } = createController();
-
-    const { status } = await rejection(controller.ingest(requestWith({ ...example, account_id: example.account_id + 1 }), mock<Response>()));
-
-    expect(status).toBe(HttpStatus.FORBIDDEN);
   });
 
   it('hands the parsed batch to ingestion and keeps the default status when something is new', async () => {

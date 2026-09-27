@@ -3,9 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import as_int, is_int
 from ....core.format import COLOR_DOWN, COLOR_UP, font, format_number
 from ....core.templates import render
-from .constants import COLOR_DRAW, COLOR_LOSS, COLOR_WIN, RANDOM_BONUS_TYPE
-
-RESULT_COLORS = {'win': COLOR_WIN, 'loss': COLOR_LOSS, 'draw': COLOR_DRAW}
+from .constants import RANDOM_BONUS_TYPE, RESULT_COLORS
+from .page import build_page, compact, page_actions, session_of  # noqa: F401
 
 
 def moe_percent(damage_rating):
@@ -13,8 +12,6 @@ def moe_percent(damage_rating):
 
 
 def build_summary(event, moe_before=None, map_label=None):
-    """The post-battle summary from the companion's own battle_result event (the player's `personal`
-    block only) and the vehicle's MoE snapshot from before the battle."""
     stats = event.get('stats') or {}
     vehicle = event.get('vehicle') or {}
     moe = event.get('moe') or {}
@@ -43,7 +40,20 @@ def build_summary(event, moe_before=None, map_label=None):
         'moving_avg': moe.get('moving_avg_damage'),
         'moving_avg_delta': None,
         'marks_delta': None,
+        'arena': event.get('arena_unique_id'),
+        'time': event.get('occurred_at'),
+        'duration': as_int(event.get('duration_s')),
+        'free_xp': as_int(stats.get('free_xp')),
+        'repair': as_int(stats.get('repair_cost')),
+        'ammo': as_int(stats.get('ammo_cost')),
+        'consumables': as_int(stats.get('consumables_cost')),
+        'shots': as_int(stats.get('shots')),
+        'hits': as_int(stats.get('direct_enemy_hits')),
+        'pens': as_int(stats.get('piercing_enemy_hits')),
+        'life_time': as_int(stats.get('life_time_s')),
+        'alive': bool(stats.get('is_alive')),
     }
+    summary['net_credits'] = summary['credits'] - summary['repair'] - summary['ammo'] - summary['consumables']
     before = moe_before or {}
     if summary['moe_percent'] is not None and is_int(before.get('damage_rating')) and before.get('damage_rating') > 0:
         summary['moe_delta'] = round(summary['moe_percent'] - moe_percent(before['damage_rating']), 2)

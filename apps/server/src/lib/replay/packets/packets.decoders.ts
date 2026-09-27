@@ -2,7 +2,7 @@ import type { DecodePacketInput, DecodeVehicleMethodInput, EntityMethodPacket, R
 
 import { ByteReader } from '../binary';
 import { PACKET_TYPE } from './packets.constants';
-import { htmlToText } from './packets.helpers';
+import { htmlToText } from './packets.support';
 
 const decoder = new TextDecoder('utf-8');
 

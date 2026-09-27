@@ -1,8 +1,7 @@
 import type { SupertestParamMeta } from './param-key.types';
 
 import { PARSED_UNITS, SUPERTEST_PARAMS } from '../../config';
-
-const RAW_UNIT_LENGTH = 12;
+import { PARAM_KEY } from './param-key.constants';
 
 export const paramOf = (label: string): SupertestParamMeta | null => SUPERTEST_PARAMS.find((param) => param.pattern.test(label.trim())) ?? null;
 
@@ -24,5 +23,5 @@ export const parsedUnit = (text: string): string | null => {
 
   const word = /^[\p{L}%°./]+/u.exec(trimmed)?.[0] ?? '';
 
-  return word.length > 0 && word.length <= RAW_UNIT_LENGTH ? word : null;
+  return word.length > 0 && word.length <= PARAM_KEY.rawUnitLength ? word : null;
 };

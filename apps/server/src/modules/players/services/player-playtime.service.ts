@@ -2,13 +2,13 @@ import type { Playtime } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
-import { sumBy } from 'remeda';
 
-import type { PlaytimeResultInput, PlaytimeRow, PlaytimeWindowInput } from '../players.types';
+import type { PlaytimeRow, PlaytimeWindowInput } from '../players.types';
 
 import { TIME } from '../../../config';
 import { PrismaService } from '../../../core';
-import { PLAYTIME, playtimeCells } from '../lib';
+import { PLAYTIME } from '../lib';
+import { toPlaytime } from '../mappers';
 
 @Injectable()
 export class PlayerPlaytimeService {
@@ -19,16 +19,12 @@ export class PlayerPlaytimeService {
     const battles = await this.fromBattles({ accountId, from });
 
     if (battles.length > 0) {
-      return this.toPlaytime({ rows: battles, source: 'battles' });
+      return toPlaytime({ rows: battles, source: 'battles' });
     }
 
     const snapshots = await this.fromSnapshots({ accountId, from });
 
-    return this.toPlaytime({ rows: snapshots, source: snapshots.length > 0 ? 'snapshots' : 'none' });
-  }
-
-  private toPlaytime({ rows, source }: PlaytimeResultInput): Playtime {
-    return { battles: Math.round(sumBy(rows, (row) => row.battles)), source, cells: playtimeCells(rows) };
+    return toPlaytime({ rows: snapshots, source: snapshots.length > 0 ? 'snapshots' : 'none' });
   }
 
   private async fromBattles({ accountId, from }: PlaytimeWindowInput): Promise<PlaytimeRow[]> {

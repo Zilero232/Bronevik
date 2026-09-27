@@ -4,16 +4,33 @@ Part of the [style guide](../../README.md).
 
 ## 2. Slice `ui/` structure
 
-**One component per folder.** A slice's `ui/` holds at most **one** flat main component;
-every other component gets its own PascalCase folder. Never two flat components side by
-side in a `ui/` root, and never two components in one file.
+**One component per folder.** A slice's `ui/` takes one of two shapes, and never mixes
+them:
+
+- **One exported component** — the canonical layout, used by most slices: the main
+  component lies flat in `ui/` and its subcomponents sit in `ui/components/`, one folder
+  each.
+- **Several exported components** — every one of them gets its own PascalCase folder, and
+  none lies flat. Subcomponents that several of them share may sit in a `ui/components/`
+  beside the folders (`views/my-analytics/ui/`).
+
+A flat main component beside sibling component folders is the one thing that is not
+allowed, and so are two components in one file.
 
 ```text
 features/app/switch-theme/ui/
-  ThemeToggle.tsx                    ← the one flat main component
+  ThemeToggle.tsx                    ← the flat main component
   ThemeToggle.types.ts               ← Props and local union types
   ThemeToggle.module.scss
   ThemeToggle.motion.ts              ← motion presets (when the component is animated)
+
+views/clan-workspace/ui/
+  ClanWorkspacePage.tsx              ← the flat main component
+  ClanWorkspacePage.module.scss
+  components/                        ← its subcomponents, one folder each
+    index.ts
+    WorkspaceTabs/
+    WorkspaceNotice/
 
 features/search/command-palette/ui/
   CommandPalette/                    ← a second top-level component → every one gets a folder
@@ -53,12 +70,25 @@ or a `hooks/` folder inside a component folder. Where they go instead:
 
 What a component body may contain: `useTranslations`/`useFormatter`, navigation and context
 hooks, **one** call to its own model hook, **at most one** trivial UI flag (`useBoolean` or a
-single `useState` for open/tab), and JSX.
+single `useState` for open/tab), pure single-expression lookups, and JSX.
+
+A **pure single-expression lookup** reads one value from props or config in one step —
+`const Icon = ICONS[kind]`, `const { width, height } = TANK_IMAGE[size]`, or one helper
+call destructured (`const { ratio, radius } = ringGeometry({ ... })`). A hook per lookup
+would be ceremony. Anything built in several steps — values that feed each other,
+formatting, filtering, geometry — belongs in the model hook (`ui-kit`: a `shared/lib`
+helper or hook).
 
 Table column definitions are the one hook that may be `.tsx`:
 `model/hooks/use-<table>-columns/use-<table>-columns.tsx`. It only references cell
 components, which live in `ui/components/<Table>/components/<X>Cell/`; no JSX-heavy cells or
-`.module.scss` in `model/`.
+`.module.scss` in `model/`. The TanStack helper stays at module level in that file
+(`const column = createColumnHelper<Row>()`) — it is stateless and stable, and it is the one
+module-level value a hook file may declare.
+
+**Nesting stops at two `components/` levels.** A subcomponent that would need a third
+level is lifted to a sibling of its parent (`WorkspaceCandidates/components/NotesDialog`
+next to `CandidateActions`), or into a slice of its own when others need it.
 
 **Subcomponents** (used only inside the parent) — each one in a `components/` folder:
 
@@ -152,8 +182,8 @@ ui-kit/
 
 ```ts
 // features/search/command-palette/index.ts
-export { CommandPaletteProvider, useCommandPalette } from './model/context';
 export { CommandPalette } from './ui/CommandPalette';
+export { CommandPaletteProvider } from './ui/CommandPaletteProvider';
 export { CommandPaletteTrigger } from './ui/CommandPaletteTrigger';
 export type { CommandPaletteTriggerProps } from './ui/CommandPaletteTrigger';
 ```
@@ -162,19 +192,33 @@ export type { CommandPaletteTriggerProps } from './ui/CommandPaletteTrigger';
 
 A side effect with no markup is **its own hook in `model/hooks/`** — it returns nothing
 (or a single value) and encapsulates a single effect: the palette hotkey, the
-rating-patterns sync, the header's scroll state. The orchestrator is the Provider or the
-component that calls them:
+rating-patterns sync, the header's scroll state. The orchestrator is a value-building
+hook (`use-<x>-state`) or the component that calls them:
 
-```tsx
-// features/search/command-palette/model/context/CommandPaletteProvider.tsx
-export const CommandPaletteProvider = ({ children }: CommandPaletteProviderProps) => {
+```ts
+// features/search/command-palette/model/hooks/use-command-palette-state/use-command-palette-state.ts
+export const useCommandPaletteState = (): CommandPaletteContextValue => {
   const [isOpen, toggleOpen] = useBoolean(false);
 
   useCommandPaletteHotkey(() => toggleOpen());
 
-  return <CommandPaletteContext value={{ isOpen, setOpen: toggleOpen }}>{children}</CommandPaletteContext>;
+  return { isOpen, setOpen: toggleOpen };
 };
 ```
+
+```tsx
+// features/search/command-palette/ui/CommandPaletteProvider/CommandPaletteProvider.tsx
+export const CommandPaletteProvider = ({ children }: CommandPaletteProviderProps) => {
+  const value = useCommandPaletteState();
+
+  return <CommandPaletteContext value={value}>{children}</CommandPaletteContext>;
+};
+```
+
+The context object and its `useCommandPalette` consumer live in
+`model/context/command-palette/`; the Provider is a component, so it lives in `ui/` and
+imports both `model/context` and `model/hooks` — the hooks import the context, never the
+Provider, so there is no `hooks ↔ context` cycle.
 
 This keeps effects from bloating the body of the main component; each one is isolated
 and can be reasoned about on its own. The alternative — a pile of `useEffect` inside

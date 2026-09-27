@@ -1,8 +1,8 @@
 'use client';
 
+import { useBoolean } from '@siberiacancode/reactuse';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 import type { TacticBoard } from '@/entities/tactic/board';
@@ -17,12 +17,12 @@ export const useBoardRow = (board: TacticBoard) => {
   const t = useTranslations('tactics.toast');
   const queryClient = useQueryClient();
   const { mapOf, modeLabel } = useTacticMaps();
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [isConfirming, setConfirming] = useBoolean(false);
   const remove = useMutation({
     mutationFn: removeTacticBoard,
     onSuccess: () => {
       toast.success(t('deleted'));
-      setIsConfirming(false);
+      setConfirming(false);
       queryClient.removeQueries({ queryKey: QUERY_KEYS.tactics.board({ id: board.id }) });
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tactics.mine });
     },
@@ -37,7 +37,7 @@ export const useBoardRow = (board: TacticBoard) => {
     summary: boardSummary(board.data),
     isConfirming,
     isDeleting: remove.isPending,
-    onConfirmChange: setIsConfirming,
+    onConfirmChange: setConfirming,
     onDelete
   };
 };

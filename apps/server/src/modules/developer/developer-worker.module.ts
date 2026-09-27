@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
-import { WebhooksProcessor } from './processors/webhooks.processor';
+import { WebhooksProcessor } from './processors';
 import {
   ApiTierService,
   ApiTierSyncService,

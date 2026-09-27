@@ -1,4 +1,5 @@
-"""The persistent per-account queue of own battles waiting for their replay upload."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import random
 
 from ....core.codec import decode_json
@@ -19,7 +20,6 @@ def _error_code(body):
 
 
 def uploaded_replay_id(result):
-    """The site's id of an uploaded replay (the 201 body), or None (409 duplicate, unreadable body)."""
     if not isinstance(result, dict) or result.get('status') != 201 or not result.get('body'):
         return None
     try:
@@ -43,10 +43,6 @@ def classify_upload(status, body=None):
 
 
 class ReplayQueue(object):
-    """Pending own battles of one account, persisted so uploads survive a client restart.
-
-    Deduplicates by arenaUniqueID across pending items and the last MAX_SEEN finished ones.
-    """
 
     def __init__(self, storage, max_pending=MAX_PENDING, max_seen=MAX_SEEN, rng=None):
         self.storage = storage
@@ -136,7 +132,6 @@ class ReplayQueue(object):
         return delay
 
     def complete(self, arena_unique_id, result, now, retry_after=None):
-        """Applies a job result (see upload_job) to the item and returns the outcome."""
         item = self._find(to_text(arena_unique_id))
         if item is None:
             return Outcome.DROP

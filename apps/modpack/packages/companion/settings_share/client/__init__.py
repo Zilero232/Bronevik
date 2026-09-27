@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import time
 
@@ -14,7 +14,6 @@ from .constants import CORE_NAMES, POLL_EVERY_S
 
 
 def read_client_settings():
-    """Flat raw values (whitelisted) read through the settings core, or None if unavailable."""
     current = read_settings(CORE_NAMES.values())
     if current is None:
         return None
@@ -26,7 +25,6 @@ def write_client_settings(values):
 
 
 def show_confirm(title, message, callback):
-    """Hangar yes/no dialog. False when the dialog API is unavailable (then nothing is applied)."""
     try:
         from gui import DialogsInterface
         from gui.Scaleform.daapi.view.dialogs import I18nConfirmDialogButtons, SimpleDialogMeta
@@ -38,7 +36,6 @@ def show_confirm(title, message, callback):
 
 
 class SettingsShare(object):
-    """Hangar-only export of own settings and user-confirmed apply of a creator's settings."""
 
     def __init__(self, app, config_dir):
         self.app = app
@@ -62,7 +59,6 @@ class SettingsShare(object):
 
     @safe
     def on_hangar(self):
-        """Run the one-shot `settings_action` from config.json ('export' / 'restore')."""
         action = self.app.config.get('settings_action')
         if not action or not self._in_hangar():
             return

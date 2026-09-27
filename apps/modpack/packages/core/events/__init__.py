@@ -3,6 +3,10 @@
 Blinker keeps the receivers; the bus adds what the mod needs on top: handlers take the event's own
 positional arguments (not blinker's `sender`), run in subscription order on both Pythons, and a failing
 handler is logged without stopping the ones after it, so one feature cannot break another.
+
+Events sent between packages (not by the app host) are named here: `component_settings(component_id,
+changed_keys)` from the settings window and a profile load, `replay_uploaded(arena_unique_id, replay_id)`
+from the replay upload.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -10,6 +14,7 @@ from collections import OrderedDict  # novermin (2.7 has it; vermin counts 3.1 f
 
 from ..log import log_exception
 from ..vendor.blinker import NamedSignal, Namespace
+from .constants import EVENT_COMPONENT_SETTINGS, EVENT_REPLAY_UPLOADED  # noqa: F401
 
 
 class OrderedSignal(NamedSignal):

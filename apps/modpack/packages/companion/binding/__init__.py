@@ -1,27 +1,22 @@
-"""Binding the mod to a site account: the one-time code, the bind request/response and per-account credentials."""
-import re
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import time
 
 from ...core.compat import is_int, string_types, to_text
+from ...core.errors import ReasonError
 from ...core.vendor import attr
-from .constants import BIND_PATH, CODE_ALPHABET, CODE_LENGTH, MIN_SECRET_LENGTH  # noqa: F401
-
-_CODE_RE = re.compile('^[' + CODE_ALPHABET + ']{' + str(CODE_LENGTH) + '}$')
-_STRIP_RE = re.compile(r'[\s\-_]+')
+from .constants import BIND_PATH, CODE_ALPHABET, CODE_LENGTH, CODE_PATTERN, CODE_SEPARATORS, MIN_SECRET_LENGTH  # noqa: F401
 
 
-class BindError(Exception):
-
-    def __init__(self, reason):
-        Exception.__init__(self, reason)
-        self.reason = reason
+class BindError(ReasonError):
+    pass
 
 
 def normalize_code(raw):
     if not isinstance(raw, string_types):
         return None
-    code = _STRIP_RE.sub('', to_text(raw)).upper()
-    if _CODE_RE.match(code):
+    code = CODE_SEPARATORS.sub('', to_text(raw)).upper()
+    if CODE_PATTERN.match(code):
         return str(code)
     return None
 

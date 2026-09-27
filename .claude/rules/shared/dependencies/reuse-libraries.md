@@ -17,7 +17,8 @@ Before writing a helper, check whether an installed library covers it:
 `cmdk`, visx (charts), `@tanstack/react-table` + `@tanstack/react-virtual`,
 `lucide-react` + `@otmetki/icons`, `sonner`, `@otmetki/logger` (pino). Within the
 monorepo: `@otmetki/ratings` for any rating math, the server's `lib/lesta` for any
-Lesta call, `@otmetki/schemas` for any contract.
+Lesta call, `@otmetki/schemas` or the client's generated `z*` schemas and request types
+(`shared/api/generated`) for any contract — derive from them, never retype a field.
 
 Only libraries **already declared** in the workspace's `package.json` count. A
 transitive dependency used directly is a phantom dependency — it passes locally

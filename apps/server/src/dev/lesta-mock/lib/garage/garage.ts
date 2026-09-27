@@ -1,9 +1,8 @@
 import { LRUCache } from 'lru-cache';
 import { groupBy, sumBy } from 'remeda';
 
-import type { MockCatalog, MockGarage, MockGarageTank, MockPlayer, MockVehicle, MockWorld } from '../../lesta-mock.types';
-import type { MockRng } from '../random';
-import type { GaragePools, PlannedTank } from './garage.types';
+import type { MockCatalog, MockGarage, MockGarageTank, MockVehicle } from '../../lesta-mock.types';
+import type { BuildGarageInput, GaragePools, OtherShareOfInput, PlanInput, PlannedTank, SampleInput } from './garage.types';
 
 import { MOCK_CACHE, MOCK_GARAGE, MOCK_OTHER_MODES, MOCK_SALT, MOCK_SKILL } from '../../config';
 import { createRng } from '../random';
@@ -45,12 +44,12 @@ export const garagePools = (catalog: MockCatalog): GaragePools => {
   return created;
 };
 
-const sample = <T>(rng: MockRng, items: readonly T[], count: number, weight: (item: T) => number): T[] => {
+const sample = <T>({ rng, items, count, weight }: SampleInput<T>): T[] => {
   const left = [...items];
   const chosen: T[] = [];
 
   while (chosen.length < count && left.length > 0) {
-    const item = rng.weighted(left, weight);
+    const item = rng.weighted({ items: left, weight });
 
     chosen.push(item);
     left.splice(left.indexOf(item), 1);
@@ -59,21 +58,24 @@ const sample = <T>(rng: MockRng, items: readonly T[], count: number, weight: (it
   return chosen;
 };
 
-const plan = (rng: MockRng, player: MockPlayer, catalog: MockCatalog, anchorDay: number): PlannedTank[] => {
+const plan = ({ rng, player, catalog, anchorDay }: PlanInput): PlannedTank[] => {
   const { lines, starters, premiums, collectibles } = garagePools(catalog);
   const experience = player.careerBattles;
   const lineCount = Math.min(
     MOCK_GARAGE.maxLines,
     lines.length,
-    Math.max(1, Math.round(MOCK_GARAGE.linesBase + experience / MOCK_GARAGE.linesPerBattles + rng.normal(0, MOCK_GARAGE.linesSigma)))
+    Math.max(
+      1,
+      Math.round(MOCK_GARAGE.linesBase + experience / MOCK_GARAGE.linesPerBattles + rng.normal({ mean: 0, deviation: MOCK_GARAGE.linesSigma }))
+    )
   );
 
   const saturation = 1 - Math.exp(-experience / MOCK_GARAGE.tierSaturation);
   const planned: PlannedTank[] = [];
   const active = player.activity !== 'lapsed';
 
-  for (const line of sample(rng, lines, lineCount, (entry) => entry.weight)) {
-    const maxTier = Math.min(10, Math.max(2, Math.round(3 + 7 * saturation + rng.normal(0, MOCK_GARAGE.tierSigma))));
+  for (const line of sample({ rng, items: lines, count: lineCount, weight: (entry) => entry.weight })) {
+    const maxTier = Math.min(10, Math.max(2, Math.round(3 + 7 * saturation + rng.normal({ mean: 0, deviation: MOCK_GARAGE.tierSigma }))));
 
     for (let tier = 2; tier <= maxTier; tier += 1) {
       const candidates = line.vehicles.filter((vehicle) => vehicle.tier === tier);
@@ -92,21 +94,21 @@ const plan = (rng: MockRng, player: MockPlayer, catalog: MockCatalog, anchorDay:
     const next = line.vehicles.filter((vehicle) => vehicle.tier === maxTier + 1);
 
     if (active && next.length > 0 && rng.chance(MOCK_GARAGE.unlockChance)) {
-      planned.push({ vehicle: rng.pick(next), role: 'keeper', availableFromDay: anchorDay + rng.int(5, 400) });
+      planned.push({ vehicle: rng.pick(next), role: 'keeper', availableFromDay: anchorDay + rng.int({ min: 5, max: 400 }) });
     }
   }
 
-  for (const vehicle of rng.shuffle(starters).slice(0, rng.int(MOCK_GARAGE.starters[0], MOCK_GARAGE.starters[1]))) {
+  for (const vehicle of rng.shuffle(starters).slice(0, rng.int({ min: MOCK_GARAGE.starters[0], max: MOCK_GARAGE.starters[1] }))) {
     planned.push({ vehicle, role: 'starter', availableFromDay: 0 });
   }
 
   const premiumCount = Math.min(MOCK_GARAGE.maxPremiums, rng.poisson(experience / MOCK_GARAGE.premiumsPer));
 
-  for (const vehicle of sample(rng, premiums, premiumCount, (entry) => MOCK_GARAGE.premiumTierWeights[entry.tier] ?? 0)) {
+  for (const vehicle of sample({ rng, items: premiums, count: premiumCount, weight: (entry) => MOCK_GARAGE.premiumTierWeights[entry.tier] ?? 0 })) {
     planned.push({ vehicle, role: 'keeper', availableFromDay: 0 });
   }
 
-  for (const vehicle of sample(rng, collectibles, rng.poisson(experience / MOCK_GARAGE.collectiblePer), () => 1)) {
+  for (const vehicle of sample({ rng, items: collectibles, count: rng.poisson(experience / MOCK_GARAGE.collectiblePer), weight: () => 1 })) {
     planned.push({ vehicle, role: 'keeper', availableFromDay: 0 });
   }
 
@@ -123,14 +125,14 @@ const plan = (rng: MockRng, player: MockPlayer, catalog: MockCatalog, anchorDay:
   });
 };
 
-const otherShareOf = (rng: MockRng, player: MockPlayer, world: MockWorld): number => {
+const otherShareOf = ({ rng, player, world }: OtherShareOfInput): number => {
   const clan = player.stints.at(-1);
   const tier = clan ? world.clanById.get(clan.clanId)?.tier : undefined;
 
   return tier ? MOCK_OTHER_MODES.clanTierShare[tier] * (0.5 + rng.float()) : 0;
 };
 
-export const buildGarage = (world: MockWorld, player: MockPlayer): MockGarage => {
+export const buildGarage = ({ world, player }: BuildGarageInput): MockGarage => {
   const key = `${world.seed}:${player.index}`;
   const cached = garages.get(key);
 
@@ -139,11 +141,11 @@ export const buildGarage = (world: MockWorld, player: MockPlayer): MockGarage =>
   }
 
   const rng = createRng(world.seed, MOCK_SALT.garage, player.index);
-  const planned = plan(rng, player, world.catalog, world.anchorDay);
-  const otherShare = otherShareOf(rng, player, world);
+  const planned = plan({ rng, player, catalog: world.catalog, anchorDay: world.anchorDay });
+  const otherShare = otherShareOf({ rng, player, world });
   const weights = planned.map((entry) =>
     entry.role === 'keeper'
-      ? rng.logNormal(1, MOCK_GARAGE.preferenceSigma) *
+      ? rng.logNormal({ median: 1, sigma: MOCK_GARAGE.preferenceSigma }) *
         (MOCK_GARAGE.tierComfort[entry.vehicle.tier] ?? 1) *
         (entry.vehicle.isPremium && entry.vehicle.tier === 8 ? 1.3 : 1)
       : 0
@@ -155,10 +157,13 @@ export const buildGarage = (world: MockWorld, player: MockPlayer): MockGarage =>
     }
 
     if (entry.role === 'grind') {
-      return rng.logNormal(MOCK_GARAGE.grindBase + MOCK_GARAGE.grindScale * entry.vehicle.tier ** MOCK_GARAGE.grindPower, MOCK_GARAGE.grindSigma);
+      return rng.logNormal({
+        median: MOCK_GARAGE.grindBase + MOCK_GARAGE.grindScale * entry.vehicle.tier ** MOCK_GARAGE.grindPower,
+        sigma: MOCK_GARAGE.grindSigma
+      });
     }
 
-    return entry.role === 'starter' ? rng.int(MOCK_GARAGE.starterBattles[0], MOCK_GARAGE.starterBattles[1]) : 0;
+    return entry.role === 'starter' ? rng.int({ min: MOCK_GARAGE.starterBattles[0], max: MOCK_GARAGE.starterBattles[1] }) : 0;
   });
 
   const fixedTotal = sumBy(fixed, (value) => value);
@@ -180,7 +185,7 @@ export const buildGarage = (world: MockWorld, player: MockPlayer): MockGarage =>
       vehicle: entry.vehicle,
       baseBattles: Math.max(entry.availableFromDay > 0 ? 0 : 1, Math.round((fixed[index] ?? 0) * scale + played * share)),
       weight: entry.role === 'keeper' ? weight : MOCK_GARAGE.grindWeight * meanWeight,
-      affinity: rng.logNormal(1, MOCK_SKILL.affinitySigma),
+      affinity: rng.logNormal({ median: 1, sigma: MOCK_SKILL.affinitySigma }),
       availableFromDay: entry.availableFromDay,
       otherShare: entry.vehicle.tier >= MOCK_GARAGE.otherMinTier ? otherShare : 0
     };

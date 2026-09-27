@@ -1,10 +1,10 @@
 import { atom, computed } from 'nanostores';
 
-import type { UiState } from '../protocol/protocol.types';
+import type { UiState } from '../protocol';
 import type { Section, View } from './store.types';
 
-import { parseState } from '../protocol/protocol';
-import { groupComponents, selectedComponent } from './select/select';
+import { parseState } from '../protocol';
+import { groupComponents, selectedComponent } from './select';
 
 export const $state = atom<UiState | null>(null);
 export const $invalid = atom(false);

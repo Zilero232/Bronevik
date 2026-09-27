@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { fromUnixTime, startOfHour, subDays, subHours } from 'date-fns';
+import { startOfHour, subDays, subHours } from 'date-fns';
 
 import type { LestaClients, WebhookEmitter } from '../../../../core';
 import type { ClanRefreshPayload } from '../../contracts';
@@ -7,12 +7,13 @@ import type { ClanActivityInput, ClanFieldsInput, ClanSnapshotInput, LestaOrEmpt
 import type { CurrentMember } from '../lib/clan-roster';
 import type { ClanActivityRow } from '../queries';
 
-import { clanInfoFields, clanRoleToDb, errorMessage, readNumber, readRecord, toJsonValue } from '../../../../common/lib';
+import { clanInfoFields, errorMessage, readNumber, readRecord, toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService, WEBHOOK_EMITTER } from '../../../../core';
 import { PurgeGuardService } from '../../purge';
 import { CLANS } from '../config';
 import { ownedProvinces } from '../lib/clan-provinces';
 import { clanMemberEvents, diffClanRoster, rosterChanges } from '../lib/clan-roster';
+import { toCurrentMember, toPopulationPlayer } from '../mappers';
 import { clanActivitySql } from '../queries';
 
 @Injectable()
@@ -57,11 +58,7 @@ export class ClanSyncService {
     const blocked = await this.guard.blocked(members.map((member) => member.account_id));
     const allowed = members.filter((member) => !blocked.has(member.account_id));
 
-    const current: CurrentMember[] = allowed.map((member) => ({
-      accountId: BigInt(member.account_id),
-      role: clanRoleToDb(member.role) ?? CLANS.defaultRole,
-      joinedAt: member.joined_at ? fromUnixTime(member.joined_at) : null
-    }));
+    const current: CurrentMember[] = allowed.map(toCurrentMember);
 
     const stored = await this.prisma.clanMember.findMany({ where: { clanId: id }, select: { accountId: true, role: true } });
     const diff = diffClanRoster({ stored, current });
@@ -75,12 +72,7 @@ export class ClanSyncService {
       await tx.clan.upsert({ where: { clanId: id }, create: { clanId: id, tag: info?.tag ?? '', name: info?.name ?? '', ...clan }, update: clan });
 
       await tx.player.createMany({
-        data: diff.joined.map((member) => ({
-          accountId: member.accountId,
-          nickname: names.get(Number(member.accountId)) ?? String(member.accountId),
-          clanId: id,
-          trackingTier: 'population' as const
-        })),
+        data: diff.joined.map((member) => toPopulationPlayer({ member, nickname: names.get(Number(member.accountId)), clanId: id })),
         skipDuplicates: true
       });
 

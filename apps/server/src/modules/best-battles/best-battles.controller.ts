@@ -22,13 +22,13 @@ export class BestBattlesController {
   @CacheTTL(BEST_BATTLES.feedCacheMs)
   @ZodResponse({ type: BestBattlesPageDto })
   list(@Query() query: BestBattlesQueryDto) {
-    return this.feed.page(query, new Date());
+    return this.feed.page({ query, now: new Date() });
   }
 
   @Get('facets')
   @CacheTTL(BEST_BATTLES.facetsCacheMs)
   @ZodResponse({ type: BestBattlesFacetsDto })
   facetsOf(@Query() query: BestBattlesFacetsQueryDto) {
-    return this.facets.facets(query, new Date());
+    return this.facets.facets({ query, now: new Date() });
   }
 }

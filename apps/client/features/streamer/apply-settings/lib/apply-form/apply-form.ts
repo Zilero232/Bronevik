@@ -7,7 +7,7 @@ import { settingsRows } from '@/entities/streamer/settings';
 import type { HardwareOptions, HardwareOptionsInput, ToApplyRequestInput } from './apply-form.types';
 
 export const applicableGroups = (settings: StreamerSettings): ApplicableGroup[] =>
-  STREAMER_SETTINGS_APPLICABLE.filter((group) => settingsRows(settings, group).length > 0);
+  STREAMER_SETTINGS_APPLICABLE.filter((group) => settingsRows({ settings, group }).length > 0);
 
 const hasAny = (group: Record<string, unknown> | undefined, keys: readonly string[]): boolean =>
   keys.some((key) => group?.[key] !== undefined && group[key] !== null);

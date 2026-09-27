@@ -1,4 +1,3 @@
-"""Feature: team HP panel (team HP sums and bars, frag score). Depends on the core and the companion."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'team_hp'

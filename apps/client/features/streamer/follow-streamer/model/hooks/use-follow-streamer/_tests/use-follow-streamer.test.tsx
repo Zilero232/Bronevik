@@ -28,7 +28,11 @@ vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 vi.mock('../../../../api', () => ({ getMyFollows: vi.fn(), followStreamer: vi.fn(), unfollowStreamer: vi.fn() }));
 
 const TEXT = messages.en.streamersDirectory.follow;
-const SESSION: AuthSession = { user: { id: 'user-1', name: 'Tanker' }, lestaAccountId: null };
+const SESSION: AuthSession = {
+  user: { id: 'user-1', name: 'Tanker', email: 'user-1@example.com', emailVerified: false, createdAt: new Date(0), updatedAt: new Date(0) },
+  lestaAccountId: null
+};
+
 const SLUG = 'jove';
 const TANK_ID = 2849;
 

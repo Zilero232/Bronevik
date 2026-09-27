@@ -1,4 +1,4 @@
-import type { UiComponent } from '../protocol/protocol.types';
+import type { UiComponent } from '../protocol';
 
 export type Section = 'components' | 'hud' | 'profiles';
 

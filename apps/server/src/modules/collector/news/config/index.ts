@@ -1,1 +1,1 @@
-export { NEWS } from './news.config';
+export { NEWS } from './news.constants';

@@ -4,7 +4,8 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.core.settings import Settings
-from otmetki.features.hangar_tweaks.model import REFUSE_BERTHS, REFUSE_LOCKED, REFUSE_NOTHING, plan_crew_unload, plan_demount, to_native
+from otmetki.features.hangar_tweaks.model import (REFUSE_BERTHS, REFUSE_LOCKED, REFUSE_NOTHING, plan_crew_return, plan_crew_unload, plan_demount,
+                                                  to_native)
 from otmetki.features.hangar_tweaks.settings import SCHEMA, SETTINGS
 
 
@@ -40,6 +41,11 @@ class QuickActionsTest(unittest.TestCase):
         assert plan_crew_unload({'locked': False, 'crew': 4}, 3) == (0, REFUSE_BERTHS)
         assert plan_crew_unload({'locked': True, 'crew': 4}, 10) == (0, REFUSE_LOCKED)
         assert plan_crew_unload({'locked': False, 'crew': 0}, 10) == (0, REFUSE_NOTHING)
+
+    def test_crew_return(self):
+        assert plan_crew_return({'locked': False, 'last_crew': True}) is None
+        assert plan_crew_return({'locked': True, 'last_crew': True}) == REFUSE_LOCKED
+        assert plan_crew_return({'locked': False, 'last_crew': False}) == REFUSE_NOTHING
 
 
 if __name__ == '__main__':

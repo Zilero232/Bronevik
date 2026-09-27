@@ -1,6 +1,8 @@
+export { useAnalyticsFiltersState } from './use-analytics-filters-state';
 export { useAnalyticsMaps } from './use-analytics-maps';
 export { useAnalyticsOverview } from './use-analytics-overview';
 export { useAnalyticsPlatoons } from './use-analytics-platoons';
+export type { AnalyticsQuery } from './use-analytics-query';
 export { useAnalyticsRng } from './use-analytics-rng';
 export { useAnalyticsTank } from './use-analytics-tank';
 export { useAnalyticsToolbar } from './use-analytics-toolbar';

@@ -2,9 +2,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.client.battle import BattleHooks, call, controls_own_vehicle, feedback, is_enemy, vehicle_name
-from ....core.client.hud import hud_layer
-from ....core.hud import HudPreview
+from ....core.client.battle import call, controls_own_vehicle, feedback, is_enemy, vehicle_name
+from ....core.client.game import values_by_name
+from ....core.client.hud.panel import BattlePanel
 from ....core.log import safe
 from ....core.shells import shell_code
 from ..i18n import STRINGS
@@ -12,57 +12,25 @@ from ..model import DamageLog, format_damage_log
 from ..model.constants import PREVIEW_SIZE
 from ..model.preview import preview_text
 from ..settings import PANEL_ID, SCHEMA, SWITCH
-
-EVENT_KINDS = (
-    ('DAMAGE', 'damage'),
-    ('RADIO_ASSIST', 'radio'),
-    ('TRACK_ASSIST', 'track'),
-    ('STUN_ASSIST', 'stun'),
-    ('TANKING', 'blocked'),
-    ('RECEIVED_DAMAGE', 'received'),
-)
+from .constants import EVENT_KINDS
 
 
-def kind_by_event():
-    kinds = {}
-    for name, kind in EVENT_KINDS:
-        value = getattr(BATTLE_EVENT_TYPE, name, None)
-        if value is not None:
-            kinds[value] = kind
-    return kinds
-
-
-class DamageLogPanel(object):
+class DamageLogPanel(BattlePanel):
 
     def __init__(self, app):
-        self.app = app
-        app.translate.catalog.add(STRINGS)
-        self.hud = hud_layer(app)
-        self.settings = self.hud.register(PANEL_ID, SCHEMA)
-        self.preview = HudPreview(self.hud, PANEL_ID, self._preview, lambda: app.config.is_enabled(SWITCH), lambda: not app.in_battle,
-                                  PREVIEW_SIZE).attach(app.bus)
-        self.kinds = kind_by_event()
-        self.hooks = BattleHooks()
+        self.kinds = values_by_name(BATTLE_EVENT_TYPE, EVENT_KINDS)
         self.log = None
-        app.bus.on('battle_ready', self._on_battle_ready)
-        app.bus.on('battle_leave', self._on_battle_leave)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
 
-    def _on_battle_ready(self, player):
-        self._on_battle_leave()
-        if not self.app.config.is_enabled(SWITCH):
-            return
+    def start(self, player):
         self.log = DamageLog()
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
         self.hooks.add(feedback, 'onPlayerSummaryFeedbackReceived', self._on_summary)
         self.render()
 
-    def _on_battle_leave(self):
-        self.preview.end()
-        self.hooks.clear()
+    def stop(self):
         self.log = None
-        self.hud.hide(PANEL_ID)
 
-    @safe
     def _on_feedback(self, events):
         if self.log is None or not controls_own_vehicle():
             return
@@ -80,16 +48,12 @@ class DamageLogPanel(object):
         if changed:
             self.render()
 
-    @safe
     def _on_summary(self, event):
         if self.log is not None and self.log.apply_summary(call(event, 'getTotalDamage'), call(event, 'getTotalAssistDamage'),
                                                            call(event, 'getTotalBlockedDamage'), call(event, 'getTotalStunDamage')):
             self.render()
 
-    def _preview(self):
-        return preview_text(self.settings, self.app.translate)
-
     @safe
     def render(self):
         if self.log is not None:
-            self.hud.show(PANEL_ID, format_damage_log(self.log, self.settings, self.app.translate))
+            self.show(format_damage_log(self.log, self.settings, self.app.translate))

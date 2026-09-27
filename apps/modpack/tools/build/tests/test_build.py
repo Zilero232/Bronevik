@@ -105,7 +105,6 @@ class LayoutTest(unittest.TestCase):
 
 
 class BuildTest(unittest.TestCase):
-    """A source-only build (no compiler): the development format, checked for the package layout."""
 
     def setUp(self):
         self.out = tempfile.mkdtemp()

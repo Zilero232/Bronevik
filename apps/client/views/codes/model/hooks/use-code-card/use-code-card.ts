@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { useAuthSession } from '@/entities/auth/session';
+import { useAuthSession, useLoginHref } from '@/entities/auth/session';
 import { shopControllerListBonusCodesQueryKey } from '@/shared/api/query-options';
 import { safeWebHref, useClientNow, useCopyFeedback } from '@/shared/lib';
 
@@ -20,6 +20,7 @@ export const useCodeCard = ({ code }: UseCodeCardInput) => {
   const t = useTranslations('codes.report');
   const queryClient = useQueryClient();
   const { data: session } = useAuthSession();
+  const loginHref = useLoginHref();
   const now = useClientNow({ updateInterval: CODES.clockMs });
   const { copied, onCopyClick } = useCopyFeedback({ value: code.code });
 
@@ -39,6 +40,7 @@ export const useCodeCard = ({ code }: UseCodeCardInput) => {
     sourceHref: safeWebHref(code.sourceUrl),
     ribbon: codeRibbon({ code, now, expiringDays: CODES.expiringDays, freshDays: CODES.freshDays }),
     copied,
+    loginHref,
     onCopy: () => void onCopyClick(),
     isSignedIn: Boolean(session),
     isReporting: mutation.isPending,

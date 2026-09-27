@@ -40,22 +40,25 @@ export const CheckoutAction = () => {
                 {isTrialPending ? t('checkout.action.trialPending') : t('checkout.action.trial', { days: trialDays })}
               </Button>
             )}
-            {isCheckoutAvailable ? (
-              <Button disabled={isRedirecting} type='submit'>
-                {isRedirecting ? t('checkout.action.redirecting') : t('checkout.action.buy')}
-              </Button>
-            ) : trialAvailable ? (
-              <Button disabled type='button' variant='secondary'>
-                {t('checkout.action.closed')}
-              </Button>
-            ) : (
-              <>
-                <Link className={buttonVariants()} href={ROUTES.account.billing}>
-                  {t('teaser.promo')}
-                </Link>
-                <CheckoutNotify />
-              </>
-            )}
+            {match({ isCheckoutAvailable, trialAvailable })
+              .with({ isCheckoutAvailable: true }, () => (
+                <Button disabled={isRedirecting} type='submit'>
+                  {isRedirecting ? t('checkout.action.redirecting') : t('checkout.action.buy')}
+                </Button>
+              ))
+              .with({ trialAvailable: true }, () => (
+                <Button disabled type='button' variant='secondary'>
+                  {t('checkout.action.closed')}
+                </Button>
+              ))
+              .otherwise(() => (
+                <>
+                  <Link className={buttonVariants()} href={ROUTES.account.billing}>
+                    {t('teaser.promo')}
+                  </Link>
+                  <CheckoutNotify />
+                </>
+              ))}
           </>
         ))}
       <p className={s.note}>

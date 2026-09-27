@@ -13,7 +13,7 @@ export const MiniAppFooter = () => {
       <p>
         {t('dataSource')}{' '}
         <a className={s.link} href={EXTERNAL_LINKS.game} rel='noreferrer' target='_blank'>
-          tanki.su
+          {t('gameSite')}
         </a>
       </p>
       <p className={s.disclaimer}>{t('disclaimer')}</p>

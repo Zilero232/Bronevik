@@ -16,8 +16,9 @@ import s from './ChallengeCard.module.scss';
 
 export const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
   const t = useTranslations('streamer.challenges');
-  const { id, title, code, status, amount, currency, condition, progress, donorName, expiresAt } = challenge;
-  const { amountLabel, expiresLabel } = useChallengeCard({ amount, currency, expiresAt });
+  const { amountLabel, expiresLabel } = useChallengeCard(challenge);
+
+  const { id, title, code, status, condition, progress, donorName } = challenge;
 
   return (
     <article className={s.root} data-status={status}>

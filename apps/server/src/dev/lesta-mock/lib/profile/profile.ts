@@ -1,5 +1,5 @@
-import type { MockPlayer, MockPlayerState } from '../../lesta-mock.types';
-import type { ProfileInput } from './profile.types';
+import type { MockPlayerState } from '../../lesta-mock.types';
+import type { IsPremiumAtInput, ProfileInput } from './profile.types';
 
 import { MOCK_SALT, MOCK_TIME } from '../../config';
 import { hashSeed, unitFloat } from '../random';
@@ -11,7 +11,7 @@ export const accountTotals = (state: MockPlayerState) => {
 
   return {
     random: sumTotals(tanks.map((tank) => tank.random)),
-    all: mergeTotals(sumTotals(tanks.map((tank) => tank.random)), sumTotals(tanks.map((tank) => tank.other)))
+    all: mergeTotals({ target: sumTotals(tanks.map((tank) => tank.random)), source: sumTotals(tanks.map((tank) => tank.other)) })
   };
 };
 
@@ -37,12 +37,12 @@ export const logoutAt = ({ world, player, state }: ProfileInput): number => {
   return Math.min(state.at, state.lastBattle + pause);
 };
 
-export const isPremiumAt = (seed: number, player: MockPlayer, at: number): boolean =>
+export const isPremiumAt = ({ seed, player, at }: IsPremiumAtInput): boolean =>
   unitFloat(seed, MOCK_SALT.economy, player.index, dayOf(at)) < player.premiumShare;
 
 export const privateData = ({ world, player, state }: ProfileInput) => {
   const { all } = accountTotals(state);
-  const premium = isPremiumAt(world.seed, player, state.at);
+  const premium = isPremiumAt({ seed: world.seed, player, at: state.at });
   const credits = Math.round(2_000_000 + 60_000_000 * unitFloat(world.seed, MOCK_SALT.economy, player.index, 1) + all.battles * 180);
 
   return {

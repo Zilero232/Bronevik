@@ -5,10 +5,6 @@ from .constants import PANEL_POSITION_KEYS
 
 
 class Component(object):
-    """A card of the window: an optional switch (usually the companion's config.json switch of the
-    feature), fields from one settings source (config.json keys or the feature's components.json
-    section), and an optional feature instance that adds actions or a page (duck-typed `ui_actions()`,
-    `ui_page()`, `ui_action(action, row, value)`)."""
 
     def __init__(self, component_id, group, source, keys, switch=None, switch_source=None, panel=False, instance=None, title=None):
         self.id = component_id
@@ -35,7 +31,6 @@ class Component(object):
         return self.switch_source if key == self.switch else self.source
 
     def update(self, key, value):
-        """(changed keys, source kind) of setting one value; nothing when the key is not on the card."""
         if not self.editable(key):
             return [], None
         source = self.source_of(key)
@@ -67,7 +62,6 @@ class Component(object):
 
 
 def switch_of(settings, keys, candidates):
-    """The first bool key of `keys` that is a switch (a companion feature switch)."""
     for key in keys:
         if key in candidates and field_type(settings.schema, key) == TYPE_BOOL:
             return key

@@ -22,12 +22,14 @@ export const useClanRating = () => {
     placeholderData: keepPreviousData
   });
 
+  const { data: feed, fetchNextPage } = query;
+
   return {
     sort,
     setSort,
     query,
-    items: query.data?.pages.flatMap((page) => page.items) ?? [],
-    total: query.data?.pages[0]?.total ?? 0,
-    loadMore: () => void query.fetchNextPage()
+    items: feed?.pages.flatMap((page) => page.items) ?? [],
+    total: feed?.pages[0]?.total ?? 0,
+    loadMore: () => void fetchNextPage()
   };
 };

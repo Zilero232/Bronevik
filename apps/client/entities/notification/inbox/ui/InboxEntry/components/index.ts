@@ -1,0 +1,1 @@
+export { InboxEntryContent } from './InboxEntryContent';

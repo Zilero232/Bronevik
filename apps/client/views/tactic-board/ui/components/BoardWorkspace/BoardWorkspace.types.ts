@@ -1,6 +1,3 @@
-import type { TacticBoard } from '@/entities/tactic/board';
+import type { BoardWorkspaceInput } from '../../../model/hooks';
 
-export type BoardWorkspaceProps = {
-  board: TacticBoard;
-  urlToken: string | null;
-};
+export type BoardWorkspaceProps = BoardWorkspaceInput;

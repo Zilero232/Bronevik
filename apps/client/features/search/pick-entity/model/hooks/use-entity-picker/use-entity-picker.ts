@@ -3,7 +3,7 @@
 import { useBoolean } from '@siberiacancode/reactuse';
 import { useState } from 'react';
 
-import type { PickableKind, PickableResult } from '../use-entity-search';
+import type { PickableKind, PickableResult } from '../../../lib/search-kind';
 import type { UseEntityPickerInput } from './use-entity-picker.types';
 
 import { entityId } from '../../../lib/entity-id';

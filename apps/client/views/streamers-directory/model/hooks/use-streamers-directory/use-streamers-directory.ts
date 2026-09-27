@@ -24,14 +24,15 @@ export const useStreamersDirectory = () => {
     staleTime: DIRECTORY.staleMs
   });
 
+  const { data: directory, fetchNextPage } = query;
   const index = vehicleIndex(catalog);
-  const entries = (query.data?.pages.flatMap(({ items }) => items) ?? []).map((card) => directoryEntry({ card, index }));
+  const entries = (directory?.pages.flatMap(({ items }) => items) ?? []).map((card) => directoryEntry({ card, index }));
 
   return {
     query,
     entries,
     hasFilters,
-    loadMore: () => void query.fetchNextPage(),
+    loadMore: () => void fetchNextPage(),
     reset
   };
 };

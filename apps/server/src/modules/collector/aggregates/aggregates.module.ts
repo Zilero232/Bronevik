@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { AggregateProcessor } from './processors/aggregate.processor';
+import { AggregateProcessor } from './processors';
 import {
   AccountRatingsService,
   BuildUsageService,

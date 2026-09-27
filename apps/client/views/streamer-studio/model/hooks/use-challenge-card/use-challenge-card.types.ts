@@ -1,5 +1,3 @@
-export type UseChallengeCardInput = {
-  amount: number;
-  currency: string;
-  expiresAt: string | null;
-};
+import type { StreamerChallenge } from '@/entities/streamer/streamer';
+
+export type UseChallengeCardInput = Pick<StreamerChallenge, 'amount' | 'currency' | 'expiresAt'>;

@@ -6,15 +6,11 @@ renderer props (GUIFlash label names). The panel's on/off switch stays in the co
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import re
-
 from ...settings import Schema
-from .constants import ALIAS_PREFIX, LAYOUT_KEYS, PANEL_CHOICES, PANEL_DEFAULTS, PANEL_LIMITS
+from .constants import ALIAS_PREFIX, HEX_COLOR, LAYOUT_KEYS, MAX_SOUND_EVENT, PANEL_CHOICES, PANEL_DEFAULTS, PANEL_LIMITS, SOUND_EVENT
 
 __all__ = ('ALIAS_PREFIX', 'LAYOUT_KEYS', 'PANEL_DEFAULTS', 'alias_of', 'component_schema', 'hex_color', 'layout_props', 'matching',
-           'max_length', 'panel_of', 'panel_schema')
-
-HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
+           'max_length', 'panel_of', 'panel_schema', 'sound_event')
 
 
 def component_schema(defaults, choices=None, limits=None, normalizers=None):
@@ -51,6 +47,11 @@ def matching(pattern, limit):
 def hex_color(value):
     """A normalizer for `#RRGGBB` colours (upper-cased)."""
     return value.upper() if HEX_COLOR.match(value) else None
+
+
+def sound_event(value):
+    """A normalizer for Wwise event names (`core/client/sound` plays them): letters, digits, underscores."""
+    return matching(SOUND_EVENT, MAX_SOUND_EVENT)(value)
 
 
 def alias_of(panel_id):

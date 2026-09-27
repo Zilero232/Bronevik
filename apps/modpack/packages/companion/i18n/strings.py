@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# The companion's own strings: settings labels (every switch, the features' included), binding, settings share.
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 STRINGS = {
     'ru': {
         'mod_name': u'Три отметки',
@@ -19,6 +20,13 @@ STRINGS = {
         'minimap_tweaks': u'Мини-карта: размер, прозрачность, подписи техники',
         'camera_tweaks': u'Камера: шаги зума и стабилизация',
         'crosshair_presets': u'Пресеты прицела',
+        'hangar_info': u'Ангар: часы, сервер, пинг и онлайн',
+        'battle_sounds': u'Звуки событий своего танка (пожар, криты, боеукладка, первая кровь)',
+        'battle_chat_filter': u'Фильтр спама и время сообщений в чате боя',
+        'hangar_auto_resupply': u'Автопополнение: ремонт, снаряды, снаряжение, инструкции',
+        'hangar_notification_filter': u'Центр уведомлений: скрывать рекламу и напоминания',
+        'hangar_cleaner': u'Чистый ангар: без промо-тизера, баннеров предложений',
+        'hangar_marks_history': u'История отметок по каждому танку',
         'battle_clock': u'Часы и таймер боя',
         'battle_team_hp': u'ХП команд и счёт',
         'battle_sixth_sense': u'Лампа шестого чувства: свой звук и значок',
@@ -64,6 +72,13 @@ STRINGS = {
         'minimap_tweaks': u'Minimap: size, opacity, vehicle labels',
         'camera_tweaks': u'Camera: zoom steps and stabilisation',
         'crosshair_presets': u'Crosshair presets',
+        'hangar_info': u'Hangar: clock, server, ping and online',
+        'battle_sounds': u'Sounds for your own tank events (fire, crits, ammo rack, first blood)',
+        'battle_chat_filter': u'Battle chat spam filter and timestamps',
+        'hangar_auto_resupply': u'Auto resupply: repair, shells, consumables, directives',
+        'hangar_notification_filter': u'Notification centre: hide promo and reminders',
+        'hangar_cleaner': u'Clean hangar: no promo teaser or offer banners',
+        'hangar_marks_history': u'Marks of excellence history per tank',
         'battle_clock': u'Clock and battle timer',
         'battle_team_hp': u'Team HP and score',
         'battle_sixth_sense': u'Sixth sense: custom sound and icon',

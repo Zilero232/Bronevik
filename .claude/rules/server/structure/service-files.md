@@ -12,12 +12,13 @@ paths:
 
 | What                               | Where                                                       |
 | ---------------------------------- | ----------------------------------------------------------- |
-| Constants, timeouts, lookup tables | `config/<concern>.config.ts` or `<name>.constants.ts`       |
+| Constants, timeouts, lookup tables | `config/<concern>.constants.ts`; a lib's own tunables in `lib/<name>/<name>.constants.ts` |
 | Pure domain logic                  | `lib/<name>/` — one folder per **concern**, tested there    |
 | Row / payload → DTO converters     | `mappers/<name>/` — every `to*View` / `to*Dto`               |
 | Prisma `select` / `include`        | `selects/<name>/` with its `GetPayload` type                 |
 | Standalone raw-SQL builders        | `queries/<name>/` (`Prisma.sql` fragments)                    |
 | Guards, decorators, interceptors   | `guards/`, `decorators/`, `interceptors/`, one folder each    |
+| Custom providers, queue handles    | `providers/<name>.provider.ts`                              |
 | Types                              | `x.types.ts` next to the file that owns them                |
 
 Every item is its own folder (`<name>.ts` + `.types.ts` + `index.ts` + `_tests/`) and every

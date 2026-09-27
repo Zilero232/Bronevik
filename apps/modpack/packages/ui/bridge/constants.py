@@ -1,9 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# Bus events the window emits (features and the HUD layer subscribe on app.bus):
-#   component_settings(component_id, changed_keys)  settings of a card changed (window, profile load)
-#   language(language)                               the player switched the mod language
-EVENT_COMPONENT_SETTINGS = 'component_settings'
+import re
+
+from ...core.events import EVENT_COMPONENT_SETTINGS  # noqa: F401
+
 EVENT_LANGUAGE = 'language'
 CONFIG_COMPONENT = 'config'
 
@@ -18,3 +18,4 @@ SITE_URL = 'https://triotmetki.ru'
 API_PREFIX = 'https://api.'
 LOCAL_SITE_URL = 'http://localhost:3000'
 LOCAL_HOSTS = ('http://localhost', 'http://127.0.0.1')
+SAFE_PATH = re.compile(r'^/(?!/)[A-Za-z0-9/_.~%?=&-]*$')

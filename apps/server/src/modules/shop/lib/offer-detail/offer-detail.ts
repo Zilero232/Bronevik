@@ -4,12 +4,11 @@ import type { OfferDetail, OfferDiscount, ParseOfferDetailInput } from './offer-
 
 import { latestDeadline, textLines } from '../../../../lib/scrape';
 import { BONUS_CODE, OFFER_SCRAPE } from '../../config';
-
-const DISCOUNT = /скидк[аи]\s*(\d{1,2})\s*%/iu;
+import { OFFER_DETAIL } from './offer-detail.constants';
 
 export const discountsOf = (lines: readonly string[]): OfferDiscount[] =>
   lines.flatMap((line, index) => {
-    const found = DISCOUNT.exec(line);
+    const found = OFFER_DETAIL.discount.exec(line);
 
     return found ? [{ percent: Number(found[1]), context: `${line} ${lines[index + 1] ?? ''}`.trim() }] : [];
   });

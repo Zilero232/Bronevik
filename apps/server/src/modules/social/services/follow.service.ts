@@ -8,7 +8,7 @@ import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { FEED } from '../config';
 import { clearFollowFlag, setFollowFlag } from '../lib';
-import { FOLLOW_KIND_FROM_DB } from '../lib/views';
+import { toFollowView } from '../mappers';
 
 @Injectable()
 export class FollowService {
@@ -24,13 +24,9 @@ export class FollowService {
       select: { accountId: true, nickname: true }
     });
 
-    return follows.map((follow) => ({
-      id: follow.id,
-      kind: FOLLOW_KIND_FROM_DB[follow.kind],
-      targetId: Number(follow.targetId),
-      label: follow.kind === 'player' ? (players.find((player) => player.accountId === follow.targetId)?.nickname ?? null) : null,
-      createdAt: follow.createdAt.toISOString()
-    }));
+    return follows.map((follow) =>
+      toFollowView({ follow, nickname: players.find((player) => player.accountId === follow.targetId)?.nickname ?? null })
+    );
   }
 
   async create({ userId, kind, targetId }: CreateFollowInput): Promise<FollowView[]> {

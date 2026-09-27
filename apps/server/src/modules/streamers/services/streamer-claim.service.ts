@@ -17,11 +17,12 @@ import type {
 
 import { Prisma } from '../../../../generated';
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
-import { errorMessage, readRecord, toIso, toJsonValue } from '../../../common/lib';
+import { errorMessage, readRecord, toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { CLAIM, CLAIM_METHOD_FROM_DB, CLAIM_METHOD_TO_DB, REMOVAL_REPORT, STREAMER_INVITATIONS, STREAMERS } from '../config';
+import { CLAIM, CLAIM_METHOD_TO_DB, REMOVAL_REPORT, STREAMER_INVITATIONS, STREAMERS } from '../config';
 import { invitationChannelsSchema } from '../dto';
 import { bioHasCode, newClaimCode, parseChannel } from '../lib';
+import { toAdminClaim, toClaimView, toInvitationView } from '../mappers';
 import { LivePlatformsService } from './live-platforms.service';
 import { StreamerProfileService } from './streamer-profile.service';
 
@@ -53,10 +54,10 @@ export class StreamerClaimService {
       });
 
       if (await this.contested({ target, userId, login: login.toLowerCase() })) {
-        return this.view(claim, slug);
+        return toClaimView({ claim, slug });
       }
 
-      return this.view(await this.complete({ claim, verifiedPlatform: 'twitch', moderatorId: null }), slug);
+      return toClaimView({ claim: await this.complete({ claim, verifiedPlatform: 'twitch', moderatorId: null }), slug });
     }
 
     const claim = await this.prisma.streamerClaim.create({
@@ -70,7 +71,7 @@ export class StreamerClaimService {
       }
     });
 
-    return this.view(claim, slug);
+    return toClaimView({ claim, slug });
   }
 
   async verify({ userId, slug }: ClaimRef): Promise<StreamerClaimView> {
@@ -92,18 +93,18 @@ export class StreamerClaimService {
       const bio = await this.description(channel);
 
       if (bioHasCode({ bio, code: claim.code })) {
-        return this.view(await this.complete({ claim, verifiedPlatform: channel.platform, moderatorId: null }), slug);
+        return toClaimView({ claim: await this.complete({ claim, verifiedPlatform: channel.platform, moderatorId: null }), slug });
       }
     }
 
-    return this.view(claim, slug);
+    return toClaimView({ claim, slug });
   }
 
   async mine({ userId, slug }: ClaimRef): Promise<StreamerClaimView | null> {
     const target = await this.target(slug);
     const claim = await this.prisma.streamerClaim.findFirst({ where: { ...this.targetRef(target), userId }, orderBy: { createdAt: 'desc' } });
 
-    return claim ? this.view(claim, slug) : null;
+    return claim ? toClaimView({ claim, slug }) : null;
   }
 
   async pending(): Promise<AdminClaim[]> {
@@ -113,11 +114,7 @@ export class StreamerClaimService {
       orderBy: { createdAt: 'asc' }
     });
 
-    return claims.map((claim) => ({
-      ...this.view(claim, claim.profile?.slug ?? claim.invitation?.slug ?? ''),
-      userId: claim.userId,
-      evidence: claim.evidence
-    }));
+    return claims.map(toAdminClaim);
   }
 
   async resolve({ id, approve, moderatorId }: ResolveClaimRequest): Promise<void> {
@@ -197,14 +194,7 @@ export class StreamerClaimService {
   async invitations(): Promise<InvitationView[]> {
     const rows = await this.prisma.streamerInvitation.findMany({ orderBy: { createdAt: 'asc' } });
 
-    return rows.map((row) => ({
-      slug: row.slug,
-      displayName: row.displayName,
-      status: row.status,
-      channels: invitationChannelsSchema.parse(row.channels),
-      sourceUrl: row.sourceUrl,
-      sentAt: toIso(row.sentAt)
-    }));
+    return rows.map(toInvitationView);
   }
 
   async markInvitationSent(slug: string): Promise<void> {
@@ -337,17 +327,5 @@ export class StreamerClaimService {
       where: { id: claim.id },
       data: { status: 'resolved', resolvedAt: now, resolvedBy: moderatorId, profileId: result.id }
     });
-  }
-
-  private view(claim: StreamerClaim, slug: string): StreamerClaimView {
-    return {
-      id: claim.id,
-      slug,
-      method: CLAIM_METHOD_FROM_DB[claim.method],
-      status: claim.status,
-      code: claim.code,
-      createdAt: claim.createdAt.toISOString(),
-      resolvedAt: toIso(claim.resolvedAt)
-    };
   }
 }

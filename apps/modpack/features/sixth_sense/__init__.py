@@ -1,4 +1,3 @@
-"""Feature: sixth sense alert (custom sound and icon when the client lamp lights). Depends on the core and the companion."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 FEATURE_ID = 'sixth_sense'

@@ -6,14 +6,15 @@ import os
 import shutil
 import struct
 import tempfile
+import time
 import unittest
 
 import _support
 from otmetki.core.replay_file import MAGIC
 from otmetki.core.storage import MemoryFile
 from otmetki.features.replay_manager.i18n import STRINGS
-from otmetki.features.replay_manager.model import (HeaderCache, ReplayActionError, UploadedIndex, build_page, find_own, own_replays,
-                                                   rename_target)
+from otmetki.features.replay_manager.model import (AutoNamer, HeaderCache, ReplayActionError, UploadedIndex, build_page, find_own, name_values,
+                                                   own_replays, rename_target, render_name)
 from otmetki.features.replay_manager.model.constants import INDEX_MAX
 from otmetki.features.replay_manager.settings import SCHEMA, SETTINGS
 
@@ -128,6 +129,52 @@ class IndexAndSettingsTest(unittest.TestCase):
     def test_settings(self):
         assert SETTINGS == ('hangar_replay_manager',)
         assert SCHEMA.coerce('max_rows', 5000) == 200
+        assert SCHEMA.defaults['auto_rename'] is False
+        assert len(SCHEMA.coerce('name_template', 'x' * 500)) == 100
+
+
+STARTED = time.mktime((2026, 9, 27, 14, 5, 0, 0, 0, -1))
+
+
+def own_event(arena='777'):
+    return {'arena_unique_id': arena, 'arena_created_at': int(STARTED), 'occurred_at': int(STARTED) + 400, 'result': 'win',
+            'map_name': '05_prohorovka', 'vehicle': {'tank_id': 1, 'tier': 5}, 'stats': {'damage_dealt': 2150, 'xp': 1150, 'frags': 2}}
+
+
+def replay(name, arena=None, started=None, mtime=STARTED + 400):
+    return {'name': name, 'path': name, 'size': 1, 'mtime': mtime, 'header': {'arena_unique_id': arena, 'date_time': started}}
+
+
+class AutoNameTest(unittest.TestCase):
+
+    def values(self):
+        return name_values(own_event(), u'Прохоровка', u'Т-34', u'победа')
+
+    def test_values_and_name(self):
+        values = self.values()
+        assert (values['date'], values['time'], values['damage']) == ('2026-09-27', '14-05', 2150)
+        name = render_name('{date}_{time}_{map}_{vehicle}_{result}_{damage}', values, 'old.mtreplay')
+        assert name == u'2026-09-27_14-05_Прохоровка_Т-34_победа_2150.mtreplay'
+        assert render_name('{vehicle}: <bad>?', values, 'a.wotreplay') == u'Т-34 bad.wotreplay'
+        assert render_name('   ', values, 'a.mtreplay') is None
+
+    def test_matching_by_arena_then_time(self):
+        namer = AutoNamer()
+        assert namer.queue(own_event('777'), self.values(), 0.0)
+        assert not namer.queue(own_event('777'), self.values(), 0.0)
+        replays = [replay('other.mtreplay', arena='555'), replay('mine.mtreplay', arena='777')]
+        assert [(item[0]['name'], item[1]) for item in namer.plan(replays, '{result}', STARTED + 500)] == [('mine.mtreplay', u'победа.mtreplay')]
+        assert namer.pending == []
+        namer.queue(own_event('778'), self.values(), 0.0)
+        by_time = [replay('left_early.mtreplay', started=STARTED + 60)]
+        assert namer.plan(by_time, '{map}', STARTED + 500)[0][1] == u'Прохоровка.mtreplay'
+
+    def test_waits_for_the_file_and_gives_up(self):
+        namer = AutoNamer()
+        namer.queue(own_event(), self.values(), STARTED)
+        fresh = [replay('mine.mtreplay', arena='777', mtime=STARTED + 495)]
+        assert namer.plan(fresh, '{result}', STARTED + 500) == [] and len(namer.pending) == 1
+        assert namer.plan([], '{result}', STARTED + 3 * 3600) == [] and namer.pending == []
 
 
 if __name__ == '__main__':

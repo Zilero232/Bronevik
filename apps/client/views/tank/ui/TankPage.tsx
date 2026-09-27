@@ -6,7 +6,6 @@ import { ROUTES } from '@/shared/constants';
 import { useRouteParam } from '@/shared/lib';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
-import { TankProvider } from '../model/context';
 import { useTankDetail } from '../model/hooks';
 import {
   BestBattles,
@@ -22,6 +21,7 @@ import {
   ServerStats,
   SimilarTanks,
   TankGarage,
+  TankProvider,
   TankSkeleton,
   TopPlayers
 } from './components';

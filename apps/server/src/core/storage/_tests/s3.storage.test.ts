@@ -1,5 +1,8 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { describe, expect, it } from 'vitest';
+import { mock } from 'vitest-mock-extended';
+
+import type { S3Sender } from '../storage.types';
 
 import { S3Storage } from '../s3.storage';
 
@@ -14,44 +17,50 @@ const options = {
 
 const body = new TextEncoder().encode('replay bytes');
 
+const createStorage = () => {
+  const client = mock<S3Sender>();
+
+  return { client, storage: new S3Storage({ ...options, client }) };
+};
+
 describe('S3Storage', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('writes under the configured prefix with the content type', async () => {
-    const send = vi.spyOn(S3Client.prototype, 'send').mockImplementation(async () => ({}));
+    const { client, storage } = createStorage();
 
-    await new S3Storage(options).put({ key: 'a.wotreplay', body, contentType: 'application/octet-stream' });
+    client.send.mockImplementation(async () => ({}));
 
-    expect(send.mock.calls[0]?.[0]).toBeInstanceOf(PutObjectCommand);
+    await storage.put({ key: 'a.wotreplay', body, contentType: 'application/octet-stream' });
 
-    expect(send.mock.calls.map(([command]) => command.input)).toEqual([
+    expect(client.send.mock.calls[0]?.[0]).toBeInstanceOf(PutObjectCommand);
+
+    expect(client.send.mock.calls.map(([command]) => command.input)).toEqual([
       { Bucket: 'replays', Key: 'prod/a.wotreplay', Body: body, ContentType: 'application/octet-stream' }
     ]);
   });
 
   it('reads and removes the same prefixed key', async () => {
-    const send = vi
-      .spyOn(S3Client.prototype, 'send')
-      .mockImplementation(async (command) => (command instanceof GetObjectCommand ? { Body: { transformToByteArray: async () => body } } : {}));
+    const { client, storage } = createStorage();
 
-    const storage = new S3Storage(options);
+    client.send.mockImplementation(async (command) =>
+      command instanceof GetObjectCommand ? { Body: { transformToByteArray: async () => body } } : {}
+    );
 
     expect(await storage.get('a.wotreplay')).toEqual(body);
     await storage.remove('a.wotreplay');
 
-    expect(send.mock.calls[1]?.[0]).toBeInstanceOf(DeleteObjectCommand);
+    expect(client.send.mock.calls[1]?.[0]).toBeInstanceOf(DeleteObjectCommand);
 
-    expect(send.mock.calls.map(([command]) => command.input)).toEqual([
+    expect(client.send.mock.calls.map(([command]) => command.input)).toEqual([
       expect.objectContaining({ Key: 'prod/a.wotreplay' }),
       expect.objectContaining({ Key: 'prod/a.wotreplay' })
     ]);
   });
 
   it('fails clearly on an object without a body', async () => {
-    vi.spyOn(S3Client.prototype, 'send').mockImplementation(async () => ({}));
+    const { client, storage } = createStorage();
 
-    await expect(new S3Storage(options).get('a.wotreplay')).rejects.toThrow('no body');
+    client.send.mockImplementation(async () => ({}));
+
+    await expect(storage.get('a.wotreplay')).rejects.toThrow('no body');
   });
 });

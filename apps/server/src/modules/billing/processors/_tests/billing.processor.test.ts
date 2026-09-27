@@ -3,10 +3,13 @@ import type { Job } from 'bullmq';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
+import type { MetricsService } from '../../../collector/metrics';
 import type { RenewalService } from '../../services';
 
 import { BILLING_QUEUE } from '../../config';
 import { BillingProcessor } from '../billing.processor';
+
+const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });
 
 const createProcessor = () => {
   const renewals = mock<RenewalService>();
@@ -14,7 +17,7 @@ const createProcessor = () => {
   renewals.chargeDue.mockResolvedValue(3);
   renewals.expireDue.mockResolvedValue(5);
 
-  return { processor: new BillingProcessor(renewals), renewals };
+  return { processor: new BillingProcessor(renewals, trackingMetrics()), renewals };
 };
 
 describe('BillingProcessor.process', () => {

@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from ...compat import to_native
 from ...vendor import six
 from .constants import DEFAULT_TIMEOUT_S, HTTP_WORKER, NETWORK_ERROR
@@ -14,10 +16,15 @@ def _headers_of(response):
         return {}
 
 
+def native_headers(headers):
+    """Header names and values as the interpreter's `str`: Python 2's HTTP code must not mix unicode
+    headers with a binary body."""
+    return dict((to_native(key), to_native(value)) for key, value in (headers or {}).items())
+
+
 def perform(method, url, headers, body, timeout):
     """One blocking HTTP exchange: (status, body, headers); status NETWORK_ERROR when nothing came back."""
-    native = dict((to_native(key), to_native(value)) for key, value in (headers or {}).items())
-    request = _urlrequest.Request(to_native(url), data=body, headers=native)
+    request = _urlrequest.Request(to_native(url), data=body, headers=native_headers(headers))
     request.get_method = lambda: method
     try:
         response = _urlrequest.urlopen(request, timeout=timeout)

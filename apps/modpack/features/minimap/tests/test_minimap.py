@@ -4,11 +4,11 @@ import re
 import unittest
 
 import _support  # noqa: F401
+from otmetki.core.native_settings import setting_names
 from otmetki.core.settings import Settings
-from otmetki.features.minimap.model import CLIENT_SETTINGS, to_native
+from otmetki.features.minimap.model import FIELDS, to_native
 from otmetki.features.minimap.settings import SCHEMA, SETTINGS
 
-# Anything on Lesta's forbidden list would need a setting about enemies, directions, tracers or objects.
 FORBIDDEN = re.compile(r'enemy|lost|direction|barrel|gun|tracer|arty|destroy|spot|transparen(?!cy$)', re.I)
 
 
@@ -28,9 +28,9 @@ class MinimapTest(unittest.TestCase):
         assert Settings({'size': '9', 'vehicle_names': 'enemies'}, SCHEMA).to_dict()['size'] == 'native'
 
     def test_only_vanilla_minimap_options(self):
-        assert CLIENT_SETTINGS == ('minimapAlpha', 'minimapDrawRange', 'minimapMaxViewRange', 'minimapSize', 'minimapViewRange',
+        assert setting_names(FIELDS) == ('minimapAlpha', 'minimapDrawRange', 'minimapMaxViewRange', 'minimapSize', 'minimapViewRange',
                                    'showVehModelsOnMap')
-        for name in CLIENT_SETTINGS:
+        for name in setting_names(FIELDS):
             assert not FORBIDDEN.search(name), name
 
 

@@ -1,14 +1,24 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
 
-import type { AuthenticatedDevice, AuthenticateInput, IdentifyDeviceInput, ModDeviceView, RevokeDeviceInput } from '../mod.types';
+import type {
+  AuthenticateBodyInput,
+  AuthenticatedBody,
+  AuthenticatedDevice,
+  AuthenticateInput,
+  IdentifyDeviceInput,
+  ModDeviceView,
+  RevokeDeviceInput,
+  SignedDeviceBody
+} from '../mod.types';
 
 import { AppNotFoundException, ModException } from '../../../common/exceptions';
-import { isSignatureHeader, toIso, verifySignatureHeader } from '../../../common/lib';
+import { isSignatureHeader, verifySignatureHeader } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
 import { MOD_DEVICE, MOD_REQUEST } from '../config';
 import { deviceSecret, isFreshTimestamp, isNonce, matchesSecretHash, requestPath, signedMessage } from '../lib';
+import { toModDeviceView } from '../mappers';
 
 @Injectable()
 export class ModDeviceService {
@@ -34,6 +44,21 @@ export class ModDeviceService {
     }
 
     return { ...device, accountId: device.accountId };
+  }
+
+  async authenticateBody<T extends SignedDeviceBody>({ request, schema }: AuthenticateBodyInput<T>): Promise<AuthenticatedBody<T>> {
+    const device = await this.authenticate({ request, rawBody: request.rawBody });
+    const parsed = schema.safeParse(request.body);
+
+    if (!parsed.success) {
+      throw new ModException({ status: HttpStatus.BAD_REQUEST, error: 'invalid_payload', message: parsed.error.issues[0]?.message });
+    }
+
+    if (parsed.data.device_id !== device.id || BigInt(parsed.data.account_id) !== device.accountId) {
+      throw new ModException({ status: HttpStatus.FORBIDDEN, error: 'account_mismatch' });
+    }
+
+    return { device, body: parsed.data };
   }
 
   async authenticate({ request, rawBody, signedHeaders = [] }: AuthenticateInput): Promise<AuthenticatedDevice> {
@@ -74,16 +99,7 @@ export class ModDeviceService {
   async list(userId: string): Promise<ModDeviceView[]> {
     const devices = await this.prisma.modDevice.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
 
-    return devices.map((device) => ({
-      id: device.id,
-      accountId: device.accountId === null ? null : Number(device.accountId),
-      name: device.name,
-      modVersion: device.modVersion,
-      gameVersion: device.gameVersion,
-      lastSeenAt: toIso(device.lastSeenAt),
-      revokedAt: toIso(device.revokedAt),
-      createdAt: device.createdAt.toISOString()
-    }));
+    return devices.map(toModDeviceView);
   }
 
   async revoke({ userId, deviceId }: RevokeDeviceInput): Promise<void> {

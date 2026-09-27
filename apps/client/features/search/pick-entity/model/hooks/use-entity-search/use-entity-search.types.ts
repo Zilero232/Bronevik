@@ -1,8 +1,4 @@
-import type { PlayerSearchResult, TankSearchResult } from '@otmetki/schemas';
-
-export type PickableKind = 'player' | 'tank';
-
-export type PickableResult<K extends PickableKind> = K extends 'player' ? PlayerSearchResult : TankSearchResult;
+import type { PickableKind } from '../../../lib/search-kind';
 
 export type UseEntitySearchInput<K extends PickableKind> = {
   kind: K;

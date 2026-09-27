@@ -2,9 +2,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.format import font
 
+# Fair play: follows the client's own sixth-sense lamp (the player's vehicle is spotted); nothing else.
+
 
 class SixthSense(object):
-    """Follows the client's own sixth-sense lamp (the player's vehicle is spotted); nothing else."""
 
     def __init__(self):
         self.lit_at = None
@@ -15,7 +16,6 @@ class SixthSense(object):
         return self.lit_at is not None
 
     def observed(self, is_observed, now):
-        """'show' when the lamp lights (play the sound), 'hide' when it goes out, None otherwise."""
         if is_observed and not self.lit:
             self.lit_at = now
             self.count += 1

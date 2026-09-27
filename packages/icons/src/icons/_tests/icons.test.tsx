@@ -2,14 +2,14 @@ import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { NATIONS, TANK_CLASSES } from '../../registry';
-import { TankClassIcon } from '../classes';
-import { CLASS_GLYPHS, CLASS_VARIANT } from '../classes.shapes';
-import { MarkOfExcellenceIcon } from '../marks';
-import { MasteryIcon } from '../mastery';
-import { MASTERY_TINTS } from '../mastery.shapes';
-import { NationFlag, NationIcon } from '../nations';
-import { NATION_FLAGS } from '../nations.shapes';
-import { TierIcon } from '../tier';
+import { TankClassIcon } from '../classes/classes';
+import { CLASS_GLYPHS, CLASS_VARIANT } from '../classes/classes.shapes';
+import { MarkOfExcellenceIcon } from '../marks/marks';
+import { MasteryIcon } from '../mastery/mastery';
+import { MASTERY_TINTS } from '../mastery/mastery.shapes';
+import { NationFlag, NationIcon } from '../nations/nations';
+import { NATION_FLAGS } from '../nations/nations.shapes';
+import { TierIcon } from '../tier/tier';
 
 const svgOf = (container: HTMLElement) => container.querySelector('svg');
 

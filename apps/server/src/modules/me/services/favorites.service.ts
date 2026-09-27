@@ -3,12 +3,12 @@ import { Injectable } from '@nestjs/common';
 import type { CreateFavoriteInput, Favorite, OwnedInput } from '../me.types';
 
 import { AppConflictException, AppNotFoundException } from '../../../common/exceptions';
-import { toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { CollectorProducerService } from '../../collector';
 import { VehicleCatalogService } from '../../reference';
 import { clearFollowFlag, setFollowFlag } from '../../social';
 import { FAVORITES } from '../config';
+import { toFavorite } from '../mappers';
 
 @Injectable()
 export class FavoritesService {
@@ -31,20 +31,7 @@ export class FavoritesService {
     const nicknameOf = new Map(players.map((player) => [player.accountId, player.nickname]));
     const tagOf = new Map(clans.map((clan) => [clan.clanId, clan.tag]));
 
-    return rows.map((row) => ({
-      id: row.id,
-      kind: row.kind,
-      targetId: toNumber(row.targetId),
-      label: row.label,
-      isOwn: row.isOwn,
-      title:
-        row.kind === 'player'
-          ? (nicknameOf.get(row.targetId) ?? null)
-          : row.kind === 'clan'
-            ? (tagOf.get(row.targetId) ?? null)
-            : (catalog.get(toNumber(row.targetId))?.summary.name ?? null),
-      createdAt: row.createdAt.toISOString()
-    }));
+    return rows.map((row) => toFavorite({ row, nicknameOf, tagOf, catalog }));
   }
 
   async create({ userId, kind, targetId, label, isOwn }: CreateFavoriteInput): Promise<Favorite> {

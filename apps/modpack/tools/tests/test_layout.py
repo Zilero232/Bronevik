@@ -8,13 +8,16 @@ from otmetki.companion.i18n import STRINGS as COMPANION_STRINGS
 
 FEATURE_FILES = ('model', 'client', 'settings', 'i18n')
 HUD_FEATURES = ('battle_clock', 'battle_results', 'damage_log', 'hit_log', 'sixth_sense', 'team_hp')
+HANGAR_FEATURES = ('auto_resupply', 'camera', 'crosshair', 'hangar_cleaner', 'hangar_info', 'hangar_tweaks', 'marks_history', 'minimap',
+                   'notification_filter', 'replay_manager')
+BATTLE_EXTRAS = ('battle_sounds', 'chat_filter')
 
 
 class FeatureLayoutTest(unittest.TestCase):
 
     def test_features_found(self):
         found = set(_support.feature_ids())
-        self.assertTrue(set(('marks_panel', 'replay_upload', 'session_stats') + HUD_FEATURES) <= found, sorted(found))
+        self.assertTrue(set(('marks_panel', 'replay_upload', 'session_stats') + HUD_FEATURES + HANGAR_FEATURES + BATTLE_EXTRAS) <= found, sorted(found))
 
     def test_feature_layout(self):
         for feature_id in _support.feature_ids():

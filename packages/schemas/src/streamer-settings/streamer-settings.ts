@@ -2,6 +2,7 @@ import type {
   ApplyValuesInput,
   ChangedGroupsInput,
   FlatSettings,
+  FlattenInput,
   FlatValue,
   SettingsDiffRow,
   SettingsGroupKey,
@@ -11,8 +12,6 @@ import type {
 
 import { STREAMER_SETTINGS } from './streamer-settings.constants';
 import { settingsGroupKeySchema, settingsValuesSchema } from './streamer-settings.schemas';
-
-const PROVENANCE_KEYS = new Set(['source', 'sourceUrl', 'checkedAt']);
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -25,15 +24,15 @@ const groupOrder = (field: string): number => {
   return parsed.success ? STREAMER_SETTINGS.groups.indexOf(parsed.data) : -1;
 };
 
-const flatten = (value: unknown, prefix: string, target: FlatSettings): void => {
+const flatten = ({ value, prefix, target }: FlattenInput): void => {
   if (value === undefined) {
     return;
   }
 
   if (isPlainObject(value)) {
     for (const [key, nested] of Object.entries(value)) {
-      if (!PROVENANCE_KEYS.has(key)) {
-        flatten(nested, prefix === '' ? key : `${prefix}.${key}`, target);
+      if (!STREAMER_SETTINGS.provenanceKeys.has(key)) {
+        flatten({ value: nested, prefix: prefix === '' ? key : `${prefix}.${key}`, target });
       }
     }
 
@@ -52,7 +51,7 @@ const flatten = (value: unknown, prefix: string, target: FlatSettings): void => 
 export const flattenSettings = (settings: SettingsValues | StreamerSettings): FlatSettings => {
   const target: FlatSettings = {};
 
-  flatten(settings, '', target);
+  flatten({ value: settings, prefix: '', target });
 
   return target;
 };

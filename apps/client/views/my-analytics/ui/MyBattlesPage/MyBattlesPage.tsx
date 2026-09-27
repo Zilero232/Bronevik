@@ -15,7 +15,7 @@ export const MyBattlesPage = () => {
   return (
     <AnalyticsFiltersProvider>
       <div className={s.root}>
-        <SectionHeader action={<AnalyticsToolbar isPeriodVisible={false} />} as='h2' description={t('description')} title={t('title')} />
+        <SectionHeader action={<AnalyticsToolbar isPeriodVisible={false} />} as='h1' description={t('description')} title={t('title')} />
         <BattlesTab />
       </div>
     </AnalyticsFiltersProvider>

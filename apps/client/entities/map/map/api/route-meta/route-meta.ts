@@ -1,25 +1,17 @@
 import type { RouteStaticParamsInput } from '@/shared/seo';
 
+import { routeEntity, routeSlugs } from '@/shared/seo';
+
 import { getMap, listMaps } from '../maps';
 
-export const mapRouteName = async (idOrSlug: string) => {
+export const mapRouteEntity = async (idOrSlug: string) => {
   'use cache';
 
-  try {
-    return (await getMap({ idOrSlug })).name;
-  } catch {
-    return decodeURIComponent(idOrSlug);
-  }
+  return routeEntity({ key: idOrSlug, load: async () => (await getMap({ idOrSlug })).name });
 };
 
 export const mapSlugs = async ({ fallback }: RouteStaticParamsInput) => {
   'use cache';
 
-  try {
-    const values = (await listMaps({})).map(({ slug }) => slug);
-
-    return values.length > 0 ? values : [fallback];
-  } catch {
-    return [fallback];
-  }
+  return routeSlugs({ fallback, load: async () => (await listMaps({})).map(({ slug }) => slug) });
 };

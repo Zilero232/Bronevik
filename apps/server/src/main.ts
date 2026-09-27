@@ -1,10 +1,10 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 
 import { NestFactory } from '@nestjs/core';
-import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
+import { apiHelmet } from './common/middleware';
 import { allowedOrigins, corsOptionsFor, isLestaMock, isProduction, validateEnv } from './config';
 import { PublicApiModule } from './modules/public-api';
 import { setupDocs } from './openapi';
@@ -22,7 +22,7 @@ app.useLogger(app.get(Logger));
 app.set('trust proxy', 1);
 app.set('json replacer', (_key: string, value: unknown) => (typeof value === 'bigint' ? Number(value) : value));
 
-app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'same-site' } }));
+app.use(apiHelmet);
 
 if (lestaMock) {
   app.use(lestaMock.loginRouter);

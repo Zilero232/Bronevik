@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
-import { AccountSelect, CommunityGate } from '@/features/community/viewer';
+import { AccountSelect, CommunityGate } from '@/entities/auth/session';
 import { Button, Card, CardBody, CardHeader, FormField, Input } from '@/ui-kit';
 
 import type { RegistrationPanelProps } from './RegistrationPanel.types';

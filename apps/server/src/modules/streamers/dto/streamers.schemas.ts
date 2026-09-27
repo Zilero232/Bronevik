@@ -45,7 +45,7 @@ export const oauthStateSchema = z
       return z.NEVER;
     }
   })
-  .pipe(z.object({ provider: z.enum(StreamerProvider), userId: z.string().min(1) }));
+  .pipe(z.object({ provider: z.enum(StreamerProvider), userId: z.string().min(1), binding: z.string().min(1) }));
 
 export const claimStatusResponseSchema = z.object({ claim: streamerClaimSchema.nullable() });
 

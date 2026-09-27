@@ -199,6 +199,20 @@ describe('ApiKeysService.verify', () => {
     await expect(service.verify('otm_key')).rejects.toMatchObject({ response: { code: 'PLAN_LIMIT_REACHED' }, retryAfterSec: null });
   });
 
+  it('takes the tier from the owner, not from the key metadata', async () => {
+    const { service, auth } = createService();
+
+    auth.api.verifyApiKey.mockResolvedValue(
+      verified({ metadata: JSON.stringify({ tier: 'community' }), refillAmount: 10_000_000, remaining: 9_999_999 })
+    );
+
+    await expect(service.verify('otm_key')).resolves.toMatchObject({
+      tier: 'free',
+      dailyLimit: API_TIERS.free.requestsPerDay,
+      dailyRemaining: API_TIERS.free.requestsPerDay
+    });
+  });
+
   it('leaves the keys alone when the owner tier did not change', async () => {
     const { service, tiers, auth, tierSync } = createService();
 

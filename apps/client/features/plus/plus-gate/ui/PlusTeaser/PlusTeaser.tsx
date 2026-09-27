@@ -53,6 +53,11 @@ export const PlusTeaser = ({ feature, className }: PlusTeaserProps) => {
               {t('teaser.trial', { days: trialDays })}
             </Button>
           ))
+          .with({ action: 'promo' }, () => (
+            <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.account.billing}>
+              {t('teaser.promo')}
+            </Link>
+          ))
           .with({ action: 'subscribe' }, () => (
             <Link className={buttonVariants()} href={ROUTES.plus}>
               {t('teaser.subscribe')}

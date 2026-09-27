@@ -1,7 +1,8 @@
+export { compareTanks } from './compare-tanks';
+export type { CompareTanksInput } from './compare-tanks';
 export { economyView } from './mappers';
 export type { EconomyView } from './mappers';
 export {
-  compareTanks,
   getMyEconomy,
   getMyTankLearning,
   getTank,
@@ -15,7 +16,6 @@ export {
   listVehicles
 } from './tanks';
 export type {
-  CompareTanksInput,
   MyEconomyInput,
   MyLearningInput,
   TankDetailInput,

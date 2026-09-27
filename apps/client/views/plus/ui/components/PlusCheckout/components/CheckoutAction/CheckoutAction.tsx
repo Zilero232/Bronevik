@@ -1,33 +1,23 @@
 'use client';
 
-import type { CheckoutInput } from '@otmetki/schemas';
-
 import { useFormatter, useTranslations } from 'next-intl';
-import { useFormState } from 'react-hook-form';
 import { match } from 'ts-pattern';
 
-import { useLoginHref } from '@/entities/auth/session';
-import { useStartTrial } from '@/entities/plus/subscription';
-import { usePlus } from '@/features/plus/plus-gate';
+import { TELEGRAM_BOT } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants, Skeleton } from '@/ui-kit';
 
-import { checkoutNote } from '../../../../../lib/checkout-note';
+import { useCheckoutAction } from '../../../../../model/hooks';
 
 import s from './CheckoutAction.module.scss';
 
 export const CheckoutAction = () => {
-  const loginHref = useLoginHref();
   const t = useTranslations('plus');
   const format = useFormatter();
-  const access = usePlus();
-  const trial = useStartTrial();
-  const { isSubmitting, isSubmitSuccessful } = useFormState<CheckoutInput>();
+  const { access, loginHref, isTrialPending, startTrial, isRedirecting, note } = useCheckoutAction();
 
   const { isPending, isSignedIn, isPlus, isCheckoutAvailable, trialAvailable, trialDays } = access;
-  const isRedirecting = isSubmitting || isSubmitSuccessful;
-  const note = checkoutNote(access);
 
   return (
     <div className={s.root}>
@@ -46,18 +36,27 @@ export const CheckoutAction = () => {
         .otherwise(() => (
           <>
             {trialAvailable && (
-              <Button disabled={trial.isPending} type='button' variant={isCheckoutAvailable ? 'secondary' : 'primary'} onClick={() => trial.mutate()}>
-                {trial.isPending ? t('checkout.action.trialPending') : t('checkout.action.trial', { days: trialDays })}
+              <Button disabled={isTrialPending} type='button' variant={isCheckoutAvailable ? 'secondary' : 'primary'} onClick={startTrial}>
+                {isTrialPending ? t('checkout.action.trialPending') : t('checkout.action.trial', { days: trialDays })}
               </Button>
             )}
             {isCheckoutAvailable ? (
               <Button disabled={isRedirecting} type='submit'>
                 {isRedirecting ? t('checkout.action.redirecting') : t('checkout.action.buy')}
               </Button>
-            ) : (
+            ) : trialAvailable ? (
               <Button disabled type='button' variant='secondary'>
                 {t('checkout.action.closed')}
               </Button>
+            ) : (
+              <>
+                <Link className={buttonVariants()} href={ROUTES.account.billing}>
+                  {t('teaser.promo')}
+                </Link>
+                <a className={buttonVariants({ variant: 'secondary' })} href={TELEGRAM_BOT.url} rel='noreferrer' target='_blank'>
+                  {t('checkout.action.notify')}
+                </a>
+              </>
             )}
           </>
         ))}

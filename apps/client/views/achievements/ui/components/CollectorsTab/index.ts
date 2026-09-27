@@ -1,0 +1,1 @@
+export { CollectorsTab } from './CollectorsTab';

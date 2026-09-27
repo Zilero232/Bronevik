@@ -2,14 +2,13 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useBoolean } from '@siberiacancode/reactuse';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useAuthSession } from '@/entities/auth/session';
 import { useSettingsFormatter } from '@/entities/streamer/settings';
-import { QUERY_KEYS } from '@/shared/constants';
 
 import type { ApplyFormValues } from '../../../lib/apply-form';
 import type { UseApplySettingsFormInput } from './use-apply-settings-form.types';
@@ -20,7 +19,6 @@ import { applicableGroups, applyFormSchema, hardwareOptions, toApplyRequest } fr
 
 export const useApplySettingsForm = ({ slug, settings }: UseApplySettingsFormInput) => {
   const t = useTranslations('streamerSettings.apply');
-  const queryClient = useQueryClient();
   const { data: session, isPending: isSessionPending } = useAuthSession();
   const { groupLabel } = useSettingsFormatter();
   const [isOpen, setOpen] = useBoolean(false);
@@ -33,7 +31,6 @@ export const useApplySettingsForm = ({ slug, settings }: UseApplySettingsFormInp
 
   const apply = useMutation({
     mutationFn: requestSettingsApply,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.me.streamer.applyRequests }),
     onError: () => toast.error(t('failed'))
   });
 

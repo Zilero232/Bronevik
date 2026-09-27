@@ -1,4 +1,5 @@
 import type { LoggerService } from '@nestjs/common';
+import type { Redis } from 'ioredis';
 
 import type { PrismaClient } from '../../../generated';
 import type { Env } from '../../config/env';
@@ -19,6 +20,7 @@ export type AccountPurgeStore = {
 export type CreateAuthInput = {
   env: Env;
   prisma: PrismaClient;
+  redis: Pick<Redis, 'multi'>;
   lesta: LestaClient;
   lestaStore: LestaAccountStore;
   telegramStore: TelegramAccountStore;

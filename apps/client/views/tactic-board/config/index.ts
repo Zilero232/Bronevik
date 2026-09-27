@@ -16,4 +16,3 @@ export {
   CANVAS_FALLBACK,
   CANVAS_TOKENS
 } from './board.constants';
-export type { BoardDrawTool, BoardTeam, BoardTool, CanvasPalette } from './board.types';

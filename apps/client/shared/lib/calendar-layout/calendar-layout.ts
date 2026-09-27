@@ -1,4 +1,6 @@
-import type { CalendarCell, CalendarDay, CalendarLayout, CalendarWeek, HeatLevelInput } from './calendar-layout.types';
+import { clamp } from 'remeda';
+
+import type { CalendarCell, CalendarDay, CalendarLayout, CalendarStepInput, CalendarWeek, HeatLevelInput } from './calendar-layout.types';
 
 const DAYS_IN_WEEK = 7;
 
@@ -41,4 +43,20 @@ export const calendarLayout = (days: CalendarDay[]): CalendarLayout => {
   const isCrowded = lead && next && !lead.date.endsWith('-01') && next.index - lead.index < MIN_LABEL_GAP_WEEKS;
 
   return { weeks, months: isCrowded ? months.slice(1) : months };
+};
+
+const CALENDAR_STEPS: Record<string, number> = { ArrowUp: -1, ArrowDown: 1, ArrowLeft: -DAYS_IN_WEEK, ArrowRight: DAYS_IN_WEEK };
+
+export const calendarStep = ({ key, index, count }: CalendarStepInput): number | null => {
+  if (key === 'Home') {
+    return 0;
+  }
+
+  if (key === 'End') {
+    return count - 1;
+  }
+
+  const step = CALENDAR_STEPS[key];
+
+  return step === undefined ? null : clamp(index + step, { min: 0, max: count - 1 });
 };

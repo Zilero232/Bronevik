@@ -1,1 +1,1 @@
-export { streamerRouteName } from './route-meta';
+export { streamerRouteEntity, streamerSlugs } from './route-meta';

@@ -11,7 +11,7 @@ import type { BotContext } from '../telegram.types';
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { BOT, BOT_API, BOT_COMMANDS, EXTERNAL_BOT_COMMANDS, TELEGRAM_TOKENS } from '../config';
-import { looksLikeLinkCode, webhookUrl } from '../lib';
+import { LINK_CONFIRM_DATA, looksLikeLinkCode, webhookUrl } from '../lib';
 import { TelegramChatService } from './telegram-chat.service';
 import { TelegramCommandRegistry } from './telegram-command-registry.service';
 import { TelegramCommandsService } from './telegram-commands.service';
@@ -97,6 +97,7 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
       bot.command(command, (ctx) => this.commands.guard({ ctx, run: () => this.registry.run({ command, ctx }) }));
     }
 
+    bot.callbackQuery(LINK_CONFIRM_DATA, (ctx) => this.commands.guard({ ctx, run: () => this.commands.confirmLink(ctx) }));
     bot.on('inline_query', (ctx) => this.commands.guard({ ctx, run: () => this.inline.answer(ctx) }));
     bot.on('message:text', (ctx) => this.commands.guard({ ctx, run: () => this.onText(ctx) }));
 
@@ -110,7 +111,7 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
     const identity = this.commands.identityOf(ctx);
 
     if (identity && looksLikeLinkCode(text)) {
-      await this.commands.consume({ ctx, identity, code: text });
+      await this.commands.askLink({ ctx, code: text });
 
       return;
     }

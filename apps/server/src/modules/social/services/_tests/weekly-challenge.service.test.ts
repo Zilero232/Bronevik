@@ -7,12 +7,12 @@ import type { NotificationService } from '../../../notifications';
 import type { SnapshotEventsService } from '../snapshot-events.service';
 
 import { toIsoDate, weekWindow } from '../../../../common/lib';
-import { WEEKLY_CHALLENGES } from '../../config';
+import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../../config';
 import { badgeCodeOf } from '../../lib';
 import { WeeklyChallengeService } from '../weekly-challenge.service';
 
 const now = new Date('2026-09-23T12:00:00Z');
-const { start } = weekWindow(now);
+const { weekStart: start } = weekWindow(now);
 const battlesChallenge = WEEKLY_CHALLENGES.find((definition) => definition.metric === 'battles');
 const battlesTarget = battlesChallenge?.target ?? 0;
 const battlesBadge = battlesChallenge ? badgeCodeOf(battlesChallenge) : '';
@@ -78,7 +78,7 @@ const createService = () => {
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
   prisma.userLestaAccount.findMany.mockResolvedValue([link]);
   prisma.playSession.findMany.mockResolvedValue([session(battlesTarget)]);
-  prisma.battle.findMany.mockResolvedValue([]);
+  prisma.$queryRaw.mockResolvedValue([]);
   prisma.tankBattleDelta.findMany.mockResolvedValue([]);
   prisma.vehicle.findMany.mockResolvedValue([]);
   prisma.weeklyChallengeProgress.findUnique.mockResolvedValue(null);
@@ -148,5 +148,30 @@ describe('WeeklyChallengeService.evaluate', () => {
     expect(prisma.weeklyChallengeProgress.upsert).toHaveBeenCalledWith(
       expect.objectContaining({ create: expect.objectContaining({ code: battlesChallenge?.code, progress: battlesTarget - 1, completedAt: null }) })
     );
+  });
+});
+
+describe('WeeklyChallengeService.evaluate paging', () => {
+  it('walks every linked account page by page instead of stopping at the first page', async () => {
+    const { service, prisma } = createService();
+    const page = Array.from({ length: CHALLENGE_BADGES.accountsPerPage }, (_, index) => ({ ...link, accountId: BigInt(index + 1) }));
+
+    prisma.userLestaAccount.findMany.mockResolvedValueOnce(page).mockResolvedValueOnce([{ ...link, accountId: 999_999n }]);
+
+    await service.evaluate(now);
+
+    const cursors = prisma.userLestaAccount.findMany.mock.calls.map(([args]) => args?.where);
+
+    expect(cursors).toEqual([{}, { accountId: { gt: BigInt(CHALLENGE_BADGES.accountsPerPage) } }]);
+  });
+
+  it('reads only corroborated mod battles for the damage challenges', async () => {
+    const { service, prisma } = createService();
+
+    await service.evaluate(now);
+
+    const sql = prisma.$queryRaw.mock.calls[0]?.[0];
+
+    expect(sql && !('raw' in sql) ? sql.sql : '').toContain('corroboration');
   });
 });

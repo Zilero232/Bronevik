@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { addMinutes } from 'date-fns';
+import RedisMock from 'ioredis-mock';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -14,7 +15,7 @@ import { ModBindService } from '../mod-bind.service';
 
 const NOW = new Date('2026-05-01T12:00:00.000Z');
 const SERVER_SECRET = 'server-secret-for-tests';
-const CODE = 'ABCDEF';
+const CODE = BIND_CODE.alphabet.slice(0, BIND_CODE.length);
 const ACCOUNT_ID = 12345;
 
 const link = (accountId: number, overrides: Partial<UserLestaAccount> = {}) =>
@@ -51,7 +52,7 @@ const createService = () => {
   config.get.mockReturnValue(SERVER_SECRET);
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
-  return { service: new ModBindService(prisma, config), prisma };
+  return { service: new ModBindService(prisma, config, new RedisMock()), prisma };
 };
 
 const readyToBind = (code: OneTimeCode = storedCode()) => {
@@ -135,12 +136,12 @@ describe('ModBindService.bind', () => {
   it('rejects a body without a well-formed code before touching the database', async () => {
     const { service, prisma } = createService();
 
-    await expect(service.bind(bindBody({ code: 'I0I0I0' }))).rejects.toMatchObject({
+    await expect(service.bind(bindBody({ code: 'I0'.repeat(BIND_CODE.length / 2) }))).rejects.toMatchObject({
       status: HttpStatus.BAD_REQUEST,
       response: { error: 'invalid_code' }
     });
 
-    await expect(service.bind('ABCDEF')).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
+    await expect(service.bind(CODE)).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
     expect(prisma.oneTimeCode.findUnique).not.toHaveBeenCalled();
   });
 
@@ -158,30 +159,30 @@ describe('ModBindService.bind', () => {
   it('accepts a code typed in lower case with separators', async () => {
     const { service, prisma } = readyToBind();
 
-    await service.bind(bindBody({ code: 'abc-def' }));
+    await service.bind(bindBody({ code: `${CODE.slice(0, 5).toLowerCase()}-${CODE.slice(5).toLowerCase()}` }));
 
     expect(prisma.oneTimeCode.findUnique).toHaveBeenCalledWith(expect.objectContaining({ where: { code: CODE, purpose: 'modBind' } }));
   });
 
-  it('answers not found for an unknown code', async () => {
+  it('answers an unknown code with the same error as any other refusal', async () => {
     const { service, prisma } = createService();
 
     prisma.oneTimeCode.findUnique.mockResolvedValue(null);
 
-    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND, response: { error: 'code_not_found' } });
+    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
   });
 
   it('refuses to reuse a code that already bound a device', async () => {
     const { service, prisma } = readyToBind(storedCode({ usedAt: NOW }));
 
-    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.CONFLICT, response: { error: 'code_used' } });
+    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
     expect(prisma.modDevice.create).not.toHaveBeenCalled();
   });
 
   it('treats a code as expired at the exact expiry instant', async () => {
     const { service, prisma } = readyToBind(storedCode({ expiresAt: NOW }));
 
-    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.GONE, response: { error: 'code_expired' } });
+    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
     expect(prisma.modDevice.create).not.toHaveBeenCalled();
   });
 
@@ -196,14 +197,14 @@ describe('ModBindService.bind', () => {
 
     prisma.userLestaAccount.findFirst.mockResolvedValue(null);
 
-    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.FORBIDDEN, response: { error: 'account_mismatch' } });
+    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
     expect(prisma.oneTimeCode.updateMany).not.toHaveBeenCalled();
   });
 
   it('refuses a linked account other than the one the code was pinned to', async () => {
     const { service, prisma } = readyToBind(storedCode({ accountId: BigInt(ACCOUNT_ID + 1) }));
 
-    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.FORBIDDEN, response: { error: 'account_mismatch' } });
+    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
     expect(prisma.oneTimeCode.updateMany).not.toHaveBeenCalled();
   });
 
@@ -212,7 +213,7 @@ describe('ModBindService.bind', () => {
 
     prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 0 });
 
-    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.CONFLICT, response: { error: 'code_used' } });
+    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
     expect(prisma.modDevice.create).not.toHaveBeenCalled();
   });
 
@@ -258,5 +259,33 @@ describe('ModBindService.bind', () => {
     expect(prisma.oneTimeCode.update).toHaveBeenCalledWith(
       expect.objectContaining({ where: { code: CODE }, data: { deviceId: response.device_id } })
     );
+  });
+
+  it('stops trying codes for an account after too many failures', async () => {
+    const { service, prisma } = createService();
+
+    prisma.oneTimeCode.findUnique.mockResolvedValue(null);
+
+    for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerAccount; attempt += 1) {
+      await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST, response: { error: 'invalid_code' } });
+    }
+
+    await expect(service.bind(bindBody())).rejects.toMatchObject({ status: HttpStatus.TOO_MANY_REQUESTS, response: { error: 'rate_limited' } });
+    expect(prisma.oneTimeCode.findUnique).toHaveBeenCalledTimes(BIND_CODE.maxFailuresPerAccount);
+  });
+
+  it('counts failures per account, so guessing for one account does not lock another', async () => {
+    const { service, prisma } = createService();
+
+    prisma.oneTimeCode.findUnique.mockResolvedValue(null);
+
+    for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerAccount; attempt += 1) {
+      await service.bind(bindBody()).catch(() => undefined);
+    }
+
+    await expect(service.bind(bindBody({ account_id: ACCOUNT_ID + 1 }))).rejects.toMatchObject({
+      status: HttpStatus.BAD_REQUEST,
+      response: { error: 'invalid_code' }
+    });
   });
 });

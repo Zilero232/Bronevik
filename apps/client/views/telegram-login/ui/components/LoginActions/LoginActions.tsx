@@ -13,11 +13,21 @@ import type { LoginActionsProps } from './LoginActions.types';
 
 import s from './LoginActions.module.scss';
 
-export const LoginActions = ({ phase }: LoginActionsProps) => {
+export const LoginActions = ({ phase, replacesSession, onConfirm }: LoginActionsProps) => {
   const t = useTranslations('telegram.webLogin.actions');
 
   return match(phase)
     .with('redeeming', () => null)
+    .with('confirm', () => (
+      <div className={s.root}>
+        <button className={buttonVariants()} type='button' onClick={onConfirm}>
+          {t(replacesSession ? 'switchAccount' : 'continue')}
+        </button>
+        <Link className={buttonVariants({ variant: 'ghost' })} href={ROUTES.home}>
+          {t('cancel')}
+        </Link>
+      </div>
+    ))
     .with('success', () => (
       <div className={s.root}>
         <Link className={buttonVariants()} href={ROUTES.account.overview}>

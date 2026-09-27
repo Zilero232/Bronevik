@@ -5,8 +5,8 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
+import { AccountSelect } from '@/entities/auth/session';
 import { FormDialog } from '@/features/community/form-dialog';
-import { AccountSelect } from '@/features/community/viewer';
 import { FormField, Switch, Textarea } from '@/ui-kit';
 
 import { PLATOON_FORM } from '../../../config';

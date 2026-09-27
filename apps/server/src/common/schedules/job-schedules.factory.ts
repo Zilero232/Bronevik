@@ -1,22 +1,23 @@
 import type { OnApplicationBootstrap, Type } from '@nestjs/common';
+import type { Queue } from 'bullmq';
 
-import { InjectQueue } from '@nestjs/bullmq';
+import { getQueueToken } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
-import { Queue } from 'bullmq';
+import { ModuleRef } from '@nestjs/core';
 
 import type { CreateJobSchedulesInput } from './job-schedules.types';
 
-import { AppConfigService } from '../../config';
-import { JOB_SCHEDULES, registerJobSchedules } from '../lib';
+import { AppConfigService, isLestaMock } from '../../config';
+import { registerJobSchedules } from '../lib';
 
-export const createJobSchedules = ({ queue, schedules, label }: CreateJobSchedulesInput): Type<OnApplicationBootstrap> => {
+export const createJobSchedules = ({ schedules, label }: CreateJobSchedulesInput): Type<OnApplicationBootstrap> => {
   @Injectable()
   class SchedulesService implements OnApplicationBootstrap {
     private readonly logger = new Logger(label);
 
     constructor(
-      private readonly config: AppConfigService,
-      @InjectQueue(queue) private readonly target: Queue
+      private readonly moduleRef: ModuleRef,
+      private readonly config: AppConfigService
     ) {}
 
     async onApplicationBootstrap(): Promise<void> {
@@ -24,7 +25,14 @@ export const createJobSchedules = ({ queue, schedules, label }: CreateJobSchedul
         return;
       }
 
-      const registered = await registerJobSchedules({ schedules, queueOf: () => this.target, timezone: JOB_SCHEDULES.timezone });
+      const registered = await registerJobSchedules({
+        schedules,
+        queueOf: (name) => this.moduleRef.get<Queue>(getQueueToken(name), { strict: false }),
+        environment: {
+          hasLesta: this.config.get('LESTA_APPLICATION_ID') !== '',
+          lestaMock: isLestaMock({ LESTA_MOCK: this.config.get('LESTA_MOCK') })
+        }
+      });
 
       this.logger.log(`registered ${registered} of ${schedules.length} ${label} job schedulers`);
     }

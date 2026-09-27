@@ -1,13 +1,35 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.value {
   @include numeric;
+  @include tone;
 
   color: var(--color-text-muted);
   font-weight: 600;
 
-  &[data-best='true'] {
-    box-shadow: inset 0 -2px 0 var(--color-accent);
+  &[data-tone] {
+    color: var(--tone);
+  }
+
+  &[data-best='true']:not([data-tone]) {
     color: var(--color-text);
   }
+}
+
+.best {
+  @include label;
+
+  color: var(--color-accent);
+  font-size: var(--text-2xs);
+}
+
+.delta {
+  font-size: var(--text-xs);
 }

@@ -9,10 +9,21 @@ export type JobSchedule = {
   repeat: JobRepeat;
   data?: Record<string, unknown>;
   enabled?: boolean;
+  needsLesta?: boolean;
+  realLestaOnly?: boolean;
+};
+
+export type ScheduleEnvironment = {
+  hasLesta: boolean;
+  lestaMock: boolean;
+};
+
+export type IsScheduleActiveInput = ScheduleEnvironment & {
+  schedule: JobSchedule;
 };
 
 export type RegisterJobSchedulesInput = {
   schedules: readonly JobSchedule[];
   queueOf: (name: string) => Queue;
-  timezone: string;
+  environment: ScheduleEnvironment;
 };

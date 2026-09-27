@@ -7,7 +7,7 @@ import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { eventsControllerCalendarOptions } from '@/shared/api/query-options';
+import { QUERY_KEYS } from '@/shared/constants';
 
 import { useCurrentEvent } from '../use-current-event';
 
@@ -34,7 +34,7 @@ const UPCOMING = event('5', '2026-10-01T00:00:00Z', '2026-10-05T00:00:00Z');
 const clientWith = (events: GameEvent[]) => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
-  client.setQueryData(eventsControllerCalendarOptions().queryKey, events);
+  client.setQueryData(QUERY_KEYS.events.calendar, events);
 
   return client;
 };

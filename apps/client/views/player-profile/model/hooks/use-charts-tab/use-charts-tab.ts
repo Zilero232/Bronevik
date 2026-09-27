@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import type { ChartGranularity, ChartMetric } from '../../../config';
+import type { ChartGranularity, ChartMetric } from '../../../model/profile.types';
 
 import { HISTORY_CHART } from '../../../config';
 import { usePlayerHistory } from '../use-profile-queries';

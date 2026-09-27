@@ -6,10 +6,10 @@ import { usePlusOffers } from '../use-plus-offers';
 import { useReferralCapture } from '../use-referral-capture';
 
 export const usePlusPage = () => {
-  const { trialAvailable, trialDays, isSignedIn } = usePlus();
+  const { trialAvailable, trialDays, isSignedIn, isPlus } = usePlus();
   const { fromMonthlyRub } = usePlusOffers();
 
   useReferralCapture();
 
-  return { isTrialOffered: trialAvailable || !isSignedIn, trialDays, fromMonthlyRub };
+  return { isPlus, isTrialOffered: !isPlus && (trialAvailable || !isSignedIn), trialDays, fromMonthlyRub };
 };

@@ -21,7 +21,7 @@
     "meta": "28 days · {timezone}",
     "caption": "Players by weekday and hour",
     "day": "Day",
-    "cell": "{day}, {hour}:00 — {players} players",
+    "cell": "{day}, {hour}:00 — {players, plural, one {# player} other {# players}}",
     "empty": "Not enough data yet",
     "days": {
       "mon": "Mon",

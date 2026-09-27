@@ -3,9 +3,9 @@
 import { NavigationMenu } from '@base-ui/react/navigation-menu';
 import { useTranslations } from 'next-intl';
 
-import { LiveLamp } from '@/entities/streamer/broadcast';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
+import { LiveLamp } from '@/ui-kit';
 
 import { useLiveStreamers } from '../../../../../model/hooks';
 

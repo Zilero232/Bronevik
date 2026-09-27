@@ -1,7 +1,7 @@
 import type { BetterAuthPlugin } from 'better-auth';
 
 import { createAuthEndpoint, getSessionFromCtx, sessionMiddleware } from 'better-auth/api';
-import { deleteSessionCookie, setSessionCookie } from 'better-auth/cookies';
+import { deleteSessionCookie, expireCookie, setSessionCookie } from 'better-auth/cookies';
 import { addMilliseconds, addSeconds, getUnixTime } from 'date-fns';
 import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
@@ -44,6 +44,10 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
             expiresAt: addMilliseconds(new Date(), LESTA_ID.stateTtlMs)
           });
 
+          const stateCookie = ctx.context.createAuthCookie(LESTA_ID.stateCookie, { maxAge: LESTA_ID.stateTtlMs / 1000 });
+
+          await ctx.setSignedCookie(stateCookie.name, state, ctx.context.secret, stateCookie.attributes);
+
           const redirectUri = new URL(LESTA_ID.callbackPath, apiUrl);
 
           redirectUri.searchParams.set('state', state);
@@ -66,7 +70,13 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
         async (ctx) => {
           const query = new URLSearchParams(ctx.query ?? {});
           const stateKey = query.get('state');
-          const stored = stateKey ? await ctx.context.internalAdapter.consumeVerificationValue(`${LESTA_ID.statePrefix}${stateKey}`) : null;
+          const stateCookie = ctx.context.createAuthCookie(LESTA_ID.stateCookie);
+          const cookieState = await ctx.getSignedCookie(stateCookie.name, ctx.context.secret);
+
+          expireCookie(ctx, stateCookie);
+
+          const boundState = stateKey && cookieState === stateKey ? stateKey : null;
+          const stored = boundState ? await ctx.context.internalAdapter.consumeVerificationValue(`${LESTA_ID.statePrefix}${boundState}`) : null;
           const parsedState = stored ? stateSchema.safeParse(JSON.parse(stored.value)) : null;
 
           if (!parsedState?.success) {
@@ -75,6 +85,15 @@ export const lestaId = ({ lesta, store, apiUrl, webUrl }: LestaIdOptions) =>
 
           const { callbackURL, errorCallbackURL, linkUserId } = parsedState.data;
           const errorURL = errorCallbackURL ?? callbackURL;
+
+          if (linkUserId) {
+            const current = await getSessionFromCtx(ctx).catch(() => null);
+
+            if (current?.user.id !== linkUserId) {
+              throw ctx.redirect(withError({ url: errorURL, code: LESTA_ID_ERROR.state }));
+            }
+          }
+
           const login = lesta.auth.parseLoginCallback(query);
 
           if (login.status === 'error') {

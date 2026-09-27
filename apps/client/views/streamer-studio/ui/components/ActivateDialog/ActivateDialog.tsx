@@ -14,13 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  FormField,
   Input
 } from '@/ui-kit';
 
 import type { ActivateDialogProps } from './ActivateDialog.types';
 
 import { useActivateForm } from '../../../model/hooks';
-import { FormField } from '../FormField';
 
 import s from './ActivateDialog.module.scss';
 

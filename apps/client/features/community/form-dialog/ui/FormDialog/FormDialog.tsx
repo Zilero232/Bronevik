@@ -5,7 +5,7 @@ import type { FieldValues } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { FormProvider } from 'react-hook-form';
 
-import { CommunityGate } from '@/features/community/viewer';
+import { CommunityGate } from '@/entities/auth/session';
 import {
   Button,
   buttonVariants,

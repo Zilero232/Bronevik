@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { crossesMidnight, dayHours, dialPoint, formatHour, isQuietHour, quietArcPath, quietHourList, quietSpan } from '..';
+import { crossesMidnight, dayHours, dialPoint, formatHour, isQuietHour, quietArcPath, quietSpan } from '..';
 import { QUIET_HOURS } from '../../../config';
 
 const NIGHT = { start: 23, end: 7 } as const;
@@ -36,16 +36,6 @@ describe('isQuietHour', () => {
   it('treats midnight as silent for a range that wraps it', () => {
     expect(isQuietHour({ hour: 0, range: NIGHT })).toBe(true);
     expect(isQuietHour({ hour: 0, range: DAY })).toBe(false);
-  });
-});
-
-describe('quietHourList', () => {
-  it('lists the silent hours in order from the start', () => {
-    const list = quietHourList(NIGHT);
-
-    expect(list[0]).toBe(NIGHT.start);
-    expect(list).toHaveLength(quietSpan(NIGHT));
-    expect(list.every((hour) => isQuietHour({ hour, range: NIGHT }))).toBe(true);
   });
 });
 

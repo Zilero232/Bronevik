@@ -1,7 +1,6 @@
-import type { ApplyRequest, SettingsShare, SettingsTableRow, StreamerCard } from '@otmetki/schemas';
+import type { SettingsShare, SettingsTableRow, StreamerCard } from '@otmetki/schemas';
 
 import {
-  streamersControllerApplyRequests,
   streamersControllerBySlug,
   streamersControllerListIntegrations,
   streamersControllerLive,
@@ -20,8 +19,6 @@ export const getIntegrations = (): Promise<StreamerIntegration[]> => fromSdk(() 
 export const getLiveStreamers = (): Promise<StreamerCard[]> => fromSdk(() => streamersControllerLive());
 
 export const getSettingsTable = (): Promise<SettingsTableRow[]> => fromSdk(() => streamersControllerSettingsTable());
-
-export const getApplyRequests = (): Promise<ApplyRequest[]> => fromSdk(() => streamersControllerApplyRequests(SESSION_REQUEST));
 
 export const getSettingsShare = async (): Promise<SettingsShare | null> =>
   (await fromSdk(() => streamersControllerSettingsShare(SESSION_REQUEST))).share;

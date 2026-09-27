@@ -1,4 +1,6 @@
+import { WORKER_CONCURRENCY } from '../../../config';
+
 export const POLL_PIPELINE = {
-  accountConcurrency: 10,
+  accountConcurrency: WORKER_CONCURRENCY.accountsPerJob,
   marksTiers: ['active']
 } as const;

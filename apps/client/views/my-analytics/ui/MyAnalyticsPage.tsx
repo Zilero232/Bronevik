@@ -21,7 +21,7 @@ export const MyAnalyticsPage = () => {
       <div className={s.root}>
         <SectionHeader
           action={<TankPicker className={s.tankPicker} placeholder={t('tank.pick')} value={null} onChange={openTank} />}
-          as='h2'
+          as='h1'
           description={t('header.description')}
           title={t('header.title')}
         />

@@ -6,6 +6,7 @@ import { sumBy } from 'remeda';
 
 import type { PlaytimeResultInput, PlaytimeRow, PlaytimeWindowInput } from '../players.types';
 
+import { TIME } from '../../../config';
 import { PrismaService } from '../../../core';
 import { PLAYTIME, playtimeCells } from '../lib';
 
@@ -32,8 +33,8 @@ export class PlayerPlaytimeService {
 
   private async fromBattles({ accountId, from }: PlaytimeWindowInput): Promise<PlaytimeRow[]> {
     return this.prisma.$queryRaw<PlaytimeRow[]>`
-      SELECT (extract(isodow FROM started_at AT TIME ZONE ${PLAYTIME.timeZone}) - 1)::int AS weekday,
-             extract(hour FROM started_at AT TIME ZONE ${PLAYTIME.timeZone})::int AS hour,
+      SELECT (extract(isodow FROM started_at AT TIME ZONE ${TIME.zone}) - 1)::int AS weekday,
+             extract(hour FROM started_at AT TIME ZONE ${TIME.zone})::int AS hour,
              count(*)::float8 AS battles,
              count(*) FILTER (WHERE result = 'win'::battle_result)::float8 AS wins,
              sum(damage_dealt)::float8 AS damage
@@ -45,8 +46,8 @@ export class PlayerPlaytimeService {
 
   private async fromSnapshots({ accountId, from }: PlaytimeWindowInput): Promise<PlaytimeRow[]> {
     return this.prisma.$queryRaw<PlaytimeRow[]>`
-      SELECT (extract(isodow FROM captured_at AT TIME ZONE ${PLAYTIME.timeZone}) - 1)::int AS weekday,
-             extract(hour FROM captured_at AT TIME ZONE ${PLAYTIME.timeZone})::int AS hour,
+      SELECT (extract(isodow FROM captured_at AT TIME ZONE ${TIME.zone}) - 1)::int AS weekday,
+             extract(hour FROM captured_at AT TIME ZONE ${TIME.zone})::int AS hour,
              sum(battles)::float8 AS battles,
              sum(wins)::float8 AS wins,
              sum(damage_dealt)::float8 AS damage

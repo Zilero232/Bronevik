@@ -28,3 +28,4 @@ export type {
   PushUnsubscribeInput,
   UpdateNotificationSettingsInput
 } from './notifications.types';
+export { isPushServiceUrl } from './push-service';

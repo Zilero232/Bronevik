@@ -85,7 +85,7 @@ widgets/
 ```ts
 // yes
 import { CommandPalette, CommandPaletteTrigger } from '@/features/search/command-palette';
-import { PlayerCard } from '@/entities/player/player';
+import { PlayerIdentity } from '@/entities/player/player';
 import { Button, RatingBadge } from '@/ui-kit';
 
 // no — reaching past the barrel
@@ -129,7 +129,7 @@ Layer rules still hold: an entity never imports another entity, so two entities 
 
 A file that has companions — `x.ts` with `x.types.ts`, `x.constants.ts`, `x.schemas.ts`, `_tests/` — lives in its own `x/` folder with an `index.ts`. Nothing lies flat next to another concern: a folder holds its own concern's files plus subfolders, and a second concern gets a second folder (`shared/api/http/` holds `http.ts` + `http.constants.ts` and the subfolders `bearer-token/`, `client-config/`, `list-param/`). The one flat exception is `config/`, which is one `<concern>.constants.ts` per concern until a concern grows a companion.
 
-`shared/lib/` is flat, one folder per concern, the same layout GnomeVPN and Chatovo use: pure helpers as `shared/lib/<concern>/`, hooks as `shared/lib/use-<x>/` (`use-hydrated`, `use-svg-id`, `use-client-now`). The `use-` prefix is what separates the two; there is no `hooks/` or `utils/` grouping folder. `shared/constants/` is the same — `routes/`, `site-nav/`, `account-nav/`, `query-keys/`, `storage-keys/`, each with its `index.ts`.
+`shared/lib/` is flat, one folder per concern, the same layout GnomeVPN and Chatovo use: pure helpers as `shared/lib/<concern>/`, hooks as `shared/lib/use-<x>/` (`use-hydrated`, `use-reveal-once`, `use-client-now`). The `use-` prefix is what separates the two; there is no `hooks/` or `utils/` grouping folder. `shared/constants/` is the same — `routes/`, `site-nav/`, `account-nav/`, `query-keys/`, `storage-keys/`, each with its `index.ts`.
 
 `ROUTES` is nested by page family: `ROUTES.players.{list, profile(nick), session({ nickname, sessionId }), compare}`, `ROUTES.tanks.{list, detail, armor, compare}`, `ROUTES.guides.{list, detail, create, edit}`, `ROUTES.streamers.{list, profile, claim, overlay, forStreamers, settings.{table, compare, profile}}`, `ROUTES.auth.{login, telegram}`, `ROUTES.account.{overview, …}`, `ROUTES.api.playerCard`, `ROUTES.sw`. Single pages stay flat (`ROUTES.top`, `ROUTES.tree`).
 
@@ -207,7 +207,7 @@ Route groups do not appear in the URL. `(site)` carries the layout that wraps it
 | a pure helper | `<slice>/lib/<concern>/` |
 | a constant | `<slice>/config/<concern>.constants.ts` |
 
-An example from live code: `views/home` assembles `HomePage` out of its own `ui/components` (`HomeHero`, `LiveCounters`, `TopPlayers`, `HotTanks`, `MarksShowcase`) and `model/hooks` (`useTopPlayers`, `useLiveCounters`). `TopPlayers` in turn takes `PlayerCard` from `entities/player/player`, `PeriodSwitcher` from `features/stats/select-period` and `SectionHeader` / `buttonVariants` from `ui-kit`. It reaches nothing sideways.
+An example from live code: `views/home` assembles `HomePage` out of its own `ui/components` (`HomeHero`, `LiveCounters`, `TopPlayers`, `HotTanks`, `MarksShowcase`) and `model/hooks` (`useTopPlayers`, `useLiveCounters`). `TopPlayers` in turn takes `PlayerIdentity` from `entities/player/player`, `PeriodSwitcher` from `features/stats/select-period` and `SectionHeader` / `buttonVariants` from `ui-kit`. It reaches nothing sideways.
 
 ## 8. Tests
 

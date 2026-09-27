@@ -4,12 +4,11 @@ import { BadgeCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
-import { Badge, Input } from '@/ui-kit';
+import { Badge, FormField, Input } from '@/ui-kit';
 
 import type { ChannelsFieldsProps } from './ChannelsFields.types';
 
 import { useChannelsFields } from '../../../model/hooks';
-import { FormField } from '../FormField';
 
 import s from './ChannelsFields.module.scss';
 

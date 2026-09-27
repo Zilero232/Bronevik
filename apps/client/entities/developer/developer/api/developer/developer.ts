@@ -8,13 +8,10 @@ import {
   developerControllerListWebhooks,
   developerControllerOverview
 } from '@/shared/api/generated';
-import { api, SESSION_REQUEST } from '@/shared/api/http';
-import { fromSdk, fromServer } from '@/shared/api/source';
+import { SESSION_REQUEST } from '@/shared/api/http';
+import { fromSdk } from '@/shared/api/source';
 
-import type { ApiKeyUsageInput, OpenApiDocument } from './developer.types';
-
-import { DEVELOPER_PATHS } from './developer.constants';
-import { openApiDocumentSchema } from './developer.schemas';
+import type { ApiKeyUsageInput } from './developer.types';
 
 export const getDeveloperOverview = (): Promise<DeveloperOverview> => fromSdk(() => developerControllerOverview(SESSION_REQUEST));
 
@@ -30,6 +27,3 @@ export const getWebhooks = (): Promise<WebhookEndpoints> => fromSdk(() => develo
 
 export const getWebhookDeliveries = (id: string): Promise<WebhookDeliveries> =>
   fromSdk(() => developerControllerDeliveries({ ...SESSION_REQUEST, path: { id } }));
-
-export const getOpenApiSpec = (): Promise<OpenApiDocument> =>
-  fromServer(async () => openApiDocumentSchema.parse((await api.get(DEVELOPER_PATHS.spec)).data));

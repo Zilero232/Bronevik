@@ -1,5 +1,6 @@
 export { useClanActivity } from './use-clan-activity';
 export { useClanActivityColumns } from './use-clan-activity-columns';
+export { useForYou } from './use-for-you';
 export { useGameNews } from './use-game-news';
 export { useHeroTanks } from './use-hero-tanks';
 export { useMarksMovement } from './use-marks-movement';

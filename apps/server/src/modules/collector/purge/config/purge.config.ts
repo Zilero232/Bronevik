@@ -1,9 +1,27 @@
 import type { DeletionSource, DeletionStatus } from '../../../../../generated';
+import type { RetentionRule } from '../purge.types';
 
 export const PURGE = {
   blockingSources: ['user', 'lesta'] satisfies DeletionSource[],
   blockingStatuses: ['pending', 'processing', 'completed'] satisfies DeletionStatus[],
-  dispatchBatch: 50,
-  jobMetricRetentionDays: 14,
-  jobMetricDeleteBatch: 5_000
+  dispatchBatch: 50
+} as const;
+
+export const RETENTION = {
+  deleteBatch: 5_000,
+  rules: [
+    { table: 'collector_job_metric', column: 'bucket_start', days: 14 },
+    { table: 'webhook_delivery', column: 'created_at', days: 30, where: "status <> 'pending'" },
+    { table: 'api_error_log', column: 'occurred_at', days: 30 },
+    { table: 'one_time_code', column: 'expires_at', days: 1 },
+    { table: 'notification', column: 'created_at', days: 180 },
+    { table: 'tank_percentile', column: 'date', days: 60 },
+    { table: 'build_usage_aggregate', column: 'computed_at', days: 180 },
+    { table: 'audit_log', column: 'created_at', days: 365 },
+    { table: 'clan_snapshot', column: 'captured_at', days: 365 },
+    { table: 'clan_member_event', column: 'occurred_at', days: 730 },
+    { table: 'tank_threshold', column: 'date', days: 730 },
+    { table: 'battle', column: 'received_at', days: 730 },
+    { table: 'play_session', column: 'started_at', days: 730 }
+  ] satisfies readonly RetentionRule[]
 } as const;

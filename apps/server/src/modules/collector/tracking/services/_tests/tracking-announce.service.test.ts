@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Player } from '../../../../../../generated';
+import type { Player, UserLestaAccount } from '../../../../../../generated';
 import type { PrismaService, WebhookEmitter } from '../../../../../core';
 
 import { TrackingAnnounceService } from '../tracking-announce.service';
@@ -53,20 +53,28 @@ describe('TrackingAnnounceService.announceMarks', () => {
   });
 });
 
-describe('TrackingAnnounceService.isSubscriber', () => {
-  it('is false when no linked user holds an entitled subscription', async () => {
-    const { prisma, announce } = createAnnounce();
+describe('TrackingAnnounceService.announceMarks dedupe', () => {
+  it('keys the event by account, tank and marks so a repeated announcement is delivered once', async () => {
+    const { prisma, webhooks, announce } = createAnnounce();
 
-    prisma.userLestaAccount.count.mockResolvedValue(0);
+    prisma.player.findUnique.mockResolvedValue(null);
 
-    expect(await announce.isSubscriber(1n)).toBe(false);
+    await announce.announceMarks([gained]);
+    await announce.announceMarks([gained]);
+
+    const keys = webhooks.emit.mock.calls.map(([input]) => input.dedupeKey);
+
+    expect(keys[0]).toBeDefined();
+    expect(keys[0]).toBe(keys[1]);
   });
+});
 
-  it('is true when a linked user holds an entitled subscription', async () => {
+describe('TrackingAnnounceService.subscribers', () => {
+  it('returns the linked accounts whose user holds an entitled subscription', async () => {
     const { prisma, announce } = createAnnounce();
 
-    prisma.userLestaAccount.count.mockResolvedValue(1);
+    prisma.userLestaAccount.findMany.mockResolvedValue([mock<UserLestaAccount>({ accountId: 2n })]);
 
-    expect(await announce.isSubscriber(1n)).toBe(true);
+    expect(await announce.subscribers([1n, 2n])).toEqual(new Set([2]));
   });
 });

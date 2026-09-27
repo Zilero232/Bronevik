@@ -1,6 +1,6 @@
 import { ShellApIcon, ShellHeatIcon, ShellHeIcon } from '@otmetki/icons';
 
-import type { EconomyTier } from './economy.types';
+import type { EconomyTier } from '../model/economy.types';
 
 export const ECONOMY_TIERS: Readonly<Record<number, EconomyTier>> = {
   1: { base: 1_800, perDamage: 3, perSpotting: 2, repair: 60, ap: 10, heat: 280, he: 8 },

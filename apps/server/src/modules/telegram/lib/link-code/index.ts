@@ -1,1 +1,2 @@
-export { looksLikeLinkCode, normaliseLinkCode } from './link-code';
+export { LINK_CONFIRM_DATA, linkConfirmData, looksLikeLinkCode, normaliseLinkCode, parseLinkConfirm } from './link-code';
+export type { LinkConfirmAnswer } from './link-code.types';

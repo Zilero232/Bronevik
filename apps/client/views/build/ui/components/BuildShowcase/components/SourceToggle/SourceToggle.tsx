@@ -5,8 +5,8 @@ import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { Fragment } from 'react';
 
-import { ROUTES } from '@/shared/constants';
-import { Link } from '@/shared/i18n/navigation';
+import { PlusTeaser } from '@/features/plus/plus-gate';
+import { Popover } from '@/ui-kit';
 
 import { SHOWCASE } from '../../../../../config';
 import { useSourceToggle } from '../../../../../model/hooks';
@@ -24,10 +24,16 @@ export const SourceToggle = () => {
           <Fragment key={option}>
             {index > 0 && <span className={s.or}>{t('source.or')}</span>}
             {option === 'top1' && !isPlus ? (
-              <Link data-locked className={s.option} href={ROUTES.plus} title={t('source.plus')}>
-                <Lock aria-hidden size={14} />
-                {t(`source.${option}`)}
-              </Link>
+              <Popover
+                trigger={
+                  <button data-locked aria-label={`${t(`source.${option}`)} · ${t('source.plus')}`} className={s.option} type='button'>
+                    <Lock aria-hidden size={14} />
+                    {t(`source.${option}`)}
+                  </button>
+                }
+              >
+                <PlusTeaser feature={SHOWCASE.plusFeature} />
+              </Popover>
             ) : (
               <button aria-pressed={option === source} className={s.option} type='button' onClick={() => onSourceChange(option)}>
                 {t(`source.${option}`)}

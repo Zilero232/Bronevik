@@ -9,6 +9,7 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 
 import { CACHE_STORE, THROTTLE } from './common/cache';
 import { AllExceptionsFilter } from './common/filters';
+import { OriginGuard } from './common/guards';
 import { AppConfigModule, AppConfigService } from './config';
 import { AppLoggerModule, LestaModule, LOGGER, PrismaModule, QueuesModule, REDIS, RedisModule } from './core';
 import { AchievementsRarityModule } from './modules/achievements-rarity';
@@ -66,7 +67,7 @@ import { WatchlistModule } from './modules/watchlist';
   imports: [
     AppConfigModule,
     AppLoggerModule.forService(LOGGER.service.server),
-    PrismaModule,
+    PrismaModule.forRoot(),
     RedisModule,
     LestaModule,
     QueuesModule,
@@ -141,6 +142,7 @@ import { WatchlistModule } from './modules/watchlist';
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
+    { provide: APP_GUARD, useClass: OriginGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_PIPE, useClass: ZodValidationPipe },
     { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }

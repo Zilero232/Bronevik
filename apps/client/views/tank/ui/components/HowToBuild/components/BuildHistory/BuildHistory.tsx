@@ -3,7 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { GameIcon, gameLabel } from '@/entities/tank/build';
-import { EmptyState, QueryState, Skeleton } from '@/ui-kit';
+import { EmptyState, QueryState, Skeleton, Tooltip } from '@/ui-kit';
 
 import type { BuildHistoryProps } from './BuildHistory.types';
 
@@ -47,18 +47,22 @@ export const BuildHistory = ({ mode, cohort }: BuildHistoryProps) => {
                   <td>
                     <span className={s.icons}>
                       {equipment.map(({ option }) => (
-                        <span key={option.id} title={gameLabel(option.name)}>
-                          <GameIcon kind={option.kind} size={HOW_TO_BUILD.iconSize} src={option.image} />
-                        </span>
+                        <Tooltip key={option.id} content={gameLabel(option.name)}>
+                          <span aria-label={gameLabel(option.name)}>
+                            <GameIcon kind={option.kind} size={HOW_TO_BUILD.iconSize} src={option.image} />
+                          </span>
+                        </Tooltip>
                       ))}
                     </span>
                   </td>
                   <td>
                     <span className={s.icons}>
                       {consumables.map(({ option }) => (
-                        <span key={option.id} title={gameLabel(option.name)}>
-                          <GameIcon kind={option.kind} size={HOW_TO_BUILD.iconSize} src={option.image} />
-                        </span>
+                        <Tooltip key={option.id} content={gameLabel(option.name)}>
+                          <span aria-label={gameLabel(option.name)}>
+                            <GameIcon kind={option.kind} size={HOW_TO_BUILD.iconSize} src={option.image} />
+                          </span>
+                        </Tooltip>
                       ))}
                     </span>
                   </td>

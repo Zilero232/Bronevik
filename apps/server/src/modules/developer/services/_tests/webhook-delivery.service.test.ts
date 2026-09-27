@@ -104,16 +104,17 @@ describe('WebhookDeliveryService.deliver', () => {
     expect(post).not.toHaveBeenCalled();
   });
 
-  it('refuses to post when the host now resolves to a private address', async () => {
+  it('fails a delivery for good when the host now resolves to a private address', async () => {
     const { service, prisma } = createService();
 
     lookup.mockResolvedValue([{ address: '10.0.0.5', family: 4 }]);
+    prisma.webhookEndpoint.update.mockResolvedValue({ ...endpoint, failureCount: 1 });
 
-    await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).rejects.toThrow(WEBHOOK_DELIVERY.blockedResponse);
+    await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).resolves.toBe('skipped');
     expect(post).not.toHaveBeenCalled();
 
     expect(prisma.webhookDelivery.update.mock.calls[0]?.[0].data).toMatchObject({
-      status: 'pending',
+      status: 'failed',
       responseBody: WEBHOOK_DELIVERY.blockedResponse
     });
   });

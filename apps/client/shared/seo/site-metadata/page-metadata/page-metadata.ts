@@ -28,9 +28,11 @@ export const createPageMetadata = ({ title, description, path, locale, index = f
       description,
       ...(isNonNullish(canonical) ? { url: canonical } : {}),
       type: 'website',
+      siteName: SITE.name,
       locale: OG_LOCALES[locale]
     },
     twitter: {
+      card: 'summary_large_image',
       title: ogTitle,
       description
     }

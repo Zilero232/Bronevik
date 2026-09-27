@@ -86,8 +86,10 @@ without a timeout holds the connection, and the job, indefinitely.
 
 Queue and job names and the payload schemas live in one place,
 `modules/collector/contracts` (`QUEUE`, `JOB`) — the worker's processors and the
-API's `CollectorProducerService` both import them. Never a string literal at a
-call site.
+API's `CollectorProducerService` both import them. A module that owns its own
+queue (discord, streamers, notifications, …) keeps that queue's name, job names and
+payload schema in its own `config/`. Importing the collector barrel from every worker
+module risks import cycles. Never a string literal at a call site.
 
 ## Parse strictly on a write path
 

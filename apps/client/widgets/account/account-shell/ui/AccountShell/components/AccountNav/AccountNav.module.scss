@@ -52,6 +52,8 @@
 
 .link,
 .signOut {
+  @include touch-target;
+
   display: flex;
   height: 34px;
   align-items: center;
@@ -116,5 +118,6 @@
     width: auto;
     flex: none;
     border: 1px solid var(--color-border);
+    margin-inline-start: auto;
   }
 }

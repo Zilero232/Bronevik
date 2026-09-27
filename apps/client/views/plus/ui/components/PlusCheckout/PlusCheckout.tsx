@@ -5,6 +5,7 @@ import { FormProvider } from 'react-hook-form';
 
 import { SectionHeader } from '@/ui-kit';
 
+import { PLUS_CHECKOUT } from '../../../config';
 import { usePlusCheckoutForm } from '../../../model/hooks';
 import { CheckoutAction, PlanTable, PromoField } from './components';
 
@@ -15,7 +16,7 @@ export const PlusCheckout = () => {
   const { form, onSubmit } = usePlusCheckoutForm();
 
   return (
-    <section className={s.root}>
+    <section className={s.root} id={PLUS_CHECKOUT.anchor}>
       <SectionHeader description={t('description')} title={t('title')} />
       <FormProvider {...form}>
         <form noValidate className={s.panel} onSubmit={onSubmit}>

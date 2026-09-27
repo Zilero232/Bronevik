@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 
 import { ROUTES } from '@/shared/constants';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { BuildProvider } from '../model/context';
 import { useBuildData } from '../model/hooks';

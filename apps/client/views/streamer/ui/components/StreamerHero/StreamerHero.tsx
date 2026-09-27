@@ -3,11 +3,10 @@
 import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { LiveLamp } from '@/entities/streamer/broadcast';
 import { FollowStreamer } from '@/features/streamer/follow-streamer';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Avatar, buttonVariants } from '@/ui-kit';
+import { Avatar, buttonVariants, LiveLamp } from '@/ui-kit';
 
 import { STREAMER_PAGE } from '../../../config';
 import { useStreamer } from '../../../model/context';

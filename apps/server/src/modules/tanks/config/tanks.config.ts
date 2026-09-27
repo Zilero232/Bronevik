@@ -23,7 +23,3 @@ export const TANK_PROFILES = {
   stock: 'stock',
   top: 'top'
 } as const;
-
-export const TANK_TREND_SQL = {
-  timeZone: 'Europe/Moscow'
-} as const;

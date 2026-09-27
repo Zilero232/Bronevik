@@ -2,9 +2,9 @@ import type { Loadout } from '@otmetki/schemas';
 
 import { LOADOUT, loadoutSchema } from '@otmetki/schemas';
 
-import type { BuildHrefInput, ToSlotsInput } from './loadout-code.types';
+import type { ToSlotsInput } from './loadout-code.types';
 
-import { BUILD_URL, LOADOUT_CODE } from '../../config';
+import { LOADOUT_CODE } from '../../config';
 
 const { sectionSeparator, keySeparator, listSeparator, roleSeparator, roleAssign, skillSeparator, sections } = LOADOUT_CODE;
 
@@ -76,14 +76,4 @@ export const parseLoadout = (code: string): Loadout | null => {
   });
 
   return result.success ? result.data : null;
-};
-
-export const buildHref = ({ slug, loadout, compare }: BuildHrefInput) => {
-  const params = new URLSearchParams({ [BUILD_URL.primary]: serializeLoadout(loadout) });
-
-  if (compare) {
-    params.set(BUILD_URL.compare, serializeLoadout(compare));
-  }
-
-  return `/builds/${slug}?${params.toString()}`;
 };

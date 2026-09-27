@@ -5,8 +5,9 @@ import { ImageResponse } from 'next/og';
 import { getPlayer } from '@/entities/player/profile';
 import { isNotFoundError } from '@/shared/api/source';
 import { SITE } from '@/shared/config/site';
-import { loadOgFonts, OG_SIZE } from '@/shared/seo/og';
+import { OG_SIZE } from '@/shared/seo/og';
 import { OG_CACHE, OG_REQUEST, ogNotFound, parseOgPlayerRequest } from '@/shared/seo/og-request';
+import { loadOgFonts } from '@/shared/seo/og/server';
 import { FallbackOgCard, ogLabels, PlayerOgCard } from '@/views/player-og';
 
 export const GET = async (request: NextRequest, { params }: RouteContext<'/api/og/player/[id]'>) => {

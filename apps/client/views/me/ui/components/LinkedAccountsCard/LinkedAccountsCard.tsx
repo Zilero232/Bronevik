@@ -4,12 +4,11 @@ import { KeyRound, Send } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
-import { getLinkedAccounts } from '@/entities/auth/session';
+import { useLinkedAccounts } from '@/entities/auth/session';
 import { LestaIdButton } from '@/features/auth/lesta-link';
 import { ROUTES } from '@/shared/constants';
 import { Badge, Skeleton } from '@/ui-kit';
 
-import { useMeSection } from '../../../model/hooks';
 import { MeCard } from '../MeCard';
 import { SectionError } from '../SectionError';
 import { LestaLinkError } from './components';
@@ -19,7 +18,7 @@ import s from './LinkedAccountsCard.module.scss';
 export const LinkedAccountsCard = () => {
   const t = useTranslations('me.accounts');
   const format = useFormatter();
-  const { data: accounts, isPending, isError, isFetching, refetch } = useMeSection({ section: 'accounts', fetcher: getLinkedAccounts });
+  const { data: accounts, isPending, isError, isFetching, refetch } = useLinkedAccounts();
 
   return (
     <MeCard description={t('description')} icon={<KeyRound size={18} />} title={t('title')}>

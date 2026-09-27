@@ -20,6 +20,12 @@ export type CalendarLayout = {
   months: CalendarMonth[];
 };
 
+export type CalendarStepInput = {
+  key: string;
+  index: number;
+  count: number;
+};
+
 export type HeatLevelInput = {
   value: number;
   max: number;

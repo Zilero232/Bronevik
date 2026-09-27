@@ -1,7 +1,6 @@
-import type { CompareFormat } from '../../../../../config';
+import type { CompareRow } from '../../../../../lib/compare-rows';
 
 export type ValueCellProps = {
-  value: number | null;
-  format: CompareFormat;
-  isBest: boolean;
+  row: CompareRow;
+  index: number;
 };

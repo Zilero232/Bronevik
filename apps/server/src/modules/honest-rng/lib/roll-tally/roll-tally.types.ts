@@ -25,3 +25,8 @@ export type FoldBattleInput = {
   shots: readonly StoredShot[];
   accuracy: BattleAccuracy | null;
 };
+
+export type MergeTallyInput = {
+  into: RollTally;
+  from: RollTally;
+};

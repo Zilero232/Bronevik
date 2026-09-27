@@ -20,18 +20,3 @@ export type MoeHistoryInput = {
   source?: ThresholdSource;
   signal?: AbortSignal;
 };
-
-export type MoeHistoryBatchInput = {
-  tankIds: readonly number[];
-  days?: number;
-  source?: ThresholdSource;
-  signal?: AbortSignal;
-};
-
-export type MoeProjectionInput = {
-  tankId: number;
-  currentPercent: number | null;
-  targetMarks: number;
-  avgDamage: number;
-  signal?: AbortSignal;
-};

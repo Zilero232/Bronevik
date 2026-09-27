@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { uniqueBy } from 'remeda';
 
 import type { AccountRatingsPayload } from '../../contracts';
 
 import { PrismaService } from '../../../../core';
 import { AGGREGATES } from '../config';
 import { buildAccountRatings } from '../lib/account-ratings';
+import { TANK_TOTALS_SELECT } from '../selects';
 import { ReferenceTablesService } from './reference-tables.service';
 
 @Injectable()
@@ -28,35 +30,18 @@ export class AccountRatingsService {
       return { skipped: true };
     }
 
-    const [accountSnapshots, tankSnapshots, tables] = await Promise.all([
+    const [accountSnapshots, history, latest, tables] = await Promise.all([
       this.prisma.accountSnapshot.findMany({
         where: { accountId: id, mode },
         select: { capturedAt: true, battles: true },
         orderBy: { capturedAt: 'asc' }
       }),
-      this.prisma.tankSnapshot.findMany({
-        where: { accountId: id, mode },
-        select: {
-          tankId: true,
-          capturedAt: true,
-          battles: true,
-          wins: true,
-          losses: true,
-          damageDealt: true,
-          damageReceived: true,
-          frags: true,
-          spotted: true,
-          xp: true,
-          survived: true,
-          hits: true,
-          shots: true,
-          capturePoints: true,
-          droppedCapturePoints: true
-        }
-      }),
+      this.prisma.tankSnapshot.findMany({ where: { accountId: id, mode }, select: TANK_TOTALS_SELECT }),
+      this.prisma.tankSnapshotLatest.findMany({ where: { accountId: id, mode }, select: TANK_TOTALS_SELECT }),
       this.tables.tables()
     ]);
 
+    const tankSnapshots = uniqueBy([...history, ...latest], (row) => `${row.tankId}:${row.capturedAt.getTime()}`);
     const { ratings, tankRatings } = buildAccountRatings({ accountId: id, accountSnapshots, tankSnapshots, ...tables, now: new Date() });
 
     await this.prisma.$transaction([
@@ -71,7 +56,7 @@ export class AccountRatingsService {
 
   private async ratingMode(accountId: bigint) {
     for (const mode of AGGREGATES.ratingModes) {
-      const exists = await this.prisma.tankSnapshot.findFirst({ where: { accountId, mode }, select: { tankId: true } });
+      const exists = await this.prisma.tankSnapshotLatest.findFirst({ where: { accountId, mode }, select: { tankId: true } });
 
       if (exists) {
         return mode;

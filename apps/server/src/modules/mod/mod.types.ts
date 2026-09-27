@@ -22,7 +22,14 @@ export type IdentifyDeviceInput = {
   signature: string | undefined;
 };
 
-export type AuthenticateInput = IdentifyDeviceInput & {
+export type SignedModRequest = {
+  method: string;
+  originalUrl: string;
+  header: (name: string) => string | undefined;
+};
+
+export type AuthenticateInput = {
+  request: SignedModRequest;
   rawBody: Buffer | undefined;
 };
 

@@ -1,6 +1,6 @@
 import { minutesToMilliseconds } from 'date-fns';
 
-import type { ComparePreset } from './compare-presets.types';
+import type { ComparePreset } from '../model/compare-presets.types';
 
 export const COMPARE_PRESETS = [
   { key: 'heavyX', tiers: [10], types: ['heavyTank'] },

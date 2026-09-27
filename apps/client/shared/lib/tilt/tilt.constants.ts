@@ -1,4 +1,3 @@
 export const TILT = {
-  maxDegrees: 4,
-  reducedMotionQuery: '(prefers-reduced-motion: reduce)'
+  maxDegrees: 4
 } as const;

@@ -8,7 +8,7 @@ import { isRetryableLestaError, LESTA_ERROR_CODE, LestaApiError, LestaHttpError,
 import { noopRateLimiter } from '../rate-limit';
 import { lestaEnvelopeSchema } from '../schemas';
 import { LESTA_API, LESTA_RETRY } from './client.constants';
-import { toSearchParams } from './client.helpers';
+import { toSearchParams } from './params';
 
 const normalizeBaseUrl = (baseUrl: string): string => (baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
 

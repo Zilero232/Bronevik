@@ -2,13 +2,14 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
 import { JOB, MetricsService, QUEUE, webhookDeliverPayloadSchema, WORKER_CONCURRENCY } from '../../collector';
-import { SessionCloseService, WebhookDeliveryService } from '../services';
+import { SessionCloseService, WebhookDeliveryService, WebhookRedriveService } from '../services';
 
 @Processor(QUEUE.developerWebhooks, { concurrency: WORKER_CONCURRENCY.developerWebhooks })
 export class WebhooksProcessor extends WorkerHost {
   constructor(
     private readonly deliveries: WebhookDeliveryService,
     private readonly sessions: SessionCloseService,
+    private readonly redrive: WebhookRedriveService,
     private readonly metrics: MetricsService
   ) {
     super();
@@ -20,6 +21,10 @@ export class WebhooksProcessor extends WorkerHost {
       run: async () => {
         if (job.name === JOB.developerWebhooks.closeSessions) {
           return { closed: await this.sessions.closeIdle() };
+        }
+
+        if (job.name === JOB.developerWebhooks.redrive) {
+          return { requeued: await this.redrive.redrive() };
         }
 
         const { deliveryId } = webhookDeliverPayloadSchema.parse(job.data);

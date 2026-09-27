@@ -1,1 +1,1 @@
-export { clampPercent, clampPercentDelta, fromUnixSeconds, isoDay, percentOf, ratio, toIso, toIsoDate, toNumber } from './serialize';
+export { fromUnixSeconds, isoDay, toIso, toIsoDate, toNumber } from './serialize';

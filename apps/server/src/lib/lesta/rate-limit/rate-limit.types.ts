@@ -5,16 +5,11 @@ export type RateLimiter = {
   acquire: () => Promise<void>;
 };
 
-export type MemoryRateLimiterInput = {
-  requestsPerSecond?: number;
-  maxQueueSize?: number;
-};
-
 export type RedisRateLimiterInput = {
   redis: Redis;
+  requestsPerSecond: number;
   key?: string;
   keyPrefix?: string;
-  requestsPerSecond?: number;
   maxQueueSize?: number;
 };
 

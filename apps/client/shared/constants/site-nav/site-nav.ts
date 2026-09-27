@@ -109,3 +109,9 @@ export const SITE_FOOTER_GROUPS = [
     ]
   }
 ] as const satisfies readonly SiteNavGroup[];
+
+export const SITE_LEGAL_LINKS = [
+  { key: 'contacts', href: ROUTES.legal.contacts },
+  { key: 'terms', href: ROUTES.legal.terms },
+  { key: 'privacy', href: ROUTES.legal.privacy }
+] as const;

@@ -1,3 +1,5 @@
+import { isIncludedIn } from 'remeda';
+
 import type { Prisma } from '../../../../../../generated';
 import type { BattleStatsBlock } from '../../../../../lib/lesta';
 import type {
@@ -12,6 +14,8 @@ import type {
   TankSnapshotRowInput
 } from './snapshots.types';
 
+import { SNAPSHOT_MODES } from './snapshots.constants';
+
 export const modeBlocks = (source: BlockSource): ModeBlock[] => {
   const blocks: ModeBlock[] = [{ mode: 'all', block: source.all }];
 
@@ -22,7 +26,7 @@ export const modeBlocks = (source: BlockSource): ModeBlock[] => {
   return blocks;
 };
 
-export const shouldWriteSnapshot = ({ previous, battles }: ShouldWriteSnapshotInput): boolean => !previous || previous.battles !== battles;
+export const shouldWriteSnapshot = ({ previous, battles }: ShouldWriteSnapshotInput): boolean => !previous || battles > previous.battles;
 
 const blockFields = (block: BattleStatsBlock): BlockFields => ({
   battles: block.battles,
@@ -114,4 +118,4 @@ export const buildTankDelta = ({ previous, current, cohort, accountWinRate }: Ta
   };
 };
 
-export const isSnapshotMode = (mode: string): mode is SnapshotMode => mode === 'all' || mode === 'random';
+export const isSnapshotMode = (mode: string): mode is SnapshotMode => isIncludedIn(mode, SNAPSHOT_MODES);

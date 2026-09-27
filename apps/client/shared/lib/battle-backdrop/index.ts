@@ -1,13 +1,10 @@
 export { contourSegments, createMotes, createTracer, stepMotes, tracerSegment } from './battle-backdrop';
-export { BATTLE_BACKDROP } from './battle-backdrop.config';
-export { paintContours, paintMotion } from './battle-backdrop.paint';
+export { BATTLE_BACKDROP } from './battle-backdrop.constants';
 export type {
   ContourInput,
   CreateMotesInput,
   CreateTracerInput,
   Mote,
-  PaintContoursInput,
-  PaintMotionInput,
   StepMotesInput,
   Tracer,
   TracerSegment,

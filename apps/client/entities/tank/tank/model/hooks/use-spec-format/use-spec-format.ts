@@ -2,7 +2,8 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { TankSpecKey, TankSpecMeta } from '../../../config';
+import type { TankSpecKey } from '../../../config';
+import type { TankSpecMeta } from '../../../model/tank-specs.types';
 import type { FormatSpecInput } from './use-spec-format.types';
 
 import { TANK_SPECS } from '../../../config';

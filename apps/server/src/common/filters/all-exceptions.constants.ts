@@ -43,7 +43,9 @@ export const MOD_ERROR_CODES: readonly unknown[] = [
   'invalid_code',
   'invalid_payload',
   'rate_limited',
+  'replayed_request',
   'server_error',
+  'stale_request',
   'too_large',
   'unknown_device'
 ] satisfies ModErrorCode[];

@@ -7,10 +7,9 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
-import { Input, Select } from '@/ui-kit';
+import { FormField, Input, Select } from '@/ui-kit';
 
 import { useOverlayBasicsFields } from '../../../model/hooks';
-import { FormField } from '../FormField';
 
 import s from './OverlayBasicsFields.module.scss';
 

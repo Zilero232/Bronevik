@@ -7,6 +7,7 @@ export const WEB_LOGIN = {
 
 export const WEB_LOGIN_PHASE_TONE = {
   missing: 'steel',
+  confirm: 'accent',
   invalid: 'bad',
   redeeming: 'accent',
   failed: 'bad',

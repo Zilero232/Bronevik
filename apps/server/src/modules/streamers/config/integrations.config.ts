@@ -14,7 +14,9 @@ export const TWITCH = {
 export const OAUTH_STATE = {
   prefix: 'otmetki:streamers:oauth:',
   ttlSeconds: 600,
-  bytes: 24
+  bytes: 24,
+  cookie: 'otmetki_streamer_oauth',
+  cookiePath: '/streamers/integrations'
 } as const;
 
 export const INTEGRATIONS = {

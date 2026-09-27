@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
-import { CommunityGate } from '@/features/community/viewer';
+import { CommunityGate } from '@/entities/auth/session';
 import { Button, Card, CardBody, CardHeader, FormField, Input, Select } from '@/ui-kit';
 
 import type { JoinPanelProps } from './JoinPanel.types';

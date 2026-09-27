@@ -8,12 +8,14 @@
     "trialOffer": "Try it for {days, plural, one {# day} other {# days}} free — no card needed.",
     "home": "Home",
     "priceFigure": "Price",
-    "priceValue": "from {price}/mo"
+    "priceValue": "from {price}/mo",
+    "cta": "Get Plus",
+    "ctaTrial": "Try {days, plural, one {# day} other {# days}}",
+    "manage": "Manage subscription"
   },
   "benefits": {
     "title": "What is included",
     "description": "Live — works right after you subscribe. Soon — arrives in Plus at no extra cost.",
-    "soon": "Soon",
     "live": "Live",
     "items": {
       "priorityPolling": {
@@ -24,58 +26,45 @@
         "title": "Up to 20 overlays",
         "text": "More stream overlays: session, marks, challenges — one for every scene."
       },
-      "capacity": {
-        "title": "More room",
-        "text": "Up to 10 linked accounts, 10 goals, 300 watched tanks and 1,000 replays."
-      },
-      "apiLimits": {
-        "title": "Personal API limits",
-        "text": "50,000 requests a day, 10 per second and 5 webhooks for personal projects. The API itself is free for everyone."
-      },
-      "history": {
-        "title": "Full history",
-        "text": "Charts over the whole stored window instead of the last 90 days."
-      },
-      "analytics": {
-        "title": "Deep analytics",
-        "text": "The \"why I lose\" breakdown, time of day, tilt and the tank learning curve."
-      },
-      "moeTracker": {
-        "title": "Marks tracker Plus",
-        "text": "Per-battle percentage history and an \"evening playlist\" of tanks closest to a mark."
-      },
-      "mapAdvisor": {
-        "title": "Map advisor",
-        "text": "Your results by map, class and spawn side, and platoon chemistry."
-      },
-      "battleAnalysis": {
-        "title": "Battle analysis",
-        "text": "Shots, damage rolls and penetration from mod and replay data."
-      },
-      "aiCoach": {
-        "title": "AI coach",
-        "text": "Session and replay reviews with advice — up to five a day."
-      },
       "progression": {
         "title": "Tank levels and seasons",
-        "text": "Levels, challenges and a seasonal reward track, like Dota Plus."
+        "text": "Tank levels, challenges and a seasonal reward track."
       },
-      "cosmetics": {
-        "title": "Profile cosmetics",
-        "text": "A badge, frames and covers on the site."
+      "privateCompetitions": {
+        "title": "Private competitions",
+        "text": "Competitions just for your crew — by invite code, off the public list."
       },
       "analyticsExport": {
         "title": "Analytics export",
         "text": "Sessions and analytics tables as CSV and JSON."
       },
-      "earlyAccess": {
-        "title": "Early access",
-        "text": "Beta features before anyone else."
-      },
-      "privateCompetitions": {
-        "title": "Private competitions",
-        "text": "Competitions just for your crew — by invite code, off the public list."
+      "cosmetics": {
+        "title": "Profile cosmetics",
+        "text": "A badge, frames and covers on the site."
       }
+    }
+  },
+  "limits": {
+    "title": "Free and with Plus",
+    "description": "The limits the subscription raises. Everything else is the same for everyone.",
+    "feature": "What",
+    "free": "Free",
+    "plus": "With Plus",
+    "unlimited": "Unlimited",
+    "rate": {
+      "week": "{count} per week",
+      "day": "{count} per day"
+    },
+    "rows": {
+      "linkedAccounts": "Linked accounts",
+      "goals": "Goals",
+      "watchedTanks": "Watched tanks",
+      "watchedPlayers": "Watched players",
+      "overlays": "Stream overlays",
+      "storedReplays": "Stored replays",
+      "streamerFollows": "Streamer follows",
+      "historyDays": "Analytics history, days",
+      "aiReviews": "AI coach reviews"
     }
   },
   "checkout": {
@@ -111,7 +100,8 @@
       "trial": "Try {days, plural, one {# day} other {# days}} free",
       "trialPending": "Starting…",
       "closed": "Payments soon",
-      "closedNote": "Payments open soon. For now you can start the trial or redeem a promo code."
+      "closedNote": "Payments open soon. For now you can start the trial or redeem a promo code.",
+      "notify": "Get notified in Telegram when payments open"
     },
     "recommended": "Best value"
   },
@@ -120,7 +110,7 @@
     "items": {
       "trial": {
         "question": "How does the trial work?",
-        "answer": "Seven days of Plus for free and without a card — once per user and per Lesta account. You need a linked account. If a friend invited you, the trial is 14 days. It does not renew on its own: Plus simply switches off afterwards."
+        "answer": "{days, plural, one {# day} other {# days}} of Plus for free and without a card — once per user and per Lesta account. You need a linked account. If a friend invited you, the trial is {referralDays, plural, one {# day} other {# days}}. It does not renew on its own: Plus simply switches off afterwards."
       },
       "free": {
         "question": "What stays free?",
@@ -158,7 +148,8 @@
     "trial": "Try {days, plural, one {# day} other {# days}} free",
     "subscribe": "Get Plus",
     "trialStarted": "Plus trial is on for {days, plural, one {# day} other {# days}}",
-    "trialFailed": "Couldn't start the trial. Make sure a Lesta account is linked."
+    "trialFailed": "Couldn't start the trial. Make sure a Lesta account is linked.",
+    "promo": "Redeem a promo code"
   },
   "limitNotice": {
     "free": "{label}: {used} of {limit}. Plus raises it to {plusLimit}.",

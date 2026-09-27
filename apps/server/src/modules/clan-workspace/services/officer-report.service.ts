@@ -26,7 +26,7 @@ export class OfficerReportService {
 
   async sendWeekly(now: Date): Promise<number> {
     const workspaces = await this.prisma.clanWorkspace.findMany({ select: { clanId: true, clan: { select: { tag: true } } } });
-    const weekKey = isoDay(weekWindow(now).start);
+    const weekKey = isoDay(weekWindow(now).weekStart);
 
     for (const workspace of workspaces) {
       const report = await this.build({ clanId: workspace.clanId, now });

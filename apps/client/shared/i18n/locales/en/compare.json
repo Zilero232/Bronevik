@@ -16,7 +16,7 @@
   "broneIndex": "Bronya Index",
   "caption": "Player metrics",
   "metric": "Metric",
-  "best": "Best result",
+  "best": "Best",
   "metrics": {
     "battles": "Battles",
     "winRate": "Win rate",

@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 
 import type { RegisterTournamentInput, Tournament, WithdrawTournamentInput } from '@/entities/tournament/tournament';
 
-import { chosenAccountId, useCommunityViewer } from '@/features/community/viewer';
+import { chosenAccountId, useCommunityViewer } from '@/entities/auth/session';
 import { useClientNow } from '@/shared/lib';
 
 import type { RegistrationFormOutput, RegistrationFormValues } from '../../../lib/registration-form';

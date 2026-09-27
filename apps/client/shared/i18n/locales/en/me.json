@@ -9,6 +9,10 @@
   "eyebrow": "// Dashboard",
   "title": "Commander {name}",
   "signOut": "Sign out",
+  "signOutConfirm": {
+    "title": "Sign out?",
+    "cancel": "Stay"
+  },
   "tabs": {
     "label": "Dashboard sections",
     "overview": "Overview",

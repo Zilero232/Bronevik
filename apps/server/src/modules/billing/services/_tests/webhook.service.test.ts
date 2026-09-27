@@ -10,6 +10,7 @@ import type { PromoService } from '../promo.service';
 import type { ReferralService } from '../referral.service';
 import type { SubscriptionService } from '../subscription.service';
 
+import { Prisma } from '../../../../../generated';
 import { PLUS_PLANS } from '../../config';
 import { WebhookService } from '../webhook.service';
 
@@ -55,6 +56,22 @@ const createService = () => {
   const service = new WebhookService(prisma, yookassa, subscriptions, entitlements, promos, referrals);
 
   return { service, prisma, yookassa, subscriptions, entitlements, promos, referrals };
+};
+
+const PAID = '199.00';
+
+const createRefund = (refunded = PAID) => {
+  const created = createService();
+
+  created.yookassa.getPayment.mockResolvedValue({
+    ...remote('succeeded'),
+    amount: { value: PAID, currency: 'RUB' },
+    refunded_amount: { value: refunded, currency: 'RUB' }
+  });
+
+  created.prisma.payment.findFirst.mockResolvedValue(mock<Payment>({ id: 'row' }));
+
+  return created;
 };
 
 describe('WebhookService.settle', () => {
@@ -217,10 +234,10 @@ describe('WebhookService.handle', () => {
   });
 
   it('takes back the refunded months as of now', async () => {
-    const { service, prisma, entitlements } = createService();
+    const { service, prisma, entitlements } = createRefund();
 
     prisma.payment.findUnique.mockResolvedValue(
-      mock<Payment>({ id: 'row', userId: 'u1', status: 'succeeded', plan: 'monthly', subscriptionId: 'sub-1' })
+      mock<Payment>({ id: 'row', userId: 'u1', status: 'succeeded', plan: 'monthly', subscriptionId: 'sub-1', amount: new Prisma.Decimal(PAID) })
     );
 
     prisma.payment.updateMany.mockResolvedValue({ count: 1 });
@@ -246,10 +263,17 @@ describe('WebhookService.handle', () => {
 
 describe('WebhookService.refund', () => {
   const now = new Date('2026-09-25T12:00:00Z');
-  const succeeded = mock<Payment>({ id: 'row', userId: 'u1', status: 'succeeded', plan: 'monthly', subscriptionId: 'sub-1' });
+  const succeeded = mock<Payment>({
+    id: 'row',
+    userId: 'u1',
+    status: 'succeeded',
+    plan: 'monthly',
+    subscriptionId: 'sub-1',
+    amount: new Prisma.Decimal(PAID)
+  });
 
   it('ignores a payment that never succeeded', async () => {
-    const { service, prisma, entitlements } = createService();
+    const { service, prisma, entitlements } = createRefund();
 
     prisma.payment.findUnique.mockResolvedValue(pendingPayment);
 
@@ -259,7 +283,7 @@ describe('WebhookService.refund', () => {
   });
 
   it('takes the paid months back and drops the cached entitlement', async () => {
-    const { service, prisma, entitlements } = createService();
+    const { service, prisma, entitlements } = createRefund();
 
     prisma.payment.findUnique.mockResolvedValue(succeeded);
     prisma.payment.updateMany.mockResolvedValue({ count: 1 });
@@ -275,7 +299,7 @@ describe('WebhookService.refund', () => {
   });
 
   it('expires the subscription when the refund covers what is left', async () => {
-    const { service, prisma } = createService();
+    const { service, prisma } = createRefund();
 
     prisma.payment.findUnique.mockResolvedValue(succeeded);
     prisma.payment.updateMany.mockResolvedValue({ count: 1 });
@@ -289,7 +313,7 @@ describe('WebhookService.refund', () => {
   });
 
   it('marks a payment without a subscription refunded without revoking anything', async () => {
-    const { service, prisma, entitlements } = createService();
+    const { service, prisma, entitlements } = createRefund();
 
     prisma.payment.findUnique.mockResolvedValue({ ...succeeded, subscriptionId: null });
     prisma.payment.updateMany.mockResolvedValue({ count: 1 });
@@ -300,7 +324,7 @@ describe('WebhookService.refund', () => {
   });
 
   it('revokes once when the refund webhook is delivered twice', async () => {
-    const { service, prisma, entitlements } = createService();
+    const { service, prisma, entitlements } = createRefund();
 
     prisma.payment.findUnique.mockResolvedValue(succeeded);
     prisma.payment.updateMany.mockResolvedValue({ count: 0 });
@@ -308,5 +332,26 @@ describe('WebhookService.refund', () => {
     expect(await service.refund({ paymentId: 'p1', now })).toBe(false);
     expect(prisma.subscription.update).not.toHaveBeenCalled();
     expect(entitlements.syncTracking).not.toHaveBeenCalled();
+  });
+
+  it('keeps access after a partial refund', async () => {
+    const { service, prisma, entitlements } = createRefund('50.00');
+
+    prisma.payment.findUnique.mockResolvedValue(succeeded);
+
+    expect(await service.refund({ paymentId: 'p1', now })).toBe(false);
+    expect(prisma.payment.updateMany).not.toHaveBeenCalled();
+    expect(entitlements.syncTracking).not.toHaveBeenCalled();
+  });
+
+  it('does not cut the current period when an older payment is refunded', async () => {
+    const { service, prisma } = createRefund();
+
+    prisma.payment.findUnique.mockResolvedValue(succeeded);
+    prisma.payment.updateMany.mockResolvedValue({ count: 1 });
+    prisma.payment.findFirst.mockResolvedValue(mock<Payment>({ id: 'newer' }));
+
+    expect(await service.refund({ paymentId: 'p1', now })).toBe(true);
+    expect(prisma.subscription.update).not.toHaveBeenCalled();
   });
 });

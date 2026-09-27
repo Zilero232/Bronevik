@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
-import { CommunityGate } from '@/features/community/viewer';
+import { CommunityGate } from '@/entities/auth/session';
 import { Card, CardBody, CardHeader, EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
 import { useCoachingOrders } from '../../../model/hooks';

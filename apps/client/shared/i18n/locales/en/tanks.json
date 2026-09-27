@@ -133,7 +133,13 @@
     "emptyTitle": "Nothing matches the filters",
     "errorTitle": "Statistics did not load",
     "errorDescription": "The statistics server is not responding.",
-    "noStatsTitle": "Server statistics are not collected yet"
+    "noStatsTitle": "Server statistics are not collected yet",
+    "players": "Players",
+    "avgXp": "XP",
+    "avgBlocked": "Blocked",
+    "accuracy": "Accuracy",
+    "columnsPicker": "Columns",
+    "exportCsv": "Download CSV"
   },
   "tierList": {
     "title": "Tier list",
@@ -178,7 +184,7 @@
       "missed": "Premium would add",
       "missedHint": "Credits a premium account would have added in battles without it",
       "perBattle": "A premium account adds you {value} credits per battle on average.",
-      "tankLine": "{battles} battles · {credits} cr per battle",
+      "tankLine": "{battles, plural, one {# battle} other {# battles}} · {credits} cr per battle",
       "emptyTitle": "No battles from the mod",
       "emptyDescription": "Install the mod and link your account to see the economy of your random battles."
     }

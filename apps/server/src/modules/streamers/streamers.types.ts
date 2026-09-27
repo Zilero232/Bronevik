@@ -94,9 +94,26 @@ export type OAuthStateInput = {
   userId: string;
 };
 
+export type IssuedOAuthState = {
+  state: string;
+  binding: string;
+};
+
+export type ConsumeOAuthStateInput = {
+  state: string;
+  binding: string | null;
+};
+
+export type ConnectUrl = {
+  url: string;
+  binding: string;
+};
+
 type OAuthCallbackInput = {
   code: string;
   state: string;
+  binding: string | null;
+  viewerId: string | null;
 };
 
 export type ProviderCallbackInput = OAuthCallbackInput & {
@@ -272,6 +289,12 @@ export type SlugOwnerInput = {
   slug: string;
 };
 
+export type ContestedClaimInput = {
+  target: ClaimTarget;
+  userId: string;
+  login: string;
+};
+
 export type CompleteClaimInput = {
   claim: StreamerClaimRow;
   verifiedPlatform: StreamerPlatform | null;
@@ -295,8 +318,6 @@ export type ClaimTarget = { profile: null; invitation: StreamerInvitation } | { 
 
 export type SignedModInput<T> = {
   request: RawBodyRequest<Request>;
-  deviceId: string | undefined;
-  signature: string | undefined;
   schema: ZodType<T>;
 };
 

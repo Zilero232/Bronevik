@@ -22,6 +22,7 @@ export class PurgeService {
 
     const expired = await this.prisma.player.findMany({
       where: { purgeAfter: { lte: now } },
+      orderBy: { purgeAfter: 'asc' },
       select: { accountId: true },
       take: PURGE.dispatchBatch
     });
@@ -70,6 +71,12 @@ export class PurgeService {
         }
 
         await tx.clanMemberEvent.deleteMany({ where: { accountId: id } });
+        await tx.weeklyChallengeProgress.deleteMany({ where: { accountId: id } });
+        await tx.clanAttendance.deleteMany({ where: { accountId: id } });
+        await tx.recruitCandidate.deleteMany({ where: { accountId: id } });
+        await tx.competitionEntry.deleteMany({ where: { accountId: id } });
+        await tx.replay.updateMany({ where: { accountId: id }, data: { accountId: null } });
+        await tx.$executeRaw`UPDATE replay SET player_account_ids = array_remove(player_account_ids, ${id}) WHERE player_account_ids @> ARRAY[${id}]::bigint[]`;
         await tx.player.deleteMany({ where: { accountId: id } });
       });
 

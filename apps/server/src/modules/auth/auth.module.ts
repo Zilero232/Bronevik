@@ -1,10 +1,11 @@
 import { Logger, Module } from '@nestjs/common';
 import { AuthModule as BetterAuthModule } from '@thallesp/nestjs-better-auth';
+import { Redis } from 'ioredis';
 
 import type { LestaClient } from '../../lib/lesta';
 
 import { validateEnv } from '../../config';
-import { LESTA_CLIENT, PrismaService } from '../../core';
+import { LESTA_CLIENT, PrismaService, REDIS } from '../../core';
 import { createAuth } from '../../lib/auth';
 import { AuthStoresModule } from './auth-stores.module';
 import { AUTH_MODULE } from './config';
@@ -16,9 +17,10 @@ import { AccountPurgeService, LestaAccountsService, TelegramAccountsService } fr
     BetterAuthModule.forRootAsync({
       isGlobal: true,
       imports: [AuthStoresModule],
-      inject: [PrismaService, LESTA_CLIENT, LestaAccountsService, TelegramAccountsService, AccountPurgeService],
+      inject: [PrismaService, REDIS, LESTA_CLIENT, LestaAccountsService, TelegramAccountsService, AccountPurgeService],
       useFactory: (
         prisma: PrismaService,
+        redis: Redis,
         lesta: LestaClient,
         lestaStore: LestaAccountsService,
         telegramStore: TelegramAccountsService,
@@ -27,6 +29,7 @@ import { AccountPurgeService, LestaAccountsService, TelegramAccountsService } fr
         auth: createAuth({
           env: validateEnv(process.env),
           prisma,
+          redis,
           lesta,
           lestaStore,
           telegramStore,

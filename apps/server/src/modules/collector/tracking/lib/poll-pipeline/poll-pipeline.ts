@@ -5,7 +5,14 @@ import { chunk, isIncludedIn, unique } from 'remeda';
 import type { Prisma } from '../../../../../../generated';
 import type { AccountInfo } from '../../../../../lib/lesta';
 import type { TankSnapshotRow } from '../snapshots';
-import type { PollResult, ProcessAccountInput, ProcessAccountResult, RunPollPipelineInput } from './poll-pipeline.types';
+import type {
+  BuildChangesInput,
+  MarkSyncedInput,
+  PollResult,
+  ProcessAccountInput,
+  ProcessAccountResult,
+  RunPollPipelineInput
+} from './poll-pipeline.types';
 
 import { diffAccountTanks, hasNewBattles } from '../account-diff';
 import { assignCohort } from '../cohort';
@@ -14,8 +21,7 @@ import { POLL_PIPELINE } from './poll-pipeline.constants';
 
 const snapshotKey = (row: Pick<TankSnapshotRow, 'mode' | 'tankId'>) => `${row.tankId}:${row.mode}`;
 
-const processAccount = async ({ ports, info, tanks, baseline, tier, now }: ProcessAccountInput): Promise<ProcessAccountResult> => {
-  const { lesta, store } = ports;
+const writeChanges = async ({ store, info, tanks, stats, marks, masteryOnlyTankIds, wn8, now }: BuildChangesInput): Promise<ProcessAccountResult> => {
   const accountId = info.account_id;
   const id = BigInt(accountId);
   const latestAccount = await store.latestAccountBattles(accountId);
@@ -28,18 +34,18 @@ const processAccount = async ({ ports, info, tanks, baseline, tier, now }: Proce
     })
     .map(({ mode, block }) => accountSnapshotRow({ accountId: id, capturedAt: now, mode, block, globalRating: info.global_rating }));
 
-  const { changedTankIds, masteryOnlyTankIds } = diffAccountTanks({ baseline, current: tanks });
   const tankSnapshots: TankSnapshotRow[] = [];
   const deltas: Prisma.TankBattleDeltaCreateManyInput[] = [];
   const statsTankIds = new Set<number>();
 
-  if (changedTankIds.length > 0) {
-    const stats = await lesta.tankStats({ accountId, tankIds: changedTankIds });
-    const marks = isIncludedIn(tier, POLL_PIPELINE.marksTiers) ? await lesta.tankMarks({ accountId, tankIds: changedTankIds }) : null;
-    const previous = new Map((await store.latestTankSnapshots({ accountId, tankIds: changedTankIds })).map((row) => [snapshotKey(row), row]));
+  if (stats.length > 0) {
+    const previous = new Map(
+      (await store.latestTankSnapshots({ accountId, tankIds: stats.map((stat) => stat.tank_id) })).map((row) => [snapshotKey(row), row])
+    );
+
     const reference = info.statistics.random ?? info.statistics.all;
     const accountWinRate = winRate(reference);
-    const cohort = assignCohort({ battles: reference.battles, winRate: accountWinRate, wn8: await store.overallWn8(accountId) });
+    const cohort = assignCohort({ battles: reference.battles, winRate: accountWinRate, wn8 });
 
     for (const stat of stats) {
       statsTankIds.add(stat.tank_id);
@@ -66,7 +72,7 @@ const processAccount = async ({ ports, info, tanks, baseline, tier, now }: Proce
   const masteryOnly = new Set(masteryOnlyTankIds);
   const lastBattleAt = fromUnixTime(info.last_battle_time);
 
-  const baselineRows = tanks
+  const baseline = tanks
     .filter((tank) => statsTankIds.has(tank.tank_id) || masteryOnly.has(tank.tank_id))
     .map((tank) => ({
       accountId: id,
@@ -77,11 +83,26 @@ const processAccount = async ({ ports, info, tanks, baseline, tier, now }: Proce
       lastBattleAt: statsTankIds.has(tank.tank_id) ? lastBattleAt : undefined
     }));
 
-  if (accountSnapshots.length + tankSnapshots.length + baselineRows.length > 0) {
-    await store.writeAccountChanges({ accountId, accountSnapshots, tankSnapshots, deltas, baseline: baselineRows });
+  if (accountSnapshots.length + tankSnapshots.length + baseline.length > 0) {
+    await store.writeAccountChanges({ accountId, accountSnapshots, tankSnapshots, deltas, baseline });
   }
 
   return { snapshots: accountSnapshots.length + tankSnapshots.length, deltas: deltas.length };
+};
+
+const processAccount = async ({ ports, info, tanks, baseline, tier, now }: ProcessAccountInput): Promise<ProcessAccountResult> => {
+  const { lesta, store } = ports;
+  const accountId = info.account_id;
+  const { changedTankIds, masteryOnlyTankIds } = diffAccountTanks({ baseline, current: tanks });
+  const scan = changedTankIds.length > 0;
+  const stats = scan ? await lesta.tankStats({ accountId, tankIds: changedTankIds }) : [];
+  const marks = scan && isIncludedIn(tier, POLL_PIPELINE.marksTiers) ? await lesta.tankMarks({ accountId, tankIds: changedTankIds }) : null;
+  const wn8 = scan ? await store.overallWn8(accountId) : null;
+
+  return store.withAccount({
+    accountId,
+    run: (locked) => writeChanges({ store: locked, info, tanks, stats, marks, masteryOnlyTankIds, wn8, now })
+  });
 };
 
 export const runPollPipeline = async ({ ports, accountIds, tier, promote = false, now = new Date() }: RunPollPipelineInput): Promise<PollResult> => {
@@ -125,6 +146,7 @@ export const runPollPipeline = async ({ ports, accountIds, tier, promote = false
   }
 
   const toScan: AccountInfo[] = [];
+  const synced: MarkSyncedInput[] = [];
 
   for (const info of present) {
     const previous = players.get(info.account_id);
@@ -140,45 +162,46 @@ export const runPollPipeline = async ({ ports, accountIds, tier, promote = false
     if (scan) {
       toScan.push(info);
     } else {
-      await store.markSynced({ accountId: info.account_id, lastBattleAt: previous?.lastBattleAt ?? null, now });
+      synced.push({ accountId: info.account_id, lastBattleAt: previous?.lastBattleAt ?? null, now });
       result.unchanged.push(info.account_id);
     }
   }
 
-  if (toScan.length === 0) {
-    return result;
+  if (toScan.length > 0) {
+    const scanIds = toScan.map((info) => info.account_id);
+    const tanksByAccount = await lesta.accountTanks(scanIds);
+    const baselines = await store.loadBaselines(scanIds);
+
+    for (const part of chunk(toScan, POLL_PIPELINE.accountConcurrency)) {
+      await Promise.all(
+        part.map(async (info) => {
+          const accountId = info.account_id;
+
+          try {
+            const outcome = await processAccount({
+              ports,
+              info,
+              tanks: tanksByAccount[String(accountId)] ?? [],
+              baseline: baselines.get(accountId) ?? [],
+              tier,
+              now
+            });
+
+            synced.push({ accountId, lastBattleAt: fromUnixTime(info.last_battle_time), now });
+            result.snapshots += outcome.snapshots;
+            result.deltas += outcome.deltas;
+            (outcome.snapshots > 0 ? result.updated : result.unchanged).push(accountId);
+          } catch (error) {
+            result.failed.push(accountId);
+            ports.onError?.({ accountId, error });
+          }
+        })
+      );
+    }
   }
 
-  const scanIds = toScan.map((info) => info.account_id);
-  const tanksByAccount = await lesta.accountTanks(scanIds);
-  const baselines = await store.loadBaselines(scanIds);
-
-  for (const part of chunk(toScan, POLL_PIPELINE.accountConcurrency)) {
-    await Promise.all(
-      part.map(async (info) => {
-        const accountId = info.account_id;
-
-        try {
-          const outcome = await processAccount({
-            ports,
-            info,
-            tanks: tanksByAccount[String(accountId)] ?? [],
-            baseline: baselines.get(accountId) ?? [],
-            tier,
-            now
-          });
-
-          await store.markSynced({ accountId, lastBattleAt: fromUnixTime(info.last_battle_time), now });
-
-          result.snapshots += outcome.snapshots;
-          result.deltas += outcome.deltas;
-          (outcome.snapshots > 0 ? result.updated : result.unchanged).push(accountId);
-        } catch (error) {
-          result.failed.push(accountId);
-          ports.onError?.({ accountId, error });
-        }
-      })
-    );
+  if (synced.length > 0) {
+    await store.markSynced(synced);
   }
 
   return result;

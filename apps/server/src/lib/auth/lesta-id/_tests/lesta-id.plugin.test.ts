@@ -21,6 +21,19 @@ const LOGIN = { status: 'ok', access_token: 'token', account_id: '42', nickname:
 
 type Tables = Record<'account' | 'session' | 'user' | 'verification', Record<string, unknown>[]>;
 
+const cookiesOf = (response: Response) =>
+  response.headers
+    .getSetCookie()
+    .map((cookie) => cookie.split(';')[0])
+    .join('; ');
+
+const sessionCookieOf = (response: Response) =>
+  response.headers
+    .getSetCookie()
+    .map((cookie) => cookie.split(';')[0] ?? '')
+    .filter((cookie) => cookie.includes('session_token'))
+    .join('; ');
+
 const createAuth = () => {
   const lesta = mockDeep<LestaClient>();
   const store = mock<LestaAccountStore>();
@@ -46,20 +59,19 @@ const createAuth = () => {
   const start = async ({ query = '', cookie }: { query?: string; cookie?: string } = {}) => {
     const response = await get(`/lesta/start${query}`, cookie ? { cookie } : undefined);
     const redirectUri = lesta.auth.loginUrl.mock.lastCall?.[0].redirectUri ?? '';
+    const flowCookie = [cookie, cookiesOf(response)].filter(Boolean).join('; ');
 
-    return { response, state: new URL(redirectUri).searchParams.get('state') ?? '' };
+    return { response, state: new URL(redirectUri).searchParams.get('state') ?? '', cookie: flowCookie };
   };
 
-  const callback = (params: Record<string, string>) => get(`/lesta/callback?${new URLSearchParams(params).toString()}`);
+  const callback = (params: Record<string, string>, cookie?: string) =>
+    get(`/lesta/callback?${new URLSearchParams(params).toString()}`, cookie ? { cookie } : undefined);
 
   const signIn = async () => {
-    const { state } = await start();
-    const response = await callback({ ...LOGIN, state });
+    const { state, cookie } = await start();
+    const response = await callback({ ...LOGIN, state }, cookie);
 
-    return response.headers
-      .getSetCookie()
-      .map((cookie) => cookie.split(';')[0])
-      .join('; ');
+    return sessionCookieOf(response);
   };
 
   return { auth, lesta, store, db, get, start, callback, signIn };
@@ -101,8 +113,8 @@ describe('lestaId /lesta/start', () => {
   it('never sends the user back to a foreign origin after login', async () => {
     const { start, callback } = createAuth();
 
-    const { state } = await start({ query: `?callbackURL=${encodeURIComponent('https://evil.example/steal')}` });
-    const response = await callback({ ...LOGIN, state });
+    const { state, cookie: flow } = await start({ query: `?callbackURL=${encodeURIComponent('https://evil.example/steal')}` });
+    const response = await callback({ ...LOGIN, state }, flow);
 
     expect(locationOf(response).origin).toBe(WEB_URL);
   });
@@ -112,8 +124,8 @@ describe('lestaId /lesta/callback', () => {
   it('signs in a new player, stores the Lesta sign-in and returns to the requested page', async () => {
     const { start, callback, store, db } = createAuth();
 
-    const { state } = await start({ query: '?callbackURL=/me' });
-    const response = await callback({ ...LOGIN, state });
+    const { state, cookie: flow } = await start({ query: '?callbackURL=/me' });
+    const response = await callback({ ...LOGIN, state }, flow);
 
     expect(locationOf(response).toString()).toBe(`${WEB_URL}/me`);
     expect(response.headers.getSetCookie().some((cookie) => cookie.includes('session_token'))).toBe(true);
@@ -131,13 +143,42 @@ describe('lestaId /lesta/callback', () => {
     expect(lesta.account.info).not.toHaveBeenCalled();
   });
 
-  it('rejects a replayed state', async () => {
-    const { start, callback } = createAuth();
+  it('rejects a callback in a browser that did not start the sign-in', async () => {
+    const { start, callback, lesta, store } = createAuth();
 
     const { state } = await start();
 
-    await callback({ ...LOGIN, state });
-    const replay = await callback({ ...LOGIN, state });
+    expect(errorOf(await callback({ ...LOGIN, state }))).toBe(LESTA_ID_ERROR.state);
+    expect(lesta.account.info).not.toHaveBeenCalled();
+    expect(store.link).not.toHaveBeenCalled();
+  });
+
+  it('rejects a state that belongs to another sign-in flow', async () => {
+    const { start, callback } = createAuth();
+
+    const victim = await start();
+    const attacker = await start();
+
+    expect(errorOf(await callback({ ...LOGIN, state: attacker.state }, victim.cookie))).toBe(LESTA_ID_ERROR.state);
+  });
+
+  it('clears the state cookie on the callback', async () => {
+    const { start, callback } = createAuth();
+
+    const { state, cookie: flow } = await start();
+    const response = await callback({ ...LOGIN, state }, flow);
+    const cleared = response.headers.getSetCookie().find((cookie) => cookie.includes(LESTA_ID.stateCookie));
+
+    expect(cleared).toMatch(/Max-Age=0/i);
+  });
+
+  it('rejects a replayed state', async () => {
+    const { start, callback } = createAuth();
+
+    const { state, cookie: flow } = await start();
+
+    await callback({ ...LOGIN, state }, flow);
+    const replay = await callback({ ...LOGIN, state }, flow);
 
     expect(errorOf(replay)).toBe(LESTA_ID_ERROR.state);
   });
@@ -145,19 +186,19 @@ describe('lestaId /lesta/callback', () => {
   it('rejects a state older than its lifetime', async () => {
     const { start, callback } = createAuth();
 
-    const { state } = await start();
+    const { state, cookie: flow } = await start();
 
     vi.setSystemTime(addMilliseconds(NOW, LESTA_ID.stateTtlMs + 1));
 
-    expect(errorOf(await callback({ ...LOGIN, state }))).toBe(LESTA_ID_ERROR.state);
+    expect(errorOf(await callback({ ...LOGIN, state }, flow))).toBe(LESTA_ID_ERROR.state);
   });
 
   it('reports a login the player cancelled at Lesta', async () => {
     const { start, callback } = createAuth();
 
-    const { state } = await start();
+    const { state, cookie: flow } = await start();
 
-    expect(errorOf(await callback({ status: 'error', code: 'AUTH_CANCEL', state }))).toBe(LESTA_ID_ERROR.denied);
+    expect(errorOf(await callback({ status: 'error', code: 'AUTH_CANCEL', state }, flow))).toBe(LESTA_ID_ERROR.denied);
   });
 
   it('refuses a token Lesta does not confirm for that account', async () => {
@@ -165,9 +206,9 @@ describe('lestaId /lesta/callback', () => {
 
     lesta.account.info.mockResolvedValue({ '42': mock<AccountInfo>({ account_id: 42, nickname: 'Tanker', private: null }) });
 
-    const { state } = await start();
+    const { state, cookie: flow } = await start();
 
-    expect(errorOf(await callback({ ...LOGIN, state }))).toBe(LESTA_ID_ERROR.token);
+    expect(errorOf(await callback({ ...LOGIN, state }, flow))).toBe(LESTA_ID_ERROR.token);
     expect(store.link).not.toHaveBeenCalled();
   });
 
@@ -176,9 +217,9 @@ describe('lestaId /lesta/callback', () => {
 
     lesta.account.info.mockResolvedValue({ '42': mock<AccountInfo>({ account_id: 43, nickname: 'Other', private: {} }) });
 
-    const { state } = await start();
+    const { state, cookie: flow } = await start();
 
-    expect(errorOf(await callback({ ...LOGIN, state }))).toBe(LESTA_ID_ERROR.token);
+    expect(errorOf(await callback({ ...LOGIN, state }, flow))).toBe(LESTA_ID_ERROR.token);
   });
 
   it('treats an invalid access token error from Lesta as a bad token', async () => {
@@ -188,9 +229,9 @@ describe('lestaId /lesta/callback', () => {
       new LestaApiError({ code: LESTA_ERROR_CODE.invalidAccessToken, method: 'account/info', status: 407, field: null, value: null })
     );
 
-    const { state } = await start();
+    const { state, cookie: flow } = await start();
 
-    expect(errorOf(await callback({ ...LOGIN, state }))).toBe(LESTA_ID_ERROR.token);
+    expect(errorOf(await callback({ ...LOGIN, state }, flow))).toBe(LESTA_ID_ERROR.token);
   });
 
   it('reports Lesta as unavailable when the check itself fails', async () => {
@@ -198,9 +239,9 @@ describe('lestaId /lesta/callback', () => {
 
     lesta.account.info.mockRejectedValue(new LestaNetworkError({ method: 'account/info', cause: new Error('timeout') }));
 
-    const { state } = await start();
+    const { state, cookie: flow } = await start();
 
-    expect(errorOf(await callback({ ...LOGIN, state }))).toBe(LESTA_ID_ERROR.unavailable);
+    expect(errorOf(await callback({ ...LOGIN, state }, flow))).toBe(LESTA_ID_ERROR.unavailable);
   });
 
   it('reports the plan limit when the account cannot be linked', async () => {
@@ -208,8 +249,8 @@ describe('lestaId /lesta/callback', () => {
 
     store.link.mockResolvedValue(false);
 
-    const { state } = await start();
-    const response = await callback({ ...LOGIN, state });
+    const { state, cookie: flow } = await start();
+    const response = await callback({ ...LOGIN, state }, flow);
 
     expect(errorOf(response)).toBe(LESTA_ID_ERROR.limit);
     expect(response.headers.getSetCookie().some((cookie) => cookie.includes('session_token'))).toBe(false);
@@ -233,9 +274,43 @@ describe('lestaId /lesta/callback', () => {
 
     store.findUserId.mockResolvedValue('someone-else');
 
-    const { state } = await start({ cookie });
+    const { state, cookie: flow } = await start({ cookie });
 
-    expect(errorOf(await callback({ ...LOGIN, state }))).toBe(LESTA_ID_ERROR.taken);
+    expect(errorOf(await callback({ ...LOGIN, state }, flow))).toBe(LESTA_ID_ERROR.taken);
+  });
+});
+
+describe('lestaId account linking', () => {
+  it('refuses to link when the callback runs without the session that started it', async () => {
+    const { signIn, start, callback, store } = createAuth();
+
+    const session = await signIn();
+
+    store.link.mockClear();
+
+    const { state, cookie: flow } = await start({ cookie: session });
+    const stateOnly = flow
+      .split('; ')
+      .filter((cookie) => !cookie.includes('session_token'))
+      .join('; ');
+
+    expect(errorOf(await callback({ ...LOGIN, state }, stateOnly))).toBe(LESTA_ID_ERROR.state);
+    expect(store.link).not.toHaveBeenCalled();
+  });
+
+  it('links to the signed-in user when the same session finishes the flow', async () => {
+    const { signIn, start, callback, store, db } = createAuth();
+
+    const session = await signIn();
+    const userId = String(db.user[0]?.id);
+
+    store.findUserId.mockResolvedValue(userId);
+
+    const { state, cookie: flow } = await start({ cookie: session });
+    const response = await callback({ ...LOGIN, state }, flow);
+
+    expect(errorOf(response)).toBeNull();
+    expect(store.link).toHaveBeenLastCalledWith(expect.objectContaining({ userId }));
   });
 });
 

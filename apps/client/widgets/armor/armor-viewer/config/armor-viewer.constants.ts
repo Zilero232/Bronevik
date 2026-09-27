@@ -1,4 +1,4 @@
-import type { OrbitKeyStep } from './armor-viewer.types';
+import type { OrbitKeyStep } from '../model/armor-viewer.types';
 
 export const VIEW_PRESETS = ['front', 'side', 'rear', 'top'] as const;
 

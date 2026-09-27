@@ -50,17 +50,26 @@ export type AccountChanges = {
   baseline: Prisma.PlayerTankCreateManyInput[];
 };
 
+export type AccountStorePort = {
+  latestAccountBattles: (accountId: number) => Promise<Map<SnapshotMode, number>>;
+  latestTankSnapshots: (input: LatestTankSnapshotsInput) => Promise<TankSnapshotRow[]>;
+  writeAccountChanges: (changes: AccountChanges) => Promise<void>;
+};
+
+export type WithAccountInput<T> = {
+  accountId: number;
+  run: (store: AccountStorePort) => Promise<T>;
+};
+
 export type PollStorePort = {
   blockedAccounts: (accountIds: readonly number[]) => Promise<Set<number>>;
   loadPlayers: (accountIds: readonly number[]) => Promise<StoredPlayer[]>;
   upsertPlayer: (input: UpsertPlayerInput) => Promise<void>;
-  markSynced: (input: MarkSyncedInput) => Promise<void>;
+  markSynced: (entries: readonly MarkSyncedInput[]) => Promise<void>;
   markMissing: (accountIds: readonly number[]) => Promise<void>;
-  latestAccountBattles: (accountId: number) => Promise<Map<SnapshotMode, number>>;
   loadBaselines: (accountIds: readonly number[]) => Promise<Map<number, TankBaseline[]>>;
-  latestTankSnapshots: (input: LatestTankSnapshotsInput) => Promise<TankSnapshotRow[]>;
   overallWn8: (accountId: number) => Promise<number | null>;
-  writeAccountChanges: (changes: AccountChanges) => Promise<void>;
+  withAccount: <T>(input: WithAccountInput<T>) => Promise<T>;
 };
 
 type PollErrorInput = {
@@ -105,4 +114,15 @@ export type ProcessAccountInput = {
 export type ProcessAccountResult = {
   snapshots: number;
   deltas: number;
+};
+
+export type BuildChangesInput = {
+  store: AccountStorePort;
+  info: AccountInfo;
+  tanks: readonly AccountTank[];
+  stats: readonly TankStats[];
+  marks: Map<number, number> | null;
+  masteryOnlyTankIds: readonly number[];
+  wn8: number | null;
+  now: Date;
 };

@@ -1,3 +1,3 @@
 import 'server-only';
 
-export { mapRouteName, mapSlugs } from './api/route-meta';
+export { mapRouteEntity, mapSlugs } from './api/route-meta';

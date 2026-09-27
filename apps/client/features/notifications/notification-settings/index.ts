@@ -1,1 +1,2 @@
-export { getNotificationSettings, updateNotificationSettings } from './api';
+export { groupValue, mergeGroup, toggleEvent } from './lib/event-selection';
+export { useNotificationSettings } from './model/hooks';

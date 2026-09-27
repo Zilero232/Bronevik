@@ -1,1 +1,1 @@
-export { mapRouteName, mapSlugs } from './route-meta';
+export { mapRouteEntity, mapSlugs } from './route-meta';

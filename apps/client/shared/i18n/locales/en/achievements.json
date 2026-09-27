@@ -1,1 +1,88 @@
-{}
+{
+  "meta": {
+    "title": "Medal and tank rarity",
+    "description": "Which medals and tanks are the rarest in Mir Tankov: owner share, rarity tiers and the collectors leaderboard."
+  },
+  "hero": {
+    "home": "Home",
+    "title": "Medals and rarity",
+    "lead": "How many players in the sample earned each medal and own each tank. The smaller the share, the rarer the award.",
+    "sample": "Players in sample",
+    "catalog": "Medals in catalogue",
+    "rarest": "Rarest"
+  },
+  "tabs": {
+    "medals": "Medals",
+    "tanks": "Tanks",
+    "collectors": "Collectors"
+  },
+  "tiers": {
+    "legendary": "Legendary",
+    "epic": "Epic",
+    "rare": "Rare",
+    "uncommon": "Uncommon",
+    "common": "Common"
+  },
+  "medals": {
+    "section": "Section",
+    "anySection": "All sections",
+    "sort": "Sort",
+    "sorts": {
+      "rarity": "Rarest first",
+      "common": "Most common first",
+      "points": "By points"
+    },
+    "sections": {
+      "battle": "Battle heroes",
+      "epic": "Epic",
+      "special": "Special",
+      "memorial": "Commemorative",
+      "group": "Group",
+      "class": "Class",
+      "action": "Campaigns",
+      "other": "Other"
+    },
+    "columns": {
+      "medal": "Medal",
+      "points": "Points",
+      "holders": "Holders",
+      "share": "Share",
+      "tier": "Rarity"
+    },
+    "summary": "Sample of {sample, plural, one {# player} other {# players}}, {total, plural, one {# medal} other {# medals}} in the catalogue",
+    "empty": "No medals",
+    "emptyDescription": "There is no rarity data for this section yet.",
+    "error": "Could not load medals"
+  },
+  "tanks": {
+    "tier": "Tier",
+    "type": "Class",
+    "sort": "Sort",
+    "sorts": {
+      "rare": "Rarest first",
+      "common": "Most common first"
+    },
+    "columns": {
+      "tank": "Tank",
+      "owners": "Owners",
+      "share": "Share",
+      "tier": "Rarity"
+    },
+    "summary": "Sample of {sample, plural, one {# player} other {# players}}",
+    "empty": "No tanks",
+    "emptyDescription": "No tank matches these filters.",
+    "error": "Could not load tank rarity"
+  },
+  "collectors": {
+    "columns": {
+      "player": "Player",
+      "held": "Medals",
+      "points": "Points",
+      "completion": "Collection"
+    },
+    "summary": "{total, plural, one {# collector} other {# collectors}} on the board",
+    "empty": "The board is empty",
+    "emptyDescription": "Collectors appear after the first rarity recount.",
+    "error": "Could not load the collectors board"
+  }
+}

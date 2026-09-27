@@ -1,19 +1,16 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 
 import { Tabs } from '@/ui-kit';
 
-import type { ProfileTab } from '../../../config';
-
 import { PROFILE_TABS } from '../../../config';
+import { useProfileTab } from '../../../model/hooks';
 import { ProfileTabContent } from '../ProfileTabContent';
 
 export const ProfileTabs = () => {
   const t = useTranslations('profile.tabs');
-
-  const [tab, setTab] = useState<ProfileTab>('overview');
+  const { tab, setTab } = useProfileTab();
 
   return (
     <Tabs

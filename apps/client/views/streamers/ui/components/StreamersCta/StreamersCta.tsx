@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { LiveLamp } from '@/entities/streamer/broadcast';
+import { LiveLamp } from '@/ui-kit';
 
 import { StudioLink } from '../StudioLink';
 

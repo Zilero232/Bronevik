@@ -33,14 +33,15 @@ const chain = (limiters: readonly RateLimiter[]): RateLimiter => ({
 });
 
 export const createLestaClients = ({ applicationId, baseUrl, redis, budget, fetch }: CreateLestaClientsInput): LestaClients => {
-  const global = createRedisRateLimiter({
-    redis,
-    key: LESTA_BUCKET.global,
-    requestsPerSecond: budget.requestsPerSecond,
-    maxQueueSize: LESTA.request.maxQueueSize
-  });
+  const globalLimiter = (maxQueueSize: number) =>
+    createRedisRateLimiter({ redis, key: LESTA_BUCKET.global, requestsPerSecond: budget.requestsPerSecond, maxQueueSize });
 
-  const bulk = createRedisRateLimiter({ redis, key: LESTA_BUCKET.bulk, requestsPerSecond: bulkRequestsPerSecond(budget) });
+  const bulk = createRedisRateLimiter({
+    redis,
+    key: LESTA_BUCKET.bulk,
+    requestsPerSecond: bulkRequestsPerSecond(budget),
+    maxQueueSize: LESTA.bulk.maxQueueSize
+  });
 
   return {
     priority: createLestaClient({
@@ -49,8 +50,15 @@ export const createLestaClients = ({ applicationId, baseUrl, redis, budget, fetc
       fetch,
       timeoutMs: LESTA.request.timeoutMs,
       retry: LESTA.request.retry,
-      rateLimiter: global
+      rateLimiter: globalLimiter(LESTA.request.maxQueueSize)
     }),
-    bulk: createLestaClient({ applicationId, baseUrl, fetch, rateLimiter: chain([bulk, global]) })
+    bulk: createLestaClient({
+      applicationId,
+      baseUrl,
+      fetch,
+      timeoutMs: LESTA.bulk.timeoutMs,
+      retry: LESTA.bulk.retry,
+      rateLimiter: chain([bulk, globalLimiter(LESTA.bulk.maxQueueSize)])
+    })
   };
 };

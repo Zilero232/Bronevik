@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { Skeleton } from '@/ui-kit';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { StreamerPageProps } from './StreamerPage.types';
 

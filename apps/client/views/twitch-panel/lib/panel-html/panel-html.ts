@@ -1,6 +1,7 @@
 import type { PanelHtmlInput } from './panel-html.types';
 
-import { PANEL_SCRIPT, PANEL_STYLE, TWITCH_PANEL } from '../../config';
+import { PANEL_STYLE, TWITCH_PANEL } from '../../config';
+import { runPanelScript } from '../panel-script';
 
 const escapeHtml = (text: string): string => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
@@ -19,7 +20,7 @@ export const panelHtml = ({ apiUrl, locale, copy }: PanelHtmlInput): string => {
     '</head>',
     '<body>',
     `<main id="panel" aria-live="polite" data-config="${escapeHtml(config)}"></main>`,
-    `<script>${PANEL_SCRIPT}</script>`,
+    `<script>(${runPanelScript.toString()})();</script>`,
     '</body>',
     '</html>'
   ].join('');

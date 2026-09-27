@@ -3,9 +3,8 @@
 import { ExternalLink } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { LiveLamp } from '@/entities/streamer/broadcast';
 import { PLATFORM_ICONS } from '@/entities/streamer/channel';
-import { buttonVariants, Card, CardHeader, RelativeTime, TankImage } from '@/ui-kit';
+import { buttonVariants, Card, CardHeader, LiveLamp, RelativeTime, TankImage } from '@/ui-kit';
 
 import type { LiveBlockProps } from './LiveBlock.types';
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { useReducedMotion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
@@ -10,6 +11,7 @@ import { SECTION_NAV, TANK_PAGE } from '../../../config';
 export const useSectionNav = () => {
   const t = useTranslations('tank.nav');
   const [active, setActive] = useState<SectionNavId>(SECTION_NAV[0]);
+  const isReduced = useReducedMotion();
 
   useEffect(() => {
     const targets = SECTION_NAV.flatMap((id) => {
@@ -41,7 +43,7 @@ export const useSectionNav = () => {
     setActive(id);
 
     document.getElementById(id)?.scrollIntoView({
-      behavior: window.matchMedia(TANK_PAGE.reducedMotionQuery).matches ? 'auto' : 'smooth',
+      behavior: isReduced ? 'auto' : 'smooth',
       block: 'start'
     });
 

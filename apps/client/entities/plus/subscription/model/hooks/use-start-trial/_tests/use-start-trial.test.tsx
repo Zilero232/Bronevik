@@ -7,15 +7,15 @@ import { NextIntlClientProvider } from 'next-intl';
 import { toast } from 'sonner';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 
-import { startPlusTrial } from '@/entities/plus/subscription/api';
 import { QUERY_KEYS } from '@/shared/constants';
 import { messages } from '@/shared/i18n';
 
+import { startPlusTrial } from '../../../../api';
 import { useStartTrial } from '../use-start-trial';
 
 vi.hoisted(() => vi.resetModules());
 
-vi.mock('@/entities/plus/subscription/api', () => ({
+vi.mock('../../../../api', () => ({
   startPlusTrial: vi.fn(),
   getBillingStatus: vi.fn(),
   getPaymentHistory: vi.fn(),

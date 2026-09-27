@@ -41,7 +41,7 @@
     "title": "Queue time",
     "meta": "Median by hour · {days} days · {timezone}",
     "caption": "Median wait for a battle by vehicle tier and hour",
-    "cell": "Tier {tier}, {hour}:00 — median {median}, 90% within {p90}, {samples} battles",
+    "cell": "Tier {tier}, {hour}:00 — median {median}, 90% within {p90}, {samples, plural, one {# battle} other {# battles}}",
     "noData": "{hour}:00 — not enough data",
     "legendFast": "Fast · {wait}",
     "legendSlow": "Slow · {wait}",

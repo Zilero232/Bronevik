@@ -1,5 +1,6 @@
 export { ClanActivity } from './ClanActivity';
 export { CommunityBand } from './CommunityBand';
+export { ForYou } from './ForYou';
 export { GameNews } from './GameNews';
 export { GarageStrip } from './GarageStrip';
 export { HomeActions } from './HomeActions';

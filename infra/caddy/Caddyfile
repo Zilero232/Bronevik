@@ -18,10 +18,22 @@
 	}
 }
 
+# Tokens ride some query strings (the Lesta ID callback's access_token, OAuth
+# codes, tactic-board edit tokens): the access log drops them before writing.
 (access_log) {
 	log {
 		output stdout
-		format console
+		format filter {
+			wrap console
+			fields {
+				request>uri query {
+					delete access_token
+					delete token
+					delete code
+					delete state
+				}
+			}
+		}
 	}
 }
 
@@ -32,8 +44,9 @@
 	encode @compressible zstd gzip
 
 	# bull-board (/admin/queues) stays off the public internet: reach it over
-	# an ssh tunnel to the server container instead.
-	respond /admin/* 404
+	# an ssh tunnel to the server container instead. The rest of /admin is the
+	# role-guarded admin API and stays reachable.
+	respond /admin/queues* 404
 
 	reverse_proxy server:4000 {
 		# A config reload keeps open WebSocket and SSE streams alive for a while

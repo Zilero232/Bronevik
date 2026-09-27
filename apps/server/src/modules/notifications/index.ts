@@ -1,5 +1,5 @@
-export { JOB_SCHEDULES, registerJobSchedules, resolveNotificationLocale } from './lib';
-export type { JobSchedule, NotificationLocale } from './lib';
+export { resolveNotificationLocale } from './lib';
+export type { NotificationLocale } from './lib';
 export { NotificationsProducerModule } from './notifications-producer.module';
 export { NotificationsWorkerModule } from './notifications-worker.module';
 export { NotificationsModule } from './notifications.module';

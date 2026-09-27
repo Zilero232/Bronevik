@@ -148,8 +148,8 @@
     "errors": {
       "tank": "Выберите танк",
       "map": "Выберите карту",
-      "title": "От {min} до {max} символов",
-      "body": "От {min} до {max} символов"
+      "title": "От {min} до {max, plural, one {# символа} few {# символов} many {# символов} other {# символа}}",
+      "body": "От {min} до {max, plural, one {# символа} few {# символов} many {# символов} other {# символа}}"
     }
   }
 }

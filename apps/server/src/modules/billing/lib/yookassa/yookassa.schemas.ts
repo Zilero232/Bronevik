@@ -7,6 +7,7 @@ export const yookassaPaymentSchema = z.object({
   status: yookassaPaymentStatusSchema,
   paid: z.boolean().optional(),
   amount: z.object({ value: z.string(), currency: z.string() }),
+  refunded_amount: z.object({ value: z.string(), currency: z.string() }).optional(),
   confirmation: z.object({ confirmation_url: z.string().optional() }).optional(),
   payment_method: z
     .object({

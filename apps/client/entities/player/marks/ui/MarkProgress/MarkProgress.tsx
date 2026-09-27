@@ -3,7 +3,7 @@ import { clsx } from 'clsx';
 import { useFormatter, useTranslations } from 'next-intl';
 import { match, P } from 'ts-pattern';
 
-import { ProgressRing } from '@/ui-kit';
+import { MarksRing } from '@/ui-kit';
 
 import type { MarkProgressProps } from './MarkProgress.types';
 
@@ -23,15 +23,15 @@ export const MarkProgress = ({
   const t = useTranslations('marks.progress');
   const format = useFormatter();
 
-  const { marks, nextMark, ratio } = markRing(percent);
+  const { marks, nextMark } = markRing(percent);
   const target = markTarget(marks);
   const percentText = format.number(percent / 100, { style: 'percent', maximumFractionDigits: 2 });
 
   return (
     <Tag className={clsx(s.root, s[variant], className)} data-marks={target}>
-      <ProgressRing className={s.ring} label={t('label')} marks={target} max={1} size={size} thickness={6} value={ratio}>
+      <MarksRing className={s.ring} label={t('label')} percent={percent} size={size} thickness={6}>
         <MarkOfExcellenceIcon aria-hidden className={s.glyph} marks={target} size={Math.round(size * 0.4)} />
-      </ProgressRing>
+      </MarksRing>
       <div className={s.text}>
         {title && <span className={s.title}>{title}</span>}
         <span className={s.value}>{percentText}</span>

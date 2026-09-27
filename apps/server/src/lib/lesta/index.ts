@@ -19,7 +19,15 @@ export type {
   Selected
 } from './client';
 
-export { isRetryableLestaError, LESTA_ERROR_CODE, LestaApiError, LestaHttpError, LestaNetworkError, RETRYABLE_LESTA_CODES } from './errors';
+export {
+  isRetryableLestaError,
+  LESTA_ERROR_CODE,
+  LestaApiError,
+  LestaHttpError,
+  LestaNetworkError,
+  LestaQueueFullError,
+  RETRYABLE_LESTA_CODES
+} from './errors';
 
 export { parseLoginCallback } from './methods';
 export type {
@@ -46,8 +54,8 @@ export type {
 export { classifyLestaResponse } from './outcome';
 export type { LestaOutcome } from './outcome';
 
-export { createMemoryRateLimiter, createRedisRateLimiter, noopRateLimiter, RATE_LIMIT } from './rate-limit';
-export type { MemoryRateLimiterInput, RateLimiter, RedisRateLimiterInput } from './rate-limit';
+export { createRedisRateLimiter, noopRateLimiter, RATE_LIMIT } from './rate-limit';
+export type { RateLimiter, RedisRateLimiterInput } from './rate-limit';
 
 export {
   accountAchievementsSchema,

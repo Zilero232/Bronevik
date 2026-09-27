@@ -1,4 +1,4 @@
-import type { LestaApiErrorInput, LestaHttpErrorInput, LestaNetworkErrorInput } from './errors.types';
+import type { LestaApiErrorInput, LestaHttpErrorInput, LestaNetworkErrorInput, LestaQueueFullErrorInput } from './errors.types';
 
 import { errorMessage } from '../../../common/lib/errors';
 import { RETRYABLE_HTTP_STATUS, RETRYABLE_LESTA_CODES } from './errors.constants';
@@ -45,6 +45,16 @@ export class LestaNetworkError extends Error {
   }
 }
 
+export class LestaQueueFullError extends Error {
+  readonly key: string;
+
+  constructor({ key, cause }: LestaQueueFullErrorInput) {
+    super(`Lesta rate limiter queue ${key} is full`, { cause });
+    this.name = 'LestaQueueFullError';
+    this.key = key;
+  }
+}
+
 export const isRetryableLestaError = (error: unknown): boolean => {
   if (error instanceof LestaApiError) {
     return RETRYABLE_LESTA_CODES.has(error.code);
@@ -54,5 +64,5 @@ export const isRetryableLestaError = (error: unknown): boolean => {
     return error.status === RETRYABLE_HTTP_STATUS.tooManyRequests || error.status >= RETRYABLE_HTTP_STATUS.serverErrorFrom;
   }
 
-  return error instanceof LestaNetworkError;
+  return error instanceof LestaNetworkError || error instanceof LestaQueueFullError;
 };

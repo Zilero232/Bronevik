@@ -1,12 +1,17 @@
-import { UTCDate } from '@date-fns/utc';
+import { tz } from '@date-fns/tz';
 import { addDays, startOfISOWeek } from 'date-fns';
 
 import type { WeekWindow } from './week.types';
 
-export const weekWindow = (date: Date): WeekWindow => {
-  const start = startOfISOWeek(new UTCDate(date.getTime()));
+import { TIME } from '../../../config';
+import { moscowCalendarDate } from '../moscow-time';
 
-  return { start: new Date(start.getTime()), end: new Date(addDays(start, 7).getTime()) };
+const moscow = tz(TIME.zone);
+
+export const weekWindow = (date: Date): WeekWindow => {
+  const start = startOfISOWeek(date, { in: moscow });
+
+  return { start: new Date(start.getTime()), end: new Date(addDays(start, 7).getTime()), weekStart: moscowCalendarDate(start) };
 };
 
 export const previousWeek = (now: Date): WeekWindow => weekWindow(addDays(now, -7));

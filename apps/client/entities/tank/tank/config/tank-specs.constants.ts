@@ -1,6 +1,6 @@
 import { keys } from 'remeda';
 
-import type { TankSpecGroup, TankSpecMeta } from './tank-specs.types';
+import type { TankSpecGroup, TankSpecMeta } from '../model/tank-specs.types';
 
 export const TANK_SPECS = {
   shellDamage: { group: 'firepower', unit: 'hp', digits: 0 },
@@ -27,17 +27,5 @@ export const TANK_SPECS = {
 export type TankSpecKey = keyof typeof TANK_SPECS;
 
 export const TANK_SPEC_KEYS = keys(TANK_SPECS);
-
-export const KEY_SPECS = [
-  'shellDamage',
-  'shellPenetration',
-  'damagePerMinute',
-  'reloadTime',
-  'aimingTime',
-  'dispersion',
-  'maxHealth',
-  'speedForward',
-  'viewRange'
-] as const satisfies readonly TankSpecKey[];
 
 export const TANK_SPEC_GROUPS = ['firepower', 'survivability', 'mobility', 'scouting'] as const satisfies readonly TankSpecGroup[];

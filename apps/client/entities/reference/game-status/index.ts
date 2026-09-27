@@ -1,0 +1,1 @@
+export { gameStatusQueries } from './api';

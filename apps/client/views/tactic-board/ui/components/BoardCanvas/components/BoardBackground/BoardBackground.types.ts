@@ -1,5 +1,5 @@
-import type { CanvasPalette } from '../../../../../config';
 import type { BoardGrid } from '../../../../../lib/board-grid';
+import type { CanvasPalette } from '../../../../../model/board-tools.types';
 
 export type BoardBackgroundProps = {
   grid: BoardGrid;

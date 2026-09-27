@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { calendarLayout, heatLevel } from '../calendar-layout';
+import { calendarLayout, calendarStep, heatLevel } from '../calendar-layout';
 
 const LEVELS = 5;
 const DAYS_IN_WEEK = 7;
@@ -63,5 +63,25 @@ describe('calendarLayout', () => {
 
   it('returns nothing for an empty range', () => {
     expect(calendarLayout([])).toEqual({ weeks: [], months: [] });
+  });
+});
+
+describe('calendarStep', () => {
+  it('moves a day with the vertical arrows and a week with the horizontal ones', () => {
+    expect(calendarStep({ key: 'ArrowDown', index: 3, count: 30 })).toBe(4);
+    expect(calendarStep({ key: 'ArrowUp', index: 3, count: 30 })).toBe(2);
+    expect(calendarStep({ key: 'ArrowRight', index: 3, count: 30 })).toBe(10);
+    expect(calendarStep({ key: 'ArrowLeft', index: 10, count: 30 })).toBe(3);
+  });
+
+  it('stays inside the range and jumps to its ends', () => {
+    expect(calendarStep({ key: 'ArrowLeft', index: 2, count: 30 })).toBe(0);
+    expect(calendarStep({ key: 'ArrowRight', index: 27, count: 30 })).toBe(29);
+    expect(calendarStep({ key: 'Home', index: 12, count: 30 })).toBe(0);
+    expect(calendarStep({ key: 'End', index: 12, count: 30 })).toBe(29);
+  });
+
+  it('ignores other keys', () => {
+    expect(calendarStep({ key: 'Enter', index: 3, count: 30 })).toBeNull();
   });
 });

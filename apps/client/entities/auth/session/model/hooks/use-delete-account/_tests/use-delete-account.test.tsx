@@ -4,11 +4,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { AuthSession } from '@/entities/auth/session/api';
-
-import * as authApi from '@/entities/auth/session/api/auth/auth';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import type { AuthSession } from '../../../../api';
+
+import * as authApi from '../../../../api/auth/auth';
 import { useDeleteAccount } from '../use-delete-account';
 
 vi.hoisted(() => vi.resetModules());

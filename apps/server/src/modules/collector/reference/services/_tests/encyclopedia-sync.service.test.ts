@@ -25,7 +25,7 @@ const createSync = (stored: string | null) => {
 
   clients.priority.encyclopedia.info.mockResolvedValue(INFO);
   prisma.gameVersion.findFirst.mockResolvedValue(current);
-  prisma.$transaction.mockResolvedValue(mock<GameVersion>({ id: 7, version: INFO.game_version }));
+  prisma.gameVersion.upsert.mockResolvedValue(mock<GameVersion>({ id: 7, version: INFO.game_version }));
   vehicles.sync.mockResolvedValue(10);
   equipment.modules.mockResolvedValue(20);
   equipment.provisions.mockResolvedValue(30);
@@ -69,7 +69,7 @@ describe('EncyclopediaSyncService.sync', () => {
     const { prisma, vehicles, service } = createSync(INFO.game_version);
 
     expect(await service.sync({ force: false })).toEqual({ version: INFO.game_version, skipped: true });
-    expect(prisma.$transaction).not.toHaveBeenCalled();
+    expect(prisma.gameVersion.upsert).not.toHaveBeenCalled();
     expect(vehicles.sync).not.toHaveBeenCalled();
   });
 
@@ -86,14 +86,23 @@ describe('EncyclopediaSyncService.sync', () => {
     });
   });
 
-  it('marks a failed section and still runs the others', async () => {
-    const { equipment, service } = createSync('2.0.0');
+  it('runs every section but fails the job and keeps the old version current when one section fails', async () => {
+    const { prisma, equipment, service } = createSync('2.0.0');
 
     equipment.modules.mockRejectedValue(new Error('SOURCE_NOT_AVAILABLE'));
 
-    const result = await service.sync({ force: false });
+    await expect(service.sync({ force: false })).rejects.toThrow('modules');
+    expect(equipment.provisions).toHaveBeenCalled();
+    expect(prisma.gameVersion.update).not.toHaveBeenCalled();
+    expect(prisma.collectorState.upsert).not.toHaveBeenCalled();
+  });
 
-    expect(result).toMatchObject({ counts: { modules: -1, provisions: 30, achievements: 60 } });
+  it('makes the new version current only once every section succeeded', async () => {
+    const { prisma, service } = createSync('2.0.0');
+
+    await service.sync({ force: false });
+
+    expect(prisma.gameVersion.update).toHaveBeenCalledWith({ where: { id: 7 }, data: { isCurrent: true } });
   });
 
   it('records the synced version in the collector state', async () => {

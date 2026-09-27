@@ -5,7 +5,7 @@ import type { ProlongateResult } from '../schemas';
 import type { LoginCallbackResult, LoginUrlInput, LogoutInput, ProlongateInput } from './methods.types';
 
 import { LESTA_API } from '../client/client.constants';
-import { toSearchParams } from '../client/client.helpers';
+import { toSearchParams } from '../client/params';
 import { loginCallbackSchema, loginLocationSchema, prolongateSchema } from '../schemas';
 
 export const parseLoginCallback = (query: string | URLSearchParams): LoginCallbackResult => {

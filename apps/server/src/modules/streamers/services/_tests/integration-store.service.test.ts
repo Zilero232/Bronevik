@@ -5,7 +5,7 @@ import type { StreamerIntegration } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { SaveIntegrationInput } from '../../streamers.types';
 
-import { AppBadRequestException, AppNotFoundException } from '../../../../common/exceptions';
+import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../../common/exceptions';
 import { IntegrationStoreService } from '../integration-store.service';
 
 const CONNECTED = new Date('2026-09-01T12:00:00.000Z');
@@ -81,14 +81,12 @@ describe('IntegrationStoreService.save', () => {
     config: null
   } satisfies SaveIntegrationInput;
 
-  it('detaches the external account from any other user before binding it', async () => {
+  it('binds the external account to the user who connected it', async () => {
     const { service, prisma } = createService();
 
-    await service.save(input);
+    prisma.streamerIntegration.count.mockResolvedValue(0);
 
-    expect(prisma.streamerIntegration.deleteMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { provider: 'twitch', externalId: '777', NOT: { userId: 'u1' } } })
-    );
+    await service.save(input);
 
     expect(prisma.streamerIntegration.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -96,6 +94,17 @@ describe('IntegrationStoreService.save', () => {
         update: expect.objectContaining({ externalId: '777', accessToken: 'a', tokenExpiresAt: EXPIRES })
       })
     );
+  });
+
+  it('refuses to take over an external account another user has connected', async () => {
+    const { service, prisma } = createService();
+
+    prisma.streamerIntegration.count.mockResolvedValue(1);
+
+    await expect(service.save(input)).rejects.toBeInstanceOf(AppConflictException);
+    expect(prisma.streamerIntegration.count).toHaveBeenCalledWith({ where: { provider: 'twitch', externalId: '777', NOT: { userId: 'u1' } } });
+    expect(prisma.streamerIntegration.deleteMany).not.toHaveBeenCalled();
+    expect(prisma.streamerIntegration.upsert).not.toHaveBeenCalled();
   });
 
   it('keeps the stored config when the new connection brings none', async () => {

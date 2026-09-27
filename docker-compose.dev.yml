@@ -9,7 +9,7 @@ services:
       POSTGRES_DB: otmetki
     ports:
       # 5434 on the host: 5432 is taken by a native service, 5433 by GnomeVPN.
-      - '5434:5432'
+      - '127.0.0.1:5434:5432'
     volumes:
       - otmetki-postgres-data:/home/postgres/pgdata/data
     healthcheck:
@@ -23,7 +23,7 @@ services:
     container_name: otmetki-redis-dev
     restart: unless-stopped
     ports:
-      - '6380:6379'
+      - '127.0.0.1:6380:6379'
     healthcheck:
       test: [CMD, redis-cli, ping]
       interval: 5s
@@ -36,8 +36,8 @@ services:
     restart: unless-stopped
     ports:
       # SMTP catcher on 1025, web inbox on http://localhost:8025. Nothing leaves the machine.
-      - '1025:1025'
-      - '8025:8025'
+      - '127.0.0.1:1025:1025'
+      - '127.0.0.1:8025:8025'
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1

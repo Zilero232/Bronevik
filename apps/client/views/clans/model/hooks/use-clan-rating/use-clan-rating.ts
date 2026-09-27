@@ -15,7 +15,7 @@ export const useClanRating = () => {
   );
 
   const query = useInfiniteQuery({
-    queryKey: QUERY_KEYS.clans.list({ sort, limit: CLAN_RATING.pageSize }),
+    queryKey: QUERY_KEYS.clans.feed({ sort, limit: CLAN_RATING.pageSize }),
     queryFn: ({ signal, pageParam }) => listClans({ sort, limit: CLAN_RATING.pageSize, offset: pageParam, signal }),
     initialPageParam: 0,
     getNextPageParam: ({ offset, limit, total }) => (offset + limit < total ? offset + limit : undefined),

@@ -1,3 +1,3 @@
-export { bestIndices, parseCompareIds } from './compare-math';
+export { bestIndices, compareIds, deltasToBest } from './compare-math';
 
-export type { BestIndicesInput } from './compare-math.types';
+export type { BestIndicesInput, DeltasToBestInput } from './compare-math.types';

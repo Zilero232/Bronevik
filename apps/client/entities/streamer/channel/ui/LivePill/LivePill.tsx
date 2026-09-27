@@ -3,7 +3,7 @@
 import { clsx } from 'clsx';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { LiveLamp } from '@/entities/streamer/broadcast';
+import { LiveLamp } from '@/ui-kit';
 
 import type { LivePillProps } from './LivePill.types';
 

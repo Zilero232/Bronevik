@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { DataSourceNote } from '@/ui-kit';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { PlayerProfilePageProps } from './PlayerProfilePage.types';
 

@@ -6,14 +6,14 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 
-import { markInboxRead } from '@/entities/notification/inbox/api';
 import { messages } from '@/shared/i18n';
 
+import { markInboxRead } from '../../../../api';
 import { useReadInboxItem } from '../use-read-inbox-item';
 
 vi.hoisted(() => vi.resetModules());
 
-vi.mock('@/entities/notification/inbox/api', () => ({ markInboxRead: vi.fn(), getInbox: vi.fn() }));
+vi.mock('../../../../api', () => ({ markInboxRead: vi.fn(), getInbox: vi.fn() }));
 
 const UNREAD: InboxItem = {
   id: '00000000-0000-4000-8000-000000000001',

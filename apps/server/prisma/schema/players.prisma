@@ -38,11 +38,13 @@ model Player {
   battles        Battle[]
   achievementSet AccountAchievements?
   tankChallenges TankChallengeProgress[]
+  latestTanks    TankSnapshotLatest[]
 
   @@index([nickname(ops: raw("gin_trgm_ops"))], type: Gin, map: "player_nickname_trgm_idx")
   @@index([clanId])
   @@index([trackingTier, nextPollAt])
   @@index([lastBattleAt])
+  @@index([purgeAfter])
   @@map("player")
 }
 

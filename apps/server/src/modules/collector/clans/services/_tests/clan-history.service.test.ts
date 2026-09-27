@@ -17,7 +17,7 @@ const createHistory = (histories: Record<string, ClanMemberHistoryEntry[] | null
 
   prisma.$transaction.mockResolvedValue([]);
   prisma.player.findMany.mockResolvedValue(known.map((accountId) => mock<Player>({ accountId: BigInt(accountId) })));
-  clients.priority.clans.memberhistory.mockResolvedValue(histories);
+  clients.bulk.clans.memberhistory.mockResolvedValue(histories);
 
   return { prisma, clients, service: new ClanHistoryService(prisma, clients) };
 };

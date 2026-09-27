@@ -10,16 +10,7 @@ export const PLUS_BENEFITS = {
     { id: 'privateCompetitions', icon: Trophy },
     { id: 'analyticsExport', icon: FileDown },
     { id: 'cosmetics', icon: Palette }
-  ] as const satisfies readonly { id: string; icon: LucideIcon }[],
-  items: [
-    { id: 'capacity', isLive: true },
-    { id: 'apiLimits', isLive: true },
-    { id: 'history', isLive: false },
-    { id: 'analytics', isLive: false },
-    { id: 'moeTracker', isLive: false },
-    { id: 'mapAdvisor', isLive: false },
-    { id: 'battleAnalysis', isLive: false },
-    { id: 'aiCoach', isLive: false },
-    { id: 'earlyAccess', isLive: false }
-  ]
+  ] as const satisfies readonly { id: string; icon: LucideIcon }[]
 } as const;
+
+export const PLUS_LIMIT_TIERS = ['free', 'plus'] as const;

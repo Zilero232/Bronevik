@@ -1,10 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { isPushServiceUrl } from '@otmetki/schemas';
+import { lookup } from 'node:dns/promises';
 import { sendNotification, WebPushError } from 'web-push';
 
 import type { WebPushInput } from '../notifications.types';
 
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
+import { publicAddressOf } from '../../developer';
 import { WEB_PUSH } from '../config';
 
 @Injectable()
@@ -25,7 +28,9 @@ export class WebPushService {
       return;
     }
 
-    const subscriptions = await this.prisma.pushSubscription.findMany({ where: { userId } });
+    const stored = await this.prisma.pushSubscription.findMany({ where: { userId } });
+    const reachable = await Promise.all(stored.map(async ({ endpoint }) => this.isSafeEndpoint(endpoint)));
+    const subscriptions = stored.filter((_subscription, index) => reachable[index]);
     const payload = JSON.stringify({ title, body, url });
     const vapidDetails = {
       subject: this.config.get('VAPID_SUBJECT'),
@@ -58,5 +63,13 @@ export class WebPushService {
     if (failed > 0 && failed === subscriptions.length - gone.length) {
       throw new Error(`web push to ${userId} failed on every subscription`);
     }
+  }
+
+  private async isSafeEndpoint(endpoint: string): Promise<boolean> {
+    if (!isPushServiceUrl(endpoint)) {
+      return false;
+    }
+
+    return (await publicAddressOf({ url: endpoint, lookup: async (host) => lookup(host, { all: true }) })) !== null;
   }
 }

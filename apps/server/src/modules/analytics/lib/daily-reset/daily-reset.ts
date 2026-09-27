@@ -3,9 +3,10 @@ import { addDays, addHours, startOfDay, subDays } from 'date-fns';
 
 import type { DailyWindow } from './daily-reset.types';
 
+import { TIME } from '../../../../config';
 import { FIRST_WIN } from '../../config';
 
-const zone = tz(FIRST_WIN.timeZone);
+const zone = tz(TIME.zone);
 
 export const dailyWindow = (now: Date): DailyWindow => {
   const today = addHours(startOfDay(now, { in: zone }), FIRST_WIN.resetHour, { in: zone });

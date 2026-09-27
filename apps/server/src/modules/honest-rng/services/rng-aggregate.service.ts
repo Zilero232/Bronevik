@@ -1,95 +1,118 @@
 import { Injectable } from '@nestjs/common';
-import { subDays } from 'date-fns';
-import { groupBy, prop } from 'remeda';
+import { subDays, subHours } from 'date-fns';
+import { groupBy } from 'remeda';
 
-import type { RngPeriod } from '../honest-rng.types';
-import type { RollTally } from '../lib';
+import type { DayTally, StoreDailyInput } from '../honest-rng.types';
+import type { RngWatermark } from '../lib';
+import type { RngBattleRow } from '../queries';
 
-import { Prisma } from '../../../../generated';
-import { toJsonValue } from '../../../common/lib';
+import { moscowCalendarDate, toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { readStoredShots } from '../../analytics';
 import { HONEST_RNG_AGGREGATE, RNG_PERIODS } from '../config';
-import { emptyTally, foldBattle, tallySummary } from '../lib';
+import { battleScopes, dailyFromTally, emptyTally, foldBattle, mergeTally, rngWatermarkSchema, tallyFromDaily, tallySummary } from '../lib';
+import { rngBattlesSql } from '../queries';
 
 @Injectable()
 export class RngAggregateService {
   constructor(private readonly prisma: PrismaService) {}
 
   async compute(now = new Date()) {
+    const battles = await this.foldNewBattles(now);
+    const rows = await this.rebuild(now);
+
+    return { battles, rows };
+  }
+
+  private async foldNewBattles(now: Date): Promise<number> {
+    const until = subHours(now, HONEST_RNG_AGGREGATE.settleHours);
     const vehicles = await this.prisma.vehicle.findMany({ select: { tankId: true, tier: true } });
     const tiers = new Map(vehicles.map((vehicle) => [vehicle.tankId, vehicle.tier]));
-    const starts = RNG_PERIODS.map((period) => {
-      const days = HONEST_RNG_AGGREGATE.periodDays[period];
+    let watermark = await this.watermark();
+    let folded = 0;
 
-      return { period, from: days === null ? null : subDays(now, days) };
-    });
+    for (;;) {
+      const chunk = await this.prisma.$queryRaw<RngBattleRow[]>(rngBattlesSql({ watermark, until, limit: HONEST_RNG_AGGREGATE.chunk }));
 
-    const tallies = new Map<string, { scope: string; period: RngPeriod; tally: RollTally }>();
-    const tallyOf = (scope: string, period: RngPeriod): RollTally => {
-      const key = `${scope}|${period}`;
-      const existing = tallies.get(key);
+      const last = chunk.at(-1);
 
-      if (existing) {
-        return existing.tally;
+      if (!last) {
+        return folded;
       }
 
-      const tally = emptyTally();
-
-      tallies.set(key, { scope, period, tally });
-
-      return tally;
-    };
-
-    let cursor: string | undefined;
-    let battles = 0;
-    let hasMore = true;
-
-    while (hasMore) {
-      const chunk = await this.prisma.battle.findMany({
-        where: { shots: { not: Prisma.DbNull }, startedAt: { lte: now }, ...(cursor ? { id: { gt: cursor } } : {}) },
-        orderBy: { id: 'asc' },
-        take: HONEST_RNG_AGGREGATE.chunk,
-        select: { id: true, accountId: true, tankId: true, startedAt: true, shots: true, shotsFired: true, shotsHit: true, shotsPierced: true }
-      });
+      const tallies = new Map<string, DayTally>();
 
       for (const battle of chunk) {
-        const shots = readStoredShots(battle.shots);
-        const accountId = String(battle.accountId);
-        const tier = tiers.get(battle.tankId);
+        const day = moscowCalendarDate(battle.startedAt);
         const accuracy = { fired: battle.shotsFired ?? 0, hit: battle.shotsHit ?? 0, pierced: battle.shotsPierced ?? 0 };
-        const shells = Object.entries(groupBy(shots, prop('shell')));
 
-        for (const { period, from } of starts) {
-          if (from !== null && battle.startedAt < from) {
-            continue;
-          }
+        for (const scope of battleScopes({ tier: tiers.get(battle.tankId), shots: readStoredShots(battle.shots), accuracy })) {
+          const key = `${day.getTime()}|${scope.scope}`;
+          const entry = tallies.get(key) ?? { day, scope: scope.scope, tally: emptyTally() };
 
-          foldBattle({ tally: tallyOf(HONEST_RNG_AGGREGATE.scopes.server, period), accountId, shots, accuracy });
-
-          if (tier !== undefined) {
-            foldBattle({ tally: tallyOf(`${HONEST_RNG_AGGREGATE.scopes.tier}:${tier}`, period), accountId, shots, accuracy });
-          }
-
-          for (const [shell, group] of shells) {
-            foldBattle({ tally: tallyOf(`${HONEST_RNG_AGGREGATE.scopes.shell}:${shell}`, period), accountId, shots: group, accuracy: null });
-          }
+          foldBattle({ tally: entry.tally, accountId: String(battle.accountId), shots: scope.shots, accuracy: scope.accuracy });
+          tallies.set(key, entry);
         }
       }
 
-      battles += chunk.length;
-      cursor = chunk.at(-1)?.id;
-      hasMore = chunk.length === HONEST_RNG_AGGREGATE.chunk;
+      watermark = { receivedAt: last.receivedAt, id: last.id };
+      await this.store({ tallies: [...tallies.values()], watermark });
+      folded += chunk.length;
+
+      if (chunk.length < HONEST_RNG_AGGREGATE.chunk) {
+        return folded;
+      }
     }
+  }
 
-    const rows = [...tallies.values()].map(({ scope, period, tally }) => {
-      const { buckets, ...summary } = tallySummary(tally);
+  private async watermark(): Promise<RngWatermark | null> {
+    const state = await this.prisma.collectorState.findUnique({ where: { key: HONEST_RNG_AGGREGATE.watermarkKey } });
+    const parsed = rngWatermarkSchema.safeParse(state?.value);
 
-      return { scope, period, ...summary, buckets: toJsonValue(buckets), computedAt: now };
+    return parsed.success ? parsed.data : null;
+  }
+
+  private async store({ tallies, watermark }: StoreDailyInput): Promise<void> {
+    const value = { receivedAt: watermark.receivedAt.toISOString(), id: watermark.id };
+
+    await this.prisma.$transaction(async (tx) => {
+      const stored = await tx.rngDaily.findMany({ where: { OR: tallies.map(({ day, scope }) => ({ day, scope })) } });
+      const existing = new Map(stored.map((row) => [`${row.day.getTime()}|${row.scope}`, row]));
+
+      for (const { day, scope, tally } of tallies) {
+        const previous = existing.get(`${day.getTime()}|${scope}`);
+        const merged = previous ? mergeTally({ into: tallyFromDaily(previous), from: tally }) : tally;
+        const row = dailyFromTally({ day, scope, tally: merged });
+
+        await tx.rngDaily.upsert({ where: { day_scope: { day, scope } }, create: row, update: row });
+      }
+
+      await tx.collectorState.upsert({
+        where: { key: HONEST_RNG_AGGREGATE.watermarkKey },
+        create: { key: HONEST_RNG_AGGREGATE.watermarkKey, value },
+        update: { value }
+      });
+    });
+  }
+
+  private async rebuild(now: Date): Promise<number> {
+    const daily = await this.prisma.rngDaily.findMany();
+
+    const rows = RNG_PERIODS.flatMap((period) => {
+      const days = HONEST_RNG_AGGREGATE.periodDays[period];
+      const from = days === null ? null : moscowCalendarDate(subDays(now, days));
+      const inPeriod = from === null ? daily : daily.filter((row) => row.day >= from);
+
+      return Object.entries(groupBy(inPeriod, (row) => row.scope)).map(([scope, group]) => {
+        const tally = group.reduce((total, row) => mergeTally({ into: total, from: tallyFromDaily(row) }), emptyTally());
+        const { buckets, ...summary } = tallySummary(tally);
+
+        return { scope, period, ...summary, buckets: toJsonValue(buckets), computedAt: now };
+      });
     });
 
     await this.prisma.$transaction([this.prisma.rngAggregate.deleteMany(), this.prisma.rngAggregate.createMany({ data: rows })]);
 
-    return { battles, rows: rows.length };
+    return rows.length;
   }
 }

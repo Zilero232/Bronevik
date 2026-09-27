@@ -1,4 +1,4 @@
-import { chosenAccountId } from '@/features/community/viewer';
+import { chosenAccountId } from '@/entities/auth/session';
 import { zonedInputToIso } from '@/shared/lib';
 
 import type { CreatePlatoon } from '../../api';

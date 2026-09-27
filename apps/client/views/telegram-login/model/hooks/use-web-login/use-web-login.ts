@@ -2,9 +2,8 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';
-import { useEffect, useRef } from 'react';
 
-import { useResetUserQueries, useReturnPath } from '@/entities/auth/session';
+import { useAuthSession, useResetUserQueries, useReturnPath } from '@/entities/auth/session';
 import { QUERY_KEYS } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
 
@@ -17,6 +16,7 @@ export const useWebLogin = () => {
   const queryClient = useQueryClient();
   const resetUserQueries = useResetUserQueries();
   const returnPath = useReturnPath();
+  const session = useAuthSession();
   const [code] = useQueryState(WEB_LOGIN.param, parseAsString);
   const redeem = useMutation({
     mutationFn: redeemTelegramWebLogin,
@@ -27,21 +27,18 @@ export const useWebLogin = () => {
     }
   });
 
-  const requestedRef = useRef<string | null>(null);
-
   const codeState = webLoginCodeState(code);
+  const phase = webLoginPhase({ codeState, status: redeem.status });
 
-  useEffect(() => {
-    if (code === null || codeState !== 'valid' || requestedRef.current === code) {
+  const confirm = () => {
+    if (code === null || codeState !== 'valid' || !redeem.isIdle) {
       return;
     }
 
-    requestedRef.current = code;
     redeem.mutate({ code });
-    // eslint-disable-next-line react/exhaustive-deps -- redeem each code once; the mutation object is rebuilt every render
-  }, [code, codeState]);
+  };
 
-  const phase = webLoginPhase({ codeState, status: redeem.status });
+  const signedInAs = session.data?.user.name ?? null;
 
-  return { phase, tone: WEB_LOGIN_PHASE_TONE[phase] };
+  return { phase, tone: WEB_LOGIN_PHASE_TONE[phase], replacedAccount: phase === 'confirm' ? signedInAs : null, confirm };
 };

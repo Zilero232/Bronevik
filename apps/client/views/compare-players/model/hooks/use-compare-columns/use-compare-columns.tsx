@@ -31,9 +31,7 @@ export const useCompareColumns = (players: PlayerSummary[]): TableColumn<Compare
         id: String(accountId),
         header: () => <PlayerIdentity player={{ nickname, clanTag: clan?.tag ?? null }} />,
         enableSorting: false,
-        cell: ({ row: { original } }) => (
-          <ValueCell format={original.format} isBest={original.best.includes(index)} value={original.values[index] ?? null} />
-        ),
+        cell: ({ row: { original } }) => <ValueCell index={index} row={original} />,
         meta: { align: 'end', isNumeric: true }
       })
     )

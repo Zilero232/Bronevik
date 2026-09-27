@@ -37,3 +37,22 @@ describe('TrackingLestaService.port', () => {
     expect(Object.fromEntries(marks)).toEqual({ 10: 3, 11: 0 });
   });
 });
+
+describe('TrackingLestaService field selection', () => {
+  it('asks Lesta only for the fields the poll uses and rejects a response missing one', async () => {
+    const { clients, service } = createLesta();
+
+    clients.bulk.account.info.mockResolvedValue({ 1: { account_id: 1, nickname: 'tanker' } });
+
+    await expect(service.port('bulk').accountInfo([1])).rejects.toThrow();
+    expect(clients.bulk.account.info).toHaveBeenCalledWith(expect.objectContaining({ fields: TRACKING.lesta.accountFields }));
+  });
+
+  it('keeps an account Lesta did not return as missing', async () => {
+    const { clients, service } = createLesta();
+
+    clients.bulk.account.info.mockResolvedValue({ 1: null });
+
+    expect(await service.port('bulk').accountInfo([1])).toEqual({ 1: null });
+  });
+});

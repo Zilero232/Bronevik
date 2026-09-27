@@ -1,5 +1,5 @@
 export type UseCountdownInput = {
-  seconds: ((now: Date) => number) | number;
+  seconds: (now: Date) => number;
   onExpire?: () => void;
 };
 

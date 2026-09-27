@@ -1,1 +1,1 @@
-export { TOURNAMENT_STATUS_TONE, TOURNAMENT_STATUSES } from './tournament-status.constants';
+export { TOURNAMENT_STATUS_TONE } from './tournament-status.constants';

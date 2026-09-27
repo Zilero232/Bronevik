@@ -18,6 +18,7 @@ export { useSectionNav } from './use-section-nav';
 export type { SectionNavId } from './use-section-nav';
 export { useServerFigures } from './use-server-figures';
 export type { ServerFigure } from './use-server-figures';
+export { useSimilarTanks } from './use-similar-tanks';
 export { useTankDetail } from './use-tank-detail';
 export { useTankParams } from './use-tank-params';
 export type { ParamRow, ParamTab } from './use-tank-params';

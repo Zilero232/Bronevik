@@ -4,7 +4,7 @@ import type { WebhookEmitter } from '../../../../core';
 import type { GainedMark } from '../lib/marks-gain';
 
 import { entitledSubscriptionWhere } from '../../../../common/lib';
-import { PrismaService, WEBHOOK_EMITTER } from '../../../../core';
+import { markGainedKey, PrismaService, WEBHOOK_EMITTER } from '../../../../core';
 
 @Injectable()
 export class TrackingAnnounceService {
@@ -19,6 +19,7 @@ export class TrackingAnnounceService {
 
       await this.webhooks.emit({
         event: 'mark.gained',
+        dedupeKey: markGainedKey(mark),
         subject: { accountIds: [Number(mark.accountId)], clanIds: player?.clanId ? [Number(player.clanId)] : [] },
         data: {
           accountId: Number(mark.accountId),
@@ -33,14 +34,13 @@ export class TrackingAnnounceService {
     }
   }
 
-  async isSubscriber(accountId: bigint): Promise<boolean> {
-    const links = await this.prisma.userLestaAccount.count({
-      where: {
-        accountId,
-        user: { subscriptions: { some: entitledSubscriptionWhere(new Date()) } }
-      }
+  async subscribers(accountIds: readonly bigint[]): Promise<Set<number>> {
+    const links = await this.prisma.userLestaAccount.findMany({
+      where: { accountId: { in: [...accountIds] }, user: { subscriptions: { some: entitledSubscriptionWhere(new Date()) } } },
+      select: { accountId: true },
+      distinct: ['accountId']
     });
 
-    return links > 0;
+    return new Set(links.map((link) => Number(link.accountId)));
   }
 }

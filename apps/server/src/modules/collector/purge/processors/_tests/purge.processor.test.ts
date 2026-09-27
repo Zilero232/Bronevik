@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../metrics';
-import type { JobMetricRetentionService, PurgeService } from '../../services';
+import type { PurgeService, RetentionService } from '../../services';
 
 import { JOB } from '../../../contracts';
 import { PurgeProcessor } from '../purge.processor';
@@ -12,12 +12,12 @@ const requestId = '00000000-0000-4000-8000-000000000001';
 
 const createProcessor = () => {
   const purge = mock<PurgeService>();
-  const jobMetrics = mock<JobMetricRetentionService>();
+  const retention = mock<RetentionService>();
   const metrics = mock<MetricsService>();
 
   metrics.track.mockImplementation(({ run }) => run());
 
-  return { purge, jobMetrics, processor: new PurgeProcessor(purge, jobMetrics, metrics) };
+  return { purge, retention, processor: new PurgeProcessor(purge, retention, metrics) };
 };
 
 describe('PurgeProcessor', () => {
@@ -30,12 +30,12 @@ describe('PurgeProcessor', () => {
     expect(purge.purgeAccount).not.toHaveBeenCalled();
   });
 
-  it('purges expired job metrics on the retention job', async () => {
-    const { purge, jobMetrics, processor } = createProcessor();
+  it('runs the retention purge on the retention job', async () => {
+    const { purge, retention, processor } = createProcessor();
 
-    jobMetrics.purgeExpired.mockResolvedValue(42);
+    retention.purgeExpired.mockResolvedValue({ collector_job_metric: 42 });
 
-    expect(await processor.process(mock<Job>({ name: JOB.purge.jobMetrics, data: {} }))).toEqual({ deleted: 42 });
+    expect(await processor.process(mock<Job>({ name: JOB.purge.retention, data: {} }))).toEqual({ deleted: { collector_job_metric: 42 } });
     expect(purge.purgeAccount).not.toHaveBeenCalled();
   });
 

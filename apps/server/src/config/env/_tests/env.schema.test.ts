@@ -44,6 +44,30 @@ describe('validateEnv', () => {
   });
 });
 
+describe('validateEnv fail-closed guards', () => {
+  const deployed = { ...base, API_URL: 'https://api.triotmetki.ru', WEB_URL: 'https://triotmetki.ru' };
+
+  it('refuses a deployed API that does not say which environment it runs in', () => {
+    expect(() => validateEnv(deployed)).toThrow(/NODE_ENV/);
+  });
+
+  it('defaults to development only on a local host', () => {
+    expect(validateEnv(base).NODE_ENV).toBe('development');
+  });
+
+  it('never turns the Lesta mock on by itself for a public API', () => {
+    expect(validateEnv({ ...deployed, NODE_ENV: 'development' }).LESTA_MOCK).toBe('off');
+  });
+
+  it.each(['BETTER_AUTH_SECRET', 'MOD_INGEST_SECRET'])('refuses a development placeholder %s in production', (name) => {
+    expect(() => validateEnv({ ...deployed, NODE_ENV: 'production', [name]: 'dev-secret-change-me-min-32-chars-000' })).toThrow(name);
+  });
+
+  it('accepts real secrets in production', () => {
+    expect(validateEnv({ ...deployed, NODE_ENV: 'production' }).NODE_ENV).toBe('production');
+  });
+});
+
 describe('isProduction', () => {
   it('is true only for NODE_ENV=production', () => {
     expect(isProduction({ NODE_ENV: 'production' })).toBe(true);

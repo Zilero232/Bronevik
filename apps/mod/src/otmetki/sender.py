@@ -56,7 +56,7 @@ class IngestSender(object):
             return False
         envelope = build_envelope(batch, creds.device_id, creds.account_id, self.mod_version, self.client_version, now)
         body = dumps_bytes(envelope)
-        headers = signed_headers(creds.device_id, creds.secret, body, self.user_agent)
+        headers = signed_headers(creds.device_id, creds.secret, body, self.user_agent, 'POST', self.url)
         self.in_flight = batch
 
         def done(status, response_body, response_headers):

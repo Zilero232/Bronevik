@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
-import type { ChartGranularity, ChartMetric } from '../../../config';
+import type { ChartGranularity, ChartMetric } from '../../../model/profile.types';
 
 import { CHART_GRANULARITIES, CHART_METRICS, HISTORY_CHART } from '../../../config';
 import { useChartsTab } from '../../../model/hooks';

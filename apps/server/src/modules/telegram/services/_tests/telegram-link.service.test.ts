@@ -9,6 +9,7 @@ import type { TelegramIdentityService } from '../telegram-identity.service';
 
 import { AppBadRequestException, AppConflictException } from '../../../../common/exceptions';
 import { AUTH_PROVIDER, placeholderEmail } from '../../../../lib/auth';
+import { DISPOSABLE_USER_COUNTS } from '../../config';
 import { TelegramLinkService } from '../telegram-link.service';
 
 const identity = { telegramId: 42n, username: 'ivan', name: 'ivan', languageCode: 'ru' };
@@ -27,10 +28,32 @@ const createService = () => {
   return { service: new TelegramLinkService(prisma, config, identities, communityContent), prisma, identities, communityContent };
 };
 
+const emptyCounts = Object.fromEntries(Object.keys(DISPOSABLE_USER_COUNTS).map((relation) => [relation, 0]));
+
+type HeldData = {
+  accounts: { id: string }[];
+  streamerProfile: { id: string } | null;
+  settingsShare: { userId: string } | null;
+  coachProfile: { userId: string } | null;
+  referredBy: { referredUserId: string } | null;
+  _count: Record<string, number>;
+};
+
+const NOTHING_HELD: HeldData = {
+  accounts: [],
+  streamerProfile: null,
+  settingsShare: null,
+  coachProfile: null,
+  referredBy: null,
+  _count: emptyCounts
+};
+
 const disposable = (id: string) => ({
   ...mock<User>({ id, email: placeholderEmail({ provider: AUTH_PROVIDER.telegram, id: 42 }) }),
-  _count: { lestaAccounts: 0, subscriptions: 0, payments: 0 }
+  ...NOTHING_HELD
 });
+
+const holding = (overrides: Partial<HeldData>) => ({ ...disposable('bot-user'), ...overrides });
 
 describe('TelegramLinkService.consumeCode', () => {
   it('refuses an unknown, used or expired code', async () => {
@@ -82,6 +105,64 @@ describe('TelegramLinkService.consumeCode', () => {
 
     expect(communityContent.purgeAuthoredBy).toHaveBeenCalledWith({ userId: 'bot-user', db: prisma });
     expect(prisma.user.delete).toHaveBeenCalledWith(expect.objectContaining({ where: { id: 'bot-user' } }));
+  });
+});
+
+describe('TelegramLinkService.consumeCode with a placeholder account that holds data', () => {
+  it.each(Object.keys(DISPOSABLE_USER_COUNTS))('refuses to delete an account that has %s', async (relation) => {
+    const { service, prisma, communityContent } = createService();
+
+    prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 1 });
+    prisma.telegramAccount.findUnique.mockResolvedValue(mock<TelegramAccount>({ userId: 'bot-user' }));
+    prisma.user.findUnique.mockResolvedValue(holding({ _count: { ...emptyCounts, [relation]: 1 } }));
+
+    await expect(service.consumeCode({ code: 'ABCDEFGH', identity })).rejects.toBeInstanceOf(AppConflictException);
+    expect(communityContent.purgeAuthoredBy).not.toHaveBeenCalled();
+    expect(prisma.user.delete).not.toHaveBeenCalled();
+  });
+
+  it('refuses to delete an account that signs in another way', async () => {
+    const { service, prisma } = createService();
+
+    prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 1 });
+    prisma.telegramAccount.findUnique.mockResolvedValue(mock<TelegramAccount>({ userId: 'bot-user' }));
+    prisma.user.findUnique.mockResolvedValue(holding({ accounts: [{ id: 'vk-account' }] }));
+
+    await expect(service.consumeCode({ code: 'ABCDEFGH', identity })).rejects.toBeInstanceOf(AppConflictException);
+    expect(prisma.user.delete).not.toHaveBeenCalled();
+  });
+
+  it('refuses to delete an account that owns a streamer page', async () => {
+    const { service, prisma } = createService();
+
+    prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 1 });
+    prisma.telegramAccount.findUnique.mockResolvedValue(mock<TelegramAccount>({ userId: 'bot-user' }));
+    prisma.user.findUnique.mockResolvedValue(holding({ streamerProfile: { id: 'p1' } }));
+
+    await expect(service.consumeCode({ code: 'ABCDEFGH', identity })).rejects.toBeInstanceOf(AppConflictException);
+  });
+});
+
+describe('TelegramLinkService.previewCode', () => {
+  it('names the account a fresh code would link to', async () => {
+    const { service, prisma } = createService();
+
+    prisma.oneTimeCode.findFirst.mockResolvedValue(mock<OneTimeCode & { user: User }>({ user: { name: 'Owner' } }));
+
+    expect(await service.previewCode('abcd efgh')).toEqual({ code: 'ABCDEFGH', accountName: 'Owner' });
+
+    expect(prisma.oneTimeCode.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ code: 'ABCDEFGH', purpose: 'telegramLink', usedAt: null }) })
+    );
+  });
+
+  it('returns null for an unknown, used or expired code without consuming it', async () => {
+    const { service, prisma } = createService();
+
+    prisma.oneTimeCode.findFirst.mockResolvedValue(null);
+
+    expect(await service.previewCode('ABCDEFGH')).toBeNull();
+    expect(prisma.oneTimeCode.updateMany).not.toHaveBeenCalled();
   });
 });
 

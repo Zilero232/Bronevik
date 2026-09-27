@@ -16,7 +16,7 @@ export const ProgressPage = () => {
 
   return (
     <div className={s.root}>
-      <SectionHeader as='h2' description={t('description')} title={t('title')} />
+      <SectionHeader as='h1' description={t('description')} title={t('title')} />
       {isFrozen && (
         <p className={s.frozen}>
           <PlusBadge />

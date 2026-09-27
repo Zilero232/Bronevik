@@ -35,6 +35,25 @@ describe('PurgeService.purgeAccount', () => {
     expect(statuses(prisma)).toEqual(['processing', 'completed']);
   });
 
+  it('clears the account from the tables that have no cascade to the player', async () => {
+    const { prisma, purge } = createPurge();
+
+    await purge.purgeAccount({ accountId: 5 });
+
+    for (const remove of [
+      prisma.clanMemberEvent.deleteMany,
+      prisma.weeklyChallengeProgress.deleteMany,
+      prisma.clanAttendance.deleteMany,
+      prisma.recruitCandidate.deleteMany,
+      prisma.competitionEntry.deleteMany
+    ]) {
+      expect(remove).toHaveBeenCalledWith({ where: { accountId: 5n } });
+    }
+
+    expect(prisma.replay.updateMany).toHaveBeenCalledWith({ where: { accountId: 5n }, data: { accountId: null } });
+    expect(prisma.$executeRaw).toHaveBeenCalled();
+  });
+
   it('marks the request failed and rethrows so the job retries', async () => {
     const { prisma, purge } = createPurge();
 

@@ -14,9 +14,28 @@ export const TRACKING = {
   },
   lesta: {
     accountExtra: ['statistics.random'],
+    accountFields: [
+      'account_id',
+      'nickname',
+      'clan_id',
+      'global_rating',
+      'created_at',
+      'last_battle_time',
+      'updated_at',
+      'statistics.all',
+      'statistics.random'
+    ],
     tankExtra: ['random'],
+    tankFields: ['tank_id', 'account_id', 'mark_of_mastery', 'max_frags', 'max_xp', 'all', 'random'],
     marksFields: ['tank_id', 'achievements'],
     marksAchievement: 'marksOnGun'
+  },
+  lock: {
+    scope: 'poll'
+  },
+  transaction: {
+    maxWaitMs: 5_000,
+    timeoutMs: 15_000
   },
   ratingsDebounceMs: 30_000,
   seed: {

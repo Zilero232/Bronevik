@@ -6,11 +6,11 @@ import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { AuthSession } from '@/entities/auth/session/api';
-
-import * as authApi from '@/entities/auth/session/api/auth/auth';
 import { QUERY_KEYS } from '@/shared/constants';
 
+import type { AuthSession } from '../../../../api';
+
+import * as authApi from '../../../../api/auth/auth';
 import { useAuthSession, useSignOut } from '../use-auth-session';
 
 vi.hoisted(() => vi.resetModules());

@@ -1,0 +1,41 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.table {
+  @include panel;
+
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--space-3) var(--space-4);
+    border-top: 1px solid var(--color-border);
+    text-align: end;
+  }
+
+  thead th {
+    @include label;
+
+    border-top: 0;
+  }
+
+  th[scope='row'],
+  thead th:first-child {
+    color: var(--color-text-muted);
+    font-weight: 500;
+    text-align: start;
+  }
+
+  td {
+    @include numeric;
+  }
+}
+
+.plus {
+  color: var(--color-premium);
+  font-weight: 700;
+}

@@ -57,7 +57,7 @@
     "description": "What to play today",
     "shuffle": "Another pick",
     "empty": "Could not pick any vehicles",
-    "plusHint": "With Plus — {size} tanks and more reasons: low win rate, personal missions.",
+    "plusHint": "With Plus — {size, plural, one {# tank} other {# tanks}} and more reasons: low win rate, personal missions.",
     "plusLink": "Learn more",
     "moe": "Mark",
     "toNextMark": "To next mark",
@@ -199,7 +199,7 @@
     "moe": "Mark"
   },
   "battle": {
-    "back": "Back to analytics",
+    "back": "To my battles",
     "brand": "Three Marks",
     "notFoundTitle": "Battle not found",
     "notFoundText": "There is no such battle among your mod records.",
@@ -279,7 +279,8 @@
       "lowAccuracy": "Hit rate {value}% against a norm of {reference}%.",
       "lowPenetration": "Pen rate {value}% against a norm of {reference}% — check your shells and targets.",
       "moeLoss": "The battle pulled your mark down: {value} against a moving average of {reference}."
-    }
+    },
+    "title": "Battle breakdown"
   },
   "battlesPage": {
     "title": "Battles",

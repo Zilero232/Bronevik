@@ -8,10 +8,11 @@ import { DataTable, FilteredEmptyState, QueryState } from '@/ui-kit';
 
 import { TANKS_VIEW } from '../../../config';
 import { useStatsTable } from '../../../model/hooks';
+import { TableTools } from './components';
 
 export const StatsTable = () => {
   const t = useTranslations('tanks.table');
-  const { columns, query, isFiltered, onReset } = useStatsTable();
+  const { columns, query, visibleColumns, isFiltered, onReset, onColumnsChange, onExport } = useStatsTable();
 
   return (
     <QueryState
@@ -31,6 +32,7 @@ export const StatsTable = () => {
           initialSorting={[{ id: 'battles', desc: true }]}
           renderCard={(row) => <TankCard row={row} />}
           rowHeight={TANKS_VIEW.rowHeight}
+          toolbar={<TableTools visible={visibleColumns} onExport={onExport} onVisibleChange={onColumnsChange} />}
         />
       )}
     </QueryState>

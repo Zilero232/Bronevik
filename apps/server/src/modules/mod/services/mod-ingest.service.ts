@@ -1,4 +1,4 @@
-import { Inject, Injectable, Optional } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { accountWn8 } from '@otmetki/ratings';
 import { fromUnixTime } from 'date-fns';
 import { groupBy, sortBy, sumBy } from 'remeda';
@@ -7,7 +7,8 @@ import type { BattleEventsSink, WebhookEmitter } from '../../../core';
 import type { IngestResponse } from '../lib';
 import type { BattleEventInput, IngestInput, LedgeredEventInput, MarkGainedInput, SessionRef, SessionSummary } from '../mod.types';
 
-import { BATTLE_EVENTS, isUniqueViolation, PrismaService, WEBHOOK_EMITTER } from '../../../core';
+import { errorMessage } from '../../../common/lib';
+import { BATTLE_EVENTS, isUniqueViolation, markGainedKey, PrismaService, WEBHOOK_EMITTER } from '../../../core';
 import { ExpectedValuesService } from '../../reference';
 import { countsForSession, moePercent, sessionIncrement, sessionUuid } from '../lib';
 import { toBattleData } from '../mappers';
@@ -15,6 +16,8 @@ import { EventLedgerService } from './event-ledger.service';
 
 @Injectable()
 export class ModIngestService {
+  private readonly logger = new Logger(ModIngestService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly ledger: EventLedgerService,
@@ -192,11 +195,16 @@ export class ModIngestService {
 
     const player = await this.prisma.player.findUnique({ where: { accountId }, select: { clanId: true, nickname: true } });
 
-    await this.webhooks.emit({
-      event: 'mark.gained',
-      subject: { accountIds: [Number(accountId)], clanIds: player?.clanId ? [Number(player.clanId)] : [] },
-      data: { accountId: Number(accountId), nickname: player?.nickname ?? null, tankId, marks, previousMarks: previous, percent, source: 'mod' }
-    });
+    try {
+      await this.webhooks.emit({
+        event: 'mark.gained',
+        dedupeKey: markGainedKey({ accountId, tankId, marks }),
+        subject: { accountIds: [Number(accountId)], clanIds: player?.clanId ? [Number(player.clanId)] : [] },
+        data: { accountId: Number(accountId), nickname: player?.nickname ?? null, tankId, marks, previousMarks: previous, percent, source: 'mod' }
+      });
+    } catch (error) {
+      this.logger.warn(`mark.gained webhooks not queued: ${errorMessage(error)}`);
+    }
   }
 
   private async summarize({ id, modId }: SessionRef): Promise<SessionSummary | null> {

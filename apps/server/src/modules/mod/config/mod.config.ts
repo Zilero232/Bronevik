@@ -1,8 +1,11 @@
 export const BIND_CODE = {
   alphabet: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
-  length: 6,
+  length: 10,
   ttlMinutes: 10,
-  throttle: { limit: 10, ttl: 60_000 }
+  throttle: { limit: 10, ttl: 60_000 },
+  failurePrefix: 'otmetki:mod:bind-failures:',
+  maxFailuresPerAccount: 10,
+  failureWindowSeconds: 900
 } as const;
 
 export const MOD_DEVICE = {
@@ -10,7 +13,17 @@ export const MOD_DEVICE = {
   idBytes: 12,
   secretContext: 'otmetki-mod-device:',
   header: 'x-otmetki-device',
-  signatureHeader: 'x-otmetki-signature'
+  signatureHeader: 'x-otmetki-signature',
+  timestampHeader: 'x-otmetki-timestamp',
+  nonceHeader: 'x-otmetki-nonce'
+} as const;
+
+export const MOD_REQUEST = {
+  version: 'v2',
+  maxSkewSeconds: 300,
+  noncePattern: /^[\w-]{16,64}$/u,
+  noncePrefix: 'otmetki:mod:nonce:',
+  nonceTtlSeconds: 900
 } as const;
 
 export const MOD_INGEST = {
@@ -18,6 +31,10 @@ export const MOD_INGEST = {
   ledgerTtlSeconds: 30 * 86_400,
   randomBonusType: 1,
   throttle: { limit: 120, ttl: 60_000 }
+} as const;
+
+export const BATTLE_CORROBORATION = {
+  windowHours: 72
 } as const;
 
 export const MOD_SHOTS = {

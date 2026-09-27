@@ -1,2 +1,1 @@
-export { COMPARE_LIMIT, COMPARE_METRICS, COMPARE_PERIODS } from './compare.constants';
-export type { CompareDirection, CompareFormat, CompareMetric, CompareMetricKey, CompareMetricSource } from './compare.types';
+export { COMPARE_DELTA_FORMAT, COMPARE_LIMIT, COMPARE_METRICS, COMPARE_PARAMS, COMPARE_PERIODS } from './compare.constants';

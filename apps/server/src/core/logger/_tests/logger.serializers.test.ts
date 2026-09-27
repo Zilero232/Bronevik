@@ -37,6 +37,19 @@ describe('requestId', () => {
     expect(response.setHeader).toHaveBeenCalledWith(LOGGER.http.requestIdHeader, 'abc');
   });
 
+  it.each([
+    ['too long', 'a'.repeat(65)],
+    ['carrying a line break', 'abc\ninjected'],
+    ['carrying markup', '<script>'],
+    ['empty', '']
+  ])('replaces an incoming request id that is %s', (_label, incoming) => {
+    const response = mock<ServerResponse>();
+    const id = requestId({ request: request({ headers: { [LOGGER.http.requestIdHeader]: incoming } }), response });
+
+    expect(id).not.toBe(incoming);
+    expect(response.setHeader).toHaveBeenCalledWith(LOGGER.http.requestIdHeader, id);
+  });
+
   it('generates an id when the client sent none', () => {
     const id = requestId({ request: request({}), response: mock<ServerResponse>() });
 

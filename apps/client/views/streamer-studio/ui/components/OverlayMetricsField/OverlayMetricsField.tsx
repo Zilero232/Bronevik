@@ -6,12 +6,11 @@ import { overlayMetricSchema } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { ToggleChips } from '@/ui-kit';
+import { FormField, ToggleChips } from '@/ui-kit';
 
 import type { OverlayFormValues } from '../../../lib/overlay-form';
 
 import { OVERLAY_EDITOR } from '../../../config';
-import { FormField } from '../FormField';
 
 export const OverlayMetricsField = () => {
   const t = useTranslations('streamer.overlays');

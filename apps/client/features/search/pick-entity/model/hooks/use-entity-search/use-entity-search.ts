@@ -1,40 +1,13 @@
 'use client';
 
-import type { SearchResult } from '@otmetki/schemas';
+import { useDebouncedSearch } from '@/entities/search/search';
 
-import { SEARCH } from '@otmetki/schemas';
-import { useDebounceValue } from '@siberiacancode/reactuse';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import type { PickableKind, UseEntitySearchInput } from './use-entity-search.types';
 
-import { search, SEARCH_REQUEST } from '@/entities/search/search';
-import { QUERY_KEYS } from '@/shared/constants';
-
-import type { PickableKind, PickableResult, UseEntitySearchInput } from './use-entity-search.types';
-
-const isKind =
-  <K extends PickableKind>(kind: K) =>
-  (result: SearchResult): result is PickableResult<K> & SearchResult =>
-    result.kind === kind;
+import { isKind } from '../../../lib/search-kind';
 
 export const useEntitySearch = <K extends PickableKind>({ kind, query }: UseEntitySearchInput<K>) => {
-  const debounced = useDebounceValue(query.trim(), SEARCH_REQUEST.debounceMs);
+  const { data, ...state } = useDebouncedSearch({ query, select: (response) => response.results.filter(isKind(kind)) });
 
-  const isEnabled = debounced.length >= SEARCH.minLength;
-
-  const {
-    data: response,
-    isFetching,
-    isError,
-    refetch
-  } = useQuery({
-    queryKey: QUERY_KEYS.search(debounced),
-    queryFn: ({ signal }) => search({ query: debounced, signal }),
-    enabled: isEnabled,
-    placeholderData: keepPreviousData,
-    staleTime: 30_000
-  });
-
-  const results: PickableResult<K>[] = isEnabled && response ? response.results.filter(isKind(kind)) : [];
-
-  return { results, isEnabled, isFetching: isEnabled && isFetching, isError, retry: () => refetch() };
+  return { results: data ?? [], ...state };
 };

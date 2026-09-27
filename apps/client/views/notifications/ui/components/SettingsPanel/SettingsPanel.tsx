@@ -1,12 +1,10 @@
 'use client';
 
-import type { NotificationSettings } from '@otmetki/schemas';
-
 import { useTranslations } from 'next-intl';
 
 import { QueryState, Skeleton } from '@/ui-kit';
 
-import { useNotificationSettings } from '../../../model/hooks';
+import { useSettingsPanel } from '../../../model/hooks';
 import { ChannelsSection } from '../ChannelsSection';
 import { EventsSection } from '../EventsSection';
 import { QuietHoursSection } from '../QuietHoursSection';
@@ -16,9 +14,7 @@ import s from './SettingsPanel.module.scss';
 
 export const SettingsPanel = () => {
   const t = useTranslations('notifications.settings');
-  const { query, save } = useNotificationSettings();
-
-  const onPatch = (patch: Partial<NotificationSettings>) => save.mutate(patch);
+  const { query, onPatch } = useSettingsPanel();
 
   return (
     <QueryState

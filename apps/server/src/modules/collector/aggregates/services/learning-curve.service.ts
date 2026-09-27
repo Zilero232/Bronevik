@@ -16,8 +16,28 @@ export class LearningCurveService {
     const { windowDays, maxBattleDelta, minBattles } = LEARNING_CURVE_AGGREGATE;
     const starts = [...LEARNING_CURVE_AGGREGATE.bucketStarts];
 
+    const since = subDays(computedAt, windowDays);
+
     const rows = await this.prisma.$queryRaw<LearningSqlRow[]>`
-      WITH deltas AS (
+      WITH windowed AS (
+        SELECT account_id, tank_id, captured_at, battles, wins, damage_dealt
+        FROM tank_snapshot
+        WHERE mode = 'random' AND captured_at > ${since}
+      ),
+      series AS (
+        SELECT * FROM windowed
+        UNION ALL
+        SELECT base.*
+        FROM (SELECT DISTINCT account_id, tank_id FROM windowed) pair
+        CROSS JOIN LATERAL (
+          SELECT account_id, tank_id, captured_at, battles, wins, damage_dealt
+          FROM tank_snapshot
+          WHERE account_id = pair.account_id AND tank_id = pair.tank_id AND mode = 'random' AND captured_at <= ${since}
+          ORDER BY captured_at DESC
+          LIMIT 1
+        ) base
+      ),
+      deltas AS (
         SELECT
           tank_id,
           account_id,
@@ -25,8 +45,7 @@ export class LearningCurveService {
           battles - lag(battles) OVER w AS battles_delta,
           wins - lag(wins) OVER w AS wins_delta,
           damage_dealt::bigint - lag(damage_dealt::bigint) OVER w AS damage_delta
-        FROM tank_snapshot
-        WHERE mode = 'random' AND captured_at > ${subDays(computedAt, windowDays)}
+        FROM series
         WINDOW w AS (PARTITION BY account_id, tank_id ORDER BY captured_at)
       )
       SELECT

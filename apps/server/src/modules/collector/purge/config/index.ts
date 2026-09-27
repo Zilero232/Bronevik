@@ -1,1 +1,1 @@
-export { PURGE } from './purge.config';
+export { PURGE, RETENTION } from './purge.config';

@@ -1,4 +1,4 @@
-export { getTacticBoard, listMyTacticBoards, zCreateTacticBoard, zTacticBoard, zUpdateTacticBoard } from './api';
+export { getTacticBoard, listMyTacticBoards, zCreateTacticBoard, zTacticBoard } from './api';
 export type {
   CreateTacticBoard,
   TacticBoard,

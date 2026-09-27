@@ -6,8 +6,8 @@ import { toast } from 'sonner';
 
 import type { TacticIcon, TacticIconKind, TacticLayer, TacticStroke } from '@/entities/tactic/board';
 
-import type { BoardTeam, BoardTool } from '../../../config';
 import type { BoardPoint } from '../../../lib/board-geometry';
+import type { BoardTeam, BoardTool } from '../../../model/board-tools.types';
 import type { BoardItemRef, IconDragInput, LayerRecipe, RenameLayerRequest, StrokeDragInput } from '../../board.types';
 import type { UseBoardEditorInput } from './use-board-editor.types';
 

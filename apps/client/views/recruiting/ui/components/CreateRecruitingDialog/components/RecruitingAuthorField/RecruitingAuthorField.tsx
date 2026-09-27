@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { AccountSelect } from '@/features/community/viewer';
+import { AccountSelect } from '@/entities/auth/session';
 import { Select } from '@/ui-kit';
 
 import type { RecruitingFormOutput, RecruitingFormValues } from '../../../../../lib/recruiting-form';

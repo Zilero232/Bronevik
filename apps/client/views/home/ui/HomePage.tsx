@@ -1,4 +1,15 @@
-import { ClanActivity, CommunityBand, GameNews, GarageStrip, HomeActions, HomeHero, MarksMovement, StrongTanks, TopPlayers } from './components';
+import {
+  ClanActivity,
+  CommunityBand,
+  ForYou,
+  GameNews,
+  GarageStrip,
+  HomeActions,
+  HomeHero,
+  MarksMovement,
+  StrongTanks,
+  TopPlayers
+} from './components';
 
 import s from './HomePage.module.scss';
 
@@ -8,6 +19,7 @@ export const HomePage = () => (
       <HomeHero />
       <HomeActions />
     </div>
+    <ForYou />
     <StrongTanks />
     <GarageStrip />
     <MarksMovement />

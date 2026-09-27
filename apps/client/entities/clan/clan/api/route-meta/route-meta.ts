@@ -1,29 +1,27 @@
 import type { RouteStaticParamsInput } from '@/shared/seo';
 
-import { ROUTE_STATIC_PARAMS } from '@/shared/seo';
+import { ROUTE_STATIC_PARAMS, routeEntity, routeSlugs } from '@/shared/seo';
 
 import { getClan, listClans } from '../clans';
 
-export const clanRouteName = async (idOrTag: string) => {
+export const clanRouteEntity = async (idOrTag: string) => {
   'use cache';
 
-  try {
-    const { clan } = await getClan({ idOrTag });
+  return routeEntity({
+    key: idOrTag,
+    load: async () => {
+      const { clan } = await getClan({ idOrTag });
 
-    return `[${clan.tag}] ${clan.name}`;
-  } catch {
-    return decodeURIComponent(idOrTag);
-  }
+      return `[${clan.tag}] ${clan.name}`;
+    }
+  });
 };
 
-export const topClanTags = async ({ fallback }: RouteStaticParamsInput) => {
+export const topClanTags = async ({ fallback, limit = ROUTE_STATIC_PARAMS.limit }: RouteStaticParamsInput) => {
   'use cache';
 
-  try {
-    const values = (await listClans({ limit: ROUTE_STATIC_PARAMS.limit })).items.map(({ clan }) => clan.tag);
-
-    return values.length > 0 ? values : [fallback];
-  } catch {
-    return [fallback];
-  }
+  return routeSlugs({
+    fallback,
+    load: async () => (await listClans({ limit })).items.map(({ clan }) => clan.tag)
+  });
 };

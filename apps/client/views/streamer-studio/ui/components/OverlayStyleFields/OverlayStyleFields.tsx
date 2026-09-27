@@ -7,13 +7,12 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { OVERLAY_OPTIONS } from '@/entities/streamer/overlay';
 import { PlusBadge } from '@/features/plus/plus-gate';
-import { RangeSlider, SegmentedControl } from '@/ui-kit';
+import { FormField, RangeSlider, SegmentedControl } from '@/ui-kit';
 
 import type { OverlayFormValues } from '../../../lib/overlay-form';
 
 import { OVERLAY_EDITOR } from '../../../config';
 import { useOverlayThemes } from '../../../model/hooks';
-import { FormField } from '../FormField';
 
 import s from './OverlayStyleFields.module.scss';
 

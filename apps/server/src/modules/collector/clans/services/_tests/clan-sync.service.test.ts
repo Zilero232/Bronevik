@@ -93,6 +93,21 @@ describe('ClanSyncService.refresh', () => {
     );
   });
 
+  it('moves the clan of joined players at once and clears it for players who left', async () => {
+    const { prisma, sync } = createSync({
+      info: clanInfo({ members: [member(1), member(3)] }),
+      exists: true,
+      stored: [storedMember(1), storedMember(2)]
+    });
+
+    await sync.refresh({ clanIds: [CLAN_ID], snapshot: false });
+
+    expect(prisma.player.updateMany.mock.calls.map(([args]) => args)).toEqual([
+      { where: { accountId: { in: [3n] } }, data: { clanId: BigInt(CLAN_ID) } },
+      { where: { accountId: { in: [2n] }, clanId: BigInt(CLAN_ID) }, data: { clanId: null } }
+    ]);
+  });
+
   it('updates the stored role of a promoted member', async () => {
     const { prisma, sync } = createSync({
       info: clanInfo({ members: [member(1, 'commander')] }),

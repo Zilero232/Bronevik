@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { env, EXTERNAL_LINKS, SITE } from '@/shared/config';
-import { SITE_FOOTER_GROUPS, SITE_NAV } from '@/shared/constants';
+import { SITE_FOOTER_GROUPS, SITE_LEGAL_LINKS, SITE_NAV } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
 import s from './SiteFooter.module.scss';
@@ -13,6 +13,7 @@ export const SiteFooter = () => {
   const t = useTranslations('footer');
   const tNav = useTranslations('nav');
   const tBrand = useTranslations('brand');
+  const tLegal = useTranslations('legal.footer');
 
   return (
     <footer className={s.root}>
@@ -38,6 +39,13 @@ export const SiteFooter = () => {
           <span className={s.word}>{tBrand('name')}</span>
           <span>{tBrand('tagline')}</span>
         </p>
+        <nav aria-label={t('legalLabel')} className={s.docs}>
+          {SITE_LEGAL_LINKS.map((item) => (
+            <Link key={item.key} className={s.link} href={item.href}>
+              {tLegal(item.key)}
+            </Link>
+          ))}
+        </nav>
         <p className={s.legal}>
           <span>{t('lestaCopyright')}</span>
           <span>

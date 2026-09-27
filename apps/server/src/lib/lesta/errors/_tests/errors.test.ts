@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { LESTA_ERROR_CODE, RETRYABLE_HTTP_STATUS } from '../errors.constants';
-import { isRetryableLestaError, LestaApiError, LestaHttpError, LestaNetworkError } from '../lesta-api-error';
+import { isRetryableLestaError, LestaApiError, LestaHttpError, LestaNetworkError, LestaQueueFullError } from '../lesta-api-error';
 
 const METHOD = 'account/info';
 
@@ -42,5 +42,11 @@ describe('Lesta errors', () => {
     [new Error('other'), false]
   ])('classifies %o as retryable: %s', (error, expected) => {
     expect(isRetryableLestaError(error)).toBe(expected);
+  });
+});
+
+describe('isRetryableLestaError queue overflow', () => {
+  it('retries a request the local limiter queue had no room for', () => {
+    expect(isRetryableLestaError(new LestaQueueFullError({ key: 'global', cause: new Error('full') }))).toBe(true);
   });
 });

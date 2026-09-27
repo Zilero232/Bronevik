@@ -1,15 +1,17 @@
+import type { Request } from 'express';
+
 import {
   Body,
   Controller,
   Delete,
   Get,
-  Headers,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
   Post,
   Query,
+  Req,
   StreamableFile,
   UploadedFile,
   UseGuards,
@@ -23,7 +25,6 @@ import { ZodResponse } from 'nestjs-zod';
 import type { UploadedReplayFile } from './replays.types';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
-import { MOD_DEVICE } from '../mod';
 import { REPLAY_UPLOAD, replayFileInterceptor } from './config';
 import {
   BestOfWeekDto,
@@ -70,12 +71,8 @@ export class ReplaysController {
   @UseInterceptors(replayFileInterceptor)
   @ApiConsumes('multipart/form-data')
   @ZodResponse({ type: UploadedReplayDto, status: HttpStatus.CREATED })
-  uploadFromMod(
-    @UploadedFile() file: UploadedReplayFile | undefined,
-    @Headers(MOD_DEVICE.header) deviceId: string | undefined,
-    @Headers(MOD_DEVICE.signatureHeader) signature: string | undefined
-  ) {
-    return this.uploads.uploadFromMod({ file, deviceId, signature });
+  uploadFromMod(@UploadedFile() file: UploadedReplayFile | undefined, @Req() request: Request) {
+    return this.uploads.uploadFromMod({ file, request });
   }
 
   @AllowAnonymous()

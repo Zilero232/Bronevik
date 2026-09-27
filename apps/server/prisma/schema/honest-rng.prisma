@@ -16,3 +16,22 @@ model RngAggregate {
   @@id([scope, period])
   @@map("rng_aggregate")
 }
+
+model RngDaily {
+  day   DateTime @db.Date
+  scope String
+
+  battles     Int
+  shots       Int
+  damage      Float
+  nominal     Float
+  within      Int
+  bucketShots Int[]    @map("bucket_shots")
+  fired       Int
+  hit         Int
+  pierced     Int
+  players     BigInt[]
+
+  @@id([day, scope])
+  @@map("rng_daily")
+}

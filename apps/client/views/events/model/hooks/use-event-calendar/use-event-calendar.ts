@@ -5,7 +5,7 @@ import type { GameEventKind } from '@otmetki/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { parseAsArrayOf, parseAsStringLiteral, useQueryState } from 'nuqs';
 
-import { eventsControllerCalendarOptions } from '@/shared/api/query-options';
+import { calendarQueries } from '@/entities/event/calendar';
 import { safeWebHref } from '@/shared/lib';
 
 import type { EventEntry, EventPhase } from '../../../lib/event-timeline';
@@ -22,7 +22,7 @@ export const useEventCalendar = () => {
   );
 
   const query = useQuery({
-    ...eventsControllerCalendarOptions(),
+    ...calendarQueries.all(),
     staleTime: EVENTS.staleMs
   });
 

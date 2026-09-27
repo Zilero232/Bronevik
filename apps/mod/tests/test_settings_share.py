@@ -10,7 +10,7 @@ from otmetki.config import Config
 from otmetki.settings_share import (POLL_PATH, RESULT_PATH, SettingsBackup, SettingsShareError, backup_path, build_export,
                                     build_export_request, build_poll_request, build_result_request, changes_to_values,
                                     flatten_settings, parse_poll_response, plan_apply, result_path, signed_post)
-from otmetki.signing import DEVICE_HEADER, SIGNATURE_HEADER, verify
+from otmetki.signing import DEVICE_HEADER, verify_request
 from otmetki.storage import JsonFile, MemoryFile
 
 SECRET = 'q' * 43
@@ -204,7 +204,7 @@ class PayloadTest(unittest.TestCase):
         request = transport.requests[0]
         self.assertEqual(request['method'], 'POST')
         self.assertEqual(request['headers'][DEVICE_HEADER], 'dev_1')
-        self.assertTrue(verify(SECRET, request['body'], request['headers'][SIGNATURE_HEADER]))
+        self.assertTrue(verify_request(SECRET, 'POST', 'https://api.example' + POLL_PATH, request['headers'], request['body']))
         transport.respond(204)
         self.assertEqual(calls, [(204, b'', {})])
 

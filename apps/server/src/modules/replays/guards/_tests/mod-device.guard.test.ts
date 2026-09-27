@@ -2,6 +2,7 @@ import type { ExecutionContext } from '@nestjs/common';
 import type { HttpArgumentsHost } from '@nestjs/common/interfaces';
 
 import { HttpStatus } from '@nestjs/common';
+import RedisMock from 'ioredis-mock';
 import { createHmac } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
@@ -52,7 +53,7 @@ const createGuard = (stored: ModDevice | null = boundDevice) => {
   config.get.mockReturnValue(SERVER_SECRET);
   prisma.modDevice.findUnique.mockResolvedValue(stored);
 
-  return { guard: new ModDeviceGuard(new ModDeviceService(prisma, config)), prisma };
+  return { guard: new ModDeviceGuard(new ModDeviceService(prisma, config, new RedisMock())), prisma };
 };
 
 const credentials = { [MOD_DEVICE.header]: DEVICE_ID, [MOD_DEVICE.signatureHeader]: signature };

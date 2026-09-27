@@ -2,7 +2,7 @@ import { HONEST_RNG } from '@otmetki/schemas';
 import { sumBy } from 'remeda';
 
 import type { RngSummary } from '../../honest-rng.types';
-import type { FoldBattleInput, RollTally } from './roll-tally.types';
+import type { FoldBattleInput, MergeTallyInput, RollTally } from './roll-tally.types';
 
 import { percentOf } from '../../../../common/lib';
 import { shotRolls, summarizeRolls } from '../../../analytics';
@@ -55,3 +55,21 @@ export const tallySummary = (tally: RollTally): RngSummary => ({
   hitRate: percentOf({ value: tally.hit, by: tally.fired }),
   penRate: percentOf({ value: tally.pierced, by: tally.hit })
 });
+
+export const mergeTally = ({ into, from }: MergeTallyInput): RollTally => {
+  into.battles += from.battles;
+  into.shots += from.shots;
+  into.damage += from.damage;
+  into.nominal += from.nominal;
+  into.within += from.within;
+  into.bucketShots = into.bucketShots.map((count, index) => count + (from.bucketShots[index] ?? 0));
+  into.fired += from.fired;
+  into.hit += from.hit;
+  into.pierced += from.pierced;
+
+  for (const player of from.players) {
+    into.players.add(player);
+  }
+
+  return into;
+};

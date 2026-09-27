@@ -75,7 +75,7 @@
     "unfollowed": "Unfollowed",
     "tankSaved": "Tank filter saved",
     "failed": "Could not update the follow",
-    "limit": "Without Plus you can follow up to {limit} streamers",
+    "limit": "Without Plus you can follow up to {limit, plural, one {# streamer} other {# streamers}}",
     "plusRequired": "The tank filter needs Plus",
     "tankTitle": "Only notify about streams on a tank",
     "tankPlaceholder": "Any tank",

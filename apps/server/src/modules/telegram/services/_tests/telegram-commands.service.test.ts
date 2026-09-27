@@ -15,6 +15,7 @@ import type { TelegramSharedCommandsService } from '../telegram-shared-commands.
 
 import { AppConflictException, AppNotFoundException } from '../../../../common/exceptions';
 import { BOT, LINK_CODE, SHARED_COMMAND_OF } from '../../config';
+import { linkConfirmData } from '../../lib';
 import { TelegramCommandsService } from '../telegram-commands.service';
 
 const USER: User = { id: 42, is_bot: false, first_name: 'Tank', username: 'tanker', language_code: 'ru' };
@@ -90,34 +91,35 @@ describe('TelegramCommandsService.identityOf', () => {
 });
 
 describe('TelegramCommandsService.start', () => {
-  it('links the account when started with a link code', async () => {
+  it('asks to confirm the target account before linking with a code', async () => {
     const { service, links } = createService();
     const ctx = contextOf({ match: ` ${CODE.toLowerCase()} ` });
 
+    links.previewCode.mockResolvedValue({ code: CODE, accountName: 'Owner' });
     await service.start(ctx);
 
-    expect(links.consumeCode).toHaveBeenCalledWith(expect.objectContaining({ code: CODE.toLowerCase() }));
-    expect(ctx.reply).toHaveBeenCalledWith('start-linked');
+    expect(links.previewCode).toHaveBeenCalledWith(CODE.toLowerCase());
+    expect(links.consumeCode).not.toHaveBeenCalled();
+    expect(ctx.t).toHaveBeenCalledWith('link-confirm', { name: 'Owner' });
+
+    const buttons = ctx.reply.mock.calls[0]?.[1]?.reply_markup;
+    const data =
+      buttons && 'inline_keyboard' in buttons
+        ? buttons.inline_keyboard.flat().map((button) => ('callback_data' in button ? button.callback_data : null))
+        : [];
+
+    expect(data).toEqual([linkConfirmData({ answer: 'yes', code: CODE }), linkConfirmData({ answer: 'no' })]);
   });
 
-  it('explains that a code is taken by another account', async () => {
+  it('reports an unknown code without asking for confirmation', async () => {
     const { service, links } = createService();
     const ctx = contextOf({ match: CODE });
 
-    links.consumeCode.mockRejectedValue(new AppConflictException('CONFLICT', 'taken'));
-    await service.start(ctx);
-
-    expect(ctx.reply).toHaveBeenCalledWith('start-code-taken');
-  });
-
-  it('reports any other failure as an invalid code', async () => {
-    const { service, links } = createService();
-    const ctx = contextOf({ match: CODE });
-
-    links.consumeCode.mockRejectedValue(new Error('expired'));
+    links.previewCode.mockResolvedValue(null);
     await service.start(ctx);
 
     expect(ctx.reply).toHaveBeenCalledWith('start-code-invalid');
+    expect(links.consumeCode).not.toHaveBeenCalled();
   });
 
   it('offers login and the mini app on a public site', async () => {
@@ -149,6 +151,66 @@ describe('TelegramCommandsService.start', () => {
     await service.start(ctx);
 
     expect(ctx.reply).not.toHaveBeenCalled();
+  });
+});
+
+describe('TelegramCommandsService.confirmLink', () => {
+  const confirmContext = (data: string) => {
+    const ctx = contextOf();
+
+    Object.assign(ctx, { callbackQuery: { id: 'q', from: USER, chat_instance: 'c', data } });
+    ctx.editMessageReplyMarkup.mockResolvedValue(true);
+
+    return ctx;
+  };
+
+  it('links the account only after the user confirms', async () => {
+    const { service, links } = createService();
+    const ctx = confirmContext(linkConfirmData({ answer: 'yes', code: CODE }));
+
+    await service.confirmLink(ctx);
+
+    expect(links.consumeCode).toHaveBeenCalledWith(expect.objectContaining({ code: CODE, identity: expect.objectContaining({ telegramId: 42n }) }));
+    expect(ctx.reply).toHaveBeenCalledWith('start-linked');
+  });
+
+  it('links nothing when the user declines', async () => {
+    const { service, links } = createService();
+    const ctx = confirmContext(linkConfirmData({ answer: 'no' }));
+
+    await service.confirmLink(ctx);
+
+    expect(links.consumeCode).not.toHaveBeenCalled();
+    expect(ctx.reply).toHaveBeenCalledWith('link-cancelled');
+  });
+
+  it('ignores a confirmation that does not carry a valid code', async () => {
+    const { service, links } = createService();
+    const ctx = confirmContext('tglink:yes:!!');
+
+    await service.confirmLink(ctx);
+
+    expect(links.consumeCode).not.toHaveBeenCalled();
+  });
+
+  it('explains that a code is taken by another account', async () => {
+    const { service, links } = createService();
+    const ctx = confirmContext(linkConfirmData({ answer: 'yes', code: CODE }));
+
+    links.consumeCode.mockRejectedValue(new AppConflictException('CONFLICT', 'taken'));
+    await service.confirmLink(ctx);
+
+    expect(ctx.reply).toHaveBeenCalledWith('start-code-taken');
+  });
+
+  it('reports any other failure as an invalid code', async () => {
+    const { service, links } = createService();
+    const ctx = confirmContext(linkConfirmData({ answer: 'yes', code: CODE }));
+
+    links.consumeCode.mockRejectedValue(new Error('expired'));
+    await service.confirmLink(ctx);
+
+    expect(ctx.reply).toHaveBeenCalledWith('start-code-invalid');
   });
 });
 

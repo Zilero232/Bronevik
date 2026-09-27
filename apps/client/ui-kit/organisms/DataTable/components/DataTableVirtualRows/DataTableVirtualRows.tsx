@@ -2,7 +2,7 @@
 
 import { useVirtualizer } from '@tanstack/react-virtual';
 
-import { isInteractiveTarget } from '@/shared/lib';
+import { rowActivation } from '@/shared/lib';
 
 import type { DataTableVirtualRowsProps } from './DataTableVirtualRows.types';
 
@@ -55,7 +55,7 @@ export const DataTableVirtualRows = <T,>({
             data-linked={link !== null}
             data-tint={rowTint?.(row.original) ?? undefined}
             style={{ height: rowHeight }}
-            onClick={onRowClick ? (event) => !isInteractiveTarget(event.target) && onRowClick(row.original) : undefined}
+            {...rowActivation({ onActivate: onRowClick && (() => onRowClick(row.original)), isLinked: link !== null })}
           >
             <DataTableCells barMax={barMax} link={link} row={row} />
           </tr>

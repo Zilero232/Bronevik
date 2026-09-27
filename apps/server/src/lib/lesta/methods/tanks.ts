@@ -5,7 +5,7 @@ import type { TankAchievements, TankStats } from '../schemas';
 import type { AccountTanksStatsInput, PerAccountInput, TankMasteryInput } from './methods.types';
 
 import { batchById, batchList } from '../batching';
-import { callParams, fieldAwareSchema } from '../client/client.helpers';
+import { callParams, fieldAwareSchema } from '../client/params';
 import { idMapOf, tankAchievementsSchema, tankMasterySchema, tankStatsSchema } from '../schemas';
 
 export const createTanksMethods = (requester: LestaRequester) => {

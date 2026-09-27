@@ -1,4 +1,4 @@
-import type { ComparePreset } from '../../../config';
+import type { ComparePreset } from '../../../model/compare-presets.types';
 
 export type PresetCardProps = {
   preset: ComparePreset;

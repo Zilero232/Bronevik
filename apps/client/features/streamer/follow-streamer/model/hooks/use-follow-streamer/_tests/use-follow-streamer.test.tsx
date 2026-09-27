@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { NextIntlClientProvider } from 'next-intl';
+import { createTranslator, NextIntlClientProvider } from 'next-intl';
 import { toast } from 'sonner';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 
@@ -129,7 +129,14 @@ describe('useFollowStreamer', () => {
 
     act(() => result.current.onToggle());
 
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith(TEXT.limit.replace('{limit}', String(FOLLOW_STREAMER.freeLimit))));
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        createTranslator({ locale: 'en', messages: messages.en, namespace: 'streamersDirectory.follow' })('limit', {
+          limit: FOLLOW_STREAMER.freeLimit
+        })
+      )
+    );
+
     expect(toast.success).not.toHaveBeenCalled();
   });
 });

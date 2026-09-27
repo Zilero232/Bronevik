@@ -4,3 +4,4 @@ export type { BattleResultEvent, BindResponse, IngestBatch, IngestEvent, IngestR
 export { deviceSecret, hashSecret, matchesSecretHash, newDeviceId, normalizeBindCode } from './device-secret';
 export { readStoredLoadout, storedLoadoutSchema } from './loadout';
 export type { StoredLoadout } from './loadout';
+export { isFreshTimestamp, isNonce, requestPath, signedMessage } from './request-signature';

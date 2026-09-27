@@ -14,6 +14,8 @@ const createService = (env: 'development' | 'test') => {
   const config = mock<AppConfigService>();
   const queue = mock<Queue>();
 
+  queue.getJobSchedulers.mockResolvedValue([]);
+
   config.get.mockReturnValue(env);
   moduleRef.get.mockReturnValue(queue);
 

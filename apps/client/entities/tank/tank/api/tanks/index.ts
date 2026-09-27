@@ -1,4 +1,3 @@
-export { compareTanks } from './compare-tanks';
 export {
   getMyEconomy,
   getMyTankLearning,
@@ -13,7 +12,6 @@ export {
   listVehicles
 } from './tanks';
 export type {
-  CompareTanksInput,
   MyEconomyInput,
   MyLearningInput,
   TankDetailInput,

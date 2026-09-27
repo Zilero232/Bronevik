@@ -35,6 +35,7 @@ const setup = ({ totals, trend, playtime }: Raw) => {
   catalog.all.mockResolvedValue(catalogOf(tank));
   prisma.$queryRaw.mockResolvedValueOnce(totals).mockResolvedValueOnce(trend).mockResolvedValueOnce(playtime);
   prisma.battle.findMany.mockResolvedValue([]);
+  prisma.battle.count.mockResolvedValue(0);
   prisma.playSession.findMany.mockResolvedValue([]);
 
   return { prisma, service: new AnalyticsOverviewService(prisma, catalog, expected, accounts) };
@@ -72,6 +73,7 @@ describe('AnalyticsOverviewService.overview', () => {
     const { prisma, service } = setup({ totals: [], trend: [], playtime: [cell] });
 
     prisma.battle.findMany.mockResolvedValue([modBattle('win'), modBattle('loss')]);
+    prisma.battle.count.mockResolvedValue(2);
 
     const overview = await service.overview({ userId: 'u', period: 'd30' });
 

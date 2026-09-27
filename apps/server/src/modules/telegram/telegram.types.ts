@@ -77,6 +77,13 @@ export type ConsumeInput = {
   code: string;
 };
 
+export type LinkPromptInput = Omit<ConsumeInput, 'identity'>;
+
+export type LinkCodePreview = {
+  code: string;
+  accountName: string;
+};
+
 export type SettingsSnapshot = Pick<NotificationSettings, 'channels' | 'events' | 'weeklyDigest'>;
 
 export type MenuLabelInput = {

@@ -69,9 +69,9 @@ export class ProgressionRunService {
   }
 
   private async runAccount({ userId, accountId, now }: AccountRunInput): Promise<void> {
-    const { start } = weekWindow(now);
+    const week = weekWindow(now);
     const cursor = await this.prisma.player.findUnique({ where: { accountId }, select: { progressionProcessedUntil: true } });
-    const from = cursor?.progressionProcessedUntil ?? start;
+    const from = cursor?.progressionProcessedUntil ?? week.start;
     const fresh = await this.loadSamples({ accountId, from, to: now });
     const vehicles = await this.vehicles([...fresh.keys()]);
     const gains = new Map(
@@ -82,7 +82,7 @@ export class ProgressionRunService {
     );
 
     await this.applyXp({ userId, accountId, now, gains, vehicles });
-    await this.evaluateChallenges({ userId, accountId, now, weekStart: start });
+    await this.evaluateChallenges({ userId, accountId, now, week });
   }
 
   private async applyXp({ userId, accountId, now, gains, vehicles }: ApplyXpInput): Promise<void> {
@@ -138,16 +138,16 @@ export class ProgressionRunService {
     ]);
   }
 
-  private async evaluateChallenges({ userId, accountId, now, weekStart }: EvaluateChallengesInput): Promise<void> {
-    const week = toIsoDate(weekStart) ?? '';
-    const samples = await this.loadSamples({ accountId, from: weekStart, to: now });
+  private async evaluateChallenges({ userId, accountId, now, week: { start, weekStart } }: EvaluateChallengesInput): Promise<void> {
+    const weekKey = toIsoDate(weekStart) ?? '';
+    const samples = await this.loadSamples({ accountId, from: start, to: now });
     const tanks = sortBy([...samples], [([, rows]) => battlesOf(rows), 'desc']).slice(0, TANK_CHALLENGES.maxTanksPerWeek);
     const vehicles = await this.vehicles(tanks.map(([tankId]) => tankId));
     const hasModData =
       (await this.prisma.battle.count({ where: { accountId, startedAt: { gte: subDays(now, PROGRESSION_RUN.modLookbackDays) } } })) > 0;
 
     for (const [tankId, rows] of tanks) {
-      const challenges = weeklyTankChallenges({ seed: `${accountId}:${tankId}:${week}`, tier: vehicles.get(tankId)?.tier ?? 1, hasModData });
+      const challenges = weeklyTankChallenges({ seed: `${accountId}:${tankId}:${weekKey}`, tier: vehicles.get(tankId)?.tier ?? 1, hasModData });
 
       for (const challenge of challenges) {
         const key = { accountId_tankId_weekStart_code: { accountId, tankId, weekStart, code: challenge.code } };
@@ -176,7 +176,7 @@ export class ProgressionRunService {
           continue;
         }
 
-        const rewardKey = challengeKey({ accountId, tankId, week, code: challenge.code });
+        const rewardKey = challengeKey({ accountId, tankId, week: weekKey, code: challenge.code });
         const isGranted = await this.ledger.grant({
           userId,
           amount: PROGRESSION_REWARDS.challengeShells,
@@ -184,7 +184,7 @@ export class ProgressionRunService {
           key: rewardKey,
           points: PROGRESSION_REWARDS.challengePoints,
           now,
-          context: { tankId, week, code: challenge.code }
+          context: { tankId, week: weekKey, code: challenge.code }
         });
 
         if (isGranted) {

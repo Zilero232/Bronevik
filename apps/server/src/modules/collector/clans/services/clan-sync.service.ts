@@ -84,6 +84,8 @@ export class ClanSyncService {
         skipDuplicates: true
       });
 
+      await tx.player.updateMany({ where: { accountId: { in: diff.joined.map((member) => member.accountId) } }, data: { clanId: id } });
+      await tx.player.updateMany({ where: { accountId: { in: diff.left }, clanId: id }, data: { clanId: null } });
       await tx.clanMember.deleteMany({ where: { clanId: id, accountId: { in: diff.left } } });
 
       for (const member of changed) {

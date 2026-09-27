@@ -1,8 +1,10 @@
 'use client';
 
+import { Network } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { PageHeader } from '@/ui-kit';
+import { ROUTES } from '@/shared/constants';
+import { PageHero } from '@/ui-kit';
 
 import { NationSelector, TreeExplorer } from './components';
 
@@ -10,13 +12,20 @@ import s from './TreePage.module.scss';
 
 export const TreePage = () => {
   const t = useTranslations('tree.head');
+  const tCommon = useTranslations('common');
 
   return (
     <div className={s.root}>
-      <PageHeader description={t('description')} title={t('title')}>
+      <PageHero
+        art={{ kind: 'emblem', glyph: <Network size={480} strokeWidth={1.25} /> }}
+        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('title') }]}
+        lead={t('description')}
+        title={t('title')}
+      />
+      <div className={s.content}>
         <NationSelector />
-      </PageHeader>
-      <TreeExplorer />
+        <TreeExplorer />
+      </div>
     </div>
   );
 };

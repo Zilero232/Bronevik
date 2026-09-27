@@ -2,7 +2,7 @@
 
 import type { ReportMatchInput, Tournament } from '@/entities/tournament/tournament';
 
-import { useCommunityViewer } from '@/features/community/viewer';
+import { useCommunityViewer } from '@/entities/auth/session';
 
 import { reportTournamentMatch } from '../../../api';
 import { bracketColumns, championOf } from '../../../lib/bracket-columns';

@@ -18,4 +18,5 @@ export const webLoginPhase = ({ codeState, status }: WebLoginPhaseInput): WebLog
     .with({ codeState: 'invalid' }, () => 'invalid')
     .with({ status: 'success' }, () => 'success')
     .with({ status: 'error' }, () => 'failed')
+    .with({ status: 'idle' }, () => 'confirm')
     .otherwise(() => 'redeeming');

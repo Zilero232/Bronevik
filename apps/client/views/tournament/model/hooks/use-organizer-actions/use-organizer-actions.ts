@@ -2,7 +2,7 @@
 
 import type { Tournament } from '@/entities/tournament/tournament';
 
-import { useCommunityViewer } from '@/features/community/viewer';
+import { useCommunityViewer } from '@/entities/auth/session';
 
 import { cancelTournament, openTournament, startTournament } from '../../../api';
 import { TOURNAMENT_PAGE } from '../../../config';

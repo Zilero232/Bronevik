@@ -362,5 +362,5 @@ def parse_poll_response(data):
 def signed_post(transport, url, credentials, payload, user_agent, callback):
     """POST `payload` signed exactly like /mod/ingest."""
     body = dumps_bytes(payload)
-    headers = signed_headers(credentials.device_id, credentials.secret, body, user_agent)
+    headers = signed_headers(credentials.device_id, credentials.secret, body, user_agent, 'POST', url)
     transport.request('POST', url, headers, body, callback)

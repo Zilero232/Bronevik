@@ -94,8 +94,8 @@ export class ReplayUploadService {
     return replay;
   }
 
-  async uploadFromMod({ file, deviceId, signature }: UploadFromModInput): Promise<UploadedReplay> {
-    const device = await this.devices.authenticate({ deviceId, signature, rawBody: file?.buffer });
+  async uploadFromMod({ file, request }: UploadFromModInput): Promise<UploadedReplay> {
+    const device = await this.devices.authenticate({ request, rawBody: file?.buffer });
 
     return this.upload({ file, uploaderUserId: device.userId, deviceId: device.id, visibility: 'public' });
   }

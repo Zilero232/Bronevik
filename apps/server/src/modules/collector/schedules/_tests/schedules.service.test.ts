@@ -11,6 +11,8 @@ import { SchedulesService } from '../schedules.service';
 
 const createService = (env: Pick<Env, 'LESTA_APPLICATION_ID' | 'NODE_ENV'>) => {
   const queue = mock<Queue>();
+
+  queue.getJobSchedulers.mockResolvedValue([]);
   const moduleRef = mock<ModuleRef>();
   const config = mock<AppConfigService>();
 

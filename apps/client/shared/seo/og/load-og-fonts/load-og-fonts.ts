@@ -2,6 +2,8 @@ import { readFile } from 'node:fs/promises';
 
 import { OG_FONTS } from '../og.constants';
 
+import 'server-only';
+
 const read = async (url: URL) => {
   try {
     return await readFile(url);

@@ -34,7 +34,7 @@
     "endsAt": "Обновятся {date}",
     "empty": "Сыграйте на этой неделе — испытания появятся для ваших самых активных танков.",
     "done": "Выполнено",
-    "reward": "+{shells} гильз · +{points} очков",
+    "reward": "+{shells, plural, one {# гильза} few {# гильзы} many {# гильз} other {# гильзы}} · +{points, plural, one {# очко} few {# очка} many {# очков} other {# очка}}",
     "progress": "{value} из {target}",
     "metric": {
       "damageBattles": "{target, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} с уроном от {threshold}",
@@ -51,7 +51,7 @@
     "title": "Сезон {season}",
     "description": "Очки сезона — за испытания и уровни танков. Награды — гильзы и сезонное оформление, которое остаётся навсегда.",
     "level": "Уровень {level} из {max}",
-    "points": "{points} очков",
+    "points": "{points, plural, one {# очко} few {# очка} many {# очков} other {# очка}}",
     "next": "До следующего уровня — {points}",
     "maxed": "Дорожка пройдена",
     "endsAt": "До {date}",

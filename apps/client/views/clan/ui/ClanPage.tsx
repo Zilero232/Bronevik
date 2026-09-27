@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 
 import { ROUTES } from '@/shared/constants';
 import { DataSourceNote, Tabs } from '@/ui-kit';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { useClanPage } from '../model/hooks';
 import { ClanBases, ClanEvents, ClanHeader, ClanRoster, ClanSkeleton } from './components';

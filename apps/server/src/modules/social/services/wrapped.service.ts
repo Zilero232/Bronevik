@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
+import type { WrappedBestBattleRow } from '../queries';
 import type { MonthRow, WrappedInput, WrappedView, YearTankRow } from '../social.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { FEED, WRAPPED } from '../config';
+import { wrappedBestBattleSql } from '../queries';
 import { SnapshotEventsService } from './snapshot-events.service';
 
 @Injectable()
@@ -25,7 +27,7 @@ export class WrappedService {
     }
 
     const window = { accountId: id, mode: 'all' as const, capturedAt: { gte: start, lt: end } };
-    const [first, last, tanks, snapshotEvents, badges, sessions, months, battle] = await Promise.all([
+    const [first, last, tanks, snapshotEvents, badges, sessions, months, [battle]] = await Promise.all([
       this.prisma.accountSnapshot.findFirst({ where: window, orderBy: { capturedAt: 'asc' } }),
       this.prisma.accountSnapshot.findFirst({ where: window, orderBy: { capturedAt: 'desc' } }),
       this.prisma.$queryRaw<YearTankRow[]>`
@@ -48,7 +50,7 @@ export class WrappedService {
         ORDER BY 2 DESC
         LIMIT 1
       `,
-      this.prisma.battle.findFirst({ where: { accountId: id, startedAt: { gte: start, lt: end } }, orderBy: { damageDealt: 'desc' } })
+      this.prisma.$queryRaw<WrappedBestBattleRow[]>(wrappedBestBattleSql({ accountId: id, start, end }))
     ]);
 
     const replay = battle

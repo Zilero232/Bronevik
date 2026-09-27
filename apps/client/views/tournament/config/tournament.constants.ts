@@ -1,4 +1,4 @@
-import { COMMUNITY_ACCOUNT } from '@/features/community/viewer';
+import { COMMUNITY_ACCOUNT } from '@/entities/auth/session';
 
 import type { RegistrationFormValues } from '../lib/registration-form';
 

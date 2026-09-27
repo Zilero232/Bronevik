@@ -34,7 +34,7 @@
     "endsAt": "Rotate {date}",
     "empty": "Play this week — challenges appear for your most played tanks.",
     "done": "Done",
-    "reward": "+{shells} shells · +{points} points",
+    "reward": "+{shells, plural, one {# shell} other {# shells}} · +{points, plural, one {# point} other {# points}}",
     "progress": "{value} of {target}",
     "metric": {
       "damageBattles": "{target, plural, one {# battle} other {# battles}} with {threshold}+ damage",
@@ -51,7 +51,7 @@
     "title": "Season {season}",
     "description": "Season points come from challenges and tank levels. Rewards are shells and seasonal cosmetics you keep forever.",
     "level": "Level {level} of {max}",
-    "points": "{points} points",
+    "points": "{points, plural, one {# point} other {# points}}",
     "next": "{points} to the next level",
     "maxed": "Track complete",
     "endsAt": "Until {date}",

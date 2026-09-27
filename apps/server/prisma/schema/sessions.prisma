@@ -67,6 +67,7 @@ model PlaySession {
   @@unique([accountId, source, kind, day])
   @@index([accountId, startedAt(sort: Desc)])
   @@index([status, lastActivityAt])
+  @@index([startedAt])
   @@map("play_session")
 }
 

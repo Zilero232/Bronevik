@@ -18,7 +18,7 @@ export const CosmeticsPage = () => {
     <div className={s.root}>
       <SectionHeader
         action={query.data && <KeyFigure hint={t('balanceHint')} label={t('balance')} value={query.data.balance} />}
-        as='h2'
+        as='h1'
         description={t('description')}
         title={t('title')}
       />

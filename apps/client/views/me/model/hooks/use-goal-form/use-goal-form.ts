@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { getLinkedAccounts } from '@/entities/auth/session';
+import { useLinkedAccounts } from '@/entities/auth/session';
 
 import type { GoalFormOutput, GoalFormValues } from '../../../lib/goal-form';
 
@@ -11,10 +11,9 @@ import { addGoal } from '../../../api';
 import { GOAL_FORM } from '../../../config';
 import { goalFormSchema, toGoalInput } from '../../../lib/goal-form';
 import { useMeMutation } from '../use-me-mutation';
-import { useMeSection } from '../use-me-section';
 
 export const useGoalForm = () => {
-  const { data: accounts } = useMeSection({ section: 'accounts', fetcher: getLinkedAccounts });
+  const { data: accounts } = useLinkedAccounts();
   const add = useMeMutation({ section: 'goals', mutationFn: addGoal, successKey: 'goalAdded' });
   const form = useForm<GoalFormValues, unknown, GoalFormOutput>({
     resolver: zodResolver(goalFormSchema),

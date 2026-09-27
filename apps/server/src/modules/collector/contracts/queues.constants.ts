@@ -33,8 +33,8 @@ export const JOB = {
     modeMeta: 'mode-meta'
   },
   news: { rss: 'rss' },
-  purge: { dispatch: 'dispatch', account: 'account', jobMetrics: 'job-metrics' },
-  developerWebhooks: { deliver: 'deliver', closeSessions: 'close-sessions' }
+  purge: { dispatch: 'dispatch', account: 'account', retention: 'retention' },
+  developerWebhooks: { deliver: 'deliver', closeSessions: 'close-sessions', redrive: 'redrive' }
 } as const;
 
 export const ENROL_REASONS = ['search', 'view', 'favorite', 'follow', 'login', 'mod', 'manual'] as const;

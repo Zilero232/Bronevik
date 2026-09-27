@@ -28,7 +28,7 @@ export const WatchlistPage = () => {
             onChange={onPeriodChange}
           />
         }
-        as='h2'
+        as='h1'
         description={t('description')}
         title={t('title')}
       />

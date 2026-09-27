@@ -3,7 +3,8 @@ import { ImageResponse } from 'next/og';
 import { getPlayer } from '@/entities/player/profile';
 import { SITE } from '@/shared/config/site';
 import { resolveLocale } from '@/shared/i18n';
-import { loadOgFonts, OG_SIZE } from '@/shared/seo/og';
+import { OG_SIZE } from '@/shared/seo/og';
+import { loadOgFonts } from '@/shared/seo/og/server';
 import { FallbackOgCard, ogLabels, PlayerOgCard } from '@/views/player-og';
 
 export const size = OG_SIZE;

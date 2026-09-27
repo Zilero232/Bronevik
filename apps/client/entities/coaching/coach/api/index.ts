@@ -1,5 +1,5 @@
 export { coachQueries } from './coach-queries';
-export { getCoach, getCoachingOrders, listCoaches, zCreateOrder, zReviewOrder, zUpsertCoach } from './coaching';
+export { getCoach, getCoachingOrders, listCoaches, zCreateOrder, zUpsertCoach } from './coaching';
 export type {
   Coach,
   CoachContacts,

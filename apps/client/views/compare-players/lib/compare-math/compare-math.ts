@@ -1,6 +1,6 @@
 import { unique } from 'remeda';
 
-import type { BestIndicesInput } from './compare-math.types';
+import type { BestIndicesInput, DeltasToBestInput } from './compare-math.types';
 
 import { COMPARE_LIMIT } from '../../config';
 
@@ -16,10 +16,10 @@ export const bestIndices = ({ values, direction }: BestIndicesInput): number[] =
   return values.flatMap((value, index) => (value === target ? [index] : []));
 };
 
-export const parseCompareIds = (raw: string | null): number[] =>
-  unique(
-    (raw ?? '')
-      .split(',')
-      .map((part) => Number(part.trim()))
-      .filter((id) => Number.isInteger(id) && id > 0)
-  ).slice(0, COMPARE_LIMIT.max);
+export const deltasToBest = ({ values, best }: DeltasToBestInput): (number | null)[] => {
+  const target = best.length > 0 ? values[best[0]] : null;
+
+  return values.map((value, index) => (value === null || target === null || target === undefined || best.includes(index) ? null : value - target));
+};
+
+export const compareIds = (ids: readonly number[]): number[] => unique(ids.filter((id) => id > 0)).slice(0, COMPARE_LIMIT.max);

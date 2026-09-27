@@ -30,7 +30,7 @@ export class EncyclopediaSyncService {
 
   async checkVersion(): Promise<VersionCheckResult> {
     const info = await this.clients.priority.encyclopedia.info();
-    const current = await this.prisma.gameVersion.findFirst({ where: { isCurrent: true }, select: { version: true } });
+    const current = await this.prisma.gameVersion.findFirst({ where: { isCurrent: true, source: REFERENCE.gameSource }, select: { version: true } });
     const changed = current?.version !== info.game_version;
 
     if (changed) {
@@ -50,22 +50,10 @@ export class EncyclopediaSyncService {
       return { version: info.game_version, skipped: true };
     }
 
-    const version = await this.prisma.$transaction(async (tx) => {
-      await tx.gameVersion.updateMany({ where: { isCurrent: true, NOT: { version: info.game_version } }, data: { isCurrent: false } });
-
-      return tx.gameVersion.upsert({
-        where: { source_version: { source: REFERENCE.gameSource, version: info.game_version } },
-        create: { version: info.game_version, isCurrent: true },
-        update: { isCurrent: true }
-      });
-    });
-
-    const value = { version: info.game_version, tanksUpdatedAt: info.tanks_updated_at, syncedAt: new Date().toISOString() };
-
-    await this.prisma.collectorState.upsert({
-      where: { key: COLLECTOR_STATE_KEY.gameVersion },
-      create: { key: COLLECTOR_STATE_KEY.gameVersion, value },
-      update: { value }
+    const version = await this.prisma.gameVersion.upsert({
+      where: { source_version: { source: REFERENCE.gameSource, version: info.game_version } },
+      create: { source: REFERENCE.gameSource, version: info.game_version },
+      update: {}
     });
 
     const sections: [string, SectionRunner][] = [
@@ -78,15 +66,36 @@ export class EncyclopediaSyncService {
     ];
 
     const counts: Record<string, number> = {};
+    const failed: string[] = [];
 
     for (const [name, run] of sections) {
       try {
         counts[name] = await run();
       } catch (error) {
         this.logger.error(`encyclopedia ${name} failed: ${errorMessage(error)}`);
-        counts[name] = -1;
+        failed.push(name);
       }
     }
+
+    if (failed.length > 0) {
+      throw new Error(`encyclopedia ${info.game_version} incomplete, failed sections: ${failed.join(', ')}`);
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.gameVersion.updateMany({
+        where: { isCurrent: true, source: REFERENCE.gameSource, NOT: { id: version.id } },
+        data: { isCurrent: false }
+      }),
+      this.prisma.gameVersion.update({ where: { id: version.id }, data: { isCurrent: true } })
+    ]);
+
+    const value = { version: info.game_version, tanksUpdatedAt: info.tanks_updated_at, syncedAt: new Date().toISOString() };
+
+    await this.prisma.collectorState.upsert({
+      where: { key: COLLECTOR_STATE_KEY.gameVersion },
+      create: { key: COLLECTOR_STATE_KEY.gameVersion, value },
+      update: { value }
+    });
 
     return { version: info.game_version, counts };
   }

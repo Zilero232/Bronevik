@@ -4,7 +4,7 @@ import time
 from .compat import is_int, string_types, to_text
 
 CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-CODE_LENGTH = 6
+CODE_LENGTH = 10
 BIND_PATH = '/mod/bind'
 
 _CODE_RE = re.compile('^[' + CODE_ALPHABET + ']{' + str(CODE_LENGTH) + '}$')

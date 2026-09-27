@@ -1,4 +1,4 @@
-import type { MissionOperationRouteInput, PlayerSessionRouteInput } from './routes.types';
+import type { MissionOperationRouteInput, PlayerSessionRouteInput, TreeTankRouteInput } from './routes.types';
 
 import { ROUTE_PARAMS } from './routes.constants';
 
@@ -31,6 +31,7 @@ export const ROUTES = {
     detail: (slug: string) => `/builds/${slug}`
   },
   tree: '/tree',
+  treeTank: ({ nation, tankId }: TreeTankRouteInput) => `/tree?${new URLSearchParams({ nation, tank: String(tankId) }).toString()}`,
   supertest: '/supertest',
   marks: '/marks',
   modes: {
@@ -73,6 +74,11 @@ export const ROUTES = {
     }
   },
   developers: '/developers',
+  legal: {
+    privacy: '/privacy',
+    terms: '/terms',
+    contacts: '/contacts'
+  },
   mod: '/mod',
   plus: '/plus',
   replays: {

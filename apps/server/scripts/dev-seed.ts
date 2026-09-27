@@ -39,6 +39,7 @@ import { CatalogSyncService, MasteryThresholdsSyncService } from '../src/modules
 import { runPollPipeline } from '../src/modules/collector/tracking/lib/poll-pipeline';
 import { TrackingAnnounceService, TrackingLestaService, TrackingStoreService } from '../src/modules/collector/tracking/services';
 import { sessionIncrement, sessionUuid, toBattleData } from '../src/modules/mod';
+import { ExpectedValuesService } from '../src/modules/reference';
 
 import 'reflect-metadata';
 
@@ -83,7 +84,7 @@ const lesta = createLestaClient({
 
 const clients = { priority: lesta, bulk: lesta };
 const guard = new PurgeGuardService(prisma);
-const store = new TrackingStoreService(prisma, guard, new TrackingAnnounceService(prisma, webhooks));
+const store = new TrackingStoreService(prisma, guard, new TrackingAnnounceService(prisma, webhooks), new ExpectedValuesService(prisma));
 const lestaPort = new TrackingLestaService(clients).port('bulk');
 const selection = selectSeedAccounts({ world, count: options.accounts, modPlayers: options.modPlayers });
 const accountIds = selection.accounts.map((player) => player.accountId);

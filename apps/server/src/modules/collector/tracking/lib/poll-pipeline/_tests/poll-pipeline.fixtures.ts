@@ -5,16 +5,18 @@ import type { TankBaseline } from '../../account-diff';
 import type { SnapshotMode, TankSnapshotRow } from '../../snapshots';
 import type {
   AccountChanges,
+  AccountStorePort,
   LatestTankSnapshotsInput,
   MarkSyncedInput,
   PollLestaPort,
   PollStorePort,
   StoredPlayer,
-  UpsertPlayerInput
+  UpsertPlayerInput,
+  WithAccountInput
 } from '../poll-pipeline.types';
 import type { FakeLestaInput, FakeStoreInput, InfoInput, TankStatInput } from './poll-pipeline.fixtures.types';
 
-const SNAPSHOT_MODES: readonly SnapshotMode[] = ['all', 'random'];
+import { SNAPSHOT_MODES } from '../../snapshots';
 
 export const block = (battles: number): BattleStatsBlock => ({
   battles,
@@ -87,24 +89,16 @@ export const createFakeStore = ({ players = [], baselines = {}, accountBattles =
   const synced: MarkSyncedInput[] = [];
   const upserted: UpsertPlayerInput[] = [];
   const missing: number[] = [];
+  const latestAccount = new Map(Object.entries(accountBattles).map(([accountId, modes]) => [Number(accountId), { ...modes }]));
+  const latestTanks = [...tankSnapshots];
+  const locks = new Map<number, Promise<unknown>>();
 
-  const store = {
-    blockedAccounts: vi.fn(async (ids: readonly number[]) => new Set(ids.filter((id) => blocked.includes(id)))),
-    loadPlayers: vi.fn(async (ids: readonly number[]): Promise<StoredPlayer[]> => players.filter((player) => ids.includes(player.accountId))),
-    upsertPlayer: vi.fn(async (input: UpsertPlayerInput) => {
-      upserted.push(input);
-    }),
-    markSynced: vi.fn(async (input: MarkSyncedInput) => {
-      synced.push(input);
-    }),
-    markMissing: vi.fn(async (ids: readonly number[]) => {
-      missing.push(...ids);
-    }),
+  const account: AccountStorePort = {
     latestAccountBattles: vi.fn(async (accountId: number) => {
       const battles = new Map<SnapshotMode, number>();
 
       for (const mode of SNAPSHOT_MODES) {
-        const value = accountBattles[accountId]?.[mode];
+        const value = latestAccount.get(accountId)?.[mode];
 
         if (value !== undefined) {
           battles.set(mode, value);
@@ -113,15 +107,52 @@ export const createFakeStore = ({ players = [], baselines = {}, accountBattles =
 
       return battles;
     }),
-    loadBaselines: vi.fn(async (ids: readonly number[]) => new Map<number, TankBaseline[]>(ids.map((id) => [id, baselines[id] ?? []]))),
     latestTankSnapshots: vi.fn(async ({ accountId, tankIds }: LatestTankSnapshotsInput): Promise<TankSnapshotRow[]> =>
-      tankSnapshots.filter((row) => row.accountId === BigInt(accountId) && tankIds.includes(row.tankId))
+      latestTanks.filter((row) => row.accountId === BigInt(accountId) && tankIds.includes(row.tankId))
     ),
-    overallWn8: vi.fn(async () => null),
     writeAccountChanges: vi.fn(async (changes: AccountChanges) => {
       written.push(changes);
+
+      for (const row of changes.accountSnapshots) {
+        latestAccount.set(changes.accountId, { ...latestAccount.get(changes.accountId), [row.mode]: row.battles });
+      }
+
+      for (const row of changes.tankSnapshots) {
+        const index = latestTanks.findIndex(
+          (stored) => stored.accountId === row.accountId && stored.tankId === row.tankId && stored.mode === row.mode
+        );
+
+        latestTanks.splice(index === -1 ? latestTanks.length : index, index === -1 ? 0 : 1, row);
+      }
     })
+  };
+
+  const store = {
+    blockedAccounts: vi.fn(async (ids: readonly number[]) => new Set(ids.filter((id) => blocked.includes(id)))),
+    loadPlayers: vi.fn(async (ids: readonly number[]): Promise<StoredPlayer[]> => players.filter((player) => ids.includes(player.accountId))),
+    upsertPlayer: vi.fn(async (input: UpsertPlayerInput) => {
+      upserted.push(input);
+    }),
+    markSynced: vi.fn(async (entries: readonly MarkSyncedInput[]) => {
+      synced.push(...entries);
+    }),
+    markMissing: vi.fn(async (ids: readonly number[]) => {
+      missing.push(...ids);
+    }),
+    loadBaselines: vi.fn(async (ids: readonly number[]) => new Map<number, TankBaseline[]>(ids.map((id) => [id, baselines[id] ?? []]))),
+    overallWn8: vi.fn(async () => null),
+    withAccount: async <T>({ accountId, run }: WithAccountInput<T>): Promise<T> => {
+      const held = locks.get(accountId) ?? Promise.resolve();
+      const next = held.then(async () => run(account));
+
+      locks.set(
+        accountId,
+        next.catch(() => undefined)
+      );
+
+      return next;
+    }
   } satisfies PollStorePort;
 
-  return { store, written, synced, upserted, missing };
+  return { store, account, written, synced, upserted, missing };
 };

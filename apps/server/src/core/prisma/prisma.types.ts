@@ -16,3 +16,7 @@ export type LockedTransactionInput<T> = {
   key: string;
   run: (tx: Prisma.TransactionClient) => Promise<T>;
 };
+
+export type PrismaModuleOptions = {
+  poolMax?: number;
+};

@@ -6,13 +6,12 @@ import createNextIntlPlugin from 'next-intl/plugin';
 import rootPackage from '../../package.json' with { type: 'json' };
 import {
   CLIENT_ROOT,
-  FRAMEABLE_HEADER_RULES,
   IMAGES,
   LEGACY_REDIRECTS,
   loadRootEnv,
   OPTIMIZED_PACKAGES,
   REPO_ROOT,
-  SECURITY_HEADERS,
+  securityHeaderRules,
   TRANSPILED_PACKAGES
 } from './config';
 
@@ -36,7 +35,7 @@ const nextConfig: NextConfig = {
   experimental: { optimizePackageImports: OPTIMIZED_PACKAGES },
   sassOptions: { implementation: 'sass-embedded', loadPaths: [CLIENT_ROOT] },
   turbopack: { resolveAlias: { '@': CLIENT_ROOT } },
-  headers: () => Promise.resolve([{ source: '/:path*', headers: SECURITY_HEADERS }, ...FRAMEABLE_HEADER_RULES]),
+  headers: () => Promise.resolve(securityHeaderRules({ apiUrl: process.env.NEXT_PUBLIC_API_URL, isDev: process.env.NODE_ENV !== 'production' })),
   redirects: () => Promise.resolve(LEGACY_REDIRECTS)
 };
 

@@ -125,6 +125,7 @@ model ClanMemberEvent {
 
   @@index([clanId, occurredAt(sort: Desc)])
   @@index([accountId, occurredAt(sort: Desc)])
+  @@index([occurredAt])
   @@map("clan_member_event")
 }
 
@@ -145,6 +146,7 @@ model ClanSnapshot {
   clan Clan @relation(fields: [clanId], references: [clanId], onDelete: Cascade)
 
   @@id([clanId, capturedAt])
+  @@index([capturedAt])
   @@map("clan_snapshot")
 }
 

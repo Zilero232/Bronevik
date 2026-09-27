@@ -2,17 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { addDays, fromUnixTime } from 'date-fns';
 import { groupBy } from 'remeda';
 
-import type { Prisma, StatsMode, TrackingTier } from '../../../../../generated';
+import type { Prisma, TrackingTier } from '../../../../../generated';
 import type { TankBaseline } from '../lib/account-diff';
-import type { AccountChanges, LatestTankSnapshotsInput, MarkSyncedInput, PollStorePort, StoredPlayer, UpsertPlayerInput } from '../lib/poll-pipeline';
+import type { AccountStorePort, MarkSyncedInput, PollStorePort, StoredPlayer, UpsertPlayerInput, WithAccountInput } from '../lib/poll-pipeline';
 import type { SnapshotMode, TankSnapshotRow } from '../lib/snapshots';
+import type { LatestAccountBattlesInput, LatestTanksInput, RebuildDaySessionInput, WriteAccountChangesInput } from '../tracking.types';
 
-import { PrismaService } from '../../../../core';
+import { moscowCalendarDate, moscowDayStart } from '../../../../common/lib';
+import { lockedTransaction, PrismaService } from '../../../../core';
+import { ExpectedValuesService } from '../../../reference';
 import { PurgeGuardService } from '../../purge';
 import { TRACKING } from '../config';
+import { buildDaySession } from '../lib/day-session';
 import { gainedMarks, snapshotMarks } from '../lib/marks-gain';
 import { nextPollAt } from '../lib/poll-schedule';
-import { isSnapshotMode } from '../lib/snapshots';
+import { isSnapshotMode, SNAPSHOT_MODES } from '../lib/snapshots';
+import { markSyncedSql, updateMarksSql, upsertLatestTanksSql, upsertPlayerTanksSql } from '../queries';
 import { TrackingAnnounceService } from './tracking-announce.service';
 
 @Injectable()
@@ -20,7 +25,8 @@ export class TrackingStoreService implements PollStorePort {
   constructor(
     private readonly prisma: PrismaService,
     private readonly guard: PurgeGuardService,
-    private readonly announce: TrackingAnnounceService
+    private readonly announce: TrackingAnnounceService,
+    private readonly expected: ExpectedValuesService
   ) {}
 
   async blockedAccounts(accountIds: readonly number[]): Promise<Set<number>> {
@@ -56,47 +62,57 @@ export class TrackingStoreService implements PollStorePort {
 
     const clanChanged = previous ? previous.clanId !== info.clan_id : clanId !== null;
 
-    await this.prisma.$transaction(async (tx) => {
-      await tx.player.upsert({ where: { accountId }, create: { accountId, ...identity }, update: identity });
+    await this.prisma.$transaction(
+      async (tx) => {
+        await tx.player.upsert({ where: { accountId }, create: { accountId, ...identity }, update: identity });
 
-      await tx.playerNickname.upsert({
-        where: { accountId_nickname: { accountId, nickname: info.nickname } },
-        create: { accountId, nickname: info.nickname },
-        update: { lastSeenAt: now }
-      });
+        await tx.playerNickname.upsert({
+          where: { accountId_nickname: { accountId, nickname: info.nickname } },
+          create: { accountId, nickname: info.nickname },
+          update: { lastSeenAt: now }
+        });
 
-      if (!clanChanged) {
-        return;
-      }
+        if (!clanChanged) {
+          return;
+        }
 
-      if (previous) {
-        await tx.playerClanHistory.updateMany({ where: { accountId, leftAt: null }, data: { leftAt: now } });
-      }
+        if (previous) {
+          await tx.playerClanHistory.updateMany({ where: { accountId, leftAt: null }, data: { leftAt: now } });
+        }
 
-      if (clanId !== null) {
-        await tx.playerClanHistory.create({ data: { accountId, clanId, joinedAt: previous ? now : null } });
-      }
-    });
+        if (clanId !== null) {
+          await tx.playerClanHistory.create({ data: { accountId, clanId, joinedAt: previous ? now : null } });
+        }
+      },
+      { maxWait: TRACKING.transaction.maxWaitMs, timeout: TRACKING.transaction.timeoutMs }
+    );
   }
 
-  async markSynced({ accountId, lastBattleAt, now }: MarkSyncedInput): Promise<void> {
-    const id = BigInt(accountId);
-    const player = await this.prisma.player.findUnique({ where: { accountId: id }, select: { trackingTier: true } });
+  async markSynced(entries: readonly MarkSyncedInput[]): Promise<void> {
+    const ids = entries.map((entry) => BigInt(entry.accountId));
 
-    if (!player) {
-      return;
-    }
+    const [players, subscribers] = await Promise.all([
+      this.prisma.player.findMany({ where: { accountId: { in: ids } }, select: { accountId: true, trackingTier: true } }),
+      this.announce.subscribers(ids)
+    ]);
 
-    const isSubscriber = player.trackingTier === 'active' && (await this.announce.isSubscriber(id));
+    const tierOf = new Map(players.map((player) => [Number(player.accountId), player.trackingTier]));
 
-    await this.prisma.player.update({
-      where: { accountId: id },
-      data: {
-        lastBattleAt,
-        lastPolledAt: now,
-        nextPollAt: nextPollAt({ now, tier: player.trackingTier, isSubscriber, intervals: TRACKING.intervals })
+    const rows = entries.flatMap(({ accountId, lastBattleAt, now }) => {
+      const tier = tierOf.get(accountId);
+
+      if (!tier) {
+        return [];
       }
+
+      const isSubscriber = tier === 'active' && subscribers.has(accountId);
+
+      return [{ accountId, lastBattleAt, lastPolledAt: now, nextPollAt: nextPollAt({ now, tier, isSubscriber, intervals: TRACKING.intervals }) }];
     });
+
+    if (rows.length > 0) {
+      await this.prisma.$executeRaw(markSyncedSql(rows));
+    }
   }
 
   async markMissing(accountIds: readonly number[]): Promise<void> {
@@ -106,25 +122,6 @@ export class TrackingStoreService implements PollStorePort {
       where: { accountId: { in: accountIds.map(BigInt) } },
       data: { trackingTier: 'dormant', nextPollAt: addDays(now, TRACKING.intervals.dormantDays) }
     });
-  }
-
-  async latestAccountBattles(accountId: number): Promise<Map<SnapshotMode, number>> {
-    const rows = await this.prisma.$queryRaw<{ mode: string; battles: number }[]>`
-      SELECT DISTINCT ON (mode) mode::text AS mode, battles
-      FROM account_snapshot
-      WHERE account_id = ${BigInt(accountId)} AND mode IN ('all', 'random')
-      ORDER BY mode, captured_at DESC
-    `;
-
-    const battles = new Map<SnapshotMode, number>();
-
-    for (const row of rows) {
-      if (isSnapshotMode(row.mode)) {
-        battles.set(row.mode, row.battles);
-      }
-    }
-
-    return battles;
   }
 
   async loadBaselines(accountIds: readonly number[]): Promise<Map<number, TankBaseline[]>> {
@@ -143,27 +140,6 @@ export class TrackingStoreService implements PollStorePort {
     );
   }
 
-  async latestTankSnapshots({ accountId, tankIds }: LatestTankSnapshotsInput): Promise<TankSnapshotRow[]> {
-    const id = BigInt(accountId);
-
-    const keys = await this.prisma.$queryRaw<{ tank_id: number; mode: string; captured_at: Date }[]>`
-      SELECT DISTINCT ON (tank_id, mode) tank_id, mode::text AS mode, captured_at
-      FROM tank_snapshot
-      WHERE account_id = ${id} AND tank_id = ANY(${[...tankIds]}::int[]) AND mode IN ('all', 'random')
-      ORDER BY tank_id, mode, captured_at DESC
-    `;
-
-    const filters = keys.flatMap((key): { tankId: number; mode: StatsMode; capturedAt: Date }[] =>
-      isSnapshotMode(key.mode) ? [{ tankId: key.tank_id, mode: key.mode, capturedAt: key.captured_at }] : []
-    );
-
-    if (filters.length === 0) {
-      return [];
-    }
-
-    return this.prisma.tankSnapshot.findMany({ where: { accountId: id, OR: filters } });
-  }
-
   async overallWn8(accountId: number): Promise<number | null> {
     const rating = await this.prisma.accountRating.findUnique({
       where: { accountId_period: { accountId: BigInt(accountId), period: 'overall' } },
@@ -173,35 +149,109 @@ export class TrackingStoreService implements PollStorePort {
     return rating?.wn8 ?? null;
   }
 
-  async writeAccountChanges({ accountSnapshots, tankSnapshots, deltas, baseline }: AccountChanges): Promise<void> {
+  async withAccount<T>({ accountId, run }: WithAccountInput<T>): Promise<T> {
+    return lockedTransaction({
+      prisma: this.prisma,
+      scope: TRACKING.lock.scope,
+      key: String(accountId),
+      run: async (tx) => run(this.accountStore(tx))
+    });
+  }
+
+  accountStore(tx: Prisma.TransactionClient): AccountStorePort {
+    return {
+      latestAccountBattles: async (accountId) => this.latestAccountBattles({ tx, accountId }),
+      latestTankSnapshots: async (input) => this.latestTankSnapshots({ tx, ...input }),
+      writeAccountChanges: async (changes) => this.writeAccountChanges({ tx, ...changes })
+    };
+  }
+
+  private async latestAccountBattles({ tx, accountId }: LatestAccountBattlesInput): Promise<Map<SnapshotMode, number>> {
+    const rows = await tx.$queryRaw<{ mode: string; battles: number }[]>`
+      SELECT DISTINCT ON (mode) mode::text AS mode, battles
+      FROM account_snapshot
+      WHERE account_id = ${BigInt(accountId)} AND mode IN ('all', 'random')
+      ORDER BY mode, captured_at DESC
+    `;
+
+    return new Map(rows.flatMap((row) => (isSnapshotMode(row.mode) ? [[row.mode, row.battles] as const] : [])));
+  }
+
+  private async latestTankSnapshots({ tx, accountId, tankIds }: LatestTanksInput): Promise<TankSnapshotRow[]> {
+    return tx.tankSnapshotLatest.findMany({
+      where: { accountId: BigInt(accountId), tankId: { in: [...tankIds] }, mode: { in: [...SNAPSHOT_MODES] } }
+    });
+  }
+
+  private async writeAccountChanges({ tx, accountId, accountSnapshots, tankSnapshots, deltas, baseline }: WriteAccountChangesInput): Promise<void> {
+    const id = BigInt(accountId);
     const marks = snapshotMarks(tankSnapshots);
+    const capturedAt = tankSnapshots[0]?.capturedAt;
 
     const previous =
       marks.length === 0
         ? []
-        : await this.prisma.playerTank.findMany({
-            where: { OR: marks.map(({ accountId, tankId }) => ({ accountId, tankId })) },
+        : await tx.playerTank.findMany({
+            where: { accountId: id, tankId: { in: marks.map((entry) => entry.tankId) } },
             select: { accountId: true, tankId: true, marksOnGun: true }
           });
 
-    await this.prisma.$transaction(async (tx) => {
-      await tx.accountSnapshot.createMany({ data: accountSnapshots, skipDuplicates: true });
-      await tx.tankSnapshot.createMany({ data: tankSnapshots, skipDuplicates: true });
-      await tx.tankBattleDelta.createMany({ data: deltas, skipDuplicates: true });
+    await tx.accountSnapshot.createMany({ data: accountSnapshots, skipDuplicates: true });
+    await tx.tankSnapshot.createMany({ data: tankSnapshots, skipDuplicates: true });
+    await tx.tankBattleDelta.createMany({ data: deltas, skipDuplicates: true });
 
-      for (const row of baseline) {
-        await tx.playerTank.upsert({
-          where: { accountId_tankId: { accountId: row.accountId, tankId: row.tankId } },
-          create: row,
-          update: { battles: row.battles, wins: row.wins, markOfMastery: row.markOfMastery, lastBattleAt: row.lastBattleAt }
-        });
-      }
+    if (capturedAt !== undefined) {
+      await tx.$executeRaw(upsertLatestTanksSql({ accountId: id, capturedAt: new Date(capturedAt) }));
+    }
 
-      for (const entry of marks) {
-        await tx.playerTank.updateMany({ where: { accountId: entry.accountId, tankId: entry.tankId }, data: { marksOnGun: entry.marks } });
+    if (baseline.length > 0) {
+      await tx.$executeRaw(upsertPlayerTanksSql(baseline));
+    }
+
+    if (marks.length > 0) {
+      await tx.$executeRaw(updateMarksSql(marks));
+    }
+
+    const [delta] = deltas;
+
+    if (delta) {
+      await this.rebuildDaySession({ tx, accountId: id, at: new Date(delta.capturedAt) });
+    }
+
+    await this.announce.announceMarks(gainedMarks({ current: marks, previous }));
+  }
+
+  private async rebuildDaySession({ tx, accountId, at }: RebuildDaySessionInput): Promise<void> {
+    const from = moscowDayStart(at);
+
+    const deltas = await tx.tankBattleDelta.findMany({
+      where: { accountId, mode: 'random', capturedAt: { gte: from, lt: addDays(from, 1) } },
+      select: {
+        tankId: true,
+        capturedAt: true,
+        battles: true,
+        wins: true,
+        damageDealt: true,
+        damageBlocked: true,
+        frags: true,
+        spotted: true,
+        xp: true,
+        survived: true,
+        capturePoints: true,
+        droppedCapturePoints: true
       }
     });
 
-    await this.announce.announceMarks(gainedMarks({ current: marks, previous }));
+    const session = buildDaySession({ accountId, day: moscowCalendarDate(at), deltas, expected: await this.expected.all() });
+
+    if (!session) {
+      return;
+    }
+
+    await tx.playSession.upsert({
+      where: { accountId_source_kind_day: { accountId, source: 'api', kind: 'day', day: session.day } },
+      create: session,
+      update: session
+    });
   }
 }

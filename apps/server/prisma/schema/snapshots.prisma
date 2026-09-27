@@ -122,3 +122,40 @@ model TankBattleDelta {
   @@index([tankId, capturedAt(sort: Desc)])
   @@map("tank_battle_delta")
 }
+
+model TankSnapshotLatest {
+  accountId  BigInt    @map("account_id")
+  tankId     Int       @map("tank_id")
+  mode       StatsMode
+  capturedAt DateTime  @map("captured_at") @db.Timestamptz(3)
+
+  battles Int
+  wins    Int
+  losses  Int
+  draws   Int
+
+  damageDealt    Int @map("damage_dealt")
+  damageReceived Int @map("damage_received")
+  frags          Int
+  spotted        Int
+  xp             Int
+  survived       Int @map("survived_battles")
+
+  hits  Int
+  shots Int
+
+  capturePoints        Int @map("capture_points")
+  droppedCapturePoints Int @map("dropped_capture_points")
+
+  avgDamageBlocked Float @map("avg_damage_blocked")
+
+  markOfMastery Int  @map("mark_of_mastery") @db.SmallInt
+  marksOnGun    Int? @map("marks_on_gun") @db.SmallInt
+  maxFrags      Int? @map("max_frags")
+  maxXp         Int? @map("max_xp")
+
+  player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@id([accountId, tankId, mode])
+  @@map("tank_snapshot_latest")
+}

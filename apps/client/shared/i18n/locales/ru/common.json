@@ -14,7 +14,7 @@
   "empty": "Нет данных",
   "dataSource": "Данные: API Леста Игры",
   "gameVersion": "Обновление {version}",
-  "gameVersionHint": "Текущая версия «Мир танков»",
+  "gameVersionHint": "Текущая версия «Мира танков»",
   "apiStatus": {
     "ok": "API Лесты: работает",
     "degraded": "API Лесты: задержка",
@@ -26,5 +26,7 @@
   "premium": "Прем",
   "elite": "Элита",
   "showMore": "Показать ещё",
-  "updated": "обновлено"
+  "updated": "обновлено",
+  "home": "Главная",
+  "reportError": "Сообщить об ошибке в данных"
 }

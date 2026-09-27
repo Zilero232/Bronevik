@@ -57,7 +57,7 @@
     "activityEmpty": "No battles over the last year",
     "activityDay": "{date}: {battles, plural, =0 {no battles} one {# battle} other {# battles}}{battles, plural, =0 {} other {, {winRate}% wins}}",
     "activityHint": "Hover a day to see its battles",
-    "activityAria": "Activity calendar: {total} battles over {active} active days",
+    "activityAria": "Activity calendar: {total, plural, one {# battle} other {# battles}} over {active, plural, one {# active day} other {# active days}}",
     "less": "Less",
     "more": "More",
     "highlights": {
@@ -68,7 +68,7 @@
       "avgDamage": "Avg damage",
       "battlesPerDay": "Battles per day"
     },
-    "marksRing": "Three marks: {count} of {total} tanks",
+    "marksRing": "3 marks: {count} of {total, plural, one {# tank} other {# tanks}}",
     "marksOf": "three marks of {total}"
   },
   "tanks": {
@@ -226,7 +226,7 @@
       "worstHour": "Worst time: {from}:00–{to}:00 · {rate}% wins",
       "bestWeekday": "Strong day: {day} · {rate}% wins",
       "gridLabel": "Win rate by hour and weekday",
-      "cell": "{hour}:00 · {battles} battles · {rate}% wins",
+      "cell": "{hour}:00 · {battles, plural, one {# battle} other {# battles}} · {rate}% wins",
       "empty": "No battle time data"
     },
     "empty": "Too few battles for a breakdown"

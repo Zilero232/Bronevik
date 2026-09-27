@@ -27,7 +27,7 @@ export const SeasonTrackCard = () => {
           <p className={s.description}>{t('description')}</p>
           <div className={s.level}>
             <span className={s.levelValue}>{t('level', { level: track.level, max: track.maxLevel })}</span>
-            <span className={s.points}>{t('points', { points: format.number(track.points) })}</span>
+            <span className={s.points}>{t('points', { points: track.points })}</span>
           </div>
           <ProgressBar
             max={progress.max}

@@ -4,6 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Battle } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
+import { ANALYTICS_WINDOW } from '../../config';
 import { HonestRngService } from '../honest-rng.service';
 import { OwnAccountService } from '../own-account.service';
 
@@ -19,6 +20,7 @@ const setup = () => {
 
   accounts.resolve.mockResolvedValue(7n);
   prisma.battle.findMany.mockResolvedValue([]);
+  prisma.battle.count.mockResolvedValue(0);
 
   return { prisma, accounts, service: new HonestRngService(prisma, accounts) };
 };
@@ -64,6 +66,8 @@ describe('HonestRngService.rng', () => {
       battle({ shots: null, shotsFired: 4, shotsHit: 2, shotsPierced: null })
     ]);
 
+    prisma.battle.count.mockResolvedValue(2);
+
     const rng = await service.rng({ userId: 'u', period: 'd30' });
 
     expect(rng.battles).toBe(2);
@@ -103,5 +107,18 @@ describe('HonestRngService.rng', () => {
 
     expect(from(long)).toBeLessThan(from(short));
     expect(from(short)).toBeLessThan(now.getTime());
+  });
+});
+
+describe('HonestRngService.rng bounds', () => {
+  it('reads the rolls of the most recent battles only, but counts every battle of the period', async () => {
+    const { prisma, service } = setup();
+
+    prisma.battle.count.mockResolvedValue(ANALYTICS_WINDOW.rngMaxBattles * 2);
+
+    const rng = await service.rng({ userId: 'u', period: 'all' });
+
+    expect(rng.battles).toBe(ANALYTICS_WINDOW.rngMaxBattles * 2);
+    expect(prisma.battle.findMany.mock.calls[0]?.[0]).toMatchObject({ orderBy: { startedAt: 'desc' }, take: ANALYTICS_WINDOW.rngMaxBattles });
   });
 });

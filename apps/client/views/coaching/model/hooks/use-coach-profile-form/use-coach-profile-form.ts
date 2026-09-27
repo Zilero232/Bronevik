@@ -3,10 +3,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
+import { useCommunityViewer } from '@/entities/auth/session';
 import { coachQueries } from '@/entities/coaching/coach';
 import { communityErrorKind } from '@/features/community/api-error';
 import { useFormDialog } from '@/features/community/form-dialog';
-import { useCommunityViewer } from '@/features/community/viewer';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 

@@ -1,4 +1,4 @@
-import type { JobSchedule } from '../lib';
+import type { JobSchedule } from '../../../common/lib';
 
 import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../contracts';
 

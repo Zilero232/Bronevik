@@ -37,8 +37,11 @@ describe('webLoginPhase', () => {
     expect(webLoginPhase({ codeState: 'invalid', status: 'idle' })).toBe('invalid');
   });
 
-  it('shows the redeeming state before the request starts, so a valid link never flashes an error', () => {
-    expect(webLoginPhase({ codeState: 'valid', status: 'idle' })).toBe('redeeming');
+  it('waits for the user to confirm a valid code instead of redeeming it on load', () => {
+    expect(webLoginPhase({ codeState: 'valid', status: 'idle' })).toBe('confirm');
+  });
+
+  it('shows the redeeming state while the confirmed code is being checked', () => {
     expect(webLoginPhase({ codeState: 'valid', status: 'pending' })).toBe('redeeming');
   });
 

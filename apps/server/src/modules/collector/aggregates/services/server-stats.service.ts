@@ -3,6 +3,7 @@ import { subDays } from 'date-fns';
 
 import type { DailyStatsRow, PlayerCountRow } from '../lib/server-stats';
 
+import { moscowDayStart } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
 import { AGGREGATES } from '../config';
 import { buildServerStats, SERVER_STATS } from '../lib/server-stats';
@@ -22,7 +23,8 @@ export class ServerStatsService {
 
     for (const mode of AGGREGATES.serverStatsModes) {
       for (const { period, days } of SERVER_STATS.periods) {
-        const since = subDays(now, days);
+        const since = moscowDayStart(subDays(now, days));
+        const until = moscowDayStart(now);
 
         const rows = await this.prisma.$queryRaw<DailyStatsRow[]>`
           SELECT
@@ -41,7 +43,7 @@ export class ServerStatsService {
             sum(shots)::float8 AS "shots",
             sum(player_wins_weighted)::float8 AS "playerWins"
           FROM tank_daily_stats
-          WHERE mode = ${mode}::stats_mode AND day >= ${since}
+          WHERE mode = ${mode}::stats_mode AND day >= ${since} AND day < ${until}
           GROUP BY tank_id, cohort
         `;
 
@@ -51,7 +53,7 @@ export class ServerStatsService {
             coalesce(cohort::text, 'all') AS "cohort",
             count(DISTINCT account_id)::int AS "players"
           FROM tank_battle_delta
-          WHERE mode = ${mode}::stats_mode AND captured_at >= ${since}
+          WHERE mode = ${mode}::stats_mode AND captured_at >= ${since} AND captured_at < ${until}
           GROUP BY GROUPING SETS ((tank_id, cohort), (tank_id))
         `;
 

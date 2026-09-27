@@ -20,7 +20,7 @@ export class LeagueService {
 
   async league({ userId, metric, week }: LeagueInput): Promise<LeagueView> {
     const { accountIds, own } = await this.follows.circle(userId);
-    const { start, end } = weekWindow(week ? new Date(`${week}T00:00:00Z`) : new Date());
+    const { start, end, weekStart } = weekWindow(week ? new Date(`${week}T00:00:00Z`) : new Date());
     const [sessions, marks, players] = await Promise.all([
       this.prisma.playSession.findMany({
         where: { accountId: { in: accountIds }, source: 'api', kind: 'day', startedAt: { gte: start, lt: end } },
@@ -57,7 +57,7 @@ export class LeagueService {
 
     return {
       metric,
-      weekStart: toIsoDate(start) ?? '',
+      weekStart: toIsoDate(weekStart) ?? '',
       entries: rankLeague({ stats: [...stats.values()], metric, minBattles: LEAGUE.minBattles }).map((entry) => ({
         rank: entry.rank,
         accountId: Number(entry.accountId),

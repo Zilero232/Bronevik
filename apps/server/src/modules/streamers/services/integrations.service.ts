@@ -1,3 +1,5 @@
+import type { CookieOptions } from 'express';
+
 import { RefreshingAuthProvider as DonationAlertsAuthProvider, getAccessToken } from '@donation-alerts/auth';
 import { Injectable, Logger } from '@nestjs/common';
 import { exchangeCode, getTokenInfo } from '@twurple/auth';
@@ -5,12 +7,12 @@ import { addSeconds } from 'date-fns';
 import { match } from 'ts-pattern';
 
 import type { StreamerProvider } from '../../../../generated';
-import type { OAuthCodeInput, OAuthStateInput, ProviderCallbackInput } from '../streamers.types';
+import type { ConnectUrl, OAuthCodeInput, OAuthStateInput, ProviderCallbackInput } from '../streamers.types';
 
 import { AppBadRequestException } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { DONATION_ALERTS, INTEGRATIONS, NO_SCOPES, TWITCH } from '../config';
+import { DONATION_ALERTS, INTEGRATIONS, NO_SCOPES, OAUTH_STATE, TWITCH } from '../config';
 import { IntegrationStoreService } from './integration-store.service';
 import { OAuthStateService } from './oauth-state.service';
 
@@ -24,14 +26,14 @@ export class IntegrationsService {
     private readonly store: IntegrationStoreService
   ) {}
 
-  async connectUrl({ userId, provider }: OAuthStateInput): Promise<string> {
+  async connectUrl({ userId, provider }: OAuthStateInput): Promise<ConnectUrl> {
     const { clientId, authorizeUrl, scopes } = this.app(provider);
 
     if (!clientId) {
       throw new AppBadRequestException('VALIDATION_FAILED', `${provider} is not configured on this server`);
     }
 
-    const state = await this.states.create({ provider, userId });
+    const { state, binding } = await this.states.create({ provider, userId });
     const url = new URL(authorizeUrl);
 
     url.searchParams.set('client_id', clientId);
@@ -40,14 +42,14 @@ export class IntegrationsService {
     url.searchParams.set('scope', scopes.join(' '));
     url.searchParams.set('state', state);
 
-    return url.href;
+    return { url: url.href, binding };
   }
 
-  async callback({ provider, code, state }: ProviderCallbackInput): Promise<string> {
+  async callback({ provider, code, state, binding, viewerId }: ProviderCallbackInput): Promise<string> {
     const webUrl = this.config.get('WEB_URL');
-    const owner = await this.states.consume(state);
+    const owner = await this.states.consume({ state, binding });
 
-    if (owner?.provider !== provider) {
+    if (owner?.provider !== provider || (viewerId !== null && viewerId !== owner.userId)) {
       return new URL(INTEGRATIONS.failedRedirectPath, webUrl).href;
     }
 
@@ -65,6 +67,16 @@ export class IntegrationsService {
 
       return new URL(INTEGRATIONS.failedRedirectPath, webUrl).href;
     }
+  }
+
+  bindingCookie(): CookieOptions {
+    return {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: this.config.get('API_URL').startsWith('https://'),
+      path: OAUTH_STATE.cookiePath,
+      maxAge: OAUTH_STATE.ttlSeconds * 1000
+    };
   }
 
   private async connectDonationAlerts({ userId, code }: OAuthCodeInput): Promise<void> {

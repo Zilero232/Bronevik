@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
-import { streamerRouteName } from '@/entities/streamer/streamer/server';
+import { streamerRouteEntity } from '@/entities/streamer/streamer/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
@@ -14,15 +14,15 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]
   const locale = resolveLocale(await rootParams.locale());
   const slug = decodeURIComponent((await params).slug);
   const t = await getTranslations({ locale, namespace: 'streamerSettings.meta.streamer' });
-  const name = await streamerRouteName(slug);
+  const { name, isFound } = await streamerRouteEntity(slug);
 
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
     path: ROUTES.streamers.settings.profile(slug),
     locale,
-    index: true,
-    follow: true
+    index: isFound,
+    follow: isFound
   });
 };
 

@@ -8,6 +8,7 @@ export { useFieldModStep } from './use-field-mod-step';
 export { useMobileStats } from './use-mobile-stats';
 export { useModulesPanel } from './use-modules-panel';
 export { usePresetCard } from './use-preset-card';
+export { usePresetStrip } from './use-preset-strip';
 export { useRecommendedPreset } from './use-recommended-preset';
 export { useShowcaseActions } from './use-showcase-actions';
 export { useShowcaseComparison } from './use-showcase-comparison';

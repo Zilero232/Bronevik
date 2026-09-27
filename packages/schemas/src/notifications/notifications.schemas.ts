@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { countSchema, httpsUrlSchema, isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { INBOX } from './notifications.constants';
+import { isPushServiceUrl } from './push-service';
 
 export const notificationChannelSchema = z.enum(['telegram', 'email', 'web_push', 'site']);
 
@@ -80,7 +81,7 @@ export const pushKeySchema = z.object({
 });
 
 export const pushSubscriptionSchema = z.object({
-  endpoint: httpsUrlSchema,
+  endpoint: httpsUrlSchema.refine(isPushServiceUrl, { message: 'Not a known web push service' }),
   keys: z.object({ p256dh: z.string().min(1).max(512), auth: z.string().min(1).max(512) })
 });
 

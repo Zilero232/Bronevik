@@ -1,3 +1,5 @@
+import { REDUCED_MOTION_QUERY } from '@/shared/lib';
+
 import type { ShowcaseEnvironment } from '../showcase-mode';
 
 type NavigatorHints = Navigator & {
@@ -20,8 +22,6 @@ const detectWebgl = (): boolean => {
 
   return webglSupport;
 };
-
-export const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 export const readShowcaseEnvironment = (): ShowcaseEnvironment => {
   const hints: NavigatorHints = navigator;

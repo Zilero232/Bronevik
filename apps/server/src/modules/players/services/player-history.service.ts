@@ -7,12 +7,13 @@ import { sortBy } from 'remeda';
 import type { BucketTankRow, HistoryWindowPolicy } from '../lib';
 import type { ActivityInput, ActivityRow, HistoryInput, HistoryPolicyInput } from '../players.types';
 
-import { percentOf, toIso } from '../../../common/lib';
+import { moscowDay, moscowDayStart, percentOf, toIso } from '../../../common/lib';
+import { TIME } from '../../../config';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { BronyaReferencesService, ExpectedValuesService, VehicleCatalogService } from '../../reference';
 import { HISTORY_WINDOW } from '../config';
-import { historyWindow, moscowDay, moscowDayStart, seriesPoints } from '../lib';
+import { historyWindow, seriesPoints } from '../lib';
 
 @Injectable()
 export class PlayerHistoryService {
@@ -43,7 +44,7 @@ export class PlayerHistoryService {
 
     const [rows, expected, tiers, patches, references] = await Promise.all([
       this.prisma.$queryRaw<BucketTankRow[]>`
-        SELECT (date_trunc(${query.granularity}, captured_at AT TIME ZONE 'Europe/Moscow') AT TIME ZONE 'Europe/Moscow') AS bucket,
+        SELECT (date_trunc(${query.granularity}, captured_at AT TIME ZONE ${TIME.zone}) AT TIME ZONE ${TIME.zone}) AS bucket,
                tank_id,
                sum(battles)::float8 AS battles,
                sum(wins)::float8 AS wins,
@@ -77,7 +78,7 @@ export class PlayerHistoryService {
     const from = moscowDayStart(subDays(to, days - 1));
 
     const rows = await this.prisma.$queryRaw<ActivityRow[]>`
-      SELECT to_char(captured_at AT TIME ZONE 'Europe/Moscow', 'YYYY-MM-DD') AS day,
+      SELECT to_char(captured_at AT TIME ZONE ${TIME.zone}, 'YYYY-MM-DD') AS day,
              sum(battles)::float8 AS battles,
              sum(wins)::float8 AS wins
       FROM tank_battle_delta

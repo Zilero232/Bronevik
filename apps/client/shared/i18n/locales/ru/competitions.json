@@ -64,7 +64,7 @@
     "tier": "От {tier} уровня",
     "battles": "Боёв на игрока",
     "battlesHint": "Учитываются первые бои каждого после старта",
-    "battlesError": "От {min} до {max} боёв",
+    "battlesError": "От {min} до {max, plural, one {# боя} few {# боёв} many {# боёв} other {# боя}}",
     "startsAt": "Старт",
     "startsAtError": "Укажите дату и время старта",
     "endsAt": "Финиш",

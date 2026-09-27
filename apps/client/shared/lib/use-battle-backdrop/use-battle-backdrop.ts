@@ -1,17 +1,20 @@
 'use client';
 
+import { useReducedMotion } from 'motion/react';
 import { useEffect, useRef } from 'react';
 
 import type { Tracer } from '../battle-backdrop';
 import type { UseBattleBackdropInput } from './use-battle-backdrop.types';
 
-import { BATTLE_BACKDROP, contourSegments, createMotes, createTracer, paintContours, paintMotion, stepMotes } from '../battle-backdrop';
+import { BATTLE_BACKDROP, contourSegments, createMotes, createTracer, stepMotes } from '../battle-backdrop';
+import { paintContours, paintMotion } from '../battle-backdrop-paint';
 import { seededRandom } from '../seeded-random';
 
 export const useBattleBackdrop = ({ seed, density }: UseBattleBackdropInput) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLCanvasElement>(null);
   const motionRef = useRef<HTMLCanvasElement>(null);
+  const isReduced = useReducedMotion() ?? false;
 
   useEffect(() => {
     const root = rootRef.current;
@@ -27,7 +30,6 @@ export const useBattleBackdrop = ({ seed, density }: UseBattleBackdropInput) => 
     const segments = contourSegments({ seed, cols, rows, levels: BATTLE_BACKDROP.levels });
     const motes = createMotes({ seed, dust, smoke });
     const random = seededRandom(seed * 7919 + 17);
-    const isReduced = window.matchMedia(BATTLE_BACKDROP.reducedMotionQuery).matches;
     const state = { width: 0, height: 0, color: '', tracerColor: '', frame: 0, last: 0, isRunning: false, isVisible: false, nextTracer: 0 };
     let tracers: Tracer[] = [];
 
@@ -117,7 +119,7 @@ export const useBattleBackdrop = ({ seed, density }: UseBattleBackdropInput) => 
       intersectionObserver.disconnect();
       document.removeEventListener('visibilitychange', sync);
     };
-  }, [seed, density]);
+  }, [seed, density, isReduced]);
 
   return { rootRef, fieldRef, motionRef };
 };

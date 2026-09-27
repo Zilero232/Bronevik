@@ -1,11 +1,14 @@
-import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Redirect } from '@nestjs/common';
+import type { Request, Response } from 'express';
+
+import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Redirect, Req, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
-import { PROVIDER_FROM_PATH, STREAMERS } from './config';
+import { readCookie } from '../../common/lib';
+import { OAUTH_STATE, PROVIDER_FROM_PATH, STREAMERS } from './config';
 import {
   ActivateChallengeDto,
   ApplyListDto,
@@ -246,8 +249,12 @@ export class StreamersController {
   @Post('me/integrations/:provider/connect')
   @HttpCode(HttpStatus.OK)
   @ZodResponse({ type: ConnectUrlDto })
-  async connect(@CurrentUserId() userId: string, @Param() { provider }: ConnectProviderDto) {
-    return { url: await this.integrations.connectUrl({ userId, provider: PROVIDER_FROM_PATH[provider] }) };
+  async connect(@CurrentUserId() userId: string, @Param() { provider }: ConnectProviderDto, @Res({ passthrough: true }) response: Response) {
+    const { url, binding } = await this.integrations.connectUrl({ userId, provider: PROVIDER_FROM_PATH[provider] });
+
+    response.cookie(OAUTH_STATE.cookie, binding, this.integrations.bindingCookie());
+
+    return { url };
   }
 
   @Put('me/integrations/twitch/predictions')
@@ -273,8 +280,18 @@ export class StreamersController {
   @AllowAnonymous()
   @Get('integrations/:provider/callback')
   @Redirect()
-  async callback(@Param() { provider }: ConnectProviderDto, @Query() { code, state }: OAuthCallbackDto) {
-    return { url: await this.integrations.callback({ provider: PROVIDER_FROM_PATH[provider], code, state }) };
+  async callback(
+    @Param() { provider }: ConnectProviderDto,
+    @Query() { code, state }: OAuthCallbackDto,
+    @OptionalUserId() viewerId: string | null,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response
+  ) {
+    const binding = readCookie({ header: request.headers.cookie, name: OAUTH_STATE.cookie });
+
+    response.clearCookie(OAUTH_STATE.cookie, { path: OAUTH_STATE.cookiePath });
+
+    return { url: await this.integrations.callback({ provider: PROVIDER_FROM_PATH[provider], code, state, binding, viewerId }) };
   }
 
   @AllowAnonymous()

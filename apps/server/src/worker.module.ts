@@ -6,7 +6,7 @@ import { AppLoggerModule, LestaModule, LOGGER, PrismaModule, QueuesModule, Redis
 import { AchievementsRarityWorkerModule } from './modules/achievements-rarity';
 import { BillingWorkerModule } from './modules/billing';
 import { ClanWorkspaceWorkerModule } from './modules/clan-workspace';
-import { CollectorModule } from './modules/collector';
+import { CollectorModule, WORKER_DATABASE } from './modules/collector';
 import { CommunityMaintenanceWorkerModule } from './modules/community-maintenance';
 import { CompetitionsWorkerModule } from './modules/competitions';
 import { DeveloperEventsModule, DeveloperWorkerModule } from './modules/developer';
@@ -31,7 +31,7 @@ const env = validateEnv(process.env);
     AppConfigModule,
     AppLoggerModule.forService(LOGGER.service.worker),
     ScheduleModule.forRoot(),
-    PrismaModule,
+    PrismaModule.forRoot({ poolMax: WORKER_DATABASE.poolMax }),
     RedisModule,
     QueuesModule,
     LestaModule,

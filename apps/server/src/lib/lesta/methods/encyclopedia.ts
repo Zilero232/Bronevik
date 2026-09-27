@@ -5,9 +5,9 @@ import type { EncyclopediaInfo, Vehicle, VehicleProfile } from '../schemas';
 import type { VehicleProfileInput, VehicleProfilesInput, VehiclesInput } from './methods.types';
 
 import { LESTA_API } from '../client/client.constants';
-import { callParams, fieldAwareSchema } from '../client/client.helpers';
+import { callParams, fieldAwareSchema } from '../client/params';
 import { encyclopediaInfoSchema, idMapOf, vehicleProfileSchema, vehicleSchema } from '../schemas';
-import { batchedMap, passthrough, passthroughById } from './methods.helpers';
+import { batchedMap, passthrough, passthroughById } from './call-shapes';
 
 export const createEncyclopediaMethods = (requester: LestaRequester) => {
   const vehicles = async <const F extends FieldList | undefined = undefined>({

@@ -5,7 +5,7 @@ from otmetki.binding import Credentials
 from otmetki.jsonutil import loads
 from otmetki.outbox import MAX_BACKOFF_S, OUTCOME_AUTH, OUTCOME_DROP, OUTCOME_RETRY, OUTCOME_SENT, OUTCOME_SHRINK, Outbox, classify_status
 from otmetki.sender import IngestSender, parse_retry_after
-from otmetki.signing import DEVICE_HEADER, SIGNATURE_HEADER, verify
+from otmetki.signing import DEVICE_HEADER, verify_request
 from otmetki.storage import MemoryFile
 
 
@@ -128,7 +128,7 @@ class SenderTest(unittest.TestCase):
         request = self.transport.requests[0]
         self.assertEqual(request['method'], 'POST')
         self.assertEqual(request['headers'][DEVICE_HEADER], 'dev_1')
-        self.assertTrue(verify(self.creds.secret, request['body'], request['headers'][SIGNATURE_HEADER]))
+        self.assertTrue(verify_request(self.creds.secret, 'POST', 'https://api.example/mod/ingest', request['headers'], request['body']))
         envelope = loads(request['body'])
         self.assertEqual(envelope['account_id'], 42)
         self.assertEqual(envelope['device_id'], 'dev_1')

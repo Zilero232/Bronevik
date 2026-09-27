@@ -41,6 +41,10 @@ describe('shouldWriteSnapshot', () => {
     expect(shouldWriteSnapshot({ previous: { battles: 10 }, battles: 10 })).toBe(false);
     expect(shouldWriteSnapshot({ previous: { battles: 10 }, battles: 11 })).toBe(true);
   });
+
+  it('never writes a stale read that is behind the stored snapshot', () => {
+    expect(shouldWriteSnapshot({ previous: { battles: 10 }, battles: 9 })).toBe(false);
+  });
 });
 
 describe('modeBlocks', () => {

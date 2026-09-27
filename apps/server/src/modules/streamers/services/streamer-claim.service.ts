@@ -5,7 +5,15 @@ import { match } from 'ts-pattern';
 
 import type { StreamerClaim, StreamerPlatform } from '../../../../generated';
 import type { ParsedChannel } from '../lib';
-import type { ClaimRef, ClaimTarget, CompleteClaimInput, RemovalRequestInput, ResolveClaimRequest, StartClaimRequest } from '../streamers.types';
+import type {
+  ClaimRef,
+  ClaimTarget,
+  CompleteClaimInput,
+  ContestedClaimInput,
+  RemovalRequestInput,
+  ResolveClaimRequest,
+  StartClaimRequest
+} from '../streamers.types';
 
 import { Prisma } from '../../../../generated';
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
@@ -43,6 +51,10 @@ export class StreamerClaimService {
       const claim = await this.prisma.streamerClaim.create({
         data: { ...this.targetRef(target), userId, method: CLAIM_METHOD_TO_DB[method], platform: 'twitch' }
       });
+
+      if (await this.contested({ target, userId, login: login.toLowerCase() })) {
+        return this.view(claim, slug);
+      }
 
       return this.view(await this.complete({ claim, verifiedPlatform: 'twitch', moderatorId: null }), slug);
     }
@@ -224,6 +236,15 @@ export class StreamerClaimService {
     }
 
     return { profile: null, invitation };
+  }
+
+  private async contested({ target, userId, login }: ContestedClaimInput): Promise<boolean> {
+    const rivals = await this.prisma.streamerClaim.count({ where: { ...this.targetRef(target), userId: { not: userId }, status: 'open' } });
+    const verifiedElsewhere = await this.prisma.streamerChannel.count({
+      where: { platform: 'twitch', handle: login, verifiedAt: { not: null }, ...(target.profile ? { NOT: { profileId: target.profile.id } } : {}) }
+    });
+
+    return rivals > 0 || verifiedElsewhere > 0;
   }
 
   private targetRef(target: ClaimTarget) {

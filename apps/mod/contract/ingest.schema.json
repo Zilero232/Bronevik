@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://triotmetki.ru/contract/mod/ingest.schema.json",
   "title": "Three Marks mod ingest batch",
-  "description": "Body of POST /mod/ingest. Headers: Content-Type: application/json; X-Otmetki-Device: <device_id>; X-Otmetki-Signature: sha256=<lowercase hex HMAC-SHA256 of the raw request body bytes, key = UTF-8 bytes of the device secret string exactly as returned by /mod/bind>. The mod serialises with sorted keys, no whitespace and ASCII-only escapes, but the server must verify the signature over the raw bytes it received, never over a re-serialisation. Responses: 200 with #/definitions/ingestResponse (partial duplicates are fine), 409 = whole batch already seen (treated as success), 401/403 = unknown device, bad signature or revoked device (the mod pauses until the user rebinds), 400/404/422 = invalid batch (the mod drops it), 413 = too large (the mod halves the batch size), 429/5xx = retry with backoff (Retry-After in seconds is honoured). Only the player's own data is ever sent.",
+  "description": "Body of POST /mod/ingest. Headers: Content-Type: application/json; X-Otmetki-Device: <device_id>; X-Otmetki-Timestamp: <unix seconds>; X-Otmetki-Nonce: <16-64 url-safe chars, fresh per request>; X-Otmetki-Signature: sha256=<lowercase hex HMAC-SHA256 of 'v2\n' + METHOD + '\n' + path + '\n' + timestamp + '\n' + nonce + '\n' followed by the raw request body bytes, key = UTF-8 bytes of the device secret string exactly as returned by /mod/bind>. The server rejects a timestamp more than 5 minutes off (428 stale_request, retried) and a nonce it has already seen (409 replayed_request). The mod serialises with sorted keys, no whitespace and ASCII-only escapes, but the server must verify the signature over the raw bytes it received, never over a re-serialisation. Responses: 200 with #/definitions/ingestResponse (partial duplicates are fine), 409 = whole batch already seen (treated as success), 401/403 = unknown device, bad signature or revoked device (the mod pauses until the user rebinds), 400/404/422 = invalid batch (the mod drops it), 413 = too large (the mod halves the batch size), 429/5xx = retry with backoff (Retry-After in seconds is honoured). Only the player's own data is ever sent.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "batch_id", "device_id", "account_id", "realm", "mod_version", "client_version", "sent_at", "events"],
@@ -634,7 +634,17 @@
       "required": ["error"],
       "properties": {
         "error": {
-          "enum": ["bad_signature", "unknown_device", "device_revoked", "account_mismatch", "invalid_payload", "too_large", "rate_limited"]
+          "enum": [
+            "bad_signature",
+            "unknown_device",
+            "device_revoked",
+            "account_mismatch",
+            "invalid_payload",
+            "too_large",
+            "rate_limited",
+            "stale_request",
+            "replayed_request"
+          ]
         },
         "message": {
           "type": "string"

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { CompetitionStatusBadge } from '@/entities/competition/competition';
 import { ROUTES } from '@/shared/constants';
 import { Badge, PageHeader, Skeleton, TextCard } from '@/ui-kit';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { CompetitionPageProps } from './CompetitionPage.types';
 

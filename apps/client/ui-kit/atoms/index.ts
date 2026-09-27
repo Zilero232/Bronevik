@@ -18,6 +18,8 @@ export { Input } from './Input';
 export type { InputProps } from './Input';
 export { Kbd } from './Kbd';
 export type { KbdProps } from './Kbd';
+export { LiveLamp } from './LiveLamp';
+export type { LiveLampProps } from './LiveLamp';
 export { NationBackdrop } from './NationBackdrop';
 export type { NationBackdropFade, NationBackdropProps } from './NationBackdrop';
 export { NationLabel } from './NationLabel';

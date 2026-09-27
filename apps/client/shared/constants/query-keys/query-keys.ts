@@ -43,9 +43,8 @@ export const QUERY_KEYS = {
   },
   marks: {
     list: (params: object) => ['marks', 'list', params] as const,
+    feed: (params: object) => ['marks', 'feed', params] as const,
     history: (tankId: number) => ['marks', tankId, 'history'] as const,
-    historyBatch: (params: object) => ['marks', 'history-batch', params] as const,
-    projection: (params: object) => ['marks', 'projection', params] as const,
     player: (accountId: number) => ['marks', 'player', accountId] as const
   },
   builds: {
@@ -58,8 +57,16 @@ export const QUERY_KEYS = {
   },
   tree: (nation: string) => ['tree', nation] as const,
   pulse: ['pulse'] as const,
+  reference: {
+    version: ['reference', 'version'] as const,
+    servers: ['reference', 'servers'] as const
+  },
+  events: {
+    calendar: ['events', 'calendar'] as const
+  },
   clans: {
     list: (params: object) => ['clans', 'list', params] as const,
+    feed: (params: object) => ['clans', 'feed', params] as const,
     page: (idOrTag: string) => ['clans', 'page', idOrTag.toLowerCase()] as const,
     events: (params: object) => ['clans', 'events', params] as const,
     stronghold: (clanId: number) => ['clans', clanId, 'stronghold'] as const
@@ -126,16 +133,12 @@ export const QUERY_KEYS = {
       challenges: ['me', 'streamer', 'challenges'] as const,
       integrations: ['me', 'streamer', 'integrations'] as const,
       settings: ['me', 'streamer', 'settings'] as const,
-      applyRequests: ['me', 'streamer', 'apply-requests'] as const,
       settingsShare: ['me', 'streamer', 'settings-share'] as const,
       follows: ['me', 'streamer', 'follows'] as const
     }
   },
   billing: {
     plans: ['billing', 'plans'] as const
-  },
-  developer: {
-    spec: ['developer', 'openapi'] as const
   },
   social: {
     follows: ['me', 'social', 'follows'] as const

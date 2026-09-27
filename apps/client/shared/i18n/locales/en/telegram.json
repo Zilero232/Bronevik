@@ -87,6 +87,10 @@
         "title": "Broken link",
         "description": "The code in the link is invalid; it may have been cut off when copied. Request a new one with {command}."
       },
+      "confirm": {
+        "title": "Sign in with Telegram?",
+        "description": "Continue only if you asked the bot for this link yourself. Never open sign-in links other people send you."
+      },
       "redeeming": {
         "title": "Checking the code",
         "description": "This takes a couple of seconds."
@@ -100,10 +104,14 @@
         "description": "Taking you to your account."
       }
     },
+    "replaceSession": "You are signed in as {name}. Continuing signs you out of that account.",
     "actions": {
       "account": "To my account",
       "openBot": "Open {bot}",
-      "otherWays": "Other ways to sign in"
+      "otherWays": "Other ways to sign in",
+      "continue": "Continue",
+      "switchAccount": "Switch account",
+      "cancel": "Cancel"
     }
   }
 }

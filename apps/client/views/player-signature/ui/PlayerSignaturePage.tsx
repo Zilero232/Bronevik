@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 import { ROUTES } from '@/shared/constants';
 import { Card, CardBody, CardHeader, CopyField, EmptyState, PageHeader, Skeleton } from '@/ui-kit';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { PlayerSignaturePageProps } from './PlayerSignaturePage.types';
 

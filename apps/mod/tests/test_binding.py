@@ -10,17 +10,17 @@ SECRET = 'q' * 43
 class BindingTest(unittest.TestCase):
 
     def test_normalize(self):
-        self.assertEqual(normalize_code(' ab3-k7z '), 'AB3K7Z')
-        self.assertEqual(normalize_code(u'xyz 234'), 'XYZ234')
-        self.assertIsNone(normalize_code('ABC12'))
-        self.assertIsNone(normalize_code('ABCDE0'))
-        self.assertIsNone(normalize_code('ABCDEI'))
-        self.assertIsNone(normalize_code('ABCDEFG'))
+        self.assertEqual(normalize_code(' ab3k7-zq4m9 '), 'AB3K7ZQ4M9')
+        self.assertEqual(normalize_code(u'xyz 234 abcd'), 'XYZ234ABCD')
+        self.assertIsNone(normalize_code('ABCDEFGH2'))
+        self.assertIsNone(normalize_code('ABCDEFGH20'))
+        self.assertIsNone(normalize_code('ABCDEFGH2I'))
+        self.assertIsNone(normalize_code('ABCDEFGH234'))
         self.assertIsNone(normalize_code(None))
 
     def test_request(self):
-        request = build_bind_request('ab3k7z', 12345678, '0.1.0', '1.45.0', 'RU')
-        self.assertEqual(request, {'code': 'AB3K7Z', 'account_id': 12345678, 'mod_version': '0.1.0', 'client_version': '1.45.0', 'realm': 'RU'})
+        request = build_bind_request('ab3k7zq4m9', 12345678, '0.1.0', '1.45.0', 'RU')
+        self.assertEqual(request, {'code': 'AB3K7ZQ4M9', 'account_id': 12345678, 'mod_version': '0.1.0', 'client_version': '1.45.0', 'realm': 'RU'})
         validator = _support.schema_validator('bind.schema.json', 'request')
         if validator is not None:
             self.assertEqual(list(validator.iter_errors(request)), [])
@@ -30,7 +30,7 @@ class BindingTest(unittest.TestCase):
             build_bind_request('bad', 1, '0.1.0', '', 'RU')
         self.assertEqual(ctx.exception.reason, 'invalid_code')
         with self.assertRaises(BindError) as ctx:
-            build_bind_request('AB3K7Z', None, '0.1.0', '', 'RU')
+            build_bind_request('AB3K7ZQ4M9', None, '0.1.0', '', 'RU')
         self.assertEqual(ctx.exception.reason, 'no_account')
 
     def test_response(self):

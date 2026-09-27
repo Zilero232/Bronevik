@@ -2,6 +2,8 @@ import type { RatingPeriod } from '@otmetki/schemas';
 
 export const PROFILE_TABS = ['overview', 'tanks', 'sessions', 'marks', 'achievements', 'charts', 'insights', 'history'] as const;
 
+export const PROFILE_TAB_PARAM = 'tab';
+
 export const PROFILE_PERIODS = ['overall', '1000', '30d', '7d', '24h'] as const satisfies readonly RatingPeriod[];
 
 export const DEFAULT_PERIOD: RatingPeriod = 'overall';

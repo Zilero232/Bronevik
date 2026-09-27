@@ -4,7 +4,7 @@ import { Heart } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { useId } from 'react';
 
-import { Avatar, Card, CardHeader, EmptyState, QueryState } from '@/ui-kit';
+import { Avatar, Card, CardHeader, EmptyState, QueryState, Tooltip } from '@/ui-kit';
 
 import { useTopAuthors } from '../../../model/hooks';
 import { SideListSkeleton } from '../SideListSkeleton';
@@ -34,13 +34,13 @@ export const TopAuthors = () => {
                 <span className={s.rank}>{index + 1}</span>
                 <Avatar name={author.name} size='sm' src={author.image ?? undefined} />
                 <span className={s.name}>{author.name}</span>
-                <span className={s.stat} title={t('guides', { count: guides })}>
-                  {t('guides', { count: guides })}
-                </span>
-                <span className={s.stat} title={t('likes')}>
-                  <Heart aria-hidden size={12} />
-                  {format.number(likes)}
-                </span>
+                <span className={s.stat}>{t('guides', { count: guides })}</span>
+                <Tooltip content={t('likes')}>
+                  <span aria-label={`${t('likes')}: ${format.number(likes)}`} className={s.stat}>
+                    <Heart aria-hidden size={12} />
+                    {format.number(likes)}
+                  </span>
+                </Tooltip>
               </li>
             ))}
           </ol>

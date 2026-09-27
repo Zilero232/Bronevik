@@ -10,7 +10,7 @@ import { EntitlementsService } from '../../../billing';
 import { TankProgressService } from '../tank-progress.service';
 
 const now = new Date('2026-09-26T10:00:00Z');
-const { start } = weekWindow(now);
+const { weekStart: start } = weekWindow(now);
 
 const challenge = (fields: Partial<TankChallengeProgress>): TankChallengeProgress => ({
   accountId: 7n,

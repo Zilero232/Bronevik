@@ -1,6 +1,7 @@
 import type { EquipCosmeticsInput, OverlayTheme, ShellReason, TankChallengeMetric } from '@otmetki/schemas';
 
 import type { Prisma } from '../../../generated';
+import type { WeekWindow } from '../../common/lib';
 
 export type TankChallengeDefinition = {
   metric: TankChallengeMetric;
@@ -59,7 +60,7 @@ export type ApplyXpInput = AccountRunInput & {
 };
 
 export type EvaluateChallengesInput = AccountRunInput & {
-  weekStart: Date;
+  week: WeekWindow;
 };
 
 export type PurchaseCosmeticInput = {

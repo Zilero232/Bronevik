@@ -88,7 +88,7 @@
     "placeholder": "Nickname or ID",
     "submit": "Find",
     "suggestions": "Players found",
-    "battles": "{battles} battles",
+    "battles": "{battles, plural, one {# battle} other {# battles}}",
     "error": "Could not load the marks",
     "notFound": "Player “{player}” not found",
     "notFoundDescription": "Check the nickname or enter the account ID.",

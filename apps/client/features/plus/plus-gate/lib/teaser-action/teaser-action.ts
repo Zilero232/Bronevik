@@ -1,6 +1,6 @@
 import type { TeaserAction, TeaserActionInput } from './teaser-action.types';
 
-export const teaserAction = ({ isSignedIn, isPlus, trialAvailable }: TeaserActionInput): TeaserAction => {
+export const teaserAction = ({ isSignedIn, isPlus, trialAvailable, isCheckoutAvailable }: TeaserActionInput): TeaserAction => {
   if (!isSignedIn) {
     return 'signIn';
   }
@@ -9,5 +9,9 @@ export const teaserAction = ({ isSignedIn, isPlus, trialAvailable }: TeaserActio
     return 'active';
   }
 
-  return trialAvailable ? 'trial' : 'subscribe';
+  if (trialAvailable) {
+    return 'trial';
+  }
+
+  return isCheckoutAvailable ? 'subscribe' : 'promo';
 };

@@ -10,7 +10,7 @@ import type { TankStatsInput } from '@/entities/tank/tank';
 import { listTankStats } from '@/entities/tank/tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
-import type { ComparePreset } from '../../../config';
+import type { ComparePreset } from '../../../model/compare-presets.types';
 
 import { COMPARE_REQUEST } from '../../../config';
 import { useCompareIds } from '../use-compare-ids';

@@ -41,7 +41,7 @@
     "title": "Время в очереди",
     "meta": "Медиана по часам · {days} дн. · {timezone}",
     "caption": "Медианное время ожидания боя по уровням техники и часам",
-    "cell": "{tier} ур., {hour}:00 — медиана {median}, у 90% не дольше {p90}, {samples} боёв",
+    "cell": "{tier} ур., {hour}:00 — медиана {median}, у 90% не дольше {p90}, {samples, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
     "noData": "{hour}:00 — мало данных",
     "legendFast": "Быстро · {wait}",
     "legendSlow": "Долго · {wait}",

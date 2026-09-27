@@ -1,5 +1,19 @@
 export const TANKS_TABLE = {
   numeric: { align: 'end', isNumeric: true },
   rankWidth: 48,
-  tankWidth: '28%'
+  tankWidth: '28%',
+  optionalColumns: ['tier', 'winRateDiff', 'avgFrags', 'avgSpotted', 'survivalRate', 'players', 'avgXp', 'avgBlocked', 'accuracy'],
+  columnLabels: {
+    tier: 'tier',
+    winRateDiff: 'winRateDiff',
+    avgFrags: 'frags',
+    avgSpotted: 'spotted',
+    survivalRate: 'survival',
+    players: 'players',
+    avgXp: 'avgXp',
+    avgBlocked: 'avgBlocked',
+    accuracy: 'accuracy'
+  },
+  hiddenByDefault: ['players', 'avgXp', 'avgBlocked', 'accuracy'],
+  csvName: 'tanks.csv'
 } as const;

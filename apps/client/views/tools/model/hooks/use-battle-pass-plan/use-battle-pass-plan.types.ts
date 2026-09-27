@@ -1,9 +1,5 @@
-export type BattlePassValues = {
-  stage: number | null;
-  stagePoints: number | null;
-  pointsPerStage: number | null;
-  stages: number | null;
-  daysLeft: number | null;
-  pointsPerBattle: number | null;
-  battlesPerDay: number;
-};
+import type { BattlePassPlanInput } from '../../../lib/battle-pass';
+
+type NullableFields = Omit<BattlePassPlanInput, 'battlesPerDay' | 'today'>;
+
+export type BattlePassValues = { [K in keyof NullableFields]: NullableFields[K] | null } & Pick<BattlePassPlanInput, 'battlesPerDay'>;

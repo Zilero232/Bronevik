@@ -1,8 +1,8 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useQueryState } from 'nuqs';
 
 import { LESTA_LINK } from '../../../config';
 import { lestaLinkErrorKey } from '../../../lib/lesta-link-error';
 
-export const useLestaLinkError = () => lestaLinkErrorKey(useSearchParams().get(LESTA_LINK.errorParam));
+export const useLestaLinkError = () => lestaLinkErrorKey(useQueryState(LESTA_LINK.errorParam)[0]);

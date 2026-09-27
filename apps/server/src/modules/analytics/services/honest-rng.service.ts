@@ -7,6 +7,7 @@ import type { AnalyticsInput } from '../analytics.types';
 
 import { percentOf } from '../../../common/lib';
 import { PrismaService } from '../../../core';
+import { ANALYTICS_WINDOW } from '../config';
 import { periodStart, readStoredShots, summarizeRolls } from '../lib';
 import { OwnAccountService } from './own-account.service';
 
@@ -21,10 +22,17 @@ export class HonestRngService {
     const accountId = await this.accounts.resolve({ userId, account });
     const from = periodStart({ period, now: new Date() });
 
-    const battles = await this.prisma.battle.findMany({
-      where: { accountId, ...(from ? { startedAt: { gte: from } } : {}) },
-      select: { shots: true, shotsFired: true, shotsHit: true, shotsPierced: true }
-    });
+    const where = { accountId, ...(from ? { startedAt: { gte: from } } : {}) };
+
+    const [total, battles] = await Promise.all([
+      this.prisma.battle.count({ where }),
+      this.prisma.battle.findMany({
+        where,
+        orderBy: { startedAt: 'desc' },
+        take: ANALYTICS_WINDOW.rngMaxBattles,
+        select: { shots: true, shotsFired: true, shotsHit: true, shotsPierced: true }
+      })
+    ]);
 
     const shotsFired = sumBy(battles, (battle) => battle.shotsFired ?? 0);
     const hits = sumBy(battles, (battle) => battle.shotsHit ?? 0);
@@ -32,7 +40,7 @@ export class HonestRngService {
     return {
       accountId: Number(accountId),
       period,
-      battles: battles.length,
+      battles: total,
       ...summarizeRolls(battles.flatMap((battle) => readStoredShots(battle.shots))),
       accuracy: {
         shotsFired,

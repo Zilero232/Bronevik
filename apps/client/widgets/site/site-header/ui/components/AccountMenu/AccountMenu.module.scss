@@ -2,6 +2,7 @@
 
 .signIn {
   @include nav-label;
+  @include touch-target;
 
   height: 36px;
   color: var(--color-accent-contrast);
@@ -23,10 +24,20 @@
     @include focus-ring;
   }
 
+  @include below(sm) {
+    padding-inline: var(--space-2);
+  }
+
   @include reduced-motion {
     &:hover {
       transform: none;
     }
+  }
+}
+
+.signInLabel {
+  @include below(sm) {
+    @include sr-only;
   }
 }
 
@@ -100,6 +111,8 @@
 }
 
 .item {
+  @include touch-target;
+
   display: flex;
   height: 32px;
   align-items: center;

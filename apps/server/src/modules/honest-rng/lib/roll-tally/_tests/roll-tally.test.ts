@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { StoredShot } from '../../../../analytics';
 
-import { emptyTally, foldBattle, tallySummary } from '../roll-tally';
+import { emptyTally, foldBattle, mergeTally, tallySummary } from '../roll-tally';
 
 const shot = (damage: number, overrides: Partial<StoredShot> = {}): StoredShot => ({
   damage,
@@ -48,5 +48,17 @@ describe('foldBattle', () => {
     expect(summary.meanRoll).toBeNull();
     expect(summary.hitRate).toBeNull();
     expect(summary.buckets).toHaveLength(HONEST_RNG.buckets);
+  });
+});
+
+describe('mergeTally', () => {
+  it('equals folding every battle into one tally, counting a shared player once', () => {
+    const first = foldBattle({ tally: emptyTally(), accountId: '1', shots: [shot(310), shot(420)], accuracy: { fired: 3, hit: 2, pierced: 2 } });
+    const second = foldBattle({ tally: emptyTally(), accountId: '1', shots: [shot(499)], accuracy: { fired: 1, hit: 1, pierced: 0 } });
+    const whole = foldBattle({ tally: emptyTally(), accountId: '1', shots: [shot(310), shot(420)], accuracy: { fired: 3, hit: 2, pierced: 2 } });
+
+    foldBattle({ tally: whole, accountId: '1', shots: [shot(499)], accuracy: { fired: 1, hit: 1, pierced: 0 } });
+
+    expect(tallySummary(mergeTally({ into: first, from: second }))).toEqual(tallySummary(whole));
   });
 });

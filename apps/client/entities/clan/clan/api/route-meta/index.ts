@@ -1,1 +1,1 @@
-export { clanRouteName, topClanTags } from './route-meta';
+export { clanRouteEntity, topClanTags } from './route-meta';

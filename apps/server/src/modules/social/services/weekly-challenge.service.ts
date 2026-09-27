@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { unique } from 'remeda';
+import { groupBy, sumBy, unique } from 'remeda';
 
 import type { WeekStats } from '../lib';
+import type { ChallengeBattleRow } from '../queries';
 import type { ChallengesView, RecordChallengeInput, WeekStatsInput } from '../social.types';
 
 import { toIsoDate, toJsonValue, weekWindow } from '../../../common/lib';
@@ -9,6 +10,7 @@ import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../config';
 import { badgeCodeOf, challengeProgress, isChallengeBadgeCode } from '../lib';
+import { challengeBattlesSql } from '../queries';
 import { SnapshotEventsService } from './snapshot-events.service';
 
 @Injectable()
@@ -22,14 +24,14 @@ export class WeeklyChallengeService {
   ) {}
 
   async forUser(userId: string): Promise<ChallengesView> {
-    const { start, end } = weekWindow(new Date());
+    const { weekStart, end } = weekWindow(new Date());
     const links = await this.prisma.userLestaAccount.findMany({ where: { userId }, select: { accountId: true } });
     const progress = await this.prisma.weeklyChallengeProgress.findMany({
-      where: { weekStart: start, accountId: { in: links.map((link) => link.accountId) } }
+      where: { weekStart, accountId: { in: links.map((link) => link.accountId) } }
     });
 
     return {
-      weekStart: toIsoDate(start) ?? '',
+      weekStart: toIsoDate(weekStart) ?? '',
       endsAt: end.toISOString(),
       challenges: WEEKLY_CHALLENGES.map((definition) => ({
         code: definition.code,
@@ -46,30 +48,38 @@ export class WeeklyChallengeService {
   }
 
   async evaluate(now: Date): Promise<number> {
-    const { start, end } = weekWindow(now);
-    const links = await this.prisma.userLestaAccount.findMany({
-      select: { accountId: true },
-      distinct: ['accountId'],
-      take: CHALLENGE_BADGES.maxAccountsPerRun
-    });
-
-    const accountIds = links.map((link) => link.accountId);
-    const stats = await this.weekStats({ accountIds, start, end });
+    const { start, end, weekStart } = weekWindow(now);
+    let cursor: bigint | null = null;
+    let accounts = 0;
     let completed = 0;
 
-    for (const accountId of accountIds) {
-      const own = stats.get(accountId);
+    for (;;) {
+      const links = await this.prisma.userLestaAccount.findMany({
+        where: cursor === null ? {} : { accountId: { gt: cursor } },
+        select: { accountId: true },
+        distinct: ['accountId'],
+        orderBy: { accountId: 'asc' },
+        take: CHALLENGE_BADGES.accountsPerPage
+      });
 
-      if (!own) {
-        continue;
+      const accountIds: bigint[] = links.map((link) => link.accountId);
+      const stats = accountIds.length === 0 ? new Map<bigint, WeekStats>() : await this.weekStats({ accountIds, start, end });
+
+      for (const [accountId, own] of stats) {
+        for (const definition of WEEKLY_CHALLENGES) {
+          completed += (await this.record({ accountId, weekStart, definition, stats: own, now })) ? 1 : 0;
+        }
       }
 
-      for (const definition of WEEKLY_CHALLENGES) {
-        completed += (await this.record({ accountId, weekStart: start, definition, stats: own, now })) ? 1 : 0;
+      accounts += accountIds.length;
+      cursor = accountIds.at(-1) ?? cursor;
+
+      if (accountIds.length < CHALLENGE_BADGES.accountsPerPage) {
+        break;
       }
     }
 
-    this.logger.log(`weekly challenges: ${accountIds.length} accounts, ${completed} completed`);
+    this.logger.log(`weekly challenges: ${accounts} accounts, ${completed} completed`);
 
     return completed;
   }
@@ -125,10 +135,7 @@ export class WeeklyChallengeService {
         where: { accountId: { in: accountIds }, source: 'api', kind: 'day', startedAt: { gte: start, lt: end } },
         select: { accountId: true, battles: true, wins: true, spotted: true }
       }),
-      this.prisma.battle.findMany({
-        where: { accountId: { in: accountIds }, startedAt: { gte: start, lt: end } },
-        select: { accountId: true, tankId: true, damageDealt: true }
-      }),
+      this.prisma.$queryRaw<ChallengeBattleRow[]>(challengeBattlesSql({ accountIds, start, end })),
       this.prisma.tankBattleDelta.findMany({
         where: { accountId: { in: accountIds }, mode: 'random', battles: 1, capturedAt: { gte: start, lt: end } },
         select: { accountId: true, tankId: true, damageDealt: true }
@@ -142,23 +149,30 @@ export class WeeklyChallengeService {
     });
 
     const typeOf = new Map(vehicles.map((vehicle) => [vehicle.tankId, vehicle.type]));
-    const result = new Map<bigint, WeekStats>();
+    const byAccount = <T extends { accountId: bigint }>(rows: T[]) => groupBy(rows, (row) => String(row.accountId));
+    const sessionsOf = byAccount(sessions);
+    const modOf = byAccount(battles);
+    const apiOf = byAccount(deltas);
 
-    for (const accountId of accountIds) {
-      const own = sessions.filter((row) => row.accountId === accountId);
-      const fromMod = battles.filter((row) => row.accountId === accountId);
-      const fromApi = deltas.filter((row) => row.accountId === accountId);
-      const source = fromMod.length >= fromApi.length ? fromMod : fromApi;
+    return new Map(
+      accountIds.map((accountId): [bigint, WeekStats] => {
+        const key = String(accountId);
+        const own = sessionsOf[key] ?? [];
+        const fromMod = modOf[key] ?? [];
+        const fromApi = apiOf[key] ?? [];
+        const source = fromMod.length >= fromApi.length ? fromMod : fromApi;
 
-      result.set(accountId, {
-        battles: own.reduce((total, row) => total + row.battles, 0),
-        wins: own.reduce((total, row) => total + row.wins, 0),
-        spotted: own.reduce((total, row) => total + row.spotted, 0),
-        marks: marks.get(accountId) ?? 0,
-        bigDamage: source.map((row) => ({ damage: row.damageDealt, vehicleType: typeOf.get(row.tankId) ?? null }))
-      });
-    }
-
-    return result;
+        return [
+          accountId,
+          {
+            battles: sumBy(own, (row) => row.battles),
+            wins: sumBy(own, (row) => row.wins),
+            spotted: sumBy(own, (row) => row.spotted),
+            marks: marks.get(accountId) ?? 0,
+            bigDamage: source.map((row) => ({ damage: row.damageDealt, vehicleType: typeOf.get(row.tankId) ?? null }))
+          }
+        ];
+      })
+    );
   }
 }

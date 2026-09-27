@@ -9,7 +9,8 @@ import {
   SessionCloseService,
   WebhookDeliveryService,
   WebhookEndpointsService,
-  WebhookPosterService
+  WebhookPosterService,
+  WebhookRedriveService
 } from './services';
 
 @Module({
@@ -22,6 +23,7 @@ import {
     ApiTierSyncService,
     WebhookDeliveryService,
     SessionCloseService,
+    WebhookRedriveService,
     WebhooksProcessor
   ]
 })

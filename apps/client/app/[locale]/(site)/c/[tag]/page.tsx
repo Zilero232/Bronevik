@@ -4,11 +4,12 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
-import { clanRouteName, topClanTags } from '@/entities/clan/clan/server';
+import { clanRouteEntity, topClanTags } from '@/entities/clan/clan/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';
 import { RequestTime } from '@/shared/seo/request-time';
+import { RouteGuard } from '@/shared/seo/route-guard';
 import { ClanPage } from '@/views/clan';
 
 export const generateStaticParams = async () => (await topClanTags({ fallback: ROUTE_STATIC_PARAMS.fallback.clan })).map((tag) => ({ tag }));
@@ -17,20 +18,23 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/c/[tag]'
   const locale = resolveLocale(await rootParams.locale());
   const { tag } = await params;
   const t = await getTranslations({ locale, namespace: 'clans.clanMeta' });
-  const name = await clanRouteName(tag);
+  const { name, isFound } = await clanRouteEntity(tag);
 
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
     path: ROUTES.clans.detail(tag),
     locale,
-    index: true,
-    follow: true
+    index: isFound,
+    follow: isFound
   });
 };
 
-const Page = () => (
+const Page = ({ params }: PageProps<'/[locale]/c/[tag]'>) => (
   <>
+    <Suspense>
+      <RouteGuard entity={params.then(({ tag }) => clanRouteEntity(tag))} />
+    </Suspense>
     <Suspense>
       <ClanPage />
     </Suspense>

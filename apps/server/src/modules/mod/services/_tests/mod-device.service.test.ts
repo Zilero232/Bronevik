@@ -1,6 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
+import RedisMock from 'ioredis-mock';
 import { createHmac } from 'node:crypto';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { ModDevice } from '../../../../../generated';
@@ -8,7 +9,8 @@ import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { deviceSecret, hashSecret } from '../../lib';
+import { MOD_DEVICE, MOD_REQUEST } from '../../config';
+import { deviceSecret, hashSecret, signedMessage } from '../../lib';
 import { ModDeviceService } from '../mod-device.service';
 
 const SERVER_SECRET = 'server-secret-for-tests';
@@ -40,7 +42,7 @@ const createService = ({ stored = device(), serverSecret = SERVER_SECRET }: { st
   config.get.mockReturnValue(serverSecret);
   prisma.modDevice.findUnique.mockResolvedValue(stored);
 
-  return { service: new ModDeviceService(prisma, config), prisma };
+  return { service: new ModDeviceService(prisma, config, new RedisMock()), prisma };
 };
 
 const validSignature = signatureOf({ key: secret, body: BODY });
@@ -112,35 +114,112 @@ describe('ModDeviceService.identify', () => {
   });
 });
 
+const NOW = new Date('2026-09-27T12:00:00.000Z');
+const PATH = '/mod/ingest';
+
+type SignedRequestInput = {
+  key?: string;
+  body?: Buffer;
+  signedBody?: Buffer;
+  path?: string;
+  signedPath?: string;
+  timestamp?: string;
+  nonce?: string;
+};
+
+const signedRequest = ({
+  key = secret,
+  body = BODY,
+  signedBody = body,
+  path = PATH,
+  signedPath = path,
+  timestamp = String(NOW.getTime() / 1000),
+  nonce = 'nonce-0123456789abcdef'
+}: SignedRequestInput = {}) => {
+  const headers: Record<string, string> = {
+    [MOD_DEVICE.header]: DEVICE_ID,
+    [MOD_DEVICE.signatureHeader]: signatureOf({ key, body: signedMessage({ method: 'POST', path: signedPath, timestamp, nonce, body: signedBody }) }),
+    [MOD_DEVICE.timestampHeader]: timestamp,
+    [MOD_DEVICE.nonceHeader]: nonce
+  };
+
+  return { request: { method: 'POST', originalUrl: path, header: (name: string) => headers[name] }, rawBody: body };
+};
+
 describe('ModDeviceService.authenticate', () => {
-  it('accepts a body signed with the device secret', async () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('accepts a request signed with the device secret', async () => {
     const { service } = createService();
 
-    await expect(service.authenticate({ deviceId: DEVICE_ID, signature: validSignature, rawBody: BODY })).resolves.toMatchObject({ id: DEVICE_ID });
+    await expect(service.authenticate(signedRequest())).resolves.toMatchObject({ id: DEVICE_ID });
   });
 
   it('rejects a body that differs from the one signed', async () => {
     const { service } = createService();
 
-    await expect(
-      service.authenticate({ deviceId: DEVICE_ID, signature: validSignature, rawBody: Buffer.from('{"events":[1]}') })
-    ).rejects.toMatchObject({ status: HttpStatus.UNAUTHORIZED, response: { error: 'bad_signature' } });
+    await expect(service.authenticate(signedRequest({ signedBody: Buffer.from('{"events":[1]}') }))).rejects.toMatchObject({
+      status: HttpStatus.UNAUTHORIZED,
+      response: { error: 'bad_signature' }
+    });
   });
 
-  it('rejects a body signed with another device secret', async () => {
+  it('rejects a signed request replayed against another path', async () => {
     const { service } = createService();
-    const foreign = signatureOf({ key: deviceSecret({ deviceId: 'dev_other', serverSecret: SERVER_SECRET }), body: BODY });
 
-    await expect(service.authenticate({ deviceId: DEVICE_ID, signature: foreign, rawBody: BODY })).rejects.toMatchObject({
+    await expect(service.authenticate(signedRequest({ signedPath: '/mod/settings' }))).rejects.toMatchObject({
+      response: { error: 'bad_signature' }
+    });
+  });
+
+  it('rejects a request signed with another device secret', async () => {
+    const { service } = createService();
+
+    await expect(
+      service.authenticate(signedRequest({ key: deviceSecret({ deviceId: 'dev_other', serverSecret: SERVER_SECRET }) }))
+    ).rejects.toMatchObject({
       response: { error: 'bad_signature' }
     });
   });
 
   it('rejects a request whose raw body was not captured', async () => {
     const { service } = createService();
+    const { request } = signedRequest();
 
-    await expect(service.authenticate({ deviceId: DEVICE_ID, signature: validSignature, rawBody: undefined })).rejects.toMatchObject({
-      response: { error: 'bad_signature' }
+    await expect(service.authenticate({ request, rawBody: undefined })).rejects.toMatchObject({ response: { error: 'bad_signature' } });
+  });
+
+  it('rejects a request without a usable nonce', async () => {
+    const { service } = createService();
+
+    await expect(service.authenticate(signedRequest({ nonce: 'short' }))).rejects.toMatchObject({ response: { error: 'bad_signature' } });
+  });
+
+  it('asks the mod to retry a request signed outside the allowed clock skew', async () => {
+    const { service } = createService();
+    const stale = String(NOW.getTime() / 1000 - MOD_REQUEST.maxSkewSeconds - 1);
+
+    await expect(service.authenticate(signedRequest({ timestamp: stale }))).rejects.toMatchObject({
+      status: HttpStatus.PRECONDITION_REQUIRED,
+      response: { error: 'stale_request' }
+    });
+  });
+
+  it('refuses the same signed request a second time', async () => {
+    const { service } = createService();
+
+    await service.authenticate(signedRequest());
+
+    await expect(service.authenticate(signedRequest())).rejects.toMatchObject({
+      status: HttpStatus.CONFLICT,
+      response: { error: 'replayed_request' }
     });
   });
 });

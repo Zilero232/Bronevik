@@ -1,4 +1,4 @@
-export { getApplyRequests, getIntegrations, getLiveStreamers, getSettingsShare, getSettingsTable, getStreamerBySlug, STREAMERS_PATHS } from './api';
+export { getIntegrations, getLiveStreamers, getSettingsShare, getSettingsTable, getStreamerBySlug, STREAMERS_PATHS } from './api';
 export type {
   ActivateChallengeInput,
   ConnectableProvider,

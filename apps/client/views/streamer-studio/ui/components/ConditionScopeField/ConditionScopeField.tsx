@@ -8,13 +8,12 @@ import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
 import { TankPicker } from '@/features/tank/pick-tank';
-import { SegmentedControl, Select } from '@/ui-kit';
+import { FormField, SegmentedControl, Select } from '@/ui-kit';
 
 import type { ChallengeScope } from '../../../config';
 
 import { CHALLENGE_SCOPES, CHALLENGE_TIERS } from '../../../config';
 import { useConditionScopeField } from '../../../model/hooks';
-import { FormField } from '../FormField';
 
 import s from './ConditionScopeField.module.scss';
 

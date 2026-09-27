@@ -100,21 +100,19 @@ export class ApiKeysService {
       return this.reject({ raw, code: typeof error?.code === 'string' ? error.code : undefined });
     }
 
-    const tier = keyTierOf(key.metadata) ?? 'free';
-    const dailyLimit = key.refillAmount ?? API_TIERS[tier].requestsPerDay;
+    const tier = await this.tiers.cachedTierFor(key.referenceId);
+    const dailyLimit = API_TIERS[tier].requestsPerDay;
 
-    void this.reconcile({ userId: key.referenceId, tier });
+    if (keyTierOf(key.metadata) !== tier) {
+      void this.reconcile({ userId: key.referenceId, tier });
+    }
 
-    return { id: key.id, userId: key.referenceId, tier, dailyLimit, dailyRemaining: key.remaining ?? dailyLimit };
+    return { id: key.id, userId: key.referenceId, tier, dailyLimit, dailyRemaining: Math.min(key.remaining ?? dailyLimit, dailyLimit) };
   }
 
   private async reconcile({ userId, tier }: ApplyTierInput): Promise<void> {
     try {
-      const current = await this.tiers.cachedTierFor(userId);
-
-      if (current !== tier) {
-        await this.tierSync.apply({ userId, tier: current });
-      }
+      await this.tierSync.apply({ userId, tier });
     } catch (error) {
       this.logger.warn(`API key tier for ${userId} not reconciled: ${errorMessage(error)}`);
     }

@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
+import { Suspense } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
@@ -15,6 +16,10 @@ export const generateMetadata = async () => {
   return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.account.analytics, locale });
 };
 
-const Page = () => <MyAnalyticsPage />;
+const Page = () => (
+  <Suspense>
+    <MyAnalyticsPage />
+  </Suspense>
+);
 
 export default Page;

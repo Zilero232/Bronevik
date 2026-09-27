@@ -15,11 +15,11 @@ import { useMarksUrlState } from '../use-marks-url-state';
 export const useMoeRows = () => {
   const filters = useVehicleFilters();
   const [{ sort, order, q }] = useMarksUrlState();
-  const params = { ...filters.query, sort, order };
+  const params = { ...filters.query, sort, order, limit: MOE_LIST.pageLimit };
 
   const query = useInfiniteQuery({
-    queryKey: QUERY_KEYS.marks.list(params),
-    queryFn: ({ signal, pageParam }) => listMoe({ ...params, limit: MOE_LIST.pageLimit, offset: pageParam, signal }),
+    queryKey: QUERY_KEYS.marks.feed(params),
+    queryFn: ({ signal, pageParam }) => listMoe({ ...params, offset: pageParam, signal }),
     initialPageParam: 0,
     getNextPageParam: nextOffset,
     placeholderData: keepPreviousData

@@ -7,18 +7,20 @@ import { admin, bearer, customSession, magicLink } from 'better-auth/plugins';
 import type { CreateAuthInput } from './auth.types';
 
 import { allowedOrigins, isProduction } from '../../config';
-import { API_KEY_PLUGIN, AUTH_PROVIDER, SESSION } from './auth.constants';
+import { API_KEY_PLUGIN, AUTH_RATE_LIMIT, SESSION } from './auth.constants';
 import { lestaId } from './lesta-id';
+import { redisRateLimit } from './rate-limit';
 import { socialProviders } from './social-providers';
 import { telegramLogin } from './telegram-login';
 import { vkMiniApp } from './vk-mini-app';
 
-export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, accountPurge, logger }: CreateAuthInput) => {
+export const createAuth = ({ env, prisma, redis, lesta, lestaStore, telegramStore, accountPurge, logger }: CreateAuthInput) => {
   const magicLinkEnabled = !isProduction(env);
 
   return betterAuth({
     appName: 'Three Marks',
     basePath: '/auth',
+    disabledPaths: [...API_KEY_PLUGIN.disabledPaths],
     baseURL: env.API_URL,
     secret: env.BETTER_AUTH_SECRET,
     trustedOrigins: allowedOrigins(env),
@@ -28,6 +30,13 @@ export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, acco
     },
     advanced: {
       database: { generateId: 'uuid' }
+    },
+    rateLimit: {
+      enabled: true,
+      window: AUTH_RATE_LIMIT.window,
+      max: AUTH_RATE_LIMIT.max,
+      customRules: Object.fromEntries(AUTH_RATE_LIMIT.signInPaths.map((path) => [path, AUTH_RATE_LIMIT.signIn])),
+      customStorage: redisRateLimit({ redis })
     },
     session: {
       expiresIn: SESSION.expiresIn,
@@ -40,7 +49,7 @@ export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, acco
     emailAndPassword: { enabled: false },
     socialProviders: socialProviders(env),
     account: {
-      accountLinking: { enabled: true, allowDifferentEmails: true, trustedProviders: [AUTH_PROVIDER.discord, AUTH_PROVIDER.vk] }
+      accountLinking: { enabled: true, allowDifferentEmails: true, disableImplicitLinking: true }
     },
     plugins: [
       bearer(),

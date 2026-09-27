@@ -8,8 +8,8 @@ export const TANK_PAGE = {
   rowHeight: 36,
   podium: 3,
   navSpyMargin: '-30% 0px -60% 0px',
-  reducedMotionQuery: '(prefers-reduced-motion: reduce)',
-  researchImage: 'contour'
+  researchImage: 'contour',
+  similarLimit: 6
 } as const;
 
 export const TANK_SECTIONS = {

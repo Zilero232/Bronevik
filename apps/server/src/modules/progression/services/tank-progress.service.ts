@@ -47,9 +47,9 @@ export class TankProgressService {
   }
 
   async challenges({ userId, now }: UserAtInput): Promise<TankChallenges> {
-    const { start, end } = weekWindow(now);
+    const { weekStart, end } = weekWindow(now);
     const rows = await this.prisma.tankChallengeProgress.findMany({
-      where: { accountId: { in: await this.accountIds(userId) }, weekStart: start },
+      where: { accountId: { in: await this.accountIds(userId) }, weekStart },
       orderBy: [{ accountId: 'asc' }, { tankId: 'asc' }, { code: 'asc' }]
     });
 
@@ -77,7 +77,7 @@ export class TankProgressService {
     }));
 
     return {
-      weekStart: toIsoDate(start) ?? '',
+      weekStart: toIsoDate(weekStart) ?? '',
       endsAt: end.toISOString(),
       sets: sortBy(sets, [(set) => set.items.filter((item) => item.completedAt === null).length, 'desc'])
     };

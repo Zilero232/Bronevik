@@ -86,7 +86,7 @@ We chose to write our own code rather than vendor any of these. A mod that has t
 
 ## Data flow
 
-1. **Binding.** On the site, a signed-in user gets a 6-character code: alphabet `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`, one-time, short TTL. In the hangar, the user enters it in the ModsSettingsAPI window and presses «Привязать». Without ModsSettingsAPI, the user sets `"bind_code"` in `mods/configs/otmetki/config.json` and logs in.
+1. **Binding.** On the site, a signed-in user gets a 10-character code: alphabet `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`, one-time, short TTL. In the hangar, the user enters it in the ModsSettingsAPI window and presses «Привязать». Without ModsSettingsAPI, the user sets `"bind_code"` in `mods/configs/otmetki/config.json` and logs in.
    - The mod sends `POST /mod/bind` `{code, account_id, mod_version, client_version, realm}`.
    - The server answers `{device_id, secret, account_id}`.
    - The credentials are stored per account in `mods/configs/otmetki/credentials.json`.
@@ -97,7 +97,8 @@ We chose to write our own code rather than vendor any of these. A mod that has t
    - own battle results. These are deduplicated by `arenaUniqueID`, and the last 200 are kept in `state.json`.
 3. **Send.** In the hangar only, every `flush_interval_seconds` (15 s by default) and right after a battle result, the mod sends one batch of up to 50 events with `POST /mod/ingest`. Headers:
    - `X-Otmetki-Device: <device_id>`
-   - `X-Otmetki-Signature: sha256=<hex HMAC-SHA256(secret, raw body)>`
+   - `X-Otmetki-Timestamp: <unix seconds>` and `X-Otmetki-Nonce: <random hex, new per request>`
+   - `X-Otmetki-Signature: sha256=<hex HMAC-SHA256(secret, "v2\nPOST\n<path>\n<timestamp>\n<nonce>\n" + raw body)>`. The server refuses a timestamp more than 5 minutes off (428, retried) and a nonce it has already seen, so a captured request cannot be replayed or pointed at another path.
 
    Only one batch is in flight at a time. Events leave the outbox only after a 2xx or 409 response, so a crash or restart never loses them. Retries use exponential backoff (5 s up to 10 min, ±20% jitter) and honour `Retry-After`. Other responses:
 

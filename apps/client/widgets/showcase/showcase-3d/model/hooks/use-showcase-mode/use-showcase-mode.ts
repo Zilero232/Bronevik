@@ -2,9 +2,11 @@
 
 import { useSyncExternalStore } from 'react';
 
+import { REDUCED_MOTION_QUERY } from '@/shared/lib';
+
 import type { ShowcaseMode } from '../../../lib/showcase-mode';
 
-import { readShowcaseEnvironment, REDUCED_MOTION_QUERY } from '../../../lib/showcase-environment';
+import { readShowcaseEnvironment } from '../../../lib/showcase-environment';
 import { resolveShowcaseMode } from '../../../lib/showcase-mode';
 
 const subscribe = (onChange: () => void) => {

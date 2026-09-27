@@ -2,7 +2,7 @@ import type { LestaCallOptions, LestaRequester } from '../client/client.types';
 import type { ServerOnline } from '../schemas';
 
 import { LESTA_API } from '../client/client.constants';
-import { callParams } from '../client/client.helpers';
+import { callParams } from '../client/params';
 import { serversInfoSchema } from '../schemas';
 
 export const createWgnMethods = (requester: LestaRequester) => {

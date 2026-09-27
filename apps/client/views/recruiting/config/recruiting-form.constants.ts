@@ -1,5 +1,5 @@
+import { COMMUNITY_ACCOUNT } from '@/entities/auth/session';
 import { REQUIREMENTS_FORM } from '@/features/community/stat-requirements';
-import { COMMUNITY_ACCOUNT } from '@/features/community/viewer';
 
 import type { RecruitingFormValues } from '../lib/recruiting-form';
 

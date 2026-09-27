@@ -1,7 +1,7 @@
 import type { RawBodyRequest } from '@nestjs/common';
 import type { ModDeviceRequest } from '@otmetki/schemas';
 
-import { Controller, Headers, HttpCode, HttpStatus, Param, Post, Req } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Param, Post, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { modApplyResultSchema, modDeviceRequestSchema, modSettingsExportSchema } from '@otmetki/schemas';
@@ -12,7 +12,7 @@ import { ZodResponse } from 'nestjs-zod';
 import type { SignedModInput, SignedModResult } from './streamers.types';
 
 import { ModException } from '../../common/exceptions';
-import { MOD_DEVICE, ModDeviceService } from '../mod';
+import { ModDeviceService } from '../mod';
 import { STREAMERS } from './config';
 import { IdParamsDto, ModApplyListDto } from './dto';
 import { SettingsShareService } from './services';
@@ -29,12 +29,8 @@ export class ModSettingsController {
 
   @Post()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async export(
-    @Req() request: RawBodyRequest<Request>,
-    @Headers(MOD_DEVICE.header) deviceId: string | undefined,
-    @Headers(MOD_DEVICE.signatureHeader) signature: string | undefined
-  ) {
-    const { device, body } = await this.signed({ request, deviceId, signature, schema: modSettingsExportSchema });
+  async export(@Req() request: RawBodyRequest<Request>) {
+    const { device, body } = await this.signed({ request, schema: modSettingsExportSchema });
 
     await this.shares.ingestExport({ device, body });
   }
@@ -42,31 +38,22 @@ export class ModSettingsController {
   @Post('apply/poll')
   @HttpCode(HttpStatus.OK)
   @ZodResponse({ type: ModApplyListDto })
-  async poll(
-    @Req() request: RawBodyRequest<Request>,
-    @Headers(MOD_DEVICE.header) deviceId: string | undefined,
-    @Headers(MOD_DEVICE.signatureHeader) signature: string | undefined
-  ) {
-    const { device } = await this.signed({ request, deviceId, signature, schema: modDeviceRequestSchema });
+  async poll(@Req() request: RawBodyRequest<Request>) {
+    const { device } = await this.signed({ request, schema: modDeviceRequestSchema });
 
     return this.shares.pendingForDevice(device);
   }
 
   @Post('apply/:id/result')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async result(
-    @Req() request: RawBodyRequest<Request>,
-    @Param() { id }: IdParamsDto,
-    @Headers(MOD_DEVICE.header) deviceId: string | undefined,
-    @Headers(MOD_DEVICE.signatureHeader) signature: string | undefined
-  ) {
-    const { device, body } = await this.signed({ request, deviceId, signature, schema: modApplyResultSchema });
+  async result(@Req() request: RawBodyRequest<Request>, @Param() { id }: IdParamsDto) {
+    const { device, body } = await this.signed({ request, schema: modApplyResultSchema });
 
     await this.shares.applyResult({ device, id, status: body.status });
   }
 
-  private async signed<T extends ModDeviceRequest>({ request, deviceId, signature, schema }: SignedModInput<T>): Promise<SignedModResult<T>> {
-    const device = await this.devices.authenticate({ deviceId, signature, rawBody: request.rawBody });
+  private async signed<T extends ModDeviceRequest>({ request, schema }: SignedModInput<T>): Promise<SignedModResult<T>> {
+    const device = await this.devices.authenticate({ request, rawBody: request.rawBody });
     const parsed = schema.safeParse(request.body);
 
     if (!parsed.success) {

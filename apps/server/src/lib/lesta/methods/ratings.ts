@@ -2,7 +2,7 @@ import type { LestaRequester } from '../client/client.types';
 import type { RatingAccountsInput } from './methods.types';
 
 import { looseMapSchema } from '../schemas';
-import { batchedMap, genericParams, passthrough } from './methods.helpers';
+import { batchedMap, genericParams, passthrough } from './call-shapes';
 
 export const createRatingsMethods = (requester: LestaRequester) => {
   const accounts = async ({ type, accountIds, date, ...input }: RatingAccountsInput): Promise<Record<string, unknown>> =>

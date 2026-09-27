@@ -32,7 +32,7 @@ const renderWithIntl = (ui: ReactElement) =>
     </NextIntlClientProvider>
   );
 
-const cells = () => [...screen.getByRole('img', { name: LABEL }).children].filter((node) => node.hasAttribute('data-level'));
+const cells = () => [...screen.getByRole('group', { name: LABEL }).children].filter((node) => node.hasAttribute('data-level'));
 
 const readoutNode = () => screen.getByText(/^(none|\d{4}-\d{2}-\d{2}: \d+)$/);
 
@@ -52,10 +52,33 @@ const levelsByDate = () => {
 };
 
 describe('CalendarHeatmap', () => {
-  it('exposes the grid as a single labelled image', () => {
+  it('exposes the grid as a labelled group with one labelled image per day', () => {
     renderWithIntl(<CalendarHeatmap ariaLabel={LABEL} days={DAYS} renderReadout={readout} />);
 
-    expect(screen.getByRole('img', { name: LABEL })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: LABEL })).toBeInTheDocument();
+    expect(screen.getAllByRole('img')).toHaveLength(DAYS.length);
+    expect(screen.getByRole('img', { name: 'September 3, 2026' })).toBeInTheDocument();
+  });
+
+  it('reads out the days from the keyboard with a single tab stop', () => {
+    renderWithIntl(<CalendarHeatmap ariaLabel={LABEL} days={DAYS} renderReadout={readout} />);
+
+    const focusable = cells().filter((cell) => cell.getAttribute('tabindex') === '0');
+
+    expect(focusable).toHaveLength(1);
+
+    fireEvent.focus(focusable[0]);
+
+    expect(readoutNode()).toHaveTextContent('2026-09-04: 10');
+
+    fireEvent.keyDown(focusable[0], { key: 'ArrowUp' });
+
+    expect(readoutNode()).toHaveTextContent(`${PEAK}: 20`);
+    expect(document.activeElement).toHaveAttribute('data-date', PEAK);
+
+    fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Home' });
+
+    expect(readoutNode()).toHaveTextContent('2026-08-31: 2');
   });
 
   it('reads out the hovered day and clears it when the pointer leaves', () => {
@@ -106,6 +129,6 @@ describe('CalendarHeatmap', () => {
   it('renders an empty grid for no days', () => {
     renderWithIntl(<CalendarHeatmap ariaLabel={LABEL} days={[]} />);
 
-    expect(screen.getByRole('img', { name: LABEL })).toBeEmptyDOMElement();
+    expect(screen.getByRole('group', { name: LABEL })).toBeEmptyDOMElement();
   });
 });

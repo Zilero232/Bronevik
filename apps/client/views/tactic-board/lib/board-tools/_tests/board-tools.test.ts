@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { BoardTool } from '../../../config';
+import type { BoardTool } from '../../../model/board-tools.types';
 
 import { BOARD_DRAW_TOOLS } from '../../../config';
 import { isDrawTool, isItemTool } from '../board-tools';

@@ -1,10 +1,12 @@
 import type { FeedScope, FeedSqlInput } from './best-battles-feed.types';
 
 import { Prisma } from '../../../../../generated';
+import { corroboratedBattleSql } from '../../../mod';
 import { BEST_BATTLE_METRIC_COLUMN } from '../../config';
 
 const modScopeSql = ({ since, battleTypes, tankIds, arenaId, medal }: FeedScope): Prisma.Sql => Prisma.sql`
   b.started_at >= ${since}
+  AND ${corroboratedBattleSql}
   AND b.battle_type = ANY(${battleTypes}::text[])
   ${tankIds ? Prisma.sql`AND b.tank_id = ANY(${tankIds}::int[])` : Prisma.empty}
   ${arenaId ? Prisma.sql`AND b.arena_id = ${arenaId}` : Prisma.empty}
@@ -19,7 +21,7 @@ const replayScopeSql = ({ since, battleTypes, tankIds, arenaId, medal }: FeedSco
   AND r.account_id IS NOT NULL
   AND r.tank_id IS NOT NULL
   AND p.is_hidden IS NOT TRUE
-  AND NOT EXISTS (SELECT 1 FROM battle b WHERE b.account_id = r.account_id AND b.arena_unique_id = r.arena_unique_id)
+  AND NOT EXISTS (SELECT 1 FROM battle b WHERE b.account_id = r.account_id AND b.arena_unique_id = r.arena_unique_id AND ${corroboratedBattleSql})
   ${tankIds ? Prisma.sql`AND r.tank_id = ANY(${tankIds}::int[])` : Prisma.empty}
   ${arenaId ? Prisma.sql`AND r.arena_id = ${arenaId}` : Prisma.empty}
   ${medal ? Prisma.sql`AND ${medal} = ANY(r.medals)` : Prisma.empty}

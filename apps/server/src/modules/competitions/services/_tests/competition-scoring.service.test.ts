@@ -82,12 +82,18 @@ const setup = () => {
 
   prisma.competition.findMany.mockResolvedValue([competition()]);
   prisma.competitionEntry.findMany.mockResolvedValue([entry(1n)]);
-  prisma.battle.findMany.mockResolvedValue([]);
+  prisma.$queryRaw.mockResolvedValue([]);
   prisma.competitionTeam.findMany.mockResolvedValue([]);
   prisma.$transaction.mockResolvedValue([]);
   prisma.playSession.aggregate.mockResolvedValue(sessions(null));
 
   return { prisma, catalog, notifications, service: new CompetitionScoringService(prisma, catalog, notifications) };
+};
+
+const battleWindow = (prisma: ReturnType<typeof setup>['prisma']) => {
+  const sql = prisma.$queryRaw.mock.calls[0]?.[0];
+
+  return sql && !('raw' in sql) ? sql.values.filter((value) => value instanceof Date) : [];
 };
 
 const entryWrites = (prisma: ReturnType<typeof setup>['prisma']) =>
@@ -106,7 +112,7 @@ describe('CompetitionScoringService.run', () => {
   it('counts only the first battlesPerPlayer battles of an entry', async () => {
     const { prisma, service } = setup();
 
-    prisma.battle.findMany.mockResolvedValue([battle(), battle(), battle()]);
+    prisma.$queryRaw.mockResolvedValue([battle(), battle(), battle()]);
 
     await service.run(running);
 
@@ -117,7 +123,7 @@ describe('CompetitionScoringService.run', () => {
     const { prisma, service } = setup();
 
     prisma.competitionEntry.findMany.mockResolvedValue([entry(1n), entry(2n)]);
-    prisma.battle.findMany.mockResolvedValueOnce([battle({ result: 'win' })]).mockResolvedValueOnce([battle({ result: 'loss' })]);
+    prisma.$queryRaw.mockResolvedValueOnce([battle({ result: 'win' })]).mockResolvedValueOnce([battle({ result: 'loss' })]);
 
     await service.run(running);
 
@@ -134,7 +140,7 @@ describe('CompetitionScoringService.run', () => {
 
     await service.run(running);
 
-    expect(prisma.battle.findMany.mock.calls[0]?.[0]?.where?.startedAt).toEqual({ gte: joinedAt, lt: endsAt });
+    expect(battleWindow(prisma)).toEqual([joinedAt, endsAt]);
   });
 
   it('counts battles from the start when a player joined before it', async () => {
@@ -144,14 +150,14 @@ describe('CompetitionScoringService.run', () => {
 
     await service.run(running);
 
-    expect(prisma.battle.findMany.mock.calls[0]?.[0]?.where?.startedAt).toEqual({ gte: startsAt, lt: endsAt });
+    expect(battleWindow(prisma)).toEqual([startsAt, endsAt]);
   });
 
   it('keeps battles exactly at the minimum tier and drops lower or unknown tanks', async () => {
     const { prisma, catalog, service } = setup();
 
     prisma.competition.findMany.mockResolvedValue([competition({ minTier: 8, battlesPerPlayer: 10 })]);
-    prisma.battle.findMany.mockResolvedValue([battle({ tankId: 1 }), battle({ tankId: 2 }), battle({ tankId: 3 })]);
+    prisma.$queryRaw.mockResolvedValue([battle({ tankId: 1 }), battle({ tankId: 2 }), battle({ tankId: 3 })]);
 
     catalog.all.mockResolvedValue(
       new Map([
@@ -169,7 +175,7 @@ describe('CompetitionScoringService.run', () => {
     const { prisma, catalog, service } = setup();
 
     prisma.competition.findMany.mockResolvedValue([competition({ minTier: 8 })]);
-    prisma.battle.findMany.mockResolvedValue([battle({ tankId: 1 })]);
+    prisma.$queryRaw.mockResolvedValue([battle({ tankId: 1 })]);
     catalog.all.mockResolvedValue(new Map([[1, tier(6)]]));
 
     await service.run(running);
@@ -181,7 +187,7 @@ describe('CompetitionScoringService.run', () => {
   it('does not load the vehicle catalog without a tier limit', async () => {
     const { prisma, catalog, service } = setup();
 
-    prisma.battle.findMany.mockResolvedValue([battle()]);
+    prisma.$queryRaw.mockResolvedValue([battle()]);
 
     await service.run(running);
 
@@ -223,7 +229,7 @@ describe('CompetitionScoringService.run', () => {
     const { prisma, service } = setup();
 
     prisma.competition.findMany.mockResolvedValue([competition({ id: 'broken', scoring: { damage: 'lots' } }), competition({ id: 'default' })]);
-    prisma.battle.findMany.mockResolvedValue([battle({ result: 'win', frags: 2 })]);
+    prisma.$queryRaw.mockResolvedValue([battle({ result: 'win', frags: 2 })]);
 
     await service.run(running);
 
@@ -298,5 +304,17 @@ describe('CompetitionScoringService.run', () => {
     await service.run(graceEnd);
 
     expect(notifications.notifyMany).toHaveBeenCalledWith(expect.objectContaining({ userIds: ['u1'] }));
+  });
+});
+
+describe('CompetitionScoringService corroboration', () => {
+  it('scores only mod battles corroborated by the API or a replay', async () => {
+    const { prisma, service } = setup();
+
+    await service.run(running);
+
+    const sql = prisma.$queryRaw.mock.calls[0]?.[0];
+
+    expect(sql && !('raw' in sql) ? sql.sql : '').toContain('corroboration');
   });
 });

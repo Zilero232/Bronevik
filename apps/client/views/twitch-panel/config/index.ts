@@ -1,1 +1,1 @@
-export { PANEL_SCRIPT, PANEL_STYLE, TWITCH_PANEL } from './panel.constants';
+export { PANEL_STYLE, TWITCH_PANEL } from './panel.constants';

@@ -18,7 +18,7 @@ export const isQuietRequest = (request: IncomingMessage): boolean => quietPaths.
 
 export const requestId = ({ request, response }: RequestIdInput): string => {
   const incoming = request.headers[LOGGER.http.requestIdHeader];
-  const id = typeof incoming === 'string' && incoming !== '' ? incoming : randomUUID();
+  const id = typeof incoming === 'string' && LOGGER.http.requestIdShape.test(incoming) ? incoming : randomUUID();
 
   response.setHeader(LOGGER.http.requestIdHeader, id);
 

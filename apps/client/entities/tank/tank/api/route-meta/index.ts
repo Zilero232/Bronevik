@@ -1,1 +1,1 @@
-export { tankRouteName, topTankSlugs } from './route-meta';
+export { tankRouteEntity, topTankSlugs } from './route-meta';

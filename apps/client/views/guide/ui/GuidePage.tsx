@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { CommentsThread } from '@/features/community/comments';
 import { Markdown } from '@/features/community/markdown';
 import { Card, Skeleton } from '@/ui-kit';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { GuidePageProps } from './GuidePage.types';
 

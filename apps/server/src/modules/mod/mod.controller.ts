@@ -1,7 +1,7 @@
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
-import { Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
@@ -9,7 +9,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
 import { ModException } from '../../common/exceptions';
-import { BIND_CODE, MOD_DEVICE, MOD_INGEST } from './config';
+import { BIND_CODE, MOD_INGEST } from './config';
 import { BindCodeDto, BindCodeInputDto, BindRequestDto, BindResponseDto, DeviceParamsDto, IngestResponseDto, ModDevicesDto } from './dto';
 import { ingestBatchSchema } from './lib';
 import { ModBindService, ModDeviceService, ModIngestService } from './services';
@@ -45,13 +45,8 @@ export class ModController {
   @Post('ingest')
   @HttpCode(HttpStatus.OK)
   @ZodResponse({ type: IngestResponseDto })
-  async ingest(
-    @Req() request: RawBodyRequest<Request>,
-    @Res({ passthrough: true }) response: Response,
-    @Headers(MOD_DEVICE.header) deviceId: string | undefined,
-    @Headers(MOD_DEVICE.signatureHeader) signature: string | undefined
-  ) {
-    const device = await this.devices.authenticate({ deviceId, signature, rawBody: request.rawBody });
+  async ingest(@Req() request: RawBodyRequest<Request>, @Res({ passthrough: true }) response: Response) {
+    const device = await this.devices.authenticate({ request, rawBody: request.rawBody });
     const parsed = ingestBatchSchema.safeParse(request.body);
 
     if (!parsed.success) {

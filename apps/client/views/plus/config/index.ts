@@ -1,4 +1,4 @@
-export { PLUS_BENEFITS } from './plus-benefits.constants';
+export { PLUS_BENEFITS, PLUS_LIMIT_TIERS } from './plus-benefits.constants';
 export { PLUS_CHECKOUT_FORM_DEFAULT_VALUES } from './plus-checkout-form.constants';
 export { PLUS_CHECKOUT } from './plus-checkout.constants';
 export { PLUS_FAQ } from './plus-faq.constants';

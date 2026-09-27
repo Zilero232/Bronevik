@@ -7,6 +7,7 @@ import type { AnalyticsInput, PeriodWindow, SessionsInput, TrendInput, TrendRow,
 import type { RawTankRow } from '../lib';
 
 import { percentOf } from '../../../common/lib';
+import { TIME } from '../../../config';
 import { PrismaService } from '../../../core';
 import { ExpectedValuesService, VehicleCatalogService } from '../../reference';
 import { ANALYTICS_SQL, ANALYTICS_WINDOW } from '../config';
@@ -26,12 +27,16 @@ export class AnalyticsOverviewService {
     const accountId = await this.accounts.resolve({ userId, account });
     const window: PeriodWindow = { accountId, period, from: periodStart({ period, now: new Date() }) };
 
-    const [tankRows, trendRows, modBattles, expected, catalog] = await Promise.all([
+    const modWhere = { accountId, battleType: ANALYTICS_SQL.randomBattleType, ...(window.from ? { startedAt: { gte: window.from } } : {}) };
+
+    const [tankRows, trendRows, modCount, recentMod, expected, catalog] = await Promise.all([
       this.tankTotals(window),
       this.trend({ ...window, granularity: trendGranularity(period) }),
+      this.prisma.battle.count({ where: modWhere }),
       this.prisma.battle.findMany({
-        where: { accountId, battleType: ANALYTICS_SQL.randomBattleType, ...(window.from ? { startedAt: { gte: window.from } } : {}) },
-        orderBy: { startedAt: 'asc' },
+        where: modWhere,
+        orderBy: { startedAt: 'desc' },
+        take: ANALYTICS_WINDOW.tiltMaxBattles,
         select: { result: true, startedAt: true }
       }),
       this.expected.all(),
@@ -41,17 +46,17 @@ export class AnalyticsOverviewService {
     const rows = tankRows.map(toAggregateRow);
     const totals = statLine({ rows, expected });
     const vehicles = new Map([...catalog.values()].map((entry) => [entry.summary.tankId, entry.summary]));
-    const playtime = modBattles.length > 0 ? await this.battlePlaytime(window) : await this.deltaPlaytime(window);
+    const playtime = modCount > 0 ? await this.battlePlaytime(window) : await this.deltaPlaytime(window);
 
     return {
       accountId: Number(accountId),
       period,
-      modBattles: modBattles.length,
+      modBattles: modCount,
       totals,
       breakdown: breakdown({ rows, expected, vehicles }),
       ...splitPlaytime(playtime),
       trend: trendPoints({ rows: trendRows.map((row) => ({ ...toAggregateRow(row), bucket: row.bucket })), expected }),
-      tilt: tilt(modBattles),
+      tilt: tilt(recentMod.toReversed()),
       sessions: await this.sessions({ window, totals })
     };
   }
@@ -70,7 +75,7 @@ export class AnalyticsOverviewService {
 
   async trend({ accountId, from, granularity, tankId }: TrendInput): Promise<TrendRow[]> {
     return this.prisma.$queryRaw<TrendRow[]>`
-      SELECT (date_trunc(${granularity}, captured_at AT TIME ZONE ${ANALYTICS_WINDOW.timeZone}) AT TIME ZONE ${ANALYTICS_WINDOW.timeZone}) AS bucket,
+      SELECT (date_trunc(${granularity}, captured_at AT TIME ZONE ${TIME.zone}) AT TIME ZONE ${TIME.zone}) AS bucket,
              tank_id,
              sum(battles)::float8 AS battles, sum(wins)::float8 AS wins, sum(damage_dealt)::float8 AS damage,
              sum(frags)::float8 AS frags, sum(spotted)::float8 AS spotted, sum(capture_points)::float8 AS cap,
@@ -84,8 +89,8 @@ export class AnalyticsOverviewService {
 
   private async battlePlaytime({ accountId, from }: WindowInput): Promise<PlaytimeRow[]> {
     return this.prisma.$queryRaw<PlaytimeRow[]>`
-      SELECT extract(dow FROM started_at AT TIME ZONE ${ANALYTICS_WINDOW.timeZone})::int AS weekday,
-             extract(hour FROM started_at AT TIME ZONE ${ANALYTICS_WINDOW.timeZone})::int AS hour,
+      SELECT extract(dow FROM started_at AT TIME ZONE ${TIME.zone})::int AS weekday,
+             extract(hour FROM started_at AT TIME ZONE ${TIME.zone})::int AS hour,
              count(*)::float8 AS battles,
              count(*) FILTER (WHERE result = 'win'::battle_result)::float8 AS wins,
              sum(damage_dealt)::float8 AS damage
@@ -97,8 +102,8 @@ export class AnalyticsOverviewService {
 
   private async deltaPlaytime({ accountId, from }: WindowInput): Promise<PlaytimeRow[]> {
     return this.prisma.$queryRaw<PlaytimeRow[]>`
-      SELECT extract(dow FROM captured_at AT TIME ZONE ${ANALYTICS_WINDOW.timeZone})::int AS weekday,
-             extract(hour FROM captured_at AT TIME ZONE ${ANALYTICS_WINDOW.timeZone})::int AS hour,
+      SELECT extract(dow FROM captured_at AT TIME ZONE ${TIME.zone})::int AS weekday,
+             extract(hour FROM captured_at AT TIME ZONE ${TIME.zone})::int AS hour,
              sum(battles)::float8 AS battles,
              sum(wins)::float8 AS wins,
              sum(damage_dealt)::float8 AS damage

@@ -73,7 +73,7 @@ export class ReplayQueryService {
   }
 
   async bestOfWeek(week: string | undefined): Promise<BestOfWeek> {
-    const { start, end } = weekWindow(week ? new Date(`${week}T00:00:00Z`) : new Date());
+    const { start, end, weekStart } = weekWindow(week ? new Date(`${week}T00:00:00Z`) : new Date());
     const inWeek = { ...publicReplayWhere, playedAt: { gte: start, lt: end } };
     const featured = await this.prisma.replay.findMany({
       where: { ...inWeek, isFeatured: true },
@@ -90,7 +90,7 @@ export class ReplayQueryService {
             take: BEST_OF_WEEK.size
           });
 
-    return { weekStart: toIsoDate(start) ?? '', items: rows.map((row) => this.view({ replay: row })) };
+    return { weekStart: toIsoDate(weekStart) ?? '', items: rows.map((row) => this.view({ replay: row })) };
   }
 
   async file({ id, viewerUserId }: ViewReplayInput): Promise<ReplayFile> {

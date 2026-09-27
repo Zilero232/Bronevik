@@ -2,9 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 
-import { LiveLamp } from '@/entities/streamer/broadcast';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
+import { LiveLamp } from '@/ui-kit';
 
 import type { CreatorCellProps } from './CreatorCell.types';
 

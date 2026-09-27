@@ -160,6 +160,7 @@ model Notification {
 
   @@unique([userId, channel, dedupeKey])
   @@index([userId, createdAt(sort: Desc)])
+  @@index([createdAt])
   @@map("notification")
 }
 

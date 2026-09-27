@@ -1,3 +1,4 @@
+export { BestBattles } from './BestBattles';
 export { EconomySection } from './EconomySection';
 export { HowToBuild } from './HowToBuild';
 export { LearningSection } from './LearningSection';
@@ -8,6 +9,7 @@ export { ObtainSection } from './ObtainSection';
 export { PatchHistory } from './PatchHistory';
 export { SectionNav } from './SectionNav';
 export { ServerStats } from './ServerStats';
+export { SimilarTanks } from './SimilarTanks';
 export { TankGarage } from './TankGarage';
 export { TankSkeleton } from './TankSkeleton';
 export { TopPlayers } from './TopPlayers';

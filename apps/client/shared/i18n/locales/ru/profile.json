@@ -57,7 +57,7 @@
     "activityEmpty": "Нет боёв за последний год",
     "activityDay": "{date}: {battles, plural, =0 {не играл} one {# бой} few {# боя} many {# боёв} other {# боя}}{battles, plural, =0 {} other {, {winRate}% побед}}",
     "activityHint": "Наведите на день, чтобы увидеть бои",
-    "activityAria": "Календарь активности: {total} боёв за {active} активных дней",
+    "activityAria": "Календарь активности: {total, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} за {active, plural, one {# активный день} few {# активных дня} many {# активных дней} other {# активного дня}}",
     "less": "Меньше",
     "more": "Больше",
     "highlights": {
@@ -68,7 +68,7 @@
       "avgDamage": "Средний урон",
       "battlesPerDay": "Боёв в день"
     },
-    "marksRing": "Три отметки: {count} из {total} танков",
+    "marksRing": "3 отметки: {count} из {total, plural, one {# танка} few {# танков} many {# танков} other {# танка}}",
     "marksOf": "три отметки из {total}"
   },
   "tanks": {
@@ -169,7 +169,7 @@
       "winRate": "Победы",
       "avgDamage": "Ср. урон",
       "battles": "Бои",
-      "eff": "EFF",
+      "eff": "ЭФФ",
       "broneIndex": "Броня-Индекс"
     },
     "summary": {
@@ -211,7 +211,7 @@
       },
       "not_enough_battles": {
         "title": "Мало боёв",
-        "body": "Для честного разбора нужно хотя бы {required} боёв — сейчас {battles}."
+        "body": "Для честного разбора нужно хотя бы {required, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} — сейчас {battles}."
       },
       "no_weak_spots": {
         "title": "Слабых мест не видно",
@@ -226,7 +226,7 @@
       "worstHour": "Хуже всего: {from}:00–{to}:00 · {rate}% побед",
       "bestWeekday": "Сильный день: {day} · {rate}% побед",
       "gridLabel": "Процент побед по часам и дням недели",
-      "cell": "{hour}:00 · {battles} боёв · {rate}% побед",
+      "cell": "{hour}:00 · {battles, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} · {rate}% побед",
       "empty": "Нет данных о времени боёв"
     },
     "empty": "Мало боёв для разбора"

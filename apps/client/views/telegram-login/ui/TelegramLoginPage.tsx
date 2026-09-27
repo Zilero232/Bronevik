@@ -12,7 +12,7 @@ import s from './TelegramLoginPage.module.scss';
 
 export const TelegramLoginPage = () => {
   const t = useTranslations('telegram.webLogin');
-  const { phase, tone } = useWebLogin();
+  const { phase, tone, replacedAccount, confirm } = useWebLogin();
 
   return (
     <div className={s.root}>
@@ -21,7 +21,8 @@ export const TelegramLoginPage = () => {
           <span className={s.label}>{t('label')}</span>
           <h1 className={s.title}>{t(`phases.${phase}.title`)}</h1>
           <p className={s.description}>{t(`phases.${phase}.description`, { command: WEB_LOGIN.botCommand })}</p>
-          <LoginActions phase={phase} />
+          {replacedAccount !== null && <p className={s.description}>{t('replaceSession', { name: replacedAccount })}</p>}
+          <LoginActions phase={phase} replacesSession={replacedAccount !== null} onConfirm={confirm} />
         </CardBody>
       </Card>
     </div>

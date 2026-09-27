@@ -1,13 +1,14 @@
 import type { IsGainInput } from './celebrate.types';
 
 import { isServer } from '../env';
-import { CELEBRATE } from './celebrate.config';
+import { REDUCED_MOTION_QUERY } from '../motion';
+import { CELEBRATE } from './celebrate.constants';
 
 export const isGain = ({ previous, next }: IsGainInput): boolean =>
   previous !== null && typeof next === 'number' && Number.isFinite(previous) && Number.isFinite(next) && next > previous;
 
 export const celebrate = async () => {
-  if (isServer() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (isServer() || window.matchMedia(REDUCED_MOTION_QUERY).matches) {
     return;
   }
 

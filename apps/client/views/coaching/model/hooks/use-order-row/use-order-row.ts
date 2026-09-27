@@ -2,7 +2,7 @@
 
 import type { CoachingOrder } from '@/entities/coaching/coach';
 
-import { useCommunityViewer } from '@/features/community/viewer';
+import { useCommunityViewer } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
 
 import { acceptCoachingOrder, cancelCoachingOrder, completeCoachingOrder } from '../../../api';

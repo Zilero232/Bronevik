@@ -1,5 +1,6 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { addMinutes } from 'date-fns';
+import { Redis } from 'ioredis';
 import { isObjectType, isString } from 'remeda';
 
 import type { BindResponse } from '../lib';
@@ -8,7 +9,7 @@ import type { BindCode, BindCodeInput } from '../mod.types';
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { PrismaService } from '../../../core';
+import { PrismaService, REDIS } from '../../../core';
 import { BIND_CODE } from '../config';
 import { bindCodePattern, bindRequestSchema, deviceSecret, hashSecret, newDeviceId, normalizeBindCode } from '../lib';
 
@@ -16,7 +17,8 @@ import { bindCodePattern, bindRequestSchema, deviceSecret, hashSecret, newDevice
 export class ModBindService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly config: AppConfigService
+    private readonly config: AppConfigService,
+    @Inject(REDIS) private readonly redis: Redis
   ) {}
 
   async issueCode({ userId, accountId }: BindCodeInput): Promise<BindCode> {
@@ -57,25 +59,24 @@ export class ModBindService {
     }
 
     const request = parsed.data;
-    const stored = await this.prisma.oneTimeCode.findUnique({ where: { code: request.code, purpose: 'modBind' } });
-
-    if (!stored) {
-      throw new ModException({ status: HttpStatus.NOT_FOUND, error: 'code_not_found' });
-    }
-
-    if (stored.usedAt) {
-      throw new ModException({ status: HttpStatus.CONFLICT, error: 'code_used' });
-    }
-
-    if (stored.expiresAt <= new Date()) {
-      throw new ModException({ status: HttpStatus.GONE, error: 'code_expired' });
-    }
-
     const accountId = BigInt(request.account_id);
-    const link = await this.prisma.userLestaAccount.findFirst({ where: { userId: stored.userId, accountId }, include: { player: true } });
+    const failureKey = `${BIND_CODE.failurePrefix}${request.account_id}`;
+    const failures = Number((await this.redis.get(failureKey)) ?? 0);
 
-    if (!link || (stored.accountId !== null && stored.accountId !== accountId)) {
-      throw new ModException({ status: HttpStatus.FORBIDDEN, error: 'account_mismatch' });
+    if (failures >= BIND_CODE.maxFailuresPerAccount) {
+      throw new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited' });
+    }
+
+    const stored = await this.prisma.oneTimeCode.findUnique({ where: { code: request.code, purpose: 'modBind' } });
+    const link = stored
+      ? await this.prisma.userLestaAccount.findFirst({ where: { userId: stored.userId, accountId }, include: { player: true } })
+      : null;
+
+    const usable =
+      stored !== null && stored.usedAt === null && stored.expiresAt > new Date() && (stored.accountId === null || stored.accountId === accountId);
+
+    if (!stored || !usable || !link) {
+      return this.refuse(failureKey);
     }
 
     const claimed = await this.prisma.oneTimeCode.updateMany({
@@ -84,8 +85,10 @@ export class ModBindService {
     });
 
     if (claimed.count === 0) {
-      throw new ModException({ status: HttpStatus.CONFLICT, error: 'code_used' });
+      return this.refuse(failureKey);
     }
+
+    await this.redis.del(failureKey);
 
     const deviceId = newDeviceId();
     const secret = deviceSecret({ deviceId, serverSecret: this.config.get('MOD_INGEST_SECRET') });
@@ -105,5 +108,11 @@ export class ModBindService {
     ]);
 
     return { device_id: deviceId, secret, account_id: request.account_id, nickname: link.player.nickname };
+  }
+
+  private async refuse(failureKey: string): Promise<never> {
+    await this.redis.multi().incr(failureKey).expire(failureKey, BIND_CODE.failureWindowSeconds).exec();
+
+    throw new ModException({ status: HttpStatus.BAD_REQUEST, error: 'invalid_code' });
   }
 }

@@ -1,3 +1,4 @@
+import type { ModuleRef } from '@nestjs/core';
 import type { Queue } from 'bullmq';
 
 import { describe, expect, it } from 'vitest';
@@ -10,11 +11,15 @@ import { StreamersSchedulesService } from '../streamers-schedules.service';
 
 const createService = (nodeEnv: Env['NODE_ENV']) => {
   const queue = mock<Queue>();
+
+  queue.getJobSchedulers.mockResolvedValue([]);
   const config = mock<AppConfigService>();
+  const moduleRef = mock<ModuleRef>();
 
   config.get.calledWith('NODE_ENV').mockReturnValue(nodeEnv);
+  moduleRef.get.mockReturnValue(queue);
 
-  return { queue, service: new StreamersSchedulesService(config, queue) };
+  return { queue, service: new StreamersSchedulesService(moduleRef, config) };
 };
 
 describe('StreamersSchedulesService', () => {

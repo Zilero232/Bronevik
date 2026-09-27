@@ -1,3 +1,3 @@
 import 'server-only';
 
-export { clanRouteName, topClanTags } from './api/route-meta';
+export { clanRouteEntity, topClanTags } from './api/route-meta';

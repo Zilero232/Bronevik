@@ -17,5 +17,5 @@ export { QueuesModule } from './queues';
 export { REDIS, RedisModule } from './redis';
 export { createObjectStorage, LocalDiskStorage, ObjectStorage, ObjectStorageModule } from './storage';
 export type { CreateObjectStorageInput, PutObjectInput, StorageEnv } from './storage';
-export { WEBHOOK_EMITTER } from './webhooks';
+export { markGainedKey, WEBHOOK_EMITTER } from './webhooks';
 export type { EmitWebhookInput, WebhookEmitter, WebhookSubject } from './webhooks';

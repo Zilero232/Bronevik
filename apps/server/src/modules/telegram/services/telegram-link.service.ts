@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { addMinutes } from 'date-fns';
 import { randomBytes } from 'node:crypto';
 
-import type { ConsumeLinkCodeInput, TxUserInput } from '../telegram.types';
+import type { ConsumeLinkCodeInput, LinkCodePreview, TxUserInput } from '../telegram.types';
 
 import { AppBadRequestException, AppConflictException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
@@ -12,7 +12,7 @@ import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { AUTH_PROVIDER, isPlaceholderEmail } from '../../../lib/auth';
 import { CommunityContentService } from '../../community-core';
-import { LINK_CODE, SETTINGS_MENU, WEB_LOGIN } from '../config';
+import { DISPOSABLE_USER_COUNTS, LINK_CODE, SETTINGS_MENU, WEB_LOGIN } from '../config';
 import { normaliseLinkCode, siteUrl } from '../lib';
 import { TelegramIdentityService } from './telegram-identity.service';
 
@@ -36,6 +36,16 @@ export class TelegramLinkService {
     ]);
 
     return { code, expiresAt: expiresAt.toISOString(), deepLink: botUsername ? `https://t.me/${botUsername}?start=${code}` : null };
+  }
+
+  async previewCode(code: string): Promise<LinkCodePreview | null> {
+    const normalised = normaliseLinkCode(code);
+    const row = await this.prisma.oneTimeCode.findFirst({
+      where: { code: normalised, purpose: 'telegramLink', usedAt: null, expiresAt: { gt: new Date() } },
+      select: { user: { select: { name: true } } }
+    });
+
+    return row ? { code: normalised, accountName: row.user.name } : null;
   }
 
   async consumeCode({ code, identity }: ConsumeLinkCodeInput): Promise<string> {
@@ -146,16 +156,24 @@ export class TelegramLinkService {
   private async isDisposable({ tx, userId }: TxUserInput): Promise<boolean> {
     const user = await tx.user.findUnique({
       where: { id: userId },
-      select: { email: true, _count: { select: { lestaAccounts: true, subscriptions: true, payments: true } } }
+      select: {
+        email: true,
+        accounts: { where: { NOT: { providerId: AUTH_PROVIDER.telegram } }, select: { id: true } },
+        streamerProfile: { select: { id: true } },
+        settingsShare: { select: { userId: true } },
+        coachProfile: { select: { userId: true } },
+        referredBy: { select: { referredUserId: true } },
+        _count: { select: DISPOSABLE_USER_COUNTS }
+      }
     });
 
     if (!user || !isPlaceholderEmail(user.email)) {
       return false;
     }
 
-    const { lestaAccounts, subscriptions, payments } = user._count;
+    const holdsOneToOne = [user.streamerProfile, user.settingsShare, user.coachProfile, user.referredBy].some((row) => row !== null);
 
-    return lestaAccounts + subscriptions + payments === 0;
+    return user.accounts.length === 0 && !holdsOneToOne && Object.values(user._count).every((count) => count === 0);
   }
 
   private async enableTelegramChannel({ tx, userId }: TxUserInput): Promise<void> {

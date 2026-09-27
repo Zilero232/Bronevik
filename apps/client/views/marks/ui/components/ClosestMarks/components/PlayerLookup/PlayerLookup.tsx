@@ -1,7 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { Button, Input } from '@/ui-kit';
 
@@ -13,7 +13,6 @@ import s from './PlayerLookup.module.scss';
 
 export const PlayerLookup = ({ player, onPick }: PlayerLookupProps) => {
   const t = useTranslations('marks.closest');
-  const format = useFormatter();
   const { input, players, canSubmit, pick, onSubmit, onChange } = usePlayerLookup({ player, onPick });
 
   return (
@@ -39,7 +38,7 @@ export const PlayerLookup = ({ player, onPick }: PlayerLookupProps) => {
               <button className={s.suggestion} type='button' onClick={() => pick(nickname)}>
                 <span className={s.nickname}>{nickname}</span>
                 {clanTag && <span className={s.clan}>[{clanTag}]</span>}
-                {battles !== null && <span className={s.battles}>{t('battles', { battles: format.number(battles) })}</span>}
+                {battles !== null && <span className={s.battles}>{t('battles', { battles })}</span>}
               </button>
             </li>
           ))}

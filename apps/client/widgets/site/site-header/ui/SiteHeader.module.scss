@@ -23,6 +23,10 @@
   gap: var(--space-7);
   transition: height var(--duration-base) var(--ease-out);
 
+  @include below(sm) {
+    gap: var(--space-3);
+  }
+
   @include reduced-motion {
     transition: none;
   }
@@ -39,6 +43,10 @@
   align-items: center;
   margin-left: auto;
   gap: var(--space-3);
+
+  @include below(sm) {
+    gap: var(--space-1);
+  }
 }
 
 .searchBar {

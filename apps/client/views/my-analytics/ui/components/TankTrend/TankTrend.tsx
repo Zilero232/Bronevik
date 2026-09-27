@@ -44,7 +44,7 @@ export const TankTrend = ({ tankId }: TankTrendProps) => {
             />
           </div>
         }
-        as='h2'
+        as='h1'
         description={t('description')}
         title={tank.vehicle ? t('title', { name: tank.vehicle.name }) : t('titleFallback')}
       />

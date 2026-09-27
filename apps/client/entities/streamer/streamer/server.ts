@@ -1,3 +1,3 @@
 import 'server-only';
 
-export { streamerRouteName } from './api/route-meta';
+export { streamerRouteEntity, streamerSlugs } from './api/route-meta';

@@ -8,11 +8,10 @@ export type {
   RecommendedBuildInput
 } from './api';
 export { BUILD_PRESETS, BUILD_URL, EQUIP_TILE } from './config';
-export { equipCategory, isImprovedVariant } from './lib/equip-category';
+export { equipCategory } from './lib/equip-category';
 export type { EquipTileCategory } from './lib/equip-category';
 export { gameLabel } from './lib/game-label';
-export { buildHref, emptyLoadout, parseLoadout, serializeLoadout } from './lib/loadout-code';
-export type { BuildHrefInput } from './lib/loadout-code';
+export { emptyLoadout, parseLoadout, serializeLoadout } from './lib/loadout-code';
 export { buildKey, popularLoadout } from './lib/popular-loadout';
 export { recommendedBuildHref } from './lib/recommended-href';
 export type { RecommendedHrefInput } from './lib/recommended-href';

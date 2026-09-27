@@ -1,6 +1,7 @@
 'use client';
 
 import { HocuspocusProvider } from '@hocuspocus/provider';
+import { useThrottleCallback } from '@siberiacancode/reactuse';
 import { useEffect, useRef, useState } from 'react';
 import * as Y from 'yjs';
 
@@ -20,13 +21,17 @@ import { boardDocumentName, boardSocketToken, boardSocketUrl } from '../../../li
 
 export const useBoardDocument = ({ board, urlToken, userName }: UseBoardDocumentInput) => {
   const sessionRef = useRef<BoardSession | null>(null);
-  const cursorAtRef = useRef(0);
   const [layers, setLayers] = useState<TacticLayer[]>(board.data.layers);
   const [status, setStatus] = useState<BoardConnection>('connecting');
   const [isSynced, setIsSynced] = useState(false);
   const [isWritable, setIsWritable] = useState(false);
   const [history, setHistory] = useState<BoardHistory>({ canUndo: false, canRedo: false });
   const [peers, setPeers] = useState<BoardPeer[]>([]);
+  const setCursor = useThrottleCallback(
+    (point: BoardPoint | null) => sessionRef.current?.provider.setAwarenessField('cursor', point),
+    BOARD.cursorThrottleMs
+  );
+
   const token = boardSocketToken({ editToken: board.editToken, urlToken, shareToken: board.shareToken });
 
   useEffect(() => {
@@ -72,6 +77,7 @@ export const useBoardDocument = ({ board, urlToken, userName }: UseBoardDocument
       setStatus('connecting');
       setIsSynced(false);
       setIsWritable(false);
+      setHistory({ canUndo: false, canRedo: false });
       setPeers([]);
     };
   }, [board.id, token]);
@@ -108,17 +114,6 @@ export const useBoardDocument = ({ board, urlToken, userName }: UseBoardDocument
   const undo = () => sessionRef.current?.undo.undo();
 
   const redo = () => sessionRef.current?.undo.redo();
-
-  const setCursor = (point: BoardPoint | null) => {
-    const now = Date.now();
-
-    if (point !== null && now - cursorAtRef.current < BOARD.cursorThrottleMs) {
-      return;
-    }
-
-    cursorAtRef.current = now;
-    sessionRef.current?.provider.setAwarenessField('cursor', point);
-  };
 
   return {
     layers,

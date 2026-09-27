@@ -3,13 +3,12 @@
 import { useTranslations } from 'next-intl';
 import { Controller, FormProvider } from 'react-hook-form';
 
-import { Button, Input, NumberField, Select } from '@/ui-kit';
+import { Button, FormField, Input, NumberField, Select } from '@/ui-kit';
 
 import { CHALLENGE_FORM } from '../../../config';
 import { useChallengeForm } from '../../../model/hooks';
 import { ConditionBuilder } from '../ConditionBuilder';
 import { ConditionSentenceText } from '../ConditionSentenceText';
-import { FormField } from '../FormField';
 
 import s from './ChallengeForm.module.scss';
 

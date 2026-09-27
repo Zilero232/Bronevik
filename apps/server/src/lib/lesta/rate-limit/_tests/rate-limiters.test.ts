@@ -3,8 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { RateLimiter } from '../rate-limit.types';
 
+import { LestaQueueFullError } from '../../errors';
 import { RATE_LIMIT } from '../rate-limit.constants';
-import { createMemoryRateLimiter, createRedisRateLimiter } from '../rate-limiters';
+import { createRedisRateLimiter } from '../rate-limiters';
 
 const REQUESTS_PER_SECOND = 2;
 
@@ -40,33 +41,6 @@ const expectQueuedUntilWindowEnds = async (limiter: RateLimiter) => {
   expect(overflow.settled).toBe(true);
 };
 
-describe('createMemoryRateLimiter', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it('grants the per-second budget without waiting', async () => {
-    const limiter = createMemoryRateLimiter({ requestsPerSecond: REQUESTS_PER_SECOND });
-    const granted = track(exhaustBudget([limiter]));
-
-    await vi.advanceTimersByTimeAsync(0);
-
-    expect(granted.settled).toBe(true);
-  });
-
-  it('queues a request beyond the budget until the window ends', async () => {
-    const limiter = createMemoryRateLimiter({ requestsPerSecond: REQUESTS_PER_SECOND });
-
-    await exhaustBudget([limiter]);
-
-    await expectQueuedUntilWindowEnds(limiter);
-  });
-});
-
 describe('createRedisRateLimiter', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -98,5 +72,20 @@ describe('createRedisRateLimiter', () => {
     await vi.advanceTimersByTimeAsync(0);
 
     expect(granted.settled).toBe(true);
+  });
+});
+
+describe('createRedisRateLimiter overflow', () => {
+  it('rejects a request beyond the local queue with a retryable Lesta error', async () => {
+    const redis = new RedisMock();
+    const limiter = createRedisRateLimiter({ redis, key: 'overflow', requestsPerSecond: 1, maxQueueSize: 1 });
+
+    await limiter.acquire();
+
+    const waiting = limiter.acquire();
+
+    await expect(limiter.acquire()).rejects.toBeInstanceOf(LestaQueueFullError);
+
+    await waiting;
   });
 });

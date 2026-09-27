@@ -7,10 +7,9 @@ import { useId } from 'react';
 
 import { SITE } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
-import { Input } from '@/ui-kit';
+import { FormField, Input } from '@/ui-kit';
 
 import { useProfileIdentityFields } from '../../../model/hooks';
-import { FormField } from '../FormField';
 
 import s from './ProfileIdentityFields.module.scss';
 

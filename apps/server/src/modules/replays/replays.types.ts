@@ -2,6 +2,7 @@ import type { z } from 'zod';
 
 import type { Replay, Visibility } from '../../../generated';
 import type { ReplaySummary } from '../../lib/replay';
+import type { SignedModRequest } from '../mod';
 import type {
   bestOfWeekSchema,
   heatmapSchema,
@@ -27,8 +28,7 @@ export type UploadReplayInput = {
 
 export type UploadFromModInput = {
   file: UploadedReplayFile | undefined;
-  deviceId: string | undefined;
-  signature: string | undefined;
+  request: SignedModRequest;
 };
 
 export type ReplaySearchQuery = z.output<typeof replaySearchQuerySchema>;

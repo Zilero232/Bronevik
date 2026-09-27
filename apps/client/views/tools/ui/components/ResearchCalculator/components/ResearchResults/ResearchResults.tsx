@@ -39,7 +39,7 @@ export const ResearchResults = ({ vehicle, cost, values }: ResearchResultsProps)
             {
               key: 'cost',
               label: t('cost'),
-              value: t('costValue', { xp: format.number(cost?.xp ?? 0), credits: format.number(cost?.credits ?? 0) })
+              value: t('costValue', { xp: format.number(cost?.xp ?? 0), credits: cost?.credits ?? 0 })
             },
             { key: 'xpLeft', label: t('xpLeft'), value: format.number(plan.xpLeft), tone: plan.xpLeft === 0 ? 'good' : undefined },
             {

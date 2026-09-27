@@ -2,16 +2,18 @@ import type { CompetitionScoring } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { COMPETITION, competitionScoringSchema } from '@otmetki/schemas';
-import { addHours, max, startOfDay } from 'date-fns';
+import { addHours, max } from 'date-fns';
 
 import type { EntryScore, ScoreCompetitionInput, ScoreEntryInput } from '../competitions.types';
+import type { CompetitionBattleRow } from '../queries';
 
-import { bonusTypesOfMode } from '../../../common/lib';
+import { bonusTypesOfMode, moscowDayStart } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { VehicleCatalogService } from '../../reference';
 import { COMPETITION_RUN } from '../config';
 import { rankTeams, scoreBattles, scoreTotals } from '../lib/competition-scoring';
+import { competitionBattlesSql } from '../queries';
 
 @Injectable()
 export class CompetitionScoringService {
@@ -90,23 +92,14 @@ export class CompetitionScoringService {
     const from = max([competition.startsAt, joinedAt]);
     const limit = competition.battlesPerPlayer;
 
-    const battles = await this.prisma.battle.findMany({
-      where: { accountId, battleType: { in: bonusTypesOfMode(competition.mode) }, startedAt: { gte: from, lt: competition.endsAt } },
-      orderBy: { startedAt: 'asc' },
-      take: limit * COMPETITION_RUN.battlesFetchFactor,
-      select: {
-        tankId: true,
-        result: true,
-        damageDealt: true,
-        damageAssistedRadio: true,
-        damageAssistedTrack: true,
-        damageBlocked: true,
-        frags: true,
-        spotted: true,
-        xp: true,
-        survived: true
-      }
-    });
+    const battleTypes = bonusTypesOfMode(competition.mode);
+
+    const battles =
+      battleTypes.length === 0
+        ? []
+        : await this.prisma.$queryRaw<CompetitionBattleRow[]>(
+            competitionBattlesSql({ accountId, battleTypes, from, until: competition.endsAt, limit: limit * COMPETITION_RUN.battlesFetchFactor })
+          );
 
     const catalog = competition.minTier === null ? null : await this.catalog.all();
     const eligible = battles.filter((battle) => !catalog || (catalog.get(battle.tankId)?.summary.tier ?? 0) >= (competition.minTier ?? 0));
@@ -131,7 +124,7 @@ export class CompetitionScoringService {
     }
 
     const sessions = await this.prisma.playSession.aggregate({
-      where: { accountId, source: 'api', kind: 'day', startedAt: { gte: startOfDay(from), lt: competition.endsAt } },
+      where: { accountId, source: 'api', kind: 'day', startedAt: { gte: moscowDayStart(from), lt: competition.endsAt } },
       _sum: {
         battles: true,
         wins: true,

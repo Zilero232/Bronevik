@@ -74,11 +74,6 @@ export type VehicleCatalogInput = {
   signal?: AbortSignal;
 };
 
-export type CompareTanksInput = {
-  tankIds: number[];
-  signal?: AbortSignal;
-};
-
 export type TankEconomyTableInput = {
   account?: EconomyAccount;
   tiers?: number[];

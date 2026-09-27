@@ -1,18 +1,21 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Redis } from 'ioredis';
 
 import type { AuthenticatedDevice, AuthenticateInput, IdentifyDeviceInput, ModDeviceView, RevokeDeviceInput } from '../mod.types';
 
 import { AppNotFoundException, ModException } from '../../../common/exceptions';
 import { isSignatureHeader, toIso, verifySignatureHeader } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { PrismaService } from '../../../core';
-import { deviceSecret, matchesSecretHash } from '../lib';
+import { PrismaService, REDIS } from '../../../core';
+import { MOD_DEVICE, MOD_REQUEST } from '../config';
+import { deviceSecret, isFreshTimestamp, isNonce, matchesSecretHash, requestPath, signedMessage } from '../lib';
 
 @Injectable()
 export class ModDeviceService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly config: AppConfigService
+    private readonly config: AppConfigService,
+    @Inject(REDIS) private readonly redis: Redis
   ) {}
 
   async identify({ deviceId, signature }: IdentifyDeviceInput): Promise<AuthenticatedDevice> {
@@ -33,11 +36,30 @@ export class ModDeviceService {
     return { ...device, accountId: device.accountId };
   }
 
-  async authenticate({ deviceId, signature, rawBody }: AuthenticateInput): Promise<AuthenticatedDevice> {
-    const device = await this.identify({ deviceId, signature });
+  async authenticate({ request, rawBody }: AuthenticateInput): Promise<AuthenticatedDevice> {
+    const signature = request.header(MOD_DEVICE.signatureHeader);
+    const device = await this.identify({ deviceId: request.header(MOD_DEVICE.header), signature });
+    const timestamp = request.header(MOD_DEVICE.timestampHeader);
+    const nonce = request.header(MOD_DEVICE.nonceHeader);
 
-    if (!rawBody || !verifySignatureHeader({ header: signature, key: this.secretOf(device.id), body: rawBody })) {
+    if (!rawBody || timestamp === undefined || !isNonce(nonce)) {
       throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });
+    }
+
+    const message = signedMessage({ method: request.method, path: requestPath(request.originalUrl), timestamp, nonce, body: rawBody });
+
+    if (!verifySignatureHeader({ header: signature, key: this.secretOf(device.id), body: message })) {
+      throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });
+    }
+
+    if (!isFreshTimestamp({ timestamp, now: new Date() })) {
+      throw new ModException({ status: HttpStatus.PRECONDITION_REQUIRED, error: 'stale_request' });
+    }
+
+    const fresh = await this.redis.set(`${MOD_REQUEST.noncePrefix}${device.id}:${nonce}`, '1', 'EX', MOD_REQUEST.nonceTtlSeconds, 'NX');
+
+    if (fresh === null) {
+      throw new ModException({ status: HttpStatus.CONFLICT, error: 'replayed_request' });
     }
 
     return device;

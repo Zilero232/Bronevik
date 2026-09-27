@@ -23,7 +23,7 @@ export { useProfileIdentityFields } from './use-profile-identity-fields';
 export { useSettingsField } from './use-settings-field';
 export { useSettingsImportXml } from './use-settings-import-xml';
 export { useSettingsPanel } from './use-settings-panel';
-export { useLinkedAccounts, useSaveStreamerProfile, useStreamerProfile } from './use-streamer-profile';
+export { useSaveStreamerProfile, useStreamerProfile } from './use-streamer-profile';
 export { useMyStreamerSettings, useSaveStreamerSettings } from './use-streamer-settings';
 export { useStreamerSettingsForm } from './use-streamer-settings-form';
 export { useStreamerStudio } from './use-streamer-studio';

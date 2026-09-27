@@ -1,3 +1,4 @@
+import type { ModuleRef } from '@nestjs/core';
 import type { Queue } from 'bullmq';
 
 import { describe, expect, it } from 'vitest';
@@ -5,17 +6,21 @@ import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
 
-import { JOB_SCHEDULES } from '../../../../common/lib';
+import { TIME } from '../../../../config';
 import { BILLING_SCHEDULES } from '../../config';
 import { BillingSchedulesService } from '../billing-schedules.service';
 
 const createService = (nodeEnv: 'production' | 'test') => {
   const config = mock<AppConfigService>();
+  const moduleRef = mock<ModuleRef>();
   const queue = mock<Queue>();
 
-  config.get.mockReturnValue(nodeEnv);
+  queue.getJobSchedulers.mockResolvedValue([]);
 
-  return { service: new BillingSchedulesService(config, queue), queue };
+  config.get.mockReturnValue(nodeEnv);
+  moduleRef.get.mockReturnValue(queue);
+
+  return { service: new BillingSchedulesService(moduleRef, config), queue };
 };
 
 describe('BillingSchedulesService.onApplicationBootstrap', () => {
@@ -37,7 +42,7 @@ describe('BillingSchedulesService.onApplicationBootstrap', () => {
     for (const schedule of BILLING_SCHEDULES) {
       expect(queue.upsertJobScheduler).toHaveBeenCalledWith(
         schedule.id,
-        { pattern: schedule.repeat.pattern, tz: JOB_SCHEDULES.timezone },
+        { pattern: schedule.repeat.pattern, tz: TIME.zone },
         expect.objectContaining({ name: schedule.name })
       );
     }

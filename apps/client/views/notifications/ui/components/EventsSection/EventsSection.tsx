@@ -2,51 +2,37 @@
 
 import type { NotificationEvent } from '@otmetki/schemas';
 
-import { notificationEventSchema } from '@otmetki/schemas';
 import { ListChecks } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { entries } from 'remeda';
 
-import { INBOX_EVENT } from '@/entities/notification/inbox';
 import { ToggleChips } from '@/ui-kit';
 
 import type { SettingsSectionProps } from '../../../model/notifications.types';
 
-import { EVENT_GROUPS } from '../../../config';
+import { useEventsSection } from '../../../model/hooks';
 import { SettingsCard } from '../SettingsCard';
 
 import s from './EventsSection.module.scss';
 
-export const EventsSection = ({ settings, onPatch }: SettingsSectionProps) => {
-  const t = useTranslations('notifications');
-
-  const onGroupChange = (group: readonly NotificationEvent[]) => (next: NotificationEvent[]) => {
-    const inGroup = new Set<NotificationEvent>(group);
-
-    onPatch({ events: [...settings.events.filter((event) => !inGroup.has(event)), ...next] });
-  };
+export const EventsSection = (props: SettingsSectionProps) => {
+  const t = useTranslations('notifications.settings');
+  const { count, total, groups } = useEventsSection(props);
 
   return (
-    <SettingsCard
-      description={t('settings.eventsHint')}
-      eyebrow={t('settings.eventsEyebrow', { count: settings.events.length, total: notificationEventSchema.options.length })}
-      icon={<ListChecks size={18} />}
-      title={t('settings.events')}
-    >
+    <SettingsCard description={t('eventsHint')} eyebrow={t('eventsEyebrow', { count, total })} icon={<ListChecks size={18} />} title={t('events')}>
       <div className={s.groups}>
-        {entries(EVENT_GROUPS).map(([group, events]) => (
+        {groups.map(({ group, label, options, value, onChange }) => (
           <div key={group} className={s.group}>
-            <span className={s.label}>{t(`eventGroups.${group}`)}</span>
+            <span className={s.label}>{label}</span>
             <ToggleChips<NotificationEvent>
-              options={events.map((event) => {
-                const { icon: Icon, tone } = INBOX_EVENT[event];
-
-                return { value: event, label: t(`events.${event}`), icon: <Icon className={s.icon} data-tone={tone} size={14} /> };
-              })}
-              aria-label={t(`eventGroups.${group}`)}
+              options={options.map(({ icon: Icon, tone, ...option }) => ({
+                ...option,
+                icon: <Icon className={s.icon} data-tone={tone} size={14} />
+              }))}
+              aria-label={label}
               size='sm'
-              value={settings.events.filter((event) => new Set<NotificationEvent>(events).has(event))}
-              onChange={onGroupChange(events)}
+              value={value}
+              onChange={onChange}
             />
           </div>
         ))}

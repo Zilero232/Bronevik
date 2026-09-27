@@ -1,4 +1,4 @@
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import type { HeatGridProps } from './HeatGrid.types';
 
@@ -8,7 +8,6 @@ import s from './HeatGrid.module.scss';
 
 export const HeatGrid = ({ rows }: HeatGridProps) => {
   const t = useTranslations('pulse.heat');
-  const format = useFormatter();
 
   return (
     <div className={s.scroller}>
@@ -36,12 +35,7 @@ export const HeatGrid = ({ rows }: HeatGridProps) => {
                   {day}
                 </th>
                 {row.cells.map((cell) => (
-                  <td
-                    key={cell.hour}
-                    className={s.cell}
-                    data-level={cell.level}
-                    title={t('cell', { day, hour: cell.hour, players: format.number(cell.value) })}
-                  >
+                  <td key={cell.hour} className={s.cell} data-level={cell.level} title={t('cell', { day, hour: cell.hour, players: cell.value })}>
                     <span className={s.caption}>{cell.value}</span>
                   </td>
                 ))}

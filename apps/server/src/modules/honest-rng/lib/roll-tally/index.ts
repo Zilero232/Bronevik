@@ -1,2 +1,2 @@
-export { emptyTally, foldBattle, tallySummary } from './roll-tally';
-export type { BattleAccuracy, FoldBattleInput, RollTally } from './roll-tally.types';
+export { emptyTally, foldBattle, mergeTally, tallySummary } from './roll-tally';
+export type { BattleAccuracy, FoldBattleInput, MergeTallyInput, RollTally } from './roll-tally.types';

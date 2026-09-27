@@ -33,7 +33,7 @@ export const useStatColumns = <T extends StatColumnsRow>(): TableColumn<T>[] => 
       id: 'avgDamage',
       header: t('avgDamage'),
       cell: ({ row }) => <NumberCell value={row.original.avgDamage} />,
-      meta: { ...NUMERIC, hideBelow: 'sm' }
+      meta: { ...NUMERIC, hideBelow: 'md' }
     })
   ];
 };
@@ -46,6 +46,6 @@ export const useWinRateDeltaColumn = <T extends WinRateDeltaRow>(header: WinRate
     id: 'winRateDelta',
     header: t(header),
     cell: ({ row }) => <DeltaCell suffix={t('pointsSuffix')} value={row.original.winRateDelta} />,
-    meta: { ...NUMERIC, hideBelow: 'md' }
+    meta: NUMERIC
   });
 };

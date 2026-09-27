@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import type { StreamerIntegration, StreamerProvider } from '../../../../generated';
 import type { OAuthStateInput, SaveIntegrationInput, SetPredictionsInput, StoreTokenInput, StreamerIntegrationView } from '../streamers.types';
 
-import { AppBadRequestException, AppNotFoundException } from '../../../common/exceptions';
+import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../common/exceptions';
 import { readRecord, toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { PREDICTIONS } from '../config';
@@ -34,18 +34,21 @@ export class IntegrationStoreService {
   }
 
   async save({ userId, provider, externalId, accessToken, refreshToken, expiresAt, scope, config }: SaveIntegrationInput): Promise<void> {
+    const owned = await this.prisma.streamerIntegration.count({ where: { provider, externalId, NOT: { userId } } });
+
+    if (owned > 0) {
+      throw new AppConflictException('CONFLICT', `This ${provider} account is connected to another user`);
+    }
+
     const existing = await this.prisma.streamerIntegration.findUnique({ where: { userId_provider: { userId, provider } }, select: { config: true } });
     const merged = config ? toJsonValue({ ...readRecord(existing?.config), ...config }) : undefined;
     const data = { externalId, accessToken, refreshToken, tokenExpiresAt: expiresAt, scope, config: merged };
 
-    await this.prisma.$transaction([
-      this.prisma.streamerIntegration.deleteMany({ where: { provider, externalId, NOT: { userId } } }),
-      this.prisma.streamerIntegration.upsert({
-        where: { userId_provider: { userId, provider } },
-        create: { userId, provider, ...data },
-        update: data
-      })
-    ]);
+    await this.prisma.streamerIntegration.upsert({
+      where: { userId_provider: { userId, provider } },
+      create: { userId, provider, ...data },
+      update: data
+    });
   }
 
   async setPredictions({ userId, enabled }: SetPredictionsInput): Promise<StreamerIntegrationView[]> {

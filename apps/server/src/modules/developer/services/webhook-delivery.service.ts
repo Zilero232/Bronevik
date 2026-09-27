@@ -40,10 +40,12 @@ export class WebhookDeliveryService {
         attempt,
         responseStatus: null,
         responseBody: WEBHOOK_DELIVERY.blockedResponse,
-        isFinal
+        isFinal: true
       });
 
-      throw new Error(`${WEBHOOK_DELIVERY.blockedResponse}: ${delivery.endpoint.url}`);
+      this.logger.warn(`${WEBHOOK_DELIVERY.blockedResponse}: ${delivery.endpoint.url}`);
+
+      return 'skipped';
     }
 
     try {

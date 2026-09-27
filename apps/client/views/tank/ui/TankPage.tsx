@@ -4,11 +4,12 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 
 import { ROUTES } from '@/shared/constants';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { TankProvider } from '../model/context';
 import { useTankDetail } from '../model/hooks';
 import {
+  BestBattles,
   EconomySection,
   HowToBuild,
   LearningSection,
@@ -19,6 +20,7 @@ import {
   PatchHistory,
   SectionNav,
   ServerStats,
+  SimilarTanks,
   TankGarage,
   TankSkeleton,
   TopPlayers
@@ -63,7 +65,11 @@ export const TankPage = () => {
             </div>
             <TopPlayers />
             <div className={s.shell}>
-              <PatchHistory />
+              <div className={s.pair}>
+                <PatchHistory />
+                <BestBattles />
+              </div>
+              <SimilarTanks />
               <p className={s.source}>{ts('source')}</p>
             </div>
           </TankProvider>

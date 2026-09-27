@@ -8,15 +8,15 @@ import { NextIntlClientProvider } from 'next-intl';
 import { toast } from 'sonner';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { markInboxRead } from '@/entities/notification/inbox/api';
 import { messages } from '@/shared/i18n';
 
+import { markInboxRead } from '../../../../api';
 import { INBOX_QUERY } from '../../../../config';
 import { useMarkInboxRead } from '../use-mark-inbox-read';
 
 vi.hoisted(() => vi.resetModules());
 
-vi.mock('@/entities/notification/inbox/api', () => ({ markInboxRead: vi.fn(), getInbox: vi.fn() }));
+vi.mock('../../../../api', () => ({ markInboxRead: vi.fn(), getInbox: vi.fn() }));
 
 const NOW = new Date('2026-09-26T12:00:00Z');
 

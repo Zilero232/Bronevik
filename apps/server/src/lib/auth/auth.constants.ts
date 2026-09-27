@@ -22,7 +22,16 @@ export const API_KEY_PLUGIN = {
   prefix: 'otm_',
   keyLength: 64,
   minExpiresInDays: 0,
-  maxExpiresInDays: 3_650
+  maxExpiresInDays: 3_650,
+  disabledPaths: ['/api-key/create', '/api-key/update', '/api-key/delete', '/api-key/list', '/api-key/get']
+} as const;
+
+export const AUTH_RATE_LIMIT = {
+  prefix: 'otmetki:auth:rate:',
+  window: 60,
+  max: 300,
+  signIn: { window: 60, max: 10 },
+  signInPaths: ['/lesta/*', '/telegram/*', '/vk/*', '/sign-in/*', '/magic-link/*', '/callback/*', '/link-social']
 } as const;
 
 export const VK_MINI_APP_AUTH = {

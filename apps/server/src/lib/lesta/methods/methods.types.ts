@@ -1,29 +1,11 @@
 import type { z } from 'zod';
 
 import type { LestaId } from '../batching';
-import type { FieldList, LestaCallOptions, LestaFieldsOption, LestaParams, LestaRequester } from '../client/client.types';
+import type { FieldList, LestaCallOptions, LestaFieldsOption, LestaParams } from '../client/client.types';
 
 export type LestaGenericInput = LestaCallOptions & {
   fields?: FieldList;
   params?: LestaParams;
-};
-
-export type PassthroughInput = {
-  requester: LestaRequester;
-  method: string;
-};
-
-export type PassthroughByIdInput = PassthroughInput & {
-  idParam: string;
-};
-
-export type BatchedMapInput<T> = {
-  requester: LestaRequester;
-  method: string;
-  idParam: string;
-  ids: readonly LestaId[];
-  params: LestaParams;
-  schema: z.ZodType<Record<string, T>>;
 };
 
 export type AccountSearchType = 'exact' | 'startswith';

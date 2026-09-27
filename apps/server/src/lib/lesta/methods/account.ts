@@ -5,9 +5,9 @@ import type { AccountAchievements, AccountInfo, AccountListItem, AccountTank } f
 import type { AccountIdsInput, AccountListInput, AccountTanksInput } from './methods.types';
 
 import { batchList } from '../batching';
-import { callParams, fieldAwareSchema } from '../client/client.helpers';
+import { callParams, fieldAwareSchema } from '../client/params';
 import { accountAchievementsSchema, accountInfoSchema, accountListSchema, accountTankSchema, idMapOf } from '../schemas';
-import { batchedMap } from './methods.helpers';
+import { batchedMap } from './call-shapes';
 
 export const createAccountMethods = (requester: LestaRequester) => {
   const list = async ({ search, type, limit, ...options }: AccountListInput): Promise<AccountListItem[]> => {

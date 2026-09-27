@@ -7,11 +7,10 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { OVERLAY_OPTIONS } from '@/entities/streamer/overlay';
 import { LOCALE_LABELS } from '@/shared/i18n';
-import { SegmentedControl, Select, Switch } from '@/ui-kit';
+import { FormField, SegmentedControl, Select, Switch } from '@/ui-kit';
 
 import type { OverlayFormValues } from '../../../lib/overlay-form';
 
-import { FormField } from '../FormField';
 import { OverlayAccentField } from '../OverlayAccentField';
 
 import s from './OverlayTogglesFields.module.scss';

@@ -38,6 +38,7 @@ export class SessionCloseService {
 
       await this.webhooks.emit({
         event: 'session.ended',
+        dedupeKey: `session:${session.id}`,
         subject: { accountIds: [toNumber(session.accountId)], clanIds: session.player.clanId === null ? [] : [toNumber(session.player.clanId)] },
         data: {
           sessionId: session.id,

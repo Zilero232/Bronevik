@@ -1,0 +1,1 @@
+export { SupertestFeed } from './SupertestFeed';

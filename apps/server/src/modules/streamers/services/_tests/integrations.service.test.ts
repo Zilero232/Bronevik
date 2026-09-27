@@ -83,7 +83,7 @@ describe('IntegrationsService.connectUrl', () => {
   it('points Twitch back at the API callback with the chat scopes', async () => {
     const { service } = createService();
 
-    const url = new URL(await service.connectUrl({ userId: 'u1', provider: 'twitch' }));
+    const url = new URL((await service.connectUrl({ userId: 'u1', provider: 'twitch' })).url);
 
     expect(`${url.origin}${url.pathname}`).toBe(TWITCH.authorizeUrl);
     expect(url.searchParams.get('client_id')).toBe(ENV.TWITCH_CLIENT_ID);
@@ -95,10 +95,15 @@ describe('IntegrationsService.connectUrl', () => {
   it('embeds a state that resolves back to the requesting user and provider', async () => {
     const { service, states } = createService();
 
-    const url = new URL(await service.connectUrl({ userId: 'u1', provider: 'donationAlerts' }));
+    const { url: href, binding } = await service.connectUrl({ userId: 'u1', provider: 'donationAlerts' });
+    const url = new URL(href);
 
     expect(url.searchParams.get('redirect_uri')).toBe(new URL(DONATION_ALERTS.callbackPath, API_URL).href);
-    await expect(states.consume(url.searchParams.get('state') ?? '')).resolves.toEqual({ provider: 'donationAlerts', userId: 'u1' });
+
+    await expect(states.consume({ state: url.searchParams.get('state') ?? '', binding })).resolves.toEqual({
+      provider: 'donationAlerts',
+      userId: 'u1'
+    });
   });
 });
 
@@ -106,27 +111,27 @@ describe('IntegrationsService.callback', () => {
   it('fails an unknown state without touching the provider', async () => {
     const { service, store } = createService();
 
-    await expect(service.callback({ provider: 'twitch', code: 'c', state: 'forged' })).resolves.toBe(failedUrl);
+    await expect(service.callback({ provider: 'twitch', code: 'c', state: 'forged', binding: 'b', viewerId: null })).resolves.toBe(failedUrl);
     expect(oauth.exchangeCode).not.toHaveBeenCalled();
     expect(store.save).not.toHaveBeenCalled();
   });
 
   it('fails a state that was issued for another provider', async () => {
     const { service, states, store } = createService();
-    const state = await states.create({ provider: 'donationAlerts', userId: 'u1' });
+    const issued = await states.create({ provider: 'donationAlerts', userId: 'u1' });
 
-    await expect(service.callback({ provider: 'twitch', code: 'c', state })).resolves.toBe(failedUrl);
+    await expect(service.callback({ provider: 'twitch', code: 'c', ...issued, viewerId: null })).resolves.toBe(failedUrl);
     expect(store.save).not.toHaveBeenCalled();
   });
 
   it('saves the Twitch channel login for the state owner', async () => {
     const { service, states, store } = createService();
-    const state = await states.create({ provider: 'twitch', userId: 'u1' });
+    const issued = await states.create({ provider: 'twitch', userId: 'u1' });
 
     oauth.exchangeCode.mockResolvedValue(TWITCH_TOKEN);
     oauth.getTokenInfo.mockResolvedValue(mock<TokenInfo>({ userId: '777', userName: 'jove' }));
 
-    await expect(service.callback({ provider: 'twitch', code: 'c', state })).resolves.toBe(doneUrl);
+    await expect(service.callback({ provider: 'twitch', code: 'c', ...issued, viewerId: null })).resolves.toBe(doneUrl);
     expect(oauth.exchangeCode).toHaveBeenCalledWith(ENV.TWITCH_CLIENT_ID, ENV.TWITCH_CLIENT_SECRET, 'c', new URL(TWITCH.callbackPath, API_URL).href);
 
     expect(store.save).toHaveBeenCalledWith({
@@ -143,44 +148,44 @@ describe('IntegrationsService.callback', () => {
 
   it('saves a non-expiring Twitch token without an expiry', async () => {
     const { service, states, store } = createService();
-    const state = await states.create({ provider: 'twitch', userId: 'u1' });
+    const issued = await states.create({ provider: 'twitch', userId: 'u1' });
 
     oauth.exchangeCode.mockResolvedValue({ ...TWITCH_TOKEN, expiresIn: null });
     oauth.getTokenInfo.mockResolvedValue(mock<TokenInfo>({ userId: '777', userName: 'jove' }));
 
-    await service.callback({ provider: 'twitch', code: 'c', state });
+    await service.callback({ provider: 'twitch', code: 'c', ...issued, viewerId: null });
 
     expect(store.save).toHaveBeenCalledWith(expect.objectContaining({ expiresAt: null }));
   });
 
   it('fails when Twitch returns a token without a user', async () => {
     const { service, states, store } = createService();
-    const state = await states.create({ provider: 'twitch', userId: 'u1' });
+    const issued = await states.create({ provider: 'twitch', userId: 'u1' });
 
     oauth.exchangeCode.mockResolvedValue(TWITCH_TOKEN);
     oauth.getTokenInfo.mockResolvedValue(mock<TokenInfo>({ userId: null, userName: null }));
 
-    await expect(service.callback({ provider: 'twitch', code: 'c', state })).resolves.toBe(failedUrl);
+    await expect(service.callback({ provider: 'twitch', code: 'c', ...issued, viewerId: null })).resolves.toBe(failedUrl);
     expect(store.save).not.toHaveBeenCalled();
   });
 
   it('fails when the code exchange is rejected', async () => {
     const { service, states } = createService();
-    const state = await states.create({ provider: 'twitch', userId: 'u1' });
+    const issued = await states.create({ provider: 'twitch', userId: 'u1' });
 
     oauth.exchangeCode.mockRejectedValue(new Error('invalid code'));
 
-    await expect(service.callback({ provider: 'twitch', code: 'c', state })).resolves.toBe(failedUrl);
+    await expect(service.callback({ provider: 'twitch', code: 'c', ...issued, viewerId: null })).resolves.toBe(failedUrl);
   });
 
   it('saves the DonationAlerts account id as a string with the donation scopes', async () => {
     const { service, states, store } = createService();
-    const state = await states.create({ provider: 'donationAlerts', userId: 'u1' });
+    const issued = await states.create({ provider: 'donationAlerts', userId: 'u1' });
 
     oauth.getAccessToken.mockResolvedValue(DA_TOKEN);
     oauth.addUserForToken.mockResolvedValue({ ...DA_TOKEN, userId: 4242 });
 
-    await expect(service.callback({ provider: 'donationAlerts', code: 'c', state })).resolves.toBe(doneUrl);
+    await expect(service.callback({ provider: 'donationAlerts', code: 'c', ...issued, viewerId: null })).resolves.toBe(doneUrl);
 
     expect(store.save).toHaveBeenCalledWith({
       userId: 'u1',
@@ -196,22 +201,40 @@ describe('IntegrationsService.callback', () => {
 
   it('fails a provider that cannot be connected even with a valid state', async () => {
     const { service, states, store } = createService();
-    const state = await states.create({ provider: 'youtube', userId: 'u1' });
+    const issued = await states.create({ provider: 'youtube', userId: 'u1' });
 
-    await expect(service.callback({ provider: 'youtube', code: 'c', state })).resolves.toBe(failedUrl);
+    await expect(service.callback({ provider: 'youtube', code: 'c', ...issued, viewerId: null })).resolves.toBe(failedUrl);
     expect(store.save).not.toHaveBeenCalled();
   });
 
   it('refuses to replay a state after a successful connect', async () => {
     const { service, states, store } = createService();
-    const state = await states.create({ provider: 'twitch', userId: 'u1' });
+    const issued = await states.create({ provider: 'twitch', userId: 'u1' });
 
     oauth.exchangeCode.mockResolvedValue(TWITCH_TOKEN);
     oauth.getTokenInfo.mockResolvedValue(mock<TokenInfo>({ userId: '777', userName: 'jove' }));
 
-    await service.callback({ provider: 'twitch', code: 'c', state });
+    await service.callback({ provider: 'twitch', code: 'c', ...issued, viewerId: null });
 
-    await expect(service.callback({ provider: 'twitch', code: 'c', state })).resolves.toBe(failedUrl);
+    await expect(service.callback({ provider: 'twitch', code: 'c', ...issued, viewerId: null })).resolves.toBe(failedUrl);
     expect(store.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('refuses a callback in a browser that did not start the connect', async () => {
+    const { service, states, store } = createService();
+    const { state } = await states.create({ provider: 'twitch', userId: 'u1' });
+
+    await expect(service.callback({ provider: 'twitch', code: 'c', state, binding: null, viewerId: null })).resolves.toBe(failedUrl);
+    expect(oauth.exchangeCode).not.toHaveBeenCalled();
+    expect(store.save).not.toHaveBeenCalled();
+  });
+
+  it('refuses a callback finished by a signed-in user other than the one who started it', async () => {
+    const { service, states, store } = createService();
+    const issued = await states.create({ provider: 'twitch', userId: 'u1' });
+
+    await expect(service.callback({ provider: 'twitch', code: 'c', ...issued, viewerId: 'u2' })).resolves.toBe(failedUrl);
+    expect(oauth.exchangeCode).not.toHaveBeenCalled();
+    expect(store.save).not.toHaveBeenCalled();
   });
 });

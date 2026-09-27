@@ -1,0 +1,1 @@
+export { TankRarityTab } from './TankRarityTab';

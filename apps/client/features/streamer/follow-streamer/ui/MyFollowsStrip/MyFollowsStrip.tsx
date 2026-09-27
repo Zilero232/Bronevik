@@ -4,10 +4,9 @@ import { clsx } from 'clsx';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { LiveLamp } from '@/entities/streamer/broadcast';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { IconButton } from '@/ui-kit';
+import { IconButton, LiveLamp } from '@/ui-kit';
 
 import type { MyFollowsStripProps } from './MyFollowsStrip.types';
 

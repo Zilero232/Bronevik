@@ -4,11 +4,12 @@ import { OtmetkiLogoIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Band, KeyFigure, PageHero } from '@/ui-kit';
+import { Link } from '@/shared/i18n/navigation';
+import { Band, buttonVariants, KeyFigure, PageHero } from '@/ui-kit';
 
 import { PLUS_CHECKOUT } from '../config';
 import { usePlusPage } from '../model/hooks';
-import { PlusBenefits, PlusCheckout, PlusFaq } from './components';
+import { PlusBenefits, PlusCheckout, PlusFaq, PlusLimits } from './components';
 
 import s from './PlusPage.module.scss';
 
@@ -16,11 +17,25 @@ export const PlusPage = () => {
   const t = useTranslations('plus.header');
   const tBrand = useTranslations('brand');
   const format = useFormatter();
-  const { isTrialOffered, trialDays, fromMonthlyRub } = usePlusPage();
+  const { isPlus, isTrialOffered, trialDays, fromMonthlyRub } = usePlusPage();
 
   return (
     <div className={s.root}>
       <PageHero
+        actions={
+          <div className={s.actions}>
+            {isPlus ? (
+              <Link className={buttonVariants({ size: 'lg' })} href={ROUTES.account.billing}>
+                {t('manage')}
+              </Link>
+            ) : (
+              <a className={buttonVariants({ size: 'lg' })} href={`#${PLUS_CHECKOUT.anchor}`}>
+                {isTrialOffered ? t('ctaTrial', { days: trialDays }) : t('cta')}
+              </a>
+            )}
+            {isTrialOffered && <p className={s.offer}>{t('trialOffer', { days: trialDays })}</p>}
+          </div>
+        }
         figures={
           fromMonthlyRub !== null && (
             <KeyFigure
@@ -31,7 +46,6 @@ export const PlusPage = () => {
             />
           )
         }
-        actions={isTrialOffered && <p className={s.offer}>{t('trialOffer', { days: trialDays })}</p>}
         art={{ kind: 'emblem', glyph: <OtmetkiLogoIcon size={480} /> }}
         breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: tBrand('plus') }]}
         lead={t('description')}
@@ -40,11 +54,14 @@ export const PlusPage = () => {
       <div className={s.section}>
         <PlusBenefits />
       </div>
+      <div className={s.section}>
+        <PlusLimits />
+      </div>
       <Band tone='raised'>
         <PlusCheckout />
       </Band>
       <div className={s.section}>
-        <PlusFaq />
+        <PlusFaq trialDays={trialDays} />
       </div>
     </div>
   );

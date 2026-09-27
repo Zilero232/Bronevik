@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { RevokeRefundInput } from '../billing.types';
 import type { YooKassaWebhook } from '../lib';
 
+import { Prisma } from '../../../../generated';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS } from '../config';
 import { describeCard, isPlusPlan, revokePeriod, YooKassaClient } from '../lib';
@@ -43,6 +44,14 @@ export class WebhookService {
       return false;
     }
 
+    const remote = await this.yookassa.getPayment(paymentId);
+
+    if (new Prisma.Decimal(remote.refunded_amount?.value ?? 0).lessThan(row.amount)) {
+      this.logger.warn(`payment ${paymentId} partially refunded (${remote.refunded_amount?.value ?? 0} of ${row.amount.toString()}), access kept`);
+
+      return false;
+    }
+
     const plan = isPlusPlan(row.plan) ? row.plan : PLUS_PLANS.monthly.plan;
 
     const isRefunded = await this.prisma.$transaction(async (tx) => {
@@ -52,7 +61,16 @@ export class WebhookService {
         return false;
       }
 
-      const subscription = row.subscriptionId ? await tx.subscription.findUnique({ where: { id: row.subscriptionId } }) : null;
+      const latest = row.subscriptionId
+        ? await tx.payment.findFirst({
+            where: { subscriptionId: row.subscriptionId, status: { in: ['succeeded', 'refunded'] } },
+            orderBy: { paidAt: 'desc' },
+            select: { id: true }
+          })
+        : null;
+
+      const subscription =
+        latest?.id === row.id && row.subscriptionId ? await tx.subscription.findUnique({ where: { id: row.subscriptionId } }) : null;
 
       if (subscription?.currentPeriodEnd) {
         const revoked = revokePeriod({ currentPeriodEnd: subscription.currentPeriodEnd, now, months: PLUS_PLANS[plan].months });

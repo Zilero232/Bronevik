@@ -16,8 +16,6 @@ export const crossesMidnight = ({ start, end }: QuietHours) => end < start && en
 
 export const isQuietHour = ({ hour, range }: IsQuietHourInput) => wrapHour(hour - range.start) < quietSpan(range);
 
-export const quietHourList = (range: QuietHours) => Array.from({ length: quietSpan(range) }, (_, index) => wrapHour(range.start + index));
-
 export const dialPoint = ({ hour, center, radius }: DialPointInput): DialPoint => {
   const angle = (hour / QUIET_HOURS.hoursInDay) * Math.PI * 2;
 

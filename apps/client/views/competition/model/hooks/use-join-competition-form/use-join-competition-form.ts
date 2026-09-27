@@ -8,7 +8,7 @@ import { useForm, useWatch } from 'react-hook-form';
 
 import type { JoinCompetitionRequest } from '@/entities/competition/competition';
 
-import { useCommunityViewer } from '@/features/community/viewer';
+import { useCommunityViewer } from '@/entities/auth/session';
 
 import type { JoinFormOutput, JoinFormValues } from '../../../lib/join-form';
 

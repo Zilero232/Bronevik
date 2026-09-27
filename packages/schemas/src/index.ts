@@ -667,6 +667,7 @@ export {
   inboxItemSchema,
   inboxPageSchema,
   inboxQuerySchema,
+  isPushServiceUrl,
   markReadResultSchema,
   markReadSchema,
   notificationChannelSchema,

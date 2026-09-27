@@ -1,19 +1,19 @@
 'use client';
 
-import { clsx } from 'clsx';
+import { motion } from 'motion/react';
 
-import { useSectionReveal } from '@/shared/lib';
+import { useRevealOnce } from '@/shared/lib';
 
 import type { RevealProps } from './Reveal.types';
 
-import s from './Reveal.module.scss';
+import { REVEAL } from './Reveal.motion';
 
 export const Reveal = ({ children, className }: RevealProps) => {
-  const ref = useSectionReveal<HTMLDivElement>();
+  const { ref, isRevealed } = useRevealOnce<HTMLDivElement>();
 
   return (
-    <div ref={ref} className={clsx(s.root, className)}>
+    <motion.div ref={ref} animate={isRevealed ? 'shown' : 'hidden'} className={className} initial='hidden' variants={REVEAL}>
       {children}
-    </div>
+    </motion.div>
   );
 };

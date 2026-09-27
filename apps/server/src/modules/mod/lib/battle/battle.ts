@@ -1,16 +1,10 @@
-import { createHash } from 'node:crypto';
-
 import type { BattleResultEvent } from '../contract';
 import type { SessionIncrement, SessionUuidInput } from './battle.types';
 
+import { stableUuid } from '../../../../common/lib';
 import { BATTLE } from './battle.constants';
 
-export const sessionUuid = ({ accountId, sessionId }: SessionUuidInput): string => {
-  const hex = createHash('sha256').update(`${accountId}:${sessionId}`).digest('hex');
-  const variant = ((Number.parseInt(hex.charAt(16), 16) & 0x3) | 0x8).toString(16);
-
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-8${hex.slice(13, 16)}-${variant}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
-};
+export const sessionUuid = ({ accountId, sessionId }: SessionUuidInput): string => stableUuid(`${accountId}:${sessionId}`);
 
 export const platoonSizeOf = (platoon: BattleResultEvent['platoon']): number | null => {
   if (platoon === undefined) {

@@ -2,13 +2,13 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InlineKeyboard } from 'grammy';
 import { keys } from 'remeda';
 
-import type { BotCommandSpec, BotContext, ConsumeInput, GuardInput, TelegramIdentity } from '../telegram.types';
+import type { BotCommandSpec, BotContext, ConsumeInput, GuardInput, LinkPromptInput, TelegramIdentity } from '../telegram.types';
 
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { BotRepliesService } from '../../bot-commands';
 import { BOT, SHARED_COMMAND_OF, WEB_LOGIN } from '../config';
-import { isPublicUrl, looksLikeLinkCode, resolveBotLocale } from '../lib';
+import { isPublicUrl, linkConfirmData, looksLikeLinkCode, parseLinkConfirm, resolveBotLocale } from '../lib';
 import { TelegramIdentityService } from './telegram-identity.service';
 import { TelegramLinkService } from './telegram-link.service';
 import { TelegramMissionCommandsService } from './telegram-mission-commands.service';
@@ -77,7 +77,7 @@ export class TelegramCommandsService {
     }
 
     if (looksLikeLinkCode(payload)) {
-      await this.consume({ ctx, identity, code: payload });
+      await this.askLink({ ctx, code: payload });
 
       return;
     }
@@ -95,6 +95,42 @@ export class TelegramCommandsService {
     }
 
     await ctx.reply(ctx.t('start-welcome'), { reply_markup: keyboard });
+  }
+
+  async askLink({ ctx, code }: LinkPromptInput): Promise<void> {
+    const preview = await this.links.previewCode(code);
+
+    if (!preview) {
+      await ctx.reply(ctx.t('start-code-invalid'));
+
+      return;
+    }
+
+    const keyboard = new InlineKeyboard()
+      .text(ctx.t('link-confirm-yes'), linkConfirmData({ answer: 'yes', code: preview.code }))
+      .text(ctx.t('link-confirm-no'), linkConfirmData({ answer: 'no' }));
+
+    await ctx.reply(ctx.t('link-confirm', { name: preview.accountName }), { reply_markup: keyboard });
+  }
+
+  async confirmLink(ctx: BotContext): Promise<void> {
+    const answer = parseLinkConfirm(ctx.callbackQuery?.data ?? '');
+    const identity = this.identityOf(ctx);
+
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageReplyMarkup().catch(() => undefined);
+
+    if (!answer || !identity) {
+      return;
+    }
+
+    if (answer.answer === 'no') {
+      await ctx.reply(ctx.t('link-cancelled'));
+
+      return;
+    }
+
+    await this.consume({ ctx, identity, code: answer.code });
   }
 
   async consume({ ctx, identity, code }: ConsumeInput): Promise<void> {

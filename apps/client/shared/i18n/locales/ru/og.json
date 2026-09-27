@@ -1,0 +1,13 @@
+{
+  "kinds": {
+    "tank": "ТАНК",
+    "build": "СБОРКА",
+    "clan": "КЛАН"
+  },
+  "tankLine": "{tier} уровень · {type}",
+  "winRate": "Победы",
+  "avgDamage": "Ср. урон",
+  "players": "Игроков",
+  "members": "Бойцов",
+  "source": "Данные: Леста Игры"
+}

@@ -4,6 +4,7 @@ import { parseAsStringLiteral } from 'nuqs';
 export const SHOWCASE = {
   sources: ['top10', 'all', 'top1'],
   plusSources: ['top1'],
+  plusFeature: 'analytics',
   otherSource: { top10: 'all', all: 'top10', top1: 'all' },
   views: ['showcase', 'editor'],
   period: '30d',

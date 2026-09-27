@@ -14,6 +14,6 @@ export type SectionHeaderProps = {
   more?: SectionHeaderMore;
   count?: ReactNode;
   variant?: 'default' | 'display';
-  as?: 'h2' | 'h3';
+  as?: 'h1' | 'h2' | 'h3';
   className?: string;
 };

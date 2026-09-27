@@ -1,9 +1,10 @@
 export const ANALYTICS_WINDOW = {
   periodDays: { d30: 30, d90: 90, y1: 365, all: null },
-  timeZone: 'Europe/Moscow',
   weekTrendMaxDays: 90,
   sessions: 12,
-  minBreakdownBattles: 1
+  minBreakdownBattles: 1,
+  rngMaxBattles: 3_000,
+  tiltMaxBattles: 5_000
 } as const;
 
 export const TILT = {

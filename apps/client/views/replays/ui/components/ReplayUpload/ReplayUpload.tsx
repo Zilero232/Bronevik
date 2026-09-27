@@ -4,7 +4,7 @@ import { FileUp } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { useId } from 'react';
 
-import { CommunityGate } from '@/features/community/viewer';
+import { CommunityGate } from '@/entities/auth/session';
 import { Button, Card, CardBody, CardHeader, ProgressBar, SegmentedControl } from '@/ui-kit';
 
 import type { UploadVisibility } from '../../../model/hooks';

@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 
 import type { Coach, CreateOrder } from '@/entities/coaching/coach';
 
+import { useCommunityViewer } from '@/entities/auth/session';
 import { communityErrorKind } from '@/features/community/api-error';
-import { useCommunityViewer } from '@/features/community/viewer';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { RequestFormOutput, RequestFormValues } from '../../../lib/request-form';

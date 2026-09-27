@@ -15,7 +15,7 @@ export class ClanHistoryService {
   ) {}
 
   async history({ accountIds }: AccountBatchPayload) {
-    const histories = await this.clients.priority.clans.memberhistory({ accountIds });
+    const histories = await this.clients.bulk.clans.memberhistory({ accountIds });
     const known = await this.prisma.player.findMany({ where: { accountId: { in: accountIds.map(BigInt) } }, select: { accountId: true } });
     let rows = 0;
 

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../collector';
-import type { SessionCloseService, WebhookDeliveryService } from '../../services';
+import type { SessionCloseService, WebhookDeliveryService, WebhookRedriveService } from '../../services';
 
 import { JOB } from '../../../collector';
 import { WebhooksProcessor } from '../webhooks.processor';
@@ -13,12 +13,13 @@ const DELIVERY_ID = '00000000-0000-4000-8000-000000000001';
 const createProcessor = () => {
   const deliveries = mock<WebhookDeliveryService>();
   const sessions = mock<SessionCloseService>();
+  const redrive = mock<WebhookRedriveService>();
   const metrics = mock<MetricsService>();
 
   metrics.track.mockImplementation(({ run }) => run());
   deliveries.deliver.mockResolvedValue('delivered');
 
-  return { deliveries, sessions, metrics, processor: new WebhooksProcessor(deliveries, sessions, metrics) };
+  return { deliveries, sessions, redrive, metrics, processor: new WebhooksProcessor(deliveries, sessions, redrive, metrics) };
 };
 
 const deliverJob = ({ attemptsMade, attempts }: { attemptsMade: number; attempts?: number }) =>

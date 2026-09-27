@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { ReferenceCoreModule } from '../../reference';
 import { PurgeModule } from '../purge';
 import { EnrolProcessor } from './processors/enrol.processor';
 import { PollProcessor } from './processors/poll.processor';
@@ -16,7 +17,7 @@ import {
 } from './services';
 
 @Module({
-  imports: [PurgeModule],
+  imports: [PurgeModule, ReferenceCoreModule],
   providers: [
     TrackingLestaService,
     TrackingAnnounceService,

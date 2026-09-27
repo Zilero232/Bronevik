@@ -3,8 +3,8 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { match } from 'ts-pattern';
 
+import { useCommunityViewer } from '@/entities/auth/session';
 import { listMyReplays, listReplays } from '@/entities/replay/replay';
-import { useCommunityViewer } from '@/features/community/viewer';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { REPLAY_LIST } from '../../../config';

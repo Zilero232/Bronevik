@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { getLinkedAccounts } from '@/entities/auth/session';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -36,5 +35,3 @@ export const useSaveStreamerProfile = () => {
     }
   });
 };
-
-export const useLinkedAccounts = () => useQuery({ queryKey: QUERY_KEYS.me.section('accounts'), queryFn: getLinkedAccounts });

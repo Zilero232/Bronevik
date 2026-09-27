@@ -17,3 +17,8 @@ export type LestaNetworkErrorInput = {
   method: string;
   cause: unknown;
 };
+
+export type LestaQueueFullErrorInput = {
+  key: string;
+  cause: unknown;
+};

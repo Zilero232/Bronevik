@@ -1,1 +1,1 @@
-export { EASE_OUT, POPUP, SPRING } from './motion';
+export { EASE_OUT, REDUCED_MOTION_QUERY } from './motion';

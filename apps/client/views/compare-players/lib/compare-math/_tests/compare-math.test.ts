@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { COMPARE_LIMIT } from '../../../config';
-import { bestIndices, parseCompareIds } from '../compare-math';
+import { bestIndices, compareIds, deltasToBest } from '../compare-math';
 
 describe('bestIndices', () => {
   it('marks the highest value when higher is better', () => {
@@ -29,20 +29,22 @@ describe('bestIndices', () => {
   });
 });
 
-describe('parseCompareIds', () => {
-  it('reads a comma separated list', () => {
-    expect(parseCompareIds('12,34')).toEqual([12, 34]);
-  });
-
-  it('drops junk, zeros and duplicates', () => {
-    expect(parseCompareIds('12,abc,0,12,-3,34')).toEqual([12, 34]);
+describe('compareIds', () => {
+  it('drops zeros, negatives and duplicates', () => {
+    expect(compareIds([12, 0, 12, -3, 34])).toEqual([12, 34]);
   });
 
   it('never returns more players than the page compares', () => {
-    expect(parseCompareIds('1,2,3,4,5,6,7')).toHaveLength(COMPARE_LIMIT.max);
+    expect(compareIds([1, 2, 3, 4, 5, 6, 7])).toHaveLength(COMPARE_LIMIT.max);
+  });
+});
+
+describe('deltasToBest', () => {
+  it('measures every other player against the best value', () => {
+    expect(deltasToBest({ values: [1_200, 2_900, null], best: [1] })).toEqual([-1_700, null, null]);
   });
 
-  it('returns nothing for a missing parameter', () => {
-    expect(parseCompareIds(null)).toEqual([]);
+  it('leaves every delta empty without a winner', () => {
+    expect(deltasToBest({ values: [6.5, 8.2], best: [] })).toEqual([null, null]);
   });
 });

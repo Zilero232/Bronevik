@@ -84,6 +84,7 @@ model ApiErrorLog {
   apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
 
   @@index([apiKeyId, occurredAt(sort: Desc)])
+  @@index([occurredAt])
   @@map("api_error_log")
 }
 
@@ -130,5 +131,6 @@ model WebhookDelivery {
 
   @@index([endpointId, createdAt(sort: Desc)])
   @@index([status, nextAttemptAt])
+  @@index([createdAt])
   @@map("webhook_delivery")
 }

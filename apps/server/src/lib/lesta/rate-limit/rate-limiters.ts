@@ -1,29 +1,25 @@
-import { RateLimiterMemory, RateLimiterQueue, RateLimiterRedis } from 'rate-limiter-flexible';
+import { RateLimiterQueue, RateLimiterQueueError, RateLimiterRedis } from 'rate-limiter-flexible';
 
-import type { MemoryRateLimiterInput, QueueRateLimiterInput, RateLimiter, RedisRateLimiterInput } from './rate-limit.types';
+import type { QueueRateLimiterInput, RateLimiter, RedisRateLimiterInput } from './rate-limit.types';
 
+import { LestaQueueFullError } from '../errors';
 import { RATE_LIMIT } from './rate-limit.constants';
 
 const fromQueue = ({ queue, key }: QueueRateLimiterInput): RateLimiter => ({
   acquire: async () => {
-    await queue.removeTokens(1, key);
+    try {
+      await queue.removeTokens(1, key);
+    } catch (error) {
+      throw error instanceof RateLimiterQueueError ? new LestaQueueFullError({ key, cause: error }) : error;
+    }
   }
 });
 
-export const createMemoryRateLimiter = ({
-  requestsPerSecond = RATE_LIMIT.serverRequestsPerSecond,
-  maxQueueSize
-}: MemoryRateLimiterInput = {}): RateLimiter => {
-  const limiter = new RateLimiterMemory({ points: requestsPerSecond, duration: RATE_LIMIT.windowSeconds });
-
-  return fromQueue({ queue: new RateLimiterQueue(limiter, { maxQueueSize }), key: RATE_LIMIT.redisKey });
-};
-
 export const createRedisRateLimiter = ({
   redis,
+  requestsPerSecond,
   key = RATE_LIMIT.redisKey,
   keyPrefix = RATE_LIMIT.redisKeyPrefix,
-  requestsPerSecond = RATE_LIMIT.serverRequestsPerSecond,
   maxQueueSize
 }: RedisRateLimiterInput): RateLimiter => {
   const limiter = new RateLimiterRedis({

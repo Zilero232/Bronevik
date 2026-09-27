@@ -156,7 +156,7 @@
     "emptyTitle": "The leaderboard is empty",
     "podiumLabel": "Top three",
     "rank": "Place {rank}",
-    "battles": "{battles} battles"
+    "battles": "{battles, plural, one {# battle} other {# battles}}"
   },
   "builds": {
     "title": "How to build",
@@ -173,7 +173,7 @@
       "top10": "Top 10%",
       "top1": "Top 1%"
     },
-    "sample": "Based on {battles, plural, one {# battle} other {# battles}} of {players, plural, one {# player} other {# players}} with the mod over {days} days",
+    "sample": "Based on {battles, plural, one {# battle} other {# battles}} of {players, plural, one {# player} other {# players}} with the mod over {days, plural, one {# day} other {# days}}",
     "equipment": "Equipment",
     "slot": "Slot {slot}",
     "consumables": "Consumables",
@@ -239,7 +239,7 @@
     "emptyTitle": "No economy data yet",
     "emptyDescription": "Medians appear once mod users play enough random battles on this tank.",
     "noAccountData": "Not enough battles for this account type yet",
-    "note": "Medians over {battles} random battles by {players} mod users in {days} days.",
+    "note": "Medians over {battles, plural, one {# random battle} other {# random battles}} by {players, plural, one {# mod user} other {# mod users}} in {days} days.",
     "noteEmpty": "Computed from battle results sent by the mod and from replays."
   },
   "learning": {
@@ -249,7 +249,7 @@
     "gain": "Win-rate gain from new to experienced players: {gain} pp",
     "emptyTitle": "No learning curve yet",
     "emptyDescription": "We need more observations of players on this tank.",
-    "note": "Based on {battles} battles by tracked players in {days} days, grouped by battles on the tank.",
+    "note": "Based on {battles, plural, one {# battle} other {# battles}} by tracked players in {days} days, grouped by battles on the tank.",
     "mine": {
       "title": "Your place on the curve",
       "battles": "Your battles",
@@ -315,5 +315,10 @@
     "math": "Tank math",
     "players": "Players",
     "patches": "Changes"
+  },
+  "similar": {
+    "title": "Similar tanks",
+    "tree": "Show in the tree",
+    "empty": "No other tanks of this tier and class."
   }
 }

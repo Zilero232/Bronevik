@@ -5,13 +5,12 @@ import type { ChallengeCondition, ChallengeMetric } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { NumberField, SegmentedControl, Select } from '@/ui-kit';
+import { FormField, NumberField, SegmentedControl, Select } from '@/ui-kit';
 
 import type { ChallengeFormOutput, ChallengeFormValues } from '../../../model/studio.types';
 
 import { CHALLENGE_CONDITION_OPTIONS, CHALLENGE_FORM } from '../../../config';
 import { ConditionScopeField } from '../ConditionScopeField';
-import { FormField } from '../FormField';
 
 import s from './ConditionBuilder.module.scss';
 

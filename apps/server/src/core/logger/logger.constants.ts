@@ -9,6 +9,7 @@ export const LOGGER = {
   },
   http: {
     requestIdHeader: 'x-request-id',
+    requestIdShape: /^[\w.-]{1,64}$/u,
     quietPaths: ['/health']
   }
 } as const;

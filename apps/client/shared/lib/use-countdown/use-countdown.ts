@@ -1,24 +1,32 @@
 'use client';
 
-import { useTimer } from '@siberiacancode/reactuse';
-import { secondsInHour } from 'date-fns/constants';
-import { useMemo, useState } from 'react';
+import { usePrevious } from '@siberiacancode/reactuse';
+import { millisecondsInSecond, secondsInHour, secondsInMinute } from 'date-fns/constants';
+import { useEffect, useEffectEvent } from 'react';
 
 import type { Countdown, UseCountdownInput } from './use-countdown.types';
 
 import { useClientNow } from '../use-client-now';
 
 export const useCountdown = ({ seconds, onExpire }: UseCountdownInput): Countdown => {
-  const [start] = useState(() => seconds);
-  const now = useClientNow();
-  const total = useMemo(() => (typeof start === 'number' ? start : now ? start(now) : 0), [start, now]);
-  const timer = useTimer(total, { onExpire });
+  const now = useClientNow({ updateInterval: millisecondsInSecond });
+  const left = now ? Math.max(0, Math.floor(seconds(now))) : null;
+  const previous = usePrevious(left);
+  const expire = useEffectEvent(() => onExpire?.());
+
+  useEffect(() => {
+    if (left === 0 && previous) {
+      expire();
+    }
+  }, [left, previous]);
+
+  const count = left ?? 0;
 
   return {
-    left: timer.count,
-    hours: Math.floor(timer.count / secondsInHour),
-    minutes: timer.minutes,
-    seconds: timer.seconds,
-    isExpired: timer.count === 0 && (typeof start === 'number' || now !== null)
+    left: count,
+    hours: Math.floor(count / secondsInHour),
+    minutes: Math.floor(count / secondsInMinute) % secondsInMinute,
+    seconds: count % secondsInMinute,
+    isExpired: left === 0
   };
 };

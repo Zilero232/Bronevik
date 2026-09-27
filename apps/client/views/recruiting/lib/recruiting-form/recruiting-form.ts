@@ -1,5 +1,5 @@
+import { chosenAccountId } from '@/entities/auth/session';
 import { toStatRequirements } from '@/features/community/stat-requirements';
-import { chosenAccountId } from '@/features/community/viewer';
 
 import type { CreateRecruiting } from '../../api';
 import type { ToCreateRecruitingInput } from './recruiting-form.types';

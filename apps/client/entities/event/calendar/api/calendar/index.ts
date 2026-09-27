@@ -1,0 +1,1 @@
+export { getEventCalendar } from './calendar';

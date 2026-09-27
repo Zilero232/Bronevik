@@ -1,22 +1,19 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import { buildKey } from '@/entities/tank/build';
 import { EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
-import { buildQueries } from '../../../api';
 import { BUILD_SKELETON } from '../../../config';
-import { useBuildContext } from '../../../model/context';
+import { usePresetStrip } from '../../../model/hooks';
 import { PresetCard } from './components';
 
 import s from './PresetStrip.module.scss';
 
 export const PresetStrip = () => {
   const t = useTranslations('builds.presets');
-  const { vehicle } = useBuildContext();
-  const query = useQuery(buildQueries.popular(vehicle.tankId));
+  const query = usePresetStrip();
 
   return (
     <section aria-label={t('title')} className={s.root}>

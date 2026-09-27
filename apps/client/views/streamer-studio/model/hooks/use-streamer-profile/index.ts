@@ -1,1 +1,1 @@
-export { useLinkedAccounts, useSaveStreamerProfile, useStreamerProfile } from './use-streamer-profile';
+export { useSaveStreamerProfile, useStreamerProfile } from './use-streamer-profile';

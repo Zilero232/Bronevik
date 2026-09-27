@@ -1,4 +1,3 @@
-export { getApiKeyErrors, getApiKeys, getApiKeyUsage, getDeveloperOverview, getOpenApiSpec, getWebhookDeliveries, getWebhooks } from './developer';
+export { getApiKeyErrors, getApiKeys, getApiKeyUsage, getDeveloperOverview, getWebhookDeliveries, getWebhooks } from './developer';
 export { DEVELOPER_PATHS } from './developer.constants';
-export { openApiOperationSchema } from './developer.schemas';
-export type { ApiKeyUsageInput, OpenApiDocument, OpenApiOperation, OpenApiParameter, UpdateWebhookInput } from './developer.types';
+export type { ApiKeyUsageInput, UpdateWebhookInput } from './developer.types';

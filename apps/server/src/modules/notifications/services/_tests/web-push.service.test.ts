@@ -7,9 +7,14 @@ import type { PrismaService } from '../../../../core';
 
 import { WEB_PUSH } from '../../config';
 
-const { sendNotification } = vi.hoisted(() => ({ sendNotification: vi.fn() }));
+const { sendNotification, lookup } = vi.hoisted(() => ({
+  sendNotification: vi.fn(),
+  lookup: vi.fn<(host: string) => Promise<{ address: string; family: number }[]>>()
+}));
 
 vi.mock('web-push', async (importOriginal) => ({ ...(await importOriginal<typeof import('web-push')>()), sendNotification }));
+
+vi.mock('node:dns/promises', async (importOriginal) => ({ ...(await importOriginal<typeof import('node:dns/promises')>()), lookup }));
 
 vi.resetModules();
 
@@ -17,7 +22,7 @@ const { WebPushError } = await import('web-push');
 const { WebPushService } = await import('../web-push.service');
 
 const subscription = (id: string): PushSubscription =>
-  mock<PushSubscription>({ id, endpoint: `https://push.example/${id}`, p256dh: 'key', auth: 'auth' });
+  mock<PushSubscription>({ id, endpoint: `https://fcm.googleapis.com/fcm/send/${id}`, p256dh: 'key', auth: 'auth' });
 
 const gone = (statusCode: number) => new WebPushError('gone', statusCode, {}, '', 'https://push.example');
 
@@ -28,6 +33,8 @@ const createService = ({ enabled = true, subscriptions = [subscription('a'), sub
   config.get.mockReturnValue(enabled ? 'configured' : '');
   prisma.pushSubscription.findMany.mockResolvedValue(subscriptions);
   sendNotification.mockReset();
+  lookup.mockReset();
+  lookup.mockResolvedValue([{ address: '142.250.74.10', family: 4 }]);
   sendNotification.mockResolvedValue({ statusCode: 201, body: '', headers: {} });
 
   return { service: new WebPushService(prisma, config), prisma };
@@ -54,6 +61,26 @@ describe('WebPushService.sendToUser', () => {
     expect(sendNotification).toHaveBeenCalledTimes(2);
     expect(JSON.parse(String(sendNotification.mock.calls[0]?.[1]))).toEqual({ title: 'Title', body: 'Body', url: '/me' });
     expect(prisma.pushSubscription.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('never posts to an endpoint outside the known push services', async () => {
+    const { service } = createService({
+      subscriptions: [mock<PushSubscription>({ id: 'x', endpoint: 'https://10.0.0.5:8443/push', p256dh: 'k', auth: 'a' })]
+    });
+
+    await service.sendToUser(INPUT);
+
+    expect(sendNotification).not.toHaveBeenCalled();
+  });
+
+  it('never posts to a push host that resolves to a private address', async () => {
+    const { service } = createService();
+
+    lookup.mockResolvedValue([{ address: '10.0.0.5', family: 4 }]);
+
+    await service.sendToUser(INPUT);
+
+    expect(sendNotification).not.toHaveBeenCalled();
   });
 
   it.each(WEB_PUSH.goneStatuses)('removes a subscription the push service reports as %i', async (status) => {

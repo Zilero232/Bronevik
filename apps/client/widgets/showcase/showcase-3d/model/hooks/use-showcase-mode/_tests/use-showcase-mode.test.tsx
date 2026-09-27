@@ -3,7 +3,8 @@ import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { REDUCED_MOTION_QUERY } from '../../../../lib/showcase-environment';
+import { REDUCED_MOTION_QUERY } from '@/shared/lib';
+
 import { useShowcaseMode } from '../use-showcase-mode';
 
 vi.hoisted(() => vi.resetModules());

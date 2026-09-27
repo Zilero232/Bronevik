@@ -22,6 +22,10 @@
   display: flex;
   flex-direction: column;
   line-height: 1.1;
+
+  @include below(sm) {
+    @include sr-only;
+  }
 }
 
 .word {

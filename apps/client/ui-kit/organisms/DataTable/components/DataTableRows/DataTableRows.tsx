@@ -1,4 +1,4 @@
-import { isInteractiveTarget } from '@/shared/lib';
+import { rowActivation } from '@/shared/lib';
 
 import type { DataTableRowsProps } from './DataTableRows.types';
 
@@ -19,7 +19,7 @@ export const DataTableRows = <T,>({ rows, barMax, onRowClick, rowTint, getRowCla
           data-clickable={Boolean(onRowClick) || link !== null}
           data-linked={link !== null}
           data-tint={rowTint?.(row.original) ?? undefined}
-          onClick={onRowClick ? (event) => !isInteractiveTarget(event.target) && onRowClick(row.original) : undefined}
+          {...rowActivation({ onActivate: onRowClick && (() => onRowClick(row.original)), isLinked: link !== null })}
         >
           <DataTableCells barMax={barMax} link={link} row={row} />
         </tr>

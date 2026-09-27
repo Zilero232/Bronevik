@@ -44,7 +44,11 @@ describe('WebhookEmitterService.emit', () => {
     const sent = await service.emit({ event: 'mark.gained', subject: { accountIds: [1], clanIds: [10] }, data: { tankId: 1 } });
 
     expect(sent).toBe(2);
-    expect(prisma.webhookDelivery.create.mock.calls.map(([{ data }]) => data.endpointId)).toEqual(['follows-player', 'follows-clan']);
+
+    expect(prisma.webhookDelivery.createMany.mock.calls.flatMap(([args]) => [args?.data ?? []].flat().map((row) => row.endpointId))).toEqual([
+      'follows-player',
+      'follows-clan'
+    ]);
   });
 
   it('queues each delivery with retries, keyed by its id', async () => {
@@ -58,11 +62,32 @@ describe('WebhookEmitterService.emit', () => {
     expect(options).toMatchObject({ jobId: payload?.deliveryId, attempts: WEBHOOK_DELIVERY.maxAttempts });
   });
 
-  it('never throws into the code path that emitted the event', async () => {
+  it('lets a storage failure reach the caller so the job can retry', async () => {
     const { service, prisma } = createService();
 
     prisma.webhookEndpoint.findMany.mockRejectedValue(new Error('down'));
 
-    await expect(service.emit({ event: 'mark.gained', subject: { accountIds: [1], clanIds: [] }, data: {} })).resolves.toBe(0);
+    await expect(service.emit({ event: 'mark.gained', subject: { accountIds: [1], clanIds: [] }, data: {} })).rejects.toThrow('down');
+  });
+
+  it('gives a deduplicated event the same delivery id every time', async () => {
+    const { service, queue } = createService();
+    const input = { event: 'mark.gained' as const, subject: { accountIds: [1], clanIds: [] }, data: {}, dedupeKey: 'mark:1:2:3' };
+
+    await service.emit(input);
+    await service.emit(input);
+
+    const ids = queue.add.mock.calls.map(([, payload]) => payload?.deliveryId);
+
+    expect(ids).toHaveLength(2);
+    expect(ids[0]).toBe(ids[1]);
+  });
+
+  it('skips deliveries that already exist instead of failing on them', async () => {
+    const { service, prisma } = createService();
+
+    await service.emit({ event: 'mark.gained', subject: { accountIds: [1], clanIds: [] }, data: {}, dedupeKey: 'x' });
+
+    expect(prisma.webhookDelivery.createMany).toHaveBeenCalledWith(expect.objectContaining({ skipDuplicates: true }));
   });
 });

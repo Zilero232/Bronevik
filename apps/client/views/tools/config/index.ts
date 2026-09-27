@@ -5,7 +5,6 @@ export { CREW_BONUSES, CREW_XP } from './crew.constants';
 export type { CrewBonus } from './crew.constants';
 export { ECONOMY, ECONOMY_TIERS, SHELL_ICONS, SHELL_KINDS } from './economy.constants';
 export type { ShellKind } from './economy.constants';
-export type { EconomyTier } from './economy.types';
 export { FRONTLINE, FRONTLINE_FIELDS, FRONTLINE_GAME, FRONTLINE_RESERVES } from './frontline.constants';
 export type { FrontlineReserve } from './frontline.constants';
 export { TOOL_GAMES } from './games.constants';

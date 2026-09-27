@@ -1,10 +1,10 @@
-import type { FlatValue, SettingsGroupKey, StreamerSettings } from '@otmetki/schemas';
+import type { SettingsGroupKey, StreamerSettings } from '@otmetki/schemas';
 
 import { flattenSettings } from '@otmetki/schemas';
 
 import type { SettingsFieldPath, SettingsRow, SettingsTextInput } from './settings-format.types';
 
-import { SETTINGS_FIELDS, SETTINGS_FORMAT } from '../../config';
+import { SETTINGS_FIELDS } from '../../config';
 
 export const fieldKey = (path: string): string => path.replaceAll('.', '_');
 
@@ -21,8 +21,6 @@ export const settingsRows = (settings: StreamerSettings, group: SettingsGroupKey
     return field.group === group && value !== undefined && value !== null ? [{ path: field.path, value }] : [];
   });
 };
-
-export const plainValue = (value: FlatValue): string => (value === null ? SETTINGS_FORMAT.missing : String(value));
 
 export const settingsAsText = ({ displayName, settings, label, value }: SettingsTextInput): string => {
   const lines = [displayName];

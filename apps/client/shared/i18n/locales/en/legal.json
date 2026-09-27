@@ -1,0 +1,117 @@
+{
+  "home": "Home",
+  "draft": "Draft. This is not the final wording: the operator's details and the highlighted fields will be filled in before payments open.",
+  "related": "Other documents",
+  "docs": {
+    "privacy": {
+      "title": "Privacy policy",
+      "lead": "What data Three Marks collects, why, and how you can control it.",
+      "description": "Personal data policy of the Three Marks service."
+    },
+    "terms": {
+      "title": "Terms of use and public offer",
+      "lead": "Terms of using the service and the public offer for the Three Marks Plus subscription.",
+      "description": "Terms of use and public offer of the Three Marks service."
+    },
+    "contacts": {
+      "title": "Contacts",
+      "lead": "How to reach the Three Marks team and where to ask about the game.",
+      "description": "Contacts and support of the Three Marks service."
+    }
+  },
+  "sections": {
+    "operator": {
+      "title": "Data controller",
+      "body": "The personal data controller is <todo>full name or company name</todo>, TIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>, address: <todo>address</todo>. Contact for data questions: <todo>email</todo>."
+    },
+    "data": {
+      "title": "What data we process",
+      "body": "When you sign in with Lesta ID: the Mir Tankov account ID and nickname and a Lesta API access token. If you provide them: your email address and Telegram ID. For the Plus subscription: payment history and subscription status; card data is handled by the payment provider, we never receive or store it. Public game statistics come from the open Lesta API."
+    },
+    "purposes": {
+      "title": "Why",
+      "body": "To show your statistics and analytics, keep your settings, goals and favourites, send the notifications you turned on, and run the Plus subscription."
+    },
+    "basis": {
+      "title": "Legal basis",
+      "body": "The consent you give when you sign in and turn on notifications, and performance of the contract (terms of use and public offer), under Russian Federal Law No. 152-FZ «On Personal Data»."
+    },
+    "storage": {
+      "title": "Where and how long data is stored",
+      "body": "Data is stored on servers in the Russian Federation: <todo>hosting provider and region</todo>. We keep it while you have an account and delete it within <todo>period</todo> after the account is deleted, except payment records the law requires us to keep longer."
+    },
+    "transfer": {
+      "title": "Who receives data",
+      "body": "The payment provider <todo>payment provider name</todo>, to take payments; Telegram, only if you connected the bot. Data is never sold or shared for advertising."
+    },
+    "rights": {
+      "title": "Your rights",
+      "body": "You can get a copy of your data, correct it, withdraw consent and delete your account under «My profile». Send requests the interface cannot handle to <todo>email</todo>; we reply within 10 business days."
+    },
+    "cookies": {
+      "title": "Cookies and local storage",
+      "body": "We use a session cookie to keep you signed in, and browser local storage for theme, language and display settings. Analytics services: <todo>list, if any</todo>."
+    },
+    "privacyChanges": {
+      "title": "Changes to this policy",
+      "body": "A new version is published on this page. For material changes we notify you on the site. Version date: <todo>date</todo>."
+    },
+    "parties": {
+      "title": "Parties",
+      "body": "The provider is <todo>full name or company name</todo>, TIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>, address: <todo>address</todo>, email: <todo>email</todo>. The user is anyone who uses the Three Marks site or buys a subscription."
+    },
+    "subject": {
+      "title": "Subject",
+      "body": "Three Marks is an unofficial fan-made statistics and tools service for Mir Tankov. It is not affiliated with Lesta Games; game data comes from the open Lesta API. The core features are free."
+    },
+    "account": {
+      "title": "Account",
+      "body": "You sign in with Lesta ID. We never receive or store your game password. You are responsible for actions taken in your account and can delete it at any time under «My profile»."
+    },
+    "plus": {
+      "title": "The Plus subscription",
+      "body": "Three Marks Plus is a paid subscription that raises limits and unlocks extra features. Its contents, prices and periods are listed on the Plus page and form part of this offer. Paying for the subscription means accepting the offer."
+    },
+    "payment": {
+      "title": "Payment and renewal",
+      "body": "Payments are processed by <todo>payment provider name</todo>. The subscription renews automatically unless you turn auto-renewal off under «Subscription». A fiscal receipt is sent to your email under Russian Federal Law No. 54-FZ."
+    },
+    "refund": {
+      "title": "Refunds",
+      "body": "You can cancel at any time; access stays until the end of the paid period. Refund terms and timing: <todo>refund terms</todo>. Send refund requests to <todo>email</todo>."
+    },
+    "rules": {
+      "title": "Acceptable use",
+      "body": "Do not scrape the site around the public API, disrupt the service, publish other people's data without consent, or break the Mir Tankov rules. The Three Marks mod shows only your own data."
+    },
+    "liability": {
+      "title": "Liability",
+      "body": "The service is provided «as is». Statistics are computed from the Lesta API and may differ from in-game figures. We are not liable for Lesta API outages or for decisions made based on the statistics."
+    },
+    "termsChanges": {
+      "title": "Changes to the terms",
+      "body": "A new version takes effect when published on this page. For active subscriptions, price changes apply from the next period. Version date: <todo>date</todo>."
+    },
+    "requisites": {
+      "title": "Company details",
+      "body": "<todo>full name or company name</todo>\nTIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>\nAddress: <todo>address</todo>\nEmail: <todo>email</todo>"
+    },
+    "support": {
+      "title": "Three Marks support",
+      "body": "Questions about the site, the mod, Plus and payments: <todo>email</todo> or our Telegram bot, <bot>@OtmetkiBot</bot>. We reply within 2 business days."
+    },
+    "dataErrors": {
+      "title": "Wrong data",
+      "body": "If statistics, tank characteristics or a build look wrong, write to <todo>email</todo> or the <bot>bot</bot> with a link to the page and what is off. We will check the calculation and fix it."
+    },
+    "game": {
+      "title": "Game support (Lesta)",
+      "body": "Game account questions, in-game purchases, bans and Lesta ID are handled only by Lesta Games support: <lesta>Lesta support centre</lesta>. We cannot help with them because we are not affiliated with Lesta Games."
+    }
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "terms": "Terms and offer",
+    "contacts": "Contacts and support"
+  }
+}

@@ -1,3 +1,3 @@
 import 'server-only';
 
-export { tankRouteName, topTankSlugs } from './api/route-meta';
+export { tankRouteEntity, topTankSlugs } from './api/route-meta';

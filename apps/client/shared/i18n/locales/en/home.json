@@ -101,5 +101,17 @@
       "title": "Clans",
       "description": "Rosters, activity and strongholds"
     }
+  },
+  "forYou": {
+    "label": "For you",
+    "title": "Welcome back, {nickname}",
+    "titleNoAccount": "Link your account with Lesta ID",
+    "firstWin": "First victory ×2 is available on {count, plural, one {# tank} other {# tanks}}",
+    "firstWinTaken": "All first victories for today are taken",
+    "profile": "My profile",
+    "marks": "My marks",
+    "analytics": "Session and analytics",
+    "watchlist": "Watchlist",
+    "link": "Link an account"
   }
 }

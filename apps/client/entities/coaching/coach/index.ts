@@ -1,4 +1,4 @@
-export { coachQueries, getCoach, getCoachingOrders, listCoaches, zCreateOrder, zReviewOrder, zUpsertCoach } from './api';
+export { coachQueries, getCoach, getCoachingOrders, listCoaches, zCreateOrder, zUpsertCoach } from './api';
 export type {
   Coach,
   CoachContacts,

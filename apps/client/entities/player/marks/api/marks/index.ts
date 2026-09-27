@@ -1,2 +1,2 @@
-export { getMoeHistory, getMoeHistoryBatch, listMoe, projectMoe } from './marks';
-export type { MoeHistoryBatchInput, MoeHistoryInput, MoeListInput, MoeProjectionInput } from './marks.types';
+export { getMoeHistory, listMoe } from './marks';
+export type { MoeHistoryInput, MoeListInput } from './marks.types';

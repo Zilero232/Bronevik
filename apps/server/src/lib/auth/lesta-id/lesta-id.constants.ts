@@ -1,5 +1,6 @@
 export const LESTA_ID = {
   statePrefix: 'lesta-id:',
+  stateCookie: 'lesta_state',
   stateBytes: 24,
   stateTtlMs: 10 * 60_000,
   tokenTtlSeconds: 14 * 86_400,

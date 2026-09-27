@@ -49,7 +49,9 @@ export const WEBHOOK_DELIVERY = {
   secretBytes: 32,
   blockedResponse: 'refused: the webhook host resolves to a non-public address',
   userAgent: 'Otmetki-Webhooks/1.0 (+https://triotmetki.ru)',
-  deliveriesShown: 50
+  deliveriesShown: 50,
+  redriveAfterMinutes: 15,
+  redriveBatch: 500
 } as const;
 
 export const SESSION_CLOSE = {

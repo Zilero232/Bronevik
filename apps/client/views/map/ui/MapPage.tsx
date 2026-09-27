@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 
 import { ROUTES } from '@/shared/constants';
 import { DataSourceNote } from '@/ui-kit';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { useMapDetail } from '../model/hooks';
 import { MapHeader, MapNav, MapSkeleton, MapStats } from './components';

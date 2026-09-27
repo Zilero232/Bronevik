@@ -45,4 +45,11 @@ describe('createPageMetadata', () => {
     expect(hidden.alternates).toBeUndefined();
     expect(indexed.alternates?.languages).toEqual(languageAlternates('/x'));
   });
+
+  it('keeps the site-wide Open Graph and Twitter fields', () => {
+    const metadata = createPageMetadata({ title: 'x', description: '', locale: DEFAULT_LOCALE });
+
+    expect(metadata.openGraph).toMatchObject({ siteName: SITE.name });
+    expect(metadata.twitter).toMatchObject({ card: 'summary_large_image' });
+  });
 });

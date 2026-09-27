@@ -4,9 +4,9 @@ import type { FieldList, LestaRequester, Selected } from '../client/client.types
 import type { ClanAccountInfo, ClanInfo, ClanListItem, ClanMemberHistoryEntry } from '../schemas';
 import type { AccountIdsInput, ClanIdsInput, ClanListInput } from './methods.types';
 
-import { callParams, fieldAwareSchema } from '../client/client.helpers';
+import { callParams, fieldAwareSchema } from '../client/params';
 import { clanAccountInfoSchema, clanInfoSchema, clanListItemSchema, clanMemberHistoryEntrySchema, idMapOf } from '../schemas';
-import { batchedMap, genericParams, passthrough } from './methods.helpers';
+import { batchedMap, genericParams, passthrough } from './call-shapes';
 
 export const createClansMethods = (requester: LestaRequester) => {
   const list = async ({ search, limit, pageNo, ...input }: ClanListInput = {}): Promise<ClanListItem[]> => {

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { DataSourceNote, Skeleton } from '@/ui-kit';
-import { ResourceGate } from '@/widgets/resource-missing';
+import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { useOperationDetail } from '../model/hooks';
 import { BranchBoard, MissionDetail, MissionPlan, OperationHeader } from './components';

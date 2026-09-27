@@ -166,3 +166,44 @@ describe('runPollPipeline marks on gun', () => {
     expect(written[0]?.tankSnapshots.every((row) => row.marksOnGun === null)).toBe(true);
   });
 });
+
+describe('runPollPipeline concurrent runs', () => {
+  it('writes the deltas of one battle once when two runs poll the same account at the same time', async () => {
+    const lesta = createFakeLesta({
+      infos: { 1: accountInfo({ accountId: 1, battles: 153, lastBattleTime }) },
+      tanks: { 1: [accountTank({ tankId: 10, battles: 103 })] },
+      stats: { 1: [tankStats({ tankId: 10, battles: 103 })] }
+    });
+
+    const { store, written } = createFakeStore({
+      players: [storedPlayer],
+      baselines: { 1: [{ tankId: 10, battles: 100, markOfMastery: 1 }] },
+      accountBattles: { 1: { all: 160, random: 150 } },
+      tankSnapshots: [previousSnapshot(10, 100, 'all'), previousSnapshot(10, 100, 'random')]
+    });
+
+    const run = () => runPollPipeline({ ports: { lesta, store }, accountIds: [1], tier: 'active', now });
+
+    await Promise.all([run(), run()]);
+
+    expect(written.flatMap((changes) => changes.deltas).filter((delta) => delta.mode === 'random')).toHaveLength(1);
+  });
+
+  it('syncs every polled account in one batch', async () => {
+    const lesta = createFakeLesta({
+      infos: {
+        1: accountInfo({ accountId: 1, battles: 150, lastBattleTime: lastBattleTime - 3600 }),
+        2: accountInfo({ accountId: 2, battles: 5, lastBattleTime })
+      },
+      tanks: { 2: [accountTank({ tankId: 10, battles: 5 })] },
+      stats: { 2: [tankStats({ tankId: 10, battles: 5, accountId: 2 })] }
+    });
+
+    const { store, synced } = createFakeStore({ players: [storedPlayer] });
+
+    await runPollPipeline({ ports: { lesta, store }, accountIds: [1, 2], tier: 'active', now });
+
+    expect(store.markSynced).toHaveBeenCalledTimes(1);
+    expect(synced.map((entry) => entry.accountId).sort()).toEqual([1, 2]);
+  });
+});

@@ -10,7 +10,6 @@ export const PLAYLIST_RULES = {
 
 export const FIRST_WIN = {
   resetHour: 4,
-  timeZone: 'Europe/Moscow',
   modes: ['random'],
   randomBattleType: '1'
 } as const;

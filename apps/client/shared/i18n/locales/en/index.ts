@@ -26,6 +26,7 @@ import guides from './guides.json';
 import home from './home.json';
 import honestRng from './honestRng.json';
 import inbox from './inbox.json';
+import legal from './legal.json';
 import maps from './maps.json';
 import mapStats from './mapStats.json';
 import marks from './marks.json';
@@ -37,6 +38,7 @@ import nav from './nav.json';
 import news from './news.json';
 import notFound from './notFound.json';
 import notifications from './notifications.json';
+import og from './og.json';
 import overlay from './overlay.json';
 import periods from './periods.json';
 import platoons from './platoons.json';
@@ -99,6 +101,7 @@ export const en = {
   home,
   inbox,
   maps,
+  legal,
   marks,
   me,
   missions,
@@ -108,6 +111,7 @@ export const en = {
   news,
   notFound,
   notifications,
+  og,
   overlay,
   periods,
   platoons,

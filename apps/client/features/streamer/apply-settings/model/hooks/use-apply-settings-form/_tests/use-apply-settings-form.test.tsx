@@ -100,11 +100,9 @@ describe('useApplySettingsForm', () => {
     expect(result.current.options).toEqual({ hasResolution: false, hasSensitivity: true });
   });
 
-  it('drops an opt-in the picked groups do not offer and refreshes the request list', async () => {
+  it('drops an opt-in the picked groups do not offer', async () => {
     vi.mocked(requestSettingsApply).mockResolvedValue(REQUEST);
-    const { client, result } = setup(SETTINGS);
-
-    client.setQueryData(QUERY_KEYS.me.streamer.applyRequests, []);
+    const { result } = setup(SETTINGS);
 
     act(() => {
       result.current.form.setValue('groups', ['controls']);
@@ -120,8 +118,6 @@ describe('useApplySettingsForm', () => {
       { slug: SLUG, groups: ['controls'], includeResolution: false, includeSensitivity: true },
       expect.anything()
     );
-
-    expect(client.getQueryState(QUERY_KEYS.me.streamer.applyRequests)?.isInvalidated).toBe(true);
   });
 
   it('forgets the picked groups and the sent request when closed', async () => {

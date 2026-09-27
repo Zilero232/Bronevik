@@ -9,7 +9,7 @@ import _support  # noqa: F401
 from otmetki.core import hooks, registry
 from otmetki.core.events import EventBus
 from otmetki.core.i18n import Catalog, Translator, resolve_language
-from otmetki.core.panels import format_number, format_percent
+from otmetki.core.format import format_number, format_percent
 from otmetki.core.settings import Schema, Settings
 from otmetki.core.storage import JsonFile
 

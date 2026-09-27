@@ -293,7 +293,7 @@
       {
         "align_x": "center",
         "align_y": "top",
-        "enabled": true,
+        "enabled": false,
         "height": 40,
         "id": "damage_log",
         "preview": "1 200",

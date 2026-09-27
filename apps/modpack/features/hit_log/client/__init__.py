@@ -6,10 +6,13 @@ from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.client.battle import BattleHooks, call, controls_own_vehicle, feedback, is_enemy, vehicle_name
 from ....core.client.hud import hud_layer
+from ....core.hud import HudPreview
 from ....core.log import safe
 from ....core.shells import shell_code
 from ..i18n import STRINGS
 from ..model import HitLog, format_hit_log
+from ..model.constants import PREVIEW_SIZE
+from ..model.preview import preview_text
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import OUTCOME_BY_FEEDBACK
 
@@ -35,6 +38,8 @@ class HitLogPanel(object):
         app.translate.catalog.add(STRINGS)
         self.hud = hud_layer(app)
         self.settings = self.hud.register(PANEL_ID, SCHEMA)
+        self.preview = HudPreview(self.hud, PANEL_ID, self._preview, lambda: app.config.is_enabled(SWITCH), lambda: not app.in_battle,
+                                  PREVIEW_SIZE).attach(app.bus)
         self.outcomes = outcome_by_feedback()
         self.health_event = getattr(FEEDBACK_EVENT_ID, 'VEHICLE_HEALTH', None)
         self.hooks = BattleHooks()
@@ -52,6 +57,7 @@ class HitLogPanel(object):
         self.render()
 
     def _on_battle_leave(self):
+        self.preview.end()
         self.hooks.clear()
         self.log = None
         self.hud.hide(PANEL_ID)
@@ -89,6 +95,9 @@ class HitLogPanel(object):
                 changed = self.log.add_crits(target_id, call(extra, 'getCritsCount', 0), now) or changed
         if changed:
             self.render()
+
+    def _preview(self):
+        return preview_text(self.settings, self.app.translate)
 
     @safe
     def render(self):

@@ -10,7 +10,7 @@ from otmetki.companion.config import Config
 from otmetki.companion.settings_share import (POLL_PATH, RESULT_PATH, SettingsBackup, SettingsShareError, backup_path, build_export,
                                     build_export_request, build_poll_request, build_result_request, changes_to_values,
                                     flatten_settings, parse_poll_response, plan_apply, result_path, signed_post)
-from otmetki.core.signing import DEVICE_HEADER, verify_request
+from otmetki.core.net.signing import DEVICE_HEADER, verify_request
 from otmetki.core.storage import JsonFile, MemoryFile
 
 SECRET = 'q' * 43

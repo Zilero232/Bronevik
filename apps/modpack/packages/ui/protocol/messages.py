@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import json
 
+from ...core.codec import canonical_json
 from ...core.compat import string_types, to_text
 from .constants import COMMANDS, MAX_MESSAGE_CHARS, PROTOCOL_VERSION, REQUIRED
 
@@ -38,4 +39,4 @@ def decode_message(raw):
 def encode_state(state):
     payload = dict(state)
     payload['v'] = PROTOCOL_VERSION
-    return json.dumps(payload, sort_keys=True, separators=(',', ':'), ensure_ascii=True)
+    return canonical_json(payload)

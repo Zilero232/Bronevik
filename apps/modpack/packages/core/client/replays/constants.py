@@ -1,0 +1,1 @@
+DEFAULT_REPLAY_DIR = 'replays'

@@ -16,6 +16,8 @@ import unittest
 
 import _support
 from otmetki.companion.binding import Credentials
+from otmetki.core.shells.constants import BATTLE_LOG_SHELL_NAMES
+from otmetki.core.vendor.enum34 import IntEnum
 
 ACCOUNT = 12345678
 # The ui package (packages/ui) registers through the core registry like a feature.
@@ -73,6 +75,8 @@ def package(name, path):
     return stub
 
 
+# The RU 1.45 client reports shell types as members of this IntEnum (constants.BATTLE_LOG_SHELL_TYPES).
+SHELL_TYPES = IntEnum('BATTLE_LOG_SHELL_TYPES', [(name, index) for index, name in enumerate(BATTLE_LOG_SHELL_NAMES)])
 SERVER_TIME = 1790000100.0
 OWN_VEHICLE = 101
 ENEMY_VEHICLE = 202
@@ -82,7 +86,7 @@ HIT_STATES = ('VEHICLE_HEALTH', 'VEHICLE_HIT', 'VEHICLE_RICOCHET', 'VEHICLE_ARMO
 
 class Extra(object):
 
-    def __init__(self, damage=0, shell='ARMOR_PIERCING', crits=0):
+    def __init__(self, damage=0, shell=SHELL_TYPES.ARMOR_PIERCING, crits=0):
         self.damage = damage
         self.shell = shell
         self.crits = crits
@@ -244,7 +248,7 @@ class ClientSmokeTest(unittest.TestCase):
         import importlib
         for name in entries:
             importlib.import_module('gui.mods.' + name)
-        return sys.modules['gui.mods.otmetki.companion.client.app'].g_app
+        return sys.modules['gui.mods.otmetki.companion.app.client'].g_app
 
     def play_battle(self, app):
         app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
@@ -392,10 +396,36 @@ class ClientSmokeTest(unittest.TestCase):
         self.player = Player(ACCOUNT)
         self.events.onAccountShowGUI()
         self.events.onBattleResultsReceived(True, results)
+        battle = [event for event in app.outbox.events if event['type'] == 'battle_result'][-1]
+        self.assertEqual(battle['shots'], [{'damage': 390, 'nominal': None, 'shell': 'armor_piercing', 'outcome': 'damage', 'distance_m': None,
+                                            'fatal': False}])
         summary = [text for text in self.messages if u'87.12%' in text]
         self.assertTrue(summary, self.messages)
         self.assertIn('+1.12%', summary[0])
         self.assertIn('2 150', summary[0])
+
+    def test_hud_edit_previews_in_hangar(self):
+        self.install_hud_stubs()
+        app = self.load(list(ENTRY_MODULES))
+        app.config.update({'battle_team_hp': False})
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        described = {}
+        app.bus.emit('hud_describe', lambda panel_id, preview=None, width=None, height=None, enabled=False: described.update({panel_id: (preview, width, enabled)}))
+        self.assertEqual(sorted(described), ['battle_clock', 'damage_log', 'hit_log', 'sixth_sense', 'team_hp'])
+        self.assertFalse(described['team_hp'][2])
+        self.assertTrue(described['damage_log'][2])
+        self.assertIn('390', described['damage_log'][0])
+        app.bus.emit('hud_edit', True)
+        panels = self.hud_components()
+        self.assertEqual(sorted(panels), ['battle_clock', 'damage_log', 'hit_log', 'sixth_sense'])
+        self.assertIn('Pz. IV', panels['hit_log']['text'])
+        app.bus.emit('hud_edit', False)
+        self.assertEqual(self.hud_components(), {})
+        app.bus.emit('hud_edit', True)
+        self.enter_battle(1)
+        self.assertNotIn('390', self.hud_components().get('damage_log', {}).get('text', ''))
+        self.assertNotIn('sixth_sense', self.hud_components())
 
     def test_battle_hud_switched_off(self):
         self.install_hud_stubs()

@@ -3,16 +3,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-import _support  # noqa: F401
-from otmetki.core.i18n import Catalog, Translator
+import _support
 from otmetki.core.settings import Settings
 from otmetki.features.team_hp.i18n import STRINGS
 from otmetki.features.team_hp.model import TeamHp, bar, format_team_hp
+from otmetki.features.team_hp.model.preview import preview_text
 from otmetki.features.team_hp.settings import SCHEMA
 
 
 def translator(language='ru'):
-    return Translator(Catalog(STRINGS), language)
+    return _support.translator(STRINGS, language)
 
 
 def battle():
@@ -86,6 +86,10 @@ class FormatTest(unittest.TestCase):
 
     def test_strings_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+    def test_preview(self):
+        text = preview_text(Settings({}, SCHEMA), translator('en'))
+        assert '3 200' in text and '900' in text and '2 : 1' in text
 
 
 if __name__ == '__main__':

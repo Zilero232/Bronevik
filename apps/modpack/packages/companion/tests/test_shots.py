@@ -2,6 +2,11 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.companion.shots import MAX_SHOTS, ShotLog, build_shot, nominal_for, normalize_shell
+from otmetki.core.shells.constants import BATTLE_LOG_SHELL_NAMES
+from otmetki.core.vendor.enum34 import IntEnum
+
+# The RU 1.45 client's constants.BATTLE_LOG_SHELL_TYPES: what extra.getShellType() returns.
+BATTLE_LOG_SHELL_TYPES = IntEnum('BATTLE_LOG_SHELL_TYPES', [(name, index) for index, name in enumerate(BATTLE_LOG_SHELL_NAMES)])
 
 OPTIONS = [('ARMOR_PIERCING', 390, False), ('ARMOR_PIERCING_CR', 390, True), ('HIGH_EXPLOSIVE', 510, False)]
 
@@ -11,6 +16,18 @@ class ShellTest(unittest.TestCase):
     def test_normalizes_known_kinds(self):
         self.assertEqual(normalize_shell('ARMOR_PIERCING'), 'armor_piercing')
         self.assertEqual(normalize_shell('hollow_charge'), 'hollow_charge')
+
+    def test_battle_log_shell_types_members(self):
+        self.assertEqual(normalize_shell(BATTLE_LOG_SHELL_TYPES.ARMOR_PIERCING), 'armor_piercing')
+        self.assertEqual(normalize_shell(BATTLE_LOG_SHELL_TYPES.ARMOR_PIERCING_FSDS), 'armor_piercing_cr')
+        self.assertEqual(normalize_shell(BATTLE_LOG_SHELL_TYPES.HOLLOW_CHARGE_DF), 'hollow_charge')
+        self.assertEqual(normalize_shell(BATTLE_LOG_SHELL_TYPES.HE_MODERN), 'high_explosive')
+        self.assertEqual(normalize_shell(BATTLE_LOG_SHELL_TYPES.SMOKE), 'unknown')
+        self.assertEqual(normalize_shell(int(BATTLE_LOG_SHELL_TYPES.ARMOR_PIERCING_CR)), 'armor_piercing_cr')
+
+    def test_member_matches_descriptor_kind_for_nominal(self):
+        shell = normalize_shell(BATTLE_LOG_SHELL_TYPES.HE_LEGACY_STUN)
+        self.assertEqual(nominal_for(OPTIONS, shell), 510)
 
     def test_unknown_kind(self):
         self.assertEqual(normalize_shell('FLAME'), 'unknown')

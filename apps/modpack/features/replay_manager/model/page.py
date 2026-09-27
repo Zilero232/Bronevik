@@ -1,19 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import time
-
-from ....core.compat import to_text
+from ....core.format import format_epoch
 from .constants import ACTION_DELETE, ACTION_FOLDER, ACTION_REFRESH, ACTION_RENAME, SITE_LIST_PATH, SITE_REPLAY_PATH
 
 
 def _megabytes(size):
     return '%.1f MB' % (size / (1024.0 * 1024.0))
-
-
-def _date(epoch):
-    if epoch is None:
-        return None
-    return to_text(time.strftime('%d.%m.%Y %H:%M', time.localtime(epoch)))
 
 
 def _vehicle_label(vehicle):
@@ -41,7 +33,7 @@ def row_of(replay, replay_id, translate):
         'id': replay['name'],
         'title': title or replay['name'],
         'subtitle': replay['name'],
-        'meta': ' / '.join(part for part in (_date(header.get('date_time') or replay['mtime']), _megabytes(replay['size'])) if part),
+        'meta': ' / '.join(part for part in (format_epoch(header.get('date_time') or replay['mtime']), _megabytes(replay['size'])) if part),
         'badge': translate('replay_manager_uploaded') if replay_id else None,
         'link': link,
         'actions': actions,

@@ -2,9 +2,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import base64
 import binascii
-import json
 import zlib
 
+from ...core.codec import canonical_json, decode_json
 from ...core.compat import string_types, to_bytes, to_text
 from .constants import CODE_MAX_CHARS, CODE_PREFIX, ERROR_CODE
 from .errors import ProfileError
@@ -12,7 +12,7 @@ from .errors import ProfileError
 
 def encode_profile(name, snapshot):
     """A copy-paste code of a profile: prefix + base64url(zlib(JSON))."""
-    raw = json.dumps({'name': name, 'data': snapshot}, sort_keys=True, separators=(',', ':'), ensure_ascii=True)
+    raw = canonical_json({'name': name, 'data': snapshot})
     packed = base64.urlsafe_b64encode(zlib.compress(to_bytes(raw), 9))
     return CODE_PREFIX + to_text(packed).rstrip('=')
 
@@ -27,7 +27,7 @@ def decode_profile(code):
     body = code[len(CODE_PREFIX):]
     body += '=' * (-len(body) % 4)
     try:
-        payload = json.loads(to_text(zlib.decompress(base64.urlsafe_b64decode(to_bytes(body)))))
+        payload = decode_json(zlib.decompress(base64.urlsafe_b64decode(to_bytes(body))))
     except (TypeError, ValueError, binascii.Error, zlib.error, UnicodeDecodeError):
         raise ProfileError(ERROR_CODE)
     data = payload.get('data') if isinstance(payload, dict) else None

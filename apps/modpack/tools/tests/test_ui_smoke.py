@@ -229,7 +229,7 @@ class UiSmokeTest(unittest.TestCase):
         import importlib
         for name in entries:
             importlib.import_module('gui.mods.' + name)
-        return sys.modules['gui.mods.otmetki.companion.client.app'].g_app
+        return sys.modules['gui.mods.otmetki.companion.app.client'].g_app
 
     def state(self):
         view = self.windows[-1].content

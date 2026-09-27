@@ -5,7 +5,6 @@ import unittest
 
 import _support
 from otmetki.companion.payload import build_battle_event
-from otmetki.core.i18n import Catalog, Translator
 from otmetki.core.settings import Settings
 from otmetki.features.battle_results.i18n import STRINGS
 from otmetki.features.battle_results.model import build_summary, counts, format_summary, signed
@@ -15,7 +14,7 @@ BEFORE = {'tank_id': 1, 'damage_rating': 8600, 'moving_avg_damage': 2550, 'marks
 
 
 def translator(language='ru'):
-    return Translator(Catalog(STRINGS), language)
+    return _support.translator(STRINGS, language)
 
 
 def event():

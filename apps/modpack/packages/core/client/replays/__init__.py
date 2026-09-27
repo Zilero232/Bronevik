@@ -1,8 +1,7 @@
 """Where the client records replays: BattleReplay's private replay dir, else ./replays (UNVERIFIED on
 Lesta 1.45). Shared by the replay upload and the replay manager."""
 from __future__ import absolute_import, division, print_function, unicode_literals
-
-DEFAULT_REPLAY_DIR = 'replays'
+from .constants import DEFAULT_REPLAY_DIR  # noqa: F401
 
 
 def replay_controller():

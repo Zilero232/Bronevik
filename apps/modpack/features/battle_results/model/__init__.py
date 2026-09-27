@@ -1,15 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int, is_number
-from ....core.hud import render
-from ....core.panels import COLOR_DOWN, COLOR_UP, font, format_number
+from ....core.compat import as_int, is_int
+from ....core.format import COLOR_DOWN, COLOR_UP, font, format_number
+from ....core.templates import render
 from .constants import COLOR_DRAW, COLOR_LOSS, COLOR_WIN, RANDOM_BONUS_TYPE
 
 RESULT_COLORS = {'win': COLOR_WIN, 'loss': COLOR_LOSS, 'draw': COLOR_DRAW}
-
-
-def _int(value):
-    return int(value) if is_number(value) else 0
 
 
 def moe_percent(damage_rating):
@@ -22,25 +18,25 @@ def build_summary(event, moe_before=None, map_label=None):
     stats = event.get('stats') or {}
     vehicle = event.get('vehicle') or {}
     moe = event.get('moe') or {}
-    radio = _int(stats.get('damage_assisted_radio'))
-    track = _int(stats.get('damage_assisted_track'))
-    stun = _int(stats.get('damage_assisted_stun'))
+    radio = as_int(stats.get('damage_assisted_radio'))
+    track = as_int(stats.get('damage_assisted_track'))
+    stun = as_int(stats.get('damage_assisted_stun'))
     summary = {
         'result': event.get('result'),
         'bonus_type': event.get('bonus_type'),
         'vehicle': vehicle.get('name') or '',
         'tier': vehicle.get('tier'),
         'map': map_label or event.get('map_name') or '',
-        'xp': _int(stats.get('xp')),
-        'credits': _int(stats.get('credits')),
-        'damage': _int(stats.get('damage_dealt')),
+        'xp': as_int(stats.get('xp')),
+        'credits': as_int(stats.get('credits')),
+        'damage': as_int(stats.get('damage_dealt')),
         'assist': radio + track + stun,
         'assist_radio': radio,
         'assist_track': track,
         'assist_stun': stun,
-        'blocked': _int(stats.get('damage_blocked')),
-        'frags': _int(stats.get('frags')),
-        'spotted': _int(stats.get('spotted')),
+        'blocked': as_int(stats.get('damage_blocked')),
+        'frags': as_int(stats.get('frags')),
+        'spotted': as_int(stats.get('spotted')),
         'marks_on_gun': moe.get('marks_on_gun'),
         'moe_percent': moe_percent(moe.get('damage_rating')),
         'moe_delta': None,

@@ -3,11 +3,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-import _support  # noqa: F401
-from otmetki.core.i18n import Catalog, Translator
+import _support
 from otmetki.core.settings import Settings
 from otmetki.features.hit_log.i18n import STRINGS
 from otmetki.features.hit_log.model import HitLog, format_hit_log
+from otmetki.features.hit_log.model.preview import preview_text
 from otmetki.features.hit_log.settings import SCHEMA
 
 TIGER = 202
@@ -15,7 +15,7 @@ IS = 303
 
 
 def translator(language='ru'):
-    return Translator(Catalog(STRINGS), language)
+    return _support.translator(STRINGS, language)
 
 
 class HitLogTest(unittest.TestCase):
@@ -104,6 +104,10 @@ class FormatTest(unittest.TestCase):
 
     def test_strings_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+    def test_preview(self):
+        text = preview_text(Settings({}, SCHEMA), translator('en'))
+        assert 'Pz. IV' in text and '390' in text and 'T-34' in text
 
 
 if __name__ == '__main__':

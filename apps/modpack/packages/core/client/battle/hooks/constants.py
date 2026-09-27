@@ -1,0 +1,2 @@
+RETRY_S = 1.0
+ATTEMPTS = 20

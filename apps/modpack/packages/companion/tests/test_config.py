@@ -4,7 +4,7 @@ import unittest
 import _support  # noqa: F401
 from otmetki.companion.config import DEFAULT_SERVER_URL, FEATURES, OPT_IN_FEATURES, Config, is_valid_server_url
 from otmetki.companion.i18n import STRINGS, Translator, resolve_language
-from otmetki.companion.settings_template import BIND_CODE_VAR, build_template, settings_to_config
+from otmetki.companion.settings_ui import BIND_CODE_VAR, build_template, settings_to_config
 
 
 class ConfigTest(unittest.TestCase):

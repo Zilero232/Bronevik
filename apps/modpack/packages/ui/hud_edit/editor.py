@@ -3,9 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import re
 
 from ...core.compat import is_number, string_types, to_text
+from ...core.hud import EVENT_DESCRIBE, EVENT_EDIT
 from ..components import PANEL_POSITION_KEYS
-from .constants import (DEFAULT_HEIGHT, DEFAULT_WIDTH, EVENT_DESCRIBE, EVENT_EDIT, MAX_SIZE, POSITION_ALIGNS, POSITION_NUMBERS,
-                        PREVIEW_MAX_CHARS)
+from .constants import DEFAULT_HEIGHT, DEFAULT_WIDTH, MAX_SIZE, POSITION_ALIGNS, POSITION_NUMBERS, PREVIEW_MAX_CHARS
 
 _TAGS = re.compile(r'<[^>]*>')
 
@@ -51,9 +51,9 @@ class HudEditor(object):
     def descriptions(self):
         found = {}
 
-        def collect(panel_id, preview=None, width=None, height=None):
+        def collect(panel_id, preview=None, width=None, height=None, enabled=False):
             found[panel_id] = {'preview': plain_preview(preview), 'width': _size(width, DEFAULT_WIDTH),
-                               'height': _size(height, DEFAULT_HEIGHT)}
+                               'height': _size(height, DEFAULT_HEIGHT), 'enabled': bool(enabled)}
 
         self.bus.emit(EVENT_DESCRIBE, collect)
         return found
@@ -63,8 +63,9 @@ class HudEditor(object):
         described = []
         for panel_id in self.panel_ids():
             settings = self.layer.panels[panel_id]
-            extra = descriptions.get(panel_id) or {'preview': None, 'width': DEFAULT_WIDTH, 'height': DEFAULT_HEIGHT}
-            item = {'id': panel_id, 'title': labels.title(panel_id), 'enabled': bool(settings.get('enabled'))}
+            extra = descriptions.get(panel_id) or {'preview': None, 'width': DEFAULT_WIDTH, 'height': DEFAULT_HEIGHT,
+                                                   'enabled': False}
+            item = {'id': panel_id, 'title': labels.title(panel_id)}
             for key in POSITION_NUMBERS + POSITION_ALIGNS:
                 item[key] = settings.get(key)
             item.update(extra)

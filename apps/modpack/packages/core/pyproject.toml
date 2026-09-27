@@ -3,7 +3,7 @@
 [project]
 name = "otmetki-core"
 version = "0.1.0"
-description = "Three Marks core runtime shared by the companion and every feature: hooks, event bus, lazy feature registry, schema settings, i18n, logging, storage, signing and HTTP transport."
+description = "Three Marks core runtime shared by the companion and every feature: hooks, event bus, lazy feature registry, schema settings, i18n, logging, storage, codec, signing, HTTP transport and the HUD layer; vendors six, blinker, attrs and enum34 for the game's Python 2.7."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }
 authors = [{ name = "Alexandr Artemev" }]

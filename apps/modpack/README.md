@@ -40,21 +40,29 @@ apps/modpack/
   uv.lock
   contract/                 JSON Schemas the API implements (ingest, bind, MoE thresholds, settings, replay upload) + example
   packages/
-    core/                   -> gui/mods/otmetki/core            pure runtime shared by everything
-      events.py               event bus (ordered handlers; a failing handler never stops the rest)
-      hooks.py                subscribe/unsubscribe for client Events, override()/restore() for methods
-      registry.py             lazy feature registry: attach in any load order (see "Load order")
-      settings.py             schema-driven settings: defaults, typed merge, limits, choices, normalizers
-      i18n.py                 string catalog, language resolution, translator
-      log.py                  [OTMETKI] log lines and the safe() decorator
-      compat.py jsonutil.py storage.py signing.py transport.py panels.py
+    core/                   -> gui/mods/otmetki/core            pure runtime shared by everything; one folder per concern
+      compat/                 Python 2/3 helpers on the vendored six (to_text/to_bytes/to_native, is_int/is_number/as_int)
+      events/                 app.bus: one blinker signal per event, ordered handlers, a failing handler never stops the rest
+      hooks/                  subscribe/unsubscribe for client Events, override()/restore() for methods
+      registry/               lazy feature registry: attach in any load order (see "Load order")
+      settings/               schema-driven settings: defaults, typed merge, limits, choices, normalizers
+      storage/                JsonFile (atomic write) and MemoryFile
+      codec/                  JSON on the stdlib: canonical form, request/response bodies, Retry-After
+      net/                    transport/ (fetch-free HTTP on a worker thread, BackgroundRunner), signing/ (HMAC v2,
+                              clock offset), backoff/ (exponential retry with jitter)
+      i18n/ log/              string catalog and translator; [OTMETKI] log lines and safe()
+      format/                 panel text: GUIFlash <font>, colours, numbers, percentages, times
+      templates/              {macro} panel templates (string.Template)
       hud/                    battle HUD layer: panel/ (per-panel schema), config/ (components.json), backend/ (renderer
-                              interface), layer/ (HudLayer), templates/ ({macro} panel templates)
-      shells/                 shell types from the battle feedback -> short codes
-      client/                 client glue: GUIFlash/system-message UI, BigWorld.fetchURL transport,
-                              hud/ (shared HudLayer, guiflash/ backend), battle/ (session reads, waiting subscriptions)
+                              interface), layer/ (HudLayer), edit/ (HudPreview: the panels' side of hud_edit/hud_describe)
+      shells/                 shell types from the battle feedback (1.45 IntEnum, name or index) -> short codes
       native_settings/        component values -> the player's own client settings ('native' keeps the game's value)
       replay_file/            JSON header blocks of the client's own replay files (upload and manager)
+      vendor/                 pinned py2.7 libraries (six 1.17.0, blinker 1.5, attrs 21.4.0, enum34 1.1.10) + licenses/;
+                              written by tools/vendor/vendor.py, never edited by hand
+      client/                 client glue: ui/ (hangar labels, system messages), transport/ (BigWorld.fetchURL), game/
+                              (client version, language, vehicle and map reads), hud/ (shared HudLayer, guiflash/ backend),
+                              battle/ (session reads, waiting subscriptions), native/ (settings core), replays/
     ui/                     -> gui/mods/otmetki/ui              in-game UI (own package net.triotmetki.ui, see "In-game UI")
       protocol/ fields/ components/ profiles/ hud_edit/ bridge/ i18n/   pure: the whole window as state out, messages in
       client/                 glue: Gameface window, hangar button, ModsList entry, hotkey, the bridge context
@@ -62,22 +70,23 @@ apps/modpack/
       res_map/                OpenWG Gameface resource registration of the page
     companion/              -> gui/mods/otmetki/companion       the mod the site binds to (id otmetki.companion)
       entry/mod_otmetki.py    entry point the client auto-loads (gui/mods/mod_otmetki.pyc)
-      binding.py config.py i18n.py loadout.py outbox.py payload.py queue_timer.py sender.py
-      settings_share.py settings_template.py shots.py version.py
-      client/                 glue: app.py (thin host), battles.py, marks.py, binding.py, dossier.py, loadout.py,
-                              shots.py, settings_core.py (settings share), settings_ui.py (settings window), game.py
+      version.py              MOD_ID, VERSION, SCHEMA_VERSION (read by the build)
+      app/                    client/: the thin host (OtmetkiApp, start())
+      binding/ config/ i18n/ outbox/ payload/ sender/ queue_timer/ loadout/ shots/ settings_share/ settings_ui/
+                              one concern each: pure logic in the folder, its client glue in <concern>/client/
+      battles/ marks/         client/: the battle and marks-of-excellence capture for the API
   features/                 -> gui/mods/otmetki/features/<id>   one package each, attached through the registry
     <id>/
       __init__.py             FEATURE_ID, PACKAGE_ID, VERSION, create(app), register()
       entry/mod_otmetki_<id>.py   entry script: register() with the core registry
-      model.py                pure logic (py2/3, unit-tested)
-      client.py               client glue, subscribes to the app's event bus
-      settings.py             the config keys the feature reads (defaults stay in the companion schema)
-      i18n.py                 the feature's strings
+      model/                  pure logic (py2/3, unit-tested); HUD panels add preview.py (hud_edit sample text)
+      client/                 client glue, subscribes to the app's event bus
+      settings/               the config keys the feature reads (defaults stay in the companion schema)
+      i18n/                   the feature's strings
       tests/
     marks_panel/            in-battle MoE panel: thresholds, EMA projection, damage needed
     session_stats/          hangar session panel and the session id on battle results
-    replay_upload/          opt-in replay auto-upload (model.py queue/uploader, files.py header/lookup/multipart)
+    replay_upload/          opt-in replay auto-upload (model/: queue, upload, files lookup/multipart, constants)
     damage_log/ hit_log/ battle_clock/ team_hp/ sixth_sense/ battle_results/
                             battle HUD components (see "Battle HUD"); each is model/ client/ settings/ i18n/ packages
     replay_manager/ hangar_tweaks/ minimap/ camera/ crosshair/
@@ -86,6 +95,7 @@ apps/modpack/
   tools/
     build/                  build.py (CLI), layout.py (what goes where), archive.py (zip + meta.xml), compilers.py,
                             setupkit/ (the installer build: components.json, Inno includes, artwork, OpenWG.Utils)
+    vendor/vendor.py        re-vendors packages/core/vendor from the pinned PyPI wheels (sha256); --check compares
     testing/_support.py     maps the repo onto the otmetki package; fixtures, schema validators
     tests/                  cross-package tests: py2.7 compat scan, layout, client import smoke
     run_tests.py            runs every suite with the standard library only (also on Python 2.7)
@@ -106,11 +116,11 @@ The client imports every `gui/mods/mod_*.pyc` in hash order, so packages have no
 
 ### The app and its events
 
-`companion/client/app.py` is a thin host. It hooks the client events and hands them to the companion's capture modules (`battles.py`, `marks.py`, `binding.py`) and to the features through `app.bus`.
+`companion/app/client` is a thin host. It hooks the client events and hands them to the companion's capture modules (`battles/client`, `marks/client`, `binding/client`) and to the features through `app.bus`.
 
 - **Host interface for features:** `config`, `translate` (features add their strings with `translate.catalog.add(STRINGS)`), `ui`, `transport`, `account_id`, `in_battle`, `marks.hangar_moe`, `is_bound()`, `current_credentials()`, `auth_failed`, `on_auth_failed()`, `user_agent()`, `config_dir`, and the state file: `state`, `register_state(key, dump)`, `save_state()`.
-- **Bus events:** `account`, `rebind`, `hangar`, `vehicle_moe`, `battle_enter`, `battle_start`, `battle_ready`, `battle_leave`, `battle_results`, `battle_event`, `battle_recorded`, `ingest_response`, `tick`. Their arguments are in the docstring of `app.py`. Emitted by packages: `component_settings(component_id, changed_keys)` and `language(language)` (the in-game window), `hud_edit(active)` and `hud_describe(collect)` (HUD edit mode, see [In-game UI](#in-game-ui)), `replay_uploaded(arena_unique_id, replay_id)` (replay upload).
-- **Settings window:** `companion/client/settings_ui.py`. `SettingsView` is the interface (`register()`, `refresh()`). The app creates `ModsSettingsApiView` (or `NoSettingsView`); the ui package adds its Gameface window next to it with `add_settings_view(app, view)` (a `CompositeSettingsView`), so the app keeps calling `app.settings_ui.refresh()` and ModsSettingsAPI stays the fallback.
+- **Bus events:** `account`, `rebind`, `hangar`, `vehicle_moe`, `battle_enter`, `battle_start`, `battle_ready`, `battle_leave`, `battle_results`, `battle_event`, `battle_recorded`, `ingest_response`, `tick`. Their arguments are in the docstring of `companion/app/client`. Emitted by packages: `component_settings(component_id, changed_keys)` and `language(language)` (the in-game window), `hud_edit(active)` and `hud_describe(collect)` (HUD edit mode, see [In-game UI](#in-game-ui)), `replay_uploaded(arena_unique_id, replay_id)` (replay upload).
+- **Settings window:** `companion/settings_ui/client`. `SettingsView` is the interface (`register()`, `refresh()`). The app creates `ModsSettingsApiView` (or `NoSettingsView`); the ui package adds its Gameface window next to it with `add_settings_view(app, view)` (a `CompositeSettingsView`), so the app keeps calling `app.settings_ui.refresh()` and ModsSettingsAPI stays the fallback.
 
 ## Client hooks
 
@@ -125,7 +135,7 @@ The client imports every `gui/mods/mod_*.pyc` in hash order, so packages have no
 | Queue time              | `g_playerEvents.onEnqueued(queueType)`, `onDequeued(queueType)`, `onArenaCreated()`                                                                                                                                                                                                                                                                                                                                                | `Account.py` / `PlayerEvents.py`, RU client                                            |
 | Battle start/end        | `g_playerEvents.onAvatarReady`, `onAvatarBecomeNonPlayer`. Replays are skipped with `BattleReplay.isPlaying()`.                                                                                                                                                                                                                                                                                                                    | `Avatar.py`, RU client                                                                 |
 | Account                 | `BigWorld.player().databaseID` on `onAccountShowGUI`                                                                                                                                                                                                                                                                                                                                                                               | `Account.py`, `connection_mgr.py`                                                      |
-| HTTP                    | `BigWorld.fetchURL(url, cb, headers=, timeout=, method=, postData=)`, which is asynchronous on the main thread. Fallback: `transport.ThreadTransport`, a urllib2 daemon thread whose results the main-thread tick drains, so no BigWorld call ever runs off the main thread.                                                                                                                                                       | wotstat-analytics `asyncResponse.py`                                                   |
+| HTTP                    | `BigWorld.fetchURL(url, cb, headers=, timeout=, method=, postData=)`, which is asynchronous on the main thread. Fallback: `core.net.transport.ThreadTransport`, a urllib daemon thread (a `BackgroundRunner`) whose results the main-thread tick drains, so no BigWorld call ever runs off the main thread.                                                                                                                        | wotstat-analytics `asyncResponse.py`                                                   |
 | Settings                | `gui.modsSettingsApi.g_modsSettingsApi`: `getModSettings`, `setModTemplate`, `registerCallback`, a `TextInput` with a button for the binding code                                                                                                                                                                                                                                                                                  | izeberg/modssettingsapi example + `templates.py`                                       |
 | Panels                  | `gui.mods.gambiter.g_guiFlash.createComponent/updateComponent/deleteComponent(alias, COMPONENT_TYPE.LABEL, props)`                                                                                                                                                                                                                                                                                                                 | GambitER/GUIFlash (MIT)                                                                |
 | Panel drag              | `gui.mods.gambiter.flash.COMPONENT_EVENT.UPDATED(alias, props)`, fired by GUIFlash's `py_update` when the player drags a label; the HUD layer saves `x`/`y` to components.json                                                                                                                                                                                                                                                     | GUIFlash `flash.py`                                                                    |
@@ -218,7 +228,7 @@ The test suite validates the example and the builder output against the schema w
 
 ## Streamer settings (hangar only)
 
-Spec: [streamer-settings §3.5](../../docs/specs/2026-09-26-streamer-settings.md). Switch: `share_settings` (on by default; does nothing until the mod is bound). Client glue: `packages/companion/client/settings_core.py`.
+Spec: [streamer-settings §3.5](../../docs/specs/2026-09-26-streamer-settings.md). Switch: `share_settings` (on by default; does nothing until the mod is bound). Client glue: `packages/companion/settings_share/client`.
 
 - **Whitelist.** The glue reads standard client settings through the settings core (`dependency.instance(ISettingsCore)`) into flat keys (`fov`, `sniperSens`, `zoomSteps`, …, see `settings_share.FIELDS`). `build_export` keeps only those keys with valid values and nests them into the contract groups `display` … `battleUi`. Login/account keys, hardware and mods are never sent.
 - **Export.** Set `"settings_action": "export"` in `config.json` and open the hangar. The mod posts `POST /mod/settings` `{device_id, account_id, mod_version, target, anonymous_stats, settings}`. `settings_target` is `private` (default) or `profile`; `settings_anonymous_stats` is off by default.
@@ -228,7 +238,7 @@ Spec: [streamer-settings §3.5](../../docs/specs/2026-09-26-streamer-settings.md
 
 ## Replay auto-upload
 
-Switches: `upload_replays` (off by default; does nothing until the mod is bound) and `publish_replays` (off by default: uploads are private). Feature `features/replay_upload`: pure logic in `files.py` (header, lookup, multipart) and `model.py` (queue, uploader); client glue in `client.py`. Contract: [contract/replay-upload.schema.json](contract/replay-upload.schema.json).
+Switches: `upload_replays` (off by default; does nothing until the mod is bound) and `publish_replays` (off by default: uploads are private). Feature `features/replay_upload`: pure logic in `model/` (`files` lookup and multipart, `queue`, `upload`, `constants`; the header reader is `core/replay_file`); client glue in `client/`. Contract: [contract/replay-upload.schema.json](contract/replay-upload.schema.json).
 
 1. **Respecting the game setting.** The mod never enables recording. If the client's replay setting (`replayEnabled` in the settings core) reads as off, nothing is queued; if it cannot be read, the mod just looks for a file and gives up when none appears.
 2. **Queue.** When the player's own battle results arrive (the same hook as `battle_result`, never during replay playback), the battle is queued in `replays_<account_id>.json`: `arenaUniqueID`, account, local start time (from `onAvatarReady`, else `arenaCreateTime` corrected by the clock offset). The queue deduplicates by `arenaUniqueID` against pending items and the last 500 finished ones, holds at most 50 battles and forgets a battle after 7 days. It survives a client restart.
@@ -306,7 +316,7 @@ Package `packages/ui` (`net.triotmetki.ui`, depends on core and companion; regis
 - **Cards (`ui/components`):** the companion's data switches (`COMPANION_KEYS`) first, then every attached feature, then HUD panels no feature claims. A card's switch is the feature's config.json switch (`settings.SETTINGS`); its fields come from its components.json section (`settings.SCHEMA`) or its companion keys; field type, limits and choices are derived from the `Schema` (bool, int with min/max, choice, text). Panel position keys (`x`, `y`, `align_*`, `drag`) are left to the HUD editor. A feature instance may add buttons and a list page with duck-typed `ui_actions()`, `ui_page()` and `ui_action(action, row, value)` (the replay manager and hangar tweaks do). Group: `GROUP` in the feature's settings (`data`, `hangar`, `battle`).
 - **Labels:** from the shared catalog, most specific first: `component_<id>` / `component_<id>_hint`; field `<id>_<key>`, `setting_<key>`, then the bare key (the companion labels its switches that way); hints with `_hint`; choices `<id>_<key>_<value>`, then `choice_<value>`. A feature adds these to its `i18n` STRINGS.
 - **Profiles (`ui/profiles`):** `mods/configs/otmetki/profiles.json` `{version: 1, active, profiles: [{id, name, created, updated, data: {config, components}}]}`, at most 12. `data.config` is config.json without `server_url`, `bind_code`, `settings_action`; `data.components` is the whole components.json (sections of components that are not installed included: they are stored as is and merged through their schema once installed). The installer reads and writes the same file. Profile codes `TM1.<base64url(zlib(json))>` copy a profile between players. **Site sync is not wired:** the settings-share contract (`contract/settings.schema.json`) is a strict whitelist of standard client settings and excludes mods by design, so syncing profiles to the site needs its own contract and endpoint.
-- **HUD edit mode:** the window's editor draws the screen (the client size from `viewEnv.getClientSizePx()`) with every registered panel from `hud_layer(app).panels`; dragging (or the arrow keys) sends `hud_move` with the nearest anchor (`align_x`/`align_y` by screen third), throttled to 150 ms, and the bridge writes it through `hud_layer(app).update_settings`, so a shown panel moves live. «Edit on screen» emits `hud_edit(True)` on the bus and closes the window: HUD components are expected to show their panels with preview data in the hangar and let GUIFlash drag them (Ctrl); `hud_edit(False)` (hotkey, window reopened, battle) hides them. `hud_describe(collect)` asks panels for the editor's miniature: `collect(panel_id, preview=None, width=None, height=None)`.
+- **HUD edit mode:** the window's editor draws the screen (the client size from `viewEnv.getClientSizePx()`) with every registered panel from `hud_layer(app).panels`; dragging (or the arrow keys) sends `hud_move` with the nearest anchor (`align_x`/`align_y` by screen third), throttled to 150 ms, and the bridge writes it through `hud_layer(app).update_settings`, so a shown panel moves live. «Edit on screen» emits `hud_edit(True)` on the bus and closes the window: every HUD panel (damage log, hit log, clock, team HP, sixth sense) shows itself with preview data in the hangar when its switch is on, and GUIFlash lets the player drag it (Ctrl); `hud_edit(False)` (hotkey, window reopened, battle) hides the previews, and a panel's own battle start ends its preview. `hud_describe(collect)` asks panels for the editor's miniature: `collect(panel_id, preview=None, width=None, height=None)`. A panel answers both through `core.hud.HudPreview(layer, panel_id, render_preview, is_enabled, can_show, size).attach(app.bus)`; its preview text comes from the feature's pure `model/preview.py`.
 - **Look:** the site's design v4 tokens, read from `apps/client/shared/styles/_tokens.scss` at build time (dark theme; `rgb(r g b / a)` becomes `rgba()`, px becomes rem because Gameface scales rem) and inlined into the CSS: graphite surfaces, orange accent, gold for the active profile. The ModsList icon is drawn at build time from the same tokens (`fast-png`).
 - **Build and tests:** `bun run ui:build` (in `apps/modpack`) bundles `ui-web` with esbuild into `packages/ui/gameface/` (committed; a test fails when it is stale). `bun run ui:test` (`bun test ui-web`) and the repo's Vitest project `modpack-ui` run the same `_tests`; `bun run typecheck` covers `ui-web`.
 

@@ -6,9 +6,12 @@ import BigWorld
 
 from ....core.client.battle import BattleHooks, controls_own_vehicle, vehicle_state
 from ....core.client.hud import hud_layer
+from ....core.hud import HudPreview
 from ....core.log import log_exception, safe
 from ..i18n import STRINGS
 from ..model import SixthSense, format_sixth_sense
+from ..model.constants import PREVIEW_SIZE
+from ..model.preview import preview_text
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import TICK_S
 
@@ -35,6 +38,8 @@ class SixthSenseAlert(object):
         app.translate.catalog.add(STRINGS)
         self.hud = hud_layer(app)
         self.settings = self.hud.register(PANEL_ID, SCHEMA)
+        self.preview = HudPreview(self.hud, PANEL_ID, self._preview, lambda: app.config.is_enabled(SWITCH), lambda: not app.in_battle,
+                                  PREVIEW_SIZE).attach(app.bus)
         self.observed_state = getattr(VEHICLE_VIEW_STATE, 'OBSERVED_BY_ENEMY', None)
         self.switching_state = getattr(VEHICLE_VIEW_STATE, 'SWITCHING', None)
         self.hooks = BattleHooks()
@@ -51,6 +56,7 @@ class SixthSenseAlert(object):
         self.hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
 
     def _on_battle_leave(self):
+        self.preview.end()
         self.hooks.clear()
         self.lamp = None
         self.ticking = False
@@ -88,6 +94,9 @@ class SixthSenseAlert(object):
             return
         self.render()
         BigWorld.callback(TICK_S, self._tick)
+
+    def _preview(self):
+        return preview_text(self.settings, self.app.translate)
 
     @safe
     def render(self):

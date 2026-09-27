@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...companion.client.game import client_language
 from ...companion.config import FEATURES
 from ...companion.i18n import resolve_language
+from ...core.client.game import client_language
 from ...core.registry import registry
 from .. import UI_ID
 from ..bridge import EVENT_LANGUAGE

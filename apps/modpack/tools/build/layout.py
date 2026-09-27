@@ -2,7 +2,7 @@
 
 In the client every package lands in the same tree, res/scripts/client/gui/mods/:
 
-    otmetki/__init__.py, otmetki/core/**, otmetki/features/__init__.py   <- core
+    otmetki/__init__.py, otmetki/core/**, otmetki/features/__init__.py   <- core (with core/vendor/** and its licences)
     mod_otmetki.py, otmetki/companion/**                                  <- companion
     mod_otmetki_<id>.py, otmetki/features/<id>/**                         <- feature <id>
     mod_otmetki_ui.py, otmetki/ui/**                                      <- ui (packages/ui)
@@ -28,6 +28,8 @@ CORE_PACKAGES = ('core', 'companion')
 GAMEFACE_ROOT = 'res/gui/gameface/mods/triotmetki'
 RES_MAP_ROOT = 'res/mods/configs/res_map'
 ASSET_DIRS = ('gameface', 'res_map')
+# The vendored third-party libraries ship their licence texts next to them (packages/core/vendor/licenses).
+VENDOR_LICENCES = 'vendor/licenses'
 ROOT_INIT = '"""Three Marks: the core, companion and features/<id> packages share this namespace."""\n'
 DESCRIPTIONS = {
     'core': 'Three Marks core runtime for the companion and its features (triotmetki.ru)',
@@ -81,12 +83,22 @@ def feature_ids():
     return sorted(name for name in os.listdir(FEATURES_DIR) if os.path.isfile(os.path.join(FEATURES_DIR, name, '__init__.py')))
 
 
+def vendor_licences(base):
+    """(source path, archive path) of the vendored libraries' licence texts (packages/core/vendor/licenses)."""
+    root = os.path.join(base, *VENDOR_LICENCES.split('/'))
+    if not os.path.isdir(root):
+        return []
+    return [(os.path.join(root, name), PACKAGE_ROOT + '/core/' + VENDOR_LICENCES + '/' + name) for name in sorted(os.listdir(root))
+            if os.path.isfile(os.path.join(root, name))]
+
+
 def core_package(root_init):
     """`root_init` is the path of the generated otmetki/__init__.py (the build writes ROOT_INIT there)."""
     base = os.path.join(PACKAGES_DIR, 'core')
     package_id, name, version = read_constants(os.path.join(base, 'version.py'), ('PACKAGE_ID', 'PACKAGE_NAME', 'VERSION'))
     files = [(root_init, PACKAGE_ROOT + '/__init__.py')]
     files += list(tree(base, PACKAGE_ROOT + '/core'))
+    files += vendor_licences(base)
     files.append((os.path.join(FEATURES_DIR, '__init__.py'), PACKAGE_ROOT + '/features/__init__.py'))
     return Package('core', package_id, name, version, DESCRIPTIONS['core'], files)
 

@@ -4,11 +4,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 import unittest
 
-import _support  # noqa: F401
-from otmetki.core.i18n import Catalog, Translator
+import _support
 from otmetki.core.settings import Settings
 from otmetki.features.battle_clock.i18n import STRINGS
-from otmetki.features.battle_clock.model import clock_values, format_battle_clock, format_timer, strftime, timer_seconds
+from otmetki.core.format import format_moment as strftime
+from otmetki.core.format import format_timer
+from otmetki.features.battle_clock.model import clock_values, format_battle_clock, timer_seconds
+from otmetki.features.battle_clock.model.preview import preview_text
 from otmetki.features.battle_clock.settings import SCHEMA
 
 
@@ -17,7 +19,7 @@ def moment():
 
 
 def translator(language='ru'):
-    return Translator(Catalog(STRINGS), language)
+    return _support.translator(STRINGS, language)
 
 
 class ClockTest(unittest.TestCase):
@@ -58,6 +60,10 @@ class ClockTest(unittest.TestCase):
 
     def test_strings_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+    def test_preview(self):
+        text = preview_text(Settings({}, SCHEMA), translator(), moment())
+        assert '21:05' in text and '07:00' in text
 
 
 if __name__ == '__main__':

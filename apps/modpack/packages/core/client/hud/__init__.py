@@ -10,19 +10,20 @@ import os
 from ...hud import ComponentConfig, HudLayer, NullBackend
 from ...log import log
 from ...storage import JsonFile
+from .constants import CONFIG_NAME
 from .guiflash import GuiFlashBackend
 
-CONFIG_NAME = 'components.json'
 BACKENDS = (GuiFlashBackend,)
 
 _state = {'layer': None, 'config': None}
 
 
-def create_backend(backends=BACKENDS):
+def create_backend(backends=BACKENDS, log_missing=True):
     for backend in backends:
         if backend.usable():
             return backend()
-    log('no HUD renderer (GUIFlash) installed: battle panels are off')
+    if log_missing:
+        log('no HUD renderer (GUIFlash) installed: battle panels are off')
     return NullBackend()
 
 

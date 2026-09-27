@@ -3,16 +3,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-import _support  # noqa: F401
-from otmetki.core.i18n import Catalog, Translator
+import _support
 from otmetki.core.settings import Settings
 from otmetki.features.damage_log.i18n import STRINGS
 from otmetki.features.damage_log.model import DamageLog, format_damage_log
+from otmetki.features.damage_log.model.preview import preview_text
 from otmetki.features.damage_log.settings import SCHEMA, SETTINGS, SWITCH
 
 
 def translator(language='ru'):
-    return Translator(Catalog(STRINGS), language)
+    return _support.translator(STRINGS, language)
 
 
 def filled_log():
@@ -102,6 +102,10 @@ class SettingsTest(unittest.TestCase):
 
     def test_strings_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+    def test_preview(self):
+        text = preview_text(Settings({}, SCHEMA), translator('en'))
+        assert '710' in text and '480' in text and '310' in text
 
 
 if __name__ == '__main__':

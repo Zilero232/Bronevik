@@ -1,7 +1,8 @@
+import json
 import unittest
 
 import _support
-from otmetki.core.jsonutil import dumps, dumps_bytes, loads
+from otmetki.core.codec import decode_json, encode_json
 from otmetki.companion.payload import (
     PayloadError,
     battle_outcome,
@@ -69,7 +70,7 @@ class BattleEventTest(unittest.TestCase):
         self.assertIsNone(build_battle_event(results)['moe'])
 
     def test_never_leaks_other_players(self):
-        serialized = dumps(build_envelope([self.event], 'dev', 12345678, '0.1.0', '1.45', 1790000500, 'b1'))
+        serialized = json.dumps(build_envelope([self.event], 'dev', 12345678, '0.1.0', '1.45', 1790000500, 'b1'))
         for foreign in ('98765', '87654321', 'enemy_player_secret', '4321', '2849'):
             self.assertNotIn(foreign, serialized)
 
@@ -84,7 +85,7 @@ class BattleEventTest(unittest.TestCase):
         results['players']['87654321']['prebattleID'] = 77
         event = build_battle_event(results)
         self.assertEqual(event['platoon'], {'size': 2, 'mates': [23456789]})
-        self.assertNotIn('platoon_friend_nick', dumps(event))
+        self.assertNotIn('platoon_friend_nick', json.dumps(event))
 
     def test_shots_pass_through_from_extras(self):
         shot = {'damage': 402, 'nominal': 390, 'shell': 'armor_piercing', 'outcome': 'damage', 'distance_m': None, 'fatal': False}
@@ -142,10 +143,10 @@ class EnvelopeTest(unittest.TestCase):
     def test_envelope_is_canonical_json(self):
         event = build_queue_event(1, 33.333, 'arena', 1790000000, 1)
         envelope = build_envelope([event], 'dev', 42, '0.1.0', u'1.45.0', 1790000001, 'batch-1')
-        body = dumps_bytes(envelope)
-        self.assertEqual(loads(body), envelope)
+        body = encode_json(envelope)
+        self.assertEqual(decode_json(body), envelope)
         self.assertNotIn(b' ', body)
-        self.assertEqual(body, dumps_bytes(loads(body)))
+        self.assertEqual(body, encode_json(decode_json(body)))
         self.assertEqual(envelope['events'][0]['wait_s'], 33.3)
 
     def test_battle_start_event_carries_only_own_tank(self):
@@ -169,7 +170,7 @@ class EnvelopeTest(unittest.TestCase):
             build_moe_distribution_event(1, 1000, [100, 400, 900], 1790000000),
             build_queue_event(1, 20, 'dequeued', 1790000000, None),
         ]
-        envelope = loads(dumps(build_envelope(events, 'dev_1', 12345678, '0.1.0', '1.45.0', 1790000500)))
+        envelope = decode_json(encode_json(build_envelope(events, 'dev_1', 12345678, '0.1.0', '1.45.0', 1790000500)))
         errors = sorted(validator.iter_errors(envelope), key=str)
         self.assertEqual(errors, [])
 

@@ -1,9 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_int, is_number, to_text
-from ....core.hud import render
-from ....core.panels import COLOR_MUTED, COLOR_NEUTRAL, font
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
 from ....core.shells import SHELL_CODES
+from ....core.templates import render
 from .constants import MAX_ENTRIES, MERGE_WINDOW_S, OUTCOMES
 
 

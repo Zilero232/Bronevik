@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import time
 
-from ...companion.client.settings_ui import SettingsView, add_settings_view
+from ...companion.settings_ui.client import SettingsView, add_settings_view
 from ...core.log import log, safe
 from ...core.storage import JsonFile
 from ..bridge import SettingsBridge

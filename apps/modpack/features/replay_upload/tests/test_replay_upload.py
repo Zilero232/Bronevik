@@ -11,21 +11,21 @@ import time
 import unittest
 
 import _support
-from otmetki.core import signing
-from otmetki.features.replay_upload import model as replay_upload
+from otmetki.core.net import signing
+from otmetki.features.replay_upload.model import constants as replay_upload
 from otmetki.companion.binding import Credentials
 from otmetki.companion.config import FEATURES, OPT_IN_FEATURES, Config
 from otmetki.companion.i18n import Translator
-from otmetki.features.replay_upload.model import (OUTCOME_AUTH, OUTCOME_DONE, OUTCOME_DROP, OUTCOME_QUOTA, OUTCOME_RETRY, OUTCOME_WAIT, RESULT_BUSY,
-                                   RESULT_ERROR, RESULT_HTTP, RESULT_MISSING, RESULT_TOO_LARGE, ReplayQueue, ReplayUploader,
-                                   classify_upload, upload_job)
-from otmetki.features.replay_upload.files import (EXTENSIONS, FILE_FIELD, MAGIC, MATCH_WINDOW_S, MAX_BYTES, UPLOAD_PATH, VISIBILITY_HEADER,
-                             VISIBILITY_PRIVATE, VISIBILITY_PUBLIC, build_multipart, find_replay,
-                             is_replay_name, matches, parse_date_time, read_header, read_header_from, upload_name)
-from otmetki.companion.settings_template import build_template, settings_to_config
-from otmetki.core.signing import (NONCE_HEADER, SERVER_TIME_HEADER, STALE_REQUEST_STATUS, TIMESTAMP_HEADER, verify_request)
+from otmetki.core.replay_file import MAGIC, is_replay_name, parse_date_time, read_header, read_header_from
+from otmetki.features.replay_upload.model import (JobResult, Outcome, ReplayQueue, ReplayUploader, build_multipart, classify_upload,
+                                                  find_replay, matches, upload_job, upload_name, uploaded_replay_id)
+from otmetki.features.replay_upload.model.constants import (FILE_FIELD, MATCH_WINDOW_S, MAX_BYTES, UPLOAD_PATH, VISIBILITY_HEADER,
+                                                            VISIBILITY_PRIVATE, VISIBILITY_PUBLIC)
+from otmetki.core.replay_file import EXTENSIONS
+from otmetki.companion.settings_ui import build_template, settings_to_config
+from otmetki.core.net.signing import (NONCE_HEADER, SERVER_TIME_HEADER, STALE_REQUEST_STATUS, TIMESTAMP_HEADER, verify_request)
 from otmetki.core.storage import JsonFile, MemoryFile
-from otmetki.core.transport import BackgroundRunner
+from otmetki.core.net.transport import BackgroundRunner
 
 ACCOUNT = 12345
 OTHER = 777
@@ -200,7 +200,7 @@ class UploadJobTest(unittest.TestCase):
     def test_signs_the_raw_file_and_posts_multipart(self):
         transport = SyncFakeTransport((201, b'{"id":"x","status":"uploaded"}', {}))
         result = self.run_job(transport)
-        self.assertEqual(result['result'], RESULT_HTTP)
+        self.assertEqual(result['result'], JobResult.HTTP)
         self.assertEqual(result['status'], 201)
         request = transport.requests[0]
         headers = request['headers']
@@ -251,47 +251,47 @@ class UploadJobTest(unittest.TestCase):
 
     def test_too_large_by_size_is_never_read_or_sent(self):
         transport = SyncFakeTransport()
-        self.assertEqual(self.run_job(transport, size=MAX_BYTES + 1)['result'], RESULT_TOO_LARGE)
+        self.assertEqual(self.run_job(transport, size=MAX_BYTES + 1)['result'], JobResult.TOO_LARGE)
         self.assertEqual(transport.requests, [])
 
     def test_too_large_after_reading(self):
         transport = SyncFakeTransport()
         grown = b'x' * (MAX_BYTES + 1)
-        self.assertEqual(self.run_job(transport, data=grown, size=10)['result'], RESULT_TOO_LARGE)
+        self.assertEqual(self.run_job(transport, data=grown, size=10)['result'], JobResult.TOO_LARGE)
         self.assertEqual(transport.requests, [])
 
     def test_exactly_the_limit_is_sent(self):
         transport = SyncFakeTransport()
-        self.assertEqual(self.run_job(transport, data=b'x' * MAX_BYTES)['result'], RESULT_HTTP)
+        self.assertEqual(self.run_job(transport, data=b'x' * MAX_BYTES)['result'], JobResult.HTTP)
 
     def test_file_still_being_written_waits(self):
         now = time.time()
         transport = SyncFakeTransport()
-        self.assertEqual(self.run_job(transport, mtime=now - 1, now=now)['result'], RESULT_BUSY)
-        self.assertEqual(self.run_job(transport, size=0)['result'], RESULT_BUSY)
+        self.assertEqual(self.run_job(transport, mtime=now - 1, now=now)['result'], JobResult.BUSY)
+        self.assertEqual(self.run_job(transport, size=0)['result'], JobResult.BUSY)
         self.assertEqual(transport.requests, [])
 
     def test_missing_replay(self):
         result = upload_job(self.item(), creds(), SyncFakeTransport(), URL, 'ua', lambda item: None, time.time())
-        self.assertEqual(result['result'], RESULT_MISSING)
+        self.assertEqual(result['result'], JobResult.MISSING)
 
     def test_async_transport_is_an_error(self):
         transport = _support.FakeTransport()
-        self.assertEqual(self.run_job(transport)['result'], RESULT_ERROR)
+        self.assertEqual(self.run_job(transport)['result'], JobResult.ERROR)
 
 
 class ClassifyTest(unittest.TestCase):
 
     def test_statuses(self):
-        self.assertEqual(classify_upload(201), OUTCOME_DONE)
-        self.assertEqual(classify_upload(409, b'{"code":"REPLAY_DUPLICATE"}'), OUTCOME_DONE)
-        self.assertEqual(classify_upload(401), OUTCOME_AUTH)
-        self.assertEqual(classify_upload(403, b'{"error":"x","code":"FORBIDDEN"}'), OUTCOME_AUTH)
-        self.assertEqual(classify_upload(403, b'{"code":"SUBSCRIPTION_REQUIRED"}'), OUTCOME_QUOTA)
+        self.assertEqual(classify_upload(201), Outcome.DONE)
+        self.assertEqual(classify_upload(409, b'{"code":"REPLAY_DUPLICATE"}'), Outcome.DONE)
+        self.assertEqual(classify_upload(401), Outcome.AUTH)
+        self.assertEqual(classify_upload(403, b'{"error":"x","code":"FORBIDDEN"}'), Outcome.AUTH)
+        self.assertEqual(classify_upload(403, b'{"code":"SUBSCRIPTION_REQUIRED"}'), Outcome.QUOTA)
         for status in (400, 413, 422):
-            self.assertEqual(classify_upload(status), OUTCOME_DROP)
+            self.assertEqual(classify_upload(status), Outcome.DROP)
         for status in (0, 428, 429, 500, 503):
-            self.assertEqual(classify_upload(status), OUTCOME_RETRY)
+            self.assertEqual(classify_upload(status), Outcome.RETRY)
 
 
 class ReplayQueueTest(unittest.TestCase):
@@ -312,7 +312,7 @@ class ReplayQueueTest(unittest.TestCase):
         self.assertTrue(queue.add(ARENA, ACCOUNT, STARTED, 1000.0))
         self.assertFalse(queue.add(str(ARENA), ACCOUNT, STARTED, 1001.0))
         self.assertEqual(len(queue), 1)
-        queue.complete(ARENA, {'result': RESULT_HTTP, 'status': 201}, 1100.0)
+        queue.complete(ARENA, {'result': JobResult.HTTP, 'status': 201}, 1100.0)
         self.assertEqual(len(queue), 0)
         self.assertFalse(queue.add(ARENA, ACCOUNT, STARTED, 1200.0))
         self.assertFalse(queue.add(None, ACCOUNT, STARTED, 1200.0))
@@ -323,7 +323,7 @@ class ReplayQueueTest(unittest.TestCase):
         queue = self.queue(storage)
         queue.add(ARENA, ACCOUNT, STARTED, 1000.0)
         queue.add(ARENA + 1, ACCOUNT, STARTED, 1000.0)
-        queue.complete(ARENA + 1, {'result': RESULT_HTTP, 'status': 409}, 1100.0)
+        queue.complete(ARENA + 1, {'result': JobResult.HTTP, 'status': 409}, 1100.0)
         restored = self.queue(storage)
         self.assertEqual([item['arena_unique_id'] for item in restored.items], [str(ARENA)])
         self.assertFalse(restored.add(ARENA + 1, ACCOUNT, STARTED, 1200.0))
@@ -341,20 +341,20 @@ class ReplayQueueTest(unittest.TestCase):
     def test_exponential_backoff_honours_retry_after(self):
         queue = self.queue()
         queue.add(ARENA, ACCOUNT, STARTED, 0.0)
-        self.assertEqual(queue.complete(ARENA, {'result': RESULT_HTTP, 'status': 503}, 100.0), OUTCOME_RETRY)
+        self.assertEqual(queue.complete(ARENA, {'result': JobResult.HTTP, 'status': 503}, 100.0), Outcome.RETRY)
         self.assertEqual(queue.items[0]['retry_at'], 100.0 + replay_upload.BASE_BACKOFF_S)
-        queue.complete(ARENA, {'result': RESULT_ERROR}, 200.0)
+        queue.complete(ARENA, {'result': JobResult.ERROR}, 200.0)
         self.assertEqual(queue.items[0]['retry_at'], 200.0 + 2 * replay_upload.BASE_BACKOFF_S)
-        queue.complete(ARENA, {'result': RESULT_HTTP, 'status': 429}, 300.0, retry_after=900)
+        queue.complete(ARENA, {'result': JobResult.HTTP, 'status': 429}, 300.0, retry_after=900)
         self.assertEqual(queue.items[0]['retry_at'], 1200.0)
         for _ in range(20):
-            queue.complete(ARENA, {'result': RESULT_ERROR}, 300.0)
+            queue.complete(ARENA, {'result': JobResult.ERROR}, 300.0)
         self.assertEqual(queue.items[0]['retry_at'], 300.0 + replay_upload.MAX_BACKOFF_S)
 
     def test_auth_failure_pauses_everything_until_rebind(self):
         queue = self.queue()
         queue.add(ARENA, ACCOUNT, STARTED, 0.0)
-        self.assertEqual(queue.complete(ARENA, {'result': RESULT_HTTP, 'status': 401}, 100.0), OUTCOME_AUTH)
+        self.assertEqual(queue.complete(ARENA, {'result': JobResult.HTTP, 'status': 401}, 100.0), Outcome.AUTH)
         self.assertIsNone(queue.next_item(10000.0))
         queue.unblock()
         self.assertIsNotNone(queue.next_item(10000.0))
@@ -362,8 +362,8 @@ class ReplayQueueTest(unittest.TestCase):
     def test_quota_waits_long_without_dropping(self):
         queue = self.queue()
         queue.add(ARENA, ACCOUNT, STARTED, 0.0)
-        result = {'result': RESULT_HTTP, 'status': 403, 'body': b'{"code":"SUBSCRIPTION_REQUIRED"}'}
-        self.assertEqual(queue.complete(ARENA, result, 100.0), OUTCOME_QUOTA)
+        result = {'result': JobResult.HTTP, 'status': 403, 'body': b'{"code":"SUBSCRIPTION_REQUIRED"}'}
+        self.assertEqual(queue.complete(ARENA, result, 100.0), Outcome.QUOTA)
         self.assertEqual(queue.items[0]['retry_at'], 100.0 + replay_upload.QUOTA_BACKOFF_S)
         self.assertFalse(queue.auth_blocked)
 
@@ -371,8 +371,8 @@ class ReplayQueueTest(unittest.TestCase):
         queue = self.queue()
         queue.add(ARENA, ACCOUNT, STARTED, 0.0)
         queue.add(ARENA + 1, ACCOUNT, STARTED, 0.0)
-        self.assertEqual(queue.complete(ARENA, {'result': RESULT_HTTP, 'status': 400}, 100.0), OUTCOME_DROP)
-        self.assertEqual(queue.complete(ARENA + 1, {'result': RESULT_TOO_LARGE}, 100.0), OUTCOME_DROP)
+        self.assertEqual(queue.complete(ARENA, {'result': JobResult.HTTP, 'status': 400}, 100.0), Outcome.DROP)
+        self.assertEqual(queue.complete(ARENA + 1, {'result': JobResult.TOO_LARGE}, 100.0), Outcome.DROP)
         self.assertEqual(len(queue), 0)
         self.assertEqual(queue.dropped, 2)
         self.assertTrue(queue.knows(ARENA + 1))
@@ -380,11 +380,11 @@ class ReplayQueueTest(unittest.TestCase):
     def test_missing_file_is_searched_for_then_given_up(self):
         queue = self.queue()
         queue.add(ARENA, ACCOUNT, STARTED, 0.0)
-        self.assertEqual(queue.complete(ARENA, {'result': RESULT_MISSING}, 100.0), OUTCOME_WAIT)
+        self.assertEqual(queue.complete(ARENA, {'result': JobResult.MISSING}, 100.0), Outcome.WAIT)
         self.assertEqual(queue.items[0]['retry_at'], 100.0 + replay_upload.LOCATE_RETRY_S)
-        self.assertEqual(queue.complete(ARENA, {'result': RESULT_BUSY}, 200.0), OUTCOME_WAIT)
+        self.assertEqual(queue.complete(ARENA, {'result': JobResult.BUSY}, 200.0), Outcome.WAIT)
         self.assertEqual(queue.items[0]['retry_at'], 200.0 + replay_upload.BUSY_RETRY_S)
-        self.assertEqual(queue.complete(ARENA, {'result': RESULT_MISSING}, replay_upload.LOCATE_TIMEOUT_S + 1), OUTCOME_DROP)
+        self.assertEqual(queue.complete(ARENA, {'result': JobResult.MISSING}, replay_upload.LOCATE_TIMEOUT_S + 1), Outcome.DROP)
         self.assertEqual(len(queue), 0)
 
     def test_bounded_pending_and_age(self):
@@ -583,11 +583,11 @@ class UploadedReplayIdTest(unittest.TestCase):
 
     def test_id_only_from_a_201_body(self):
         body = b'{"id": "7b0c2a44-1111-4111-8111-111111111111", "status": "uploaded"}'
-        assert replay_upload.uploaded_replay_id({'status': 201, 'body': body}) == '7b0c2a44-1111-4111-8111-111111111111'
-        assert replay_upload.uploaded_replay_id({'status': 409, 'body': body}) is None
-        assert replay_upload.uploaded_replay_id({'status': 201, 'body': b'not json'}) is None
-        assert replay_upload.uploaded_replay_id({'status': 201, 'body': b'{"id": 5}'}) is None
-        assert replay_upload.uploaded_replay_id(None) is None
+        assert uploaded_replay_id({'status': 201, 'body': body}) == '7b0c2a44-1111-4111-8111-111111111111'
+        assert uploaded_replay_id({'status': 409, 'body': body}) is None
+        assert uploaded_replay_id({'status': 201, 'body': b'not json'}) is None
+        assert uploaded_replay_id({'status': 201, 'body': b'{"id": 5}'}) is None
+        assert uploaded_replay_id(None) is None
 
 if __name__ == '__main__':
     unittest.main()

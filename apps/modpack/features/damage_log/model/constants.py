@@ -8,3 +8,13 @@ LOG_KIND_FILTER = {
     'dealt': ('damage', 'radio', 'track', 'stun', 'blocked'),
     'received': ('received',),
 }
+
+# The HUD editor's miniature and the hangar preview (hud_edit).
+PREVIEW_ENTRIES = (
+    ('damage', 390, 'Pz. IV', 'ap'),
+    ('radio', 480, None, None),
+    ('damage', 320, 'T-34', 'apcr'),
+    ('blocked', 240, 'IS', 'heat'),
+    ('received', 310, 'KV-1', 'he'),
+)
+PREVIEW_SIZE = (280, 130)

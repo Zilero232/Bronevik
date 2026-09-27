@@ -56,14 +56,20 @@ class LayoutTest(unittest.TestCase):
     def test_in_game_paths(self):
         core = self.paths('core')
         self.assertIn(MODS + 'otmetki/__init__.py', core)
-        self.assertIn(MODS + 'otmetki/core/registry.py', core)
+        self.assertIn(MODS + 'otmetki/core/registry/__init__.py', core)
         self.assertIn(MODS + 'otmetki/features/__init__.py', core)
+        self.assertIn(MODS + 'otmetki/core/vendor/six.py', core)
+        self.assertIn(MODS + 'otmetki/core/vendor/blinker/base.py', core)
+        self.assertIn(MODS + 'otmetki/core/vendor/attr/_make.py', core)
+        self.assertIn(MODS + 'otmetki/core/vendor/enum34/__init__.py', core)
+        self.assertIn(MODS + 'otmetki/core/vendor/licenses/six.txt', core)
+        self.assertNotIn(MODS + 'otmetki/core/vendor/attr/_next_gen.py', core)
         companion = self.paths('companion')
         self.assertIn(MODS + 'mod_otmetki.py', companion)
-        self.assertIn(MODS + 'otmetki/companion/client/app.py', companion)
+        self.assertIn(MODS + 'otmetki/companion/app/client/__init__.py', companion)
         replay = self.paths('replay_upload')
         self.assertIn(MODS + 'mod_otmetki_replay_upload.py', replay)
-        self.assertIn(MODS + 'otmetki/features/replay_upload/model.py', replay)
+        self.assertIn(MODS + 'otmetki/features/replay_upload/model/__init__.py', replay)
         every = [path for package in self.packages for _, path in package.files]
         self.assertFalse([path for path in every if '/tests/' in path or '/entry/' in path])
         entries = [path for path in every if path.startswith(MODS) and '/' not in path[len(MODS):]]
@@ -133,8 +139,8 @@ class BuildTest(unittest.TestCase):
         outputs = self.run_build('--single', '--wg')
         self.assertEqual([os.path.basename(path) for path in outputs], ['otmetki.%s.wotmod' % self.companion_version()])
         with zipfile.ZipFile(outputs[0]) as package:
-            self.assertIn(MODS + 'otmetki/core/registry.py', package.namelist())
-            self.assertIn(MODS + 'otmetki/features/session_stats/client.py', package.namelist())
+            self.assertIn(MODS + 'otmetki/core/registry/__init__.py', package.namelist())
+            self.assertIn(MODS + 'otmetki/features/session_stats/client/__init__.py', package.namelist())
         with self.assertRaises(SystemExit):
             self.run_build('--require-pyc')
 

@@ -5,9 +5,7 @@ import BigWorld
 
 from ....hooks import subscribe, unsubscribe
 from ....log import log_exception
-
-RETRY_S = 1.0
-ATTEMPTS = 20
+from .constants import ATTEMPTS, RETRY_S
 
 
 class BattleHooks(object):

@@ -8,8 +8,7 @@ import struct
 import tempfile
 import unittest
 
-import _support  # noqa: F401
-from otmetki.core.i18n import Catalog, Translator
+import _support
 from otmetki.core.replay_file import MAGIC
 from otmetki.core.storage import MemoryFile
 from otmetki.features.replay_manager.i18n import STRINGS
@@ -80,7 +79,7 @@ class ReplayFolderTest(unittest.TestCase):
     def test_page_links_uploaded_replays_to_the_site(self):
         index = UploadedIndex(MemoryFile())
         index.add('111', '7b0c2a44-1111-4111-8111-111111111111')
-        translate = Translator(Catalog(STRINGS), 'ru')
+        translate = _support.translator(STRINGS)
         page = build_page(own_replays(self.folder, ACCOUNT, HeaderCache()), index, translate, 50, False)
         first, second = page['rows']
         assert first['link'] == '/replays/7b0c2a44-1111-4111-8111-111111111111'

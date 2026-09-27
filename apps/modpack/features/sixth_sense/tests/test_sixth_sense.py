@@ -3,16 +3,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-import _support  # noqa: F401
-from otmetki.core.i18n import Catalog, Translator
+import _support
 from otmetki.core.settings import Settings
 from otmetki.features.sixth_sense.i18n import STRINGS
 from otmetki.features.sixth_sense.model import SixthSense, format_sixth_sense
+from otmetki.features.sixth_sense.model.preview import preview_text
 from otmetki.features.sixth_sense.settings import SCHEMA
 
 
 def translator(language='ru'):
-    return Translator(Catalog(STRINGS), language)
+    return _support.translator(STRINGS, language)
 
 
 class LampTest(unittest.TestCase):
@@ -65,6 +65,9 @@ class FormatTest(unittest.TestCase):
 
     def test_strings_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+    def test_preview(self):
+        assert preview_text(Settings({}, SCHEMA), translator('en'))
 
 
 if __name__ == '__main__':

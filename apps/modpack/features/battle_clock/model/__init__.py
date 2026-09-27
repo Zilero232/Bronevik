@@ -1,18 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import math
-import time
 
-from ....core.compat import is_number, to_text
-from ....core.hud import render
-from ....core.panels import COLOR_NEUTRAL, font
+from ....core.compat import is_number
+from ....core.format import COLOR_NEUTRAL, font, format_moment, format_timer
+from ....core.templates import render
 from .constants import TIMED_PERIODS
-
-
-def strftime(fmt, moment):
-    if not fmt:
-        return ''
-    return to_text(time.strftime(str(fmt), moment))
 
 
 def timer_seconds(period, period_end, server_now):
@@ -22,17 +15,10 @@ def timer_seconds(period, period_end, server_now):
     return max(0, int(math.ceil(period_end - server_now)))
 
 
-def format_timer(seconds):
-    if seconds is None:
-        return ''
-    minutes, rest = divmod(int(seconds), 60)
-    return '%02d:%02d' % (minutes, rest)
-
-
 def clock_values(moment, settings, period=None, seconds_left=None):
     return {
-        'time': strftime(settings.get('clock_format'), moment),
-        'date': strftime(settings.get('date_format'), moment),
+        'time': format_moment(settings.get('clock_format'), moment),
+        'date': format_moment(settings.get('date_format'), moment),
         'timer': format_timer(seconds_left) if settings.get('show_timer') else '',
         'period': period or '',
     }

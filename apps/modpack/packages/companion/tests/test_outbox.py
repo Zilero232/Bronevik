@@ -2,10 +2,10 @@ import unittest
 
 import _support
 from otmetki.companion.binding import Credentials
-from otmetki.core.jsonutil import loads
-from otmetki.companion.outbox import MAX_BACKOFF_S, OUTCOME_AUTH, OUTCOME_DROP, OUTCOME_RETRY, OUTCOME_SENT, OUTCOME_SHRINK, Outbox, classify_status
-from otmetki.companion.sender import IngestSender, parse_retry_after
-from otmetki.core.signing import DEVICE_HEADER, verify_request
+from otmetki.core.codec import decode_json, parse_retry_after
+from otmetki.companion.outbox import MAX_BACKOFF_S, Outbox, Outcome, classify_status
+from otmetki.companion.sender import IngestSender
+from otmetki.core.net.signing import DEVICE_HEADER, verify_request
 from otmetki.core.storage import MemoryFile
 
 
@@ -20,15 +20,15 @@ def outbox(**kwargs):
 class OutboxTest(unittest.TestCase):
 
     def test_classify(self):
-        self.assertEqual(classify_status(200), OUTCOME_SENT)
-        self.assertEqual(classify_status(409), OUTCOME_SENT)
-        self.assertEqual(classify_status(401), OUTCOME_AUTH)
-        self.assertEqual(classify_status(403), OUTCOME_AUTH)
-        self.assertEqual(classify_status(413), OUTCOME_SHRINK)
-        self.assertEqual(classify_status(422), OUTCOME_DROP)
-        self.assertEqual(classify_status(0), OUTCOME_RETRY)
-        self.assertEqual(classify_status(503), OUTCOME_RETRY)
-        self.assertEqual(classify_status(429), OUTCOME_RETRY)
+        self.assertEqual(classify_status(200), Outcome.SENT)
+        self.assertEqual(classify_status(409), Outcome.SENT)
+        self.assertEqual(classify_status(401), Outcome.AUTH)
+        self.assertEqual(classify_status(403), Outcome.AUTH)
+        self.assertEqual(classify_status(413), Outcome.SHRINK)
+        self.assertEqual(classify_status(422), Outcome.DROP)
+        self.assertEqual(classify_status(0), Outcome.RETRY)
+        self.assertEqual(classify_status(503), Outcome.RETRY)
+        self.assertEqual(classify_status(429), Outcome.RETRY)
 
     def test_batches_and_dedupe(self):
         box = outbox(max_batch=2)
@@ -38,7 +38,7 @@ class OutboxTest(unittest.TestCase):
         box.enqueue(event(3))
         batch = box.next_batch(0)
         self.assertEqual([e['event_id'] for e in batch], ['e1', 'e2'])
-        self.assertEqual(box.complete(batch, 200, 0), OUTCOME_SENT)
+        self.assertEqual(box.complete(batch, 200, 0), Outcome.SENT)
         self.assertEqual([e['event_id'] for e in box.next_batch(0)], ['e3'])
 
     def test_capacity_drops_oldest(self):
@@ -52,7 +52,7 @@ class OutboxTest(unittest.TestCase):
         box = outbox()
         box.enqueue(event(1))
         batch = box.next_batch(100)
-        self.assertEqual(box.complete(batch, 500, 100), OUTCOME_RETRY)
+        self.assertEqual(box.complete(batch, 500, 100), Outcome.RETRY)
         self.assertEqual(box.retry_at, 105.0)
         self.assertIsNone(box.next_batch(104))
         self.assertIsNotNone(box.next_batch(105))
@@ -74,7 +74,7 @@ class OutboxTest(unittest.TestCase):
     def test_drop_invalid(self):
         box = outbox()
         box.enqueue(event(1))
-        self.assertEqual(box.complete(box.next_batch(0), 422, 0), OUTCOME_DROP)
+        self.assertEqual(box.complete(box.next_batch(0), 422, 0), Outcome.DROP)
         self.assertEqual(len(box), 0)
         self.assertEqual(box.dropped, 1)
 
@@ -129,7 +129,7 @@ class SenderTest(unittest.TestCase):
         self.assertEqual(request['method'], 'POST')
         self.assertEqual(request['headers'][DEVICE_HEADER], 'dev_1')
         self.assertTrue(verify_request(self.creds.secret, 'POST', 'https://api.example/mod/ingest', request['headers'], request['body']))
-        envelope = loads(request['body'])
+        envelope = decode_json(request['body'])
         self.assertEqual(envelope['account_id'], 42)
         self.assertEqual(envelope['device_id'], 'dev_1')
         self.assertEqual(envelope['sent_at'], 10)

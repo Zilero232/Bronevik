@@ -2,9 +2,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.battle import BattleHooks, arena, arena_dp, call, feedback, vehicle_state
 from ....core.client.hud import hud_layer
+from ....core.hud import HudPreview
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import TeamHp, format_team_hp
+from ..model.constants import PREVIEW_SIZE
+from ..model.preview import preview_text
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 
 try:
@@ -28,6 +31,8 @@ class TeamHpPanel(object):
         app.translate.catalog.add(STRINGS)
         self.hud = hud_layer(app)
         self.settings = self.hud.register(PANEL_ID, SCHEMA)
+        self.preview = HudPreview(self.hud, PANEL_ID, self._preview, lambda: app.config.is_enabled(SWITCH), lambda: not app.in_battle,
+                                  PREVIEW_SIZE).attach(app.bus)
         self.health_event = getattr(FEEDBACK_EVENT_ID, 'VEHICLE_HEALTH', None)
         self.dead_event = getattr(FEEDBACK_EVENT_ID, 'VEHICLE_DEAD', None)
         self.health_state = getattr(VEHICLE_VIEW_STATE, 'HEALTH', None)
@@ -50,6 +55,7 @@ class TeamHpPanel(object):
         self.sync()
 
     def _on_battle_leave(self):
+        self.preview.end()
         self.hooks.clear()
         self.teams = None
         self.hud.hide(PANEL_ID)
@@ -93,6 +99,9 @@ class TeamHpPanel(object):
     def _on_vehicle_killed(self, victim_id, *args):
         if self.teams is not None and self.teams.kill(victim_id):
             self.render()
+
+    def _preview(self):
+        return preview_text(self.settings, self.app.translate)
 
     @safe
     def render(self):

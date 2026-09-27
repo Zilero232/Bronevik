@@ -57,8 +57,9 @@ def guarded(tree, node):
 class Py27CompatTest(unittest.TestCase):
 
     def test_sources_compile(self):
-        """On Python 2.7 this is the real syntax check; on Python 3 the AST scan below covers it."""
-        for path in source_files():
+        """On Python 2.7 this is the real syntax check (the vendored libraries included: the release build
+        compiles them too); on Python 3 the AST scan below covers the mod's own sources."""
+        for path in source_files() + _support.vendor_files():
             with io.open(path, 'rb') as handle:
                 compile(handle.read(), path, 'exec')
 
@@ -87,7 +88,7 @@ class Py27CompatTest(unittest.TestCase):
                 if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'print':
                     if 'print_function' not in text:
                         problems.append('%s:%d: print() without __future__ import' % (source, node.lineno))
-                if isinstance(node, (ast.Import, ast.ImportFrom)):
+                if isinstance(node, (ast.Import, ast.ImportFrom)) and not getattr(node, 'level', 0):
                     names = [node.module] if isinstance(node, ast.ImportFrom) else [a.name for a in node.names]
                     for module in names:
                         if module in PY3_ONLY_MODULES and not guarded(tree, node):
@@ -115,7 +116,7 @@ class Py27CompatTest(unittest.TestCase):
     def test_pure_modules_import_without_client(self):
         import importlib
         names = [module_name(path) for path in source_files() if not is_client_glue(path)]
-        self.assertIn('otmetki.core.signing', names)
+        self.assertIn('otmetki.core.net.signing', names)
         self.assertIn('otmetki.features.replay_upload.model', names)
         for name in names:
             importlib.import_module(name)

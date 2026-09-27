@@ -19,6 +19,7 @@ FEATURES_DIR = os.path.join(MODPACK_DIR, 'features')
 CONTRACT_DIR = os.path.join(MODPACK_DIR, 'contract')
 FIXTURES_DIR = os.path.join(PACKAGES_DIR, 'companion', 'tests', 'fixtures')
 ROOT_PACKAGE = 'otmetki'
+VENDOR_DIR = os.path.join(PACKAGES_DIR, 'core', 'vendor')
 
 
 def _install_root_package():
@@ -43,15 +44,26 @@ def feature_ids():
     return [os.path.basename(path) for path in source_dirs() if os.path.dirname(path) == FEATURES_DIR]
 
 
+def _py_files(base, skipped):
+    for directory, dirs, files in os.walk(base):
+        dirs[:] = sorted(d for d in dirs if d not in skipped and os.path.join(directory, d) not in skipped)
+        for name in sorted(files):
+            if name.endswith('.py'):
+                yield os.path.join(directory, name)
+
+
 def source_files():
-    """Game-client .py sources (tests excluded), the entry scripts and features/__init__.py included."""
+    """The mod's own game-client .py sources (tests and the vendored libraries excluded), the entry
+    scripts and features/__init__.py included."""
     yield os.path.join(FEATURES_DIR, '__init__.py')
     for base in source_dirs():
-        for directory, dirs, files in os.walk(base):
-            dirs[:] = sorted(d for d in dirs if d not in ('tests', '__pycache__'))
-            for name in sorted(files):
-                if name.endswith('.py'):
-                    yield os.path.join(directory, name)
+        for path in _py_files(base, ('tests', '__pycache__', VENDOR_DIR)):
+            yield path
+
+
+def vendor_files():
+    """The vendored third-party .py files (packages/core/vendor): shipped, but not held to the mod's style."""
+    return list(_py_files(VENDOR_DIR, ('__pycache__',)))
 
 
 def load_json(path):
@@ -84,6 +96,12 @@ def schema_validator(name, definition=None):
     root = schema(name)
     target = root if definition is None else dict(root['definitions'][definition], definitions=root['definitions'])
     return jsonschema.Draft7Validator(target)
+
+
+def translator(strings, language='ru'):
+    """A translator over a feature's own STRINGS (the tests' stand-in for app.translate)."""
+    from otmetki.core.i18n import Catalog, Translator
+    return Translator(Catalog(strings), language)
 
 
 class FakeTransport(object):

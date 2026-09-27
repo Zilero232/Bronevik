@@ -87,7 +87,7 @@ norecursedirs = [".*", "dist", "__pycache__", "entry", "fixtures"]
 # ruff's oldest target is py37; the py2.7 syntax rules live in tools/tests/test_py27_compat.py and vermin.
 target-version = "py37"
 line-length = 160
-extend-exclude = ["dist"]
+extend-exclude = ["dist", "packages/core/vendor"]
 
 [tool.ruff.lint]
 # pyupgrade (UP), bugbear (B) and friends stay off: they suggest Python-3-only rewrites.

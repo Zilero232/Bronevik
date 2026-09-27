@@ -4,8 +4,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.hud import (ComponentConfig, HudBackend, HudLayer, NullBackend, alias_of, component_schema, format_value, hex_color,
-                              layout_props, matching, max_length, panel_schema, render)
+from otmetki.core.events import EventBus
+from otmetki.core.hud import (EVENT_DESCRIBE, EVENT_EDIT, ComponentConfig, HudBackend, HudLayer, HudPreview, NullBackend, alias_of,
+                              component_schema, hex_color, layout_props, matching, max_length, panel_schema)
+from otmetki.core.templates import format_value, render
 from otmetki.core.settings import Settings
 from otmetki.core.shells import shell_code, shell_name
 from otmetki.core.storage import MemoryFile
@@ -157,6 +159,59 @@ class HudLayerTest(unittest.TestCase):
         assert self.backend.labels[alias]['alignX'] == 'right'
         self.layer.hide_all()
         assert self.backend.labels == {}
+
+
+class HudPreviewTest(unittest.TestCase):
+
+    def setUp(self):
+        self.backend = FakeBackend()
+        self.layer = HudLayer(self.backend, ComponentConfig(MemoryFile()))
+        self.layer.register('damage_log', SCHEMA)
+        self.bus = EventBus()
+        self.state = {'enabled': True, 'hangar': True}
+        self.preview = HudPreview(self.layer, 'damage_log', lambda: u'<font color="#FFFFFF">390</font>', lambda: self.state['enabled'],
+                                  lambda: self.state['hangar'], (260, 120)).attach(self.bus)
+        self.alias = alias_of('damage_log')
+
+    def test_edit_mode_shows_and_hides_the_preview(self):
+        self.bus.emit(EVENT_EDIT, True)
+        assert self.backend.labels[self.alias]['text'] == u'<font color="#FFFFFF">390</font>'
+        assert self.preview.previewing
+        self.bus.emit(EVENT_EDIT, False)
+        assert self.alias not in self.backend.labels
+        assert not self.preview.previewing
+
+    def test_switched_off_or_in_battle_shows_nothing(self):
+        self.state['enabled'] = False
+        self.bus.emit(EVENT_EDIT, True)
+        assert self.alias not in self.backend.labels
+        self.state.update({'enabled': True, 'hangar': False})
+        self.bus.emit(EVENT_EDIT, True)
+        assert self.alias not in self.backend.labels
+
+    def test_leaving_edit_mode_keeps_a_real_panel(self):
+        self.layer.show('damage_log', 'real')
+        self.bus.emit(EVENT_EDIT, False)
+        assert self.backend.labels[self.alias]['text'] == 'real'
+
+    def test_end_hides_only_a_preview(self):
+        self.bus.emit(EVENT_EDIT, True)
+        self.preview.end()
+        assert self.alias not in self.backend.labels
+        self.bus.emit(EVENT_EDIT, False)
+        assert self.backend.calls.count(('delete', self.alias)) == 1
+
+    def test_describe(self):
+        found = []
+        self.bus.emit(EVENT_DESCRIBE, lambda *args: found.append(args))
+        assert found == [('damage_log', u'<font color="#FFFFFF">390</font>', 260, 120, True)]
+
+    def test_without_renderer_nothing_is_previewing(self):
+        layer = HudLayer(FakeBackend(available=False), ComponentConfig(MemoryFile()))
+        layer.register('damage_log', SCHEMA)
+        preview = HudPreview(layer, 'damage_log', lambda: 'x')
+        preview.on_edit(True)
+        assert not preview.previewing
 
 
 class ShellTest(unittest.TestCase):

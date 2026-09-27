@@ -3,8 +3,8 @@ import unittest
 import time
 
 import _support
-from otmetki.core import signing
-from otmetki.core.signing import (DEVICE_HEADER, NONCE_HEADER, SERVER_TIME_HEADER, SIGNATURE_HEADER, STALE_REQUEST_STATUS, TIMESTAMP_HEADER,
+from otmetki.core.net import signing
+from otmetki.core.net.signing import (DEVICE_HEADER, NONCE_HEADER, SERVER_TIME_HEADER, SIGNATURE_HEADER, STALE_REQUEST_STATUS, TIMESTAMP_HEADER,
                              clock_offset, request_path, server_time, sign, signed_headers, signed_message, signed_request, sync_clock,
                              verify, verify_request)
 

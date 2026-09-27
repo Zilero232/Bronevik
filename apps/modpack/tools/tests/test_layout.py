@@ -21,12 +21,17 @@ class FeatureLayoutTest(unittest.TestCase):
             base = os.path.join(_support.FEATURES_DIR, feature_id)
             self.assertTrue(os.path.isfile(os.path.join(base, '__init__.py')), feature_id)
             for name in FEATURE_FILES:
-                is_module = os.path.isfile(os.path.join(base, name + '.py'))
-                is_package = os.path.isfile(os.path.join(base, name, '__init__.py'))
-                self.assertTrue(is_module or is_package, '%s/%s' % (feature_id, name))
+                self.assertTrue(os.path.isfile(os.path.join(base, name, '__init__.py')), '%s/%s/ must be a package' % (feature_id, name))
+                self.assertFalse(os.path.isfile(os.path.join(base, name + '.py')), '%s/%s.py: folder per concern' % (feature_id, name))
             self.assertTrue(os.path.isdir(os.path.join(base, 'tests')), feature_id)
             entry = os.path.join(base, 'entry', 'mod_otmetki_%s.py' % feature_id)
             self.assertTrue(os.path.isfile(entry), entry)
+
+    def test_core_and_companion_have_no_flat_modules(self):
+        for name, allowed in (('core', ('__init__.py', 'version.py')), ('companion', ('__init__.py', 'version.py'))):
+            base = os.path.join(_support.PACKAGES_DIR, name)
+            flat = sorted(entry for entry in os.listdir(base) if entry.endswith('.py') and entry not in allowed)
+            self.assertEqual(flat, [], '%s: one folder per concern' % name)
 
     def test_feature_descriptor(self):
         for feature_id in _support.feature_ids():

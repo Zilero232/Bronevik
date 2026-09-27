@@ -1,7 +1,7 @@
 import unittest
 
 import _support
-from otmetki.core.jsonutil import dumps, loads
+from otmetki.core.codec import decode_json, encode_json
 from otmetki.companion.loadout import LoadoutTracker, gameplay_id_of, normalize_loadout
 from otmetki.companion.payload import build_battle_event, build_envelope
 
@@ -83,7 +83,7 @@ class BattleEventLoadoutTest(unittest.TestCase):
         if validator is None:
             self.skipTest('jsonschema is not installed')
         event = build_battle_event(_support.battle_results(), {'vehicle_name': 'ussr:R04_T-34', 'vehicle_tier': 5, 'loadout': RAW})
-        envelope = loads(dumps(build_envelope([event], 'dev_1', 12345678, '0.1.0', '1.45.0', 1790000500)))
+        envelope = decode_json(encode_json(build_envelope([event], 'dev_1', 12345678, '0.1.0', '1.45.0', 1790000500)))
         self.assertEqual(sorted(validator.iter_errors(envelope), key=str), [])
 
 

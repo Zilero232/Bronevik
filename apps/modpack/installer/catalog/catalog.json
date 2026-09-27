@@ -198,8 +198,8 @@
       "presets": ["recommended", "streamer"],
       "title": { "ru": "Прицелы", "en": "Crosshairs" },
       "description": {
-        "ru": "Стили прицела, дальность до цели и время полёта вашего снаряда, пресеты прямо в игре.",
-        "en": "Crosshair styles, distance to target and your own shell flight time, with presets in the game."
+        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов и серверный прицел, выбор в окне мода.",
+        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, and the server reticle, chosen in the mod window."
       },
       "fairPlay": {
         "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
@@ -213,8 +213,8 @@
       "presets": ["recommended"],
       "title": { "ru": "Зум и камера", "en": "Zoom and camera" },
       "description": {
-        "ru": "Кратность снайперского режима, камера без качания и командирская камера, настройка в окне мода вместо правки файлов.",
-        "en": "Sniper zoom steps, a camera without sway and the commander camera, set up in the mod window instead of editing files."
+        "ru": "Шаги снайперского зума, динамическая камера и горизонтальная стабилизация: стандартные настройки игры, выставляемые из окна мода.",
+        "en": "Sniper zoom steps, the dynamic camera and horizontal stabilisation: the game's own settings, set from the mod window."
       },
       "fairPlay": {
         "ru": "Меняет только вашу камеру в пределах правил Lesta.",
@@ -252,8 +252,8 @@
       "presets": ["recommended", "streamer"],
       "title": { "ru": "Удобный ангар", "en": "Hangar tweaks" },
       "description": {
-        "ru": "Карусель техники в несколько рядов и быстрые действия в ангаре.",
-        "en": "A multi-row vehicle carousel and quick actions in the hangar."
+        "ru": "Карусель в один или два ряда и размер карточек из настроек игры, быстрые действия: снять снимаемое оборудование и отправить экипаж в казарму.",
+        "en": "A one- or two-row carousel and tile size from the game's settings, and quick actions: demount removable equipment and send the crew to the barracks."
       },
       "fairPlay": { "ru": "Работает только в ангаре.", "en": "Works in the hangar only." },
       "preview": { "image": "previews/hangar_tweaks.svg" }

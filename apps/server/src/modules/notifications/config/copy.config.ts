@@ -23,5 +23,6 @@ export const NOTIFICATION_LINKS = {
   watchlist: '/me/watchlist',
   competitions: '/competitions',
   streamer: '/s',
-  progress: '/me/progress'
+  progress: '/me/progress',
+  plus: '/plus'
 } as const;

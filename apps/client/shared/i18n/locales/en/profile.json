@@ -4,7 +4,6 @@
     "description": "{nickname} in «Мир танков»: Bronya Index, WN8, win rate, tanks, marks of excellence and sessions."
   },
   "loading": "Loading the player dossier",
-  "overall": "All time",
   "stats": {
     "battles": "Battles",
     "winRate": "Win rate",

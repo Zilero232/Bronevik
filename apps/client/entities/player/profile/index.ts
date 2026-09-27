@@ -10,6 +10,7 @@ export {
   getPlayerSessions,
   getPlayerTanks,
   getPopularPlayers,
+  playerQueries,
   PLAYERS_REQUEST
 } from './api';
 export type { GroupInsight, PlayerMarkRow, PlayerMarks, PlayerTanksFilter, TankInsight } from './api';

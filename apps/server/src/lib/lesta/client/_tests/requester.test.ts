@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import type { LestaOutcome } from '../../outcome';
+
 import { createFetchMock, FAST_RETRY, lestaError, ok } from '../../_tests/fixtures';
 import { LESTA_ERROR_CODE, LestaApiError, LestaHttpError, LestaNetworkError } from '../../errors';
 import { createLestaClient } from '../client';
@@ -135,5 +137,24 @@ describe('lesta requester', () => {
 
     await expect(client.account.info({ accountIds: [1], fields })).rejects.toBeInstanceOf(RangeError);
     expect(calls).toHaveLength(0);
+  });
+
+  it('reports each attempt outcome, a rate-limit envelope and a network failure as degraded', async () => {
+    const replies = [lestaError({ code: 407, message: LESTA_ERROR_CODE.requestLimitExceeded }), ok([])];
+    const { fetch } = createFetchMock(() => replies.shift() ?? ok([]));
+    const outcomes: LestaOutcome[] = [];
+    const client = createLestaClient({ applicationId: APPLICATION_ID, fetch, retry: FAST_RETRY, onOutcome: (outcome) => outcomes.push(outcome) });
+
+    await client.account.list({ search: 'abc' });
+
+    const offline = createLestaClient({
+      applicationId: APPLICATION_ID,
+      fetch: createFetchMock(() => new Error('ECONNRESET')).fetch,
+      retry: { ...FAST_RETRY, retries: 0 },
+      onOutcome: (outcome) => outcomes.push(outcome)
+    });
+
+    await expect(offline.account.list({ search: 'abc' })).rejects.toBeInstanceOf(LestaNetworkError);
+    expect(outcomes).toEqual(['degraded', 'ok', 'degraded']);
   });
 });

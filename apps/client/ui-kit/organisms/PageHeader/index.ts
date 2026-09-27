@@ -1,2 +1,2 @@
 export { PageHeader } from './PageHeader';
-export type { PageBreadcrumb, PageHeaderProps } from './PageHeader.types';
+export type { PageHeaderProps } from './PageHeader.types';

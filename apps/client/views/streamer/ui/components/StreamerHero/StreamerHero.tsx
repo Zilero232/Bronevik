@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { FollowStreamer } from '@/features/streamer/follow-streamer';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Avatar, buttonVariants, LiveLamp } from '@/ui-kit';
+import { Avatar, Breadcrumbs, buttonVariants, LiveLamp } from '@/ui-kit';
 
 import { STREAMER_PAGE } from '../../../config';
 import { useStreamer } from '../../../model/context';
@@ -23,6 +23,7 @@ export const StreamerHero = () => {
 
   return (
     <section className={s.root} data-live={isLive}>
+      <Breadcrumbs items={[{ label: t('crumb'), href: ROUTES.streamers.list }, { label: displayName }]} />
       <div className={s.top}>
         <LiveLamp isLive={isLive} label={isLive ? t('live') : t('offline')} />
         <span className={s.eyebrow}>{t('eyebrow')}</span>

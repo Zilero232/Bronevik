@@ -2,12 +2,15 @@ import { z } from 'zod';
 
 import { tankIdSchema } from '../common/primitives/primitives.schemas';
 import { booleanParam, listParam } from '../common/query/query.schemas';
+import { TANK_ROLES } from '../tanks/tank-insights.constants';
 
 export const vehicleTypeSchema = z.enum(['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG']);
 
 export const tierSchema = z.coerce.number().int().min(1).max(11);
 
 export const nationSchema = z.string().min(1).max(32);
+
+export const tankRoleSchema = z.enum(TANK_ROLES);
 
 export const vehicleImagesSchema = z.object({
   small: z.url().nullable(),
@@ -36,4 +39,8 @@ export const vehicleFilterSchema = z.object({
   collectible: booleanParam.optional()
 });
 
-export const vehicleCatalogSchema = z.array(vehicleSummarySchema);
+export const vehicleCatalogItemSchema = vehicleSummarySchema.extend({
+  role: tankRoleSchema.nullable().describe('Battle role from the game client, null when the vehicle has none')
+});
+
+export const vehicleCatalogSchema = z.array(vehicleCatalogItemSchema);

@@ -15,7 +15,6 @@ import { useProfileContext } from '../../context';
 import { usePlayerTanks } from '../use-profile-queries';
 
 export const useProfileHeader = () => {
-  const t = useTranslations('profile');
   const tPeriods = useTranslations('periods');
   const { profile, period, setPeriod } = useProfileContext();
   const { data: cosmetics } = useProfileCosmetics(profile.summary.accountId);
@@ -41,6 +40,6 @@ export const useProfileHeader = () => {
     banner: cosmetics?.banner ?? null,
     frame: cosmetics?.frame ?? null,
     seasons: (seasons?.items ?? []).slice(0, PROFILE_HEADER.seasons),
-    periodOptions: PROFILE_PERIODS.map((value) => ({ value, label: value === 'overall' ? t('overall') : tPeriods(value) }))
+    periodOptions: PROFILE_PERIODS.map((value) => ({ value, label: tPeriods(value) }))
   };
 };

@@ -1,1 +1,1 @@
-export { queryClient } from './query-client';
+export { getQueryClient, makeQueryClient, queryClient } from './query-client';

@@ -335,7 +335,8 @@
       "hidden": "Account stats are unavailable right now"
     },
     "errorTitle": "Streamer page unavailable",
-    "errorDescription": "Couldn't load the data. Please try again."
+    "errorDescription": "Couldn't load the data. Please try again.",
+    "crumb": "Streamers"
   },
   "settings": {
     "description": "The client settings you play with: graphics, camera, sensitivity, zoom, sight, markers, sound, hardware and mods. Viewers see them on your settings page.",

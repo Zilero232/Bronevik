@@ -7,7 +7,7 @@ import { absoluteUrl, SITEMAP } from '@/shared/seo';
 const robots = (): MetadataRoute.Robots => ({
   rules: {
     userAgent: '*',
-    allow: '/',
+    allow: [...SITEMAP.allow],
     disallow: [...new Set(SITEMAP.disallow.flatMap((path) => LOCALES.map((locale) => localePath({ path, locale }))))]
   },
   sitemap: absoluteUrl(SITEMAP.path),

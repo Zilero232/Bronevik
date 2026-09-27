@@ -5,7 +5,9 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { MarksPage } from '@/views/marks';
+import { marksPageState } from '@/views/marks/server';
 
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
@@ -14,9 +16,11 @@ export const generateMetadata = async () => {
   return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.marks, locale, index: true, follow: true });
 };
 
-const Page = () => (
+const Page = ({ searchParams }: PageProps<'/[locale]/marks'>) => (
   <Suspense>
-    <MarksPage />
+    <PrefetchBoundary state={searchParams.then(marksPageState)}>
+      <MarksPage />
+    </PrefetchBoundary>
   </Suspense>
 );
 

@@ -19,7 +19,7 @@ import s from './AccountShell.module.scss';
 export const AccountShell = ({ children }: AccountShellProps) => {
   const loginHref = useLoginHref();
   const t = useTranslations('me');
-  const { state, isRetrying, retry } = useAccountShell();
+  const { state, section, isRetrying, retry } = useAccountShell();
 
   return (
     <div className={s.root}>
@@ -40,8 +40,9 @@ export const AccountShell = ({ children }: AccountShellProps) => {
                 {t('signIn')}
               </Link>
             }
-            description={t('guestDescription')}
-            title={t('guestTitle')}
+            description={t(`guest.${section.key}.description`)}
+            icon={<section.icon aria-hidden size={28} />}
+            title={t(`guest.${section.key}.title`)}
           />
         ))
         .otherwise(() => (

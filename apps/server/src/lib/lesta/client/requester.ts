@@ -5,6 +5,7 @@ import type { LestaEnvelope } from '../schemas';
 import type { LestaClientOptions, LestaRequester, LestaRequestInput, LestaResponse, ReadEnvelopeInput, SendInput } from './client.types';
 
 import { isRetryableLestaError, LESTA_ERROR_CODE, LestaApiError, LestaHttpError, LestaNetworkError } from '../errors';
+import { classifyLestaResponse } from '../outcome';
 import { noopRateLimiter } from '../rate-limit';
 import { lestaEnvelopeSchema } from '../schemas';
 import { LESTA_API, LESTA_RETRY } from './client.constants';
@@ -26,14 +27,18 @@ const safeJson = (text: string): unknown => {
   }
 };
 
-const readEnvelope = async ({ response, method }: ReadEnvelopeInput): Promise<LestaEnvelope> => {
+const readEnvelope = async ({ response, method, onOutcome }: ReadEnvelopeInput): Promise<LestaEnvelope> => {
   const text = await response.text();
 
   if (!response.ok) {
+    onOutcome?.(classifyLestaResponse({ status: response.status, errorCode: null }));
+
     throw new LestaHttpError({ method, status: response.status, body: text });
   }
 
   const parsed = lestaEnvelopeSchema.safeParse(safeJson(text));
+
+  onOutcome?.(classifyLestaResponse({ status: response.status, errorCode: parsed.data?.status === 'error' ? parsed.data.error.message : null }));
 
   if (!parsed.success) {
     throw new LestaApiError({ code: LESTA_ERROR_CODE.invalidResponse, message: parsed.error.message, method });
@@ -50,7 +55,8 @@ export const createRequester = ({
   rateLimiter = noopRateLimiter,
   retry,
   timeoutMs = LESTA_API.timeoutMs,
-  fetch: fetchImpl = globalThis.fetch
+  fetch: fetchImpl = globalThis.fetch,
+  onOutcome
 }: LestaClientOptions): LestaRequester => {
   const root = normalizeBaseUrl(baseUrl);
   const retryOptions = { ...LESTA_RETRY, ...retry };
@@ -70,10 +76,12 @@ export const createRequester = ({
         signal: AbortSignal.timeout(timeoutMs)
       });
     } catch (error) {
+      onOutcome?.('degraded');
+
       throw new LestaNetworkError({ method, cause: error });
     }
 
-    return readEnvelope({ response, method });
+    return readEnvelope({ response, method, onOutcome });
   };
 
   const sendChecked = async (input: SendInput) => {

@@ -8,7 +8,8 @@
     "lead": "Equipment, consumables, directives, crew and field modification · final Мир танков stats recalculated by the server",
     "picker": "Switch tank",
     "toTank": "Tank page",
-    "share": "Share"
+    "share": "Share",
+    "crumbBuilds": "Builds"
   },
   "share": {
     "done": "Build link copied",
@@ -133,7 +134,7 @@
     "notFoundDescription": "There's no vehicle “{slug}”. Check the link or pick a tank from the list.",
     "errorTitle": "Couldn't load the build",
     "errorDescription": "The server didn't respond. Try again in a few seconds.",
-    "back": "Back to tanks"
+    "back": "All builds"
   },
   "recommended": {
     "loading": "Loading the recommended build…",

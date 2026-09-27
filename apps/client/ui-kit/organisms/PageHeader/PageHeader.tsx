@@ -2,7 +2,7 @@ import { clsx } from 'clsx';
 
 import type { PageHeaderProps } from './PageHeader.types';
 
-import { Breadcrumbs } from './components';
+import { Breadcrumbs } from '../../molecules';
 
 import s from './PageHeader.module.scss';
 

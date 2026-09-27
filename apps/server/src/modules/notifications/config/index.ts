@@ -1,5 +1,6 @@
 export { NOTIFICATION_COPY, NOTIFICATION_LINKS } from './copy.config';
 export { NOTIFICATION_ALWAYS_IN_INBOX, NOTIFICATION_DEFAULTS, NOTIFICATION_DELIVERY, NOTIFICATION_ROUTING, WEB_PUSH } from './delivery.config';
 export { EMAIL_THEME, SMTP_TIMEOUTS } from './email.config';
+export { PLUS_LAUNCH } from './plus-launch.config';
 export { NOTIFICATION_SCHEDULES } from './schedules.config';
 export { FIRST_WIN_REMINDER, MARKS_WATCH, SESSION_REPORT, THRESHOLD_DROP, WEEKLY_DIGEST } from './watchers.config';

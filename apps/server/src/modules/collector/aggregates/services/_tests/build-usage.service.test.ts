@@ -23,7 +23,12 @@ const createService = () => {
   const prisma = mockDeep<PrismaService>();
 
   prisma.gameVersion.findFirst.mockResolvedValue(null);
-  prisma.$queryRaw.mockResolvedValue([{ account_id: 1n, rank: 0 }]);
+
+  prisma.$queryRaw.mockResolvedValue([
+    { tank_id: 7, account_id: 1n, rank: 0 },
+    { tank_id: 8, account_id: 2n, rank: 0 }
+  ]);
+
   prisma.$transaction.mockResolvedValue([]);
   prisma.buildUsageAggregate.deleteMany.mockResolvedValue({ count: 2 });
 
@@ -54,5 +59,20 @@ describe('BuildUsageService', () => {
       'random:top1:1',
       'onslaught:all:1'
     ]);
+  });
+
+  it('ranks the cohorts of every tank with one query', async () => {
+    const { prisma, service } = createService();
+
+    prisma.battle.findMany
+      .mockResolvedValueOnce([mock<Battle>({ tankId: 7 }), mock<Battle>({ tankId: 8 })])
+      .mockResolvedValue([battle({ accountId: 2n, battleType: '1', result: 'win' })]);
+
+    await service.compute();
+
+    const cohorts = prisma.buildUsageAggregate.upsert.mock.calls.map(([args]) => `${args.create.tankId}:${args.create.cohort}`);
+
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
+    expect(cohorts).toEqual(['7:all', '8:all', '8:top10', '8:top1']);
   });
 });

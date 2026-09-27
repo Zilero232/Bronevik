@@ -10,6 +10,7 @@ import {
   EmailService,
   FirstWinRemindersService,
   MarksWatchService,
+  PlusLaunchService,
   SessionReportsService,
   ThresholdDropsService,
   WebPushService,
@@ -27,6 +28,7 @@ import {
     SessionReportsService,
     ThresholdDropsService,
     WeeklyDigestService,
+    PlusLaunchService,
     DeliverProcessor,
     NotificationEventsProcessor,
     NotificationSchedulesService

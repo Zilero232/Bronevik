@@ -1,7 +1,7 @@
-export type BoardCell = {
+import type { CompareCell } from '../../../lib/compare-rows';
+
+export type BoardCell = Omit<CompareCell, 'value'> & {
   display: string;
-  ratio: number | null;
-  isBest: boolean;
 };
 
 export type BoardRow = {

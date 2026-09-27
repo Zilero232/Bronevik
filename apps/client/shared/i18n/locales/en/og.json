@@ -2,7 +2,8 @@
   "kinds": {
     "tank": "TANK",
     "build": "BUILD",
-    "clan": "CLAN"
+    "clan": "CLAN",
+    "site": "STATS"
   },
   "tankLine": "Tier {tier} · {type}",
   "winRate": "Win rate",

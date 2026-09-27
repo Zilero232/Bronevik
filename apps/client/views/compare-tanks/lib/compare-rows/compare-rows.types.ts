@@ -4,6 +4,9 @@ export type CompareCell = {
   value: number | null;
   ratio: number | null;
   isBest: boolean;
+  isWorst: boolean;
+  delta: number | null;
+  isLowerBetter: boolean;
 };
 
 export type CompareRowInput = {

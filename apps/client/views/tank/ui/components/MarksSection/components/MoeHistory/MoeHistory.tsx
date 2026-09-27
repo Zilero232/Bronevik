@@ -23,6 +23,7 @@ export const MoeHistory = () => {
         skeleton={<Skeleton height={TANK_PAGE.chartHeight} shape='block' width='100%' />}
       >
         <LineChart
+          hasTableToggle
           ariaLabel={t('historyTitle')}
           formatValue={formatValue}
           height={TANK_PAGE.chartHeight}

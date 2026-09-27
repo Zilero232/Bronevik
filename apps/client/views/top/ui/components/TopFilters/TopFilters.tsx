@@ -23,7 +23,7 @@ export const TopFilters = () => {
     useTopFilters();
 
   const metrics = TOP_METRICS[scope].map((value) => ({ value, label: t(`metrics.${value}`) }));
-  const periods = TOP_PERIODS.map((value) => ({ value, label: value === 'overall' ? t('overall') : tPeriods(value) }));
+  const periods = TOP_PERIODS.map((value) => ({ value, label: tPeriods(value) }));
   const tiers = [{ value: 'all' as const, label: t('allTiers') }, ...TIERS.map((value) => ({ value: `${value}` as const, label: toRoman(value) }))];
   const types = [
     { value: 'all' as const, label: t('allTypes') },

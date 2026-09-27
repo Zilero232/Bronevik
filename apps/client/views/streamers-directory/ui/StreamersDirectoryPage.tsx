@@ -1,12 +1,12 @@
 'use client';
 
-import { ArrowRight, SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { MyFollowsStrip } from '@/features/streamer/follow-streamer';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants, Card, DataSourceNote, EmptyState, FilteredEmptyState, PageHeader, QueryState, Skeleton } from '@/ui-kit';
+import { StreamersHubNav } from '@/widgets/streamer/streamers-hub';
 
 import { DIRECTORY } from '../config';
 import { useStreamersDirectory } from '../model/hooks';
@@ -20,22 +20,8 @@ export const StreamersDirectoryPage = () => {
 
   return (
     <div className={s.root}>
-      <PageHeader
-        actions={
-          <>
-            <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={ROUTES.streamers.settings.table}>
-              <SlidersHorizontal size={DIRECTORY.iconSize} />
-              {t('head.settings')}
-            </Link>
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.streamers.forStreamers}>
-              {t('head.forStreamers')}
-              <ArrowRight size={DIRECTORY.iconSize} />
-            </Link>
-          </>
-        }
-        description={t('head.description')}
-        title={t('head.title')}
-      />
+      <PageHeader description={t('head.description')} title={t('head.title')} />
+      <StreamersHubNav />
       <MyFollowsStrip />
       <DirectoryFilters />
       <QueryState

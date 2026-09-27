@@ -14,6 +14,8 @@ export type TankOgCardInput = EntityOgInput & {
   kind: EntityOgKind;
 };
 
+export type SiteOgCardInput = EntityOgInput;
+
 export type ClanOgCardInput = EntityOgInput & {
   page: Pick<ClanPage, 'clan' | 'stats'>;
 };

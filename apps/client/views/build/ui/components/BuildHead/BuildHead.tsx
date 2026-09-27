@@ -35,6 +35,7 @@ export const BuildHead = () => {
             </Button>
           </>
         }
+        breadcrumbs={[{ label: t('crumbBuilds'), href: ROUTES.builds.list }, { label: vehicle.name }]}
         className={s.header}
         description={t('lead')}
         meta={<TankIdentity tank={tank} />}

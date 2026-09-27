@@ -101,30 +101,36 @@ export class DeliveryService {
       return 0;
     }
 
-    const key = `${WEEKLY_DIGEST.dedupePrefix}${userId}:${weekKey}`;
-    const claimed = await this.redis.set(key, '1', 'EX', WEEKLY_DIGEST.dedupeTtlSeconds, 'NX');
-
-    if (claimed !== 'OK') {
-      return 0;
-    }
-
     const locale = resolveNotificationLocale(user.locale);
     const rendered = renderDigest({ digest, locale, webUrl: this.config.get('WEB_URL') });
+    const failures: unknown[] = [];
+    let sent = 0;
 
-    try {
-      for (const channel of channels) {
+    for (const channel of channels) {
+      const key = `${WEEKLY_DIGEST.dedupePrefix}${userId}:${weekKey}:${channel}`;
+
+      if ((await this.redis.set(key, '1', 'EX', WEEKLY_DIGEST.dedupeTtlSeconds, 'NX')) !== 'OK') {
+        continue;
+      }
+
+      try {
         await match(channel)
           .with('email', () => this.email.sendDigest({ to: user.email, locale, rendered, digest }))
           .with('telegram', () => (telegramId === null ? undefined : this.telegram.sendNotification({ telegramId, locale, ...rendered })))
           .otherwise(() => undefined);
-      }
-    } catch (error) {
-      await this.redis.del(key);
 
-      throw error;
+        sent += 1;
+      } catch (error) {
+        await this.redis.del(key);
+        failures.push(error);
+      }
     }
 
-    return channels.length;
+    if (failures.length > 0) {
+      throw failures[0];
+    }
+
+    return sent;
   }
 
   private async deliverTo(input: DeliverToInput): Promise<void> {

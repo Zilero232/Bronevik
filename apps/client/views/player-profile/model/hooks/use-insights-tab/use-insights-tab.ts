@@ -9,7 +9,6 @@ import { PROFILE_PERIODS } from '../../../config';
 import { usePlayerInsights } from '../use-profile-queries';
 
 export const useInsightsTab = () => {
-  const t = useTranslations('profile');
   const tPeriods = useTranslations('periods');
 
   const [period, setPeriod] = useState<InsightsPeriod>('overall');
@@ -19,7 +18,7 @@ export const useInsightsTab = () => {
   return {
     period,
     setPeriod,
-    periodOptions: PROFILE_PERIODS.map((value) => ({ value, label: value === 'overall' ? t('overall') : tPeriods(value) })),
+    periodOptions: PROFILE_PERIODS.map((value) => ({ value, label: tPeriods(value) })),
     query
   };
 };

@@ -36,9 +36,23 @@ export const HistoryChart = ({ metric, series }: HistoryChartProps) => {
         </div>
       </dl>
       {isBar ? (
-        <BarChart ariaLabel={t(`metric.${metric}`)} formatValue={formatValue} height={HISTORY_CHART.height} labels={labels} series={chartSeries} />
+        <BarChart
+          hasTableToggle
+          ariaLabel={t(`metric.${metric}`)}
+          formatValue={formatValue}
+          height={HISTORY_CHART.height}
+          labels={labels}
+          series={chartSeries}
+        />
       ) : (
-        <LineChart ariaLabel={t(`metric.${metric}`)} formatValue={formatValue} height={HISTORY_CHART.height} labels={labels} series={chartSeries} />
+        <LineChart
+          hasTableToggle
+          ariaLabel={t(`metric.${metric}`)}
+          formatValue={formatValue}
+          height={HISTORY_CHART.height}
+          labels={labels}
+          series={chartSeries}
+        />
       )}
       {markers.length > 0 && (
         <ul aria-label={t('markers')} className={s.markers}>

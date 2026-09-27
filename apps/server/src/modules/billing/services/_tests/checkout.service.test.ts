@@ -1,5 +1,5 @@
 import { PLUS } from '@otmetki/schemas';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PromoCode } from '../../../../../generated';
@@ -77,8 +77,8 @@ describe('CheckoutService.createCheckout', () => {
     expect(amountRub).toBeLessThan(PLUS_PLANS.quarterly.priceRub);
     expect(yookassa.createPayment).toHaveBeenCalledWith(expect.objectContaining({ amountRub }));
 
-    expect(prisma.payment.create).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ amount: amountRub, promoCode: 'SPRING' }) })
+    expect(prisma.payment.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ create: expect.objectContaining({ amount: amountRub, promoCode: 'SPRING' }) })
     );
   });
 
@@ -94,16 +94,17 @@ describe('CheckoutService.createCheckout', () => {
     expect(yookassa.createPayment).not.toHaveBeenCalled();
   });
 
-  it('gives every checkout its own idempotence key', async () => {
+  it('sends a double submit to YooKassa with one idempotence key', async () => {
     const { service, yookassa } = createService();
 
+    vi.useFakeTimers({ now: new Date('2026-09-25T12:00:10Z') });
     await service.createCheckout({ userId: 'u1', plan: 'monthly' });
     await service.createCheckout({ userId: 'u1', plan: 'monthly' });
+    vi.useRealTimers();
 
     const [first, second] = yookassa.createPayment.mock.calls.map(([input]) => input.idempotenceKey);
 
-    expect(first).toEqual(expect.any(String));
-    expect(second).not.toBe(first);
+    expect(second).toBe(first);
   });
 
   it('returns the shopper to the billing page of the site', async () => {
@@ -127,9 +128,10 @@ describe('CheckoutService.createCheckout', () => {
 
     await expect(service.createCheckout({ userId: 'u1', plan: 'monthly' })).resolves.toEqual({ confirmationUrl, paymentId: 'pay-1' });
 
-    expect(prisma.payment.create).toHaveBeenCalledWith(
+    expect(prisma.payment.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ userId: 'u1', yookassaPaymentId: 'pay-1', status: 'pending', plan: 'monthly', promoCode: null })
+        where: { yookassaPaymentId: 'pay-1' },
+        create: expect.objectContaining({ userId: 'u1', yookassaPaymentId: 'pay-1', status: 'pending', plan: 'monthly', promoCode: null })
       })
     );
   });
@@ -140,6 +142,6 @@ describe('CheckoutService.createCheckout', () => {
     yookassa.createPayment.mockResolvedValue(created({}));
 
     await expect(service.createCheckout({ userId: 'u1', plan: 'monthly' })).rejects.toMatchObject({ response: { code: 'PAYMENT_FAILED' } });
-    expect(prisma.payment.create).not.toHaveBeenCalled();
+    expect(prisma.payment.upsert).not.toHaveBeenCalled();
   });
 });

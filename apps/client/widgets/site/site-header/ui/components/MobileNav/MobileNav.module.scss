@@ -1,5 +1,15 @@
 @use '@/shared/styles/mixins' as *;
 
+.top {
+  @include stack(var(--space-3));
+
+  padding-bottom: var(--space-4);
+}
+
+.search {
+  width: 100%;
+}
+
 .nav {
   display: flex;
   flex-direction: column;

@@ -4,11 +4,12 @@ import { ANALYTICS_PERIODS } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { useLinkedAccounts } from '@/entities/auth/session';
+import { PERIOD_LABEL } from '@/shared/constants';
 
 import { useAnalyticsFilters } from '../../context';
 
 export const useAnalyticsToolbar = () => {
-  const t = useTranslations('analytics.periods');
+  const tPeriods = useTranslations('periods');
   const { period, account, setPeriod, setAccount } = useAnalyticsFilters();
   const { data } = useLinkedAccounts();
 
@@ -17,7 +18,7 @@ export const useAnalyticsToolbar = () => {
 
   return {
     period,
-    periodOptions: ANALYTICS_PERIODS.map((value) => ({ value, label: t(value) })),
+    periodOptions: ANALYTICS_PERIODS.map((value) => ({ value, label: tPeriods(PERIOD_LABEL[value]) })),
     accountItems: accounts.length > 1 ? accounts.map(({ accountId, nickname }) => ({ value: String(accountId), label: nickname })) : [],
     accountValue: String(account ?? primary?.accountId ?? ''),
     setPeriod,

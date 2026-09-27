@@ -85,7 +85,10 @@ export class PromoService {
     const inserted = await db.promoRedemption.createMany({ data: [{ code, userId }], skipDuplicates: true });
 
     if (inserted.count > 0) {
-      await db.promoCode.update({ where: { code }, data: { usedCount: { increment: 1 } } });
+      await db.promoCode.updateMany({
+        where: { code, OR: [{ maxUses: null }, { usedCount: { lt: db.promoCode.fields.maxUses } }] },
+        data: { usedCount: { increment: 1 } }
+      });
     }
   }
 }

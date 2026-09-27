@@ -23,7 +23,15 @@ export type ChartBaseProps = {
   yDomain?: [number, number];
   ariaLabel?: string;
   className?: string;
+  hasTableToggle?: boolean;
   formatValue?: (value: number) => string;
+};
+
+export type ChartDataTableProps = Pick<ChartBaseProps, 'labels' | 'series'> & {
+  id: string;
+  caption?: string;
+  isVisible: boolean;
+  formatValue: (value: number) => string;
 };
 
 export type ChartAxesProps = {

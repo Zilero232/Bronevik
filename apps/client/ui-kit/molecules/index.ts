@@ -1,5 +1,7 @@
 export { ActionStrip } from './ActionStrip';
 export type { ActionStripLink, ActionStripProps } from './ActionStrip';
+export { Breadcrumbs } from './Breadcrumbs';
+export type { BreadcrumbsProps, PageBreadcrumb } from './Breadcrumbs';
 export { Card, CardBody, CardHeader } from './Card';
 export type { CardHeaderProps, CardProps, CardVariant } from './Card';
 export { CellBar } from './CellBar';

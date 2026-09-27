@@ -40,7 +40,17 @@ describe('compareRow', () => {
   it('keeps a missing value empty instead of treating it as zero', () => {
     const [missing] = compareRow({ key: HIGHER_KEY, values: [null, 4, 8] });
 
-    expect(missing).toEqual({ value: null, ratio: null, isBest: false });
+    expect(missing).toMatchObject({ value: null, ratio: null, isBest: false, isWorst: false, delta: null });
+  });
+
+  it('marks the worst value and gives the rest a signed delta to the best', () => {
+    const higher = compareRow({ key: HIGHER_KEY, values: [300, 400, 350] });
+    const lower = compareRow({ key: LOWER_KEY, values: [10, 8, 12] });
+
+    expect(higher.map(({ isWorst }) => isWorst)).toEqual([true, false, false]);
+    expect(higher.map(({ delta }) => delta)).toEqual([-0.25, null, -0.125]);
+    expect(lower.map(({ isWorst }) => isWorst)).toEqual([false, false, true]);
+    expect(lower[2].delta).toBe(0.5);
   });
 
   it('draws no bar for negative values', () => {

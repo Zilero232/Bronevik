@@ -16,11 +16,7 @@
     "description": "Your battles, from the «Three Marks» mod and the Lesta API."
   },
   "periods": {
-    "label": "Period",
-    "d30": "30 d",
-    "d90": "90 d",
-    "y1": "Year",
-    "all": "All time"
+    "label": "Period"
   },
   "account": {
     "label": "Account"

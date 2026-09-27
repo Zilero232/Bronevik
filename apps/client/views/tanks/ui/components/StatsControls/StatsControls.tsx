@@ -13,6 +13,7 @@ import s from './StatsControls.module.scss';
 
 export const StatsControls = () => {
   const t = useTranslations('tanks.controls');
+  const tPeriods = useTranslations('periods');
   const [{ period, cohort, view }, setState] = useTanksState();
 
   return (
@@ -22,7 +23,7 @@ export const StatsControls = () => {
           <div className={s.row}>
             <SegmentedControl
               aria-label={t('period')}
-              options={serverPeriodSchema.options.map((value) => ({ value, label: t(`periods.${value}`) }))}
+              options={serverPeriodSchema.options.map((value) => ({ value, label: tPeriods(value) }))}
               size='sm'
               value={period}
               onChange={(next) => setState({ period: next })}

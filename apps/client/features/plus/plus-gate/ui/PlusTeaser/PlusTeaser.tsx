@@ -15,6 +15,7 @@ import type { PlusTeaserProps } from './PlusTeaser.types';
 import { PLUS_FEATURE_ICONS, PLUS_GATE } from '../../config';
 import { usePlusTeaser } from '../../model/hooks';
 import { PlusBadge } from '../PlusBadge';
+import { TeaserPreview } from './components';
 
 import s from './PlusTeaser.module.scss';
 
@@ -28,6 +29,7 @@ export const PlusTeaser = ({ feature, className }: PlusTeaserProps) => {
 
   return (
     <section aria-labelledby={titleId} className={clsx(s.root, className)}>
+      <TeaserPreview feature={feature} />
       <span aria-hidden className={s.icon}>
         <Icon size={PLUS_GATE.iconSize} />
       </span>
@@ -54,9 +56,14 @@ export const PlusTeaser = ({ feature, className }: PlusTeaserProps) => {
             </Button>
           ))
           .with({ action: 'promo' }, () => (
-            <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.account.billing}>
-              {t('teaser.promo')}
-            </Link>
+            <>
+              <Link className={buttonVariants({ variant: 'secondary' })} href={ROUTES.account.billing}>
+                {t('teaser.promo')}
+              </Link>
+              <Link className={buttonVariants({ variant: 'ghost' })} href={`${ROUTES.plus}${PLUS_GATE.checkoutHash}`}>
+                {t('teaser.notify')}
+              </Link>
+            </>
           ))
           .with({ action: 'subscribe' }, () => (
             <Link className={buttonVariants()} href={ROUTES.plus}>

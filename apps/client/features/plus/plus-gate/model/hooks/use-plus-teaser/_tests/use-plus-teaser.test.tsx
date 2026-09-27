@@ -113,7 +113,10 @@ describe('usePlusTeaser', () => {
 
     act(() => result.current.onStartTrial());
 
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith(messages.en.plus.teaser.trialFailed));
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(messages.en.plus.teaser.trialFailed, expect.objectContaining({ action: expect.anything() }))
+    );
+
     expect(result.current.action).toBe('trial');
   });
 });

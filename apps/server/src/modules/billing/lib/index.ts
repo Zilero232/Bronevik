@@ -5,5 +5,5 @@ export type { PlusPlan } from './pricing';
 export { promoRejection } from './promo-check';
 export { isTrialEligible, trialDaysFor } from './trial';
 export { buildAllowList, isAllowedIp } from './webhook-ip';
-export { describeCard, YooKassaClient, yookassaWebhookSchema } from './yookassa';
+export { checkoutIdempotenceKey, describeCard, YooKassaClient, yookassaWebhookSchema } from './yookassa';
 export type { YooKassaPayment, YooKassaWebhook } from './yookassa';

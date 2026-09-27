@@ -1144,7 +1144,6 @@ export {
   tankObtainSchema,
   tankOfferSchema,
   tankResearchStepSchema,
-  tankRoleSchema,
   tankSourceSchema,
   tankStatusSchema,
   tankTraitsFilterSchema,
@@ -1220,14 +1219,16 @@ export { techTreeEdgeSchema, techTreeNodeSchema, techTreeParamsSchema, techTreeS
 export type { TechTree, TechTreeEdge, TechTreeNode, TechTreeParams } from './tree';
 export {
   nationSchema,
+  tankRoleSchema,
   tierSchema,
+  vehicleCatalogItemSchema,
   vehicleCatalogSchema,
   vehicleFilterSchema,
   vehicleImagesSchema,
   vehicleSummarySchema,
   vehicleTypeSchema
 } from './vehicles';
-export type { VehicleCatalog, VehicleFilter, VehicleImages, VehicleSummary, VehicleType } from './vehicles';
+export type { VehicleCatalog, VehicleCatalogItem, VehicleFilter, VehicleImages, VehicleSummary, VehicleType } from './vehicles';
 export { isPlusDigest, WATCHLIST, WATCHLIST_DIGESTS, WATCHLIST_PERIODS } from './watchlist';
 export {
   addWatchlistPlayerSchema,

@@ -3,6 +3,7 @@ export { EmailService } from './email.service';
 export { FirstWinRemindersService } from './first-win-reminders.service';
 export { InboxService } from './inbox.service';
 export { MarksWatchService } from './marks-watch.service';
+export { PlusLaunchService } from './plus-launch.service';
 export { PushSubscriptionsService } from './push-subscriptions.service';
 export { SessionReportsService } from './session-reports.service';
 export { ThresholdDropsService } from './threshold-drops.service';

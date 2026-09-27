@@ -8,9 +8,11 @@ import { tankRouteEntity, topTankSlugs } from '@/entities/tank/tank/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';
+import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { RouteGuard } from '@/shared/seo/route-guard';
 import { BuildPage } from '@/views/build';
+import { buildPageState } from '@/views/build/server';
 
 export const generateStaticParams = async () => (await topTankSlugs({ fallback: ROUTE_STATIC_PARAMS.fallback.tank })).map((tank) => ({ tank }));
 
@@ -26,7 +28,8 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/builds/[
     path: ROUTES.builds.detail(tank),
     locale,
     index: isFound,
-    follow: isFound
+    follow: isFound,
+    hasOwnImage: true
   });
 };
 
@@ -36,7 +39,9 @@ const Page = ({ params }: PageProps<'/[locale]/builds/[tank]'>) => (
       <RouteGuard entity={params.then(({ tank }) => tankRouteEntity(tank))} />
     </Suspense>
     <Suspense>
-      <BuildPage />
+      <PrefetchBoundary state={params.then(({ tank }) => buildPageState(decodeURIComponent(tank)))}>
+        <BuildPage />
+      </PrefetchBoundary>
     </Suspense>
     <Suspense>
       <RequestTime />

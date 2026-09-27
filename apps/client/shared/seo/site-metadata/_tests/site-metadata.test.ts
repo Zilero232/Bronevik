@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { SITE } from '@/shared/config';
+import { ROUTES } from '@/shared/constants';
 import { DEFAULT_LOCALE, localePath, LOCALES } from '@/shared/i18n';
 
 import { createPageMetadata } from '../page-metadata';
@@ -51,5 +52,13 @@ describe('createPageMetadata', () => {
 
     expect(metadata.openGraph).toMatchObject({ siteName: SITE.name });
     expect(metadata.twitter).toMatchObject({ card: 'summary_large_image' });
+  });
+
+  it('falls back to the site card unless the page draws its own image', () => {
+    const plain = createPageMetadata({ title: 'x', description: '', locale: DEFAULT_LOCALE });
+    const own = createPageMetadata({ title: 'x', description: '', locale: DEFAULT_LOCALE, hasOwnImage: true });
+
+    expect(plain.openGraph?.images).toEqual([expect.objectContaining({ url: ROUTES.api.siteCard(DEFAULT_LOCALE) })]);
+    expect(own.openGraph).not.toHaveProperty('images');
   });
 });

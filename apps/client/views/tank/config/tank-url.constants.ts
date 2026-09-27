@@ -1,5 +1,5 @@
 import { serverPeriodSchema } from '@otmetki/schemas';
-import { parseAsStringLiteral } from 'nuqs';
+import { parseAsStringLiteral } from 'nuqs/server';
 
 import { TOP_METRICS } from './tank-page.constants';
 

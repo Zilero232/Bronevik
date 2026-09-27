@@ -2,12 +2,10 @@
 
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 
-import { listMoe } from '@/entities/player/marks';
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
-import { QUERY_KEYS } from '@/shared/constants';
 
-import { MOE_LIST } from '../../../config';
-import { nextOffset } from '../../../lib/moe-pages';
+import { marksQueries } from '../../../api';
+import { moeFeedParams } from '../../../lib/moe-feed-params';
 import { filterByName, latestUpdate } from '../../../lib/moe-rows';
 import { useFetchAllPages } from '../use-fetch-all-pages';
 import { useMarksUrlState } from '../use-marks-url-state';
@@ -15,15 +13,8 @@ import { useMarksUrlState } from '../use-marks-url-state';
 export const useMoeRows = () => {
   const filters = useVehicleFilters();
   const [{ sort, order, q }] = useMarksUrlState();
-  const params = { ...filters.query, sort, order, limit: MOE_LIST.pageLimit };
 
-  const query = useInfiniteQuery({
-    queryKey: QUERY_KEYS.marks.feed(params),
-    queryFn: ({ signal, pageParam }) => listMoe({ ...params, offset: pageParam, signal }),
-    initialPageParam: 0,
-    getNextPageParam: nextOffset,
-    placeholderData: keepPreviousData
-  });
+  const query = useInfiniteQuery({ ...marksQueries.feed(moeFeedParams({ vehicle: filters.query, sort, order })), placeholderData: keepPreviousData });
 
   useFetchAllPages(query);
 

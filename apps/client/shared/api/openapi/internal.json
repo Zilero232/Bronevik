@@ -3867,24 +3867,7 @@
     "/mod/ingest": {
       "post": {
         "operationId": "ModController_ingest",
-        "parameters": [
-          {
-            "name": "x-otmetki-device",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-otmetki-signature",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "default": {
             "description": "",
@@ -8225,24 +8208,7 @@
     "/mod/settings": {
       "post": {
         "operationId": "ModSettingsController_export",
-        "parameters": [
-          {
-            "name": "x-otmetki-device",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-otmetki-signature",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "204": {
             "description": ""
@@ -8254,24 +8220,7 @@
     "/mod/settings/apply/poll": {
       "post": {
         "operationId": "ModSettingsController_poll",
-        "parameters": [
-          {
-            "name": "x-otmetki-device",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-otmetki-signature",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "default": {
             "description": "",
@@ -8298,22 +8247,6 @@
             "schema": {
               "format": "uuid",
               "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-otmetki-device",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-otmetki-signature",
-            "required": true,
-            "in": "header",
-            "schema": {
               "type": "string"
             }
           }
@@ -8480,24 +8413,7 @@
     "/replays/mod": {
       "post": {
         "operationId": "ReplaysController_uploadFromMod",
-        "parameters": [
-          {
-            "name": "x-otmetki-device",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-otmetki-signature",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "201": {
             "description": "",
@@ -21244,9 +21160,39 @@
               },
               "required": ["small", "contour", "big"],
               "additionalProperties": false
+            },
+            "role": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "HT_assault",
+                    "HT_break",
+                    "HT_universal",
+                    "HT_support",
+                    "MT_universal",
+                    "MT_sniper",
+                    "MT_assault",
+                    "MT_support",
+                    "LT_universal",
+                    "LT_wheeled",
+                    "ATSPG_sniper",
+                    "ATSPG_assault",
+                    "ATSPG_support",
+                    "ATSPG_universal",
+                    "SPG",
+                    "SPG_assault",
+                    "SPG_flame"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Battle role from the game client, null when the vehicle has none"
             }
           },
-          "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+          "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images", "role"],
           "additionalProperties": false
         }
       },
@@ -32762,7 +32708,8 @@
                 "replay_overflow",
                 "streamer_live",
                 "tank_level_up",
-                "tank_challenge_done"
+                "tank_challenge_done",
+                "plus_checkout_open"
               ],
               "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
             }
@@ -32836,7 +32783,8 @@
                 "replay_overflow",
                 "streamer_live",
                 "tank_level_up",
-                "tank_challenge_done"
+                "tank_challenge_done",
+                "plus_checkout_open"
               ],
               "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
             }
@@ -32908,7 +32856,8 @@
                 "replay_overflow",
                 "streamer_live",
                 "tank_level_up",
-                "tank_challenge_done"
+                "tank_challenge_done",
+                "plus_checkout_open"
               ],
               "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
             }
@@ -33588,7 +33537,7 @@
         "properties": {
           "code": {
             "type": "string",
-            "pattern": "^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$"
+            "pattern": "^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{10}$"
           },
           "account_id": {
             "type": "integer",
@@ -41889,7 +41838,8 @@
                     "replay_overflow",
                     "streamer_live",
                     "tank_level_up",
-                    "tank_challenge_done"
+                    "tank_challenge_done",
+                    "plus_checkout_open"
                   ],
                   "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
                 },

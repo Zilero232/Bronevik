@@ -7,6 +7,7 @@ import {
   CalendarClock,
   ChevronsUp,
   ClipboardList,
+  Crown,
   Eye,
   Flag,
   ListChecks,
@@ -47,5 +48,6 @@ export const INBOX_EVENT = {
   competition_finished: { icon: Swords, tone: 'success' },
   streamer_live: { icon: Radio, tone: 'accent' },
   tank_level_up: { icon: ChevronsUp, tone: 'success' },
-  tank_challenge_done: { icon: ListChecks, tone: 'success' }
+  tank_challenge_done: { icon: ListChecks, tone: 'success' },
+  plus_checkout_open: { icon: Crown, tone: 'premium' }
 } as const satisfies Record<NotificationEvent, InboxEventLook>;

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { isNonNullish } from 'remeda';
 
 import type { LestaClients } from '../../../../core';
+import type { LatestSpecRow } from '../queries';
 import type { WriteVehicleInput } from '../reference.types';
 
 import { toJsonValue } from '../../../../common/lib';
@@ -9,6 +10,7 @@ import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { vehicleImages } from '../../../../lib/lesta';
 import { REFERENCE } from '../config';
 import { previousTankIds, specDiff, toVehicleType, vehicleSlugs } from '../lib/encyclopedia';
+import { latestSpecHistorySql } from '../queries';
 
 @Injectable()
 export class VehicleSyncService {
@@ -26,15 +28,8 @@ export class VehicleSyncService {
 
     const slugs = vehicleSlugs({ vehicles });
     const previous = previousTankIds(vehicles);
-    const history = new Map(
-      (
-        await this.prisma.vehicleSpecHistory.findMany({
-          where: { gameVersionId: { not: gameVersionId } },
-          orderBy: { capturedAt: 'desc' },
-          distinct: ['tankId']
-        })
-      ).map((row) => [row.tankId, row.specs])
-    );
+    const latest = await this.prisma.$queryRaw<LatestSpecRow[]>(latestSpecHistorySql(gameVersionId));
+    const history = new Map(latest.map((row) => [row.tankId, row.specs]));
 
     let written = 0;
 

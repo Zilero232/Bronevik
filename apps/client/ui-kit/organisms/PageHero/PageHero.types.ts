@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
 import type { TankImageSubject } from '../../atoms';
+import type { PageBreadcrumb } from '../../molecules';
 import type { BattleBackdropTone } from '../BattleBackdrop';
-import type { PageBreadcrumb } from '../PageHeader';
 
 export type PageHeroArt =
   | { kind: 'clan'; emblem: string | null; color?: string | null }

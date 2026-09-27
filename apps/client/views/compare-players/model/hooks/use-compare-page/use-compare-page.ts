@@ -9,7 +9,6 @@ import { useCompareState } from '../use-compare-state';
 import { useComparison } from '../use-comparison';
 
 export const useComparePage = () => {
-  const t = useTranslations('compare');
   const tPeriods = useTranslations('periods');
   const { ids, period, setPeriod, canAdd, add, remove } = useCompareState();
   const query = useComparison(ids);
@@ -18,7 +17,7 @@ export const useComparePage = () => {
     ids,
     period,
     setPeriod,
-    periodOptions: COMPARE_PERIODS.map((value) => ({ value, label: value === 'overall' ? t('overall') : tPeriods(value) })),
+    periodOptions: COMPARE_PERIODS.map((value) => ({ value, label: tPeriods(value) })),
     canAdd,
     add,
     remove,

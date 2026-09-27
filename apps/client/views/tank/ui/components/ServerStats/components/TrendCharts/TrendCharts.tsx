@@ -27,6 +27,7 @@ export const TrendCharts = () => {
             <div className={s.chart}>
               <span className={s.label}>{t('trendWinRate')}</span>
               <LineChart
+                hasTableToggle
                 ariaLabel={t('trendWinRate')}
                 formatValue={formatPercent}
                 height={TANK_PAGE.chartHeight}
@@ -37,6 +38,7 @@ export const TrendCharts = () => {
             <div className={s.chart}>
               <span className={s.label}>{t('trendDamage')}</span>
               <LineChart
+                hasTableToggle
                 ariaLabel={t('trendDamage')}
                 formatValue={formatDamage}
                 height={TANK_PAGE.chartHeight}

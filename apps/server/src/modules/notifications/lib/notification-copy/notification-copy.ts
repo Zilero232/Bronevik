@@ -136,6 +136,7 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       values: { tankName: event.tankName, shells: event.shells },
       path: NOTIFICATION_LINKS.progress
     }))
+    .with({ event: 'plusCheckoutOpen' }, () => ({ message: 'plus-checkout-open', values: {}, path: NOTIFICATION_LINKS.plus }))
     .exhaustive();
 
 export const renderNotification = ({ notification, locale, webUrl }: RenderNotificationInput): RenderedNotification => {

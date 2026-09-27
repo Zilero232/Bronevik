@@ -3,12 +3,12 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { TELEGRAM_BOT } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants, Skeleton } from '@/ui-kit';
 
 import { useCheckoutAction } from '../../../../../model/hooks';
+import { CheckoutNotify } from '../CheckoutNotify';
 
 import s from './CheckoutAction.module.scss';
 
@@ -53,9 +53,7 @@ export const CheckoutAction = () => {
                 <Link className={buttonVariants()} href={ROUTES.account.billing}>
                   {t('teaser.promo')}
                 </Link>
-                <a className={buttonVariants({ variant: 'secondary' })} href={TELEGRAM_BOT.url} rel='noreferrer' target='_blank'>
-                  {t('checkout.action.notify')}
-                </a>
+                <CheckoutNotify />
               </>
             )}
           </>

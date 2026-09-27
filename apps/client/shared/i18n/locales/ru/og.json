@@ -2,7 +2,8 @@
   "kinds": {
     "tank": "ТАНК",
     "build": "СБОРКА",
-    "clan": "КЛАН"
+    "clan": "КЛАН",
+    "site": "СТАТИСТИКА"
   },
   "tankLine": "{tier} уровень · {type}",
   "winRate": "Победы",

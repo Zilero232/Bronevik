@@ -1,5 +1,5 @@
 import { BUILD_USAGE } from '@otmetki/schemas';
-import { parseAsStringLiteral } from 'nuqs';
+import { parseAsStringLiteral } from 'nuqs/server';
 
 export const SHOWCASE = {
   sources: ['top10', 'all', 'top1'],

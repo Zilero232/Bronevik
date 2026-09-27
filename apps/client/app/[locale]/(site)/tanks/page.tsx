@@ -5,7 +5,9 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { TanksPage } from '@/views/tanks';
+import { tanksPageState } from '@/views/tanks/server';
 
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
@@ -14,9 +16,11 @@ export const generateMetadata = async () => {
   return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.tanks.list, locale, index: true, follow: true });
 };
 
-const Page = () => (
+const Page = ({ searchParams }: PageProps<'/[locale]/tanks'>) => (
   <Suspense>
-    <TanksPage />
+    <PrefetchBoundary state={searchParams.then(tanksPageState)}>
+      <TanksPage />
+    </PrefetchBoundary>
   </Suspense>
 );
 

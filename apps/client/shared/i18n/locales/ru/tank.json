@@ -50,7 +50,6 @@
     "actionsLabel": "Действия с машиной",
     "build": "Конструктор сборки",
     "compare": "Сравнить",
-    "breadcrumbLabel": "Путь к машине",
     "crumbTanks": "Танки",
     "crumbTier": "{tier} уровень",
     "figures": {
@@ -81,13 +80,6 @@
   "stats": {
     "title": "Сервер за {period}",
     "periodLabel": "Период статистики",
-    "periods": {
-      "1d": "24 ч",
-      "7d": "7 дн",
-      "14d": "14 дн",
-      "30d": "30 дн",
-      "60d": "60 дн"
-    },
     "figures": {
       "winRate": "Процент побед",
       "avgDamage": "Средний урон",

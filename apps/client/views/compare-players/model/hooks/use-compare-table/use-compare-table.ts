@@ -9,10 +9,12 @@ import { useCompareColumns } from '../use-compare-columns';
 
 export const useCompareTable = ({ comparison, period }: UseCompareTableInput) => {
   const players = comparison?.players ?? [];
-  const columns = useCompareColumns(players.map(({ summary }) => summary));
+  const summaries = players.map(({ summary }) => summary);
+  const columns = useCompareColumns(summaries);
 
   return {
     columns,
+    players: summaries,
     rows:
       players.length === 0
         ? []

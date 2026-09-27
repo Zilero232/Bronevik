@@ -28,5 +28,10 @@
   "showMore": "Show more",
   "updated": "updated",
   "home": "Home",
-  "reportError": "Report a data error"
+  "reportError": "Report a data error",
+  "chart": {
+    "point": "Point",
+    "showTable": "Show as table",
+    "showChart": "Show chart"
+  }
 }

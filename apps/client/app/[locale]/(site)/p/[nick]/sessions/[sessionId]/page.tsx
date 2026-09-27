@@ -19,7 +19,8 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]
     title: t('title', { nickname }),
     description: t('description', { nickname }),
     path: ROUTES.players.session({ nickname, sessionId }),
-    locale
+    locale,
+    hasOwnImage: true
   });
 };
 

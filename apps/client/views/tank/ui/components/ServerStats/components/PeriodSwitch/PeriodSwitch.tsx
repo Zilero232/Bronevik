@@ -11,9 +11,10 @@ import { useTankPeriod } from '../../../../../model/hooks';
 
 export const PeriodSwitch = () => {
   const t = useTranslations('tank.stats');
+  const tPeriods = useTranslations('periods');
   const [period, setPeriod] = useTankPeriod();
 
-  const options = serverPeriodSchema.options.map((value) => ({ value, label: t(`periods.${value}`) }));
+  const options = serverPeriodSchema.options.map((value) => ({ value, label: tPeriods(value) }));
 
   const onChange = (value: ServerPeriod) => {
     void setPeriod(value);

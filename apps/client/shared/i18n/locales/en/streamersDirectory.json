@@ -26,9 +26,7 @@
   },
   "head": {
     "title": "Streamers",
-    "description": "Who is live now, what they play, their stats and settings.",
-    "forStreamers": "A streamer? Tools",
-    "settings": "Streamer settings"
+    "description": "Who is live now, what they play, their stats and settings."
   },
   "filters": {
     "label": "Filters",
@@ -183,5 +181,11 @@
       "submit": "Send for review",
       "sent": "Claim sent to a moderator"
     }
+  },
+  "hub": {
+    "label": "Streamers section",
+    "live": "Live",
+    "settings": "Streamer settings",
+    "forStreamers": "For streamers"
   }
 }

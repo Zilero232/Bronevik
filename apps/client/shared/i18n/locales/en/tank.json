@@ -50,7 +50,6 @@
     "actionsLabel": "Vehicle actions",
     "build": "Build constructor",
     "compare": "Compare",
-    "breadcrumbLabel": "Breadcrumbs",
     "crumbTanks": "Tanks",
     "crumbTier": "Tier {tier}",
     "figures": {
@@ -81,13 +80,6 @@
   "stats": {
     "title": "Server, last {period}",
     "periodLabel": "Statistics period",
-    "periods": {
-      "1d": "24 h",
-      "7d": "7 days",
-      "14d": "14 days",
-      "30d": "30 days",
-      "60d": "60 days"
-    },
     "figures": {
       "winRate": "Win rate",
       "avgDamage": "Avg damage",

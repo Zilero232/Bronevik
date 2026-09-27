@@ -8,6 +8,7 @@ import { RatingPaletteToggle } from '@/features/app/rating-palette';
 import { RatingPatternsToggle } from '@/features/app/rating-patterns';
 import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { ThemeToggle } from '@/features/app/switch-theme';
+import { CommandPaletteTrigger } from '@/features/search/command-palette';
 import { SITE_NAV } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Drawer } from '@/ui-kit';
@@ -16,6 +17,7 @@ import type { MobileNavProps } from './MobileNav.types';
 
 import { useSiteNav } from '../../../model/hooks';
 import { GameStatusSlot } from '../GameStatusSlot';
+import { DrawerAccount } from './components';
 
 import s from './MobileNav.module.scss';
 
@@ -26,6 +28,10 @@ export const MobileNav = ({ open, onOpenChange }: MobileNavProps) => {
 
   return (
     <Drawer open={open} title={t('label')} onOpenChange={onOpenChange}>
+      <div className={s.top}>
+        <DrawerAccount onNavigate={() => onOpenChange(false)} />
+        <CommandPaletteTrigger className={s.search} onOpen={() => onOpenChange(false)} />
+      </div>
       <nav aria-label={t('label')} className={s.nav}>
         <Accordion.Root multiple className={s.groups} defaultValue={groupKey ? [groupKey] : []}>
           {SITE_NAV.groups.map((group) => (

@@ -113,7 +113,8 @@ export const NOTIFICATION_EVENT_FROM_DB = {
   replayOverflow: 'replay_overflow',
   streamerLive: 'streamer_live',
   tankLevelUp: 'tank_level_up',
-  tankChallengeDone: 'tank_challenge_done'
+  tankChallengeDone: 'tank_challenge_done',
+  plusCheckoutOpen: 'plus_checkout_open'
 } as const satisfies Record<DbNotificationEvent, string>;
 
 export const NOTIFICATION_CHANNEL_FROM_DB = {

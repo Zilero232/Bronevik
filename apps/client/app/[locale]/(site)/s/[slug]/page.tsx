@@ -8,7 +8,9 @@ import { streamerRouteEntity } from '@/entities/streamer/streamer/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { StreamerPage } from '@/views/streamer';
+import { streamerPageState } from '@/views/streamer/server';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
@@ -27,9 +29,13 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/s/[slug]
 };
 
 const StreamerRoute = async ({ params }: Pick<PageProps<'/[locale]/s/[slug]'>, 'params'>) => {
-  const { slug } = await params;
+  const slug = decodeURIComponent((await params).slug);
 
-  return <StreamerPage slug={decodeURIComponent(slug)} />;
+  return (
+    <PrefetchBoundary state={streamerPageState(slug)}>
+      <StreamerPage slug={slug} />
+    </PrefetchBoundary>
+  );
 };
 
 const Page = ({ params }: PageProps<'/[locale]/s/[slug]'>) => (

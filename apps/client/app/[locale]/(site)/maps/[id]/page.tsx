@@ -8,9 +8,11 @@ import { mapRouteEntity, mapSlugs } from '@/entities/map/map/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';
+import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { RouteGuard } from '@/shared/seo/route-guard';
 import { MapPage } from '@/views/map';
+import { mapPageState } from '@/views/map/server';
 
 export const generateStaticParams = async () => (await mapSlugs({ fallback: ROUTE_STATIC_PARAMS.fallback.map })).map((id) => ({ id }));
 
@@ -36,7 +38,9 @@ const Page = ({ params }: PageProps<'/[locale]/maps/[id]'>) => (
       <RouteGuard entity={params.then(({ id }) => mapRouteEntity(id))} />
     </Suspense>
     <Suspense>
-      <MapPage />
+      <PrefetchBoundary state={params.then(({ id }) => mapPageState(decodeURIComponent(id)))}>
+        <MapPage />
+      </PrefetchBoundary>
     </Suspense>
     <Suspense>
       <RequestTime />

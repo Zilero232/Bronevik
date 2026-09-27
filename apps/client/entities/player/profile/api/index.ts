@@ -1,3 +1,4 @@
+export { playerQueries } from './player-queries';
 export {
   getNicknameHistory,
   getPlayer,

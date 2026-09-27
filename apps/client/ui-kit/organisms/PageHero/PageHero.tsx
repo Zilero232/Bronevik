@@ -3,8 +3,8 @@ import { clsx } from 'clsx';
 
 import type { PageHeroProps } from './PageHero.types';
 
+import { Breadcrumbs } from '../../molecules';
 import { BattleBackdrop } from '../BattleBackdrop';
-import { Breadcrumbs } from '../PageHeader/components';
 import { HeroArt } from './components';
 
 import s from './PageHero.module.scss';

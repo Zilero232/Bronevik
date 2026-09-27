@@ -14,3 +14,50 @@
   align-items: center;
   gap: var(--space-2);
 }
+
+.body {
+  @include stack(var(--space-4));
+
+  align-items: center;
+}
+
+.code {
+  @include label;
+
+  color: var(--color-accent);
+}
+
+.links {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+
+  @include from(md) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.link {
+  @include well;
+  @include touch-target;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

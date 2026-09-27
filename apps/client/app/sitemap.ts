@@ -3,18 +3,20 @@ import type { MetadataRoute } from 'next';
 import { topClanTags } from '@/entities/clan/clan/server';
 import { mapSlugs } from '@/entities/map/map/server';
 import { popularNicknames } from '@/entities/player/profile/server';
+import { publicReplayIds } from '@/entities/replay/replay/server';
 import { streamerSlugs } from '@/entities/streamer/streamer/server';
 import { topTankSlugs } from '@/entities/tank/tank/server';
 import { ROUTES } from '@/shared/constants';
 import { SITEMAP, SITEMAP_STATIC_PATHS, sitemapEntries } from '@/shared/seo';
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  const [tanks, clans, maps, streamers, players] = await Promise.all([
+  const [tanks, clans, maps, streamers, players, replays] = await Promise.all([
     topTankSlugs({ limit: SITEMAP.limit }),
     topClanTags({ limit: SITEMAP.limit }),
     mapSlugs({}),
     streamerSlugs({ limit: SITEMAP.limit }),
-    popularNicknames({ limit: SITEMAP.limit })
+    popularNicknames({ limit: SITEMAP.limit }),
+    publicReplayIds({ limit: SITEMAP.limit })
   ]);
 
   return sitemapEntries([
@@ -23,7 +25,8 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     ...clans.map((tag) => ROUTES.clans.detail(tag)),
     ...maps.map((id) => ROUTES.maps.detail(id)),
     ...streamers.map((slug) => ROUTES.streamers.profile(slug)),
-    ...players.map((nickname) => ROUTES.players.profile(nickname))
+    ...players.map((nickname) => ROUTES.players.profile(nickname)),
+    ...replays.map((id) => ROUTES.replays.detail(id))
   ]);
 };
 

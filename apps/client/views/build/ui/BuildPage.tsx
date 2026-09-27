@@ -21,7 +21,7 @@ export const BuildPage = () => {
   return (
     <div className={s.root}>
       <ResourceGate
-        back={{ href: ROUTES.tanks.list, label: t('back') }}
+        back={{ href: ROUTES.builds.list, label: t('back') }}
         error={{ title: t('errorTitle'), description: t('errorDescription') }}
         notFound={{ title: t('notFoundTitle'), description: t('notFoundDescription', { slug }) }}
         query={query}

@@ -15,6 +15,7 @@ import s from './MissionTanks.module.scss';
 
 export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
   const t = useTranslations('missions');
+  const tPeriods = useTranslations('periods');
   const { columns, garageColumns, tanks, showcase, garage, garageNotice, garageTanks } = useMissionTanks({ questId, metric });
 
   return (
@@ -44,7 +45,7 @@ export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
             t('tanks.description', {
               metric: t(`metric.${tanks.data.metric}`),
               cohort: t(`tanks.cohort.${tanks.data.cohort}`),
-              period: t(`periods.${tanks.data.period}`)
+              period: tPeriods(tanks.data.period)
             })
           }
           title={t('tanks.title')}

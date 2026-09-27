@@ -7,7 +7,6 @@
   "description": "Compare two to four «Мир танков» players by WN8, Bronya Index, win rate and marks.",
   "slot": "Slot {index} of {max}",
   "add": "Add a player by nickname",
-  "overall": "All time",
   "emptyTitle": "Add at least two players",
   "errorTitle": "The comparison did not load",
   "missingTitle": "These players are not collected yet",

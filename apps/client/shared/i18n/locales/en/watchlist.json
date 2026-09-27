@@ -7,9 +7,7 @@
   "description": "Friends, clanmates, rivals — their battles over a day or a week from the Lesta API, and a digest on your schedule.",
   "error": "The watchlist did not load. Try again.",
   "period": {
-    "label": "Stats period",
-    "24h": "24 hours",
-    "7d": "7 days"
+    "label": "Stats period"
   },
   "summary": {
     "watched": "Watched",

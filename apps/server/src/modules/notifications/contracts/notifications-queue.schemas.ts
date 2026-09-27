@@ -141,7 +141,8 @@ export const notificationSchema = z.discriminatedUnion('event', [
     tankId,
     tankName: z.string(),
     shells: z.number().int().nonnegative()
-  })
+  }),
+  z.object({ event: z.literal('plusCheckoutOpen') })
 ]);
 
 export const deliverPayloadSchema = z.object({

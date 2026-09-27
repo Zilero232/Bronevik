@@ -15,12 +15,21 @@ export const LineChart = ({
   withArea = false,
   ariaLabel,
   className,
+  hasTableToggle,
   formatValue
 }: LineChartProps) => {
   const format = useChartFormat(formatValue);
 
   return (
-    <ChartFrame ariaLabel={ariaLabel} className={className} height={height}>
+    <ChartFrame
+      ariaLabel={ariaLabel}
+      className={className}
+      formatValue={format}
+      hasTableToggle={hasTableToggle}
+      height={height}
+      labels={labels}
+      series={series}
+    >
       {(width) => (
         <LineChartPlot formatValue={format} height={height} labels={labels} series={series} width={width} withArea={withArea} yDomain={yDomain} />
       )}

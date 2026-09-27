@@ -56,7 +56,8 @@
     "competition_finished": "Итоги состязания",
     "streamer_live": "Стример в эфире",
     "tank_level_up": "Новый уровень танка",
-    "tank_challenge_done": "Челлендж недели выполнен"
+    "tank_challenge_done": "Челлендж недели выполнен",
+    "plus_checkout_open": "Оплата Плюса открылась"
   },
   "eventGroups": {
     "marks": "Отметки и классность",

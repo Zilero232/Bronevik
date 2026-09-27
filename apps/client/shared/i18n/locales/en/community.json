@@ -53,10 +53,10 @@
   "requirements": {
     "title": "Requirements",
     "none": "No requirements",
-    "minBattles": "{value}+ battles",
-    "minWn8": "WN8 from {value}",
-    "maxWn8": "WN8 up to {value}",
-    "minWinRate": "win rate from {value}%",
+    "minBattles": "{value, plural, one {# battle} other {# battles}} or more",
+    "minWn8": "WN8 from {value, number}",
+    "maxWn8": "WN8 up to {value, number}",
+    "minWinRate": "win rate from {value, number}%",
     "fields": {
       "legend": "Player requirements",
       "minBattles": "Battles from",

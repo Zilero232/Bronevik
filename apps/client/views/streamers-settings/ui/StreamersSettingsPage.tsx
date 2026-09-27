@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, PageHeader } from '@/ui-kit';
+import { StreamersHubNav } from '@/widgets/streamer/streamers-hub';
 
 import { STREAMERS_SETTINGS_PAGE } from '../config';
 import { MySettingsShare, SettingsTable, TopSettings } from './components';
@@ -28,6 +29,7 @@ export const StreamersSettingsPage = () => {
         description={t('description')}
         title={t('title')}
       />
+      <StreamersHubNav />
       <SettingsTable />
       <TopSettings />
       <MySettingsShare />

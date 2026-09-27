@@ -2,10 +2,14 @@ import { notFound } from 'next/navigation';
 
 import type { RouteGuardProps } from './RouteGuard.types';
 
-export const RouteGuard = async ({ entity }: RouteGuardProps) => {
-  if (!(await entity).isFound) {
+import { JsonLd } from '../json-ld';
+
+export const RouteGuard = async ({ entity, schema }: RouteGuardProps) => {
+  const found = await entity;
+
+  if (!found.isFound) {
     notFound();
   }
 
-  return null;
+  return schema ? <JsonLd data={await schema(found)} /> : null;
 };

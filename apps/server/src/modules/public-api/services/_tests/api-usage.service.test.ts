@@ -60,6 +60,26 @@ describe('ApiUsageService.flush', () => {
     await expect(service.flush()).resolves.toBeUndefined();
   });
 
+  it('writes the rest of the buffer past a failed row and retries the failed one on the next flush', async () => {
+    const { service, prisma } = createService();
+
+    prisma.apiUsageDaily.upsert.mockRejectedValueOnce(new Error('down'));
+    service.record({ keyId: 'a', endpoint: 'GET /v1/tanks', latencyMs: 1, failed: false });
+    service.record({ keyId: 'b', endpoint: 'GET /v1/tanks', latencyMs: 1, failed: false });
+
+    await service.flush();
+    service.record({ keyId: 'a', endpoint: 'GET /v1/tanks', latencyMs: 1, failed: false });
+    await service.flush();
+
+    const writes = prisma.apiUsageDaily.upsert.mock.calls.map(([args]) => [args.create.apiKeyId, args.create.requests]);
+
+    expect(writes).toEqual([
+      ['a', 1],
+      ['b', 1],
+      ['a', 2]
+    ]);
+  });
+
   it('starts a new row at UTC midnight', async () => {
     const { service, prisma } = createService();
 

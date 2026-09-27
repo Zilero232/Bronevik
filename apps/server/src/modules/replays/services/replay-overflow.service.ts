@@ -79,15 +79,20 @@ export class ReplayOverflowService {
     const doomed = new Set(overflowReplayIds({ replays, keep: REPLAY_OVERFLOW.keep }));
     const removed = replays.filter((replay) => doomed.has(replay.id));
 
-    for (const replay of removed) {
-      if (replay.timelineKey) {
-        await this.storage.remove(replay.timelineKey);
-      }
+    const { count } = await this.prisma.replay.deleteMany({ where: { id: { in: [...doomed] }, uploaderUserId: userId } });
+    let orphans = 0;
 
-      await this.storage.remove(replay.storageKey);
+    for (const key of removed.flatMap((replay) => (replay.timelineKey ? [replay.storageKey, replay.timelineKey] : [replay.storageKey]))) {
+      try {
+        await this.storage.remove(key);
+      } catch {
+        orphans += 1;
+      }
     }
 
-    const { count } = await this.prisma.replay.deleteMany({ where: { id: { in: [...doomed] }, uploaderUserId: userId } });
+    if (orphans > 0) {
+      this.logger.warn(`${orphans} storage objects of ${userId}'s deleted overflow replays were not removed`);
+    }
 
     this.logger.log(`deleted ${count} overflow replays of ${userId}`);
 

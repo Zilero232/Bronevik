@@ -7,14 +7,22 @@ import { localePath } from '@/shared/i18n';
 
 import type { PageMetadataInput } from './page-metadata.types';
 
-import { languageAlternates } from '../site-metadata';
+import { languageAlternates, siteImage } from '../site-metadata';
 
 const OG_LOCALES: Record<string, string> = {
   ru: SITE.locale,
   en: SITE.en.locale
 };
 
-export const createPageMetadata = ({ title, description, path, locale, index = false, follow = false }: PageMetadataInput): Metadata => {
+export const createPageMetadata = ({
+  title,
+  description,
+  path,
+  locale,
+  index = false,
+  follow = false,
+  hasOwnImage = false
+}: PageMetadataInput): Metadata => {
   const ogTitle = title.includes(SITE.name) ? title : `${title} · ${SITE.name}`;
   const canonical = isNonNullish(path) ? localePath({ path, locale }) : undefined;
 
@@ -29,7 +37,8 @@ export const createPageMetadata = ({ title, description, path, locale, index = f
       ...(isNonNullish(canonical) ? { url: canonical } : {}),
       type: 'website',
       siteName: SITE.name,
-      locale: OG_LOCALES[locale]
+      locale: OG_LOCALES[locale],
+      ...(hasOwnImage ? {} : { images: [siteImage(locale)] })
     },
     twitter: {
       card: 'summary_large_image',

@@ -13,6 +13,7 @@ export const useMapLabels = () => {
 
       return kind ? t(`modes.${kind}`) : mode;
     },
+    name: (name: string | null | undefined) => name ?? t('unnamed'),
     camouflage: (camouflage: string) => (isMapCamouflage(camouflage) ? t(`camouflage.${camouflage}`) : camouflage)
   };
 };

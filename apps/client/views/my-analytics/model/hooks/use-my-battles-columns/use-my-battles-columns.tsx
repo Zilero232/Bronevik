@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import type { TableColumn } from '@/ui-kit';
 
+import { useMapLabels } from '@/entities/map/map';
 import { TankCell } from '@/entities/tank/tank';
 import { NumberCell } from '@/ui-kit';
 
@@ -17,6 +18,7 @@ const column = createColumnHelper<MyBattle>();
 
 export const useMyBattlesColumns = (): TableColumn<MyBattle>[] => {
   const t = useTranslations('analytics.columns');
+  const labels = useMapLabels();
 
   return [
     column.accessor((row) => Date.parse(row.startedAt), {
@@ -29,7 +31,7 @@ export const useMyBattlesColumns = (): TableColumn<MyBattle>[] => {
       header: t('tank'),
       cell: ({ row }) => (row.original.vehicle ? <TankCell vehicle={row.original.vehicle} /> : row.original.tankId)
     }),
-    column.accessor((row) => row.mapName ?? row.arenaId, {
+    column.accessor((row) => labels.name(row.mapName), {
       id: 'map',
       header: t('map'),
       meta: { hideBelow: 'md' }

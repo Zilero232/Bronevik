@@ -153,8 +153,8 @@ describe('PromoService.recordRedemption', () => {
 
     await service.recordRedemption({ db: prisma, userId: 'u1', code: 'SPRING' });
 
-    expect(prisma.promoCode.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { code: 'SPRING' }, data: { usedCount: { increment: 1 } } })
+    expect(prisma.promoCode.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ code: 'SPRING' }), data: { usedCount: { increment: 1 } } })
     );
   });
 
@@ -165,6 +165,6 @@ describe('PromoService.recordRedemption', () => {
 
     await service.recordRedemption({ db: prisma, userId: 'u1', code: 'SPRING' });
 
-    expect(prisma.promoCode.update).not.toHaveBeenCalled();
+    expect(prisma.promoCode.updateMany).not.toHaveBeenCalled();
   });
 });

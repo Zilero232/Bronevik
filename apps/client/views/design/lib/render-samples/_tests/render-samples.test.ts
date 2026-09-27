@@ -1,11 +1,11 @@
-import type { VehicleSummary } from '@otmetki/schemas';
+import type { VehicleCatalogItem } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 
 import { DESIGN_ICONS } from '../../../config';
 import { renderSamples } from '../render-samples';
 
-const vehicle = (tankId: number, isPremium: boolean, withImages = true): VehicleSummary => ({
+const vehicle = (tankId: number, isPremium: boolean, withImages = true): VehicleCatalogItem => ({
   tankId,
   name: `T${tankId}`,
   shortName: `T${tankId}`,
@@ -15,7 +15,8 @@ const vehicle = (tankId: number, isPremium: boolean, withImages = true): Vehicle
   tier: 10,
   isPremium,
   isCollectible: false,
-  images: withImages ? { small: 's.png', contour: 'c.png', big: 'b.png' } : { small: null, contour: null, big: null }
+  images: withImages ? { small: 's.png', contour: 'c.png', big: 'b.png' } : { small: null, contour: null, big: null },
+  role: null
 });
 
 describe('renderSamples', () => {

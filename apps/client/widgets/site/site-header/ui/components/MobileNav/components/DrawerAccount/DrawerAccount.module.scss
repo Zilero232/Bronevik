@@ -1,0 +1,43 @@
+@use '@/shared/styles/mixins' as *;
+
+.guest {
+  @include stack(var(--space-2));
+}
+
+.signIn {
+  width: 100%;
+  justify-content: center;
+}
+
+.hint {
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}
+
+.user {
+  @include well;
+
+  display: flex;
+  align-items: center;
+  padding: var(--space-3);
+  color: var(--color-text);
+  gap: var(--space-3);
+  text-decoration: none;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.name {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  font-weight: 600;
+  gap: 2px;
+}
+
+.chevron {
+  color: var(--color-text-dim);
+}

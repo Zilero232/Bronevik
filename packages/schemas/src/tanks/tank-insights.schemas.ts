@@ -10,13 +10,11 @@ import {
   tankIdSchema
 } from '../common/primitives/primitives.schemas';
 import { listParam, paginatedSchema, paginationQuerySchema, sortQuery } from '../common/query/query.schemas';
-import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
-import { ECONOMY_ACCOUNTS, LEARNING_DIFFICULTIES, TANK_ECONOMY, TANK_ROLES, TANK_SOURCES, TANK_STATUSES } from './tank-insights.constants';
+import { tankRoleSchema, vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
+import { ECONOMY_ACCOUNTS, LEARNING_DIFFICULTIES, TANK_ECONOMY, TANK_SOURCES, TANK_STATUSES } from './tank-insights.constants';
 import { vehicleSourceMissionSchema, vehicleSourceSchema } from './vehicle-sources.schemas';
 
 export const tankStatusSchema = z.enum(TANK_STATUSES);
-
-export const tankRoleSchema = z.enum(TANK_ROLES);
 
 export const tankSourceSchema = z.enum(TANK_SOURCES);
 

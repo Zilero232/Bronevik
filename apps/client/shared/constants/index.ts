@@ -1,5 +1,6 @@
 export { ACCOUNT_NAV } from './account-nav';
 export type { AccountNavGroup, AccountNavLink } from './account-nav';
+export { PERIOD_LABEL } from './periods';
 export { QUERY_KEYS } from './query-keys';
 export type { GuideDetailKeyInput, GuideListKeyInput, GuideViewerKeyInput, MeSection, PlayerSection, PlayerSectionKeyInput } from './query-keys';
 export { ROUTE_PARAMS, ROUTES } from './routes';

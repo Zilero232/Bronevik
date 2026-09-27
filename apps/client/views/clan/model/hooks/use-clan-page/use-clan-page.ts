@@ -2,12 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getClan } from '@/entities/clan/clan';
-import { QUERY_KEYS } from '@/shared/constants';
+import { clanQueries } from '../../../api';
 
-export const useClanPage = (tag: string) =>
-  useQuery({
-    queryKey: QUERY_KEYS.clans.page(tag),
-    queryFn: ({ signal }) => getClan({ idOrTag: tag, signal }),
-    retry: false
-  });
+export const useClanPage = (tag: string) => useQuery({ ...clanQueries.page(tag), retry: false });

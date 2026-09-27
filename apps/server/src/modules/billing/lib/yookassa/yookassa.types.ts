@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 
+import type { CheckoutInput } from '../../billing.types';
 import type { yookassaPaymentSchema, yookassaWebhookSchema } from './yookassa.schemas';
 
 export type YooKassaPayment = z.infer<typeof yookassaPaymentSchema>;
@@ -32,4 +33,8 @@ export type YooKassaRequestInput = {
   method: 'get' | 'post';
   json?: unknown;
   idempotenceKey?: string;
+};
+
+export type CheckoutKeyInput = Pick<CheckoutInput, 'plan' | 'promoCode' | 'userId'> & {
+  now: Date;
 };

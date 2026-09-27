@@ -116,3 +116,6 @@ tank-challenge-done-body = { $tankName }: this week's challenge is done. { $shel
         [one] shell
        *[other] shells
     } credited
+
+plus-checkout-open-title = Three Marks Plus is open
+plus-checkout-open-body = You asked us to let you know: Plus is now available to subscribe.

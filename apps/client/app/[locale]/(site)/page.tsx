@@ -4,6 +4,7 @@ import * as rootParams from 'next/root-params';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { JsonLd, siteJsonLd } from '@/shared/seo/json-ld';
 import { HomePage } from '@/views/home';
 
 export const generateMetadata = async () => {
@@ -13,6 +14,11 @@ export const generateMetadata = async () => {
   return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.home, locale, index: true, follow: true });
 };
 
-const Page = () => <HomePage />;
+const Page = async () => (
+  <>
+    <JsonLd data={siteJsonLd(resolveLocale(await rootParams.locale()))} />
+    <HomePage />
+  </>
+);
 
 export default Page;

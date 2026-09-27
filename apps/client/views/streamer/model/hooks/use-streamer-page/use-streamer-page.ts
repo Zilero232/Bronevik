@@ -2,15 +2,13 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getStreamerBySlug } from '@/entities/streamer/streamer';
 import { isNotFoundError } from '@/shared/api/source';
-import { QUERY_KEYS } from '@/shared/constants';
 
+import { streamerQueries } from '../../../api';
 import { STREAMER_PAGE } from '../../../config';
 
 export const useStreamerPage = (slug: string) =>
   useQuery({
-    queryKey: QUERY_KEYS.streamers.profile(slug),
-    queryFn: () => getStreamerBySlug(slug),
+    ...streamerQueries.profile(slug),
     retry: (failures, error) => !isNotFoundError(error) && failures < STREAMER_PAGE.retries
   });

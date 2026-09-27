@@ -16,15 +16,23 @@ const ratioToBest = ({ value, reference, isLower }: RatioToBestInput): number | 
   return clamp(value / reference, { min: 0, max: 1 });
 };
 
+const deltaToBest = ({ value, reference }: Omit<RatioToBestInput, 'isLower'>): number | null =>
+  isNumber(value) && reference !== null && reference > 0 && value >= 0 && value !== reference ? (value - reference) / reference : null;
+
 export const compareRow = ({ key, values }: CompareRowInput): CompareCell[] => {
   const best = specBest({ key, values });
   const reference = best ?? values.find(isNumber) ?? null;
   const isLower = isLowerBetter(key);
+  const numbers = values.filter(isNumber);
+  const worst = best === null ? null : isLower ? Math.max(...numbers) : Math.min(...numbers);
 
   return values.map((value) => ({
     value,
     ratio: ratioToBest({ value, reference, isLower }),
-    isBest: best !== null && value === best
+    isBest: best !== null && value === best,
+    isWorst: worst !== null && value === worst,
+    delta: best === null ? null : deltaToBest({ value, reference: best }),
+    isLowerBetter: isLower
   }));
 };
 

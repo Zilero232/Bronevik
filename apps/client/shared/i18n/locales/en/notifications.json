@@ -56,7 +56,8 @@
     "competition_finished": "Competition results",
     "streamer_live": "Followed streamer is live",
     "tank_level_up": "Tank level up",
-    "tank_challenge_done": "Weekly challenge complete"
+    "tank_challenge_done": "Weekly challenge complete",
+    "plus_checkout_open": "Plus checkout is open"
   },
   "eventGroups": {
     "marks": "Marks and mastery",

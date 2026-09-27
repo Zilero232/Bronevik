@@ -17,6 +17,11 @@
   max-height: calc(100dvh - var(--header-offset) - var(--space-8));
   overscroll-behavior-x: contain;
 
+  @include below(lg) {
+    overflow: auto hidden;
+    max-height: none;
+  }
+
   &:focus-visible {
     @include focus-ring;
   }
@@ -48,12 +53,17 @@
   text-align: left;
 
   @include below(lg) {
-    width: 128px;
+    width: 112px;
   }
 }
 
 .head {
   min-width: 176px;
+
+  @include below(lg) {
+    min-width: 128px;
+  }
+
   border-left: 1px solid var(--color-border);
   text-align: left;
 }
@@ -77,6 +87,13 @@
 
 .label {
   position: sticky;
+
+  @include below(lg) {
+    max-width: 112px;
+    font-size: var(--text-xs);
+    white-space: normal;
+  }
+
   z-index: 1;
   left: 0;
   height: var(--row-h);

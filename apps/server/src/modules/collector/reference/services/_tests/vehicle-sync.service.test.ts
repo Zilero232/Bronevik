@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mockDeep } from 'vitest-mock-extended';
 
-import type { VehicleSpecHistory } from '../../../../../../generated';
 import type { LestaClients, PrismaService } from '../../../../../core';
 import type { Vehicle } from '../../../../../lib/lesta';
 
@@ -27,7 +26,7 @@ const createSync = (vehicles: Record<string, Vehicle | null>) => {
   const clients = mockDeep<LestaClients>();
 
   clients.bulk.encyclopedia.allVehicles.mockResolvedValue(vehicles);
-  prisma.vehicleSpecHistory.findMany.mockResolvedValue([]);
+  prisma.$queryRaw.mockResolvedValue([]);
 
   return { prisma, clients, service: new VehicleSyncService(prisma, clients) };
 };
@@ -111,13 +110,11 @@ describe('VehicleSyncService.sync', () => {
   it('diffs the specs against the latest earlier game version only', async () => {
     const { prisma, service } = createSync({ 1: vehicle() });
 
-    prisma.vehicleSpecHistory.findMany.mockResolvedValue([
-      mock<VehicleSpecHistory>({ tankId: 1, specs: { profile_id: 'p1', modules: { gun_id: 9 } } })
-    ]);
+    prisma.$queryRaw.mockResolvedValue([{ tankId: 1, specs: { profile_id: 'p1', modules: { gun_id: 9 } } }]);
 
     await service.sync(GAME_VERSION_ID);
 
-    expect(prisma.vehicleSpecHistory.findMany.mock.calls[0]?.[0]?.where).toEqual({ gameVersionId: { not: GAME_VERSION_ID } });
+    expect(prisma.$queryRaw.mock.calls[0]?.[0]).toMatchObject({ values: [GAME_VERSION_ID] });
     expect(prisma.vehicleSpecHistory.upsert.mock.calls[0]?.[0].create.diff).not.toBeNull();
   });
 });

@@ -27,7 +27,6 @@ export {
   tankObtainSchema,
   tankOfferSchema,
   tankResearchStepSchema,
-  tankRoleSchema,
   tankSourceSchema,
   tankStatusSchema,
   tankTraitsFilterSchema,

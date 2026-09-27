@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from 'next';
 
 import { SITE } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
+import { DEFAULT_LOCALE } from '@/shared/i18n';
 
-import { languageAlternates } from '../site-metadata';
+import { languageAlternates, siteImage } from '../site-metadata';
 import { THEME_COLOR } from '../site-metadata.constants';
 
 export const defaultMetadata: Metadata = {
@@ -26,7 +27,8 @@ export const defaultMetadata: Metadata = {
     url: SITE.url,
     siteName: SITE.name,
     title: SITE.title,
-    description: SITE.description
+    description: SITE.description,
+    images: [siteImage(DEFAULT_LOCALE)]
   },
   twitter: {
     card: 'summary_large_image',

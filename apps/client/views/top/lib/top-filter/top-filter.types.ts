@@ -1,5 +1,5 @@
 import type { LeaderboardScope, RatingKind } from '@otmetki/schemas';
-import type { inferParserType } from 'nuqs';
+import type { inferParserType } from 'nuqs/server';
 
 import type { TOP_PARAMS } from '../../config';
 

@@ -53,6 +53,8 @@
     overscroll-behavior: contain;
 
     @include below(md) {
+      overflow: auto hidden;
+      max-height: none;
       overscroll-behavior: auto;
     }
   }

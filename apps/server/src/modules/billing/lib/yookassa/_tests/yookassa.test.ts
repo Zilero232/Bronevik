@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { describeCard, toAmount } from '../yookassa';
+import { checkoutIdempotenceKey, describeCard, toAmount } from '../yookassa';
 import { yookassaWebhookSchema } from '../yookassa.schemas';
 
 describe('describeCard', () => {
@@ -29,5 +29,24 @@ describe('yookassaWebhookSchema', () => {
 
   it('rejects a body that is not a notification', () => {
     expect(yookassaWebhookSchema.safeParse({ event: 'payment.succeeded', object: { id: 'p1' } }).success).toBe(false);
+  });
+});
+
+describe('checkoutIdempotenceKey', () => {
+  const base = { userId: 'u1', plan: 'monthly', promoCode: undefined, now: new Date('2026-09-25T12:00:05Z') } as const;
+
+  it('repeats within the same minute and fits the YooKassa 64-character limit', () => {
+    const key = checkoutIdempotenceKey(base);
+
+    expect(checkoutIdempotenceKey({ ...base, now: new Date('2026-09-25T12:00:59Z') })).toBe(key);
+    expect(key).toHaveLength(64);
+  });
+
+  it('changes with the minute, the plan and the promo code', () => {
+    const key = checkoutIdempotenceKey(base);
+
+    expect(checkoutIdempotenceKey({ ...base, now: new Date('2026-09-25T12:01:00Z') })).not.toBe(key);
+    expect(checkoutIdempotenceKey({ ...base, plan: 'yearly' })).not.toBe(key);
+    expect(checkoutIdempotenceKey({ ...base, promoCode: 'SPRING' })).not.toBe(key);
   });
 });

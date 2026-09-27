@@ -1,9 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type PageBreadcrumb = {
-  label: ReactNode;
-  href?: string;
-};
+import type { PageBreadcrumb } from '../../molecules';
 
 export type PageHeaderProps = {
   title: ReactNode;

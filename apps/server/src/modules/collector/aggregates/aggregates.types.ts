@@ -1,5 +1,7 @@
 import type { ExpectedValuesTable, TankReferenceTable, TankTiers } from '@otmetki/ratings';
 
+import type { CohortRank } from './lib/build-usage';
+
 export type ReferenceTables = {
   expected: ExpectedValuesTable;
   tiers: TankTiers;
@@ -26,14 +28,5 @@ export type ComputeTankUsageInput = {
   since: Date;
   battleTypes: string[];
   gameVersion: string;
-};
-
-export type TankRanksInput = {
-  tankId: number;
-  accountIds: bigint[];
-};
-
-export type BuildRankRow = {
-  account_id: bigint;
-  rank: number;
+  ranks: CohortRank[];
 };

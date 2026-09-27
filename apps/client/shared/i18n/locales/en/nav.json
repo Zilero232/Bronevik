@@ -98,6 +98,9 @@
   },
   "account": {
     "signIn": "Sign in",
-    "menu": "Account menu"
+    "menu": "Account menu",
+    "drawerSignIn": "Sign in",
+    "drawerHint": "Sessions, goals and marks in your account",
+    "profile": "My account"
   }
 }

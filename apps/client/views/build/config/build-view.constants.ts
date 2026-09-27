@@ -1,6 +1,6 @@
 import { BUILD_USAGE } from '@otmetki/schemas';
 import { minutesToMilliseconds } from 'date-fns';
-import { createParser, parseAsStringLiteral } from 'nuqs';
+import { createParser, parseAsStringLiteral } from 'nuqs/server';
 
 import { BUILD_PRESETS, BUILD_URL, parseLoadout, serializeLoadout } from '@/entities/tank/build';
 

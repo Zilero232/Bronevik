@@ -8,24 +8,24 @@ import { IconButton, Kbd } from '@/ui-kit';
 
 import type { CommandPaletteTriggerProps } from './CommandPaletteTrigger.types';
 
-import { useCommandPalette } from '../../model/context';
+import { useCommandPaletteTrigger } from '../../model/hooks';
 
 import s from './CommandPaletteTrigger.module.scss';
 
-export const CommandPaletteTrigger = ({ variant = 'bar', className }: CommandPaletteTriggerProps) => {
+export const CommandPaletteTrigger = ({ variant = 'bar', className, onOpen }: CommandPaletteTriggerProps) => {
   const t = useTranslations('search');
-  const { setOpen } = useCommandPalette();
+  const open = useCommandPaletteTrigger(onOpen);
 
   if (variant === 'icon') {
     return (
-      <IconButton aria-label={t('open')} className={className} onClick={() => setOpen(true)}>
+      <IconButton aria-label={t('open')} className={className} onClick={open}>
         <Search size={16} />
       </IconButton>
     );
   }
 
   return (
-    <button className={clsx(s.root, s[variant], className)} type='button' onClick={() => setOpen(true)}>
+    <button className={clsx(s.root, s[variant], className)} type='button' onClick={open}>
       <Search aria-hidden className={s.icon} size={variant === 'hero' ? 20 : 14} />
       <span className={s.label}>{variant === 'hero' ? t('heroPlaceholder') : t('trigger')}</span>
       <span className={s.keys}>

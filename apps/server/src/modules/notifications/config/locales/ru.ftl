@@ -123,3 +123,6 @@ tank-challenge-done-body = { $tankName }: задание недели выпол
         [few] гильзы
        *[many] гильз
     }
+
+plus-checkout-open-title = Подписка «Три отметки Плюс» открыта
+plus-checkout-open-body = Вы просили сообщить: оформить Плюс уже можно.

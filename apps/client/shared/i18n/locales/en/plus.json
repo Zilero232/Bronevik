@@ -100,10 +100,16 @@
       "trial": "Try {days, plural, one {# day} other {# days}} free",
       "trialPending": "Starting…",
       "closed": "Payments soon",
-      "closedNote": "Payments open soon. For now you can start the trial or redeem a promo code.",
-      "notify": "Get notified in Telegram when payments open"
+      "closedNote": "Payments open soon. For now you can start the trial or redeem a promo code."
     },
-    "recommended": "Best value"
+    "recommended": "Best value",
+    "notify": {
+      "label": "Tell me when checkout opens",
+      "channels": "Choose channels in notification settings",
+      "enabled": "We will let you know once checkout opens",
+      "disabled": "Checkout alert turned off",
+      "failed": "Could not save the setting"
+    }
   },
   "faq": {
     "title": "FAQ",
@@ -149,7 +155,9 @@
     "subscribe": "Get Plus",
     "trialStarted": "Plus trial is on for {days, plural, one {# day} other {# days}}",
     "trialFailed": "Couldn't start the trial. Make sure a Lesta account is linked.",
-    "promo": "Redeem a promo code"
+    "promo": "Redeem a promo code",
+    "linkAccount": "Link account",
+    "notify": "Get notified when checkout opens"
   },
   "limitNotice": {
     "free": "{label}: {used} of {limit}. Plus raises it to {plusLimit}.",

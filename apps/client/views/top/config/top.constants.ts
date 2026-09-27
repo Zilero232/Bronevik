@@ -2,7 +2,7 @@ import type { LeaderboardScope, RatingKind, RatingPeriod } from '@otmetki/schema
 
 import { TANK_CLASSES } from '@otmetki/icons';
 import { ratingKindSchema } from '@otmetki/schemas';
-import { parseAsInteger, parseAsStringLiteral } from 'nuqs';
+import { parseAsInteger, parseAsStringLiteral } from 'nuqs/server';
 
 export const TOP_SCOPES: readonly LeaderboardScope[] = ['players', 'clans', 'risingStars', 'marks', 'streamers'];
 

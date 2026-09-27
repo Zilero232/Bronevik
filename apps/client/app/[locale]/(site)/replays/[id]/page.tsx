@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { replayRouteMeta } from '@/entities/replay/replay/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
@@ -11,15 +12,17 @@ import { ReplayPage } from '@/views/replay';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/replays/[id]'>): Promise<Metadata> => {
   const locale = resolveLocale(await rootParams.locale());
-  const { id } = await params;
+  const id = decodeURIComponent((await params).id);
   const t = await getTranslations({ locale, namespace: 'replays.detailMeta' });
+  const meta = await replayRouteMeta(id);
+  const named = meta?.player && meta.mapName ? { player: meta.player, map: meta.mapName, damage: meta.damageDealt ?? 0 } : null;
 
   return createPageMetadata({
-    title: t('title'),
-    description: t('description'),
-    path: ROUTES.replays.detail(decodeURIComponent(id)),
+    title: named ? t('titleNamed', named) : t('title'),
+    description: named ? t('descriptionNamed', named) : t('description'),
+    path: ROUTES.replays.detail(id),
     locale,
-    index: false,
+    index: meta?.isPublic ?? false,
     follow: true
   });
 };

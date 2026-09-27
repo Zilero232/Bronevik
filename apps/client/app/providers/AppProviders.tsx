@@ -10,7 +10,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { RatingPaletteSync } from '@/features/app/rating-palette';
 import { RatingPatternsSync } from '@/features/app/rating-patterns';
 import { CommandPalette, CommandPaletteProvider } from '@/features/search/command-palette';
-import { queryClient } from '@/shared/api';
+import { getQueryClient } from '@/shared/api';
 import { ROUTES, STORAGE_KEYS } from '@/shared/constants';
 import { FORMATS, messages, TIME_ZONE } from '@/shared/i18n';
 import { AppToaster, TooltipProvider } from '@/ui-kit';
@@ -19,7 +19,7 @@ import type { AppProvidersProps } from './AppProviders.types';
 
 export const AppProviders = ({ children, locale }: AppProvidersProps) => (
   <NuqsAdapter>
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={getQueryClient()}>
       <NextIntlClientProvider formats={FORMATS} locale={locale} messages={messages[locale]} timeZone={TIME_ZONE}>
         <ThemeProvider
           disableTransitionOnChange

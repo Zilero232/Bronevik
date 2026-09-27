@@ -15,7 +15,7 @@ export type { LineChartProps } from './LineChart';
 export { PagedList } from './PagedList';
 export type { PagedListLayout, PagedListProps } from './PagedList';
 export { PageHeader } from './PageHeader';
-export type { PageBreadcrumb, PageHeaderProps } from './PageHeader';
+export type { PageHeaderProps } from './PageHeader';
 export { PageHero } from './PageHero';
 export type { PageHeroArt, PageHeroProps } from './PageHero';
 export { QueryState } from './QueryState';

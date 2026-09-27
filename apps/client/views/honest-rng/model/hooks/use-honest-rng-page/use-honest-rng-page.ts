@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { QUERY_KEYS } from '@/shared/constants';
+import { PERIOD_LABEL, QUERY_KEYS } from '@/shared/constants';
 import { percentText } from '@/shared/lib';
 
 import { getHonestRng } from '../../../api';
@@ -13,6 +13,7 @@ import { useRngPeriod } from '../use-rng-period';
 
 export const useHonestRngPage = () => {
   const t = useTranslations('honestRng');
+  const tPeriods = useTranslations('periods');
   const format = useFormatter();
   const [period, setPeriod] = useRngPeriod();
   const query = useQuery({
@@ -27,7 +28,7 @@ export const useHonestRngPage = () => {
 
   return {
     period,
-    periods: RNG_PERIODS.map((value) => ({ value, label: t(`period.${value}`) })),
+    periods: RNG_PERIODS.map((value) => ({ value, label: tPeriods(PERIOD_LABEL[value]) })),
     setPeriod: (value: (typeof RNG_PERIODS)[number]) => void setPeriod(value),
     query,
     server,

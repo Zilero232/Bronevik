@@ -1,5 +1,11 @@
+import type { NotificationEvent } from '@otmetki/schemas';
+
 export const PLUS_CHECKOUT = {
   anchor: 'checkout',
   plansStaleMs: 30 * 60_000,
   priceFormat: { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }
 } as const;
+
+export const CHECKOUT_NOTIFY = {
+  event: 'plus_checkout_open'
+} as const satisfies { event: NotificationEvent };

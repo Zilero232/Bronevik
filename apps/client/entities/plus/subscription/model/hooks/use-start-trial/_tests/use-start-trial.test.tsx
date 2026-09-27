@@ -15,6 +15,8 @@ import { useStartTrial } from '../use-start-trial';
 
 vi.hoisted(() => vi.resetModules());
 
+vi.mock('@/shared/i18n/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
+
 vi.mock('../../../../api', () => ({
   startPlusTrial: vi.fn(),
   getBillingStatus: vi.fn(),
@@ -99,6 +101,10 @@ describe('useStartTrial', () => {
     });
 
     expect(client.getQueryData(QUERY_KEYS.me.billing.status)).toEqual(FREE);
-    expect(failed).toHaveBeenCalledWith(messages.en.plus.teaser.trialFailed);
+
+    expect(failed).toHaveBeenCalledWith(
+      messages.en.plus.teaser.trialFailed,
+      expect.objectContaining({ action: expect.objectContaining({ label: messages.en.plus.teaser.linkAccount }) })
+    );
   });
 });

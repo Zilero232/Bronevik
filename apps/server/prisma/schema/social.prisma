@@ -28,6 +28,7 @@ enum NotificationEvent {
   streamerLive        @map("streamer_live")
   tankLevelUp         @map("tank_level_up")
   tankChallengeDone   @map("tank_challenge_done")
+  plusCheckoutOpen    @map("plus_checkout_open")
 
   @@map("notification_event")
 }

@@ -1,5 +1,5 @@
 import { moeSortFieldSchema, sortOrderSchema } from '@otmetki/schemas';
-import { parseAsString, parseAsStringLiteral } from 'nuqs';
+import { parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 export const MARKS_URL_PARSERS = {
   sort: parseAsStringLiteral(moeSortFieldSchema.options).withDefault('p95'),

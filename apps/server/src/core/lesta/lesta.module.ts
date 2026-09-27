@@ -6,7 +6,7 @@ import type { LestaClients, LestaOutcomeRecorder } from './lesta.types';
 import { AppConfigService, isLestaMock, LESTA, lestaMockBaseUrl } from '../../config';
 import { REDIS } from '../redis';
 import { LESTA_CLIENT, LESTA_CLIENTS, LESTA_OUTCOME_RECORDER } from './lesta.constants';
-import { createLestaClients, meteredFetch } from './lesta.factory';
+import { createLestaClients } from './lesta.factory';
 
 @Global()
 @Module({
@@ -20,7 +20,7 @@ import { createLestaClients, meteredFetch } from './lesta.factory';
           baseUrl: isLestaMock({ LESTA_MOCK: config.get('LESTA_MOCK') }) ? lestaMockBaseUrl(config.get('API_URL')) : undefined,
           redis,
           budget: { requestsPerSecond: config.get('LESTA_RPS'), reserve: LESTA.tierAReserve },
-          fetch: recorder ? meteredFetch({ fetch: globalThis.fetch, record: (outcome) => recorder.recordLesta({ outcome }) }) : undefined
+          onOutcome: recorder ? (outcome) => recorder.recordLesta({ outcome }) : undefined
         })
     },
     { provide: LESTA_CLIENT, inject: [LESTA_CLIENTS], useFactory: (clients: LestaClients) => clients.priority }

@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 
+import type { LestaOutcome } from '../outcome';
 import type { RateLimiter } from '../rate-limit';
 import type { LestaMeta } from '../schemas';
 import type { LESTA_LANGUAGES } from './client.constants';
@@ -33,6 +34,7 @@ export type LestaClientOptions = {
   retry?: LestaRetryOptions;
   timeoutMs?: number;
   fetch?: LestaFetch;
+  onOutcome?: (outcome: LestaOutcome) => void;
 };
 
 export type LestaCallOptions = {
@@ -84,7 +86,7 @@ export type SendInput = {
   params?: LestaParams;
 };
 
-export type ReadEnvelopeInput = {
+export type ReadEnvelopeInput = Pick<LestaClientOptions, 'onOutcome'> & {
   response: Response;
   method: string;
 };

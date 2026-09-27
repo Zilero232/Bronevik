@@ -1,5 +1,5 @@
 import { ECONOMY_ACCOUNTS, LEARNING_DIFFICULTIES, serverPeriodSchema, skillCohortSchema, TANK_ROLES, TANK_STATUSES } from '@otmetki/schemas';
-import { parseAsArrayOf, parseAsBoolean, parseAsInteger, parseAsStringLiteral } from 'nuqs';
+import { parseAsArrayOf, parseAsBoolean, parseAsInteger, parseAsStringLiteral } from 'nuqs/server';
 
 export const TANKS_VIEWS = ['table', 'tierlist', 'economy'] as const;
 

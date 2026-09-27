@@ -8,10 +8,13 @@ import type { AuthSession } from '@/entities/auth/session/api';
 
 import * as authApi from '@/entities/auth/session/api/auth/auth';
 import { UnauthorizedError } from '@/shared/api/source';
+import { ROUTES } from '@/shared/constants';
 
 import { useAccountShell } from '../use-account-shell';
 
 vi.hoisted(() => vi.resetModules());
+
+vi.mock('@/shared/i18n/navigation', () => ({ usePathname: () => '/me/watchlist' }));
 
 const SESSION: AuthSession = { user: { id: 'user-1', name: 'Grom' }, lestaAccountId: 42 };
 
@@ -31,6 +34,14 @@ afterAll(() => {
 });
 
 describe('useAccountShell', () => {
+  it('names the section the guest tried to open', () => {
+    vi.spyOn(authApi, 'getAuthSession').mockReturnValue(new Promise(() => undefined));
+
+    const { result } = renderShell();
+
+    expect(result.current.section.href).toBe(ROUTES.account.watchlist);
+  });
+
   it('is pending until the session is known', () => {
     vi.spyOn(authApi, 'getAuthSession').mockReturnValue(new Promise(() => undefined));
 

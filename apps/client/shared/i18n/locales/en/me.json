@@ -4,8 +4,6 @@
     "description": "Favorites, goals, linked accounts, the mod and notifications."
   },
   "signIn": "Sign in",
-  "guestTitle": "Sign-in required",
-  "guestDescription": "Your dashboard is available after signing in with Lesta ID or Telegram.",
   "eyebrow": "// Dashboard",
   "title": "Commander {name}",
   "signOut": "Sign out",
@@ -198,6 +196,52 @@
       "invite": "Add the bot to a server",
       "bot": "Message the bot",
       "miniApp": "Mini app"
+    }
+  },
+  "guest": {
+    "overview": {
+      "title": "Sign in to open your dashboard",
+      "description": "Your accounts, goals and latest sessions in one place."
+    },
+    "analytics": {
+      "title": "Analytics needs a sign-in",
+      "description": "Sessions, maps, platoons, first win of the day and damage spread from your battles."
+    },
+    "battles": {
+      "title": "Your battles need a sign-in",
+      "description": "Battle history with a breakdown: damage, spotting, marks and what went wrong."
+    },
+    "progress": {
+      "title": "Progress needs a sign-in",
+      "description": "Tank levels, weekly challenges and the season in one place."
+    },
+    "cosmetics": {
+      "title": "Cosmetics need a sign-in",
+      "description": "The badges, banners and profile frames you have earned."
+    },
+    "watchlist": {
+      "title": "The watchlist needs a sign-in",
+      "description": "Follow players and get a digest of their battles."
+    },
+    "notifications": {
+      "title": "Notifications need a sign-in",
+      "description": "New marks, session results and bonus codes — on the site, in Telegram or by email."
+    },
+    "telegram": {
+      "title": "Telegram needs a sign-in",
+      "description": "Link the bot to get reports in Telegram."
+    },
+    "billing": {
+      "title": "Billing needs a sign-in",
+      "description": "Plus, promo codes and payment history."
+    },
+    "streamer": {
+      "title": "The streamer studio needs a sign-in",
+      "description": "Overlays, challenges and settings for your stream."
+    },
+    "developer": {
+      "title": "The API cabinet needs a sign-in",
+      "description": "Keys, limits and webhooks for your integrations."
     }
   }
 }

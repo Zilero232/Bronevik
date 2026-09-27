@@ -5,7 +5,9 @@
   },
   "detailMeta": {
     "title": "Battle replay",
-    "description": "Battle results from a replay: team scoreboard, battle flow and heatmap."
+    "description": "Battle results from a replay: team scoreboard, battle flow and heatmap.",
+    "titleNamed": "{player} on {map} — battle replay",
+    "descriptionNamed": "{player} on {map}: {damage, number} damage, team table, battle timeline and heatmap."
   },
   "modes": {
     "ctf": "Standard battle",

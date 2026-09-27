@@ -74,7 +74,8 @@
         "winRateDiff": "WR diff",
         "avgDamage": "Average damage",
         "battles": "Battles"
-      }
+      },
+      "worst": "Worst value"
     }
   },
   "filters": {
@@ -103,13 +104,6 @@
       "economy": "Economy"
     },
     "period": "Period",
-    "periods": {
-      "1d": "24 h",
-      "7d": "7 d",
-      "14d": "14 d",
-      "30d": "30 d",
-      "60d": "60 d"
-    },
     "cohort": "Player skill",
     "cohorts": {
       "all": "All",

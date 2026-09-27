@@ -4,7 +4,7 @@ import * as rootParams from 'next/root-params';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
-import { StreamersPage } from '@/views/streamers';
+import { ForStreamersPage } from '@/views/for-streamers';
 
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
@@ -20,6 +20,6 @@ export const generateMetadata = async () => {
   });
 };
 
-const Page = () => <StreamersPage />;
+const Page = () => <ForStreamersPage />;
 
 export default Page;

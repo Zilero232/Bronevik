@@ -64,6 +64,7 @@ export type {
 } from './atoms';
 export {
   ActionStrip,
+  Breadcrumbs,
   Card,
   CardBody,
   CardHeader,
@@ -116,6 +117,7 @@ export {
 export type {
   ActionStripLink,
   ActionStripProps,
+  BreadcrumbsProps,
   CardHeaderProps,
   CardProps,
   CardVariant,
@@ -146,6 +148,7 @@ export type {
   MediaCardProps,
   NumberCellProps,
   NumberFieldProps,
+  PageBreadcrumb,
   PodiumCardProps,
   PodiumProps,
   PopoverProps,
@@ -198,7 +201,6 @@ export type {
   DataTableRowTint,
   HeatmapDay,
   LineChartProps,
-  PageBreadcrumb,
   PagedListLayout,
   PagedListProps,
   PageHeaderProps,

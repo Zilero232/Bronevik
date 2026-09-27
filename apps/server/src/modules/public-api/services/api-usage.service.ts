@@ -5,7 +5,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { AddUsageInput, LogErrorInput, RecordThrottledInput, RecordUsageInput, UsageBufferEntry } from '../public-api.types';
 
 import { errorMessage, isoDay } from '../../../common/lib';
-import { PrismaService } from '../../../core';
+import { isPrismaRequestError, PrismaService } from '../../../core';
 import { API_USAGE } from '../config';
 import { addCounters, emptyCounters } from '../lib';
 
@@ -51,11 +51,13 @@ export class ApiUsageService implements OnModuleInit, OnModuleDestroy {
 
     this.buffer = new Map();
 
-    try {
-      for (const entry of pending) {
-        const { requests, errors, throttled, latencyMs } = entry.counters;
-        const day = new Date(entry.day);
+    const failures: unknown[] = [];
 
+    for (const entry of pending) {
+      const { requests, errors, throttled, latencyMs } = entry.counters;
+      const day = new Date(entry.day);
+
+      try {
         await this.prisma.apiUsageDaily.upsert({
           where: { apiKeyId_day_endpoint: { apiKeyId: entry.keyId, day, endpoint: entry.endpoint } },
           create: { apiKeyId: entry.keyId, day, endpoint: entry.endpoint, requests, errors, throttled, latencyMsTotal: BigInt(latencyMs) },
@@ -66,14 +68,25 @@ export class ApiUsageService implements OnModuleInit, OnModuleDestroy {
             latencyMsTotal: { increment: BigInt(latencyMs) }
           }
         });
+      } catch (error) {
+        failures.push(error);
+
+        if (!isPrismaRequestError(error)) {
+          this.merge(entry);
+        }
       }
-    } catch (error) {
-      this.logger.warn(`API usage not flushed: ${errorMessage(error)}`);
+    }
+
+    if (failures.length > 0) {
+      this.logger.warn(`${failures.length} of ${pending.length} API usage rows not flushed: ${errorMessage(failures.at(-1))}`);
     }
   }
 
   private add({ keyId, endpoint, counters }: AddUsageInput): void {
-    const day = isoDay(new Date());
+    this.merge({ keyId, endpoint, counters, day: isoDay(new Date()) });
+  }
+
+  private merge({ keyId, endpoint, counters, day }: UsageBufferEntry): void {
     const bufferKey = `${keyId}|${day}|${endpoint}`;
     const current = this.buffer.get(bufferKey);
 

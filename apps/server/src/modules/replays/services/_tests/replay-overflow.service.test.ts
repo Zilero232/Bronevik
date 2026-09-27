@@ -42,6 +42,24 @@ describe('ReplayOverflowService.run', () => {
     expect(prisma.replay.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: { in: ['r1', 'r0'] }, uploaderUserId: 'u1' } }));
   });
 
+  it('leaves the files alone when the row delete fails', async () => {
+    const { service, prisma, storage } = createService('expired');
+
+    prisma.replay.deleteMany.mockRejectedValue(new Error('db down'));
+
+    await expect(service.run(deleteAt)).rejects.toThrow('db down');
+    expect(storage.remove).not.toHaveBeenCalled();
+  });
+
+  it('still deletes the rows when a file removal fails', async () => {
+    const { service, storage } = createService('expired');
+
+    storage.remove.mockRejectedValueOnce(new Error('s3 down'));
+
+    await expect(service.run(deleteAt)).resolves.toBe(2);
+    expect(storage.remove).toHaveBeenCalledTimes(2);
+  });
+
   it('warns 14 days ahead with an idempotent key and deletes nothing', async () => {
     const { service, prisma, notifications } = createService('expired');
 

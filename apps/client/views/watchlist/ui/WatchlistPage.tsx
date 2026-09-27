@@ -14,6 +14,7 @@ import s from './WatchlistPage.module.scss';
 
 export const WatchlistPage = () => {
   const t = useTranslations('watchlist');
+  const tPeriods = useTranslations('periods');
   const { period, query, players, summary, watchedIds, isFull, onPeriodChange } = useWatchlistPage();
 
   return (
@@ -22,7 +23,7 @@ export const WatchlistPage = () => {
         action={
           <SegmentedControl
             aria-label={t('period.label')}
-            options={WATCHLIST_PERIODS.map((value) => ({ value, label: t(`period.${value}`) }))}
+            options={WATCHLIST_PERIODS.map((value) => ({ value, label: tPeriods(value) }))}
             size='sm'
             value={period}
             onChange={onPeriodChange}

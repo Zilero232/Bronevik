@@ -1,8 +1,6 @@
 'use client';
 
-import { useVirtualizer } from '@tanstack/react-virtual';
-
-import { rowActivation } from '@/shared/lib';
+import { rowActivation, useTableVirtualizer } from '@/shared/lib';
 
 import type { DataTableVirtualRowsProps } from './DataTableVirtualRows.types';
 
@@ -24,16 +22,12 @@ export const DataTableVirtualRows = <T,>({
 }: DataTableVirtualRowsProps<T>) => {
   'use no memo';
 
-  const virtualizer = useVirtualizer({
+  const { items, paddingTop, paddingBottom } = useTableVirtualizer({
     count: rows.length,
     getScrollElement: scrollElement,
-    estimateSize: () => rowHeight,
+    rowHeight,
     overscan: DATA_TABLE.overscan
   });
-
-  const items = virtualizer.getVirtualItems();
-  const paddingTop = items[0]?.start ?? 0;
-  const paddingBottom = virtualizer.getTotalSize() - (items.at(-1)?.end ?? 0);
 
   return (
     <tbody>

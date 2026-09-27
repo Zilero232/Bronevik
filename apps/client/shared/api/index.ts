@@ -1,2 +1,2 @@
 export { api } from './http';
-export { queryClient } from './query-client';
+export { getQueryClient, queryClient } from './query-client';

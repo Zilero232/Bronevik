@@ -53,10 +53,10 @@
   "requirements": {
     "title": "Требования",
     "none": "Без требований",
-    "minBattles": "от {value} боёв",
-    "minWn8": "WN8 от {value}",
-    "maxWn8": "WN8 до {value}",
-    "minWinRate": "победы от {value}%",
+    "minBattles": "от {value, plural, one {# боя} few {# боёв} many {# боёв} other {# боя}}",
+    "minWn8": "WN8 от {value, number}",
+    "maxWn8": "WN8 до {value, number}",
+    "minWinRate": "победы от {value, number}%",
     "fields": {
       "legend": "Требования к игроку",
       "minBattles": "Боёв от",

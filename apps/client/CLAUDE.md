@@ -13,7 +13,7 @@ app/          # Next.js routes — [locale]/{(site),(overlay),(tma)}, api/og, se
 views/        # one screen per route (36): home, design, error, not-found, login, me, billing, plus,
               #   notifications, players, player-profile, player-session, player-og, compare-players, top,
               #   clan, clans, tank, tanks, compare-tanks, build, marks, tree, map, maps, play, tools,
-              #   streamer, streamers, streamer-studio, overlay, developers, developer-cabinet,
+              #   streamer, for-streamers, streamer-studio, overlay, developers, developer-cabinet,
               #   mini-app, telegram-link, telegram-login
 widgets/      # account/account-shell, player/session-detail, site/{site-header,site-footer}
 features/     # app/{rating-palette,rating-patterns,switch-locale,switch-theme}, auth/lesta-link,

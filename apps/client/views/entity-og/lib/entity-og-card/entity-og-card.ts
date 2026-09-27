@@ -8,7 +8,7 @@ import { ROUTES } from '@/shared/constants';
 import { FORMATS, messages, TIME_ZONE } from '@/shared/i18n';
 import { OG_COLORS, OG_TONES } from '@/shared/seo/og';
 
-import type { ClanOgCardInput, EntityOgCardData, TankOgCardInput } from './entity-og-card.types';
+import type { ClanOgCardInput, EntityOgCardData, SiteOgCardInput, TankOgCardInput } from './entity-og-card.types';
 
 const toolsOf = (locale: Locale) => ({
   t: createTranslator({ locale, messages: messages[locale] }),
@@ -74,6 +74,19 @@ export const clanOgCard = ({ page: { clan, stats }, locale, host }: ClanOgCardIn
       { key: 'members', label: t('og.members'), value: format.number(clan.membersCount, 'integer'), color: OG_COLORS.text }
     ],
     url: `${host}${ROUTES.clans.detail(clan.tag)}`,
+    source: t('og.source')
+  };
+};
+
+export const siteOgCard = ({ locale, host }: SiteOgCardInput): EntityOgCardData => {
+  const { t } = toolsOf(locale);
+
+  return {
+    heading: `${t('brand.name')} · ${t('og.kinds.site')}`,
+    title: t('brand.name'),
+    subtitle: t('brand.tagline'),
+    metrics: [],
+    url: host,
     source: t('og.source')
   };
 };

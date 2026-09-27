@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 
+import type { tankRoleSchema } from '../vehicles/vehicles.schemas';
 import type {
   accountEconomyQuerySchema,
   accountEconomySchema,
@@ -20,7 +21,6 @@ import type {
   tankObtainSchema,
   tankOfferSchema,
   tankResearchStepSchema,
-  tankRoleSchema,
   tankSourceSchema,
   tankStatusSchema,
   tankTraitsFilterSchema,

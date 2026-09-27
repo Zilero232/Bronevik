@@ -2,7 +2,6 @@ import type { CheckoutResult } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 import { PLUS } from '@otmetki/schemas';
-import { randomUUID } from 'node:crypto';
 
 import type { CheckoutInput } from '../billing.types';
 
@@ -10,7 +9,7 @@ import { AppBadRequestException, AppForbiddenException } from '../../../common/e
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { BILLING_LINKS, PLUS_SUBSCRIPTION } from '../config';
-import { describePlan, planPrice, YooKassaClient } from '../lib';
+import { checkoutIdempotenceKey, describePlan, planPrice, YooKassaClient } from '../lib';
 import { PromoService } from './promo.service';
 import { SubscriptionService } from './subscription.service';
 
@@ -41,7 +40,7 @@ export class CheckoutService {
       amountRub,
       description: describePlan({ plan, isRenewal: false }),
       returnUrl: new URL(BILLING_LINKS.returnPath, this.config.get('WEB_URL')).href,
-      idempotenceKey: randomUUID(),
+      idempotenceKey: checkoutIdempotenceKey({ userId, plan, promoCode: promo?.code, now: new Date() }),
       savePaymentMethod: this.subscriptions.isRecurringEnabled,
       metadata: { userId, plan, product: PLUS_SUBSCRIPTION.product }
     });
@@ -52,8 +51,10 @@ export class CheckoutService {
       throw new AppBadRequestException('PAYMENT_FAILED', 'YooKassa returned no confirmation URL');
     }
 
-    await this.prisma.payment.create({
-      data: {
+    await this.prisma.payment.upsert({
+      where: { yookassaPaymentId: payment.id },
+      update: {},
+      create: {
         userId,
         yookassaPaymentId: payment.id,
         amount: amountRub,

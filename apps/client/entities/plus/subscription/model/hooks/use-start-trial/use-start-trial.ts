@@ -4,13 +4,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { QUERY_KEYS } from '@/shared/constants';
+import { QUERY_KEYS, ROUTES } from '@/shared/constants';
+import { useRouter } from '@/shared/i18n/navigation';
 
 import { startPlusTrial } from '../../../api';
 
 export const useStartTrial = () => {
   const t = useTranslations('plus.teaser');
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: startPlusTrial,
@@ -18,6 +20,6 @@ export const useStartTrial = () => {
       queryClient.setQueryData(QUERY_KEYS.me.billing.status, status);
       toast.success(t('trialStarted', { days: status.plus.trialDays }));
     },
-    onError: () => toast.error(t('trialFailed'))
+    onError: () => toast.error(t('trialFailed'), { action: { label: t('linkAccount'), onClick: () => router.push(ROUTES.account.overview) } })
   });
 };

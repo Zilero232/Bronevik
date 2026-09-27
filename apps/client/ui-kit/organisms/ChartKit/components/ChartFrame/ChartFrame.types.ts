@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 
-export type ChartFrameProps = {
+import type { ChartBaseProps } from '../../ChartKit.types';
+
+export type ChartFrameProps = Pick<ChartBaseProps, 'ariaLabel' | 'className' | 'hasTableToggle' | 'labels' | 'series'> & {
   height: number;
-  ariaLabel?: string;
-  className?: string;
+  formatValue: (value: number) => string;
   children: (width: number) => ReactNode;
 };

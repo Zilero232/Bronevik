@@ -2,9 +2,7 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-import { getLeaderboard } from '@/entities/player/leaderboard';
-import { QUERY_KEYS } from '@/shared/constants';
-
+import { topQueries } from '../../../api';
 import { TOP_BOARD } from '../../../config';
 import { toLeaderboardFilter } from '../../../lib/top-filter';
 import { useTopParams } from '../use-top-params';
@@ -12,11 +10,7 @@ import { useTopParams } from '../use-top-params';
 export const useTopBoard = () => {
   const [params] = useTopParams();
   const filter = toLeaderboardFilter(params);
-  const query = useQuery({
-    queryKey: QUERY_KEYS.leaderboard(filter),
-    queryFn: ({ signal }) => getLeaderboard({ ...filter, signal }),
-    placeholderData: keepPreviousData
-  });
+  const query = useQuery({ ...topQueries.board(filter), placeholderData: keepPreviousData });
 
   return {
     filter,

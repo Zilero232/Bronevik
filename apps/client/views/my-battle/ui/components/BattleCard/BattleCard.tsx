@@ -15,7 +15,7 @@ import s from './BattleCard.module.scss';
 export const BattleCard = ({ battle }: BattleCardProps) => {
   const t = useTranslations('analytics.battle');
   const format = useFormatter();
-  const { facts, duration, lifetime, startedAt, onShare } = useBattleCard(battle);
+  const { facts, duration, lifetime, map, startedAt, onShare } = useBattleCard(battle);
 
   return (
     <Card className={s.root} data-result={battle.result} padding='none'>
@@ -31,7 +31,7 @@ export const BattleCard = ({ battle }: BattleCardProps) => {
             )}
             <h2 className={s.name}>{battle.vehicle?.name ?? battle.tankId}</h2>
             <span className={s.map}>
-              {battle.mapName ?? battle.arenaId} · {startedAt}
+              {map} · {startedAt}
             </span>
           </div>
         </div>

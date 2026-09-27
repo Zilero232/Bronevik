@@ -12,10 +12,7 @@
     "within": "Within ±25%"
   },
   "period": {
-    "label": "Period",
-    "d7": "7 days",
-    "d30": "30 days",
-    "all": "All time"
+    "label": "Period"
   },
   "server": {
     "title": "Server damage distribution",

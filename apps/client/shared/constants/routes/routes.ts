@@ -127,7 +127,8 @@ export const ROUTES = {
     watchlist: '/me/watchlist'
   },
   api: {
-    playerCard: (accountId: number) => `/api/og/player/${accountId}`
+    playerCard: (accountId: number) => `/api/og/player/${accountId}`,
+    siteCard: (locale: string) => `/api/og/site?${new URLSearchParams({ locale }).toString()}`
   },
   sw: '/serwist/sw.js'
 } as const;

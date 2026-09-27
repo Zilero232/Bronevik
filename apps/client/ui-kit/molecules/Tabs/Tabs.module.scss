@@ -37,6 +37,12 @@
   overflow-x: auto;
 
   @include hide-scrollbar;
+
+  @supports (animation-timeline: scroll()) {
+    animation: tabs-edge-fade linear both;
+    animation-timeline: scroll(self inline);
+    mask-image: linear-gradient(to right, transparent, #000 var(--tabs-fade-start), #000 calc(100% - var(--tabs-fade-end)), transparent);
+  }
 }
 
 .aside {
@@ -152,6 +158,38 @@
     transition:
       left 220ms var(--ease-out),
       width 220ms var(--ease-out);
+  }
+}
+
+@property --tabs-fade-start {
+  inherits: false;
+  initial-value: 0;
+  syntax: '<length>';
+}
+
+@property --tabs-fade-end {
+  inherits: false;
+  initial-value: 0;
+  syntax: '<length>';
+}
+
+@keyframes tabs-edge-fade {
+  0% {
+    --tabs-fade-start: 0;
+    --tabs-fade-end: 32px;
+  }
+
+  8% {
+    --tabs-fade-start: 32px;
+  }
+
+  92% {
+    --tabs-fade-end: 32px;
+  }
+
+  100% {
+    --tabs-fade-start: 32px;
+    --tabs-fade-end: 0;
   }
 }
 

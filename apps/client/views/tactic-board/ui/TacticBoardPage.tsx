@@ -1,12 +1,10 @@
 'use client';
 
-import { SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { match, P } from 'ts-pattern';
 
 import { ROUTES } from '@/shared/constants';
-import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { Skeleton } from '@/ui-kit';
+import { ResourceGate } from '@/widgets/resource-missing';
 
 import type { TacticBoardPageProps } from './TacticBoardPage.types';
 
@@ -17,34 +15,26 @@ import s from './TacticBoardPage.module.scss';
 
 export const TacticBoardPage = ({ id }: TacticBoardPageProps) => {
   const t = useTranslations('tactics.board');
-  const { board, token, isPending, isNotFound, isError, isFetching, onRetry } = useTacticBoardPage(id);
+  const tCommon = useTranslations('common');
+  const { query, token } = useTacticBoardPage(id);
 
   return (
     <div className={s.root}>
-      {match({ board, isPending, isNotFound, isError })
-        .with({ isPending: true }, () => <Skeleton height={560} shape='block' />)
-        .with({ isNotFound: true }, () => (
-          <EmptyState
-            action={
-              <Link className={buttonVariants({ size: 'sm', variant: 'secondary' })} href={ROUTES.tactics.list}>
-                {t('backToList')}
-              </Link>
-            }
-            description={t('notFoundHint')}
-            icon={<SearchX size={22} />}
-            title={t('notFound')}
-          />
-        ))
-        .with({ board: P.nonNullable }, ({ board: current }) => (
+      <ResourceGate
+        back={{ href: ROUTES.tactics.list, label: t('backToList') }}
+        error={{ title: tCommon('loadErrorTitle'), description: tCommon('loadErrorDescription') }}
+        notFound={{ title: t('notFound'), description: t('notFoundHint') }}
+        query={query}
+        skeleton={<Skeleton height={560} shape='block' />}
+      >
+        {(board) => (
           <>
-            <BoardHeader board={current} token={token} />
-            {current.role === 'owner' && <SharePanel board={current} token={token} />}
-            <BoardWorkspace key={current.id} board={current} urlToken={token} />
+            <BoardHeader board={board} token={token} />
+            {board.role === 'owner' && <SharePanel board={board} token={token} />}
+            <BoardWorkspace key={board.id} board={board} urlToken={token} />
           </>
-        ))
-        .otherwise(() => (
-          <ErrorState isRetrying={isFetching} onRetry={onRetry} />
-        ))}
+        )}
+      </ResourceGate>
     </div>
   );
 };

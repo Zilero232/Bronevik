@@ -1,11 +1,10 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
 import { VehicleFilters } from '@/features/tank/filter-vehicles';
 import { ROUTES } from '@/shared/constants';
-import { DataTable, ErrorState, FilteredEmptyState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { DataTable, FilteredEmptyState, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import type { ModeTanksProps } from './ModeTanks.types';
 
@@ -17,7 +16,7 @@ import s from './ModeTanks.module.scss';
 
 export const ModeTanks = ({ mode }: ModeTanksProps) => {
   const t = useTranslations('modes.table');
-  const { view, onViewChange, columns, rows, groups, minBattles, isLoading, isError, isRetrying, isFiltered, onReset, onRetry } = useModeTanks(mode);
+  const { view, onViewChange, columns, rows, groups, minBattles, query, isFiltered, onReset } = useModeTanks(mode);
 
   const emptyState = (
     <FilteredEmptyState
@@ -40,11 +39,19 @@ export const ModeTanks = ({ mode }: ModeTanksProps) => {
           onChange={onViewChange}
         />
       </div>
-      {match({ isError, view, isLoading })
-        .with({ isError: true }, () => (
-          <ErrorState description={t('errorDescription')} isRetrying={isRetrying} title={t('errorTitle')} onRetry={onRetry} />
-        ))
-        .with({ view: 'table' }, () => (
+      <QueryState
+        skeleton={
+          view === 'table' ? (
+            <DataTable isLoading columns={columns} data={[]} rowHeight={MODE_TABLE.rowHeight} />
+          ) : (
+            <Skeleton height={MODE_TABLE.skeletonHeight} shape='block' />
+          )
+        }
+        errorDescription={t('errorDescription')}
+        errorTitle={t('errorTitle')}
+        query={query}
+      >
+        {view === 'table' ? (
           <DataTable
             caption={t('caption', { count: rows.length })}
             columns={columns}
@@ -53,13 +60,15 @@ export const ModeTanks = ({ mode }: ModeTanksProps) => {
             getRowId={(row) => String(row.vehicle.tankId)}
             getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
             initialSorting={[{ id: 'score', desc: true }]}
-            isLoading={isLoading}
             renderCard={(row) => <ModeTankCard tank={row} />}
             rowHeight={MODE_TABLE.rowHeight}
           />
-        ))
-        .with({ isLoading: true }, () => <Skeleton height={MODE_TABLE.skeletonHeight} shape='block' />)
-        .otherwise(() => (groups.length > 0 ? <RankGroups groups={groups} /> : emptyState))}
+        ) : groups.length > 0 ? (
+          <RankGroups groups={groups} />
+        ) : (
+          emptyState
+        )}
+      </QueryState>
       {minBattles !== null && <p className={s.note}>{t('rankNote', { battles: minBattles })}</p>}
     </section>
   );

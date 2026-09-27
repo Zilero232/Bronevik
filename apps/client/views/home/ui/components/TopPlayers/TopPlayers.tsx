@@ -4,7 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { toneOfTier } from '@/shared/lib';
-import { Card, DataSourceNote, DataTable, EmptyState, ErrorState, Podium, PodiumCard, SectionHeader, SegmentedControl, Skeleton } from '@/ui-kit';
+import { Card, DataSourceNote, DataTable, EmptyState, Podium, PodiumCard, QueryState, SectionHeader, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import { HOME } from '../../../config';
 import { useTopPlayerColumns, useTopPlayers } from '../../../model/hooks';
@@ -15,7 +15,7 @@ export const TopPlayers = () => {
   const t = useTranslations('home.topPlayers');
   const tc = useTranslations('home.columns');
   const format = useFormatter();
-  const { metric, setMetric, podium, rest, isPending, isError, retry } = useTopPlayers();
+  const { metric, setMetric, query } = useTopPlayers();
   const columns = useTopPlayerColumns(metric);
 
   return (
@@ -36,18 +36,30 @@ export const TopPlayers = () => {
         title={t('title')}
         variant='display'
       />
-      {isError && <ErrorState isCompact onRetry={retry} />}
-      {!isError && (
-        <>
-          <Podium aria-label={t('title')}>
-            {isPending &&
-              Array.from({ length: HOME.topPlayers.podium }, (_, index) => (
+      <QueryState
+        isCompact
+        skeleton={
+          <>
+            <Podium aria-label={t('title')}>
+              {Array.from({ length: HOME.topPlayers.podium }, (_, index) => (
                 <li key={index}>
                   <Skeleton className={s.skeleton} height={120} shape='block' />
                 </li>
               ))}
-            {!isPending &&
-              podium.map((entry) => (
+            </Podium>
+            <Card padding='none'>
+              <DataTable isLoading columns={columns} data={[]} />
+            </Card>
+          </>
+        }
+        empty={<EmptyState isCompact title={t('empty')} />}
+        isEmpty={({ podium }) => podium.length === 0}
+        query={query}
+      >
+        {({ podium, rest }) => (
+          <>
+            <Podium aria-label={t('title')}>
+              {podium.map((entry) => (
                 <PodiumCard
                   key={`${entry.rank}-${entry.name}`}
                   href={ROUTES.players.profile(entry.name)}
@@ -60,21 +72,20 @@ export const TopPlayers = () => {
                   value={format.number(entry.value, { maximumFractionDigits: 0 })}
                 />
               ))}
-          </Podium>
-          {!isPending && podium.length === 0 && <EmptyState isCompact title={t('empty')} />}
-          {(isPending || rest.length > 0) && (
-            <Card padding='none'>
-              <DataTable
-                columns={columns}
-                data={rest}
-                getRowId={(entry) => `${entry.rank}-${entry.name}`}
-                getRowLink={(entry) => ({ href: ROUTES.players.profile(entry.name), label: entry.name })}
-                isLoading={isPending}
-              />
-            </Card>
-          )}
-        </>
-      )}
+            </Podium>
+            {rest.length > 0 && (
+              <Card padding='none'>
+                <DataTable
+                  columns={columns}
+                  data={rest}
+                  getRowId={(entry) => `${entry.rank}-${entry.name}`}
+                  getRowLink={(entry) => ({ href: ROUTES.players.profile(entry.name), label: entry.name })}
+                />
+              </Card>
+            )}
+          </>
+        )}
+      </QueryState>
       <DataSourceNote />
     </section>
   );

@@ -6,25 +6,22 @@ import { OVERLAY_EDITOR } from '../../../config';
 import { useOverlays } from '../use-overlays';
 
 export const useOverlaysPanel = () => {
-  const { data: overlays = [], isPending, isError, isFetching, refetch } = useOverlays();
+  const query = useOverlays();
   const [selection, setSelection] = useState<string | null>(null);
 
+  const overlays = query.data ?? [];
   const selected = selection === OVERLAY_EDITOR.newId ? null : (overlays.find(({ id }) => id === selection) ?? overlays[0] ?? null);
 
   const onCreate = () => setSelection(OVERLAY_EDITOR.newId);
   const onRemoved = () => setSelection(null);
-  const onRetry = () => void refetch();
 
   return {
+    query,
     overlays,
     selected,
     editorKey: selected?.id ?? OVERLAY_EDITOR.newId,
-    isPending,
-    isError,
-    isFetching,
     onSelect: setSelection,
     onCreate,
-    onRemoved,
-    onRetry
+    onRemoved
   };
 };

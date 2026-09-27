@@ -6,17 +6,8 @@ import { QUERY_KEYS } from '@/shared/constants';
 
 import { getStreamerSettingsHistory } from '../../../api';
 
-export const useSettingsHistory = (slug: string) => {
-  const query = useQuery({
+export const useSettingsHistory = (slug: string) =>
+  useQuery({
     queryKey: QUERY_KEYS.streamers.settingsHistory(slug),
     queryFn: () => getStreamerSettingsHistory(slug)
   });
-
-  return {
-    entries: query.data ?? [],
-    isPending: query.isPending,
-    isError: query.isError,
-    isRetrying: query.isRefetching,
-    retry: () => void query.refetch()
-  };
-};

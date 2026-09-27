@@ -2,8 +2,8 @@ import type { MeCardProps } from './MeCard.types';
 
 import s from './MeCard.module.scss';
 
-export const MeCard = ({ icon, title, description, action, children }: MeCardProps) => (
-  <section className={s.root}>
+export const MeCard = ({ icon, title, description, action, children, tone = 'default' }: MeCardProps) => (
+  <section className={s.root} data-tone={tone}>
     <header className={s.header}>
       <span aria-hidden className={s.icon}>
         {icon}

@@ -2,9 +2,8 @@
 
 import { Activity } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { match, P } from 'ts-pattern';
 
-import { EmptyState, ErrorState, SectionHeader, SegmentedControl, Select, Skeleton } from '@/ui-kit';
+import { EmptyState, QueryState, SectionHeader, SegmentedControl, Select, Skeleton } from '@/ui-kit';
 
 import type { UsagePeriod } from '../../../model/hooks';
 
@@ -17,7 +16,7 @@ import s from './UsagePanel.module.scss';
 
 export const UsagePanel = () => {
   const t = useTranslations('developer.usage');
-  const { keyItems, selectedId, setKeyId, period, setPeriod, usage, isStale, isFailed, isRetrying, onRetry } = useUsagePanel();
+  const { keyItems, hasNoKeys, selectedId, setKeyId, period, setPeriod, isStale, query } = useUsagePanel();
 
   return (
     <section className={s.root} id='usage'>
@@ -34,22 +33,22 @@ export const UsagePanel = () => {
           />
         </div>
       )}
-      {match({ selectedId, usage, isFailed })
-        .with({ isFailed: true }, () => <ErrorState isRetrying={isRetrying} onRetry={onRetry} />)
-        .with({ selectedId: '' }, () => <EmptyState description={t('noKeysHint')} icon={<Activity size={22} />} title={t('noKeys')} />)
-        .with({ usage: P.nonNullable }, ({ usage: loaded }) => (
-          <div className={s.body} data-stale={isStale}>
-            <UsageToday usage={loaded} />
-            <UsageCharts history={loaded.history} />
-            <div className={s.split}>
-              <TopEndpoints endpoints={loaded.topEndpoints} />
-              <ErrorLog keyId={selectedId} />
+      {hasNoKeys ? (
+        <EmptyState description={t('noKeysHint')} icon={<Activity size={22} />} title={t('noKeys')} />
+      ) : (
+        <QueryState query={query} skeleton={<Skeleton height={320} shape='block' />}>
+          {(usage) => (
+            <div className={s.body} data-stale={isStale}>
+              <UsageToday usage={usage} />
+              <UsageCharts history={usage.history} />
+              <div className={s.split}>
+                <TopEndpoints endpoints={usage.topEndpoints} />
+                <ErrorLog keyId={selectedId} />
+              </div>
             </div>
-          </div>
-        ))
-        .otherwise(() => (
-          <Skeleton height={320} shape='block' />
-        ))}
+          )}
+        </QueryState>
+      )}
     </section>
   );
 };

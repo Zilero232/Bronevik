@@ -4,7 +4,6 @@
   "patterns": "Rating patterns",
   "patternsHint": "Hatching instead of colour alone — easier with colour blindness",
   "xvm": "XVM colour scale",
-  "xvmHint": "The familiar rating colours from the XVM modpack",
   "language": "Language",
   "theme": "Theme",
   "palette": "Rating scale",

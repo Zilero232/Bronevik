@@ -12,8 +12,8 @@ export type PlaceholderEmailInput = {
   id: bigint | number | string;
 };
 
-export type UserContentStore = {
-  purgeAuthoredBy: (input: { userId: string }) => Promise<void>;
+export type AccountPurgeStore = {
+  purgeAccount: (input: { userId: string }) => Promise<void>;
 };
 
 export type CreateAuthInput = {
@@ -22,7 +22,7 @@ export type CreateAuthInput = {
   lesta: LestaClient;
   lestaStore: LestaAccountStore;
   telegramStore: TelegramAccountStore;
-  userContent: UserContentStore;
+  accountPurge: AccountPurgeStore;
   logger: Pick<LoggerService, 'log'>;
 };
 

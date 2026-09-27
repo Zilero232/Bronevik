@@ -70,7 +70,6 @@
     "emptyTitle": "No stats yet",
     "emptyDescription": "No tank in this mode has reached {battles, plural, one {# battle} other {# battles}} in our data yet.",
     "filteredEmptyTitle": "No tanks match these filters",
-    "resetFilters": "Reset filters",
     "errorTitle": "Could not load the mode meta",
     "errorDescription": "The stats server did not respond. Try again."
   },

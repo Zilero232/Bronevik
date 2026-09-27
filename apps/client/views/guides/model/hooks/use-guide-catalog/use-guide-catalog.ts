@@ -18,23 +18,23 @@ export const useGuideCatalog = () => {
   const [knownTotal, setKnownTotal] = useState<number | null>(null);
   const knownPages = knownTotal === null ? Number.POSITIVE_INFINITY : pageCount({ total: knownTotal, pageSize: GUIDE_LIST.pageSize });
   const queryPage = clamp(filters.page, { min: GUIDE_LIST.firstPage, max: knownPages });
-  const query = toGuideListQuery({ filters: { ...filters, page: queryPage }, pageSize: GUIDE_LIST.pageSize });
-  const { data, isPending, isError, isFetching, refetch } = useQuery({
-    queryKey: QUERY_KEYS.guides.list({ viewerId: session?.user.id ?? null, params: query }),
-    queryFn: ({ signal }) => listGuides({ ...query, signal }),
+  const params = toGuideListQuery({ filters: { ...filters, page: queryPage }, pageSize: GUIDE_LIST.pageSize });
+  const query = useQuery({
+    queryKey: QUERY_KEYS.guides.list({ viewerId: session?.user.id ?? null, params }),
+    queryFn: ({ signal }) => listGuides({ ...params, signal }),
     placeholderData: keepPreviousData
   });
 
-  const total = data?.total ?? 0;
+  const total = query.data?.total ?? 0;
   const pages = pageCount({ total, pageSize: GUIDE_LIST.pageSize });
   const page = clamp(queryPage, { min: GUIDE_LIST.firstPage, max: pages });
 
-  if (data && data.total !== knownTotal) {
-    setKnownTotal(data.total);
+  if (query.data && query.data.total !== knownTotal) {
+    setKnownTotal(query.data.total);
   }
 
   return {
-    items: data?.items ?? [],
+    query,
     total,
     page,
     pages,
@@ -43,10 +43,6 @@ export const useGuideCatalog = () => {
     prev: () => setPage(page - 1),
     next: () => setPage(page + 1),
     hasFilters: hasActiveFilters(filters),
-    reset,
-    isPending,
-    isError: isError && !data,
-    isRetrying: isFetching,
-    retry: () => void refetch()
+    reset
   };
 };

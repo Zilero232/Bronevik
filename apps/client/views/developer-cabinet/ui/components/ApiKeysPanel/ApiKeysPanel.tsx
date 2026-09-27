@@ -3,9 +3,8 @@
 import { API_KEY } from '@otmetki/schemas';
 import { KeyRound, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
-import { Button, ConfirmDialog, EmptyState, ErrorState, SectionHeader, Skeleton } from '@/ui-kit';
+import { Button, ConfirmDialog, EmptyState, QueryState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { useApiKeysPanel } from '../../../model/hooks';
 import { ApiKeyRow, CreateKeyDialog } from './components';
@@ -15,28 +14,13 @@ import s from './ApiKeysPanel.module.scss';
 export const ApiKeysPanel = () => {
   const t = useTranslations('developer.keys');
   const tDeveloper = useTranslations('developer');
-  const {
-    keys,
-    count,
-    isPending,
-    isError,
-    isFetching,
-    isFull,
-    isCreating,
-    toggleCreating,
-    revoking,
-    setRevoking,
-    isRevoking,
-    onRetry,
-    onRevoke,
-    onRevokeOpenChange
-  } = useApiKeysPanel();
+  const { query, isFull, canCreate, isCreating, toggleCreating, revoking, setRevoking, isRevoking, onRevoke, onRevokeOpenChange } = useApiKeysPanel();
 
   return (
     <section className={s.root} id='keys'>
       <SectionHeader
         action={
-          <Button disabled={isPending || isError || isFull} onClick={() => toggleCreating(true)}>
+          <Button disabled={!canCreate} onClick={() => toggleCreating(true)}>
             <Plus size={16} />
             {t('create')}
           </Button>
@@ -45,17 +29,19 @@ export const ApiKeysPanel = () => {
         title={t('title')}
       />
       {isFull && <p className={s.limit}>{t('limit', { max: API_KEY.maxActivePerUser })}</p>}
-      {match({ isPending, isError, count })
-        .with({ isPending: true }, () => <Skeleton height={180} shape='block' />)
-        .with({ isError: true }, () => <ErrorState isRetrying={isFetching} onRetry={onRetry} />)
-        .with({ count: 0 }, () => <EmptyState description={t('emptyHint')} icon={<KeyRound size={22} />} title={t('empty')} />)
-        .otherwise(() => (
+      <QueryState
+        empty={<EmptyState description={t('emptyHint')} icon={<KeyRound size={22} />} title={t('empty')} />}
+        query={query}
+        skeleton={<Skeleton height={180} shape='block' />}
+      >
+        {(keys) => (
           <ul className={s.list}>
-            {keys?.map((apiKey) => (
+            {keys.map((apiKey) => (
               <ApiKeyRow key={apiKey.id} apiKey={apiKey} onRevoke={setRevoking} />
             ))}
           </ul>
-        ))}
+        )}
+      </QueryState>
       <CreateKeyDialog open={isCreating} onOpenChange={toggleCreating} />
       <ConfirmDialog
         cancelLabel={tDeveloper('cancel')}

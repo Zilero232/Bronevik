@@ -29,13 +29,5 @@ export const useOverlayPreview = ({ accountId }: UseOverlayPreviewInput) => {
     placeholderData: keepPreviousData
   });
 
-  const onRetry = () => void query.refetch();
-
-  return {
-    data: query.data,
-    config,
-    isError: query.isError,
-    isFetching: query.isFetching,
-    onRetry
-  };
+  return { query, config };
 };

@@ -21,7 +21,16 @@ export const useMyBattles = () => {
   const columns = useMyBattlesColumns();
 
   return {
-    ...list,
+    total: list.total,
+    hasNextPage: list.hasNextPage,
+    isFetchingNextPage: list.isFetchingNextPage,
+    loadMore: list.loadMore,
+    query: {
+      data: list.isPending || (list.isError && list.items.length === 0) ? undefined : list.items,
+      isError: list.isError,
+      isRefetching: list.isRetrying,
+      refetch: list.retry
+    },
     columns,
     isNoAccount: list.isError && isNotFoundError(list.error),
     battleLink: (row: MyBattle) => ({

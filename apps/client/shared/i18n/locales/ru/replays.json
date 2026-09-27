@@ -42,7 +42,6 @@
     "prev": "Назад",
     "next": "Дальше",
     "page": "{page} из {pages}",
-    "resetFilters": "Сбросить фильтры",
     "emptyTitle": "Реплеев нет",
     "emptyDescription": "Сюда попадают публичные разобранные реплеи. Загрузите свой первым.",
     "emptyFilteredDescription": "Под эти фильтры ничего не нашлось.",

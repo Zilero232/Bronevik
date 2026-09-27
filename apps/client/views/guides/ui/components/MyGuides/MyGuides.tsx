@@ -3,12 +3,11 @@
 import { Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
-import { match } from 'ts-pattern';
 
 import { GuideStatusBadge } from '@/features/community/guide-meta';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, Card, CardHeader, EmptyState, ErrorState, RelativeTime } from '@/ui-kit';
+import { buttonVariants, Card, CardHeader, EmptyState, QueryState, RelativeTime } from '@/ui-kit';
 
 import { useMyGuides } from '../../../model/hooks';
 import { SideListSkeleton } from '../SideListSkeleton';
@@ -18,7 +17,7 @@ import s from './MyGuides.module.scss';
 export const MyGuides = () => {
   const t = useTranslations('guides.mine');
   const titleId = useId();
-  const { isSignedIn, guides, isPending, isError, isRetrying, retry } = useMyGuides();
+  const { isSignedIn, query } = useMyGuides();
 
   if (!isSignedIn) {
     return null;
@@ -26,11 +25,10 @@ export const MyGuides = () => {
 
   return (
     <Card aria-labelledby={titleId} padding='none'>
-      <CardHeader meta={guides.length > 0 ? guides.length : undefined} title={<span id={titleId}>{t('title')}</span>} />
-      {match({ isPending, isError, isEmpty: guides.length === 0 })
-        .with({ isPending: true }, () => <SideListSkeleton />)
-        .with({ isError: true }, () => <ErrorState isCompact isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />)
-        .with({ isEmpty: true }, () => (
+      <CardHeader meta={query.data?.length || undefined} title={<span id={titleId}>{t('title')}</span>} />
+      <QueryState
+        isCompact
+        empty={
           <EmptyState
             isCompact
             action={
@@ -41,8 +39,12 @@ export const MyGuides = () => {
             description={t('emptyDescription')}
             title={t('emptyTitle')}
           />
-        ))
-        .otherwise(() => (
+        }
+        errorTitle={t('errorTitle')}
+        query={query}
+        skeleton={<SideListSkeleton />}
+      >
+        {(guides) => (
           <ul className={s.list}>
             {guides.map((guide) => (
               <li key={guide.id} className={s.row}>
@@ -61,7 +63,8 @@ export const MyGuides = () => {
               </li>
             ))}
           </ul>
-        ))}
+        )}
+      </QueryState>
     </Card>
   );
 };

@@ -6,24 +6,23 @@ import type { LestaClient } from '../../lib/lesta';
 import { validateEnv } from '../../config';
 import { LESTA_CLIENT, PrismaService } from '../../core';
 import { createAuth } from '../../lib/auth';
-import { CommunityContentService, CommunityCoreModule } from '../community-core';
 import { AuthStoresModule } from './auth-stores.module';
 import { AUTH_MODULE } from './config';
-import { LestaAccountsService, TelegramAccountsService } from './services';
+import { AccountPurgeService, LestaAccountsService, TelegramAccountsService } from './services';
 
 @Module({
   imports: [
     AuthStoresModule,
     BetterAuthModule.forRootAsync({
       isGlobal: true,
-      imports: [AuthStoresModule, CommunityCoreModule],
-      inject: [PrismaService, LESTA_CLIENT, LestaAccountsService, TelegramAccountsService, CommunityContentService],
+      imports: [AuthStoresModule],
+      inject: [PrismaService, LESTA_CLIENT, LestaAccountsService, TelegramAccountsService, AccountPurgeService],
       useFactory: (
         prisma: PrismaService,
         lesta: LestaClient,
         lestaStore: LestaAccountsService,
         telegramStore: TelegramAccountsService,
-        userContent: CommunityContentService
+        accountPurge: AccountPurgeService
       ) => ({
         auth: createAuth({
           env: validateEnv(process.env),
@@ -31,7 +30,7 @@ import { LestaAccountsService, TelegramAccountsService } from './services';
           lesta,
           lestaStore,
           telegramStore,
-          userContent,
+          accountPurge,
           logger: new Logger(AUTH_MODULE.logContext)
         }),
         disableTrustedOriginsCors: true,

@@ -3,11 +3,10 @@
 import { LogIn } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
-import { match } from 'ts-pattern';
 
 import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { buttonVariants, Card, CardHeader, EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
 import type { CommentsThreadProps } from './CommentsThread.types';
 
@@ -21,7 +20,7 @@ export const CommentsThread = ({ target, targetId, className }: CommentsThreadPr
   const loginHref = useLoginHref();
   const t = useTranslations('community.comments');
   const titleId = useId();
-  const { context, nodes, count, isPending, isError, isRetrying, retry } = useCommentsThread({ target, targetId });
+  const { context, query, count } = useCommentsThread({ target, targetId });
 
   return (
     <CommentsThreadProvider value={context}>
@@ -39,23 +38,26 @@ export const CommentsThread = ({ target, targetId, className }: CommentsThreadPr
               <span>{t('signInHint')}</span>
             </p>
           )}
-          {match({ isPending, isError, isEmpty: nodes.length === 0 })
-            .with({ isPending: true }, () => (
+          <QueryState
+            isCompact
+            skeleton={
               <div aria-busy className={s.list}>
                 <Skeleton count={COMMENTS_THREAD.skeletonRows} height={COMMENTS_THREAD.skeletonHeight} shape='block' />
               </div>
-            ))
-            .with({ isError: true }, () => (
-              <ErrorState isCompact description={t('errorDescription')} isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />
-            ))
-            .with({ isEmpty: true }, () => <EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />)
-            .otherwise(() => (
+            }
+            empty={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
+            errorDescription={t('errorDescription')}
+            errorTitle={t('errorTitle')}
+            query={query}
+          >
+            {(nodes) => (
               <div className={s.list}>
                 {nodes.map((node) => (
                   <CommentItem key={node.comment.id} comment={node.comment} replies={node.replies} />
                 ))}
               </div>
-            ))}
+            )}
+          </QueryState>
         </div>
       </Card>
     </CommentsThreadProvider>

@@ -89,8 +89,6 @@
     },
     "unavailable": "Цены пока недоступны",
     "columns": {
-      "plan": "Срок",
-      "price": "Цена",
       "perMonth": "В месяц",
       "saving": "Экономия"
     },

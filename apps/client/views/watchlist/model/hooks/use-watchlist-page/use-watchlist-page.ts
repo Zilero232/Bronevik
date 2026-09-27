@@ -17,24 +17,21 @@ export const useWatchlistPage = () => {
     parseAsStringLiteral(WATCHLIST_PERIODS).withDefault(WATCHLIST.defaultPeriod).withOptions({ history: 'replace' })
   );
 
-  const { data, isPending, isError, isFetching, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.watchlist(period),
     queryFn: ({ signal }) => getWatchlist({ period, signal })
   });
 
+  const { data } = query;
   const players = data?.players ?? [];
 
   return {
     period,
-    watchlist: data ?? null,
+    query,
     players,
     summary: watchlistSummary(players),
     watchedIds: players.map(({ accountId }) => accountId),
     isFull: data ? isWatchlistFull({ used: players.length, limit: data.limit }) : false,
-    isPending,
-    isError: isError && !data,
-    isRetrying: isFetching,
-    retry: () => void refetch(),
     onPeriodChange: (next: WatchlistPeriod) => void setPeriod(next)
   };
 };

@@ -1,9 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
-import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
 import { BUILD_SKELETON } from '../../../config';
 import { useBuildStatGroups } from '../../../model/hooks';
@@ -14,24 +13,26 @@ import s from './StatsBoard.module.scss';
 export const StatsBoard = () => {
   const t = useTranslations('builds.stats');
   const tTank = useTranslations('tank');
-  const { groups, isPending, isError, isFetching, isCompare, refetch } = useBuildStatGroups();
+  const { query, isCompare } = useBuildStatGroups();
 
   return (
-    <section aria-busy={isFetching} aria-label={t('title')} className={s.root}>
+    <section aria-busy={query.isRefetching} aria-label={t('title')} className={s.root}>
       <header className={s.head}>
         <h2 className={s.title}>{t('title')}</h2>
-        {isFetching && <span className={s.updating}>{t('updating')}</span>}
+        {query.isRefetching && <span className={s.updating}>{t('updating')}</span>}
       </header>
       <div className={s.body}>
-        {match({ isPending, isError, count: groups.length })
-          .with({ isPending: true }, () => (
+        <QueryState
+          skeleton={
             <div className={s.skeleton}>
               <Skeleton count={BUILD_SKELETON.statRows} height={28} />
             </div>
-          ))
-          .with({ isError: true }, () => <ErrorState isRetrying={isFetching} title={t('error')} onRetry={refetch} />)
-          .with({ count: 0 }, () => <EmptyState title={t('empty')} />)
-          .otherwise(() => (
+          }
+          empty={<EmptyState title={t('empty')} />}
+          errorTitle={t('error')}
+          query={query}
+        >
+          {(groups) => (
             <table className={s.table}>
               <caption className={s.caption}>{isCompare ? t('captionCompare') : t('caption')}</caption>
               <thead className={s.thead}>
@@ -55,7 +56,8 @@ export const StatsBoard = () => {
                 </tbody>
               ))}
             </table>
-          ))}
+          )}
+        </QueryState>
       </div>
     </section>
   );

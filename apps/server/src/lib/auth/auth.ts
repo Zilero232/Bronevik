@@ -13,7 +13,7 @@ import { socialProviders } from './social-providers';
 import { telegramLogin } from './telegram-login';
 import { vkMiniApp } from './vk-mini-app';
 
-export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, userContent, logger }: CreateAuthInput) => {
+export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, accountPurge, logger }: CreateAuthInput) => {
   const magicLinkEnabled = !isProduction(env);
 
   return betterAuth({
@@ -24,14 +24,18 @@ export const createAuth = ({ env, prisma, lesta, lestaStore, telegramStore, user
     trustedOrigins: allowedOrigins(env),
     database: prismaAdapter(prisma, { provider: 'postgresql' }),
     databaseHooks: {
-      user: { delete: { before: async (user) => userContent.purgeAuthoredBy({ userId: user.id }) } }
+      user: { delete: { before: async (user) => accountPurge.purgeAccount({ userId: user.id }) } }
     },
     advanced: {
       database: { generateId: 'uuid' }
     },
     session: {
       expiresIn: SESSION.expiresIn,
-      updateAge: SESSION.updateAge
+      updateAge: SESSION.updateAge,
+      freshAge: SESSION.freshAge
+    },
+    user: {
+      deleteUser: { enabled: true }
     },
     emailAndPassword: { enabled: false },
     socialProviders: socialProviders(env),

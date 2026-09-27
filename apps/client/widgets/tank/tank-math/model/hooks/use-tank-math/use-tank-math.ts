@@ -11,20 +11,18 @@ import { useTankMathData } from '../use-tank-math-data';
 export const useTankMath = (tankId: number) => {
   const t = useTranslations('tankMath.presets');
   const [preset, setPreset] = useState<TankMathPreset>('top');
-  const { data, isPending, isError, refetch } = useTankMathData(tankId);
+  const query = useTankMathData(tankId);
+  const { data } = query;
 
   const presets = TANK_MATH_PRESETS.map((value) => ({ value, label: t(value) }));
   const otherPreset: TankMathPreset = preset === 'top' ? 'stock' : 'top';
 
   return {
-    data,
+    query,
     preset,
     presets,
     setPreset,
     config: data ? data[preset] : null,
-    other: data ? data[otherPreset] : null,
-    isPending,
-    isError,
-    retry: () => void refetch()
+    other: data ? data[otherPreset] : null
   };
 };

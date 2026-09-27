@@ -6,4 +6,5 @@ export type MeCardProps = {
   description?: ReactNode;
   action?: ReactNode;
   children: ReactNode;
+  tone?: 'danger' | 'default';
 };

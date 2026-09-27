@@ -10,12 +10,12 @@ import { useModeMeta } from '../use-mode-meta';
 import { useModeView } from '../use-mode-view';
 
 export const useModeTanks = (mode: PlayMode) => {
-  const { data, isLoading, isError, isRetrying, onRetry } = useModeMeta(mode);
+  const query = useModeMeta(mode);
   const { isActive, reset } = useVehicleFilters();
   const [view, setView] = useModeView();
   const columns = useModeColumns();
 
-  const rows = data?.tanks ?? [];
+  const rows = query.data?.tanks ?? [];
 
   return {
     view,
@@ -23,12 +23,9 @@ export const useModeTanks = (mode: PlayMode) => {
     columns,
     rows,
     groups: view === 'ranks' ? groupByRank(rows) : [],
-    minBattles: data?.minBattles ?? null,
-    isLoading,
-    isError,
-    isRetrying,
+    minBattles: query.data?.minBattles ?? null,
+    query,
     isFiltered: isActive,
-    onReset: () => void reset(),
-    onRetry
+    onReset: () => void reset()
   };
 };

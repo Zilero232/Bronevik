@@ -2,8 +2,6 @@
   "code": "500 // Equipment failure",
   "title": "Something went wrong",
   "body": "This page failed to load. Try again or head back home.",
-  "loadErrorTitle": "Couldn't load data",
-  "loadErrorDescription": "The server did not respond. Check your connection and try again.",
   "retry": "Retry",
   "home": "Go home"
 }

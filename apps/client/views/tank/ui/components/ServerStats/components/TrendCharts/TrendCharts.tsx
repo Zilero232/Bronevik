@@ -1,9 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
-import { Card, CardHeader, EmptyState, ErrorState, LineChart, Skeleton } from '@/ui-kit';
+import { Card, CardHeader, EmptyState, LineChart, QueryState, Skeleton } from '@/ui-kit';
 
 import { TANK_PAGE } from '../../../../../config';
 import { useTrendCharts } from '../../../../../model/hooks';
@@ -12,16 +11,18 @@ import s from './TrendCharts.module.scss';
 
 export const TrendCharts = () => {
   const t = useTranslations('tank.stats');
-  const { labels, winRates, damages, isEmpty, isPending, isError, refetch, formatPercent, formatDamage } = useTrendCharts();
+  const { query, formatPercent, formatDamage } = useTrendCharts();
 
   return (
     <Card padding='none'>
       <CardHeader className={s.header} title={t('trendTitle', { days: TANK_PAGE.trendDays })} />
-      {match({ isPending, isError, isEmpty })
-        .with({ isPending: true }, () => <Skeleton height={TANK_PAGE.chartHeight * 2} shape='block' width='100%' />)
-        .with({ isError: true }, () => <ErrorState onRetry={() => void refetch()} />)
-        .with({ isEmpty: true }, () => <EmptyState title={t('trendEmpty')} />)
-        .otherwise(() => (
+      <QueryState
+        empty={<EmptyState title={t('trendEmpty')} />}
+        isEmpty={({ labels }) => labels.length === 0}
+        query={query}
+        skeleton={<Skeleton height={TANK_PAGE.chartHeight * 2} shape='block' width='100%' />}
+      >
+        {({ labels, winRates, damages }) => (
           <div className={s.charts}>
             <div className={s.chart}>
               <span className={s.label}>{t('trendWinRate')}</span>
@@ -44,7 +45,8 @@ export const TrendCharts = () => {
               />
             </div>
           </div>
-        ))}
+        )}
+      </QueryState>
     </Card>
   );
 };

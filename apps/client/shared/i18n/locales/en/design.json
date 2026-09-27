@@ -74,8 +74,6 @@
     "panel": "Panel",
     "rendersError": "Could not load the vehicle catalogue.",
     "rendersEmpty": "No vehicles with renders yet.",
-    "loadErrorTitle": "Couldn't load data",
-    "loadErrorDescription": "The server did not respond. Check your connection and try again.",
     "retry": "Retry"
   },
   "controls": {
@@ -156,7 +154,6 @@
     "rings": "Rings",
     "sparklines": "Sparklines",
     "skeleton": "Loading",
-    "emptyCode": "404 // No contact",
     "emptyTitle": "No battles yet",
     "emptyBody": "Play at least one battle and your stats will appear here."
   },
@@ -180,8 +177,6 @@
     "live": "Server",
     "errorTitle": "Server is unavailable",
     "errorBody": "Could not load vehicle stats.",
-    "loadErrorTitle": "Couldn't load data",
-    "loadErrorDescription": "The server did not respond. Check your connection and try again.",
     "retry": "Retry"
   },
   "patterns": {

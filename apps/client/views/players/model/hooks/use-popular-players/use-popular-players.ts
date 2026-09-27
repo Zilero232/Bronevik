@@ -6,17 +6,13 @@ import { getPopularPlayers, PLAYERS_REQUEST } from '@/entities/player/profile';
 import { QUERY_KEYS } from '@/shared/constants';
 
 export const usePopularPlayers = () => {
-  const { data, isPending, isError, isRefetching, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.player.popular({ days: PLAYERS_REQUEST.popularDays, limit: PLAYERS_REQUEST.popularLimit }),
     queryFn: ({ signal }) => getPopularPlayers({ signal })
   });
 
   return {
-    items: data?.items ?? [],
-    days: data?.days ?? PLAYERS_REQUEST.popularDays,
-    isPending,
-    isError,
-    isRetrying: isRefetching,
-    retry: () => void refetch()
+    query,
+    days: query.data?.days ?? PLAYERS_REQUEST.popularDays
   };
 };

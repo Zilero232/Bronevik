@@ -48,9 +48,6 @@ export const useHowToBuild = () => {
     crew: usage ? orderCrew({ crew: usage.crew, skillsPerRole: HOW_TO_BUILD.skillsPerRole }) : [],
     hasLoadout: Boolean(query.data?.loadout),
     href: recommendedBuildHref({ slug, mode, cohort }),
-    isPending: query.isPending && !isLocked,
-    isError: query.isError,
-    isFetching: query.isFetching,
-    onRetry: () => void query.refetch()
+    query
   };
 };

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { EmptyState, QueryState, Skeleton } from '@/ui-kit';
 import { SessionDetail } from '@/widgets/player/session-detail';
 
 import { SESSIONS } from '../../../config';
@@ -13,25 +13,32 @@ import s from './SessionsTab.module.scss';
 
 export const SessionsTab = () => {
   const t = useTranslations('profile.sessions');
-  const { accountId, nickname, items, isEmpty, hasMore, selectedId, isPending, isError, isFetching, isRetrying, select, showMore, retry } =
-    useSessionsTab();
-
-  if (isError) {
-    return <ErrorState isRetrying={isRetrying} onRetry={retry} />;
-  }
-
-  if (isEmpty) {
-    return <EmptyState title={t('empty')} />;
-  }
+  const { accountId, nickname, query, selectedId, select, showMore } = useSessionsTab();
 
   return (
-    <div className={s.root}>
-      {isPending ? (
-        <Skeleton className={s.listSkeleton} height={SESSIONS.skeletonHeight} shape='block' />
-      ) : (
-        <SessionList hasMore={hasMore} isFetching={isFetching} items={items} selectedId={selectedId} onMore={showMore} onSelect={select} />
+    <QueryState
+      skeleton={
+        <div className={s.root}>
+          <Skeleton className={s.listSkeleton} height={SESSIONS.skeletonHeight} shape='block' />
+        </div>
+      }
+      empty={<EmptyState title={t('empty')} />}
+      isEmpty={({ items }) => items.length === 0}
+      query={query}
+    >
+      {({ items, total }) => (
+        <div className={s.root}>
+          <SessionList
+            hasMore={total > items.length}
+            isFetching={query.isFetching}
+            items={items}
+            selectedId={selectedId}
+            onMore={showMore}
+            onSelect={select}
+          />
+          <div className={s.detail}>{selectedId && <SessionDetail accountId={accountId} nickname={nickname} sessionId={selectedId} />}</div>
+        </div>
       )}
-      <div className={s.detail}>{selectedId && <SessionDetail accountId={accountId} nickname={nickname} sessionId={selectedId} />}</div>
-    </div>
+    </QueryState>
   );
 };

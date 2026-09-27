@@ -1,13 +1,10 @@
-import type { ReactNode } from 'react';
-
 import type { BestBattle, BestBattleMetric } from '@/entities/battle/best-battle';
+import type { DataTableProps } from '@/ui-kit';
 
-export type BestBattlesTableProps = {
+export type BestBattlesTableProps = Partial<Pick<DataTableProps<BestBattle>, 'emptyState' | 'isLoading'>> & {
   battles: BestBattle[];
   metric: BestBattleMetric;
-  emptyState: ReactNode;
-  isLoading: boolean;
-  hasNextPage: boolean;
-  isFetchingNextPage: boolean;
-  onLoadMore: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  onLoadMore?: () => void;
 };

@@ -1,10 +1,9 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
 import { GameIcon, gameLabel } from '@/entities/tank/build';
-import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
 import type { BuildHistoryProps } from './BuildHistory.types';
 
@@ -16,16 +15,19 @@ import s from './BuildHistory.module.scss';
 export const BuildHistory = ({ mode, cohort }: BuildHistoryProps) => {
   const t = useTranslations('tank.builds.history');
   const format = useFormatter();
-  const { entries, isPending, isError, isFetching, onRetry } = useBuildHistory({ mode, cohort });
+  const query = useBuildHistory({ mode, cohort });
 
   return (
     <section className={s.root}>
       <h3 className={s.title}>{t('title')}</h3>
-      {match({ entries, isPending, isError })
-        .with({ isPending: true }, () => <Skeleton height={HOW_TO_BUILD.historySkeletonHeight} shape='block' width='100%' />)
-        .with({ isError: true }, () => <ErrorState isCompact isRetrying={isFetching} title={t('errorTitle')} onRetry={onRetry} />)
-        .with({ entries: [] }, () => <EmptyState isCompact title={t('emptyTitle')} />)
-        .otherwise(() => (
+      <QueryState
+        isCompact
+        empty={<EmptyState isCompact title={t('emptyTitle')} />}
+        errorTitle={t('errorTitle')}
+        query={query}
+        skeleton={<Skeleton height={HOW_TO_BUILD.historySkeletonHeight} shape='block' width='100%' />}
+      >
+        {(entries) => (
           <table className={s.table}>
             <thead>
               <tr>
@@ -64,7 +66,8 @@ export const BuildHistory = ({ mode, cohort }: BuildHistoryProps) => {
               ))}
             </tbody>
           </table>
-        ))}
+        )}
+      </QueryState>
     </section>
   );
 };

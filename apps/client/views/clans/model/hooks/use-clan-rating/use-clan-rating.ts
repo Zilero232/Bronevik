@@ -14,7 +14,7 @@ export const useClanRating = () => {
     parseAsStringLiteral(CLAN_SORTS).withDefault(CLAN_RATING.defaultSort).withOptions({ history: 'replace' })
   );
 
-  const { data, isPending, isError, isFetching, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey: QUERY_KEYS.clans.list({ sort, limit: CLAN_RATING.pageSize }),
     queryFn: ({ signal, pageParam }) => listClans({ sort, limit: CLAN_RATING.pageSize, offset: pageParam, signal }),
     initialPageParam: 0,
@@ -22,19 +22,12 @@ export const useClanRating = () => {
     placeholderData: keepPreviousData
   });
 
-  const items = data?.pages.flatMap((page) => page.items) ?? [];
-
   return {
     sort,
     setSort,
-    items,
-    total: data?.pages[0]?.total ?? 0,
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    hasNextPage,
-    isFetchingNextPage,
-    loadMore: () => void fetchNextPage(),
-    retry: () => void refetch()
+    query,
+    items: query.data?.pages.flatMap((page) => page.items) ?? [],
+    total: query.data?.pages[0]?.total ?? 0,
+    loadMore: () => void query.fetchNextPage()
   };
 };

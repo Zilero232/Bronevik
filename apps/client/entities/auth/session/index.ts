@@ -4,4 +4,4 @@ export { getLinkedAccounts } from './api';
 export { RETURN_PATH } from './config';
 export { returnUrl, safeReturnPath } from './lib/return-path';
 export type { ReturnUrlInput } from './lib/return-path';
-export { useAuthSession, useLoginHref, useResetUserQueries, useReturnPath, useSignOut } from './model/hooks';
+export { useAuthSession, useDeleteAccount, useLoginHref, useResetUserQueries, useReturnPath, useSignOut } from './model/hooks';

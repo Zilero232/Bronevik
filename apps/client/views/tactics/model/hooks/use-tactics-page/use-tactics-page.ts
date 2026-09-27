@@ -9,21 +9,11 @@ import { QUERY_KEYS } from '@/shared/constants';
 export const useTacticsPage = () => {
   const { data: session, isPending: isSessionPending } = useAuthSession();
   const isSignedIn = Boolean(session);
-  const { data, isPending, isError, isFetching, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.tactics.mine,
     queryFn: ({ signal }) => listMyTacticBoards(signal),
     enabled: isSignedIn
   });
 
-  const onRetry = () => void refetch();
-
-  return {
-    isSessionPending,
-    isSignedIn,
-    boards: data ?? [],
-    isPending: isSignedIn && isPending,
-    isError: isError && !data,
-    isFetching,
-    onRetry
-  };
+  return { isGuest: !isSessionPending && !isSignedIn, isSignedIn, query };
 };

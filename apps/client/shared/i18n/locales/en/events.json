@@ -44,7 +44,6 @@
   "progress": "Elapsed",
   "ics": {
     "title": "Calendar",
-    "hint": "Subscribe in Google, Apple or Outlook — events update on their own.",
     "subscribe": "Subscribe",
     "url": "iCal link",
     "subscribeIcs": "Subscribe (.ics)"

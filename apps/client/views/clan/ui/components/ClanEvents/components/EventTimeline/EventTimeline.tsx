@@ -1,9 +1,8 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
-import { Button, Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { Button, Card, CardHeader, EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
 import type { EventTimelineProps } from './EventTimeline.types';
 
@@ -16,20 +15,24 @@ import s from './EventTimeline.module.scss';
 export const EventTimeline = ({ clanId }: EventTimelineProps) => {
   const t = useTranslations('clans.events');
   const format = useFormatter();
-  const { days, shown, total, isPending, isError, isRetrying, hasNextPage, isFetchingNextPage, loadMore, retry } = useClanEvents(clanId);
+  const query = useClanEvents(clanId);
 
   return (
     <Card padding='none'>
-      <CardHeader meta={total > 0 && t('shown', { shown, total })} title={t('title')} />
-      {match({ isPending, isError, count: days.length })
-        .with({ isPending: true }, () => (
+      <CardHeader meta={query.data && query.data.total > 0 && t('shown', { shown: query.data.shown, total: query.data.total })} title={t('title')} />
+      <QueryState
+        isCompact
+        skeleton={
           <div aria-busy aria-label={t('loading')} className={s.body} role='status'>
             <Skeleton count={CLAN_EVENTS.skeletonRows} height={28} />
           </div>
-        ))
-        .with({ isError: true, count: 0 }, () => <ErrorState isCompact isRetrying={isRetrying} title={t('error')} onRetry={retry} />)
-        .with({ count: 0 }, () => <EmptyState isCompact title={t('emptyTitle')} />)
-        .otherwise(() => (
+        }
+        empty={<EmptyState isCompact title={t('emptyTitle')} />}
+        errorTitle={t('error')}
+        isEmpty={({ days }) => days.length === 0}
+        query={query}
+      >
+        {({ days }) => (
           <div className={s.body}>
             <ol className={s.days}>
               {days.map(({ day, events }) => (
@@ -46,13 +49,14 @@ export const EventTimeline = ({ clanId }: EventTimelineProps) => {
                 </li>
               ))}
             </ol>
-            {hasNextPage && (
-              <Button className={s.more} disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={loadMore}>
+            {query.hasNextPage && (
+              <Button className={s.more} disabled={query.isFetchingNextPage} size='sm' variant='secondary' onClick={() => void query.fetchNextPage()}>
                 {t('more')}
               </Button>
             )}
           </div>
-        ))}
+        )}
+      </QueryState>
     </Card>
   );
 };

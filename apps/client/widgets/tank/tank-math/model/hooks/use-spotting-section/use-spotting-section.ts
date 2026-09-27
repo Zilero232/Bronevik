@@ -44,12 +44,13 @@ export const useSpottingSection = ({ data, preset }: UseSpottingSectionInput) =>
     targetVehicle,
     onTargetChange,
     foliage: FOLIAGE_KINDS.map((value) => ({ value, label: t(`foliage.${value}`) })),
-    view,
-    tone: view ? VERDICT_TONES[view.duel.verdict] : null,
     meters,
     percent,
-    isTargetPending: values.targetId !== null && target.isPending,
-    isTargetError: values.targetId !== null && target.isError,
-    retryTarget: () => void target.refetch()
+    query: {
+      data: view ? { view, tone: VERDICT_TONES[view.duel.verdict] } : undefined,
+      isError: values.targetId !== null && target.isError,
+      isRefetching: target.isRefetching,
+      refetch: target.refetch
+    }
   };
 };

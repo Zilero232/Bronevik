@@ -1,21 +1,12 @@
-import { EmptyState, Skeleton } from '@/ui-kit';
+import { EmptyState } from '@/ui-kit';
 
 import type { CodeListProps } from './CodeList.types';
 
-import { CODES } from '../../../config';
 import { CodeCard } from '../CodeCard';
 
 import s from './CodeList.module.scss';
 
-export const CodeList = ({ codes, isPending, emptyTitle }: CodeListProps) => {
-  if (isPending) {
-    return (
-      <div className={s.root}>
-        <Skeleton count={CODES.skeletons} height={132} shape='block' />
-      </div>
-    );
-  }
-
+export const CodeList = ({ codes, emptyTitle }: CodeListProps) => {
   if (codes.length === 0) {
     return <EmptyState isCompact title={emptyTitle} />;
   }

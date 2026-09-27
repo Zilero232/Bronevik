@@ -2,9 +2,8 @@
 
 import { clsx } from 'clsx';
 import { useTranslations } from 'next-intl';
-import { match, P } from 'ts-pattern';
 
-import { Card, CardHeader, DataSourceNote, ErrorState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { Card, CardHeader, DataSourceNote, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import type { TankMathProps } from './TankMath.types';
 
@@ -18,7 +17,7 @@ import s from './TankMath.module.scss';
 
 export const TankMath = ({ tankId, id, className }: TankMathProps) => {
   const t = useTranslations('tankMath');
-  const { data, config, other, preset, presets, setPreset, isPending, isError, retry } = useTankMath(tankId);
+  const { query, config, other, preset, presets, setPreset } = useTankMath(tankId);
 
   return (
     <Card className={clsx(s.root, className)} id={id} padding='none'>
@@ -28,19 +27,19 @@ export const TankMath = ({ tankId, id, className }: TankMathProps) => {
         meta={config ? t('modules', { gun: config.modules.gun, turret: config.modules.turret }) : undefined}
         title={t('title')}
       />
-      {match({ data, config, isPending, isError })
-        .with({ isPending: true }, () => <Skeleton height={TANK_MATH.skeletonHeight} shape='block' width='100%' />)
-        .with({ data: P.nonNullable, config: P.nonNullable }, ({ data: loaded, config: current }) => (
-          <div className={s.body}>
-            <HandlingSection config={current} other={other} otherLabel={t(`presets.vs.${preset}`)} />
-            <BallisticsSection config={current} />
-            <SpottingSection data={loaded} preset={preset} />
-            <p className={s.note}>{t('note')}</p>
-            <DataSourceNote />
-          </div>
-        ))
-        .with({ isError: true }, () => <ErrorState onRetry={retry} />)
-        .otherwise(() => null)}
+      <QueryState query={query} skeleton={<Skeleton height={TANK_MATH.skeletonHeight} shape='block' width='100%' />}>
+        {(data) =>
+          config && (
+            <div className={s.body}>
+              <HandlingSection config={config} other={other} otherLabel={t(`presets.vs.${preset}`)} />
+              <BallisticsSection config={config} />
+              <SpottingSection data={data} preset={preset} />
+              <p className={s.note}>{t('note')}</p>
+              <DataSourceNote />
+            </div>
+          )
+        }
+      </QueryState>
     </Card>
   );
 };

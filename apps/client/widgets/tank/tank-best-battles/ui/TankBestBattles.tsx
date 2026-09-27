@@ -2,10 +2,9 @@
 
 import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, Card, CardHeader, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { buttonVariants, Card, CardHeader, EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
 import type { TankBestBattlesProps } from './TankBestBattles.types';
 
@@ -17,7 +16,7 @@ import s from './TankBestBattles.module.scss';
 
 export const TankBestBattles = ({ tankId, className }: TankBestBattlesProps) => {
   const t = useTranslations('bestBattles.widget');
-  const { battles, allHref, isPending, isError, isRetrying, retry } = useTankBestBattles(tankId);
+  const { query, allHref } = useTankBestBattles(tankId);
 
   return (
     <Card className={className} padding='none'>
@@ -31,21 +30,25 @@ export const TankBestBattles = ({ tankId, className }: TankBestBattlesProps) => 
         meta={t('meta')}
         title={t('title')}
       />
-      {match({ isPending, isError, isEmpty: battles.length === 0 })
-        .with({ isPending: true }, () => (
+      <QueryState
+        isCompact
+        skeleton={
           <div className={s.state}>
             <Skeleton height={TANK_BEST_BATTLES.limit * TANK_BEST_BATTLES.rowHeight} shape='block' width='100%' />
           </div>
-        ))
-        .with({ isError: true }, () => <ErrorState isCompact isRetrying={isRetrying} title={t('error')} onRetry={retry} />)
-        .with({ isEmpty: true }, () => <EmptyState isCompact description={t('emptyDescription')} title={t('empty')} />)
-        .otherwise(() => (
+        }
+        empty={<EmptyState isCompact description={t('emptyDescription')} title={t('empty')} />}
+        errorTitle={t('error')}
+        query={query}
+      >
+        {(battles) => (
           <ol className={s.list}>
             {battles.map((battle) => (
               <BattleRow key={battle.key} battle={battle} />
             ))}
           </ol>
-        ))}
+        )}
+      </QueryState>
     </Card>
   );
 };

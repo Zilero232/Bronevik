@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { TankShowcaseCard, WinRateCell } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
-import { Card, CardHeader, DataTable, EmptyState, ErrorState, SectionHeader } from '@/ui-kit';
+import { Card, CardHeader, DataTable, EmptyState, QueryState, SectionHeader } from '@/ui-kit';
 
 import type { MissionTanksProps } from './MissionTanks.types';
 
@@ -15,22 +15,7 @@ import s from './MissionTanks.module.scss';
 
 export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
   const t = useTranslations('missions');
-  const {
-    columns,
-    garageColumns,
-    tanks,
-    showcase,
-    isPending,
-    isError,
-    isRetrying,
-    retry,
-    garageNotice,
-    isGarageLoading,
-    isGarageError,
-    isGarageRetrying,
-    retryGarage,
-    garageTanks
-  } = useMissionTanks({ questId, metric });
+  const { columns, garageColumns, tanks, showcase, garage, garageNotice, garageTanks } = useMissionTanks({ questId, metric });
 
   return (
     <div className={s.root}>
@@ -55,43 +40,47 @@ export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
       <Card padding='none'>
         <CardHeader
           meta={
-            tanks &&
+            tanks.data &&
             t('tanks.description', {
-              metric: t(`metric.${tanks.metric}`),
-              cohort: t(`tanks.cohort.${tanks.cohort}`),
-              period: t(`periods.${tanks.period}`)
+              metric: t(`metric.${tanks.data.metric}`),
+              cohort: t(`tanks.cohort.${tanks.data.cohort}`),
+              period: t(`periods.${tanks.data.period}`)
             })
           }
           title={t('tanks.title')}
         />
-        {isError ? (
-          <ErrorState isCompact isRetrying={isRetrying} title={t('tanks.errorTitle')} onRetry={retry} />
-        ) : (
-          <DataTable
-            columns={columns}
-            data={tanks?.tanks ?? []}
-            density='compact'
-            emptyState={<EmptyState isCompact description={t('tanks.emptyDescription')} title={t('tanks.emptyTitle')} />}
-            getRowId={(row) => String(row.vehicle.tankId)}
-            getRowLink={({ vehicle }) => ({ href: ROUTES.tanks.detail(vehicle.slug), label: vehicle.name })}
-            isLoading={isPending}
-          />
-        )}
+        <QueryState
+          isCompact
+          errorTitle={t('tanks.errorTitle')}
+          query={tanks}
+          skeleton={<DataTable isLoading columns={columns} data={[]} density='compact' />}
+        >
+          {({ tanks: rows }) => (
+            <DataTable
+              columns={columns}
+              data={rows}
+              density='compact'
+              emptyState={<EmptyState isCompact description={t('tanks.emptyDescription')} title={t('tanks.emptyTitle')} />}
+              getRowId={(row) => String(row.vehicle.tankId)}
+              getRowLink={({ vehicle }) => ({ href: ROUTES.tanks.detail(vehicle.slug), label: vehicle.name })}
+            />
+          )}
+        </QueryState>
       </Card>
       <Card padding='none'>
         <CardHeader title={t('tanks.garageTitle')} />
         {garageNotice && <p className={s.note}>{t(`tanks.${garageNotice}`)}</p>}
-        {!garageNotice && isGarageError && <ErrorState isCompact isRetrying={isGarageRetrying} onRetry={retryGarage} />}
-        {!garageNotice && !isGarageError && (
-          <DataTable
-            columns={garageColumns}
-            data={garageTanks}
-            density='compact'
-            emptyState={<EmptyState isCompact title={t('tanks.garageEmpty')} />}
-            getRowId={(row) => String(row.vehicle.tankId)}
-            getRowLink={({ vehicle }) => ({ href: ROUTES.tanks.detail(vehicle.slug), label: vehicle.name })}
-            isLoading={isGarageLoading}
-          />
+        {!garageNotice && (
+          <QueryState isCompact query={garage} skeleton={<DataTable isLoading columns={garageColumns} data={[]} density='compact' />}>
+            <DataTable
+              columns={garageColumns}
+              data={garageTanks}
+              density='compact'
+              emptyState={<EmptyState isCompact title={t('tanks.garageEmpty')} />}
+              getRowId={(row) => String(row.vehicle.tankId)}
+              getRowLink={({ vehicle }) => ({ href: ROUTES.tanks.detail(vehicle.slug), label: vehicle.name })}
+            />
+          </QueryState>
         )}
       </Card>
     </div>

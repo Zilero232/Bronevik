@@ -9,5 +9,5 @@ export const useSettingsPanel = () => {
 
   const onOpenProfile = () => void setTab('profile');
 
-  return { ...query, onOpenProfile };
+  return { query, onOpenProfile };
 };

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 
 import { usePlayerProfile } from '@/entities/player/profile';
-import { isNotFoundError } from '@/shared/api/source';
 import { env, SITE } from '@/shared/config';
 
 import { SIGNATURE_SNIPPETS } from '../../../config';
@@ -20,12 +19,8 @@ export const useSignaturePage = (nickname: string) => {
     nickname: canonical ?? nickname,
     links,
     snippets: links ? SIGNATURE_SNIPPETS.map((id) => ({ id, value: links[id] })) : [],
-    isPending: profile.isPending,
-    isNotFound: isNotFoundError(profile.error),
-    isError: profile.isError,
-    isRetrying: profile.isFetching,
+    query: profile,
     isImageBroken,
-    retry: () => void profile.refetch(),
     onImageError: () => setIsImageBroken(true)
   };
 };

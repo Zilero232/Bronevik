@@ -17,11 +17,7 @@ export const useStreamerSettingsPage = (slug: string) => {
   });
 
   return {
-    view: query.data ?? null,
-    groups: query.data ? settingsGroups(query.data) : [],
-    isPending: query.isPending,
-    isRetrying: query.isRefetching,
-    error: query.error,
-    retry: () => void query.refetch()
+    query,
+    groups: query.data ? settingsGroups(query.data) : []
   };
 };

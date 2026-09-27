@@ -12,6 +12,8 @@ export const ConfirmDialog = ({
   cancelLabel,
   tone = 'default',
   isPending = false,
+  isConfirmDisabled = false,
+  children,
   onConfirm,
   open,
   onOpenChange,
@@ -24,9 +26,10 @@ export const ConfirmDialog = ({
         <DialogTitle>{title}</DialogTitle>
         {description && <DialogDescription>{description}</DialogDescription>}
       </DialogHeader>
+      {children}
       <DialogFooter>
         <DialogClose render={<Button variant='ghost'>{cancelLabel}</Button>} />
-        <Button disabled={isPending} variant={tone === 'danger' ? 'danger' : 'primary'} onClick={onConfirm}>
+        <Button disabled={isPending || isConfirmDisabled} variant={tone === 'danger' ? 'danger' : 'primary'} onClick={onConfirm}>
           {confirmLabel}
         </Button>
       </DialogFooter>

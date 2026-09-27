@@ -2,12 +2,10 @@
 
 import { SlidersHorizontal } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
-import { notFound } from 'next/navigation';
-import { match, P } from 'ts-pattern';
 
-import { isNotFoundError } from '@/shared/api/source';
 import { ROUTES } from '@/shared/constants';
-import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/ui-kit';
+import { EmptyState, PageHeader, Skeleton } from '@/ui-kit';
+import { ResourceGate } from '@/widgets/resource-missing';
 
 import type { StreamerSettingsPageProps } from './StreamerSettingsPage.types';
 
@@ -19,12 +17,22 @@ import s from './StreamerSettingsPage.module.scss';
 export const StreamerSettingsPage = ({ slug }: StreamerSettingsPageProps) => {
   const t = useTranslations('streamerSettings.page');
   const format = useFormatter();
-  const { view, groups, isPending, isRetrying, error, retry } = useStreamerSettingsPage(slug);
+  const { query, groups } = useStreamerSettingsPage(slug);
 
   return (
     <div className={s.root}>
-      {match({ view, isPending, error })
-        .with({ view: P.nonNullable }, ({ view: loaded }) => (
+      <ResourceGate
+        skeleton={
+          <>
+            <Skeleton height={96} shape='block' />
+            <Skeleton height={320} shape='block' />
+          </>
+        }
+        className={s.skeleton}
+        error={{ title: t('errorTitle'), description: t('errorDescription') }}
+        query={query}
+      >
+        {(loaded) => (
           <>
             <PageHeader
               breadcrumbs={[
@@ -49,17 +57,8 @@ export const StreamerSettingsPage = ({ slug }: StreamerSettingsPageProps) => {
             )}
             <SettingsHistory slug={loaded.slug} />
           </>
-        ))
-        .with({ isPending: true }, () => (
-          <div aria-busy className={s.skeleton}>
-            <Skeleton height={96} shape='block' />
-            <Skeleton height={320} shape='block' />
-          </div>
-        ))
-        .with({ error: P.when(isNotFoundError) }, () => notFound())
-        .otherwise(() => (
-          <ErrorState description={t('errorDescription')} isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />
-        ))}
+        )}
+      </ResourceGate>
     </div>
   );
 };

@@ -44,7 +44,6 @@
   "progress": "Прошло",
   "ics": {
     "title": "Календарь",
-    "hint": "Подпишитесь в Google, Apple или Outlook — события обновятся сами.",
     "subscribe": "Подписаться",
     "url": "Ссылка iCal",
     "subscribeIcs": "Подписаться (.ics)"

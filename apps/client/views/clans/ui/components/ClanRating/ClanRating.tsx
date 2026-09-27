@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
-import { Button, Card, CardHeader, DataTable, EmptyState, ErrorState, Select } from '@/ui-kit';
+import { Button, Card, CardHeader, DataTable, EmptyState, QueryState, Select } from '@/ui-kit';
 
 import type { ClanSort } from './ClanRating.types';
 
@@ -16,7 +16,7 @@ import s from './ClanRating.module.scss';
 export const ClanRating = () => {
   const t = useTranslations('clans.rating');
   const titleId = useId();
-  const { sort, setSort, items, total, isPending, isError, isRetrying, hasNextPage, isFetchingNextPage, loadMore, retry } = useClanRating();
+  const { sort, setSort, query, items, total, loadMore } = useClanRating();
   const columns = useClanColumns();
 
   return (
@@ -33,16 +33,20 @@ export const ClanRating = () => {
         }
         title={<span id={titleId}>{t('title')}</span>}
       />
-      {isError && items.length === 0 ? (
-        <ErrorState isCompact description={t('errorDescription')} isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />
-      ) : (
+      <QueryState
+        isCompact
+        errorDescription={t('errorDescription')}
+        errorTitle={t('errorTitle')}
+        query={query}
+        skeleton={<DataTable isLoading columns={columns} data={[]} />}
+      >
         <DataTable
           footer={
             items.length > 0 && (
               <>
                 <span className={s.progress}>{t('shown', { shown: items.length, total })}</span>
-                {hasNextPage && (
-                  <Button disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={loadMore}>
+                {query.hasNextPage && (
+                  <Button disabled={query.isFetchingNextPage} size='sm' variant='secondary' onClick={loadMore}>
                     {t('more')}
                   </Button>
                 )}
@@ -54,9 +58,8 @@ export const ClanRating = () => {
           emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
           getRowId={(row) => String(row.clan.clanId)}
           getRowLink={({ clan }) => ({ href: ROUTES.clans.detail(clan.tag), label: clan.name })}
-          isLoading={isPending}
         />
-      )}
+      </QueryState>
     </Card>
   );
 };

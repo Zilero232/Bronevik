@@ -14,20 +14,13 @@ import { expiringCount } from '../../../lib/code-ribbon';
 
 export const useBonusCodes = () => {
   const [tab, setTab] = useQueryState('tab', parseAsStringLiteral(CODES.tabs).withDefault('active').withOptions({ history: 'replace' }));
-  const { data, isPending, isError, isFetching, refetch } = useQuery({ ...shopControllerListBonusCodesOptions(), staleTime: CODES.staleMs });
-
+  const query = useQuery({ ...shopControllerListBonusCodesOptions(), staleTime: CODES.staleMs, select: codeGroups });
   const now = useClientNow({ updateInterval: CODES.clockMs });
-  const groups = codeGroups(data ?? []);
 
   return {
     tab,
-    active: groups.active,
-    expired: groups.expired,
-    expiringCount: expiringCount({ codes: groups.active, now, expiringDays: CODES.expiringDays }),
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    setTab: (next: CodesTab) => void setTab(next),
-    retry: () => void refetch()
+    query,
+    expiringCount: expiringCount({ codes: query.data?.active ?? [], now, expiringDays: CODES.expiringDays }),
+    setTab: (next: CodesTab) => void setTab(next)
   };
 };

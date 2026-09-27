@@ -15,21 +15,12 @@ export const useTopPlayers = () => {
 
   const filter = { scope: 'players', metric, period: HOME.period.rating, limit: HOME.topPlayers.limit } as const;
 
-  const { data, isPending, isError, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.leaderboard(filter),
     queryFn: ({ signal }) => getLeaderboard({ ...filter, signal }),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    select: ({ entries }) => ({ podium: entries.slice(0, HOME.topPlayers.podium), rest: entries.slice(HOME.topPlayers.podium) })
   });
 
-  const entries = data?.entries ?? [];
-
-  return {
-    metric,
-    setMetric,
-    podium: entries.slice(0, HOME.topPlayers.podium),
-    rest: entries.slice(HOME.topPlayers.podium),
-    isPending,
-    isError,
-    retry: () => void refetch()
-  };
+  return { metric, setMetric, query };
 };

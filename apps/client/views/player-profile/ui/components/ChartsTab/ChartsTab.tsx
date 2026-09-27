@@ -2,11 +2,11 @@
 
 import { useTranslations } from 'next-intl';
 
-import { SegmentedControl } from '@/ui-kit';
+import { QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import type { ChartGranularity, ChartMetric } from '../../../config';
 
-import { CHART_GRANULARITIES, CHART_METRICS } from '../../../config';
+import { CHART_GRANULARITIES, CHART_METRICS, HISTORY_CHART } from '../../../config';
 import { useChartsTab } from '../../../model/hooks';
 import { ProfilePanel } from '../ProfilePanel';
 import { HistoryChart } from './components';
@@ -15,7 +15,7 @@ import s from './ChartsTab.module.scss';
 
 export const ChartsTab = () => {
   const t = useTranslations('profile.charts');
-  const { metric, setMetric, granularity, setGranularity, series, isLoading, isError, isRetrying, retry } = useChartsTab();
+  const { metric, setMetric, granularity, setGranularity, query } = useChartsTab();
 
   return (
     <ProfilePanel
@@ -38,7 +38,9 @@ export const ChartsTab = () => {
           value={metric}
           onChange={setMetric}
         />
-        <HistoryChart isError={isError} isLoading={isLoading} isRetrying={isRetrying} metric={metric} series={series} onRetry={retry} />
+        <QueryState query={query} skeleton={<Skeleton height={HISTORY_CHART.height} shape='block' />}>
+          {(series) => <HistoryChart metric={metric} series={series} />}
+        </QueryState>
       </div>
     </ProfilePanel>
   );

@@ -9,6 +9,8 @@ export type ConfirmDialogProps = {
   cancelLabel: ReactNode;
   tone?: ConfirmDialogTone;
   isPending?: boolean;
+  isConfirmDisabled?: boolean;
+  children?: ReactNode;
   onConfirm: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;

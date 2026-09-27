@@ -10,20 +10,16 @@ import { usePlayerMarks, usePlayerTanks } from '../use-profile-queries';
 export const useMarksTab = () => {
   const [sort, setSort] = useState<MarksSort>('closest');
 
-  const { data: marks, isPending, isError, isRefetching, refetch } = usePlayerMarks();
+  const query = usePlayerMarks();
   const { data: tanks } = usePlayerTanks();
 
   const averages = new Map(tanks?.items.map(({ vehicle, avgDamage }) => [vehicle.tankId, avgDamage]));
 
   return {
-    marks,
-    rows: marks ? sortMarks({ rows: marks.items, sort }) : [],
+    query,
+    rows: query.data ? sortMarks({ rows: query.data.items, sort }) : [],
     averageDamageOf: (tankId: number) => averages.get(tankId) ?? null,
     sort,
-    setSort,
-    isPending,
-    isError,
-    isRetrying: isRefetching,
-    retry: () => void refetch()
+    setSort
   };
 };

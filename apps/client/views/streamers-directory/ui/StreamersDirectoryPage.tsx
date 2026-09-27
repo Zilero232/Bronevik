@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { MyFollowsStrip } from '@/features/streamer/follow-streamer';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Button, buttonVariants, Card, DataSourceNote, EmptyState, ErrorState, PageHeader, Skeleton } from '@/ui-kit';
+import { Button, buttonVariants, Card, DataSourceNote, EmptyState, FilteredEmptyState, PageHeader, QueryState, Skeleton } from '@/ui-kit';
 
 import { DIRECTORY } from '../config';
 import { useStreamersDirectory } from '../model/hooks';
@@ -38,50 +38,49 @@ export const StreamersDirectoryPage = () => {
       />
       <MyFollowsStrip />
       <DirectoryFilters />
-      {directory.isError && (
-        <ErrorState description={t('error.description')} isRetrying={directory.isRetrying} title={t('error.title')} onRetry={directory.retry} />
-      )}
-      {directory.isPending && (
-        <div aria-busy className={s.grid}>
-          {DIRECTORY.skeletons.map((index) => (
-            <Skeleton key={index} height={DIRECTORY.skeletonHeight} shape='block' />
-          ))}
-        </div>
-      )}
-      {directory.isEmpty && (
-        <Card>
-          {directory.hasFilters ? (
-            <EmptyState
-              action={
-                <Button size='sm' variant='secondary' onClick={directory.reset}>
-                  {t('empty.reset')}
-                </Button>
-              }
-              description={t('empty.filteredDescription')}
-              title={t('empty.filteredTitle')}
-            />
-          ) : (
-            <EmptyState
-              action={
-                <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.account.streamer}>
-                  {t('empty.action')}
-                </Link>
-              }
-              description={t('empty.description')}
-              title={t('empty.title')}
-            />
-          )}
-        </Card>
-      )}
-      {directory.entries.length > 0 && (
+      <QueryState
+        empty={
+          <Card>
+            {directory.hasFilters ? (
+              <FilteredEmptyState
+                isFiltered
+                description={t('empty.filteredDescription')}
+                title={t('empty.filteredTitle')}
+                onReset={directory.reset}
+              />
+            ) : (
+              <EmptyState
+                action={
+                  <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.account.streamer}>
+                    {t('empty.action')}
+                  </Link>
+                }
+                description={t('empty.description')}
+                title={t('empty.title')}
+              />
+            )}
+          </Card>
+        }
+        skeleton={
+          <div aria-busy className={s.grid}>
+            {DIRECTORY.skeletons.map((index) => (
+              <Skeleton key={index} height={DIRECTORY.skeletonHeight} shape='block' />
+            ))}
+          </div>
+        }
+        errorDescription={t('error.description')}
+        errorTitle={t('error.title')}
+        isEmpty={() => directory.entries.length === 0}
+        query={directory.query}
+      >
         <ul className={s.grid}>
           {directory.entries.map((entry) => (
             <StreamerCard key={entry.card.slug} entry={entry} />
           ))}
         </ul>
-      )}
-      {directory.hasNextPage && (
-        <Button className={s.more} disabled={directory.isFetchingNextPage} variant='secondary' onClick={directory.loadMore}>
+      </QueryState>
+      {directory.query.hasNextPage && (
+        <Button className={s.more} disabled={directory.query.isFetchingNextPage} variant='secondary' onClick={directory.loadMore}>
           {t('more')}
         </Button>
       )}

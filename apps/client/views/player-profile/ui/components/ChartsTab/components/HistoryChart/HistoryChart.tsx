@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Badge, BarChart, DeltaValue, EmptyState, ErrorState, LineChart, Skeleton } from '@/ui-kit';
+import { Badge, BarChart, DeltaValue, EmptyState, LineChart } from '@/ui-kit';
 
 import type { HistoryChartProps } from './HistoryChart.types';
 
@@ -11,17 +11,9 @@ import { useHistoryChart } from '../../../../../model/hooks';
 
 import s from './HistoryChart.module.scss';
 
-export const HistoryChart = ({ metric, series, isLoading, isError, isRetrying, onRetry }: HistoryChartProps) => {
+export const HistoryChart = ({ metric, series }: HistoryChartProps) => {
   const t = useTranslations('profile.charts');
   const { summary, changeFormat, isBar, formatValue, labels, chartSeries, markers } = useHistoryChart({ metric, series });
-
-  if (isError) {
-    return <ErrorState isRetrying={isRetrying} onRetry={onRetry} />;
-  }
-
-  if (isLoading || !series) {
-    return <Skeleton height={HISTORY_CHART.height} shape='block' />;
-  }
 
   if (!summary) {
     return <EmptyState isCompact title={t('empty')} />;

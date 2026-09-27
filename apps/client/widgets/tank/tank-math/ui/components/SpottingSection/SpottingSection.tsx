@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { TankCell } from '@/entities/tank/tank';
 import { TankPicker } from '@/features/tank/pick-tank';
-import { ErrorState, Skeleton } from '@/ui-kit';
+import { QueryState, Skeleton } from '@/ui-kit';
 
 import type { SpottingSectionProps } from './SpottingSection.types';
 
@@ -16,8 +16,7 @@ import s from './SpottingSection.module.scss';
 
 export const SpottingSection = ({ data, preset }: SpottingSectionProps) => {
   const t = useTranslations('tankMath.spotting');
-  const { form, vehicle, targetVehicle, onTargetChange, foliage, view, tone, meters, percent, isTargetPending, isTargetError, retryTarget } =
-    useSpottingSection({ data, preset });
+  const { form, vehicle, targetVehicle, onTargetChange, foliage, meters, percent, query } = useSpottingSection({ data, preset });
 
   return (
     <section className={s.root}>
@@ -33,9 +32,9 @@ export const SpottingSection = ({ data, preset }: SpottingSectionProps) => {
           <TankPicker label={t('target')} placeholder={t('targetPlaceholder')} value={targetVehicle ?? vehicle} onChange={onTargetChange} />
         </SpottingSideFields>
       </form>
-      {isTargetPending && <Skeleton height={TANK_MATH.chartHeight} shape='block' width='100%' />}
-      {isTargetError && <ErrorState onRetry={retryTarget} />}
-      {view && tone && !isTargetPending && <SpottingResult meters={meters} percent={percent} tone={tone} view={view} />}
+      <QueryState query={query} skeleton={<Skeleton height={TANK_MATH.chartHeight} shape='block' width='100%' />}>
+        {({ view, tone }) => <SpottingResult meters={meters} percent={percent} tone={tone} view={view} />}
+      </QueryState>
     </section>
   );
 };

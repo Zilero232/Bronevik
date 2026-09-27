@@ -38,13 +38,9 @@ export const useMySettingsShare = () => {
   return {
     isSignedIn,
     isSessionPending,
-    share: query.data ?? null,
-    isPending: isSignedIn && query.isPending,
-    isError: query.isError,
-    isRetrying: query.isRefetching,
+    query,
     isUpdating: update.isPending,
     isRemoving: remove.isPending,
-    retry: () => void query.refetch(),
     onAnonymousChange: (value: boolean) => {
       if (!update.isPending) {
         update.mutate(value);

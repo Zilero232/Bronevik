@@ -31,7 +31,6 @@ export const usePlayerMarks = (player: string) => {
 
   const {
     data: marks,
-    isPending,
     isError,
     isFetching,
     refetch: refetchMarks
@@ -54,12 +53,8 @@ export const usePlayerMarks = (player: string) => {
 
   return {
     nickname: found?.nickname ?? player,
-    marks: marks ?? [],
     hasPlayer: isActive,
     isNotFound: isActive && !isAccount && !isSearching && !isSearchError && found === null,
-    isLoading: isActive && ((!isAccount && isSearching) || (accountId !== null && isPending)),
-    isError: isSearchError || isError,
-    isRetrying: isSearchFetching || isFetching,
-    retry
+    query: { data: marks, isError: isSearchError || isError, isRefetching: isSearchFetching || isFetching, refetch: retry }
   };
 };

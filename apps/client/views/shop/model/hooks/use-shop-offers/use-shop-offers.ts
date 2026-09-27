@@ -13,29 +13,24 @@ import { SHOP } from '../../../config';
 
 export const useShopOffers = ({ isActiveOnly }: UseShopOffersInput) => {
   const { data: catalog } = useVehicleCatalog();
-  const { data, dataUpdatedAt, isPending, isError, isFetching, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInfiniteQuery({
+  const query = useInfiniteQuery({
     ...shopControllerListOffersInfiniteOptions({ query: { limit: SHOP.pageSize, ...(isActiveOnly ? { active: true } : {}) } }),
     initialPageParam: 0,
     getNextPageParam: nextPageOffset,
     staleTime: SHOP.staleMs
   });
 
-  const offers: OfferEntry[] = (data?.pages.flatMap(({ items }) => items) ?? []).map((offer) => ({
+  const offers: OfferEntry[] = (query.data?.pages.flatMap(({ items }) => items) ?? []).map((offer) => ({
     offer,
     href: safeWebHref(offer.url),
     vehicles: pickVehicles({ tankIds: offer.tankIds, catalog }),
-    isRunning: offer.endsAt === null || new Date(offer.endsAt).getTime() > dataUpdatedAt
+    isRunning: offer.endsAt === null || new Date(offer.endsAt).getTime() > query.dataUpdatedAt
   }));
 
   return {
     offers,
-    total: data?.pages[0]?.total ?? 0,
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    hasNextPage,
-    isFetchingNextPage,
-    loadMore: () => void fetchNextPage(),
-    retry: () => void refetch()
+    total: query.data?.pages[0]?.total ?? 0,
+    query,
+    loadMore: () => void query.fetchNextPage()
   };
 };

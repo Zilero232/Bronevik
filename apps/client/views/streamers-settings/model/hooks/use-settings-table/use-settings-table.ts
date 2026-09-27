@@ -28,9 +28,9 @@ export const useSettingsTable = () => {
   });
 
   return {
+    query,
     rows,
     columns,
-    total: query.data?.length ?? 0,
     search: filters.q,
     preset: filters.preset,
     presetItems: SETTINGS_FILTER_PRESETS.map((value) => ({
@@ -38,10 +38,6 @@ export const useSettingsTable = () => {
       label: value === STREAMERS_SETTINGS_PAGE.allPresets ? t('allPresets') : optionLabel(value)
     })),
     isFiltered: filters.q !== '' || filters.preset !== STREAMERS_SETTINGS_PAGE.allPresets,
-    isPending: query.isPending,
-    isError: query.isError,
-    isRetrying: query.isRefetching,
-    retry: () => void query.refetch(),
     onSearch: (q: string) => void setFilters({ q: q === '' ? null : q }),
     onPreset: (preset: SettingsFilterPreset) => void setFilters({ preset }),
     onReset: () => void setFilters(null)

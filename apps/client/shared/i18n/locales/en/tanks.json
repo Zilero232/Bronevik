@@ -131,7 +131,6 @@
     "survival": "Survived",
     "battles": "Battles",
     "emptyTitle": "Nothing matches the filters",
-    "resetFilters": "Reset filters",
     "errorTitle": "Statistics did not load",
     "errorDescription": "The statistics server is not responding.",
     "noStatsTitle": "Server statistics are not collected yet"
@@ -157,7 +156,6 @@
     "emptyTitle": "No economy data yet",
     "emptyDescription": "Medians appear once mod users play enough random battles.",
     "emptyFilteredTitle": "Nothing matches the filters",
-    "resetFilters": "Reset filters",
     "note": "Per-battle medians from random battles sent by the mod and from replays over 30 days. The reserve and clan payouts are applied on the site from the base income.",
     "columns": {
       "tank": "Tank",

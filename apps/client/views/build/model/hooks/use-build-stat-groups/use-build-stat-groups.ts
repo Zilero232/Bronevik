@@ -17,8 +17,6 @@ export const useBuildStatGroups = () => {
   const statsA = queryA.data;
   const statsB = queryB.data;
 
-  const groups = statsA && base ? buildStatGroups({ base, a: statsA, b: b ? (statsB ?? null) : null }) : [];
-
   const refetch = () => {
     [baseQuery, queryA, queryB]
       .filter((query) => query.isError)
@@ -28,11 +26,12 @@ export const useBuildStatGroups = () => {
   };
 
   return {
-    groups,
-    isPending: baseQuery.isPending || queryA.isPending,
-    isError: baseQuery.isError || queryA.isError || queryB.isError,
-    isFetching: queryA.isFetching || queryB.isFetching,
-    isCompare: b !== null,
-    refetch
+    query: {
+      data: statsA && base && !queryB.isError ? buildStatGroups({ base, a: statsA, b: b ? (statsB ?? null) : null }) : undefined,
+      isError: baseQuery.isError || queryA.isError || queryB.isError,
+      isRefetching: queryA.isFetching || queryB.isFetching,
+      refetch
+    },
+    isCompare: b !== null
   };
 };

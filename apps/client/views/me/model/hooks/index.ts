@@ -1,6 +1,7 @@
 export { useBindCodeDisplay } from './use-bind-code-display';
 export { useBotsCard } from './use-bots-card';
 export { useDataExport } from './use-data-export';
+export { useDeleteAccountForm } from './use-delete-account-form';
 export { useFavoritesCard } from './use-favorites-card';
 export { useGoalForm } from './use-goal-form';
 export { useGoalItem } from './use-goal-item';

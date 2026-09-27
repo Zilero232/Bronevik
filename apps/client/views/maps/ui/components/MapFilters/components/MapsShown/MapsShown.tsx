@@ -8,11 +8,11 @@ import s from './MapsShown.module.scss';
 
 export const MapsShown = () => {
   const t = useTranslations('maps.filters');
-  const { maps, total } = useMapsCatalog();
+  const { query } = useMapsCatalog();
 
   return (
     <span aria-live='polite' className={s.root}>
-      {t('shown', { shown: maps.length, total })}
+      {t('shown', { shown: query.data?.maps.length ?? 0, total: query.data?.total ?? 0 })}
     </span>
   );
 };

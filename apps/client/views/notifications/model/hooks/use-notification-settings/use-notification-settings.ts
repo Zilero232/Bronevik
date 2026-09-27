@@ -14,7 +14,7 @@ const SETTINGS_KEY = QUERY_KEYS.me.section('notifications');
 export const useNotificationSettings = () => {
   const t = useTranslations('notifications.settings');
   const queryClient = useQueryClient();
-  const { data: settings, isPending, isError, isFetching, refetch } = useQuery({ queryKey: SETTINGS_KEY, queryFn: getNotificationSettings });
+  const query = useQuery({ queryKey: SETTINGS_KEY, queryFn: getNotificationSettings });
 
   const save = useMutation({
     mutationFn: updateNotificationSettings,
@@ -34,5 +34,5 @@ export const useNotificationSettings = () => {
     }
   });
 
-  return { settings, isPending, isError, isFetching, refetch, save };
+  return { query, save };
 };

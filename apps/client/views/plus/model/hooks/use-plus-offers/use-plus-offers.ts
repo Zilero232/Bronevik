@@ -9,23 +9,9 @@ import { PLUS_CHECKOUT } from '../../../config';
 import { cheapestMonthly, planPricing, recommendedPlan } from '../../../lib/plan-pricing';
 
 export const usePlusOffers = () => {
-  const {
-    data: offers,
-    isPending,
-    isError,
-    isFetching,
-    refetch
-  } = useQuery({ queryKey: QUERY_KEYS.billing.plans, queryFn: getPlusPlans, staleTime: PLUS_CHECKOUT.plansStaleMs });
+  const query = useQuery({ queryKey: QUERY_KEYS.billing.plans, queryFn: getPlusPlans, staleTime: PLUS_CHECKOUT.plansStaleMs, select: planPricing });
 
-  const pricing = planPricing(offers ?? []);
+  const pricing = query.data ?? [];
 
-  return {
-    pricing,
-    recommended: recommendedPlan(pricing),
-    fromMonthlyRub: cheapestMonthly(pricing),
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    retry: () => void refetch()
-  };
+  return { query, recommended: recommendedPlan(pricing), fromMonthlyRub: cheapestMonthly(pricing) };
 };

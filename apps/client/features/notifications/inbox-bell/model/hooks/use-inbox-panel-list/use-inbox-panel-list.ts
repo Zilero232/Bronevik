@@ -8,7 +8,7 @@ import { useInboxPanelContext } from '../../context';
 import { useInboxPreview } from '../use-inbox-preview';
 
 export const useInboxPanelList = () => {
-  const { page, isPending, isError, isRetrying, retry } = useInboxPreview();
+  const { page, isError, isRetrying, retry } = useInboxPreview();
   const readItem = useReadInboxItem();
   const { close } = useInboxPanelContext();
 
@@ -20,5 +20,5 @@ export const useInboxPanelList = () => {
     }
   };
 
-  return { items: page?.items ?? [], isPending, isError, isRetrying, onRetry: retry, onSelect };
+  return { query: { data: page?.items, isError, isRefetching: isRetrying, refetch: retry }, onSelect };
 };

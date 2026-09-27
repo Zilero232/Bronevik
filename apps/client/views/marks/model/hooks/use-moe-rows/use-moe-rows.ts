@@ -13,11 +13,11 @@ import { useFetchAllPages } from '../use-fetch-all-pages';
 import { useMarksUrlState } from '../use-marks-url-state';
 
 export const useMoeRows = () => {
-  const { query } = useVehicleFilters();
+  const filters = useVehicleFilters();
   const [{ sort, order, q }] = useMarksUrlState();
-  const params = { ...query, sort, order };
+  const params = { ...filters.query, sort, order };
 
-  const { data, isPending, isError, isFetching, isPlaceholderData, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey: QUERY_KEYS.marks.list(params),
     queryFn: ({ signal, pageParam }) => listMoe({ ...params, limit: MOE_LIST.pageLimit, offset: pageParam, signal }),
     initialPageParam: 0,
@@ -25,18 +25,14 @@ export const useMoeRows = () => {
     placeholderData: keepPreviousData
   });
 
-  useFetchAllPages({ hasNextPage, isFetchingNextPage, fetchNextPage });
+  useFetchAllPages(query);
 
-  const all = data?.pages.flatMap(({ items }) => items) ?? [];
+  const all = query.data?.pages.flatMap(({ items }) => items) ?? [];
 
   return {
     rows: filterByName({ rows: all, query: q }),
-    total: data?.pages[0]?.total ?? 0,
+    total: query.data?.pages[0]?.total ?? 0,
     updatedAt: latestUpdate(all),
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    isStale: isPlaceholderData,
-    refetch
+    query
   };
 };

@@ -16,18 +16,13 @@ export const useSettingsAggregates = () => {
   const query = useQuery({
     queryKey: QUERY_KEYS.streamers.settingsAggregates(cohort),
     queryFn: () => getSettingsAggregates(cohort),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    select: ({ fields, ...rest }) => ({ ...rest, fields: fields.map((field) => ({ ...field, shares: aggregateShares(field) })) })
   });
 
   return {
     cohort,
-    minCohort: query.data?.minCohort ?? null,
-    computedAt: query.data?.computedAt ?? null,
-    fields: (query.data?.fields ?? []).map((field) => ({ ...field, shares: aggregateShares(field) })),
-    isPending: query.isPending,
-    isError: query.isError,
-    isRetrying: query.isRefetching,
-    retry: () => void query.refetch(),
+    query,
     onCohortChange: setCohort
   };
 };

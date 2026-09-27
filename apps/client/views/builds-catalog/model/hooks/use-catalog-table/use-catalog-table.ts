@@ -9,7 +9,7 @@ import { useCatalogColumns } from '../use-catalog-columns';
 import { useCatalogState } from '../use-catalog-state';
 
 export const useCatalogTable = () => {
-  const { data, isLoading, isError, isFetching, refetch } = useBuildsCatalog();
+  const query = useBuildsCatalog();
   const [{ difficulties }, setState] = useCatalogState();
   const { reset, isActive } = useVehicleFilters();
   const columns = useCatalogColumns();
@@ -19,19 +19,11 @@ export const useCatalogTable = () => {
     void setState({ difficulties: null });
   };
 
-  const onRetry = () => {
-    void refetch();
-  };
-
   return {
     columns,
-    rows: data?.entries ?? [],
-    minSample: data?.minSample ?? BUILD_USAGE.minSample,
-    isLoading,
-    isError,
-    isFetching,
+    query,
+    minSample: query.data?.minSample ?? BUILD_USAGE.minSample,
     isFiltered: isActive || difficulties.length > 0,
-    onReset,
-    onRetry
+    onReset
   };
 };

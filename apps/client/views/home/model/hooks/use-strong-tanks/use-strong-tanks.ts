@@ -15,13 +15,12 @@ export const useStrongTanks = () => {
 
   const params = { period: HOME.period.server, tiers: [tier], sort: 'winRate', order: 'desc', limit: HOME.strongTanks.limit } as const;
 
-  const { data, isPending, isError, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.tanks.stats(params),
     queryFn: ({ signal }) => listTankStats({ ...params, tiers: [...params.tiers], signal }),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    select: ({ items }) => items.slice(0, HOME.strongTanks.cards)
   });
-
-  const rows = data?.items ?? [];
 
   const setTiers = (next: number[]) => {
     const match = HOME.strongTanks.tiers.find((option) => option === next[0]);
@@ -34,10 +33,7 @@ export const useStrongTanks = () => {
   return {
     tiers: [tier],
     setTiers,
-    cards: rows.slice(0, HOME.strongTanks.cards),
-    updatedAt: rows[0]?.computedAt ?? null,
-    isPending,
-    isError,
-    retry: () => void refetch()
+    query,
+    updatedAt: query.data?.[0]?.computedAt ?? null
   };
 };

@@ -54,8 +54,7 @@
     "description": "A page appears here once a streamer creates it in the studio and verifies a channel.",
     "action": "Create a streamer page",
     "filteredTitle": "Nobody found",
-    "filteredDescription": "Nobody matches these filters right now.",
-    "reset": "Reset filters"
+    "filteredDescription": "Nobody matches these filters right now."
   },
   "error": {
     "title": "The list did not load",

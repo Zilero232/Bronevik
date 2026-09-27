@@ -3,9 +3,8 @@
 import type { TopPlayersMetric } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
-import { Card, EmptyState, ErrorState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { Card, EmptyState, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import { TANK_PAGE, TANK_SECTIONS, TOP_METRICS } from '../../../config';
 import { useTank } from '../../../model/context';
@@ -17,7 +16,7 @@ import s from './TopPlayers.module.scss';
 export const TopPlayers = () => {
   const t = useTranslations('tank.players');
   const { identity } = useTank();
-  const { metric, onMetricChange, rows, podium, rest, isPending, isError, isStale, refetch } = useTankTopPlayers();
+  const { metric, onMetricChange, isStale, query } = useTankTopPlayers();
 
   return (
     <section aria-labelledby={`${TANK_SECTIONS.players}-title`} className={s.root} data-theme='dark' id={TANK_SECTIONS.players}>
@@ -34,11 +33,13 @@ export const TopPlayers = () => {
             onChange={onMetricChange}
           />
         </header>
-        {match({ isPending, isError, isEmpty: rows.length === 0 })
-          .with({ isPending: true }, () => <Skeleton height={TANK_PAGE.skeletonRows * TANK_PAGE.rowHeight} shape='block' width='100%' />)
-          .with({ isError: true }, () => <ErrorState onRetry={() => void refetch()} />)
-          .with({ isEmpty: true }, () => <EmptyState title={t('emptyTitle')} />)
-          .otherwise(() => (
+        <QueryState
+          empty={<EmptyState title={t('emptyTitle')} />}
+          isEmpty={({ podium, rest }) => podium.length + rest.length === 0}
+          query={query}
+          skeleton={<Skeleton height={TANK_PAGE.skeletonRows * TANK_PAGE.rowHeight} shape='block' width='100%' />}
+        >
+          {({ podium, rest }) => (
             <div className={s.body} data-stale={isStale}>
               <TopPodium metricLabel={t(`metrics.${metric}`)} rows={podium} />
               {rest.length > 0 && (
@@ -62,7 +63,8 @@ export const TopPlayers = () => {
                 </Card>
               )}
             </div>
-          ))}
+          )}
+        </QueryState>
       </div>
     </section>
   );

@@ -13,23 +13,17 @@ export const useMissionPlan = (operation: number) => {
   const { isSignedIn, isPlus, isPending: isPlusPending } = usePlus();
   const branchLabel = useBranchLabel();
 
-  const plan = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.missions.plan(operation),
     queryFn: ({ signal }) => getMissionPlan({ operation, signal }),
     enabled: isPlus,
     retry: false
   });
 
-  const isPlusRequired = isPlusRequiredError(plan.error);
-
   return {
     branchLabel,
-    plan: plan.data,
+    query,
     isSignedIn: isPlusPending || isSignedIn,
-    isPending: isPlusPending || (plan.isPending && plan.fetchStatus !== 'idle'),
-    needsPlus: (isSignedIn && !isPlusPending && !isPlus) || isPlusRequired,
-    isError: plan.isError && !isPlusRequired,
-    isRetrying: plan.isFetching,
-    retry: () => void plan.refetch()
+    needsPlus: (isSignedIn && !isPlusPending && !isPlus) || isPlusRequiredError(query.error)
   };
 };

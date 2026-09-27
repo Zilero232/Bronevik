@@ -10,6 +10,7 @@ import type { MeDashboardProps } from './MeDashboard.types';
 
 import { BotsCard } from '../BotsCard';
 import { DataExportCard } from '../DataExportCard';
+import { DeleteAccountCard } from '../DeleteAccountCard';
 import { FavoritesCard } from '../FavoritesCard';
 import { GoalsCard } from '../GoalsCard';
 import { LinkedAccountsCard } from '../LinkedAccountsCard';
@@ -56,6 +57,9 @@ export const MeDashboard = ({ name }: MeDashboardProps) => {
         </div>
         <div>
           <DataExportCard />
+        </div>
+        <div className={s.wide}>
+          <DeleteAccountCard />
         </div>
       </div>
     </div>

@@ -6,7 +6,6 @@
   "markAll": "Mark all read",
   "viewAll": "All notifications",
   "empty": "All quiet",
-  "emptyHint": "New marks, sessions and bonus codes will show up here.",
   "error": "Could not load notifications.",
   "failed": "Could not mark as read.",
   "unread": "Unread"

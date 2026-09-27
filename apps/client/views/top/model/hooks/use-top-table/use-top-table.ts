@@ -19,10 +19,7 @@ export const useTopTable = () => {
     entries: query.data?.entries ?? [],
     tank,
     summary: minBattles === null ? undefined : t('minBattles', { count: minBattles }),
-    isPending: query.isPending,
-    isError: query.isError,
-    isRetrying: query.isFetching,
-    isRefreshing,
-    retry: () => void query.refetch()
+    query,
+    isRefreshing
   };
 };

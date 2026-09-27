@@ -54,10 +54,10 @@ describe('useCommentsThread', () => {
     const { wrapper } = setup(SESSION);
     const { result } = renderHook(() => useCommentsThread(THREAD), { wrapper });
 
-    await waitFor(() => expect(result.current.isPending).toBe(false));
+    await waitFor(() => expect(result.current.query.isPending).toBe(false));
 
-    expect(result.current.nodes.map((node) => node.comment.id)).toEqual([ROOT.id, OTHER_ROOT.id]);
-    expect(result.current.nodes[0]?.replies).toEqual([REPLY]);
+    expect(result.current.query.data?.map((node) => node.comment.id)).toEqual([ROOT.id, OTHER_ROOT.id]);
+    expect(result.current.query.data?.[0]?.replies).toEqual([REPLY]);
     expect(result.current.count).toBe(3);
     expect(vi.mocked(listComments).mock.calls[0]?.[0]).toMatchObject(THREAD);
   });
@@ -67,7 +67,7 @@ describe('useCommentsThread', () => {
     const { wrapper } = setup(SESSION);
     const { result } = renderHook(() => useCommentsThread(THREAD), { wrapper });
 
-    await waitFor(() => expect(result.current.isPending).toBe(false));
+    await waitFor(() => expect(result.current.query.isPending).toBe(false));
 
     expect(result.current.context.isSignedIn).toBe(true);
     expect(result.current.context.viewerId).toBe(SESSION?.user.id);
@@ -79,11 +79,11 @@ describe('useCommentsThread', () => {
     const { wrapper } = setup(null);
     const { result } = renderHook(() => useCommentsThread(THREAD), { wrapper });
 
-    await waitFor(() => expect(result.current.isPending).toBe(false));
+    await waitFor(() => expect(result.current.query.isPending).toBe(false));
 
     expect(result.current.context.isSignedIn).toBe(false);
     expect(result.current.context.viewerId).toBeNull();
-    expect(result.current.nodes).toEqual([]);
+    expect(result.current.query.data).toEqual([]);
     expect(result.current.count).toBe(0);
   });
 
@@ -92,13 +92,13 @@ describe('useCommentsThread', () => {
     const { wrapper } = setup(null);
     const { result } = renderHook(() => useCommentsThread(THREAD), { wrapper });
 
-    await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(result.current.nodes).toEqual([]);
+    await waitFor(() => expect(result.current.query.isError).toBe(true));
+    expect(result.current.query.data).toBeUndefined();
 
-    act(() => result.current.retry());
+    act(() => void result.current.query.refetch());
 
     await waitFor(() => expect(result.current.count).toBe(1));
-    expect(result.current.isError).toBe(false);
+    expect(result.current.query.isError).toBe(false);
   });
 
   it('keeps showing loaded comments when a later refetch fails', async () => {
@@ -108,10 +108,10 @@ describe('useCommentsThread', () => {
 
     await waitFor(() => expect(result.current.count).toBe(1));
 
-    act(() => result.current.retry());
+    act(() => void result.current.query.refetch());
 
     await waitFor(() => expect(client.getQueryState(QUERY_KEYS.comments(THREAD))?.status).toBe('error'));
-    expect(result.current.isError).toBe(false);
+    expect(result.current.query.data).toHaveLength(1);
     expect(result.current.count).toBe(1);
   });
 });

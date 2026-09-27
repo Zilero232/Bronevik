@@ -10,10 +10,9 @@ import { HOME } from '../../../config';
 export const useClanActivity = () => {
   const params = { sort: 'activeMembers', order: 'desc', limit: HOME.clans.limit } as const;
 
-  const { data, isPending, isError, refetch } = useQuery({
+  return useQuery({
     queryKey: QUERY_KEYS.clans.list(params),
-    queryFn: ({ signal }) => listClans({ ...params, signal })
+    queryFn: ({ signal }) => listClans({ ...params, signal }),
+    select: ({ items }) => items
   });
-
-  return { rows: data?.items ?? [], isPending, isError, retry: () => void refetch() };
 };

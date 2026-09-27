@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
-import { LestaAccountsService, TelegramAccountsService } from './services';
+import { CommunityCoreModule } from '../community-core';
+import { AccountPurgeService, LestaAccountsService, TelegramAccountsService } from './services';
 
 @Module({
-  imports: [BillingCoreModule],
-  providers: [LestaAccountsService, TelegramAccountsService],
-  exports: [LestaAccountsService, TelegramAccountsService]
+  imports: [BillingCoreModule, CommunityCoreModule],
+  providers: [LestaAccountsService, TelegramAccountsService, AccountPurgeService],
+  exports: [LestaAccountsService, TelegramAccountsService, AccountPurgeService]
 })
 export class AuthStoresModule {}

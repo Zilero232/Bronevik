@@ -14,14 +14,14 @@ import { COACHING_ORDERS } from '../../../config';
 
 export const useCoachingOrders = () => {
   const { userId, isSignedIn } = useCommunityViewer();
-  const { data, isPending, isError, isFetching, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.coaching.orders,
     queryFn: getCoachingOrders,
     enabled: isSignedIn,
     retry: (failures, failure) => !isNotFoundError(failure) && failures < COACHING_ORDERS.retries
   });
 
-  const coachIds = unique((data ?? []).map(({ coachUserId }) => coachUserId).filter((id) => id !== userId));
+  const coachIds = unique((query.data ?? []).map(({ coachUserId }) => coachUserId).filter((id) => id !== userId));
   const coaches = useQueries({
     queries: coachIds.map((coachUserId) => ({
       queryKey: QUERY_KEYS.coaching.coach(coachUserId),
@@ -34,11 +34,7 @@ export const useCoachingOrders = () => {
 
   return {
     isSignedIn,
-    orders: data ?? [],
-    isPending: isSignedIn && isPending,
-    isError,
-    isRetrying: isFetching,
-    coachName: (coachUserId: string) => names.get(coachUserId) ?? null,
-    retry: () => void refetch()
+    query,
+    coachName: (coachUserId: string) => names.get(coachUserId) ?? null
   };
 };

@@ -4,7 +4,7 @@ import { Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Card, DataSourceNote, ErrorState, FilteredEmptyState, KeyFigure, PageHero } from '@/ui-kit';
+import { Card, DataSourceNote, FilteredEmptyState, KeyFigure, PageHero, QueryState } from '@/ui-kit';
 
 import { useBestBattles } from '../model/hooks';
 import { BestBattlesFilters, BestBattlesPodium, BestBattlesTable } from './components';
@@ -32,18 +32,22 @@ export const BestBattlesPage = () => {
         title={t('hero.title')}
       />
       <div className={s.content}>
-        {!view.isError && view.podium.length > 0 && (
-          <div className={s.board} data-refreshing={view.isRefreshing}>
+        {view.podium.length > 0 && (
+          <div className={s.board} data-refreshing={view.feed.isPlaceholderData}>
             <BestBattlesPodium battles={view.podium} metric={view.metric} />
           </div>
         )}
         <Card padding='none'>
           <div className={s.body}>
             <BestBattlesFilters />
-            {view.isError ? (
-              <ErrorState isCompact description={t('error.description')} isRetrying={view.isRetrying} title={t('error.title')} onRetry={view.retry} />
-            ) : (
-              <div className={s.board} data-refreshing={view.isRefreshing}>
+            <QueryState
+              isCompact
+              errorDescription={t('error.description')}
+              errorTitle={t('error.title')}
+              query={view.feed}
+              skeleton={<BestBattlesTable isLoading battles={[]} metric={view.metric} />}
+            >
+              <div className={s.board} data-refreshing={view.feed.isPlaceholderData}>
                 <BestBattlesTable
                   emptyState={
                     <FilteredEmptyState
@@ -55,14 +59,13 @@ export const BestBattlesPage = () => {
                     />
                   }
                   battles={view.battles}
-                  hasNextPage={view.hasNextPage}
-                  isFetchingNextPage={view.isFetchingNextPage}
-                  isLoading={view.isPending}
+                  hasNextPage={view.feed.hasNextPage}
+                  isFetchingNextPage={view.feed.isFetchingNextPage}
                   metric={view.metric}
                   onLoadMore={view.loadMore}
                 />
               </div>
-            )}
+            </QueryState>
           </div>
         </Card>
         <DataSourceNote />

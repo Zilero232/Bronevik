@@ -19,13 +19,13 @@ export const useTankTopPlayers = () => {
   const format = useFormatter();
   const { tankId } = useTank();
   const [metric, setMetric] = useQueryState('metric', TANK_URL_PARSERS.metric.withOptions({ history: 'replace', scroll: false }));
-  const { data, isPending, isError, isPlaceholderData, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.tanks.topPlayers({ tankId, metric, limit: TANK_PAGE.topLimit }),
     queryFn: ({ signal }) => getTankTopPlayers({ tankId, metric, limit: TANK_PAGE.topLimit, signal }),
     placeholderData: keepPreviousData
   });
 
-  const rows: TopPlayerRow[] = (data?.entries ?? []).map((entry) => {
+  const rows: TopPlayerRow[] = (query.data?.entries ?? []).map((entry) => {
     const { value, tone, isPercent } = playerMetric({ metric, entry });
 
     return {
@@ -39,12 +39,19 @@ export const useTankTopPlayers = () => {
     };
   });
 
-  const podium = rows.filter((row) => row.isPodium);
-  const rest = rows.filter((row) => !row.isPodium);
-
   const onMetricChange = (value: TopPlayersMetric) => {
     void setMetric(value);
   };
 
-  return { metric, onMetricChange, rows, podium, rest, isPending, isError, isStale: isPlaceholderData, refetch };
+  return {
+    metric,
+    onMetricChange,
+    isStale: query.isPlaceholderData,
+    query: {
+      data: query.data && { podium: rows.filter((row) => row.isPodium), rest: rows.filter((row) => !row.isPodium) },
+      isError: query.isError,
+      isRefetching: query.isRefetching,
+      refetch: query.refetch
+    }
+  };
 };

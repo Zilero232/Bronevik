@@ -8,7 +8,7 @@ import { QUERY_KEYS } from '@/shared/constants';
 
 export const useMyGuides = () => {
   const { data: session } = useAuthSession();
-  const { data, isPending, isError, isFetching, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.guides.mine({ viewerId: session?.user.id ?? null }),
     queryFn: ({ signal }) => getMyGuides(signal),
     enabled: Boolean(session)
@@ -16,10 +16,6 @@ export const useMyGuides = () => {
 
   return {
     isSignedIn: Boolean(session),
-    guides: data ?? [],
-    isPending,
-    isError: isError && !data,
-    isRetrying: isFetching,
-    retry: () => void refetch()
+    query
   };
 };

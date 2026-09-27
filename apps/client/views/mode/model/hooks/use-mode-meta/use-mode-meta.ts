@@ -13,11 +13,9 @@ export const useModeMeta = (mode: PlayMode) => {
 
   const params = { mode, tiers: filters.tiers, types: filters.types, nations: filters.nations };
 
-  const { data, isPending, isLoading, isError, isFetching, refetch } = useQuery({
+  return useQuery({
     queryKey: QUERY_KEYS.modes.meta(params),
     queryFn: ({ signal }) => getModeMeta({ ...params, signal }),
     placeholderData: keepPreviousData
   });
-
-  return { data, isPending, isLoading, isError, isRetrying: isFetching, onRetry: () => void refetch() };
 };

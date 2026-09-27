@@ -4,7 +4,7 @@ import { authClient } from '@/shared/api/auth';
 import { bearerToken } from '@/shared/api/http';
 import { fromAuth } from '@/shared/api/source';
 
-import type { AuthSession } from './auth.types';
+import type { AuthSession, DeleteAccountOutcome } from './auth.types';
 
 export const getAuthSession = async (): Promise<AuthSession> => {
   const session = await fromAuth(authClient.getSession());
@@ -15,4 +15,17 @@ export const getAuthSession = async (): Promise<AuthSession> => {
 export const signOut = async (): Promise<void> => {
   await fromAuth(authClient.signOut());
   bearerToken.clear();
+};
+
+export const deleteAccount = async (): Promise<DeleteAccountOutcome> => {
+  const result = await authClient.deleteUser();
+
+  if (result.error?.code === authClient.$ERROR_CODES.SESSION_EXPIRED.code) {
+    return 'reauthenticate';
+  }
+
+  await fromAuth(Promise.resolve(result));
+  bearerToken.clear();
+
+  return 'deleted';
 };

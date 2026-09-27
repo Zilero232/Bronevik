@@ -11,13 +11,11 @@ import { BOARD_PAGE } from '../../../config';
 
 export const useTacticBoardPage = (id: string) => {
   const [token] = useQueryState(BOARD_PAGE.tokenParam, parseAsString);
-  const { data, error, isPending, isError, isFetching, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.tactics.board({ id, token }),
     queryFn: ({ signal }) => getTacticBoard({ id, token, signal }),
     retry: (count, failure) => !isNotFoundError(failure) && count < BOARD_PAGE.retries
   });
 
-  const onRetry = () => void refetch();
-
-  return { board: data ?? null, token, isPending, isNotFound: isNotFoundError(error), isError, isFetching, onRetry };
+  return { query, token };
 };

@@ -20,7 +20,7 @@ export const useEconomyTable = () => {
 
   const params = { ...query, statuses, roles, difficulties, account, limit: TANKS_ECONOMY.limit };
 
-  const { data, isLoading, isError, isFetching, refetch } = useQuery({
+  const economy = useQuery({
     queryKey: QUERY_KEYS.tanks.economy(params),
     queryFn: ({ signal }) => listTankEconomy({ ...params, signal }),
     placeholderData: keepPreviousData
@@ -29,10 +29,6 @@ export const useEconomyTable = () => {
   const onReset = () => {
     void reset();
     void setState({ statuses: null, roles: null, difficulties: null });
-  };
-
-  const onRetry = () => {
-    void refetch();
   };
 
   const onAccountChange = (next: typeof account) => {
@@ -50,18 +46,13 @@ export const useEconomyTable = () => {
   return {
     columns,
     view,
-    rows: data?.items ?? [],
-    total: data?.total ?? 0,
+    query: economy,
     account,
     reserve,
     clanPayout,
     clanPayoutPercent: ECONOMY_VIEW.clanPayoutBonus * 100,
-    isLoading,
-    isError,
-    isFetching,
     isFiltered: isActive || statuses.length > 0 || roles.length > 0 || difficulties.length > 0,
     onReset,
-    onRetry,
     onAccountChange,
     onReserveChange,
     onClanPayoutChange

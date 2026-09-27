@@ -155,6 +155,24 @@
     "battlesCsv": "Battles, CSV",
     "failed": "Couldn't export the data."
   },
+  "deleteAccount": {
+    "title": "Delete account",
+    "description": "Permanently removes your Three Marks profile. This cannot be undone.",
+    "removed": "Deleted: your profile, sign-in methods, favorites, goals, notifications, API keys and webhooks, streamer profile and overlays, bot links and mod devices.",
+    "kept": "Kept: the public game stats of your Lesta accounts — they are only unlinked from you.",
+    "billing": "An active Plus subscription stops renewing; the paid period is not refunded.",
+    "exportFirst": "Download my data first",
+    "open": "Delete account",
+    "dialogTitle": "Delete your account for good?",
+    "dialogText": "Your profile and personal data will be erased right away. You will be signed out.",
+    "confirmLabel": "Type {nickname} to confirm",
+    "confirm": "Delete for good",
+    "cancel": "Cancel",
+    "reauth": "For your safety, sign in again and repeat the deletion right after.",
+    "reauthAction": "Sign in again",
+    "deleted": "Your account has been deleted",
+    "failed": "Could not delete the account. Please try again."
+  },
   "bots": {
     "title": "Bots",
     "description": "Discord and VK: commands, clan roles, reminders.",

@@ -1,10 +1,3 @@
-import type { TimeSeries, TimeSeriesMetric } from '@otmetki/schemas';
+import type { UseHistoryChartInput } from '../../../../../model/hooks';
 
-export type HistoryChartProps = {
-  metric: TimeSeriesMetric;
-  series?: TimeSeries;
-  isLoading: boolean;
-  isError: boolean;
-  isRetrying: boolean;
-  onRetry: () => void;
-};
+export type HistoryChartProps = Required<UseHistoryChartInput>;

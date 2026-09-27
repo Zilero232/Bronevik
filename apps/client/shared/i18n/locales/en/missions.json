@@ -115,7 +115,6 @@
     "signIn": "Sign in to build a plan from your progress.",
     "empty": "Every mission of this operation is done.",
     "remaining": "Steps left: {count}",
-    "retry": "Redo with honors",
     "errorTitle": "Could not build the plan"
   },
   "periods": {

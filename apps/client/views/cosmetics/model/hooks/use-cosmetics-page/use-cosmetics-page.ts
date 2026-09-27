@@ -19,7 +19,7 @@ import { cosmeticAction } from '../../../lib/cosmetic-action';
 export const useCosmeticsPage = () => {
   const t = useTranslations('cosmetics.toast');
   const queryClient = useQueryClient();
-  const { data: inventory, isPending, isError, isFetching, refetch } = useQuery({ queryKey: QUERY_KEYS.me.cosmetics, queryFn: getCosmetics });
+  const query = useQuery({ queryKey: QUERY_KEYS.me.cosmetics, queryFn: getCosmetics });
 
   const onSaved = (next: CosmeticsInventory) => {
     queryClient.setQueryData(QUERY_KEYS.me.cosmetics, next);
@@ -44,15 +44,12 @@ export const useCosmeticsPage = () => {
     onError: () => toast.error(t('failed'))
   });
 
+  const inventory = query.data;
   const bySlot = groupBy(inventory?.items ?? [], (item) => item.slot);
   const isBusy = purchase.isPending || equip.isPending;
 
   return {
-    inventory,
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    retry: () => void refetch(),
+    query,
     sections: COSMETICS_PAGE.slots.map((slot) => ({
       slot,
       items: (bySlot[slot] ?? []).map((item) => ({

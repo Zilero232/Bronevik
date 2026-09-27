@@ -3,6 +3,7 @@ export { useChartsTab } from './use-charts-tab';
 export { useFavoriteTanks } from './use-favorite-tanks';
 export { useHighlightStats } from './use-highlight-stats';
 export { useHistoryChart } from './use-history-chart';
+export type { UseHistoryChartInput } from './use-history-chart';
 export { useHistoryTab } from './use-history-tab';
 export { useInsightsTab } from './use-insights-tab';
 export { useMarksTab } from './use-marks-tab';

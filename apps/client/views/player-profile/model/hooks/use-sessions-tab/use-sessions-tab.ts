@@ -12,21 +12,14 @@ export const useSessionsTab = () => {
   const [limit, setLimit] = useState<number>(SESSIONS.pageSize);
   const [selected, setSelected] = useState<string | null>(null);
 
-  const { data: page, isPending, isError, isFetching, isRefetching, refetch } = usePlayerSessions(limit);
+  const query = usePlayerSessions(limit);
 
   return {
     accountId,
     nickname,
-    items: page?.items ?? [],
-    isEmpty: page?.items.length === 0,
-    hasMore: page ? page.total > page.items.length : false,
-    selectedId: selected ?? page?.items[0]?.id,
-    isPending,
-    isError,
-    isFetching,
-    isRetrying: isRefetching,
+    query,
+    selectedId: selected ?? query.data?.items[0]?.id,
     select: setSelected,
-    showMore: () => setLimit((current) => current + SESSIONS.pageSize),
-    retry: () => void refetch()
+    showMore: () => setLimit((current) => current + SESSIONS.pageSize)
   };
 };

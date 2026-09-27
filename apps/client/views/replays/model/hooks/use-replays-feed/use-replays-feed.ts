@@ -16,17 +16,16 @@ export const useReplaysFeed = () => {
   const { isSignedIn } = useCommunityViewer();
   const activeTab = isSignedIn ? tab : REPLAY_LIST.defaultTab;
   const isMine = activeTab === 'mine';
-  const query = toSearchQuery({ filters, limit: REPLAY_LIST.pageSize });
-  const page = { limit: REPLAY_LIST.pageSize, offset: query.offset ?? 0 };
+  const search = toSearchQuery({ filters, limit: REPLAY_LIST.pageSize });
+  const page = { limit: REPLAY_LIST.pageSize, offset: search.offset ?? 0 };
 
-  const { data, isPending, isError, isFetching, refetch } = useQuery({
-    queryKey: isMine ? QUERY_KEYS.replays.mine(page) : QUERY_KEYS.replays.list(query),
-    queryFn: ({ signal }) => (isMine ? listMyReplays({ ...page, signal }) : listReplays({ ...query, signal })),
+  const query = useQuery({
+    queryKey: isMine ? QUERY_KEYS.replays.mine(page) : QUERY_KEYS.replays.list(search),
+    queryFn: ({ signal }) => (isMine ? listMyReplays({ ...page, signal }) : listReplays({ ...search, signal })),
     placeholderData: keepPreviousData
   });
 
-  const items = data?.items ?? [];
-  const total = data?.total ?? 0;
+  const total = query.data?.total ?? 0;
   const pager = pageWindow({ offset: page.offset, limit: page.limit, total });
   const isFiltered = !isMine && hasActiveFilters(filters);
   const empty = match({ isMine, isFiltered })
@@ -38,18 +37,14 @@ export const useReplaysFeed = () => {
     tab: activeTab,
     isSignedIn,
     isMine,
-    items,
+    query,
     total,
     pager,
     isFiltered,
     empty,
-    isPending,
-    isError,
-    isFetching,
     setTab,
     resetFilters: reset,
     goPrev: () => setOffset(pager.prevOffset ?? 0),
-    goNext: () => setOffset(pager.nextOffset ?? page.offset),
-    retry: () => void refetch()
+    goNext: () => setOffset(pager.nextOffset ?? page.offset)
   };
 };

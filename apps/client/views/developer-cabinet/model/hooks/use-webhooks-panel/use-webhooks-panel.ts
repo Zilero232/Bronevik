@@ -14,17 +14,16 @@ import { useWebhooks } from '../use-webhooks';
 
 export const useWebhooksPanel = () => {
   const { data: overview } = useDeveloperOverview();
-  const { data: webhooks, isPending, isError, isFetching, refetch } = useWebhooks();
+  const query = useWebhooks();
   const remove = useDeveloperMutation({ mutationFn: removeWebhook, invalidates: WEBHOOK_QUERIES.invalidates, successKey: 'webhookDeleted' });
   const [editor, setEditor] = useState<WebhookEditorState>({ mode: 'closed' });
   const [removing, setRemoving] = useState<WebhookEndpoint | null>(null);
 
   const isOverviewLoaded = overview !== undefined;
-  const count = webhooks?.length ?? 0;
+  const count = query.data?.length ?? 0;
   const limit = overview?.limits.webhooks ?? 0;
   const isFull = count >= limit;
 
-  const onRetry = () => void refetch();
   const onCreate = () => setEditor({ mode: 'create' });
   const onEdit = (endpoint: WebhookEndpoint) => setEditor({ mode: 'edit', endpoint });
   const onCloseEditor = () => setEditor({ mode: 'closed' });
@@ -42,19 +41,15 @@ export const useWebhooksPanel = () => {
   };
 
   return {
-    webhooks,
+    query,
     count,
     limit,
     isOverviewLoaded,
     isFull,
-    isPending,
-    isError,
-    isFetching,
     editor,
     removing,
     setRemoving,
     isRemoving: remove.isPending,
-    onRetry,
     onCreate,
     onEdit,
     onCloseEditor,

@@ -15,12 +15,13 @@ export const useHonestRngPage = () => {
   const t = useTranslations('honestRng');
   const format = useFormatter();
   const [period, setPeriod] = useRngPeriod();
-  const { data, isPending, isError, isFetching, refetch } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.honestRng.server({ period }),
     queryFn: ({ signal }) => getHonestRng({ period, signal }),
     staleTime: HONEST_RNG_VIEW.staleMs
   });
 
+  const { data } = query;
   const server = data?.server ?? null;
   const buckets = server?.buckets ?? data?.theory ?? [];
 
@@ -28,9 +29,8 @@ export const useHonestRngPage = () => {
     period,
     periods: RNG_PERIODS.map((value) => ({ value, label: t(`period.${value}`) })),
     setPeriod: (value: (typeof RNG_PERIODS)[number]) => void setPeriod(value),
-    data: data ?? null,
+    query,
     server,
-    isEmpty: data !== undefined && (server === null || server.shots === 0),
     meanRoll: rollPercent(server?.meanRoll),
     chart: {
       labels: bucketMidpoints(buckets).map((value) => format.number(value / HONEST_RNG_VIEW.percentScale, 'signedPercent')),
@@ -53,10 +53,6 @@ export const useHonestRngPage = () => {
       meanRoll: rollPercent(row.meanRoll),
       within: row.withinSpread
     })),
-    formatPercent: (value: number) => percentText({ format, value, digits: 1 }),
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    retry: () => void refetch()
+    formatPercent: (value: number) => percentText({ format, value, digits: 1 })
   };
 };

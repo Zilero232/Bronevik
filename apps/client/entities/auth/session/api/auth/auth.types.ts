@@ -6,3 +6,5 @@ export type AuthUser = {
 };
 
 export type AuthSession = { user: AuthUser; lestaAccountId: number | null } | null;
+
+export type DeleteAccountOutcome = 'deleted' | 'reauthenticate';

@@ -39,17 +39,10 @@ export const useMissionTanks = ({ questId, metric }: UseMissionTanksInput) => {
   return {
     columns,
     garageColumns,
-    tanks: tanks.data,
+    tanks,
     showcase: (tanks.data?.tanks ?? []).slice(0, MISSION_BOARD.showcaseLimit),
-    isPending: tanks.isPending,
-    isError: tanks.isError,
-    isRetrying: tanks.isFetching,
-    retry: () => void tanks.refetch(),
+    garage,
     garageNotice,
-    isGarageLoading: garage.isPending,
-    isGarageError: garage.isError,
-    isGarageRetrying: garage.isFetching,
-    retryGarage: () => void garage.refetch(),
     garageTanks: (garage.data?.tanks ?? []).slice(0, MISSION_TANKS_VIEW.garageLimit)
   };
 };

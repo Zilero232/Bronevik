@@ -51,18 +51,15 @@ export const useCompareBoard = () => {
     }))
   }));
 
-  const onRetry = () => {
-    void refetch();
-  };
-
   return {
     count: ids.length,
-    vehicles: vehicles.map(({ vehicle }) => vehicle),
     sections: [statsSection, ...specSectionsList],
-    isLoading,
-    isError,
-    isFetching,
-    onRetry,
+    query: {
+      data: isLoading || isError ? undefined : vehicles.map(({ vehicle }) => vehicle),
+      isError,
+      isRefetching: isFetching,
+      refetch
+    },
     onClear: clear,
     onRemove: remove
   };

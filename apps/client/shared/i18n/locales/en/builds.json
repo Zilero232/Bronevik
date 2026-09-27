@@ -180,8 +180,7 @@
       "empty": "No stats for this tank in the last 30 days"
     },
     "fieldMods": {
-      "title": "Field modification",
-      "picked": "Picked most"
+      "title": "Field modification"
     },
     "crew": {
       "title": "Crew",

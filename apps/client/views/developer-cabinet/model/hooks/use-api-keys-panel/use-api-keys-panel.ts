@@ -13,15 +13,12 @@ import { useApiKeys } from '../use-api-keys';
 import { useDeveloperMutation } from '../use-developer-mutation';
 
 export const useApiKeysPanel = () => {
-  const { data: keys, isPending, isError, isFetching, refetch } = useApiKeys();
+  const query = useApiKeys();
   const revoke = useDeveloperMutation({ mutationFn: revokeApiKey, invalidates: [QUERY_KEYS.me.developer.keys], successKey: 'keyRevoked' });
   const [isCreating, toggleCreating] = useBoolean(false);
   const [revoking, setRevoking] = useState<ApiKey | null>(null);
 
-  const count = keys?.length ?? 0;
-  const isFull = count >= API_KEY.maxActivePerUser;
-
-  const onRetry = () => void refetch();
+  const isFull = (query.data?.length ?? 0) >= API_KEY.maxActivePerUser;
 
   const onRevoke = () => {
     if (revoking) {
@@ -36,18 +33,14 @@ export const useApiKeysPanel = () => {
   };
 
   return {
-    keys,
-    count,
-    isPending,
-    isError,
-    isFetching,
+    query,
     isFull,
+    canCreate: query.data !== undefined && !isFull,
     isCreating,
     toggleCreating,
     revoking,
     setRevoking,
     isRevoking: revoke.isPending,
-    onRetry,
     onRevoke,
     onRevokeOpenChange
   };

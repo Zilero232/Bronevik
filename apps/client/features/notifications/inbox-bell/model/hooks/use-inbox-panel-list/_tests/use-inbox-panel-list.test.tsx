@@ -60,8 +60,8 @@ describe('useInboxPanelList', () => {
   it('lists the cached preview', () => {
     const { result } = setup();
 
-    expect(result.current.items).toEqual(PAGE.items);
-    expect(result.current.isPending).toBe(false);
+    expect(result.current.query.data).toEqual(PAGE.items);
+    expect(result.current.query.isError).toBe(false);
   });
 
   it('marks an unread linked entry as read and closes the panel to follow it', async () => {

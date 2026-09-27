@@ -2,7 +2,8 @@ import { secondsInDay } from 'date-fns/constants';
 
 export const SESSION = {
   expiresIn: 30 * secondsInDay,
-  updateAge: secondsInDay
+  updateAge: secondsInDay,
+  freshAge: secondsInDay
 } as const;
 
 export const PLACEHOLDER_EMAIL = {

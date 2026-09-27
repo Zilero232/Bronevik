@@ -14,16 +14,10 @@ export const useMapsCatalog = () => {
     onReset
   } = useMapFilters();
 
-  const { data: catalog = [], isPending, isError, isFetching, refetch } = useQuery(mapQueries.list());
+  const query = useQuery({
+    ...mapQueries.list(),
+    select: (catalog) => ({ maps: filterMaps({ maps: catalog, query: q, modes, camouflages: camo }), total: catalog.length })
+  });
 
-  return {
-    maps: filterMaps({ maps: catalog, query: q, modes, camouflages: camo }),
-    total: catalog.length,
-    isFiltered,
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    onReset,
-    retry: () => void refetch()
-  };
+  return { query, isFiltered, onReset };
 };

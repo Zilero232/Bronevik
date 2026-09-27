@@ -6,11 +6,6 @@
   "title": "Progress",
   "description": "Tank levels grow from your battles, challenges rotate weekly and the season track pays out shells and profile cosmetics. Only your own battles count.",
   "frozen": "Levels are visible to everyone, but XP, challenges and shells accrue only with Plus.",
-  "figures": {
-    "shells": "Shells",
-    "seasonLevel": "Season level",
-    "tanks": "Tanks with a level"
-  },
   "shells": {
     "title": "Shells",
     "hint": "Never sold or cashed out — spent only on profile cosmetics.",

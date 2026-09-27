@@ -39,7 +39,6 @@
   },
   "grid": {
     "errorTitle": "Maps failed to load",
-    "reset": "Reset filters",
     "noMatchTitle": "No such maps",
     "emptyTitle": "The map list is empty",
     "errorDescription": "The server is not responding."

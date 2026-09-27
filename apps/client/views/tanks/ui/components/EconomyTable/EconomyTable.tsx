@@ -5,7 +5,7 @@ import type { EconomyAccount } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Button, DataTable, EmptyState, ErrorState, SegmentedControl, Switch } from '@/ui-kit';
+import { DataTable, FilteredEmptyState, QueryState, SegmentedControl, Switch } from '@/ui-kit';
 
 import { TANKS_ECONOMY, TANKS_VIEW } from '../../../config';
 import { useEconomyTable } from '../../../model/hooks';
@@ -18,18 +18,13 @@ export const EconomyTable = () => {
   const {
     columns,
     view,
-    rows,
-    total,
+    query,
     account,
     reserve,
     clanPayout,
     clanPayoutPercent,
-    isLoading,
-    isError,
-    isFetching,
     isFiltered,
     onReset,
-    onRetry,
     onAccountChange,
     onReserveChange,
     onClanPayoutChange
@@ -48,35 +43,33 @@ export const EconomyTable = () => {
         <Switch checked={reserve} label={t('reserve')} onCheckedChange={onReserveChange} />
         <Switch checked={clanPayout} label={t('clanPayout', { percent: clanPayoutPercent })} onCheckedChange={onClanPayoutChange} />
       </div>
-      {isError ? (
-        <ErrorState description={t('errorDescription')} isRetrying={isFetching} title={t('errorTitle')} onRetry={onRetry} />
-      ) : (
-        <DataTable
-          emptyState={
-            isFiltered ? (
-              <EmptyState
-                action={
-                  <Button size='sm' variant='secondary' onClick={onReset}>
-                    {t('resetFilters')}
-                  </Button>
-                }
-                title={t('emptyFilteredTitle')}
+      <QueryState
+        errorDescription={t('errorDescription')}
+        errorTitle={t('errorTitle')}
+        query={query}
+        skeleton={<DataTable isLoading caption={t('caption', { count: 0 })} columns={columns} data={[]} rowHeight={TANKS_VIEW.rowHeight} />}
+      >
+        {({ items, total }) => (
+          <DataTable
+            emptyState={
+              <FilteredEmptyState
+                description={isFiltered ? undefined : t('emptyDescription')}
+                isFiltered={isFiltered}
+                title={isFiltered ? t('emptyFilteredTitle') : t('emptyTitle')}
+                onReset={onReset}
               />
-            ) : (
-              <EmptyState description={t('emptyDescription')} title={t('emptyTitle')} />
-            )
-          }
-          caption={t('caption', { count: total })}
-          columns={columns}
-          data={rows}
-          getRowId={(row) => String(row.vehicle.tankId)}
-          getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
-          initialSorting={[{ id: 'credits', desc: true }]}
-          isLoading={isLoading}
-          renderCard={(row) => <EconomyCard row={row} view={view(row)} />}
-          rowHeight={TANKS_VIEW.rowHeight}
-        />
-      )}
+            }
+            caption={t('caption', { count: total })}
+            columns={columns}
+            data={items}
+            getRowId={(row) => String(row.vehicle.tankId)}
+            getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
+            initialSorting={[{ id: 'credits', desc: true }]}
+            renderCard={(row) => <EconomyCard row={row} view={view(row)} />}
+            rowHeight={TANKS_VIEW.rowHeight}
+          />
+        )}
+      </QueryState>
       <p className={s.note}>{t('note')}</p>
     </section>
   );

@@ -27,18 +27,23 @@ export const useQueueNow = () => {
 
   return {
     now,
-    overall,
     formatWait,
     timezone: queue.data?.timezone ?? null,
-    tiers: (now?.tiers ?? []).map((cell) => ({ ...cell, deltaSec: overall ? cell.medianSec - overall.medianSec : null })),
-    topMaps: (rotation.data?.rows ?? []).slice(0, MAP_STATS.compactTopMaps),
-    isPending: queue.isPending,
-    isError: queue.isError && rotation.isError,
-    isEmpty: queue.isSuccess && !overall && (rotation.data?.rows.length ?? 0) === 0,
-    isRetrying: queue.isFetching || rotation.isFetching,
-    retry: () => {
-      void queue.refetch();
-      void rotation.refetch();
+    query: {
+      data:
+        queue.isPending || (queue.isError && rotation.isError)
+          ? undefined
+          : {
+              overall,
+              tiers: (now?.tiers ?? []).map((cell) => ({ ...cell, deltaSec: overall ? cell.medianSec - overall.medianSec : null })),
+              topMaps: (rotation.data?.rows ?? []).slice(0, MAP_STATS.compactTopMaps)
+            },
+      isError: queue.isError && rotation.isError,
+      isRefetching: queue.isFetching || rotation.isFetching,
+      refetch: () => {
+        void queue.refetch();
+        void rotation.refetch();
+      }
     }
   };
 };

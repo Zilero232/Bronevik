@@ -2,11 +2,10 @@
 
 import { BUILD_USAGE } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
-import { match } from 'ts-pattern';
 
 import { PlusBadge, PlusGate, PlusTeaser } from '@/features/plus/plus-gate';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, Card, CardHeader, EmptyState, ErrorState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { buttonVariants, Card, CardHeader, EmptyState, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import { HOW_TO_BUILD, TANK_SECTIONS } from '../../../config';
 import { useHowToBuild } from '../../../model/hooks';
@@ -16,24 +15,7 @@ import s from './HowToBuild.module.scss';
 
 export const HowToBuild = () => {
   const t = useTranslations('tank.builds');
-  const {
-    mode,
-    cohort,
-    setMode,
-    setCohort,
-    modes,
-    cohorts,
-    plusCohorts,
-    isLocked,
-    usage,
-    crew,
-    hasLoadout,
-    href,
-    isPending,
-    isError,
-    isFetching,
-    onRetry
-  } = useHowToBuild();
+  const { mode, cohort, setMode, setCohort, modes, cohorts, plusCohorts, isLocked, usage, crew, hasLoadout, href, query } = useHowToBuild();
 
   return (
     <Card className={s.root} id={TANK_SECTIONS.builds} padding='none'>
@@ -67,21 +49,28 @@ export const HowToBuild = () => {
           <span className={s.sample}>{t('sample', { battles: usage.battles, players: usage.players, days: usage.windowDays })}</span>
         )}
       </div>
-      {match({ isLocked, isPending, isError, usage })
-        .with({ isLocked: true }, () => <PlusTeaser className={s.body} feature='analytics' />)
-        .with({ isPending: true }, () => (
-          <div className={s.body}>
-            <Skeleton height={HOW_TO_BUILD.skeletonHeight} shape='block' width='100%' />
-          </div>
-        ))
-        .with({ isError: true }, () => <ErrorState isRetrying={isFetching} title={t('errorTitle')} onRetry={onRetry} />)
-        .with({ usage: { isEnough: true } }, ({ usage: loaded }) => <UsageBody crew={crew} usage={loaded} />)
-        .otherwise(() => (
-          <EmptyState
-            description={t('emptyDescription', { min: usage?.minSample ?? BUILD_USAGE.minSample, battles: usage?.battles ?? 0 })}
-            title={t('emptyTitle')}
-          />
-        ))}
+      {isLocked ? (
+        <PlusTeaser className={s.body} feature='analytics' />
+      ) : (
+        <QueryState
+          empty={
+            <EmptyState
+              description={t('emptyDescription', { min: usage?.minSample ?? BUILD_USAGE.minSample, battles: usage?.battles ?? 0 })}
+              title={t('emptyTitle')}
+            />
+          }
+          skeleton={
+            <div className={s.body}>
+              <Skeleton height={HOW_TO_BUILD.skeletonHeight} shape='block' width='100%' />
+            </div>
+          }
+          errorTitle={t('errorTitle')}
+          isEmpty={(build) => !build.usage?.isEnough}
+          query={query}
+        >
+          {(build) => build.usage && <UsageBody crew={crew} usage={build.usage} />}
+        </QueryState>
+      )}
       <PlusGate fallback={null} feature='analytics'>
         <BuildHistory cohort={cohort} mode={mode} />
       </PlusGate>

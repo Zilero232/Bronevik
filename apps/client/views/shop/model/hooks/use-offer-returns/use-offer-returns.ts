@@ -15,15 +15,15 @@ import { useReturnsColumns } from '../use-returns-columns';
 export const useOfferReturns = () => {
   const columns = useReturnsColumns();
   const { data: catalog } = useVehicleCatalog();
-  const { data, dataUpdatedAt, isPending, isError, isFetching, refetch } = useQuery({ ...shopControllerArchiveOptions(), staleTime: SHOP.staleMs });
+  const query = useQuery({ ...shopControllerArchiveOptions(), staleTime: SHOP.staleMs });
 
   const vehicles = vehicleIndex(catalog);
-  const now = new Date(dataUpdatedAt);
-  const rows: ReturnRow[] = (data ?? []).map((item) => ({
+  const now = new Date(query.dataUpdatedAt);
+  const rows: ReturnRow[] = (query.data ?? []).map((item) => ({
     ...item,
     vehicle: vehicles[item.tankId] ?? null,
     outlook: returnOutlook({ nextExpectedAt: item.nextExpectedAt, now, soonDays: SHOP.soonDays })
   }));
 
-  return { rows, columns, isPending, isError, isRetrying: isFetching, retry: () => void refetch() };
+  return { rows, columns, query };
 };

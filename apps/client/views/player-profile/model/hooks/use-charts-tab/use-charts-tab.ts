@@ -11,17 +11,18 @@ export const useChartsTab = () => {
   const [metric, setMetric] = useState<ChartMetric>(HISTORY_CHART.defaultMetric);
   const [granularity, setGranularity] = useState<ChartGranularity>(HISTORY_CHART.defaultGranularity);
 
-  const { data: series, isPending, isError, isPlaceholderData, isRefetching, refetch } = usePlayerHistory({ metric, granularity });
+  const query = usePlayerHistory({ metric, granularity });
 
   return {
     metric,
     setMetric,
     granularity,
     setGranularity,
-    series,
-    isLoading: isPending || isPlaceholderData,
-    isError,
-    isRetrying: isRefetching,
-    retry: () => void refetch()
+    query: {
+      data: query.isPlaceholderData ? undefined : query.data,
+      isError: query.isError,
+      isRefetching: query.isRefetching,
+      refetch: query.refetch
+    }
   };
 };

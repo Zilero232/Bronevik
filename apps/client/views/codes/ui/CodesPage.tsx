@@ -4,8 +4,9 @@ import { Gift } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { ActionStrip, DataSourceNote, ErrorState, KeyFigure, PageHero, Tabs } from '@/ui-kit';
+import { ActionStrip, DataSourceNote, KeyFigure, PageHero, QueryState, Skeleton, Tabs } from '@/ui-kit';
 
+import { CODES } from '../config';
 import { useBonusCodes } from '../model/hooks';
 import { CodeAlert, CodeList } from './components';
 
@@ -19,10 +20,9 @@ export const CodesPage = () => {
     <div className={s.root}>
       <PageHero
         figures={
-          !codes.isPending &&
-          !codes.isError && (
+          codes.query.data && (
             <>
-              <KeyFigure label={t('head.activeFigure')} value={codes.active.length} variant='compact' />
+              <KeyFigure label={t('head.activeFigure')} value={codes.query.data.active.length} variant='compact' />
               {codes.expiringCount !== null && <KeyFigure label={t('head.expiringFigure')} value={codes.expiringCount} variant='compact' />}
             </>
           )
@@ -34,29 +34,34 @@ export const CodesPage = () => {
       />
       <ActionStrip end={<CodeAlert />} width='narrow' />
       <div className={s.body}>
-        {codes.isError ? (
-          <ErrorState description={t('error.description')} isRetrying={codes.isRetrying} title={t('error.title')} onRetry={codes.retry} />
-        ) : (
-          <Tabs
-            items={[
-              {
-                value: 'active',
-                label: t('tabs.active'),
-                count: codes.isPending ? undefined : codes.active.length,
-                content: <CodeList codes={codes.active} emptyTitle={t('empty.active')} isPending={codes.isPending} />
-              },
-              {
-                value: 'expired',
-                label: t('tabs.expired'),
-                count: codes.isPending ? undefined : codes.expired.length,
-                content: <CodeList codes={codes.expired} emptyTitle={t('empty.expired')} isPending={codes.isPending} />
-              }
-            ]}
-            value={codes.tab}
-            variant='panel'
-            onValueChange={codes.setTab}
-          />
-        )}
+        <QueryState
+          errorDescription={t('error.description')}
+          errorTitle={t('error.title')}
+          query={codes.query}
+          skeleton={<Skeleton count={CODES.skeletons} height={132} shape='block' />}
+        >
+          {({ active, expired }) => (
+            <Tabs
+              items={[
+                {
+                  value: 'active',
+                  label: t('tabs.active'),
+                  count: active.length,
+                  content: <CodeList codes={active} emptyTitle={t('empty.active')} />
+                },
+                {
+                  value: 'expired',
+                  label: t('tabs.expired'),
+                  count: expired.length,
+                  content: <CodeList codes={expired} emptyTitle={t('empty.expired')} />
+                }
+              ]}
+              value={codes.tab}
+              variant='panel'
+              onValueChange={codes.setTab}
+            />
+          )}
+        </QueryState>
         <DataSourceNote />
       </div>
     </div>

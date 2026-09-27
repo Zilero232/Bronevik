@@ -14,7 +14,6 @@
   "list": {
     "title": "Coaches",
     "tankPlaceholder": "Filter by tank",
-    "reset": "Reset filter",
     "emptyTitle": "No coaches",
     "emptyDescription": "Nobody offers coaching yet. Be the first.",
     "emptyFilteredDescription": "Nobody coaches this tank yet.",

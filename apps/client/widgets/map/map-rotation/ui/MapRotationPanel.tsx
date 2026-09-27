@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Card, CardHeader, EmptyState, ErrorState, KeyFigure, KeyFigures, Skeleton } from '@/ui-kit';
+import { Card, CardHeader, EmptyState, KeyFigure, KeyFigures, QueryState, Skeleton } from '@/ui-kit';
 
 import { useMapRotationPanel } from '../model/hooks';
 import { QueueHeatmap, RotationList, StatsFilters } from './components';
@@ -22,52 +22,48 @@ export const MapRotationPanel = () => {
           label={t('figures.battles')}
           value={rotation.data?.battles ?? null}
         />
-        <KeyFigure label={t('figures.maps')} value={rotation.data ? rotation.rows.length : null} />
+        <KeyFigure label={t('figures.maps')} value={rotation.data?.rows.length ?? null} />
         <KeyFigure
-          hint={queue.now && queue.data ? t('figures.waitNowHint', { hour: queue.now.hour, timezone: queue.data.timezone }) : undefined}
+          hint={queue.data ? t('figures.waitNowHint', { hour: queue.data.now.hour, timezone: queue.data.timezone }) : undefined}
           label={t('figures.waitNow')}
-          value={queue.now?.selected ? formatWait(queue.now.selected.medianSec) : null}
+          value={queue.data?.now.selected ? formatWait(queue.data.now.selected.medianSec) : null}
         />
         <KeyFigure
-          hint={queue.now?.fastest ? t('figures.fastestHint', { wait: formatWait(queue.now.fastest.medianSec) }) : undefined}
+          hint={queue.data?.now.fastest ? t('figures.fastestHint', { wait: formatWait(queue.data.now.fastest.medianSec) }) : undefined}
           label={t('figures.fastest')}
-          value={queue.now?.fastest ? t('figures.hour', { hour: queue.now.fastest.hour }) : null}
+          value={queue.data?.now.fastest ? t('figures.hour', { hour: queue.data.now.fastest.hour }) : null}
         />
       </KeyFigures>
       <Card padding='none'>
         <CardHeader meta={rotation.data ? t('rotation.meta', { days: rotation.data.windowDays }) : undefined} title={t('rotation.title')} />
-        {rotation.isError && (
-          <ErrorState
-            isCompact
-            description={t('rotation.errorDescription')}
-            isRetrying={rotation.isRetrying}
-            title={t('rotation.errorTitle')}
-            onRetry={rotation.retry}
-          />
-        )}
-        {rotation.isPending && <Skeleton className={s.skeleton} height={320} shape='block' />}
-        {rotation.data && rotation.rows.length === 0 && (
-          <EmptyState isCompact description={t('rotation.emptyDescription')} title={t('rotation.empty')} />
-        )}
-        {rotation.rows.length > 0 && <RotationList maxShare={rotation.maxShare} rows={rotation.rows} />}
+        <QueryState
+          isCompact
+          empty={<EmptyState isCompact description={t('rotation.emptyDescription')} title={t('rotation.empty')} />}
+          errorDescription={t('rotation.errorDescription')}
+          errorTitle={t('rotation.errorTitle')}
+          isEmpty={({ rows }) => rows.length === 0}
+          query={rotation}
+          skeleton={<Skeleton className={s.skeleton} height={320} shape='block' />}
+        >
+          {({ rows, maxShare }) => <RotationList maxShare={maxShare} rows={rows} />}
+        </QueryState>
       </Card>
       <Card padding='none'>
         <CardHeader
           meta={queue.data ? t('queue.meta', { days: queue.data.windowDays, timezone: queue.data.timezone }) : undefined}
           title={t('queue.title')}
         />
-        {queue.isError && (
-          <ErrorState
-            isCompact
-            description={t('queue.errorDescription')}
-            isRetrying={queue.isRetrying}
-            title={t('queue.errorTitle')}
-            onRetry={queue.retry}
-          />
-        )}
-        {queue.isPending && <Skeleton className={s.skeleton} height={280} shape='block' />}
-        {queue.data && queue.heat.rows.length === 0 && <EmptyState isCompact description={t('queue.emptyDescription')} title={t('queue.empty')} />}
-        {queue.data && queue.heat.rows.length > 0 && <QueueHeatmap currentHour={queue.data.now.hour} heat={queue.heat} />}
+        <QueryState
+          isCompact
+          empty={<EmptyState isCompact description={t('queue.emptyDescription')} title={t('queue.empty')} />}
+          errorDescription={t('queue.errorDescription')}
+          errorTitle={t('queue.errorTitle')}
+          isEmpty={({ heat }) => heat.rows.length === 0}
+          query={queue}
+          skeleton={<Skeleton className={s.skeleton} height={280} shape='block' />}
+        >
+          {({ now, heat }) => <QueueHeatmap currentHour={now.hour} heat={heat} />}
+        </QueryState>
       </Card>
     </div>
   );

@@ -325,15 +325,6 @@
     "eyebrow": "Tanks streamer",
     "live": "Live",
     "offline": "Offline",
-    "channels": "Where to watch",
-    "link": {
-      "twitch": "Twitch",
-      "vk": "VK Video Live",
-      "youtube": "YouTube",
-      "telegram": "Telegram",
-      "boosty": "Boosty",
-      "other": "Link"
-    },
     "stats": {
       "title": "Battle record",
       "battles": "Battles",
@@ -344,8 +335,7 @@
       "hidden": "Account stats are unavailable right now"
     },
     "errorTitle": "Streamer page unavailable",
-    "errorDescription": "Couldn't load the data. Please try again.",
-    "retry": "Retry"
+    "errorDescription": "Couldn't load the data. Please try again."
   },
   "settings": {
     "description": "The client settings you play with: graphics, camera, sensitivity, zoom, sight, markers, sound, hardware and mods. Viewers see them on your settings page.",

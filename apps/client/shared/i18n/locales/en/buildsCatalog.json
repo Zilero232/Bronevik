@@ -25,7 +25,6 @@
     "consumables": "Consumables",
     "noData": "not enough data",
     "emptyTitle": "No tanks match these filters",
-    "resetFilters": "Reset filters",
     "errorTitle": "Could not load builds",
     "errorDescription": "Check your connection and try again."
   },

@@ -70,7 +70,6 @@
     "emptyTitle": "Пока нет статистики",
     "emptyDescription": "В этом режиме ещё ни один танк не набрал {battles, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} в наших данных.",
     "filteredEmptyTitle": "По этим фильтрам танков нет",
-    "resetFilters": "Сбросить фильтры",
     "errorTitle": "Не удалось загрузить мету режима",
     "errorDescription": "Сервер статистики не ответил. Попробуйте ещё раз."
   },

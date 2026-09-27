@@ -94,7 +94,6 @@
     "days": "{count, plural, one {# day} other {# days}}",
     "noKeys": "Nothing to show",
     "noKeysHint": "Statistics appear once you have at least one key.",
-    "topEyebrow": "Top",
     "top": "Busiest endpoints",
     "topEmpty": "No requests yet.",
     "today": {
@@ -108,10 +107,8 @@
       "quota": "Daily quota"
     },
     "charts": {
-      "requestsEyebrow": "Requests per day",
       "requestsTotal": "{total} in the period",
       "requests": "Requests",
-      "errorsEyebrow": "Errors per day",
       "errorsTotal": "{rate} errors",
       "errors": "Errors",
       "throttled": "429"

@@ -19,11 +19,12 @@ export const useMyLearning = () => {
   const bucket = query.data ? detail.learning.buckets[query.data.bucket] : undefined;
 
   return {
-    data: query.data,
-    isPending: query.isPending,
-    isError: query.isError && !isNotFoundError(query.error),
-    isRetrying: query.isFetching,
-    onRetry: () => void query.refetch(),
+    query: {
+      data: isNotFoundError(query.error) ? null : query.data,
+      isError: query.isError,
+      isRefetching: query.isFetching,
+      refetch: query.refetch
+    },
     bucketLabel: bucket ? bucketLabel(bucket) : null
   };
 };

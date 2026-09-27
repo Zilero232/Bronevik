@@ -1,7 +1,10 @@
 import type { PlayerTankRow } from '@otmetki/schemas';
 
-export type TanksTableProps = {
+import type { DataTableProps } from '@/ui-kit';
+
+import type { TanksFilterControls } from '../../../model/hooks';
+
+export type TanksTableProps = Pick<DataTableProps<PlayerTankRow>, 'isLoading'> & {
   rows: PlayerTankRow[];
-  isLoading: boolean;
-  onReset: () => void;
+  filters: Pick<TanksFilterControls, 'isDirty' | 'reset'>;
 };

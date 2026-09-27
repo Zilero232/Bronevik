@@ -10,21 +10,14 @@ import { usePlayerPlaytime } from '../use-profile-queries';
 export const usePlaytimeCard = () => {
   const locale = useLocale();
   const format = useFormatter();
-  const { data: playtime, isPending, isError, isRefetching, refetch } = usePlayerPlaytime();
-
-  const hasData = playtime !== undefined && playtime.source !== 'none' && playtime.battles > 0;
+  const query = usePlayerPlaytime();
 
   return {
-    playtime: hasData ? playtime : null,
-    summary: hasData ? playtimeSummary({ cells: playtime.cells, minBattles: PLAYTIME.minSlotBattles }) : null,
-    isApproximate: playtime?.source === 'snapshots',
-    isEmpty: playtime !== undefined && !hasData,
+    query,
+    summary: query.data ? playtimeSummary({ cells: query.data.cells, minBattles: PLAYTIME.minSlotBattles }) : null,
+    isApproximate: query.data?.source === 'snapshots',
     weekday: (index: number) => weekdayName({ locale, index }),
     shortWeekday: (index: number) => weekdayName({ locale, index, width: 'short' }),
-    rate: (value: number) => format.number(value, { maximumFractionDigits: 1 }),
-    isPending,
-    isError,
-    isRetrying: isRefetching,
-    retry: () => void refetch()
+    rate: (value: number) => format.number(value, { maximumFractionDigits: 1 })
   };
 };

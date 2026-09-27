@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { TankPicker } from '@/features/tank/pick-tank';
-import { Button, Card, DataSourceNote, EmptyState, ErrorState, PageHeader, SegmentedControl, Skeleton } from '@/ui-kit';
+import { Button, Card, DataSourceNote, FilteredEmptyState, PageHeader, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import { NEWS } from '../config';
 import { useNewsFeed } from '../model/hooks';
@@ -35,38 +35,36 @@ export const NewsPage = () => {
           )}
         </div>
       </div>
-      {feed.isError && <ErrorState description={t('error.description')} isRetrying={feed.isRetrying} title={t('error.title')} onRetry={feed.retry} />}
-      {feed.isPending && (
-        <div className={s.list}>
-          <Skeleton count={NEWS.skeletons} height={96} shape='block' />
-        </div>
-      )}
-      {!feed.isPending && !feed.isError && feed.entries.length === 0 && (
-        <Card>
-          {feed.isTankFiltered ? (
-            <EmptyState
-              action={
-                <Button size='sm' variant='secondary' onClick={feed.clearVehicle}>
-                  {t('filters.clearTank')}
-                </Button>
-              }
-              description={t('emptyTank.description')}
-              title={t('emptyTank.title')}
+      <QueryState
+        empty={
+          <Card>
+            <FilteredEmptyState
+              description={feed.isTankFiltered ? t('emptyTank.description') : t('empty.description')}
+              isFiltered={feed.isTankFiltered}
+              resetLabel={t('filters.clearTank')}
+              title={feed.isTankFiltered ? t('emptyTank.title') : t('empty.title')}
+              onReset={feed.clearVehicle}
             />
-          ) : (
-            <EmptyState description={t('empty.description')} title={t('empty.title')} />
-          )}
-        </Card>
-      )}
-      {feed.entries.length > 0 && (
+          </Card>
+        }
+        skeleton={
+          <div className={s.list}>
+            <Skeleton count={NEWS.skeletons} height={96} shape='block' />
+          </div>
+        }
+        errorDescription={t('error.description')}
+        errorTitle={t('error.title')}
+        isEmpty={() => feed.entries.length === 0}
+        query={feed.query}
+      >
         <ul className={s.list}>
           {feed.entries.map((entry) => (
             <NewsCard key={entry.item.id} entry={entry} />
           ))}
         </ul>
-      )}
-      {feed.hasNextPage && (
-        <Button className={s.more} disabled={feed.isFetchingNextPage} variant='secondary' onClick={feed.loadMore}>
+      </QueryState>
+      {feed.query.hasNextPage && (
+        <Button className={s.more} disabled={feed.query.isFetchingNextPage} variant='secondary' onClick={feed.loadMore}>
           {t('more', { shown: feed.entries.length, total: feed.total })}
         </Button>
       )}

@@ -4,9 +4,8 @@ import type { RatingPeriod } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
-import { match } from 'ts-pattern';
 
-import { Card, CardHeader, DataSourceNote, EmptyState, ErrorState, PageHeader, SegmentedControl } from '@/ui-kit';
+import { Card, CardHeader, DataSourceNote, EmptyState, PageHeader, QueryState, SegmentedControl } from '@/ui-kit';
 
 import { useComparePage } from '../model/hooks';
 import { AddSlot, CompareTable, PlayerSlot } from './components';
@@ -17,7 +16,7 @@ export const ComparePlayersPage = () => {
   const t = useTranslations('compare');
   const titleId = useId();
   const tPeriods = useTranslations('periods');
-  const { ids, period, setPeriod, periodOptions, canAdd, add, remove, comparison, status, isRetrying, retry } = useComparePage();
+  const { ids, period, setPeriod, periodOptions, canAdd, add, remove, query, isIdle, isMissing } = useComparePage();
 
   return (
     <div className={s.root}>
@@ -36,13 +35,18 @@ export const ComparePlayersPage = () => {
           }
           title={<span id={titleId}>{t('caption')}</span>}
         />
-        {match(status)
-          .with('idle', () => <EmptyState isCompact title={t('emptyTitle')} />)
-          .with('missing', () => <EmptyState isCompact title={t('missingTitle')} />)
-          .with('error', () => <ErrorState isCompact isRetrying={isRetrying} title={t('errorTitle')} onRetry={retry} />)
-          .otherwise(() => (
-            <CompareTable comparison={comparison} isLoading={status === 'loading'} period={period} />
-          ))}
+        {isIdle || isMissing ? (
+          <EmptyState isCompact title={isIdle ? t('emptyTitle') : t('missingTitle')} />
+        ) : (
+          <QueryState
+            isCompact
+            errorTitle={t('errorTitle')}
+            query={query}
+            skeleton={<CompareTable isLoading comparison={undefined} period={period} />}
+          >
+            {(comparison) => <CompareTable comparison={comparison} period={period} />}
+          </QueryState>
+        )}
       </Card>
       <DataSourceNote />
     </div>

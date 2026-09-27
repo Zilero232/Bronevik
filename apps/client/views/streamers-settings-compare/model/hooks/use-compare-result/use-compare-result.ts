@@ -35,17 +35,23 @@ export const useCompareResult = () => {
 
   return {
     columns,
-    sections: isComparable ? compareSections(diffSettings([...views.map(({ settings }) => settings), ...(mine ? [mine] : [])])) : [],
     isComparable,
     isShareMissing: isMine && isSignedIn && share.isSuccess && share.data === null,
-    isPending: slugs.length > 0 && compare.isPending,
-    isError: compare.isError || share.isError,
-    isRetrying: compare.isRefetching || share.isRefetching,
-    retry: () => {
-      void compare.refetch();
+    query: {
+      data:
+        slugs.length === 0 || compare.data
+          ? isComparable
+            ? compareSections(diffSettings([...views.map(({ settings }) => settings), ...(mine ? [mine] : [])]))
+            : []
+          : undefined,
+      isError: compare.isError || share.isError,
+      isRefetching: compare.isRefetching || share.isRefetching,
+      refetch: () => {
+        void compare.refetch();
 
-      if (isMine) {
-        void share.refetch();
+        if (isMine) {
+          void share.refetch();
+        }
       }
     }
   };

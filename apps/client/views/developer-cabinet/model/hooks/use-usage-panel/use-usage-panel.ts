@@ -17,22 +17,19 @@ export const useUsagePanel = () => {
   const selectedId = keys?.some(({ id }) => id === keyId) ? keyId : (keys?.[0]?.id ?? '');
   const usageQuery = useApiKeyUsage({ id: selectedId, days: Number(period) });
 
-  const keyItems = keys?.map(({ id, name }) => ({ value: id, label: name })) ?? [];
-  const isFailed = keysQuery.isError || usageQuery.isError;
-  const isRetrying = keysQuery.isFetching || usageQuery.isFetching;
-
-  const onRetry = () => void (keysQuery.isError ? keysQuery.refetch() : usageQuery.refetch());
-
   return {
-    keyItems,
+    keyItems: keys?.map(({ id, name }) => ({ value: id, label: name })) ?? [],
+    hasNoKeys: keys?.length === 0,
     selectedId,
     setKeyId,
     period,
     setPeriod,
-    usage: usageQuery.data,
     isStale: usageQuery.isPlaceholderData,
-    isFailed,
-    isRetrying,
-    onRetry
+    query: {
+      data: usageQuery.data,
+      isError: keysQuery.isError || usageQuery.isError,
+      isRefetching: keysQuery.isFetching || usageQuery.isFetching,
+      refetch: () => (keysQuery.isError ? keysQuery.refetch() : usageQuery.refetch())
+    }
   };
 };

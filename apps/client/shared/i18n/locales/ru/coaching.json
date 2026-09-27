@@ -14,7 +14,6 @@
   "list": {
     "title": "Тренеры",
     "tankPlaceholder": "Фильтр по танку",
-    "reset": "Сбросить фильтр",
     "emptyTitle": "Тренеров нет",
     "emptyDescription": "Пока никто не предложил тренировки. Станьте первым.",
     "emptyFilteredDescription": "На этом танке пока никто не тренирует.",

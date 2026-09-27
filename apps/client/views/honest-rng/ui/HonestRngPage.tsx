@@ -4,7 +4,7 @@ import { Dices } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Band, DataSourceNote, EmptyState, ErrorState, KeyFigure, PageHero, SegmentedControl, Skeleton, TierNumeral } from '@/ui-kit';
+import { Band, DataSourceNote, EmptyState, KeyFigure, PageHero, QueryState, SegmentedControl, Skeleton, TierNumeral } from '@/ui-kit';
 
 import { useHonestRngPage } from '../model/hooks';
 import { MyRngPanel, RngHistogram, RngScopeTable } from './components';
@@ -46,34 +46,34 @@ export const HonestRngPage = () => {
       />
       <div className={s.body}>
         <SegmentedControl aria-label={t('period.label')} options={rng.periods} value={rng.period} onChange={rng.setPeriod} />
-        {rng.isError && <ErrorState description={t('error.description')} isRetrying={rng.isRetrying} title={t('error.title')} onRetry={rng.retry} />}
-        {rng.isPending && <Skeleton height={320} shape='block' />}
-        {rng.data &&
-          (rng.isEmpty ? (
-            <EmptyState description={t('empty.description')} title={t('empty.title')} />
-          ) : (
-            <>
-              <RngHistogram
-                formatValue={rng.formatPercent}
-                labels={rng.chart.labels}
-                meta={t('server.meta')}
-                series={rng.chart.series}
-                title={t('server.title')}
-              />
-              <div className={s.pair}>
-                <RngScopeTable
-                  rows={rng.tiers.map((row) => ({ ...row, label: <TierNumeral tier={row.tier} variant='hex' /> }))}
-                  scopeLabel={t('columns.tier')}
-                  title={t('breakdown.tiers')}
-                />
-                <RngScopeTable
-                  rows={rng.shells.map((row) => ({ ...row, label: t(`shells.${row.shell}`) }))}
-                  scopeLabel={t('columns.shell')}
-                  title={t('breakdown.shells')}
-                />
-              </div>
-            </>
-          ))}
+        <QueryState
+          empty={<EmptyState description={t('empty.description')} title={t('empty.title')} />}
+          errorDescription={t('error.description')}
+          errorTitle={t('error.title')}
+          isEmpty={({ server }) => server === null || server.shots === 0}
+          query={rng.query}
+          skeleton={<Skeleton height={320} shape='block' />}
+        >
+          <RngHistogram
+            formatValue={rng.formatPercent}
+            labels={rng.chart.labels}
+            meta={t('server.meta')}
+            series={rng.chart.series}
+            title={t('server.title')}
+          />
+          <div className={s.pair}>
+            <RngScopeTable
+              rows={rng.tiers.map((row) => ({ ...row, label: <TierNumeral tier={row.tier} variant='hex' /> }))}
+              scopeLabel={t('columns.tier')}
+              title={t('breakdown.tiers')}
+            />
+            <RngScopeTable
+              rows={rng.shells.map((row) => ({ ...row, label: t(`shells.${row.shell}`) }))}
+              scopeLabel={t('columns.shell')}
+              title={t('breakdown.shells')}
+            />
+          </div>
+        </QueryState>
         <MyRngPanel />
       </div>
       <Band tone='deep'>
@@ -85,7 +85,7 @@ export const HonestRngPage = () => {
         </div>
       </Band>
       <div className={s.body}>
-        <DataSourceNote updatedAt={rng.data?.computedAt ?? null} />
+        <DataSourceNote updatedAt={rng.query.data?.computedAt ?? null} />
       </div>
     </div>
   );

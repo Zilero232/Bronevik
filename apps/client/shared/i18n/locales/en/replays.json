@@ -42,7 +42,6 @@
     "prev": "Previous",
     "next": "Next",
     "page": "{page} of {pages}",
-    "resetFilters": "Reset filters",
     "emptyTitle": "No replays",
     "emptyDescription": "Public parsed replays show up here. Be the first to upload one.",
     "emptyFilteredDescription": "Nothing matches these filters.",

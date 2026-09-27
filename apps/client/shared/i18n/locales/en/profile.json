@@ -123,7 +123,6 @@
     "errorDescription": "We could not fetch this session. It may have been removed.",
     "listLabel": "Sessions",
     "more": "Show more",
-    "back": "{nickname} dossier",
     "meta": {
       "title": "{nickname} session",
       "description": "Session summary for {nickname}: battles, wins, damage and the best tanks of the day."

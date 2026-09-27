@@ -94,7 +94,6 @@
     "days": "{count, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
     "noKeys": "Нечего показывать",
     "noKeysHint": "Статистика появится, когда у тебя будет хотя бы один ключ.",
-    "topEyebrow": "Топ",
     "top": "Популярные эндпоинты",
     "topEmpty": "Запросов пока не было.",
     "today": {
@@ -108,10 +107,8 @@
       "quota": "Дневной лимит"
     },
     "charts": {
-      "requestsEyebrow": "Запросы по дням",
       "requestsTotal": "{total} за период",
       "requests": "Запросы",
-      "errorsEyebrow": "Ошибки по дням",
       "errorsTotal": "{rate} ошибок",
       "errors": "Ошибки",
       "throttled": "429"

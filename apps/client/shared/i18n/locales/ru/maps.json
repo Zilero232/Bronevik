@@ -39,7 +39,6 @@
   },
   "grid": {
     "errorTitle": "Карты не загрузились",
-    "reset": "Сбросить фильтры",
     "noMatchTitle": "Таких карт нет",
     "emptyTitle": "Список карт пуст",
     "errorDescription": "Сервер не отвечает."

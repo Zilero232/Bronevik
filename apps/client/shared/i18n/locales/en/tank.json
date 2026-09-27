@@ -174,7 +174,6 @@
       "top1": "Top 1%"
     },
     "sample": "Based on {battles, plural, one {# battle} other {# battles}} of {players, plural, one {# player} other {# players}} with the mod over {days} days",
-    "sampleShort": "{battles, plural, one {# battle} other {# battles}}",
     "equipment": "Equipment",
     "slot": "Slot {slot}",
     "consumables": "Consumables",

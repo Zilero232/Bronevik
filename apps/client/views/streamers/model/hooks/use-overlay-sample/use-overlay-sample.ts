@@ -42,14 +42,15 @@ export const useOverlaySample = () => {
   const data =
     profile.data && isSessionSettled
       ? previewOverlayData({ profile: profile.data, session: session.data ?? null, config: PREVIEW_OVERLAY_CONFIG })
-      : null;
+      : undefined;
 
   return {
-    data,
     nickname: profile.data?.summary.nickname ?? null,
-    isEmpty: leaderboard.isSuccess && accountId === null,
-    isError: leaderboard.isError || profile.isError,
-    isRetrying: leaderboard.isFetching || profile.isFetching,
-    retry: () => void (leaderboard.isError ? leaderboard.refetch() : profile.refetch())
+    query: {
+      data: leaderboard.isSuccess && accountId === null ? null : data,
+      isError: leaderboard.isError || profile.isError,
+      isRefetching: leaderboard.isFetching || profile.isFetching,
+      refetch: () => (leaderboard.isError ? leaderboard.refetch() : profile.refetch())
+    }
   };
 };

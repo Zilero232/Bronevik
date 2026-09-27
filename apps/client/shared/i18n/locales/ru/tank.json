@@ -174,7 +174,6 @@
       "top1": "Топ-1%"
     },
     "sample": "По {battles, plural, one {# бою} other {# боям}} {players, plural, one {# игрока} other {# игроков}} с модом за {days} дней",
-    "sampleShort": "{battles, plural, one {# бой} few {# боя} other {# боёв}}",
     "equipment": "Оборудование",
     "slot": "Слот {slot}",
     "consumables": "Снаряжение",

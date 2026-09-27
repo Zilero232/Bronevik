@@ -17,17 +17,10 @@ export const useBuildHistory = ({ mode, cohort }: UseBuildHistoryInput) => {
 
   const params = { tankId, mode, cohort };
 
-  const query = useQuery({
+  return useQuery({
     queryKey: QUERY_KEYS.builds.history(params),
     queryFn: ({ signal }) => getBuildHistory({ ...params, signal }),
-    enabled: isPlus
+    enabled: isPlus,
+    select: ({ entries }) => entries.slice(0, HOW_TO_BUILD.historyRows)
   });
-
-  return {
-    entries: (query.data?.entries ?? []).slice(0, HOW_TO_BUILD.historyRows),
-    isPending: query.isPending,
-    isError: query.isError,
-    isFetching: query.isFetching,
-    onRetry: () => void query.refetch()
-  };
 };

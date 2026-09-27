@@ -5,7 +5,7 @@ import { useInboxFeedQuery } from '../use-inbox-feed-query';
 import { useInboxFilter } from '../use-inbox-filter';
 
 export const useInboxFeed = () => {
-  const { data, isPending, isError, isFetching, refetch } = useInboxFeedQuery();
+  const { data, isError, isFetching, refetch } = useInboxFeedQuery();
   const { filter } = useInboxFilter();
 
   const loaded = data?.pages.flatMap(({ items }) => items) ?? [];
@@ -13,11 +13,6 @@ export const useInboxFeed = () => {
 
   return {
     filter,
-    days: groupInboxByDay(items),
-    isEmpty: items.length === 0,
-    isPending,
-    isError: isError && !data,
-    isRetrying: isFetching,
-    onRetry: () => void refetch()
+    query: { data: data && groupInboxByDay(items), isError, isRefetching: isFetching, refetch }
   };
 };

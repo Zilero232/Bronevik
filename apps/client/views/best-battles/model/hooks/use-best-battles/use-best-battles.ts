@@ -35,14 +35,8 @@ export const useBestBattles = () => {
     podium: battles.slice(0, BEST_BATTLES_VIEW.podiumSize),
     facets: facets.data ?? null,
     isFiltered: hasBattleFilters(state),
-    isPending: feed.isPending,
-    isError: feed.isError,
-    isRefreshing: feed.isPlaceholderData,
-    isRetrying: feed.isFetching,
-    hasNextPage: feed.hasNextPage,
-    isFetchingNextPage: feed.isFetchingNextPage,
+    feed,
     loadMore: () => void feed.fetchNextPage(),
-    retry: () => void feed.refetch(),
     reset: () => void setState({ tank: null, map: null, medal: null })
   };
 };

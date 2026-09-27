@@ -58,6 +58,17 @@ describe('ConfirmDialog', () => {
     expect(screen.getByRole('button', { name: LABELS.cancelLabel })).toBeEnabled();
   });
 
+  it('renders extra content and keeps confirm locked until the caller allows it', () => {
+    renderWithIntl(
+      <ConfirmDialog isConfirmDisabled open {...LABELS} onConfirm={vi.fn()} onOpenChange={vi.fn()}>
+        <input aria-label='Nickname' />
+      </ConfirmDialog>
+    );
+
+    expect(screen.getByRole('textbox', { name: 'Nickname' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: LABELS.confirmLabel })).toBeDisabled();
+  });
+
   it('opens from its trigger when uncontrolled', async () => {
     const user = userEvent.setup();
 

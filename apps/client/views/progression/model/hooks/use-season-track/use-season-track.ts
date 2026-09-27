@@ -9,25 +9,15 @@ import { getSeasonTrack } from '../../../api';
 import { levelProgress } from '../../../lib/level-progress';
 
 export const useSeasonTrack = () => {
-  const {
-    data: track,
-    isPending,
-    isError,
-    isFetching,
-    refetch
-  } = useQuery({
+  const query = useQuery({
     queryKey: QUERY_KEYS.me.progression.season,
-    queryFn: getSeasonTrack
+    queryFn: getSeasonTrack,
+    select: (track) => ({ track, progress: levelProgress({ current: track.points, start: track.levelPoints, next: track.nextLevelPoints }) })
   });
+
+  const track = query.data?.track;
 
   useCelebrateGain({ key: track ? `season:${track.season.code}` : null, value: track?.level });
 
-  return {
-    track,
-    isPending,
-    isError,
-    isRetrying: isFetching,
-    retry: () => void refetch(),
-    progress: track ? levelProgress({ current: track.points, start: track.levelPoints, next: track.nextLevelPoints }) : null
-  };
+  return query;
 };

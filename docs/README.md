@@ -1,0 +1,39 @@
+# Documentation index
+
+Everything under `docs/`, grouped by concern. Agent-facing editing digests live separately in [.claude/rules/](../.claude/rules/) (loaded by path) and in the `CLAUDE.md` files.
+
+## Product
+
+- [product/features.md](product/features.md) — the feature catalogue: priorities, sources, what is done.
+
+## Specs
+
+Design specs, one per initiative, dated.
+
+- [specs/2026-09-24-otmetki-design.md](specs/2026-09-24-otmetki-design.md) — the platform design (architecture, data flow, phases).
+- [specs/2026-09-26-plus-subscription.md](specs/2026-09-26-plus-subscription.md) — the Plus subscription.
+- [specs/2026-09-26-streamer-settings.md](specs/2026-09-26-streamer-settings.md) — the streamer directory and streamer settings.
+
+## Architecture
+
+- [architecture/fsd.md](architecture/fsd.md) — Feature-Sliced Design as used by `apps/client`: layers, slices, segments, where a thing goes.
+
+## Guides
+
+The style guide, split by stack. Index and tooling: [guides/README.md](guides/README.md).
+
+- `guides/client/` — slices, `ui/` and `ui-kit`, `model/hooks`, segments, React, component body and size, styles, forms, conditional render, drill cleanup.
+- `guides/server/` — [NestJS modules and routes](guides/server/nestjs.md).
+- `guides/shared/` — naming, imports and barrels, types, functions, blank lines, shared schemas, forbidden list, pre-commit checklist, [external docs (context7 ids)](guides/shared/references.md).
+- Modpack — [apps/modpack/CLAUDE.md](../apps/modpack/CLAUDE.md) and [apps/modpack/README.md](../apps/modpack/README.md).
+
+## Research
+
+- `research/data/` — [Lesta API reference and terms](research/data/lesta-api.md), [ЛБЗ in the client files](research/data/lbz.md), [3D armor viewer](research/data/armor-viewer.md).
+- `research/design/` — [visual language](research/design/visual-language.md), [design v2](research/design/design-v2.md), [v3](research/design/design-v3.md), [v4](research/design/design-v4.md).
+- `research/competitors/` — [market](research/competitors/market.md), [competitors v2](research/competitors/competitors-v2.md).
+- `research/tooling/` — [ready-made packages](research/tooling/packages.md).
+
+## Ops
+
+- [ops/deploy.md](ops/deploy.md) — the first production deploy checklist.

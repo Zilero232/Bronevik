@@ -2,10 +2,10 @@
 
 All-in-one companion platform for «Мир танков» (Lesta, RU realm). Bun-workspaces monorepo. Production domains: site `https://triotmetki.ru`, API `https://api.triotmetki.ru`.
 
-- Product scope: [docs/features.md](docs/features.md)
-- Architecture: [docs/superpowers/specs/2026-09-24-otmetki-design.md](docs/superpowers/specs/2026-09-24-otmetki-design.md)
-- Lesta API reference and terms: [docs/research/lesta-api.md](docs/research/lesta-api.md)
-- External library docs (context7 ids): [docs/references.md](docs/references.md)
+- Product scope: [docs/product/features.md](docs/product/features.md)
+- Architecture: [docs/specs/2026-09-24-otmetki-design.md](docs/specs/2026-09-24-otmetki-design.md)
+- Lesta API reference and terms: [docs/research/data/lesta-api.md](docs/research/data/lesta-api.md)
+- External library docs (context7 ids): [docs/guides/shared/references.md](docs/guides/shared/references.md)
 - First production deploy checklist: [docs/ops/deploy.md](docs/ops/deploy.md)
 
 Respond to the user in Russian. Code, comments, docs and commits are in English. UI text is in Russian and English via next-intl.
@@ -47,7 +47,7 @@ Deploy ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) runs manua
 
 ## Rules
 
-The full style guide is [docs/guides/style.md](docs/guides/style.md). Digests in `.claude/rules/` load automatically by path (tests: [.claude/rules/testing.md](.claude/rules/testing.md)). The key rules:
+The full style guide is [docs/guides/](docs/guides/README.md) (split into `client/`, `server/`, `shared/`); every doc is indexed in [docs/README.md](docs/README.md). Digests in `.claude/rules/` load automatically by path, one topic per file: `shared/` (TypeScript everywhere), `client/`, `server/`, `modpack/`, `testing/` (tests: [.claude/rules/testing/](.claude/rules/testing/shared/location.md)). The key rules:
 
 - **Packages before custom code.** Before building any non-trivial piece (replay parser, rate limiter, charts, drag-n-drop, canvas board, OG images, 3D, OpenAPI, SDK generation, bot framework…), search npm/PyPI/GitHub for a maintained package and use it. Write it yourself only when nothing fits, and say why in the commit.
 - **Reuse over reinvention.** Before writing a helper, check what is already installed: remeda, ts-pattern, date-fns, zod, @siberiacancode/reactuse, TanStack Query / Table / Virtual, @base-ui/react, class-variance-authority, cmdk, visx, lucide-react + `@otmetki/icons`, sonner, motion, p-retry — and the workspace packages: `@otmetki/ratings` for rating math, the server's `lib/lesta` client (through `core/lesta`) for every Lesta call, `@otmetki/schemas` for every contract. Forms use react-hook-form + `@hookform/resolvers/zod`, inside a `model/hooks/use-<x>-form/` hook.
@@ -58,10 +58,12 @@ The full style guide is [docs/guides/style.md](docs/guides/style.md). Digests in
 - **i18n.** Every user-facing string goes through next-intl, in both languages: `shared/i18n/locales/{ru,en}/<namespace>.json` (one file per namespace, same keys in both languages).
 - **Dependency versions.** Versions shared between workspaces live only in the root `catalog`.
 - **Tests.** Tests go in `_tests/` next to the source.
-- **Lesta terms are hard constraints** ([docs/research/lesta-api.md](docs/research/lesta-api.md)):
+- **Lesta terms are hard constraints** ([docs/research/data/lesta-api.md](docs/research/data/lesta-api.md)):
   - every page carries the attribution footer;
   - never ask for Lesta credentials, only use Lesta ID OpenID;
   - no ads;
   - honour data retention and deletion.
 - **Fair play.** The mod never reads or shows enemy information beyond what the client shows: no positions, no reload timers, no aim data, no ally-spot markers. Allowed: own battle results, own shots, MoE %, session stats.
 - **Git.** Never run git operations unless the user asks.
+
+New design specs go in `docs/specs/YYYY-MM-DD-<topic>.md`. Do not use `docs/superpowers/specs/`.

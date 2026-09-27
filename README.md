@@ -25,7 +25,7 @@ A single site for everything a «Мир танков» (Lesta, RU realm) player 
 
 Три отметки is an independent fan project and is not affiliated with Lesta Games. Game data comes from the [Lesta API](https://developers.lesta.ru), under its terms: every page carries the attribution, game accounts are linked only through Lesta ID (sign-in also works with Telegram and the VK Mini App; Discord and VK ID can be linked), there are no ads, and the mod never reads anything beyond the player's own data.
 
-Product scope: [docs/features.md](docs/features.md).
+Product scope: [docs/product/features.md](docs/product/features.md).
 
 ## Stack
 
@@ -104,6 +104,6 @@ With `LESTA_APPLICATION_ID` empty and `NODE_ENV=development`, the server and the
 
 ## Contributing
 
-Conventional commits (enforced by commitlint). The pre-commit hook runs lint-staged and typechecks only the workspaces a commit touches. Code style: [docs/guides/style.md](docs/guides/style.md); architecture of the client: [docs/architecture/fsd.md](docs/architecture/fsd.md); agent guidance: [CLAUDE.md](CLAUDE.md).
+Conventional commits (enforced by commitlint). The pre-commit hook runs lint-staged and typechecks only the workspaces a commit touches. Code style: [docs/guides/](docs/guides/README.md); docs index: [docs/README.md](docs/README.md); architecture of the client: [docs/architecture/fsd.md](docs/architecture/fsd.md); agent guidance: [CLAUDE.md](CLAUDE.md).
 
 © Три отметки. «Мир танков» and all related game content are the property of Lesta Games.

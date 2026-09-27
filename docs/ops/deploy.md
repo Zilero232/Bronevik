@@ -13,7 +13,7 @@ What runs where:
 ### Accounts and external applications
 
 - [ ] **Lesta API: register our own application** at [developers.lesta.ru](https://developers.lesta.ru). Use the **Server** type and add the VPS public IP to the allowed IPs. Put its id in `LESTA_APPLICATION_ID`.
-  - Never reuse a key from another project or a personal test key. The limits and the terms ([docs/research/lesta-api.md](../research/lesta-api.md)) apply per application.
+  - Never reuse a key from another project or a personal test key. The limits and the terms ([docs/research/data/lesta-api.md](../research/data/lesta-api.md)) apply per application.
   - Allow the Lesta ID (OpenID) redirect to `https://api.triotmetki.ru/auth/lesta/callback`.
   - `LESTA_RPS` is the total across all processes: 20 per registered IP. Raise it only after you add IPs to the application.
   - Without a key, production does **not** start the mock. The worker starts degraded: it logs a warning and runs no Lesta jobs.
@@ -106,7 +106,7 @@ The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HM
   - cookies and third-party list.
 
   Once they are filled, drop the draft notice.
-- [ ] Plus checkout stays off (`PLUS.checkoutEnabled = false` in `packages/schemas/src/plus`) until Lesta confirms the model in writing (see [docs/research/lesta-api.md](../research/lesta-api.md#monetisation-status)). To open checkout:
+- [ ] Plus checkout stays off (`PLUS.checkoutEnabled = false` in `packages/schemas/src/plus`) until Lesta confirms the model in writing (see [docs/research/data/lesta-api.md](../research/data/lesta-api.md#monetisation-status)). To open checkout:
   - set `YOOKASSA_*` and the webhook;
   - flip the flag and deploy.
 

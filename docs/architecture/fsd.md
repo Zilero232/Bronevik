@@ -163,7 +163,7 @@ A file that has companions — `x.ts` with `x.types.ts`, `x.constants.ts`, `x.sc
 
 `ROUTES` is nested by page family: `ROUTES.players.{list, profile(nick), session({ nickname, sessionId }), signature(nick), compare}`, `ROUTES.tanks.{list, detail, armor, compare}`, `ROUTES.guides.{list, detail, create, edit}`, `ROUTES.streamers.{list, profile, claim, overlay, forStreamers, settings.{table, compare, profile}}`, `ROUTES.auth.{login, loginNext, telegram}`, `ROUTES.missions.{hub, operation}`, `ROUTES.legal.{privacy, terms, contacts}`, `ROUTES.account.{overview, analytics, analyticsTank(id), battles, …}`, `ROUTES.api.{playerCard, siteCard}`, `ROUTES.sw`. Single pages stay flat (`ROUTES.top`, `ROUTES.tree`, `ROUTES.supertest`, `ROUTES.mod`).
 
-A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts`); never `*.helpers.ts`, `*.utils.ts`, `*.constants.ts` or `hooks/`. One component per folder, and a `ui/` root holds at most one flat component. Full rules: [style.md §2](../guides/style.md).
+A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts`); never `*.helpers.ts`, `*.utils.ts`, `*.constants.ts` or `hooks/`. One component per folder, and a `ui/` root holds at most one flat component. Full rules: [guides/client/slice-ui.md §2](../guides/client/slice-ui.md).
 
 ## 5. `ui-kit`
 

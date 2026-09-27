@@ -29,7 +29,7 @@ bun run gamedata:import -- --local /path/to/wot.src-checkout
 | `--models-ref <sha>`       | Pin the models mirror to another branch or commit                                                                               |
 | `--local-models <dir>`     | Read a local checkout of the models mirror instead of GitHub                                                                    |
 | `--armor-dir <dir>`        | Local armor storage, default `<repo>/.data/armor` (only with `REPLAY_STORAGE=local`)                                            |
-| `--skip-missions`          | Do not import personal missions (ЛБЗ), see [docs/research/lbz.md](../../../../../docs/research/lbz.md)                          |
+| `--skip-missions`          | Do not import personal missions (ЛБЗ), see [docs/research/data/lbz.md](../../../../../docs/research/data/lbz.md)                |
 | `--strict-armor`           | Exit 1 when any vehicle has no collision model in the models mirror (every one is printed with its reason either way)           |
 | `--allow-version-mismatch` | Import even when the client release line differs from the live Lesta `encyclopedia/info` version                                |
 
@@ -37,7 +37,7 @@ bun run gamedata:import -- --local /path/to/wot.src-checkout
 
 ## Data source
 
-- **Мир танков only.** Every source is the Lesta client (`MT.RU.PRODUCTION`, public test `MT.PT.PRODUCTION`), never Wargaming World of Tanks. `lib/source/mt-client` (`assertMtClient`) rejects a mirror whose `.version_name` is not a 1.x build (Wargaming is on 2.x) or whose README names a `WOT.*.PRODUCTION` guid or lacks the source's own guid; it throws `ForeignClientError`, and there is no fallback. With `LESTA_APPLICATION_ID` set, the script also compares the release line with the live `encyclopedia/info.game_version` and exits on a mismatch. See [docs/research/armor-viewer.md §7](../../../../../docs/research/armor-viewer.md).
+- **Мир танков only.** Every source is the Lesta client (`MT.RU.PRODUCTION`, public test `MT.PT.PRODUCTION`), never Wargaming World of Tanks. `lib/source/mt-client` (`assertMtClient`) rejects a mirror whose `.version_name` is not a 1.x build (Wargaming is on 2.x) or whose README names a `WOT.*.PRODUCTION` guid or lacks the source's own guid; it throws `ForeignClientError`, and there is no fallback. With `LESTA_APPLICATION_ID` set, the script also compares the release line with the live `encyclopedia/info.game_version` and exits on a mismatch. See [docs/research/data/armor-viewer.md §7](../../../../../docs/research/data/armor-viewer.md).
 
 - **Mirrors.** [`unicum-gg/wot.src`](https://github.com/unicum-gg/wot.src) has branches `RU` and `PT_RU`, rebuilt daily from the Lesta update CDN. It contains packed XML converted to text plus decompiled scripts. [`izeberg/wot-src`](https://github.com/izeberg/wot-src) (branch `RU`) has the same layout and is the backup. Minimaps come from [`unicum-gg/wot.maps`](https://github.com/unicum-gg/wot.maps) (`Lesta`, `Lesta_PT`). Each is `maps/<geometry>[_<mode>].webp`, re-encoded from `spaces/<id>/mmap*.dds`.
 - **Licences.** None of these repositories has a licence file, and the assets belong to Lesta. We use them only as a source of public game data files. No code from `wot.build`/`wot.src` is copied. The parsers here are written against the XML format. The client's decompiled Python was read to learn the formulas, and none of it is vendored.

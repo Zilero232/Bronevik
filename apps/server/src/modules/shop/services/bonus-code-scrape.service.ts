@@ -3,17 +3,20 @@ import { Injectable } from '@nestjs/common';
 import type { ScrapeSummary } from '../shop.types';
 
 import { SOURCES } from '../../../config';
-import { crawlPages } from '../../../lib/scrape';
+import { PageCrawlerService } from '../../../core';
 import { BONUS_CODE } from '../config';
 import { parseWotexpressCodes } from '../lib';
 import { BonusCodeService } from './bonus-code.service';
 
 @Injectable()
 export class BonusCodeScrapeService {
-  constructor(private readonly bonusCodes: BonusCodeService) {}
+  constructor(
+    private readonly bonusCodes: BonusCodeService,
+    private readonly crawler: PageCrawlerService
+  ) {}
 
   async run(now: Date): Promise<ScrapeSummary> {
-    const [page] = await crawlPages({ urls: [SOURCES.wotexpressBonusCodes] });
+    const [page] = await this.crawler.crawl({ urls: [SOURCES.wotexpressBonusCodes] });
     const scraped = page ? parseWotexpressCodes({ $: page.$, baseUrl: SOURCES.wotexpressBonusCodes, reference: now }) : [];
     let created = 0;
 

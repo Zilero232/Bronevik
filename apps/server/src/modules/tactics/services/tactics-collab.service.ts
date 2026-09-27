@@ -2,7 +2,6 @@ import type { OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/comm
 import type { IncomingMessage } from 'node:http';
 import type { Duplex } from 'node:stream';
 
-import { Redis as RedisExtension } from '@hocuspocus/extension-redis';
 import { Hocuspocus } from '@hocuspocus/server';
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
@@ -15,6 +14,7 @@ import { allowedOrigins, AppConfigService } from '../../../config';
 import { TACTICS } from '../config';
 import { boardIdOf, boardSnapshot, canEdit, encodeBoard, redisConnection, restoreBoard, seedBoardDocument } from '../lib';
 import { BoardLiveService } from './board-live.service';
+import { CollabRedisService } from './collab-redis.service';
 import { TacticBoardService } from './tactic-board.service';
 
 @Injectable()
@@ -28,7 +28,8 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
     private readonly boards: TacticBoardService,
     private readonly config: AppConfigService,
     private readonly auth: AuthService,
-    private readonly live: BoardLiveService
+    private readonly live: BoardLiveService,
+    private readonly redis: CollabRedisService
   ) {
     this.hocuspocus = this.createServer();
     this.live.attach(this.hocuspocus);
@@ -37,7 +38,7 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
   private createServer(): Hocuspocus<CollabContext> {
     return new Hocuspocus<CollabContext>({
       quiet: true,
-      extensions: [new RedisExtension({ ...redisConnection(this.config.get('REDIS_URL')), prefix: TACTICS.redisPrefix })],
+      extensions: [this.redis.createExtension({ ...redisConnection(this.config.get('REDIS_URL')), prefix: TACTICS.redisPrefix })],
       debounce: TACTICS.debounceMs,
       maxDebounce: TACTICS.maxDebounceMs,
       onAuthenticate: async ({ documentName, token, requestHeaders, connectionConfig }) => {

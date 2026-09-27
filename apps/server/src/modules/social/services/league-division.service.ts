@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { LEAGUE_TIERS } from '@otmetki/schemas';
-import { subDays } from 'date-fns';
 import { groupBy, sortBy } from 'remeda';
 
 import type { CloseLeagueWeekInput, LeagueRollover } from '../social.types';
@@ -36,13 +35,10 @@ export class LeagueDivisionService {
     }
 
     const placed = await this.openWeek(now);
-    const { count: pruned } = await this.prisma.leagueMembership.deleteMany({
-      where: { weekStart: { lt: subDays(weekStart, LEAGUE_DIVISION.retentionWeeks * LEAGUE_DIVISION.daysPerWeek) } }
-    });
 
-    this.logger.log(`leagues: ${closed} closed, ${placed} placed, ${pruned} pruned`);
+    this.logger.log(`leagues: ${closed} closed, ${placed} placed`);
 
-    return { closed, placed, pruned };
+    return { closed, placed };
   }
 
   async closeWeek({ weekStart, now }: CloseLeagueWeekInput): Promise<number> {

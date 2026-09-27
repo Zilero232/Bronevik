@@ -2,26 +2,21 @@ import type { CheerioAPI } from 'cheerio';
 
 import { load } from 'cheerio';
 import { readFileSync } from 'node:fs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PremiumOffer, Vehicle } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
+import type { PageCrawlerService, PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 import type { NotificationService } from '../../../notifications';
 import type { BonusCodeService } from '../bonus-code.service';
 
 import { Prisma } from '../../../../../generated';
 import { SOURCES } from '../../../../config';
-import { crawlPages, parseTankiListing } from '../../../../lib/scrape';
+import { parseTankiListing } from '../../../../lib/scrape';
 import { OFFER_SCRAPE } from '../../config';
 import { parseOfferDetail } from '../../lib';
 import { OfferScrapeService } from '../offer-scrape.service';
-
-vi.mock('../../../../lib/scrape', async () => ({
-  ...(await vi.importActual<typeof import('../../../../lib/scrape')>('../../../../lib/scrape')),
-  crawlPages: vi.fn()
-}));
 
 const fixture = (path: string): CheerioAPI => load(readFileSync(new URL(path, import.meta.url), 'utf8'));
 
@@ -43,24 +38,30 @@ const createService = () => {
   const notifications = mock<NotificationService>();
   const bonusCodes = mock<BonusCodeService>();
   const entitlements = mock<EntitlementsService>();
+  const crawler = mock<PageCrawlerService>();
 
-  prisma.premiumOffer.findMany.mockResolvedValueOnce([mock<PremiumOffer>({ url: knownItem?.url ?? null })]).mockResolvedValue([]);
-  prisma.premiumOffer.create.mockResolvedValue(mock<PremiumOffer>({ id: 'offer-1' }));
-  prisma.vehicle.findMany.mockResolvedValue([defender, unmentioned]);
-  notifications.tankDiscounted.mockResolvedValue(1);
-
-  return { service: new OfferScrapeService(prisma, notifications, bonusCodes, entitlements), prisma, notifications, bonusCodes, entitlements };
-};
-
-beforeEach(() => {
-  vi.mocked(crawlPages).mockImplementation(async ({ urls }) =>
+  crawler.crawl.mockImplementation(async ({ urls }) =>
     urls.flatMap((url) => {
       const $ = pages.get(url);
 
       return $ ? [{ url, $ }] : [];
     })
   );
-});
+
+  prisma.premiumOffer.findMany.mockResolvedValueOnce([mock<PremiumOffer>({ url: knownItem?.url ?? null })]).mockResolvedValue([]);
+  prisma.premiumOffer.create.mockResolvedValue(mock<PremiumOffer>({ id: 'offer-1' }));
+  prisma.vehicle.findMany.mockResolvedValue([defender, unmentioned]);
+  notifications.tankDiscounted.mockResolvedValue(1);
+
+  return {
+    service: new OfferScrapeService(prisma, notifications, bonusCodes, entitlements, crawler),
+    prisma,
+    notifications,
+    bonusCodes,
+    entitlements,
+    crawler
+  };
+};
 
 describe('OfferScrapeService.run', () => {
   it('creates an offer for every listing item not seen before and refreshes the known ones', async () => {
@@ -159,9 +160,9 @@ describe('OfferScrapeService.run', () => {
   });
 
   it('creates nothing and skips the vehicle lookup when the listing is unavailable', async () => {
-    const { service, prisma } = createService();
+    const { service, prisma, crawler } = createService();
 
-    vi.mocked(crawlPages).mockResolvedValue([]);
+    crawler.crawl.mockResolvedValue([]);
     prisma.premiumOffer.findMany.mockResolvedValue([]);
 
     expect(await service.run(now)).toEqual({ seen: 0, created: 0, notified: 0 });

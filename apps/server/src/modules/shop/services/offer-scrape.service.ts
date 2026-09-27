@@ -5,8 +5,8 @@ import type { AnnounceReturnInput, ScrapeSummary, StoreOfferInput } from '../sho
 
 import { toJsonValue } from '../../../common/lib';
 import { SOURCES } from '../../../config';
-import { isUniqueViolation, PrismaService } from '../../../core';
-import { crawlPages, parseTankiListing } from '../../../lib/scrape';
+import { isUniqueViolation, PageCrawlerService, PrismaService } from '../../../core';
+import { parseTankiListing } from '../../../lib/scrape';
 import { EntitlementsService } from '../../billing';
 import { NotificationService } from '../../notifications';
 import { NEWS_ENRICH, OFFER_RETURN, OFFER_SCRAPE } from '../config';
@@ -19,11 +19,12 @@ export class OfferScrapeService {
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationService,
     private readonly bonusCodes: BonusCodeService,
-    private readonly entitlements: EntitlementsService
+    private readonly entitlements: EntitlementsService,
+    private readonly crawler: PageCrawlerService
   ) {}
 
   async run(now: Date): Promise<ScrapeSummary> {
-    const [listingPage] = await crawlPages({ urls: [SOURCES.tankiSpecialOffers] });
+    const [listingPage] = await this.crawler.crawl({ urls: [SOURCES.tankiSpecialOffers] });
     const listing = listingPage ? parseTankiListing({ $: listingPage.$, baseUrl: SOURCES.tankiSite }) : [];
     const known = await this.prisma.premiumOffer.findMany({
       where: { source: OFFER_SCRAPE.source, url: { in: listing.map((item) => item.url) } },
@@ -35,7 +36,7 @@ export class OfferScrapeService {
     await this.prisma.premiumOffer.updateMany({ where: { source: OFFER_SCRAPE.source, url: { in: [...knownUrls] } }, data: { lastSeenAt: now } });
 
     const fresh = listing.filter((item) => !knownUrls.has(item.url)).slice(0, OFFER_SCRAPE.maxDetailPages);
-    const pages = await crawlPages({ urls: fresh.map((item) => item.url) });
+    const pages = await this.crawler.crawl({ urls: fresh.map((item) => item.url) });
     const vehicles = fresh.length > 0 ? await this.prisma.vehicle.findMany({ where: { isActive: true }, select: { tankId: true, name: true } }) : [];
     let notified = 0;
 

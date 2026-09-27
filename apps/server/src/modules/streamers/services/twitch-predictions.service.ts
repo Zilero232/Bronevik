@@ -1,5 +1,6 @@
+import type { ApiClient } from '@twurple/api';
+
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ApiClient } from '@twurple/api';
 import { addMinutes } from 'date-fns';
 import { Redis } from 'ioredis';
 import { meanBy } from 'remeda';
@@ -14,6 +15,7 @@ import { CHAT_COPY, PREDICTIONS } from '../config';
 import { clipText, predictionThreshold, predictionWinner, readPredictionState } from '../lib';
 import { StreamerStatsService } from './streamer-stats.service';
 import { TwitchChatService } from './twitch-chat.service';
+import { TwitchSdkService } from './twitch-sdk.service';
 
 @Injectable()
 export class TwitchPredictionsService {
@@ -25,7 +27,8 @@ export class TwitchPredictionsService {
     private readonly chat: TwitchChatService,
     private readonly stats: StreamerStatsService,
     private readonly catalog: VehicleCatalogService,
-    @Inject(REDIS) private readonly redis: Redis
+    @Inject(REDIS) private readonly redis: Redis,
+    private readonly sdk: TwitchSdkService
   ) {}
 
   async openFromJob(job: PredictionJob): Promise<number> {
@@ -171,7 +174,7 @@ export class TwitchPredictionsService {
       return null;
     }
 
-    this.client ??= new ApiClient({ authProvider });
+    this.client ??= this.sdk.createApiClient(authProvider);
 
     return this.client;
   }

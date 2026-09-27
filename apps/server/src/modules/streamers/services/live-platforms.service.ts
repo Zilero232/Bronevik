@@ -1,9 +1,7 @@
 import type { StreamerVideo } from '@otmetki/schemas';
 
 import { Injectable, Logger } from '@nestjs/common';
-import { getAppToken } from '@twurple/auth';
 import { chunk } from 'remeda';
-import Parser from 'rss-parser';
 
 import type { LiveStream } from '../lib';
 import type { CachedToken } from '../streamers.types';
@@ -13,15 +11,20 @@ import { AppConfigService } from '../../../config';
 import { http } from '../../../lib/http';
 import { LIVE, STREAMERS } from '../config';
 import { twitchStreamsSchema, twitchUsersSchema, vkChannelsSchema, vkTokenSchema, youtubeChannelSchema, youtubeLiveSchema } from '../dto';
+import { FeedReaderService } from './feed-reader.service';
+import { TwitchSdkService } from './twitch-sdk.service';
 
 @Injectable()
 export class LivePlatformsService {
   private readonly logger = new Logger(LivePlatformsService.name);
-  private readonly parser = new Parser();
   private twitchToken: CachedToken | null = null;
   private vkToken: CachedToken | null = null;
 
-  constructor(private readonly config: AppConfigService) {}
+  constructor(
+    private readonly config: AppConfigService,
+    private readonly twitch: TwitchSdkService,
+    private readonly feeds: FeedReaderService
+  ) {}
 
   hasTwitch(): boolean {
     return this.config.get('TWITCH_CLIENT_ID') !== '' && this.config.get('TWITCH_CLIENT_SECRET') !== '';
@@ -143,7 +146,7 @@ export class LivePlatformsService {
 
   async youtubeVideos(channelId: string): Promise<StreamerVideo[]> {
     try {
-      const feed = await this.parser.parseURL(`${LIVE.youtube.rssUrl}?channel_id=${encodeURIComponent(channelId)}`);
+      const feed = await this.feeds.read(`${LIVE.youtube.rssUrl}?channel_id=${encodeURIComponent(channelId)}`);
 
       return feed.items
         .slice(0, STREAMERS.videosLimit)
@@ -174,7 +177,7 @@ export class LivePlatformsService {
       return this.twitchToken.value;
     }
 
-    const token = await getAppToken(this.config.get('TWITCH_CLIENT_ID'), this.config.get('TWITCH_CLIENT_SECRET'));
+    const token = await this.twitch.getAppToken(this.config.get('TWITCH_CLIENT_ID'), this.config.get('TWITCH_CLIENT_SECRET'));
 
     this.twitchToken = { value: token.accessToken, expiresAt: Date.now() + (token.expiresIn ?? 3600) * LIVE.tokenMsPerSecond };
 

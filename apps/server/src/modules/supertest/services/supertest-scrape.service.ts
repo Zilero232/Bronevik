@@ -3,8 +3,8 @@ import { subDays } from 'date-fns';
 
 import type { ScrapeSummary } from './supertest-scrape.types';
 
-import { PrismaService } from '../../../core';
-import { crawlPages, textLines } from '../../../lib/scrape';
+import { PageCrawlerService, PrismaService } from '../../../core';
+import { textLines } from '../../../lib/scrape';
 import { SUPERTEST_SCRAPE, SUPERTEST_SOURCES } from '../config';
 import { isSupertestTitle, parseSupertestArticle } from '../lib';
 import { SupertestStoreService } from './supertest-store.service';
@@ -13,7 +13,8 @@ import { SupertestStoreService } from './supertest-store.service';
 export class SupertestScrapeService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly store: SupertestStoreService
+    private readonly store: SupertestStoreService,
+    private readonly crawler: PageCrawlerService
   ) {}
 
   async run(now: Date): Promise<ScrapeSummary> {
@@ -40,7 +41,7 @@ export class SupertestScrapeService {
       return { seen: candidates.length, fetched: 0, stored: 0, changes: 0 };
     }
 
-    const pages = await crawlPages({ urls: fresh.map((item) => item.url) });
+    const pages = await this.crawler.crawl({ urls: fresh.map((item) => item.url) });
     const vehicles = await this.prisma.vehicle.findMany({ select: { tankId: true, name: true } });
     let stored = 0;
     let changes = 0;

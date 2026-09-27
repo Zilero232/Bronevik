@@ -45,7 +45,6 @@ const createService = () => {
 
   prisma.leagueMembership.findMany.mockResolvedValue([]);
   prisma.leagueMembership.createMany.mockResolvedValue({ count: 0 });
-  prisma.leagueMembership.deleteMany.mockResolvedValue({ count: 0 });
   prisma.userLestaAccount.findMany.mockResolvedValue([]);
   stats.weekStats.mockResolvedValue(new Map());
 
@@ -118,15 +117,5 @@ describe('LeagueDivisionService.rollover', () => {
     expect(updates).toHaveLength(group.length);
     expect(updates.every((data) => data.closedAt === now)).toBe(true);
     expect(updates.map((data) => data.zone)).toEqual(expect.arrayContaining(['promotion', 'relegation']));
-  });
-
-  it('prunes weeks past the retention window', async () => {
-    const { service, prisma } = createService();
-
-    await service.rollover(now);
-
-    const cutoff = prisma.leagueMembership.deleteMany.mock.calls[0]?.[0]?.where?.weekStart;
-
-    expect(cutoff).toEqual({ lt: new Date(thisWeek.getTime() - LEAGUE_DIVISION.retentionWeeks * LEAGUE_DIVISION.daysPerWeek * 86_400_000) });
   });
 });

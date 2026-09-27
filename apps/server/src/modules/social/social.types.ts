@@ -33,7 +33,7 @@ export type LeagueInput = { userId: string; scope: LeagueScope; metric: LeagueMe
 export type LeagueScopeInput = { userId: string; metric: LeagueMetric; window: WeekWindow };
 export type LeagueStatsInput = { accountIds: bigint[]; start: Date; end: Date; withMarks: boolean };
 export type CloseLeagueWeekInput = { weekStart: Date; now: Date };
-export type LeagueRollover = { closed: number; placed: number; pruned: number };
+export type LeagueRollover = { closed: number; placed: number };
 export type WrappedInput = { accountId: number; year: number };
 
 export type SnapshotEventRow = {

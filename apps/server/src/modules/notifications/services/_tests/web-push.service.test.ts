@@ -1,25 +1,18 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
+import { WebPushError } from 'web-push';
 
 import type { PushSubscription } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
+import type { HostLookupService } from '../../../developer';
+import type { WebPushSenderService } from '../web-push-sender.service';
 
 import { WEB_PUSH } from '../../config';
+import { WebPushService } from '../web-push.service';
 
-const { sendNotification, lookup } = vi.hoisted(() => ({
-  sendNotification: vi.fn(),
-  lookup: vi.fn<(host: string) => Promise<{ address: string; family: number }[]>>()
-}));
-
-vi.mock('web-push', async (importOriginal) => ({ ...(await importOriginal<typeof import('web-push')>()), sendNotification }));
-
-vi.mock('node:dns/promises', async (importOriginal) => ({ ...(await importOriginal<typeof import('node:dns/promises')>()), lookup }));
-
-vi.resetModules();
-
-const { WebPushError } = await import('web-push');
-const { WebPushService } = await import('../web-push.service');
+const sendNotification = vi.fn<WebPushSenderService['send']>();
+const lookup = vi.fn<HostLookupService['resolve']>();
 
 const subscription = (id: string): PushSubscription =>
   mock<PushSubscription>({ id, endpoint: `https://fcm.googleapis.com/fcm/send/${id}`, p256dh: 'key', auth: 'auth' });
@@ -37,7 +30,10 @@ const createService = ({ enabled = true, subscriptions = [subscription('a'), sub
   lookup.mockResolvedValue([{ address: '142.250.74.10', family: 4 }]);
   sendNotification.mockResolvedValue({ statusCode: 201, body: '', headers: {} });
 
-  return { service: new WebPushService(prisma, config), prisma };
+  return {
+    service: new WebPushService(prisma, config, mock<WebPushSenderService>({ send: sendNotification }), mock<HostLookupService>({ resolve: lookup })),
+    prisma
+  };
 };
 
 const INPUT = { userId: 'user', title: 'Title', body: 'Body', url: '/me' };

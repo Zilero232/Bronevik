@@ -1,9 +1,8 @@
 import type { OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
+import type { RefreshingAuthProvider } from '@twurple/auth';
 
 import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-import { RefreshingAuthProvider } from '@twurple/auth';
-import { ChatClient } from '@twurple/chat';
 import { addSeconds, differenceInSeconds } from 'date-fns';
 
 import type { StreamerIntegration } from '../../../../generated';
@@ -15,6 +14,7 @@ import { INTEGRATIONS, TWITCH } from '../config';
 import { parseChatCommand } from '../lib';
 import { IntegrationStoreService } from './integration-store.service';
 import { StreamerStatsService } from './streamer-stats.service';
+import { TwitchSdkService } from './twitch-sdk.service';
 
 @Injectable()
 export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap, OnModuleDestroy {
@@ -26,7 +26,8 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
   constructor(
     private readonly config: AppConfigService,
     private readonly store: IntegrationStoreService,
-    private readonly stats: StreamerStatsService
+    private readonly stats: StreamerStatsService,
+    private readonly sdk: TwitchSdkService
   ) {}
 
   get authProvider(): RefreshingAuthProvider | null {
@@ -47,7 +48,7 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
       return;
     }
 
-    this.auth = new RefreshingAuthProvider({ clientId, clientSecret });
+    this.auth = this.sdk.createAuthProvider({ clientId, clientSecret });
 
     this.auth.onRefresh((externalId, token) => {
       void this.store.storeToken({
@@ -123,7 +124,7 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
       [intent]
     );
 
-    const client = new ChatClient({ authProvider: this.auth, channels: [login], authIntents: [intent] });
+    const client = this.sdk.createChatClient({ authProvider: this.auth, channels: [login], authIntents: [intent] });
 
     client.onMessage((channel, _user, text) => {
       void this.reply({ userId: integration.userId, client, channel, text });

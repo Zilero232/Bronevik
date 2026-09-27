@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { isPushServiceUrl } from '@otmetki/schemas';
-import { lookup } from 'node:dns/promises';
-import { sendNotification, WebPushError } from 'web-push';
+import { WebPushError } from 'web-push';
 
 import type { WebPushInput } from '../notifications.types';
 
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
-import { publicAddressOf } from '../../developer';
+import { HostLookupService, publicAddressOf } from '../../developer';
 import { WEB_PUSH } from '../config';
+import { WebPushSenderService } from './web-push-sender.service';
 
 @Injectable()
 export class WebPushService {
@@ -16,7 +16,9 @@ export class WebPushService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly config: AppConfigService
+    private readonly config: AppConfigService,
+    private readonly sender: WebPushSenderService,
+    private readonly hosts: HostLookupService
   ) {}
 
   get isEnabled(): boolean {
@@ -40,7 +42,7 @@ export class WebPushService {
 
     const results = await Promise.allSettled(
       subscriptions.map((subscription) =>
-        sendNotification({ endpoint: subscription.endpoint, keys: { p256dh: subscription.p256dh, auth: subscription.auth } }, payload, {
+        this.sender.send({ endpoint: subscription.endpoint, keys: { p256dh: subscription.p256dh, auth: subscription.auth } }, payload, {
           TTL: WEB_PUSH.ttlSeconds,
           vapidDetails
         })
@@ -70,6 +72,6 @@ export class WebPushService {
       return false;
     }
 
-    return (await publicAddressOf({ url: endpoint, lookup: async (host) => lookup(host, { all: true }) })) !== null;
+    return (await publicAddressOf({ url: endpoint, lookup: this.hosts.resolve })) !== null;
   }
 }

@@ -43,9 +43,7 @@ export const LEAGUE_DIVISION = {
   groupSize: 30,
   zoneShare: 0.2,
   minRanked: 5,
-  retentionWeeks: 26,
-  batchSize: 1_000,
-  daysPerWeek: 7
+  batchSize: 1_000
 } as const;
 
 export const WEEKLY_CHALLENGES = [

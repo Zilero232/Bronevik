@@ -1,9 +1,8 @@
-import type { EventsListener } from '@donation-alerts/events';
+import type { RefreshingAuthProvider } from '@donation-alerts/auth';
+import type { EventsClient, EventsListener } from '@donation-alerts/events';
 import type { OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
 
-import { ApiClient } from '@donation-alerts/api';
-import { getTokenExpiryDate, RefreshingAuthProvider } from '@donation-alerts/auth';
-import { EventsClient } from '@donation-alerts/events';
+import { getTokenExpiryDate } from '@donation-alerts/auth';
 import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { differenceInSeconds } from 'date-fns';
@@ -16,6 +15,7 @@ import { AppConfigService } from '../../../config';
 import { CHAT_COPY, DONATION_ALERTS, INTEGRATIONS } from '../config';
 import { ChallengeService } from './challenge.service';
 import { ChatAnnouncerService } from './chat-announcer.service';
+import { DonationAlertsSdkService } from './donation-alerts-sdk.service';
 import { IntegrationStoreService } from './integration-store.service';
 import { OverlayPublisherService } from './overlay-publisher.service';
 import { StreamerStatsService } from './streamer-stats.service';
@@ -33,7 +33,8 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
     private readonly challenges: ChallengeService,
     private readonly announcer: ChatAnnouncerService,
     private readonly publisher: OverlayPublisherService,
-    private readonly stats: StreamerStatsService
+    private readonly stats: StreamerStatsService,
+    private readonly sdk: DonationAlertsSdkService
   ) {}
 
   onApplicationBootstrap(): void {
@@ -50,7 +51,7 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
       return;
     }
 
-    this.auth = new RefreshingAuthProvider({ clientId, clientSecret, scopes: [...DONATION_ALERTS.scopes] });
+    this.auth = this.sdk.createAuthProvider({ clientId, clientSecret, scopes: [...DONATION_ALERTS.scopes] });
 
     this.auth.onRefresh((externalId, token) => {
       void this.store.storeToken({
@@ -62,7 +63,7 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
       });
     });
 
-    this.events = new EventsClient({ apiClient: new ApiClient({ authProvider: this.auth }) });
+    this.events = this.sdk.createEventsClient(this.auth);
 
     void this.sync();
   }

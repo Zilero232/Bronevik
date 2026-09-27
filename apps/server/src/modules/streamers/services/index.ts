@@ -1,7 +1,9 @@
 export { ChallengeFeedService } from './challenge-feed.service';
 export { ChallengeService } from './challenge.service';
 export { ChatAnnouncerService } from './chat-announcer.service';
+export { DonationAlertsSdkService } from './donation-alerts-sdk.service';
 export { DonationListenerService } from './donation-listener.service';
+export { FeedReaderService } from './feed-reader.service';
 export { IntegrationStoreService } from './integration-store.service';
 export { IntegrationsService } from './integrations.service';
 export { LivePlatformsService } from './live-platforms.service';
@@ -24,4 +26,5 @@ export { StreamerStatsService } from './streamer-stats.service';
 export { TwitchChatService } from './twitch-chat.service';
 export { TwitchPanelService } from './twitch-panel.service';
 export { TwitchPredictionsService } from './twitch-predictions.service';
+export { TwitchSdkService } from './twitch-sdk.service';
 export { VkLiveChatService } from './vk-live-chat.service';

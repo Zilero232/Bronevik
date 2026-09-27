@@ -1,20 +1,15 @@
 import { load } from 'cheerio';
 import { readFileSync } from 'node:fs';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
+import type { PageCrawlerService } from '../../../../core';
 import type { BonusCodeService } from '../bonus-code.service';
 
 import { SOURCES } from '../../../../config';
-import { crawlPages } from '../../../../lib/scrape';
 import { BONUS_CODE } from '../../config';
 import { parseWotexpressCodes } from '../../lib';
 import { BonusCodeScrapeService } from '../bonus-code-scrape.service';
-
-vi.mock('../../../../lib/scrape', async () => ({
-  ...(await vi.importActual<typeof import('../../../../lib/scrape')>('../../../../lib/scrape')),
-  crawlPages: vi.fn()
-}));
 
 const $ = load(readFileSync(new URL('../../lib/wotexpress-codes/_tests/fixtures/wotexpress-bonus-codes.html', import.meta.url), 'utf8'));
 const now = new Date('2026-09-25T00:00:00Z');
@@ -23,11 +18,12 @@ const scraped = parseWotexpressCodes({ $, baseUrl: SOURCES.wotexpressBonusCodes,
 describe('BonusCodeScrapeService.run', () => {
   it('offers every code of the page and counts only the new ones', async () => {
     const bonusCodes = mock<BonusCodeService>();
+    const crawler = mock<PageCrawlerService>();
 
-    vi.mocked(crawlPages).mockResolvedValue([{ url: SOURCES.wotexpressBonusCodes, $ }]);
+    crawler.crawl.mockResolvedValue([{ url: SOURCES.wotexpressBonusCodes, $ }]);
     bonusCodes.discover.mockResolvedValueOnce(false).mockResolvedValue(true);
 
-    const summary = await new BonusCodeScrapeService(bonusCodes).run(now);
+    const summary = await new BonusCodeScrapeService(bonusCodes, crawler).run(now);
 
     expect(scraped.length).toBeGreaterThan(1);
     expect(bonusCodes.discover.mock.calls.map(([input]) => input.code)).toEqual(scraped.map((item) => item.code));
@@ -37,10 +33,11 @@ describe('BonusCodeScrapeService.run', () => {
 
   it('does nothing when the page could not be fetched', async () => {
     const bonusCodes = mock<BonusCodeService>();
+    const crawler = mock<PageCrawlerService>();
 
-    vi.mocked(crawlPages).mockResolvedValue([]);
+    crawler.crawl.mockResolvedValue([]);
 
-    expect(await new BonusCodeScrapeService(bonusCodes).run(now)).toEqual({ seen: 0, created: 0, notified: 0 });
+    expect(await new BonusCodeScrapeService(bonusCodes, crawler).run(now)).toEqual({ seen: 0, created: 0, notified: 0 });
     expect(bonusCodes.discover).not.toHaveBeenCalled();
   });
 });

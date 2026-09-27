@@ -1,32 +1,30 @@
+import type { SendMailOptions, SentMessageInfo, Transporter } from 'nodemailer';
+
 import { describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
+import type { MailTransportService } from '../mail-transport.service';
 
 import { placeholderEmail } from '../../../../lib/auth';
+import { EmailService } from '../email.service';
 
-const { sendMail, createTransport } = vi.hoisted(() => {
-  const send = vi.fn();
-
-  return { sendMail: send, createTransport: vi.fn(() => ({ sendMail: send })) };
-});
-
-vi.mock('nodemailer', async (importOriginal) => ({ ...(await importOriginal<typeof import('nodemailer')>()), createTransport }));
-
-vi.resetModules();
-
-const { EmailService } = await import('../email.service');
+const sendMail = vi.fn<(mail: SendMailOptions) => Promise<SentMessageInfo>>();
 
 const RENDERED = { title: 'Weekly digest', body: 'You played 10 battles', url: 'https://example.com/me' };
 
 const createService = (value: string) => {
   const config = mock<AppConfigService>();
+  const transport = mock<MailTransportService>();
+  const transporter = mock<Transporter>();
 
   config.get.mockReturnValue(value);
+  transporter.sendMail.mockImplementation(sendMail);
+  transport.create.mockReturnValue(transporter);
   sendMail.mockReset();
-  sendMail.mockResolvedValue({});
+  sendMail.mockResolvedValue(mock<SentMessageInfo>());
 
-  return new EmailService(config);
+  return new EmailService(config, transport);
 };
 
 describe('EmailService', () => {

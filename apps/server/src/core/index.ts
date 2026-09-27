@@ -15,6 +15,7 @@ export {
 } from './prisma';
 export { QueuesModule } from './queues';
 export { REDIS, RedisModule } from './redis';
+export { PageCrawlerService, ScrapeModule } from './scrape';
 export { createObjectStorage, LocalDiskStorage, ObjectStorage, ObjectStorageModule } from './storage';
 export type { CreateObjectStorageInput, PutObjectInput, StorageEnv } from './storage';
 export { markGainedKey, WEBHOOK_EMITTER } from './webhooks';

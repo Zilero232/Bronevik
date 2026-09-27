@@ -9,7 +9,9 @@ import {
   ChallengeFeedService,
   ChallengeService,
   ChatAnnouncerService,
+  DonationAlertsSdkService,
   DonationListenerService,
+  FeedReaderService,
   IntegrationStoreService,
   LivePlatformsService,
   LiveStatusService,
@@ -18,6 +20,7 @@ import {
   StreamerStatsService,
   TwitchChatService,
   TwitchPredictionsService,
+  TwitchSdkService,
   VkLiveChatService
 } from './services';
 
@@ -27,7 +30,9 @@ import {
     ChallengeService,
     ChallengeFeedService,
     ChatAnnouncerService,
+    DonationAlertsSdkService,
     DonationListenerService,
+    FeedReaderService,
     IntegrationStoreService,
     LivePlatformsService,
     LiveStatusService,
@@ -36,6 +41,7 @@ import {
     StreamerStatsService,
     TwitchChatService,
     TwitchPredictionsService,
+    TwitchSdkService,
     VkLiveChatService,
     StreamersProcessor,
     StreamersSchedulesService

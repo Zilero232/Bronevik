@@ -1,4 +1,4 @@
-import type { AccessToken as DonationAlertsToken } from '@donation-alerts/auth';
+import type { RefreshingAuthProvider as DonationAlertsAuthProvider, AccessToken as DonationAlertsToken } from '@donation-alerts/auth';
 import type { TokenInfo, AccessToken as TwitchToken } from '@twurple/auth';
 
 import { ConfigService } from '@nestjs/config';
@@ -8,7 +8,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { Env } from '../../../../config/env';
+import type { DonationAlertsSdkService } from '../donation-alerts-sdk.service';
 import type { IntegrationStoreService } from '../integration-store.service';
+import type { TwitchSdkService } from '../twitch-sdk.service';
 
 import { AppBadRequestException } from '../../../../common/exceptions';
 import { AppConfigService } from '../../../../config';
@@ -16,22 +18,12 @@ import { DONATION_ALERTS, INTEGRATIONS, OAUTH_STATE, TWITCH } from '../../config
 import { IntegrationsService } from '../integrations.service';
 import { OAuthStateService } from '../oauth-state.service';
 
-const oauth = vi.hoisted(() => ({
-  exchangeCode: vi.fn<(clientId: string, clientSecret: string, code: string, redirectUri: string) => Promise<TwitchToken>>(),
-  getTokenInfo: vi.fn<(accessToken: string, clientId?: string) => Promise<TokenInfo>>(),
-  getAccessToken: vi.fn<(clientId: string, clientSecret: string, redirectUri: string, code: string) => Promise<DonationAlertsToken>>(),
-  addUserForToken: vi.fn<(token: DonationAlertsToken) => Promise<DonationAlertsToken & { userId: number }>>()
-}));
-
-vi.mock('@twurple/auth', () => ({ exchangeCode: oauth.exchangeCode, getTokenInfo: oauth.getTokenInfo }));
-
-vi.mock('@donation-alerts/auth', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@donation-alerts/auth')>()),
-  getAccessToken: oauth.getAccessToken,
-  RefreshingAuthProvider: class {
-    addUserForToken = oauth.addUserForToken;
-  }
-}));
+const oauth = {
+  exchangeCode: vi.fn<TwitchSdkService['exchangeCode']>(),
+  getTokenInfo: vi.fn<TwitchSdkService['getTokenInfo']>(),
+  getAccessToken: vi.fn<DonationAlertsSdkService['getAccessToken']>(),
+  addUserForToken: vi.fn<DonationAlertsAuthProvider['addUserForToken']>()
+};
 
 const API_URL = 'http://api.test';
 const WEB_URL = 'http://web.test';
@@ -59,7 +51,12 @@ const DA_TOKEN: DonationAlertsToken = { accessToken: 'da-access', refreshToken: 
 const createService = (env: Partial<Env> = ENV) => {
   const states = new OAuthStateService(new RedisMock());
   const store = mock<IntegrationStoreService>();
-  const service = new IntegrationsService(new AppConfigService(new ConfigService<Env, true>(env)), states, store);
+  const twitch = mock<TwitchSdkService>({ exchangeCode: oauth.exchangeCode, getTokenInfo: oauth.getTokenInfo });
+  const donationAlerts = mock<DonationAlertsSdkService>({ getAccessToken: oauth.getAccessToken });
+
+  donationAlerts.createAuthProvider.mockReturnValue(mock<DonationAlertsAuthProvider>({ addUserForToken: oauth.addUserForToken }));
+
+  const service = new IntegrationsService(new AppConfigService(new ConfigService<Env, true>(env)), states, store, twitch, donationAlerts);
 
   return { service, states, store };
 };

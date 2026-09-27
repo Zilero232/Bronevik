@@ -12,17 +12,12 @@ import * as Y from 'yjs';
 
 import type { AppConfigService } from '../../../../config';
 import type { BoardAccess, CollabContext } from '../../tactics.types';
+import type { CollabRedisService } from '../collab-redis.service';
 
 import { BOARD_DOCUMENT, TACTICS } from '../../config';
 import { BoardLiveService } from '../board-live.service';
 import { TacticBoardService } from '../tactic-board.service';
 import { TacticsCollabService } from '../tactics-collab.service';
-
-vi.mock('@hocuspocus/extension-redis', () => ({
-  Redis: class {
-    readonly extensionName = 'redis-test-double';
-  }
-}));
 
 const BOARD_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
 const NAME = `${TACTICS.documentPrefix}${BOARD_ID}`;
@@ -36,13 +31,15 @@ const createCollab = () => {
   const config = mock<AppConfigService>();
   const auth = mockDeep<AuthService>();
   const live = new BoardLiveService();
+  const redis = mock<CollabRedisService>();
 
   adapterHost.httpAdapter.getHttpServer.mockReturnValue(server);
   config.get.mockImplementation((key) => (key === 'WEB_URL' ? WEB_URL : key === 'CORS_ORIGINS' ? '' : 'redis://localhost:6380'));
   auth.api.getSession.mockResolvedValue(null);
+  redis.createExtension.mockReturnValue({ extensionName: 'redis-test-double' });
 
   const configure = vi.spyOn(Hocuspocus.prototype, 'configure');
-  const collab = new TacticsCollabService(adapterHost, boards, config, auth, live);
+  const collab = new TacticsCollabService(adapterHost, boards, config, auth, live, redis);
   const [configuration] = configure.mock.lastCall ?? [];
 
   configure.mockRestore();

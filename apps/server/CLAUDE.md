@@ -14,7 +14,7 @@ src/
 ├── main.ts, app.module.ts        # the API
 ├── worker.ts, worker.module.ts   # the collector worker
 ├── config/      # env/ (env.schema.ts: secrets, addresses, ports only) + *.constants.ts (every tunable; time.constants.ts: TIME.zone), cors/ (per-path CORS), proxy/ (TRUSTED_PROXIES → trust proxy), lesta-mock/
-├── core/        # prisma (factory, timescale, error guards, lib/advisory-lock: lockedTransaction), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (S3 / local-disk object storage), webhooks, battle-events
+├── core/        # prisma (factory, timescale, error guards, lib/advisory-lock: lockedTransaction), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (S3 / local-disk object storage), scrape (PageCrawlerService over lib/scrape), webhooks, battle-events
 ├── common/      # exceptions, filters, guards (origin), middleware (api-helmet), decorators, cache, schedules (createJobSchedules factory), shared pure helpers in lib/
 ├── lib/         # lesta (Lesta API client), replay (.mtreplay parser, NOTICE), http (ky), auth (better-auth), scrape (robots-aware cheerio crawl, tanki.su listings)
 ├── dev/         # lesta-mock: the generated Lesta API served in development while there is no key (see Lesta API mock)

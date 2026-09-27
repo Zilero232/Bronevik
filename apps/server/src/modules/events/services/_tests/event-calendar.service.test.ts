@@ -1,21 +1,16 @@
 import { load } from 'cheerio';
 import { readFileSync } from 'node:fs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { GameEvent } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
+import type { PageCrawlerService, PrismaService } from '../../../../core';
 
 import { SOURCES } from '../../../../config';
-import { crawlPages, parseTankiListing } from '../../../../lib/scrape';
+import { parseTankiListing } from '../../../../lib/scrape';
 import { EVENT_CALENDAR } from '../../config';
 import { eventKind, eventSlug } from '../../lib/event-kind';
 import { EventCalendarService } from '../event-calendar.service';
-
-vi.mock('../../../../lib/scrape', async () => ({
-  ...(await vi.importActual<typeof import('../../../../lib/scrape')>('../../../../lib/scrape')),
-  crawlPages: vi.fn()
-}));
 
 const $ = load(readFileSync(new URL('../../../../lib/scrape/tanki-listing/_tests/fixtures/tanki-game-events.html', import.meta.url), 'utf8'));
 const listing = parseTankiListing({ $, baseUrl: SOURCES.tankiSite });
@@ -24,15 +19,14 @@ const now = new Date('2026-09-25T12:00:00Z');
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
+  const crawler = mock<PageCrawlerService>();
+
+  crawler.crawl.mockImplementation(async ({ urls }) => (urls.includes(SOURCES.tankiGameEvents) ? [{ url: SOURCES.tankiGameEvents, $ }] : []));
 
   prisma.gameEvent.findMany.mockResolvedValue([mock<GameEvent>({ slug: eventSlug(knownItem?.url ?? SOURCES.tankiSite) })]);
 
-  return { service: new EventCalendarService(prisma), prisma };
+  return { service: new EventCalendarService(prisma, crawler), prisma, crawler };
 };
-
-beforeEach(() => {
-  vi.mocked(crawlPages).mockImplementation(async ({ urls }) => (urls.includes(SOURCES.tankiGameEvents) ? [{ url: SOURCES.tankiGameEvents, $ }] : []));
-});
 
 describe('EventCalendarService.run', () => {
   it('creates an event for every listed slug it has not stored yet', async () => {
@@ -71,11 +65,11 @@ describe('EventCalendarService.run', () => {
   });
 
   it('visits at most the configured number of detail pages', async () => {
-    const { service } = createService();
+    const { service, crawler } = createService();
 
     await service.run(now);
 
-    const detailUrls = vi.mocked(crawlPages).mock.calls.at(-1)?.[0].urls ?? [];
+    const detailUrls = crawler.crawl.mock.calls.at(-1)?.[0].urls ?? [];
 
     expect(detailUrls.length).toBeLessThanOrEqual(EVENT_CALENDAR.maxDetailPages);
     expect(detailUrls).not.toContain(knownItem?.url);

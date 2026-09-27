@@ -23,6 +23,7 @@ export const RETENTION = {
         'date < (SELECT max(latest.date) FROM tank_percentile latest WHERE latest.tank_id = tank_percentile.tank_id AND latest.distribution = tank_percentile.distribution)'
     },
     { table: 'build_usage_aggregate', column: 'computed_at', days: 180 },
+    { table: 'league_membership', column: 'week_start', days: 189 },
     { table: 'audit_log', column: 'created_at', days: 365 },
     { table: 'clan_snapshot', column: 'captured_at', days: 365 },
     { table: 'clan_member_event', column: 'occurred_at', days: 730 },

@@ -1,23 +1,26 @@
 import { Injectable } from '@nestjs/common';
 
 import { SOURCES } from '../../../config';
-import { PrismaService } from '../../../core';
-import { crawlPages, latestDeadline, parseTankiListing, textLines } from '../../../lib/scrape';
+import { PageCrawlerService, PrismaService } from '../../../core';
+import { latestDeadline, parseTankiListing, textLines } from '../../../lib/scrape';
 import { EVENT_CALENDAR } from '../config';
 import { eventKind, eventSlug } from '../lib/event-kind';
 
 @Injectable()
 export class EventCalendarService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly crawler: PageCrawlerService
+  ) {}
 
   async run(now: Date): Promise<number> {
-    const [page] = await crawlPages({ urls: [SOURCES.tankiGameEvents] });
+    const [page] = await this.crawler.crawl({ urls: [SOURCES.tankiGameEvents] });
     const listing = page ? parseTankiListing({ $: page.$, baseUrl: SOURCES.tankiSite }) : [];
     const items = listing.map((item) => ({ ...item, slug: eventSlug(item.url) })).filter((item) => item.slug.length > 0);
     const known = await this.prisma.gameEvent.findMany({ where: { slug: { in: items.map((item) => item.slug) } }, select: { slug: true } });
     const knownSlugs = new Set(known.map((event) => event.slug));
     const fresh = items.filter((item) => !knownSlugs.has(item.slug)).slice(0, EVENT_CALENDAR.maxDetailPages);
-    const details = await crawlPages({ urls: fresh.map((item) => item.url) });
+    const details = await this.crawler.crawl({ urls: fresh.map((item) => item.url) });
 
     for (const item of fresh) {
       const detail = details.find((candidate) => candidate.url === item.url);

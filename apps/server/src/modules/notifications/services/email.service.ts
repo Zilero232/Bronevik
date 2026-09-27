@@ -1,7 +1,6 @@
 import type { Transporter } from 'nodemailer';
 
 import { Injectable } from '@nestjs/common';
-import { createTransport } from 'nodemailer';
 import { render } from 'react-email';
 
 import type { DigestEmailInput, NotificationEmailInput } from '../notifications.types';
@@ -11,20 +10,21 @@ import { isPlaceholderEmail } from '../../../lib/auth';
 import { SMTP_TIMEOUTS } from '../config';
 import { notificationText } from '../lib';
 import { DigestEmail } from '../templates/digest-email';
+import { MailTransportService } from './mail-transport.service';
 
 @Injectable()
 export class EmailService {
   private readonly transporter: Transporter | null;
   private readonly from: string;
 
-  constructor(config: AppConfigService) {
+  constructor(config: AppConfigService, transport: MailTransportService) {
     const host = config.get('SMTP_HOST');
 
     this.from = config.get('EMAIL_FROM');
 
     this.transporter =
       host && this.from
-        ? createTransport({
+        ? transport.create({
             host,
             port: config.get('SMTP_PORT'),
             secure: config.get('SMTP_SECURE'),

@@ -9,6 +9,8 @@ import { ModSettingsController } from './mod-settings.controller';
 import { OverlaysController } from './overlays.controller';
 import {
   ChallengeService,
+  DonationAlertsSdkService,
+  FeedReaderService,
   IntegrationsService,
   IntegrationStoreService,
   LivePlatformsService,
@@ -25,7 +27,8 @@ import {
   StreamerFollowService,
   StreamerProfileService,
   StreamerSettingsService,
-  TwitchPanelService
+  TwitchPanelService,
+  TwitchSdkService
 } from './services';
 import { StreamersController } from './streamers.controller';
 
@@ -50,7 +53,10 @@ import { StreamersController } from './streamers.controller';
     ChallengeService,
     IntegrationStoreService,
     IntegrationsService,
-    OAuthStateService
+    OAuthStateService,
+    TwitchSdkService,
+    DonationAlertsSdkService,
+    FeedReaderService
   ]
 })
 export class StreamersModule {}

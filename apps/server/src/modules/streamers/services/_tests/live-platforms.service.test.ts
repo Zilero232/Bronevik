@@ -1,22 +1,14 @@
 import { ConfigService } from '@nestjs/config';
-import { getAppToken } from '@twurple/auth';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 import type { Env } from '../../../../config/env';
+import type { FeedReaderService } from '../feed-reader.service';
+import type { TwitchSdkService } from '../twitch-sdk.service';
 
 import { AppConfigService } from '../../../../config';
 import { LIVE, STREAMERS } from '../../config';
 import { LivePlatformsService } from '../live-platforms.service';
-
-const { parseURL } = vi.hoisted(() => ({ parseURL: vi.fn() }));
-
-vi.mock('@twurple/auth', () => ({ getAppToken: vi.fn() }));
-
-vi.mock('rss-parser', () => ({
-  default: class {
-    parseURL = parseURL;
-  }
-}));
 
 type Route = (url: URL, request: Request) => unknown;
 
@@ -39,7 +31,15 @@ const noCredentials = {
   YOUTUBE_API_KEY: ''
 } satisfies Partial<Env>;
 
-const createService = (env: Partial<Env> = credentials) => new LivePlatformsService(new AppConfigService(new ConfigService<Env, true>(env)));
+const getAppToken = vi.fn<TwitchSdkService['getAppToken']>();
+const readFeed = vi.fn<FeedReaderService['read']>();
+
+const createService = (env: Partial<Env> = credentials) =>
+  new LivePlatformsService(
+    new AppConfigService(new ConfigService<Env, true>(env)),
+    mock<TwitchSdkService>({ getAppToken }),
+    mock<FeedReaderService>({ read: readFeed })
+  );
 
 const requests: Request[] = [];
 
@@ -80,7 +80,10 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(now);
 
-  vi.mocked(getAppToken).mockResolvedValue({
+  getAppToken.mockReset();
+  readFeed.mockReset();
+
+  getAppToken.mockResolvedValue({
     accessToken: 'twitch-token',
     refreshToken: null,
     scope: [],
@@ -325,7 +328,7 @@ describe('LivePlatformsService.youtubeVideos', () => {
   });
 
   it('maps the newest feed entries up to the videos limit', async () => {
-    parseURL.mockResolvedValue({ items: Array.from({ length: STREAMERS.videosLimit + 2 }, (_, index) => item(index)) });
+    readFeed.mockResolvedValue({ items: Array.from({ length: STREAMERS.videosLimit + 2 }, (_, index) => item(index)) });
 
     const videos = await createService(noCredentials).youtubeVideos('UC1');
 
@@ -334,17 +337,17 @@ describe('LivePlatformsService.youtubeVideos', () => {
   });
 
   it('reads the feed for the url-encoded channel id', async () => {
-    parseURL.mockResolvedValue({ items: [] });
+    readFeed.mockResolvedValue({ items: [] });
 
     await createService().youtubeVideos('UC a&b');
 
-    expect(parseURL).toHaveBeenCalledWith(`${LIVE.youtube.rssUrl}?channel_id=${encodeURIComponent('UC a&b')}`);
+    expect(readFeed).toHaveBeenCalledWith(`${LIVE.youtube.rssUrl}?channel_id=${encodeURIComponent('UC a&b')}`);
   });
 
   it('drops entries missing a link, title or date and falls back to the link as id', async () => {
     const { id: _id, ...withoutId } = item(1);
 
-    parseURL.mockResolvedValue({ items: [{ ...item(0), title: undefined }, withoutId, { ...item(2), isoDate: undefined }] });
+    readFeed.mockResolvedValue({ items: [{ ...item(0), title: undefined }, withoutId, { ...item(2), isoDate: undefined }] });
 
     await expect(createService().youtubeVideos('UC1')).resolves.toEqual([
       { id: withoutId.link, title: withoutId.title, url: withoutId.link, publishedAt: withoutId.isoDate }
@@ -352,7 +355,7 @@ describe('LivePlatformsService.youtubeVideos', () => {
   });
 
   it('returns an empty list when the feed cannot be read', async () => {
-    parseURL.mockRejectedValue(new Error('404'));
+    readFeed.mockRejectedValue(new Error('404'));
 
     await expect(createService().youtubeVideos('UC1')).resolves.toEqual([]);
   });

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AnalyticsCoreModule } from '../analytics';
+import { HostLookupService } from '../developer';
 import { ReferenceCoreModule } from '../reference';
 import { TelegramCoreModule } from '../telegram';
 import { NotificationsProducerModule } from './notifications-producer.module';
@@ -9,10 +10,12 @@ import {
   DeliveryService,
   EmailService,
   FirstWinRemindersService,
+  MailTransportService,
   MarksWatchService,
   PlusLaunchService,
   SessionReportsService,
   ThresholdDropsService,
+  WebPushSenderService,
   WebPushService,
   WeeklyDigestService
 } from './services';
@@ -24,6 +27,9 @@ import {
     EmailService,
     FirstWinRemindersService,
     WebPushService,
+    WebPushSenderService,
+    MailTransportService,
+    HostLookupService,
     MarksWatchService,
     SessionReportsService,
     ThresholdDropsService,

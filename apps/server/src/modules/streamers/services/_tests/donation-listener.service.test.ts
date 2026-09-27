@@ -1,5 +1,5 @@
-import type { AccessToken } from '@donation-alerts/auth';
-import type { DonationAlertsDonationEvent, EventsListener } from '@donation-alerts/events';
+import type { AccessToken, RefreshingAuthProvider as DonationAlertsAuthProvider } from '@donation-alerts/auth';
+import type { DonationAlertsDonationEvent, EventsClient, EventsListener } from '@donation-alerts/events';
 
 import { getTokenExpiryDate } from '@donation-alerts/auth';
 import { ConfigService } from '@nestjs/config';
@@ -11,6 +11,7 @@ import type { Challenge, StreamerIntegration } from '../../../../../generated';
 import type { Env } from '../../../../config/env';
 import type { ChallengeService } from '../challenge.service';
 import type { ChatAnnouncerService } from '../chat-announcer.service';
+import type { DonationAlertsSdkService } from '../donation-alerts-sdk.service';
 import type { IntegrationStoreService } from '../integration-store.service';
 import type { OverlayPublisherService } from '../overlay-publisher.service';
 import type { StreamerStatsService } from '../streamer-stats.service';
@@ -19,36 +20,12 @@ import { AppConfigService } from '../../../../config';
 import { CHAT_COPY, DONATION_ALERTS } from '../../config';
 import { DonationListenerService } from '../donation-listener.service';
 
-type DonationHandler = (donation: DonationAlertsDonationEvent) => void;
-
-const sdk = vi.hoisted(() => ({
-  constructed: vi.fn(),
-  addUser: vi.fn(),
-  removeUser: vi.fn(),
-  onRefresh: vi.fn<(handler: (userId: number, token: AccessToken) => void) => void>(),
-  onDonation: vi.fn<(user: number, handler: DonationHandler) => Promise<EventsListener>>()
-}));
-
-vi.mock('@donation-alerts/auth', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@donation-alerts/auth')>()),
-  RefreshingAuthProvider: class {
-    addUser = sdk.addUser;
-    removeUser = sdk.removeUser;
-    onRefresh = sdk.onRefresh;
-
-    constructor() {
-      sdk.constructed();
-    }
-  }
-}));
-
-vi.mock('@donation-alerts/api', () => ({ ApiClient: class {} }));
-
-vi.mock('@donation-alerts/events', () => ({
-  EventsClient: class {
-    onDonation = sdk.onDonation;
-  }
-}));
+const sdk = {
+  addUser: vi.fn<DonationAlertsAuthProvider['addUser']>(),
+  removeUser: vi.fn<DonationAlertsAuthProvider['removeUser']>(),
+  onRefresh: vi.fn<DonationAlertsAuthProvider['onRefresh']>(),
+  onDonation: vi.fn<EventsClient['onDonation']>()
+};
 
 const NOW = new Date('2026-09-01T12:00:00.000Z');
 const ENV = { DONATIONALERTS_CLIENT_ID: 'da-id', DONATIONALERTS_CLIENT_SECRET: 'da-secret' } satisfies Partial<Env>;
@@ -82,11 +59,18 @@ const createService = (env: Partial<Env> = ENV) => {
   const publisher = mock<OverlayPublisherService>();
   const stats = mock<StreamerStatsService>();
   const listener = mock<EventsListener>();
+  const factory = mock<DonationAlertsSdkService>();
 
   store.byProvider.mockResolvedValue([]);
   listener.remove.mockResolvedValue();
   sdk.onDonation.mockResolvedValue(listener);
   stats.text.mockResolvedValue('announcement');
+
+  factory.createAuthProvider.mockReturnValue(
+    mock<DonationAlertsAuthProvider>({ addUser: sdk.addUser, removeUser: sdk.removeUser, onRefresh: sdk.onRefresh })
+  );
+
+  factory.createEventsClient.mockReturnValue(mock<EventsClient>({ onDonation: sdk.onDonation }));
 
   const service = new DonationListenerService(
     new AppConfigService(new ConfigService<Env, true>(env)),
@@ -94,10 +78,11 @@ const createService = (env: Partial<Env> = ENV) => {
     challenges,
     announcer,
     publisher,
-    stats
+    stats,
+    factory
   );
 
-  return { service, store, challenges, announcer, publisher, stats, listener };
+  return { service, store, challenges, announcer, publisher, stats, listener, factory };
 };
 
 const boot = async (setup: ReturnType<typeof createService>, integrations: StreamerIntegration[]) => {
@@ -106,7 +91,7 @@ const boot = async (setup: ReturnType<typeof createService>, integrations: Strea
   await flush();
 };
 
-const donationHandler = (): DonationHandler => {
+const donationHandler = () => {
   const handler = sdk.onDonation.mock.calls[0]?.[1];
 
   if (!handler) {
@@ -134,7 +119,7 @@ describe('DonationListenerService.onApplicationBootstrap', () => {
     await boot(setup, [integration()]);
     await setup.service.sync();
 
-    expect(sdk.constructed).not.toHaveBeenCalled();
+    expect(setup.factory.createAuthProvider).not.toHaveBeenCalled();
     expect(setup.store.byProvider).not.toHaveBeenCalled();
   });
 
@@ -144,7 +129,7 @@ describe('DonationListenerService.onApplicationBootstrap', () => {
 
     await boot(setup, [integration()]);
 
-    expect(sdk.constructed).not.toHaveBeenCalled();
+    expect(setup.factory.createAuthProvider).not.toHaveBeenCalled();
     expect(sdk.onDonation).not.toHaveBeenCalled();
   });
 

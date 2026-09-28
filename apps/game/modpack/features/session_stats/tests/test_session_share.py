@@ -9,7 +9,7 @@ from otmetki.companion.binding import Credentials
 from otmetki.companion.config import Config
 from otmetki.core.errors import ReasonError
 from otmetki.features.session_stats.i18n import STRINGS
-from otmetki.features.session_stats.model.share import channels_of, preference_body, preference_of, send_body, send_failure_key
+from otmetki.features.session_stats.model.share import channels_of, preference_body, preference_of, preference_outcome, send_body, send_failure_key
 from otmetki.features.session_stats.settings import SETTINGS
 
 CREDENTIALS = Credentials('dev_share', 's' * 40, 12345678)
@@ -57,6 +57,12 @@ class SessionShareTest(unittest.TestCase):
             self.skipTest('jsonschema not installed')
         for code in ('session_not_found', 'channel_not_linked'):
             validator.validate({'error': code, 'message': 'x'})
+
+    def test_a_channel_not_linked_stops_the_sync_until_the_switch_changes(self):
+        assert preference_outcome(200) == 'synced'
+        assert preference_outcome(409) == 'refused'
+        for status in (0, 401, 429, 500):
+            assert preference_outcome(status) == 'retry'
 
     def test_strings_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])

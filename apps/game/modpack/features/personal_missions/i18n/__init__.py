@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+STRINGS = {
+    'ru': {
+        'component_personal_missions': u'Помощник ЛБЗ',
+        'component_personal_missions_hint': u'Личные боевые задачи, которые вы сейчас выполняете, с основным и дополнительным условием: подпись в ангаре, строка в бою для задач класса вашего танка и список всех задач в окне мода. Данные — из экрана задач самой игры.',
+        'personal_missions_show_hangar': u'Подпись в ангаре',
+        'personal_missions_show_battle': u'Строка в бою',
+        'personal_missions_show_conditions': u'Условия задач',
+        'personal_missions_max_missions': u'Сколько задач показывать',
+        'pm_title': u'ЛБЗ: в работе {active}, выполнено {done}, с отличием {honors}',
+        'pm_main': u'Основное: {condition}',
+        'pm_extra': u'С отличием: {condition}',
+        'pm_main_label': u'Основное условие',
+        'pm_extra_label': u'Условие «с отличием»',
+        'pm_none_active': u'Нет задач в работе: выберите задачу на экране ЛБЗ',
+        'pm_state_in_progress': u'В работе',
+        'pm_state_done': u'Выполнена',
+        'pm_state_honors': u'Выполнена с отличием',
+        'pm_empty': u'Игра пока не передала список личных задач: откройте экран ЛБЗ',
+        'pm_refresh': u'Обновить',
+    },
+    'en': {
+        'component_personal_missions': u'Personal missions helper',
+        'component_personal_missions_hint': u'The personal missions you are working on, with their main and «with honours» conditions: a hangar label, a battle line for the missions of your tank\'s class and a list of every mission in the mod window. The data comes from the game\'s own missions screen.',
+        'personal_missions_show_hangar': u'Hangar label',
+        'personal_missions_show_battle': u'Battle line',
+        'personal_missions_show_conditions': u'Mission conditions',
+        'personal_missions_max_missions': u'Missions to show',
+        'pm_title': u'Personal missions: {active} in progress, {done} done, {honors} with honours',
+        'pm_main': u'Main: {condition}',
+        'pm_extra': u'With honours: {condition}',
+        'pm_main_label': u'Main condition',
+        'pm_extra_label': u'«With honours» condition',
+        'pm_none_active': u'No missions in progress: pick one on the missions screen',
+        'pm_state_in_progress': u'In progress',
+        'pm_state_done': u'Done',
+        'pm_state_honors': u'Done with honours',
+        'pm_empty': u'The game has not listed your personal missions yet: open the missions screen',
+        'pm_refresh': u'Refresh',
+    },
+}

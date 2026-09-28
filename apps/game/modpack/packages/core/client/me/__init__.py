@@ -8,7 +8,7 @@ import time
 
 from ...codec import encode_json, parse_json_body, parse_retry_after
 from ...errors import ReasonError
-from ...log import log, safe
+from ...log import log, log_exception, safe
 from ...me import (OK_STATUS, REFRESH_AFTER_BATTLE_S, TANKS_PATH, ReadState, device_body, is_auth_failure, retry_delay, tank_key, tank_rows,
                    tanks_request)
 from ...me.constants import MAX_WATCHED_TANKS
@@ -64,7 +64,8 @@ class TankRatings(object):
         bus.on('tick', self._on_tick)
 
     def listen(self, callback):
-        """`callback(tank_id)` after a read of that tank finished (with or without a row)."""
+        """`callback(tank_id)` after a read of that tank finished (with or without a row); a failing one is logged
+        and the others still run."""
         self.listeners.append(callback)
 
     def row(self, tank_id):
@@ -118,7 +119,10 @@ class TankRatings(object):
             else:
                 self.reads.fail([key], time.time(), retry_delay(status, retry_after))
             for callback in list(self.listeners):
-                callback(tank_id)
+                try:
+                    callback(tank_id)
+                except Exception:
+                    log_exception('tank ratings listener')
 
         post_signed(self.app, TANKS_PATH, payload, done)
         return True

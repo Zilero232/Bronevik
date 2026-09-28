@@ -19,18 +19,28 @@ def clean_record(values):
 
 
 class RecordBook(object):
-    """The best single-battle values per own tank (random battles), the largest of every source seen."""
+    """The best single-battle values per own tank (random battles), the largest of every source seen. Past MAX_TANKS
+    the tank seen least recently is dropped; the order is kept in the file."""
 
     def __init__(self, data=None):
         self.tanks = {}
         self.order = []
         tanks = data.get('tanks') if isinstance(data, dict) else None
-        for key, values in sorted((tanks or {}).items()):
-            if str(key).isdigit() and isinstance(values, dict):
-                self.merge(int(key), values)
+        tanks = tanks if isinstance(tanks, dict) else {}
+        saved = data.get('order') if isinstance(data, dict) and isinstance(data.get('order'), list) else []
+        keys = [str(tank_id) for tank_id in saved if str(tank_id) in tanks]
+        keys.extend(sorted(key for key in tanks if key not in keys))
+        for key in keys:
+            if str(key).isdigit() and isinstance(tanks[key], dict):
+                self.merge(int(key), tanks[key])
 
     def get(self, tank_id):
         return dict(self.tanks.get(tank_id) or {})
+
+    def _touch(self, tank_id):
+        if tank_id in self.order:
+            self.order.remove(tank_id)
+        self.order.append(tank_id)
 
     def merge(self, tank_id, values):
         if not is_int(tank_id) or tank_id <= 0:
@@ -41,9 +51,11 @@ class RecordBook(object):
             if not incoming:
                 return False
             current = self.tanks[tank_id] = {}
-            self.order.append(tank_id)
-            if len(self.order) > MAX_TANKS:
+            self._touch(tank_id)
+            while len(self.order) > MAX_TANKS:
                 self.tanks.pop(self.order.pop(0), None)
+        elif incoming:
+            self._touch(tank_id)
         changed = False
         for metric, value in incoming.items():
             if value > current.get(metric, 0):
@@ -52,7 +64,8 @@ class RecordBook(object):
         return changed
 
     def to_dict(self):
-        return {'tanks': dict((str(tank_id), dict(self.tanks[tank_id])) for tank_id in self.order if tank_id in self.tanks)}
+        order = [tank_id for tank_id in self.order if tank_id in self.tanks]
+        return {'tanks': dict((str(tank_id), dict(self.tanks[tank_id])) for tank_id in order), 'order': order}
 
 
 def event_values(event):

@@ -160,6 +160,25 @@ class HudLayerTest(unittest.TestCase):
         self.layer.hide_all()
         assert self.backend.labels == {}
 
+    def test_muted_and_blocked_panels_come_back_with_their_latest_text(self):
+        alias = alias_of('damage_log')
+        self.layer.register('session', SCHEMA)
+        self.layer.show('damage_log', 'one')
+        self.layer.set_muted(True)
+        assert self.backend.labels == {}
+        assert self.layer.show('damage_log', 'two') and self.layer.show('session', 'mine')
+        assert self.backend.labels == {}
+        self.layer.set_blocked(['session'])
+        self.layer.set_muted(False)
+        assert self.backend.labels[alias]['text'] == 'two' and alias_of('session') not in self.backend.labels
+        self.layer.hide('session')
+        self.layer.set_blocked([])
+        assert alias_of('session') not in self.backend.labels
+        self.layer.set_blocked(['damage_log'])
+        assert alias not in self.backend.labels
+        self.layer.set_blocked([])
+        assert self.backend.labels[alias]['text'] == 'two'
+
 
 class HudPreviewTest(unittest.TestCase):
 

@@ -5,6 +5,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import BigWorld
 
+from .constants import SOURCE_CHECKS
+
 
 def player():
     return BigWorld.player()
@@ -81,3 +83,19 @@ def call(target, name, default=None, *args):
         return method(*args)
     except Exception:
         return default
+
+
+def damage_source(extra):
+    """'shot', 'fire', 'ram', 'world' or 'other': what caused a damage the feedback reported."""
+    for check, source in SOURCE_CHECKS:
+        if call(extra, check, False):
+            return source
+    return 'other'
+
+
+def own_hull_yaw():
+    """The world yaw (radians) of the player's own vehicle, or None. Only the own vehicle: never another entity."""
+    getter = getattr(BigWorld, 'entity', None)
+    vehicle_id = getattr(player(), 'playerVehicleID', None)
+    entity = getter(vehicle_id) if getter is not None and vehicle_id else None
+    return getattr(entity, 'yaw', None)

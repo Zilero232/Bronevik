@@ -23,6 +23,11 @@ pub const MAX_REDIRECTS: usize = 5;
 pub const MAX_PACKAGE_BYTES: u64 = 256 * 1024 * 1024;
 pub const MAX_CATALOG_BYTES: u64 = 16 * 1024 * 1024;
 pub const MAX_NOTICE_BYTES: u64 = 256 * 1024;
+pub const FORBIDDEN_NAME_CHARS: [char; 9] = ['/', '\\', ':', '*', '?', '"', '<', '>', '|'];
+pub const RESERVED_NAMES: [&str; 22] = [
+    "con", "prn", "aux", "nul", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5",
+    "lpt6", "lpt7", "lpt8", "lpt9",
+];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -101,7 +106,12 @@ pub fn verify_sha256(bytes: &[u8], expected: &str) -> AppResult<()> {
 }
 
 pub fn safe_file_name(name: &str) -> AppResult<&str> {
-    let valid = !name.is_empty() && !name.contains(['/', '\\', ':']) && name != "." && name != "..";
+    let stem = name.split('.').next().unwrap_or_default().trim_end().to_lowercase();
+    let valid = !name.is_empty()
+        && !name.contains(FORBIDDEN_NAME_CHARS)
+        && !name.chars().any(char::is_control)
+        && !name.ends_with(['.', ' '])
+        && !RESERVED_NAMES.contains(&stem.as_str());
 
     if !valid {
         return Err(AppError::coded(ErrorCode::InvalidPath, format!("bad package file name {name}")));

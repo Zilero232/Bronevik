@@ -1,7 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.native_settings import NATIVE, tri_state
-from .constants import CENTRE_PART, MARK_FILES, MARK_RENDITIONS, MARK_ROOT, MODE_RETICLES, PRESET_PARTS, SERVER_RETICLE
+from .constants import (CENTRE_PART, DEFAULT_MARK_COLOR, MARK_COLORS, MARK_FILES, MARK_RENDITIONS, MARK_ROOT, MODE_RETICLES, PRESET_PARTS,
+                        SERVER_RETICLE, TINTED_FOLDER)
 
 # Visual only: a preset sets the opacity and style of reticle parts the game's settings already offer, and a centre
 # mark is a static image drawn where the client already draws its own reticle centre. Nothing here computes anything
@@ -32,17 +33,20 @@ def rendition(size):
     return MARK_RENDITIONS[-1]
 
 
-def mark_image(mark, size):
-    """The client path of the mark's image in the smallest rendition not below `size`, or None."""
+def mark_image(mark, size, color=DEFAULT_MARK_COLOR):
+    """The client path of the mark's image in the smallest rendition not below `size` (a one-colour mark in `color`),
+    or None."""
     found = MARK_FILES.get(mark)
     if found is None or not size:
         return None
     folder, stem = found
+    if folder == TINTED_FOLDER:
+        stem = '%s_%s' % (stem, color if color in MARK_COLORS else DEFAULT_MARK_COLOR)
     return '%s/%s/%s_%d.png' % (MARK_ROOT, folder, stem, rendition(size))
 
 
-def mark_html(mark, size):
-    path = mark_image(mark, size)
+def mark_html(mark, size, color=DEFAULT_MARK_COLOR):
+    path = mark_image(mark, size, color)
     return '<img src="img://%s" width="%d" height="%d"/>' % (path, size, size) if path else ''
 
 

@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import BigWorld
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.client.battle import call, feedback, is_enemy, vehicle_class, vehicle_name, vehicle_state
+from ....core.client.battle import call, damage_source, feedback, is_enemy, vehicle_class, vehicle_name, vehicle_state
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel
 from ....core.client.timer import Ticker
@@ -14,19 +14,12 @@ from ..model import DamageLog, format_damage_log, format_last_hit
 from ..model.constants import PREVIEW_LAST_HIT_SIZE, PREVIEW_SIZE
 from ..model.preview import preview_last_hit, preview_text
 from ..settings import LAST_HIT_PANEL_ID, LAST_HIT_SCHEMA, PANEL_ID, SCHEMA, SWITCH
-from .constants import AMMO_RACK_DEVICE, AMMO_RACK_STATES, EVENT_KINDS, SOURCE_CHECKS
+from .constants import AMMO_RACK_DEVICE, AMMO_RACK_STATES, EVENT_KINDS
 
 try:
     from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 except ImportError:
     VEHICLE_VIEW_STATE = None
-
-
-def damage_source(extra):
-    for check, source in SOURCE_CHECKS:
-        if call(extra, check, False):
-            return source
-    return 'other'
 
 
 def now():

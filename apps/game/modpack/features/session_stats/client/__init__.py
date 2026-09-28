@@ -10,8 +10,9 @@ from ....core.me import OK_STATUS
 from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import SessionAggregator, format_session_panel, format_session_plain
-from ..model.constants import ACTION_SHARE, SHARE_PATH, SHARE_RETRY_S, SHARE_SEND_PATH, SHARE_STATE_KEY
-from ..model.share import preference_body, preference_of, send_body, send_failure_key
+from ..model.constants import (ACTION_SHARE, SHARE_PATH, SHARE_REFUSED, SHARE_REFUSED_NOTICE, SHARE_RETRY_S, SHARE_SEND_PATH, SHARE_STATE_KEY,
+                               SHARE_SYNCED)
+from ..model.share import preference_body, preference_of, preference_outcome, send_body, send_failure_key
 from ..settings import IDLE_MINUTES, SHARE, SHARE_CHANNEL, SWITCH
 from .constants import HANGAR_PANEL, LAYOUT, STATE_KEY
 
@@ -30,6 +31,7 @@ class SessionStats(object):
         self.share_synced = tuple(synced) if isinstance(synced, list) and len(synced) == 2 else None
         self.share_sending = False
         self.share_retry_at = 0.0
+        self.share_refused = None
         app.register_state(SHARE_STATE_KEY, lambda: list(self.share_synced) if self.share_synced else None)
         bus = app.bus
         bus.on('hangar', self._on_hangar)
@@ -62,6 +64,7 @@ class SessionStats(object):
 
     def _on_rebind(self):
         self.share_synced = None
+        self.share_refused = None
 
     def _on_tick(self, now):
         if now >= self.share_retry_at:
@@ -90,7 +93,7 @@ class SessionStats(object):
     # A never-synced "off" is the server's default: nothing is posted before the player turned sharing on once.
     def sync_share(self, now):
         wanted = preference_of(self.app.config)
-        if self.share_sending or wanted == self.share_synced or not can_read(self.app):
+        if self.share_sending or wanted in (self.share_synced, self.share_refused) or not can_read(self.app):
             return
         if self.share_synced is None and not wanted[0]:
             return
@@ -103,9 +106,13 @@ class SessionStats(object):
 
         def done(status, data, retry_after):
             self.share_sending = False
-            if status == OK_STATUS:
+            outcome = preference_outcome(status)
+            if outcome == SHARE_SYNCED:
                 self.share_synced = wanted
                 self.app.save_state()
+            elif outcome == SHARE_REFUSED:
+                self.share_refused = wanted
+                self.app.ui.notify(self.app.translate(SHARE_REFUSED_NOTICE))
             else:
                 self.share_retry_at = time.time() + SHARE_RETRY_S
 

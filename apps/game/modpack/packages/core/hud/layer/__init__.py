@@ -3,6 +3,9 @@
 When the backend reports a drag (`on_moved`), the new x/y (and the anchor, when the renderer sends one)
 are saved into the panel's section of components.json, so the panel comes back where the player left it.
 An unchanged text is not sent again (a Flash or Gameface re-layout per call is the cost).
+
+`set_muted(True)` (the streamer hotkey) and `set_blocked(panel_ids)` (the streamer's private panels) take panels off
+the screen without the features knowing: their texts are held and come back when the panel is allowed again.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -21,6 +24,9 @@ class HudLayer(object):
         self.shown = set()
         self.texts = {}
         self.places = {}
+        self.muted = False
+        self.blocked = frozenset()
+        self.held = {}
         self.backend.listen(self.on_moved)
 
     @property
@@ -49,11 +55,19 @@ class HudLayer(object):
         props.update({'text': text, 'visible': True})
         return props
 
+    def suppressed(self, panel_id):
+        return self.muted or panel_id in self.blocked
+
     def show(self, panel_id, text):
-        """Show or update the panel; False when it is unknown or no renderer is installed."""
+        """Show or update the panel; False when it is unknown or no renderer is installed. A muted or blocked panel
+        keeps its text for later and counts as shown."""
         if not self.is_registered(panel_id) or not self.has_panels:
             self.hide(panel_id)
             return False
+        if self.suppressed(panel_id):
+            self._take_off(panel_id)
+            self.held[panel_id] = text
+            return True
         alias = alias_of(panel_id)
         if alias in self.shown:
             if self.texts.get(alias) != text:
@@ -79,6 +93,10 @@ class HudLayer(object):
         return True
 
     def hide(self, panel_id):
+        self.held.pop(panel_id, None)
+        self._take_off(panel_id)
+
+    def _take_off(self, panel_id):
         alias = alias_of(panel_id)
         self.texts.pop(alias, None)
         self.places.pop(alias, None)
@@ -89,6 +107,27 @@ class HudLayer(object):
     def hide_all(self):
         for panel_id in list(self.panels):
             self.hide(panel_id)
+
+    def set_muted(self, muted):
+        """Take every panel off the screen (True) or bring back what the features show (False)."""
+        self.muted = bool(muted)
+        self._apply()
+
+    def set_blocked(self, panel_ids):
+        self.blocked = frozenset(panel_ids or ())
+        self._apply()
+
+    def _apply(self):
+        for alias in list(self.shown):
+            panel_id = panel_of(alias)
+            if panel_id is not None and self.suppressed(panel_id):
+                self.held[panel_id] = self.texts.get(alias)
+                self._take_off(panel_id)
+        for panel_id, text in list(self.held.items()):
+            if not self.suppressed(panel_id):
+                del self.held[panel_id]
+                if text is not None:
+                    self.show(panel_id, text)
 
     def update_settings(self, panel_id, values):
         """Apply new settings (a settings window, a preset); a shown panel is moved or restyled at once."""

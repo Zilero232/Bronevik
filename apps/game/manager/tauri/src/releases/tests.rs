@@ -18,6 +18,15 @@ fn refuses_package_names_that_leave_the_folder() {
 }
 
 #[test]
+fn refuses_package_names_windows_cannot_hold() {
+    for name in ["", ".", "..", "a|b.mtmod", "a?.mtmod", "core.mtmod.", "core.mtmod ", "NUL.mtmod", "com1", "lpt9.txt", "a\u{1}.mtmod"] {
+        assert!(safe_file_name(name).is_err(), "{name:?}");
+    }
+
+    assert!(safe_file_name("console.mtmod").is_ok());
+}
+
+#[test]
 fn reads_the_server_contract() {
     let parsed: LatestRelease = serde_json::from_str(
         r#"{"game":"1.46.0.0","status":"compatible","release":{"version":"0.2.0","publishedAt":"2026-09-27T12:00:00.000Z","games":["1.46.*"],"notes":{"ru":"Исправления","en":"Fixes"},"catalog":{"url":"https://cdn.triotmetki.ru/c.json","sha256":"ab"},"packages":[{"id":"core","file":"net.triotmetki.core_0.2.0.mtmod","url":"https://cdn.triotmetki.ru/core.mtmod","sha256":"ab","size":10}]}}"#,

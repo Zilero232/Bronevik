@@ -57,6 +57,12 @@ class PanelTest(unittest.TestCase):
         empty = panel_state({'damage': 10, 'spot': 0, 'frag': 0, 'def': 0}, None)
         assert empty['wn8'] is None and empty['delta'] is None
 
+    def test_a_zero_average_shows_no_damage_line(self):
+        state = panel_state({'damage': 500, 'spot': 0, 'frag': 0, 'def': 0}, dict(row(), avg_damage=0.0))
+        assert state['average'] is None and state['delta'] is None
+        assert format_panel(state, Settings({}, SCHEMA), translator()) is not None
+        assert format_panel(state, Settings({'show_wn8': False}, SCHEMA), translator()) is None
+
     def test_format(self):
         state = panel_state({'damage': 1500, 'spot': 1, 'frag': 1, 'def': 0}, dict(row(), avg_damage=1200.0))
         text = format_panel(state, Settings({}, SCHEMA), translator())

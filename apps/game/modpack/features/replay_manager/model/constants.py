@@ -42,7 +42,7 @@ SORT_KEYS = {
     'size': ('size', True),
 }
 
-# contract/replay-analysis.schema.json (not served yet, README TODO): the site's analysis of an uploaded replay.
+# contract/replay-analysis.schema.json: the site's analysis of an uploaded replay.
 ANALYSIS_PATH = '/mod/me/replays'
 ANALYSIS_POLL_S = 60
 ANALYSIS_WATCH_S = 6 * 3600

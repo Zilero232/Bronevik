@@ -10,7 +10,8 @@ from otmetki.core.native_settings import merge_value
 from otmetki.core.settings import Settings
 from otmetki.features.crosshair.i18n import STRINGS
 from otmetki.features.crosshair.model import mark_html, mark_image, mark_offset, shows_in, to_native
-from otmetki.features.crosshair.model.constants import MARK_FILES, MARK_RENDITIONS, OPACITY_PARTS, PRESET_PARTS, RETICLE_PARTS, STYLE_MAX, STYLE_PARTS
+from otmetki.features.crosshair.model.constants import (MARK_COLORS, MARK_FILES, MARK_RENDITIONS, OPACITY_PARTS, PRESET_PARTS, RETICLE_PARTS, STYLE_MAX,
+                                                        STYLE_PARTS)
 from otmetki.features.crosshair.model.preview import preview_text
 from otmetki.features.crosshair.settings import SCHEMA, SETTINGS
 from otmetki.features.crosshair.settings.constants import MARKS
@@ -64,7 +65,15 @@ class CentreMarkTest(unittest.TestCase):
         assert set(MARKS) == set(MARK_FILES) | set(['none'])
         for mark in MARK_FILES:
             for size in MARK_RENDITIONS:
-                assert mark_image(mark, size) in shipped, (mark, size)
+                for color in MARK_COLORS:
+                    assert mark_image(mark, size, color) in shipped, (mark, size, color)
+
+    def test_one_colour_marks_come_in_the_chosen_colour(self):
+        assert mark_image('tint_ring', 48, 'green').endswith('/tinted/tint_ring_green_64.png')
+        assert mark_image('tint_ring', 48, 'bogus').endswith('/tinted/tint_ring_white_64.png')
+        assert mark_image('ring', 48, 'green').endswith('/otmetki/ring_64.png')
+        assert Settings({'mark_color': 'purple'}, SCHEMA).get('mark_color') == 'white'
+        assert 'tint_brackets_red_128.png' in preview_text(Settings({'mark': 'tint_brackets', 'mark_size': 100, 'mark_color': 'red'}, SCHEMA), None)
 
     def test_image_picks_the_rendition_not_below_the_size(self):
         assert mark_image('dot', 48).endswith('/otmetki/dot_64.png')

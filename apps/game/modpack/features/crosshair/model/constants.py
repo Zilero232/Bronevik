@@ -30,8 +30,12 @@ MODE_RETICLES = {
     'sniper': (SNIPER,),
 }
 
-# The mark images the package ships (assets/assets.json: otmetki_crosshair, kenney_crosshair_pack), as the client
-# reads them through Scaleform `img://`. Each is rendered at every size of MARK_RENDITIONS.
+# The mark images the package ships (assets/assets.json: otmetki_crosshair, otmetki_crosshair_tinted,
+# kenney_crosshair_pack), as the client reads them through Scaleform `img://`. Each is rendered at every size of
+# MARK_RENDITIONS; a TINTED_FOLDER mark also in every colour of MARK_COLORS (`<stem>_<colour>_<size>.png`).
+TINTED_FOLDER = 'tinted'
+MARK_COLORS = ('white', 'green', 'yellow', 'cyan', 'magenta', 'red')
+DEFAULT_MARK_COLOR = 'white'
 MARK_ROOT = 'gui/maps/icons/otmetki/crosshair'
 MARK_RENDITIONS = (64, 128)
 MARK_FILES = {
@@ -42,6 +46,11 @@ MARK_FILES = {
     'streamer': ('otmetki', 'streamer'),
     'colorblind': ('otmetki', 'colorblind'),
     'triad': ('otmetki', 'triad'),
+    'tint_dot': ('tinted', 'tint_dot'),
+    'tint_cross': ('tinted', 'tint_cross'),
+    'tint_ring': ('tinted', 'tint_ring'),
+    'tint_brackets': ('tinted', 'tint_brackets'),
+    'tint_diamond': ('tinted', 'tint_diamond'),
     'kenney_dotted': ('kenney', 'crosshair-016'),
     'kenney_cluster': ('kenney', 'crosshair-021'),
     'kenney_pincer': ('kenney', 'crosshair-061'),

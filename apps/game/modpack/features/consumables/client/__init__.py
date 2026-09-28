@@ -59,6 +59,7 @@ class ConsumablesPanel(BattlePanel):
 
     def _on_equipment(self, int_cd, item):
         if self.loadout is not None and self._set_item(int_cd, item):
+            self.ticker.restart_elapsed()
             self.render()
 
     def _on_shells_added(self, int_cd, descriptor, quantity, *args):
@@ -74,7 +75,7 @@ class ConsumablesPanel(BattlePanel):
     def _on_tick(self):
         if self.loadout is None:
             return False
-        if self.loadout.tick(TICK_S):
+        if self.loadout.tick(self.ticker.elapsed()):
             self.render()
         return True
 

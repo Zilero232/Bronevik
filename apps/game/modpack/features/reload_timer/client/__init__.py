@@ -53,7 +53,11 @@ class ReloadTimerPanel(BattlePanel):
         return self.gun.set_in_clip(shells[1] if isinstance(shells, tuple) and len(shells) == 2 else None)
 
     def _on_reload(self, shell_cd, snapshot, *args):
-        if self.gun is not None and self.gun.set_reload(call(snapshot, 'getTimeLeft', 0), call(snapshot, 'getBaseValue', 0)):
+        if self.gun is None:
+            return
+        changed = self.gun.set_reload(call(snapshot, 'getTimeLeft', 0), call(snapshot, 'getBaseValue', 0))
+        self.ticker.restart_elapsed()
+        if changed:
             self.render()
 
     def _on_gun_settings(self, gun_settings):
@@ -71,7 +75,7 @@ class ReloadTimerPanel(BattlePanel):
     def _on_tick(self):
         if self.gun is None:
             return False
-        if self.gun.tick(TICK_S):
+        if self.gun.tick(self.ticker.elapsed()):
             self.render()
         return True
 

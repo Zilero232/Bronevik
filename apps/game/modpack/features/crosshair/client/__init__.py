@@ -36,7 +36,7 @@ class CrosshairComponent(BattlePanel):
         return BattlePanel._in_hangar(self) and bool(self.mark())
 
     def mark(self):
-        return mark_html(self.settings.get('mark'), self.settings.get('mark_size'))
+        return mark_html(self.settings.get('mark'), self.settings.get('mark_size'), self.settings.get('mark_color'))
 
     def start(self, player):
         if not self.mark():

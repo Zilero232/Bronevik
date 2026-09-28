@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# contract/goals.schema.json (not served yet, README TODO): the goals set on the site's «Мой кабинет» page.
+# contract/goals.schema.json: the goals set on the site's «Мой кабинет» page.
 GOALS_PATH = '/mod/me/goals'
 SITE_PATH = '/me'
 GOALS_KEY = 'goals'

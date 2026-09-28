@@ -43,6 +43,13 @@ dependencies = [
   "otmetki-feature-battle-efficiency",
   "otmetki-feature-consumables",
   "otmetki-feature-reload-timer",
+  "otmetki-feature-received-hits",
+  "otmetki-feature-death-card",
+  "otmetki-feature-battle-loadout",
+  "otmetki-feature-personal-missions",
+  "otmetki-feature-streamer-mode",
+  "otmetki-feature-platoon-helper",
+  "otmetki-feature-tilt-guard",
 ]
 
 [project.urls]
@@ -103,6 +110,13 @@ otmetki-feature-main-gun = { workspace = true }
 otmetki-feature-battle-efficiency = { workspace = true }
 otmetki-feature-consumables = { workspace = true }
 otmetki-feature-reload-timer = { workspace = true }
+otmetki-feature-received-hits = { workspace = true }
+otmetki-feature-death-card = { workspace = true }
+otmetki-feature-battle-loadout = { workspace = true }
+otmetki-feature-personal-missions = { workspace = true }
+otmetki-feature-streamer-mode = { workspace = true }
+otmetki-feature-platoon-helper = { workspace = true }
+otmetki-feature-tilt-guard = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["packages", "features", "tools"]

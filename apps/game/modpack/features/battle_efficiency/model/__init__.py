@@ -53,7 +53,7 @@ def wn8(totals, expected, win_ratio=NEUTRAL_WIN_RATIO):
 
 def panel_state(totals, row):
     row = row or {}
-    average = row.get('avg_damage')
+    average = row.get('avg_damage') if is_number(row.get('avg_damage')) and row.get('avg_damage') > 0 else None
     own_wn8 = (row.get('wn8') or {}).get('value')
     damage = totals['damage']
     return {
@@ -61,7 +61,7 @@ def panel_state(totals, row):
         'tank_wn8': own_wn8,
         'damage': damage,
         'average': average,
-        'delta': int(round(100.0 * (damage - average) / average)) if is_number(average) and average > 0 else None,
+        'delta': int(round(100.0 * (damage - average) / average)) if average is not None else None,
     }
 
 

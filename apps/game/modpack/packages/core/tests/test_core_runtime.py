@@ -239,6 +239,30 @@ class TickerTest(unittest.TestCase):
         self.run_callbacks()
         self.assertEqual(len(ticks), 2)
 
+    def test_elapsed_is_the_game_time_between_ticks(self):
+        clock = [10.0]
+        sys.modules['BigWorld'].time = lambda: clock[0]
+        seen = []
+        ticker = self.timer.Ticker(0.1, lambda: seen.append(round(ticker.elapsed(), 3)))
+        ticker.start()
+        clock[0] = 10.133
+        self.run_callbacks()
+        clock[0] = 10.25
+        self.run_callbacks()
+        self.assertEqual(seen, [0.133, 0.117])
+        clock[0] = 10.3
+        ticker.restart_elapsed()
+        clock[0] = 10.35
+        self.run_callbacks()
+        self.assertEqual(seen[-1], 0.05)
+
+    def test_elapsed_falls_back_to_the_interval_without_a_clock(self):
+        seen = []
+        ticker = self.timer.Ticker(0.5, lambda: seen.append(ticker.elapsed()))
+        ticker.start()
+        self.run_callbacks()
+        self.assertEqual(seen, [0.5])
+
 
 class CoreHelpersTest(unittest.TestCase):
 

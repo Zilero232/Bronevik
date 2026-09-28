@@ -4,4 +4,4 @@ from . import mark_html
 
 
 def preview_text(settings, translate):
-    return mark_html(settings.get('mark'), settings.get('mark_size'))
+    return mark_html(settings.get('mark'), settings.get('mark_size'), settings.get('mark_color'))

@@ -13,6 +13,7 @@ members = [
     "otmetki-feature-auto-resupply",
     "otmetki-feature-battle-clock",
     "otmetki-feature-battle-efficiency",
+    "otmetki-feature-battle-loadout",
     "otmetki-feature-battle-results",
     "otmetki-feature-battle-sounds",
     "otmetki-feature-camera",
@@ -20,6 +21,7 @@ members = [
     "otmetki-feature-consumables",
     "otmetki-feature-crosshair",
     "otmetki-feature-damage-log",
+    "otmetki-feature-death-card",
     "otmetki-feature-hangar-cleaner",
     "otmetki-feature-hangar-info",
     "otmetki-feature-hangar-marks",
@@ -32,13 +34,18 @@ members = [
     "otmetki-feature-minimap",
     "otmetki-feature-notification-filter",
     "otmetki-feature-personal-best",
+    "otmetki-feature-personal-missions",
+    "otmetki-feature-platoon-helper",
+    "otmetki-feature-received-hits",
     "otmetki-feature-reload-timer",
     "otmetki-feature-replay-manager",
     "otmetki-feature-replay-upload",
     "otmetki-feature-session-goals",
     "otmetki-feature-session-stats",
     "otmetki-feature-sixth-sense",
+    "otmetki-feature-streamer-mode",
     "otmetki-feature-team-hp",
+    "otmetki-feature-tilt-guard",
     "otmetki-modpack",
     "otmetki-ui",
 ]
@@ -172,6 +179,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "otmetki-feature-battle-loadout"
+version = "0.1.0"
+source = { virtual = "features/battle_loadout" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-battle-results"
 version = "0.1.0"
 source = { virtual = "features/battle_results" }
@@ -248,7 +270,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-crosshair"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/crosshair" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -265,6 +287,21 @@ requires-dist = [
 name = "otmetki-feature-damage-log"
 version = "0.2.0"
 source = { virtual = "features/damage_log" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
+name = "otmetki-feature-death-card"
+version = "0.1.0"
+source = { virtual = "features/death_card" }
 dependencies = [
     { name = "otmetki-companion" },
     { name = "otmetki-core" },
@@ -457,6 +494,51 @@ requires-dist = [
 ]
 
 [[package]]
+name = "otmetki-feature-personal-missions"
+version = "0.1.0"
+source = { virtual = "features/personal_missions" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
+name = "otmetki-feature-platoon-helper"
+version = "0.1.0"
+source = { virtual = "features/platoon_helper" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
+name = "otmetki-feature-received-hits"
+version = "0.1.0"
+source = { virtual = "features/received_hits" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-reload-timer"
 version = "0.1.0"
 source = { virtual = "features/reload_timer" }
@@ -547,9 +629,39 @@ requires-dist = [
 ]
 
 [[package]]
+name = "otmetki-feature-streamer-mode"
+version = "0.1.0"
+source = { virtual = "features/streamer_mode" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-team-hp"
 version = "0.2.0"
 source = { virtual = "features/team_hp" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
+name = "otmetki-feature-tilt-guard"
+version = "0.1.0"
+source = { virtual = "features/tilt_guard" }
 dependencies = [
     { name = "otmetki-companion" },
     { name = "otmetki-core" },
@@ -571,6 +683,7 @@ dependencies = [
     { name = "otmetki-feature-auto-resupply" },
     { name = "otmetki-feature-battle-clock" },
     { name = "otmetki-feature-battle-efficiency" },
+    { name = "otmetki-feature-battle-loadout" },
     { name = "otmetki-feature-battle-results" },
     { name = "otmetki-feature-battle-sounds" },
     { name = "otmetki-feature-camera" },
@@ -578,6 +691,7 @@ dependencies = [
     { name = "otmetki-feature-consumables" },
     { name = "otmetki-feature-crosshair" },
     { name = "otmetki-feature-damage-log" },
+    { name = "otmetki-feature-death-card" },
     { name = "otmetki-feature-hangar-cleaner" },
     { name = "otmetki-feature-hangar-info" },
     { name = "otmetki-feature-hangar-marks" },
@@ -590,13 +704,18 @@ dependencies = [
     { name = "otmetki-feature-minimap" },
     { name = "otmetki-feature-notification-filter" },
     { name = "otmetki-feature-personal-best" },
+    { name = "otmetki-feature-personal-missions" },
+    { name = "otmetki-feature-platoon-helper" },
+    { name = "otmetki-feature-received-hits" },
     { name = "otmetki-feature-reload-timer" },
     { name = "otmetki-feature-replay-manager" },
     { name = "otmetki-feature-replay-upload" },
     { name = "otmetki-feature-session-goals" },
     { name = "otmetki-feature-session-stats" },
     { name = "otmetki-feature-sixth-sense" },
+    { name = "otmetki-feature-streamer-mode" },
     { name = "otmetki-feature-team-hp" },
+    { name = "otmetki-feature-tilt-guard" },
     { name = "otmetki-ui" },
 ]
 
@@ -617,6 +736,7 @@ requires-dist = [
     { name = "otmetki-feature-auto-resupply", virtual = "features/auto_resupply" },
     { name = "otmetki-feature-battle-clock", virtual = "features/battle_clock" },
     { name = "otmetki-feature-battle-efficiency", virtual = "features/battle_efficiency" },
+    { name = "otmetki-feature-battle-loadout", virtual = "features/battle_loadout" },
     { name = "otmetki-feature-battle-results", virtual = "features/battle_results" },
     { name = "otmetki-feature-battle-sounds", virtual = "features/battle_sounds" },
     { name = "otmetki-feature-camera", virtual = "features/camera" },
@@ -624,6 +744,7 @@ requires-dist = [
     { name = "otmetki-feature-consumables", virtual = "features/consumables" },
     { name = "otmetki-feature-crosshair", virtual = "features/crosshair" },
     { name = "otmetki-feature-damage-log", virtual = "features/damage_log" },
+    { name = "otmetki-feature-death-card", virtual = "features/death_card" },
     { name = "otmetki-feature-hangar-cleaner", virtual = "features/hangar_cleaner" },
     { name = "otmetki-feature-hangar-info", virtual = "features/hangar_info" },
     { name = "otmetki-feature-hangar-marks", virtual = "features/hangar_marks" },
@@ -636,13 +757,18 @@ requires-dist = [
     { name = "otmetki-feature-minimap", virtual = "features/minimap" },
     { name = "otmetki-feature-notification-filter", virtual = "features/notification_filter" },
     { name = "otmetki-feature-personal-best", virtual = "features/personal_best" },
+    { name = "otmetki-feature-personal-missions", virtual = "features/personal_missions" },
+    { name = "otmetki-feature-platoon-helper", virtual = "features/platoon_helper" },
+    { name = "otmetki-feature-received-hits", virtual = "features/received_hits" },
     { name = "otmetki-feature-reload-timer", virtual = "features/reload_timer" },
     { name = "otmetki-feature-replay-manager", virtual = "features/replay_manager" },
     { name = "otmetki-feature-replay-upload", virtual = "features/replay_upload" },
     { name = "otmetki-feature-session-goals", virtual = "features/session_goals" },
     { name = "otmetki-feature-session-stats", virtual = "features/session_stats" },
     { name = "otmetki-feature-sixth-sense", virtual = "features/sixth_sense" },
+    { name = "otmetki-feature-streamer-mode", virtual = "features/streamer_mode" },
     { name = "otmetki-feature-team-hp", virtual = "features/team_hp" },
+    { name = "otmetki-feature-tilt-guard", virtual = "features/tilt_guard" },
     { name = "otmetki-ui", virtual = "packages/ui" },
 ]
 

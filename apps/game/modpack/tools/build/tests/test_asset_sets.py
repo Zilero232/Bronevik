@@ -39,9 +39,10 @@ class AssetSetsTest(unittest.TestCase):
                     self.assertIn(os.path.normcase(os.path.join(directory, name)), listed)
 
     def test_problems_catch_a_non_commercial_licence(self):
-        bad = dict(self.sets[1].data, id='nc', license='CC-BY-NC-4.0')
+        third_party = [asset_set for asset_set in self.sets if asset_set.origin == 'third_party'][0]
+        bad = dict(third_party.data, id='nc', license='CC-BY-NC-4.0')
         self.assertTrue([problem for problem in asset_sets.problems([asset_sets.AssetSet(bad)]) if 'not allowed' in problem])
-        own = dict(self.sets[1].data, id='own', license=asset_sets.ORIGINAL_LICENCE)
+        own = dict(third_party.data, id='own', license=asset_sets.ORIGINAL_LICENCE)
         self.assertTrue(asset_sets.problems([asset_sets.AssetSet(own)]))
 
     def test_notices_are_current_and_name_every_set(self):

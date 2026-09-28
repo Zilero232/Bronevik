@@ -18,7 +18,8 @@ ACCOUNT = 12345678
 REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
 STUBBED = ('gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2', 'constants', 'SoundGroups',
-           'messenger', 'notification', 'account_helpers', 'helpers', 'skeletons', 'frameworks', 'openwg_gameface', 'items', 'WWISE', 'vehicle_outfit')
+           'messenger', 'notification', 'account_helpers', 'helpers', 'skeletons', 'frameworks', 'openwg_gameface', 'items', 'WWISE', 'vehicle_outfit',
+           'Keys', 'Avatar')
 
 
 class Event(object):
@@ -528,8 +529,8 @@ class ClientSmokeTest(unittest.TestCase):
         session.arena.onVehicleKilled(ALLY_VEHICLE, ENEMY_VEHICLE, 0, 0, 1)
 
         panels = self.hud_components()
-        self.assertEqual(sorted(panels), ['battle_clock', 'consumables', 'damage_log', 'hit_log', 'last_hit', 'main_gun', 'reload_timer', 'sixth_sense',
-                                          'team_hp'])
+        self.assertEqual(sorted(panels), ['battle_clock', 'consumables', 'damage_log', 'hit_log', 'last_hit', 'main_gun', 'received_hits', 'reload_timer',
+                                          'sixth_sense', 'team_hp'])
         self.assertTrue(all(props['kind'] == 'Label' and props['drag'] for props in panels.values()))
         damage_log = panels['damage_log']['text']
         self.assertIn('390', damage_log)
@@ -580,16 +581,17 @@ class ClientSmokeTest(unittest.TestCase):
             described.update({panel_id: (preview, width, enabled)})
 
         app.bus.emit('hud_describe', collect)
-        self.assertEqual(sorted(described), ['battle_clock', 'battle_efficiency', 'consumables', 'crosshair', 'damage_log', 'hangar_marks', 'hit_log',
-                                             'last_hit', 'main_gun', 'marks_panel', 'personal_best', 'reload_timer', 'session_goals', 'sixth_sense',
-                                             'team_hp'])
+        self.assertEqual(sorted(described), ['battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'crosshair', 'damage_log',
+                                             'death_card', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best',
+                                             'personal_missions', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense', 'team_hp'])
         self.assertFalse(described['team_hp'][2])
         self.assertTrue(described['damage_log'][2])
         self.assertIn('390', described['damage_log'][0])
         app.bus.emit('hud_edit', True)
         panels = self.hud_components()
-        self.assertEqual(sorted(panels), ['battle_clock', 'battle_efficiency', 'consumables', 'damage_log', 'hangar_marks', 'hit_log', 'last_hit',
-                                          'main_gun', 'marks_panel', 'personal_best', 'reload_timer', 'session_goals', 'sixth_sense'])
+        self.assertEqual(sorted(panels), ['battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'damage_log', 'death_card',
+                                          'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best', 'personal_missions',
+                                          'received_hits', 'reload_timer', 'session_goals', 'sixth_sense'])
         self.assertTrue(all(props['lobby'] and not props['battle'] for props in panels.values()))
         self.assertIn('Pz. IV', panels['hit_log']['text'])
         app.bus.emit('hud_edit', False)
@@ -783,6 +785,99 @@ class ClientSmokeTest(unittest.TestCase):
         self.events.onAvatarBecomeNonPlayer()
         self.assertEqual(self.hud_components(), {})
 
+    def install_round_four_stubs(self):
+        test = self
+        self.key_down = Event()
+        self.hit_directions = []
+        module('Keys', KEY_H=35, KEY_LCONTROL=29, KEY_LSHIFT=42)
+        sys.modules['gui'].InputHandler = type('InputHandler', (object,), {'g_instance': type('Input', (object,), {'onKeyDown': self.key_down})()})
+        sys.modules['BigWorld'].isKeyDown = lambda key: True
+
+        class PlayerAvatar(object):
+            # RU 1.45 Avatar.PlayerAvatar: the server's call behind the game's own hit direction indicator.
+
+            def showOwnVehicleHitDirection(self, hit_yaw, *args):
+                test.hit_directions.append(hit_yaw)
+
+        module('Avatar', PlayerAvatar=PlayerAvatar)
+
+        class Item(object):
+
+            def __init__(self, name, categories=()):
+                self.userName = name
+                self.icon = '../maps/icons/artefact/%s.png' % name
+                self.descriptor = type('Descriptor', (object,), {'categories': set(categories)})()
+
+        def slot(*categories):
+            return type('Slot', (object,), {'categories': set(categories)})()
+
+        devices = type('Layout', (object,), {'installed': [Item('rammer', ['firepower']), Item('vents', ['survivability']), None],
+                                             'slots': [slot('firepower'), slot('mobility'), slot('firepower')]})()
+        boosters = type('Layout', (object,), {'installed': [Item('brotherhood')]})()
+        self.vehicle.item = type('Vehicle', (object,), {'intCD': 1, 'optDevices': devices, 'battleBoosters': boosters, 'descriptor': None})()
+        return PlayerAvatar
+
+    def test_round_four_battle_panels_and_streamer_hotkey(self):
+        self.install_hud_stubs()
+        avatar = self.install_round_four_stubs()
+        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
+        self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        session = self.enter_battle(1, tank_id=1)
+        loadout = self.hud_components()['battle_loadout']['text']
+        self.assertIn('img://gui/maps/icons/artefact/rammer.png', loadout)
+        self.assertIn('brotherhood.png', loadout)
+        self.assertEqual(loadout.count(u'★'), 1)
+
+        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RECEIVED_DAMAGE, ENEMY_VEHICLE, Extra(310)),
+                                                   Feedback(kinds.TANKING, ALLY_VEHICLE, Extra(200, SHELL_TYPES.HE_MODERN))])
+        hits = self.hud_components()['received_hits']['text']
+        self.assertIn(u'Pz. IV', hits)
+        self.assertIn(u'не пробил, заблокировано 200', hits)
+        avatar().showOwnVehicleHitDirection(3.1)
+        self.assertEqual(self.hit_directions, [3.1])
+        session.vehicle_state.onVehicleStateUpdated(2, ('engine', 'critical', 'critical'))
+        self.assertNotIn('death_card', self.hud_components())
+        session.arena.onVehicleKilled(OWN_VEHICLE, ENEMY_VEHICLE, 0, 0)
+        card = self.hud_components()['death_card']['text']
+        self.assertIn(u'Вас уничтожил: СТ Pz. IV', card)
+        self.assertIn(u'урон 310', card)
+        self.assertIn(u'двигатель', card)
+
+        self.key_down(type('KeyEvent', (object,), {'key': 35})())
+        self.assertEqual(self.hud_components(), {})
+        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.TANKING, ALLY_VEHICLE, Extra(100))])
+        self.assertEqual(self.hud_components(), {})
+        self.key_down(type('KeyEvent', (object,), {'key': 35})())
+        self.assertIn(u'заблокировано 100', self.hud_components()['received_hits']['text'])
+        self.assertIn('death_card', self.hud_components())
+        self.events.onAvatarBecomeNonPlayer()
+        self.assertEqual(self.hud_components(), {})
+
+    def test_round_four_hangar_helpers_and_private_mode(self):
+        self.install_hud_stubs()
+        self.install_round_four_stubs()
+        app = self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
+        self.assertEqual(instances['personal_missions'].ui_page()['rows'], [])
+        self.assertNotIn('otmetki.personal_missions', self.components)
+        app.ui.show('otmetki.session', 'mine', {'x': 0, 'y': 0, 'alignX': 'right', 'alignY': 'top'})
+        sys.modules['gui.mods.otmetki.core.client.hud'].component_config(app).get('streamer_mode').update({'private': True})
+        app.bus.emit('component_settings', 'streamer_mode', ['private'])
+        self.assertNotIn('otmetki.session', self.components)
+        sys.modules['gui.mods.otmetki.core.client.hud'].component_config(app).get('streamer_mode').update({'private': False})
+        app.bus.emit('component_settings', 'streamer_mode', ['private'])
+        self.assertEqual(self.components['otmetki.session']['text'], 'mine')
+        for step in range(3):
+            results = _support.battle_results()
+            results['arenaUniqueID'] = 900 + step
+            results['common']['winnerTeam'] = 2
+            self.events.onBattleResultsReceived(True, results)
+        self.assertTrue([text for text in self.messages if u'поражений подряд' in text], self.messages)
+
     def install_site_vehicle(self):
         test = self
 
@@ -826,6 +921,11 @@ class ClientSmokeTest(unittest.TestCase):
         app.credentials.save(Credentials('device-1', 's' * 40, ACCOUNT))
         self.player = Player(ACCOUNT)
         self.events.onAccountShowGUI()
+
+        def failing_listener(tank_id):
+            raise RuntimeError('listener')
+
+        sys.modules['gui.mods.otmetki.core.client.me'].tank_ratings(app).listeners.insert(0, failing_listener)
         tanks, goals = self.site_rows()
         self.answer('tanks', tanks)
         self.answer('goals', goals)
@@ -896,6 +996,14 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertEqual(stats.ui_action('share_now')['kind'], 'info')
         sent = [fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/session-share/send')]
         self.assertEqual(json.loads(sent[0][3])['session_id'], stats.session.session_id)
+
+        app.config.update({'share_session_channel': 'discord'})
+        app.bus.emit('component_settings', 'session_stats', ['share_session_channel'])
+        shares = [fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/session-share')]
+        shares[-1][4](Response(409, b'{"error":"channel_not_linked"}'))
+        self.assertTrue([text for text in self.messages if u'привяжите выбранный канал' in text], self.messages)
+        app.bus.emit('tick', time.time() + 3600)
+        self.assertEqual(len([fetch for fetch in self.fetches if fetch[1].endswith('/mod/me/session-share')]), len(shares))
 
     def install_customization_stubs(self):
         test = self

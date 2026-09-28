@@ -1,7 +1,8 @@
 """Renders the PNG files of every asset set from its sources (assets/assets.json `sources` -> `files`).
 
 SVG sources go through resvg (resvg-py), raster sources (a third-party PNG) are resized with Pillow (LANCZOS).
-Each rendition is `<stem><suffix>_<size>.png`; `alpha` scales the opacity (the dimmed pulse frame).
+Each rendition is `<stem><suffix>_<size>.png`; `alpha` scales the opacity (the dimmed pulse frame) and `recolor`
+({from: to}) swaps colours in an SVG source before it is drawn (one-colour art in several colours).
 The client shows them through Scaleform `img://gui/maps/icons/...` in the HUD labels, which reads PNG
 directly: no DDS or atlas is needed (atlases are only for the vanilla battleAtlas, which we never touch).
 
@@ -35,7 +36,13 @@ def rendition_name(stem, rendition):
 def render_one(path, rendition):
     resvg_py, Image = libraries()
     size = rendition['size']
-    if path.endswith('.svg'):
+    if path.endswith('.svg') and rendition.get('recolor'):
+        with io.open(path, encoding='utf-8') as handle:
+            svg = handle.read()
+        for source, target in sorted(rendition['recolor'].items()):
+            svg = svg.replace(source, target)
+        image = Image.open(io.BytesIO(bytes(resvg_py.svg_to_bytes(svg_string=svg, width=size, height=size)))).convert('RGBA')
+    elif path.endswith('.svg'):
         image = Image.open(io.BytesIO(bytes(resvg_py.svg_to_bytes(svg_path=path, width=size, height=size)))).convert('RGBA')
     else:
         image = Image.open(path).convert('RGBA').resize((size, size), Image.LANCZOS)

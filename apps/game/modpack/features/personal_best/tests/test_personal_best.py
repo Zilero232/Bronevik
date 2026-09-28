@@ -50,6 +50,15 @@ class RecordBookTest(unittest.TestCase):
             book.merge(tank_id, {'damage': 100})
         assert len(book.tanks) == MAX_TANKS and 1 not in book.tanks and MAX_TANKS + 10 in book.tanks
 
+    def test_drops_the_tank_seen_least_recently_even_after_a_reload(self):
+        book = RecordBook()
+        for tank_id in range(1, MAX_TANKS + 1):
+            book.merge(tank_id, {'damage': 100})
+        book.merge(1, {'damage': 50})
+        again = RecordBook(book.to_dict())
+        again.merge(MAX_TANKS + 1, {'damage': 100})
+        assert 1 in again.tanks and 2 not in again.tanks and len(again.tanks) == MAX_TANKS
+
 
 class BattleTest(unittest.TestCase):
 

@@ -18,6 +18,18 @@ export const lookupRouteEntity = async ({ key, load }: RouteEntityInput): Promis
   }
 };
 
+export const lookupRouteMeta = async <T>(load: () => Promise<T>): Promise<T | null> => {
+  try {
+    return await load();
+  } catch (error) {
+    if (!isNotFoundError(error)) {
+      cacheLife('seconds');
+    }
+
+    return null;
+  }
+};
+
 export const routeEntity = async ({ key, lookup }: RouteLookupInput): Promise<RouteEntity> => {
   try {
     return await lookup(key);

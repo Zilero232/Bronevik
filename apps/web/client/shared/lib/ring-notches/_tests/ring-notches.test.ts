@@ -18,4 +18,20 @@ describe('ringNotches', () => {
 
     expect(notch.y1).toBeCloseTo(5);
   });
+
+  it('rounds coordinates so the server and the browser print the same markup', () => {
+    const notches = ringNotches({ size: 88, thickness: 7, percents: [12.5, 33, 65, 85, 95] });
+
+    for (const notch of notches) {
+      for (const value of [notch.x1, notch.y1, notch.x2, notch.y2]) {
+        expect(value).toBe(Math.round(value * 1000) / 1000);
+      }
+    }
+  });
+
+  it('lands exactly on the axis at a quarter turn', () => {
+    const [right] = ringNotches({ size: 100, thickness: 6, percents: [25], overshoot: 0 });
+
+    expect(right).toEqual({ percent: 25, x1: 94, y1: 50, x2: 100, y2: 50 });
+  });
 });

@@ -6,10 +6,16 @@ import { Breadcrumbs } from '../../molecules';
 
 import s from './PageHeader.module.scss';
 
-export const PageHeader = ({ title, description, breadcrumbs, meta, actions, aside, children, className }: PageHeaderProps) => (
+export const PageHeader = ({ title, description, breadcrumbs, meta, actions, aside, emblem, children, className }: PageHeaderProps) => (
   <header className={clsx(s.root, className)}>
+    <span aria-hidden className={s.texture} />
+    {emblem && (
+      <span aria-hidden className={s.emblem}>
+        {emblem}
+      </span>
+    )}
     <div className={s.main}>
-      {breadcrumbs && breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} />}
+      {breadcrumbs && breadcrumbs.length > 0 && <Breadcrumbs isCurrentAccent items={breadcrumbs} />}
       <div className={s.titleRow}>
         <h1 className={s.title}>{title}</h1>
         {meta && <div className={s.meta}>{meta}</div>}

@@ -16,7 +16,6 @@
   "shell": {
     "label": "Разделы сообщества",
     "home": "Главная",
-    "competitions": "Соревнования",
     "signIn": "Войти",
     "sections": {
       "feed": {

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "{name} — build constructor",
-    "description": "Equipment, crew, field modifications and final stats of the {name}."
+    "description": "{name} build for Mir Tankov: equipment, crew skills, field modifications, consumables and the final stats."
   },
   "head": {
     "title": "{name} build",
@@ -157,7 +157,8 @@
       "or": "or",
       "plus": "Available with Plus"
     },
-    "sample": "based on {battles, plural, one {# battle} other {# battles}} over {days} days",
+    "sample": "builds — based on {battles, plural, one {# battle} other {# battles}} over {days} days",
+    "noSample": "builds — no data over {days} days yet",
     "version": "update {version}",
     "notEnough": "Not enough data for this sample yet: {battles} of {min} battles. Options are shown without a recommendation.",
     "error": "Could not load the build",

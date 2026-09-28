@@ -51,6 +51,8 @@ RUN for attempt in 1 2 3; do \
 # cached dependency layer.
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ARG NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
 
 # Salts the service-worker precache revision of the manifest and PWA icons, so
 # a deploy refreshes them even when the package version stays the same.

@@ -29,11 +29,16 @@
 }
 
 .interactive {
-  transition: border-color var(--duration-fast) ease;
+  transition:
+    border-color var(--duration-fast) ease,
+    box-shadow var(--duration-lift) var(--ease-out);
 
   &:hover,
   &:focus-within {
-    border-color: var(--color-text-dim);
+    border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border-strong));
+    box-shadow:
+      var(--elev-2),
+      0 0 0 1px color-mix(in srgb, var(--color-accent) 12%, transparent);
   }
 }
 
@@ -67,7 +72,7 @@
   padding: 0 var(--card-pad, 0);
   border-bottom: 1px solid var(--color-border);
   margin: calc(var(--card-pad, 0px) * -1) calc(var(--card-pad, 0px) * -1) var(--card-pad, 0);
-  background-color: var(--color-surface-raised);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-text) 3%, transparent), transparent), var(--color-surface-raised);
   gap: var(--space-4);
 
   .pad-none > & {
@@ -87,8 +92,20 @@
 .title {
   @include label;
 
+  display: inline-flex;
+  align-items: center;
   color: var(--color-text);
   font-size: var(--text-xs);
+  gap: var(--space-2);
+
+  &:before {
+    width: 3px;
+    height: 10px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, var(--color-accent) 0 60%, var(--color-gold) 60% 100%);
+    content: '';
+    transform: skewX(-18deg);
+  }
 }
 
 .meta {
@@ -103,7 +120,10 @@
 
 .action {
   display: flex;
-  flex-shrink: 0;
+  min-width: 0;
+  max-width: 100%;
+  flex-shrink: 1;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
 }

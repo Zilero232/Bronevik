@@ -5,7 +5,9 @@
   },
   "detailMeta": {
     "title": "Tournament",
-    "description": "Participants, requirements and the bracket."
+    "description": "A community Mir Tankov tournament: participants, player requirements and the bracket.",
+    "titleNamed": "{title} — tournament",
+    "descriptionNamed": "{title}: a community Mir Tankov tournament. Participants, player requirements and the bracket."
   },
   "head": {
     "title": "Tournaments",

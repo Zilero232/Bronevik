@@ -1,5 +1,6 @@
 'use client';
 
+import { Newspaper } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { TankPicker } from '@/features/tank/pick-tank';
@@ -17,7 +18,7 @@ export const NewsPage = () => {
 
   return (
     <div className={s.root}>
-      <PageHeader description={t('head.description')} title={t('head.title')} />
+      <PageHeader description={t('head.description')} emblem={<Newspaper />} title={t('head.title')} />
       <div className={s.controls}>
         <SegmentedControl
           aria-label={t('filters.label')}
@@ -48,8 +49,8 @@ export const NewsPage = () => {
           </Card>
         }
         skeleton={
-          <div className={s.list}>
-            <Skeleton count={NEWS.skeletons} height={96} shape='block' />
+          <div className={s.grid}>
+            <Skeleton count={NEWS.skeletons} height={320} shape='block' />
           </div>
         }
         errorDescription={t('error.description')}
@@ -57,11 +58,18 @@ export const NewsPage = () => {
         isEmpty={() => feed.entries.length === 0}
         query={feed.query}
       >
-        <ul className={s.list}>
-          {feed.entries.map((entry) => (
-            <NewsCard key={entry.item.id} entry={entry} />
-          ))}
-        </ul>
+        <div className={s.feed}>
+          {feed.lead && <NewsCard isPriority entry={feed.lead} variant='lead' />}
+          {feed.rest.length > 0 && (
+            <ul className={s.grid}>
+              {feed.rest.map((entry) => (
+                <li key={entry.item.id} className={s.cell}>
+                  <NewsCard entry={entry} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </QueryState>
       {feed.query.hasNextPage && (
         <Button className={s.more} disabled={feed.query.isFetchingNextPage} variant='secondary' onClick={feed.loadMore}>

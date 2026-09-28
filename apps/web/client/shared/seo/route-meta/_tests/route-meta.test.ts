@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { NotFoundError } from '@/shared/api/source';
 
-import { lookupRouteEntity, routeEntity, routeSlugs } from '../route-meta';
+import { lookupRouteEntity, lookupRouteMeta, routeEntity, routeSlugs } from '../route-meta';
 
 vi.mock('next/cache', () => ({ cacheLife: vi.fn() }));
 
@@ -23,6 +23,26 @@ describe('lookupRouteEntity', () => {
 
   it('treats a transient failure as found and keeps it in the cache only for seconds', async () => {
     await expect(lookupRouteEntity({ key: 'object-140', load: fail })).resolves.toEqual({ name: 'object-140', isFound: true });
+    expect(cacheLife).toHaveBeenCalledWith('seconds');
+  });
+});
+
+describe('lookupRouteMeta', () => {
+  it('returns the loaded meta', async () => {
+    await expect(lookupRouteMeta(async () => ({ title: 'Гайд' }))).resolves.toEqual({ title: 'Гайд' });
+  });
+
+  it('returns null for a missing entity without shortening the cache', async () => {
+    vi.mocked(cacheLife).mockClear();
+
+    await expect(lookupRouteMeta(() => Promise.reject(new NotFoundError('404')))).resolves.toBeNull();
+    expect(cacheLife).not.toHaveBeenCalled();
+  });
+
+  it('returns null for a transient failure and keeps it in the cache only for seconds', async () => {
+    vi.mocked(cacheLife).mockClear();
+
+    await expect(lookupRouteMeta(fail)).resolves.toBeNull();
     expect(cacheLife).toHaveBeenCalledWith('seconds');
   });
 });

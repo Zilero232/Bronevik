@@ -8,7 +8,7 @@ import s from '../../DataTable.module.scss';
 
 export const DataTableRows = <T,>({ rows, barMax, onRowClick, rowTint, getRowClass, getRowLink }: DataTableRowsProps<T>) => (
   <tbody>
-    {rows.map((row) => {
+    {rows.map((row, index) => {
       const link = getRowLink?.(row.original) ?? null;
 
       return (
@@ -18,6 +18,7 @@ export const DataTableRows = <T,>({ rows, barMax, onRowClick, rowTint, getRowCla
           data-class={getRowClass?.(row.original) ?? undefined}
           data-clickable={Boolean(onRowClick) || link !== null}
           data-linked={link !== null}
+          data-stripe={index % 2 === 1 || undefined}
           data-tint={rowTint?.(row.original) ?? undefined}
           {...rowActivation({ onActivate: onRowClick && (() => onRowClick(row.original)), isLinked: link !== null })}
         >

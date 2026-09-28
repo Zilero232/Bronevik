@@ -21,7 +21,7 @@ const PLAYER: LeaderboardEntry = {
 
 describe('entrantLink', () => {
   it('links a player row to the profile', () => {
-    expect(entrantLink(PLAYER)).toEqual({ href: ROUTES.players.profile('Player'), label: 'Player' });
+    expect(entrantLink(PLAYER)).toEqual({ href: ROUTES.players.profile('Player'), label: 'Player', hasCellLink: true });
   });
 
   it('links a clan row to the clan by its tag', () => {

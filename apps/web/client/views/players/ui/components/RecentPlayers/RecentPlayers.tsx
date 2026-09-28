@@ -33,7 +33,7 @@ export const RecentPlayers = () => {
         data={players}
         density='compact'
         getRowId={(row) => String(row.accountId)}
-        getRowLink={(row) => ({ href: ROUTES.players.profile(row.nickname), label: row.nickname })}
+        getRowLink={(row) => ({ href: ROUTES.players.profile(row.nickname), label: row.nickname, hasCellLink: true })}
       />
     </Card>
   );

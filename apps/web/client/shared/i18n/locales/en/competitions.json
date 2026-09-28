@@ -1,7 +1,9 @@
 {
   "detailMeta": {
     "title": "Competition",
-    "description": "Team standings, participants and scoring rules of a competition on Three Marks."
+    "description": "Team standings, participants and scoring rules of a competition on Three Marks.",
+    "titleNamed": "{title} — competition",
+    "descriptionNamed": "{title}: team standings, participants and scoring rules of this Mir Tankov competition."
   },
   "head": {
     "title": "Competitions"

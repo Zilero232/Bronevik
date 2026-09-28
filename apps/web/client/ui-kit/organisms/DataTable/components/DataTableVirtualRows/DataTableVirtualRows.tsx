@@ -47,6 +47,7 @@ export const DataTableVirtualRows = <T,>({
             data-class={getRowClass?.(row.original) ?? undefined}
             data-clickable={Boolean(onRowClick) || link !== null}
             data-linked={link !== null}
+            data-stripe={item.index % 2 === 1 || undefined}
             data-tint={rowTint?.(row.original) ?? undefined}
             style={{ height: rowHeight }}
             {...rowActivation({ onActivate: onRowClick && (() => onRowClick(row.original)), isLinked: link !== null })}

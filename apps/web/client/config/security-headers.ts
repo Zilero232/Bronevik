@@ -28,7 +28,9 @@ const baseDirectives = ({ apiUrl, isDev }: CspInput): Directives => ({
   'default-src': ["'self'"],
   'script-src': ["'self'", "'unsafe-inline'", ...(isDev ? ["'unsafe-eval'"] : [])],
   'style-src': ["'self'", "'unsafe-inline'"],
-  'img-src': ["'self'", 'data:', 'blob:', 'https:'],
+  // In development the API is served over plain http (the /sig/*.png signatures and
+  // uploads), which the site-wide https: source does not cover.
+  'img-src': ["'self'", 'data:', 'blob:', 'https:', ...(isDev ? apiOrigins(apiUrl).slice(0, 1) : [])],
   'font-src': ["'self'", 'data:'],
   'connect-src': ["'self'", ...apiOrigins(apiUrl), ...(isDev ? ['ws:'] : [])],
   'media-src': ["'self'", 'blob:'],

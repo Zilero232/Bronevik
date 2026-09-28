@@ -203,7 +203,6 @@ app/
 │   │   ├── design/ developers/ events/ for-streamers/ guides/ honest-rng/ login/ maps/ marks/ me/ missions/
 │   │   ├── mod/ modes/ news/ platoons/ play/ players/ plus/ privacy/ pulse/ recruiting/ replays/ shop/
 │   │   ├── streamers/ supertest/ tactics/ tanks/ terms/ tools/ top/ tournaments/ tree/
-│   │   ├── [...rest]/     # unknown paths → not-found inside the site shell
 │   │   ├── layout.tsx
 │   │   └── not-found.tsx
 │   ├── (overlay)/overlay/ # stream overlays, no site shell
@@ -211,6 +210,8 @@ app/
 │   ├── layout.tsx         # the root layout — html, fonts, providers
 │   ├── error.tsx
 │   └── not-found.tsx
+├── global-not-found.tsx   # unknown paths (and missing entities rewritten by proxy.ts) → 404 inside both layouts
+├── proxy/entity-presence/ # proxy.ts helper: a document request for a missing player/tank/clan/map → real 404
 ├── api/og/                # OG image routes (player card, site card)
 ├── serwist/[path]/        # service worker route (sw.ts source)
 ├── twitch-panel/          # route handler serving the Twitch panel extension page

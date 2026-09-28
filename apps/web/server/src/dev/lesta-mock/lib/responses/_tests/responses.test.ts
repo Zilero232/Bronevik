@@ -205,3 +205,27 @@ describe('Lesta mock languages', () => {
     expect(pick(en)[name]?.name_i18n).not.toBe(pick(ru)[name]?.name_i18n);
   });
 });
+
+describe('Lesta mock achievement images', () => {
+  const images = z.record(
+    z.string(),
+    z.object({
+      type: z.string(),
+      image: z.string().nullable(),
+      image_big: z.string().nullable(),
+      options: z.array(z.object({ image: z.string().nullable(), image_big: z.string().nullable() })).nullable()
+    })
+  );
+
+  it('points only at files the Lesta static host serves', async () => {
+    const medals = images.parse(await lesta.encyclopedia.achievements());
+
+    expect(medals.medalKay).toMatchObject({ image: null, image_big: null });
+    expect(medals.medalKay?.options?.[0]?.image_big).toMatch(/\/big\/medalKay1\.png$/);
+    expect(medals.markOfMastery).toMatchObject({ image: expect.stringMatching(/\/markOfMastery4\.png$/), image_big: null });
+    expect(medals.markOfMasteryIII?.image).toMatch(/\/markOfMastery1\.png$/);
+    expect(medals.medalCarius?.options?.every((option) => option.image === null)).toBe(true);
+    expect(medals.lumberjack).toMatchObject({ image: null, image_big: null });
+    expect(medals.warrior?.image_big).toMatch(/\/big\/warrior\.png$/);
+  });
+});

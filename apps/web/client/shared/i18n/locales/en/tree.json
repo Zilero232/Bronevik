@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Tech tree",
-    "description": "Research lines of every nation with the XP and credits to each tank."
+    "description": "The Mir Tankov tech tree: research lines of every nation with the XP and credits needed for each tank."
   },
   "nations": {
     "label": "Nation"

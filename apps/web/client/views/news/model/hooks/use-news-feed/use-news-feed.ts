@@ -8,11 +8,12 @@ import { parseAsInteger, parseAsStringLiteral, useQueryState } from 'nuqs';
 import { pickVehicles, vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { shopControllerListNewsInfiniteOptions } from '@/shared/api/query-options';
-import { nextPageOffset, safeWebHref } from '@/shared/lib';
+import { nextPageOffset, safeWebHref, useClientNow } from '@/shared/lib';
 
 import type { NewsEntry, NewsFilter } from './use-news-feed.types';
 
 import { NEWS } from '../../../config';
+import { newsExcerpt } from '../../../lib/news-excerpt';
 
 export const useNewsFeed = () => {
   const [kind, setKind] = useQueryState('kind', parseAsStringLiteral(NEWS.filters).withDefault('all').withOptions({ history: 'replace' }));
@@ -27,10 +28,14 @@ export const useNewsFeed = () => {
     staleTime: NEWS.staleMs
   });
 
+  const now = useClientNow();
+
   const { data: feed, fetchNextPage } = query;
   const entries: NewsEntry[] = (feed?.pages.flatMap(({ items }) => items) ?? []).map((item) => ({
     item,
     href: safeWebHref(item.url),
+    excerpt: newsExcerpt(item.summary),
+    isFresh: now !== null && now.getTime() - new Date(item.publishedAt).getTime() < NEWS.freshMs,
     vehicles: pickVehicles({ tankIds: item.tankIds, catalog })
   }));
 
@@ -39,6 +44,8 @@ export const useNewsFeed = () => {
     vehicle: tankId === null ? null : (vehicleIndex(catalog)[tankId] ?? null),
     isTankFiltered: tankId !== null,
     entries,
+    lead: entries[0] ?? null,
+    rest: entries.slice(1),
     total: feed?.pages[0]?.total ?? 0,
     query,
     setKind: (next: NewsFilter) => void setKind(next),

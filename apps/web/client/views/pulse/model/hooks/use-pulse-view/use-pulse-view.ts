@@ -3,19 +3,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { useFormatter } from 'next-intl';
 
-import { getPulse } from '@/entities/pulse/pulse';
-import { QUERY_KEYS } from '@/shared/constants';
+import { pulseQueries } from '@/entities/pulse/pulse';
 
 import { PULSE } from '../../../config';
 import { heatGrid } from '../../../lib/heat-grid';
 
 export const usePulseView = () => {
   const format = useFormatter();
-  const query = useQuery({
-    queryKey: QUERY_KEYS.pulse,
-    queryFn: ({ signal }) => getPulse({ signal }),
-    staleTime: PULSE.staleMs
-  });
+  const query = useQuery({ ...pulseQueries.current(), staleTime: PULSE.staleMs });
 
   const pulse = query.data;
   const peak = pulse?.bestHours[0] ?? null;

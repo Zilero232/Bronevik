@@ -20,7 +20,7 @@ export const CollectorsTab = () => {
           data={board.items}
           emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('empty')} />}
           getRowId={(row) => String(row.accountId)}
-          getRowLink={(row) => ({ href: ROUTES.players.profile(row.nickname), label: row.nickname })}
+          getRowLink={(row) => ({ href: ROUTES.players.profile(row.nickname), label: row.nickname, hasCellLink: true })}
           summary={t('summary', { total: board.total })}
         />
       )}

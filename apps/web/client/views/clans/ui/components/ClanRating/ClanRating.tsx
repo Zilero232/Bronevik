@@ -57,7 +57,7 @@ export const ClanRating = () => {
           data={items}
           emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
           getRowId={(row) => String(row.clan.clanId)}
-          getRowLink={({ clan }) => ({ href: ROUTES.clans.detail(clan.tag), label: clan.name })}
+          getRowLink={({ clan }) => ({ href: ROUTES.clans.detail(clan.tag), label: clan.name, hasCellLink: true })}
         />
       </QueryState>
     </Card>

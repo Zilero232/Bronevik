@@ -8,6 +8,7 @@ export type DataTableRowTint = 'bad' | 'good' | 'loss' | 'self' | 'win';
 export type DataTableRowLink = {
   href: string;
   label: string;
+  hasCellLink?: boolean;
 };
 
 export type TableColumn<T> = ColumnDef<T, any>;

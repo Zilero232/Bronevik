@@ -39,6 +39,7 @@ Set these under Settings → Secrets and variables → Actions, in the `producti
 | Secret | Value |
 |---|---|
 | `NEXT_PUBLIC_API_URL` | `https://api.triotmetki.ru`. The value is baked into the client image at build time, so changing it later means rebuilding the image. |
+| `NEXT_PUBLIC_SITE_URL` | `https://triotmetki.ru`. Canonical URLs, hreflang, the sitemap and robots.txt are built from it; baked into the client image at build time like the API URL. |
 | `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PORT` (optional, default 22) | the VPS |
 | `DEPLOY_SSH_KEY` (preferred) or `DEPLOY_SSH_PASSWORD` | SSH credentials |
 | `DEPLOY_PATH` | directory with the compose file, for example `/opt/otmetki` |

@@ -11,6 +11,7 @@ import { IconCell } from '../IconCell';
 
 export const ClassVariantRows = ({ size }: ClassVariantRowsProps) => {
   const t = useTranslations('design.icons');
+  const tGame = useTranslations('game');
 
   return DESIGN_ICONS.classVariants.map((variant) => (
     <DesignRow key={variant} label={t(`variants.${variant}`)}>
@@ -18,7 +19,7 @@ export const ClassVariantRows = ({ size }: ClassVariantRowsProps) => {
         const Icon = TANK_CLASS_ICONS[tankClass];
 
         return (
-          <IconCell key={tankClass} title={`${tankClass} · ${variant}`}>
+          <IconCell key={tankClass} title={`${tGame(`classes.${tankClass}`)} · ${t(`variants.${variant}`)}`}>
             <Icon size={size} variant={variant} />
           </IconCell>
         );

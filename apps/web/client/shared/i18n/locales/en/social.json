@@ -16,7 +16,6 @@
   "shell": {
     "label": "Community sections",
     "home": "Home",
-    "competitions": "Competitions",
     "signIn": "Sign in",
     "sections": {
       "feed": {

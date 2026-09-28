@@ -5,7 +5,9 @@
   },
   "coachMeta": {
     "title": "Coach",
-    "description": "Coach profile: stats, tanks, session formats and contacts."
+    "description": "A Mir Tankov coach profile: stats, tanks, session formats, student reviews and contacts.",
+    "titleNamed": "{name} — Mir Tankov coach",
+    "descriptionNamed": "{name}: {headline}. Stats, tanks, session formats and student reviews on Three Marks."
   },
   "head": {
     "title": "Coaches",

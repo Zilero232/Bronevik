@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Developer API",
-    "description": "Three Marks public API: WN8 and recent periods, player history, server-wide tank statistics, marks of excellence thresholds, clans and sessions. Free key, TypeScript SDK and webhooks."
+    "description": "Three Marks public API: WN8 and recent periods, player history, tank statistics, marks of excellence thresholds and clans. Free key, SDK and webhooks."
   },
   "header": {
     "title": "Developer API",

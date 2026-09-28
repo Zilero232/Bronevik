@@ -18,6 +18,8 @@ import { AppToaster, TooltipProvider } from '@/ui-kit';
 
 import type { AppProvidersProps } from './AppProviders.types';
 
+import { THEME_SCRIPT_PROPS } from './config';
+
 export const AppProviders = ({ children, locale }: AppProvidersProps) => (
   <NuqsAdapter>
     <QueryClientProvider client={getQueryClient()}>
@@ -27,6 +29,7 @@ export const AppProviders = ({ children, locale }: AppProvidersProps) => (
           attribute='data-theme'
           defaultTheme='dark'
           enableSystem={false}
+          scriptProps={THEME_SCRIPT_PROPS}
           storageKey={STORAGE_KEYS.theme}
           themes={['dark', 'light']}
         >

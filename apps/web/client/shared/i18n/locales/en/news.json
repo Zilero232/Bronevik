@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "«Мир танков» news and patch notes — Три отметки",
+    "title": "«Мир танков» news and patch notes — Three Marks",
     "description": "News, update notes and the developer blog of «Мир танков» from tanki.su, linked to the vehicles they mention."
   },
   "head": {
@@ -30,5 +30,8 @@
   },
   "version": "Update {version}",
   "mentions": "Mentioned vehicles",
-  "more": "Show more ({shown} of {total})"
+  "more": "Show more ({shown} of {total})",
+  "read": "Read on tanki.su",
+  "fresh": "New",
+  "latest": "Latest post"
 }

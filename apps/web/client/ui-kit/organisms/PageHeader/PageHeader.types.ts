@@ -9,6 +9,7 @@ export type PageHeaderProps = {
   meta?: ReactNode;
   actions?: ReactNode;
   aside?: ReactNode;
+  emblem?: ReactNode;
   children?: ReactNode;
   className?: string;
 };

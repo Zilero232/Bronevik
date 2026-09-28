@@ -27,7 +27,7 @@ export const ClanRoster = ({ members, now }: ClanRosterProps) => {
         data={rows}
         emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}
         getRowId={({ accountId }) => String(accountId)}
-        getRowLink={({ nickname }) => ({ href: ROUTES.players.profile(nickname), label: nickname })}
+        getRowLink={({ nickname }) => ({ href: ROUTES.players.profile(nickname), label: nickname, hasCellLink: true })}
         summary={t('shown', { shown: rows.length, total })}
       />
     </div>

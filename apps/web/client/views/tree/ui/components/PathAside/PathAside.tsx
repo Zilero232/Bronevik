@@ -18,7 +18,7 @@ export const PathAside = () => {
   if (isCompact) {
     return (
       <>
-        {placeholder}
+        {!isOpen && placeholder}
         <Drawer open={isOpen} title={t('title')} onOpenChange={onOpenChange}>
           <PathPanel />
         </Drawer>

@@ -11,6 +11,8 @@ import { IconCell } from '../IconCell';
 
 export const ExtraIconRows = ({ iconProps }: ExtraIconRowsProps) => {
   const t = useTranslations('design.icons');
+  const tGame = useTranslations('game');
+  const tMastery = useTranslations('profile.awards.mastery');
 
   return (
     <>
@@ -19,7 +21,7 @@ export const ExtraIconRows = ({ iconProps }: ExtraIconRowsProps) => {
           const Icon = NATION_ICONS[nation];
 
           return (
-            <IconCell key={nation} name={nation} title={nation}>
+            <IconCell key={nation} name={nation} title={tGame(`nations.${nation}`)}>
               <Icon palette='color' {...iconProps} />
             </IconCell>
           );
@@ -27,7 +29,7 @@ export const ExtraIconRows = ({ iconProps }: ExtraIconRowsProps) => {
       </DesignRow>
       <DesignRow label={t('groups.masteryTinted')}>
         {DESIGN_ICONS.masteryLevels.map((level) => (
-          <IconCell key={level} title={level}>
+          <IconCell key={level} title={tMastery(level)}>
             <MasteryIcon tinted level={level} {...iconProps} />
           </IconCell>
         ))}

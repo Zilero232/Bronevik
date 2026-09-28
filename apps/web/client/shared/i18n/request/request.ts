@@ -8,8 +8,8 @@ import { TIME_ZONE } from '../locale';
 import { messages } from '../messages';
 import { routing } from '../routing';
 
-export default getRequestConfig(async () => {
-  const requested = await rootParams.locale();
+export default getRequestConfig(async ({ requestLocale }) => {
+  const requested = (await rootParams.locale()) ?? (await requestLocale);
 
   if (!hasLocale(routing.locales, requested)) {
     notFound();

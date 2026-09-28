@@ -1,3 +1,5 @@
+import { isIncludedIn } from 'remeda';
+
 import type { MockCatalog, MockModule } from '../../lesta-mock.types';
 import type { AchievementImageInput, ByTypeInput, MockContext, MockRoute, VehicleEntryInput } from './responses.types';
 
@@ -11,6 +13,8 @@ import { ENCYCLOPEDIA_LABELS, PROVISION_TYPE_TO_API, RESPONSES } from './respons
 const PROVISION_TYPES: ReadonlyMap<string, string> = new Map(Object.entries(PROVISION_TYPE_TO_API));
 
 const CREW_ROLES: ReadonlyMap<string, string> = new Map(Object.entries(ENCYCLOPEDIA_LABELS.crewRoles));
+
+const ACHIEVEMENT_FILES: ReadonlyMap<string, string> = new Map(Object.entries(ACHIEVEMENT_IMAGES.files));
 
 const moduleIndexes = new WeakMap<MockCatalog, ReadonlyMap<number, MockModule>>();
 
@@ -28,8 +32,15 @@ const moduleIndex = (catalog: MockCatalog): ReadonlyMap<number, MockModule> => {
   return created;
 };
 
-const achievementImage = ({ name, big = false }: AchievementImageInput): string =>
-  `${ACHIEVEMENT_IMAGES.base}/${big ? `${ACHIEVEMENT_IMAGES.big}/` : ''}${name}.png`;
+const achievementImage = ({ name, stage, big = false }: AchievementImageInput): string | null => {
+  const file = ACHIEVEMENT_FILES.get(name) ?? `${name}${stage ?? ''}`;
+
+  if (isIncludedIn(name, ACHIEVEMENT_IMAGES.unpublished) || (big && isIncludedIn(file, ACHIEVEMENT_IMAGES.smallOnly))) {
+    return null;
+  }
+
+  return `${ACHIEVEMENT_IMAGES.base}/${big ? `${ACHIEVEMENT_IMAGES.big}/` : ''}${file}.png`;
+};
 
 const byType = ({ context, vehicle, type }: ByTypeInput): number[] =>
   vehicle.moduleIds.filter((moduleId) => moduleIndex(context.world.catalog).get(moduleId)?.type === type);
@@ -208,16 +219,16 @@ export const encyclopediaAchievements: MockRoute = (context) => {
           type: achievement.type,
           description: isEnglish(context) ? null : achievement.description,
           condition: isEnglish(context) ? null : achievement.description,
-          image: achievementImage({ name: achievement.name }),
-          image_big: achievementImage({ name: achievement.name, big: true }),
+          image: achievement.type === 'class' ? null : achievementImage({ name: achievement.name }),
+          image_big: achievement.type === 'class' ? null : achievementImage({ name: achievement.name, big: true }),
           order,
           outdated: false,
           options:
             achievement.type === 'class'
               ? [1, 2, 3, 4].map((stage) => ({
                   name_i18n: `${achievement.title} ${['I', 'II', 'III', 'IV'][stage - 1] ?? ''} степени`,
-                  image: achievementImage({ name: `${achievement.name}${stage}` }),
-                  image_big: achievementImage({ name: `${achievement.name}${stage}`, big: true })
+                  image: achievementImage({ name: achievement.name, stage }),
+                  image_big: achievementImage({ name: achievement.name, stage, big: true })
                 }))
               : null
         },

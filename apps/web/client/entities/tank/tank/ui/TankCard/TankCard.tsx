@@ -21,7 +21,7 @@ export const TankCard = ({ row, className }: TankCardProps) => {
   const tank = vehicleIdentity(vehicle);
 
   return (
-    <Link className={clsx(s.root, className)} href={ROUTES.tanks.detail(vehicle.slug)}>
+    <Link className={clsx(s.root, className)} data-class={tank.type} href={ROUTES.tanks.detail(vehicle.slug)}>
       <TankImage isDecorative className={s.render} size='big' tank={tank} />
       <TankIdentity className={s.identity} tank={tank} withNation={false} />
       <dl className={s.metrics}>

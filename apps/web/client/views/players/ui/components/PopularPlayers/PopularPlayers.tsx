@@ -30,7 +30,7 @@ export const PopularPlayers = () => {
             density='compact'
             emptyState={<EmptyState isCompact title={t('emptyTitle')} />}
             getRowId={(row) => String(row.accountId)}
-            getRowLink={(row) => ({ href: ROUTES.players.profile(row.nickname), label: row.nickname })}
+            getRowLink={(row) => ({ href: ROUTES.players.profile(row.nickname), label: row.nickname, hasCellLink: true })}
           />
         )}
       </QueryState>

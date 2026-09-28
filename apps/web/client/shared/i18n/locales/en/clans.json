@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Clans",
-    "description": "Rating and search of «Мир танков» clans."
+    "description": "Rating and search of Mir Tankov clans: roster, activity, stronghold and change history from the Lesta API."
   },
   "clanMeta": {
     "title": "{name} — clan",
-    "description": "Roster, activity, history and stronghold of the {name} clan."
+    "description": "The {name} clan in Mir Tankov: roster, player activity, stronghold, rating and change history."
   },
   "head": {
     "title": "Clans",

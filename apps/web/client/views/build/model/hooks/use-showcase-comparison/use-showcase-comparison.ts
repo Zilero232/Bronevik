@@ -19,5 +19,5 @@ export const useShowcaseComparison = () => {
     return { ...item, delta, verdict: delta === null ? null : deltaVerdict({ value: delta }) };
   });
 
-  return { items, other, isShown: usage !== null };
+  return { items, other, isShown: usage !== null && usage.battles > 0 && items.some(({ value }) => value !== null) };
 };

@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { competitionRouteMeta } from '@/entities/competition/competition/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
@@ -14,13 +15,14 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/competit
   const locale = resolveLocale(await rootParams.locale());
   const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'competitions.detailMeta' });
+  const meta = await competitionRouteMeta(slug);
 
   return createPageMetadata({
-    title: t('title'),
-    description: t('description'),
+    title: meta ? t('titleNamed', { title: meta.title }) : t('title'),
+    description: meta ? t('descriptionNamed', { title: meta.title }) : t('description'),
     path: ROUTES.competitions.detail(slug),
     locale,
-    index: true,
+    index: meta?.isPublic ?? false,
     follow: true
   });
 };

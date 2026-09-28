@@ -1,3 +1,3 @@
 import 'server-only';
 
-export { lookupRouteEntity, routeEntity, routeSlugs } from './route-meta';
+export { lookupRouteEntity, lookupRouteMeta, routeEntity, routeSlugs } from './route-meta';

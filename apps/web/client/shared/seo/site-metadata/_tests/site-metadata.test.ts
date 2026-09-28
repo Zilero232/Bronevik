@@ -38,12 +38,19 @@ describe('createPageMetadata', () => {
     expect(branded.title).toEqual({ absolute: `${SITE.name} — главная` });
   });
 
+  it('brands English pages with the English site name', () => {
+    const plain = createPageMetadata({ title: 'Tanks', description: '', locale: 'en' });
+
+    expect(plain.title).toEqual({ absolute: `Tanks · ${SITE.en.title}` });
+    expect(plain.openGraph).toMatchObject({ siteName: SITE.en.title, locale: SITE.en.locale, alternateLocale: [SITE.locale] });
+  });
+
   it('keeps pages out of the index unless asked', () => {
     const hidden = createPageMetadata({ title: 'x', description: '', path: '/x', locale: DEFAULT_LOCALE });
     const indexed = createPageMetadata({ title: 'x', description: '', path: '/x', locale: DEFAULT_LOCALE, index: true });
 
     expect(hidden.robots).toEqual({ index: false, follow: false });
-    expect(hidden.alternates).toBeUndefined();
+    expect(hidden.alternates).toBeNull();
     expect(indexed.alternates?.languages).toEqual(languageAlternates('/x'));
   });
 
@@ -60,5 +67,6 @@ describe('createPageMetadata', () => {
 
     expect(plain.openGraph?.images).toEqual([expect.objectContaining({ url: ROUTES.api.siteCard(DEFAULT_LOCALE) })]);
     expect(own.openGraph).not.toHaveProperty('images');
+    expect(plain.twitter).toMatchObject({ images: plain.openGraph?.images });
   });
 });

@@ -11,9 +11,15 @@ export const VehicleTile = ({ vehicle }: VehicleTileProps) => {
 
   return (
     <li className={s.root}>
-      <Link className={s.link} data-nation={tank.nation} data-premium={vehicle.isPremium} href={ROUTES.tanks.detail(vehicle.slug)}>
-        <span className={s.render}>
-          <TankImage isDecorative size='small' tank={tank} />
+      <Link
+        className={s.link}
+        data-class={tank.type}
+        data-nation={tank.nation}
+        data-premium={vehicle.isPremium}
+        href={ROUTES.tanks.detail(vehicle.slug)}
+      >
+        <span className={s.stage}>
+          <TankImage isDecorative className={s.render} size='big' tank={tank} withTint={false} />
         </span>
         <TankIdentity className={s.identity} tank={tank} />
       </Link>

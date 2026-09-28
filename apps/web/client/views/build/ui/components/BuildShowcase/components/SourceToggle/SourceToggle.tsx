@@ -15,7 +15,7 @@ import s from './SourceToggle.module.scss';
 
 export const SourceToggle = () => {
   const t = useTranslations('builds.showcase');
-  const { source, isPlus, usage, onSourceChange } = useSourceToggle();
+  const { source, isPlus, usage, hasSample, onSourceChange } = useSourceToggle();
 
   return (
     <div className={s.root}>
@@ -45,7 +45,7 @@ export const SourceToggle = () => {
       </div>
       {usage && (
         <p className={s.sample}>
-          {t('sample', { battles: usage.battles, days: usage.windowDays })}
+          {hasSample ? t('sample', { battles: usage.battles, days: usage.windowDays }) : t('noSample', { days: usage.windowDays })}
           {usage.gameVersion && ` · ${t('version', { version: usage.gameVersion })}`}
         </p>
       )}

@@ -93,6 +93,7 @@ export type ProvincesCountInput = {
 
 export type AchievementImageInput = {
   name: string;
+  stage?: number;
   big?: boolean;
 };
 

@@ -5,20 +5,16 @@ import { SITE } from '@/shared/config';
 import { sitemapEntries } from '../sitemap';
 
 describe('sitemapEntries', () => {
-  it('builds absolute URLs with locale and x-default alternates and drops duplicates', () => {
-    const entries = sitemapEntries(['/tanks', '/tanks']);
+  it('lists every locale version with locale and x-default alternates and drops duplicates', () => {
+    const languages = {
+      ru: new URL('/tanks', SITE.url).toString(),
+      en: new URL('/en/tanks', SITE.url).toString(),
+      'x-default': new URL('/tanks', SITE.url).toString()
+    };
 
-    expect(entries).toEqual([
-      {
-        url: new URL('/tanks', SITE.url).toString(),
-        alternates: {
-          languages: {
-            ru: new URL('/tanks', SITE.url).toString(),
-            en: new URL('/en/tanks', SITE.url).toString(),
-            'x-default': new URL('/tanks', SITE.url).toString()
-          }
-        }
-      }
+    expect(sitemapEntries(['/tanks', '/tanks'])).toEqual([
+      { url: languages.ru, alternates: { languages } },
+      { url: languages.en, alternates: { languages } }
     ]);
   });
 });

@@ -1,7 +1,9 @@
 import type { ModDistribution } from './site.types';
 
+import { env } from '../client-env';
+
 export const SITE = {
-  url: 'https://triotmetki.ru',
+  url: new URL(env.NEXT_PUBLIC_SITE_URL).origin,
   name: 'Три отметки',
   title: 'Три отметки',
   description: 'Статистика «Мира танков»: игроки, танки, отметки, топы, кланы и инструменты в одном месте.',

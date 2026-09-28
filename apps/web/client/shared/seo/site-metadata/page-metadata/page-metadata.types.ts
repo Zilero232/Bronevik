@@ -8,4 +8,5 @@ export type PageMetadataInput = {
   index?: boolean;
   follow?: boolean;
   hasOwnImage?: boolean;
+  contentLocale?: Locale | null;
 };

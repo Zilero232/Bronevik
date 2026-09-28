@@ -12,36 +12,61 @@
 }
 
 .controls {
+  @include panel;
+
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  padding: var(--space-3);
   gap: var(--space-3);
 }
 
 .tank {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: var(--space-2);
+
+  @include below(md) {
+    width: 100%;
+  }
 }
 
 .picker {
   width: 18rem;
   max-width: 100%;
+
+  @include below(md) {
+    width: auto;
+    flex: 1;
+  }
 }
 
 .filters {
   max-width: 100%;
   align-self: flex-start;
   overflow-x: auto;
+
+  @include hide-scrollbar;
 }
 
-.list {
-  @include stack(var(--space-3));
+.feed {
+  @include stack(var(--space-5));
+}
 
+.grid {
+  display: grid;
   padding: 0;
   margin: 0;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
   list-style: none;
+}
+
+.cell {
+  display: flex;
+  min-width: 0;
 }
 
 .more {

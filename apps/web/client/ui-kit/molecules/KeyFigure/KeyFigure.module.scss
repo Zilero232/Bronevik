@@ -12,6 +12,30 @@
 
 .framed {
   @include panel;
+
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  &:before {
+    position: absolute;
+    z-index: -1;
+    content: '';
+    inset: 0;
+    mask-image: radial-gradient(ellipse 70% 90% at 100% 0%, #000 0%, transparent 70%);
+
+    @include texture(hex);
+  }
+
+  &:after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--tone);
+    content: '';
+  }
 }
 
 .head {

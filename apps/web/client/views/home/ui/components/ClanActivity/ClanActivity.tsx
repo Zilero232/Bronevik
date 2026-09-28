@@ -29,7 +29,7 @@ export const ClanActivity = () => {
               columns={columns}
               data={rows}
               getRowId={(row) => String(row.clan.clanId)}
-              getRowLink={({ clan }) => ({ href: ROUTES.clans.detail(clan.tag), label: clan.name })}
+              getRowLink={({ clan }) => ({ href: ROUTES.clans.detail(clan.tag), label: clan.name, hasCellLink: true })}
             />
           )}
         </QueryState>

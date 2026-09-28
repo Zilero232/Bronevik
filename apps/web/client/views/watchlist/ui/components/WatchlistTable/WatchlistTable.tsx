@@ -21,7 +21,7 @@ export const WatchlistTable = ({ players }: WatchlistTableProps) => {
       data={players}
       density='compact'
       getRowId={({ accountId }) => String(accountId)}
-      getRowLink={({ nickname }) => (nickname ? { href: ROUTES.players.profile(nickname), label: nickname } : null)}
+      getRowLink={({ nickname }) => (nickname ? { href: ROUTES.players.profile(nickname), label: nickname, hasCellLink: true } : null)}
       initialSorting={[...WATCHLIST_PAGE.initialSorting]}
     />
   );

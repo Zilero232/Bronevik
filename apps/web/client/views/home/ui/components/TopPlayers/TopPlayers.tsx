@@ -79,7 +79,7 @@ export const TopPlayers = () => {
                   columns={columns}
                   data={rest}
                   getRowId={(entry) => `${entry.rank}-${entry.name}`}
-                  getRowLink={(entry) => ({ href: ROUTES.players.profile(entry.name), label: entry.name })}
+                  getRowLink={(entry) => ({ href: ROUTES.players.profile(entry.name), label: entry.name, hasCellLink: true })}
                 />
               </Card>
             )}

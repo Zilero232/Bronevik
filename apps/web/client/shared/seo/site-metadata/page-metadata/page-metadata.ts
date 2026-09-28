@@ -2,17 +2,11 @@ import type { Metadata } from 'next';
 
 import { isNonNullish } from 'remeda';
 
-import { SITE } from '@/shared/config';
-import { localePath } from '@/shared/i18n';
+import { localePath, LOCALES } from '@/shared/i18n';
 
 import type { PageMetadataInput } from './page-metadata.types';
 
-import { languageAlternates, siteImage } from '../site-metadata';
-
-const OG_LOCALES: Record<string, string> = {
-  ru: SITE.locale,
-  en: SITE.en.locale
-};
+import { contentAlternates, languageAlternates, siteBrand, siteImage } from '../site-metadata';
 
 export const createPageMetadata = ({
   title,
@@ -21,29 +15,37 @@ export const createPageMetadata = ({
   locale,
   index = false,
   follow = false,
-  hasOwnImage = false
+  hasOwnImage = false,
+  contentLocale = null
 }: PageMetadataInput): Metadata => {
-  const ogTitle = title.includes(SITE.name) ? title : `${title} · ${SITE.name}`;
-  const canonical = isNonNullish(path) ? localePath({ path, locale }) : undefined;
+  const brand = siteBrand(locale);
+  const ogTitle = LOCALES.some((other) => title.includes(siteBrand(other).name)) ? title : `${title} · ${brand.name}`;
+  const canonical = isNonNullish(path) ? localePath({ path, locale: contentLocale ?? locale }) : undefined;
+  const images = hasOwnImage ? {} : { images: [siteImage(locale)] };
 
   return {
     title: { absolute: ogTitle },
     description,
-    ...(index && isNonNullish(path) ? { alternates: { canonical, languages: languageAlternates(path) } } : {}),
+    alternates:
+      index && isNonNullish(path)
+        ? { canonical, languages: contentLocale ? contentAlternates({ path, locale: contentLocale }) : languageAlternates(path) }
+        : null,
     robots: { index, follow },
     openGraph: {
       title: ogTitle,
       description,
       ...(isNonNullish(canonical) ? { url: canonical } : {}),
       type: 'website',
-      siteName: SITE.name,
-      locale: OG_LOCALES[locale],
-      ...(hasOwnImage ? {} : { images: [siteImage(locale)] })
+      siteName: brand.name,
+      locale: brand.ogLocale,
+      alternateLocale: LOCALES.filter((other) => other !== locale).map((other) => siteBrand(other).ogLocale),
+      ...images
     },
     twitter: {
       card: 'summary_large_image',
       title: ogTitle,
-      description
+      description,
+      ...images
     }
   };
 };

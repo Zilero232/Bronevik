@@ -122,7 +122,7 @@
   },
   "meta": {
     "streamer": {
-      "title": "{name} settings — graphics, sensitivity, zoom",
+      "title": "{name} settings: graphics, zoom, sight",
       "description": "Mir Tankov settings of {name}: graphics, camera, sensitivity, zoom, sight, markers and hardware — with source and check date."
     },
     "list": {

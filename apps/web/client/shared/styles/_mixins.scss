@@ -82,7 +82,7 @@ $accent-tones: (
 }
 
 @mixin chip-active {
-  background-color: var(--color-surface-hover);
+  background: linear-gradient(0deg, color-mix(in srgb, var(--color-accent) 14%, transparent), transparent 80%), var(--color-surface-hover);
   box-shadow: inset 0 -2px 0 var(--color-accent);
   color: var(--color-text);
 }

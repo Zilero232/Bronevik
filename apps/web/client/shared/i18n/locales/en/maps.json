@@ -5,7 +5,7 @@
   },
   "mapMeta": {
     "title": "{name} — map",
-    "description": "{name}: size, battle modes and team win rates."
+    "description": "The {name} map in Mir Tankov: size, battle modes, team win rates and the tanks that do best on it."
   },
   "head": {
     "title": "Maps",

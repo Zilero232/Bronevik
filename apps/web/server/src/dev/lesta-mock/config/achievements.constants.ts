@@ -1,6 +1,26 @@
 export const ACHIEVEMENT_IMAGES = {
   base: 'https://api.tanki.su/static/2.80.0/wot/encyclopedia/achievement',
-  big: 'big'
+  big: 'big',
+  files: {
+    markOfMastery: 'markOfMastery4',
+    markOfMasteryI: 'markOfMastery3',
+    markOfMasteryII: 'markOfMastery2',
+    markOfMasteryIII: 'markOfMastery1'
+  },
+  smallOnly: ['markOfMastery1', 'markOfMastery2', 'markOfMastery3', 'markOfMastery4'],
+  unpublished: [
+    'medalPascucci',
+    'medalHalonen',
+    'medalBrunoPietro',
+    'medalTarczay',
+    'medalTamadaYoshio',
+    'medalBoelter',
+    'medalLehvaslaiho',
+    'lumberjack',
+    'medalCarius',
+    'medalKnispel',
+    'marksOnGun'
+  ]
 } as const;
 
 export const ACHIEVEMENT_SECTIONS = {

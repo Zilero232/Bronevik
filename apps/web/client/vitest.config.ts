@@ -13,6 +13,7 @@ export default defineConfig({
     globals: true,
     env: {
       NEXT_PUBLIC_API_URL: 'http://localhost:4000',
+      NEXT_PUBLIC_SITE_URL: 'https://triotmetki.ru',
       NEXT_PUBLIC_APP_VERSION: '0.0.0-test'
     },
     setupFiles: ['./vitest.setup.ts'],

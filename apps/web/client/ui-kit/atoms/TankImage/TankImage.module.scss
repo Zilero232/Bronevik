@@ -14,9 +14,25 @@
 }
 
 .image {
+  position: relative;
   display: block;
   max-width: 100%;
   height: auto;
+}
+
+.big[data-state='image'],
+.large[data-state='image'] {
+  &:before {
+    position: absolute;
+    right: 16%;
+    bottom: 4%;
+    left: 16%;
+    height: 16%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-shade) 50%, transparent), transparent);
+    content: '';
+    pointer-events: none;
+  }
 }
 
 .large {
@@ -36,6 +52,7 @@
 
   .image {
     width: 100%;
+    max-width: 160px;
   }
 }
 

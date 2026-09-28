@@ -30,5 +30,8 @@
   },
   "version": "Обновление {version}",
   "mentions": "Упомянутая техника",
-  "more": "Показать ещё ({shown} из {total})"
+  "more": "Показать ещё ({shown} из {total})",
+  "read": "Читать на tanki.su",
+  "fresh": "Новое",
+  "latest": "Свежая публикация"
 }

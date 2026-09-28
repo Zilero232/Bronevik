@@ -109,6 +109,10 @@
 
 .render .flag {
   inset: -24px -10%;
+
+  @include below(xl) {
+    inset: -24px 0;
+  }
 }
 
 .floor {

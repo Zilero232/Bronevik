@@ -5,7 +5,9 @@
   },
   "detailMeta": {
     "title": "Guide",
-    "description": "A player guide to a tank, a map or a game situation."
+    "description": "A Mir Tankov player guide to a tank, a map or a game situation, with tips and tactics.",
+    "titleNamed": "{title} — guide",
+    "descriptionNamed": "{title}: a Mir Tankov player guide with positions, tactics and gameplay tips on Three Marks."
   },
   "editorMeta": {
     "newTitle": "New guide",

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Tank statistics",
-    "description": "Win rate, damage, WR diff and popularity of every tank on the server."
+    "description": "Stats of every Mir Tankov tank: win rate, average damage, WR difference and popularity across the server."
   },
   "source": "Data: Lesta Games API",
   "head": {
@@ -19,7 +19,7 @@
   "compare": {
     "meta": {
       "title": "Tank comparison",
-      "description": "Up to six tanks side by side with the best values highlighted."
+      "description": "Compare Mir Tankov tanks: up to six vehicles side by side with the best characteristics highlighted."
     },
     "head": {
       "title": "Tank comparison",

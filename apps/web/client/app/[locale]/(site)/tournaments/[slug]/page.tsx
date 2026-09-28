@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { tournamentRouteMeta } from '@/entities/tournament/tournament/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
@@ -14,13 +15,14 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/tourname
   const locale = resolveLocale(await rootParams.locale());
   const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'tournaments.detailMeta' });
+  const meta = await tournamentRouteMeta(slug);
 
   return createPageMetadata({
-    title: t('title'),
-    description: t('description'),
+    title: meta ? t('titleNamed', { title: meta.title }) : t('title'),
+    description: meta ? t('descriptionNamed', { title: meta.title }) : t('description'),
     path: ROUTES.tournaments.detail(slug),
     locale,
-    index: true,
+    index: meta?.isListed ?? false,
     follow: true
   });
 };

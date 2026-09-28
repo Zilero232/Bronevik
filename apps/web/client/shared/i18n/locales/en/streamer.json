@@ -4,8 +4,8 @@
     "description": "Streamer profile, OBS overlays, donation integrations and viewer challenges."
   },
   "publicMeta": {
-    "title": "{name} — Tanks streamer",
-    "description": "{name}: streams, channel links and in-game stats."
+    "title": "{name} — Mir Tankov streamer",
+    "description": "{name}: streams, channel links, Mir Tankov stats and the in-game settings of this streamer."
   },
   "confirm": {
     "cancel": "Cancel"

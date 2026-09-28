@@ -1,56 +1,36 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  @include panel;
-  @include stack(var(--space-2));
-
-  padding: var(--space-4);
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.date {
-  @include numeric(var(--text-xs));
-
-  color: var(--color-text-dim);
-}
-
-.title {
-  display: inline-flex;
-  align-items: baseline;
-  color: var(--color-text);
-  font-size: var(--text-md);
-  font-weight: 600;
-  gap: var(--space-2);
-  text-decoration: none;
-
-  &:hover {
-    color: var(--color-accent);
-  }
-}
-
-.icon {
-  flex-shrink: 0;
-  color: var(--color-text-dim);
-}
-
-.summary {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-body);
-}
-
 .tanks {
   display: flex;
   flex-wrap: wrap;
   padding: 0;
-  margin: var(--space-1) 0 0;
-  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  gap: var(--space-2);
   list-style: none;
+}
+
+.tank {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  font-size: var(--text-xs);
+
+  @include hover {
+    border-color: var(--color-accent);
+  }
+}
+
+.version {
+  color: var(--color-accent);
+}
+
+.latest {
+  @include label;
+
+  color: var(--color-accent);
 }

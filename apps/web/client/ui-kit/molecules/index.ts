@@ -67,6 +67,8 @@ export { Sparkline } from './Sparkline';
 export type { SparklineProps } from './Sparkline';
 export { StatList } from './StatList';
 export type { StatListItem, StatListProps } from './StatList';
+export { StoryCard } from './StoryCard';
+export type { StoryCardProps, StoryCardTone, StoryCardVariant } from './StoryCard';
 export { Tabs } from './Tabs';
 export type { TabItem, TabsProps } from './Tabs';
 export { TextCard } from './TextCard';

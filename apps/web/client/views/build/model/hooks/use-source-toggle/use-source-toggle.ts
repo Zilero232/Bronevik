@@ -7,5 +7,5 @@ export const useSourceToggle = () => {
   const { source, isPlus, onSourceChange } = useShowcaseSource();
   const usage = useShowcaseUsage();
 
-  return { source, isPlus, usage, onSourceChange };
+  return { source, isPlus, usage, hasSample: (usage?.battles ?? 0) > 0, onSourceChange };
 };

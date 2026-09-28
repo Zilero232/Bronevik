@@ -15,8 +15,8 @@
   grid-template-columns: 2.4em minmax(0, 1fr) auto;
 
   &:last-child {
+    background-color: color-mix(in srgb, var(--color-accent) 8%, transparent);
     box-shadow: inset 2px 0 0 var(--color-accent);
-    padding-inline-start: var(--space-2);
   }
 }
 

@@ -1,1 +1,1 @@
-export { NEWS } from './news.constants';
+export { NEWS, NEWS_EXCERPT } from './news.constants';

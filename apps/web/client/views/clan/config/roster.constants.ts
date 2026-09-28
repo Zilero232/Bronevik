@@ -1,6 +1,6 @@
 import type { ClanRole } from '@otmetki/schemas';
 
-import { parseAsStringLiteral } from 'nuqs';
+import { parseAsStringLiteral } from 'nuqs/server';
 
 export const ROLE_GROUP_KEYS = ['command', 'officers', 'soldiers', 'reserve'] as const;
 

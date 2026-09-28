@@ -1,4 +1,4 @@
-import { parseAsInteger } from 'nuqs';
+import { parseAsInteger } from 'nuqs/server';
 
 export const MISSION_PARAMS = {
   mission: parseAsInteger

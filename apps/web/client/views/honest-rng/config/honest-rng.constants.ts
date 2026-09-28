@@ -1,4 +1,4 @@
-import { parseAsStringLiteral } from 'nuqs';
+import { parseAsStringLiteral } from 'nuqs/server';
 
 export const RNG_PERIODS = ['d7', 'd30', 'all'] as const;
 

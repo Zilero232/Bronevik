@@ -1,4 +1,4 @@
-import { parseAsStringLiteral } from 'nuqs';
+import { parseAsStringLiteral } from 'nuqs/server';
 
 export const STUDIO_TABS = ['profile', 'settings', 'integrations', 'overlays', 'challenges'] as const;
 

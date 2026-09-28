@@ -1,4 +1,4 @@
-import { parseAsStringLiteral } from 'nuqs';
+import { parseAsStringLiteral } from 'nuqs/server';
 
 export const CALCULATOR_IDS = ['research', 'target', 'moe', 'crew', 'economy', 'gold', 'pass', 'frontline', 'math'] as const;
 

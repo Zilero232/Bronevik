@@ -1,5 +1,5 @@
 import { STREAMER_DIRECTORY, STREAMER_PLATFORMS } from '@otmetki/schemas';
-import { parseAsBoolean, parseAsStringLiteral } from 'nuqs';
+import { parseAsBoolean, parseAsStringLiteral } from 'nuqs/server';
 
 export const DIRECTORY_TOGGLES = ['live', 'settings'] as const;
 

@@ -9,7 +9,7 @@ import { InboxBell } from '@/features/notifications/inbox-bell';
 import { CommandPaletteTrigger } from '@/features/search/command-palette';
 import { SITE_NAV } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { IconButton } from '@/ui-kit';
+import { IconButton, Skeleton } from '@/ui-kit';
 
 import { useHeaderCompact } from '../model/hooks';
 import { AccountMenu, MobileNav, SiteBrand, SiteNav, UtilityBar } from './components';
@@ -38,7 +38,9 @@ export const SiteHeader = () => {
               <SITE_NAV.plus.icon aria-hidden size={15} />
               <span className={s.plusLabel}>{t(`items.${SITE_NAV.plus.key}`)}</span>
             </Link>
-            <AccountMenu />
+            <Suspense fallback={<Skeleton height={28} shape='block' width={44} />}>
+              <AccountMenu />
+            </Suspense>
             <IconButton aria-label={t('menu')} className={s.burger} onClick={() => toggleMenu(true)}>
               <Menu size={20} />
             </IconButton>

@@ -11,6 +11,7 @@ import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
+import { RouteGuard } from '@/shared/seo/route-guard';
 import { TankArmorPage } from '@/views/tank-armor';
 
 export const generateStaticParams = async () => (await topTankSlugs({ fallback: ROUTE_STATIC_PARAMS.fallback.tankArmor })).map((slug) => ({ slug }));
@@ -31,19 +32,18 @@ export const generateMetadata = async ({ params }: Pick<PageProps<'/[locale]/t/[
   });
 };
 
-const Page = async ({ params }: PageProps<'/[locale]/t/[slug]/armor'>) => {
-  await requireRouteEntity(tankRouteEntity(decodeRouteParam((await params).slug)));
-
-  return (
-    <>
-      <Suspense>
-        <TankArmorPage />
-      </Suspense>
-      <Suspense>
-        <RequestTime />
-      </Suspense>
-    </>
-  );
-};
+const Page = ({ params }: PageProps<'/[locale]/t/[slug]/armor'>) => (
+  <>
+    <Suspense>
+      <RouteGuard entity={params.then(({ slug }) => tankRouteEntity(decodeRouteParam(slug)))} />
+    </Suspense>
+    <Suspense>
+      <TankArmorPage />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
+);
 
 export default Page;

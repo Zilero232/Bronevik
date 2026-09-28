@@ -9,10 +9,11 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';
-import { clanJsonLd, JsonLd } from '@/shared/seo/json-ld';
+import { clanJsonLd } from '@/shared/seo/json-ld';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
+import { RouteGuard } from '@/shared/seo/route-guard';
 import { ClanPage } from '@/views/clan';
 import { clanPageState } from '@/views/clan/server';
 
@@ -35,18 +36,25 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/c/[tag]'
   });
 };
 
-const Page = async ({ params }: PageProps<'/[locale]/c/[tag]'>) => {
-  const tag = decodeRouteParam((await params).tag);
-  const { name } = await requireRouteEntity(clanRouteEntity(tag));
-  const locale = resolveLocale(await rootParams.locale());
+const ClanRoute = async ({ params }: Pick<PageProps<'/[locale]/c/[tag]'>, 'params'>) => (
+  <PrefetchBoundary state={clanPageState(decodeRouteParam((await params).tag))}>
+    <ClanPage />
+  </PrefetchBoundary>
+);
+
+const Page = ({ params }: PageProps<'/[locale]/c/[tag]'>) => {
+  const tag = params.then(({ tag: raw }) => decodeRouteParam(raw));
 
   return (
     <>
-      <JsonLd data={clanJsonLd({ name, path: ROUTES.clans.detail(tag), locale })} />
       <Suspense>
-        <PrefetchBoundary state={clanPageState(tag)}>
-          <ClanPage />
-        </PrefetchBoundary>
+        <RouteGuard
+          entity={tag.then(clanRouteEntity)}
+          schema={async ({ name }) => clanJsonLd({ name, path: ROUTES.clans.detail(await tag), locale: resolveLocale(await rootParams.locale()) })}
+        />
+      </Suspense>
+      <Suspense>
+        <ClanRoute params={params} />
       </Suspense>
       <Suspense>
         <RequestTime />

@@ -7,20 +7,24 @@ import { FavoriteButton } from '@/features/player/toggle-favorite';
 import { WatchButton } from '@/features/player/watch-player';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Button, buttonVariants } from '@/ui-kit';
+import { ActionStrip, Button, buttonVariants } from '@/ui-kit';
 
 import { useProfileActions } from '../../../model/hooks';
-
-import s from './ProfileActionStrip.module.scss';
 
 export const ProfileActionStrip = () => {
   const t = useTranslations('profile.actions');
   const { accountId, copied, share, signatureHref, wrappedHref, analyticsHref } = useProfileActions();
 
   return (
-    <div className={s.root} data-theme='dark'>
-      <div aria-label={t('label')} className={s.inner} role='toolbar'>
-        <div className={s.group}>
+    <ActionStrip
+      end={
+        <>
+          <FavoriteButton kind='player' targetId={accountId} />
+          <WatchButton accountId={accountId} />
+        </>
+      }
+      start={
+        <>
           <Link
             className={buttonVariants({ variant: 'secondary', size: 'sm' })}
             href={{ pathname: ROUTES.players.compare, query: { ids: String(accountId) } }}
@@ -48,12 +52,10 @@ export const ProfileActionStrip = () => {
               {t('myAnalytics')}
             </Link>
           )}
-        </div>
-        <div className={s.group}>
-          <FavoriteButton kind='player' targetId={accountId} />
-          <WatchButton accountId={accountId} />
-        </div>
-      </div>
-    </div>
+        </>
+      }
+      aria-label={t('label')}
+      role='toolbar'
+    />
   );
 };

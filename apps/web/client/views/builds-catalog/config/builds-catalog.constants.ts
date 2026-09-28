@@ -1,5 +1,5 @@
 import { BUILD_USAGE, LEARNING_DIFFICULTIES } from '@otmetki/schemas';
-import { parseAsArrayOf, parseAsStringLiteral } from 'nuqs';
+import { parseAsArrayOf, parseAsStringLiteral } from 'nuqs/server';
 
 export const CATALOG_QUERY_PARSERS = {
   mode: parseAsStringLiteral(BUILD_USAGE.modes).withDefault(BUILD_USAGE.defaultMode),

@@ -1,4 +1,4 @@
-import { parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs';
+import { parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 import { MAP_CAMOUFLAGES, MAP_MODE_KINDS } from '@/entities/map/map';
 

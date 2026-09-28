@@ -1,5 +1,5 @@
 import { TANK_CLASSES } from '@otmetki/icons';
-import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs';
+import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 import type { BadgeTone } from '@/ui-kit';
 

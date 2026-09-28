@@ -2,7 +2,8 @@ import type { RouteStaticParamsInput } from '@/shared/seo';
 
 import { streamersControllerList } from '@/shared/api/generated';
 import { fromSdk } from '@/shared/api/source';
-import { lookupRouteEntity, ROUTE_STATIC_PARAMS, routeEntity, routeSlugs } from '@/shared/seo';
+import { ROUTE_STATIC_PARAMS } from '@/shared/seo';
+import { lookupRouteEntity, routeEntity, routeSlugs } from '@/shared/seo/server';
 
 import { getStreamerBySlug } from '../streamers';
 

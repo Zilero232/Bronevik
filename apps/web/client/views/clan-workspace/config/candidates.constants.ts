@@ -1,4 +1,4 @@
-import { parseAsStringLiteral } from 'nuqs';
+import { parseAsStringLiteral } from 'nuqs/server';
 
 import type { BadgeTone } from '@/ui-kit';
 

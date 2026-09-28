@@ -1,13 +1,13 @@
 @use 'sass:map';
 @use 'sass:meta';
 @use 'sass:string';
-@use 'colors';
-@use 'motion';
-@use 'palette';
-@use 'ratings';
-@use 'scale';
-@use 'surfaces';
-@use 'textures';
+@use './colors';
+@use './motion';
+@use './palette';
+@use './ratings';
+@use './scale';
+@use './surfaces';
+@use './textures';
 
 @function merge-maps($maps...) {
   $merged: ();

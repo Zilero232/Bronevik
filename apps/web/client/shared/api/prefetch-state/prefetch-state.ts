@@ -1,4 +1,5 @@
 import { dehydrate } from '@tanstack/react-query';
+import { cacheLife } from 'next/cache';
 
 import type { PrefetchQueries } from './prefetch-state.types';
 
@@ -9,7 +10,13 @@ import 'server-only';
 export const prefetchState = async (fetch: PrefetchQueries) => {
   const client = makeServerQueryClient();
 
-  await Promise.all(fetch(client));
+  try {
+    await Promise.all(fetch(client));
 
-  return dehydrate(client);
+    return dehydrate(client);
+  } catch {
+    cacheLife('seconds');
+
+    return null;
+  }
 };

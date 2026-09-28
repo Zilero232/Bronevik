@@ -1,4 +1,4 @@
-import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs';
+import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 import { PLATOON_VOICE } from './platoons.constants';
 

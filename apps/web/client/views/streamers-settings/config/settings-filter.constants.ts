@@ -1,5 +1,5 @@
 import { STREAMER_SETTINGS } from '@otmetki/schemas';
-import { parseAsString, parseAsStringLiteral } from 'nuqs';
+import { parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 import { STREAMERS_SETTINGS_PAGE } from './streamers-settings.constants';
 

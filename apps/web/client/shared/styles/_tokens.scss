@@ -1,4 +1,4 @@
-@use '@otmetki/design-tokens' as tokens;
+@use 'design-tokens' as tokens;
 
 :root {
   @include tokens.root-properties;

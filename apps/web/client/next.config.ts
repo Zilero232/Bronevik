@@ -5,7 +5,6 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 import rootPackage from '../../../package.json' with { type: 'json' };
 import {
-  CLIENT_NODE_MODULES,
   CLIENT_ROOT,
   IMAGES,
   LEGACY_REDIRECTS,
@@ -13,7 +12,8 @@ import {
   OPTIMIZED_PACKAGES,
   REPO_ROOT,
   securityHeaderRules,
-  TRANSPILED_PACKAGES
+  TRANSPILED_PACKAGES,
+  WORKSPACE_PACKAGES
 } from './config';
 
 loadRootEnv();
@@ -34,8 +34,8 @@ const nextConfig: NextConfig = {
   images: IMAGES,
   transpilePackages: TRANSPILED_PACKAGES,
   experimental: { optimizePackageImports: OPTIMIZED_PACKAGES },
-  sassOptions: { implementation: 'sass-embedded', loadPaths: [CLIENT_ROOT, CLIENT_NODE_MODULES] },
-  turbopack: { resolveAlias: { '@': CLIENT_ROOT } },
+  sassOptions: { implementation: 'sass-embedded', loadPaths: [CLIENT_ROOT, WORKSPACE_PACKAGES] },
+  turbopack: { root: REPO_ROOT, resolveAlias: { '@': CLIENT_ROOT } },
   headers: () => Promise.resolve(securityHeaderRules({ apiUrl: process.env.NEXT_PUBLIC_API_URL, isDev: process.env.NODE_ENV !== 'production' })),
   redirects: () => Promise.resolve(LEGACY_REDIRECTS)
 };

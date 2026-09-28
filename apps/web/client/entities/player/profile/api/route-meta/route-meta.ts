@@ -1,6 +1,7 @@
 import type { RouteStaticParamsInput } from '@/shared/seo';
 
-import { lookupRouteEntity, ROUTE_STATIC_PARAMS, routeEntity, routeSlugs } from '@/shared/seo';
+import { ROUTE_STATIC_PARAMS } from '@/shared/seo';
+import { lookupRouteEntity, routeEntity, routeSlugs } from '@/shared/seo/server';
 
 import { getPlayer, getPopularPlayers } from '../players';
 

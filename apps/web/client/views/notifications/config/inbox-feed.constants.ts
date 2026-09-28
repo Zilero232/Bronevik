@@ -1,4 +1,4 @@
-import { parseAsStringLiteral } from 'nuqs';
+import { parseAsStringLiteral } from 'nuqs/server';
 
 export const INBOX_FEED = {
   pageSize: 20,

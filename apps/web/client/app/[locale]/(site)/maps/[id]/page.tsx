@@ -12,6 +12,7 @@ import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
+import { RouteGuard } from '@/shared/seo/route-guard';
 import { MapPage } from '@/views/map';
 import { mapPageState } from '@/views/map/server';
 
@@ -33,23 +34,24 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/maps/[id
   });
 };
 
-const Page = async ({ params }: PageProps<'/[locale]/maps/[id]'>) => {
-  const id = decodeRouteParam((await params).id);
+const MapRoute = async ({ params }: Pick<PageProps<'/[locale]/maps/[id]'>, 'params'>) => (
+  <PrefetchBoundary state={mapPageState(decodeRouteParam((await params).id))}>
+    <MapPage />
+  </PrefetchBoundary>
+);
 
-  await requireRouteEntity(mapRouteEntity(id));
-
-  return (
-    <>
-      <Suspense>
-        <PrefetchBoundary state={mapPageState(id)}>
-          <MapPage />
-        </PrefetchBoundary>
-      </Suspense>
-      <Suspense>
-        <RequestTime />
-      </Suspense>
-    </>
-  );
-};
+const Page = ({ params }: PageProps<'/[locale]/maps/[id]'>) => (
+  <>
+    <Suspense>
+      <RouteGuard entity={params.then(({ id }) => mapRouteEntity(decodeRouteParam(id)))} />
+    </Suspense>
+    <Suspense>
+      <MapRoute params={params} />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
+);
 
 export default Page;

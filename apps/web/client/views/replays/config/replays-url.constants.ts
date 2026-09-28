@@ -1,4 +1,4 @@
-import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs';
+import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 import { REPLAY_LIST, REPLAY_RESULTS, REPLAY_SORTS, REPLAY_TABS } from './replays-list.constants';
 

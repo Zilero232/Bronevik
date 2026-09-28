@@ -1,8 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { cacheLife } from 'next/cache';
+import { describe, expect, it, vi } from 'vitest';
 
 import { NotFoundError } from '@/shared/api/source';
 
 import { lookupRouteEntity, routeEntity, routeSlugs } from '../route-meta';
+
+vi.mock('next/cache', () => ({ cacheLife: vi.fn() }));
 
 const fail = () => Promise.reject(new Error('down'));
 
@@ -18,8 +21,9 @@ describe('lookupRouteEntity', () => {
     });
   });
 
-  it('rethrows a transient failure so the cache does not keep it', async () => {
-    await expect(lookupRouteEntity({ key: 'object-140', load: fail })).rejects.toThrow('down');
+  it('treats a transient failure as found and keeps it in the cache only for seconds', async () => {
+    await expect(lookupRouteEntity({ key: 'object-140', load: fail })).resolves.toEqual({ name: 'object-140', isFound: true });
+    expect(cacheLife).toHaveBeenCalledWith('seconds');
   });
 });
 

@@ -1,4 +1,4 @@
-import { parseAsNumberLiteral, parseAsStringLiteral } from 'nuqs';
+import { parseAsNumberLiteral, parseAsStringLiteral } from 'nuqs/server';
 
 import { MAP_STATS } from './map-stats.constants';
 

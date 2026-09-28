@@ -1,6 +1,7 @@
 import type { RouteStaticParamsInput } from '@/shared/seo';
 
-import { ROUTE_STATIC_PARAMS, routeSlugs } from '@/shared/seo';
+import { ROUTE_STATIC_PARAMS } from '@/shared/seo';
+import { routeSlugs } from '@/shared/seo/server';
 
 import type { ReplayRouteMeta } from './route-meta.types';
 

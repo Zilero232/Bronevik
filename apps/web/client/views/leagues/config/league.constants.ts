@@ -1,5 +1,5 @@
 import { LEAGUE_METRICS, LEAGUE_SCOPES } from '@otmetki/schemas';
-import { parseAsString, parseAsStringLiteral } from 'nuqs';
+import { parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 import type { LeagueScope, LeagueZone } from '@/entities/social/league';
 import type { DataTableRowTint, LegendTone } from '@/ui-kit';

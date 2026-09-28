@@ -1,6 +1,6 @@
 import type { RouteStaticParamsInput } from '@/shared/seo';
 
-import { lookupRouteEntity, routeEntity, routeSlugs } from '@/shared/seo';
+import { lookupRouteEntity, routeEntity, routeSlugs } from '@/shared/seo/server';
 
 import { getMap, listMaps } from '../maps';
 

@@ -1,4 +1,4 @@
-import { parseAsBoolean, parseAsString } from 'nuqs';
+import { parseAsBoolean, parseAsString } from 'nuqs/server';
 
 export const COMPARE_SLOTS = ['a', 'b', 'c', 'd'] as const;
 

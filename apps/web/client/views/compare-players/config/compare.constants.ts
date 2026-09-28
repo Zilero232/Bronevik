@@ -1,6 +1,6 @@
 import type { RatingPeriod } from '@otmetki/schemas';
 
-import { parseAsArrayOf, parseAsInteger } from 'nuqs';
+import { parseAsArrayOf, parseAsInteger } from 'nuqs/server';
 
 import type { NumberFormatName } from '@/shared/i18n';
 

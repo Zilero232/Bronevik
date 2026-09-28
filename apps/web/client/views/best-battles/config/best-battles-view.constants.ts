@@ -1,4 +1,4 @@
-import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs';
+import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 import { BEST_BATTLE, BEST_BATTLE_METRICS, BEST_BATTLE_PERIODS } from '@/entities/battle/best-battle';
 

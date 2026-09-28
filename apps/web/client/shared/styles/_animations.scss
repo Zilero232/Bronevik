@@ -1,4 +1,4 @@
-@use '@otmetki/design-tokens' as tokens;
+@use 'design-tokens' as tokens;
 
 @mixin spin($duration: 0.7s) {
   animation: otmetki-spin $duration linear infinite;

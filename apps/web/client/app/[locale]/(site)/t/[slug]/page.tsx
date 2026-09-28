@@ -12,6 +12,7 @@ import { createPageMetadata, ROUTE_STATIC_PARAMS } from '@/shared/seo';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
+import { RouteGuard } from '@/shared/seo/route-guard';
 import { TankPage } from '@/views/tank';
 import { tankPageState } from '@/views/tank/server';
 
@@ -34,23 +35,24 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/t/[slug]
   });
 };
 
-const Page = async ({ params }: PageProps<'/[locale]/t/[slug]'>) => {
-  const slug = decodeRouteParam((await params).slug);
+const TankRoute = async ({ params }: Pick<PageProps<'/[locale]/t/[slug]'>, 'params'>) => (
+  <PrefetchBoundary state={tankPageState(decodeRouteParam((await params).slug))}>
+    <TankPage />
+  </PrefetchBoundary>
+);
 
-  await requireRouteEntity(tankRouteEntity(slug));
-
-  return (
-    <>
-      <Suspense>
-        <PrefetchBoundary state={tankPageState(slug)}>
-          <TankPage />
-        </PrefetchBoundary>
-      </Suspense>
-      <Suspense>
-        <RequestTime />
-      </Suspense>
-    </>
-  );
-};
+const Page = ({ params }: PageProps<'/[locale]/t/[slug]'>) => (
+  <>
+    <Suspense>
+      <RouteGuard entity={params.then(({ slug }) => tankRouteEntity(decodeRouteParam(slug)))} />
+    </Suspense>
+    <Suspense>
+      <TankRoute params={params} />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
+);
 
 export default Page;

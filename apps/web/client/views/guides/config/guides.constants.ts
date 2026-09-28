@@ -1,4 +1,4 @@
-import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs';
+import { parseAsInteger, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 import type { GuideKind, GuideSort } from '@/entities/guide/guide';
 

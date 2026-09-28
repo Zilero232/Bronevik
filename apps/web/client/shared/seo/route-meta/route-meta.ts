@@ -1,3 +1,5 @@
+import { cacheLife } from 'next/cache';
+
 import { isNotFoundError } from '@/shared/api/source';
 
 import type { RouteEntity, RouteEntityInput, RouteLookupInput, RouteSlugsInput } from './route-meta.types';
@@ -10,7 +12,9 @@ export const lookupRouteEntity = async ({ key, load }: RouteEntityInput): Promis
       return { name: key, isFound: false };
     }
 
-    throw error;
+    cacheLife('seconds');
+
+    return { name: key, isFound: true };
   }
 };
 

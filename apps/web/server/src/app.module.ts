@@ -51,6 +51,7 @@ import { RecruitingModule } from './modules/recruiting';
 import { ReferenceModule } from './modules/reference';
 import { ReplaysModule } from './modules/replays';
 import { SearchModule } from './modules/search';
+import { SessionShareModule } from './modules/session-share';
 import { ShopModule } from './modules/shop';
 import { SocialModule } from './modules/social';
 import { StreamerEventsModule, StreamersModule } from './modules/streamers';
@@ -106,6 +107,7 @@ import { WatchlistModule } from './modules/watchlist';
     AnalyticsModule,
     MeModule,
     ModModule,
+    SessionShareModule,
     ModpackReleasesModule,
     DeveloperModule,
     PublicApiModule,

@@ -1,9 +1,11 @@
 import { z } from 'zod';
 
-import { accountIdSchema, countSchema, isoDateTimeSchema, percentSchema } from '../common/primitives/primitives.schemas';
+import { accountIdSchema, countSchema, isoDateTimeSchema, percentSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { ratingValueSchema } from '../common/rating/rating.schemas';
+import { goalSchema } from '../me/me.schemas';
+import { replayStatusSchema } from '../replays/replays.schemas';
 import { sessionKindSchema, sessionSourceSchema } from '../sessions/sessions.schemas';
-import { MOD_ERROR_CODES, MOD_LOADOUT, MOD_RATINGS } from './mod.constants';
+import { MOD_ERROR_CODES, MOD_HANGAR, MOD_LOADOUT, MOD_RATINGS } from './mod.constants';
 
 export const bindCodeInputSchema = z.object({
   accountId: accountIdSchema.optional()
@@ -104,6 +106,25 @@ export const modOverviewSchema = z
   })
   .describe('The bound account own ratings, as the mod hangar panel shows them');
 
+export const modTankRecordsSchema = z
+  .object({
+    max_damage: countSchema.nullable(),
+    max_assist: countSchema.nullable(),
+    max_frags: countSchema.nullable(),
+    max_xp: countSchema.nullable()
+  })
+  .describe('Career records of the tank in random battles: the highest damage, assistance (radio + tracking), frags and base XP of one battle');
+
+export const modTankExpectedSchema = z
+  .object({
+    damage: z.number().positive(),
+    spot: z.number().nonnegative(),
+    frag: z.number().nonnegative(),
+    def: z.number().nonnegative(),
+    win_rate: z.number().positive().max(100)
+  })
+  .describe('The WN8 expected values of the tank the site uses, per battle; win rate in percent');
+
 export const modTankRatingSchema = z.object({
   tank_id: modTankIdSchema,
   battles: countSchema,
@@ -112,7 +133,9 @@ export const modTankRatingSchema = z.object({
   wn8: ratingValueSchema,
   moe_percent: percentSchema.nullable(),
   marks_on_gun: z.number().int().min(0).max(3).nullable(),
-  mastery: z.number().int().min(0).max(4)
+  mastery: z.number().int().min(0).max(4),
+  records: modTankRecordsSchema.nullable(),
+  expected: modTankExpectedSchema.nullable()
 });
 
 export const modTankRatingsSchema = z
@@ -121,3 +144,101 @@ export const modTankRatingsSchema = z
     tanks: z.array(modTankRatingSchema).describe('One row per requested tank the account has data for, in request order')
   })
   .describe('Per-tank own ratings of the bound account');
+
+export const modGoalsRequestSchema = z
+  .strictObject({
+    device_id: modDeviceIdSchema,
+    account_id: modAccountIdSchema
+  })
+  .describe('Signed body of POST /mod/me/goals: the bound device and its account, nothing else');
+
+export const modGoalSchema = z.object({
+  id: goalSchema.shape.id,
+  metric: goalSchema.shape.metric,
+  tank_id: goalSchema.shape.tankId,
+  target: goalSchema.shape.target,
+  baseline: goalSchema.shape.baseline,
+  current: goalSchema.shape.current,
+  battles: countSchema.describe('Random battles counted in the goal window so far'),
+  status: goalSchema.shape.status,
+  starts_at: goalSchema.shape.startsAt,
+  ends_at: goalSchema.shape.endsAt,
+  achieved_at: goalSchema.shape.achievedAt
+});
+
+export const modGoalsSchema = z
+  .object({
+    account_id: modAccountIdSchema,
+    goals: z.array(modGoalSchema).max(MOD_HANGAR.maxGoals).describe('Active goals and those ended in the last 24 hours, newest first')
+  })
+  .describe('The goals the bound account set on the site, for the mod session goals');
+
+export const modReplayStatusRequestSchema = z
+  .strictObject({
+    device_id: modDeviceIdSchema,
+    account_id: modAccountIdSchema,
+    replay_ids: z.array(uuidSchema).min(1).max(MOD_HANGAR.maxReplayIds)
+  })
+  .describe('Signed body of POST /mod/me/replays: the ids POST /replays/mod answered');
+
+export const modReplayHighlightsSchema = z
+  .object({
+    accuracy: percentSchema.nullable(),
+    damage: countSchema.nullable(),
+    penetrations: countSchema.nullable()
+  })
+  .describe('A short summary of the recorder battle for the hangar notice');
+
+export const modReplayStatusSchema = z.object({
+  id: uuidSchema,
+  status: replayStatusSchema,
+  highlights: modReplayHighlightsSchema.nullable()
+});
+
+export const modReplayStatusesSchema = z
+  .object({
+    account_id: modAccountIdSchema,
+    replays: z.array(modReplayStatusSchema).describe('One row per requested replay the account owns, in request order')
+  })
+  .describe('Analysis state of the replays the mod uploaded');
+
+export const modShareChannelSchema = z.enum(MOD_HANGAR.shareChannels);
+
+export const modShareChannelsSchema = z
+  .array(modShareChannelSchema)
+  .min(1)
+  .max(MOD_HANGAR.shareChannels.length)
+  .refine((channels) => new Set(channels).size === channels.length, { message: 'Channels must be unique' });
+
+export const modSessionSharePreferenceSchema = z
+  .strictObject({
+    device_id: modDeviceIdSchema,
+    account_id: modAccountIdSchema,
+    enabled: z.boolean(),
+    channels: modShareChannelsSchema
+  })
+  .describe('Signed body of POST /mod/me/session-share: the opt-in session report and its channels');
+
+export const modSessionSharePreferenceAnswerSchema = z
+  .object({
+    account_id: modAccountIdSchema,
+    enabled: z.boolean(),
+    channels: modShareChannelsSchema
+  })
+  .describe('The stored session report preference');
+
+export const modSessionShareSendSchema = z
+  .strictObject({
+    device_id: modDeviceIdSchema,
+    account_id: modAccountIdSchema,
+    session_id: z.string().regex(MOD_HANGAR.shareSessionIdPattern),
+    channels: modShareChannelsSchema
+  })
+  .describe('Signed body of POST /mod/me/session-share/send: post the card of that mod session now');
+
+export const modSessionShareSentSchema = z
+  .object({
+    account_id: modAccountIdSchema,
+    queued: modShareChannelsSchema
+  })
+  .describe('The channels the session card was queued to');

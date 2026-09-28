@@ -13,6 +13,7 @@ export const MOD_LOADOUT = {
 export const MOD_ERROR_CODES = [
   'account_mismatch',
   'bad_signature',
+  'channel_not_linked',
   'code_expired',
   'code_not_found',
   'code_used',
@@ -23,6 +24,7 @@ export const MOD_ERROR_CODES = [
   'replay_not_owned',
   'replayed_request',
   'server_error',
+  'session_not_found',
   'stale_request',
   'too_large',
   'unknown_device'
@@ -32,4 +34,11 @@ export const MOD_RATINGS = {
   maxTanks: 100,
   deviceIdPattern: /^[\w-]+$/,
   deviceIdMaxLength: 64
+} as const;
+
+export const MOD_HANGAR = {
+  maxGoals: 20,
+  maxReplayIds: 20,
+  shareChannels: ['telegram', 'discord'],
+  shareSessionIdPattern: /^[\da-f]{32}$/
 } as const;

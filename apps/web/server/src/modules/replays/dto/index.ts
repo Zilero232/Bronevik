@@ -4,6 +4,8 @@ export {
   HeatmapDto,
   HeatmapParamsDto,
   HeatmapQueryDto,
+  ModReplayStatusesDto,
+  ModReplayStatusRequestDto,
   PaginationQueryDto,
   ReplayDto,
   ReplayIdParamsDto,

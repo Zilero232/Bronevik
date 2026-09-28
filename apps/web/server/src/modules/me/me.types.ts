@@ -4,11 +4,14 @@ import type {
   Favorite,
   Goal,
   LinkedAccounts,
+  ModGoals,
   NotificationSettings,
   UpdateGoalInput as UpdateGoalBody
 } from '@otmetki/schemas';
 
-export type { Favorite, Goal, LinkedAccounts };
+import type { GoalWindow } from './lib';
+
+export type { Favorite, Goal, LinkedAccounts, ModGoals };
 
 export type CreateFavoriteInput = CreateFavoriteBody & { userId: string };
 export type CreateGoalInput = CreateGoalBody & { userId: string };
@@ -32,4 +35,16 @@ export type BaselineInput = {
   accountId: bigint;
   metric: Goal['metric'];
   tankId: number | null;
+};
+
+export type HangarGoalsInput = {
+  userId: string;
+  accountId: bigint;
+  now?: Date;
+};
+
+export type GoalBattlesQueryInput = {
+  accountId: bigint;
+  tankId: number | null;
+  window: GoalWindow;
 };

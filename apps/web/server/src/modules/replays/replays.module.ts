@@ -5,8 +5,9 @@ import { ObjectStorageModule } from '../../core';
 import { BillingCoreModule } from '../billing';
 import { ModModule } from '../mod';
 import { REPLAYS_QUEUE } from './config';
+import { ModReplaysController } from './mod-replays.controller';
 import { ReplaysController } from './replays.controller';
-import { HeatmapService, ReplayOwnerService, ReplayQueryService, ReplayUploadService } from './services';
+import { HeatmapService, ReplayOwnerService, ReplayQueryService, ReplayStatusService, ReplayUploadService } from './services';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { HeatmapService, ReplayOwnerService, ReplayQueryService, ReplayUploadSer
     ObjectStorageModule.register({ rootEnv: 'REPLAY_STORAGE_DIR' }),
     BullModule.registerQueue({ name: REPLAYS_QUEUE.name })
   ],
-  controllers: [ReplaysController],
-  providers: [ReplayUploadService, ReplayQueryService, ReplayOwnerService, HeatmapService]
+  controllers: [ReplaysController, ModReplaysController],
+  providers: [ReplayUploadService, ReplayQueryService, ReplayOwnerService, ReplayStatusService, HeatmapService]
 })
 export class ReplaysModule {}

@@ -1,8 +1,9 @@
+import type { ModReplayStatuses } from '@otmetki/schemas';
 import type { z } from 'zod';
 
 import type { Replay, Visibility } from '../../../generated';
 import type { ReplaySummary } from '../../lib/replay';
-import type { SignedModRequest } from '../mod';
+import type { AuthenticatedDevice, SignedModRequest } from '../mod';
 import type {
   bestOfWeekSchema,
   heatmapSchema,
@@ -125,4 +126,11 @@ export type SettleOverflowInput = OverflowOwner & {
 export type ReplayViewInput = {
   replay: Replay;
   viewerUserId?: string | null;
+};
+
+export type { ModReplayStatuses };
+
+export type ModReplayStatusInput = {
+  device: AuthenticatedDevice;
+  replayIds: string[];
 };

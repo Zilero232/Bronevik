@@ -1,8 +1,9 @@
-import type { ModTankRating } from '@otmetki/schemas';
+import type { ExpectedValues } from '@otmetki/ratings';
+import type { ModTankExpected, ModTankRating, ModTankRecords } from '@otmetki/schemas';
 
 import { clamp } from 'remeda';
 
-import type { ModTankRatingInput } from './mod-tank-rating.types';
+import type { ModTankRatingInput, ModTankRecordsInput } from './mod-tank-rating.types';
 
 import { clampPercent, percentOf, ratingValue, ratio } from '../../../../common/lib';
 import { MOD_RATINGS_READ } from '../../config';
@@ -33,6 +34,37 @@ const marksOf = ({ tank, totals }: ModTankRatingInput): number | null => {
   return marks === null ? null : clamp(marks, { min: 0, max: MOD_RATINGS_READ.maxMarksOnGun });
 };
 
+const highest = (values: (number | null | undefined)[]): number | null => {
+  const known = values.filter((value): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0);
+
+  return known.length === 0 ? null : Math.round(Math.max(...known));
+};
+
+export const toModTankRecords = ({ totals, records }: ModTankRecordsInput): ModTankRecords | null => {
+  const result = {
+    max_damage: highest([records?.maxDamage]),
+    max_assist: highest([records?.maxAssist]),
+    max_frags: highest([records?.maxFrags, totals?.maxFrags]),
+    max_xp: highest([records?.maxXp, totals?.maxXp])
+  };
+
+  return Object.values(result).every((value) => value === null) ? null : result;
+};
+
+export const toModTankExpected = (expected: ExpectedValues | undefined): ModTankExpected | null => {
+  if (!expected || !(expected.expDamage > 0) || !(expected.expWinRate > 0) || expected.expWinRate > MOD_RATINGS_READ.maxPercent) {
+    return null;
+  }
+
+  return {
+    damage: expected.expDamage,
+    spot: Math.max(0, expected.expSpot),
+    frag: Math.max(0, expected.expFrag),
+    def: Math.max(0, expected.expDef),
+    win_rate: expected.expWinRate
+  };
+};
+
 export const toModTankRating = (input: ModTankRatingInput): ModTankRating | null => {
   const { tankId, tank, rating, totals } = input;
 
@@ -48,6 +80,8 @@ export const toModTankRating = (input: ModTankRatingInput): ModTankRating | null
     wn8: ratingValue({ kind: 'wn8', value: rating?.wn8 }),
     moe_percent: clampPercent(tank?.moePercent),
     marks_on_gun: marksOf(input),
-    mastery: clamp(tank?.markOfMastery ?? totals?.markOfMastery ?? 0, { min: 0, max: MOD_RATINGS_READ.maxMastery })
+    mastery: clamp(tank?.markOfMastery ?? totals?.markOfMastery ?? 0, { min: 0, max: MOD_RATINGS_READ.maxMastery }),
+    records: toModTankRecords(input),
+    expected: toModTankExpected(input.expected)
   };
 };

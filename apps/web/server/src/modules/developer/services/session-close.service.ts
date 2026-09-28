@@ -1,17 +1,18 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { subMinutes } from 'date-fns';
 
-import type { WebhookEmitter } from '../../../core';
+import type { SessionEventsSink, WebhookEmitter } from '../../../core';
 
 import { isSessionEnded, percentOf, ratio, toNumber } from '../../../common/lib';
-import { PrismaService, WEBHOOK_EMITTER } from '../../../core';
+import { PrismaService, SESSION_EVENTS, WEBHOOK_EMITTER } from '../../../core';
 import { SESSION_CLOSE } from '../config';
 
 @Injectable()
 export class SessionCloseService {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject(WEBHOOK_EMITTER) private readonly webhooks: WebhookEmitter
+    @Inject(WEBHOOK_EMITTER) private readonly webhooks: WebhookEmitter,
+    @Optional() @Inject(SESSION_EVENTS) private readonly sessionEvents: SessionEventsSink | null = null
   ) {}
 
   async closeIdle(now = new Date()): Promise<number> {
@@ -60,6 +61,10 @@ export class SessionCloseService {
           wn8: session.wn8
         }
       });
+
+      if (session.source === 'mod') {
+        await this.sessionEvents?.ended({ sessionId: session.id, accountId: session.accountId });
+      }
     }
 
     return closed;

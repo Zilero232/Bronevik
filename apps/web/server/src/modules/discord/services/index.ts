@@ -5,4 +5,5 @@ export { DiscordInteractionsService } from './discord-interactions.service';
 export { DiscordRemindersService } from './discord-reminders.service';
 export { DiscordReportService } from './discord-report.service';
 export { DiscordRolesService } from './discord-roles.service';
+export { DiscordSenderService } from './discord-sender.service';
 export { DiscordStatusService } from './discord-status.service';

@@ -4086,6 +4086,35 @@
         "tags": ["me"]
       }
     },
+    "/mod/me/goals": {
+      "post": {
+        "operationId": "ModGoalsController_hangar",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModGoalsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModGoalsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      }
+    },
     "/mod/bind-code": {
       "post": {
         "operationId": "ModController_issueCode",
@@ -4255,6 +4284,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ModTankRatingsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      }
+    },
+    "/mod/me/session-share": {
+      "post": {
+        "operationId": "SessionShareController_preference",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModSessionSharePreferenceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModSessionSharePreferenceAnswerDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      }
+    },
+    "/mod/me/session-share/send": {
+      "post": {
+        "operationId": "SessionShareController_send",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModSessionShareSendDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModSessionShareSentDto_Output"
                 }
               }
             }
@@ -9115,6 +9202,35 @@
           }
         },
         "tags": ["replays"]
+      }
+    },
+    "/mod/me/replays": {
+      "post": {
+        "operationId": "ModReplaysController_statusesOf",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModReplayStatusRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModReplayStatusesDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
       }
     },
     "/community/builds": {
@@ -34961,6 +35077,113 @@
         "required": ["generatedAt", "sessions", "battles", "tankProgress"],
         "additionalProperties": false
       },
+      "ModGoalsRequestDto": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\w-]+$"
+          },
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": ["device_id", "account_id"],
+        "description": "Signed body of POST /mod/me/goals: the bound device and its account, nothing else",
+        "additionalProperties": false
+      },
+      "ModGoalsDto_Output": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "goals": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "metric": {
+                  "type": "string",
+                  "enum": ["winRate", "wn8", "avgDamage", "battles", "moe", "broneIndex"],
+                  "description": "winRate and moe are percents"
+                },
+                "tank_id": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "target": {
+                  "type": "number"
+                },
+                "baseline": {
+                  "type": "number"
+                },
+                "current": {
+                  "type": ["number", "null"]
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Random battles counted in the goal window so far"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["active", "achieved", "failed", "cancelled"]
+                },
+                "starts_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "ends_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                },
+                "achieved_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": ["id", "metric", "tank_id", "target", "baseline", "current", "battles", "status", "starts_at", "ends_at", "achieved_at"],
+              "additionalProperties": false
+            },
+            "description": "Active goals and those ended in the last 24 hours, newest first"
+          }
+        },
+        "required": ["account_id", "goals"],
+        "description": "The goals the bound account set on the site, for the mod session goals",
+        "additionalProperties": false
+      },
       "BindCodeInputDto": {
         "type": "object",
         "properties": {
@@ -35544,9 +35767,108 @@
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 4
+                },
+                "records": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "max_damage": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "max_assist": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "max_frags": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "max_xp": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["max_damage", "max_assist", "max_frags", "max_xp"],
+                      "additionalProperties": false,
+                      "description": "Career records of the tank in random battles: the highest damage, assistance (radio + tracking), frags and base XP of one battle"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expected": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "damage": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "spot": {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        "frag": {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        "def": {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        "win_rate": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 100
+                        }
+                      },
+                      "required": ["damage", "spot", "frag", "def", "win_rate"],
+                      "additionalProperties": false,
+                      "description": "The WN8 expected values of the tank the site uses, per battle; win rate in percent"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 }
               },
-              "required": ["tank_id", "battles", "win_rate", "avg_damage", "wn8", "moe_percent", "marks_on_gun", "mastery"],
+              "required": ["tank_id", "battles", "win_rate", "avg_damage", "wn8", "moe_percent", "marks_on_gun", "mastery", "records", "expected"],
               "additionalProperties": false
             },
             "description": "One row per requested tank the account has data for, in request order"
@@ -35554,6 +35876,116 @@
         },
         "required": ["account_id", "tanks"],
         "description": "Per-tank own ratings of the bound account",
+        "additionalProperties": false
+      },
+      "ModSessionSharePreferenceDto": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\w-]+$"
+          },
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "channels": {
+            "minItems": 1,
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["telegram", "discord"]
+            }
+          }
+        },
+        "required": ["device_id", "account_id", "enabled", "channels"],
+        "description": "Signed body of POST /mod/me/session-share: the opt-in session report and its channels",
+        "additionalProperties": false
+      },
+      "ModSessionSharePreferenceAnswerDto_Output": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "channels": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+              "type": "string",
+              "enum": ["telegram", "discord"]
+            }
+          }
+        },
+        "required": ["account_id", "enabled", "channels"],
+        "description": "The stored session report preference",
+        "additionalProperties": false
+      },
+      "ModSessionShareSendDto": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\w-]+$"
+          },
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "session_id": {
+            "type": "string",
+            "pattern": "^[\\da-f]{32}$"
+          },
+          "channels": {
+            "minItems": 1,
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["telegram", "discord"]
+            }
+          }
+        },
+        "required": ["device_id", "account_id", "session_id", "channels"],
+        "description": "Signed body of POST /mod/me/session-share/send: post the card of that mod session now",
+        "additionalProperties": false
+      },
+      "ModSessionShareSentDto_Output": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "queued": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+              "type": "string",
+              "enum": ["telegram", "discord"]
+            }
+          }
+        },
+        "required": ["account_id", "queued"],
+        "description": "The channels the session card was queued to",
         "additionalProperties": false
       },
       "ModpackLatestReleaseDto_Output": {
@@ -52433,6 +52865,120 @@
           }
         },
         "required": ["visibility"]
+      },
+      "ModReplayStatusRequestDto": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\w-]+$"
+          },
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "replay_ids": {
+            "minItems": 1,
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        },
+        "required": ["device_id", "account_id", "replay_ids"],
+        "description": "Signed body of POST /mod/me/replays: the ids POST /replays/mod answered",
+        "additionalProperties": false
+      },
+      "ModReplayStatusesDto_Output": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "replays": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["uploaded", "parsing", "parsed", "failed"]
+                },
+                "highlights": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "accuracy": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 100,
+                              "description": "Percent, 0–100"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "damage": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "penetrations": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["accuracy", "damage", "penetrations"],
+                      "additionalProperties": false,
+                      "description": "A short summary of the recorder battle for the hangar notice"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": ["id", "status", "highlights"],
+              "additionalProperties": false
+            },
+            "description": "One row per requested replay the account owns, in request order"
+          }
+        },
+        "required": ["account_id", "replays"],
+        "description": "Analysis state of the replays the mod uploaded",
+        "additionalProperties": false
       },
       "BuildPageDto_Output": {
         "type": "object",

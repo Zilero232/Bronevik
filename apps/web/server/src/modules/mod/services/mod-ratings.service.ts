@@ -5,11 +5,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { indexBy, unique } from 'remeda';
 
 import type { ModOverview, ModTankRatings, TankRatingsInput } from '../mod.types';
+import type { TankRecordRow } from '../queries';
 
-import { toNumber } from '../../../common/lib';
+import { bonusTypesOfMode, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
+import { ExpectedValuesService } from '../../reference';
 import { MOD_RATINGS_READ } from '../config';
 import { toModOverview, toModTankRating } from '../mappers';
+import { tankRecordsSql } from '../queries';
 import {
   LATEST_SESSION_ORDER,
   LATEST_SESSION_SELECT,
@@ -23,6 +26,7 @@ import {
 export class ModRatingsService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly expectedValues: ExpectedValuesService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache
   ) {}
 
@@ -64,20 +68,30 @@ export class ModRatingsService {
 
     const where = { accountId, tankId: { in: ids } };
 
-    const [tanks, ratings, totals] = await Promise.all([
+    const [tanks, ratings, totals, records, expected] = await Promise.all([
       this.prisma.playerTank.findMany({ where, select: OWN_TANK_SELECT }),
       this.prisma.accountTankRating.findMany({ where: { ...where, period: MOD_RATINGS_READ.period }, select: TANK_RATING_SELECT }),
-      this.prisma.tankSnapshotLatest.findMany({ where: { ...where, mode: MOD_RATINGS_READ.statsMode }, select: TANK_TOTALS_SELECT })
+      this.prisma.tankSnapshotLatest.findMany({ where: { ...where, mode: MOD_RATINGS_READ.statsMode }, select: TANK_TOTALS_SELECT }),
+      this.prisma.$queryRaw<TankRecordRow[]>(tankRecordsSql({ accountId, tankIds: ids, battleTypes: bonusTypesOfMode(MOD_RATINGS_READ.statsMode) })),
+      this.expectedValues.all()
     ]);
 
     const tankOf = indexBy(tanks, (row) => row.tankId);
     const ratingOf = indexBy(ratings, (row) => row.tankId);
     const totalsOf = indexBy(totals, (row) => row.tankId);
+    const recordsOf = indexBy(records, (row) => row.tankId);
 
     const result: ModTankRatings = {
       account_id: toNumber(accountId),
       tanks: ids.flatMap((tankId) => {
-        const row = toModTankRating({ tankId, tank: tankOf[tankId], rating: ratingOf[tankId], totals: totalsOf[tankId] });
+        const row = toModTankRating({
+          tankId,
+          tank: tankOf[tankId],
+          rating: ratingOf[tankId],
+          totals: totalsOf[tankId],
+          records: recordsOf[tankId],
+          expected: expected.get(tankId)
+        });
 
         return row ? [row] : [];
       })

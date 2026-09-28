@@ -19,6 +19,8 @@ export {
 export { QueuesModule } from './queues';
 export { REDIS, RedisModule } from './redis';
 export { PageCrawlerService, ScrapeModule } from './scrape';
+export { SESSION_EVENTS } from './session-events';
+export type { SessionEndedEvent, SessionEventsSink } from './session-events';
 export { createObjectStorage, LocalDiskStorage, ObjectStorage, ObjectStorageModule } from './storage';
 export type { CreateObjectStorageInput, PutObjectInput, StorageEnv } from './storage';
 export { markGainedKey, WEBHOOK_EMITTER } from './webhooks';

@@ -41,7 +41,8 @@ model User {
   telegramAccount      TelegramAccount?
   oneTimeCodes         OneTimeCode[]
 
-  modDevices ModDevice[]
+  modDevices             ModDevice[]
+  sessionSharePreference SessionSharePreference?
 
   apiKeys          ApiKey[]
   webhookEndpoints WebhookEndpoint[]

@@ -1,2 +1,2 @@
-export { isGoalEndAllowed } from './goal';
-export type { GoalEndInput } from './goal.types';
+export { goalBattles, goalWindow, hangarGoalsSince, isGoalEndAllowed } from './goal';
+export type { GoalBattlesInput, GoalEndInput, GoalWindow, GoalWindowInput } from './goal.types';

@@ -1,14 +1,25 @@
 import { Injectable } from '@nestjs/common';
+import { MOD_HANGAR } from '@otmetki/schemas';
 import { match } from 'ts-pattern';
 
-import type { BaselineInput, CreateGoalInput, Goal, OwnedInput, UpdateGoalInput } from '../me.types';
+import type {
+  BaselineInput,
+  CreateGoalInput,
+  Goal,
+  GoalBattlesQueryInput,
+  HangarGoalsInput,
+  ModGoals,
+  OwnedInput,
+  UpdateGoalInput
+} from '../me.types';
 
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
+import { bonusTypesOfMode, toNumber } from '../../../common/lib';
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
-import { GOALS } from '../config';
-import { isGoalEndAllowed } from '../lib';
-import { toGoal } from '../mappers';
+import { GOALS, MOD_GOALS } from '../config';
+import { goalBattles, goalWindow, hangarGoalsSince, isGoalEndAllowed } from '../lib';
+import { toGoal, toModGoal } from '../mappers';
 
 @Injectable()
 export class GoalsService {
@@ -21,6 +32,34 @@ export class GoalsService {
     const rows = await this.prisma.goal.findMany({ where: { userId }, orderBy: [{ status: 'asc' }, { endsAt: 'asc' }] });
 
     return rows.map(toGoal);
+  }
+
+  async hangar({ userId, accountId, now = new Date() }: HangarGoalsInput): Promise<ModGoals> {
+    const since = hangarGoalsSince(now);
+
+    const rows = await this.prisma.goal.findMany({
+      where: {
+        userId,
+        accountId,
+        OR: [
+          { status: 'active', endsAt: { gte: since } },
+          { status: { not: 'active' }, endsAt: { gte: since, lte: now } },
+          { achievedAt: { gte: since } }
+        ]
+      },
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+      take: MOD_HANGAR.maxGoals
+    });
+
+    const goals = await Promise.all(
+      rows.map(async (row) => {
+        const window = goalWindow({ startsAt: row.startsAt, endsAt: row.endsAt, now });
+
+        return toModGoal({ row, battles: await this.battlesIn({ accountId, tankId: row.tankId, window }) });
+      })
+    );
+
+    return { account_id: toNumber(accountId), goals };
   }
 
   async create({ userId, accountId, metric, tankId, target, endsAt }: CreateGoalInput): Promise<Goal> {
@@ -97,6 +136,26 @@ export class GoalsService {
     if (removed.count === 0) {
       throw new AppNotFoundException('NOT_FOUND', 'Goal not found');
     }
+  }
+
+  private async battlesIn({ accountId, tankId, window }: GoalBattlesQueryInput): Promise<number> {
+    if (window.to <= window.from) {
+      return 0;
+    }
+
+    const tank = tankId === null ? {} : { tankId };
+
+    const [modBattles, api] = await Promise.all([
+      this.prisma.battle.count({
+        where: { accountId, ...tank, battleType: { in: bonusTypesOfMode(MOD_GOALS.statsMode) }, startedAt: { gte: window.from, lte: window.to } }
+      }),
+      this.prisma.tankBattleDelta.aggregate({
+        where: { accountId, ...tank, mode: MOD_GOALS.statsMode, capturedAt: { gt: window.from, lte: window.to } },
+        _sum: { battles: true }
+      })
+    ]);
+
+    return goalBattles({ modBattles, apiBattles: api._sum.battles });
   }
 
   private async baseline({ accountId, metric, tankId }: BaselineInput): Promise<number | null> {

@@ -19,6 +19,7 @@ import { NotificationsWorkerModule } from './modules/notifications';
 import { ProgressionWorkerModule } from './modules/progression';
 import { PulseWorkerModule } from './modules/pulse';
 import { ReplaysWorkerModule } from './modules/replays';
+import { SessionShareEventsModule, SessionShareWorkerModule } from './modules/session-share';
 import { ShopWorkerModule } from './modules/shop';
 import { SocialWorkerModule } from './modules/social';
 import { StreamersWorkerModule } from './modules/streamers';
@@ -35,9 +36,11 @@ import { WatchlistWorkerModule } from './modules/watchlist';
     QueuesModule,
     LestaModule,
     DeveloperEventsModule,
+    SessionShareEventsModule,
     CollectorModule.register({ hasLesta: validateEnv(process.env).LESTA_APPLICATION_ID !== '' }),
     DeveloperWorkerModule,
     NotificationsWorkerModule,
+    SessionShareWorkerModule,
     BillingWorkerModule,
     StreamersWorkerModule,
     ReplaysWorkerModule,

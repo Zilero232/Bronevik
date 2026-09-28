@@ -5,6 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { AccountRating, AccountTankRating, Player, PlayerTank, PlaySession } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { ExpectedValuesService } from '../../../reference';
 
 import { MOD_RATINGS_READ } from '../../config';
 import { ModRatingsService } from '../mod-ratings.service';
@@ -29,6 +30,9 @@ const session = (overrides: Partial<PlaySession>) =>
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const cache = mock<Cache>();
+  const expectedValues = mock<ExpectedValuesService>();
+
+  expectedValues.all.mockResolvedValue(new Map());
 
   prisma.accountRating.findUnique.mockResolvedValue(
     mock<AccountRating & { player: Player }>({
@@ -47,8 +51,9 @@ const createService = () => {
   prisma.playerTank.findMany.mockResolvedValue([]);
   prisma.accountTankRating.findMany.mockResolvedValue([]);
   prisma.tankSnapshotLatest.findMany.mockResolvedValue([]);
+  prisma.$queryRaw.mockResolvedValue([]);
 
-  return { service: new ModRatingsService(prisma, cache), prisma, cache };
+  return { service: new ModRatingsService(prisma, expectedValues, cache), prisma, cache, expectedValues };
 };
 
 describe('ModRatingsService.overview', () => {
@@ -114,5 +119,21 @@ describe('ModRatingsService.tanks', () => {
     await second.service.tanks({ accountId: ACCOUNT, tankIds: [2, 5, 2] });
 
     expect(first.cache.set.mock.calls[0]?.[0]).toBe(second.cache.set.mock.calls[0]?.[0]);
+  });
+
+  it('fills the records from the account battles and the expected values from the site table', async () => {
+    const { service, prisma, expectedValues } = createService();
+
+    prisma.playerTank.findMany.mockResolvedValue([
+      mock<PlayerTank>({ tankId: 3, battles: 10, wins: 6, markOfMastery: 2, marksOnGun: 1, moePercent: 70 })
+    ]);
+
+    prisma.$queryRaw.mockResolvedValue([{ tankId: 3, maxDamage: 5000, maxAssist: 3000, maxFrags: 4, maxXp: 1800 }]);
+    expectedValues.all.mockResolvedValue(new Map([[3, { tankId: 3, expDamage: 1200, expSpot: 1, expFrag: 1, expDef: 0.5, expWinRate: 52 }]]));
+
+    const [row] = (await service.tanks({ accountId: ACCOUNT, tankIds: [3] })).tanks;
+
+    expect(row).toMatchObject({ records: { max_damage: 5000, max_assist: 3000 }, expected: { damage: 1200, win_rate: 52 } });
+    expect(prisma.$queryRaw.mock.calls[0]?.[0]).toMatchObject({ values: expect.arrayContaining([ACCOUNT]) });
   });
 });

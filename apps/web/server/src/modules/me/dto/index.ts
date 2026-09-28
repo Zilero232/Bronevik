@@ -9,6 +9,8 @@ export {
   IdParamsDto,
   LestaAccountParamsDto,
   LinkedAccountsDto,
+  ModGoalsDto,
+  ModGoalsRequestDto,
   MyMarksDto,
   NotificationSettingsDto,
   RawStatsExportDto,

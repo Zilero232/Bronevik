@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PlaySession } from '../../../../../generated';
-import type { PrismaService, WebhookEmitter } from '../../../../core';
+import type { PrismaService, SessionEventsSink, WebhookEmitter } from '../../../../core';
 
 import { SessionCloseService } from '../session-close.service';
 
@@ -26,10 +26,11 @@ const session = (overrides: SessionFixture = {}) => ({
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const webhooks = mock<WebhookEmitter>();
+  const sessionEvents = mock<SessionEventsSink>();
 
   prisma.playSession.updateMany.mockResolvedValue({ count: 1 });
 
-  return { service: new SessionCloseService(prisma, webhooks), prisma, webhooks };
+  return { service: new SessionCloseService(prisma, webhooks, sessionEvents), prisma, webhooks, sessionEvents };
 };
 
 describe('SessionCloseService.closeIdle', () => {
@@ -86,5 +87,15 @@ describe('SessionCloseService.closeIdle', () => {
     await service.closeIdle();
 
     expect(prisma.playSession.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ kind: 'live' });
+  });
+
+  it('tells the session listeners when a mod session with battles ends', async () => {
+    const { service, prisma, sessionEvents } = createService();
+
+    prisma.playSession.findMany.mockResolvedValue([session(), session({ id: 'api-day', source: 'api' }), session({ id: 'empty', battles: 0 })]);
+
+    await service.closeIdle();
+
+    expect(sessionEvents.ended.mock.calls).toEqual([[{ sessionId: 'session', accountId: 1n }]]);
   });
 });

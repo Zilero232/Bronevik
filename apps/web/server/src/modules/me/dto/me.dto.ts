@@ -7,6 +7,8 @@ import {
   goalSchema,
   goalsSchema,
   linkedAccountsSchema,
+  modGoalsRequestSchema,
+  modGoalsSchema,
   notificationSettingsSchema,
   playerMarksSchema,
   rawStatsExportSchema,
@@ -32,3 +34,5 @@ export class UpdateNotificationSettingsDto extends createZodDto(updateNotificati
 export class MyMarksDto extends createZodDto(playerMarksSchema) {}
 export class RawStatsExportDto extends createZodDto(rawStatsExportSchema) {}
 export class AnalyticsExportDto extends createZodDto(analyticsExportSchema) {}
+export class ModGoalsRequestDto extends createZodDto(modGoalsRequestSchema) {}
+export class ModGoalsDto extends createZodDto(modGoalsSchema) {}

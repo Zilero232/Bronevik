@@ -17,6 +17,7 @@ import type { AccountRating, ModDevice, PlayerTank } from '../../../../generated
 import { AllExceptionsFilter } from '../../../common/filters';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
+import { ExpectedValuesService } from '../../reference';
 import { MOD_DEVICE } from '../config';
 import { deviceSecret, hashSecret, signedMessage } from '../lib';
 import { ModRatingsController } from '../mod-ratings.controller';
@@ -52,6 +53,7 @@ type SignedPostInput = {
 
 const prisma = mockDeep<PrismaService>();
 const config = mock<AppConfigService>();
+const expectedValues = mock<ExpectedValuesService>();
 
 let app: INestApplication;
 
@@ -82,6 +84,7 @@ beforeAll(async () => {
       ModRatingsService,
       { provide: PrismaService, useValue: prisma },
       { provide: AppConfigService, useValue: config },
+      { provide: ExpectedValuesService, useValue: expectedValues },
       { provide: REDIS, useValue: new RedisMock() },
       { provide: APP_PIPE, useClass: ZodValidationPipe },
       { provide: APP_FILTER, useClass: AllExceptionsFilter },
@@ -100,6 +103,8 @@ beforeEach(() => {
   prisma.playerTank.findMany.mockResolvedValue([]);
   prisma.accountTankRating.findMany.mockResolvedValue([]);
   prisma.tankSnapshotLatest.findMany.mockResolvedValue([]);
+  prisma.$queryRaw.mockResolvedValue([]);
+  expectedValues.all.mockResolvedValue(new Map());
 });
 
 afterAll(async () => {
@@ -191,7 +196,9 @@ describe('POST /mod/me/tanks', () => {
           wn8: { value: null, tier: null },
           moe_percent: 70.5,
           marks_on_gun: 1,
-          mastery: 2
+          mastery: 2,
+          records: null,
+          expected: null
         }
       ]
     });

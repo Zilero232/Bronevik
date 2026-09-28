@@ -1,2 +1,2 @@
-export { toModTankRating } from './mod-tank-rating';
-export type { ModTankRatingInput } from './mod-tank-rating.types';
+export { toModTankExpected, toModTankRating, toModTankRecords } from './mod-tank-rating';
+export type { ModTankRatingInput, ModTankRecordsInput } from './mod-tank-rating.types';

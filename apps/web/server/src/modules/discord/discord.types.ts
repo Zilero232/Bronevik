@@ -4,6 +4,7 @@ import type { APIChatInputApplicationCommandInteraction } from 'discord-api-type
 import type { DiscordGuild } from '../../../generated';
 import type { BotLocale, LinkedBotUser } from '../bot-commands';
 import type { MemberStanding } from './lib';
+import type { NotificationMessageInput } from './mappers';
 
 export type CommandContext = {
   interaction: APIChatInputApplicationCommandInteraction;
@@ -46,4 +47,8 @@ export type RecordSeenInput = {
 export type RegisterCommandsInput = {
   api: API;
   applicationId: string;
+};
+
+export type SendDirectInput = NotificationMessageInput & {
+  discordUserId: string;
 };

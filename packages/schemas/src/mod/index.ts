@@ -1,4 +1,4 @@
-export { MOD_ERROR_CODES, MOD_LOADOUT, MOD_RATINGS } from './mod.constants';
+export { MOD_ERROR_CODES, MOD_HANGAR, MOD_LOADOUT, MOD_RATINGS } from './mod.constants';
 export {
   bindCodeInputSchema,
   bindCodeSchema,
@@ -7,13 +7,28 @@ export {
   modDeviceSchema,
   modDevicesSchema,
   modErrorCodeSchema,
+  modGoalSchema,
+  modGoalsRequestSchema,
+  modGoalsSchema,
   modOverallRatingsSchema,
   modOverviewSchema,
   modRatingsRequestSchema,
+  modReplayHighlightsSchema,
+  modReplayStatusesSchema,
+  modReplayStatusRequestSchema,
+  modReplayStatusSchema,
   modSessionRatingsSchema,
+  modSessionSharePreferenceAnswerSchema,
+  modSessionSharePreferenceSchema,
+  modSessionShareSendSchema,
+  modSessionShareSentSchema,
+  modShareChannelSchema,
+  modShareChannelsSchema,
+  modTankExpectedSchema,
   modTankRatingSchema,
   modTankRatingsRequestSchema,
-  modTankRatingsSchema
+  modTankRatingsSchema,
+  modTankRecordsSchema
 } from './mod.schemas';
 export type {
   BindCode,
@@ -22,11 +37,25 @@ export type {
   ModDevice,
   ModDevices,
   ModErrorCode,
+  ModGoal,
+  ModGoals,
+  ModGoalsRequest,
   ModOverallRatings,
   ModOverview,
   ModRatingsRequest,
+  ModReplayHighlights,
+  ModReplayStatus,
+  ModReplayStatuses,
+  ModReplayStatusRequest,
   ModSessionRatings,
+  ModSessionSharePreference,
+  ModSessionSharePreferenceAnswer,
+  ModSessionShareSend,
+  ModSessionShareSent,
+  ModShareChannel,
+  ModTankExpected,
   ModTankRating,
   ModTankRatings,
-  ModTankRatingsRequest
+  ModTankRatingsRequest,
+  ModTankRecords
 } from './mod.types';

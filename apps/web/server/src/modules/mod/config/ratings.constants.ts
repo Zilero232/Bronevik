@@ -6,5 +6,6 @@ export const MOD_RATINGS_READ = {
   statsMode: 'random',
   period: 'overall',
   maxMarksOnGun: 3,
-  maxMastery: 4
+  maxMastery: 4,
+  maxPercent: 100
 } as const;

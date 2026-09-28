@@ -23,5 +23,7 @@ export const TANK_TOTALS_SELECT = {
   wins: true,
   damageDealt: true,
   markOfMastery: true,
-  marksOnGun: true
+  marksOnGun: true,
+  maxFrags: true,
+  maxXp: true
 } as const satisfies Prisma.TankSnapshotLatestSelect;

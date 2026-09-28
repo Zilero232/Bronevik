@@ -1,4 +1,4 @@
-import { paginationQuerySchema, replaySummarySchema } from '@otmetki/schemas';
+import { modReplayStatusesSchema, modReplayStatusRequestSchema, paginationQuerySchema, replaySummarySchema } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
 import {
@@ -30,3 +30,5 @@ export class HeatmapQueryDto extends createZodDto(heatmapQuerySchema) {}
 export class HeatmapDto extends createZodDto(heatmapSchema) {}
 export class ReplayTracksDto extends createZodDto(replayTracksSchema) {}
 export class PaginationQueryDto extends createZodDto(paginationQuerySchema) {}
+export class ModReplayStatusRequestDto extends createZodDto(modReplayStatusRequestSchema) {}
+export class ModReplayStatusesDto extends createZodDto(modReplayStatusesSchema) {}

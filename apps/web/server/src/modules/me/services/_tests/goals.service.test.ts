@@ -1,4 +1,5 @@
-import { addDays } from 'date-fns';
+import { MOD_HANGAR } from '@otmetki/schemas';
+import { addDays, subHours } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -7,7 +8,8 @@ import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 
 import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
-import { GOALS } from '../../config';
+import { bonusTypesOfMode } from '../../../../common/lib';
+import { GOALS, MOD_GOALS } from '../../config';
 import { GoalsService } from '../goals.service';
 
 const NOW = new Date('2026-09-26T12:00:00.000Z');
@@ -188,5 +190,93 @@ describe('GoalsService.remove', () => {
     prisma.goal.deleteMany.mockResolvedValue({ count: 0 });
 
     await expect(service.remove({ userId: 'user', id: 'goal' })).rejects.toBeInstanceOf(AppNotFoundException);
+  });
+});
+
+describe('GoalsService.hangar', () => {
+  const storedGoal = (overrides: Partial<Goal> = {}): Goal => ({
+    id: 'goal',
+    userId: 'user',
+    accountId: 7n,
+    metric: 'avgDamage',
+    tankId: null,
+    target: 3000,
+    baseline: 2400,
+    current: null,
+    status: 'active',
+    startsAt: NOW,
+    endsAt: addDays(NOW, 1),
+    achievedAt: null,
+    createdAt: NOW,
+    ...overrides
+  });
+
+  const hangarService = () => {
+    const context = createService();
+
+    context.prisma.goal.findMany.mockResolvedValue([]);
+    context.prisma.battle.count.mockResolvedValue(0);
+    context.prisma.tankBattleDelta.aggregate.mockResolvedValue({ _sum: { battles: null }, _count: {}, _avg: {}, _min: {}, _max: {} });
+
+    return context;
+  };
+
+  it('reads only the goals the device owner set for the device account, capped at the contract maximum', async () => {
+    const { service, prisma } = hangarService();
+
+    await service.hangar({ userId: 'user', accountId: 7n, now: NOW });
+
+    const query = prisma.goal.findMany.mock.calls[0]?.[0];
+
+    expect(query?.where).toMatchObject({ userId: 'user', accountId: 7n });
+    expect(query?.take).toBe(MOD_HANGAR.maxGoals);
+    expect(query?.orderBy).toEqual(expect.arrayContaining([{ createdAt: 'desc' }]));
+  });
+
+  it('keeps only active goals and those that ended inside the recent window', async () => {
+    const { service, prisma } = hangarService();
+
+    await service.hangar({ userId: 'user', accountId: 7n, now: NOW });
+
+    const since = subHours(NOW, MOD_GOALS.endedWithinHours);
+
+    expect(prisma.goal.findMany.mock.calls[0]?.[0]?.where?.OR).toEqual([
+      { status: 'active', endsAt: { gte: since } },
+      { status: { not: 'active' }, endsAt: { gte: since, lte: NOW } },
+      { achievedAt: { gte: since } }
+    ]);
+  });
+
+  it('counts the random battles of the goal tank inside the goal window, taking the larger source', async () => {
+    const { service, prisma } = hangarService();
+    const startsAt = subHours(NOW, 48);
+
+    prisma.goal.findMany.mockResolvedValue([storedGoal({ tankId: 1, startsAt })]);
+    prisma.battle.count.mockResolvedValue(4);
+    prisma.tankBattleDelta.aggregate.mockResolvedValue({ _sum: { battles: 9 }, _count: {}, _avg: {}, _min: {}, _max: {} });
+
+    const answer = await service.hangar({ userId: 'user', accountId: 7n, now: NOW });
+
+    expect(answer).toMatchObject({ account_id: 7, goals: [{ tank_id: 1, battles: 9 }] });
+
+    expect(prisma.battle.count.mock.calls[0]?.[0]?.where).toMatchObject({
+      accountId: 7n,
+      tankId: 1,
+      battleType: { in: bonusTypesOfMode(MOD_GOALS.statsMode) },
+      startedAt: { gte: startsAt, lte: NOW }
+    });
+
+    expect(prisma.tankBattleDelta.aggregate.mock.calls[0]?.[0]?.where).toMatchObject({ accountId: 7n, tankId: 1, mode: MOD_GOALS.statsMode });
+  });
+
+  it('does not query battles for a goal whose window is empty', async () => {
+    const { service, prisma } = hangarService();
+
+    prisma.goal.findMany.mockResolvedValue([storedGoal()]);
+
+    const answer = await service.hangar({ userId: 'user', accountId: 7n, now: NOW });
+
+    expect(answer.goals[0]?.battles).toBe(0);
+    expect(prisma.battle.count).not.toHaveBeenCalled();
   });
 });

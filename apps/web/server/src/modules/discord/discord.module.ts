@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
 import { BotCommandsModule } from '../bot-commands';
+import { DiscordCoreModule } from './discord-core.module';
 import { DiscordController } from './discord.controller';
-import { discordApiProvider } from './providers';
 import {
   DiscordCopyService,
   DiscordGatewayService,
@@ -14,16 +14,8 @@ import {
 } from './services';
 
 @Module({
-  imports: [BillingCoreModule, BotCommandsModule],
+  imports: [BillingCoreModule, BotCommandsModule, DiscordCoreModule],
   controllers: [DiscordController],
-  providers: [
-    discordApiProvider,
-    DiscordCopyService,
-    DiscordGatewayService,
-    DiscordGuildsService,
-    DiscordInteractionsService,
-    DiscordRolesService,
-    DiscordStatusService
-  ]
+  providers: [DiscordCopyService, DiscordGatewayService, DiscordGuildsService, DiscordInteractionsService, DiscordRolesService, DiscordStatusService]
 })
 export class DiscordModule {}

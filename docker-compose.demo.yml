@@ -36,6 +36,7 @@ services:
     # Same image as the server: `docker compose build` builds it once, for the server.
     build: !reset null
     expose: !reset []
+    # eslint-disable-next-line yaml/plain-scalar -- a plain `no` is a YAML 1.1 boolean; compose needs the string
     restart: 'no'
     healthcheck:
       disable: true

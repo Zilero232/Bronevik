@@ -75,7 +75,7 @@ pub fn run() {
     let log_dir = layout.logs_dir();
 
     tauri::Builder::default()
-        .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| match deep_link::first_link(args.iter().map(String::as_str)) {
+        .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| match deep_link::first_arg_link(args.iter().map(String::as_str)) {
             Some(link) => deliver_link(app, link),
             None => background::show_main(app),
         }))
@@ -111,14 +111,12 @@ pub fn run() {
             let link_handle = handle.clone();
 
             app.deep_link().on_open_url(move |event| {
-                if let Some(link) = deep_link::first_link(event.urls().iter().map(tauri::Url::as_str)) {
+                if let Some(link) = deep_link::first_link(&event.urls()) {
                     deliver_link(&link_handle, link);
                 }
             });
 
-            if let Some(link) =
-                app.deep_link().get_current().ok().flatten().and_then(|urls| deep_link::first_link(urls.iter().map(tauri::Url::as_str)))
-            {
+            if let Some(link) = app.deep_link().get_current().ok().flatten().and_then(|urls| deep_link::first_link(&urls)) {
                 handle.state::<Manager>().set_pending_link(link);
             }
 

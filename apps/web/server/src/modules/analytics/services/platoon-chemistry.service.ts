@@ -36,14 +36,19 @@ export class PlatoonChemistryService {
         GROUP BY 1, 2
       `,
       this.prisma.$queryRaw<MateRow[]>`
-        SELECT mate, tank_id,
+        SELECT mate.account_id AS mate, own.tank_id,
                count(*)::float8 AS battles,
-               count(*) FILTER (WHERE result = 'win'::battle_result)::float8 AS wins,
-               sum(damage_dealt)::float8 AS damage, sum(frags)::float8 AS frags, sum(spotted)::float8 AS spotted,
-               sum(capture_points)::float8 AS cap, sum(dropped_capture_points)::float8 AS def,
-               count(*) FILTER (WHERE survived)::float8 AS survived
-        FROM battle, unnest(platoon_mates) AS mate
-        WHERE account_id = ${accountId} AND battle_type = ${ANALYTICS_SQL.randomBattleType} AND started_at >= ${from}
+               count(*) FILTER (WHERE own.result = 'win'::battle_result)::float8 AS wins,
+               sum(own.damage_dealt)::float8 AS damage, sum(own.frags)::float8 AS frags, sum(own.spotted)::float8 AS spotted,
+               sum(own.capture_points)::float8 AS cap, sum(own.dropped_capture_points)::float8 AS def,
+               count(*) FILTER (WHERE own.survived)::float8 AS survived
+        FROM battle own
+        JOIN battle mate
+          ON mate.arena_unique_id = own.arena_unique_id AND mate.account_id <> own.account_id AND mate.team = own.team
+         AND mate.platoon_size > 1 AND mate.battle_type = own.battle_type AND mate.started_at >= ${from}
+        JOIN player p ON p.account_id = mate.account_id AND NOT p.is_hidden
+        WHERE own.account_id = ${accountId} AND own.battle_type = ${ANALYTICS_SQL.randomBattleType} AND own.started_at >= ${from}
+          AND own.platoon_size > 1
         GROUP BY 1, 2
       `,
       this.expected.all()

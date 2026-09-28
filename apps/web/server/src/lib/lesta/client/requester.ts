@@ -1,3 +1,4 @@
+import ky from 'ky';
 import pRetry from 'p-retry';
 import { isNonNullish, pickBy } from 'remeda';
 
@@ -13,30 +14,16 @@ import { toSearchParams } from './params';
 
 const normalizeBaseUrl = (baseUrl: string): string => (baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
 
-const normalizeMethod = (method: string): string => {
-  const trimmed = method.replace(/^\/+|\/+$/g, '');
-
-  return `${trimmed}/`;
-};
-
-const safeJson = (text: string): unknown => {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return undefined;
-  }
-};
+const normalizeMethod = (method: string): string => `${method.replace(/\/+$/, '')}/`;
 
 const readEnvelope = async ({ response, method, onOutcome }: ReadEnvelopeInput): Promise<LestaEnvelope> => {
-  const text = await response.text();
-
   if (!response.ok) {
     onOutcome?.(classifyLestaResponse({ status: response.status, errorCode: null }));
 
-    throw new LestaHttpError({ method, status: response.status, body: text });
+    throw new LestaHttpError({ method, status: response.status, body: await response.text() });
   }
 
-  const parsed = lestaEnvelopeSchema.safeParse(safeJson(text));
+  const parsed = lestaEnvelopeSchema.safeParse(await response.json().catch(() => undefined));
 
   onOutcome?.(classifyLestaResponse({ status: response.status, errorCode: parsed.data?.status === 'error' ? parsed.data.error.message : null }));
 
@@ -55,31 +42,23 @@ export const createRequester = ({
   rateLimiter = noopRateLimiter,
   retry,
   timeoutMs = LESTA_API.timeoutMs,
-  fetch: fetchImpl = globalThis.fetch,
+  fetch,
   onOutcome
 }: LestaClientOptions): LestaRequester => {
   const root = normalizeBaseUrl(baseUrl);
   const retryOptions = { ...LESTA_RETRY, ...retry };
+  const api = ky.create({ prefix: root, timeout: timeoutMs, retry: 0, throwHttpErrors: false, fetch, headers: { accept: 'application/json' } });
 
   const send = async ({ method, params = {} }: SendInput): Promise<LestaEnvelope> => {
     const body = toSearchParams({ application_id: applicationId, language, access_token: accessToken, ...pickBy(params, isNonNullish) });
 
     await rateLimiter.acquire();
 
-    let response: Response;
-
-    try {
-      response = await fetchImpl(`${root}${normalizeMethod(method)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
-        body: body.toString(),
-        signal: AbortSignal.timeout(timeoutMs)
-      });
-    } catch (error) {
+    const response = await api.post(normalizeMethod(method), { body }).catch((error: unknown) => {
       onOutcome?.('degraded');
 
       throw new LestaNetworkError({ method, cause: error });
-    }
+    });
 
     return readEnvelope({ response, method, onOutcome });
   };

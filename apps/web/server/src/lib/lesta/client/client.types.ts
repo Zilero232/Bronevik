@@ -1,3 +1,4 @@
+import type { Options } from 'ky';
 import type { z } from 'zod';
 
 import type { LestaOutcome } from '../outcome';
@@ -15,7 +16,7 @@ export type LestaParamValue = LestaParamScalar | readonly LestaParamScalar[] | n
 
 export type LestaParams = Record<string, LestaParamValue>;
 
-export type LestaFetch = (input: string, init: RequestInit) => Promise<Response>;
+export type LestaFetch = NonNullable<Options['fetch']>;
 
 export type LestaRetryOptions = {
   retries?: number;

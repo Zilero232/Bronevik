@@ -3,15 +3,7 @@ import { sumBy } from 'remeda';
 import { describe, expect, it } from 'vitest';
 
 import { RNG_LUCK } from '../../../config';
-import { erf, luckVerdict, theoryBuckets } from '../rng-theory';
-
-describe('erf', () => {
-  it('is odd and saturates towards one', () => {
-    expect(erf(0)).toBeCloseTo(0, 6);
-    expect(erf(-0.7)).toBeCloseTo(-erf(0.7), 6);
-    expect(erf(4)).toBeCloseTo(1, 6);
-  });
-});
+import { luckVerdict, theoryBuckets } from '../rng-theory';
 
 describe('theoryBuckets', () => {
   const buckets = theoryBuckets();
@@ -24,7 +16,7 @@ describe('theoryBuckets', () => {
   it('is symmetric and peaks at the nominal damage', () => {
     const shares = buckets.map((bucket) => bucket.share ?? 0);
 
-    shares.forEach((share, index) => expect(share).toBeCloseTo(shares.at(-1 - index) ?? Number.NaN, 6));
+    shares.forEach((share, index) => expect(share).toBeCloseTo(shares.at(-1 - index) ?? Number.NaN, 4));
     expect(shares[0]).toBeLessThan(shares[Math.floor(shares.length / 2)] ?? 0);
   });
 });

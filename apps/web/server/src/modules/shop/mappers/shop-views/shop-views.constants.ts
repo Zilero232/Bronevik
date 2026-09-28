@@ -1,5 +1,7 @@
 import type { BonusCodeVerdict as BonusCodeVerdictView } from '@otmetki/schemas';
 
+import { invert } from 'remeda';
+
 import type { BonusCodeVerdict, NewsKind } from '../../../../../generated';
 
 export const NEWS_KIND_FROM_DB = {
@@ -8,11 +10,7 @@ export const NEWS_KIND_FROM_DB = {
   devBlog: 'dev_blog'
 } as const satisfies Record<NewsKind, string>;
 
-export const NEWS_KIND_TO_DB = {
-  news: 'news',
-  patch_notes: 'patchNotes',
-  dev_blog: 'devBlog'
-} as const satisfies Record<(typeof NEWS_KIND_FROM_DB)[NewsKind], NewsKind>;
+export const NEWS_KIND_TO_DB = invert(NEWS_KIND_FROM_DB) satisfies Record<(typeof NEWS_KIND_FROM_DB)[NewsKind], NewsKind>;
 
 export const VERDICT_TO_DB = {
   working: 'working',

@@ -1,4 +1,4 @@
-import { entries } from 'remeda';
+import { entries, invert } from 'remeda';
 
 import type {
   ClanRole as DbClanRole,
@@ -8,11 +8,9 @@ import type {
 
 import { CLAN_ROLE_FROM_DB, NOTIFICATION_CHANNEL_FROM_DB, NOTIFICATION_EVENT_FROM_DB } from './enums.constants';
 
-const invert = <K extends string>(map: Record<K, string>): Map<string, K> => new Map(entries(map).map(([key, value]) => [value, key]));
-
-const clanRoles = invert(CLAN_ROLE_FROM_DB);
-const notificationEvents = invert(NOTIFICATION_EVENT_FROM_DB);
-const notificationChannels = invert(NOTIFICATION_CHANNEL_FROM_DB);
+const clanRoles = new Map<string, DbClanRole>(entries(invert(CLAN_ROLE_FROM_DB)));
+const notificationEvents = new Map<string, DbNotificationEvent>(entries(invert(NOTIFICATION_EVENT_FROM_DB)));
+const notificationChannels = new Map<string, DbNotificationChannel>(entries(invert(NOTIFICATION_CHANNEL_FROM_DB)));
 
 export const clanRoleToDb = (role: string): DbClanRole | null => clanRoles.get(role) ?? null;
 

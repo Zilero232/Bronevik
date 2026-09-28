@@ -1,6 +1,7 @@
 import { delay, http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
+import type { LestaFetch } from '../../../../lib/lesta';
 import type { LestaMockEnvelope } from '../../lesta-mock.types';
 import type { CreateMockFetchInput, MockRequestInput, MockServerInput } from './transport.types';
 
@@ -26,10 +27,10 @@ export const answerMockRequest = ({ handler, url, body, now }: MockRequestInput)
 };
 
 export const createLestaMockFetch =
-  ({ handler, clock = nowUnix }: CreateMockFetchInput) =>
-  async (input: string, init: RequestInit): Promise<Response> => {
-    const body = typeof init.body === 'string' ? init.body : '';
-    const envelope = answerMockRequest({ handler, url: input, body, now: clock() });
+  ({ handler, clock = nowUnix }: CreateMockFetchInput): LestaFetch =>
+  async (input, init) => {
+    const request = input instanceof Request ? new Request(input, init) : new Request(String(input), init);
+    const envelope = answerMockRequest({ handler, url: request.url, body: await request.text(), now: clock() });
 
     return Response.json(envelope);
   };

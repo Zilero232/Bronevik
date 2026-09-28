@@ -1,9 +1,11 @@
 import { PLAYLIST_REASONS } from '@otmetki/schemas';
+import { uniformFloat64 } from 'pure-rand/distribution/uniformFloat64';
+import { xoroshiro128plus } from 'pure-rand/generator/xoroshiro128plus';
 import { describe, expect, it } from 'vitest';
 
 import type { PlaylistCandidate } from '../playlist.types';
 
-import { PLAYLIST_RULES } from '../../../config';
+import { PLAYLIST_RULES, PLAYLIST_SEED } from '../../../config';
 import { buildPlaylist, seededRandom } from '../playlist';
 
 const candidate = (tankId: number, overrides: Partial<PlaylistCandidate> = {}): PlaylistCandidate => ({
@@ -37,6 +39,19 @@ describe('seededRandom', () => {
 
     expect(values).toEqual(Array.from({ length: 20 }, () => second()));
     expect(values.every((value) => value >= 0 && value < 1)).toBe(true);
+  });
+
+  it('keeps the sequence of a day before the pure-rand switch', () => {
+    const random = seededRandom(20_000);
+
+    expect([random(), random(), random()]).toEqual([0.548_125_733_388_587_8, 0.887_897_496_344_521_6, 0.872_610_077_261_924_7]);
+  });
+
+  it('draws from xoroshiro128plus from the switch day on', () => {
+    const random = seededRandom(PLAYLIST_SEED.pureRandFromDay);
+    const generator = xoroshiro128plus(PLAYLIST_SEED.pureRandFromDay);
+
+    expect([random(), random()]).toEqual([uniformFloat64(generator), uniformFloat64(generator)]);
   });
 });
 

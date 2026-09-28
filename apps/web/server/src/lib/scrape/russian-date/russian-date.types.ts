@@ -3,12 +3,16 @@ export type RussianDateInput = {
   reference: Date;
 };
 
-export type MoscowDateInput = {
+export type MonthOfInput = {
+  monthName: string;
+  reference: Date;
+};
+
+export type MoscowDateInput = MonthOfInput & {
   year: number;
-  month: number;
-  day: number;
-  hour: number;
-  minute: number;
+  day: string;
+  hour: string;
+  minute: string;
 };
 
 export type YearForInput = {

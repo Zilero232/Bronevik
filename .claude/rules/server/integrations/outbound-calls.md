@@ -11,5 +11,5 @@ paths:
 ## Outbound calls
 
 Plain HTTP goes through the shared `ky` instance in `lib/http` (one User-Agent,
-a default timeout); `lib/lesta`'s requester uses `AbortSignal.timeout`. A call
+a default timeout); `lib/lesta`'s requester builds its own `ky` instance with the lane's `timeoutMs`. A call
 without a timeout holds the connection, and the job, indefinitely.

@@ -1,10 +1,12 @@
 import type { PlaylistReason } from '@otmetki/schemas';
 
+import { uniformFloat64 } from 'pure-rand/distribution/uniformFloat64';
+import { xoroshiro128plus } from 'pure-rand/generator/xoroshiro128plus';
 import { sortBy, sumBy } from 'remeda';
 
 import type { BuildPlaylistInput, PlaylistCandidate, PlaylistPick } from './playlist.types';
 
-import { PLAYLIST_RULES } from '../../config';
+import { PLAYLIST_RULES, PLAYLIST_SEED } from '../../config';
 
 const REASON_TESTS: Record<PlaylistReason, (candidate: PlaylistCandidate) => boolean> = {
   closeToMark: (candidate) =>
@@ -18,7 +20,7 @@ const REASON_TESTS: Record<PlaylistReason, (candidate: PlaylistCandidate) => boo
   mission: (candidate) => candidate.isMission
 };
 
-export const seededRandom = (seed: number): (() => number) => {
+const legacyRandom = (seed: number): (() => number) => {
   let state = Math.trunc(seed) >>> 0;
 
   return () => {
@@ -30,6 +32,16 @@ export const seededRandom = (seed: number): (() => number) => {
 
     return ((value ^ (value >>> 14)) >>> 0) / 4_294_967_296;
   };
+};
+
+export const seededRandom = (seed: number): (() => number) => {
+  if (seed < PLAYLIST_SEED.pureRandFromDay) {
+    return legacyRandom(seed);
+  }
+
+  const generator = xoroshiro128plus(Math.trunc(seed) | 0);
+
+  return () => uniformFloat64(generator);
 };
 
 export const buildPlaylist = ({ candidates, size, reasons, seed }: BuildPlaylistInput): PlaylistPick[] => {

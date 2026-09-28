@@ -55,6 +55,7 @@ fn matches_wildcards_like_inno() {
     assert!(wildcard_match("*", ""));
     assert!(wildcard_match("a?c", "abc"));
     assert!(!wildcard_match("a*d", "abc"));
+    assert!(wildcard_match("NET.TriOtmetki.*.MTMOD", "net.triotmetki.a_1.mtmod"));
 }
 
 #[test]

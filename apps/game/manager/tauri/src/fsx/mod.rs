@@ -1,7 +1,7 @@
 pub mod faults;
 
 use std::fs;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
@@ -38,18 +38,18 @@ pub fn rename_file(from: &Path, to: &Path) -> AppResult<()> {
 }
 
 pub fn write_atomic(path: &Path, bytes: &[u8]) -> AppResult<()> {
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent)?;
-    }
+    let parent = path.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or(Path::new("."));
 
-    let temp = sibling(path, TEMP_SUFFIX);
-    let written = write_file(&temp, bytes).and_then(|()| rename_file(&temp, path));
+    fs::create_dir_all(parent)?;
 
-    if written.is_err() {
-        let _ = fs::remove_file(&temp);
-    }
+    let mut temp = tempfile::Builder::new().suffix(TEMP_SUFFIX).tempfile_in(parent)?;
 
-    written
+    faults::check(temp.path())?;
+    temp.write_all(bytes)?;
+    faults::check(path)?;
+    temp.persist(path).map_err(|error| error.error)?;
+
+    Ok(())
 }
 
 pub fn file_sha256(path: &Path) -> AppResult<String> {

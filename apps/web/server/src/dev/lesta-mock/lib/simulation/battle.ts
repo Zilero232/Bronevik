@@ -1,3 +1,5 @@
+import { probit } from 'simple-statistics';
+
 import type { MockTotals, MockVehicle } from '../../lesta-mock.types';
 import type {
   AccuracyInput,
@@ -16,7 +18,7 @@ import type {
 } from './simulation.types';
 
 import { MOCK_BATTLE, MOCK_MOE, MOCK_SKILL } from '../../config';
-import { normalCdf, normalQuantile } from '../random';
+import { normalCdf } from '../random';
 import { damageRatio, learningFactor, progressFactor, targetWinRate } from '../skill';
 import { emptyTotals } from '../stats';
 
@@ -67,7 +69,7 @@ export const moeAlpha = (): number => 2 / (MOCK_MOE.emaBattles + 1);
 export const marksFor = (percent: number): number => MOCK_MOE.markPercents.filter((mark) => percent >= mark).length;
 
 export const moeThresholdDamage = ({ vehicle, percent }: MoeThresholdDamageInput): number =>
-  Math.round(combinedExpected(vehicle) * Math.exp(MOCK_SKILL.damageMu + MOCK_MOE.populationSigma * normalQuantile(percent / 100)));
+  Math.round(combinedExpected(vehicle) * Math.exp(MOCK_SKILL.damageMu + MOCK_MOE.populationSigma * probit(percent / 100)));
 
 export const oddsFor = ({ player, vehicle, affinity, battlesOnTank, at }: OddsForInput): BattleOdds => {
   const learning = learningFactor(battlesOnTank);
@@ -233,7 +235,7 @@ export const aggregateBattles = ({ rng, vehicle, battles, perf, winChance }: Agg
   const survivalShare = survived / battles;
   const receivedMean = vehicle.hp * (survivalShare * 0.4 + (1 - survivalShare) * 1.01);
   const bounces = MOCK_BATTLE.bounces[type] * outcome({ win: 1.1, loss: 0.9 });
-  const zq = battles <= 1 ? 0 : normalQuantile(1 - 1 / (battles + 1));
+  const zq = battles <= 1 ? 0 : probit(1 - 1 / (battles + 1));
   const peak = Math.exp(MOCK_BATTLE.damageSigma * zq - (MOCK_BATTLE.damageSigma * MOCK_BATTLE.damageSigma) / 2) / (1 - MOCK_BATTLE.zeroDamageChance);
   const fragsMean = expected.frags * perf ** MOCK_BATTLE.fragPower * outcome({ win: MOCK_BATTLE.winFrags, loss: MOCK_BATTLE.lossFrags });
   const isArtillery = type === 'SPG';

@@ -84,8 +84,10 @@ export const lestaError = ({ code, message, field = null, value = null }: LestaE
 export const createFetchMock = (handler: FetchHandler) => {
   const calls: RecordedCall[] = [];
 
-  const fetch: LestaFetch = async (url, init) => {
-    const params = Object.fromEntries(new URLSearchParams(String(init.body)));
+  const fetch: LestaFetch = async (input, init) => {
+    const request = input instanceof Request ? new Request(input, init) : new Request(String(input), init);
+    const { url } = request;
+    const params = Object.fromEntries(new URLSearchParams(await request.text()));
     const method = url.replace(/^https:\/\/api\.tanki\.su\/wot\//, '').replace(/\/$/, '');
     const call = { url, method, params };
 

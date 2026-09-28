@@ -4,10 +4,10 @@ import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Pat
 import { ApiTags } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import { parseCookies } from 'better-auth/cookies';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
-import { readCookie } from '../../common/lib';
 import { OAUTH_STATE, PROVIDER_FROM_PATH, STREAMERS } from './config';
 import {
   ActivateChallengeDto,
@@ -287,7 +287,7 @@ export class StreamersController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ) {
-    const binding = readCookie({ header: request.headers.cookie, name: OAUTH_STATE.cookie });
+    const binding = parseCookies(request.headers.cookie ?? '').get(OAUTH_STATE.cookie) ?? null;
 
     response.clearCookie(OAUTH_STATE.cookie, { path: OAUTH_STATE.cookiePath });
 

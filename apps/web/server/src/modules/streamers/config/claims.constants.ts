@@ -1,5 +1,7 @@
 import type { ClaimMethod } from '@otmetki/schemas';
 
+import { invert } from 'remeda';
+
 import type { StreamerClaimMethod } from '../../../../generated';
 
 export const CLAIM = {
@@ -15,8 +17,4 @@ export const CLAIM_METHOD_TO_DB = {
   manual: 'manual'
 } as const satisfies Record<ClaimMethod, StreamerClaimMethod>;
 
-export const CLAIM_METHOD_FROM_DB = {
-  oauth: 'oauth',
-  bioCode: 'bio_code',
-  manual: 'manual'
-} as const satisfies Record<StreamerClaimMethod, ClaimMethod>;
+export const CLAIM_METHOD_FROM_DB = invert(CLAIM_METHOD_TO_DB) satisfies Record<StreamerClaimMethod, ClaimMethod>;

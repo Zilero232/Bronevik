@@ -2,6 +2,7 @@ use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use glob::{MatchOptions, Pattern};
 use serde::{Deserialize, Serialize};
 
 use crate::error::{AppError, AppResult, ErrorCode};
@@ -345,33 +346,9 @@ impl Catalog {
 }
 
 pub fn wildcard_match(pattern: &str, text: &str) -> bool {
-    let pattern: Vec<char> = pattern.to_lowercase().chars().collect();
-    let text: Vec<char> = text.to_lowercase().chars().collect();
-    let (mut p, mut t) = (0, 0);
-    let mut backtrack: Option<(usize, usize)> = None;
+    let options = MatchOptions { case_sensitive: false, ..MatchOptions::default() };
 
-    while t < text.len() {
-        match pattern.get(p) {
-            Some('*') => {
-                backtrack = Some((p, t));
-                p += 1;
-            }
-            Some(&c) if c == '?' || c == text[t] => {
-                p += 1;
-                t += 1;
-            }
-            _ => match backtrack {
-                Some((star, matched)) => {
-                    p = star + 1;
-                    t = matched + 1;
-                    backtrack = Some((star, matched + 1));
-                }
-                None => return false,
-            },
-        }
-    }
-
-    pattern[p..].iter().all(|&c| c == '*')
+    Pattern::new(pattern).is_ok_and(|pattern| pattern.matches_with(text, options))
 }
 
 #[cfg(test)]

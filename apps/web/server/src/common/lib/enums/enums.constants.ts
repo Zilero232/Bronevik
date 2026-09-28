@@ -1,5 +1,7 @@
 import type { RatingPeriod, ServerPeriod, SkillCohort, StatsMode } from '@otmetki/schemas';
 
+import { invert } from 'remeda';
+
 import type {
   ClanRole as DbClanRole,
   CohortFilter as DbCohortFilter,
@@ -20,14 +22,7 @@ export const RATING_PERIOD_TO_DB = {
   '1000': 'b1000'
 } as const satisfies Record<RatingPeriod, DbRatingPeriod>;
 
-export const RATING_PERIOD_FROM_DB = {
-  overall: 'overall',
-  h24: '24h',
-  d7: '7d',
-  d30: '30d',
-  d60: '60d',
-  b1000: '1000'
-} as const satisfies Record<DbRatingPeriod, RatingPeriod>;
+export const RATING_PERIOD_FROM_DB = invert(RATING_PERIOD_TO_DB) satisfies Record<DbRatingPeriod, RatingPeriod>;
 
 export const SERVER_PERIOD_TO_DB = {
   '1d': 'd1',
@@ -70,13 +65,7 @@ export const VEHICLE_TYPE_FROM_DB = {
   spg: 'SPG'
 } as const satisfies Record<DbVehicleType, string>;
 
-export const VEHICLE_TYPE_TO_DB = {
-  lightTank: 'lightTank',
-  mediumTank: 'mediumTank',
-  heavyTank: 'heavyTank',
-  'AT-SPG': 'atSpg',
-  SPG: 'spg'
-} as const satisfies Record<string, DbVehicleType>;
+export const VEHICLE_TYPE_TO_DB = invert(VEHICLE_TYPE_FROM_DB) satisfies Record<string, DbVehicleType>;
 
 export const CLAN_ROLE_FROM_DB = {
   commander: 'commander',

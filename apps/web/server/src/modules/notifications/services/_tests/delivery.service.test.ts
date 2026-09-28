@@ -18,6 +18,7 @@ import { Prisma } from '../../../../../generated';
 import { PRISMA_CODE } from '../../../../core/prisma/prisma.constants';
 import { WEEKLY_DIGEST } from '../../config';
 import { DeliveryService } from '../delivery.service';
+import { NotificationLedgerService } from '../notification-ledger.service';
 
 const NOW = new Date('2026-09-26T23:30:00Z');
 
@@ -73,7 +74,7 @@ const createService = () => {
   prisma.notification.create.mockResolvedValue(mock<Notification>({ id: 'n1' }));
 
   const redis = new RedisMock();
-  const service = new DeliveryService(prisma, config, telegram, webPush, email, redis, queue);
+  const service = new DeliveryService(prisma, config, telegram, webPush, email, redis, queue, new NotificationLedgerService(prisma));
 
   return { service, prisma, telegram, email, queue, redis };
 };

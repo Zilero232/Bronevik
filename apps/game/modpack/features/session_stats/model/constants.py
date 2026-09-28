@@ -10,6 +10,8 @@ BOTH_CHANNELS = 'both'
 SHARE_STATE_KEY = 'session_share_synced'
 SHARE_RETRY_S = 300
 ACTION_SHARE = 'share_now'
+SHARE_SEND_FAILURES = {404: 'session_share_not_found', 409: 'session_share_not_linked'}
+SHARE_SEND_FAILED = 'session_share_failed'
 
 COUNTERS = (
     'battles',

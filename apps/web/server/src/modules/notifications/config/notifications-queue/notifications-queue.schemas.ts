@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { NotificationChannel } from '../../../../../generated';
+import { GoalMetric, NotificationChannel } from '../../../../../generated';
 
 const accountId = z.number().int().positive();
 const tankId = z.number().int().positive();
@@ -141,6 +141,12 @@ export const notificationSchema = z.discriminatedUnion('event', [
     tankId,
     tankName: z.string(),
     shells: z.number().int().nonnegative()
+  }),
+  z.object({
+    event: z.literal('goalReached'),
+    goalId: z.string(),
+    metric: z.enum(GoalMetric),
+    target: z.number()
   }),
   z.object({ event: z.literal('plusCheckoutOpen') }),
   z.object({

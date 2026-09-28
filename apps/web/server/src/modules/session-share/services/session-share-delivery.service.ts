@@ -6,7 +6,7 @@ import type { SessionSharePayload } from '../config';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { DiscordSenderService } from '../../discord';
-import { renderNotification, resolveNotificationLocale } from '../../notifications';
+import { NotificationLedgerService, renderNotification, resolveNotificationLocale, sessionReportKey } from '../../notifications';
 import { TelegramSenderService } from '../../telegram';
 import { toSessionCard } from '../mappers';
 import { SESSION_CARD_SELECT, SHARE_RECIPIENT_SELECT } from '../selects';
@@ -17,7 +17,8 @@ export class SessionShareDeliveryService {
     private readonly prisma: PrismaService,
     private readonly config: AppConfigService,
     private readonly telegram: TelegramSenderService,
-    private readonly discord: DiscordSenderService
+    private readonly discord: DiscordSenderService,
+    private readonly ledger: NotificationLedgerService
   ) {}
 
   async deliver({ userId, sessionId, channel }: SessionSharePayload): Promise<boolean> {
@@ -49,7 +50,14 @@ export class SessionShareDeliveryService {
           return false;
         }
 
-        await this.telegram.sendNotification({ telegramId, locale, ...rendered });
+        await this.ledger.sendOnce({
+          userId,
+          channel: 'telegram',
+          dedupeKey: sessionReportKey(sessionId),
+          notification: card,
+          rendered,
+          send: () => this.telegram.sendNotification({ telegramId, locale, ...rendered })
+        });
 
         return true;
       })

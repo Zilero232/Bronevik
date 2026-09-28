@@ -59,6 +59,8 @@ const samples: ParsedNotification[] = [
   { event: 'competitionFinished', competitionSlug: 'cup-1', title: 'Cup', teamName: 'Alpha', rank: 2, teams: 8 },
   { event: 'tankLevelUp', tankId: 1, tankName: 'Об. 140', level: 5, shells: 20 },
   { event: 'tankChallengeDone', tankId: 1, tankName: 'Об. 140', shells: 15 },
+  { event: 'goalReached', goalId: 'g', metric: 'avgDamage', target: 3000 },
+  { event: 'goalReached', goalId: 'g', metric: 'broneIndex', target: 1500.5 },
   { event: 'plusCheckoutOpen' },
   { event: 'lestaRelinkRequired', accountId: 1, nickname: 'Tanker' }
 ];
@@ -115,6 +117,14 @@ describe('renderNotification', () => {
 
     expect(rendered.body).toContain(notificationText({ locale: 'ru', key: 'missing' }));
     expect(rendered.body).not.toContain('null');
+  });
+
+  it('names the goal metric and target of a reached goal', () => {
+    const rendered = renderNotification({ notification: { event: 'goalReached', goalId: 'g', metric: 'winRate', target: 55 }, locale: 'en', webUrl });
+
+    expect(rendered.body).toContain('Win rate');
+    expect(rendered.body).toContain('55');
+    expect(rendered.url).toBe(`${webUrl}/me`);
   });
 
   it('declines the battle count in Russian', () => {

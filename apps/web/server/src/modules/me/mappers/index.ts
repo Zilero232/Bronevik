@@ -16,3 +16,4 @@ export type { LinkedLestaAccount } from './linked-account-view';
 export { toModGoal } from './mod-goal';
 export type { ToModGoalInput } from './mod-goal';
 export { defaultNotificationSettings, toNotificationSettings } from './notification-settings-view';
+export { toApiTankTotals, toModTankTotals } from './window-tank-totals';

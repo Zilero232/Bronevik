@@ -136,6 +136,11 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       values: { tankName: event.tankName, shells: event.shells },
       path: NOTIFICATION_LINKS.progress
     }))
+    .with({ event: 'goalReached' }, (event) => ({
+      message: 'goal-reached',
+      values: { metric: event.metric, target: event.target },
+      path: NOTIFICATION_LINKS.goals
+    }))
     .with({ event: 'plusCheckoutOpen' }, () => ({ message: 'plus-checkout-open', values: {}, path: NOTIFICATION_LINKS.plus }))
     .with({ event: 'lestaRelinkRequired' }, (event) => ({
       message: 'lesta-relink-required',

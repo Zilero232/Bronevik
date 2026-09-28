@@ -146,9 +146,18 @@ describe('GoalsService.create', () => {
   it('starts at zero with an unknown current value when there is no rating yet', async () => {
     const { service, prisma } = createService();
 
-    await service.create({ userId: 'user', accountId: 7, metric: 'battles', target: 1000, endsAt: ENDS_AT });
+    await service.create({ userId: 'user', accountId: 7, metric: 'avgDamage', target: 3000, endsAt: ENDS_AT });
 
     expect(created(prisma)).toMatchObject({ baseline: 0, current: null });
+  });
+
+  it('counts a battles goal from zero inside its own window', async () => {
+    const { service, prisma } = createService();
+
+    await service.create({ userId: 'user', accountId: 7, metric: 'battles', target: 100, endsAt: ENDS_AT });
+
+    expect(created(prisma)).toMatchObject({ baseline: 0, current: 0 });
+    expect(prisma.accountRating.findUnique).not.toHaveBeenCalled();
   });
 });
 

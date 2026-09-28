@@ -4,6 +4,7 @@ export { FirstWinRemindersService } from './first-win-reminders.service';
 export { InboxService } from './inbox.service';
 export { MailTransportService } from './mail-transport.service';
 export { MarksWatchService } from './marks-watch.service';
+export { NotificationLedgerService } from './notification-ledger.service';
 export { PlusLaunchService } from './plus-launch.service';
 export { PushSubscriptionsService } from './push-subscriptions.service';
 export { SessionReportsService } from './session-reports.service';

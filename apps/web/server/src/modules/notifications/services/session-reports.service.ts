@@ -4,6 +4,7 @@ import { subHours, subMinutes } from 'date-fns';
 import { isSessionEnded } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { SESSION_REPORT } from '../config';
+import { sessionReportKey } from '../lib';
 import { NotificationService } from './notification.service';
 
 @Injectable()
@@ -66,7 +67,7 @@ export class SessionReportsService {
           avgDamage: session.damageDealt / session.battles,
           wn8: session.wn8
         },
-        dedupeKey: `session-${session.id}`
+        dedupeKey: sessionReportKey(session.id)
       });
     }
 

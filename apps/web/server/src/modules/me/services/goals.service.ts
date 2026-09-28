@@ -159,6 +159,10 @@ export class GoalsService {
   }
 
   private async baseline({ accountId, metric, tankId }: BaselineInput): Promise<number | null> {
+    if (metric === 'battles') {
+      return 0;
+    }
+
     if (metric === 'moe') {
       const progress =
         tankId === null
@@ -181,7 +185,6 @@ export class GoalsService {
       .with('winRate', () => rating.winRate)
       .with('wn8', () => rating.wn8)
       .with('avgDamage', () => rating.avgDamage)
-      .with('battles', () => rating.battles)
       .with('broneIndex', () => ('broneIndex' in rating ? rating.broneIndex : null))
       .exhaustive();
   }

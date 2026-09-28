@@ -66,6 +66,10 @@ export type DeliverToInput = {
 
 export type ChannelSendInput = Omit<DeliverToInput, 'dedupeKey' | 'notification'>;
 
+export type SendOnceInput = Pick<DeliverToInput, 'channel' | 'dedupeKey' | 'notification' | 'rendered' | 'userId'> & {
+  send: () => Promise<unknown>;
+};
+
 export type WebPushInput = {
   userId: string;
   title: string;

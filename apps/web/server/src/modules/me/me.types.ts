@@ -1,3 +1,4 @@
+import type { ExpectedValuesTable } from '@otmetki/ratings';
 import type {
   CreateFavoriteInput as CreateFavoriteBody,
   CreateGoalInput as CreateGoalBody,
@@ -9,6 +10,7 @@ import type {
   UpdateGoalInput as UpdateGoalBody
 } from '@otmetki/schemas';
 
+import type { Goal as GoalRow } from '../../../generated';
 import type { GoalWindow } from './lib';
 
 export type { Favorite, Goal, LinkedAccounts, ModGoals };
@@ -47,4 +49,13 @@ export type GoalBattlesQueryInput = {
   accountId: bigint;
   tankId: number | null;
   window: GoalWindow;
+};
+
+export type GoalAtInput = {
+  goal: GoalRow;
+  now: Date;
+};
+
+export type EvaluateGoalInput = GoalAtInput & {
+  expected: ExpectedValuesTable;
 };

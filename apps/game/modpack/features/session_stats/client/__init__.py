@@ -11,7 +11,7 @@ from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import SessionAggregator, format_session_panel, format_session_plain
 from ..model.constants import ACTION_SHARE, SHARE_PATH, SHARE_RETRY_S, SHARE_SEND_PATH, SHARE_STATE_KEY
-from ..model.share import preference_body, preference_of, send_body
+from ..model.share import preference_body, preference_of, send_body, send_failure_key
 from ..settings import IDLE_MINUTES, SHARE, SHARE_CHANNEL, SWITCH
 from .constants import HANGAR_PANEL, LAYOUT, STATE_KEY
 
@@ -132,7 +132,7 @@ class SessionStats(object):
 
         def done(status, data, retry_after):
             if status not in SENT_STATUSES:
-                app.ui.notify(translate('session_share_failed', status=status))
+                app.ui.notify(translate(send_failure_key(status), status=status))
 
         post_signed(app, SHARE_SEND_PATH, payload, done)
         return {'kind': 'info', 'text': translate('session_share_sent')}

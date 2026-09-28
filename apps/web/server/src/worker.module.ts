@@ -15,6 +15,7 @@ import { EventsWorkerModule } from './modules/events';
 import { HonestRngWorkerModule } from './modules/honest-rng';
 import { LestaLinksWorkerModule } from './modules/lesta-links';
 import { MapStatsWorkerModule } from './modules/map-stats';
+import { MeWorkerModule } from './modules/me';
 import { NotificationsWorkerModule } from './modules/notifications';
 import { ProgressionWorkerModule } from './modules/progression';
 import { PulseWorkerModule } from './modules/pulse';
@@ -40,6 +41,7 @@ import { WatchlistWorkerModule } from './modules/watchlist';
     CollectorModule.register({ hasLesta: validateEnv(process.env).LESTA_APPLICATION_ID !== '' }),
     DeveloperWorkerModule,
     NotificationsWorkerModule,
+    MeWorkerModule,
     SessionShareWorkerModule,
     BillingWorkerModule,
     StreamersWorkerModule,

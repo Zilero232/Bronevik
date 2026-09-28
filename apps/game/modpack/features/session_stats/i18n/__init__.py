@@ -15,6 +15,8 @@ STRINGS = {
         'session_share_empty': u'В этой сессии ещё нет случайных боёв',
         'session_share_unbound': u'Привяжите мод, чтобы отправлять отчёты',
         'session_share_failed': u'Три отметки: сайт не принял запрос на отчёт о сессии ({status})',
+        'session_share_not_linked': u'Три отметки: привяжите выбранный канал на сайте, чтобы отправлять отчёты',
+        'session_share_not_found': u'Три отметки: сайт ещё не получил бои этой сессии',
     },
     'en': {
         'session_title': u'Session',
@@ -29,5 +31,7 @@ STRINGS = {
         'session_share_empty': u'No random battles in this session yet',
         'session_share_unbound': u'Bind the mod to send reports',
         'session_share_failed': u'Three Marks: the site did not take the session report request ({status})',
+        'session_share_not_linked': u'Three Marks: link the chosen channel on the site to send reports',
+        'session_share_not_found': u'Three Marks: the site has no battles of this session yet',
     },
 }

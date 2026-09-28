@@ -6,7 +6,8 @@ export const MARKS_WATCH = {
 export const SESSION_REPORT = {
   idleMinutes: 30,
   maxAgeHours: 12,
-  batchSize: 200
+  batchSize: 200,
+  dedupePrefix: 'session-'
 } as const;
 
 export const THRESHOLD_DROP = {

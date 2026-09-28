@@ -122,3 +122,13 @@ plus-checkout-open-body = You asked us to let you know: Plus is now available to
 
 lesta-relink-required-title = Relink your Lesta account
 lesta-relink-required-body = { $nickname }: the Lesta ID access expired and could not be renewed. Relink the account to bring back the garage, the playlist and the first win of the day.
+
+goal-reached-title = Goal reached
+goal-reached-body = { $metric ->
+        [winRate] Win rate
+        [wn8] WN8
+        [avgDamage] Average damage
+        [battles] Battles
+        [moe] Marks of excellence
+       *[broneIndex] Bronya Index
+    }: { NUMBER($target, maximumFractionDigits: 2) } reached. Time to set the next goal

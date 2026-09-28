@@ -129,3 +129,13 @@ plus-checkout-open-body = Вы просили сообщить: оформить
 
 lesta-relink-required-title = Перепривяжите аккаунт Лесты
 lesta-relink-required-body = { $nickname }: доступ Леста ID истёк и не продлился. Перепривяжите аккаунт, чтобы вернуть ангар, плейлист и первую победу дня.
+
+goal-reached-title = Цель выполнена
+goal-reached-body = { $metric ->
+        [winRate] Процент побед
+        [wn8] WN8
+        [avgDamage] Средний урон
+        [battles] Бои
+        [moe] Отметки
+       *[broneIndex] Броня-Индекс
+    }: { NUMBER($target, maximumFractionDigits: 2) } — цель достигнута. Самое время поставить следующую

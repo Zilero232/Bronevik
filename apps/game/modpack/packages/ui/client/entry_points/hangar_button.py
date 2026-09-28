@@ -15,7 +15,7 @@ def _host_class():
     return None
 
 
-# UNVERIFIED on Lesta 1.45: the hangar host view names and setChildView.
+# The openwg_gameface layout accessor behind BUTTON_LAYOUT is UNVERIFIED on Lesta 1.45 (see ..constants for the host).
 class HangarButton(object):
 
     def __init__(self, on_open):

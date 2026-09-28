@@ -1,8 +1,10 @@
 """Merges the package layout (ids, versions, files, dependencies) with the catalog (UI metadata).
 
 Nothing the layout knows is repeated in the catalog: a component's id is its package key, its file name
-comes from archive.file_name and its dependencies start with the package's own `depends`.
+comes from archive.file_name and its dependencies start with the package's own `depends`. Third-party
+runtime mods (`kind: "dependency"`) have no package here: they are passed through as the catalog pins them.
 """
+import dataclasses
 import fnmatch
 import hashlib
 import os
@@ -88,6 +90,7 @@ def build_manifest(packages, catalog, platform='lesta', packages_dir=None, stric
             problems.append('%s depends on %s, which this build does not ship' % (component.id, ', '.join(missing)))
         if not any(fnmatch.fnmatch(component.file, pattern) for pattern in catalog.owned_patterns):
             problems.append('%s matches no ownedPatterns mask: uninstall would not recognise it' % component.file)
+    dependencies = _dependencies(catalog, keys, warnings)
     if strict:
         problems.extend(warnings)
     if problems:
@@ -105,5 +108,19 @@ def build_manifest(packages, catalog, platform='lesta', packages_dir=None, stric
         presets=catalog.presets,
         components=tuple(components),
         owned_patterns=catalog.owned_patterns,
+        dependencies=dependencies,
     )
     return manifest, warnings
+
+
+def _dependencies(catalog, keys, warnings):
+    """The catalog's third-party runtime mods, passed through; requiredBy keeps only the components this build ships."""
+    shipped = []
+    for dependency in catalog.dependencies:
+        required_by = tuple(component_id for component_id in dependency.required_by if component_id in keys)
+        left_out = [component_id for component_id in dependency.required_by if component_id not in keys]
+        if left_out:
+            warnings.append('dependency %s is required by %s, which this build does not ship' % (dependency.id, ', '.join(left_out)))
+        if required_by:
+            shipped.append(dataclasses.replace(dependency, required_by=required_by))
+    return tuple(shipped)

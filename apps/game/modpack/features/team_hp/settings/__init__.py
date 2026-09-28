@@ -8,7 +8,7 @@ SETTINGS = (SWITCH,)
 SCHEMA = panel_schema(
     DEFAULTS,
     choices={'style': STYLES},
-    limits={'bar_width': (5, 60)},
+    limits={'bar_width': (5, 60), 'icon_width': (1, 8)},
     normalizers={'ally_color': hex_color, 'enemy_color': hex_color, 'template': max_length(MAX_TEMPLATE)},
 )
 

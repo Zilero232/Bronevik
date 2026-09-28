@@ -7,9 +7,9 @@ renderer props (GUIFlash label names). The panel's on/off switch stays in the co
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...settings import Schema
-from .constants import ALIAS_PREFIX, HEX_COLOR, LAYOUT_KEYS, MAX_SOUND_EVENT, PANEL_CHOICES, PANEL_DEFAULTS, PANEL_LIMITS, SOUND_EVENT
+from .constants import ALIAS_PREFIX, HEX_COLOR, LAYOUT_KEYS, MAX_SOUND_EVENT, MOVED_ALIGNS, PANEL_CHOICES, PANEL_DEFAULTS, PANEL_LIMITS, SOUND_EVENT
 
-__all__ = ('ALIAS_PREFIX', 'LAYOUT_KEYS', 'PANEL_DEFAULTS', 'alias_of', 'component_schema', 'hex_color', 'layout_props', 'matching',
+__all__ = ('ALIAS_PREFIX', 'LAYOUT_KEYS', 'MOVED_ALIGNS', 'PANEL_DEFAULTS', 'alias_of', 'component_schema', 'hex_color', 'layout_props', 'matching',
            'max_length', 'panel_of', 'panel_schema', 'sound_event')
 
 

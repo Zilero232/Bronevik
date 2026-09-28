@@ -10,6 +10,16 @@
     }
   },
   {
+    "itemID": "otmetki/ui/hud",
+    "type": "Layout",
+    "path": "coui://gui/gameface/mods/triotmetki/ui/hud.html",
+    "parameters": {
+      "extension": "",
+      "entrance": "OtmetkiHud",
+      "impl": "gameface"
+    }
+  },
+  {
     "itemID": "otmetki/ui/button",
     "type": "Layout",
     "path": "coui://gui/gameface/mods/triotmetki/ui/button.html",

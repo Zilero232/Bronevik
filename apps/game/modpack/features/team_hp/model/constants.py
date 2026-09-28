@@ -1,6 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 BAR_CHAR = '|'
+# One bar per vehicle in arena order, the Battle Observer-style strip (same data as the totals).
+STYLE_ICONS = 'icons'
 
 PREVIEW_TEAM = 1
 PREVIEW_VEHICLES = (

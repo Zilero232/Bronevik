@@ -36,6 +36,18 @@ class HangarInfoTest(unittest.TestCase):
         settings = Settings({'template': '{time} {server} {ping} {{x}'}, SCHEMA)
         assert format_info(INFO, settings, translator('en'), NOW) == '18:05:09 RU4 42 ms {x}'
 
+    def test_selected_vehicle_line(self):
+        info = dict(INFO, vehicle=u'T-34', tiers=(5, 7), crew_xp=12400, crew_role=u'Наводчик', accelerated=True)
+        text = format_info(info, Settings({}, SCHEMA), translator(), NOW)
+        last = text.splitlines()[-1]
+        assert u'T-34' in last and u'бои 5–7 ур.' in last and u'до навыка 12 400 опыта (Наводчик)' in last and u'ускоренное обучение' in last
+        same = format_info(dict(info, tiers=[10, 10], crew_role=None, accelerated=False), Settings({}, SCHEMA), translator('en'), NOW)
+        assert 'battles tier 10' in same and '12 400 XP to a skill' in same and 'no accelerated training' in same
+        bare = format_info(dict(INFO, vehicle=u'T-34', tiers='x', crew_xp=None, accelerated=None), Settings({}, SCHEMA), translator(), NOW)
+        assert u'T-34' not in bare
+        custom = format_info(info, Settings({'template': '{vehicle} {tiers} | {crew}'}, SCHEMA), translator('en'), NOW)
+        assert custom == u'T-34 battles tiers 5–7 | 12 400 XP to a skill (Наводчик)'
+
     def test_ping(self):
         assert valid_ping(-1) is None and valid_ping(None) is None and valid_ping(80.4) == 80
         assert ping_color(200) == PING_BAD_COLOR and ping_color(10) == PING_GOOD_COLOR

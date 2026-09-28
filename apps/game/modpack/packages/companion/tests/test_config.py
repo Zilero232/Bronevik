@@ -50,11 +50,11 @@ class ConfigTest(unittest.TestCase):
 class SettingsTemplateTest(unittest.TestCase):
 
     def test_template_shape(self):
-        config = Config({'send_moe_distribution': False})
+        config = Config({'send_queue_times': False})
         template = build_template(config, Translator('en'), 'status')
         self.assertEqual(template['modDisplayName'], 'Three Marks')
         self.assertEqual([c['varName'] for c in template['column1']], list(FEATURES))
-        self.assertFalse([c for c in template['column1'] if c['varName'] == 'send_moe_distribution'][0]['value'])
+        self.assertFalse([c for c in template['column1'] if c['varName'] == 'send_queue_times'][0]['value'])
         self.assertEqual(template['column2'][1]['type'], 'TextInput')
         self.assertEqual(template['column2'][1]['varName'], BIND_CODE_VAR)
 

@@ -36,6 +36,13 @@ dependencies = [
   "otmetki-feature-hangar-cleaner",
   "otmetki-feature-marks-history",
   "otmetki-feature-hangar-ratings",
+  "otmetki-feature-hangar-marks",
+  "otmetki-feature-personal-best",
+  "otmetki-feature-session-goals",
+  "otmetki-feature-main-gun",
+  "otmetki-feature-battle-efficiency",
+  "otmetki-feature-consumables",
+  "otmetki-feature-reload-timer",
 ]
 
 [project.urls]
@@ -89,6 +96,13 @@ otmetki-feature-notification-filter = { workspace = true }
 otmetki-feature-hangar-cleaner = { workspace = true }
 otmetki-feature-marks-history = { workspace = true }
 otmetki-feature-hangar-ratings = { workspace = true }
+otmetki-feature-hangar-marks = { workspace = true }
+otmetki-feature-personal-best = { workspace = true }
+otmetki-feature-session-goals = { workspace = true }
+otmetki-feature-main-gun = { workspace = true }
+otmetki-feature-battle-efficiency = { workspace = true }
+otmetki-feature-consumables = { workspace = true }
+otmetki-feature-reload-timer = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["packages", "features", "tools"]

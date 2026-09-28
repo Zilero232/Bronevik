@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 BATTLE_LOG_SHELL_NAMES = (
     'HOLLOW_CHARGE', 'ARMOR_PIERCING', 'ARMOR_PIERCING_HE', 'ARMOR_PIERCING_CR', 'SMOKE', 'HE_MODERN',
     'HE_LEGACY_STUN', 'HE_LEGACY_NO_STUN', 'FLAME', 'ARMOR_PIERCING_FSDS', 'HOLLOW_CHARGE_DF',
-    'ARMOR_PIERCING_DF', 'ARMOR_PIERCING_HE_DF', 'ARMOR_PIERCING_CR_DF',
+    'ARMOR_PIERCING_DF', 'ARMOR_PIERCING_HE_DF', 'ARMOR_PIERCING_CR_DF', 'HE_MODERN_DF',
 )
 
 CODES = {
@@ -19,6 +19,7 @@ CODES = {
     'HOLLOW_CHARGE_DF': 'heat',
     'HIGH_EXPLOSIVE': 'he',
     'HE_MODERN': 'he',
+    'HE_MODERN_DF': 'he',
     'HE_LEGACY_STUN': 'he',
     'HE_LEGACY_NO_STUN': 'he',
     'SMOKE': 'smoke',

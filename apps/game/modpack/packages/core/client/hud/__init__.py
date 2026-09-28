@@ -1,28 +1,44 @@
 """The process-wide HUD layer the features share, and the choice of its renderer.
 
-Backends are tried in `BACKENDS` order; the first usable wins, else `NullBackend` (panels stay hidden,
-features fall back to system messages). Add a Gameface backend to BACKENDS when one exists.
+`BACKENDS` in preference order: OpenWG Gameface (the ui package's HUD page), then GUIFlash. Every
+installed one joins a `BackendChain`, which draws each label with the first backend available at that
+moment (GUIFlash before 0.6 draws in battle only); with none, panels stay hidden and features fall back
+to system messages. The layer and the hangar labels (`core.client.ui`) share one chain, so there is one
+Gameface window.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...durable import open_config
-from ...hud import ComponentConfig, HudLayer, NullBackend
+from ...hud import BackendChain, ComponentConfig, HudLayer
 from ...log import log
 from .constants import CONFIG_NAME
+from .gameface import GamefaceBackend
 from .guiflash import GuiFlashBackend
 
-BACKENDS = (GuiFlashBackend,)
+BACKENDS = (GamefaceBackend, GuiFlashBackend)
 
-_state = {'layer': None, 'config': None}
+_state = {'layer': None, 'config': None, 'backend': None}
 
 
-def create_backend(backends=BACKENDS, log_missing=True):
+def build_backend(backends=BACKENDS, log_missing=True):
+    """A chain of the installed backends; logs why each missing one was left out."""
+    installed = []
     for backend in backends:
         if backend.usable():
-            return backend()
+            installed.append(backend())
+        elif log_missing:
+            log('HUD: %s' % backend.missing_reason())
+    chain = BackendChain(installed)
     if log_missing:
-        log('no HUD renderer (GUIFlash) installed: battle panels are off')
-    return NullBackend()
+        log('HUD renderers: %s' % (', '.join(chain.names) or 'none, battle and hangar panels are off'))
+    return chain
+
+
+def create_backend(backends=BACKENDS):
+    """The process-wide renderer chain (built on first use)."""
+    if _state['backend'] is None:
+        _state['backend'] = build_backend(backends)
+    return _state['backend']
 
 
 def component_config(app):

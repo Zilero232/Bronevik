@@ -7,14 +7,17 @@ GROUP = 'hangar'
 
 CAROUSEL_ROWS = (NATIVE, 'single', 'double')
 CAROUSEL_TILES = (NATIVE, 'adaptive', 'small')
+INTERFACE_SCALE_CHOICES = (NATIVE, 'auto', 'x1', 'x1_25', 'x1_5', 'x1_75', 'x2')
 
 DEFAULTS = {
     'carousel_rows': NATIVE,
     'carousel_tiles': NATIVE,
+    'interface_scale': NATIVE,
     'quick_actions': True,
 }
 
 CHOICES = {
     'carousel_rows': CAROUSEL_ROWS,
     'carousel_tiles': CAROUSEL_TILES,
+    'interface_scale': INTERFACE_SCALE_CHOICES,
 }

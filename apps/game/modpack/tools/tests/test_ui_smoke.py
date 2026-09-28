@@ -16,7 +16,7 @@ ACCOUNT = 12345678
 ENTRY_MODULES = ('mod_otmetki', 'mod_otmetki_ui', 'mod_otmetki_minimap', 'mod_otmetki_camera', 'mod_otmetki_crosshair',
                  'mod_otmetki_hangar_tweaks', 'mod_otmetki_replay_manager', 'mod_otmetki_replay_upload')
 STUBBED = ('gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'frameworks', 'openwg_gameface', 'Keys', 'helpers',
-           'skeletons', 'dossiers2', 'BattleFeedbackCommon')
+           'skeletons', 'dossiers2', 'BattleFeedbackCommon', 'account_helpers')
 KEYS = {'KEY_T': 20, 'KEY_LCONTROL': 29, 'KEY_LSHIFT': 42}
 
 
@@ -54,24 +54,51 @@ class Sink(object):
 
 
 class SettingsCore(object):
+    # RU 1.45 client source (account_helpers/settings_core/SettingsCore.py): applySettings(diff) returns
+    # nothing; applyStorages(restartApproved, force=False) returns (confirmation, revert) pairs that
+    # confirmChanges walks; clearStorages() drops the staged values. Only what a storage applied is stored.
 
     def __init__(self):
-        self.values = {'minimapSize': 1, 'minimapAlpha': 0, 'carouselType': 0, 'arcade': {'net': 100, 'custom': 3}, 'sniper': {'net': 100}}
+        self.values = {'minimapAlpha': 0, 'carouselType': 0, 'arcade': {'net': 100, 'custom': 3}, 'sniper': {'net': 100}}
         self.applied = []
+        self.staged = {}
+        self.calls = []
 
     def getSetting(self, name):
         return self.values.get(name)
 
     def applySettings(self, diff):
+        self.calls.append('applySettings')
         self.applied.append(dict(diff))
-        self.values.update(diff)
-        return 'confirmators'
+        self.staged.update(diff)
+
+    def applyStorages(self, restartApproved, force=False):
+        self.calls.append('applyStorages')
+        return [(None, lambda: None)]
 
     def confirmChanges(self, confirmators):
-        pass
+        self.calls.append('confirmChanges')
+        for confirmation, revert in confirmators:
+            if confirmation is not None:
+                confirmation()
+        self.values.update(self.staged)
 
-    def applyStorages(self, restart):
-        pass
+    def clearStorages(self):
+        self.calls.append('clearStorages')
+        self.staged = {}
+
+
+class AccountSettings(object):
+    # RU 1.45 client source (account_helpers/AccountSettings.py): KEY_SETTINGS values by name.
+    values = {}
+
+    @classmethod
+    def getSettings(cls, name):
+        return cls.values.get(name)
+
+    @classmethod
+    def setSettings(cls, name, value):
+        cls.values[name] = value
 
 
 def module(name, **attrs):
@@ -152,6 +179,16 @@ def gameface_stubs(test):
            WindowFlags=type(str('WindowFlags'), (object,), {'WINDOW': 1}))
     package('gui.impl')
     module('gui.impl.pub', ViewImpl=ViewImpl, WindowImpl=WindowImpl)
+
+    class HangarCrewWidget(ViewImpl):
+        # RU 1.45 client source: gui/impl/lobby/crew/hangar_crew_widget.py, the hangar's Gameface widget.
+
+        def _onLoading(self, *args, **kwargs):
+            pass
+
+    package('gui.impl.lobby')
+    package('gui.impl.lobby.crew')
+    module('gui.impl.lobby.crew.hangar_crew_widget', HangarCrewWidget=HangarCrewWidget)
     module('openwg_gameface', ModDynAccessor=lambda key: (lambda: 'layout:' + key),
            gf_mod_inject=lambda model, key, styles=None, modules=None: test.injected.append((key, styles, modules)))
 
@@ -195,8 +232,9 @@ class UiSmokeTest(unittest.TestCase):
 
     def install_stubs(self):
         test = self
+        self.opened = []
         module('BigWorld', callback=lambda delay, fn: None, player=lambda: test.player, fetchURL=lambda *args, **kwargs: None,
-               isKeyDown=lambda key: key in test.pressed)
+               isKeyDown=lambda key: key in test.pressed, openWebBrowser=test.opened.append)
         module('BattleReplay', isPlaying=lambda: False)
         vehicle = type(str('CurrentVehicle'), (object,), {'item': None, 'onChanged': Event()})()
         module('CurrentVehicle', g_currentVehicle=vehicle)
@@ -211,6 +249,9 @@ class UiSmokeTest(unittest.TestCase):
         package('skeletons')
         package('skeletons.account_helpers')
         module('skeletons.account_helpers.settings_core', ISettingsCore=object)
+        AccountSettings.values = {'minimapSize': 1}
+        package('account_helpers')
+        module('account_helpers.AccountSettings', AccountSettings=AccountSettings, MINIMAP_SIZE='minimapSize')
         package('gui')
         module('gui.SystemMessages', SM_TYPE=type(str('SM_TYPE'), (object,), {'Information': 'info'}),
                pushMessage=lambda text, type=None: test.messages.append(text))
@@ -257,13 +298,18 @@ class UiSmokeTest(unittest.TestCase):
             ids = [component['id'] for component in state['components']]
             assert ids[0] == 'companion' and 'minimap' in ids and 'replay_manager' in ids, ids
 
+            self.send(type='set', component='minimap', key='transparency', value='40')
+            assert self.core.applied[-1] == {'minimapAlpha': 40}
+            assert self.core.calls[-4:] == ['applySettings', 'applyStorages', 'confirmChanges', 'clearStorages']
+            assert self.core.values['minimapAlpha'] == 40 and self.core.staged == {}
             self.send(type='set', component='minimap', key='size', value='3')
-            assert self.core.applied[-1] == {'minimapSize': 3}
+            assert AccountSettings.values['minimapSize'] == 3
+            assert all('minimapSize' not in diff for diff in self.core.applied)
             self.send(type='set', component='crosshair', key='preset', value='clean')
             assert self.core.applied[-1]['arcade']['custom'] == 3 and self.core.applied[-1]['arcade']['net'] == 0
             self.send(type='set', component='companion', key='send_shots', value=False)
             assert app.config.get('send_shots') is False
-            assert self.state()['revision'] == 3
+            assert self.state()['revision'] == 4
 
     def test_hotkey_and_battle_close_the_window(self):
         self.open_hangar(0)
@@ -276,14 +322,24 @@ class UiSmokeTest(unittest.TestCase):
         self.events.onAvatarReady()
         assert self.windows == []
 
+    def test_hangar_button_in_the_crew_widget_and_links_in_the_game_browser(self):
+        self.open_hangar(2)
+        widget_class = sys.modules['gui.impl.lobby.crew.hangar_crew_widget'].HangarCrewWidget
+        widget = widget_class(None)
+        widget._onLoading()
+        button_class = sys.modules['gui.mods.otmetki.ui.client.window'].HangarButtonView
+        assert [type(child) for child in widget.children] == [button_class]
+        assert sys.modules['gui.mods.otmetki.ui.client.browser'].open_url('https://triotmetki.ru/mod')
+        assert self.opened == ['https://triotmetki.ru/mod']
+
     def test_profiles_and_close_from_the_page(self):
         app = self.open_hangar(1)
         self.mods_list[0]['callback']()
         self.send(type='profile_save', name='Streamer')
-        self.send(type='set', component='companion', key='send_shots', value=False)
+        self.send(type='set', component='companion', key='flush_interval_seconds', value=30)
         profile_id = self.state()['profiles']['active']
         self.send(type='profile_load', id=profile_id)
-        assert app.config.get('send_shots') is True
+        assert app.config.get('flush_interval_seconds') == 15
         with open(os.path.join('mods', 'configs', 'otmetki', 'profiles.json')) as handle:
             assert json.load(handle)['profiles'][0]['name'] == 'Streamer'
         self.send(type='close')

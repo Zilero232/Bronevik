@@ -5,3 +5,4 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .constants import NATIVE, OFF, ON, TRI_STATE  # noqa: F401
 from .mapping import from_table, merge_value, native_values, setting_names, tri_state  # noqa: F401
+from .write import write_settings  # noqa: F401

@@ -1,5 +1,5 @@
 """Hangar panels and notifications for the companion and the hangar features: labels drawn through the
-HUD backend (GUIFlash when installed), each placed by its own layout, and the game's system messages."""
+HUD renderer chain (OpenWG Gameface or GUIFlash 0.6+), each placed by its own layout, and the game's system messages."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...log import log, safe
@@ -9,10 +9,10 @@ from ..hud import create_backend
 class Ui(object):
 
     def __init__(self, backend=None):
-        self.backend = backend or create_backend(log_missing=False)
+        self.backend = backend or create_backend()
         self.components = set()
         if not self.has_panels:
-            log('GUIFlash not installed: panels fall back to system messages')
+            log('no hangar HUD renderer: panels fall back to system messages')
 
     @property
     def has_panels(self):

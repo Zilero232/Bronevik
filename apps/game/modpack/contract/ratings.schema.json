@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://triotmetki.ru/contract/mod/ratings.schema.json",
   "title": "Three Marks mod own ratings (hangar read)",
-  "description": "Hangar-only reads of the bound account's own ratings. Both requests are signed exactly like /mod/ingest (v2: X-Otmetki-Device, X-Otmetki-Timestamp, X-Otmetki-Nonce, X-Otmetki-Signature over the raw body) and answer only for the device's bound account: a body naming another account is refused with 403 account_mismatch. POST /mod/me/overview body #/definitions/overviewRequest -> 200 #/definitions/overview. POST /mod/me/tanks body #/definitions/tanksRequest -> 200 #/definitions/tanks (one row per requested tank the account has data for, in request order; tanks without data are left out). The server caches each answer for 30 s and rate-limits the pair (429 with Retry-After); error replies carry X-Otmetki-Server-Time like every /mod/* reply. Mirrors packages/schemas/src/mod (modRatingsRequestSchema, modTankRatingsRequestSchema, modOverviewSchema, modTankRatingsSchema).",
+  "description": "Hangar-only reads of the bound account's own ratings. Both requests are signed exactly like /mod/ingest (v2: X-Otmetki-Device, X-Otmetki-Timestamp, X-Otmetki-Nonce, X-Otmetki-Signature over the raw body) and answer only for the device's bound account: a body naming another account is refused with 403 account_mismatch. POST /mod/me/overview body #/definitions/overviewRequest -> 200 #/definitions/overview. POST /mod/me/tanks body #/definitions/tanksRequest -> 200 #/definitions/tanks (one row per requested tank the account has data for, in request order; tanks without data are left out). The server caches each answer for 30 s and rate-limits the pair (429 with Retry-After); error replies carry X-Otmetki-Server-Time like every /mod/* reply. A tank row may carry the optional `records` and `expected` objects (not yet served; README TODO). Mirrors packages/schemas/src/mod (modRatingsRequestSchema, modTankRatingsRequestSchema, modOverviewSchema, modTankRatingsSchema).",
   "definitions": {
     "deviceId": {
       "type": "string",
@@ -28,7 +28,9 @@
       "description": "A rating value and its tier on the site's scale (null when unknown). Tiers: very_bad, bad, below_avg, avg, good, very_good, great, unicum, super_unicum.",
       "required": ["value", "tier"],
       "properties": {
-        "value": { "type": ["number", "null"] },
+        "value": {
+          "type": ["number", "null"]
+        },
         "tier": {
           "enum": ["very_bad", "bad", "below_avg", "avg", "good", "very_good", "great", "unicum", "super_unicum", null]
         }
@@ -39,8 +41,12 @@
       "additionalProperties": false,
       "required": ["device_id", "account_id"],
       "properties": {
-        "device_id": { "$ref": "#/definitions/deviceId" },
-        "account_id": { "$ref": "#/definitions/accountId" }
+        "device_id": {
+          "$ref": "#/definitions/deviceId"
+        },
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        }
       }
     },
     "tanksRequest": {
@@ -48,14 +54,21 @@
       "additionalProperties": false,
       "required": ["device_id", "account_id", "tank_ids"],
       "properties": {
-        "device_id": { "$ref": "#/definitions/deviceId" },
-        "account_id": { "$ref": "#/definitions/accountId" },
+        "device_id": {
+          "$ref": "#/definitions/deviceId"
+        },
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        },
         "tank_ids": {
           "type": "array",
           "description": "Lesta tank_id (the client intCD) of the player's own vehicles.",
           "minItems": 1,
           "maxItems": 100,
-          "items": { "type": "integer", "minimum": 1 }
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
         }
       }
     },
@@ -63,23 +76,44 @@
       "type": "object",
       "required": ["account_id", "nickname", "overall", "session"],
       "properties": {
-        "account_id": { "$ref": "#/definitions/accountId" },
-        "nickname": { "type": ["string", "null"] },
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        },
+        "nickname": {
+          "type": ["string", "null"]
+        },
         "overall": {
           "description": "Random-battle ratings over the whole career; null until the account is tracked.",
           "oneOf": [
-            { "type": "null" },
+            {
+              "type": "null"
+            },
             {
               "type": "object",
               "required": ["battles", "win_rate", "avg_damage", "wn8", "eff", "brone_index", "updated_at"],
               "properties": {
-                "battles": { "type": "integer", "minimum": 0 },
-                "win_rate": { "$ref": "#/definitions/percent" },
-                "avg_damage": { "$ref": "#/definitions/average" },
-                "wn8": { "$ref": "#/definitions/rating" },
-                "eff": { "$ref": "#/definitions/rating" },
-                "brone_index": { "$ref": "#/definitions/rating" },
-                "updated_at": { "type": "string" }
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "win_rate": {
+                  "$ref": "#/definitions/percent"
+                },
+                "avg_damage": {
+                  "$ref": "#/definitions/average"
+                },
+                "wn8": {
+                  "$ref": "#/definitions/rating"
+                },
+                "eff": {
+                  "$ref": "#/definitions/rating"
+                },
+                "brone_index": {
+                  "$ref": "#/definitions/rating"
+                },
+                "updated_at": {
+                  "type": "string"
+                }
               }
             }
           ]
@@ -87,21 +121,44 @@
         "session": {
           "description": "The latest play session: the mod's live session, else the latest API day rollup.",
           "oneOf": [
-            { "type": "null" },
+            {
+              "type": "null"
+            },
             {
               "type": "object",
               "required": ["kind", "source", "is_live", "started_at", "ended_at", "battles", "win_rate", "avg_damage", "wn8", "brone_index"],
               "properties": {
-                "kind": { "enum": ["day", "live"] },
-                "source": { "enum": ["api", "mod"] },
-                "is_live": { "type": "boolean" },
-                "started_at": { "type": "string" },
-                "ended_at": { "type": ["string", "null"] },
-                "battles": { "type": "integer", "minimum": 0 },
-                "win_rate": { "$ref": "#/definitions/percent" },
-                "avg_damage": { "$ref": "#/definitions/average" },
-                "wn8": { "$ref": "#/definitions/rating" },
-                "brone_index": { "$ref": "#/definitions/rating" }
+                "kind": {
+                  "enum": ["day", "live"]
+                },
+                "source": {
+                  "enum": ["api", "mod"]
+                },
+                "is_live": {
+                  "type": "boolean"
+                },
+                "started_at": {
+                  "type": "string"
+                },
+                "ended_at": {
+                  "type": ["string", "null"]
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "win_rate": {
+                  "$ref": "#/definitions/percent"
+                },
+                "avg_damage": {
+                  "$ref": "#/definitions/average"
+                },
+                "wn8": {
+                  "$ref": "#/definitions/rating"
+                },
+                "brone_index": {
+                  "$ref": "#/definitions/rating"
+                }
               }
             }
           ]
@@ -112,32 +169,123 @@
       "type": "object",
       "required": ["tank_id", "battles", "win_rate", "avg_damage", "wn8", "moe_percent", "marks_on_gun", "mastery"],
       "properties": {
-        "tank_id": { "type": "integer", "minimum": 1 },
-        "battles": { "type": "integer", "minimum": 0 },
-        "win_rate": { "$ref": "#/definitions/percent" },
-        "avg_damage": { "$ref": "#/definitions/average" },
-        "wn8": { "$ref": "#/definitions/rating" },
-        "moe_percent": { "$ref": "#/definitions/percent" },
-        "marks_on_gun": { "type": ["integer", "null"], "minimum": 0, "maximum": 3 },
-        "mastery": { "type": "integer", "minimum": 0, "maximum": 4 }
+        "tank_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "battles": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "win_rate": {
+          "$ref": "#/definitions/percent"
+        },
+        "avg_damage": {
+          "$ref": "#/definitions/average"
+        },
+        "wn8": {
+          "$ref": "#/definitions/rating"
+        },
+        "moe_percent": {
+          "$ref": "#/definitions/percent"
+        },
+        "marks_on_gun": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 3
+        },
+        "mastery": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "records": {
+          "$ref": "#/definitions/tankRecords"
+        },
+        "expected": {
+          "$ref": "#/definitions/tankExpected"
+        }
       }
     },
     "tanks": {
       "type": "object",
       "required": ["account_id", "tanks"],
       "properties": {
-        "account_id": { "$ref": "#/definitions/accountId" },
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        },
         "tanks": {
           "type": "array",
-          "items": { "$ref": "#/definitions/tankRating" }
+          "items": {
+            "$ref": "#/definitions/tankRating"
+          }
+        }
+      }
+    },
+    "tankRecords": {
+      "type": ["object", "null"],
+      "description": "Optional: the tank's career records in random battles (the dossier max15x15 block the site already stores): the highest damage, assistance (radio + tracking), frags and base XP of one battle. null until the server fills it. Read by the personal_best component; the mod keeps the larger of these, the hangar dossier and its own battle results.",
+      "required": ["max_damage", "max_assist", "max_frags", "max_xp"],
+      "properties": {
+        "max_damage": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "max_assist": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "max_frags": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "max_xp": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "tankExpected": {
+      "type": ["object", "null"],
+      "description": "Optional: the WN8 expected values of the tank the site uses (per battle: damage, spotted, frags, defence points, win rate in percent). null until the server fills it. Read by the battle_efficiency component for its live WN8 estimate.",
+      "required": ["damage", "spot", "frag", "def", "win_rate"],
+      "properties": {
+        "damage": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "spot": {
+          "type": "number",
+          "minimum": 0
+        },
+        "frag": {
+          "type": "number",
+          "minimum": 0
+        },
+        "def": {
+          "type": "number",
+          "minimum": 0
+        },
+        "win_rate": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 100
         }
       }
     }
   },
   "oneOf": [
-    { "$ref": "#/definitions/overviewRequest" },
-    { "$ref": "#/definitions/tanksRequest" },
-    { "$ref": "#/definitions/overview" },
-    { "$ref": "#/definitions/tanks" }
+    {
+      "$ref": "#/definitions/overviewRequest"
+    },
+    {
+      "$ref": "#/definitions/tanksRequest"
+    },
+    {
+      "$ref": "#/definitions/overview"
+    },
+    {
+      "$ref": "#/definitions/tanks"
+    }
   ]
 }

@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-session-stats"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: hangar session panel (battles, win rate, average damage, WN8) and the session id on battle results."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

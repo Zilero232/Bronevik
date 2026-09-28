@@ -5,10 +5,11 @@ import { build, mergeConfig } from 'vite';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { buttonConfig } from '../button';
+import { hudConfig } from '../hud';
 import { settingsConfig } from '../settings';
 import { UI_BUILD } from '../vite.constants';
 
-const BUNDLE_FILES = ['button.css', 'button.html', 'button.js', 'icon.png', 'index.html'];
+const BUNDLE_FILES = ['button.css', 'button.html', 'button.js', 'hud.html', 'icon.png', 'index.html'];
 const IIFE_START = /^\(function\(\)\{/;
 const CLASSIC_SCRIPT_AT_BODY_END = /<script>\(function\(\)\{[\s\S]*\}\)\(\);<\/script>\s*<\/body>\s*<\/html>\s*$/;
 const POLYFILLED_ELEMENTS = /[\w$]\([`'"](?:ul|ol|li|dl|dt|dd|select|option)[`'"][,)]/;
@@ -21,7 +22,7 @@ beforeAll(async () => {
   outDir = await mkdtemp(path.join(tmpdir(), 'otmetki-ui-'));
   vi.stubEnv('NODE_ENV', 'production');
 
-  for (const config of [settingsConfig(), buttonConfig()]) {
+  for (const config of [settingsConfig(), buttonConfig(), hudConfig()]) {
     await build(mergeConfig(config, { configFile: false, logLevel: 'silent', build: { outDir } }));
   }
 }, 60_000);
@@ -45,8 +46,8 @@ describe('committed Gameface bundle', () => {
     }
   });
 
-  it('loads the settings window with one classic inline script at the end of the body, as the client pages do', async () => {
-    const page = await read(outDir, 'index.html');
+  it.each(['index.html', 'hud.html'])('loads %s with one classic inline script at the end of the body, as the client pages do', async (file) => {
+    const page = await read(outDir, file);
 
     expect(page).not.toContain('type="module"');
     expect(page.match(/<script/g)).toHaveLength(1);
@@ -61,9 +62,8 @@ describe('committed Gameface bundle', () => {
   });
 
   it('renders no list or select elements, which Gameface only supports through a polyfill', async () => {
-    const [page, button] = await Promise.all([read(outDir, 'index.html'), read(outDir, 'button.js')]);
+    const files = await Promise.all(['index.html', 'button.js', 'hud.html'].map((file) => read(outDir, file)));
 
-    expect(page).not.toMatch(POLYFILLED_ELEMENTS);
-    expect(button).not.toMatch(POLYFILLED_ELEMENTS);
+    files.forEach((source) => expect(source).not.toMatch(POLYFILLED_ELEMENTS));
   });
 });

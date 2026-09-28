@@ -11,7 +11,6 @@ from otmetki.companion.payload import (
     build_battle_event,
     build_envelope,
     build_battle_start_event,
-    build_moe_distribution_event,
     build_moe_snapshot_event,
     build_queue_event,
 )
@@ -80,14 +79,23 @@ class BattleEventTest(unittest.TestCase):
         self.assertIsNone(self.event['platoon'])
         self.assertIsNone(self.event['shots'])
 
-    def test_platoon_lists_only_own_team_mates(self):
+    def test_platoon_counts_own_team_mates_and_sends_no_ids(self):
         results = _support.battle_results()
         results['players']['12345678']['prebattleID'] = 77
         results['players']['23456789'] = {'name': 'platoon_friend_nick', 'team': 1, 'prebattleID': 77}
         results['players']['87654321']['prebattleID'] = 77
         event = build_battle_event(results)
-        self.assertEqual(event['platoon'], {'size': 2, 'mates': [23456789]})
-        self.assertNotIn('platoon_friend_nick', json.dumps(event))
+        self.assertEqual(event['platoon'], {'size': 2})
+        serialized = json.dumps(build_envelope([event], 'dev', 12345678, '0.1.0', '1.45', 1790000500, 'b1'))
+        for foreign in ('23456789', 'platoon_friend_nick', '87654321'):
+            self.assertNotIn(foreign, serialized)
+
+    def test_platoon_size_is_capped(self):
+        results = _support.battle_results()
+        results['players']['12345678']['prebattleID'] = 77
+        for mate in ('23456789', '34567890', '45678901'):
+            results['players'][mate] = {'team': 1, 'prebattleID': 77}
+        self.assertEqual(build_battle_event(results)['platoon'], {'size': 3})
 
     def test_shots_pass_through_from_extras(self):
         shot = {'damage': 402, 'nominal': 390, 'shell': 'armor_piercing', 'outcome': 'damage', 'distance_m': None, 'fatal': False}
@@ -169,7 +177,6 @@ class EnvelopeTest(unittest.TestCase):
         events = [
             build_battle_event(_support.battle_results(), {'vehicle_name': 'ussr:R04_T-34', 'vehicle_tier': 5, 'map_name': '05_prohorovka', 'session_id': 's'}),
             build_moe_snapshot_event(1, 8712, 2610, 2, 350, 1790000000),
-            build_moe_distribution_event(1, 1000, [100, 400, 900], 1790000000),
             build_queue_event(1, 20, 'dequeued', 1790000000, None),
         ]
         envelope = decode_json(encode_json(build_envelope(events, 'dev_1', 12345678, '0.1.0', '1.45.0', 1790000500)))

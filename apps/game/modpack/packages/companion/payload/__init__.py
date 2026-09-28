@@ -2,11 +2,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import uuid
 
-from ...core.compat import as_int, is_int, is_number, string_types, to_text
+from ...core.compat import as_int, is_int, string_types, to_text
 from ..loadout import normalize_loadout
 from ..shots import MAX_SHOTS
 from ..version import SCHEMA_VERSION
-from .constants import COST_FIELDS, MASTERY_BADGES, MAX_ACHIEVEMENTS, MAX_ACHIEVEMENT_NAME, MAX_PLATOON_MATES, REALM, STAT_FIELDS  # noqa: F401
+from .constants import COST_FIELDS, MASTERY_BADGES, MAX_ACHIEVEMENTS, MAX_ACHIEVEMENT_NAME, MAX_PLATOON_SIZE, REALM, STAT_FIELDS  # noqa: F401
 
 
 class PayloadError(Exception):
@@ -84,6 +84,8 @@ def _player_key(value):
     return None
 
 
+# Fair play / privacy: the players block is read only to count the own platoon (same prebattleID on the
+# own team); the size is all that leaves the client, never another player's account id or name.
 def extract_platoon(results, account_id):
     players = results.get('players')
     if not isinstance(players, dict) or not is_int(account_id):
@@ -99,13 +101,13 @@ def extract_platoon(results, account_id):
     prebattle = own.get('prebattleID')
     if not is_int(prebattle) or prebattle <= 0:
         return None
-    mates = sorted(
-        player_id for player_id, player in by_id.items()
+    size = 1 + sum(
+        1 for player_id, player in by_id.items()
         if player_id != account_id and player.get('prebattleID') == prebattle and player.get('team') == own.get('team')
-    )[:MAX_PLATOON_MATES]
-    if not mates:
+    )
+    if size < 2:
         return None
-    return {'size': len(mates) + 1, 'mates': mates}
+    return {'size': min(size, MAX_PLATOON_SIZE)}
 
 
 def normalize_shots(shots):
@@ -190,21 +192,6 @@ def build_moe_snapshot_event(tank_id, damage_rating, moving_avg_damage, marks_on
         'moving_avg_damage': int(moving_avg_damage),
         'marks_on_gun': int(marks_on_gun),
         'battles': int(battles) if is_int(battles) else None,
-    }
-
-
-def build_moe_distribution_event(tank_id, battle_count, percentiles, occurred_at):
-    values = []
-    for value in percentiles or ():
-        if is_number(value):
-            values.append(int(value))
-    return {
-        'type': 'moe_distribution',
-        'event_id': new_event_id(),
-        'occurred_at': int(occurred_at),
-        'tank_id': int(tank_id),
-        'battle_count': as_int(battle_count),
-        'damage_better_than_n_percent': values,
     }
 
 

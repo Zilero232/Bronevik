@@ -190,6 +190,7 @@ class OtmetkiApp(object):
             self._switch_account(account_id)
         self.binder.bind_from_config()
         self._on_vehicle_changed()
+        self.battles.on_hangar()
         self.bus.emit('hangar')
         self.settings_ui.refresh()
         self.settings_share.on_hangar()

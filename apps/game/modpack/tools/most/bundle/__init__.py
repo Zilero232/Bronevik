@@ -7,7 +7,7 @@
     dist/most/<id>/screenshots/*           client screenshots from catalog/screenshots/<id>/
     dist/most/<id>/description.ru.md       mod page texts (en too)
     dist/most/<id>/changelog.md            this version's CHANGELOG.md entry (### ru, ### en)
-    dist/most/<id>/submission.json         forum titles, dependencies, file hash and size, findings
+    dist/most/<id>/submission.json         forum titles, dependencies (ours and third-party), file hash and size, findings
 """
 import hashlib
 import io
@@ -113,6 +113,7 @@ def bundle_component(component, manifest, catalog, package, options, out_dir):
         'forumTitle': dict((language, texts.forum_title(options['game_version'], component, language)) for language in LANGUAGES),
         'title': dict((language, getattr(component.title, language)) for language in LANGUAGES),
         'dependencies': texts.dependency_list(component, manifest),
+        'externalDependencies': texts.external_dependency_list(component, manifest),
         'sendsData': texts.sends_data(component),
         'previews': [os.path.relpath(path, target).replace(os.sep, '/') for path in written],
         'screenshots': ['screenshots/' + os.path.basename(shot) for shot in shots],

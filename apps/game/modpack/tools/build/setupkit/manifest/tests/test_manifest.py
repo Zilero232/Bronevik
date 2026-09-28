@@ -160,7 +160,8 @@ class CliTest(unittest.TestCase):
         with io.open(os.path.join(folder, 'components.json'), encoding='utf-8') as handle:
             data = json.load(handle)
         keys = [package.key for package in layout.split_packages('root_init.py')]
-        self.assertEqual(sorted(component['id'] for component in data['components']), sorted(keys))
+        self.assertEqual(sorted(component['id'] for component in data['components'] if 'kind' not in component), sorted(keys))
+        self.assertEqual([component['id'] for component in data['components'] if component.get('kind') == 'dependency'], ['openwg_gameface', 'guiflash'])
         self.assertTrue(cli.DEFAULT_OUT.endswith(os.path.join('dist', 'catalog')))
 
 

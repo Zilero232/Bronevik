@@ -3,10 +3,14 @@ traceback holding non-ASCII bytes (a Cyrillic game path) never breaks the logger
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import functools
+import time
 import traceback
 
 from ..compat import to_native
 from .constants import PREFIX
+from .limiter import RepeatLimiter
+
+_repeats = RepeatLimiter(time.time)
 
 
 def _line(*parts):
@@ -18,7 +22,17 @@ def log(message):
 
 
 def log_exception(context):
-    print(to_native('\n').join((_line(PREFIX, 'error in', context), to_native(traceback.format_exc()))))
+    """Logs the current exception with its traceback. An identical one (same context and traceback) is
+    written once per REPEAT_WINDOW_S; the next one written says how many were held back in between."""
+    trace = traceback.format_exc()
+    write, suppressed = _repeats.admit((to_native(context), trace))
+    if not write:
+        return
+    lines = [_line(PREFIX, 'error in', context)]
+    if suppressed:
+        lines.append(_line(PREFIX, 'the same error repeated %d more times' % suppressed))
+    lines.append(to_native(trace))
+    print(to_native('\n').join(lines))
 
 
 def safe(func):

@@ -4,7 +4,7 @@ from ....core.format import COLOR_DOWN, COLOR_UP
 
 SWITCH = 'battle_team_hp'
 PANEL_ID = 'team_hp'
-STYLES = ('full', 'numbers', 'bars', 'compact')
+STYLES = ('full', 'numbers', 'bars', 'compact', 'icons')
 MAX_TEMPLATE = 400
 
 DEFAULTS = {
@@ -14,6 +14,7 @@ DEFAULTS = {
     'align_y': 'top',
     'style': 'full',
     'bar_width': 30,
+    'icon_width': 3,
     'show_score': True,
     'show_diff': True,
     'ally_color': COLOR_UP,

@@ -4,7 +4,7 @@ from ....core.compat import is_int, is_number, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
 from ....core.shells import SHELL_CODES
 from ....core.templates import render
-from .constants import MAX_ENTRIES, MERGE_WINDOW_S, OUTCOMES
+from .constants import MAX_ENTRIES, MERGE_WINDOW_S, OUTCOME_COLORS, OUTCOMES
 
 
 class HitLog(object):
@@ -115,8 +115,24 @@ class HitLog(object):
         return [groups[target] for target in reversed(order[-limit:])]
 
 
-def line_values(entry, translate, index):
+# VEHICLE_HEALTH fires for any health change of a visible vehicle; its payload is (newHealth, attackerInfo,
+# attackReasonID) (RU 1.45 feedback_adaptor._setVehicleHealthChanged). Only the player's own hit may set "HP left".
+def own_shot_health(value, own_vehicle_id):
+    if not isinstance(value, (list, tuple)) or len(value) < 2 or own_vehicle_id is None:
+        return None
+    if getattr(value[1], 'vehicleID', None) != own_vehicle_id:
+        return None
+    return value[0]
+
+
+def outcome_color(outcome, palette):
+    colors = OUTCOME_COLORS.get(palette, OUTCOME_COLORS['classic'])
+    return colors[OUTCOMES.index(outcome)] if outcome in OUTCOMES else COLOR_MUTED
+
+
+def line_values(entry, translate, index, palette=None):
     return {
+        'c_outcome': outcome_color(entry.get('outcome'), palette),
         'index': index,
         'vehicle': entry.get('vehicle') or '',
         'outcome': translate('hlog_outcome_' + entry['outcome']),
@@ -138,6 +154,6 @@ def format_hit_log(log, settings, translate):
     rows = log.by_target(settings.get('lines')) if grouped else log.recent(settings.get('lines'))
     template = settings.get('line_template') or translate('hlog_target_template' if grouped else 'hlog_line_template')
     for index, entry in enumerate(rows):
-        text = render(template, line_values(entry, translate, index + 1)).strip()
+        text = render(template, line_values(entry, translate, index + 1, settings.get('palette'))).strip()
         lines.append(font(text, COLOR_MUTED, max(8, size - 2)))
     return '\n'.join(lines)

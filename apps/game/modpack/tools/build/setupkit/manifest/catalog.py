@@ -1,17 +1,26 @@
 """Reads and checks catalog/catalog.json.
 
 Every problem is collected, then reported at once as a CatalogError. Texts are shown by the manager and
-copied into МОСТ pages, so control characters other than a newline are refused.
+copied into МОСТ pages, so control characters other than a newline are refused. Entries with
+`kind: "dependency"` are third-party runtime mods, checked here and passed through to components.json.
 """
+import fnmatch
 import io
 import json
 import os
 import re
 
-from .model import ID_PATTERN, LANGUAGES, Catalog, CatalogEntry, Category, Localized, Preset, Preview
+from .model import (DEPENDENCY_KIND, ID_PATTERN, LANGUAGES, Author, Catalog, CatalogEntry, Category, Dependency, Licence, Localized, Preset,
+                    Preview)
 
 PREVIEW_EXTENSIONS = ('.svg', '.png')
 FORBIDDEN_TEXT = re.compile(r'[\x00-\x09\x0b-\x1f]')
+SHA256_PATTERN = re.compile(r'^[0-9a-f]{64}$')
+PACKAGE_ID_PATTERN = re.compile(r'^[a-z0-9]+(?:[._-][a-z0-9]+)+$')
+VERSION_PATTERN = re.compile(r'^\d+(?:\.\d+)*$')
+DEPENDENCY_EXTENSION = '.mtmod'
+DEPENDENCY_FIELDS = ('id', 'kind', 'packageId', 'version', 'file', 'title', 'description', 'author', 'licence', 'sourceUrl', 'sha256', 'size',
+                     'requiredBy', 'restartRequired')
 
 
 class CatalogError(ValueError):
@@ -95,6 +104,60 @@ class _Reader(object):
             dependencies=tuple(raw.get('dependencies', ())),
         )
 
+    def https(self, where, value):
+        if not isinstance(value, str) or not value.startswith('https://') or len(value) <= len('https://'):
+            self.fail(where, 'must be an https:// link, got %r' % (value,))
+            return str(value)
+        return value
+
+    def text(self, where, value):
+        if not isinstance(value, str) or not value.strip() or FORBIDDEN_TEXT.search(value):
+            self.fail(where, 'must be a non-empty single-line text')
+            return str(value)
+        return value
+
+    def sha256(self, where, value):
+        if not isinstance(value, str) or not SHA256_PATTERN.match(value):
+            self.fail(where, 'must be a lowercase 64-hex sha256')
+            return str(value)
+        return value
+
+    def dependency(self, index, raw):
+        where = 'components[%d]' % index
+        unknown = sorted(set(raw) - set(DEPENDENCY_FIELDS))
+        if unknown:
+            self.fail(where, 'a dependency has no %s (it is not our package)' % ', '.join(unknown))
+        author = raw.get('author') if isinstance(raw.get('author'), dict) else {}
+        licence = raw.get('licence') if isinstance(raw.get('licence'), dict) else {}
+        size = raw.get('size')
+        if isinstance(size, bool) or not isinstance(size, int) or size <= 0:
+            self.fail(where + '.size', 'must be the byte size of the release file')
+            size = 0
+        required_by = raw.get('requiredBy')
+        if not isinstance(required_by, list) or not required_by:
+            self.fail(where + '.requiredBy', 'list the ids of our components that need it')
+            required_by = []
+        restart = raw.get('restartRequired')
+        if not isinstance(restart, bool):
+            self.fail(where + '.restartRequired', 'must be true or false')
+        return Dependency(
+            id=self.ident(where, raw.get('id')),
+            kind=DEPENDENCY_KIND,
+            package_id=str(raw.get('packageId', '')),
+            version=str(raw.get('version', '')),
+            file=str(raw.get('file', '')),
+            title=self.localized(where + '.title', raw.get('title')),
+            description=self.localized(where + '.description', raw.get('description')),
+            author=Author(self.text(where + '.author.name', author.get('name')), self.https(where + '.author.url', author.get('url'))),
+            licence=Licence(self.text(where + '.licence.name', licence.get('name')), self.https(where + '.licence.url', licence.get('url')),
+                            self.sha256(where + '.licence.sha256', licence.get('sha256'))),
+            source_url=self.https(where + '.sourceUrl', raw.get('sourceUrl')),
+            sha256=self.sha256(where + '.sha256', raw.get('sha256')),
+            size=size,
+            required_by=tuple(str(item) for item in required_by),
+            restart_required=bool(restart),
+        )
+
 
 def _unique(reader, where, ids):
     seen = set()
@@ -108,14 +171,24 @@ def parse(raw, assets_dir):
     reader = _Reader(assets_dir)
     categories = tuple(reader.category(index, item) for index, item in enumerate(raw.get('categories', ())))
     presets = tuple(reader.preset(index, item) for index, item in enumerate(raw.get('presets', ())))
-    entries = tuple(reader.entry(index, item) for index, item in enumerate(raw.get('components', ())))
+    entries = []
+    dependencies = []
+    for index, item in enumerate(raw.get('components', ())):
+        kind = item.get('kind')
+        if kind == DEPENDENCY_KIND:
+            dependencies.append(reader.dependency(index, item))
+        elif kind is not None:
+            reader.fail('components[%d]' % index, 'unknown kind %r (ours have none, third-party mods are "%s")' % (kind, DEPENDENCY_KIND))
+        else:
+            entries.append(reader.entry(index, item))
     catalog = Catalog(
         categories=categories,
         presets=presets,
-        components=entries,
+        components=tuple(entries),
         owned_patterns=tuple(raw.get('ownedPatterns', ())),
         fallback_category=raw.get('fallbackCategory', ''),
         fallback_fair_play=reader.localized('fallbackFairPlay', raw.get('fallbackFairPlay')),
+        dependencies=tuple(dependencies),
     )
     _check(reader, catalog)
     if reader.problems:
@@ -129,7 +202,7 @@ def _check(reader, catalog):
     entry_ids = [entry.id for entry in catalog.components]
     _unique(reader, 'categories', category_ids)
     _unique(reader, 'presets', preset_ids)
-    _unique(reader, 'components', entry_ids)
+    _unique(reader, 'components', entry_ids + [dependency.id for dependency in catalog.dependencies])
     custom = [preset.id for preset in catalog.presets if preset.custom]
     if len(custom) != 1 or not catalog.presets or not catalog.presets[-1].custom:
         reader.fail('presets', 'exactly one preset must be custom, and it must come last')
@@ -154,6 +227,33 @@ def _check(reader, catalog):
         for dependency in entry.dependencies:
             if dependency not in entry_ids or dependency == entry.id:
                 reader.fail(where, 'unknown dependency %r' % dependency)
+    for dependency in catalog.dependencies:
+        _check_dependency(reader, catalog, entry_ids, dependency)
+
+
+def our_prefixes(owned_patterns):
+    """The package id prefixes of our packages: `net.triotmetki.*.mtmod` -> `net.triotmetki.`."""
+    return tuple(sorted(set(pattern.split('*', 1)[0] for pattern in owned_patterns if '*' in pattern)))
+
+
+def _check_dependency(reader, catalog, entry_ids, dependency):
+    where = 'components.%s' % dependency.id
+    if not PACKAGE_ID_PATTERN.match(dependency.package_id):
+        reader.fail(where, 'packageId %r is not a package id' % dependency.package_id)
+    if any(dependency.package_id.lower().startswith(prefix.lower()) for prefix in our_prefixes(catalog.owned_patterns)):
+        reader.fail(where, 'packageId %s is ours: a dependency is a third-party mod' % dependency.package_id)
+    if any(fnmatch.fnmatch(dependency.file.lower(), pattern.lower()) for pattern in catalog.owned_patterns):
+        reader.fail(where, 'file %s matches ownedPatterns: uninstall would take it for ours' % dependency.file)
+    if not VERSION_PATTERN.match(dependency.version):
+        reader.fail(where, 'version %r is not a release version' % dependency.version)
+    expected = '%s_%s%s' % (dependency.package_id, dependency.version, DEPENDENCY_EXTENSION)
+    if dependency.file != expected:
+        reader.fail(where, 'file must be %s, got %s' % (expected, dependency.file))
+    if len(set(dependency.required_by)) != len(dependency.required_by):
+        reader.fail(where, 'requiredBy lists a component twice')
+    for component_id in dependency.required_by:
+        if component_id not in entry_ids:
+            reader.fail(where, 'requiredBy: unknown component %r' % component_id)
 
 
 def load(path, assets_dir):

@@ -22,9 +22,19 @@ def native_headers(headers):
     return dict((to_native(key), to_native(value)) for key, value in (headers or {}).items())
 
 
+def _sized_headers(headers, body):
+    if not hasattr(body, 'read'):
+        return headers
+    body.seek(0)
+    sized = dict(headers or {})
+    sized['Content-Length'] = str(len(body))
+    return sized
+
+
 def perform(method, url, headers, body, timeout):
-    """One blocking HTTP exchange: (status, body, headers); status NETWORK_ERROR when nothing came back."""
-    request = _urlrequest.Request(to_native(url), data=body, headers=native_headers(headers))
+    """One blocking HTTP exchange: (status, body, headers); status NETWORK_ERROR when nothing came back.
+    `body` is bytes or a sized file-like object (body.StoppableBody), sent from its start in blocks."""
+    request = _urlrequest.Request(to_native(url), data=body, headers=native_headers(_sized_headers(headers, body)))
     request.get_method = lambda: method
     try:
         response = _urlrequest.urlopen(request, timeout=timeout)

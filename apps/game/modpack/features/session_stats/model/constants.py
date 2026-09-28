@@ -2,6 +2,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 REGULAR_BONUS_TYPE = 1
 
+# contract/session-share.schema.json (not served yet, README TODO).
+SHARE_PATH = '/mod/me/session-share'
+SHARE_SEND_PATH = '/mod/me/session-share/send'
+CHANNELS = ('telegram', 'discord')
+BOTH_CHANNELS = 'both'
+SHARE_STATE_KEY = 'session_share_synced'
+SHARE_RETRY_S = 300
+ACTION_SHARE = 'share_now'
+
 COUNTERS = (
     'battles',
     'wins',

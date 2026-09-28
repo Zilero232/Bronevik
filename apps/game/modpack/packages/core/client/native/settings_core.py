@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...log import log_exception
-from ...native_settings import merge_value
+from ...native_settings import merge_value, write_settings
 from ..game import service
 
 
@@ -30,20 +30,14 @@ def read_settings(names):
 
 
 def apply_settings(values):
-    """Writes settings the way the game's settings window does (apply, confirm, store). False without a core."""
+    """Writes settings the way the game's settings window does (apply, store, confirm, clear). False without a core."""
     core = settings_core()
     if core is None:
         return False
     if not values:
         return True
     try:
-        confirmators = core.applySettings(dict(values))
-        confirm = getattr(core, 'confirmChanges', None)
-        if confirm is not None:
-            confirm(confirmators)
-        apply_storages = getattr(core, 'applyStorages', None)
-        if apply_storages is not None:
-            apply_storages(False)
+        write_settings(core, values)
     except Exception:
         log_exception('apply client settings')
         return False

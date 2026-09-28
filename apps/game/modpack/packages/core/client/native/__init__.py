@@ -3,5 +3,6 @@ settings window reads and writes. Setting names are the features' business and U
 an unknown name reads as missing and is never written."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from .account_settings import apply_account_changed, read_account_settings  # noqa: F401
 from .component import NativeSettingsComponent  # noqa: F401
 from .settings_core import apply_changed, apply_settings, read_settings, settings_core  # noqa: F401

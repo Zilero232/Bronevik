@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 
 import type { ClientSize } from '../../../../../shared/api/gameface';
 import type { UiPanel } from '../../../../../shared/api/protocol';
-import type { Drag, LiveRect } from '../../../lib/geometry';
+import type { Drag, LiveRect } from '../../../../../shared/lib/hud-geometry';
 import type { KeyPress, PointerPress } from './use-hud-editor.types';
 
 import { gameface } from '../../../../../shared/api/gameface';
 import { send } from '../../../../../shared/api/protocol';
+import { dragRect, dragTo, moveMessage, panelRect, stageBox, stageScale } from '../../../../../shared/lib/hud-geometry';
 import { createThrottle } from '../../../../../shared/lib/throttle';
 import { HUD_EDITOR } from '../../../config';
-import { dragRect, dragTo, moveMessage, panelRect, stageBox, stageScale } from '../../../lib/geometry';
 
 export const useHudEditor = (panels: UiPanel[]) => {
   const stageRef = useRef<HTMLDivElement>(null);

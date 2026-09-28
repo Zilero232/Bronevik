@@ -1,0 +1,19 @@
+{
+  "account_id": 12345678,
+  "replays": [
+    {
+      "id": "0f8e2d4c-6b1a-4f3e-9d2c-7a5b3c1d9e8f",
+      "status": "parsed",
+      "highlights": {
+        "accuracy": 83.3,
+        "damage": 2150,
+        "penetrations": 7
+      }
+    },
+    {
+      "id": "5a4b3c2d-1e0f-4a9b-8c7d-6e5f4a3b2c1d",
+      "status": "parsing",
+      "highlights": null
+    }
+  ]
+}

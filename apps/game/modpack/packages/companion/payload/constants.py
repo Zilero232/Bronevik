@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 REALM = 'RU'
-MAX_PLATOON_MATES = 2
+MAX_PLATOON_SIZE = 3
 MAX_ACHIEVEMENTS = 64
 MAX_ACHIEVEMENT_NAME = 64
 MASTERY_BADGES = {4: 'markOfMastery', 3: 'markOfMasteryI', 2: 'markOfMasteryII', 1: 'markOfMasteryIII'}

@@ -1,73 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int, is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number
 from ....core.templates import render
-from .constants import BAR_CHAR
-
-# Fair play: only what the client already shows. Max HP from the arena data behind the player panels, current HP
-# from the health updates the client receives (an unseen enemy keeps its last known HP, as on its marker).
-
-
-class TeamHp(object):
-
-    def __init__(self, own_team):
-        self.own_team = own_team
-        self.vehicles = {}
-
-    def add(self, vehicle_id, team, max_hp, alive=True):
-        if not is_int(vehicle_id) or not is_int(team) or not is_number(max_hp) or max_hp <= 0:
-            return False
-        known = self.vehicles.get(vehicle_id)
-        hp = known['hp'] if known is not None else int(max_hp)
-        self.vehicles[vehicle_id] = {'team': team, 'max': int(max_hp), 'hp': min(hp, int(max_hp)), 'alive': bool(alive)}
-        if not alive:
-            self.vehicles[vehicle_id]['hp'] = 0
-        return True
-
-    def set_health(self, vehicle_id, hp):
-        vehicle = self.vehicles.get(vehicle_id)
-        if vehicle is None or not is_number(hp):
-            return False
-        hp = max(0, min(vehicle['max'], int(hp)))
-        if hp == vehicle['hp']:
-            return False
-        vehicle['hp'] = hp
-        return True
-
-    def kill(self, vehicle_id):
-        vehicle = self.vehicles.get(vehicle_id)
-        if vehicle is None or not vehicle['alive']:
-            return False
-        vehicle['alive'] = False
-        vehicle['hp'] = 0
-        return True
-
-    def totals(self, allies):
-        hp = max_hp = alive = count = 0
-        for vehicle in self.vehicles.values():
-            if (vehicle['team'] == self.own_team) != allies:
-                continue
-            count += 1
-            max_hp += vehicle['max']
-            hp += vehicle['hp']
-            alive += 1 if vehicle['alive'] else 0
-        return {'hp': hp, 'max': max_hp, 'alive': alive, 'count': count}
-
-    def values(self):
-        allies = self.totals(True)
-        enemies = self.totals(False)
-        return {
-            'allies_hp': allies['hp'],
-            'allies_max': allies['max'],
-            'allies_alive': allies['alive'],
-            'enemies_hp': enemies['hp'],
-            'enemies_max': enemies['max'],
-            'enemies_alive': enemies['alive'],
-            'allies_frags': enemies['count'] - enemies['alive'],
-            'enemies_frags': allies['count'] - allies['alive'],
-            'diff': allies['hp'] - enemies['hp'],
-        }
+from ....core.teams import TeamHp  # noqa: F401
+from .constants import BAR_CHAR, STYLE_ICONS
 
 
 def bar(value, maximum, width, color):
@@ -78,6 +14,26 @@ def bar(value, maximum, width, color):
 
 def signed(value):
     return ('+' if value > 0 else '') + format_number(value)
+
+
+def icon_row(vehicles, width, color):
+    return u' '.join(bar(vehicle['hp'], vehicle['max'], width, color) for vehicle in vehicles)
+
+
+def format_icons(teams, settings):
+    width = settings.get('icon_width')
+    values = teams.values()
+    parts = [icon_row(teams.team(True), width, settings.get('ally_color'))]
+    if settings.get('show_score'):
+        parts.append(font('%d : %d' % (values['allies_frags'], values['enemies_frags']), COLOR_NEUTRAL))
+    parts.append(icon_row(teams.team(False), width, settings.get('enemy_color')))
+    return font(u'   '.join(parts), COLOR_NEUTRAL, settings.get('font_size'))
+
+
+def format_panel(teams, settings, translate):
+    if settings.get('style') == STYLE_ICONS and not settings.get('template'):
+        return format_icons(teams, settings)
+    return format_team_hp(teams.values(), settings, translate)
 
 
 def format_team_hp(values, settings, translate):

@@ -8,12 +8,16 @@ In the client every package lands in the same tree, res/scripts/client/gui/mods/
     mod_otmetki_ui.py, otmetki/ui/**                                      <- ui (packages/ui)
 
 plus, for the ui, res/gui/gameface/mods/triotmetki/ui/* (the built ui-web page) and
-res/mods/configs/res_map/*.json (its OpenWG Gameface resource registration).
+res/mods/configs/res_map/*.json (its OpenWG Gameface resource registration); and, for a feature with
+asset sets in assets/assets.json (images, sounds), their files, licences and THIRD_PARTY_NOTICES.md
+(asset_sets.py).
 
 so the split packages never ship the same file, and the single package is their union.
 """
 import os
 import re
+
+import asset_sets
 
 MODPACK_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PACKAGES_DIR = os.path.join(MODPACK_DIR, 'packages')
@@ -141,7 +145,7 @@ def extension_package(name, core, companion):
 def feature_package(feature_id, core, companion):
     base = os.path.join(FEATURES_DIR, feature_id)
     package_id, name, version = read_constants(os.path.join(base, '__init__.py'), ('PACKAGE_ID', 'PACKAGE_NAME', 'VERSION'))
-    files = entries(base) + list(tree(base, PACKAGE_ROOT + '/features/' + feature_id))
+    files = entries(base) + list(tree(base, PACKAGE_ROOT + '/features/' + feature_id)) + asset_sets.feature_files(feature_id)
     return Package(feature_id, package_id, name, version, name + ' (triotmetki.ru)', files, [core, companion])
 
 

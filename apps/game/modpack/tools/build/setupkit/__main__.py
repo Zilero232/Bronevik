@@ -48,7 +48,7 @@ def generate(args):
     for warning in warnings:
         print('WARNING: %s' % warning)
     write_text(os.path.join(args.out, 'components.json'), json.dumps(manifest.to_json(), ensure_ascii=False, indent=2) + '\n')
-    print('Wrote %s (%d components)' % (os.path.join(args.out, 'components.json'), len(manifest.components)))
+    print('Wrote %s (%d components, %d dependencies)' % (os.path.join(args.out, 'components.json'), len(manifest.components), len(manifest.dependencies)))
     if not args.skip_artwork:
         from setupkit.artwork.render import render_previews
         print('Rendered %d previews' % len(render_previews(manifest, catalog, ASSETS_DIR, args.out)))

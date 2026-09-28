@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<!-- (c) 2026 Три отметки. Original artwork; reference-only study of popular packs, nothing traced. -->
+<defs>
+<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ff7a1a" stop-opacity="0.55"/><stop offset="0.6" stop-color="#ff7a1a" stop-opacity="0.18"/><stop offset="1" stop-color="#ff7a1a" stop-opacity="0"/></radialGradient>
+<linearGradient id="hot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="0.55" stop-color="#ff9a3d"/><stop offset="1" stop-color="#e8650a"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5d27a"/><stop offset="0.5" stop-color="#e8b84a"/><stop offset="1" stop-color="#c8912a"/></linearGradient>
+</defs>
+<circle cx="64" cy="64" r="63" fill="url(#glow)"/>
+<circle cx="64" cy="64" r="52" fill="#18181b" stroke="#0e0e10" stroke-width="10"/>
+<circle cx="64" cy="64" r="52" fill="none" stroke="url(#hot)" stroke-width="5"/>
+<path d="M30 88L46 40H58L42 88Z" fill="url(#gold)" stroke="#0e0e10" stroke-width="3" stroke-linejoin="round"/>
+<path d="M53 88L69 40H81L65 88Z" fill="url(#hot)" stroke="#0e0e10" stroke-width="3" stroke-linejoin="round"/>
+<path d="M76 88L92 40H104L88 88Z" fill="url(#gold)" stroke="#0e0e10" stroke-width="3" stroke-linejoin="round"/>
+</svg>

@@ -5,15 +5,19 @@ import time
 
 from ....core.client.component import FeatureComponent
 from ....core.client.game import map_label, vehicle_short_name
+from ....core.client.me import can_read, post_signed, signed_body
 from ....core.client.replays import replay_dir
+from ....core.errors import ReasonError
 from ....core.events import EVENT_REPLAY_UPLOADED
 from ....core.log import log
+from ....core.me import OK_STATUS
 from ....core.storage import JsonFile
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import (ACTION_DELETE, ACTION_FOLDER, ACTION_REFRESH, ACTION_RENAME, ERROR_EXISTS, ERROR_MISSING, INDEX_FILE, AutoNamer, HeaderCache,
-                     ReplayActionError, UploadedIndex, build_page, find_own, name_values, own_replays, page_actions, rename_target)
-from ..model.constants import AUTO_NAME_CHECK_S
+from ..model import (ACTION_DELETE, ACTION_FOLDER, ACTION_REFRESH, ACTION_RENAME, ERROR_EXISTS, ERROR_MISSING, INDEX_FILE, AnalysisWatch, AutoNamer,
+                     HeaderCache, ReplayActionError, UploadedIndex, analysis_notice, build_page, find_own, name_values, own_replays, page_actions,
+                     parse_statuses, rename_target)
+from ..model.constants import ANALYSIS_PATH, ANALYSIS_POLL_S, AUTO_NAME_CHECK_S, NOT_SERVED_STATUS
 from ..settings import SCHEMA, SWITCH
 
 class ReplayManager(FeatureComponent):
@@ -24,6 +28,10 @@ class ReplayManager(FeatureComponent):
         self.index = None
         self.namer = AutoNamer()
         self.checked_at = 0.0
+        self.analysis = AnalysisWatch()
+        self.polled_at = 0.0
+        self.polling = False
+        self.served = True
         app.bus.on('account', self._on_account)
         app.bus.on(EVENT_REPLAY_UPLOADED, self._on_uploaded)
         app.bus.on('battle_event', self._on_battle_event)
@@ -33,10 +41,12 @@ class ReplayManager(FeatureComponent):
 
     def _on_account(self, account_id):
         self.index = UploadedIndex(JsonFile(os.path.join(self.app.config_dir, INDEX_FILE % account_id)))
+        self.analysis = AnalysisWatch()
 
     def _on_uploaded(self, arena_unique_id, replay_id):
         if self.index is not None:
             self.index.add(arena_unique_id, replay_id)
+        self.analysis.add(replay_id, time.time())
 
     def _on_battle_event(self, event, now):
         if not self.enabled() or not self.settings.get('auto_rename'):
@@ -47,6 +57,7 @@ class ReplayManager(FeatureComponent):
         self.namer.queue(event, values, time.time())
 
     def _on_tick(self, now):
+        self._poll_analysis(now)
         if not self.namer.pending or now - self.checked_at < AUTO_NAME_CHECK_S or not self.enabled_in_hangar():
             return
         self.checked_at = now
@@ -55,6 +66,34 @@ class ReplayManager(FeatureComponent):
                 self._rename(replay, name)
             except (ReplayActionError, IOError, OSError):
                 log('replay manager: auto name %s -> %s failed' % (replay['name'], name))
+
+    def _poll_analysis(self, now):
+        if not self.served or self.polling or now - self.polled_at < ANALYSIS_POLL_S or not self.enabled_in_hangar():
+            return
+        if not self.settings.get('notify_analysis') or not can_read(self.app):
+            return
+        replay_ids = self.analysis.due(now)
+        if not replay_ids:
+            return
+        try:
+            payload = signed_body(self.app, replay_ids=replay_ids)
+        except ReasonError as error:
+            log('replay analysis not requested: %s' % error.reason)
+            return
+        self.polled_at = now
+        self.polling = True
+        account_id = self.app.account_id
+
+        def done(status, data, retry_after):
+            self.polling = False
+            if status == NOT_SERVED_STATUS:
+                self.served = False
+            if status != OK_STATUS or account_id != self.app.account_id:
+                return
+            for replay_id, highlights in self.analysis.apply(parse_statuses(data, account_id)):
+                self.app.ui.notify(analysis_notice(highlights, self.app.translate))
+
+        post_signed(self.app, ANALYSIS_PATH, payload, done)
 
     def _replays(self):
         return own_replays(replay_dir(), self.app.account_id, self.cache)
@@ -65,7 +104,8 @@ class ReplayManager(FeatureComponent):
     def ui_page(self):
         if not self.enabled_in_hangar() or self.index is None:
             return None
-        return build_page(self._replays(), self.index, self.app.translate, self.settings.get('max_rows'), self.settings.get('uploaded_only'))
+        return build_page(self._replays(), self.index, self.app.translate, self.settings.get('max_rows'), self.settings.get('uploaded_only'),
+                          self.settings, time.time(), self.analysis.parsed)
 
     def ui_action(self, action, row=None, value=None):
         if not self.enabled_in_hangar():

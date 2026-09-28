@@ -109,6 +109,24 @@ class TextsTest(unittest.TestCase):
         self.assertIn(texts.LABELS['en']['no_changes'], english)
         self.assertNotIn(texts.LABELS['en']['data'], english)
 
+    def test_description_lists_third_party_mods_as_external_requirements(self):
+        panel = self.manifest.component('marks_panel')
+        russian = texts.description(panel, self.manifest, 'ru', '1.45.0.0', FIRST)
+        english = texts.description(panel, self.manifest, 'en', '1.45.0.0', FIRST)
+        self.assertIn(texts.LABELS['ru']['external'], russian)
+        self.assertIn(u'- OpenWG Gameface 1.2.2 (`net.openwg.gameface_1.2.2.mtmod`, лицензия MIT, автор OpenWG): https://gitlab.com/openwg/wot.gameface',
+                      russian)
+        self.assertIn('- GUIFlash 0.6.6 (`gambiter.guiflash_0.6.6.mtmod`, MIT licence', english)
+        self.assertIn('`net.triotmetki.core` 0.1.0', english)
+        self.assertNotIn(texts.LABELS['en']['external'], texts.description(self.manifest.component('core'), self.manifest, 'en', '1.45.0.0', None))
+
+    def test_external_dependency_list_names_the_upstream(self):
+        items = texts.external_dependency_list(self.manifest.component('marks_panel'), self.manifest)
+        self.assertEqual([(item['id'], item['packageId'], item['version']) for item in items],
+                         [('openwg_gameface', 'net.openwg.gameface', '1.2.2'), ('guiflash', 'gambiter.guiflash', '0.6.6')])
+        self.assertEqual(items[1]['url'], 'https://github.com/CH4MPi/GUIFlash')
+        self.assertEqual(texts.external_dependency_list(self.manifest.component('companion'), self.manifest), [])
+
     def test_dependency_list_carries_titles(self):
         items = texts.dependency_list(self.manifest.component('marks_panel'), self.manifest)
         self.assertEqual([item['id'] for item in items], ['core', 'companion'])

@@ -3,17 +3,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 import BattleReplay
-import BigWorld
 
 from ....core.client.game import map_name, player_tank_id, vehicle_info
-from ....core.log import log, safe
+from ....core.log import log
 from ...loadout import LoadoutTracker
 from ...loadout.client import read_current_loadout
 from ...marks.client.dossier import achievement_name, current_vehicle_id
 from ...payload import PayloadError, build_battle_event, build_battle_start_event, build_queue_event
 from ...queue_timer import QueueTimer
 from ...shots.client import ShotTracker
-from ..constants import RESULTS_POLL_ATTEMPTS, RESULTS_POLL_EVERY_S, SEEN_ARENAS_LIMIT
+from ..constants import PLAYED_ARENAS_LIMIT, RESULTS_POLL_ATTEMPTS, RESULTS_POLL_EVERY_S, SEEN_ARENAS_LIMIT
+from .results import POSTED_EVENT, cached_results, posted_arena_id, results_service
 
 
 class BattleCapture(object):
@@ -29,7 +29,9 @@ class BattleCapture(object):
         self.shots_by_arena = {}
         self.shot_arena = None
         self.pending_arenas = []
+        self.played_arenas = []
         self.last_results_poll = 0.0
+        self.results_service = None
 
     def _dump_seen_arenas(self):
         self.seen_arenas = self.seen_arenas[-SEEN_ARENAS_LIMIT:]
@@ -67,6 +69,8 @@ class BattleCapture(object):
             self.queue_wait_by_arena[arena_id] = wait
         if arena_id not in [entry[0] for entry in self.pending_arenas]:
             self.pending_arenas.append([arena_id, 0])
+        if arena_id not in self.played_arenas:
+            self.played_arenas = (self.played_arenas + [arena_id])[-PLAYED_ARENAS_LIMIT:]
         if self.app.config.is_enabled('send_shots'):
             self.shot_arena = arena_id
             self.shot_tracker.start()
@@ -81,25 +85,41 @@ class BattleCapture(object):
         if is_player_vehicle and not BattleReplay.isPlaying():
             self.handle_results(results)
 
+    def on_hangar(self):
+        if self.results_service is not None:
+            return
+        results = results_service()
+        if results is not None and getattr(results, POSTED_EVENT, None) is not None:
+            self.app.hooks.add(results, POSTED_EVENT, self.on_result_posted)
+            self.results_service = results
+
+    def on_result_posted(self, reusable_info, *args):
+        arena_id = posted_arena_id(reusable_info)
+        if arena_id in self.played_arenas and arena_id not in self.seen_arenas:
+            self._take_cached(arena_id)
+
     def poll_pending_results(self, now):
         if not self.pending_arenas or now - self.last_results_poll < RESULTS_POLL_EVERY_S:
-            return
-        cache = getattr(BigWorld.player(), 'battleResultsCache', None)
-        if cache is None:
             return
         self.last_results_poll = now
         entry = self.pending_arenas.pop(0)
         entry[1] += 1
         if entry[1] < RESULTS_POLL_ATTEMPTS:
             self.pending_arenas.append(entry)
-        arena_id = entry[0]
+        if not self._take_cached(entry[0]) and entry[1] >= RESULTS_POLL_ATTEMPTS:
+            self._forget(entry[0])
 
-        @safe
-        def done(code, results):
-            if code >= 0 and isinstance(results, dict) and results:
-                self.handle_results(results)
+    def _take_cached(self, arena_id):
+        results = cached_results(arena_id)
+        if not isinstance(results, dict) or not results:
+            return False
+        self.handle_results(results)
+        return True
 
-        cache.get(arena_id, done)
+    def _forget(self, arena_id):
+        self.shots_by_arena.pop(arena_id, None)
+        self.queue_wait_by_arena.pop(arena_id, None)
+        self.loadouts.take(arena_id, None)
 
     def handle_results(self, results):
         app = self.app

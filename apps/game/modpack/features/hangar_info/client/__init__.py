@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 from ....core.client.component import FeatureComponent
+from ....core.client.game import selected_vehicle
 from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.log import safe
 from .. import FEATURE_ID
@@ -10,7 +11,7 @@ from ..i18n import STRINGS
 from ..model import format_info, layout_of
 from ..settings import SCHEMA, SWITCH
 from .constants import HANGAR_PANEL, PING_REQUEST_S
-from .reads import online, ping, request_ping, server_name
+from .reads import accelerated_training, battle_tiers, crew_next_skill, online, ping, request_ping, server_name
 
 
 class HangarInfo(FeatureComponent):
@@ -44,7 +45,19 @@ class HangarInfo(FeatureComponent):
             self.pinged_at = now
             request_ping()
         cluster, region = online() if self.settings.get('show_online') else (None, None)
-        return {'server': server_name(), 'ping': ping(), 'online': cluster, 'region_online': region}
+        vehicle = selected_vehicle()
+        crew_xp, crew_role = crew_next_skill(vehicle) if self.settings.get('show_crew') and vehicle is not None else (None, None)
+        return {
+            'server': server_name(),
+            'ping': ping(),
+            'online': cluster,
+            'region_online': region,
+            'vehicle': getattr(vehicle, 'shortUserName', None) or getattr(vehicle, 'userName', None),
+            'tiers': battle_tiers(vehicle) if self.settings.get('show_tiers') and vehicle is not None else None,
+            'crew_xp': crew_xp,
+            'crew_role': crew_role,
+            'accelerated': accelerated_training(vehicle) if self.settings.get('show_training') else None,
+        }
 
     @safe
     def render(self, now):

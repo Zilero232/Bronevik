@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...core.compat import string_types
 from ...core.settings import Schema, Settings
-from .constants import CHOICES, DEFAULTS, DEFAULT_SERVER_URL, FEATURES, LIMITS, LOCAL_HOSTS, OPT_IN_FEATURES  # noqa: F401
+from .constants import CHOICES, DEFAULTS, DEFAULT_SERVER_URL, FEATURES, LIMITS, LOCAL_HOSTS, OPT_IN_FEATURES, SHARE_CHANNELS  # noqa: F401
 
 
 def is_valid_server_url(url):

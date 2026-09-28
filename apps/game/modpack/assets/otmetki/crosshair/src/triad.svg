@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<!-- (c) 2026 Три отметки. Original artwork; reference-only study of popular packs, nothing traced. -->
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc56b"/><stop offset="1" stop-color="#ff7a1a"/></linearGradient></defs>
+<path d="M22 84L38 44M90 84L106 44" stroke="#0e0e10" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="13"/>
+<path d="M22 84L38 44M90 84L106 44" stroke="url(#g)" stroke-width="7" stroke-linecap="round"/>
+<path d="M58 78L70 50" stroke="#0e0e10" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="11"/>
+<path d="M58 78L70 50" stroke="url(#g)" stroke-width="5" stroke-linecap="round"/>
+<circle cx="64" cy="64" r="5.5" fill="#0e0e10"/>
+<circle cx="64" cy="64" r="3.3" fill="#f2f2f3"/>
+</svg>

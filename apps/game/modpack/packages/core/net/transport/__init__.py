@@ -2,5 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .constants import DEFAULT_TIMEOUT_S, NETWORK_ERROR  # noqa: F401
+from .body import StoppableBody, TransferStopped  # noqa: F401
 from .exchange import SyncTransport, ThreadTransport, native_headers, perform  # noqa: F401
+from .headers import response_headers  # noqa: F401
 from .runner import BackgroundRunner  # noqa: F401

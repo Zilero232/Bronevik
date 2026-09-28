@@ -11,6 +11,7 @@ from typing import Optional, Tuple
 SCHEMA_VERSION = 1
 LANGUAGES = ('ru', 'en')
 ID_PATTERN = re.compile(r'^[a-z][a-z0-9_]*$')
+DEPENDENCY_KIND = 'dependency'
 
 
 @dataclass(frozen=True)
@@ -56,6 +57,42 @@ class CatalogEntry:
 
 
 @dataclass(frozen=True)
+class Author:
+    name: str
+    url: str
+
+
+@dataclass(frozen=True)
+class Licence:
+    name: str
+    url: str
+    sha256: str
+
+
+@dataclass(frozen=True)
+class Dependency:
+    """A third-party runtime mod (`kind: "dependency"`): not our package, passed through to components.json as is.
+
+    The manager downloads `source_url` only when the player has no copy, checks `sha256` and `size`, keeps the
+    licence text from `licence.url` (checked by `licence.sha256`) and ticks it when a `required_by` id is selected.
+    """
+    id: str
+    kind: str
+    package_id: str
+    version: str
+    file: str
+    title: Localized
+    description: Localized
+    author: Author
+    licence: Licence
+    source_url: str
+    sha256: str
+    size: int
+    required_by: Tuple[str, ...]
+    restart_required: bool
+
+
+@dataclass(frozen=True)
 class Catalog:
     categories: Tuple[Category, ...]
     presets: Tuple[Preset, ...]
@@ -63,6 +100,7 @@ class Catalog:
     owned_patterns: Tuple[str, ...]
     fallback_category: str
     fallback_fair_play: Localized
+    dependencies: Tuple[Dependency, ...] = ()
 
     def entry(self, key):
         return next((entry for entry in self.components if entry.id == key), None)
@@ -101,13 +139,21 @@ class Manifest:
     presets: Tuple[Preset, ...]
     components: Tuple[Component, ...]
     owned_patterns: Tuple[str, ...]
+    dependencies: Tuple[Dependency, ...] = ()
     schema_version: int = SCHEMA_VERSION
 
     def component(self, component_id):
         return next((component for component in self.components if component.id == component_id), None)
 
+    def dependencies_of(self, component_id):
+        """The third-party runtime mods the component needs, in catalog order."""
+        return tuple(dependency for dependency in self.dependencies if component_id in dependency.required_by)
+
     def to_json(self):
-        return _to_json(self)
+        """components.json: the dependency entries follow our packages in `components`."""
+        data = _to_json(self)
+        data['components'] = data['components'] + data.pop('dependencies')
+        return data
 
 
 def camel(name):

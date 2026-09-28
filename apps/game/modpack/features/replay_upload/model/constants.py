@@ -40,6 +40,7 @@ class JobResult(Enum):
     BUSY = 'busy'
     TOO_LARGE = 'too_large'
     ERROR = 'error'
+    STOPPED = 'stopped'
 
 
 class Outcome(Enum):

@@ -6,8 +6,10 @@ export const UI_BUILD = {
   root: UI_WEB_ROOT,
   outDir: path.resolve(UI_WEB_ROOT, '../packages/ui/gameface'),
   buttonMode: 'button',
+  hudMode: 'hud',
   pages: {
-    settings: path.resolve(UI_WEB_ROOT, 'index.html')
+    settings: path.resolve(UI_WEB_ROOT, 'index.html'),
+    hud: path.resolve(UI_WEB_ROOT, 'hud.html')
   },
   button: {
     entry: path.resolve(UI_WEB_ROOT, 'src/app/button/main.tsx'),

@@ -8,3 +8,5 @@ from .listing import HeaderCache, find_own, own_replays  # noqa: F401
 from .auto_name import AutoNamer, name_values, render_name  # noqa: F401
 from .names import rename_target  # noqa: F401
 from .page import build_page, page_actions, row_of  # noqa: F401
+from .filters import arrange, matches  # noqa: F401
+from .analysis import AnalysisWatch, analysis_notice, parse_statuses  # noqa: F401

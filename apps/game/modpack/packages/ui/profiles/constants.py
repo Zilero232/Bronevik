@@ -5,7 +5,18 @@ FILE_VERSION = 1
 MAX_PROFILES = 12
 NAME_MAX_LENGTH = 40
 
-EXCLUDED_CONFIG_KEYS = ('server_url', 'bind_code', 'settings_action')
+EXCLUDED_CONFIG_KEYS = (
+    'server_url',
+    'bind_code',
+    'settings_action',
+    'settings_target',
+    'settings_anonymous_stats',
+    'share_settings',
+    'upload_replays',
+    'publish_replays',
+    'share_session_report',
+)
+EXCLUDED_CONFIG_PREFIXES = ('send_', 'settings_include_')
 
 CODE_PREFIX = 'TM1.'
 CODE_MAX_CHARS = 48 * 1024

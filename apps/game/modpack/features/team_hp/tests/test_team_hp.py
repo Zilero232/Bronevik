@@ -6,7 +6,7 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.team_hp.i18n import STRINGS
-from otmetki.features.team_hp.model import TeamHp, bar, format_team_hp
+from otmetki.features.team_hp.model import TeamHp, bar, format_panel, format_team_hp, icon_row
 from otmetki.features.team_hp.model.preview import preview_text
 from otmetki.features.team_hp.settings import SCHEMA
 
@@ -78,6 +78,24 @@ class FormatTest(unittest.TestCase):
         assert '2 500' not in bars
         custom = format_team_hp(values, Settings({'template': '{allies_hp}/{enemies_hp} ({diff})'}, SCHEMA), translator('en'))
         assert '2 500/1 200 (1 300)' in custom
+
+    def test_icon_row_style(self):
+        teams = battle()
+        teams.set_health(3, 600)
+        text = format_panel(teams, Settings({'style': 'icons', 'icon_width': 4}, SCHEMA), translator())
+        allies, score, enemies = text.split('   ')
+        assert allies.count('|') == 8 and enemies.count('|') == 8 and '1 : 0' in score
+        assert u'разница' not in text
+        assert [vehicle['max'] for vehicle in teams.team(False)] == [1200, 800]
+        assert icon_row([], 3, '#FFFFFF') == ''
+        assert '2 500' in format_panel(teams, Settings({'style': 'icons', 'template': '{allies_hp}'}, SCHEMA), translator())
+
+    def test_classes_and_order_from_the_arena(self):
+        teams = TeamHp(own_team=1)
+        teams.add(9, 2, 1000, kind='heavyTank')
+        teams.add(4, 2, 800, kind=5)
+        assert [vehicle['kind'] for vehicle in teams.team(False)] == ['heavyTank', None]
+        assert teams.is_ally(9) is False and teams.is_ally(77) is False
 
     def test_colors(self):
         settings = Settings({'ally_color': '#00ff00', 'enemy_color': 'blue'}, SCHEMA)

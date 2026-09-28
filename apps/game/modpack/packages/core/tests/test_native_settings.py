@@ -6,7 +6,7 @@ import struct
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.native_settings import NATIVE, from_table, native_values, tri_state
+from otmetki.core.native_settings import NATIVE, from_table, native_values, tri_state, write_settings
 from otmetki.core.replay_file import MAGIC, is_replay_name, read_header_from
 
 
@@ -19,6 +19,40 @@ class NativeSettingsTest(unittest.TestCase):
         fields = {'a': ('clientA', tri_state), 'b': ('clientB', from_table({'x': 1})), 'c': ('clientC', tri_state)}
         assert native_values({'a': 'off', 'b': 'x', 'z': 'on'}, fields) == {'clientA': False, 'clientB': 1}
         assert native_values({'a': NATIVE, 'b': NATIVE}, fields) == {}
+
+
+class RecordingCore(object):
+
+    def __init__(self):
+        self.calls = []
+
+    def applySettings(self, diff):
+        self.calls.append(('applySettings', diff))
+
+    def applyStorages(self, restartApproved, force=False):
+        self.calls.append(('applyStorages', restartApproved))
+        return ['confirmator']
+
+    def confirmChanges(self, confirmators):
+        self.calls.append(('confirmChanges', confirmators))
+
+    def clearStorages(self):
+        self.calls.append(('clearStorages',))
+
+
+class WriteSettingsTest(unittest.TestCase):
+
+    def test_order_of_the_game_settings_window(self):
+        core = RecordingCore()
+        write_settings(core, {'minimapAlpha': 40})
+        assert core.calls == [('applySettings', {'minimapAlpha': 40}), ('applyStorages', False), ('confirmChanges', ['confirmator']),
+                              ('clearStorages',)]
+
+    def test_no_confirmators_confirms_an_empty_list(self):
+        core = RecordingCore()
+        core.applyStorages = lambda restartApproved, force=False: None
+        write_settings(core, {'a': 1})
+        assert ('confirmChanges', []) in core.calls
 
 
 class ReplayHeaderTest(unittest.TestCase):

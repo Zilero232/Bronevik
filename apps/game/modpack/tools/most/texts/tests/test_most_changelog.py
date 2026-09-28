@@ -30,7 +30,7 @@ class ChangelogTest(unittest.TestCase):
     def setUp(self):
         self.changelog = texts.load_changelog(DEFAULT_CHANGELOG)
         self.versions = dict((package.key, package.version) for package in layout.split_packages('root_init.py'))
-        self.catalogued = [item['id'] for item in read_json(CATALOG)['components']]
+        self.catalogued = [item['id'] for item in read_json(CATALOG)['components'] if 'kind' not in item]
 
     def test_every_catalogued_component_has_an_entry_for_its_version(self):
         missing = ['%s %s' % (key, self.versions.get(key)) for key in self.catalogued

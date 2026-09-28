@@ -1,31 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.me.constants import (MAX_RETRY_S, MAX_TANKS, RATING_TIERS, REFRESH_AFTER_BATTLE_S, RETRY_AFTER_ERROR_S,  # noqa: F401
+                                   RETRY_AFTER_LIMIT_S, TANKS_PATH)
+
 OVERVIEW_PATH = '/mod/me/overview'
-TANKS_PATH = '/mod/me/tanks'
 SITE_PATH = '/me/analytics'
 
-# contract/ratings.schema.json: tanksRequest.tank_ids maxItems, the same as MOD_RATINGS.maxTanks on the server.
-MAX_TANKS = 100
-MAX_MARKS = 3
-MAX_MASTERY = 4
-
 OVERVIEW_KEY = 'overview'
-TANK_KEY = 'tank:%d'
-
-# The ingest flush runs every 15 s in the hangar; the live session on the site is updated only then.
-REFRESH_AFTER_BATTLE_S = 20.0
-RETRY_AFTER_ERROR_S = 120.0
-RETRY_AFTER_LIMIT_S = 60.0
-MAX_RETRY_S = 1800.0
-
-AUTH_STATUSES = (401, 403)
-RATE_LIMITED_STATUS = 429
 
 ACTION_REFRESH = 'refresh'
 ACTION_SITE = 'site'
-
-RATING_TIERS = ('very_bad', 'bad', 'below_avg', 'avg', 'good', 'very_good', 'great', 'unicum', 'super_unicum')
 
 # One colour per tier of the site's rating scale (RATING_TIERS in @otmetki/ratings), worst to best, XVM-style.
 TIER_COLORS = {
@@ -50,4 +35,3 @@ METRIC_SEPARATOR = u' · '
 STAR = u'★'
 TITLE_SIZE_STEP = 2
 SESSION_RATINGS = ('wn8', 'brone_index')
-TANK_RATINGS = ('wn8',)

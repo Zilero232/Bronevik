@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'notification_filter'
 PACKAGE_ID = 'net.triotmetki.notification_filter'
 PACKAGE_NAME = 'Three Marks: notification filter'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 
 def create(app):

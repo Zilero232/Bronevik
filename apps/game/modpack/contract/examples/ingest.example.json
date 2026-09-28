@@ -88,8 +88,7 @@
       },
       "winner_team": 1,
       "platoon": {
-        "size": 2,
-        "mates": [23456789]
+        "size": 2
       },
       "shots": [
         {
@@ -119,14 +118,6 @@
       "occurred_at": 1790000600,
       "tank_id": 1,
       "type": "moe_snapshot"
-    },
-    {
-      "battle_count": 1843,
-      "damage_better_than_n_percent": [512, 1020, 1488, 1900, 2310],
-      "event_id": "b3f1c2d4e5f60718293a4b5c6d7e8f91",
-      "occurred_at": 1790000610,
-      "tank_id": 1,
-      "type": "moe_distribution"
     },
     {
       "event_id": "c3f1c2d4e5f60718293a4b5c6d7e8f92",

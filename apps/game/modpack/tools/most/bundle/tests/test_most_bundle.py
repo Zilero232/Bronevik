@@ -54,6 +54,7 @@ class BundleTest(unittest.TestCase):
         self.assertTrue(os.listdir(os.path.join(folder, 'previews')))
         submission = read_json(os.path.join(folder, 'submission.json'))
         self.assertEqual([item['id'] for item in submission['dependencies']], ['core', 'companion'])
+        self.assertEqual([item['id'] for item in submission['externalDependencies']], ['openwg_gameface', 'guiflash'])
         self.assertTrue(submission['forumTitle']['ru'].startswith('[1.45.0.0] '))
         self.assertEqual(len(submission['sha256']), 64)
         with io.open(os.path.join(folder, 'changelog.md'), encoding='utf-8') as handle:

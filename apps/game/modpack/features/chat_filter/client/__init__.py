@@ -49,6 +49,9 @@ class ChatFilterFeature(FeatureComponent):
             log('chat filter: %d lines hidden' % self.filter.hidden)
         self.filter = None
 
+    # A hidden line skips the client's own addMessage, so the channel history and the replay's chat
+    # (g_replayCtrl.onBattleChatMessage, RU 1.45 messenger/gui/Scaleform/channels/layout.py) leave it out too:
+    # the replay shows the chat as the player saw it.
     def _add_message(self, original, layout, message, *args, **kwargs):
         chat = self.filter
         session_id = getattr(message, 'avatarSessionID', None)

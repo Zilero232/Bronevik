@@ -1,21 +1,22 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# Client setting names; UNVERIFIED on Lesta 1.45 (an unknown name is never written). ZOOM_STEPS is the
-# sniper zoom-step selection of the game's own settings window (its raw value is assumed to be the list
-# of multipliers; check in the live client, see README "Camera").
-ZOOM_STEPS = 'zoomSteps'
+# Settings-core names, RU 1.45 client source (account_helpers/settings_core/settings_constants.py GAME.*).
+# SNIPER_ZOOM is the "zoom when entering sniper mode" option of the game's own settings window
+# (options.SniperZoomSetting: 0 remember the last zoom, 1 x2, 2 x4, 3 x8); the client has no option for
+# the list of zoom steps itself.
+SNIPER_ZOOM = 'sniperZoom'
 DYNAMIC_CAMERA = 'dynamicCamera'
 HORIZONTAL_STABILIZATION = 'horStabilizationSnp'
 
-CAMERA_PRESETS = {
-    'sniper': {'zoom_steps': 'x2_x25', 'dynamic_camera': 'off', 'horizontal_stabilization': 'on'},
-    'balanced': {'zoom_steps': 'x2_x16', 'dynamic_camera': 'off', 'horizontal_stabilization': 'on'},
-    'dynamic': {'zoom_steps': 'x2_x8', 'dynamic_camera': 'on', 'horizontal_stabilization': 'on'},
+SNIPER_ZOOM_VALUES = {
+    'remember': 0,
+    'x2': 1,
+    'x4': 2,
+    'x8': 3,
 }
 
-ZOOM_STEP_PRESETS = {
-    'x2_x8': [2, 4, 8],
-    'x2_x16': [2, 4, 8, 16],
-    'x2_x25': [2, 4, 8, 16, 25],
-    'x4_x25': [4, 8, 16, 25],
+CAMERA_PRESETS = {
+    'sniper': {'sniper_zoom': 'x8', 'dynamic_camera': 'off', 'horizontal_stabilization': 'on'},
+    'balanced': {'sniper_zoom': 'x4', 'dynamic_camera': 'off', 'horizontal_stabilization': 'on'},
+    'dynamic': {'sniper_zoom': 'x2', 'dynamic_camera': 'on', 'horizontal_stabilization': 'on'},
 }

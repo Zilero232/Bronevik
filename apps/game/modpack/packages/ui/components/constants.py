@@ -11,7 +11,6 @@ COMPANION_SWITCH = 'enabled'
 COMPANION_KEYS = (
     'send_battle_results',
     'send_moe_snapshots',
-    'send_moe_distribution',
     'send_queue_times',
     'send_loadouts',
     'send_shots',

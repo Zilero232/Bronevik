@@ -4,11 +4,13 @@ import time
 
 from ....core.client.battle import controls_own_vehicle, vehicle_state
 from ....core.client.hud.panel import BattlePanel
+from ....core.client.native import apply_changed
 from ....core.client.sound import play_sound
 from ....core.client.timer import Ticker
+from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.log import safe
 from ..i18n import STRINGS
-from ..model import SixthSense, format_sixth_sense
+from ..model import SixthSense, format_sixth_sense, to_native
 from ..model.constants import PREVIEW_SIZE
 from ..model.preview import preview_text
 from ..settings import PANEL_ID, SCHEMA, SWITCH
@@ -28,6 +30,11 @@ class SixthSenseAlert(BattlePanel):
         self.lamp = None
         self.ticker = Ticker(TICK_S, self._tick)
         BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        app.bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
+
+    def _on_settings(self, component_id, changed):
+        if component_id == self.component_id and 'lamp_sound' in (changed or ()) and self.enabled_in_hangar():
+            apply_changed(to_native(self.settings.to_dict()))
 
     def start(self, player):
         if self.observed_state is None:

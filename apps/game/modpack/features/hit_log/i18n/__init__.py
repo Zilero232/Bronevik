@@ -4,7 +4,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 STRINGS = {
     'ru': {
         'hlog_header_template': 'Попаданий {hits}   Пробитий {pens}   Урон {damage}',
-        'hlog_line_template': '{index}. {vehicle}: {outcome} {damage} {shell}',
+        'hlog_line_template': '{index}. {vehicle}: <font color="{c_outcome}">{outcome}</font> {damage} {shell}',
+        'hit_log_palette': 'Цвета исходов',
+        'hit_log_palette_classic': 'Классические',
+        'hit_log_palette_graphite': 'Графит и золото',
+        'hit_log_palette_contrast': 'Контрастные',
+        'hit_log_palette_colorblind': 'Для дальтоников',
         'hlog_target_template': '{vehicle}: x{hits} урон {damage}',
         'hlog_outcome_pen': 'пробитие',
         'hlog_outcome_crit': 'крит',
@@ -22,7 +27,12 @@ STRINGS = {
     },
     'en': {
         'hlog_header_template': 'Hits {hits}   Pens {pens}   Damage {damage}',
-        'hlog_line_template': '{index}. {vehicle}: {outcome} {damage} {shell}',
+        'hlog_line_template': '{index}. {vehicle}: <font color="{c_outcome}">{outcome}</font> {damage} {shell}',
+        'hit_log_palette': 'Outcome colours',
+        'hit_log_palette_classic': 'Classic',
+        'hit_log_palette_graphite': 'Graphite and gold',
+        'hit_log_palette_contrast': 'High contrast',
+        'hit_log_palette_colorblind': 'Colour-blind safe',
         'hlog_target_template': '{vehicle}: x{hits} damage {damage}',
         'hlog_outcome_pen': 'penetrated',
         'hlog_outcome_crit': 'critical',

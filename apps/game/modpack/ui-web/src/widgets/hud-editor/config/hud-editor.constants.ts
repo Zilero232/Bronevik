@@ -1,4 +1,4 @@
-import type { NudgeSteps } from '../lib/geometry';
+import type { NudgeSteps } from '../../../shared/lib/hud-geometry';
 
 const NUDGE: NudgeSteps = {
   ArrowLeft: { dx: -4, dy: 0 },

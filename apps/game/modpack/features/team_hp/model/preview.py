@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from . import TeamHp, format_team_hp
+from . import TeamHp, format_panel
 from .constants import PREVIEW_TEAM, PREVIEW_VEHICLES
 
 
@@ -13,4 +13,4 @@ def preview_teams():
 
 
 def preview_text(settings, translate):
-    return format_team_hp(preview_teams().values(), settings, translate)
+    return format_panel(preview_teams(), settings, translate)

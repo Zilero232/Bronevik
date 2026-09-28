@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://triotmetki.ru/contract/mod/goals.schema.json",
+  "title": "Three Marks mod goals read (hangar)",
+  "description": "NOT YET SERVED (README TODO): the goals the player set on the site (me/goals, packages/schemas/src/me goalSchema) for the session_goals component. POST /mod/me/goals body #/definitions/deviceRequest -> 200 #/definitions/goals. Signed exactly like /mod/ingest (v2: X-Otmetki-Device, X-Otmetki-Timestamp, X-Otmetki-Nonce, X-Otmetki-Signature over the raw body) and answered only for the device's bound account: a body naming another account is refused with 403 account_mismatch; 429 with Retry-After when rate-limited; every error reply carries X-Otmetki-Server-Time. The server answers the account's active goals and those that ended in the last 24 hours, newest first, at most 20; `battles` is the number of random battles counted in the goal window so far (the mod needs it for the damage an average-damage goal asks of the next battle). The mod reads it in the hangar only, once per game session and again 20 s after each own battle.",
+  "definitions": {
+    "deviceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "accountId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "deviceRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device_id", "account_id"],
+      "properties": {
+        "device_id": {
+          "$ref": "#/definitions/deviceId"
+        },
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        }
+      }
+    },
+    "goal": {
+      "type": "object",
+      "required": ["id", "metric", "tank_id", "target", "baseline", "current", "battles", "status", "starts_at", "ends_at", "achieved_at"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "metric": {
+          "enum": ["winRate", "wn8", "avgDamage", "battles", "moe", "broneIndex"],
+          "description": "winRate and moe are percents"
+        },
+        "tank_id": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "target": {
+          "type": "number"
+        },
+        "baseline": {
+          "type": "number"
+        },
+        "current": {
+          "type": ["number", "null"]
+        },
+        "battles": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": ["active", "achieved", "failed", "cancelled"]
+        },
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ends_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "achieved_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      }
+    },
+    "goals": {
+      "type": "object",
+      "required": ["account_id", "goals"],
+      "properties": {
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        },
+        "goals": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/definitions/goal"
+          }
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/definitions/deviceRequest"
+    },
+    {
+      "$ref": "#/definitions/goals"
+    }
+  ]
+}

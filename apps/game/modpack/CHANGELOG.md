@@ -28,6 +28,108 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - The Gameface settings window with profiles and an on-screen HUD editor; ModsSettingsAPI stays the fallback.
 - Settings survive a wiped `mods/configs`: the binding, config.json, components.json, profiles.json and the app state are mirrored into `%APPDATA%\TriOtmetki` and restored on the next start.
 
+## personal_best 0.1.0
+
+### ru
+
+- Рекорд урона, помощи и фрагов на танке в бою: «рекорд 6 812, осталось 1 200», после рекорда — «Новый рекорд».
+- После боя, побившего рекорд, — уведомление-карточка в ангаре и наш звук.
+- Рекорды берутся из досье своего танка, своих итогов боёв и копии рекордов на сайте (`/mod/me/tanks`, когда сервер начнёт её отдавать).
+
+### en
+
+- The tank's damage, assist and frags record in battle: «record 6,812, 1,200 to go», then «New record».
+- After a battle that beat a record, a card notification in the hangar and our sound.
+- Records come from the own tank dossier, the own battle results and the site's copy of them (`/mod/me/tanks`, once the server serves it).
+
+## session_goals 0.1.0
+
+### ru
+
+- Цели из кабинета на сайте: прогресс в ангаре, строка в бою (для цели по среднему урону — сколько урона нужно в этом бою) и звук, когда сайт отметил цель выполненной.
+- Чтение `/mod/me/goals` после привязки, в ангаре; сервер ещё не отдаёт этот запрос (контракт `contract/goals.schema.json`).
+
+### en
+
+- Goals from your site dashboard: progress in the hangar, a battle line (for an average-damage goal, the damage this battle needs) and a sound when the site marks a goal met.
+- Reads `/mod/me/goals` once bound, in the hangar; the server does not serve it yet (contract `contract/goals.schema.json`).
+
+## main_gun 0.1.0
+
+### ru
+
+- Счётчик «Основного калибра»: ваш урон против порога медали (20% ХП противника, не меньше 1 000), урон команды и ваша доля.
+
+### en
+
+- The High Caliber counter: your damage against the medal threshold (20% of the enemy HP, at least 1,000), the team damage and your share.
+
+## battle_efficiency 0.1.0
+
+### ru
+
+- Эффективность боя: оценка WN8 этого боя по ожидаемым значениям танка и урон против своего среднего на нём, цветом выше или ниже своего.
+
+### en
+
+- Battle efficiency: a WN8 estimate of this battle from the tank's expected values and the damage against your own average on it, coloured above or below your own.
+
+## consumables 0.1.0
+
+### ru
+
+- Своё снаряжение с откатом и оставшиеся снаряды каждого типа одной перетаскиваемой строкой.
+
+### en
+
+- Your consumables with their cooldowns and the shells left of each type on one movable line.
+
+## reload_timer 0.1.0
+
+### ru
+
+- Отсчёт перезарядки своего орудия с полоской и снаряды в кассете; только своё орудие.
+
+### en
+
+- Your gun's reload countdown with a bar and the shells in the magazine; your own gun only.
+
+## core 0.3.0
+
+### ru
+
+- Общие чтения своего аккаунта с сайта (`core/me`, `core/client/me`): подписанный запрос `/mod/me/*`, отбрасывание ответов о чужом аккаунте, задержки повторов и общее чтение строк своих танков (`/mod/me/tanks`) — оно одно на всю игру для рейтингов, рекордов и эффективности.
+- ХП команд (`core/teams`, `core/client/battle/teams`) вынесены из панели ХП, чтобы ими пользовался и счётчик «Основного калибра».
+- Звуки в MP3 (`play_mp3`): наши звуки из `res/audioww/` проигрываются через собственное MP3-событие клиента, без банков Wwise.
+- Заголовок реплея теперь даёт итог боя и урон записавшего игрока (только его собственная запись итогов).
+
+### en
+
+- Shared reads of the own account from the site (`core/me`, `core/client/me`): the signed `/mod/me/*` request, dropping answers about another account, retry delays and one shared read of the own tank rows (`/mod/me/tanks`) for the ratings, records and efficiency.
+- Team HP (`core/teams`, `core/client/battle/teams`) moved out of the team HP panel so the High Caliber counter can use it too.
+- MP3 sounds (`play_mp3`): our sounds from `res/audioww/` play through the client's own custom-MP3 event, no Wwise bank needed.
+- The replay header now gives the battle result and damage of the recorder (only its own results entry).
+
+## core 0.2.0
+
+### ru
+
+- Общая математика отметок (`core/moe`) для панели в бою и вида в ангаре, и сторона Gameface-страницы HUD (`core/hud/surface`).
+- HTTP: заголовки ответа `BigWorld.fetchURL` читаются так, как их отдаёт клиент 1.45 (`response.headers()`), поэтому снова работают повторная подпись после 428 со сдвигом часов и `Retry-After`.
+- Настройки клиента записываются в том же порядке, что и в окне настроек игры (применить, сохранить, подтвердить, очистить); размер мини-карты пишется в `AccountSettings`.
+- Одинаковая ошибка пишется в журнал раз в минуту, дальше только счётчик повторов.
+- Снятие оборудования и другие действия в ангаре идут по одному запросу и показывают собственный текст ответа клиента.
+- Добавлен тип снаряда `HE_MODERN_DF` журнала боя 1.45; папка реплеев больше не читается из приватного поля клиента.
+
+### en
+
+- Shared MoE maths (`core/moe`) for the in-battle panel and the hangar view, and the Gameface HUD page's side (`core/hud/surface`).
+- HTTP: the `BigWorld.fetchURL` response headers are read the way the 1.45 client exposes them (`response.headers()`), so the 428 clock re-sync and `Retry-After` work again.
+- Client settings are written in the order of the game's own settings window (apply, store, confirm, clear); the minimap size goes to `AccountSettings`.
+- An identical error is written to the log once a minute, then only a repeat count.
+- Demounting and the other hangar actions send one request at a time and show the client's own answer text.
+- Added the 1.45 battle-log shell type `HE_MODERN_DF`; the replay folder is no longer read from a private client field.
+
 ## core 0.1.0
 
 ### ru
@@ -44,6 +146,36 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Durable settings: the files a player cannot recreate are mirrored into `%APPDATA%\TriOtmetki`, and a missing or older copy in `mods/configs/otmetki` is restored on load.
 - Pinned Python 2.7 libraries: six, blinker, attrs, enum34.
 
+## companion 0.3.0
+
+### ru
+
+- Переключатели новых компонентов: `battle_personal_best`, `hangar_session_goals`, `battle_main_gun`, `battle_efficiency`, `battle_consumables`, `battle_reload_timer`.
+- `share_session_report` (выключен по умолчанию) и `share_session_channel`: отчёт о сессии в свой Telegram или Discord через сайт. Профили и коды его не переносят.
+
+### en
+
+- Switches of the new components: `battle_personal_best`, `hangar_session_goals`, `battle_main_gun`, `battle_efficiency`, `battle_consumables`, `battle_reload_timer`.
+- `share_session_report` (off by default) and `share_session_channel`: the session report to your own Telegram or Discord through the site. Profiles and codes never carry it.
+
+## companion 0.2.0
+
+### ru
+
+- Переключатель `hangar_marks` для вида отметки в ангаре.
+- Итоги боя, из которого вышли раньше, берутся только из того, что игра уже сохранила сама (событие окна итогов и кэш на диске). Мод больше не запрашивает итоги у сервера и не мешает окну итогов игры.
+- Распределение урона для отметок больше не запрашивается закрытой командой клиента; переключатель `send_moe_distribution` убран. Пороги отметок считаются по открытым данным: досье и итогам своих боёв.
+- Из взвода отправляется только его размер, без идентификаторов других игроков.
+- Модификации в сборке танка читаются из `descriptor.modifications` клиента 1.45; устаревшая настройка камеры после гибели убрана из обмена настройками.
+
+### en
+
+- The `hangar_marks` switch for the hangar MoE view.
+- The results of a battle left early are taken only from what the game itself already saved (the results window event and the on-disk cache). The mod no longer asks the server for results and no longer gets in the way of the game's results window.
+- The MoE damage distribution is no longer asked with a private client command; the `send_moe_distribution` switch is gone. MoE thresholds come from public data: the dossier and the own battle results.
+- Only the platoon's size is sent, without other players' ids.
+- Field modifications in the loadout are read from the 1.45 `descriptor.modifications`; the obsolete post-mortem camera setting is gone from the settings share.
+
 ## companion 0.1.0
 
 ### ru
@@ -58,6 +190,26 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
 
+## ui 0.1.2
+
+### ru
+
+- Профили и коды не переносят `share_session_report`, как и другие сетевые переключатели.
+
+### en
+
+- Profiles and codes do not carry `share_session_report`, like the other network switches.
+
+## ui 0.1.1
+
+### ru
+
+- Ссылки открываются во встроенном браузере игры (`BigWorld.openWebBrowser`); кнопка в ангаре встраивается только в виджет экипажа, который есть в клиенте 1.45.
+
+### en
+
+- Links open in the game's own browser (`BigWorld.openWebBrowser`); the hangar button is injected only into the crew widget the 1.45 client has.
+
 ## ui 0.1.0
 
 ### ru
@@ -70,6 +222,32 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - The Gameface settings window (OpenWG Gameface): a card per installed component built from its own schema, list pages, profiles (save, load, rename, export and import as a code) and the on-screen HUD editor.
 - Entry points: the «///» button in the hangar, a ModsList entry and the hotkey Ctrl+Shift+T.
 
+## marks_panel 0.2.0
+
+### ru
+
+- Панель отметки стала полноценным компонентом боевого интерфейса: перетаскивается в редакторе HUD, показывается в режиме редактирования, настраивается в окне.
+- Процент на начало боя и прогноз после него, изменение, урон до 65, 85 и 95 % (и до 100 %, когда она следующая), урон на +0,1/0,5/1 %, среднее до и после боя, прогноз боёв до следующей отметки по темпу последних боёв на этом танке.
+- Виды «Подробный», «Компактный», «Минимальный» и свой шаблон с макросами; цвет по изменению, по отметке или без цвета.
+- Засвет и урон по гусеницам после гибели танка теперь учитываются, итоговая сводка клиента поднимает урон и оглушение до своих значений.
+
+### en
+
+- The MoE panel is now a full battle HUD component: movable in the HUD editor, shown in the edit mode, configured in the window.
+- The percent at the start of the battle and the projection after it, the change, the damage to 65, 85 and 95% (and to 100% when it is next), the damage for +0.1/0.5/1%, the average before and after the battle, and a forecast of the battles to the next mark at the pace of your last battles on the tank.
+- Styles «Extended», «Compact», «Minimal» and your own macro template; colour by change, by mark or none.
+- Spotting and tracking assist earned after the tank is destroyed now counts; the client's end-of-life summary raises the damage and stun to its values.
+
+## hangar_marks 0.1.0
+
+### ru
+
+- В ангаре для выбранного танка: процент отметки и звёзды, среднее, темп последних боёв, урон за бой до 65/85/95 % и на +0,5 %, прогноз боёв до следующей отметки. Перетаскивается в редакторе HUD, три вида и свой шаблон.
+
+### en
+
+- In the hangar for the selected tank: the MoE percent and stars, the average, the pace of your last battles, the damage per battle to 65/85/95% and for +0.5%, and a forecast of the battles to the next mark. Movable in the HUD editor, three styles and your own template.
+
 ## marks_panel 0.1.0
 
 ### ru
@@ -79,6 +257,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - In battle: the current MoE percentage, the projection after the battle and the damage still needed for the next mark; team damage is not counted.
+
+## session_stats 0.2.0
+
+### ru
+
+- Отчёт о сессии в свой Telegram или Discord через сайт: включается в карточке (по умолчанию выключен), кнопка «Отправить отчёт о сессии».
+
+### en
+
+- The session report to your own Telegram or Discord through the site: turned on in the card (off by default), with a «Send the session report» button.
 
 ## session_stats 0.1.0
 
@@ -90,6 +278,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - In the hangar: battles, win rate, average damage and WN8 of the current session; a new session starts after `session_idle_minutes` of idle time.
 
+## replay_upload 0.1.1
+
+### ru
+
+- Загрузка встаёт на паузу при входе в бой (идущая останавливается на следующем блоке) и продолжается в ангаре.
+- Реплей, переименованный между поиском и чтением, ищется ещё раз по заголовку.
+
+### en
+
+- The upload pauses when a battle starts (a running one stops at its next block) and resumes in the hangar.
+- A replay renamed between the search and the read is looked up again by its header.
+
 ## replay_upload 0.1.0
 
 ### ru
@@ -100,25 +300,45 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - Opt-in, off by default: uploads the replays the game itself recorded of the player's own battles, matched by the replay header, private unless `publish_replays` is on. Never turns replay recording on; files above 50 MiB are refused.
 
+## damage_log 0.2.0
+
+### ru
+
+- Источник полученного урона: пожар, таран, падение, попадание в боеукладку; значок класса техники противника.
+- Строки лога цветом своего вида (из набора цветов или свои цвета).
+- Всплывающая строка «Последнее попадание» — отдельная перетаскиваемая панель со своим временем показа.
+
+### en
+
+- The source of received damage: fire, ram, a fall, a hit on the ammo rack; the enemy vehicle class glyph.
+- Log lines coloured by their kind (from the colour set or your own colours).
+- The «Last hit» pop-up, a movable panel of its own with its own display time.
+
 ## damage_log 0.1.0
 
 ### ru
 
 - В бою: суммы нанесённого, заблокированного, ассистированного (разведка, гусеница, оглушение) и полученного урона и последние записи (тип, величина, техника, снаряд). Стили `full`, `compact`, `minimal` и свой шаблон.
+- Палитры `classic`, `graphite`, `contrast`, `colorblind` (макросы `{c_dealt}`, `{c_blocked}`, `{c_assisted}`, `{c_received}`) и свои значки видов урона (`{icon}`).
+- Ассист, заработанный после гибели, пока камера следит за союзником, тоже учитывается.
 
 ### en
 
 - In battle: totals of damage dealt, blocked, assisted (radio, track, stun) and received, with the latest entries (kind, amount, vehicle, shell). Styles `full`, `compact`, `minimal` and a custom template.
+- Palettes `classic`, `graphite`, `contrast`, `colorblind` (macros `{c_dealt}`, `{c_blocked}`, `{c_assisted}`, `{c_received}`) and our own damage-kind icons (`{icon}`).
+- Assist earned after death, while the camera follows an ally, still counts.
 
 ## hit_log 0.1.0
 
 ### ru
 
 - В бою: каждое собственное попадание по противнику (пробитие, крит, непробитие, рикошет и остальные) с уроном, снарядом, критами и HP цели после попадания — ровно как показывает маркер противника; по желанию с группировкой по цели.
+- Цвет исхода по палитре (`{c_outcome}`: `classic`, `graphite`, `contrast`, `colorblind`); HP цели берётся только из собственного попадания.
 
 ### en
 
 - In battle: each own hit on an enemy (penetration, critical, no penetration, ricochet and the rest) with damage, shell, crits and the target's HP after the hit, exactly as the enemy marker shows it; optionally grouped by target.
+- Outcome colour by palette (`{c_outcome}`: `classic`, `graphite`, `contrast`, `colorblind`); the target's HP is taken only from the player's own hit.
 
 ## battle_clock 0.1.0
 
@@ -129,6 +349,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - In battle: the local time, optionally the date, and the time left in the current arena period.
+
+## team_hp 0.2.0
+
+### ru
+
+- Стиль «Полоска на каждый танк»: по полоске ХП на каждую машину обеих команд и счёт между ними.
+
+### en
+
+- The «A bar per tank» style: an HP bar for every vehicle of both teams with the score between them.
 
 ## team_hp 0.1.0
 
@@ -145,10 +375,12 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### ru
 
 - В бою: текст или значок с секундами с момента, когда загорелась собственная лампа шестого чувства клиента, и по желанию звук из звукового мода. Без направления, дистанции и «ближайшего противника».
+- Четыре своих значка (лампа, глаз, знак «!», «///») с пульсацией и свой сигнал (CC0) через слот «пользовательского звука» засвета в настройках игры, без Wwise.
 
 ### en
 
 - In battle: a text or icon with the seconds since the client's own sixth-sense lamp lit, and an optional sound from a sound mod. No direction, distance or "nearest enemy".
+- Four icons of our own (lamp, eye, «!» badge, «///») with a pulse, and our own chime (CC0) through the game's user detection-sound slot, no Wwise.
 
 ## battle_results 0.1.0
 
@@ -180,6 +412,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - In battle: time stamps on chat lines and hiding of repeats, flood, quick-command spam and lines with blocked words. The player's own lines are never hidden.
 
+## replay_manager 0.2.0
+
+### ru
+
+- Поиск по карте, танку и имени файла, фильтры по итогу боя и времени, сортировка по дате, урону и размеру; итог и урон в строке реплея.
+- Уведомление в ангаре, когда сайт закончил разбор загруженного реплея (`/mod/me/replays`, сервер ещё не отдаёт этот запрос).
+
+### en
+
+- Search by map, tank and file name, filters by result and period, sorting by date, damage and size; the result and damage on each replay row.
+- A hangar notice when the site has finished analysing an uploaded replay (`/mod/me/replays`, not served by the server yet).
+
 ## replay_manager 0.1.0
 
 ### ru
@@ -189,6 +433,28 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - In the hangar: the player's own replays with map, vehicle, date and size; rename, delete, open the folder, and a link to the uploaded replay on the site. Optional auto names from a template.
+
+## hangar_tweaks 0.2.0
+
+### ru
+
+- Быстрое снятие стиля с выбранного танка (с подтверждением) и масштаб интерфейса из настроек игры.
+- Переключатель ускоренного обучения экипажа не добавлен: в клиенте 1.45 его нет, обучение ускоряется само на элитных и премиум-танках.
+
+### en
+
+- Quick style removal from the selected tank (confirmed) and the interface scale from the game settings.
+- No accelerated crew training switch: the 1.45 client has none, training speeds up by itself on elite and premium tanks.
+
+## hangar_tweaks 0.1.1
+
+### ru
+
+- Оборудование снимается по одному слоту, каждый запрос строится по свежему состоянию танка; ответы клиента показываются как у кнопок ангара. Проверка мест в казарме — по `freeTankmenBerthsCount()`.
+
+### en
+
+- Equipment is demounted one slot at a time, each request built from the tank's fresh state; the client's answers are shown as for the hangar's buttons. The barracks check uses `freeTankmenBerthsCount()`.
 
 ## hangar_tweaks 0.1.0
 
@@ -200,6 +466,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - The client's own carousel options (rows, tile size) and three confirmed quick actions on the selected vehicle: demount removable equipment, crew to the barracks, return the previous crew.
 
+## minimap 0.1.1
+
+### ru
+
+- Размер мини-карты теперь действительно меняется: он пишется в `AccountSettings`, откуда его читает мини-карта в бою.
+
+### en
+
+- The minimap size now really changes: it is written to `AccountSettings`, where the battle minimap reads it.
+
 ## minimap 0.1.0
 
 ### ru
@@ -209,6 +485,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - The game's own minimap options: size, transparency, vehicle names and the player's own range circles.
+
+## camera 0.2.0
+
+### ru
+
+- Вместо несуществующей настройки шагов зума — настройка игры «Зум при входе в снайперский режим» (`sniperZoom`: запоминать, x2, x4, x8); пресеты выставляют её.
+
+### en
+
+- The non-existent zoom-steps setting is replaced by the game's own «zoom on entering sniper mode» option (`sniperZoom`: remember, x2, x4, x8); the presets set it.
 
 ## camera 0.1.0
 
@@ -225,10 +511,22 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### ru
 
 - Пресеты поверх собственных настроек прицела игры для аркадного и снайперского режимов и переключатель серверного прицела.
+- Центральная метка на выбор поверх центра прицела игры: 7 своих (точка, крест, кольцо, шеврон, стример, для дальтоников, «///») и 5 из CC0-набора Kenney.
 
 ### en
 
 - Presets over the game's own reticle settings for arcade and sniper modes, and the server-reticle switch.
+- A centre mark of your choice over the game's reticle centre: 7 of our own (dot, cross, ring, chevron, streamer, colour-blind safe, «///») and 5 from Kenney's CC0 pack.
+
+## hangar_info 0.2.0
+
+### ru
+
+- Строка выбранного танка: уровни боёв, опыт экипажа до следующего навыка и ускоренное обучение.
+
+### en
+
+- A line for the selected tank: its battle tiers, crew XP to the next skill and accelerated training.
 
 ## hangar_info 0.1.0
 
@@ -250,6 +548,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - The MoE percent, marks and moving-average damage after each own battle per vehicle, with the date each mark was reached: a hangar label for the selected tank and a list in the mod window.
 
+## hangar_ratings 0.1.1
+
+### ru
+
+- Строка выбранного танка читается общим чтением ядра, одним на все компоненты; поведение не изменилось.
+
+### en
+
+- The selected tank's row comes from the core's shared read, one for every component; the behaviour is unchanged.
+
 ## hangar_ratings 0.1.0
 
 ### ru
@@ -270,6 +578,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - The game's own auto repair and auto-resupply flags (shells, consumables, directives), applied to the selected tank or the whole garage only when the player presses the button.
 
+## notification_filter 0.1.1
+
+### ru
+
+- Пополнение «Торгового каравана» больше не скрывается вместе с аукционом: в 1.45 у них общий номер типа, фильтр различает их по классу уведомления.
+
+### en
+
+- The Trading Caravan refill is no longer hidden with the auction: in 1.45 they share a type number, and the filter tells them apart by the notification's class.
+
 ## notification_filter 0.1.0
 
 ### ru
@@ -279,6 +597,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - Hides promo, reminders, friend requests and clan invites in the notification centre by the client's own notification types. Plain messages and platoon invites are never hidden.
+
+## hangar_cleaner 0.1.1
+
+### ru
+
+- Переопределения приватных методов ангара ставятся только на проверенной версии клиента (1.45) и только если методы есть; иначе тизер и входы в события остаются как в игре, а журнал объясняет почему.
+- Баннеры предложений скрываются на всех путях загрузки (`OfferBannerWindow.tryLoad`).
+
+### en
+
+- The overrides of the hangar's private methods are installed only on a verified client version (1.45) and only when the methods exist; otherwise the teaser and the event entries stay as in the game and the log says why.
+- Offer banners are hidden on every load path (`OfferBannerWindow.tryLoad`).
 
 ## hangar_cleaner 0.1.0
 

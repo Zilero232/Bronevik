@@ -12,7 +12,6 @@ def _number(value):
 
 
 FIELDS = {
-    'size': (SIZE, _number),
     'transparency': (TRANSPARENCY, _number),
     'vehicle_names': (VEHICLE_NAMES, from_table(VEHICLE_NAME_MODES)),
     'view_range': (VIEW_RANGE, tri_state),
@@ -21,5 +20,14 @@ FIELDS = {
 }
 
 
+ACCOUNT_FIELDS = {
+    'size': (SIZE, _number),
+}
+
+
 def to_native(values):
     return native_values(values, FIELDS)
+
+
+def to_account(values):
+    return native_values(values, ACCOUNT_FIELDS)

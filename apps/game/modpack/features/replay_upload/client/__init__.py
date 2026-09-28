@@ -39,10 +39,13 @@ class ReplayAutoUpload(object):
         self.uploader = None
         self.started = {}
         self.folder = DEFAULT_REPLAY_DIR
+        self.in_battle = False
         bus = app.bus
         bus.on('account', self.on_account)
         bus.on('rebind', self.on_rebind)
         bus.on('battle_start', self.on_battle_start)
+        bus.on('battle_enter', self.on_battle_enter)
+        bus.on('hangar', self.on_hangar)
         bus.on('battle_results', self.on_battle_result)
         bus.on('tick', self.tick)
         if app.account_id:
@@ -66,10 +69,24 @@ class ReplayAutoUpload(object):
             on_uploaded=self._on_uploaded,
             on_replay_id=self._on_replay_id,
         )
+        if self.in_battle:
+            self.uploader.pause()
 
     def on_rebind(self):
         if self.queue is not None:
             self.queue.unblock()
+
+    # Nothing of the upload runs in battle: its bandwidth and the worker's share of the interpreter would cost
+    # ping and frames. A running upload stops at its next block and is sent again from the hangar.
+    def on_battle_enter(self):
+        self.in_battle = True
+        if self.uploader is not None:
+            self.uploader.pause()
+
+    def on_hangar(self):
+        self.in_battle = False
+        if self.uploader is not None:
+            self.uploader.resume()
 
     def on_battle_start(self, arena_unique_id):
         if arena_unique_id:

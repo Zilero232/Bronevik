@@ -4,9 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { UiPanel } from '../../../../../../shared/api/protocol';
 
 import { send } from '../../../../../../shared/api/protocol/protocol';
+import { dragRect, moveMessage, panelRect } from '../../../../../../shared/lib/hud-geometry';
 import { renderHook } from '../../../../../../shared/lib/testing/render-hook';
 import { HUD_EDITOR } from '../../../../config';
-import { dragRect, moveMessage, panelRect } from '../../../../lib/geometry';
 import { useHudEditor } from '../use-hud-editor';
 
 vi.mock('../../../../../../shared/api/protocol/protocol', () => ({ send: vi.fn(() => true) }));

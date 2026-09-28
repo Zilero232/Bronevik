@@ -16,7 +16,8 @@ def summary(vehicle):
     for slot, device in enumerate(_installed(vehicle)):
         devices.append({'slot': slot, 'removable': bool(getattr(device, 'isRemovable', False))} if device is not None else None)
     crew = [member for _, member in (getattr(vehicle, 'crew', None) or []) if member is not None]
-    return {'locked': is_locked(vehicle), 'devices': devices, 'crew': len(crew), 'last_crew': bool(getattr(vehicle, 'lastCrew', None))}
+    return {'locked': is_locked(vehicle), 'devices': devices, 'crew': len(crew), 'last_crew': bool(getattr(vehicle, 'lastCrew', None)),
+            'style': bool(getattr(vehicle, 'isStyleInstalled', False))}
 
 
 def device_in(vehicle, slot):
@@ -25,9 +26,10 @@ def device_in(vehicle, slot):
 
 
 def free_berths():
+    # RU 1.45 client source: ItemsRequester.freeTankmenBerthsCount(), what the barracks validator
+    # (gui/shared/gui_items/processors/plugins.py BarracksSlotsValidator) checks.
     try:
         from skeletons.gui.shared import IItemsCache
-        stats = service(IItemsCache).items.stats
-        return int(stats.tankmenBerthsCount) - int(stats.tankmenCount)
+        return int(service(IItemsCache).items.freeTankmenBerthsCount())
     except Exception:
         return None

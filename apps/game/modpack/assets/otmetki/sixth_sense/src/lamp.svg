@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<!-- (c) 2026 Три отметки. Original artwork; reference-only study of popular packs, nothing traced. -->
+<defs>
+<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ff7a1a" stop-opacity="0.55"/><stop offset="0.6" stop-color="#ff7a1a" stop-opacity="0.18"/><stop offset="1" stop-color="#ff7a1a" stop-opacity="0"/></radialGradient>
+<linearGradient id="hot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="0.55" stop-color="#ff9a3d"/><stop offset="1" stop-color="#e8650a"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5d27a"/><stop offset="0.5" stop-color="#e8b84a"/><stop offset="1" stop-color="#c8912a"/></linearGradient>
+</defs>
+<circle cx="64" cy="64" r="63" fill="url(#glow)"/>
+<path d="M64 8V20M30 18L37 28M98 18L91 28M14 46L26 50M114 46L102 50" stroke="#0e0e10" stroke-width="9" stroke-linecap="round" stroke-opacity="0.85"/>
+<path d="M64 8V20M30 18L37 28M98 18L91 28M14 46L26 50M114 46L102 50" stroke="#e8b84a" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M64 28C44 28 32 43 32 59C32 71 39 79 46 86C49 89 50 93 50 97H78C78 93 79 89 82 86C89 79 96 71 96 59C96 43 84 28 64 28Z" fill="url(#hot)" stroke="#0e0e10" stroke-width="5" stroke-linejoin="round"/>
+<path d="M50 44C46 48 44 53 44 59" fill="none" stroke="#fff4e0" stroke-width="5" stroke-linecap="round" stroke-opacity="0.85"/>
+<path d="M56 97L58 70L64 76L70 70L72 97" fill="none" stroke="#7a3300" stroke-width="3.5" stroke-linejoin="round"/>
+<rect x="48" y="97" width="32" height="9" rx="3" fill="#8ea4b5" stroke="#0e0e10" stroke-width="4"/>
+<rect x="50" y="106" width="28" height="8" rx="3" fill="#6f8290" stroke="#0e0e10" stroke-width="4"/>
+<path d="M56 114H72L68 121H60Z" fill="#27272c" stroke="#0e0e10" stroke-width="3.5" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<!-- (c) 2026 Три отметки. Original artwork; reference-only study of popular packs, nothing traced. -->
+<path d="M64 30L98 64L64 98L30 64Z" stroke="#0e0e10" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="11"/>
+<path d="M64 30L98 64L64 98L30 64Z" fill="none" stroke="#56b4e9" stroke-width="5" stroke-linejoin="round"/>
+<path d="M64 6V22M64 106V122M6 64H22M106 64H122" stroke="#0e0e10" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="10"/>
+<path d="M64 6V22M64 106V122M6 64H22M106 64H122" stroke="#f2f2f3" stroke-width="4" stroke-linecap="round"/>
+<circle cx="64" cy="64" r="8" fill="#0e0e10" fill-opacity="0.9"/>
+<circle cx="64" cy="64" r="5.5" fill="#e69f00"/>
+</svg>

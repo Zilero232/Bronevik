@@ -4,13 +4,13 @@ import time
 
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.client.battle import call, controls_own_vehicle, feedback, is_enemy, vehicle_name
+from ....core.client.battle import call, controls_own_vehicle, feedback, is_enemy, player, vehicle_name
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel
 from ....core.log import safe
 from ....core.shells import shell_code
 from ..i18n import STRINGS
-from ..model import HitLog, format_hit_log
+from ..model import HitLog, format_hit_log, own_shot_health
 from ..model.constants import PREVIEW_SIZE
 from ..model.preview import preview_text
 from ..settings import PANEL_ID, SCHEMA, SWITCH
@@ -44,7 +44,7 @@ class HitLogPanel(BattlePanel):
             return
         now = time.time()
         if event_id == self.health_event:
-            health = value[0] if isinstance(value, (list, tuple)) and value else None
+            health = own_shot_health(value, getattr(player(), 'playerVehicleID', None))
             if self.log.set_health(vehicle_id, health, now):
                 self.render()
             return

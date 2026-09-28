@@ -81,9 +81,6 @@
           "$ref": "#/definitions/moeSnapshot"
         },
         {
-          "$ref": "#/definitions/moeDistribution"
-        },
-        {
           "$ref": "#/definitions/queue"
         },
         {
@@ -505,36 +502,6 @@
         }
       }
     },
-    "moeDistribution": {
-      "type": "object",
-      "description": "Raw answer of the client account command CMD_GET_VEHICLE_DAMAGE_DISTRIBUTION for the selected own vehicle (ext.battleCount, ext.damageBetterThanNPercent). Semantics of the list are not documented by Lesta; store raw and analyse server-side. At most once per vehicle per 24h.",
-      "additionalProperties": false,
-      "required": ["type", "event_id", "occurred_at", "tank_id", "battle_count", "damage_better_than_n_percent"],
-      "properties": {
-        "type": {
-          "const": "moe_distribution"
-        },
-        "event_id": {
-          "$ref": "#/definitions/id"
-        },
-        "occurred_at": {
-          "$ref": "#/definitions/unixTime"
-        },
-        "tank_id": {
-          "$ref": "#/definitions/tankId"
-        },
-        "battle_count": {
-          "$ref": "#/definitions/count"
-        },
-        "damage_better_than_n_percent": {
-          "type": "array",
-          "maxItems": 200,
-          "items": {
-            "type": "integer"
-          }
-        }
-      }
-    },
     "battleStart": {
       "type": "object",
       "description": "The own vehicle entered a battle (arena created). Sent at once; the server opens the streamer's Twitch auto-prediction and the matching battle_result resolves it.",
@@ -653,21 +620,14 @@
     },
     "battlePlatoon": {
       "type": ["object", "null"],
-      "description": "Own platoon after the battle: its size and the account ids of the platoon mates (same prebattleID on the own team). Never other players.",
+      "description": "Own platoon after the battle: only its size, counted from the own prebattleID on the own team. No other player's account id is sent.",
       "additionalProperties": false,
-      "required": ["size", "mates"],
+      "required": ["size"],
       "properties": {
         "size": {
           "type": "integer",
           "minimum": 2,
           "maximum": 3
-        },
-        "mates": {
-          "type": "array",
-          "maxItems": 2,
-          "items": {
-            "$ref": "#/definitions/accountId"
-          }
         }
       }
     },

@@ -1,14 +1,14 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 POLL_EVERY_S = 120.0
-# Names come from WoT-era account_helpers.settings_core.settings_constants
-# and are UNVERIFIED on Lesta 1.45; a name the core does not know reads as None
-# and is dropped by the whitelist, so a wrong entry is harmless.
+# Settings-core names (account_helpers/settings_core/settings_constants.py), checked against the RU 1.45
+# client source; a name the core does not know reads as None and is dropped by the whitelist. The
+# contract's camera.postMortem has no 1.45 setting (enablePostMortemEffect is gone; enablePostMortemDelay
+# is a different option), so the mod never reads or writes it.
 CORE_NAMES = {
     'fov': 'fov',
     'vsync': 'vertSync',
     'tripleBuffering': 'tripleBuffered',
-    'postMortem': 'enablePostMortemEffect',
     'sniperDynamicCamera': 'dynamicCamera',
     'horizontalStabilisation': 'horStabilizationSnp',
     'arcadeSens': 'mouseArcadeSens',

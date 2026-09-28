@@ -6,12 +6,19 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.hit_log.i18n import STRINGS
-from otmetki.features.hit_log.model import HitLog, format_hit_log
+from otmetki.features.hit_log.model import HitLog, format_hit_log, outcome_color, own_shot_health
+from otmetki.features.hit_log.model.constants import OUTCOME_COLORS, OUTCOMES
 from otmetki.features.hit_log.model.preview import preview_text
 from otmetki.features.hit_log.settings import SCHEMA
 
 TIGER = 202
 IS = 303
+
+
+class VehicleInfo(object):
+
+    def __init__(self, vehicle_id):
+        self.vehicleID = vehicle_id
 
 
 def translator(language='ru'):
@@ -51,6 +58,14 @@ class HitLogTest(unittest.TestCase):
         log.add_result(TIGER, 'no_pen', 1.0)
         log.add_damage(TIGER, 45, 1.3, shell='he')
         assert (log.entries[0]['outcome'], log.entries[0]['damage']) == ('no_pen', 45)
+
+    def test_health_only_from_the_players_own_shot(self):
+        own, ally = VehicleInfo(101), VehicleInfo(303)
+        assert own_shot_health((510, own, 0), 101) == 510
+        assert own_shot_health((510, ally, 0), 101) is None
+        assert own_shot_health((510, None, 0), 101) is None
+        assert own_shot_health((510,), 101) is None and own_shot_health(510, 101) is None
+        assert own_shot_health((510, own, 0), None) is None
 
     def test_rejects(self):
         log = HitLog()
@@ -92,8 +107,16 @@ class FormatTest(unittest.TestCase):
         lines = text.split('\n')
         assert 'Попаданий 2' in lines[0]
         assert 'Урон 390' in lines[0]
-        assert '1. IS: рикошет' in lines[1]
-        assert '2. Tiger: пробитие 390 БП' in lines[2]
+        assert '1. IS: <font color="#A3A3AD">рикошет</font>' in lines[1]
+        assert '2. Tiger: <font color="#FF7A1A">пробитие</font> 390 БП' in lines[2]
+
+    def test_palettes(self):
+        for name, colors in OUTCOME_COLORS.items():
+            assert len(colors) == len(OUTCOMES), name
+            text = format_hit_log(self.log(), Settings({'palette': name}, SCHEMA), translator())
+            assert '<font color="%s">' % colors[OUTCOMES.index('ricochet')] in text, name
+        assert outcome_color(None, 'graphite') == outcome_color('unknown', 'classic')
+        assert Settings({'palette': 'neon'}, SCHEMA).get('palette') == 'graphite'
 
     def test_grouped_and_custom(self):
         settings = Settings({'group_by_target': True, 'show_header': False, 'line_template': '{vehicle} {hits} {hp}'}, SCHEMA)

@@ -315,12 +315,12 @@ class BridgeProfilesTest(unittest.TestCase):
         send(self.bridge, type='profile_save', name='  Streamer   setup ')
         profiles = self.bridge.state()['profiles']
         assert profiles == {'active': 'p1', 'items': [{'id': 'p1', 'name': 'Streamer setup', 'updated': 1000.0}]}
-        send(self.bridge, type='set', component=COMPANION_ID, key='send_shots', value=False)
+        send(self.bridge, type='set', component=COMPANION_ID, key='flush_interval_seconds', value=30)
         send(self.bridge, type='set', component='minimap', key='zoom', value='x2')
         send(self.bridge, type='hud_move', panel='damage_log', x=50, y=60)
         del self.context.events[:]
         send(self.bridge, type='profile_load', id='p1')
-        assert self.context.config.get('send_shots') is True
+        assert self.context.config.get('flush_interval_seconds') == 15
         assert self.context.component_config.get('minimap').get('zoom') == 'native'
         assert self.context.component_config.get('damage_log').get('x') == 10
         assert sorted(event[0] for event in self.context.events) == ['config', 'damage_log', 'minimap']
@@ -330,6 +330,19 @@ class BridgeProfilesTest(unittest.TestCase):
         data = self.context.profiles.get('p1')['data']
         assert 'server_url' not in data['config'] and 'bind_code' not in data['config']
         assert data['components']['uninstalled'] == {'enabled': False}
+
+    def test_profile_never_carries_privacy_or_network_flags(self):
+        send(self.bridge, type='profile_save', name='A')
+        data = self.context.profiles.get('p1')['data']
+        for key in ('send_shots', 'share_settings', 'settings_target', 'settings_anonymous_stats', 'settings_include_resolution'):
+            assert key not in data['config'], key
+        send(self.bridge, type='set', component=COMPANION_ID, key='send_shots', value=False)
+        data['config'].update(send_shots=True, publish_replays=True, upload_replays=True, settings_target='profile')
+        send(self.bridge, type='profile_load', id='p1')
+        assert self.context.config.get('send_shots') is False
+        assert self.context.config.get('publish_replays') is False
+        assert self.context.config.get('upload_replays') is False
+        assert self.context.config.get('settings_target') == 'private'
 
     def test_rename_delete_limit(self):
         send(self.bridge, type='profile_save', name='A')
@@ -368,7 +381,7 @@ class DiscoveryAndLinksTest(unittest.TestCase):
         features = load_features('otmetki', {'ui': object(), 'session_stats': object(), 'missing_one': object()}, skip=('ui',))
         assert [feature.id for feature in features] == ['missing_one', 'session_stats']
         assert features[0].settings_module is None
-        assert features[1].config_keys() == ('hangar_session_panel', 'session_idle_minutes')
+        assert features[1].config_keys() == ('hangar_session_panel', 'session_idle_minutes', 'share_session_report', 'share_session_channel')
         assert features[1].title == 'Three Marks: session stats'
 
     def test_site_url(self):

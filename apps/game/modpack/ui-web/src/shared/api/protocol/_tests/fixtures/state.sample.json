@@ -33,14 +33,6 @@
         {
           "default": true,
           "hint": null,
-          "key": "send_moe_distribution",
-          "label": "Отправлять распределение урона для отметок",
-          "type": "bool",
-          "value": true
-        },
-        {
-          "default": true,
-          "hint": null,
           "key": "send_queue_times",
           "label": "Отправлять время в очереди",
           "type": "bool",

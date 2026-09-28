@@ -5,7 +5,9 @@ import time
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.net.transport import NETWORK_ERROR, SyncTransport, ThreadTransport
+from otmetki.core.codec import parse_retry_after
+from otmetki.core.net.signing import server_time
+from otmetki.core.net.transport import NETWORK_ERROR, StoppableBody, SyncTransport, ThreadTransport, response_headers
 
 try:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -41,6 +43,7 @@ class ThreadTransportTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.server = HTTPServer(('127.0.0.1', 0), Handler)
+        cls.server.handle_error = lambda request, address: None
         cls.thread = threading.Thread(target=cls.server.serve_forever)
         cls.thread.daemon = True
         cls.thread.start()
@@ -94,6 +97,50 @@ class SyncTransportTest(ThreadTransportTest):
         results = []
         SyncTransport(timeout=2).request('POST', 'http://127.0.0.1:1/x', {}, b'x', lambda *args: results.append(args))
         self.assertEqual(results[0][0], NETWORK_ERROR)
+
+
+    def test_a_stoppable_body_is_streamed_whole(self):
+        results = []
+        data = b'y' * 200000
+        body = StoppableBody(data, lambda: False)
+        transport = SyncTransport(timeout=5)
+        for _ in range(2):
+            transport.request('POST', self.base + '/ok', {'Content-Type': 'application/octet-stream'}, body, lambda *args: results.append(args))
+        self.assertEqual([result[1] for result in results], [b'{"echo":200000}'] * 2)
+
+    def test_a_stopped_body_ends_the_exchange(self):
+        results = []
+        body = StoppableBody(b'z' * 200000, lambda: True)
+        SyncTransport(timeout=5).request('POST', self.base + '/ok', {}, body, lambda *args: results.append(args))
+        self.assertEqual(results[0][0], NETWORK_ERROR)
+
+
+class FetchResponse(object):
+
+    def __init__(self, headers):
+        self._headers = headers
+
+    def headers(self):
+        return self._headers
+
+
+class ResponseHeadersTest(unittest.TestCase):
+
+    def test_headers_method_of_the_client_response(self):
+        headers = response_headers(FetchResponse({'Retry-After': '9', 'X-Otmetki-Server-Time': '1790000600'}))
+        self.assertEqual(parse_retry_after(headers), 9.0)
+        self.assertEqual(server_time(headers), 1790000600.0)
+
+    def test_pairs_dicts_and_garbage(self):
+        self.assertEqual(response_headers(FetchResponse([('Retry-After', 3), ('bad',)])), {'Retry-After': '3'})
+        self.assertEqual(response_headers(type(str('R'), (object,), {'headers': {'A': 'b'}})()), {'A': 'b'})
+        self.assertEqual(response_headers(object()), {})
+        self.assertEqual(response_headers(FetchResponse(None)), {})
+
+    def test_a_failing_headers_method(self):
+        def broken():
+            raise RuntimeError('no headers')
+        self.assertEqual(response_headers(type(str('R'), (object,), {'headers': staticmethod(broken)})()), {})
 
 
 if __name__ == '__main__':

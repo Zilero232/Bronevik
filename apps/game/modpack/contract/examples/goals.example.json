@@ -1,0 +1,44 @@
+{
+  "account_id": 12345678,
+  "goals": [
+    {
+      "id": "7d1f0f5e-3a52-4c1b-9b6f-1d3c2a4b5e6f",
+      "metric": "avgDamage",
+      "tank_id": null,
+      "target": 3000,
+      "baseline": 2410,
+      "current": 2740.4,
+      "battles": 12,
+      "status": "active",
+      "starts_at": "2026-09-27T17:00:00.000Z",
+      "ends_at": "2026-09-28T23:59:00.000Z",
+      "achieved_at": null
+    },
+    {
+      "id": "2b8e6c4a-9f1d-4e3b-8a7c-5d6e4f3a2b1c",
+      "metric": "moe",
+      "tank_id": 1,
+      "target": 85,
+      "baseline": 81.2,
+      "current": 84.6,
+      "battles": 9,
+      "status": "active",
+      "starts_at": "2026-09-25T10:00:00.000Z",
+      "ends_at": "2026-10-05T10:00:00.000Z",
+      "achieved_at": null
+    },
+    {
+      "id": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e6f",
+      "metric": "battles",
+      "tank_id": null,
+      "target": 10,
+      "baseline": 0,
+      "current": 10,
+      "battles": 10,
+      "status": "achieved",
+      "starts_at": "2026-09-27T17:00:00.000Z",
+      "ends_at": "2026-09-27T23:59:00.000Z",
+      "achieved_at": "2026-09-27T21:40:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+# Game-client package: runs on the client's CPython 2.7. requires-python is for the host tooling (tests on 3.x).
+
+[project]
+name = "otmetki-feature-battle-efficiency"
+version = "0.1.0"
+description = "Feature: a live WN8 estimate of this battle and own damage against the own average on the tank."
+requires-python = ">=3.10"
+license = { text = "UNLICENSED" }
+authors = [{ name = "Alexandr Artemev" }]
+dependencies = ["otmetki-core", "otmetki-companion"]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+otmetki-core = { workspace = true }
+otmetki-companion = { workspace = true }

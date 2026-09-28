@@ -4,16 +4,16 @@ import time
 
 from ....core.client.component import FeatureComponent
 from ....core.client.game import selected_vehicle, vehicle_short_name
-from ....core.codec import encode_json, parse_json_body, parse_retry_after
+from ....core.client.me import post_signed, tank_ratings
 from ....core.errors import ReasonError
 from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.hooks import subscribe
 from ....core.log import log, log_exception, safe
-from ....core.net.signing import signed_request
+from ....core.me import OK_STATUS
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import (ACTION_REFRESH, OVERVIEW_KEY, OVERVIEW_PATH, TANKS_PATH, RatingsCache, is_auth_failure, layout_of, overview_request,
-                     page_actions, panel_text, parse_overview, parse_tanks, retry_delay, tank_key, tanks_request)
+from ..model import (ACTION_REFRESH, OVERVIEW_KEY, OVERVIEW_PATH, RatingsCache, layout_of, overview_request, page_actions, panel_text, parse_overview,
+                     retry_delay)
 from ..settings import SCHEMA, SWITCH
 from .constants import HANGAR_PANEL
 
@@ -23,6 +23,7 @@ class HangarRatings(FeatureComponent):
     def __init__(self, app):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
         self.cache = RatingsCache(app.account_id)
+        self.tanks = tank_ratings(app)
         self.selected = None
         self.text = None
         bus = app.bus
@@ -34,6 +35,7 @@ class HangarRatings(FeatureComponent):
         bus.on('battle_event', self._on_battle_event)
         bus.on('ingest_response', self._on_ingest_response)
         bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
+        self.tanks.listen(self._on_tank)
         try:
             from CurrentVehicle import g_currentVehicle
             subscribe(g_currentVehicle, 'onChanged', self._on_vehicle_changed)
@@ -63,8 +65,12 @@ class HangarRatings(FeatureComponent):
     def _on_tick(self, now):
         self.update(now)
 
+    def _on_tank(self, tank_id):
+        if tank_id == self.selected:
+            self.render()
+
     def _on_battle_event(self, event, now):
-        self.cache.after_battle((event.get('vehicle') or {}).get('tank_id'), now)
+        self.cache.after_battle(now)
 
     def _on_ingest_response(self, data):
         self.cache.expedite(OVERVIEW_KEY)
@@ -89,51 +95,35 @@ class HangarRatings(FeatureComponent):
 
     def fetch(self, now):
         settings = self.settings
-        credentials = self.app.current_credentials()
+        if settings.get('show_tank') and self.selected:
+            self.tanks.ensure(self.selected, now)
+        if not (settings.get('show_account') or settings.get('show_session')) or not self.cache.wants(OVERVIEW_KEY, now):
+            return
         try:
-            if (settings.get('show_account') or settings.get('show_session')) and self.cache.wants(OVERVIEW_KEY, now):
-                self._post(OVERVIEW_PATH, overview_request(credentials), [OVERVIEW_KEY], self._store_overview)
-            tank_id = self.selected
-            if settings.get('show_tank') and tank_id and self.cache.wants(tank_key(tank_id), now):
-                self._post(TANKS_PATH, tanks_request(credentials, [tank_id]), [tank_key(tank_id)], self._store_tanks([tank_id]))
+            payload = overview_request(self.app.current_credentials())
         except ReasonError as error:
             log('hangar ratings not requested: %s' % error.reason)
-
-    def _store_overview(self, data, account_id):
-        self.cache.store_overview(parse_overview(data, account_id))
-
-    def _store_tanks(self, tank_ids):
-        def store(data, account_id):
-            self.cache.store_tanks(tank_ids, parse_tanks(data, account_id))
-        return store
-
-    def _post(self, path, payload, keys, store):
-        app = self.app
-        credentials = app.current_credentials()
+            return
         account_id = self.cache.account_id
-        self.cache.start(keys)
+        self.cache.start([OVERVIEW_KEY])
 
-        @safe
-        def done(status, body, headers):
+        def done(status, data, retry_after):
             if account_id != self.cache.account_id:
                 return
-            if status == 200:
-                store(parse_json_body(body), account_id)
+            if status == OK_STATUS:
+                self.cache.store_overview(parse_overview(data, account_id))
             else:
-                self.cache.fail(keys, time.time(), retry_delay(status, parse_retry_after(headers)))
-                if is_auth_failure(status):
-                    app.on_auth_failed()
+                self.cache.fail([OVERVIEW_KEY], time.time(), retry_delay(status, retry_after))
             self.render()
 
-        signed_request(app.transport, 'POST', app.config.endpoint(path), credentials.device_id, credentials.secret, encode_json(payload),
-                       app.user_agent(), done)
+        post_signed(self.app, OVERVIEW_PATH, payload, done)
 
     @safe
     def render(self):
         app = self.app
         if not self.active():
             return
-        tank = self.cache.tank(self.selected) if self.selected else None
+        tank = self.tanks.row(self.selected) if self.selected else None
         label = vehicle_short_name(self.selected) if tank is not None else None
         text = panel_text(self.cache.overview, tank, label, self.settings, app.translate)
         if text is None:
@@ -153,5 +143,6 @@ class HangarRatings(FeatureComponent):
         if not self.app.is_bound():
             return {'kind': 'error', 'text': translate('hangar_ratings_unbound')}
         self.cache.refresh_all()
+        self.tanks.reads.refresh_all()
         self.update(time.time())
         return {'kind': 'info', 'text': translate('hangar_ratings_refreshing')}

@@ -1,10 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.native_settings import NATIVE, from_table, native_values, tri_state
-from .constants import CAMERA_PRESETS, DYNAMIC_CAMERA, HORIZONTAL_STABILIZATION, ZOOM_STEP_PRESETS, ZOOM_STEPS
+from .constants import CAMERA_PRESETS, DYNAMIC_CAMERA, HORIZONTAL_STABILIZATION, SNIPER_ZOOM, SNIPER_ZOOM_VALUES
 
 FIELDS = {
-    'zoom_steps': (ZOOM_STEPS, from_table(ZOOM_STEP_PRESETS)),
+    'sniper_zoom': (SNIPER_ZOOM, from_table(SNIPER_ZOOM_VALUES)),
     'dynamic_camera': (DYNAMIC_CAMERA, tri_state),
     'horizontal_stabilization': (HORIZONTAL_STABILIZATION, tri_state),
 }

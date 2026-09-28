@@ -119,7 +119,9 @@ class ParseTest(unittest.TestCase):
         assert sorted(rows) == [1, 9, 2849]
         assert rows[1]['moe_percent'] == 86.12 and rows[1]['marks_on_gun'] == 2 and rows[1]['mastery'] == 4
         assert rows[9] == {'tank_id': 9, 'battles': 0, 'win_rate': None, 'avg_damage': None, 'wn8': {'value': None, 'tier': None},
-                           'moe_percent': None, 'marks_on_gun': None, 'mastery': 0}
+                           'moe_percent': None, 'marks_on_gun': None, 'mastery': 0, 'records': None, 'expected': None}
+        assert rows[1]['records'] == {'damage': 6812, 'assist': 5120, 'frags': 6, 'xp': 2740}
+        assert rows[1]['expected'] == {'damage': 1180.0, 'spot': 1.42, 'frag': 0.98, 'def': 0.75, 'win_rate': 52.3}
 
     def test_overview_without_ratings_yet(self):
         overview = parse_overview({'account_id': ACCOUNT, 'nickname': None, 'overall': None, 'session': None}, ACCOUNT)
@@ -142,32 +144,28 @@ class CacheTest(unittest.TestCase):
         cache.fail([tank_key(1)], T0, 60)
         assert not cache.wants(tank_key(1), T0 + 59) and cache.wants(tank_key(1), T0 + 60)
 
-    def test_a_battle_refreshes_the_overview_and_its_tank_after_a_delay(self):
+    def test_a_battle_refreshes_the_overview_after_a_delay(self):
         cache = RatingsCache(ACCOUNT)
         cache.store_overview({'account_id': ACCOUNT})
-        cache.store_tanks([1, 2], {1: {'tank_id': 1}, 2: {'tank_id': 2}})
-        cache.after_battle(1, T0)
+        cache.after_battle(T0)
         assert not cache.wants(OVERVIEW_KEY, T0 + REFRESH_AFTER_BATTLE_S - 1)
-        assert cache.wants(OVERVIEW_KEY, T0 + REFRESH_AFTER_BATTLE_S) and cache.wants(tank_key(1), T0 + REFRESH_AFTER_BATTLE_S)
-        assert not cache.wants(tank_key(2), T0 + REFRESH_AFTER_BATTLE_S)
-        assert cache.tank(1) == {'tank_id': 1}
+        assert cache.wants(OVERVIEW_KEY, T0 + REFRESH_AFTER_BATTLE_S)
+        assert cache.overview == {'account_id': ACCOUNT}
 
     def test_ingest_answer_expedites_a_stale_overview_only(self):
         cache = RatingsCache(ACCOUNT)
-        cache.after_battle(None, T0)
+        cache.after_battle(T0)
         cache.expedite(OVERVIEW_KEY)
         assert cache.wants(OVERVIEW_KEY, T0)
         cache.store_overview(None)
         cache.expedite(OVERVIEW_KEY)
         assert not cache.wants(OVERVIEW_KEY, T0)
 
-    def test_a_tank_without_data_is_forgotten_and_reset_clears_everything(self):
+    def test_reset_clears_everything(self):
         cache = RatingsCache(ACCOUNT)
-        cache.store_tanks([1], {1: {'tank_id': 1}})
-        cache.refresh_all()
-        cache.store_tanks([1], {})
-        assert cache.tank(1) is None
         cache.store_overview({'account_id': ACCOUNT})
+        cache.refresh_all()
+        assert cache.wants(OVERVIEW_KEY, T0)
         cache.reset(ACCOUNT + 1)
         assert cache.overview is None and cache.account_id == ACCOUNT + 1 and cache.wants(OVERVIEW_KEY, T0)
 

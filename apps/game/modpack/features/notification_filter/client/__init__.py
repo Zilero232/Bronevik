@@ -5,7 +5,7 @@ from ....core.hooks import override
 from ....core.log import log
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import hidden_types, type_table_of
+from ..model import hidden_names, hides, type_table_of
 from ..settings import SCHEMA, SWITCH
 
 # RU 1.45: notification.NotificationsModel.addNotification lists and counts an entry of the notification
@@ -36,10 +36,10 @@ class NotificationFilter(FeatureComponent):
     def blocked(self):
         if not self.enabled():
             return frozenset()
-        return hidden_types(self.settings.to_dict(), self.types)
+        return hidden_names(self.settings.to_dict())
 
     def _add_notification(self, original, model, notification, *args, **kwargs):
-        if notification.getType() in self.blocked():
+        if hides(notification.getType(), type(notification).__name__, self.blocked(), self.types):
             self.hidden += 1
             return None
         return original(model, notification, *args, **kwargs)

@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.garage import run_processor
+from ....core.client.garage import fresh_vehicle, run_in_order, run_processor
 
 # The requests the hangar's own buttons send, RU 1.45 client source: gui.shared.gui_items.processors
 # module.getInstallerProcessor(vehicle, item, slotIdx, install=False), tankman.TankmanUnload(vehicleInvID),
@@ -22,12 +22,37 @@ def _return(vehicle):
     return TankmanReturn(vehicle)
 
 
-def demount(vehicle, device, slot, done):
-    run_processor(lambda: _installer(vehicle, device, slot), done, 'demount')
+def _style_remover(vehicle):
+    # The customization window's own way to take a style off (styled_mode._sellItem, RU 1.45): an empty outfit for
+    # every season through OutfitApplier; the style goes back to the depot.
+    from gui.shared.gui_items.processors.common import OutfitApplier
+    from items.components.c11n_constants import SeasonType
+    from items.customizations import CustomizationOutfit
+    from vehicle_outfit.outfit import Outfit
+    outfit = Outfit(component=CustomizationOutfit(), vehicleCD=vehicle.descriptor.makeCompactDescr())
+    return OutfitApplier(vehicle, ((outfit, SeasonType.ALL),))
+
+
+def _demount_step(vehicle, slot, device_in):
+    def make():
+        current = fresh_vehicle(vehicle)
+        device = device_in(current, slot)
+        return _installer(current, device, slot) if device is not None else None
+    return make
+
+
+def demount(vehicle, slots, device_in, done):
+    # One slot at a time, each built from the vehicle as the items cache holds it after the previous
+    # answer: the hangar's own demount never sends overlapping inventory requests.
+    run_in_order([_demount_step(vehicle, slot, device_in) for slot in slots], done, 'demount')
 
 
 def unload_crew(vehicle, done):
     run_processor(lambda: _unload(vehicle), done, 'crew unload')
+
+
+def remove_style(vehicle, done):
+    run_processor(lambda: _style_remover(vehicle), done, 'style removal')
 
 
 def return_crew(vehicle, done):

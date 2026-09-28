@@ -1,4 +1,5 @@
-"""The texts of a submission: ru/en descriptions, the forum topic title, the changelog and the dependency list.
+"""The texts of a submission: ru/en descriptions, the forum topic title, the changelog and the dependency lists
+(our packages, then the third-party runtime mods the player installs separately).
 
 Everything comes from catalog/catalog.json (through the setupkit manifest) and CHANGELOG.md, so the
 manager, the site and МОСТ describe a component with the same words. A CHANGELOG.md entry carries one
@@ -17,6 +18,8 @@ LABELS = {
         'fair_play': 'Честная игра',
         'dependencies': 'Зависимости',
         'no_dependencies': 'Нет: ставится сам по себе.',
+        'external': 'Сторонние моды: не входят в пакет, ставятся отдельно (менеджер модпака ставит их сам).',
+        'external_item': '- %(title)s %(version)s (`%(file)s`, лицензия %(licence)s, автор %(author)s): %(url)s',
         'data': 'Какие данные отправляются',
         'data_text': ('Мод ничего не отправляет, пока вы не привяжете его кодом с сайта %s. После привязки уходят только ваши '
                       'данные на api.triotmetki.ru по HTTPS; каждую отправку можно выключить в настройках.') % SITE,
@@ -30,6 +33,8 @@ LABELS = {
         'fair_play': 'Fair play',
         'dependencies': 'Dependencies',
         'no_dependencies': 'None: installs on its own.',
+        'external': 'Third-party mods: not in the package, installed separately (the modpack manager installs them itself).',
+        'external_item': '- %(title)s %(version)s (`%(file)s`, %(licence)s licence, by %(author)s): %(url)s',
         'data': 'What data is sent',
         'data_text': ('The mod sends nothing until you bind it with a code from %s. Once bound, only your own data goes to '
                       'api.triotmetki.ru over HTTPS; every kind of upload can be switched off in the settings.') % SITE,
@@ -136,6 +141,20 @@ def dependency_list(component, manifest):
     return items
 
 
+def external_dependency_list(component, manifest):
+    """[{id, packageId, version, file, title: {ru, en}, author, licence, url}]: the third-party mods the component needs."""
+    return [{
+        'id': dependency.id,
+        'packageId': dependency.package_id,
+        'version': dependency.version,
+        'file': dependency.file,
+        'title': dict((language, getattr(dependency.title, language)) for language in LANGUAGES),
+        'author': dependency.author.name,
+        'licence': dependency.licence.name,
+        'url': dependency.author.url,
+    } for dependency in manifest.dependencies_of(component.id)]
+
+
 def sends_data(component):
     return component.category == DATA_CATEGORY or component.id in DATA_COMPONENTS
 
@@ -149,9 +168,13 @@ def description(component, manifest, language, game_version, changes):
         lines += ['## %s' % labels['data'], '', labels['data_text'], '']
     lines += ['## %s' % labels['dependencies'], '']
     dependencies = dependency_list(component, manifest)
+    external = external_dependency_list(component, manifest)
     if dependencies:
         lines += ['- %s (`%s` %s)' % (item['title'][language], item['packageId'], item['version']) for item in dependencies]
-    else:
+    if external:
+        lines += ['', labels['external']] if dependencies else [labels['external']]
+        lines += [labels['external_item'] % dict(item, title=item['title'][language]) for item in external]
+    if not dependencies and not external:
         lines.append(labels['no_dependencies'])
     lines += ['', '## %s' % labels['install'], '', labels['install_text'] % (component.file, game_version), '']
     lines += ['## %s' % labels['changes'], '', changes_text(changes, language) or labels['no_changes'], '']

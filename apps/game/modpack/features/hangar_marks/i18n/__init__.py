@@ -1,0 +1,53 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+STRINGS = {
+    'ru': {
+        'hangar_marks_title': u'Отметка',
+        'hangar_marks_line_head': u'{title} {percent}% {stars}',
+        'hangar_marks_line_average': u'среднее {ema} · темп {pace} · +{step}%: {step_need}',
+        'hangar_marks_line_target': u'{level}%: {need}',
+        'hangar_marks_line_forecast': u'до {next}% (среднее {target_next}): ~{battles} боёв',
+        'hangar_marks_line_compact': u'{percent}% {stars} · до {next}%: ~{battles} боёв',
+        'hangar_marks_no_curve': u'нет порогов для этого танка',
+        'component_hangar_marks': u'Отметки в ангаре',
+        'component_hangar_marks_hint': u'Выбранный танк: процент отметки, урон за бой до 65/85/95 %, прогноз боёв до следующей отметки '
+                                       u'по вашему темпу (среднее последних боёв).',
+        'hangar_marks_style': u'Вид',
+        'hangar_marks_style_extended': u'Подробный',
+        'hangar_marks_style_compact': u'Компактный',
+        'hangar_marks_style_custom': u'Свой шаблон',
+        'hangar_marks_template': u'Шаблон',
+        'hangar_marks_template_hint': u'Макросы как у панели отметки в бою: {percent} {stars} {ema} {pace} {next} {need65} {need85} {need95} '
+                                      u'{target_next} {step_need} {battles}',
+        'hangar_marks_show_targets': u'Урон до 65/85/95 %',
+        'hangar_marks_show_forecast': u'Прогноз боёв',
+        'hangar_marks_color_mode': u'Цвет',
+        'hangar_marks_color_mode_mark': u'По отметке',
+        'hangar_marks_color_mode_off': u'Без цвета',
+    },
+    'en': {
+        'hangar_marks_title': u'MoE',
+        'hangar_marks_line_head': u'{title} {percent}% {stars}',
+        'hangar_marks_line_average': u'average {ema} · pace {pace} · +{step}%: {step_need}',
+        'hangar_marks_line_target': u'{level}%: {need}',
+        'hangar_marks_line_forecast': u'to {next}% (average {target_next}): ~{battles} battles',
+        'hangar_marks_line_compact': u'{percent}% {stars} · to {next}%: ~{battles} battles',
+        'hangar_marks_no_curve': u'no thresholds for this tank',
+        'component_hangar_marks': u'Marks in the hangar',
+        'component_hangar_marks_hint': u'The selected tank: MoE percent, damage per battle to 65/85/95%, battles to the next mark at your '
+                                       u'pace (the average of your last battles).',
+        'hangar_marks_style': u'Style',
+        'hangar_marks_style_extended': u'Extended',
+        'hangar_marks_style_compact': u'Compact',
+        'hangar_marks_style_custom': u'Own template',
+        'hangar_marks_template': u'Template',
+        'hangar_marks_template_hint': u'The in-battle panel macros: {percent} {stars} {ema} {pace} {next} {need65} {need85} {need95} '
+                                      u'{target_next} {step_need} {battles}',
+        'hangar_marks_show_targets': u'Damage to 65/85/95%',
+        'hangar_marks_show_forecast': u'Battles forecast',
+        'hangar_marks_color_mode': u'Colour',
+        'hangar_marks_color_mode_mark': u'By mark',
+        'hangar_marks_color_mode_off': u'No colour',
+    },
+}

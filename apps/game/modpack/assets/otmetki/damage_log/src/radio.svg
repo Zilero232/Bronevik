@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<!-- (c) 2026 Три отметки. Original artwork. -->
+<path d="M9 9C5 13 5 19 9 23M23 9C27 13 27 19 23 23M12.5 12.5C10.5 14.5 10.5 17.5 12.5 19.5M19.5 12.5C21.5 14.5 21.5 17.5 19.5 19.5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#0e0e10" stroke-width="5"/>
+<path d="M9 9C5 13 5 19 9 23M23 9C27 13 27 19 23 23M12.5 12.5C10.5 14.5 10.5 17.5 12.5 19.5M19.5 12.5C21.5 14.5 21.5 17.5 19.5 19.5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#f2f2f3" stroke-width="2.2"/>
+<circle cx="16" cy="16" r="3" fill="#f2f2f3" stroke="#0e0e10" stroke-width="2" stroke-linejoin="round"/>
+</svg>

@@ -23,6 +23,14 @@ def plan_crew_unload(vehicle, free_berths):
     return count, None
 
 
+def plan_style_removal(vehicle):
+    if vehicle.get('locked'):
+        return REFUSE_LOCKED
+    if not vehicle.get('style'):
+        return REFUSE_NOTHING
+    return None
+
+
 def plan_crew_return(vehicle):
     if vehicle.get('locked'):
         return REFUSE_LOCKED

@@ -29,3 +29,24 @@ MODE_RETICLES = {
     'arcade': (ARCADE,),
     'sniper': (SNIPER,),
 }
+
+# The mark images the package ships (assets/assets.json: otmetki_crosshair, kenney_crosshair_pack), as the client
+# reads them through Scaleform `img://`. Each is rendered at every size of MARK_RENDITIONS.
+MARK_ROOT = 'gui/maps/icons/otmetki/crosshair'
+MARK_RENDITIONS = (64, 128)
+MARK_FILES = {
+    'dot': ('otmetki', 'dot'),
+    'cross': ('otmetki', 'cross'),
+    'ring': ('otmetki', 'ring'),
+    'chevron': ('otmetki', 'chevron'),
+    'streamer': ('otmetki', 'streamer'),
+    'colorblind': ('otmetki', 'colorblind'),
+    'triad': ('otmetki', 'triad'),
+    'kenney_dotted': ('kenney', 'crosshair-016'),
+    'kenney_cluster': ('kenney', 'crosshair-021'),
+    'kenney_pincer': ('kenney', 'crosshair-061'),
+    'kenney_arrows': ('kenney', 'crosshair-113'),
+    'kenney_scope': ('kenney', 'crosshair-196'),
+}
+CENTRE_PART = 'centralTag'
+PREVIEW_SIZE = (128, 128)

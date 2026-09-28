@@ -61,6 +61,11 @@ def vehicle_name(vehicle_id):
     return getattr(vehicle_type, 'shortName', None) or getattr(vehicle_type, 'name', None)
 
 
+def vehicle_class(vehicle_id):
+    """The class tag (lightTank, mediumTank, heavyTank, AT-SPG, SPG) the player panels and the vanilla damage log show."""
+    return getattr(getattr(vehicle_info(vehicle_id), 'vehicleType', None), 'classTag', None)
+
+
 def is_enemy(vehicle_id):
     provider = arena_dp()
     info = vehicle_info(vehicle_id)

@@ -143,6 +143,9 @@ class ReplayQueue(object):
         elif kind == JobResult.BUSY:
             item['retry_at'] = now + BUSY_RETRY_S
             outcome = Outcome.WAIT
+        elif kind == JobResult.STOPPED:
+            item['retry_at'] = now
+            outcome = Outcome.WAIT
         elif kind == JobResult.MISSING:
             if now - item['ended_at'] > LOCATE_TIMEOUT_S:
                 outcome = Outcome.DROP

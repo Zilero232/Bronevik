@@ -468,6 +468,70 @@ class ReplayUploaderTest(unittest.TestCase):
         self.runner.poll()
         self.assertEqual(self.queue.items[0]['retry_at'], self.now[0] + 900)
 
+    def test_paused_uploader_starts_nothing(self):
+        transport = SyncFakeTransport((201, b'{}', {}))
+        uploader = self.uploader(transport)
+        self.queue.add(ARENA, ACCOUNT, STARTED, 0.0)
+        uploader.pause()
+        self.assertFalse(uploader.tick(self.now[0]))
+        uploader.resume()
+        self.assertTrue(uploader.tick(self.now[0]))
+
+    def test_entering_a_battle_stops_the_running_upload_and_the_hangar_resends_it(self):
+        uploader = None
+        sent = []
+
+        class StreamingTransport(object):
+
+            def __init__(self):
+                self.pause_first = True
+
+            def request(self, method, url, headers, body, callback):
+                if self.pause_first:
+                    self.pause_first = False
+                    uploader.pause()
+                try:
+                    data = b''
+                    while True:
+                        block = body.read(8192)
+                        if not block:
+                            break
+                        data += block
+                except IOError:
+                    callback(0, b'', {})
+                    return
+                sent.append(data)
+                callback(201, b'{}', {})
+
+        uploader = self.uploader(StreamingTransport())
+        self.queue.add(ARENA, ACCOUNT, STARTED, 0.0)
+        uploader.tick(self.now[0])
+        self.runner.poll()
+        self.assertEqual(sent, [])
+        self.assertEqual(len(self.queue), 1)
+        self.assertEqual((self.queue.items[0]['attempt'], self.queue.items[0]['retry_at']), (0, self.now[0]))
+        self.assertFalse(uploader.tick(self.now[0]))
+        uploader.resume()
+        self.assertTrue(uploader.tick(self.now[0]))
+        self.runner.poll()
+        self.assertEqual(self.uploaded, [str(ARENA)])
+        self.assertIn(self.data, sent[0])
+
+    def test_a_replay_renamed_before_the_read_is_found_again(self):
+        data = replay_bytes()
+        paths = iter(['/replays/old.wotreplay', '/replays/renamed.wotreplay'])
+        now = time.time()
+
+        def read(path, limit):
+            if path.endswith('old.wotreplay'):
+                raise IOError('renamed')
+            return data
+
+        result = upload_job({'arena_unique_id': str(ARENA), 'account_id': ACCOUNT, 'started_at': STARTED}, creds(),
+                            SyncFakeTransport((201, b'{}', {})), URL, 'ua', lambda item: (next(paths), len(data), now - 60), now,
+                            read_file=read)
+        self.assertEqual((result['result'], result['status']), (JobResult.HTTP, 201))
+
     def test_needs_valid_credentials(self):
         uploader = self.uploader(SyncFakeTransport(), credentials=Credentials('dev-1', 'short', ACCOUNT))
         self.queue.add(ARENA, ACCOUNT, STARTED, 0.0)

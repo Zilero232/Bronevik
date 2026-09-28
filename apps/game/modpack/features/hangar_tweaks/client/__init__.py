@@ -2,19 +2,32 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.game import selected_vehicle
 from ....core.client.native import NativeSettingsComponent
+from ....core.client.native.settings_core import settings_core
 from ....core.log import safe
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import ACTION_CREW, ACTION_DEMOUNT, ACTION_RETURN, plan_crew_return, plan_crew_unload, plan_demount, to_native
+from ..model import (ACTION_CREW, ACTION_DEMOUNT, ACTION_RETURN, ACTION_STYLE, plan_crew_return, plan_crew_unload, plan_demount, plan_style_removal,
+                     to_native, with_interface_scale)
 from ..settings import SCHEMA, SWITCH
-from .processors import demount, return_crew, unload_crew
+from .processors import demount, remove_style, return_crew, unload_crew
 from .vehicle import device_in, free_berths, summary
+
+
+def scale_options():
+    try:
+        return list(settings_core().interfaceScale.getScaleOptions())
+    except Exception:
+        return []
 
 
 class HangarTweaks(NativeSettingsComponent):
 
     def __init__(self, app):
         NativeSettingsComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS, to_native)
+
+    def desired(self):
+        values = self.settings.to_dict()
+        return with_interface_scale(to_native(values), values.get('interface_scale'), scale_options())
 
     def _actions_enabled(self):
         return self.enabled_in_hangar() and self.settings.get('quick_actions')
@@ -27,6 +40,7 @@ class HangarTweaks(NativeSettingsComponent):
             {'id': ACTION_DEMOUNT, 'label': translate('hangar_tweaks_demount'), 'confirm': translate('hangar_tweaks_demount_confirm')},
             {'id': ACTION_CREW, 'label': translate('hangar_tweaks_crew'), 'confirm': translate('hangar_tweaks_crew_confirm')},
             {'id': ACTION_RETURN, 'label': translate('hangar_tweaks_return'), 'confirm': translate('hangar_tweaks_return_confirm')},
+            {'id': ACTION_STYLE, 'label': translate('hangar_tweaks_style'), 'confirm': translate('hangar_tweaks_style_confirm')},
         ]
 
     def ui_action(self, action, row=None, value=None):
@@ -38,8 +52,7 @@ class HangarTweaks(NativeSettingsComponent):
             slots, refusal = plan_demount(state)
             if refusal:
                 return self._notice('error', 'hangar_tweaks_refused_%s' % refusal)
-            for slot in slots:
-                demount(vehicle, device_in(vehicle, slot), slot, self._done)
+            demount(vehicle, slots, device_in, self._done)
             return self._notice('info', 'hangar_tweaks_sent')
         if action == ACTION_CREW:
             count, refusal = plan_crew_unload(state, free_berths())
@@ -52,6 +65,12 @@ class HangarTweaks(NativeSettingsComponent):
             if refusal:
                 return self._notice('error', 'hangar_tweaks_refused_%s' % refusal)
             return_crew(vehicle, self._done)
+            return self._notice('info', 'hangar_tweaks_sent')
+        if action == ACTION_STYLE:
+            refusal = plan_style_removal(state)
+            if refusal:
+                return self._notice('error', 'hangar_tweaks_refused_%s' % refusal)
+            remove_style(vehicle, self._done)
             return self._notice('info', 'hangar_tweaks_sent')
         return None
 

@@ -13,3 +13,6 @@ DATE_TIME_FORMAT = '%d.%m.%Y %H:%M'
 
 TAGS = re.compile(r'<[^>]*>')
 SPACES = re.compile(r'\s+')
+
+# The marks colour ramp: below the first mark, then 1, 2 and 3 marks (the percent a view shows).
+MARK_COLORS = ('#A09A8B', '#C9A26B', '#C8D1DC', '#F2C94C')

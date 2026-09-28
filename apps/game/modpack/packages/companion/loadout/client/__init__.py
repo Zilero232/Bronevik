@@ -34,8 +34,10 @@ def _shells(vehicle):
 
 
 def _modification_names(vehicle):
+    # RU 1.45 client source (common/items/vehicles.py): VehicleDescriptor.modifications, the ids of the
+    # installed field modifications; vehicles.g_cache.postProgression().modifications maps them to items.
     descriptor = getattr(vehicle, 'descriptor', None)
-    ids = getattr(descriptor, 'installedModifications', None) or ()
+    ids = getattr(descriptor, 'modifications', None) or ()
     if not ids:
         return []
     try:

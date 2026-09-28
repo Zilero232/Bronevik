@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import io
+import json
+import os
 import unittest
 
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.damage_log.i18n import STRINGS
-from otmetki.features.damage_log.model import DamageLog, format_damage_log
-from otmetki.features.damage_log.model.preview import preview_text
-from otmetki.features.damage_log.settings import SCHEMA, SETTINGS, SWITCH
+from otmetki.features.damage_log.model import DamageLog, class_icon, format_damage_log, format_last_hit, kind_color, kind_icon
+from otmetki.features.damage_log.model.constants import CLASS_GLYPHS, KINDS, PALETTES
+from otmetki.features.damage_log.model.preview import preview_last_hit, preview_text
+from otmetki.features.damage_log.settings import LAST_HIT_SCHEMA, SCHEMA, SETTINGS, SWITCH
 
 
 def translator(language='ru'):
@@ -83,12 +87,89 @@ class FormatTest(unittest.TestCase):
         assert '800 / 240 / 240 / 310' in compact
         assert '\n' not in compact
 
+    def test_palettes_colour_the_full_line(self):
+        for name, colors in PALETTES.items():
+            text = format_damage_log(filled_log(), Settings({'palette': name, 'show_log': False}, SCHEMA), translator())
+            for color in colors:
+                assert '<font color="%s">' % color in text, (name, color)
+        assert Settings({'palette': 'rainbow'}, SCHEMA).get('palette') == 'graphite'
+
+    def test_kind_icons(self):
+        lines = format_damage_log(filled_log(), Settings({'log_lines': 1}, SCHEMA), translator()).split('\n')
+        assert '<img src="img://gui/maps/icons/otmetki/damage_log/icons/received_32.png" width="14" height="14"/>' in lines[1]
+        plain = format_damage_log(filled_log(), Settings({'log_lines': 1, 'kind_icons': False}, SCHEMA), translator())
+        assert '<img' not in plain and 'Получено 310 Tiger' in plain
+
+    def test_every_class_glyph_ships(self):
+        assets = os.path.join(_support.MODPACK_DIR, 'assets')
+        with io.open(os.path.join(assets, 'assets.json'), encoding='utf-8') as handle:
+            sets = [item for item in json.load(handle)['sets'] if item['feature'] == 'damage_log']
+        shipped = set(item['target'][len('res/'):] + '/' + name for item in sets
+                      for name in os.listdir(os.path.join(assets, *item['files'].split('/'))))
+        for vehicle_class in CLASS_GLYPHS:
+            assert class_icon(vehicle_class, 16).split('img://')[1].split('"')[0] in shipped, vehicle_class
+        assert class_icon('warship', 16) == '' and class_icon('heavyTank', None) == ''
+
+    def test_every_kind_icon_ships(self):
+        assets = os.path.join(_support.MODPACK_DIR, 'assets')
+        with io.open(os.path.join(assets, 'assets.json'), encoding='utf-8') as handle:
+            sets = [item for item in json.load(handle)['sets'] if item['feature'] == 'damage_log']
+        shipped = set(item['target'][len('res/'):] + '/' + name for item in sets
+                      for name in os.listdir(os.path.join(assets, *item['files'].split('/'))))
+        for kind in KINDS:
+            assert kind_icon(kind, 16).split('img://')[1].split('"')[0] in shipped, kind
+
     def test_custom_templates(self):
         settings = Settings({'style': 'custom', 'template': 'D={dealt} R={received_hits}', 'log_kinds': 'dealt', 'log_lines': 1,
                              'entry_template': '#{index} {amount} {vehicle}'}, SCHEMA)
         text = format_damage_log(filled_log(), settings, translator('en'))
         assert 'D=800 R=1' in text
         assert '#1 240 Tiger' in text
+
+
+class SourcesTest(unittest.TestCase):
+
+    def test_received_damage_keeps_its_source_and_attacker_class(self):
+        log = DamageLog()
+        assert log.add('received', 120, 'KV-1', None, 'fire', 'heavyTank', 10.0)
+        assert log.add('damage', 300, 'Pz. IV', 'ap', 'fire', 'tank-destroyer', 11.0)
+        assert log.entries[0]['source'] == 'fire' and log.entries[0]['class'] == 'heavyTank'
+        assert log.entries[1]['source'] is None and log.entries[1]['class'] is None
+        text = format_damage_log(log, Settings({'log_lines': 2}, SCHEMA), translator())
+        assert u'пожар' in text and 'class_heavy_32.png' in text
+
+    def test_ammo_rack_marks_the_hit_of_that_moment_in_either_order(self):
+        log = DamageLog()
+        log.add('received', 310, 'KV-1', 'he', 'shot', 'heavyTank', 20.0)
+        assert log.ammo_rack_hit(20.4) and log.entries[-1]['ammo_rack']
+        assert not log.ammo_rack_hit(40.0)
+        log.add('received', 200, 'IS', 'ap', 'shot', 'heavyTank', 40.9)
+        assert log.entries[-1]['ammo_rack']
+        log.add('received', 150, 'IS', 'ap', 'shot', 'heavyTank', 60.0)
+        assert not log.entries[-1]['ammo_rack']
+        assert u'боеукладка' in format_damage_log(log, Settings({'log_lines': 3}, SCHEMA), translator())
+
+    def test_kind_colours(self):
+        settings = Settings({'palette': 'classic', 'color_received': '#123abc', 'color_damage': 'red'}, SCHEMA)
+        assert kind_color('received', settings) == '#123ABC'
+        assert kind_color('damage', settings) == PALETTES['classic'][0]
+        assert kind_color('stun', settings) == PALETTES['classic'][2]
+        lines = format_damage_log(filled_log(), settings, translator()).splitlines()
+        assert '<font color="#123ABC"' in lines[1]
+        plain = format_damage_log(filled_log(), Settings({'kind_colors': False}, SCHEMA), translator()).splitlines()
+        assert '#123ABC' not in plain[1] and '#A09A8B' in plain[1]
+
+    def test_last_hit(self):
+        log = DamageLog()
+        log.add('received', 310, 'KV-1', 'he', 'ram', 'heavyTank', 5.0)
+        text = format_last_hit(log.last('received'), Settings({}, LAST_HIT_SCHEMA), translator())
+        assert u'KV-1 −310 ОФ таран' in text and 'class_heavy_32.png' in text
+        plain = format_last_hit(log.last('received'), Settings({'show_class': False, 'template': '{vehicle}:{amount}'}, LAST_HIT_SCHEMA),
+                                translator('en'))
+        assert 'KV-1:310' in plain and '<img' not in plain
+        assert log.last('damage') is None
+        assert 'KV-1' in preview_last_hit(Settings({}, LAST_HIT_SCHEMA), translator('en'))
+        assert Settings({'timeout_s': 99}, LAST_HIT_SCHEMA).get('timeout_s') == 15
 
 
 class SettingsTest(unittest.TestCase):

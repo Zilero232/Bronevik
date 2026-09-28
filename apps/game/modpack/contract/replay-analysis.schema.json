@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://triotmetki.ru/contract/mod/replay-analysis.schema.json",
+  "title": "Three Marks mod replay analysis status (hangar poll)",
+  "description": "NOT YET SERVED (README TODO): the analysis state of the replays the mod uploaded (POST /replays/mod answered their ids), for the replay manager's hangar notice. POST /mod/me/replays body #/definitions/statusRequest -> 200 #/definitions/statuses (one row per requested replay the account owns, in request order; ids of other accounts or unknown ids are left out). Signed exactly like /mod/ingest (v2: X-Otmetki-Device, X-Otmetki-Timestamp, X-Otmetki-Nonce, X-Otmetki-Signature over the raw body) and answered only for the device's bound account: a body naming another account is refused with 403 account_mismatch; 429 with Retry-After when rate-limited; every error reply carries X-Otmetki-Server-Time. The mod polls every 60 s in the hangar while an upload of the last 6 hours is neither `parsed` nor `failed`, at most 20 ids per request.",
+  "definitions": {
+    "deviceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "accountId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "deviceRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device_id", "account_id"],
+      "properties": {
+        "device_id": {
+          "$ref": "#/definitions/deviceId"
+        },
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        }
+      }
+    },
+    "statusRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device_id", "account_id", "replay_ids"],
+      "properties": {
+        "device_id": {
+          "$ref": "#/definitions/deviceId"
+        },
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        },
+        "replay_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      }
+    },
+    "highlights": {
+      "type": ["object", "null"],
+      "description": "Optional short summary for the notice; null when the server has none.",
+      "properties": {
+        "accuracy": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "damage": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "penetrations": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "status": {
+      "type": "object",
+      "required": ["id", "status"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "enum": ["uploaded", "parsing", "parsed", "failed"]
+        },
+        "highlights": {
+          "$ref": "#/definitions/highlights"
+        }
+      }
+    },
+    "statuses": {
+      "type": "object",
+      "required": ["account_id", "replays"],
+      "properties": {
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        },
+        "replays": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/status"
+          }
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/definitions/statusRequest"
+    },
+    {
+      "$ref": "#/definitions/statuses"
+    }
+  ]
+}

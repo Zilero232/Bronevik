@@ -1,0 +1,40 @@
+@use '../../../../../shared/styles/gameface' as *;
+
+.label {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 2px 4px;
+  border: 1px solid rgb(0 0 0 / 0%);
+  margin: 0;
+  background-color: rgb(0 0 0 / 0%);
+  color: token(color-text);
+  font-family: $font-family;
+  font-size: 14px;
+  pointer-events: none;
+  text-align: left;
+  text-shadow: 1px 1px 2px rgb(0 0 0 / 90%);
+  white-space: pre;
+}
+
+.border {
+  border-color: token(color-border-strong);
+  background-color: token(shade-35);
+}
+
+.draggable {
+  border-color: token(color-text-dim);
+  cursor: move;
+  pointer-events: auto;
+}
+
+.dragging {
+  border-color: token(color-accent);
+}
+
+.line {
+  display: flex;
+  min-height: 1em;
+  flex-direction: row;
+  align-items: center;
+}

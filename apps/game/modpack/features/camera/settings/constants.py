@@ -5,19 +5,19 @@ from ....core.native_settings import NATIVE, TRI_STATE
 SWITCH = 'camera_tweaks'
 GROUP = 'battle'
 
-ZOOM_PRESETS = (NATIVE, 'x2_x8', 'x2_x16', 'x2_x25', 'x4_x25')
+SNIPER_ZOOMS = (NATIVE, 'remember', 'x2', 'x4', 'x8')
 CAMERA_PRESETS = (NATIVE, 'sniper', 'balanced', 'dynamic')
 
 DEFAULTS = {
     'preset': NATIVE,
-    'zoom_steps': NATIVE,
+    'sniper_zoom': NATIVE,
     'dynamic_camera': NATIVE,
     'horizontal_stabilization': NATIVE,
 }
 
 CHOICES = {
     'preset': CAMERA_PRESETS,
-    'zoom_steps': ZOOM_PRESETS,
+    'sniper_zoom': SNIPER_ZOOMS,
     'dynamic_camera': TRI_STATE,
     'horizontal_stabilization': TRI_STATE,
 }

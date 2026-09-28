@@ -9,6 +9,9 @@ apps/game/modpack/packages/ui/gameface/**
 apps/game/modpack/ui-web/**/_tests/fixtures/**
 # Written by the manager's Rust contract test (OTMETKI_UPDATE_FIXTURES=1) and compared byte for byte.
 apps/game/manager/tauri/contract/**
+# Written by tools/build/asset_sets.py --write and checked byte for byte by its test.
+apps/game/modpack/assets/assets.json
+apps/game/modpack/assets/THIRD_PARTY_NOTICES.md
 
 .claude
 docs

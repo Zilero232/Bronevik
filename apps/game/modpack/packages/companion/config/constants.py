@@ -4,7 +4,6 @@ DEFAULT_SERVER_URL = 'https://api.triotmetki.ru'
 FEATURES = (
     'send_battle_results',
     'send_moe_snapshots',
-    'send_moe_distribution',
     'send_queue_times',
     'send_loadouts',
     'send_shots',
@@ -29,11 +28,20 @@ FEATURES = (
     'hangar_cleaner',
     'hangar_marks_history',
     'hangar_ratings',
+    'hangar_marks',
+    'battle_personal_best',
+    'hangar_session_goals',
+    'battle_main_gun',
+    'battle_efficiency',
+    'battle_consumables',
+    'battle_reload_timer',
     'share_settings',
     'upload_replays',
     'publish_replays',
+    'share_session_report',
 )
-OPT_IN_FEATURES = ('upload_replays', 'publish_replays')
+OPT_IN_FEATURES = ('upload_replays', 'publish_replays', 'share_session_report')
+SHARE_CHANNELS = ('telegram', 'discord', 'both')
 DEFAULTS = {
     'enabled': True,
     'server_url': DEFAULT_SERVER_URL,
@@ -43,7 +51,6 @@ DEFAULTS = {
     'bind_code': '',
     'send_battle_results': True,
     'send_moe_snapshots': True,
-    'send_moe_distribution': True,
     'send_queue_times': True,
     'send_loadouts': True,
     'send_shots': True,
@@ -68,9 +75,18 @@ DEFAULTS = {
     'hangar_cleaner': True,
     'hangar_marks_history': True,
     'hangar_ratings': True,
+    'hangar_marks': True,
+    'battle_personal_best': True,
+    'hangar_session_goals': True,
+    'battle_main_gun': True,
+    'battle_efficiency': True,
+    'battle_consumables': True,
+    'battle_reload_timer': True,
     'share_settings': True,
     'upload_replays': False,
     'publish_replays': False,
+    'share_session_report': False,
+    'share_session_channel': 'telegram',
     'settings_action': '',
     'settings_target': 'private',
     'settings_anonymous_stats': False,
@@ -80,6 +96,7 @@ DEFAULTS = {
 CHOICES = {
     'settings_action': ('', 'export', 'restore'),
     'settings_target': ('profile', 'private'),
+    'share_session_channel': SHARE_CHANNELS,
 }
 LIMITS = {
     'session_idle_minutes': (10, 24 * 60),

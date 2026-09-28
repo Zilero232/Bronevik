@@ -1,122 +1,87 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import time
-
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
-from ....core.client.battle import BattleHooks, controls_own_vehicle, feedback, is_enemy
+from ....core.client.battle import call, feedback, is_enemy
 from ....core.client.game import player_tank_id, values_by_name
-from ....core.codec import parse_json_body
+from ....core.client.hud.panel import BattlePanel
+from ....core.client.moe import moe_service
 from ....core.log import safe
-from ....core.net.signing import DEVICE_HEADER
 from ..i18n import STRINGS
-from ..model import BattleTotals, ThresholdCurve, format_moe_panel, project, rating_to_percent
-from ..settings import SWITCH
-from .constants import BATTLE_PANEL, KIND_BY_EVENT, LAYOUT, MOE_PATH, THRESHOLD_ERROR_TTL_S, THRESHOLD_TTL_S
+from ..model import BattleTotals, format_panel, panel_state
+from ..model.constants import PREVIEW_SIZE
+from ..model.preview import preview_text
+from ..settings import PANEL_ID, SCHEMA, SWITCH
+from .constants import KIND_BY_EVENT
 
 
-class BattleMoeTracker(object):
+class MarksPanel(BattlePanel):
+    """The in-battle marks panel. `onPlayerFeedbackReceived` carries only the player's own events, so
+    assist earned after death (camera on an ally) still counts; the end-of-life summary raises the totals."""
 
-    def __init__(self, on_update):
-        self.on_update = on_update
+    def __init__(self, app):
         self.kinds = values_by_name(BATTLE_EVENT_TYPE, KIND_BY_EVENT)
+        self.moe = moe_service(app)
         self.totals = None
-        self.hooks = BattleHooks()
-        self.active = False
+        self.snapshot = None
+        self.tank_id = None
+        self.curve = None
+        self.pace = None
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE)
+        app.bus.on('component_settings', self._on_settings)
+        self.moe.listen(self._on_curve)
 
-    def start(self):
-        self.stop()
+    def start(self, player):
+        tank_id = player_tank_id(player)
+        snapshot = self.moe.snapshot(tank_id)
+        if snapshot is None:
+            return
+        self.snapshot = snapshot
+        self.tank_id = tank_id
+        self.curve = self.moe.curve(tank_id)
+        self.moe.ensure(tank_id)
+        self.pace = self.moe.pace(tank_id)
         self.totals = BattleTotals()
-        self.active = True
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
-        self.on_update(self.totals)
+        self.hooks.add(feedback, 'onPlayerSummaryFeedbackReceived', self._on_summary)
+        self.render()
 
     def stop(self):
-        self.active = False
-        self.hooks.clear()
+        self.totals = None
+        self.snapshot = None
+
+    def preview_text(self):
+        return preview_text(self.settings, self.app.translate)
+
+    def _on_settings(self, component_id, changed):
+        if component_id == PANEL_ID:
+            self.render()
+
+    def _on_curve(self, tank_id):
+        if self.totals is not None and tank_id == self.tank_id:
+            self.curve = self.moe.curve(tank_id)
+            self.render()
 
     def _on_feedback(self, events):
-        if not self.active or self.totals is None or not controls_own_vehicle():
+        if self.totals is None:
             return
         changed = False
         for event in events:
             kind = self.kinds.get(event.getBattleEventType())
-            if kind is None:
+            extra = event.getExtra() if kind is not None else None
+            if extra is None or (kind == 'damage' and not is_enemy(event.getTargetID())):
                 continue
-            extra = event.getExtra()
-            if extra is None:
-                continue
-            if kind == 'damage' and not is_enemy(event.getTargetID()):
-                continue
-            if self.totals.add(kind, extra.getDamage()):
-                changed = True
+            changed = self.totals.add(kind, extra.getDamage()) or changed
         if changed:
-            self.on_update(self.totals)
+            self.render()
 
-
-class MarksPanel(object):
-
-    def __init__(self, app):
-        self.app = app
-        app.translate.catalog.add(STRINGS)
-        self.thresholds = {}
-        self.threshold_requests = set()
-        self.snapshot = None
-        self.curve = None
-        self.tracker = BattleMoeTracker(self._on_totals)
-        app.bus.on('vehicle_moe', self._on_vehicle_moe)
-        app.bus.on('battle_ready', self._on_battle_ready)
-        app.bus.on('battle_leave', self._on_battle_leave)
-
-    def _on_vehicle_moe(self, snapshot):
-        self._ensure_thresholds(snapshot['tank_id'])
-
-    def _ensure_thresholds(self, tank_id):
-        app = self.app
-        cached = self.thresholds.get(tank_id)
-        now = time.time()
-        if cached is not None:
-            ttl = THRESHOLD_TTL_S if cached[1] is not None else THRESHOLD_ERROR_TTL_S
-            if now - cached[0] < ttl:
-                return
-        if tank_id in self.threshold_requests:
-            return
-        self.threshold_requests.add(tank_id)
-        headers = {'Accept': 'application/json', 'User-Agent': app.user_agent()}
-        creds = app.current_credentials()
-        if creds is not None:
-            headers[DEVICE_HEADER] = creds.device_id
-
-        @safe
-        def done(status, body, response_headers):
-            self.threshold_requests.discard(tank_id)
-            curve = ThresholdCurve.from_api(parse_json_body(body)) if status == 200 else None
-            self.thresholds[tank_id] = (time.time(), curve)
-
-        app.transport.request('GET', app.config.endpoint(MOE_PATH % tank_id), headers, None, done)
-
-    def _on_battle_ready(self, player):
-        if not self.app.config.is_enabled(SWITCH):
-            return
-        tank_id = player_tank_id(player)
-        snapshot = self.app.marks.hangar_moe.get(tank_id)
-        if snapshot is None:
-            return
-        cached = self.thresholds.get(tank_id)
-        self.snapshot = snapshot
-        self.curve = cached[1] if cached is not None else None
-        self.tracker.start()
+    def _on_summary(self, event):
+        if self.totals is not None and self.totals.apply_summary(call(event, 'getTotalDamage'), call(event, 'getTotalStunDamage')):
+            self.render()
 
     @safe
-    def _on_totals(self, totals):
-        snapshot = self.snapshot
-        if snapshot is None:
+    def render(self):
+        if self.totals is None or self.snapshot is None:
             return
-        projection = project(snapshot['moving_avg_damage'], rating_to_percent(snapshot['damage_rating']), totals, self.curve)
-        self.app.ui.show(BATTLE_PANEL, format_moe_panel(projection, self.app.translate), LAYOUT)
-
-    def _on_battle_leave(self):
-        self.tracker.stop()
-        self.snapshot = None
-        self.curve = None
-        self.app.ui.hide(BATTLE_PANEL)
+        state = panel_state(self.snapshot, self.totals.combined(), self.curve, self.pace, self.settings)
+        self.show(format_panel(state, self.settings, self.app.translate))

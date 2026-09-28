@@ -6,20 +6,41 @@
       "battles": 412,
       "win_rate": 55.1,
       "avg_damage": 1204.5,
-      "wn8": { "value": 2104.9, "tier": "very_good" },
+      "wn8": {
+        "value": 2104.9,
+        "tier": "very_good"
+      },
       "moe_percent": 86.12,
       "marks_on_gun": 2,
-      "mastery": 4
+      "mastery": 4,
+      "records": {
+        "max_damage": 6812,
+        "max_assist": 5120,
+        "max_frags": 6,
+        "max_xp": 2740
+      },
+      "expected": {
+        "damage": 1180.0,
+        "spot": 1.42,
+        "frag": 0.98,
+        "def": 0.75,
+        "win_rate": 52.3
+      }
     },
     {
       "tank_id": 2849,
       "battles": 3,
       "win_rate": 33.33,
       "avg_damage": null,
-      "wn8": { "value": null, "tier": null },
+      "wn8": {
+        "value": null,
+        "tier": null
+      },
       "moe_percent": null,
       "marks_on_gun": null,
-      "mastery": 0
+      "mastery": 0,
+      "records": null,
+      "expected": null
     }
   ]
 }

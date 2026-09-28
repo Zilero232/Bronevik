@@ -1,6 +1,7 @@
 import type { CatalogCounts, PlanWriteInput } from '../../importer.types';
 
 import { Prisma } from '../../../../../../../generated';
+import { ASSET_URL_PREFIX } from '../../../source';
 import { inBatches, toStoredJson } from '../batches';
 
 export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameVersionId'>): Promise<CatalogCounts> => {
@@ -92,6 +93,15 @@ export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameV
       )
   });
 
+  const provisionsWithImages = new Set(
+    (
+      await prisma.provision.findMany({
+        where: { image: { startsWith: 'http' }, NOT: { image: { startsWith: ASSET_URL_PREFIX } } },
+        select: { provisionId: true }
+      })
+    ).map(({ provisionId }) => provisionId)
+  );
+
   const provisions = await inBatches({
     items: plan.provisions,
     run: (batch) =>
@@ -100,16 +110,20 @@ export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameV
           const fields = {
             tag: row.tag,
             type: row.type,
+            nameKey: row.nameKey ?? null,
+            descriptionKey: row.descriptionKey ?? null,
             priceCredit: row.priceCredit ?? null,
             priceGold: row.priceGold ?? null,
             tankIds: row.tankIds,
             data: toStoredJson(row.data)
           };
 
+          const update = { ...fields, ...row.localized };
+
           return prisma.provision.upsert({
             where: { provisionId: row.provisionId },
-            create: { provisionId: row.provisionId, name: row.name, description: row.description, ...fields },
-            update: fields
+            create: { provisionId: row.provisionId, name: row.name, description: row.description, image: row.image, ...fields },
+            update: provisionsWithImages.has(row.provisionId) || !row.image ? update : { ...update, image: row.image }
           });
         })
       )

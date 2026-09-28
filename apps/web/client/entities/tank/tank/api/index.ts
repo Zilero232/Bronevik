@@ -27,3 +27,4 @@ export type {
   TankTrendInput,
   TierListInput
 } from './tanks';
+export { vehicleCatalogQuery } from './vehicle-catalog';

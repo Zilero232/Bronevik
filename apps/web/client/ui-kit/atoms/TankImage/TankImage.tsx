@@ -16,15 +16,14 @@ import s from './TankImage.module.scss';
 export const TankImage = ({
   tank,
   size,
-  withTint = size === 'big',
+  withTint = size === 'big' || size === 'large',
   isPriority = false,
   isDecorative = false,
   withFallback = true,
   className
 }: TankImageProps) => {
-  const { image, onError } = useImageFallback(tank.images?.[size] ?? null);
-
-  const { width, height, glyph } = TANK_IMAGE[size];
+  const { width, height, glyph, sources, isOptimized, sizes } = TANK_IMAGE[size];
+  const { image, onError } = useImageFallback(sources.map((key) => tank.images?.[key]));
 
   if (!image && !withFallback) {
     return null;
@@ -44,8 +43,9 @@ export const TankImage = ({
           className={s.image}
           height={height}
           priority={isPriority}
+          sizes={sizes}
           src={image}
-          unoptimized={size !== 'big'}
+          unoptimized={!isOptimized}
           width={width}
           onError={onError}
         />

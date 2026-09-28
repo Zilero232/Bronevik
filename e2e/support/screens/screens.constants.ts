@@ -9,7 +9,7 @@ const ROOT = path.resolve(import.meta.dirname, '..', '..', '..');
 const OUT = path.join(ROOT, 'e2e', '.screens');
 
 export const SCREENS_PATHS = {
-  appDir: path.join(ROOT, 'apps', 'client', 'app', '[locale]'),
+  appDir: path.join(ROOT, 'apps', 'web', 'client', 'app', '[locale]'),
   out: OUT,
   raw: path.join(OUT, '.raw'),
   params: path.join(OUT, 'params.json'),

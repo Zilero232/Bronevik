@@ -23,6 +23,7 @@ import {
   createLocalRepoReader,
   createRepoReader,
   GAME_DATA_SOURCES,
+  importLocalizationKeys,
   isNation,
   loadLocalization,
   LOCALE_SOURCES,
@@ -124,14 +125,18 @@ const localeReader = values['armor-only']
 const messages = localeReader
   ? await loadLocalization({
       reader: localeReader,
-      keys: data.vehicles.flatMap((vehicle) => [vehicle.nameKey, vehicle.shortNameKey, vehicle.descriptionKey])
+      keys: importLocalizationKeys(data)
     })
   : undefined;
 
 const plan = createImportPlan({ data, messages });
 const localizedVehicles = plan.vehicles.filter((vehicle) => vehicle.localized.name !== undefined).length;
+const localizedProvisions = plan.provisions.filter((provision) => provision.localized.name !== undefined).length;
 
-console.log(`→ localization: ${localizedVehicles} of ${plan.vehicles.length} vehicle names from ${localeReader?.revision.repo ?? 'nowhere'}`);
+console.log(
+  `→ localization: ${localizedVehicles} of ${plan.vehicles.length} vehicle names, ${localizedProvisions} of ${plan.provisions.length} provision names ` +
+    `from ${localeReader?.revision.repo ?? 'nowhere'}`
+);
 
 console.log(
   `→ plan: ${plan.vehicles.length} vehicles, ${plan.profiles.length} profiles, ${plan.modules.length} modules, ` +

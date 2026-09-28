@@ -3,6 +3,14 @@
 @forward '@/shared/styles/breakpoints';
 @use '@/shared/styles/breakpoints' as *;
 
+$accent-tones: (
+  'gold': 'gold',
+  'olive': 'armor',
+  'battle': 'battle',
+  'brass': 'brass',
+  'sky': 'steel-blue'
+);
+
 @mixin stack($gap: var(--space-4)) {
   display: flex;
   flex-direction: column;
@@ -141,7 +149,7 @@
     #{$var}: var(--color-steel);
   }
 
-  @each $tone, $token in (gold: gold, olive: armor, battle: battle, brass: brass, sky: steel-blue) {
+  @each $tone, $token in $accent-tones {
     &[data-tone='#{$tone}'] {
       #{$var}: var(--color-#{$token});
     }

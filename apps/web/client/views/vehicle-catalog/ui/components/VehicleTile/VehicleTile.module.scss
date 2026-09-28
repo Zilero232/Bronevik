@@ -1,0 +1,44 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  min-width: 0;
+}
+
+.link {
+  @include panel;
+  @include nation-tint;
+
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[data-premium='true'] {
+    border-color: color-mix(in srgb, var(--color-premium) 45%, var(--color-border-strong));
+  }
+}
+
+.render {
+  display: grid;
+  height: 56px;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--nation) 22%, transparent), transparent 75%);
+  place-items: center;
+}
+
+.identity {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+}

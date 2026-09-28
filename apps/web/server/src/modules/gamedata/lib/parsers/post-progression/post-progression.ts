@@ -13,6 +13,7 @@ import type { ParsePostProgressionInput, ResolveVehicleProgressionInput } from '
 import { fieldModificationIdOf } from '../../ids';
 import { parseModifierBlock } from '../../modifiers';
 import { entries, get, isXmlNode, nodes, num, nums, parseXml, price, text } from '../../xml';
+import { FIELD_MODIFICATION_TEXT } from './post-progression.constants';
 
 const parseTrees = (xml: string): ProgressionTree[] =>
   entries(parseXml(xml)).flatMap(([name, value]) => {
@@ -46,12 +47,15 @@ const parseModifications = (xml: string): FieldModification[] =>
       return [];
     }
 
+    const locName = text(value.locName);
+
     return [
       {
         name,
         id,
         provisionId: fieldModificationIdOf(id),
-        locName: text(value.locName),
+        nameKey: `${FIELD_MODIFICATION_TEXT.namePrefix}${locName ?? name}${FIELD_MODIFICATION_TEXT.nameSuffix}`,
+        locName,
         imgName: text(value.imgName),
         modifiers: parseModifierBlock(value.modifiers)
       }

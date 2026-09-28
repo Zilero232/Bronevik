@@ -4,7 +4,7 @@ import { memoryFiles } from '../../../_tests/fixtures';
 import { buildGameData } from '../../../game-data';
 import { createMemoryReader } from '../../../source';
 import { ENTRY_KIND, PROFILE, PROVISION_TYPE } from '../../importer.constants';
-import { createImportPlan } from '../plan';
+import { createImportPlan, importLocalizationKeys } from '../plan';
 
 const data = await buildGameData({ reader: createMemoryReader({ sourceId: 'RU', files: memoryFiles() }), nations: ['ussr'] });
 const plan = createImportPlan({ data });
@@ -68,6 +68,36 @@ describe('createImportPlan', () => {
     expect(modifications.some((row) => row.tankIds.includes(vehicle.tankId))).toBe(true);
     expect(consumables.some((row) => row.tag === 'artillery_epic')).toBe(false);
     expect(new Set(plan.provisions.map((row) => row.provisionId)).size).toBe(plan.provisions.length);
+  });
+
+  it('names provisions from the artefacts localization and keeps the fallback without it', () => {
+    const modification = data.postProgression.modifications[0];
+    const device = data.optionalDevices.find((item) => item.nameKey !== undefined);
+    const messages = { [modification?.nameKey ?? '']: 'Улучшенная ходовая', [device?.nameKey ?? '']: 'Досылатель' };
+    const localized = createImportPlan({ data, messages }).provisions;
+    const find = (rows: typeof localized, provisionId: number | undefined) => rows.find((row) => row.provisionId === provisionId);
+
+    expect(importLocalizationKeys(data)).toEqual(expect.arrayContaining([modification?.nameKey, device?.nameKey]));
+    expect(find(localized, modification?.provisionId)).toMatchObject({ name: 'Улучшенная ходовая', localized: { name: 'Улучшенная ходовая' } });
+    expect(find(localized, device?.provisionId)).toMatchObject({ name: 'Досылатель', nameKey: device?.nameKey });
+    expect(find(plan.provisions, modification?.provisionId)).toMatchObject({ localized: {} });
+  });
+
+  it('points provision icons at the Lesta GUI assets mirror', () => {
+    const pair = data.postProgression.modifications.find((item) => item.imgName !== undefined);
+    const device = data.optionalDevices.find((item) => item.icon !== undefined);
+
+    expect(plan.provisions.find((row) => row.provisionId === pair?.provisionId)?.image).toBe(
+      `https://raw.githubusercontent.com/unicum-gg/wot.assets/Lesta/gui/maps/icons/vehPostProgression/actionItems/pairModifications/120x120/${pair?.imgName}.png`
+    );
+
+    expect(plan.provisions.find((row) => row.provisionId === device?.provisionId)?.image).toBe(
+      `https://raw.githubusercontent.com/unicum-gg/wot.assets/Lesta/gui/maps/icons/artefact/${device?.icon}.png`
+    );
+
+    expect(plan.provisions.flatMap(({ image }) => (image ? [image] : [])).every((image) => /\/gui\/maps\/icons\/[\w/]+\/\w+\.png$/.test(image))).toBe(
+      true
+    );
   });
 
   it('keeps a raw snapshot entry per item and a summary per vehicle', () => {

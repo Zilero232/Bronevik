@@ -1,3 +1,5 @@
+@use '@/shared/styles/mixins' as *;
+
 .root {
   display: inline-flex;
   height: 18px;
@@ -53,7 +55,7 @@
   --badge-fg: var(--color-danger);
 }
 
-@each $tone, $token in (gold: gold, olive: armor, battle: battle, brass: brass, sky: steel-blue) {
+@each $tone, $token in $accent-tones {
   .#{$tone} {
     --badge-bg: color-mix(in srgb, var(--color-#{$token}) 14%, transparent);
     --badge-fg: var(--color-#{$token});

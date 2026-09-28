@@ -17,7 +17,7 @@ export const HeroCrumbs = () => {
     <Breadcrumbs
       isCurrentAccent
       items={[
-        { label: t('crumbTanks'), href: ROUTES.tanks.list },
+        { label: t('crumbTanks'), href: ROUTES.tanks.catalog },
         { label: tGame(`nations.${identity.nation}`) },
         { label: tGame(`classes.${identity.type}`) },
         { label: t('crumbTier', { tier: toRoman(identity.tier) }) }

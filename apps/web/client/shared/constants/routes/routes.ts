@@ -23,6 +23,7 @@ export const ROUTES = {
   achievements: '/achievements',
   tanks: {
     list: '/tanks',
+    catalog: '/t',
     detail: (slug: string) => `/t/${slug}`,
     armor: (slug: string) => `/t/${slug}/armor`,
     compare: '/tanks/compare'

@@ -1,4 +1,13 @@
-import type { Equipment, FinalStats, ModuleBase, ModulePreset, OptionalDevice, VehicleFilter, VehicleSpec } from '@otmetki/gamedata';
+import type {
+  Equipment,
+  FieldModification,
+  FinalStats,
+  ModuleBase,
+  ModulePreset,
+  OptionalDevice,
+  VehicleFilter,
+  VehicleSpec
+} from '@otmetki/gamedata';
 import type { ModuleSlot } from '@otmetki/schemas';
 
 import type { Arena, CrewRole, CrewSkill, GameDataEntry, Module, PrismaClient, Provision, Vehicle, VehicleProfile } from '../../../../../generated';
@@ -99,9 +108,15 @@ export type ModuleRow = Pick<Module, 'moduleId' | 'name' | 'nation' | 'tankIds' 
   data: Record<string, unknown>;
 };
 
+export type LocalizedProvisionFields = Partial<Pick<Provision, 'description' | 'name'>>;
+
 export type ProvisionRow = Pick<Provision, 'name' | 'provisionId' | 'tankIds' | 'type'> & {
   tag: string;
+  nameKey?: string;
+  descriptionKey?: string;
   description?: string;
+  image?: string;
+  localized: LocalizedProvisionFields;
   priceCredit?: number;
   priceGold?: number;
   data: Record<string, unknown>;
@@ -207,14 +222,35 @@ export type TryLoadoutInput = {
   warnings: string[];
 };
 
-export type DeviceRowInput = {
-  device: OptionalDevice;
+export type ProvisionRowContext = {
   vehicles: VehicleSpec[];
+  messages: LocalizedMessages;
+  sourceId: SourceRevision['sourceId'];
 };
 
-export type EquipmentRowInput = {
+export type DeviceRowInput = ProvisionRowContext & {
+  device: OptionalDevice;
+};
+
+export type EquipmentRowInput = ProvisionRowContext & {
   item: Equipment;
-  vehicles: VehicleSpec[];
+};
+
+export type ModificationRowInput = Omit<ProvisionRowContext, 'vehicles'> & {
+  modification: FieldModification;
+  tankIds: number[];
+};
+
+export type LocalizeProvisionInput = {
+  messages: LocalizedMessages;
+  nameKey: string | undefined;
+  descriptionKey?: string;
+};
+
+export type ProvisionIconInput = {
+  sourceId: SourceRevision['sourceId'];
+  folder: string;
+  icon: string | undefined;
 };
 
 export type InBatchesInput<T> = {

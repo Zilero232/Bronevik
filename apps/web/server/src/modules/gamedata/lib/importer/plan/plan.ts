@@ -19,7 +19,7 @@ import { minimapUrl } from '../../source';
 import { ENTRY_KIND, PROFILE } from '../importer.constants';
 import { profileStats, summarizeVehicle } from '../summary';
 import { buildModuleRows } from './module-rows';
-import { buildProvisionRows } from './provision-rows';
+import { buildProvisionRows, provisionLocalizationKeys } from './provision-rows';
 import { buildVehicleRows } from './vehicle-rows';
 
 const tryLoadout = ({ vehicle, preset, warnings }: TryLoadoutInput): FinalStats | undefined => {
@@ -31,6 +31,11 @@ const tryLoadout = ({ vehicle, preset, warnings }: TryLoadoutInput): FinalStats 
     return undefined;
   }
 };
+
+export const importLocalizationKeys = (data: CreateImportPlanInput['data']): (string | undefined)[] => [
+  ...data.vehicles.flatMap((vehicle) => [vehicle.nameKey, vehicle.shortNameKey, vehicle.descriptionKey]),
+  ...provisionLocalizationKeys(data)
+];
 
 export const createImportPlan = ({ data, messages }: CreateImportPlanInput): ImportPlan => {
   const warnings = [...data.warnings];
@@ -103,7 +108,7 @@ export const createImportPlan = ({ data, messages }: CreateImportPlanInput): Imp
     vehicles: buildVehicleRows({ vehicles: data.vehicles, messages }),
     profiles,
     modules: buildModuleRows(data.vehicles),
-    provisions: buildProvisionRows({ data }),
+    provisions: buildProvisionRows({ data, messages }),
     crewRoles,
     crewSkills,
     arenas,

@@ -37,7 +37,7 @@ export const TankPage = () => {
   return (
     <div className={s.root}>
       <ResourceGate
-        back={{ href: ROUTES.tanks.list, label: t('back') }}
+        back={{ href: ROUTES.tanks.catalog, label: t('back') }}
         className={s.shell}
         error={{ title: t('error.title'), description: t('error.description', { slug: name }) }}
         notFound={{ title: t('notFound.title'), description: t('notFound.description', { slug: name }) }}

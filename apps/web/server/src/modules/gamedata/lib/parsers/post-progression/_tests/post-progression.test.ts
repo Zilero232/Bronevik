@@ -23,6 +23,14 @@ describe('parsePostProgression', () => {
     }
   });
 
+  it('keys the name by locName and falls back to the tag for pair modifications', () => {
+    const withLocName = postProgression.modifications.find((item) => item.locName !== undefined);
+    const withoutLocName = postProgression.modifications.find((item) => item.locName === undefined);
+
+    expect(withLocName?.nameKey).toBe(`artefacts:${withLocName?.locName}/name`);
+    expect(withoutLocName?.nameKey).toBe(`artefacts:${withoutLocName?.name}/name`);
+  });
+
   it('reads per-level prices with currencies', () => {
     const base = postProgression.prices.unlockBaseModificationCost;
 

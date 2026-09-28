@@ -58,6 +58,7 @@ export const createPrisma = (gameVersionId = 7) => {
   prisma.$transaction.mockResolvedValue([]);
   prisma.gameVersion.upsert.mockResolvedValue(mock<GameVersion>({ id: gameVersionId }));
   prisma.vehicle.findMany.mockResolvedValue([]);
+  prisma.provision.findMany.mockResolvedValue([]);
   prisma.vehicleSpecHistory.findMany.mockResolvedValue([]);
 
   return prisma;

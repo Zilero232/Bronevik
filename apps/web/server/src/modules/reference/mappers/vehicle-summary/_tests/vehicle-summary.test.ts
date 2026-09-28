@@ -14,6 +14,7 @@ const ROW: VehicleRow = {
   tier: 10,
   isPremium: false,
   isCollectible: false,
+  tag: 'Object_268',
   images: null
 };
 
@@ -31,18 +32,23 @@ describe('toVehicleSummary', () => {
     expect(summary.images).toEqual({
       small: 'https://cdn.example/small.png',
       contour: 'https://cdn.example/contour.png',
-      big: 'https://cdn.example/big.png'
+      big: 'https://cdn.example/big.png',
+      large: 'https://raw.githubusercontent.com/unicum-gg/wot.assets/Lesta/gui/maps/shop/vehicles/600x450/Object_268.png'
     });
   });
 
   it('skips values that are not valid URLs and tries the next key', () => {
     const summary = toVehicleSummary({ ...ROW, images: { small: 'not a url', small_icon: 'https://cdn.example/s.png', big: 42 } });
 
-    expect(summary.images).toEqual({ small: 'https://cdn.example/s.png', contour: null, big: null });
+    expect(summary.images).toMatchObject({ small: 'https://cdn.example/s.png', contour: null, big: null });
   });
 
   it('returns empty images when the stored value is not an object', () => {
-    expect(toVehicleSummary({ ...ROW, images: 'https://cdn.example/x.png' }).images).toEqual({ small: null, contour: null, big: null });
+    expect(toVehicleSummary({ ...ROW, images: 'https://cdn.example/x.png' }).images).toMatchObject({ small: null, contour: null, big: null });
+  });
+
+  it('has no large render for a vehicle without a client tag', () => {
+    expect(toVehicleSummary({ ...ROW, tag: null }).images.large).toBeNull();
   });
 });
 

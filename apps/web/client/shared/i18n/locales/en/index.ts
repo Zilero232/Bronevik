@@ -74,6 +74,7 @@ import tools from './tools.json';
 import top from './top.json';
 import tournaments from './tournaments.json';
 import tree from './tree.json';
+import vehicleCatalog from './vehicleCatalog.json';
 import watchlist from './watchlist.json';
 import wrapped from './wrapped.json';
 
@@ -149,6 +150,7 @@ export const en = {
   top,
   tournaments,
   tree,
+  vehicleCatalog,
   watchlist,
   achievements,
   bestBattles,

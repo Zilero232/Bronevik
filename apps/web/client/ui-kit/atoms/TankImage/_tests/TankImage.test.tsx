@@ -10,13 +10,15 @@ import type { TankImageSubject } from '../TankImage.types';
 
 import { TankImage } from '../TankImage';
 
+const IMAGES = { small: 'https://img.test/object-140-small.png', contour: null, big: 'https://img.test/object-140-big.png' };
+
 const TANK: TankImageSubject = {
   name: 'Object 140',
   type: 'mediumTank',
   tier: 10,
   nation: 'ussr',
   isPremium: false,
-  images: { small: 'https://img.test/object-140-small.png', contour: null, big: 'https://img.test/object-140-big.png' }
+  images: IMAGES
 };
 
 const render = (ui: ReactElement) =>
@@ -43,6 +45,16 @@ describe('TankImage', () => {
     const fallback = screen.getByRole('img', { name: TANK.name });
 
     expect(fallback.tagName).not.toBe('IMG');
+  });
+
+  it('shows the large render and falls back to the big icon when it fails', () => {
+    render(<TankImage size='large' tank={{ ...TANK, images: { ...IMAGES, large: 'https://img.test/object-140-large.png' } }} />);
+
+    expect(screen.getByRole('img', { name: TANK.name })).toHaveAttribute('src', expect.stringContaining('object-140-large'));
+
+    fireEvent.error(screen.getByRole('img', { name: TANK.name }));
+
+    expect(screen.getByRole('img', { name: TANK.name })).toHaveAttribute('src', expect.stringContaining('object-140-big'));
   });
 
   it('uses the fallback when the tank has no picture of that size', () => {

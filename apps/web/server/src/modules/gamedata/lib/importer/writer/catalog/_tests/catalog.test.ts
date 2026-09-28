@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { Vehicle } from '../../../../../../../../generated';
+import type { Provision, Vehicle } from '../../../../../../../../generated';
 import type { ProvisionRow } from '../../../importer.types';
 
 import { createPrisma, plan, VEHICLE_IMAGES, vehicleRow } from '../../_tests/writer.fixtures';
@@ -82,6 +82,7 @@ describe('writeCatalog', () => {
       tag: 'rammer',
       type: 'optionalDevice',
       description: 'Faster reload',
+      localized: {},
       tankIds: [],
       data: {}
     };
@@ -93,6 +94,47 @@ describe('writeCatalog', () => {
     expect(upsert?.create).toMatchObject({ name: 'Rammer', description: 'Faster reload' });
     expect(upsert?.update).not.toHaveProperty('name');
     expect(upsert?.update).not.toHaveProperty('description');
+  });
+
+  it('replaces a stored provision name with the localized one and fills a missing image', async () => {
+    const prisma = createPrisma();
+    const image = 'https://raw.githubusercontent.com/unicum-gg/wot.assets/Lesta/icon.png';
+    const localized = { name: 'Повышение жизнеспособности модулей' };
+    const provision: ProvisionRow = {
+      provisionId: 2,
+      name: localized.name,
+      tag: 'role_mediumTank_pair_1_1',
+      type: 'fieldModification',
+      nameKey: 'artefacts:role_mediumTank_pair_1_1/name',
+      image,
+      localized,
+      tankIds: [],
+      data: {}
+    };
+
+    await writeCatalog({ prisma, plan: plan({ provisions: [provision] }) });
+
+    const [upsert] = prisma.provision.upsert.mock.calls[0] ?? [];
+
+    expect(upsert?.create).toMatchObject({ ...localized, image, nameKey: provision.nameKey });
+    expect(upsert?.update).toMatchObject({ ...localized, image, nameKey: provision.nameKey });
+  });
+
+  it('keeps a stored provision image', async () => {
+    const prisma = createPrisma();
+
+    prisma.provision.findMany.mockResolvedValue([mock<Provision>({ provisionId: 3 })]);
+
+    await writeCatalog({
+      prisma,
+      plan: plan({
+        provisions: [
+          { provisionId: 3, name: 'Rammer', tag: 'rammer', type: 'optionalDevice', image: 'https://x/icon.png', localized: {}, tankIds: [], data: {} }
+        ]
+      })
+    });
+
+    expect(prisma.provision.upsert.mock.calls[0]?.[0].update).not.toHaveProperty('image');
   });
 
   it('drops relative provision images that cannot be served', async () => {

@@ -12,6 +12,19 @@ export const MINIMAP_SOURCES = {
   IZEBERG_RU: { owner: 'unicum-gg', repo: 'wot.maps', ref: 'Lesta' }
 } as const;
 
+export const ASSET_SOURCES = {
+  RU: { owner: 'unicum-gg', repo: 'wot.assets', ref: 'Lesta' },
+  PT_RU: { owner: 'unicum-gg', repo: 'wot.assets', ref: 'Lesta_PT' },
+  IZEBERG_RU: { owner: 'unicum-gg', repo: 'wot.assets', ref: 'Lesta' }
+} as const;
+
+export const ASSET_PATHS = {
+  artefact: 'gui/maps/icons/artefact',
+  pairModification: 'gui/maps/icons/vehPostProgression/actionItems/pairModifications/120x120',
+  vehicleRender: 'gui/maps/shop/vehicles/600x450',
+  extension: '.png'
+} as const;
+
 export const MODEL_SOURCES = {
   RU: { owner: 'unicum-gg', repo: 'wot.models', ref: 'Lesta', isTest: false, guid: MT_CLIENT.guids.release }
 } as const;

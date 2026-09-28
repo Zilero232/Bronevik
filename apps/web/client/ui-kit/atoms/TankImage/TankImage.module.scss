@@ -19,6 +19,16 @@
   height: auto;
 }
 
+.large {
+  width: 400px;
+  max-width: 100%;
+  aspect-ratio: 600 / 450;
+
+  .image {
+    width: 100%;
+  }
+}
+
 .big {
   width: 160px;
   max-width: 100%;
@@ -56,7 +66,8 @@
     color: var(--color-premium);
   }
 
-  .big & {
+  .big &,
+  .large & {
     flex-direction: column;
   }
 }
@@ -67,7 +78,8 @@
   font-weight: 700;
   letter-spacing: 0.04em;
 
-  .big & {
+  .big &,
+  .large & {
     font-size: var(--text-md);
   }
 }

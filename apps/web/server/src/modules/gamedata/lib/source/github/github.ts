@@ -5,6 +5,7 @@ import pRetry, { AbortError } from 'p-retry';
 import { z } from 'zod';
 
 import type {
+  AssetUrlInput,
   CreateGithubReaderInput,
   CreateRepoReaderInput,
   MinimapUrlInput,
@@ -15,7 +16,7 @@ import type {
   SourceReader
 } from '../source.types';
 
-import { FETCH, GAME_DATA_SOURCES, GITHUB, MINIMAP_SOURCES } from '../source.constants';
+import { ASSET_PATHS, ASSET_SOURCES, FETCH, GAME_DATA_SOURCES, GITHUB, MINIMAP_SOURCES } from '../source.constants';
 
 const commitResponseSchema = z.object({
   sha: z.string(),
@@ -43,6 +44,17 @@ export const minimapUrl = ({ sourceId, path }: MinimapUrlInput): string => {
 
   return rawUrl({ owner: source.owner, repo: source.repo, sha: source.ref, path });
 };
+
+export const ASSET_URL_PREFIX = `${GITHUB.raw}/${ASSET_SOURCES.RU.owner}/${ASSET_SOURCES.RU.repo}/`;
+
+export const assetUrl = ({ sourceId, path }: AssetUrlInput): string => {
+  const source = ASSET_SOURCES[sourceId];
+
+  return rawUrl({ owner: source.owner, repo: source.repo, sha: source.ref, path });
+};
+
+export const vehicleRenderUrl = (tag: string): string =>
+  assetUrl({ sourceId: GAME_DATA_SOURCES.RU.id, path: `${ASSET_PATHS.vehicleRender}/${tag}${ASSET_PATHS.extension}` });
 
 const resolveCommit = async ({ source, ref, token, fetch }: ResolveCommitInput): Promise<ResolvedCommit> => {
   const response = await fetch(`${GITHUB.api}/repos/${source.owner}/${source.repo}/commits/${encodeURIComponent(ref)}`, {

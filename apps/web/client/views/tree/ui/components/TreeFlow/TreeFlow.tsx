@@ -13,25 +13,27 @@ import s from './TreeFlow.module.scss';
 import '@xyflow/react/dist/base.css';
 
 export const TreeFlow = () => {
-  const { nation, nodes, edges, onClear } = useTreeFlow();
+  const { nation, nodes, edges, onInit, onNodeClick, onClear } = useTreeFlow();
 
   return (
     <ReactFlow
-      fitView
       key={nation}
       className={s.root}
       edges={edges}
+      edgesFocusable={false}
       edgeTypes={TREE_FLOW_TYPES.edges}
       elementsSelectable={false}
-      fitViewOptions={{ padding: TREE_VIEW.fitPadding, minZoom: TREE_VIEW.fitMinZoom }}
       maxZoom={TREE_VIEW.maxZoom}
       minZoom={TREE_VIEW.minZoom}
       nodes={nodes}
       nodesConnectable={false}
       nodesDraggable={false}
+      nodesFocusable={false}
       nodeTypes={TREE_FLOW_TYPES.nodes}
       preventScrolling={false}
       zoomOnScroll={false}
+      onInit={onInit}
+      onNodeClick={onNodeClick}
       onPaneClick={onClear}
     >
       <ViewportPortal>

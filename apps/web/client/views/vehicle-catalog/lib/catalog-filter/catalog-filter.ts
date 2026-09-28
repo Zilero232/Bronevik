@@ -1,0 +1,47 @@
+import type { VehicleCatalogItem } from '@otmetki/schemas';
+
+import { NATIONS, TANK_CLASSES } from '@otmetki/icons';
+import { groupBy, isIncludedIn, sortBy } from 'remeda';
+
+import type { CatalogTierGroup, FilterCatalogInput } from './catalog-filter.types';
+
+const normalizeName = (value: string) =>
+  value
+    .toLocaleLowerCase('ru')
+    .replaceAll('ё', 'е')
+    .replaceAll(/[\s\-_.«»"'()]/g, '');
+
+const rankOf = (list: readonly string[], value: string) => {
+  const index = list.indexOf(value);
+
+  return index === -1 ? list.length : index;
+};
+
+export const filterCatalog = ({ catalog, filters: { tiers, types, nations, premium }, search }: FilterCatalogInput): VehicleCatalogItem[] => {
+  const needle = normalizeName(search);
+
+  return catalog.filter(({ name, shortName, slug, tier, type, nation, isPremium }) => {
+    const isNameMatch = needle.length === 0 || [name, shortName, slug].some((value) => normalizeName(value).includes(needle));
+    const isTierMatch = tiers.length === 0 || tiers.includes(tier);
+    const isTypeMatch = types.length === 0 || types.includes(type);
+    const isNationMatch = nations.length === 0 || isIncludedIn(nation, nations);
+    const isPremiumMatch = premium === 'all' || (premium === 'premium') === isPremium;
+
+    return isNameMatch && isTierMatch && isTypeMatch && isNationMatch && isPremiumMatch;
+  });
+};
+
+export const groupByTier = (vehicles: readonly VehicleCatalogItem[]): CatalogTierGroup[] =>
+  sortBy(
+    Object.values(groupBy(vehicles, ({ tier }) => tier)).map((group) => ({
+      tier: group[0].tier,
+      vehicles: sortBy(
+        group,
+        ({ type }) => rankOf(TANK_CLASSES, type),
+        ({ nation }) => rankOf(NATIONS, nation),
+        ({ isPremium }) => Number(isPremium),
+        ({ shortName, name }) => shortName || name
+      )
+    })),
+    [({ tier }) => tier, 'desc']
+  );

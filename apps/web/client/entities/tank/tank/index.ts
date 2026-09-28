@@ -10,7 +10,8 @@ export {
   getTierList,
   listTankEconomy,
   listTankStats,
-  listVehicles
+  listVehicles,
+  vehicleCatalogQuery
 } from './api';
 export type {
   CompareTanksInput,

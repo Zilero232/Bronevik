@@ -5,6 +5,7 @@ import { isObjectType, isString } from 'remeda';
 import type { ReadUrlInput, VehicleRow } from './vehicle-summary.types';
 
 import { VEHICLE_TYPE_FROM_DB } from '../../../../common/lib';
+import { vehicleRenderUrl } from '../../../gamedata';
 import { IMAGE_KEYS } from './vehicle-summary.constants';
 
 const readUrl = ({ images, keys }: ReadUrlInput): string | null => {
@@ -36,7 +37,8 @@ export const toVehicleSummary = (row: VehicleRow): VehicleSummary => ({
   images: {
     small: readUrl({ images: row.images, keys: IMAGE_KEYS.small }),
     contour: readUrl({ images: row.images, keys: IMAGE_KEYS.contour }),
-    big: readUrl({ images: row.images, keys: IMAGE_KEYS.big })
+    big: readUrl({ images: row.images, keys: IMAGE_KEYS.big }),
+    large: row.tag ? vehicleRenderUrl(row.tag) : null
   }
 });
 
@@ -50,5 +52,5 @@ export const unknownVehicle = (tankId: number): VehicleSummary => ({
   tier: 1,
   isPremium: false,
   isCollectible: false,
-  images: { small: null, contour: null, big: null }
+  images: { small: null, contour: null, big: null, large: null }
 });

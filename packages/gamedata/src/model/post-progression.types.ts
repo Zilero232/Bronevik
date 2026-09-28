@@ -24,6 +24,7 @@ export type FieldModification = {
   name: string;
   id: number;
   provisionId: number;
+  nameKey?: string;
   locName?: string;
   imgName?: string;
   modifiers: Modifier[];

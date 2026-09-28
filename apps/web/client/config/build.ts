@@ -5,7 +5,11 @@ const WEEK_IN_SECONDS = 60 * 60 * 24 * 7;
 export const IMAGES: NextConfig['images'] = {
   formats: ['image/avif', 'image/webp'],
   minimumCacheTTL: WEEK_IN_SECONDS,
-  remotePatterns: [{ protocol: 'https', hostname: 'api.tanki.su', pathname: '/static/**' }]
+  remotePatterns: [
+    { protocol: 'https', hostname: 'api.tanki.su', pathname: '/static/**' },
+    // Lesta client GUI assets (vehicle renders) mirrored by unicum-gg/wot.assets.
+    { protocol: 'https', hostname: 'raw.githubusercontent.com', pathname: '/unicum-gg/wot.assets/**' }
+  ]
 };
 
 // Barrel-heavy packages whose named imports Next rewrites to per-module paths.

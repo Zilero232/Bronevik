@@ -18,6 +18,7 @@ export const SITEMAP_STATIC_PATHS = [
   ROUTES.bestBattles,
   ROUTES.achievements,
   ROUTES.clans.list,
+  ROUTES.tanks.catalog,
   ROUTES.tanks.list,
   ROUTES.tanks.compare,
   ROUTES.builds.list,

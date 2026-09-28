@@ -5,7 +5,6 @@ import { ROUTES, SITE_FOOTER_GROUPS } from '@/shared/constants';
 export const NAV_ALIASES = [
   { prefix: '/p', href: ROUTES.players.list },
   { prefix: '/c', href: ROUTES.clans.list },
-  { prefix: '/t', href: ROUTES.tanks.list },
   { prefix: '/s', href: ROUTES.streamers.list },
   { prefix: '/competitions', href: ROUTES.tournaments.list },
   { prefix: ROUTES.social.feed, href: ROUTES.social.leagues },

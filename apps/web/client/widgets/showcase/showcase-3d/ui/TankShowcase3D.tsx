@@ -1,11 +1,8 @@
 'use client';
 
 import { clsx } from 'clsx';
-import { Shield } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 
-import { Link } from '@/shared/i18n/navigation';
 import { TankImage } from '@/ui-kit';
 
 import type { TankShowcase3DProps } from './TankShowcase3D.types';
@@ -17,8 +14,7 @@ import s from './TankShowcase3D.module.scss';
 
 const ShowcaseCanvas = dynamic(() => import('./components/ShowcaseCanvas').then(({ ShowcaseCanvas: Component }) => Component), { ssr: false });
 
-export const TankShowcase3D = ({ tank, tanks, armorHref, className }: TankShowcase3DProps) => {
-  const t = useTranslations('showcase');
+export const TankShowcase3D = ({ tank, tanks, className }: TankShowcase3DProps) => {
   const showcase = useTankShowcase({ tank, tanks });
   const { current } = showcase;
 
@@ -26,7 +22,7 @@ export const TankShowcase3D = ({ tank, tanks, armorHref, className }: TankShowca
     <div ref={showcase.rootRef} className={clsx(s.root, className)} data-mode={showcase.canvasMode ?? 'flat'} {...showcase.dragHandlers}>
       {showcase.identity && (
         <div aria-hidden={!showcase.isFlatVisible} className={s.flat} data-hidden={!showcase.isFlatVisible}>
-          <TankImage isPriority className={s.render} size='big' tank={showcase.identity} withTint={false} />
+          <TankImage isPriority className={s.render} size='large' tank={showcase.identity} withTint={false} />
         </div>
       )}
       {current && showcase.canvasMode && (
@@ -41,12 +37,6 @@ export const TankShowcase3D = ({ tank, tanks, armorHref, className }: TankShowca
         </div>
       )}
       {current && showcase.tanks.length > 1 && <NamePlate index={showcase.index} tanks={showcase.tanks} onSelect={showcase.onSelect} />}
-      {armorHref && (
-        <Link className={s.armor} href={armorHref}>
-          <Shield aria-hidden size={14} />
-          {t('armor')}
-        </Link>
-      )}
     </div>
   );
 };

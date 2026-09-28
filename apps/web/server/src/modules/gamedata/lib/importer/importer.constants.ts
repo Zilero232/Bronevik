@@ -27,6 +27,10 @@ export const PROVISION_TYPE = {
   fieldModification: 'fieldModification'
 } as const satisfies Record<string, ProvisionType>;
 
+export const PROVISION_ICON = {
+  name: /(?:^|\/)([^/\s]+?)(?:\.png)?(?:\s.*)?$/
+} as const;
+
 export const PROFILE = {
   stock: 'stock',
   top: 'top'

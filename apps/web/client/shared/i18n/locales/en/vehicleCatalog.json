@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "title": "Mir Tankov vehicle catalog",
+    "description": "Every vehicle in the game: search by name, filter by nation, type, tier and premium status. Open a tank's card for its specs, stats and builds."
+  },
+  "head": {
+    "home": "Home",
+    "title": "Vehicle catalog",
+    "description": "Every vehicle in the game in one place. Find a tank by name or filter by nation, type and tier, then open its card."
+  },
+  "filters": {
+    "label": "Catalog filters",
+    "search": "Search by name",
+    "searchPlaceholder": "Tank name",
+    "shown": "{shown, plural, one {# vehicle} other {# vehicles}} of {total}",
+    "reset": "Reset"
+  },
+  "tier": "Tier {tier}",
+  "tierCount": "{count, plural, one {# vehicle} other {# vehicles}}",
+  "empty": {
+    "title": "No vehicles found",
+    "description": "Try another name or loosen the filters.",
+    "noDataTitle": "The catalog is empty for now",
+    "noDataDescription": "The vehicle list has not been loaded from the game server yet. Check back a little later."
+  },
+  "error": {
+    "title": "Could not load the catalog",
+    "description": "The server did not respond. Try again."
+  }
+}

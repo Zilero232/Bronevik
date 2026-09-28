@@ -1,9 +1,12 @@
 'use client';
 
-import { useBoolean } from '@siberiacancode/reactuse';
+import { useState } from 'react';
+import { isNonNullish } from 'remeda';
 
-export const useImageFallback = (src: string | null) => {
-  const [hasFailed, setFailed] = useBoolean(false);
+export const useImageFallback = (sources: readonly (string | null | undefined)[]) => {
+  const [failed, setFailed] = useState<ReadonlySet<string>>(() => new Set());
 
-  return { image: hasFailed ? null : src, onError: () => setFailed(true) };
+  const image = sources.filter(isNonNullish).find((source) => !failed.has(source)) ?? null;
+
+  return { image, onError: () => image && setFailed((current) => new Set([...current, image])) };
 };

@@ -73,6 +73,8 @@ export type MinimapUrlInput = {
   path: string;
 };
 
+export type AssetUrlInput = MinimapUrlInput;
+
 export type ResolvedCommit = {
   sha: string;
   committedAt?: string;

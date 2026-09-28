@@ -1,4 +1,4 @@
-import type { NodeStateInput, TreeElementState, TreeFlowInput } from './tree-flow.types';
+import type { BranchFlowEdge, NodeStateInput, TankFlowNode, TreeElementState, TreeFlowInput } from './tree-flow.types';
 
 import { pathEdgeKeys } from '../tree-path';
 
@@ -17,7 +17,7 @@ const nodeState = ({ id, path }: NodeStateInput): TreeElementState => {
 export const toFlowElements = ({ tree, layout, path }: TreeFlowInput) => {
   const onPath = pathEdgeKeys(path);
 
-  const nodes = tree.nodes.flatMap((node) => {
+  const nodes = tree.nodes.flatMap((node): TankFlowNode[] => {
     const position = layout.positions.get(node.vehicle.tankId);
 
     return position
@@ -34,7 +34,7 @@ export const toFlowElements = ({ tree, layout, path }: TreeFlowInput) => {
 
   const edges = tree.edges
     .filter(({ from, to }) => layout.positions.has(from) && layout.positions.has(to))
-    .map(({ from, to, xp }) => {
+    .map(({ from, to, xp }): BranchFlowEdge => {
       const key = `${from}-${to}`;
       const isOnPath = onPath.has(key);
       const state: TreeElementState = path.length === 0 ? 'idle' : isOnPath ? 'path' : 'dimmed';

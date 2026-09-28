@@ -2912,6 +2912,12 @@
                           "type": "string",
                           "format": "uri",
                           "nullable": true
+                        },
+                        "large": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "nullable": true
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -3363,6 +3369,12 @@
                         "big": {
                           "type": "string",
                           "format": "uri",
+                          "nullable": true
+                        },
+                        "large": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "nullable": true
                         }
                       },
@@ -3909,6 +3921,12 @@
                           "type": "string",
                           "format": "uri",
                           "nullable": true
+                        },
+                        "large": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "nullable": true
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -4120,6 +4138,12 @@
                           "type": "string",
                           "format": "uri",
                           "nullable": true
+                        },
+                        "large": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "nullable": true
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -4323,6 +4347,12 @@
                         "type": "string",
                         "format": "uri",
                         "nullable": true
+                      },
+                      "large": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                        "nullable": true
                       }
                     },
                     "required": ["small", "contour", "big"],
@@ -4523,6 +4553,12 @@
                       "big": {
                         "type": "string",
                         "format": "uri",
+                        "nullable": true
+                      },
+                      "large": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                         "nullable": true
                       }
                     },
@@ -4749,6 +4785,12 @@
                           "type": "string",
                           "format": "uri",
                           "nullable": true
+                        },
+                        "large": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "nullable": true
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -4961,6 +5003,12 @@
                           "type": "string",
                           "format": "uri",
                           "nullable": true
+                        },
+                        "large": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "nullable": true
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -5059,6 +5107,12 @@
                   "big": {
                     "type": "string",
                     "format": "uri",
+                    "nullable": true
+                  },
+                  "large": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                     "nullable": true
                   }
                 },
@@ -5659,6 +5713,12 @@
                           "type": "string",
                           "format": "uri",
                           "nullable": true
+                        },
+                        "large": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "nullable": true
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -6026,6 +6086,12 @@
                             "big": {
                               "type": "string",
                               "format": "uri",
+                              "nullable": true
+                            },
+                            "large": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                               "nullable": true
                             }
                           },
@@ -6626,6 +6692,12 @@
                         "big": {
                           "type": "string",
                           "format": "uri",
+                          "nullable": true
+                        },
+                        "large": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "nullable": true
                         }
                       },

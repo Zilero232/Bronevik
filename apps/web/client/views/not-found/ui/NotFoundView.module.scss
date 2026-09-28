@@ -2,29 +2,111 @@
 
 .root {
   @include shell;
+  @include stack(var(--space-8));
 
-  display: grid;
-  min-height: 60dvh;
-  place-items: center;
+  max-width: 880px;
+  padding-block: var(--space-9);
+
+  @include below(md) {
+    padding-block: var(--space-6) var(--space-8);
+  }
 }
 
-.actions {
+.card {
+  @include panel;
+  @include rivet-rule;
+
   display: flex;
-  flex-wrap: wrap;
+  overflow: hidden;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
+  padding: var(--space-9) var(--space-8);
+  gap: var(--space-3);
+  isolation: isolate;
+  text-align: center;
+
+  &:before {
+    @include texture(hex);
+
+    position: absolute;
+    z-index: -1;
+    content: '';
+    inset: 0;
+    mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  @include below(md) {
+    padding: var(--space-8) var(--space-5);
+  }
 }
 
-.body {
-  @include stack(var(--space-4));
+.status {
+  @include display(clamp(4.5rem, 18vw, 8rem));
 
-  align-items: center;
+  margin: 0;
+  background: linear-gradient(180deg, var(--color-accent-hover) 0%, var(--color-accent-pressed) 100%);
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
 }
 
 .code {
   @include label;
 
+  margin: 0;
   color: var(--color-accent);
+}
+
+.title {
+  @include heading(var(--display-md));
+
+  margin: var(--space-2) 0 0;
+  color: var(--color-text);
+
+  @include below(md) {
+    font-size: var(--text-2xl);
+  }
+}
+
+.body {
+  max-width: 52ch;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-md);
+  line-height: var(--leading-body);
+}
+
+.actions {
+  display: flex;
+  width: 100%;
+  max-width: 560px;
+  align-items: center;
+  margin-top: var(--space-6);
+  gap: var(--space-3);
+
+  @include below(sm) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.search {
+  min-width: 0;
+  flex: 1;
+}
+
+.popular {
+  @include stack(var(--space-3));
+}
+
+.popularTitle {
+  @include label;
+
+  margin: 0;
+  text-align: center;
 }
 
 .links {
@@ -32,11 +114,15 @@
   padding: 0;
   margin: 0;
   gap: var(--space-2);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   list-style: none;
 
-  @include from(md) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  @include from(sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include from(xl) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -45,19 +131,44 @@
   @include touch-target;
 
   display: flex;
+  height: 100%;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-4) var(--space-5);
   color: var(--color-text);
-  font-size: var(--text-sm);
-  gap: var(--space-2);
+  gap: var(--space-3);
   text-decoration: none;
+  transition: border-color var(--duration-fast) var(--ease-out);
 
   &:hover {
-    color: var(--color-accent);
+    border-color: var(--color-accent);
   }
 
   &:focus-visible {
     @include focus-ring;
   }
+}
+
+.linkIcon {
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+.linkText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.linkLabel {
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.linkHint {
+  overflow: hidden;
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

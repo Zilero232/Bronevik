@@ -25,7 +25,8 @@ describe('activeNavHref', () => {
 
 describe('activeSiteNav', () => {
   it('maps detail pages to their section and group', () => {
-    expect(activeSiteNav(ROUTES.tanks.detail('is-7'))).toEqual({ href: ROUTES.tanks.list, groupKey: 'vehicles' });
+    expect(activeSiteNav(ROUTES.tanks.detail('is-7'))).toEqual({ href: ROUTES.tanks.catalog, groupKey: 'vehicles' });
+    expect(activeSiteNav(ROUTES.tanks.list)).toEqual({ href: ROUTES.tanks.list, groupKey: 'vehicles' });
     expect(activeSiteNav(ROUTES.players.profile('Nick'))).toEqual({ href: ROUTES.players.list, groupKey: 'players' });
     expect(activeSiteNav(ROUTES.competitions.detail('spring'))).toEqual({ href: ROUTES.tournaments.list, groupKey: 'community' });
     expect(activeSiteNav(ROUTES.play.guessTank)).toEqual({ href: ROUTES.tools, groupKey: null });

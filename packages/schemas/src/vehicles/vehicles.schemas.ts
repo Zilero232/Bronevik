@@ -15,7 +15,12 @@ export const tankRoleSchema = z.enum(TANK_ROLES);
 export const vehicleImagesSchema = z.object({
   small: z.url().nullable(),
   contour: z.url().nullable(),
-  big: z.url().nullable()
+  big: z.url().nullable(),
+  large: z
+    .url()
+    .nullable()
+    .optional()
+    .describe('600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load')
 });
 
 export const vehicleSummarySchema = z.object({

@@ -13909,6 +13909,18 @@
                                   "type": "null"
                                 }
                               ]
+                            },
+                            "large": {
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             }
                           },
                           "required": ["small", "contour", "big"],
@@ -14689,6 +14701,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -15911,6 +15935,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -16219,6 +16255,18 @@
                                   "type": "null"
                                 }
                               ]
+                            },
+                            "large": {
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             }
                           },
                           "required": ["small", "contour", "big"],
@@ -16466,6 +16514,18 @@
                             ]
                           },
                           "big": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "large": {
+                            "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                             "anyOf": [
                               {
                                 "type": "string",
@@ -16768,6 +16828,18 @@
                             ]
                           },
                           "big": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "large": {
+                            "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                             "anyOf": [
                               {
                                 "type": "string",
@@ -17124,6 +17196,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -17516,6 +17600,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -17644,6 +17740,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -17967,6 +18075,18 @@
                                         "type": "null"
                                       }
                                     ]
+                                  },
+                                  "large": {
+                                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
                                   }
                                 },
                                 "required": ["small", "contour", "big"],
@@ -18087,6 +18207,18 @@
                                         "type": "null"
                                       }
                                     ]
+                                  },
+                                  "large": {
+                                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
                                   }
                                 },
                                 "required": ["small", "contour", "big"],
@@ -18198,6 +18330,18 @@
                                     ]
                                   },
                                   "big": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "large": {
+                                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                                     "anyOf": [
                                       {
                                         "type": "string",
@@ -18524,6 +18668,18 @@
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "large": {
+                                "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               }
                             },
                             "required": ["small", "contour", "big"],
@@ -18786,6 +18942,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -19020,6 +19188,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -19138,6 +19318,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -19961,6 +20153,18 @@
                         "type": "null"
                       }
                     ]
+                  },
+                  "large": {
+                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   }
                 },
                 "required": ["small", "contour", "big"],
@@ -20275,6 +20479,18 @@
                     ]
                   },
                   "big": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "large": {
+                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                     "anyOf": [
                       {
                         "type": "string",
@@ -21002,6 +21218,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -21434,6 +21662,18 @@
                               ]
                             },
                             "big": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "large": {
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                               "anyOf": [
                                 {
                                   "type": "string",
@@ -22337,6 +22577,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -22500,6 +22752,18 @@
                   ]
                 },
                 "big": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "large": {
+                  "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                   "anyOf": [
                     {
                       "type": "string",
@@ -22808,6 +23072,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -26640,6 +26916,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -27043,6 +27331,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -29618,6 +29918,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -30254,6 +30566,18 @@
                         ]
                       },
                       "big": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "large": {
+                        "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                         "anyOf": [
                           {
                             "type": "string",
@@ -31086,6 +31410,18 @@
                                   "type": "null"
                                 }
                               ]
+                            },
+                            "large": {
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             }
                           },
                           "required": ["small", "contour", "big"],
@@ -31342,6 +31678,18 @@
                         ]
                       },
                       "big": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "large": {
+                        "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                         "anyOf": [
                           {
                             "type": "string",
@@ -31611,6 +31959,18 @@
                             ]
                           },
                           "big": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "large": {
+                            "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                             "anyOf": [
                               {
                                 "type": "string",
@@ -32136,6 +32496,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -32329,6 +32701,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -32468,6 +32852,18 @@
                                   "type": "null"
                                 }
                               ]
+                            },
+                            "large": {
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             }
                           },
                           "required": ["small", "contour", "big"],
@@ -32568,6 +32964,18 @@
                                     ]
                                   },
                                   "big": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "large": {
+                                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                                     "anyOf": [
                                       {
                                         "type": "string",
@@ -32766,6 +33174,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -32894,6 +33314,18 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "large": {
+                            "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           }
                         },
                         "required": ["small", "contour", "big"],
@@ -32996,6 +33428,18 @@
                             ]
                           },
                           "big": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "large": {
+                            "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                             "anyOf": [
                               {
                                 "type": "string",
@@ -33466,6 +33910,18 @@
                                   "type": "null"
                                 }
                               ]
+                            },
+                            "large": {
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             }
                           },
                           "required": ["small", "contour", "big"],
@@ -33573,6 +34029,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -33727,6 +34195,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -34122,6 +34602,7 @@
             "enum": ["winRate", "wn8", "avgDamage", "battles", "moe", "broneIndex"]
           },
           "tankId": {
+            "description": "Required for a moe goal",
             "type": "integer",
             "exclusiveMinimum": 0,
             "maximum": 9007199254740991
@@ -38070,6 +38551,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -38703,6 +39196,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -39519,6 +40024,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -39827,6 +40344,18 @@
                                   "type": "null"
                                 }
                               ]
+                            },
+                            "large": {
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             }
                           },
                           "required": ["small", "contour", "big"],
@@ -40074,6 +40603,18 @@
                             ]
                           },
                           "big": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "large": {
+                            "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                             "anyOf": [
                               {
                                 "type": "string",
@@ -40376,6 +40917,18 @@
                             ]
                           },
                           "big": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "large": {
+                            "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                             "anyOf": [
                               {
                                 "type": "string",
@@ -40709,6 +41262,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -40943,6 +41508,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -41056,6 +41633,18 @@
                     ]
                   },
                   "big": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "large": {
+                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                     "anyOf": [
                       {
                         "type": "string",
@@ -41783,6 +42372,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -42215,6 +42816,18 @@
                               ]
                             },
                             "big": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "large": {
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                               "anyOf": [
                                 {
                                   "type": "string",
@@ -43023,6 +43636,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -58428,6 +59053,18 @@
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "large": {
+                                "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               }
                             },
                             "required": ["small", "contour", "big"],
@@ -58716,6 +59353,18 @@
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "large": {
+                                "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               }
                             },
                             "required": ["small", "contour", "big"],
@@ -58923,6 +59572,18 @@
                                 ]
                               },
                               "big": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "large": {
+                                "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                                 "anyOf": [
                                   {
                                     "type": "string",
@@ -59143,6 +59804,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -62039,6 +62712,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -62345,6 +63030,18 @@
                           ]
                         },
                         "big": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                           "anyOf": [
                             {
                               "type": "string",
@@ -63825,6 +64522,18 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "large": {
+                          "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["small", "contour", "big"],
@@ -64393,6 +65102,18 @@
                                         "type": "null"
                                       }
                                     ]
+                                  },
+                                  "large": {
+                                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
                                   }
                                 },
                                 "required": ["small", "contour", "big"],
@@ -64671,6 +65392,18 @@
                                         "type": "null"
                                       }
                                     ]
+                                  },
+                                  "large": {
+                                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
                                   }
                                 },
                                 "required": ["small", "contour", "big"],
@@ -64933,6 +65666,18 @@
                               ]
                             },
                             "big": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "uri"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "large": {
+                              "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
                               "anyOf": [
                                 {
                                   "type": "string",

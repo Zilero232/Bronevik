@@ -11,14 +11,14 @@ import { TankImage, vehicleIdentity } from '@/entities/tank/tank';
 import type { TankFlowNode } from '../../../lib/tree-flow';
 
 import { TREE_FORMAT } from '../../../config';
-import { useTreeParams } from '../../../model/hooks';
+import { useNodeFocus } from '../../../model/hooks';
 
 import s from './TankNode.module.scss';
 
-export const TankNode = ({ data }: NodeProps<TankFlowNode>) => {
+export const TankNode = ({ data, positionAbsoluteX, positionAbsoluteY }: NodeProps<TankFlowNode>) => {
   const t = useTranslations('tree.node');
   const format = useFormatter();
-  const { selectTank } = useTreeParams();
+  const onFocus = useNodeFocus({ x: positionAbsoluteX, y: positionAbsoluteY });
 
   const { node, state } = data;
   const { vehicle, xp } = node;
@@ -28,13 +28,7 @@ export const TankNode = ({ data }: NodeProps<TankFlowNode>) => {
   return (
     <div className={s.root} data-premium={vehicle.isPremium} data-state={state}>
       <Handle className={s.handle} isConnectable={false} position={Position.Left} type='target' />
-      <button
-        aria-label={t('select', { name })}
-        aria-pressed={state === 'selected'}
-        className={s.body}
-        type='button'
-        onClick={() => selectTank(vehicle.tankId)}
-      >
+      <button aria-label={t('select', { name })} aria-pressed={state === 'selected'} className={s.body} type='button' onFocus={onFocus}>
         <span className={s.head}>
           <ClassIcon aria-hidden className={s.icon} size={14} variant={vehicle.isPremium ? 'premium' : 'regular'} />
           <span className={s.tier}>{toRoman(vehicle.tier)}</span>

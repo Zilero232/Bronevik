@@ -5,9 +5,9 @@
 
   position: relative;
   overflow: hidden;
-  height: 620px;
+  height: clamp(560px, calc(100dvh - 240px), 880px);
 
   @include below(md) {
-    height: 460px;
+    height: min(72dvh, 520px);
   }
 }

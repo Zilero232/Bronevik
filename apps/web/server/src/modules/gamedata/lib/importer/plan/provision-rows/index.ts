@@ -1,1 +1,1 @@
-export { buildProvisionRows } from './provision-rows';
+export { buildProvisionRows, provisionLocalizationKeys } from './provision-rows';

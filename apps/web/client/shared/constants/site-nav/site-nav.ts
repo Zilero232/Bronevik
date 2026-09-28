@@ -15,6 +15,7 @@ import {
   FlaskConical,
   GitCompareArrows,
   GraduationCap,
+  LayoutGrid,
   ListChecks,
   MapIcon,
   Medal,
@@ -63,10 +64,10 @@ export const SITE_NAV = {
       key: 'vehicles',
       featured: 'topTank',
       items: [
+        { key: 'catalog', href: ROUTES.tanks.catalog, icon: LayoutGrid },
         { key: 'tanks', href: ROUTES.tanks.list, icon: HeavyTankIcon },
         { key: 'builds', href: ROUTES.builds.list, icon: Wrench },
         { key: 'marks', href: ROUTES.marks, icon: Mark3Icon },
-        { key: 'modes', href: ROUTES.modes.list, icon: Flag },
         { key: 'tree', href: ROUTES.tree, icon: Network },
         { key: 'supertest', href: ROUTES.supertest, icon: FlaskConical },
         { key: 'compareTanks', href: ROUTES.tanks.compare, icon: Scale }
@@ -82,7 +83,7 @@ export const SITE_NAV = {
         { key: 'shop', href: ROUTES.shop, icon: ShoppingCart },
         { key: 'news', href: ROUTES.news, icon: Newspaper },
         { key: 'maps', href: ROUTES.maps.list, icon: GlobalMapIcon },
-        { key: 'honestRng', href: ROUTES.honestRng, icon: Dices }
+        { key: 'modes', href: ROUTES.modes.list, icon: Flag }
       ]
     },
     {
@@ -94,7 +95,8 @@ export const SITE_NAV = {
         { key: 'replays', href: ROUTES.replays.list, icon: Film },
         { key: 'guides', href: ROUTES.guides.list, icon: BookOpen },
         { key: 'tactics', href: ROUTES.tactics.list, icon: MapIcon },
-        { key: 'tournaments', href: ROUTES.tournaments.list, icon: Swords }
+        { key: 'tournaments', href: ROUTES.tournaments.list, icon: Swords },
+        { key: 'honestRng', href: ROUTES.honestRng, icon: Dices }
       ]
     }
   ],

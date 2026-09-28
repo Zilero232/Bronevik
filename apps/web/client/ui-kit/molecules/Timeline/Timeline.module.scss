@@ -68,7 +68,7 @@
     --node: var(--color-text-dim);
   }
 
-  @each $tone, $token in (gold: gold, olive: armor, battle: battle, brass: brass, sky: steel-blue) {
+  @each $tone, $token in $accent-tones {
     &[data-tone='#{$tone}'] {
       --node: var(--color-#{$token});
     }

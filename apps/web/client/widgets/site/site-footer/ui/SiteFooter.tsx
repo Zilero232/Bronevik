@@ -1,8 +1,6 @@
 import { OtmetkiLogoIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
-import { Suspense } from 'react';
 
-import { LocaleSwitcher } from '@/features/app/switch-locale';
 import { env, EXTERNAL_LINKS, SITE } from '@/shared/config';
 import { ROUTES, SITE_FOOTER_COLUMNS, SITE_LEGAL_LINKS } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
@@ -54,9 +52,6 @@ export const SiteFooter = () => {
               {t('support')}
             </a>
           </nav>
-          <Suspense>
-            <LocaleSwitcher />
-          </Suspense>
         </div>
         <p className={s.legal}>
           <span>{t('lestaCopyright')}</span>

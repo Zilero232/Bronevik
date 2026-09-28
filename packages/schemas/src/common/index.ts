@@ -1,4 +1,5 @@
 export { BRAND } from './brand';
+export { INTERNAL_REQUEST } from './internal-request';
 export { ratingPeriodSchema, recentPeriodSchema, serverPeriodSchema, skillCohortSchema, statsModeSchema } from './period';
 export type { RatingPeriod, RecentPeriod, ServerPeriod, SkillCohort, StatsMode } from './period';
 export {

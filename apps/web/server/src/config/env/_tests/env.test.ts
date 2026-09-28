@@ -10,6 +10,7 @@ const base = {
   API_URL: 'http://localhost:4000',
   WEB_URL: 'http://localhost:3000',
   BETTER_AUTH_SECRET: 'x'.repeat(32),
+  INTERNAL_API_TOKEN: 'i'.repeat(32),
   MOD_INGEST_SECRET: 'mod-secret'
 };
 
@@ -56,6 +57,11 @@ describe('validateEnv', () => {
   it('rejects an auth secret too short to be safe', () => {
     expect(() => validateEnv({ ...base, BETTER_AUTH_SECRET: 'short' })).toThrow(/BETTER_AUTH_SECRET/);
   });
+
+  it('requires an internal API token long enough to be safe, with no fallback', () => {
+    expect(() => validateEnv({ ...base, INTERNAL_API_TOKEN: undefined })).toThrow(/INTERNAL_API_TOKEN/);
+    expect(() => validateEnv({ ...base, INTERNAL_API_TOKEN: 'short' })).toThrow(/INTERNAL_API_TOKEN/);
+  });
 });
 
 describe('validateEnv fail-closed guards', () => {
@@ -73,7 +79,7 @@ describe('validateEnv fail-closed guards', () => {
     expect(validateEnv({ ...deployed, NODE_ENV: 'development' }).LESTA_MOCK).toBe('off');
   });
 
-  it.each(['BETTER_AUTH_SECRET', 'MOD_INGEST_SECRET'])('refuses a development placeholder %s in production', (name) => {
+  it.each(['BETTER_AUTH_SECRET', 'MOD_INGEST_SECRET', 'INTERNAL_API_TOKEN'])('refuses a development placeholder %s in production', (name) => {
     expect(() => validateEnv({ ...deployed, NODE_ENV: 'production', [name]: 'dev-secret-change-me-min-32-chars-000' })).toThrow(name);
   });
 

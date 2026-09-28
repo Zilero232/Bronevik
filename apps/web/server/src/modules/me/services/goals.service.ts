@@ -13,7 +13,7 @@ import type {
   UpdateGoalInput
 } from '../me.types';
 
-import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
+import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { bonusTypesOfMode, toNumber } from '../../../common/lib';
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
@@ -116,6 +116,10 @@ export class GoalsService {
 
     if (!existing) {
       throw new AppNotFoundException('NOT_FOUND', 'Goal not found');
+    }
+
+    if (existing.status !== 'active') {
+      throw new AppConflictException('GOAL_CLOSED', `The goal is already ${existing.status} and can no longer be changed`);
     }
 
     const row = await this.prisma.goal.update({

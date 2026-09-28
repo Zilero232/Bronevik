@@ -2206,6 +2206,7 @@
               "MOD_DEVICE_INVALID",
               "MOD_SIGNATURE_INVALID",
               "BIND_CODE_INVALID",
+              "GOAL_CLOSED",
               "PAYMENT_REQUIRED",
               "PAYMENT_FAILED",
               "SUBSCRIPTION_REQUIRED",

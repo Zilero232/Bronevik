@@ -13,7 +13,7 @@ import 'reflect-metadata';
 
 const env = validateEnv(process.env);
 
-const lestaMock = isLestaMock(env) ? await (await import('./dev/lesta-mock')).startLestaMock(env) : null;
+const lestaMock = isLestaMock(env) ? await (await import('./dev/lesta-mock')).startLestaMock({ env, announceDemo: true }) : null;
 
 const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false, bufferLogs: true });
 

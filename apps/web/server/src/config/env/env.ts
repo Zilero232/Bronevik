@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import type { Env, UnsafeSettingsInput } from './env.types';
 
+import { isRealLestaApplicationId } from '../lesta-mock/lesta-mock';
 import { LESTA_MOCK } from '../lesta-mock/lesta-mock.constants';
 import { ENV_GUARD } from './env.constants';
 import { envSchema } from './env.schemas';
@@ -14,7 +15,7 @@ const isLocalUrl = (url: string): boolean => {
   return localHosts.has(hostname) || hostname.endsWith(ENV_GUARD.localSuffix);
 };
 
-const hasLestaKey = (env: Env): boolean => env.LESTA_APPLICATION_ID !== '' && env.LESTA_APPLICATION_ID !== LESTA_MOCK.applicationId;
+const hasLestaKey = (env: Env): boolean => isRealLestaApplicationId(env.LESTA_APPLICATION_ID);
 
 const wantsLestaMock = (env: Env): boolean =>
   !hasLestaKey(env) &&

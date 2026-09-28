@@ -7,7 +7,7 @@ import type { AccountRating, AccountTankRating, Goal, PlayerTank, UserLestaAccou
 import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 
-import { AppBadRequestException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
+import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
 import { bonusTypesOfMode } from '../../../../common/lib';
 import { GOALS, MOD_GOALS } from '../../config';
 import { GoalsService } from '../goals.service';
@@ -189,6 +189,21 @@ describe('GoalsService.update', () => {
 
     await expect(service.update({ userId: 'user', id: 'goal', target: 2500 })).resolves.toMatchObject({ target: 2500 });
     expect(prisma.goal.update.mock.calls[0]?.[0].data).toEqual({ target: 2500 });
+  });
+
+  it.each(['achieved', 'failed', 'cancelled'] as const)('refuses to change a %s goal with a 409 GOAL_CLOSED', async (status) => {
+    const { service, prisma } = createService();
+
+    prisma.goal.findFirst.mockResolvedValue(goalRow({ status }));
+
+    await expect(service.update({ userId: 'user', id: 'goal', target: 2500 })).rejects.toBeInstanceOf(AppConflictException);
+
+    await expect(service.update({ userId: 'user', id: 'goal', endsAt: addDays(NOW, 5).toISOString() })).rejects.toMatchObject({
+      response: { code: 'GOAL_CLOSED' }
+    });
+
+    await expect(service.update({ userId: 'user', id: 'goal', status: 'cancelled' })).rejects.toMatchObject({ response: { code: 'GOAL_CLOSED' } });
+    expect(prisma.goal.update).not.toHaveBeenCalled();
   });
 });
 

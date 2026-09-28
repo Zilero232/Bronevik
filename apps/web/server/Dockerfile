@@ -33,19 +33,29 @@ COPY packages/sdk/package.json ./packages/sdk/package.json
 
 # Lifecycle scripts are off: the server's postinstall runs `prisma generate`
 # before the schema is copied. Generation runs later, in the runner stage.
-# --production leaves every devDependency out; the Prisma CLI and dotenv are
+# --filter installs only the server and the workspace packages it depends on,
+# not the client, the manager or their toolchains (Next, SWC, three.js...);
+# --production leaves every devDependency out. The Prisma CLI and dotenv are
 # regular dependencies because the deploy runs `db:deploy` in this image.
 # The retry loop survives registry hiccups that corrupt a tarball mid-download;
 # the third failure fails the build instead of carrying on with a broken tree.
 RUN for attempt in 1 2 3; do \
-      bun install --frozen-lockfile --ignore-scripts --production && break; \
+      bun install --frozen-lockfile --ignore-scripts --production --filter @otmetki/server && break; \
       [ "$attempt" = 3 ] && exit 1; \
       echo "bun install attempt $attempt failed; clearing cache and retrying"; \
       rm -rf /root/.bun/install/cache ~/.bun/install/cache; \
     done
 
-FROM base AS runner
+# The slim variant drops the build toolchain the full image carries. Prisma's
+# schema engine (`db:deploy` runs `prisma db push` in this image) links against
+# OpenSSL; without it Prisma guesses openssl-1.1.x and fetches the wrong engine.
+FROM oven/bun:1.3.1-slim AS runner
+WORKDIR /app
 ENV NODE_ENV=production
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 # Bun workspaces keep dependencies under each package's node_modules, so the
 # whole installed tree comes over to keep the resolution graph intact.

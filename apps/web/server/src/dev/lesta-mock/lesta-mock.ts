@@ -1,7 +1,6 @@
 import { Logger } from '@nestjs/common';
 
-import type { Env } from '../../config';
-import type { MockCatalog, MockWorld } from './lesta-mock.types';
+import type { LestaMockStartInput, MockCatalog, MockWorld } from './lesta-mock.types';
 
 import { createPrismaClient } from '../../core';
 import { loadMockCatalog } from './lib/catalog';
@@ -34,7 +33,7 @@ const closePrevious = () => {
   }
 };
 
-export const startLestaMock = async (env: Pick<Env, 'API_URL' | 'DATABASE_URL' | 'DEMO_MODE'>) => {
+export const startLestaMock = async ({ env, announceDemo }: LestaMockStartInput) => {
   const world = await loadMockWorld(env.DATABASE_URL);
   const handler = createLestaMockHandler(world);
 
@@ -52,7 +51,7 @@ export const startLestaMock = async (env: Pick<Env, 'API_URL' | 'DATABASE_URL' |
     `LESTA_APPLICATION_ID is empty: serving a generated Lesta API (${world.players.length} players, ${world.clans.length} clans, ${world.catalog.vehicles.length} vehicles). Set the key to switch it off.`
   );
 
-  if (env.DEMO_MODE) {
+  if (env.DEMO_MODE && announceDemo) {
     logger.warn(
       `DEMO_MODE is on: every player, clan and battle on ${env.API_URL} is generated. This is a public demo, not production; unset DEMO_MODE and set LESTA_APPLICATION_ID to go live.`
     );

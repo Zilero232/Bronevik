@@ -33,7 +33,7 @@ This is the status of every area at the last audit. **Ready** means the piece is
 | **Lesta application**: `LESTA_APPLICATION_ID`, the VPS IP allow-listed, the OpenID redirect | Blocked | Register at developers.lesta.ru (§1) |
 | **DNS**: `A`/`AAAA` for `triotmetki.ru` and `api.triotmetki.ru`; ports 80, 443/tcp and 443/udp open | Blocked | The registrar and the VPS firewall |
 | **GitHub secrets**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_*`, `DEPLOY_PATH` | Blocked | Settings → Secrets (§1) |
-| **VPS `.env` secrets**: `BETTER_AUTH_SECRET`, `MOD_INGEST_SECRET`, `POSTGRES_PASSWORD`, `BULL_BOARD_PASSWORD` | Blocked | Generate them on the VPS (§1) |
+| **VPS `.env` secrets**: `BETTER_AUTH_SECRET`, `MOD_INGEST_SECRET`, `INTERNAL_API_TOKEN`, `POSTGRES_PASSWORD`, `BULL_BOARD_PASSWORD` | Blocked | Generate them on the VPS (§1) |
 | ghcr access from the VPS | Blocked | Make the packages public, or run `docker login ghcr.io` with a read-only token |
 | **YooKassa**: `YOOKASSA_*`, the webhook | Blocked, not needed for launch | Checkout stays off (`PLUS.checkoutEnabled`) until Lesta confirms the model (§5) |
 | **Bots and streamer integrations**: Telegram, Discord, VK, Twitch, DonationAlerts, VK Video Live, YouTube | Blocked, optional | Each one is off while its token is empty |
@@ -93,7 +93,8 @@ Start from [.env.example](../../.env.example). The server and worker containers 
 - [ ] **Secrets.** Generate fresh values with `openssl rand -base64 32`:
   - `BETTER_AUTH_SECRET`: at least 32 characters.
   - `MOD_INGEST_SECRET`: the root of every mod device key. Rotating it unbinds every device.
-  - In production, the server **refuses to start** when either secret still looks like a development placeholder. The check matches `change-me`, `changeme`, `dev-secret`, `dev-mod-secret`, `test-secret`, `example` or `placeholder` (`ENV_GUARD` in `apps/web/server/src/config/env/env.constants.ts`), so copying `.env.example` unchanged fails loudly.
+  - `INTERNAL_API_TOKEN`: at least 32 characters, no default. Compose passes the same value to the client container (server-only, never `NEXT_PUBLIC_`); the Next server sends it as `x-otmetki-internal-token` with the visitor's IP (`x-otmetki-client-ip`) on every server-side API call, so SSR, prefetches and the entity-presence check are rate-limited per visitor instead of sharing the Next server's bucket. A signed call without a visitor IP (cached renders) gets the separate internal bucket (`THROTTLE.internalLimit`). The API accepts the token only from a loopback/private peer or a `TRUSTED_PROXIES` entry, and Caddy drops the header from its access log. `docker compose` refuses to start without it; rotating it means restarting the client and the server together.
+  - In production, the server **refuses to start** when any of these secrets still looks like a development placeholder. The check matches `change-me`, `changeme`, `dev-secret`, `dev-mod-secret`, `test-secret`, `example` or `placeholder` (`ENV_GUARD` in `apps/web/server/src/config/env/env.constants.ts`), so copying `.env.example` unchanged fails loudly.
 - [ ] `API_URL=https://api.triotmetki.ru`, `WEB_URL=https://triotmetki.ru`. `CORS_ORIGINS` stays empty unless another origin needs the API.
 - [ ] `TRUSTED_PROXIES`: leave it empty for the stock stack. The only hop is Caddy, which sends a single-entry `X-Forwarded-For`, and the default trusts one hop. Once a CDN or load balancer sits in front of Caddy, list its IPs or CIDRs (comma-separated). If you skip that, rate limits and the better-auth IP checks see the proxy's IP as every client's.
 - [ ] `DATABASE_POOL_MAX`: leave it unset at first. The API then keeps 10 connections and the worker sizes its pool from its queue concurrency (`WORKER_DATABASE.poolMax`). Set it only when Postgres `max_connections` is tight. The variable applies per process, so the API and the worker each take that many.
@@ -211,6 +212,7 @@ Until the Lesta key exists, the site can run publicly on generated data. The ove
    POSTGRES_DB=otmetki
    BETTER_AUTH_SECRET=$(openssl rand -base64 32)
    MOD_INGEST_SECRET=$(openssl rand -base64 32)
+   INTERNAL_API_TOKEN=$(openssl rand -base64 32)
    BULL_BOARD_PASSWORD=$(openssl rand -hex 16)
    # Optional: a GitHub token with no scopes lifts the API limit for the catalog import.
    GITHUB_TOKEN=

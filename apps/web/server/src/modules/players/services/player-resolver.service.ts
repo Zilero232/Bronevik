@@ -1,15 +1,18 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Redis } from 'ioredis';
 
 import type { Prisma } from '../../../../generated';
 import type { LestaClient } from '../../../lib/lesta';
+import type { MissingPlayerLookup } from '../lib';
 import type { LestaPlayerInfo } from '../players.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { errorMessage, fromUnixSeconds } from '../../../common/lib';
-import { LESTA_CLIENT, PrismaService } from '../../../core';
+import { LESTA_CLIENT, PrismaService, REDIS } from '../../../core';
 import { accountInfoSchema, isExtraRejected } from '../../../lib/lesta';
 import { CollectorProducerService } from '../../collector';
 import { PLAYER_LOOKUP } from '../config';
+import { missingPlayerKey } from '../lib';
 
 @Injectable()
 export class PlayerResolverService {
@@ -18,7 +21,8 @@ export class PlayerResolverService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly collector: CollectorProducerService,
-    @Inject(LESTA_CLIENT) private readonly lesta: LestaClient
+    @Inject(LESTA_CLIENT) private readonly lesta: LestaClient,
+    @Inject(REDIS) private readonly redis: Redis
   ) {}
 
   async resolve(idOrNick: string): Promise<bigint> {
@@ -36,9 +40,17 @@ export class PlayerResolverService {
       return this.ensure(local.accountId);
     }
 
+    const lookup: MissingPlayerLookup = { kind: 'nickname', value: idOrNick };
+
+    if (await this.isKnownMissing(lookup)) {
+      throw new AppNotFoundException('PLAYER_NOT_FOUND', `No player named ${idOrNick}`);
+    }
+
     const [found] = await this.lesta.account.list({ search: idOrNick, type: 'exact', limit: 1 });
 
     if (!found) {
+      await this.rememberMissing(lookup);
+
       throw new AppNotFoundException('PLAYER_NOT_FOUND', `No player named ${idOrNick}`);
     }
 
@@ -58,9 +70,17 @@ export class PlayerResolverService {
       return accountId;
     }
 
+    const lookup: MissingPlayerLookup = { kind: 'id', value: String(accountId) };
+
+    if (await this.isKnownMissing(lookup)) {
+      throw new AppNotFoundException('PLAYER_NOT_FOUND', `No player with id ${accountId}`);
+    }
+
     const info = await this.fetchInfo(accountId);
 
     if (!info) {
+      await this.rememberMissing(lookup);
+
       throw new AppNotFoundException('PLAYER_NOT_FOUND', `No player with id ${accountId}`);
     }
 
@@ -119,6 +139,22 @@ export class PlayerResolverService {
       where: { accountId_nickname: { accountId, nickname: info.nickname } },
       create: { accountId, nickname: info.nickname },
       update: { lastSeenAt: new Date() }
+    });
+  }
+
+  private async isKnownMissing(lookup: MissingPlayerLookup): Promise<boolean> {
+    const marker = await this.redis.get(missingPlayerKey(lookup)).catch((error: unknown) => {
+      this.logger.warn(`Missing-player cache unavailable: ${errorMessage(error)}`);
+
+      return null;
+    });
+
+    return marker !== null;
+  }
+
+  private async rememberMissing(lookup: MissingPlayerLookup): Promise<void> {
+    await this.redis.set(missingPlayerKey(lookup), PLAYER_LOOKUP.missingMarker, 'EX', PLAYER_LOOKUP.missingTtlSeconds).catch((error: unknown) => {
+      this.logger.warn(`Missing player not cached: ${errorMessage(error)}`);
     });
   }
 

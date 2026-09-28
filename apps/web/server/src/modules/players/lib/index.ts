@@ -2,6 +2,8 @@ export { playerAchievements } from './achievements';
 export { historyWindow } from './history-window';
 export type { HistoryWindowPolicy } from './history-window';
 export { computeInsights } from './insights';
+export { missingPlayerKey } from './missing-player';
+export type { MissingPlayerLookup } from './missing-player';
 export { combinedSource, nextMark } from './next-mark';
 export { PLAYTIME, playtimeCells } from './playtime';
 export { statsBlockFromRating, statsBlockFromTotals, totalsFromLestaBlock } from './stats-block';

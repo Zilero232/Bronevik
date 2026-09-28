@@ -19,6 +19,7 @@ export const envSchema = z.object({
   TRUSTED_PROXIES: z.string().default(''),
 
   BETTER_AUTH_SECRET: z.string().min(32),
+  INTERNAL_API_TOKEN: z.string().min(32),
 
   LESTA_APPLICATION_ID: z.string().default(''),
   LESTA_RPS: z.coerce.number().int().positive().default(20),

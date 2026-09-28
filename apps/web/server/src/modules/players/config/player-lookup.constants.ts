@@ -14,6 +14,9 @@ export const PLAYER_LOOKUP = {
     'statistics.random'
   ],
   modeExtra: ['statistics.epic', 'statistics.ranked_battles'],
+  missingKeyPrefix: 'otmetki:players:missing:',
+  missingTtlSeconds: 600,
+  missingMarker: '1',
   modeFields: [
     'account_id',
     'statistics.stronghold_skirmish',

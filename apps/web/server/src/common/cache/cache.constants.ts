@@ -12,7 +12,8 @@ export const CACHE_STORE = {
 export const THROTTLE = {
   name: 'default',
   ttl: 60_000,
-  limit: 120
+  limit: 120,
+  internalLimit: 6000
 } as const;
 
 export const CACHE_BY_VIEWER = 'otmetki:cache-by-viewer';

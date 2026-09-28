@@ -1,3 +1,6 @@
+import type { ExecutionContext } from '@nestjs/common';
+import type { Request } from 'express';
+
 import { createKeyvNonBlocking } from '@keyv/redis';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -10,7 +13,8 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { CACHE_STORE, THROTTLE } from './common/cache';
 import { AllExceptionsFilter } from './common/filters';
 import { OriginGuard } from './common/guards';
-import { AppConfigModule, AppConfigService } from './config';
+import { throttleSubject } from './common/lib';
+import { AppConfigModule, AppConfigService, trustedProxies } from './config';
 import { AppLoggerModule, LestaModule, LOGGER, PrismaModule, QueuesModule, REDIS, RedisModule } from './core';
 import { AchievementsRarityModule } from './modules/achievements-rarity';
 import { AnalyticsModule } from './modules/analytics';
@@ -86,11 +90,23 @@ import { WatchlistModule } from './modules/watchlist';
       })
     }),
     ThrottlerModule.forRootAsync({
-      inject: [REDIS],
-      useFactory: (redis: Redis) => ({
-        throttlers: [{ name: THROTTLE.name, ttl: THROTTLE.ttl, limit: THROTTLE.limit }],
-        storage: new ThrottlerStorageRedisService(redis)
-      })
+      inject: [REDIS, AppConfigService],
+      useFactory: (redis: Redis, config: AppConfigService) => {
+        const policy = {
+          token: config.get('INTERNAL_API_TOKEN'),
+          trustedProxies: trustedProxies({ TRUSTED_PROXIES: config.get('TRUSTED_PROXIES') })
+        };
+
+        const subjectOf = (context: ExecutionContext) => throttleSubject({ request: context.switchToHttp().getRequest<Request>(), policy });
+
+        return {
+          throttlers: [
+            { name: THROTTLE.name, ttl: THROTTLE.ttl, limit: (context) => (subjectOf(context).isInternal ? THROTTLE.internalLimit : THROTTLE.limit) }
+          ],
+          getTracker: (_request, context) => subjectOf(context).tracker,
+          storage: new ThrottlerStorageRedisService(redis)
+        };
+      }
     }),
     ReferenceModule,
     AuthModule,

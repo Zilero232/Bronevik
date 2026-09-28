@@ -1,6 +1,7 @@
 import type { BattleResult, VehicleType } from '@otmetki/schemas';
 
 import type { CrewRole } from '../../../generated';
+import type { Env } from '../../config';
 
 export type MockExpected = {
   damage: number;
@@ -280,3 +281,8 @@ export type LestaMockCall = {
 };
 
 export type LestaMockHandler = (call: LestaMockCall) => LestaMockEnvelope;
+
+export type LestaMockStartInput = {
+  env: Pick<Env, 'API_URL' | 'DATABASE_URL' | 'DEMO_MODE'>;
+  announceDemo: boolean;
+};

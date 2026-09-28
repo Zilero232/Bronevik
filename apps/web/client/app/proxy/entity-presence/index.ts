@@ -1,1 +1,1 @@
-export { isDocumentRequest, isMissingEntity, missingEntityRewrite, splitLocale } from './entity-presence';
+export { clientIpOf, isDocumentRequest, isMissingEntity, missingEntityRewrite, splitLocale } from './entity-presence';

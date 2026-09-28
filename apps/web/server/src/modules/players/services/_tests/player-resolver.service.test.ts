@@ -1,3 +1,4 @@
+import RedisMock from 'ioredis-mock';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -10,6 +11,7 @@ import type { LestaPlayerInfo } from '../../players.types';
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { LestaApiError } from '../../../../lib/lesta';
 import { PLAYER_LOOKUP } from '../../config';
+import { missingPlayerKey } from '../../lib';
 import { PlayerResolverService } from '../player-resolver.service';
 
 const NOW = new Date('2026-09-26T12:00:00.000Z');
@@ -47,10 +49,11 @@ const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const collector = mock<CollectorProducerService>();
   const lesta = mockDeep<LestaClient>();
+  const redis = new RedisMock();
 
   prisma.player.update.mockResolvedValue(mock<Player>());
 
-  return { service: new PlayerResolverService(prisma, collector, lesta), prisma, collector, lesta };
+  return { service: new PlayerResolverService(prisma, collector, lesta, redis), prisma, collector, lesta, redis };
 };
 
 describe('PlayerResolverService.resolve', () => {
@@ -90,6 +93,43 @@ describe('PlayerResolverService.resolve', () => {
     lesta.account.list.mockResolvedValue([]);
 
     await expect(service.resolve('Nobody')).rejects.toBeInstanceOf(AppNotFoundException);
+  });
+
+  it('remembers an unknown nickname for a while and answers 404 without asking Lesta again', async () => {
+    const { service, prisma, lesta, redis } = createService();
+
+    prisma.player.findFirst.mockResolvedValue(null);
+    lesta.account.list.mockResolvedValue([]);
+
+    await expect(service.resolve('Nobody')).rejects.toBeInstanceOf(AppNotFoundException);
+    await expect(service.resolve('NOBODY')).rejects.toMatchObject({ response: { code: 'PLAYER_NOT_FOUND' } });
+
+    expect(lesta.account.list).toHaveBeenCalledOnce();
+    const ttl = await redis.ttl(missingPlayerKey({ kind: 'nickname', value: 'nobody' }));
+
+    expect(ttl).toBeGreaterThan(0);
+    expect(ttl).toBeLessThanOrEqual(PLAYER_LOOKUP.missingTtlSeconds);
+  });
+
+  it('still finds a nickname that reached the database after it was remembered as missing', async () => {
+    const { service, prisma, lesta, redis } = createService();
+
+    await redis.set(missingPlayerKey({ kind: 'nickname', value: 'Tanker' }), PLAYER_LOOKUP.missingMarker);
+    prisma.player.findFirst.mockResolvedValue(mock<Player>({ accountId: 7n, isHidden: false }));
+    prisma.player.findUnique.mockResolvedValue(mock<Player>({ accountId: 7n, isHidden: false }));
+
+    await expect(service.resolve('Tanker')).resolves.toBe(7n);
+    expect(lesta.account.list).not.toHaveBeenCalled();
+  });
+
+  it('does not remember a nickname when the Lesta search fails', async () => {
+    const { service, prisma, lesta, redis } = createService();
+
+    prisma.player.findFirst.mockResolvedValue(null);
+    lesta.account.list.mockRejectedValue(new Error('lesta down'));
+
+    await expect(service.resolve('Nobody')).rejects.toThrow('lesta down');
+    await expect(redis.exists(missingPlayerKey({ kind: 'nickname', value: 'Nobody' }))).resolves.toBe(0);
   });
 });
 
@@ -150,6 +190,18 @@ describe('PlayerResolverService.ensure', () => {
 
     await expect(service.ensure(42n)).rejects.toMatchObject({ response: { code: 'PLAYER_NOT_FOUND' } });
     expect(collector.enrol).not.toHaveBeenCalled();
+  });
+
+  it('remembers an unknown id and answers 404 without asking Lesta again', async () => {
+    const { service, prisma, lesta } = createService();
+
+    prisma.player.findUnique.mockResolvedValue(null);
+    lesta.account.info.mockResolvedValue({ '42': null });
+
+    await expect(service.ensure(42n)).rejects.toMatchObject({ response: { code: 'PLAYER_NOT_FOUND' } });
+    await expect(service.ensure(42n)).rejects.toMatchObject({ response: { code: 'PLAYER_NOT_FOUND' } });
+
+    expect(lesta.account.info).toHaveBeenCalledOnce();
   });
 });
 

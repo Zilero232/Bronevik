@@ -14,7 +14,8 @@ export default defineConfig({
     env: {
       NEXT_PUBLIC_API_URL: 'http://localhost:4000',
       NEXT_PUBLIC_SITE_URL: 'https://triotmetki.ru',
-      NEXT_PUBLIC_APP_VERSION: '0.0.0-test'
+      NEXT_PUBLIC_APP_VERSION: '0.0.0-test',
+      INTERNAL_API_TOKEN: 'test-internal-token-not-used-outside-tests'
     },
     setupFiles: ['./vitest.setup.ts'],
     include: ['**/*.test.{ts,tsx}'],

@@ -29,6 +29,7 @@ export default defineConfig({
       API_URL: 'http://localhost:4000',
       WEB_URL: 'http://localhost:3000',
       BETTER_AUTH_SECRET: 'test-secret-not-used-outside-tests-000',
+      INTERNAL_API_TOKEN: 'test-internal-token-not-used-outside-tests',
       MOD_INGEST_SECRET: 'test-mod-ingest-secret',
       LESTA_APPLICATION_ID: 'test-application'
     }

@@ -53,5 +53,7 @@ export type { SessionEndedInput } from './session-end';
 export { slugify } from './slug';
 export { page, sortRows } from './sort';
 export { stableUuid } from './stable-uuid';
+export { THROTTLE_SUBJECT, throttleSubject } from './throttle-subject';
+export type { ThrottleRequest, ThrottleSubject, ThrottleSubjectPolicy } from './throttle-subject';
 export { previousWeek, weekWindow } from './week';
 export type { WeekWindow } from './week';

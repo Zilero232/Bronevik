@@ -3,7 +3,9 @@ import path from 'node:path';
 
 import { REPO_ROOT } from './paths';
 
-const PUBLIC_VARIABLE = /^(NEXT_PUBLIC_[A-Z0-9_]*)=(.*)$/;
+// The browser build reads NEXT_PUBLIC_*; the Next server also reads INTERNAL_API_TOKEN at runtime
+// (shared/config/server-env). It is never NEXT_PUBLIC_, so it stays out of the browser bundle.
+const ROOT_VARIABLE = /^(NEXT_PUBLIC_[A-Z0-9_]*|INTERNAL_API_TOKEN)=(.*)$/;
 
 export const loadRootEnv = () => {
   const rootEnv = path.resolve(REPO_ROOT, '.env');
@@ -13,7 +15,7 @@ export const loadRootEnv = () => {
   }
 
   for (const line of readFileSync(rootEnv, 'utf8').split('\n')) {
-    const match = PUBLIC_VARIABLE.exec(line.trim());
+    const match = ROOT_VARIABLE.exec(line.trim());
 
     if (match && process.env[match[1]] === undefined) {
       process.env[match[1]] = match[2];

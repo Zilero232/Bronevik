@@ -25,12 +25,15 @@
 
 # Tokens ride some query strings (the Lesta ID callback's access_token, OAuth
 # codes, tactic-board edit tokens): the access log drops them before writing.
+# The Next server's internal API token (x-otmetki-internal-token) rides a header
+# on every server-side API call and is dropped the same way.
 (access_log) {
 	log {
 		output stdout
 		format filter {
 			wrap console
 			fields {
+				request>headers>X-Otmetki-Internal-Token delete
 				request>uri query {
 					delete access_token
 					delete token

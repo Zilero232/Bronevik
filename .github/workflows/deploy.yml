@@ -23,6 +23,11 @@ name: deploy
 #   DEPLOY_SSH_PASSWORD       only used when no key is set
 #   DEPLOY_SSH_PORT           optional, defaults to 22
 #   DEPLOY_PATH               where docker-compose.yml lives, e.g. /opt/otmetki
+#
+# Runtime secrets live in the VPS .env, not here (docs/ops/deploy.md §1). The
+# stack refuses to start without INTERNAL_API_TOKEN: the server validates it and
+# docker-compose.yml passes it to the client, so the first `docker compose config`
+# below already fails when it is missing.
 
 on:
   workflow_dispatch:
@@ -103,6 +108,8 @@ jobs:
         env:
           PORT: '3000'
           HOSTNAME: 127.0.0.1
+          # No API runs here; the Next server still signs its (failing) API calls.
+          INTERNAL_API_TOKEN: e2e-internal-token-no-api-behind-it-000
         run: |
           cp -r apps/web/client/.next/static apps/web/client/.next/standalone/apps/web/client/.next/static
           cp -r apps/web/client/public apps/web/client/.next/standalone/apps/web/client/public 2>/dev/null || true

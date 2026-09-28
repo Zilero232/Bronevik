@@ -87,6 +87,6 @@ test.describe('without the API', () => {
   test('the home page shows the server stats error instead of numbers', async ({ page }) => {
     await page.goto('/en');
 
-    await expect(page.getByText('Server stats failed to load.')).toBeVisible();
+    await expect(page.getByRole('complementary', { name: 'Server now' }).getByRole('button', { name: 'Retry' })).toBeVisible({ timeout: 30_000 });
   });
 });

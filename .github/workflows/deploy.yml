@@ -107,7 +107,9 @@ jobs:
       - name: Serve the client
         env:
           PORT: '3000'
-          HOSTNAME: 127.0.0.1
+          # Not 127.0.0.1: NextURL turns it into localhost, so the next-intl rewrite of a default-locale
+          # path looks like another origin and loops back through the proxy as a redirect.
+          HOSTNAME: 0.0.0.0
           # No API runs here; the Next server still signs its (failing) API calls.
           INTERNAL_API_TOKEN: e2e-internal-token-no-api-behind-it-000
         run: |

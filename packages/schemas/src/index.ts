@@ -547,15 +547,19 @@ export type {
 } from './marks';
 export {
   createFavoriteSchema,
+  createGoalFieldsSchema,
   createGoalSchema,
   FAVORITE,
   favoriteKindSchema,
   favoriteSchema,
   favoritesSchema,
+  GOAL,
   goalMetricSchema,
   goalSchema,
   goalsSchema,
   goalStatusSchema,
+  hasGoalTank,
+  isGoalTankMetric,
   linkedAccountsSchema,
   sessionExtrasSchema,
   updateGoalSchema
@@ -570,6 +574,7 @@ export type {
   GoalMetric,
   Goals,
   GoalStatus,
+  GoalTankInput,
   LinkedAccounts,
   SessionExtras,
   UpdateGoalInput

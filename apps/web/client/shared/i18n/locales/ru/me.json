@@ -119,6 +119,7 @@
     "empty": "Целей пока нет. Самое время поставить первую.",
     "remove": "Удалить цель",
     "goalTitle": "{metric}: {target}",
+    "goalTitleTank": "{metric} на {tank}: {target}",
     "progress": "Старт {from} · сейчас {current}",
     "rule": {
       "winRate": "По боям за срок · итог в конце срока",
@@ -146,6 +147,9 @@
     },
     "newGoal": "Новая цель",
     "metricLabel": "Показатель",
+    "tankLabel": "Танк",
+    "tankPlaceholder": "Найдите танк",
+    "tankRequired": "Выберите танк для цели.",
     "targetLabel": "Цель",
     "hint": {
       "winRate": "Считается только по боям внутри срока. Итог подводится в конце срока.",

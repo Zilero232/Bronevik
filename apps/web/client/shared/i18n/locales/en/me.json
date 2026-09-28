@@ -119,6 +119,7 @@
     "empty": "No goals yet. Time to set the first one.",
     "remove": "Remove goal",
     "goalTitle": "{metric}: {target}",
+    "goalTitleTank": "{metric} on {tank}: {target}",
     "progress": "Start {from} · now {current}",
     "rule": {
       "winRate": "Battles in period · judged at the end",
@@ -146,6 +147,9 @@
     },
     "newGoal": "New goal",
     "metricLabel": "Metric",
+    "tankLabel": "Tank",
+    "tankPlaceholder": "Find a tank",
+    "tankRequired": "Pick the tank for this goal.",
     "targetLabel": "Target",
     "hint": {
       "winRate": "Counted only over battles inside the period. Judged when the period ends.",

@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
+import { TankPicker } from '@/features/tank/pick-tank';
 import { Button, FormField, Input, Select } from '@/ui-kit';
 
 import type { GoalDuration } from '../../../lib/goal-form';
@@ -19,7 +20,7 @@ import s from './GoalForm.module.scss';
 export const GoalForm = () => {
   const t = useTranslations('me.goals');
   const id = useId();
-  const { form, metric, durations, isInvalid, isDisabled, onSubmit } = useGoalForm();
+  const { form, metric, durations, hasTank, tank, onTankChange, isInvalid, isTankInvalid, isDisabled, onSubmit } = useGoalForm();
 
   return (
     <form noValidate className={s.root} onSubmit={onSubmit}>
@@ -36,6 +37,11 @@ export const GoalForm = () => {
         control={form.control}
         name='metric'
       />
+      {hasTank && (
+        <FormField error={isTankInvalid && t('tankRequired')} label={t('tankLabel')}>
+          <TankPicker placeholder={t('tankPlaceholder')} value={tank} onChange={onTankChange} />
+        </FormField>
+      )}
       <FormField error={isInvalid && t('invalid')} hint={t(`hint.${metric}`)} htmlFor={id} label={t('targetLabel')}>
         <Input id={id} inputMode='decimal' isInvalid={isInvalid} placeholder={t(`targetPlaceholder.${metric}`)} {...form.register('target')} />
       </FormField>

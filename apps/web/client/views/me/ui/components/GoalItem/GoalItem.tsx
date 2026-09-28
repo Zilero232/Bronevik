@@ -14,14 +14,18 @@ import s from './GoalItem.module.scss';
 
 export const GoalItem = ({ goal, onRemove }: GoalItemProps) => {
   const t = useTranslations('me.goals');
-  const { progress, daysLeft, formatValue: value } = useGoalItem(goal);
+  const { progress, tankName, daysLeft, formatValue: value } = useGoalItem(goal);
 
   const { metric, target, baseline, current, status } = goal;
 
   return (
     <article className={s.root} data-status={status}>
       <div className={s.head}>
-        <strong className={s.title}>{t('goalTitle', { metric: t(`metric.${metric}`), target: value(target) })}</strong>
+        <strong className={s.title}>
+          {tankName === null
+            ? t('goalTitle', { metric: t(`metric.${metric}`), target: value(target) })
+            : t('goalTitleTank', { metric: t(`metric.${metric}`), tank: tankName, target: value(target) })}
+        </strong>
         <Badge tone={GOAL_STATUS_TONE[status]}>{t(`status.${status}`)}</Badge>
         <IconButton aria-label={t('remove')} size='sm' onClick={onRemove}>
           <Trash2 size={14} />

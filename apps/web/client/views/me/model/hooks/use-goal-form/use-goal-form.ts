@@ -1,10 +1,15 @@
 'use client';
 
+import type { VehicleSummary } from '@otmetki/schemas';
+
 import { zodResolver } from '@hookform/resolvers/zod';
+import { isGoalTankMetric } from '@otmetki/schemas';
 import { useMutation } from '@tanstack/react-query';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { useLinkedAccounts } from '@/entities/auth/session';
+import { vehicleIndex } from '@/entities/tank/tank';
+import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { GoalFormOutput, GoalFormValues } from '../../../lib/goal-form';
@@ -15,6 +20,7 @@ import { goalFormSchema, toGoalInput } from '../../../lib/goal-form';
 
 export const useGoalForm = () => {
   const { data: accounts } = useLinkedAccounts();
+  const { data: catalog } = useVehicleCatalog();
   const add = useMutation({
     mutationFn: addGoal,
     meta: { successKey: 'me.toast.goalAdded', errorKey: 'me.toast.failed', invalidates: [QUERY_KEYS.me.section('goals')] }
@@ -26,7 +32,7 @@ export const useGoalForm = () => {
     reValidateMode: 'onSubmit'
   });
 
-  const metric = useWatch({ control: form.control, name: 'metric' });
+  const [metric, tankId] = useWatch({ control: form.control, name: ['metric', 'tankId'] });
 
   const accountId = accounts?.lesta.find(({ isPrimary }) => isPrimary)?.accountId ?? accounts?.lesta[0]?.accountId;
 
@@ -42,7 +48,11 @@ export const useGoalForm = () => {
     form,
     metric,
     durations: GOAL_FORM.durations,
+    hasTank: isGoalTankMetric(metric),
+    tank: typeof tankId === 'number' ? (vehicleIndex(catalog)[tankId] ?? null) : null,
+    onTankChange: (vehicle: VehicleSummary | null) => form.setValue('tankId', vehicle?.tankId, { shouldValidate: form.formState.isSubmitted }),
     isInvalid: form.formState.errors.target !== undefined,
+    isTankInvalid: form.formState.errors.tankId !== undefined,
     isDisabled: add.isPending || accountId === undefined,
     onSubmit
   };

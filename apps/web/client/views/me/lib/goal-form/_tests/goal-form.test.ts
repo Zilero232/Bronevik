@@ -24,8 +24,15 @@ describe('goalFormSchema', () => {
     const above = String(GOAL_METRICS.percentMax + 1);
 
     goalMetricSchema.options.forEach((metric) => {
-      expect(goalFormSchema.safeParse({ ...BASE, metric, target: above }).success).toBe(!isPercentMetric(metric));
+      expect(goalFormSchema.safeParse({ ...BASE, metric, tankId: 1, target: above }).success).toBe(!isPercentMetric(metric));
     });
+  });
+
+  it('requires a tank for a moe goal', () => {
+    const result = goalFormSchema.safeParse({ ...BASE, metric: 'moe', target: '85' });
+
+    expect(result.error?.issues.map((issue) => issue.path.join('.'))).toContain('tankId');
+    expect(goalFormSchema.safeParse({ ...BASE, metric: 'moe', tankId: 1, target: '85' }).success).toBe(true);
   });
 
   it('accepts only the offered durations', () => {
@@ -42,6 +49,15 @@ describe('toGoalInput', () => {
     const values = goalFormSchema.parse({ ...BASE, metric: 'battles', target: '500' });
 
     expect(createGoalSchema.safeParse(toGoalInput({ values, accountId: 1, now: NOW })).success).toBe(true);
+  });
+
+  it('sends the tank of a moe goal and drops it from the other metrics', () => {
+    const moe = goalFormSchema.parse({ ...BASE, metric: 'moe', tankId: 7, target: '85' });
+    const wn8 = goalFormSchema.parse({ ...BASE, metric: 'wn8', tankId: 7, target: '2000' });
+
+    expect(createGoalSchema.safeParse(toGoalInput({ values: moe, accountId: 1, now: NOW })).success).toBe(true);
+    expect(toGoalInput({ values: moe, accountId: 1, now: NOW }).tankId).toBe(7);
+    expect(toGoalInput({ values: wn8, accountId: 1, now: NOW })).not.toHaveProperty('tankId');
   });
 
   it('ends the goal the chosen number of days from now', () => {

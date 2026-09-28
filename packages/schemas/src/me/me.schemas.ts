@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { accountIdSchema, isoDateTimeSchema, tankIdSchema, uuidSchema } from '../common/primitives/primitives.schemas';
+import { hasGoalTank } from './me';
 import { FAVORITE } from './me.constants';
 
 export const favoriteKindSchema = z.enum(['player', 'clan', 'tank']);
@@ -45,13 +46,15 @@ export const goalSchema = z.object({
 
 export const goalsSchema = z.array(goalSchema);
 
-export const createGoalSchema = z.object({
+export const createGoalFieldsSchema = z.object({
   accountId: accountIdSchema,
   metric: goalMetricSchema,
-  tankId: tankIdSchema.optional(),
+  tankId: tankIdSchema.optional().describe('Required for a moe goal'),
   target: z.number().finite(),
   endsAt: isoDateTimeSchema
 });
+
+export const createGoalSchema = createGoalFieldsSchema.refine(hasGoalTank, { message: 'A moe goal needs a tank', path: ['tankId'] });
 
 export const updateGoalSchema = z.object({
   target: z.number().finite().optional(),

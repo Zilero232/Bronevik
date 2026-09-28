@@ -2,6 +2,7 @@ import type { z } from 'zod';
 
 import type {
   createFavoriteSchema,
+  createGoalFieldsSchema,
   createGoalSchema,
   favoriteKindSchema,
   favoriteSchema,
@@ -24,6 +25,7 @@ export type GoalStatus = z.infer<typeof goalStatusSchema>;
 export type Goal = z.infer<typeof goalSchema>;
 export type Goals = z.infer<typeof goalsSchema>;
 export type CreateGoalInput = z.infer<typeof createGoalSchema>;
+export type GoalTankInput = Pick<z.infer<typeof createGoalFieldsSchema>, 'metric' | 'tankId'>;
 export type UpdateGoalInput = z.infer<typeof updateGoalSchema>;
 export type LinkedAccounts = z.infer<typeof linkedAccountsSchema>;
 export type SessionExtras = z.infer<typeof sessionExtrasSchema>;

@@ -228,7 +228,10 @@ jobs:
             # The banner is baked into the client image, DEMO_MODE comes from the
             # compose files the VPS .env selects: both must say the same thing.
             stack=false
-            if docker compose config --services | grep -qx demo-seed; then stack=true; fi
+            # Read the list first: `grep -q` exits on the first match, compose then dies of
+            # SIGPIPE, and pipefail turned that into a false "not a demo".
+            services=$(docker compose config --services)
+            if grep -qx demo-seed <<<"$services"; then stack=true; fi
             if [ "$stack" != "$DEMO" ]; then
               echo "the run says demo=$DEMO but the VPS stack says demo=$stack (COMPOSE_FILE in $DEPLOY_PATH/.env)" >&2
               exit 1

@@ -52,7 +52,8 @@
     "summary": "Sample of {sample, plural, one {# player} other {# players}}, {total, plural, one {# medal} other {# medals}} in the catalogue",
     "empty": "No medals",
     "emptyDescription": "There is no rarity data for this section yet.",
-    "error": "Could not load medals"
+    "error": "Could not load medals",
+    "caption": "Medals and their rarity"
   },
   "tanks": {
     "tier": "Tier",
@@ -71,7 +72,8 @@
     "summary": "Sample of {sample, plural, one {# player} other {# players}}",
     "empty": "No tanks",
     "emptyDescription": "No tank matches these filters.",
-    "error": "Could not load tank rarity"
+    "error": "Could not load tank rarity",
+    "caption": "Medal rarity by tank"
   },
   "collectors": {
     "columns": {
@@ -83,6 +85,7 @@
     "summary": "{total, plural, one {# collector} other {# collectors}} on the board",
     "empty": "The board is empty",
     "emptyDescription": "Collectors appear after the first rarity recount.",
-    "error": "Could not load the collectors board"
+    "error": "Could not load the collectors board",
+    "caption": "Medal collectors"
   }
 }

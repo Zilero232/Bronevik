@@ -337,3 +337,4 @@ State after WP1–WP7 and WP9 (2026-09-26).
   - WP8a–d: progression, deep analytics, battle analysis and AI coach, overlay themes and hangar extras;
   - soft limits not yet enforced: linked accounts, watched tanks, stored replays, the history window;
   - the replay overflow cleanup job (§4.5) and its 14-day / 1-day notifications.
+- **Free tiers and monthly meters** (3D armor, battle analysis, proposed cuts): [2026-09-28-plus-free-tiers.md](2026-09-28-plus-free-tiers.md).

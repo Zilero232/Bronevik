@@ -14,7 +14,27 @@
 .ring {
   @include tone;
 
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tier {
+  display: inline-flex;
+  height: 20px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  background-color: var(--tone);
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%);
+  color: var(--color-accent-contrast);
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .ringValue {
@@ -38,6 +58,10 @@
   display: grid;
   gap: var(--space-4) var(--space-6);
   grid-template-columns: repeat(3, auto);
+
+  &:has(> :nth-child(4)) {
+    grid-template-columns: repeat(2, auto);
+  }
 
   @include below(sm) {
     grid-template-columns: repeat(2, auto);

@@ -125,7 +125,8 @@
         "reserve": "Reserve"
       }
     },
-    "emptyDescription": "No member matches these filters."
+    "emptyDescription": "No member matches these filters.",
+    "caption": "Clan roster"
   },
   "events": {
     "title": "Roster moves",

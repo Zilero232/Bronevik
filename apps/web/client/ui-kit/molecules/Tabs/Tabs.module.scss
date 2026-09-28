@@ -114,6 +114,10 @@
 
 .content {
   outline: none;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
 }
 
 .sticky {

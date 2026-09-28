@@ -23,6 +23,7 @@ export const ClanRoster = ({ members, now }: ClanRosterProps) => {
       <ActivityStrip distribution={distribution} shares={shares} />
       <RosterFilters />
       <DataTable
+        caption={t('caption')}
         columns={columns}
         data={rows}
         emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}

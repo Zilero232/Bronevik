@@ -9,3 +9,4 @@ export { classifyFace } from './lib/classify-face';
 export { decodeArmorModel } from './lib/decode-model';
 export type { ArmorFaceClass, ArmorModelData, ArmorShellState } from './model/armor-model.types';
 export { useArmorModel } from './model/hooks';
+export type { UseArmorModelInput } from './model/hooks';

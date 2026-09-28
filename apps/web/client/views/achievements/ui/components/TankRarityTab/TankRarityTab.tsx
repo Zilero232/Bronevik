@@ -36,6 +36,7 @@ export const TankRarityTab = () => {
               emptyState={
                 <FilteredEmptyState isCompact description={t('emptyDescription')} isFiltered={isFiltered} title={t('empty')} onReset={onReset} />
               }
+              caption={t('caption')}
               columns={columns}
               data={rarity.items}
               density='media'

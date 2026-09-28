@@ -21,7 +21,7 @@ export const BuildHead = () => {
 
   return (
     <div className={s.root}>
-      <TankImage isPriority className={s.render} size='big' tank={tank} />
+      <TankImage isDecorative isPriority className={s.render} size='big' tank={tank} />
       <PageHeader
         actions={
           <>

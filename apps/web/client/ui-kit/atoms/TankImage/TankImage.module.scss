@@ -43,6 +43,10 @@
   .image {
     width: 100%;
   }
+
+  &[data-source='big'] .image {
+    max-width: 160px;
+  }
 }
 
 .big {

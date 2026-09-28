@@ -23,7 +23,7 @@ export {
   VEHICLE_TYPE_TO_DB
 } from './enums';
 export { errorMessage } from './errors';
-export { isSignatureHeader, timingSafeEqual, verifySignatureHeader } from './hmac';
+export { hmacSha256Hex, isSignatureHeader, timingSafeEqual, verifySignatureHeader } from './hmac';
 export { isScheduleActive, registerJobSchedules } from './job-schedules';
 export type { JobSchedule, ScheduleEnvironment } from './job-schedules';
 export { parseJsonText, readNumber, readRecord, toJsonValue } from './json';

@@ -16,6 +16,7 @@ export const CollectorsTab = () => {
     <QueryState errorTitle={t('error')} query={query} skeleton={<DataTable isLoading columns={columns} data={[]} />}>
       {(board) => (
         <DataTable
+          caption={t('caption')}
           columns={columns}
           data={board.items}
           emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('empty')} />}

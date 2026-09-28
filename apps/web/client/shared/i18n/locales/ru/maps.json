@@ -41,7 +41,8 @@
     "errorTitle": "Карты не загрузились",
     "noMatchTitle": "Таких карт нет",
     "emptyTitle": "Список карт пуст",
-    "errorDescription": "Сервер не отвечает."
+    "errorDescription": "Сервер не отвечает.",
+    "caption": "Статистика карт"
   },
   "missing": {
     "toMaps": "Ко всем картам",

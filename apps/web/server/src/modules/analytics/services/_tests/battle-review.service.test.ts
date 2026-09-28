@@ -5,7 +5,9 @@ import type { Arena } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { ReferenceRow } from '../../mappers';
 
+import { AppForbiddenException } from '../../../../common/exceptions';
 import { VehicleCatalogService } from '../../../reference';
+import { UsageMeterService } from '../../../usage';
 import { BATTLE_REVIEW } from '../../config';
 import { BattleReviewService } from '../battle-review.service';
 import { OwnAccountService } from '../own-account.service';
@@ -27,6 +29,7 @@ const setup = () => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
   const accounts = mock<OwnAccountService>();
+  const usage = mock<UsageMeterService>();
 
   accounts.resolve.mockResolvedValue(7n);
   accounts.accountIds.mockResolvedValue([7n]);
@@ -36,7 +39,7 @@ const setup = () => {
   prisma.battle.count.mockResolvedValue(0);
   prisma.$queryRaw.mockResolvedValue([]);
 
-  return { prisma, service: new BattleReviewService(prisma, catalog, accounts) };
+  return { prisma, usage, service: new BattleReviewService(prisma, catalog, accounts, usage) };
 };
 
 describe('BattleReviewService.list', () => {
@@ -121,11 +124,33 @@ describe('BattleReviewService.analysis', () => {
     expect(analysis.rolls[0]?.ratio).toBeCloseTo(shot.damage / shot.nominal);
   });
 
-  it('throws not found for a foreign battle', async () => {
-    const { prisma, service } = setup();
+  it('throws not found for a foreign battle without spending an analysis', async () => {
+    const { prisma, usage, service } = setup();
 
     prisma.battle.findFirst.mockResolvedValue(null);
 
     await expect(service.analysis({ userId: 'u', id: 'x' })).rejects.toMatchObject({ status: 404 });
+    expect(usage.consume).not.toHaveBeenCalled();
+  });
+
+  it('spends one analysis of the monthly allowance per battle', async () => {
+    const { prisma, usage, service } = setup();
+
+    prisma.battle.findFirst.mockResolvedValue(battleRow());
+
+    await service.analysis({ userId: 'u', id: 'b1' });
+
+    expect(usage.consume).toHaveBeenCalledWith(
+      expect.objectContaining({ meter: BATTLE_REVIEW.meter, subject: 'b1', actor: expect.objectContaining({ userId: 'u' }) })
+    );
+  });
+
+  it('withholds the analysis once the allowance is used up', async () => {
+    const { prisma, usage, service } = setup();
+
+    prisma.battle.findFirst.mockResolvedValue(battleRow());
+    usage.consume.mockRejectedValue(new AppForbiddenException('SUBSCRIPTION_REQUIRED', 'used up', { feature: 'battleAnalysis' }));
+
+    await expect(service.analysis({ userId: 'u', id: 'b1' })).rejects.toBeInstanceOf(AppForbiddenException);
   });
 });

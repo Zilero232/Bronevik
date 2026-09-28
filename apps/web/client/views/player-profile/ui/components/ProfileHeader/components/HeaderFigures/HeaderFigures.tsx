@@ -31,6 +31,7 @@ export const HeaderFigures = ({ stats, ring }: HeaderFiguresProps) => {
           <span className={s.ringValue}>{stats.wn8.value === null ? '—' : format.number(stats.wn8.value, FIGURE_FORMAT.integer)}</span>
           <span className={s.ringLabel}>{tCommon('ratings.wn8')}</span>
         </ProgressRing>
+        {stats.wn8.tier && <span className={s.tier}>{t(`tiers.${stats.wn8.tier}`)}</span>}
       </div>
       <div className={s.figures}>
         <KeyFigure
@@ -43,6 +44,15 @@ export const HeaderFigures = ({ stats, ring }: HeaderFiguresProps) => {
         />
         <KeyFigure format={FIGURE_FORMAT.integer} isFramed={false} label={t('battles')} value={stats.battles} />
         <KeyFigure format={FIGURE_FORMAT.integer} isFramed={false} label={t('avgDamage')} value={stats.avgDamage} />
+        {stats.broneIndex.value !== null && (
+          <KeyFigure
+            format={FIGURE_FORMAT.integer}
+            isFramed={false}
+            label={t('broneIndex')}
+            tone={ratingValueTone(stats.broneIndex)}
+            value={stats.broneIndex.value}
+          />
+        )}
       </div>
     </div>
   );

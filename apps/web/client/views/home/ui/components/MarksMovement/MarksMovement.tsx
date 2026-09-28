@@ -39,6 +39,7 @@ export const MarksMovement = () => {
           <div className={s.split}>
             <Card padding='none'>
               <DataTable
+                caption={t('title')}
                 columns={columns}
                 data={rows}
                 density='media'

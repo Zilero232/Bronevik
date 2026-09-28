@@ -43,6 +43,7 @@ export const AccountShell = ({ children }: AccountShellProps) => {
             description={t(`guest.${section.key}.description`)}
             icon={<section.icon aria-hidden size={28} />}
             title={t(`guest.${section.key}.title`)}
+            titleAs='h1'
           />
         ))
         .otherwise(() => (

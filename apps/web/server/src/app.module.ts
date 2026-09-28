@@ -62,6 +62,7 @@ import { TanksModule } from './modules/tanks';
 import { TelegramModule } from './modules/telegram';
 import { TournamentsModule } from './modules/tournaments';
 import { TreeModule } from './modules/tree';
+import { UsageModule } from './modules/usage';
 import { VkModule } from './modules/vk';
 import { WatchlistModule } from './modules/watchlist';
 
@@ -97,6 +98,7 @@ import { WatchlistModule } from './modules/watchlist';
     SearchModule,
     PlayersModule,
     TanksModule,
+    UsageModule,
     BuildsModule,
     TreeModule,
     MapsModule,

@@ -69,7 +69,12 @@
       "battlesPerDay": "Battles per day"
     },
     "marksRing": "3 marks: {count} of {total, plural, one {# tank} other {# tanks}}",
-    "marksOf": "three marks of {total}"
+    "marksOf": "three marks of {total}",
+    "shelf": {
+      "title": "Award shelf",
+      "all": "All achievements ({total})",
+      "empty": "No awards yet"
+    }
   },
   "tanks": {
     "caption": "Player vehicles",
@@ -265,7 +270,21 @@
     "avgXp": "Avg XP",
     "seasons": "Seasons",
     "seasonLevel": "{season} · lv. {level}",
-    "wn8Ring": "WN8 rating level"
+    "wn8Ring": "WN8 rating level",
+    "favorites": "Favourite vehicles",
+    "favoriteNation": "Nation",
+    "favoriteClass": "Class",
+    "tiers": {
+      "very_bad": "Very bad",
+      "bad": "Bad",
+      "below_avg": "Below average",
+      "avg": "Average",
+      "good": "Good",
+      "very_good": "Very good",
+      "great": "Great",
+      "unicum": "Unicum",
+      "super_unicum": "Super unicum"
+    }
   },
   "achievements": {
     "empty": "The player has no achievements",

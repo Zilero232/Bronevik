@@ -1,3 +1,4 @@
+export { useAchievementShelf } from './use-achievement-shelf';
 export { useActivity } from './use-activity';
 export { useCareerPanel } from './use-career-panel';
 export { useChartsTab } from './use-charts-tab';

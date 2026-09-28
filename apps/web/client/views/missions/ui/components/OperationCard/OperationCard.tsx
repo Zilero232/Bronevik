@@ -15,7 +15,7 @@ export const OperationCard = ({ operation, progress }: OperationCardProps) => {
     <MediaCard
       media={
         <span className={s.stage} data-nation={operation.reward?.nation}>
-          {operation.reward && <TankImage isDecorative className={s.render} size='big' tank={vehicleIdentity(operation.reward)} />}
+          {operation.reward && <TankImage isDecorative className={s.render} size='large' tank={vehicleIdentity(operation.reward)} withTint={false} />}
           {operation.reward && (
             <span className={s.reward}>
               <span className={s.rewardLabel}>{t('reward')}</span>

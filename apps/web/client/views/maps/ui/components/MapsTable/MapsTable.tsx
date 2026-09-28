@@ -23,6 +23,7 @@ export const MapsTable = () => {
           emptyState={
             <FilteredEmptyState isCompact isFiltered={isFiltered} title={isFiltered ? t('noMatchTitle') : t('emptyTitle')} onReset={onReset} />
           }
+          caption={t('caption')}
           columns={columns}
           data={maps}
           getRowId={(map) => map.arenaId}

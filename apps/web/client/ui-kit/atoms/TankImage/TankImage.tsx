@@ -34,6 +34,7 @@ export const TankImage = ({
       className={clsx(s.root, s[size], className)}
       data-nation={tank.nation}
       data-premium={tank.isPremium || undefined}
+      data-source={image !== null && image === tank.images?.big ? 'big' : undefined}
       data-state={image ? 'image' : 'fallback'}
       data-tint={withTint || undefined}
     >

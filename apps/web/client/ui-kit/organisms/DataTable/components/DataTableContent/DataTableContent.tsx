@@ -60,8 +60,15 @@ export const DataTableContent = <T,>({
     >
       {(summary || toolbar) && <DataTableToolbar summary={summary} toolbar={toolbar} />}
       {showTable && !(hasCards && isEmpty) && (
-        <div ref={setScrollNode} className={s.root} data-virtual={isVirtual}>
-          <table className={s.table}>
+        <div
+          ref={setScrollNode}
+          aria-label={caption}
+          className={s.root}
+          data-virtual={isVirtual}
+          role={caption ? 'region' : undefined}
+          tabIndex={caption ? 0 : undefined}
+        >
+          <table aria-rowcount={isVirtual ? rows.length + 1 : undefined} className={s.table}>
             {caption && <caption className={s.caption}>{caption}</caption>}
             <DataTableHead table={table} />
             {isLoading && <DataTableSkeleton columnCount={columnCount} />}

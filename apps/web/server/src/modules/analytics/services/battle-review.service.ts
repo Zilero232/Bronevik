@@ -9,6 +9,7 @@ import type { ReferenceRow } from '../mappers';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
+import { UsageMeterService } from '../../usage';
 import { BATTLE_REVIEW } from '../config';
 import { readStoredShots, reviewBattle, shotRolls } from '../lib';
 import { toMyBattle, toTankReference } from '../mappers';
@@ -19,7 +20,8 @@ export class BattleReviewService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly accounts: OwnAccountService
+    private readonly accounts: OwnAccountService,
+    private readonly usage: UsageMeterService
   ) {}
 
   async list({ userId, account, tankId, limit, offset }: BattlesInput): Promise<MyBattlesPage> {
@@ -52,12 +54,20 @@ export class BattleReviewService {
       throw new AppNotFoundException('NOT_FOUND', `No battle ${input.id}`);
     }
 
-    return {
+    const analysis = {
       battle,
       reference,
       rolls: shotRolls(readStoredShots(row.shots)),
       ...reviewBattle({ battle: row, reference, vehicleType: catalog.get(row.tankId)?.summary.type ?? null })
     };
+
+    await this.usage.consume({
+      meter: BATTLE_REVIEW.meter,
+      actor: { userId: input.userId, deviceId: null, ipHash: null },
+      subject: input.id
+    });
+
+    return analysis;
   }
 
   private async own({ userId, id }: BattleInput): Promise<Battle> {

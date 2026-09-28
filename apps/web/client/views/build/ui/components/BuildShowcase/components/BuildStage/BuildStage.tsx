@@ -44,7 +44,7 @@ export const BuildStage = ({ toggle, left, right, stats, compare, notice, action
         <div className={s.render}>
           <NationBackdrop className={s.flag} nation={tank.nation} />
           <span aria-hidden className={s.floor} />
-          <TankImage isPriority className={s.image} size='large' tank={tank} withTint={false} />
+          <TankImage isDecorative isPriority className={s.image} size='large' tank={tank} withTint={false} />
         </div>
         {compare}
       </div>

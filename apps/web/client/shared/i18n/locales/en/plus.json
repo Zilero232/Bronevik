@@ -45,6 +45,10 @@
       "supertestMine": {
         "title": "Supertest for your tanks",
         "text": "The “My tanks” supertest tab: changes to the vehicles in your garage only."
+      },
+      "armor3d": {
+        "title": "Unlimited 3D armor",
+        "text": "Any vehicle in 3D as often as you like. Without Plus there is a monthly allowance."
       }
     }
   },
@@ -58,7 +62,8 @@
     "unlimited": "Unlimited",
     "rate": {
       "week": "{count} per week",
-      "day": "{count} per day"
+      "day": "{count} per day",
+      "month": "{count} per month"
     },
     "units": {
       "days": "{count, plural, one {# day} other {# days}}"
@@ -72,8 +77,11 @@
       "storedReplays": "Stored replays",
       "streamerFollows": "Streamer follows",
       "historyDays": "Analytics history depth",
-      "aiReviews": "AI coach reviews"
-    }
+      "aiReviews": "AI coach reviews",
+      "armor3d": "3D armor: different vehicles",
+      "battleAnalysis": "Detailed battle analysis"
+    },
+    "meters": "Monthly allowances renew on the 1st at 00:00 Moscow time. Without signing in, 3D armor covers {armor, plural, one {# vehicle} other {# vehicles}} a month."
   },
   "checkout": {
     "title": "Plan",
@@ -128,7 +136,7 @@
       },
       "free": {
         "question": "What stays free?",
-        "answer": "All the essentials: profiles and stats of any player, marks and thresholds, tank tables, leaderboards, sessions, replays, clans, community, tools and the API. Plus sells our analytics, room and conveniences, not Lesta data."
+        "answer": "All the essentials: profiles and stats of any player, marks and thresholds, tank tables, the tech tree, news, leaderboards, sessions, replays, clans, community, tools and the API. The heavy tools, 3D armor and detailed battle analysis, are free within a monthly allowance. Plus sells our analytics, room and conveniences, not Lesta data."
       },
       "payment": {
         "question": "How does payment work?",
@@ -254,6 +262,10 @@
     "supertest": {
       "title": "My tanks on the supertest",
       "text": "Supertest changes for your tanks only: what got buffed and nerfed in your garage, with the difference for every stat."
+    },
+    "armor3d": {
+      "title": "Unlimited 3D armor",
+      "text": "Any vehicle in 3D as often as you like: effective armor, spaced plates and penetration for every shell. Without Plus there is a monthly allowance."
     }
   }
 }

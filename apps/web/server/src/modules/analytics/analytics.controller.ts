@@ -96,7 +96,6 @@ export class AnalyticsController {
   }
 
   @Get('battles/:id/analysis')
-  @RequiresPlus('battleAnalysis')
   @ZodResponse({ type: BattleAnalysisDto })
   analysis(@CurrentUserId() userId: string, @Param() { id }: AnalyticsBattleParamsDto) {
     return this.battles.analysis({ userId, id });

@@ -18,7 +18,7 @@ export const MarkRow = ({ chase }: MarkRowProps) => {
 
   return (
     <li className={s.root}>
-      <TankImage className={s.image} size='contour' tank={tank} />
+      <TankImage isDecorative className={s.image} size='contour' tank={tank} />
       <div className={s.body}>
         <ProgressBar
           label={tank.name}

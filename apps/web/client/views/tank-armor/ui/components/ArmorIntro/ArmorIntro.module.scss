@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  max-width: 70ch;
+  margin: 0;
+  color: var(--color-text-dim);
+}
+
+.link {
+  color: var(--color-accent);
+  text-underline-offset: 2px;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

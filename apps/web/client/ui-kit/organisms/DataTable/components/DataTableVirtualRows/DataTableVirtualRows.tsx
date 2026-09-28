@@ -43,6 +43,7 @@ export const DataTableVirtualRows = <T,>({
         return (
           <tr
             key={row.id}
+            aria-rowindex={item.index + 2}
             className={s.row}
             data-class={getRowClass?.(row.original) ?? undefined}
             data-clickable={Boolean(onRowClick) || link !== null}

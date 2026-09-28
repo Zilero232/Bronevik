@@ -53,6 +53,7 @@ export const ClanRating = () => {
               </>
             )
           }
+          caption={t('title')}
           columns={columns}
           data={items}
           emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle')} />}

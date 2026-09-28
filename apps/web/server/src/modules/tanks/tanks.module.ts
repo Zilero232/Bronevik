@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
 import { MarksModule } from '../marks';
+import { UsageModule } from '../usage';
 import { MyTanksController } from './my-tanks.controller';
 import { armorStorageProvider } from './providers';
 import {
@@ -21,13 +22,14 @@ import {
   VehicleListService,
   VehicleSourcesService
 } from './services';
+import { TankArmorController } from './tank-armor.controller';
 import { TanksController } from './tanks.controller';
 import { VehicleSourcesController } from './vehicle-sources.controller';
 import { VehiclesController } from './vehicles.controller';
 
 @Module({
-  imports: [MarksModule, BillingCoreModule],
-  controllers: [TanksController, MyTanksController, VehiclesController, VehicleSourcesController],
+  imports: [MarksModule, BillingCoreModule, UsageModule],
+  controllers: [TanksController, TankArmorController, MyTanksController, VehiclesController, VehicleSourcesController],
   providers: [
     armorStorageProvider,
     TankArmorService,

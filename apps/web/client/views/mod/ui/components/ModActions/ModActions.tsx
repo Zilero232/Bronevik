@@ -17,11 +17,23 @@ export const ModActions = () => {
   return (
     <div className={s.root}>
       <div className={s.buttons}>
-        <a className={buttonVariants({ variant: 'primary', size: 'lg' })} download={distribution.managerFileName} href={distribution.managerUrl}>
+        <a
+          className={buttonVariants({ variant: 'primary', size: 'lg' })}
+          download={distribution.managerFileName}
+          href={distribution.managerUrl}
+          rel='noreferrer'
+          target='_blank'
+        >
           <Download aria-hidden size={MOD_PAGE.iconSize} />
           {t('download')}
         </a>
-        <a className={buttonVariants({ variant: 'secondary', size: 'lg' })} download={distribution.packagesFileName} href={distribution.packagesUrl}>
+        <a
+          className={buttonVariants({ variant: 'secondary', size: 'lg' })}
+          download={distribution.packagesFileName}
+          href={distribution.packagesUrl}
+          rel='noreferrer'
+          target='_blank'
+        >
           <PackageOpen aria-hidden size={MOD_PAGE.iconSize} />
           {t('manual')}
         </a>

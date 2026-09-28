@@ -7,8 +7,11 @@ import type { VehicleArmorModel } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { ArmorStorage } from '../../../gamedata';
 import type { CatalogEntry, VehicleCatalogService } from '../../../reference';
+import type { UsageMeterService } from '../../../usage';
+import type { TankDetailService } from '../tank-detail.service';
 
-import { AppNotFoundException } from '../../../../common/exceptions';
+import { AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
+import { ARMOR_VIEWER } from '../../../../config';
 import { TankArmorService } from '../tank-armor.service';
 
 const SUMMARY = {
@@ -35,9 +38,13 @@ const ROW: VehicleArmorModel = {
   updatedAt: new Date('2026-09-25T00:00:00Z')
 };
 
+const ACTOR = { userId: 'user-1', deviceId: null, ipHash: null };
+
 const createService = ({ row, stored }: { row: VehicleArmorModel | null; stored?: Uint8Array }) => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
+  const details = mock<TankDetailService>();
+  const usage = mock<UsageMeterService>();
 
   const storage: ArmorStorage = {
     put: vi.fn(),
@@ -53,14 +60,15 @@ const createService = ({ row, stored }: { row: VehicleArmorModel | null; stored?
 
   prisma.vehicleArmorModel.findUnique.mockResolvedValue(row);
   catalog.find.mockResolvedValue(mock<CatalogEntry>({ summary: SUMMARY }));
+  details.resolve.mockResolvedValue(SUMMARY.tankId);
 
-  return new TankArmorService(prisma, catalog, storage);
+  return { service: new TankArmorService(prisma, catalog, details, usage, storage), usage, prisma };
 };
 
 describe('TankArmorService', () => {
   it('returns the stored geometry as base64 with the plate tables and the mirror commit', async () => {
     const stored = new Uint8Array([66, 82, 65]);
-    const response = await createService({ row: ROW, stored }).armor(SUMMARY.tankId);
+    const response = await createService({ row: ROW, stored }).service.armor(SUMMARY.tankId);
 
     expect(armorModelSchema.safeParse(response).success).toBe(true);
     expect([...base64ToBytes(response.geometry)]).toEqual([...stored]);
@@ -70,10 +78,46 @@ describe('TankArmorService', () => {
   });
 
   it('is a not-found when the tank has no armor model', async () => {
-    await expect(createService({ row: null }).armor(SUMMARY.tankId)).rejects.toBeInstanceOf(AppNotFoundException);
+    await expect(createService({ row: null }).service.armor(SUMMARY.tankId)).rejects.toBeInstanceOf(AppNotFoundException);
   });
 
   it('is a not-found when the row exists but the stored object is gone', async () => {
-    await expect(createService({ row: ROW }).armor(SUMMARY.tankId)).rejects.toBeInstanceOf(AppNotFoundException);
+    await expect(createService({ row: ROW }).service.armor(SUMMARY.tankId)).rejects.toBeInstanceOf(AppNotFoundException);
+  });
+});
+
+describe('TankArmorService.open', () => {
+  const STORED = new Uint8Array([66, 82, 65]);
+
+  it('counts one armor view against the resolved tank, not the slug it was asked by', async () => {
+    const { service, usage } = createService({ row: ROW, stored: STORED });
+
+    await service.open({ idOrSlug: SUMMARY.slug, actor: ACTOR });
+
+    expect(usage.consume).toHaveBeenCalledWith({ meter: ARMOR_VIEWER.meter, actor: ACTOR, subject: String(SUMMARY.tankId) });
+  });
+
+  it('does not count a view of a tank that has no armor model', async () => {
+    const { service, usage } = createService({ row: null });
+
+    await expect(service.open({ idOrSlug: SUMMARY.slug, actor: ACTOR })).rejects.toBeInstanceOf(AppNotFoundException);
+    expect(usage.consume).not.toHaveBeenCalled();
+  });
+
+  it('withholds the geometry once the allowance is used up', async () => {
+    const { service, usage } = createService({ row: ROW, stored: STORED });
+
+    usage.consume.mockRejectedValue(new AppForbiddenException('SUBSCRIPTION_REQUIRED', 'used up', { feature: 'armor3d' }));
+
+    await expect(service.open({ idOrSlug: SUMMARY.slug, actor: ACTOR })).rejects.toBeInstanceOf(AppForbiddenException);
+  });
+
+  it('reads the stored geometry once for repeated opens of the same tank', async () => {
+    const { service, prisma } = createService({ row: ROW, stored: STORED });
+
+    await service.open({ idOrSlug: SUMMARY.slug, actor: ACTOR });
+    await service.open({ idOrSlug: SUMMARY.slug, actor: ACTOR });
+
+    expect(prisma.vehicleArmorModel.findUnique).toHaveBeenCalledTimes(1);
   });
 });

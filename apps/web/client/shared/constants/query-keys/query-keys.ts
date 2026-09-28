@@ -112,6 +112,7 @@ export const QUERY_KEYS = {
       history: ['me', 'billing', 'history'] as const
     },
     inbox: (params: object) => ['me', 'inbox', params] as const,
+    usage: ['me', 'usage'] as const,
     analytics: {
       all: ['me', 'analytics'] as const,
       overview: (params: object) => ['me', 'analytics', 'overview', params] as const,

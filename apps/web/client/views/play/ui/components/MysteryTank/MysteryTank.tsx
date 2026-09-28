@@ -20,7 +20,7 @@ export const MysteryTank = () => {
     <Card className={s.root} data-status={status} variant='panel'>
       <div className={s.stage}>
         {isOver ? (
-          <TankImage size='big' tank={identity} />
+          <TankImage isDecorative size='big' tank={identity} />
         ) : (
           <span aria-hidden className={s.silhouette} style={{ filter: blur }}>
             <Silhouette size={160} strokeWidth={1.25} />
@@ -29,7 +29,9 @@ export const MysteryTank = () => {
       </div>
       <div className={s.caption}>
         {isOver ? <TankIdentity size='lg' tank={identity} /> : <span className={s.hidden}>{t('classified')}</span>}
-        <span className={s.hint}>{t(`status.${status}`)}</span>
+        <span className={s.hint} role='status'>
+          {t(`status.${status}`)}
+        </span>
       </div>
     </Card>
   );

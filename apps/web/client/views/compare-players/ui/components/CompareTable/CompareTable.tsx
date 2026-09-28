@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { DataTable } from '@/ui-kit';
 
 import type { CompareTableProps } from './CompareTable.types';
@@ -8,10 +10,12 @@ import { useCompareTable } from '../../../model/hooks';
 import { MetricCard } from './components';
 
 export const CompareTable = ({ comparison, period, isLoading }: CompareTableProps) => {
+  const t = useTranslations('compare');
   const { columns, rows, players } = useCompareTable({ comparison, period });
 
   return (
     <DataTable
+      caption={t('title')}
       columns={columns}
       data={rows}
       density='compact'

@@ -23,7 +23,7 @@ export const TankIdsField = ({ value, max, label, placeholder, onChange }: TankI
         <ul className={s.list}>
           {vehicles.map((vehicle) => (
             <li key={vehicle.tankId} className={s.item}>
-              <TankImage size='small' tank={vehicle} />
+              <TankImage isDecorative size='small' tank={vehicle} />
               <span className={s.name}>{vehicle.shortName}</span>
               <IconButton aria-label={t('remove', { name: vehicle.name })} size='sm' onClick={() => onRemove(vehicle.tankId)}>
                 <X size={12} />

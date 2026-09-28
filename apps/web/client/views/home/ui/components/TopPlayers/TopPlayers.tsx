@@ -76,6 +76,7 @@ export const TopPlayers = () => {
             {rest.length > 0 && (
               <Card padding='none'>
                 <DataTable
+                  caption={t('title')}
                   columns={columns}
                   data={rest}
                   getRowId={(entry) => `${entry.rank}-${entry.name}`}

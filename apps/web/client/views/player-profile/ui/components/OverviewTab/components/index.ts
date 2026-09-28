@@ -1,3 +1,4 @@
+export { AchievementShelf } from './AchievementShelf';
 export { ActivityPanel } from './ActivityPanel';
 export { CareerPanel } from './CareerPanel';
 export { FavoriteTanksPanel } from './FavoriteTanksPanel';

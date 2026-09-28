@@ -6,6 +6,8 @@ import { Skeleton } from '../../atoms';
 import { ErrorState } from '../../molecules';
 import { QUERY_STATE } from './QueryState.constants';
 
+import s from './QueryState.module.scss';
+
 export const QueryState = <TData,>({
   query: { data, isError, isRefetching = false, refetch },
   children,
@@ -39,5 +41,9 @@ export const QueryState = <TData,>({
     );
   }
 
-  return skeleton;
+  return (
+    <div aria-busy className={s.busy}>
+      {skeleton}
+    </div>
+  );
 };

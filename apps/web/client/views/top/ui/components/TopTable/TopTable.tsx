@@ -23,6 +23,7 @@ export const TopTable = () => {
     >
       <div className={s.root} data-refreshing={isRefreshing}>
         <DataTable
+          caption={t('title')}
           columns={columns}
           data={entries}
           density={tank ? 'media' : 'default'}

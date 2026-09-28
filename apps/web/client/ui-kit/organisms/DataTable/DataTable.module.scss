@@ -47,6 +47,10 @@
   position: relative;
   overflow: auto hidden;
 
+  &:focus-visible {
+    @include focus-ring;
+  }
+
   &[data-virtual='true'] {
     overflow: auto;
     max-height: calc(100dvh - var(--header-offset) - var(--space-8));

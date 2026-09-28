@@ -28,5 +28,6 @@ export const FIGURE_FORMAT = {
 
 export const PROFILE_HEADER = {
   seasons: 4,
+  heroTanks: 3,
   wn8Ring: { size: 104, thickness: 6 }
 } as const;

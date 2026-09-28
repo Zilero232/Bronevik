@@ -41,7 +41,8 @@
     "errorTitle": "Maps failed to load",
     "noMatchTitle": "No such maps",
     "emptyTitle": "The map list is empty",
-    "errorDescription": "The server is not responding."
+    "errorDescription": "The server is not responding.",
+    "caption": "Map statistics"
   },
   "missing": {
     "toMaps": "All maps",

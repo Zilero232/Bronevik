@@ -25,6 +25,7 @@ export const PopularPlayers = () => {
       >
         {({ items }) => (
           <DataTable
+            caption={t('title')}
             columns={columns}
             data={items}
             density='compact'

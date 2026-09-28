@@ -5,7 +5,6 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { sumBy } from 'remeda';
 
 import { getBattleAnalysis } from '@/entities/player/analytics';
-import { usePlus } from '@/features/plus/plus-gate';
 import { isPlusRequiredError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
@@ -15,11 +14,9 @@ import { efficiencyTone } from '../../../lib/battle-format';
 export const useBattleAnalysis = (id: string) => {
   const t = useTranslations('analytics.battle.mistakes');
   const format = useFormatter();
-  const { isPlus } = usePlus();
   const query = useQuery({
     queryKey: QUERY_KEYS.me.analytics.analysis(id),
     queryFn: ({ signal }) => getBattleAnalysis({ id, signal }),
-    enabled: isPlus,
     retry: false
   });
 

@@ -29,6 +29,7 @@ export const RecentPlayers = () => {
         title={<span id={titleId}>{t('title')}</span>}
       />
       <DataTable
+        caption={t('title')}
         columns={columns}
         data={players}
         density='compact'

@@ -1,4 +1,4 @@
-import { PLUS_LIMITS } from '@otmetki/schemas';
+import { PLUS_LIMITS, USAGE_METERS } from '@otmetki/schemas';
 import { useFormatter, useTranslations } from 'next-intl';
 import { entries } from 'remeda';
 import { match, P } from 'ts-pattern';
@@ -41,8 +41,19 @@ export const PlusLimits = () => {
               ))}
             </tr>
           ))}
+          {entries(USAGE_METERS).map(([key, meter]) => (
+            <tr key={key}>
+              <th scope='row'>{t(`rows.${key}`)}</th>
+              {PLUS_LIMIT_TIERS.map((tier) => (
+                <td key={tier} className={tier === 'plus' ? s.plus : undefined}>
+                  {meter[tier] === null ? t('unlimited') : t('rate.month', { count: meter[tier] })}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
+      <p className={s.note}>{t('meters', { armor: USAGE_METERS.armor3d.anonymous })}</p>
     </section>
   );
 };

@@ -26,6 +26,7 @@ export const ClanActivity = () => {
         >
           {(rows) => (
             <DataTable
+              caption={t('title')}
               columns={columns}
               data={rows}
               getRowId={(row) => String(row.clan.clanId)}

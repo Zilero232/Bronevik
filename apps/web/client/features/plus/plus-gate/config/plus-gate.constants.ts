@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 
 import {
   Bot,
+  Box,
   ChartLine,
   Crosshair,
   FileDown,
@@ -37,7 +38,8 @@ export const PLUS_FEATURE_ICONS = {
   hangarExtras: Warehouse,
   privateCompetitions: LockKeyhole,
   streamerAlerts: Radio,
-  supertest: FlaskConical
+  supertest: FlaskConical,
+  armor3d: Box
 } as const satisfies Record<PlusFeature, LucideIcon>;
 
 export const PLUS_GATE = {
@@ -63,7 +65,8 @@ export const PLUS_FEATURE_PREVIEW = {
   hangarExtras: 'cards',
   privateCompetitions: 'table',
   streamerAlerts: 'cards',
-  supertest: 'table'
+  supertest: 'table',
+  armor3d: 'cards'
 } as const satisfies Record<PlusFeature, 'cards' | 'chart' | 'table'>;
 
 export const PLUS_PREVIEW_SAMPLE = {

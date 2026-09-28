@@ -22,7 +22,7 @@ export const TankShowcase3D = ({ tank, tanks, className }: TankShowcase3DProps) 
     <div ref={showcase.rootRef} className={clsx(s.root, className)} data-mode={showcase.canvasMode ?? 'flat'} {...showcase.dragHandlers}>
       {showcase.identity && (
         <div aria-hidden={!showcase.isFlatVisible} className={s.flat} data-hidden={!showcase.isFlatVisible}>
-          <TankImage isPriority className={s.render} size='large' tank={showcase.identity} withTint={false} />
+          <TankImage isDecorative isPriority className={s.render} size='large' tank={showcase.identity} withTint={false} />
         </div>
       )}
       {current && showcase.canvasMode && (

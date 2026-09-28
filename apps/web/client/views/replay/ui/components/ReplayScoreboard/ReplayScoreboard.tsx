@@ -29,6 +29,7 @@ export const ReplayScoreboard = () => {
             title={<span id={`${titleId}-${team.id}`}>{t(`teams.${team.id}`)}</span>}
           />
           <DataTable
+            caption={t(`teams.${team.id}`)}
             columns={columns}
             data={[...team.players]}
             density='compact'

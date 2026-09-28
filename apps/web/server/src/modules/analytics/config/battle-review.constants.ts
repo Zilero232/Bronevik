@@ -8,7 +8,8 @@ export const BATTLE_REVIEW = {
   minShotsForAccuracy: 5,
   lowHitRate: 55,
   minHitsForPenetration: 4,
-  lowPenRate: 50
+  lowPenRate: 50,
+  meter: 'battleAnalysis'
 } as const;
 
 export const HONEST_RNG_WINDOW = {

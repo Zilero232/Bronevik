@@ -11,6 +11,7 @@ import type {
 } from '@otmetki/schemas';
 
 import type { CatalogEntry } from '../reference';
+import type { UsageActor } from '../usage';
 import type { SpecTraits } from './lib/vehicle-traits';
 
 export type TankStatsListInput = TankServerStatsQuery;
@@ -74,4 +75,9 @@ export type AccountLearningLookup = {
 export type CreateVehicleSourceRequest = {
   userId: string;
   input: CreateVehicleSourceInput;
+};
+
+export type OpenArmorInput = {
+  idOrSlug: string;
+  actor: UsageActor;
 };

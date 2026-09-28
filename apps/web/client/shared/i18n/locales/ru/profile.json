@@ -69,7 +69,12 @@
       "battlesPerDay": "Боёв в день"
     },
     "marksRing": "3 отметки: {count} из {total, plural, one {# танка} few {# танков} many {# танков} other {# танка}}",
-    "marksOf": "три отметки из {total}"
+    "marksOf": "три отметки из {total}",
+    "shelf": {
+      "title": "Витрина наград",
+      "all": "Все достижения ({total})",
+      "empty": "Наград пока нет"
+    }
   },
   "tanks": {
     "caption": "Танки игрока",
@@ -265,7 +270,21 @@
     "avgXp": "Средний опыт",
     "seasons": "Сезоны",
     "seasonLevel": "{season} · ур. {level}",
-    "wn8Ring": "Уровень рейтинга WN8"
+    "wn8Ring": "Уровень рейтинга WN8",
+    "favorites": "Любимая техника",
+    "favoriteNation": "Нация",
+    "favoriteClass": "Класс",
+    "tiers": {
+      "very_bad": "Очень плохо",
+      "bad": "Плохо",
+      "below_avg": "Ниже среднего",
+      "avg": "Средний",
+      "good": "Хороший",
+      "very_good": "Очень хороший",
+      "great": "Отличный",
+      "unicum": "Уникум",
+      "super_unicum": "Суперуникум"
+    }
   },
   "achievements": {
     "empty": "У игрока нет достижений",

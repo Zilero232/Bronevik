@@ -19,7 +19,8 @@ export const PLUS_FEATURES = [
   'hangarExtras',
   'privateCompetitions',
   'streamerAlerts',
-  'supertest'
+  'supertest',
+  'armor3d'
 ] as const;
 
 export const PLUS_LIMITS = {

@@ -55,6 +55,7 @@ export const GuideTable = () => {
                 </>
               )
             }
+            caption={t('tableTitle')}
             columns={columns}
             data={items}
             getRowId={(row) => row.id}

@@ -30,6 +30,7 @@ export const MedalsTab = () => {
         {(catalog) => (
           <>
             <DataTable
+              caption={t('caption')}
               columns={columns}
               data={catalog.items}
               density='media'

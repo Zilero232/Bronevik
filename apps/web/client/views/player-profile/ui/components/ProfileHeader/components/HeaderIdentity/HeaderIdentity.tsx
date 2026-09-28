@@ -7,14 +7,15 @@ import { CosmeticBadge } from '@/entities/player/cosmetics';
 import { clanLabel } from '@/entities/player/player';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { RelativeTime } from '@/ui-kit';
+import { ClassIcon, NationLabel, RelativeTime } from '@/ui-kit';
 
 import type { HeaderIdentityProps } from './HeaderIdentity.types';
 
 import s from './HeaderIdentity.module.scss';
 
-export const HeaderIdentity = ({ summary, badge }: HeaderIdentityProps) => {
+export const HeaderIdentity = ({ summary, badge, kinds }: HeaderIdentityProps) => {
   const t = useTranslations('profile.header');
+  const tGame = useTranslations('game');
   const format = useFormatter();
 
   const { clan, createdAt, lastBattleAt } = summary;
@@ -33,6 +34,25 @@ export const HeaderIdentity = ({ summary, badge }: HeaderIdentityProps) => {
         )}
         {badge && <CosmeticBadge code={badge} />}
       </div>
+      {(kinds.nation || kinds.tankClass) && (
+        <ul aria-label={t('favorites')} className={s.kinds}>
+          {kinds.nation && (
+            <li className={s.kind}>
+              <span className={s.kindLabel}>{t('favoriteNation')}</span>
+              <NationLabel nation={kinds.nation.value} size={16} />
+              <span className={s.kindShare}>{format.number(kinds.nation.share, { style: 'percent' })}</span>
+            </li>
+          )}
+          {kinds.tankClass && (
+            <li className={s.kind}>
+              <span className={s.kindLabel}>{t('favoriteClass')}</span>
+              <ClassIcon size={14} tankClass={kinds.tankClass.value} />
+              <span>{tGame(`classes.${kinds.tankClass.value}`)}</span>
+              <span className={s.kindShare}>{format.number(kinds.tankClass.share, { style: 'percent' })}</span>
+            </li>
+          )}
+        </ul>
+      )}
       <p className={s.meta}>
         {createdAt && <span>{t('since', { year: format.dateTime(new Date(createdAt), { year: 'numeric' }) })}</span>}
         {lastBattleAt && (

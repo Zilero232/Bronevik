@@ -21,7 +21,7 @@ export const BattleCard = ({ battle }: BattleCardProps) => {
     <Card className={s.root} data-result={battle.result} padding='none'>
       <header className={s.head}>
         <div className={s.tank}>
-          {battle.vehicle && <TankImage isPriority size='big' tank={battle.vehicle} />}
+          {battle.vehicle && <TankImage isDecorative isPriority size='big' tank={battle.vehicle} />}
           <div className={s.identity}>
             {battle.vehicle && (
               <span className={s.meta}>

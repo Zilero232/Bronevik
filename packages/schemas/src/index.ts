@@ -1361,6 +1361,17 @@ export type { TelegramLinkCode, TelegramSessionToken, TelegramStatus, TelegramWe
 export { techTreeEdgeSchema, techTreeNodeSchema, techTreeParamsSchema, techTreeSchema } from './tree';
 export type { TechTree, TechTreeEdge, TechTreeNode, TechTreeParams } from './tree';
 export {
+  USAGE_AUDIENCES,
+  USAGE_METER_KEYS,
+  USAGE_METERS,
+  usageAudienceSchema,
+  usageLimit,
+  usageMeterKeySchema,
+  usageMeterStateSchema,
+  usageSchema
+} from './usage';
+export type { Usage, UsageAudience, UsageLimitInput, UsageMeterKey, UsageMeterState } from './usage';
+export {
   nationSchema,
   tankRoleSchema,
   tierSchema,

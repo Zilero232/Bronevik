@@ -58,6 +58,7 @@ export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
         >
           {({ tanks: rows }) => (
             <DataTable
+              caption={t('tanks.title')}
               columns={columns}
               data={rows}
               density='compact'
@@ -74,6 +75,7 @@ export const MissionTanks = ({ questId, metric }: MissionTanksProps) => {
         {!garageNotice && (
           <QueryState isCompact query={garage} skeleton={<DataTable isLoading columns={garageColumns} data={[]} density='compact' />}>
             <DataTable
+              caption={t('tanks.title')}
               columns={garageColumns}
               data={garageTanks}
               density='compact'

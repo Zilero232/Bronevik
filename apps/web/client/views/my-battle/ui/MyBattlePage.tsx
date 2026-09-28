@@ -3,7 +3,6 @@
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { PlusGate } from '@/features/plus/plus-gate';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Skeleton } from '@/ui-kit';
@@ -38,9 +37,7 @@ export const MyBattlePage = ({ id }: MyBattlePageProps) => {
         {(battle) => (
           <>
             <BattleCard battle={battle} />
-            <PlusGate feature='battleAnalysis'>
-              <BattleAnalysisPanel id={id} />
-            </PlusGate>
+            <BattleAnalysisPanel id={id} />
           </>
         )}
       </ResourceGate>

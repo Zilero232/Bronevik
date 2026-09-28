@@ -64,6 +64,7 @@ export const ReplayBrowser = () => {
                 </div>
               )
             }
+            caption={t('title')}
             columns={columns}
             data={items}
             density='media'

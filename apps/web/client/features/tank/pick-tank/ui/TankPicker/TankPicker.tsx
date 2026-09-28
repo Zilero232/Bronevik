@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { TankCell } from '@/entities/tank/tank';
+import { useFormControl } from '@/shared/lib';
 import { RetryButton } from '@/ui-kit';
 
 import type { TankPickerProps } from './TankPicker.types';
@@ -18,11 +19,24 @@ import { useTankPicker } from '../../model/hooks';
 
 import s from './TankPicker.module.scss';
 
-export const TankPicker = ({ value, label, placeholder, excludeIds = [], className, onChange }: TankPickerProps) => {
+export const TankPicker = ({
+  value,
+  label,
+  placeholder,
+  excludeIds = [],
+  className,
+  onChange,
+  id,
+  'aria-describedby': describedBy,
+  'aria-invalid': isInvalid
+}: TankPickerProps) => {
   const t = useTranslations('tanks.picker');
   const tCommon = useTranslations('common');
   const { items, isLoading, isError, isFetching, retry } = useTankPicker(excludeIds);
-  const id = useId();
+  const ownId = useId();
+  const control = useFormControl();
+
+  const inputId = id ?? control.id ?? ownId;
 
   return (
     <Combobox.Root<VehicleSummary>
@@ -35,13 +49,20 @@ export const TankPicker = ({ value, label, placeholder, excludeIds = [], classNa
     >
       <div className={clsx(s.root, className)}>
         {label && (
-          <label className={s.label} htmlFor={id}>
+          <label className={s.label} htmlFor={inputId}>
             {label}
           </label>
         )}
         <Combobox.InputGroup className={s.group}>
           <Search aria-hidden className={s.icon} size={14} />
-          <Combobox.Input className={s.input} disabled={isLoading} id={id} placeholder={placeholder ?? t('placeholder')} />
+          <Combobox.Input
+            aria-describedby={describedBy ?? control['aria-describedby']}
+            aria-invalid={isInvalid ?? control['aria-invalid']}
+            className={s.input}
+            disabled={isLoading}
+            id={inputId}
+            placeholder={placeholder ?? t('placeholder')}
+          />
           <Combobox.Trigger aria-label={t('open')} className={s.trigger}>
             <ChevronsUpDown size={14} />
           </Combobox.Trigger>

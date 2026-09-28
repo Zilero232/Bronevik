@@ -38,6 +38,7 @@ describe('ModActions', () => {
 
     expect(manager).toHaveAttribute('href', MOD_DISTRIBUTION.managerUrl);
     expect(manager).toHaveAttribute('download', MOD_DISTRIBUTION.managerFileName);
+    expect(manager).toHaveAttribute('target', '_blank');
   });
 
   it('keeps the packages as the manual download', () => {

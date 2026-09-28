@@ -9,6 +9,7 @@ import { QUERY_KEYS } from '@/shared/constants';
 
 import { getSeasonHistory } from '../../../api';
 import { PROFILE_HEADER, PROFILE_PERIODS } from '../../../config';
+import { favoriteKinds } from '../../../lib/favorite-kinds';
 import { heroArt } from '../../../lib/hero-art';
 import { ratingRing } from '../../../lib/rating-ring';
 import { useProfileContext } from '../../context';
@@ -33,6 +34,7 @@ export const useProfileHeader = () => {
     stats,
     wn8Ring: ratingRing(stats.wn8.tier),
     art: heroArt({ clan: summary.clan, rows: tanks?.items ?? [] }),
+    kinds: favoriteKinds(tanks?.items ?? []),
     hasPeriodData: current !== null,
     period,
     setPeriod,

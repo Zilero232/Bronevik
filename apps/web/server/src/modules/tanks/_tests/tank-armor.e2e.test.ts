@@ -1,0 +1,158 @@
+import type { INestApplication } from '@nestjs/common';
+
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { Test } from '@nestjs/testing';
+import { usageLimit } from '@otmetki/schemas';
+import RedisMock from 'ioredis-mock';
+import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
+import { range } from 'remeda';
+import request from 'supertest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { mock, mockDeep } from 'vitest-mock-extended';
+
+import type { VehicleArmorModel } from '../../../../generated';
+import type { ArmorStorage } from '../../gamedata';
+import type { CatalogEntry } from '../../reference';
+
+import { AllExceptionsFilter } from '../../../common/filters';
+import { AppConfigService } from '../../../config';
+import { PrismaService, REDIS } from '../../../core';
+import { EntitlementsService } from '../../billing';
+import { VehicleCatalogService } from '../../reference';
+import { USAGE_DEVICE, UsageActorGuard, UsageMeterService } from '../../usage';
+import { ARMOR_STORAGE } from '../config';
+import { TankArmorService, TankDetailService } from '../services';
+import { TankArmorController } from '../tank-armor.controller';
+
+const USER_HEADER = 'x-test-user';
+const ANONYMOUS_LIMIT = usageLimit({ meter: 'armor3d', audience: 'anonymous' }) ?? 0;
+const FREE_LIMIT = usageLimit({ meter: 'armor3d', audience: 'free' }) ?? 0;
+
+const ROW: VehicleArmorModel = {
+  tankId: 1,
+  gameVersion: '1.45.0.5231',
+  storageKey: 'armor/1.bin',
+  hash: 'abc',
+  bytes: 3,
+  modules: { hull: { piece: 'Hull', plates: [] }, chassis: [], turrets: [] },
+  sourceSha: 'b'.repeat(40),
+  updatedAt: new Date('2026-09-25T00:00:00Z')
+};
+
+const SUMMARY = {
+  tankId: 1,
+  name: 'T',
+  shortName: 'T',
+  slug: 't',
+  nation: 'ussr',
+  type: 'heavyTank',
+  tier: 10,
+  isPremium: false,
+  isCollectible: false,
+  images: { small: null, contour: null, big: null, large: null }
+} as const;
+
+const prisma = mockDeep<PrismaService>();
+const catalog = mock<VehicleCatalogService>();
+const details = mock<TankDetailService>();
+const entitlements = mock<EntitlementsService>();
+const config = mock<AppConfigService>();
+const storage: ArmorStorage = { put: async () => undefined, remove: async () => undefined, get: async () => new Uint8Array([1, 2, 3]) };
+
+let app: INestApplication;
+
+const armorOf = (tank: number, userId?: string) => {
+  const call = request(app.getHttpServer()).get(`/tanks/tank-${tank}/armor`);
+
+  return userId ? call.set(USER_HEADER, userId) : call;
+};
+
+beforeAll(async () => {
+  prisma.vehicleArmorModel.findUnique.mockResolvedValue(ROW);
+  catalog.find.mockResolvedValue(mock<CatalogEntry>({ summary: SUMMARY }));
+  details.resolve.mockImplementation(async (idOrSlug) => Number(idOrSlug.replace('tank-', '')));
+  entitlements.isPlus.mockImplementation(async (userId) => userId === 'plus-user');
+  config.get.calledWith('BETTER_AUTH_SECRET').mockReturnValue('test-secret');
+  config.get.calledWith('NODE_ENV').mockReturnValue('test');
+
+  const moduleRef = await Test.createTestingModule({
+    controllers: [TankArmorController],
+    providers: [
+      TankArmorService,
+      UsageMeterService,
+      UsageActorGuard,
+      { provide: PrismaService, useValue: prisma },
+      { provide: VehicleCatalogService, useValue: catalog },
+      { provide: TankDetailService, useValue: details },
+      { provide: EntitlementsService, useValue: entitlements },
+      { provide: AppConfigService, useValue: config },
+      { provide: ARMOR_STORAGE, useValue: storage },
+      { provide: REDIS, useValue: new RedisMock() },
+      { provide: APP_PIPE, useClass: ZodValidationPipe },
+      { provide: APP_FILTER, useClass: AllExceptionsFilter },
+      { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }
+    ]
+  }).compile();
+
+  app = moduleRef.createNestApplication();
+
+  app.use((req: { headers: Record<string, string | undefined>; session?: unknown }, _res: unknown, next: () => void) => {
+    const userId = req.headers[USER_HEADER];
+
+    req.session = userId ? { user: { id: userId } } : null;
+    next();
+  });
+
+  await app.init();
+});
+
+afterAll(async () => {
+  await app.close();
+});
+
+describe('GET /tanks/:idOrSlug/armor', () => {
+  it('hands an anonymous visitor a signed device cookie and keeps the response out of shared caches', async () => {
+    const response = await armorOf(1);
+
+    expect(response.status).toBe(200);
+    expect(String(response.headers['set-cookie'])).toContain(`${USAGE_DEVICE.cookie}=`);
+    expect(response.headers['cache-control']).toContain('private');
+  });
+
+  it('meters an anonymous visitor through the device cookie and then asks for Plus', async () => {
+    const agent = request.agent(app.getHttpServer());
+
+    for (const tank of range(0, ANONYMOUS_LIMIT)) {
+      expect((await agent.get(`/tanks/tank-${tank}/armor`)).status).toBe(200);
+    }
+
+    const refused = await agent.get('/tanks/tank-99/armor');
+
+    expect(refused.status).toBe(403);
+    expect(refused.body).toMatchObject({ code: 'SUBSCRIPTION_REQUIRED', details: { feature: 'armor3d', limit: ANONYMOUS_LIMIT } });
+  });
+
+  it('refuses a forged device cookie and issues a freshly signed one', async () => {
+    const forged = `${USAGE_DEVICE.cookie}=device-x.${'0'.repeat(64)}`;
+
+    const response = await armorOf(1).set('Cookie', forged);
+
+    expect(String(response.headers['set-cookie'])).toContain(`${USAGE_DEVICE.cookie}=`);
+    expect(String(response.headers['set-cookie'])).not.toContain('device-x');
+  });
+
+  it('meters a signed-in free user by the account', async () => {
+    for (const tank of range(0, FREE_LIMIT)) {
+      expect((await armorOf(tank, 'free-user')).status).toBe(200);
+    }
+
+    expect((await armorOf(FREE_LIMIT, 'free-user')).status).toBe(403);
+    expect((await armorOf(0, 'free-user')).status).toBe(200);
+  });
+
+  it('never meters Plus', async () => {
+    for (const tank of range(0, FREE_LIMIT + 1)) {
+      expect((await armorOf(tank, 'plus-user')).status).toBe(200);
+    }
+  });
+});

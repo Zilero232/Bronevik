@@ -50,7 +50,7 @@
     },
     "cookies": {
       "title": "Cookies and local storage",
-      "body": "We use a session cookie to keep you signed in, and browser local storage for theme, language and display settings. Analytics services: <todo>list, if any</todo>."
+      "body": "We use a session cookie to keep you signed in, a technical device cookie with a random identifier to count free allowances without signing in (such as 3D armor views), and browser local storage for theme, language and display settings. Analytics services: <todo>list, if any</todo>."
     },
     "privacyChanges": {
       "title": "Changes to this policy",
@@ -70,7 +70,7 @@
     },
     "plus": {
       "title": "The Plus subscription",
-      "body": "Three Marks Plus is a paid subscription that raises limits and unlocks extra features. Its contents, prices and periods are listed on the Plus page and form part of this offer. Paying for the subscription means accepting the offer."
+      "body": "Three Marks Plus is a paid subscription that raises limits and unlocks extra features. Some features are free within a monthly allowance (for example 3D armor and detailed battle analysis); allowances follow the calendar month and renew on the 1st at 00:00 Moscow time. The subscription's contents, allowances, prices and periods are listed on the Plus page and form part of this offer. Paying for the subscription means accepting the offer."
     },
     "payment": {
       "title": "Payment and renewal",

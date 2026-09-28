@@ -19,8 +19,7 @@ name: deploy
 #   NEXT_PUBLIC_SITE_URL      public site origin, baked into the web image at build time
 #   DEPLOY_SSH_HOST           VPS
 #   DEPLOY_SSH_USER
-#   DEPLOY_SSH_KEY            private key — preferred
-#   DEPLOY_SSH_PASSWORD       only used when no key is set
+#   DEPLOY_SSH_PASSWORD
 #   DEPLOY_SSH_PORT           optional, defaults to 22
 #   DEPLOY_PATH               where docker-compose.yml lives, e.g. /opt/otmetki
 #
@@ -206,7 +205,6 @@ jobs:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
           port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           source: docker-compose.yml,docker-compose.demo.yml,infra/caddy/Caddyfile,infra/caddy/demo.caddy
           target: ${{ secrets.DEPLOY_PATH }}
@@ -220,7 +218,6 @@ jobs:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
           port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           command_timeout: 40m
           envs: DEPLOY_PATH,DEMO

@@ -32,7 +32,7 @@ This is the status of every area at the last audit. **Ready** means the piece is
 | Health: `/health` (database, Redis, worker heartbeat, Lesta breaker) | Ready | An external uptime monitor on `https://api.triotmetki.ru/health` and `https://triotmetki.ru/` (UptimeRobot, Healthchecks.io or similar) |
 | **Lesta application**: `LESTA_APPLICATION_ID`, the VPS IP allow-listed, the OpenID redirect | Blocked | Register at developers.lesta.ru (§1) |
 | **DNS**: `A`/`AAAA` for `triotmetki.ru` and `api.triotmetki.ru`; ports 80, 443/tcp and 443/udp open | Blocked | The registrar and the VPS firewall |
-| **GitHub secrets**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_*`, `DEPLOY_PATH` | Blocked | Settings → Secrets (§1) |
+| **GitHub secrets**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PASSWORD`, `DEPLOY_PATH` | Blocked | Settings → Secrets (§1) |
 | **VPS `.env` secrets**: `BETTER_AUTH_SECRET`, `MOD_INGEST_SECRET`, `INTERNAL_API_TOKEN`, `POSTGRES_PASSWORD`, `BULL_BOARD_PASSWORD` | Blocked | Generate them on the VPS (§1) |
 | ghcr access from the VPS | Blocked | Make the packages public, or run `docker login ghcr.io` with a read-only token |
 | **YooKassa**: `YOOKASSA_*`, the webhook | Blocked, not needed for launch | Checkout stays off (`PLUS.checkoutEnabled`) until Lesta confirms the model (§5) |
@@ -78,7 +78,7 @@ Set these under Settings → Secrets and variables → Actions, in the `producti
 | `NEXT_PUBLIC_API_URL` | `https://api.triotmetki.ru`. The value is baked into the client image at build time, so changing it later means rebuilding the image. |
 | `NEXT_PUBLIC_SITE_URL` | `https://triotmetki.ru`. Canonical URLs, hreflang, the sitemap and robots.txt are built from it; baked into the client image at build time like the API URL. |
 | `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PORT` (optional, default 22) | the VPS |
-| `DEPLOY_SSH_KEY` (preferred) or `DEPLOY_SSH_PASSWORD` | SSH credentials |
+| `DEPLOY_SSH_PASSWORD` | SSH password of that user (`PasswordAuthentication yes` in the VPS `sshd_config`) |
 | `DEPLOY_PATH` | directory with the compose file, for example `/opt/otmetki` |
 
 The workflow passes `GIT_COMMIT_SHA=${{ github.sha }}` to the client image by itself. With `NEXT_PUBLIC_APP_VERSION` (the root `package.json` version), it forms the service worker's precache revision. A client built without it (for example a local `docker compose build`) keeps the same revision across builds, so returning visitors keep stale precached files. When you build by hand, export `GIT_COMMIT_SHA=$(git rev-parse HEAD)` first. The server image takes no build arguments.

@@ -244,7 +244,16 @@ jobs:
             docker compose up -d --wait postgres redis
             docker compose run --rm --no-deps server bun run db:deploy
 
-            docker compose up -d
+            # A failed one-shot (demo-seed) or a crashed service only reports "exit 1" from
+            # `up`; print what it said before failing the run.
+            if ! docker compose up -d; then
+              for service in $(docker compose config --services); do
+                echo "::group::logs: $service" >&2
+                docker compose logs --no-log-prefix --tail 150 "$service" >&2 || true
+                echo "::endgroup::" >&2
+              done
+              exit 1
+            fi
             docker image prune -f
 
             for container in otmetki-server otmetki-client; do

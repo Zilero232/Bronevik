@@ -33,6 +33,7 @@ export const GoalItem = ({ goal, onRemove }: GoalItemProps) => {
         value={progress * 100}
         valueLabel={`${Math.round(progress * 100)}%`}
       />
+      <span className={s.rule}>{t(`rule.${metric}`)}</span>
       {daysLeft !== null && <span className={s.deadline}>{daysLeft >= 0 ? t('daysLeft', { count: daysLeft }) : t('overdue')}</span>}
     </article>
   );

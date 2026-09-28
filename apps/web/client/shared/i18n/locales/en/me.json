@@ -120,6 +120,14 @@
     "remove": "Remove goal",
     "goalTitle": "{metric}: {target}",
     "progress": "Start {from} · now {current}",
+    "rule": {
+      "winRate": "Battles in period · judged at the end",
+      "wn8": "Battles in period · judged at the end",
+      "avgDamage": "Battles in period · judged at the end",
+      "battles": "Battles since the goal was set",
+      "moe": "Achieved once reached",
+      "broneIndex": "Achieved once reached"
+    },
     "daysLeft": "{count, plural, =0 {last day} one {# day left} other {# days left}}",
     "overdue": "Deadline passed",
     "status": {
@@ -132,14 +140,29 @@
       "winRate": "Win rate",
       "wn8": "WN8",
       "avgDamage": "Average damage",
-      "battles": "Battles",
+      "battles": "Battles in period",
       "moe": "Marks of excellence",
       "broneIndex": "Bronya Index"
     },
     "newGoal": "New goal",
     "metricLabel": "Metric",
     "targetLabel": "Target",
-    "targetPlaceholder": "For example, 55",
+    "hint": {
+      "winRate": "Counted only over battles inside the period. Judged when the period ends.",
+      "wn8": "Counted only over battles inside the period. Judged when the period ends.",
+      "avgDamage": "Counted only over battles inside the period. Judged when the period ends.",
+      "battles": "How many battles to play within the period. Starts from zero — earlier battles do not count.",
+      "moe": "Mark of excellence percent on the tank. Achieved as soon as it is reached.",
+      "broneIndex": "Bronya Index value. Achieved as soon as it is reached."
+    },
+    "targetPlaceholder": {
+      "winRate": "For example, 55",
+      "wn8": "For example, 2000",
+      "avgDamage": "For example, 2500",
+      "battles": "For example, 100",
+      "moe": "For example, 85",
+      "broneIndex": "For example, 5000"
+    },
     "duration": "{count, plural, one {# day} other {# days}}",
     "durationLabel": "Deadline",
     "invalid": "Enter a positive number.",

@@ -5,9 +5,10 @@ import type { GoalMetric } from '@otmetki/schemas';
 import { goalMetricSchema } from '@otmetki/schemas';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 
-import { Button, Input, Select } from '@/ui-kit';
+import { Button, FormField, Input, Select } from '@/ui-kit';
 
 import type { GoalDuration } from '../../../lib/goal-form';
 
@@ -17,7 +18,8 @@ import s from './GoalForm.module.scss';
 
 export const GoalForm = () => {
   const t = useTranslations('me.goals');
-  const { form, durations, isInvalid, isDisabled, onSubmit } = useGoalForm();
+  const id = useId();
+  const { form, metric, durations, isInvalid, isDisabled, onSubmit } = useGoalForm();
 
   return (
     <form noValidate className={s.root} onSubmit={onSubmit}>
@@ -34,10 +36,9 @@ export const GoalForm = () => {
         control={form.control}
         name='metric'
       />
-      <label className={s.field}>
-        <span className={s.label}>{t('targetLabel')}</span>
-        <Input inputMode='decimal' isInvalid={isInvalid} placeholder={t('targetPlaceholder')} {...form.register('target')} />
-      </label>
+      <FormField error={isInvalid && t('invalid')} hint={t(`hint.${metric}`)} htmlFor={id} label={t('targetLabel')}>
+        <Input id={id} inputMode='decimal' isInvalid={isInvalid} placeholder={t(`targetPlaceholder.${metric}`)} {...form.register('target')} />
+      </FormField>
       <Controller
         render={({ field: { value, onChange } }) => (
           <Select<GoalDuration>
@@ -50,7 +51,6 @@ export const GoalForm = () => {
         control={form.control}
         name='duration'
       />
-      {isInvalid && <p className={s.error}>{t('invalid')}</p>}
       <Button block disabled={isDisabled} type='submit'>
         <Plus size={16} />
         {t('add')}

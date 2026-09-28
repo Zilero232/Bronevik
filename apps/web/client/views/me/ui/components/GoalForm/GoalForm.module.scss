@@ -13,16 +13,3 @@
 
   color: var(--color-text);
 }
-
-.field {
-  @include stack(6px);
-}
-
-.label {
-  @include label;
-}
-
-.error {
-  color: var(--color-danger);
-  font-size: var(--text-xs);
-}

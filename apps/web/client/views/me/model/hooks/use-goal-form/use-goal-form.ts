@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 import { useLinkedAccounts } from '@/entities/auth/session';
 import { QUERY_KEYS } from '@/shared/constants';
@@ -26,6 +26,8 @@ export const useGoalForm = () => {
     reValidateMode: 'onSubmit'
   });
 
+  const metric = useWatch({ control: form.control, name: 'metric' });
+
   const accountId = accounts?.lesta.find(({ isPrimary }) => isPrimary)?.accountId ?? accounts?.lesta[0]?.accountId;
 
   const onSubmit = form.handleSubmit((values) => {
@@ -38,6 +40,7 @@ export const useGoalForm = () => {
 
   return {
     form,
+    metric,
     durations: GOAL_FORM.durations,
     isInvalid: form.formState.errors.target !== undefined,
     isDisabled: add.isPending || accountId === undefined,

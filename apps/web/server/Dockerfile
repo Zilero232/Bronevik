@@ -20,8 +20,10 @@ WORKDIR /app
 FROM base AS deps
 COPY package.json bun.lock tsconfig.json ./
 COPY apps/web/client/package.json ./apps/web/client/package.json
+COPY apps/game/manager/package.json ./apps/game/manager/package.json
 COPY apps/game/modpack/package.json ./apps/game/modpack/package.json
 COPY apps/web/server/package.json ./apps/web/server/package.json
+COPY packages/design-tokens/package.json ./packages/design-tokens/package.json
 COPY packages/gamedata/package.json ./packages/gamedata/package.json
 COPY packages/icons/package.json ./packages/icons/package.json
 COPY packages/logger/package.json ./packages/logger/package.json

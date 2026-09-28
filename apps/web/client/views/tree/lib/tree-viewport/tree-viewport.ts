@@ -4,7 +4,7 @@ import { clamp } from 'remeda';
 
 import type { InitialViewportInput, NodeInViewInput, PlaceAxisInput } from './tree-viewport.types';
 
-import { TREE_LAYOUT, TREE_VIEW } from '../../config/tree-layout.constants';
+import { TREE_LAYOUT, TREE_VIEW } from '../../config';
 
 const { nodeWidth, nodeHeight, rulerOffset } = TREE_LAYOUT;
 

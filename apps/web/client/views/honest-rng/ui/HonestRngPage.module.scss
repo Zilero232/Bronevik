@@ -7,10 +7,9 @@
 }
 
 .body {
+  @include shell;
   @include stack(var(--space-5));
 
-  width: var(--shell-narrow);
-  margin-inline: auto;
   padding-block: var(--space-7);
 }
 

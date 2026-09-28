@@ -4,9 +4,10 @@ import { ReactFlow, ViewportPortal } from '@xyflow/react';
 
 import { TREE_VIEW } from '../../../config';
 import { useTreeFlow } from '../../../model/hooks';
+import { BranchEdge } from '../BranchEdge';
+import { TankNode } from '../TankNode';
 import { TierRuler } from '../TierRuler';
 import { TreeControls } from '../TreeControls';
-import { TREE_FLOW_TYPES } from './TreeFlow.constants';
 
 import s from './TreeFlow.module.scss';
 
@@ -21,7 +22,7 @@ export const TreeFlow = () => {
       className={s.root}
       edges={edges}
       edgesFocusable={false}
-      edgeTypes={TREE_FLOW_TYPES.edges}
+      edgeTypes={{ branch: BranchEdge }}
       elementsSelectable={false}
       maxZoom={TREE_VIEW.maxZoom}
       minZoom={TREE_VIEW.minZoom}
@@ -29,7 +30,7 @@ export const TreeFlow = () => {
       nodesConnectable={false}
       nodesDraggable={false}
       nodesFocusable={false}
-      nodeTypes={TREE_FLOW_TYPES.nodes}
+      nodeTypes={{ tank: TankNode }}
       preventScrolling={false}
       zoomOnScroll={false}
       onInit={onInit}

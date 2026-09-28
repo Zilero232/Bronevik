@@ -17,8 +17,15 @@
 FROM oven/bun:1.3.1 AS build
 WORKDIR /app
 
+# `next build` must run on Node, like in CI: the bun image's `node` is Bun
+# itself, and Next's native SWC binding fails to load there
+# ("napi_register_module_v1 not found") while compiling next.config.ts.
+# Same major as the runner below.
+COPY --from=node:22-bookworm-slim /usr/local/bin/node /opt/node/bin/node
+
 ENV NODE_ENV=production \
-    NEXT_TELEMETRY_DISABLED=1
+    NEXT_TELEMETRY_DISABLED=1 \
+    PATH=/opt/node/bin:$PATH
 
 # Manifests first, so the install layer stays cached until a package.json or
 # the lockfile changes. --frozen-lockfile validates the on-disk workspace
@@ -26,8 +33,10 @@ ENV NODE_ENV=production \
 # even those this image never builds.
 COPY package.json bun.lock tsconfig.json ./
 COPY apps/web/client/package.json ./apps/web/client/package.json
+COPY apps/game/manager/package.json ./apps/game/manager/package.json
 COPY apps/game/modpack/package.json ./apps/game/modpack/package.json
 COPY apps/web/server/package.json ./apps/web/server/package.json
+COPY packages/design-tokens/package.json ./packages/design-tokens/package.json
 COPY packages/gamedata/package.json ./packages/gamedata/package.json
 COPY packages/icons/package.json ./packages/icons/package.json
 COPY packages/logger/package.json ./packages/logger/package.json
@@ -53,6 +62,10 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+# true only for the keyless demo (docker-compose.demo.yml): renders the
+# «Демо-данные» banner on every site page.
+ARG NEXT_PUBLIC_DEMO_MODE=false
+ENV NEXT_PUBLIC_DEMO_MODE=${NEXT_PUBLIC_DEMO_MODE}
 
 # Salts the service-worker precache revision of the manifest and PWA icons, so
 # a deploy refreshes them even when the package version stays the same.
@@ -61,15 +74,19 @@ ENV GIT_COMMIT_SHA=${GIT_COMMIT_SHA}
 
 # Every workspace package the client imports (directly or through another
 # package) ships TypeScript source that Next compiles in place.
+COPY packages/design-tokens ./packages/design-tokens
 COPY packages/gamedata ./packages/gamedata
 COPY packages/icons ./packages/icons
 COPY packages/ratings ./packages/ratings
 COPY packages/schemas ./packages/schemas
 COPY apps/web/client ./apps/web/client
 
+# shared/api/generated is gitignored (and dockerignored): the API client is
+# generated here from the committed shared/api/openapi/internal.json.
 # public/ is not traced into standalone; creating it keeps the runner's COPY
 # valid either way.
-RUN bun --filter @otmetki/client build \
+RUN bun --filter @otmetki/client api:build \
+    && bun --filter @otmetki/client build \
     && test -f apps/web/client/.next/standalone/apps/web/client/server.js \
     && mkdir -p apps/web/client/public
 

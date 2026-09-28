@@ -6,7 +6,7 @@ import type { UpdateNotificationsInput } from '../me.types';
 
 import { notificationChannelToDb, notificationEventToDb } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { NOTIFICATION_DEFAULTS } from '../config';
+import { NOTIFICATION_DEFAULTS } from '../../notifications';
 import { defaultNotificationSettings, toNotificationSettings } from '../mappers';
 
 @Injectable()

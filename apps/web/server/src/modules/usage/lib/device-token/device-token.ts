@@ -1,3 +1,5 @@
+import ipaddr from 'ipaddr.js';
+
 import type { HashIpInput, ReadDeviceTokenInput, SignDeviceTokenInput } from './device-token.types';
 
 import { hmacSha256Hex, timingSafeEqual } from '../../../../common/lib';
@@ -19,5 +21,20 @@ export const readDeviceToken = ({ token, secret }: ReadDeviceTokenInput): string
   return timingSafeEqual({ left: signature, right: signatureOf({ deviceId, secret }) }) ? deviceId : null;
 };
 
+export const networkOf = (ip: string): string => {
+  if (!ipaddr.isValid(ip)) {
+    return ip;
+  }
+
+  const address = ipaddr.process(ip);
+
+  return address instanceof ipaddr.IPv6
+    ? address.parts
+        .slice(0, USAGE_DEVICE.ipv6NetworkParts)
+        .map((part) => part.toString(16))
+        .join(':')
+    : address.toString();
+};
+
 export const hashIp = ({ ip, secret }: HashIpInput): string =>
-  hmacSha256Hex({ key: secret, data: `${USAGE_DEVICE.ipContext}${ip}` }).slice(0, USAGE_DEVICE.ipHashLength);
+  hmacSha256Hex({ key: secret, data: `${USAGE_DEVICE.ipContext}${networkOf(ip)}` }).slice(0, USAGE_DEVICE.ipHashLength);

@@ -87,6 +87,32 @@ With `LESTA_APPLICATION_ID` empty and `NODE_ENV=development`, the server and the
 
 `bun run dev:seed` (`--reset`, `--accounts N`, `--days N`, `--mod-players N`, `--mod-days N`) enrols a realistic sample of the generated players, backfills their snapshots through the collector's own poll pipeline, syncs their clans, writes mod-style battles with loadouts and economy, and runs the nightly aggregate jobs once. It is idempotent; `--reset` starts over.
 
+### Dev server troubleshooting
+
+`bun run dev` / `dev:all` restart a crashed server or client by themselves (`concurrently --restart-tries`); Ctrl+C still stops everything.
+
+- **`next dev` slowly eats memory or stops answering.** Stop it, delete `apps/web/client/.next/dev`, start again. The dev-only settings live in [apps/web/client/config/dev-server.ts](apps/web/client/config/dev-server.ts) and are not used by `next build`:
+  - **Turbopack's disk cache stays on.** Turbopack can only drop in-memory data it can reload from that cache, so with the cache off memory never shrinks.
+  - **Memory eviction is `'full'`.**
+  - **The React Compiler runs through the Rust port**, not Babel in about 16 Node child processes.
+  - **Webpack loaders run in worker threads.**
+  - **`reactDebugChannel` is off.** Next 16.3 holds each HTML request's React debug stream until that page's HMR socket connects. curl, `fetch`, Playwright and closed tabs never connect, so that memory is never freed.
+
+  Measured with the same loop (20 routes + a locale/scss/ts edit every 2.5 s):
+
+  | Setup  | Memory                                                                                                                  |
+  | ------ | ----------------------------------------------------------------------------------------------------------------------- |
+  | Before | Grew about 5 MB/s: 6.3 GB in the main process plus 2–3 GB in loader children after 7 min, never shrinking               |
+  | After  | 22 min, 526 edits, 731 rounds: main process 3.2–4.0 GB from minute 5 on, loader workers under 0.7 GB, no failed request |
+
+  `MaxListenersExceededWarning … SyncWriteStream` at startup comes from the worker threads and is harmless.
+
+  As a backstop, `dev:client` caps the V8 heap at 6 GB (`NODE_OPTIONS=--max-old-space-size=6144`). Next restarts its own dev server when the heap passes 80 % of that cap. Without the cap, the limit is half of RAM (16 GB here), so the restart never came.
+
+- **The API disappears.** Bun 1.3's `--watch` on Windows watches the whole working directory, and the old script ran from the repo root. It crashed (`EBUSY: Watcher crashed` → `panic: integer overflow` / segfault) when `.next`, `target/` or other build output churned, typically when `next dev` restarted. The restarted process then sometimes hit `EADDRINUSE` and stayed down. `dev:server` / `dev:worker` now run under `nodemon` ([apps/web/server/nodemon.json](apps/web/server/nodemon.json)), which watches only the server's `src`, `generated` and the workspace packages it imports, and stops the old process before starting a new one. After a real crash, nodemon waits for the next file change, or type `rs` + Enter.
+- **Second `next dev` next to yours** (an agent checking something on another port): `.next/dev/lock` allows one dev server per dist dir, so start it with `NEXT_DIST_DIR=.next/probe` and a different `-p`.
+- **Disk:** a stale Turbopack cache can reach tens of GB (`.next/dev/cache/turbopack`). Deleting `.next/dev` while the dev server is stopped is always safe.
+
 ## Commands
 
 | Command                                                                                | What                                                                                            |

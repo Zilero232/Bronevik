@@ -36,6 +36,12 @@ export const LEGAL = {
   isDraft: true
 } as const;
 
+// The keyless demo (docker-compose.demo.yml) runs on generated players: every
+// site page says so, and Caddy keeps the whole host out of search indexes.
+export const DEMO = {
+  isEnabled: env.NEXT_PUBLIC_DEMO_MODE
+} as const;
+
 export const SUPPORT = {
   email: 'support@triotmetki.ru',
   telegramUrl: TELEGRAM_BOT.url

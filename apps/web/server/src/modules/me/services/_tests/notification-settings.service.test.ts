@@ -4,7 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { NotificationSettings } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
-import { NOTIFICATION_DEFAULTS } from '../../config';
+import { NOTIFICATION_DEFAULTS } from '../../../notifications';
 import { NotificationSettingsService } from '../notification-settings.service';
 
 const row = (overrides: Partial<NotificationSettings>): NotificationSettings =>

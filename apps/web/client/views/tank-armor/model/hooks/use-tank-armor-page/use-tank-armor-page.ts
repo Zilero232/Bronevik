@@ -18,17 +18,19 @@ export const useTankArmorPage = () => {
   const quota = useUsageMeter({ meter: ARMOR_QUOTA.meter, enabled: isCrawler === false && query.fetchStatus === 'idle' });
 
   const isLimited = isPlusRequiredError(query.error);
+  const audience = quota.audience ?? 'anonymous';
 
   return {
     slug,
     query,
     isCrawler: isCrawler === true,
     isLimited,
+    isLimitShown: isLimited && !quota.isPending,
     quota: {
       isVisible: !isLimited && !quota.isPending && !quota.isUnlimited && quota.limit !== null,
-      audience: quota.audience ?? 'anonymous',
+      audience,
       remaining: quota.remaining ?? 0,
-      limit: quota.limit ?? 0,
+      limit: quota.limit ?? USAGE_METERS[ARMOR_QUOTA.meter][audience] ?? 0,
       freeLimit: USAGE_METERS[ARMOR_QUOTA.meter].free,
       resetsOn: quota.resetsAt ? format.dateTime(new Date(quota.resetsAt), ARMOR_QUOTA.resetFormat) : ''
     }

@@ -1,3 +1,4 @@
+export { NOTIFICATION_DEFAULTS } from './config';
 export type { ParsedNotification } from './config';
 export { renderNotification, resolveNotificationLocale, sessionReportKey } from './lib';
 export type { NotificationLocale, RenderedNotification } from './lib';

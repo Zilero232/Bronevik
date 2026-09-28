@@ -11,7 +11,7 @@ import { percentOf, ratio } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { CollectorProducerService } from '../../collector';
-import { NOTIFICATION_DEFAULTS } from '../../me';
+import { NOTIFICATION_DEFAULTS } from '../../notifications';
 import { clearFollowFlag, setFollowFlag } from '../../social';
 import { WATCHLIST_DIGEST_RUN } from '../config';
 import { WatchlistActivityService } from './watchlist-activity.service';

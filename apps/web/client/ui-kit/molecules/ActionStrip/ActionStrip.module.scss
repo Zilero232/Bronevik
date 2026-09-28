@@ -7,21 +7,14 @@
 }
 
 .inner {
+  @include shell;
+
   display: flex;
   min-height: 64px;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3) var(--space-5);
-  margin-inline: auto;
   padding-block: var(--space-3);
-}
-
-.wide {
-  width: var(--shell-width);
-}
-
-.narrow {
-  width: var(--shell-narrow);
 }
 
 .bottom {

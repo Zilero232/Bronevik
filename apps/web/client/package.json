@@ -20,7 +20,7 @@
     "api:generate": "bun --filter @otmetki/server openapi:export --doc internal && prettier --write shared/api/openapi/internal.json && openapi-ts",
     "build": "next build",
     "predev": "fkill :3000 --force --silent",
-    "dev": "next dev -p 3000",
+    "dev": "NODE_OPTIONS=--max-old-space-size=6144 next dev -p 3000",
     "panel:build": "bun config/panel-script/build-panel-script.ts",
     "start": "next start -p 3000",
     "typecheck": "next typegen && tsc --noEmit && tsc --noEmit -p tsconfig.sw.json"

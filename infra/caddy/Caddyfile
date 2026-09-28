@@ -6,6 +6,11 @@
 # fetches one from Let's Encrypt over HTTP-01, so port 80 must stay reachable.
 # HTTP/3 is on by default and needs 443/udp published (docker-compose.yml).
 
+# Optional per-deployment snippets, bind-mounted into /etc/caddy/conf.d by a compose
+# override and imported into both sites. None is mounted in production (a glob with
+# no match is only a warning); docker-compose.demo.yml mounts demo.caddy, which
+# keeps the keyless demo out of every search index.
+
 # `?` sets a header only when the upstream did not: the apps own their framing
 # policy (overlays and the Telegram Mini App are frameable), Caddy only fills gaps.
 (security_headers) {
@@ -56,6 +61,7 @@
 
 	import security_headers
 	import access_log
+	import /etc/caddy/conf.d/*.caddy
 }
 
 {$SITE_DOMAIN} {
@@ -69,4 +75,5 @@
 
 	import security_headers
 	import access_log
+	import /etc/caddy/conf.d/*.caddy
 }

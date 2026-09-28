@@ -138,6 +138,25 @@ describe('UsageMeterService.consume', () => {
     );
   });
 
+  it('still refuses an open over the allowance when giving the count back fails', async () => {
+    const redis = new RedisMock();
+    const service = createService(redis);
+
+    await openTanks({ service, actor: FREE_USER, tanks: range(0, FREE_LIMIT) });
+
+    vi.spyOn(redis, 'multi')
+      .mockImplementationOnce(() => redis.pipeline())
+      .mockImplementationOnce(() => {
+        const failing = redis.pipeline();
+
+        vi.spyOn(failing, 'exec').mockRejectedValue(new Error('ECONNRESET'));
+
+        return failing;
+      });
+
+    await expect(service.consume({ meter: 'armor3d', actor: FREE_USER, subject: 'one-more' })).rejects.toBeInstanceOf(AppForbiddenException);
+  });
+
   it('lets the open through when the usage store is down', async () => {
     const redis = mock<Redis>();
 

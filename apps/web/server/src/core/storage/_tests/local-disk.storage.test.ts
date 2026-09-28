@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { StorageObjectMissingError } from '../errors';
 import { LocalDiskStorage } from '../local-disk.storage';
 
 const body = new TextEncoder().encode('replay bytes');
@@ -33,7 +34,7 @@ describe('LocalDiskStorage', () => {
     await storage.remove('a.bin');
 
     await expect(storage.remove('a.bin')).resolves.toBeUndefined();
-    await expect(storage.get('a.bin')).rejects.toThrow();
+    await expect(storage.get('a.bin')).rejects.toBeInstanceOf(StorageObjectMissingError);
   });
 
   it.each(['../outside.bin', 'nested/../../outside.bin', '/etc/passwd', ''])('refuses the key %j that escapes the storage root', async (key) => {

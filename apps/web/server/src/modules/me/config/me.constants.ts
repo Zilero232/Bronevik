@@ -11,10 +11,3 @@ export const MOD_GOALS = {
 export const FAVORITES = {
   maxCount: 200
 } as const;
-
-export const NOTIFICATION_DEFAULTS = {
-  channels: ['site'],
-  events: ['moeGained', 'moeThresholdDropped', 'sessionFinished', 'goalReached'],
-  sessionReport: true,
-  weeklyDigest: false
-} as const;

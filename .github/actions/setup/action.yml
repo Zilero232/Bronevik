@@ -27,3 +27,10 @@ runs:
         DATABASE_URL: postgresql://placeholder
         DIRECT_URL: postgresql://placeholder
       run: bun install --frozen-lockfile
+
+    # The client's API layer (shared/api/generated) is gitignored: typecheck,
+    # tests and `next build` need it generated from the committed
+    # shared/api/openapi/internal.json. No network, no running API.
+    - name: Generate the client API
+      shell: bash
+      run: bun --filter @otmetki/client api:build

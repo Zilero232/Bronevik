@@ -13,7 +13,7 @@ import type { PlayerActivityRow } from '../../watchlist.types';
 import type { WatchlistActivityService } from '../watchlist-activity.service';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
-import { NOTIFICATION_DEFAULTS } from '../../../me';
+import { NOTIFICATION_DEFAULTS } from '../../../notifications';
 import { WatchlistService } from '../watchlist.service';
 
 const now = new Date('2026-09-26T10:00:00Z');

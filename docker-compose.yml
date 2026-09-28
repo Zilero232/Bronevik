@@ -17,6 +17,9 @@
 # Everything reads the root .env. The URLs in it point at localhost for dev;
 # inside compose the services reach each other by name, so the overrides below
 # win for DATABASE_URL, DIRECT_URL and REDIS_URL.
+#
+# The keyless demo (generated data, no Lesta key) is the override
+# docker-compose.demo.yml; docs/ops/deploy.md «Демо-деплой без ключей».
 
 x-healthcheck: &healthcheck
   interval: 30s
@@ -71,6 +74,7 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?}
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?}
+        NEXT_PUBLIC_DEMO_MODE: ${NEXT_PUBLIC_DEMO_MODE:-false}
         GIT_COMMIT_SHA: ${GIT_COMMIT_SHA:-}
     image: ghcr.io/zilero232/otmetki-client:latest
     container_name: otmetki-client
@@ -103,6 +107,10 @@ services:
       PORT: '4000'
     expose:
       - '4000'
+    volumes:
+      # Local replay storage (REPLAY_STORAGE=local) and the armor models live
+      # under .data; without a volume they vanish with the container.
+      - serverdata:/app/apps/web/server/.data
     networks:
       - otmetki
 
@@ -127,6 +135,8 @@ services:
       - ./.env
     environment:
       <<: *backend-env
+    volumes:
+      - serverdata:/app/apps/web/server/.data
     networks:
       - otmetki
 
@@ -151,7 +161,9 @@ services:
       - otmetki
     healthcheck:
       <<: *healthcheck
-      test: [CMD-SHELL, 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      # Over TCP: on the first boot the image runs initdb on a socket-only
+      # temporary server, which a socket probe would already report ready.
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
       retries: 5
       start_period: 30s
 
@@ -170,6 +182,33 @@ services:
       <<: *healthcheck
       test: [CMD, redis-cli, ping]
 
+  # Nightly pg_dump in the custom format (pg_restore-able), rotated: 7 daily,
+  # 4 weekly, 6 monthly. The dumps stay on this host — copy them off it
+  # (docs/ops/deploy.md «Бэкапы»); a disk failure takes both otherwise.
+  backup:
+    image: prodrigestivill/postgres-backup-local:17
+    container_name: otmetki-backup
+    restart: always
+    logging: *logging
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_EXTRA_OPTS: -Fc -Z6
+      BACKUP_SUFFIX: .dump
+      SCHEDULE: '0 4 * * *'
+      BACKUP_KEEP_DAYS: '7'
+      BACKUP_KEEP_WEEKS: '4'
+      BACKUP_KEEP_MONTHS: '6'
+    volumes:
+      - pgbackups:/backups
+    networks:
+      - otmetki
+
 networks:
   otmetki:
     driver: bridge
@@ -178,4 +217,6 @@ volumes:
   caddy_data:
   caddy_config:
   pgdata:
+  pgbackups:
   redisdata:
+  serverdata:

@@ -32,7 +32,7 @@ export const CodesPage = () => {
         lead={t('head.description')}
         title={t('head.title')}
       />
-      <ActionStrip end={<CodeAlert />} width='narrow' />
+      <ActionStrip start={<CodeAlert />} />
       <div className={s.body}>
         <QueryState
           errorDescription={t('error.description')}

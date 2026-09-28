@@ -82,6 +82,41 @@ describe('validateEnv fail-closed guards', () => {
   });
 });
 
+describe('validateEnv demo mode', () => {
+  const deployed = { ...base, API_URL: 'https://api.triotmetki.ru', WEB_URL: 'https://triotmetki.ru', NODE_ENV: 'production' };
+
+  it('is off unless asked for', () => {
+    expect(validateEnv(deployed)).toMatchObject({ DEMO_MODE: false, LESTA_MOCK: 'off' });
+  });
+
+  it('serves the Lesta mock from a production build only with DEMO_MODE', () => {
+    expect(validateEnv({ ...deployed, DEMO_MODE: 'true' })).toMatchObject({
+      DEMO_MODE: true,
+      LESTA_MOCK: 'on',
+      LESTA_APPLICATION_ID: LESTA_MOCK.applicationId
+    });
+
+    expect(validateEnv({ ...deployed, DEMO_MODE: 'true', LESTA_MOCK: 'off' }).LESTA_MOCK).toBe('on');
+  });
+
+  it.each(['LESTA_APPLICATION_ID', 'YOOKASSA_SHOP_ID', 'YOOKASSA_SECRET_KEY'])('refuses to start a demo while %s is set', (name) => {
+    expect(() => validateEnv({ ...deployed, DEMO_MODE: 'true', [name]: 'real-value' })).toThrow(`DEMO_MODE is on while ${name} is set`);
+  });
+
+  it('validates its own resolved env again without mistaking the mock id for a key', () => {
+    const first = validateEnv({ ...deployed, DEMO_MODE: 'true' });
+
+    expect(validateEnv({ ...deployed, DEMO_MODE: 'true', LESTA_APPLICATION_ID: first.LESTA_APPLICATION_ID })).toMatchObject({
+      LESTA_MOCK: 'on',
+      LESTA_APPLICATION_ID: LESTA_MOCK.applicationId
+    });
+  });
+
+  it('still refuses placeholder secrets in a demo', () => {
+    expect(() => validateEnv({ ...deployed, DEMO_MODE: 'true', MOD_INGEST_SECRET: 'placeholder-secret' })).toThrow(/MOD_INGEST_SECRET/);
+  });
+});
+
 describe('isProduction', () => {
   it('is true only for NODE_ENV=production', () => {
     expect(isProduction({ NODE_ENV: 'production' })).toBe(true);

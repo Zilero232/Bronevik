@@ -131,6 +131,24 @@ describe('GoalProgressService.run', () => {
     expect(notifications.notify).not.toHaveBeenCalled();
   });
 
+  it('settles the other due goals when one of them cannot be evaluated', async () => {
+    const { service, prisma, notifications } = createService([goalRow({ id: 'broken', metric: 'moe', tankId: 1 }), goalRow({ id: 'healthy' })]);
+
+    battleGroups(prisma, [{ result: 'win', battles: 10 }]);
+    prisma.playerTank.findUnique.mockRejectedValue(new Error('connection reset'));
+
+    await expect(service.run(NOW)).resolves.toBe(1);
+    expect(notifications.notify).toHaveBeenCalledWith(expect.objectContaining({ notification: expect.objectContaining({ goalId: 'healthy' }) }));
+  });
+
+  it('fails the run when no due goal could be evaluated, so the job reports it', async () => {
+    const { service, prisma } = createService([goalRow({ metric: 'moe', tankId: 1 })]);
+
+    prisma.playerTank.findUnique.mockRejectedValue(new Error('connection reset'));
+
+    await expect(service.run(NOW)).rejects.toThrow(/none of 1/u);
+  });
+
   it('loads WN8 expected values only when a WN8 goal is due', async () => {
     const { service, expected } = createService([goalRow()]);
 

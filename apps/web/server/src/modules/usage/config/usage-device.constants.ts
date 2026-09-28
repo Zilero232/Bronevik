@@ -7,5 +7,6 @@ export const USAGE_DEVICE = {
   signingContext: 'usage-device:',
   ipContext: 'usage-ip:',
   ipHashLength: 24,
+  ipv6NetworkParts: 4,
   separator: '.'
 } as const;

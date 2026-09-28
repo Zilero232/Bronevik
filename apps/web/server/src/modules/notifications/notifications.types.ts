@@ -66,7 +66,11 @@ export type DeliverToInput = {
 
 export type ChannelSendInput = Omit<DeliverToInput, 'dedupeKey' | 'notification'>;
 
-export type SendOnceInput = Pick<DeliverToInput, 'channel' | 'dedupeKey' | 'notification' | 'rendered' | 'userId'> & {
+export type ClaimNotificationInput = Pick<DeliverToInput, 'channel' | 'dedupeKey' | 'notification' | 'rendered' | 'userId'>;
+
+export type NotificationClaim = { status: 'claimed'; id: string } | { status: 'inFlight' } | { status: 'sent' };
+
+export type SendOnceInput = ClaimNotificationInput & {
   send: () => Promise<unknown>;
 };
 

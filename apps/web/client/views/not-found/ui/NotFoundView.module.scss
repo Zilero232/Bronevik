@@ -4,7 +4,6 @@
   @include shell;
   @include stack(var(--space-8));
 
-  max-width: 880px;
   padding-block: var(--space-9);
 
   @include below(md) {

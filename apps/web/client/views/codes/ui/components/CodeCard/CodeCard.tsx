@@ -18,7 +18,7 @@ export const CodeCard = ({ code }: CodeCardProps) => {
   const { sourceHref, ribbon, copied, loginHref, onCopy, isSignedIn, isReporting, report } = useCodeCard({ code });
 
   return (
-    <li className={s.root} data-status={code.status}>
+    <li className={s.root} data-ribbon={ribbon ? ribbon.kind : undefined} data-status={code.status}>
       {ribbon && (
         <Badge shape='corner' tone={ribbon.kind === 'new' ? 'steel' : 'accent'}>
           {ribbon.kind === 'expiring' ? t('ribbon.expiring', { days: ribbon.days }) : t('ribbon.new')}

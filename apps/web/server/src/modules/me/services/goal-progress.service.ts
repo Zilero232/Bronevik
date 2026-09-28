@@ -1,13 +1,13 @@
 import type { TankTotals } from '@otmetki/ratings';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { subMinutes } from 'date-fns';
 import { chunk, unique } from 'remeda';
 
 import type { Goal } from '../../../../generated';
 import type { EvaluateGoalInput, GoalAtInput } from '../me.types';
 
-import { bonusTypesOfMode } from '../../../common/lib';
+import { bonusTypesOfMode, errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { ExpectedValuesService } from '../../reference';
@@ -18,6 +18,8 @@ import { API_DELTA_SUM, MOD_BATTLE_SUM } from '../selects';
 
 @Injectable()
 export class GoalProgressService {
+  private readonly logger = new Logger(GoalProgressService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly expectedValues: ExpectedValuesService,
@@ -33,9 +35,19 @@ export class GoalProgressService {
 
     const expected = goals.some((goal) => goal.metric === 'wn8') ? await this.expectedValues.all() : new Map();
     let updated = 0;
+    let failed = 0;
 
     for (const goal of goals) {
-      updated += (await this.evaluate({ goal, expected, now })) ? 1 : 0;
+      try {
+        updated += (await this.evaluate({ goal, expected, now })) ? 1 : 0;
+      } catch (error) {
+        failed += 1;
+        this.logger.error(`goal ${goal.id} could not be evaluated: ${errorMessage(error)}`);
+      }
+    }
+
+    if (failed === goals.length) {
+      throw new Error(`none of ${goals.length} due goals could be evaluated`);
     }
 
     return updated;

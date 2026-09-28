@@ -14,13 +14,24 @@ const isLocalUrl = (url: string): boolean => {
   return localHosts.has(hostname) || hostname.endsWith(ENV_GUARD.localSuffix);
 };
 
+const hasLestaKey = (env: Env): boolean => env.LESTA_APPLICATION_ID !== '' && env.LESTA_APPLICATION_ID !== LESTA_MOCK.applicationId;
+
 const wantsLestaMock = (env: Env): boolean =>
-  env.LESTA_APPLICATION_ID === '' &&
-  env.NODE_ENV !== 'production' &&
-  (env.LESTA_MOCK === 'on' || (env.LESTA_MOCK === 'auto' && env.NODE_ENV === 'development' && isLocalUrl(env.API_URL)));
+  !hasLestaKey(env) &&
+  (env.DEMO_MODE ||
+    (env.NODE_ENV !== 'production' &&
+      (env.LESTA_MOCK === 'on' || (env.LESTA_MOCK === 'auto' && env.NODE_ENV === 'development' && isLocalUrl(env.API_URL)))));
+
+const demoConflicts = (env: Env): string[] =>
+  env.DEMO_MODE
+    ? ENV_GUARD.demoForbidden
+        .filter((name) => (name === 'LESTA_APPLICATION_ID' ? hasLestaKey(env) : env[name] !== ''))
+        .map((name) => `DEMO_MODE is on while ${name} is set`)
+    : [];
 
 const unsafeSettings = ({ env, nodeEnvSet }: UnsafeSettingsInput): string[] => [
   ...(!nodeEnvSet && !isLocalUrl(env.API_URL) ? ['NODE_ENV must be set explicitly when the API is not on a local host'] : []),
+  ...demoConflicts(env),
   ...(env.NODE_ENV === 'production'
     ? ENV_GUARD.productionSecrets.filter((name) => ENV_GUARD.weakSecret.test(env[name])).map((name) => `${name} is a development placeholder`)
     : [])

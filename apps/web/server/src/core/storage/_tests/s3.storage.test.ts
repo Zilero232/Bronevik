@@ -1,9 +1,10 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, NoSuchKey, PutObjectCommand } from '@aws-sdk/client-s3';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { S3Sender } from '../storage.types';
 
+import { StorageObjectMissingError } from '../errors';
 import { S3Storage } from '../s3.storage';
 
 const options = {
@@ -62,5 +63,26 @@ describe('S3Storage', () => {
     client.send.mockImplementation(async () => ({}));
 
     await expect(storage.get('a.wotreplay')).rejects.toThrow('no body');
+  });
+
+  it('reports a key the bucket does not have as a missing object', async () => {
+    const { client, storage } = createStorage();
+
+    client.send.mockImplementation(async () => {
+      throw new NoSuchKey({ message: 'The specified key does not exist.', $metadata: {} });
+    });
+
+    await expect(storage.get('a.wotreplay')).rejects.toBeInstanceOf(StorageObjectMissingError);
+  });
+
+  it('passes any other read failure through unchanged', async () => {
+    const { client, storage } = createStorage();
+    const outage = new Error('connect ETIMEDOUT');
+
+    client.send.mockImplementation(async () => {
+      throw outage;
+    });
+
+    await expect(storage.get('a.wotreplay')).rejects.toBe(outage);
   });
 });

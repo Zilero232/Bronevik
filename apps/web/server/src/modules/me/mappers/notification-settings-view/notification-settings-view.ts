@@ -3,7 +3,7 @@ import type { NotificationSettings } from '@otmetki/schemas';
 import type { NotificationSettings as NotificationSettingsRow } from '../../../../../generated';
 
 import { NOTIFICATION_CHANNEL_FROM_DB, NOTIFICATION_EVENT_FROM_DB } from '../../../../common/lib';
-import { NOTIFICATION_DEFAULTS } from '../../config';
+import { NOTIFICATION_DEFAULTS } from '../../../notifications';
 
 export const toNotificationSettings = (row: NotificationSettingsRow): NotificationSettings => ({
   channels: row.channels.map((channel) => NOTIFICATION_CHANNEL_FROM_DB[channel]),

@@ -10,7 +10,7 @@ import type { OpenArmorInput } from '../tanks.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { ARMOR_VIEWER } from '../../../config';
-import { PrismaService } from '../../../core';
+import { PrismaService, StorageObjectMissingError } from '../../../core';
 import { MODEL_SOURCES } from '../../gamedata';
 import { VehicleCatalogService } from '../../reference';
 import { UsageMeterService } from '../../usage';
@@ -21,7 +21,10 @@ import { TankDetailService } from './tank-detail.service';
 export class TankArmorService {
   private readonly models = new LRUCache<number, ArmorModelResponse>({
     max: ARMOR_VIEWER.memoryCache.maxEntries,
-    ttl: ARMOR_VIEWER.memoryCache.ttlMs
+    maxSize: ARMOR_VIEWER.memoryCache.maxBytes,
+    sizeCalculation: (model) => model.geometry.length,
+    ttl: ARMOR_VIEWER.memoryCache.ttlMs,
+    fetchMethod: (tankId) => this.load(tankId)
   });
 
   constructor(
@@ -42,15 +45,11 @@ export class TankArmorService {
   }
 
   async armor(tankId: number): Promise<ArmorModelResponse> {
-    const cached = this.models.get(tankId);
+    const model = await this.models.fetch(tankId);
 
-    if (cached) {
-      return cached;
+    if (!model) {
+      throw new AppNotFoundException('ARMOR_MODEL_NOT_FOUND', `No armor model for tank ${tankId}`);
     }
-
-    const model = await this.load(tankId);
-
-    this.models.set(tankId, model);
 
     return model;
   }
@@ -62,8 +61,10 @@ export class TankArmorService {
       throw new AppNotFoundException('ARMOR_MODEL_NOT_FOUND', `No armor model for tank ${tankId}`);
     }
 
-    const bytes = await this.storage.get(row.storageKey).catch(() => {
-      throw new AppNotFoundException('ARMOR_MODEL_NOT_FOUND', `Armor geometry ${row.storageKey} is missing from storage`);
+    const bytes = await this.storage.get(row.storageKey).catch((error: unknown) => {
+      throw error instanceof StorageObjectMissingError
+        ? new AppNotFoundException('ARMOR_MODEL_NOT_FOUND', `Armor geometry ${row.storageKey} is missing from storage`)
+        : error;
     });
 
     return {

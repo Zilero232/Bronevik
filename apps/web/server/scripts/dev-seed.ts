@@ -67,7 +67,10 @@ const options = z
 const env = validateEnv(process.env);
 
 if (!isLestaMock(env)) {
-  console.error('dev:seed runs only against the Lesta mock: leave LESTA_APPLICATION_ID empty outside production (LESTA_MOCK=auto|on).');
+  console.error(
+    'dev:seed runs only against the Lesta mock: leave LESTA_APPLICATION_ID empty outside production (LESTA_MOCK=auto|on), or set DEMO_MODE=true.'
+  );
+
   process.exit(1);
 }
 

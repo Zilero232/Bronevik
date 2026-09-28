@@ -12,6 +12,7 @@ import type { TankDetailService } from '../tank-detail.service';
 
 import { AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
 import { ARMOR_VIEWER } from '../../../../config';
+import { StorageObjectMissingError } from '../../../../core';
 import { TankArmorService } from '../tank-armor.service';
 
 const SUMMARY = {
@@ -40,7 +41,7 @@ const ROW: VehicleArmorModel = {
 
 const ACTOR = { userId: 'user-1', deviceId: null, ipHash: null };
 
-const createService = ({ row, stored }: { row: VehicleArmorModel | null; stored?: Uint8Array }) => {
+const createService = ({ row, stored, readError }: { row: VehicleArmorModel | null; stored?: Uint8Array; readError?: Error }) => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
   const details = mock<TankDetailService>();
@@ -51,7 +52,7 @@ const createService = ({ row, stored }: { row: VehicleArmorModel | null; stored?
     remove: vi.fn(),
     get: vi.fn(async () => {
       if (!stored) {
-        throw new Error('ENOENT');
+        throw readError ?? new StorageObjectMissingError(ROW.storageKey);
       }
 
       return stored;
@@ -83,6 +84,29 @@ describe('TankArmorService', () => {
 
   it('is a not-found when the row exists but the stored object is gone', async () => {
     await expect(createService({ row: ROW }).service.armor(SUMMARY.tankId)).rejects.toBeInstanceOf(AppNotFoundException);
+  });
+
+  it('surfaces a storage outage as the failure it is, not as a missing model', async () => {
+    const outage = new Error('connect ETIMEDOUT');
+
+    await expect(createService({ row: ROW, readError: outage }).service.armor(SUMMARY.tankId)).rejects.toBe(outage);
+  });
+
+  it('loads a tank once for concurrent requests', async () => {
+    const { service, prisma } = createService({ row: ROW, stored: new Uint8Array([1]) });
+
+    await Promise.all([service.armor(SUMMARY.tankId), service.armor(SUMMARY.tankId), service.armor(SUMMARY.tankId)]);
+
+    expect(prisma.vehicleArmorModel.findUnique).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not remember a failed load', async () => {
+    const { service, prisma } = createService({ row: null });
+
+    await service.armor(SUMMARY.tankId).catch(() => null);
+    await service.armor(SUMMARY.tankId).catch(() => null);
+
+    expect(prisma.vehicleArmorModel.findUnique).toHaveBeenCalledTimes(2);
   });
 });
 

@@ -3,8 +3,9 @@
 import type { VehicleSummary } from '@otmetki/schemas';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isGoalTankMetric } from '@otmetki/schemas';
+import { goalMetricSchema, isGoalTankMetric } from '@otmetki/schemas';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { useLinkedAccounts } from '@/entities/auth/session';
@@ -19,6 +20,7 @@ import { GOAL_FORM } from '../../../config';
 import { goalFormSchema, toGoalInput } from '../../../lib/goal-form';
 
 export const useGoalForm = () => {
+  const t = useTranslations('me.goals');
   const { data: accounts } = useLinkedAccounts();
   const { data: catalog } = useVehicleCatalog();
   const add = useMutation({
@@ -47,7 +49,8 @@ export const useGoalForm = () => {
   return {
     form,
     metric,
-    durations: GOAL_FORM.durations,
+    metricItems: goalMetricSchema.options.map((value) => ({ value, label: t(`metric.${value}`) })),
+    durationItems: GOAL_FORM.durations.map((value) => ({ value, label: t('duration', { count: Number(value) }) })),
     hasTank: isGoalTankMetric(metric),
     tank: typeof tankId === 'number' ? (vehicleIndex(catalog)[tankId] ?? null) : null,
     onTankChange: (vehicle: VehicleSummary | null) => form.setValue('tankId', vehicle?.tankId, { shouldValidate: form.formState.isSubmitted }),

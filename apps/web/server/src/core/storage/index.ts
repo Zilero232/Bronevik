@@ -1,3 +1,4 @@
+export { StorageObjectMissingError } from './errors';
 export { LocalDiskStorage } from './local-disk.storage';
 export { ObjectStorage } from './object-storage';
 export { createObjectStorage } from './storage.factory';

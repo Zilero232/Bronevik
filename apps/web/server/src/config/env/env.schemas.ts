@@ -34,6 +34,7 @@ export const envSchema = z.object({
     .pipe(z.array(ipAddress).max(LESTA.egress.maxIps)),
   LESTA_EGRESS_IP: z.union([ipAddress, z.literal('')]).default(''),
   LESTA_MOCK: z.enum(LESTA_MOCK.modes).default('auto'),
+  DEMO_MODE: z.stringbool().default(false),
 
   TELEGRAM_BOT_TOKEN: z.string().default(''),
   TELEGRAM_BOT_USERNAME: z.string().default(''),

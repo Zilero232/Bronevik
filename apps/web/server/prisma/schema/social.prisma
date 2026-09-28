@@ -156,6 +156,7 @@ model Notification {
   sentAt    DateTime? @map("sent_at") @db.Timestamptz(3)
   readAt    DateTime? @map("read_at") @db.Timestamptz(3)
   failedAt  DateTime? @map("failed_at") @db.Timestamptz(3)
+  claimedAt DateTime? @map("claimed_at") @db.Timestamptz(3)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

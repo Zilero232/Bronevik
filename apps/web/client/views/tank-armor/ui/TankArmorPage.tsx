@@ -14,7 +14,7 @@ import s from './TankArmorPage.module.scss';
 
 export const TankArmorPage = () => {
   const t = useTranslations('armor.states');
-  const { slug, query, isCrawler, isLimited, quota } = useTankArmorPage();
+  const { slug, query, isCrawler, isLimited, isLimitShown, quota } = useTankArmorPage();
 
   return (
     <div className={s.root}>
@@ -26,7 +26,7 @@ export const TankArmorPage = () => {
       />
       <ArmorIntro slug={slug} />
       {quota.isVisible && <ArmorQuota {...quota} />}
-      {isLimited && <ArmorLimit {...quota} />}
+      {isLimitShown && <ArmorLimit {...quota} />}
       {!isCrawler && !isLimited && (
         <QueryState
           errorState={

@@ -50,7 +50,7 @@
 }
 
 .searchBar {
-  @include below(xl) {
+  @include below(2xl) {
     display: none;
   }
 
@@ -60,7 +60,7 @@
 }
 
 .searchIcon {
-  @include from(xl) {
+  @include from(2xl) {
     @include below(4xl) {
       display: none;
     }

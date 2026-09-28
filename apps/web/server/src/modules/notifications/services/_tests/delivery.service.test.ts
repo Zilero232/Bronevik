@@ -72,6 +72,7 @@ const createService = () => {
   config.get.mockReturnValue('https://triotmetki.ru');
   prisma.notification.findUnique.mockResolvedValue(null);
   prisma.notification.create.mockResolvedValue(mock<Notification>({ id: 'n1' }));
+  prisma.notification.updateMany.mockResolvedValue({ count: 1 });
 
   const redis = new RedisMock();
   const service = new DeliveryService(prisma, config, telegram, webPush, email, redis, queue, new NotificationLedgerService(prisma));
@@ -129,7 +130,7 @@ describe('DeliveryService.deliver', () => {
     telegram.sendNotification.mockRejectedValue(new Error('blocked'));
 
     await expect(service.deliver(job)).rejects.toThrow(/1 of 2/u);
-    expect(prisma.notification.update).toHaveBeenCalledWith(expect.objectContaining({ data: { failedAt: expect.any(Date) } }));
+    expect(prisma.notification.update).toHaveBeenCalledWith(expect.objectContaining({ data: { failedAt: expect.any(Date), claimedAt: null } }));
   });
 
   it('defers telegram to the end of a quiet window crossing midnight but fills the inbox at once', async () => {
@@ -174,7 +175,7 @@ describe('DeliveryService.deliver', () => {
     expect(queue.add).not.toHaveBeenCalled();
   });
 
-  it('skips a channel another worker created concurrently', async () => {
+  it('leaves a channel another worker is sending to the retry instead of sending it twice', async () => {
     const { service, prisma, telegram } = createService();
 
     prisma.user.findUnique.mockResolvedValue(recipient({}));
@@ -183,7 +184,7 @@ describe('DeliveryService.deliver', () => {
       new Prisma.PrismaClientKnownRequestError('duplicate', { code: PRISMA_CODE.uniqueViolation, clientVersion: 'test' })
     );
 
-    expect(await service.deliver(job)).toBe(2);
+    await expect(service.deliver(job)).rejects.toThrow(/2 of 2/u);
     expect(telegram.sendNotification).not.toHaveBeenCalled();
     expect(prisma.notification.update).not.toHaveBeenCalled();
   });

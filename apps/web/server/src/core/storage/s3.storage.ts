@@ -1,7 +1,8 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 import type { PutObjectInput, S3Sender, S3StorageOptions } from './storage.types';
 
+import { StorageObjectMissingError } from './errors';
 import { ObjectStorage } from './object-storage';
 
 export class S3Storage extends ObjectStorage {
@@ -28,7 +29,9 @@ export class S3Storage extends ObjectStorage {
   }
 
   async get(key: string): Promise<Uint8Array> {
-    const object = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: this.keyOf(key) }));
+    const object = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: this.keyOf(key) })).catch((error: unknown) => {
+      throw error instanceof NoSuchKey ? new StorageObjectMissingError(key) : error;
+    });
 
     if (!object.Body) {
       throw new Error(`Storage object ${key} has no body`);

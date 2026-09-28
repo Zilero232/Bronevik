@@ -3,6 +3,7 @@ import { dirname, resolve, sep } from 'node:path';
 
 import type { PutObjectInput } from './storage.types';
 
+import { StorageObjectMissingError } from './errors';
 import { ObjectStorage } from './object-storage';
 
 export class LocalDiskStorage extends ObjectStorage {
@@ -21,7 +22,17 @@ export class LocalDiskStorage extends ObjectStorage {
   }
 
   async get(key: string): Promise<Uint8Array> {
-    return new Uint8Array(await readFile(this.pathOf(key)));
+    const path = this.pathOf(key);
+
+    try {
+      return new Uint8Array(await readFile(path));
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+        throw new StorageObjectMissingError(key);
+      }
+
+      throw error;
+    }
   }
 
   async remove(key: string): Promise<void> {

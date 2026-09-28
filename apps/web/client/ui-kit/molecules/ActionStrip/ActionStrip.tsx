@@ -11,7 +11,6 @@ export const ActionStrip = ({
   links,
   start,
   end,
-  width = 'wide',
   align = 'center',
   variant = 'chips',
   className,
@@ -20,7 +19,7 @@ export const ActionStrip = ({
   ...props
 }: ActionStripProps) => (
   <Tag className={clsx(s.root, s[variant], className)} data-theme='dark' {...props}>
-    <div className={clsx(s.inner, s[width], s[align], innerClassName)}>
+    <div className={clsx(s.inner, s[align], innerClassName)}>
       {links && links.length > 0 && (
         <ul className={s.links}>
           {links.map(({ id, href, label, icon, hint, tone }) => (

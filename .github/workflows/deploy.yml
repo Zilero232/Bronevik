@@ -3,7 +3,13 @@ name: deploy
 # Images go to ghcr, then the VPS pulls them. The web image and the server image
 # (also run as the worker) build in parallel jobs that share
 # .github/actions/docker-image. The VPS holds no clone of the repository, so
-# docker-compose.yml and the Caddyfile are copied on every deploy.
+# the compose files and infra/caddy are copied on every deploy, keeping their
+# repository paths (docker-compose.yml bind-mounts ./infra/caddy/Caddyfile).
+#
+# `demo` builds the client with the «Демо-данные» banner. It must match the VPS:
+# a demo VPS has COMPOSE_FILE=docker-compose.yml:docker-compose.demo.yml in its
+# .env (docs/ops/deploy.md «Демо-деплой без ключей»), and the run fails before
+# touching the stack when the two disagree.
 #
 # Before production the schema is synced with `prisma db push` (no migrations).
 # A push that would lose data fails instead of running.
@@ -20,6 +26,11 @@ name: deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      demo:
+        description: Keyless demo on generated data (the VPS runs docker-compose.demo.yml)
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy
@@ -137,6 +148,7 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}
+            NEXT_PUBLIC_DEMO_MODE=${{ inputs.demo }}
             GIT_COMMIT_SHA=${{ github.sha }}
 
   server:
@@ -169,14 +181,17 @@ jobs:
     environment: production
 
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    # A demo's first boot imports the game catalog and seeds inside `up -d`.
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
-      - name: Copy docker-compose.yml
+      # Paths are kept: compose bind-mounts ./infra/caddy/Caddyfile (and, for the
+      # demo, ./infra/caddy/demo.caddy).
+      - name: Copy the compose files and the Caddy config
         uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
         with:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
@@ -184,38 +199,40 @@ jobs:
           port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
-          source: docker-compose.yml
-          target: ${{ secrets.DEPLOY_PATH }}
-
-      # Lands flat next to the compose file, which bind-mounts ./Caddyfile.
-      - name: Copy the Caddyfile
-        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
-        with:
-          host: ${{ secrets.DEPLOY_SSH_HOST }}
-          username: ${{ secrets.DEPLOY_SSH_USER }}
-          port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
-          source: infra/caddy/Caddyfile
-          strip_components: 2
+          source: docker-compose.yml,docker-compose.demo.yml,infra/caddy/Caddyfile,infra/caddy/demo.caddy
           target: ${{ secrets.DEPLOY_PATH }}
 
       - name: Pull, sync the schema, restart
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEMO: ${{ inputs.demo }}
         with:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
           port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
-          envs: DEPLOY_PATH
+          command_timeout: 40m
+          envs: DEPLOY_PATH,DEMO
           script: |
             set -euo pipefail
             cd "$DEPLOY_PATH"
+
+            # The banner is baked into the client image, DEMO_MODE comes from the
+            # compose files the VPS .env selects: both must say the same thing.
+            stack=false
+            if docker compose config --services | grep -qx demo-seed; then stack=true; fi
+            if [ "$stack" != "$DEMO" ]; then
+              echo "the run says demo=$DEMO but the VPS stack says demo=$stack (COMPOSE_FILE in $DEPLOY_PATH/.env)" >&2
+              exit 1
+            fi
+
             docker compose pull client server worker
 
+            # --no-deps below starts nothing: on the very first run the database
+            # is not up yet, so bring it (and Redis) up and wait for health first.
+            docker compose up -d --wait postgres redis
             docker compose run --rm --no-deps server bun run db:deploy
 
             docker compose up -d

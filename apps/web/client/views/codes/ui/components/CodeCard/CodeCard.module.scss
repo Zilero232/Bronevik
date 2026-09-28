@@ -36,7 +36,6 @@
   @include stack(var(--space-3));
 
   min-width: 0;
-  padding-right: var(--space-8);
 }
 
 .head {
@@ -44,6 +43,10 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
+
+  .root[data-ribbon] & {
+    padding-right: calc(var(--space-9) + var(--space-6));
+  }
 }
 
 .title {

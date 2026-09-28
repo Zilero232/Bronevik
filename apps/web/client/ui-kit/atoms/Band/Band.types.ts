@@ -6,7 +6,7 @@ export type BandTexture = 'camo' | 'hex' | 'noise' | 'none';
 
 export type BandProps = Omit<ComponentProps<'section'>, 'ref'> & {
   tone?: BandTone;
-  width?: 'full' | 'narrow' | 'wide';
+  width?: 'full' | 'wide';
   texture?: BandTexture;
   isDark?: boolean;
   as?: 'div' | 'section';

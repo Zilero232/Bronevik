@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/nodemon.json",
+  "watch": [
+    "src",
+    "generated",
+    "../../../packages/gamedata/src",
+    "../../../packages/logger/src",
+    "../../../packages/ratings/src",
+    "../../../packages/schemas/src"
+  ],
+  "ext": "ts,js,json",
+  "ignore": ["**/_tests/**", "**/*.test.ts", "**/node_modules/**"],
+  "delay": 300,
+  "signal": "SIGTERM",
+  "exec": "bun --env-file ../../../.env src/main.ts"
+}

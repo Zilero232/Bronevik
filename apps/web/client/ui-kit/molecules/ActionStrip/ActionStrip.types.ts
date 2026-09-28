@@ -16,7 +16,6 @@ export type ActionStripProps = Omit<ComponentProps<'div'>, 'ref'> & {
   links?: readonly ActionStripLink[];
   start?: ReactNode;
   end?: ReactNode;
-  width?: 'narrow' | 'wide';
   align?: 'bottom' | 'center';
   variant?: 'chips' | 'tiles';
   innerClassName?: string;

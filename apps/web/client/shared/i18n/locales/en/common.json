@@ -40,5 +40,9 @@
   "kbd": {
     "ctrl": "Ctrl",
     "esc": "Esc"
+  },
+  "demo": {
+    "title": "Demo data.",
+    "description": "The players, clans and battles here are generated: the site runs before the Lesta API is connected, so there are no real stats yet."
   }
 }

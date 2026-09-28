@@ -31,6 +31,10 @@ export const NOTIFICATION_DELIVERY = {
   backoffMs: 10_000
 } as const;
 
+export const NOTIFICATION_LEDGER = {
+  claimLeaseMs: 60_000
+} as const;
+
 export const WEB_PUSH: Readonly<{ ttlSeconds: number; goneStatuses: readonly number[] }> = {
   ttlSeconds: 24 * 60 * 60,
   goneStatuses: [404, 410]

@@ -125,7 +125,12 @@ export class UsageMeterService {
       pipeline.decr(countKey({ meter, period: period.key, scope: scope.id }));
     }
 
-    await pipeline.del(seen).exec();
+    await pipeline
+      .del(seen)
+      .exec()
+      .catch((error: unknown) => {
+        this.logger.warn(`could not give back a refused ${meter} use: ${errorMessage(error)}`);
+      });
   }
 
   private exhausted({ meter, limit }: ExhaustedInput): AppForbiddenException {

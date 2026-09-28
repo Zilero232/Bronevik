@@ -18,10 +18,13 @@
 *.wotmod
 *.mtmod
 
-# The game modpack is built on the host (apps/game/modpack/tools/build), never in an image.
-# Only its package.json goes in: the bun workspace list must match bun.lock for --frozen-lockfile.
+# The game modpack and the manager (a Tauri app; its Rust target/ alone runs to
+# gigabytes) are built on the host or in their own workflows, never in an image.
+# Only their package.json goes in: the bun workspace list must match bun.lock for --frozen-lockfile.
 apps/game/modpack/*
 !apps/game/modpack/package.json
+apps/game/manager/*
+!apps/game/manager/package.json
 
 # Secrets and local env — images get their config at runtime, never baked in.
 .env

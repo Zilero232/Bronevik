@@ -1,0 +1,24 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-7));
+
+  padding-block: var(--space-9);
+
+  @include below(xl) {
+    padding-top: var(--space-7);
+  }
+}
+
+.card {
+  @include stack(var(--space-4));
+
+  max-width: 640px;
+}
+
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

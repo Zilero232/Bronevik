@@ -91,7 +91,7 @@ otmetki-feature-marks-history = { workspace = true }
 otmetki-feature-hangar-ratings = { workspace = true }
 
 [tool.pytest.ini_options]
-testpaths = ["packages", "features", "tools", "installer"]
+testpaths = ["packages", "features", "tools"]
 python_files = ["test_*.py"]
 # importlib mode: test modules are not put on sys.path by folder, _support comes from tools/testing.
 addopts = "--import-mode=importlib"

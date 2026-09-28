@@ -1,4 +1,4 @@
-"""Run every modpack unittest suite: packages/*/tests, features/*/tests, tools/**/tests and installer/tests/*.
+"""Run every modpack unittest suite: packages/*/tests, features/*/tests and tools/**/tests.
 
 Works on Python 3 and on Python 2.7 with no third-party packages; `pytest` runs the same tests
 (see pyproject.toml). The build tool's own tests need Python 3 and are left out on Python 2.7.
@@ -10,7 +10,6 @@ import unittest
 
 TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 MODPACK_DIR = os.path.dirname(TOOLS_DIR)
-INSTALLER_DIR = os.path.join(MODPACK_DIR, 'installer')
 PY3 = sys.version_info[0] >= 3
 sys.path.insert(0, os.path.join(TOOLS_DIR, 'testing'))
 
@@ -18,18 +17,17 @@ import _support  # noqa: E402  (maps the repo layout onto the otmetki package)
 
 
 def python3_only(directory):
-    """The build tooling (tools/build/**) and the installer tests need Python 3."""
-    return directory.startswith(os.path.join(TOOLS_DIR, 'build')) or directory.startswith(INSTALLER_DIR)
+    """The build tooling (tools/build/**) needs Python 3."""
+    return directory.startswith(os.path.join(TOOLS_DIR, 'build'))
 
 
 def test_dirs():
     dirs = [os.path.join(base, 'tests') for base in _support.source_dirs()]
-    for root in (TOOLS_DIR, INSTALLER_DIR):
-        for directory, children, _ in os.walk(root):
-            children[:] = sorted(child for child in children if child != '__pycache__')
-            if os.path.basename(os.path.dirname(directory)) == 'tests' or os.path.basename(directory) == 'tests':
-                if PY3 or not python3_only(directory):
-                    dirs.append(directory)
+    for directory, children, _ in os.walk(TOOLS_DIR):
+        children[:] = sorted(child for child in children if child != '__pycache__')
+        if os.path.basename(os.path.dirname(directory)) == 'tests' or os.path.basename(directory) == 'tests':
+            if PY3 or not python3_only(directory):
+                dirs.append(directory)
     return [directory for directory in dirs if os.path.isdir(directory) and any(name.startswith('test_') for name in os.listdir(directory))]
 
 

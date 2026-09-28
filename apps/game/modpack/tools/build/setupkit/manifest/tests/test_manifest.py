@@ -1,5 +1,7 @@
+import contextlib
 import copy
 import hashlib
+import importlib
 import io
 import json
 import os
@@ -41,7 +43,7 @@ class CatalogTest(unittest.TestCase):
     def test_every_current_package_is_catalogued(self):
         catalog = catalog_module.load(CATALOG_PATH, ASSETS_DIR)
         missing = [package.key for package in layout.split_packages('root_init.py') if catalog.entry(package.key) is None]
-        self.assertEqual(missing, [], 'add these packages to installer/catalog/catalog.json')
+        self.assertEqual(missing, [], 'add these packages to catalog/catalog.json')
 
     def problems(self, mutate):
         raw = copy.deepcopy(load_raw())
@@ -57,8 +59,8 @@ class CatalogTest(unittest.TestCase):
         self.assertIn('unknown category', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(category='nowhere')))
         self.assertIn('unknown or custom preset', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(presets=['custom'])))
         self.assertIn('missing en text', self.problems(lambda raw: self.entry(raw, 'marks_panel')['title'].update(en='')))
-        self.assertIn('braces', self.problems(lambda raw: self.entry(raw, 'marks_panel')['title'].update(ru='{app}')))
-        self.assertIn('not found in installer/assets', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(preview={'image': 'previews/none.svg'})))
+        self.assertIn('control characters', self.problems(lambda raw: self.entry(raw, 'marks_panel')['title'].update(ru='a' + chr(9) + 'b')))
+        self.assertIn('not found in catalog/', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(preview={'image': 'previews/none.svg'})))
         self.assertIn('https://', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(preview={'video': 'http://x'})))
         self.assertIn('unknown dependency', self.problems(lambda raw: self.entry(raw, 'marks_panel').update(dependencies=['nothing'])))
         self.assertIn('drop its presets', self.problems(lambda raw: self.entry(raw, 'core').update(presets=['minimal'])))
@@ -145,6 +147,21 @@ class ManifestTest(unittest.TestCase):
         for component in manifest.components:
             for dependency in component.dependencies:
                 self.assertIn(dependency, ids)
+
+
+class CliTest(unittest.TestCase):
+
+    def test_writes_components_json_for_the_manager(self):
+        cli = importlib.import_module('setupkit.__main__')
+        folder = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, folder)
+        with contextlib.redirect_stdout(io.StringIO()):
+            cli.main(['--out', folder, '--skip-artwork'])
+        with io.open(os.path.join(folder, 'components.json'), encoding='utf-8') as handle:
+            data = json.load(handle)
+        keys = [package.key for package in layout.split_packages('root_init.py')]
+        self.assertEqual(sorted(component['id'] for component in data['components']), sorted(keys))
+        self.assertTrue(cli.DEFAULT_OUT.endswith(os.path.join('dist', 'catalog')))
 
 
 if __name__ == '__main__':

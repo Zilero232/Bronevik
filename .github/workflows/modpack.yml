@@ -5,10 +5,9 @@ name: modpack
 # checks         pull requests that touch the modpack, and manual runs. Windows, like the players:
 #                pytest + the stdlib runner, ruff, vermin (the py2.7 syntax guard is a test).
 # release-build  manual runs only. Builds OpenWG owg_python_compiler from source (no Python 2.7
-#                needed) and the release packages with compiled .pyc, uploaded as an artifact.
-# release-installer  manual runs only, after release-build. Windows: Inno Setup from choco, the installer's
-#                Pascal unit tests and a silent install/uninstall round trip, then components.json and the
-#                unsigned otmetki-setup-<version>.exe around the release packages (apps/game/modpack/installer).
+#                needed) and the release packages with compiled .pyc, uploaded as an artifact, then the
+#                component catalogue around them (components.json with sha256 + previews) for the manager
+#                (apps/game/manager), uploaded as `modpack-catalog`. Players install through the manager.
 
 on:
   pull_request:
@@ -25,9 +24,6 @@ permissions: {}
 
 env:
   OWG_COMPILER_VERSION: v1.2.1
-  # Pinned: the installer uses 6.6/6.7 features (dark wizard style, PNG images, PathCombine). Runner images
-  # no longer ship Inno Setup (actions/runner-images#11644).
-  INNO_SETUP_VERSION: 6.7.1
 
 jobs:
   checks:
@@ -103,55 +99,17 @@ jobs:
           path: dist/modpack/
           retention-days: 14
 
-  release-installer:
-    if: github.event_name == 'workflow_dispatch'
-    needs: release-build
-
-    permissions:
-      contents: read
-
-    runs-on: windows-latest
-    timeout-minutes: 30
-
-    defaults:
-      run:
-        working-directory: apps/game/modpack
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
-        with:
-          python-version: '3.12'
-
       - run: python -m pip install uv
 
-      - run: uv sync --locked
-
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: modpack
-          path: dist/modpack
-
-      - name: Install Inno Setup
-        run: choco install innosetup --version "$env:INNO_SETUP_VERSION" --no-progress -y
-
-      # The Pascal units against fixture clients, then a real silent install and uninstall (throwaway runner).
-      - name: Installer tests
-        run: uv run --locked pytest installer
-        env:
-          OTMETKI_INSTALLER_E2E: '1'
-
-      # --strict: every package needs its installer/catalog/catalog.json entry for a release.
-      - name: Build the installer
-        run: uv run --locked python tools/build/setupkit --strict --packages ../../dist/modpack --out ../../dist/installer --compile
+      # --strict: every package needs its catalog/catalog.json entry for a release.
+      - name: Build the component catalogue
+        working-directory: apps/game/modpack
+        run: |
+          uv sync --locked
+          uv run --locked python tools/build/setupkit --strict --packages ../../../dist/modpack --out ../../../dist/catalog
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: modpack-installer
-          path: |
-            dist/installer/otmetki-setup-*.exe
-            dist/installer/components.json
+          name: modpack-catalog
+          path: dist/catalog/
           retention-days: 14

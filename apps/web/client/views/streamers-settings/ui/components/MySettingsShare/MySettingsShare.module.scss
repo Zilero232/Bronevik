@@ -28,5 +28,9 @@
 }
 
 .install {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   align-self: flex-start;
+  gap: var(--space-2);
 }

@@ -1,5 +1,7 @@
 export type ModDistribution = {
+  managerUrl: string;
+  managerFileName: string;
   mostUrl: string | null;
-  downloadUrl: string;
-  fileName: string;
+  packagesUrl: string;
+  packagesFileName: string;
 };

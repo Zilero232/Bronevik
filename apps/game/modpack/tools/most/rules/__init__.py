@@ -31,7 +31,7 @@ VERSION = re.compile(r'^\d+\.\d+\.\d+$')
 # At most 3 screenshots in a publication (SOURCES['publication_rules']); a preview must exist (MOST shows
 # an image and a video per mod, SOURCES['most_topic']).
 MAX_SCREENSHOTS = 3
-# 16:9 like the installer previews; МОСТ publishes no size (SOURCES['ours']).
+# 16:9 like the manager previews; МОСТ publishes no size (SOURCES['ours']).
 PREVIEW_SIZES = ((1280, 720), (640, 360))
 # The МОСТ interface is Russian and Belarusian (SOURCES['most_topic']); ru is required, en is for our site.
 REQUIRED_LANGUAGES = ('ru',)

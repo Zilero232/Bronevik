@@ -46,6 +46,7 @@ features/
 ├── armor/         # armor-inspect
 ├── auth/          # lesta-link
 ├── community/     # api-error, comments, contact-player, form-dialog, guide-meta, markdown, player-stats, replay-meta, report-content, stat-requirements, tactic-board-settings, tournament-status
+├── mod/           # open-in-manager
 ├── notifications/ # inbox-bell, notification-settings
 ├── player/        # toggle-favorite, watch-player
 ├── plus/          # plus-gate
@@ -90,7 +91,7 @@ widgets/
 └── tank/     # tank-best-battles, tank-math
 ```
 
-`views/` does not group by domain — the 86 route screens sit directly in it:
+`views/` does not group by domain — the 87 route screens sit directly in it:
 
 | Area | Views |
 |---|---|
@@ -105,7 +106,7 @@ widgets/
 | community | `social-feed`, `leagues`, `challenges`, `replays`, `replay`, `tactics`, `tactic-board`, `guides`, `guide`, `guide-editor`, `platoons`, `recruiting`, `coaching`, `coach`, `tournaments`, `tournament`, `competitions`, `competition` |
 | streamers | `streamers-directory`, `streamer`, `streamer-claim`, `streamer-settings`, `streamers-settings`, `streamers-settings-compare`, `streamer-studio`, `for-streamers`, `overlay`, `twitch-panel` |
 | developers | `developers`, `developer-cabinet` |
-| game mod | `mod` |
+| game mod | `mod`, `mod-profile` |
 | mini apps (Telegram and VK) | `mini-app` |
 
 ## 3. Public API
@@ -161,7 +162,7 @@ A file that has companions — `x.ts` with `x.types.ts`, `x.constants.ts`, `x.sc
 
 `shared/lib/` is flat, one folder per concern, the same layout GnomeVPN and Chatovo use: pure helpers as `shared/lib/<concern>/`, hooks as `shared/lib/use-<x>/` (`use-hydrated`, `use-reveal-once`, `use-client-now`). The `use-` prefix is what separates the two; there is no `hooks/` or `utils/` grouping folder. `shared/constants/` is the same — `routes/`, `site-nav/`, `account-nav/`, `query-keys/`, `storage-keys/`, each with its `index.ts`.
 
-`ROUTES` is nested by page family: `ROUTES.players.{list, profile(nick), session({ nickname, sessionId }), signature(nick), compare}`, `ROUTES.tanks.{list, detail, armor, compare}`, `ROUTES.guides.{list, detail, create, edit}`, `ROUTES.streamers.{list, profile, claim, overlay, forStreamers, settings.{table, compare, profile}}`, `ROUTES.auth.{login, loginNext, telegram}`, `ROUTES.missions.{hub, operation}`, `ROUTES.legal.{privacy, terms, contacts}`, `ROUTES.account.{overview, analytics, analyticsTank(id), battles, …}`, `ROUTES.api.{playerCard, siteCard}`, `ROUTES.sw`. Single pages stay flat (`ROUTES.top`, `ROUTES.tree`, `ROUTES.supertest`, `ROUTES.mod`).
+`ROUTES` is nested by page family: `ROUTES.players.{list, profile(nick), session({ nickname, sessionId }), signature(nick), compare}`, `ROUTES.tanks.{list, detail, armor, compare}`, `ROUTES.guides.{list, detail, create, edit}`, `ROUTES.streamers.{list, profile, claim, overlay, forStreamers, settings.{table, compare, profile}}`, `ROUTES.auth.{login, loginNext, telegram}`, `ROUTES.missions.{hub, operation}`, `ROUTES.legal.{privacy, terms, contacts}`, `ROUTES.account.{overview, analytics, analyticsTank(id), battles, …}`, `ROUTES.api.{playerCard, siteCard}`, `ROUTES.sw`. Single pages stay flat (`ROUTES.top`, `ROUTES.tree`, `ROUTES.supertest`, `ROUTES.mod`, `ROUTES.modProfile`).
 
 A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `index.ts` and nested `components/` (plus `.motion.ts` / `.variants.ts`); never `*.helpers.ts`, `*.utils.ts`, `*.constants.ts` or `hooks/`. One component per folder; a `ui/` root is either one flat main component plus `components/`, or a folder per exported component — never a flat component beside sibling folders. Full rules: [guides/client/slice-ui.md §2](../guides/client/slice-ui.md).
 

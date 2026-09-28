@@ -3,6 +3,7 @@
 import { Check, Copy, Download, GitCompareArrows } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { OpenInManager } from '@/features/mod/open-in-manager';
 import { ApplySettings } from '@/features/streamer/apply-settings';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
@@ -30,6 +31,7 @@ export const SettingsActions = ({ view }: SettingsActionsProps) => {
         {t('download')}
       </Button>
       <ApplySettings settings={view.settings} slug={view.slug} />
+      <OpenInManager target={STREAMER_SETTINGS_PAGE.managerTarget} />
       <Link
         className={buttonVariants({ variant: 'ghost', size: 'sm' })}
         href={{ pathname: ROUTES.streamers.settings.compare, query: { a: view.slug } }}

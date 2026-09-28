@@ -82,6 +82,7 @@ export const ROUTES = {
     contacts: '/contacts'
   },
   mod: '/mod',
+  modProfile: '/mod/profile',
   plus: '/plus',
   replays: {
     list: '/replays',

@@ -107,12 +107,12 @@ apps/game/modpack/
   ui-web/                   source of the Gameface page and hangar button (preact, nanostores, zod/mini, clsx, SCSS modules; Vite)
   tools/
     build/                  build.py (CLI), layout.py (what goes where), archive.py (zip + meta.xml), compilers.py,
-                            setupkit/ (the installer build: components.json, Inno includes, artwork, OpenWG.Utils)
+                            setupkit/ (the component catalogue build: components.json + previews for the manager and МОСТ)
     vendor/vendor.py        re-vendors packages/core/vendor from the pinned PyPI wheels (sha256); --check compares
     testing/_support.py     maps the repo onto the otmetki package; fixtures, schema validators
     tests/                  cross-package tests: py2.7 compat scan, layout, client import smoke
     run_tests.py            runs every suite with the standard library only (also on Python 2.7)
-  installer/                Windows installer: Inno Setup 6.7 + OpenWG.Utils, component catalog, tests (installer/README.md)
+  catalog/                  the component catalogue: catalog.json (titles, presets, fair-play notes), previews/, screenshots/ (catalog/README.md)
 ```
 
 Every package keeps its tests in its own `tests/` folder. The build leaves `tests/` out and moves `entry/` scripts to `gui/mods/`.
@@ -353,7 +353,7 @@ Package `packages/ui` (`net.triotmetki.ui`, depends on core and companion; regis
 - **Bridge (pure, `ui/bridge`):** `SettingsBridge.state()` and `handle(message)`; the glue only moves JSON. Messages: `ready`, `close`, `set {component, key, value}`, `action {component, action, row?, value?}`, `language`, `bind {code}`, `open {path}` (site-relative paths only, joined to the site next to `server_url`), `profile_save/load/rename/delete/export/import`, `hud_edit {active}`, `hud_move {panel, x, y, align_x?, align_y?}`, `hud_reset {panel}`. A test checks the command list against `ui-web/src/shared/api/protocol`, and the page's zod schema parses a state fixture the Python tests write (`OTMETKI_UPDATE_FIXTURES=1` regenerates it).
 - **Cards (`ui/components`):** the companion's data switches (`COMPANION_KEYS`) first, then every attached feature, then HUD panels no feature claims. A page row may carry `details: [{label, value}]`; the page shows them behind a «Подробнее» toggle (the battle summaries and the marks history use it). A card's switch is the feature's config.json switch (`settings.SETTINGS`); its fields come from its components.json section (`settings.SCHEMA`) or its companion keys; field type, limits and choices are derived from the `Schema` (bool, int with min/max, choice, text). Panel position keys (`x`, `y`, `align_*`, `drag`) are left to the HUD editor. A feature instance may add buttons and a list page with duck-typed `ui_actions()`, `ui_page()` and `ui_action(action, row, value)` (the replay manager and hangar tweaks do). Group: `GROUP` in the feature's settings (`data`, `hangar`, `battle`).
 - **Labels:** from the shared catalog, most specific first: `component_<id>` / `component_<id>_hint`; field `<id>_<key>`, `setting_<key>`, then the bare key (the companion labels its switches that way); hints with `_hint`; choices `<id>_<key>_<value>`, then `choice_<value>`. A feature adds these to its `i18n` STRINGS.
-- **Profiles (`ui/profiles`):** `mods/configs/otmetki/profiles.json` `{version: 1, active, profiles: [{id, name, created, updated, data: {config, components}}]}`, at most 12. `data.config` is config.json without `server_url`, `bind_code`, `settings_action`; `data.components` is the whole components.json (sections of components that are not installed included: they are stored as is and merged through their schema once installed). The installer reads and writes the same file. Profile codes `TM1.<base64url(zlib(json))>` copy a profile between players. **Site sync is not wired:** the settings-share contract (`contract/settings.schema.json`) is a strict whitelist of standard client settings and excludes mods by design, so syncing profiles to the site needs its own contract and endpoint.
+- **Profiles (`ui/profiles`):** `mods/configs/otmetki/profiles.json` `{version: 1, active, profiles: [{id, name, created, updated, data: {config, components}}]}`, at most 12. `data.config` is config.json without `server_url`, `bind_code`, `settings_action`; `data.components` is the whole components.json (sections of components that are not installed included: they are stored as is and merged through their schema once installed). The manager reads and writes the same file. Profile codes `TM1.<base64url(zlib(json))>` copy a profile between players. **Site sync is not wired:** the settings-share contract (`contract/settings.schema.json`) is a strict whitelist of standard client settings and excludes mods by design, so syncing profiles to the site needs its own contract and endpoint.
 - **HUD edit mode:** the window's editor draws the screen (the client size from `viewEnv.getClientSizePx()`) with every registered panel from `hud_layer(app).panels`; dragging (or the arrow keys) sends `hud_move` with the nearest anchor (`align_x`/`align_y` by screen third), throttled to 150 ms, and the bridge writes it through `hud_layer(app).update_settings`, so a shown panel moves live. «Edit on screen» emits `hud_edit(True)` on the bus and closes the window: every HUD panel (damage log, hit log, clock, team HP, sixth sense) shows itself with preview data in the hangar when its switch is on, and GUIFlash lets the player drag it (Ctrl); `hud_edit(False)` (hotkey, window reopened, battle) hides the previews, and a panel's own battle start ends its preview. `hud_describe(collect)` asks panels for the editor's miniature: `collect(panel_id, preview=None, width=None, height=None)`. A panel answers both through `core.hud.HudPreview(layer, panel_id, render_preview, is_enabled, can_show, size).attach(app.bus)`; its preview text comes from the feature's pure `model/preview.py`.
 - **Look:** the site's design v4 tokens from `@otmetki/design-tokens` (`packages/design-tokens`, the same SCSS maps the site emits as CSS variables), dark theme. Each component has its own SCSS module (`<Component>.module.scss`, classes named `otmetki-<Component>__<class>`); `token(name)` from `src/shared/styles/_gameface.scss` inlines the static value, so the CSS carries no `var()`. Lengths are written in px and shipped as rem (`postcss-pxtorem`, 1rem = 1px of the design, because Gameface scales rem); esbuild's CSS minifier lowers `rgb(r g b / a)` to `rgba()` for `chrome58`. The «///» mark (header, hangar button) is `LOGO_SHAPES` from `@otmetki/icons/shapes`; the ModsList `icon.png` is the same mark on the tile colours, rasterised at build time with resvg.
 - **Code layout (`ui-web/src`, feature-sliced):** `app/` the two entries and the dev mock (`app/settings/main.tsx` and `app/button/main.tsx` are one line each: `onDomReady(() => mountOnce({ id, node }))`; `app/settings/ui/App` with its `use-app` hook subscribes to the bridge and picks the section); `widgets/` the window's blocks (`header`, `sidebar`, `component-card` with its fields and list page, `profiles`, `hud-editor` with `lib/geometry`, `notice`); `features/hangar-button`; `entities/window-state` (the nanostores store, `setSetting`/`toggleSwitch`, `useT`); `shared/` (`api/gameface`: the one typed adapter over the Gameface globals `model`, `engine`, `viewEnv`, `subViews`, plus `api/gameface/mock`; `api/protocol`: zod/mini schemas, inferred types, `parseState`, `send`; `i18n`; `lib/dom` (`onDomReady`, `mountOnce`), `lib/throttle`, `lib/clamp-int`, `lib/testing/render-hook`; `ui/` the kit: button, input, toggle, segmented, card, confirm, action bar, div-based list and detail list). Components only render; state, handlers and derived values come from each slice's `model/hooks/use-*`, constants from its `config/`.
@@ -542,7 +542,7 @@ Lint and extra checks:
 
 ## Install (players)
 
-The installer `otmetki-setup-<version>.exe` finds the client, offers presets and profiles, backs up the mod folders and can roll back: see [installer/README.md](installer/README.md). By hand:
+The modpack manager ([apps/game/manager](../manager/README.md), `otmetki-manager-setup.exe` from triotmetki.ru/mod) finds the client, offers presets and profiles, backs up the mod folders, can roll back and moves the modpack after a client patch. By hand:
 
 1. Copy the packages into `<game>/mods/<client version>/`: `net.triotmetki.core_<v>.mtmod`, `otmetki.companion_<v>.mtmod` and the features you want, or the single `otmetki.<v>.mtmod`. Do not mix the single package with the split ones.
 2. Optional: install ModsSettingsAPI (izeberg) with ModsList (poliroid) and OpenWG Gameface to get the settings window and binding UI. ModsList master needs WG 2.4.1+; on Lesta use a release that supports the client. Without them, edit `mods/configs/otmetki/config.json`.
@@ -578,13 +578,13 @@ The device secret is stored in plain text in `credentials.json` (and its durable
 | `credentials.json` | companion (binding)               | `{accounts: {<account id>: {device_id, secret, account_id, bound_at}}}` |
 | `config.json`      | companion (every settings change) | switches and data settings (table above)                                |
 | `components.json`  | core HUD / every component        | one schema-checked section per component                                |
-| `profiles.json`    | ui (profiles), installer          | `{version: 1, active, profiles: [...]}` (see [In-game UI](#in-game-ui)) |
+| `profiles.json`    | ui (profiles), manager            | `{version: 1, active, profiles: [...]}` (see [In-game UI](#in-game-ui)) |
 | `state.json`       | companion (`app.save_state()`)    | the app's small state parts                                             |
 | `saved_at.json`    | both sides, one per folder        | `{version: 1, files: {<name>: <unix seconds of the last save>}}`        |
 
 - **Where:** `%APPDATA%\TriOtmetki\` (Windows: `os.environ['APPDATA']`; on Python 2 a value the ANSI code page cannot hold is re-read through `GetEnvironmentVariableW`). Without `APPDATA`: `~\AppData\Roaming\TriOtmetki` on Windows, `~/.config/TriOtmetki` elsewhere; without a home folder the mirror is off and plain `mods/configs/otmetki` files are used. Paths are text on both Pythons, so a Cyrillic user or game folder works.
 - **Write-through:** every save writes `mods/configs/otmetki/<name>`, then the `%APPDATA%` copy, with the same stamp in each folder's `saved_at.json` and as the file's mtime. A failing `%APPDATA%` write never fails the save.
-- **Restore on load:** each read compares the two copies. A copy's stamp is the later of its `saved_at.json` entry and its mtime, so a hand edit or the installer's write counts as a save. The game-folder copy is rewritten from `%APPDATA%` when it is missing, unreadable or older; the `%APPDATA%` copy is rewritten when it is missing or older; on a tie (within 10 ms) the game-folder copy wins. The newer copy always survives.
+- **Restore on load:** each read compares the two copies. A copy's stamp is the later of its `saved_at.json` entry and its mtime, so a hand edit or the manager's write counts as a save. The game-folder copy is rewritten from `%APPDATA%` when it is missing, unreadable or older; the `%APPDATA%` copy is rewritten when it is missing or older; on a tie (within 10 ms) the game-folder copy wins. The newer copy always survives.
 - **Credentials:** owner-only mode (`0600`) where the platform has it; on Windows the per-user ACL of `%APPDATA%` is what protects them. The device secret stays revocable on the site.
 - **Not mirrored:** outboxes, replay queues, the marks history and the settings backup (per account, rebuilt or re-sent).
 - **For the manager app:** it reads the same files from `%APPDATA%\TriOtmetki`. When it writes one, it writes the whole JSON file atomically (temp file + rename) and sets the file's entry in that folder's `saved_at.json` to the current unix time; the mod picks the newer copy up at the next client start. The folder is shared by every client installation of the Windows user.
@@ -601,22 +601,22 @@ bun run most:bundle --game-version 1.45.0.0                # uv run python tools
 python tools/most --game-version 1.45.0.0 --only companion marks_panel --strict
 ```
 
-| Option                      | Meaning                                                                                                    |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `--game-version` (required) | Client version, `X.Y.Z.W`: the forum title prefix and the `mods/<version>/` folder in the install text     |
-| `--packages`, `--out`       | Split packages (default `dist`) and the bundle folder (default `dist/most`)                                |
-| `--release`                 | `.py` sources in a package are an error (the production client loads only `.pyc`)                          |
-| `--changelog`               | Default `CHANGELOG.md`: `## <id> <version>` entries, or `## <version>` for every component at that version |
-| `--only ID ...`             | Bundle some components; a left-out dependency is a warning                                                 |
-| `--skip-images`, `--strict` | No preview rendering; fail on warnings too                                                                 |
+| Option                      | Meaning                                                                                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--game-version` (required) | Client version, `X.Y.Z.W`: the forum title prefix and the `mods/<version>/` folder in the install text                                               |
+| `--packages`, `--out`       | Split packages (default `dist`) and the bundle folder (default `dist/most`)                                                                          |
+| `--release`                 | `.py` sources in a package are an error (the production client loads only `.pyc`)                                                                    |
+| `--changelog`               | Default `CHANGELOG.md`: `## <id> <version>` entries, or `## <version>` for every component at that version; each with `### ru` and `### en` sections |
+| `--only ID ...`             | Bundle some components; a left-out dependency is a warning                                                                                           |
+| `--skip-images`, `--strict` | No preview rendering; fail on warnings too                                                                                                           |
 
 For every component, `dist/most/<id>/` gets the following. `dist/most/index.json` lists every component and its findings, each with the URL of the rule it comes from (`tools/most/rules`).
 
 - the unchanged `.mtmod` and its extracted `meta.xml`;
 - `previews/preview-1280x720.png` and `preview-640x360.png`, rendered from the catalog SVG through setupkit's resvg renderer (needs `uv sync`; without it the SVG is copied and a warning is printed);
-- `screenshots/`, copied from `installer/assets/screenshots/<id>/` (at most 3);
-- `description.ru.md` / `description.en.md`, built from the catalog texts, the fair-play note, the data note and the dependencies;
-- `changelog.md`;
+- `screenshots/`, copied from `catalog/screenshots/<id>/` (at most 3);
+- `description.ru.md` / `description.en.md`, built from the catalog texts, the fair-play note, the data note, the dependencies and the changelog text in the same language (the Russian page falls back to the English text only when an entry has no `### ru`);
+- `changelog.md`, the entry with both language sections;
 - `submission.json`, with the forum titles, the dependency list, sha256 and size.
 
 The checks:
@@ -631,13 +631,13 @@ The checks:
 
 The tool is Python 3 only (it reuses `tools/build` and setupkit). Its tests live in `tools/most/*/tests` and are skipped on Python 2.7.
 
-The companion's `meta.xml` id stays `otmetki.companion` forever, so a new version replaces the old one. Bump `VERSION` on every release. Every `VERSION` bump adds a `## <id> <version>` entry to [CHANGELOG.md](CHANGELOG.md) (a test checks every catalogued component).
+The companion's `meta.xml` id stays `otmetki.companion` forever, so a new version replaces the old one. Bump `VERSION` on every release. Every `VERSION` bump adds a `## <id> <version>` entry with `### ru` and `### en` sections to [CHANGELOG.md](CHANGELOG.md) (a test checks every catalogued component and both languages).
 
 ## Verified and not verified
 
 **Verified on the development machine (Python 3.12, 2026-09-27):**
 
-- 434 tests under pytest (425 passed, 9 skipped without ISCC) and 427 in the stdlib runner, including schema validation with `jsonschema`. The stdlib runner also passes on Python 2.7.18 (a portable build, 390 tests without the build tool's own);
+- the pytest and stdlib-runner suites, including schema validation with `jsonschema`. The stdlib runner also passes on Python 2.7.18 (a portable build, 390 tests without the build tool's own);
 - the thread transport works against a real local HTTP server;
 - `vermin` confirms the sources are 2.7-compatible;
 - `tools/build/build.py` with a Python 2.7 interpreter produces valid stored zips with `.pyc`, for every package and for `--single`;

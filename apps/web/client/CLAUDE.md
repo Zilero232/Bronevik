@@ -12,15 +12,15 @@ Architecture is **Feature-Sliced Design** with two local tweaks: `pages` → `vi
 app/          # Next.js routes — [locale]/{(site),(overlay),(tma)}, api/og, opengraph-image.tsx per entity route,
               #   sitemap.ts, robots.ts, manifest.ts, sw.ts + serwist/[path] (service worker), twitch-panel/ (route
               #   handler for the Twitch extension), providers, global-error
-views/        # one screen per route (86), e.g. home, player-profile, tank, tanks, marks, my-analytics, missions,
-              #   mission-operation, best-battles, achievements, supertest, honest-rng, mod, legal, plus, streamer-studio
+views/        # one screen per route (87), e.g. home, player-profile, tank, tanks, marks, my-analytics, missions,
+              #   mission-operation, best-battles, achievements, supertest, honest-rng, mod, mod-profile, legal, plus, streamer-studio
               #   — the full grouped list is in docs/architecture/fsd.md §2
 widgets/      # account/account-shell, armor/armor-viewer, map/map-rotation, player/session-detail,
               #   showcase/showcase-3d, site/{resource-missing,site-footer,site-header}, social/social-shell, streamer/streamers-hub,
               #   tank/{tank-best-battles,tank-math}
 features/     # app/{rating-palette,rating-patterns,switch-locale,switch-theme}, armor/armor-inspect, auth/lesta-link,
               #   community/{api-error,comments,contact-player,form-dialog,guide-meta,markdown,player-stats,replay-meta,
-              #   report-content,stat-requirements,tactic-board-settings,tournament-status},
+              #   report-content,stat-requirements,tactic-board-settings,tournament-status}, mod/open-in-manager,
               #   notifications/{inbox-bell,notification-settings}, player/{toggle-favorite,watch-player}, plus/plus-gate,
               #   search/{command-palette,pick-entity}, stats/select-period, streamer/{apply-settings,claim-profile,follow-streamer},
               #   tank/{filter-vehicles,pick-tank}

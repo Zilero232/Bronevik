@@ -1,0 +1,1 @@
+export { OpenInManager } from './OpenInManager';

@@ -1,6 +1,6 @@
 # Three Marks modpack manager
 
-A Windows desktop app that installs and looks after the «Мир танков» modpack of [apps/game/modpack](../modpack/README.md). It replaces the Inno Setup installer (`apps/game/modpack/installer`): same client detection, the same component catalogue (`components.json`), presets, profiles, snapshots and state layout, plus what an installer cannot do — switching components on and off without reinstalling, and moving the modpack into the new `mods\<version>` folder by itself after a game patch.
+A Windows desktop app that installs and looks after the «Мир танков» modpack of [apps/game/modpack](../modpack/README.md). It replaced the Inno Setup installer (removed from the repo; installs it made are still picked up): same client detection, the same component catalogue (`components.json`), presets, profiles, snapshots and state layout, plus what an installer cannot do — switching components on and off without reinstalling, and moving the modpack into the new `mods\<version>` folder by itself after a game patch.
 
 Tauri 2: the Rust core in [`tauri/`](tauri), the React UI in [`web/`](web). Bun workspace `@otmetki/manager`.
 
@@ -55,9 +55,9 @@ Closing the window hides it to the tray (menu: open, check for updates, quit). A
 
 `%ProgramData%\Lesta\GameCenter\data\lgc_path.dat` → the Lesta Game Center folder → `preferences.xml` (every `working_dir`, the selected one under `selectedGames`) → each client folder: `version.xml` (`v.1.45.0.0 #…` and the realm), `paths.xml` (`Packages/Root` = the mods folder, the `res_mods` path, the package mask), `game_info.xml` (`.RPT.` = common test), `Tanki.exe`. Only Lesta clients 1.35+ are usable; WG and older clients are listed with the reason. A folder picked by hand is remembered in the settings.
 
-### State (`tauri/src/state`, `snapshots`, `install`) — the installer's layout
+### State (`tauri/src/state`, `snapshots`, `install`) — the old installer's layout
 
-`%LOCALAPPDATA%\TriOtmetki\clients\<key>\` with `key` = the first 16 hex characters of SHA-256 over the UTF-16LE of the ASCII-lowercased client path (exactly the installer's `OtmClientKey`), so installs made by the Inno installer are picked up as they are:
+`%LOCALAPPDATA%\TriOtmetki\clients\<key>\` with `key` = the first 16 hex characters of SHA-256 over the UTF-16LE of the ASCII-lowercased client path (exactly the removed Inno installer's `OtmClientKey`), so installs it made are picked up as they are:
 
 | File                         | What                                                                                                                                                                                                                          |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -78,7 +78,7 @@ Every write follows the mod's durable-settings contract ([modpack README «Durab
 
 ### Components catalogue
 
-`components.json` from `tools/build/setupkit` (schema in the [installer README](../modpack/installer/README.md#componentsjson)). The manager reads the newer of `%LOCALAPPDATA%\TriOtmetki\manager\components.json` (downloaded with a release, checked by sha256) and `resources\components.json` shipped with the app (CI copies the real one there; the committed file is an empty placeholder). Previews are read from `previews\` next to whichever catalogue won.
+`components.json` from `tools/build/setupkit` over [apps/game/modpack/catalog](../modpack/catalog/README.md) (schema in its [README](../modpack/catalog/README.md#componentsjson)). The manager reads the newer of `%LOCALAPPDATA%\TriOtmetki\manager\components.json` (downloaded with a release, checked by sha256) and `resources\components.json` shipped with the app (CI copies the real one there; the committed file is an empty placeholder). Previews are read from `previews\` next to whichever catalogue won.
 
 ### Patches and updates (`tauri/src/patch`, `service/check.rs`, `background`)
 
@@ -134,7 +134,7 @@ The server side is `apps/web/server/src/modules/modpack-releases`: it reads the 
 
 `tauri-plugin-updater` asks `GET https://api.triotmetki.ru/modpack/manager/update?target=windows&arch=x86_64&current=<version>` (the same module): 204 when current, otherwise Tauri's dynamic-update JSON `{version, notes, pub_date, url, signature}` from the index's `manager` block. «О программе» checks and installs it (NSIS, passive), then restarts. The update archive is verified against the minisign public key in `tauri.conf.json` (`plugins.updater.pubkey`); the private key is `%USERPROFILE%\.tauri\otmetki-manager.key` on the owner's machine and must be stored as the `TAURI_SIGNING_PRIVATE_KEY` repository secret (empty password).
 
-**Unsigned code.** The exe and the installer are not Authenticode-signed (DigiCert/Sectigo do not issue to Russian entities; see the [installer README «Unsigned builds»](../modpack/installer/README.md#unsigned-builds)). SmartScreen shows «Windows защитила ваш компьютер» on the first run of each new file. The minisign signature protects the update channel only; it does not make SmartScreen happy. Mitigations: publish sha256 next to the download, no packers, report false positives to Kaspersky / Dr.Web / Microsoft.
+**Unsigned code.** The exe and the installer are not Authenticode-signed (DigiCert and Sectigo do not issue certificates to Russian entities, Azure Artifact Signing is unavailable in Russia, and SignPath's free tier is for fully open-source projects). SmartScreen shows «Windows защитила ваш компьютер» on the first run of each new file. The minisign signature protects the update channel only; it does not make SmartScreen happy. Mitigations: publish sha256 next to the download, no packers, report false positives to Kaspersky / Dr.Web / Microsoft.
 
 ### Deep links
 
@@ -146,7 +146,7 @@ The NSIS installer registers the `triotmetki://` scheme (`tauri-plugin-deep-link
 | `triotmetki://profile/TM1.<code>`  | opens «Профили» with the code filled into «Импорт по коду»; the player confirms the import                                     |
 | `triotmetki://install?preset=<id>` | opens the install wizard with that preset (`recommended`, `minimal`, `streamer`, …; unknown ids fall back to the first preset) |
 
-Anything else is ignored. Links are parsed in Rust (`tauri/src/deep_link`, tested), queued for a window that is not ready yet, and routed by the UI (`app/model/hooks/use-app-sync`).
+Anything else is ignored. The site builds these links in `apps/web/client/features/mod/open-in-manager` («Открыть в менеджере» on the streamer settings pages and the `/mod/profile#TM1.<code>` share page) and shows a hint to install the manager when nothing opens. Links are parsed in Rust (`tauri/src/deep_link`, tested), queued for a window that is not ready yet, and routed by the UI (`app/model/hooks/use-app-sync`).
 
 ### Logs
 
@@ -160,9 +160,9 @@ Anything else is ignored. Links are parsed in Rust (`tauri/src/deep_link`, teste
 
 ## Releases (manual for now)
 
-1. Build the modpack release (`modpack.yml`, manual run) and take `components.json` from the installer job; copy it (and `build/previews`) into `tauri/resources/` for the manager build, or publish it and reference it as the release `catalog`.
+1. Build the modpack release (`modpack.yml`, manual run) and take the `modpack-catalog` artifact (`components.json` + `previews/`, the same as `bun run build:catalog` in apps/game/modpack); copy it into `tauri/resources/` for the manager build, or publish it and reference it as the release `catalog`.
 2. Upload the `.mtmod` packages to the CDN, add the release to the index (`MODPACK_RELEASES_URL` or `assets/releases.json`) with sha256 and sizes.
-3. Run `manager.yml` manually: the `modpack-manager` artifact holds the NSIS installer and its `.sig`. Upload the installer, put its URL and the `.sig` contents into the index's `manager` block.
+3. Run `manager.yml` manually: the `modpack-manager` artifact holds the NSIS installer and its `.sig`. Upload the installer, put its URL and the `.sig` contents into the index's `manager` block, and publish the same installer as `https://triotmetki.ru/downloads/otmetki-manager-setup.exe`: the site's /mod page links there (`MOD_DISTRIBUTION.managerUrl` in `apps/web/client/shared/config/site`).
 
 ## Not verified yet
 

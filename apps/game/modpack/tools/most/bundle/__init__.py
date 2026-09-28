@@ -4,9 +4,9 @@
     dist/most/<id>/<package id>_<v>.mtmod  the release package, unchanged
     dist/most/<id>/meta.xml                its meta.xml, extracted for review
     dist/most/<id>/previews/*.png          preview images (rules.PREVIEW_SIZES)
-    dist/most/<id>/screenshots/*           client screenshots from installer/assets/screenshots/<id>/
+    dist/most/<id>/screenshots/*           client screenshots from catalog/screenshots/<id>/
     dist/most/<id>/description.ru.md       mod page texts (en too)
-    dist/most/<id>/changelog.md            this version's CHANGELOG.md entry
+    dist/most/<id>/changelog.md            this version's CHANGELOG.md entry (### ru, ### en)
     dist/most/<id>/submission.json         forum titles, dependencies, file hash and size, findings
 """
 import hashlib
@@ -16,7 +16,7 @@ import os
 import shutil
 
 import layout
-from setupkit import ASSETS_DIR, CATALOG_PATH
+from setupkit import ASSETS_DIR, CATALOG_DIR, CATALOG_PATH
 from setupkit.manifest import catalog as catalog_module
 from setupkit.manifest.catalog import CatalogError
 from setupkit.manifest.generate import ManifestError, build_manifest
@@ -25,7 +25,7 @@ from most import previews, texts
 from most.package import check_package, read_package
 from most.rules import GAME_VERSION, LANGUAGES, SOURCES, UPDATE_DAYS, Findings
 
-SCREENSHOTS_DIR = os.path.join(ASSETS_DIR, 'screenshots')
+SCREENSHOTS_DIR = os.path.join(CATALOG_DIR, 'screenshots')
 INDEX = 'index.json'
 
 
@@ -52,7 +52,7 @@ def _write_json(path, value):
 
 
 def load_manifest(packages_dir, packages=None, catalog_path=CATALOG_PATH, assets_dir=ASSETS_DIR):
-    """(manifest, layout packages by key): the installer's manifest over the built packages."""
+    """(manifest, layout packages by key): the catalogue's manifest over the built packages."""
     packages = packages if packages is not None else layout.split_packages('root_init.py')
     try:
         catalog = catalog_module.load(catalog_path, assets_dir)
@@ -96,7 +96,7 @@ def bundle_component(component, manifest, catalog, package, options, out_dir):
     for language in LANGUAGES:
         _write_text(os.path.join(target, 'description.%s.md' % language),
                     texts.description(component, manifest, language, options['game_version'], changes))
-    _write_text(os.path.join(target, 'changelog.md'), '## %s %s\n\n%s\n' % (component.id, component.version, changes or ''))
+    _write_text(os.path.join(target, 'changelog.md'), texts.changelog_markdown(component, changes))
     missing = [key for key in component.dependencies if key not in options['selected']]
     if missing:
         findings.warn(component.id, 'depends on %s, which this bundle leaves out: they must already be in MOST' % ', '.join(missing), 'ours')

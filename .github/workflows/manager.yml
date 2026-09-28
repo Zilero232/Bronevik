@@ -1,7 +1,8 @@
 name: manager
 
 # The modpack manager (apps/game/manager): a Tauri 2 desktop app, Rust core in tauri/, React UI in web/.
-# It replaces the Inno Setup installer of apps/game/modpack/installer.
+# It is how players install the modpack (the Inno Setup installer it replaced is gone); its catalogue
+# (components.json + previews) comes from the `modpack-catalog` artifact of modpack.yml.
 #
 # checks  pull requests that touch the manager, the packages its UI reads, or this file; manual runs.
 #         Windows, like the players: the UI typecheck and its Vitest project, then cargo fmt, clippy and

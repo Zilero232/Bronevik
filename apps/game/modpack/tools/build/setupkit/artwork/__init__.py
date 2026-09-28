@@ -1,1 +1,1 @@
-"""SVG -> the installer's wizard images, icon and component previews."""
+"""SVG -> the component previews next to components.json."""

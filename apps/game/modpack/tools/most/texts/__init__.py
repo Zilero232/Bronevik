@@ -1,7 +1,8 @@
 """The texts of a submission: ru/en descriptions, the forum topic title, the changelog and the dependency list.
 
-Everything comes from installer/catalog/catalog.json (through the setupkit manifest) and CHANGELOG.md, so
-the installer, the site and МОСТ describe a component with the same words.
+Everything comes from catalog/catalog.json (through the setupkit manifest) and CHANGELOG.md, so the
+manager, the site and МОСТ describe a component with the same words. A CHANGELOG.md entry carries one
+`### ru` and one `### en` section; an entry without them counts as the same text in both languages.
 """
 import io
 import os
@@ -43,6 +44,7 @@ LABELS = {
 DATA_CATEGORY = 'data'
 DATA_COMPONENTS = ('companion',)
 HEADING = re.compile(r'^##\s+(?:(?P<id>[a-z][a-z0-9_]*)\s+)?v?(?P<version>\d+\.\d+\.\d+)\s*$')
+LANGUAGE_HEADING = re.compile(r'^###\s+(?P<language>%s)\s*$' % '|'.join(LANGUAGES))
 
 
 def forum_title(game_version, component, language='ru'):
@@ -50,8 +52,26 @@ def forum_title(game_version, component, language='ru'):
     return '[%s] %s — %s' % (game_version, MODPACK_TITLE[language], getattr(component.title, language))
 
 
+def _entry_texts(lines):
+    """{language: text} of one entry: its `### ru` / `### en` sections, else the whole text for every language."""
+    sections = {}
+    language = None
+    for line in lines:
+        match = LANGUAGE_HEADING.match(line)
+        if match:
+            language = match.group('language')
+            sections.setdefault(language, [])
+        else:
+            sections.setdefault(language, []).append(line)
+    untagged = '\n'.join(sections.pop(None, [])).strip()
+    if not sections:
+        return dict((language, untagged) for language in LANGUAGES) if untagged else {}
+    texts = dict((language, '\n'.join(body).strip()) for language, body in sections.items())
+    return dict((language, text) for language, text in texts.items() if text)
+
+
 def parse_changelog(text):
-    """{(component id or None, version): text} from `## <id> <version>` / `## <version>` headings."""
+    """{(component id or None, version): {language: text}} from `## <id> <version>` / `## <version>` headings."""
     entries = {}
     key = None
     lines = []
@@ -59,13 +79,13 @@ def parse_changelog(text):
         match = HEADING.match(line)
         if match or line.startswith('## ') or line.startswith('# '):
             if key is not None:
-                entries[key] = '\n'.join(lines).strip()
+                entries[key] = _entry_texts(lines)
             key = (match.group('id'), match.group('version')) if match else None
             lines = []
         elif key is not None:
             lines.append(line)
     if key is not None:
-        entries[key] = '\n'.join(lines).strip()
+        entries[key] = _entry_texts(lines)
     return entries
 
 
@@ -77,12 +97,29 @@ def load_changelog(path):
 
 
 def changelog_entry(changelog, component):
-    """The component's own entry, else the modpack-wide one for its version, else None."""
+    """{language: text} of the component's own entry, else of the modpack-wide one for its version, else None."""
     for key in ((component.id, component.version), (None, component.version)):
-        text = changelog.get(key)
-        if text:
-            return text
+        texts = changelog.get(key)
+        if texts:
+            return texts
     return None
+
+
+def changes_text(changes, language):
+    """The entry's text in `language`, else in the other language; None without an entry."""
+    if not changes:
+        return None
+    return changes.get(language) or next((changes[other] for other in LANGUAGES if changes.get(other)), None)
+
+
+def changelog_markdown(component, changes):
+    """The component's entry the way CHANGELOG.md holds it: `## <id> <version>`, then a section per language."""
+    lines = ['## %s %s' % (component.id, component.version), '']
+    for language in LANGUAGES:
+        text = (changes or {}).get(language)
+        if text:
+            lines += ['### %s' % language, '', text, '']
+    return '\n'.join(lines)
 
 
 def dependency_list(component, manifest):
@@ -117,7 +154,7 @@ def description(component, manifest, language, game_version, changes):
     else:
         lines.append(labels['no_dependencies'])
     lines += ['', '## %s' % labels['install'], '', labels['install_text'] % (component.file, game_version), '']
-    lines += ['## %s' % labels['changes'], '', changes or labels['no_changes'], '']
+    lines += ['## %s' % labels['changes'], '', changes_text(changes, language) or labels['no_changes'], '']
     lines += ['%s: %s' % (labels['site'], SITE)]
     return '\n'.join(lines) + '\n'
 
@@ -128,7 +165,7 @@ def check_texts(component, changes):
         required = language in REQUIRED_LANGUAGES
         for field in ('title', 'description', 'fair_play'):
             if not getattr(getattr(component, field), language).strip():
-                message = 'no %s %s in installer/catalog/catalog.json' % (language, field)
+                message = 'no %s %s in catalog/catalog.json' % (language, field)
                 if required:
                     findings.error(component.id, message, 'most_topic')
                 else:
@@ -138,4 +175,8 @@ def check_texts(component, changes):
     if not changes:
         findings.warn(component.id, 'no CHANGELOG.md entry for %s (## %s %s or ## %s)' % (
             component.version, component.id, component.version, component.version), 'most_criteria')
+    else:
+        for language in REQUIRED_LANGUAGES:
+            if not changes.get(language):
+                findings.warn(component.id, 'the CHANGELOG.md entry for %s has no ### %s text' % (component.version, language), 'most_topic')
     return findings

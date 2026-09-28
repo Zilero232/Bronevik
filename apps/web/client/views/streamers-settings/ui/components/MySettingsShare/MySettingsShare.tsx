@@ -3,6 +3,7 @@
 import { Download, GitCompareArrows, Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { OpenInManager } from '@/features/mod/open-in-manager';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Button, buttonVariants, Card, CardHeader, ConfirmDialog, QueryState, Skeleton, Switch } from '@/ui-kit';
@@ -34,10 +35,13 @@ export const MySettingsShare = () => {
               <li>{t('steps.hangar')}</li>
               <li>{t('steps.target')}</li>
             </ol>
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm', className: s.install })} href={ROUTES.mod}>
-              <Download size={STREAMERS_SETTINGS_PAGE.iconSize} />
-              {t('installMod')}
-            </Link>
+            <div className={s.install}>
+              <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.mod}>
+                <Download size={STREAMERS_SETTINGS_PAGE.iconSize} />
+                {t('installMod')}
+              </Link>
+              <OpenInManager target={STREAMERS_SETTINGS_PAGE.managerTarget} variant='ghost' />
+            </div>
           </>
         }
         isEmpty={(share) => share === null}

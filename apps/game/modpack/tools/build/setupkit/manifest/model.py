@@ -1,6 +1,6 @@
 """The components manifest model: the hand-written catalog (input) and components.json (output).
 
-components.json is camelCase JSON for the installer build and the future manager app; the catalog uses
+components.json is camelCase JSON for the modpack manager and the МОСТ bundler; the catalog uses
 the same spelling. Plain frozen dataclasses: the tooling runs on a bare Python 3 (tools/run_tests.py).
 """
 import dataclasses
@@ -36,7 +36,7 @@ class Preset:
 
 @dataclass(frozen=True)
 class Preview:
-    """In the catalog `image` is relative to installer/assets; in the manifest, to the manifest's folder."""
+    """In the catalog `image` is relative to catalog/; in the manifest, to the manifest's folder."""
     image: Optional[str] = None
     video: Optional[str] = None
 

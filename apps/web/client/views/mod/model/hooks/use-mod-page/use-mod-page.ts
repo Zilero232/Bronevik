@@ -12,8 +12,6 @@ export const useModPage = () => {
     isSignedIn: Boolean(session),
     isSessionPending: isPending,
     bindHref: session ? ROUTES.account.overview : loginHref,
-    downloadUrl: MOD_DISTRIBUTION.downloadUrl,
-    fileName: MOD_DISTRIBUTION.fileName,
-    mostUrl: MOD_DISTRIBUTION.mostUrl
+    distribution: MOD_DISTRIBUTION
   };
 };

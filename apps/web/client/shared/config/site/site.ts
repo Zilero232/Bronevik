@@ -31,7 +31,9 @@ export const TELEGRAM_BOT = {
 } as const;
 
 export const MOD_DISTRIBUTION: ModDistribution = {
+  managerUrl: 'https://triotmetki.ru/downloads/otmetki-manager-setup.exe',
+  managerFileName: 'otmetki-manager-setup.exe',
   mostUrl: null,
-  downloadUrl: 'https://triotmetki.ru/downloads/otmetki.mtmod',
-  fileName: 'otmetki.mtmod'
+  packagesUrl: 'https://triotmetki.ru/downloads/otmetki.mtmod',
+  packagesFileName: 'otmetki.mtmod'
 };

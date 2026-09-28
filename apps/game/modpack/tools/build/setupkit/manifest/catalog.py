@@ -1,7 +1,7 @@
-"""Reads and checks installer/catalog/catalog.json.
+"""Reads and checks catalog/catalog.json.
 
-Every problem is collected, then reported at once as a CatalogError. Texts become Inno Setup custom
-messages, so braces (Inno constants) and control characters other than a newline are refused.
+Every problem is collected, then reported at once as a CatalogError. Texts are shown by the manager and
+copied into МОСТ pages, so control characters other than a newline are refused.
 """
 import io
 import json
@@ -11,7 +11,7 @@ import re
 from .model import ID_PATTERN, LANGUAGES, Catalog, CatalogEntry, Category, Localized, Preset, Preview
 
 PREVIEW_EXTENSIONS = ('.svg', '.png')
-FORBIDDEN_TEXT = re.compile(r'[{}\x00-\x09\x0b-\x1f]')
+FORBIDDEN_TEXT = re.compile(r'[\x00-\x09\x0b-\x1f]')
 
 
 class CatalogError(ValueError):
@@ -47,7 +47,7 @@ class _Reader(object):
                 self.fail(where, 'missing %s text' % language)
                 text = ''
             if FORBIDDEN_TEXT.search(text):
-                self.fail(where, '%s text has braces or control characters' % language)
+                self.fail(where, '%s text has control characters' % language)
             texts.append(text)
         extra = sorted(set(value) - set(LANGUAGES))
         if extra:
@@ -66,7 +66,7 @@ class _Reader(object):
             if not image.lower().endswith(PREVIEW_EXTENSIONS):
                 self.fail(where, 'preview image must be %s' % ' or '.join(PREVIEW_EXTENSIONS))
             elif not os.path.isfile(os.path.join(self.assets_dir, image)):
-                self.fail(where, 'preview image %s not found in installer/assets' % image)
+                self.fail(where, 'preview image %s not found in catalog/' % image)
         if video is not None and not str(video).startswith('https://'):
             self.fail(where, 'preview video must be an https:// link')
         return Preview(image, video)

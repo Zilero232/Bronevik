@@ -2,14 +2,16 @@
 import io
 import json
 import os
+import re
 import sys
 import unittest
 
 PY3 = sys.version_info[0] >= 3
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 MODPACK_DIR = os.path.dirname(TOOLS_DIR)
-CATALOG = os.path.join(MODPACK_DIR, 'installer', 'catalog', 'catalog.json')
+CATALOG = os.path.join(MODPACK_DIR, 'catalog', 'catalog.json')
 PACKAGE_JSON = os.path.join(MODPACK_DIR, 'package.json')
+CYRILLIC = re.compile(u'[Ѐ-ӿ]')
 if PY3:
     if TOOLS_DIR not in sys.path:
         sys.path.insert(0, TOOLS_DIR)
@@ -41,6 +43,16 @@ class ChangelogTest(unittest.TestCase):
 
     def test_release_entry_for_the_modpack_version(self):
         self.assertTrue(self.changelog.get((None, read_json(PACKAGE_JSON)['version'])))
+
+    def test_every_entry_is_bilingual(self):
+        incomplete = sorted('%s %s' % (key[0] or 'modpack', key[1]) for key, entry in self.changelog.items()
+                            if sorted(entry) != sorted(texts.LANGUAGES))
+        self.assertEqual(incomplete, [])
+
+    def test_russian_texts_are_translations(self):
+        untranslated = sorted('%s %s' % (key[0] or 'modpack', key[1]) for key, entry in self.changelog.items()
+                              if entry.get('ru') == entry.get('en') or not CYRILLIC.search(entry.get('ru', '')))
+        self.assertEqual(untranslated, [])
 
     def test_every_package_is_catalogued(self):
         self.assertEqual(sorted(self.versions), sorted(self.catalogued))

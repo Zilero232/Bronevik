@@ -65,6 +65,7 @@ export type { UseIconFilterInput } from './use-icon-filter';
 export { useImageFallback } from './use-image-fallback';
 export { useLineChartLayout } from './use-line-chart-layout';
 export type { UseLineChartLayoutInput } from './use-line-chart-layout';
+export { useLocationHash } from './use-location-hash';
 export { useOffsetInfiniteList } from './use-offset-infinite-list';
 export type { OffsetInfiniteList, OffsetListFetchInput, OffsetListPage, UseOffsetInfiniteListInput } from './use-offset-infinite-list';
 export { RELATIVE_TIME, useRelativeTime } from './use-relative-time';

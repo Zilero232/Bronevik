@@ -19,7 +19,7 @@ export const MOD_FAIR_PLAY = {
   never: ['enemies', 'reload', 'aim', 'allies', 'others']
 } as const;
 
-export const MOD_INSTALL_STEPS = ['download', 'copy', 'launch', 'bind'] as const;
+export const MOD_INSTALL_STEPS = ['download', 'install', 'launch', 'bind'] as const;
 
 export const MOD_SWITCHES = [
   { id: 'battleResults', setting: 'send_battle_results' },

@@ -92,7 +92,8 @@ The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HM
 - [ ] Check that `DEFAULT_SERVER_URL` in `apps/game/modpack/packages/companion/config.py` is `https://api.triotmetki.ru`.
 - [ ] Bump `VERSION` in `apps/game/modpack/packages/companion/version.py` (and in `packages/core/version.py` and `features/<id>/__init__.py` for the packages that changed).
 - [ ] Run `python apps/game/modpack/tools/build/build.py --single --require-pyc` (a release build: one `otmetki.<version>.mtmod`; it needs `owg_python_compiler` or Python 2.7, see [apps/game/modpack/README.md](../../apps/game/modpack/README.md#build)).
-- [ ] Publish the package on the site (`SITE.downloadUrl` is `https://triotmetki.ru/downloads/otmetki.wotmod`; the Lesta client loads `.mtmod`, so the URL and file name need updating) and through МОСТ. See [apps/game/modpack/README.md](../../apps/game/modpack/README.md).
+- [ ] Publish the package on the site as `https://triotmetki.ru/downloads/otmetki.mtmod` (`MOD_DISTRIBUTION.packagesUrl` in `apps/web/client/shared/config/site`, the /mod page's «скачать пакеты вручную») and through МОСТ ([most-publishing.md](most-publishing.md)); set `MOD_DISTRIBUTION.mostUrl` once the МОСТ entry is live. See [apps/game/modpack/README.md](../../apps/game/modpack/README.md).
+- [ ] Build the component catalogue (`modpack.yml` manual run, `modpack-catalog` artifact) and the manager (`manager.yml` manual run), add the release to the index, and publish the manager installer as `https://triotmetki.ru/downloads/otmetki-manager-setup.exe` (`MOD_DISTRIBUTION.managerUrl`, the /mod page's primary download). Steps: [apps/game/manager/README.md «Releases»](../../apps/game/manager/README.md#releases-manual-for-now).
 - [ ] Users bind their devices again with a code from `/me`. Devices bound in development do not exist in production.
 
 ## 5. Legal pages and Plus: fill before checkout opens

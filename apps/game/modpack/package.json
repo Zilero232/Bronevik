@@ -17,7 +17,7 @@
   "type": "module",
   "scripts": {
     "build": "python tools/build/build.py",
-    "build:installer": "uv run python tools/build/setupkit --packages dist --compile",
+    "build:catalog": "uv run python tools/build/setupkit --packages dist",
     "build:release": "python tools/build/build.py --require-pyc",
     "lint": "uv run ruff check .",
     "most:bundle": "uv run python tools/most --packages dist --release",

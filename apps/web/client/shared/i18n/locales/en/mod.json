@@ -9,10 +9,12 @@
     "eyebrow": "Companion mod",
     "title": "Three Marks mod",
     "lead": "Your marks percentage in battle, your session in the hangar and every battle result on the site — from your own data only.",
-    "download": "Download the mod",
+    "download": "Download the manager",
+    "manual": "Download the packages manually",
     "most": "Open on MOST",
     "mostPending": "Coming to MOST",
-    "file": "File {file} · drop it into mods/<client version>/"
+    "file": "{file} · Windows 10 and 11 · finds the client and the mods folder itself",
+    "manualFile": "By hand: drop {file} into mods/<client version>/"
   },
   "features": {
     "title": "What the mod does",
@@ -59,12 +61,12 @@
     "title": "How to install",
     "steps": {
       "download": {
-        "title": "Download the mod",
-        "text": "The .wotmod file — from the button above, or from MOST once it is published there."
+        "title": "Download the manager",
+        "text": "The manager installer is behind the button above. It is not code-signed, so Windows may show a warning: «More info» → «Run anyway»."
       },
-      "copy": {
-        "title": "Drop it into mods",
-        "text": "Copy the file into mods/<client version>/ in the game folder."
+      "install": {
+        "title": "Install the modpack",
+        "text": "The manager finds your «Мир танков» client, offers a set of components and puts them into mods/<client version>/. After a game patch it moves the modpack into the new folder itself."
       },
       "launch": {
         "title": "Start the game",
@@ -167,5 +169,27 @@
         "answer": "Unbind the device and request an export or deletion in your account."
       }
     }
+  },
+  "manager": {
+    "open": "Open in the manager",
+    "hint": "Nothing opened? <link>Install the Three Marks manager</link> and click again."
+  },
+  "profile": {
+    "meta": {
+      "title": "Three Marks modpack profile",
+      "description": "Open a modpack settings profile in the Three Marks manager or import its code in the game."
+    },
+    "crumbs": {
+      "mod": "Mod",
+      "profile": "Profile"
+    },
+    "title": "Modpack profile",
+    "description": "Someone shared a modpack settings profile with you: which components are on and how they are set up.",
+    "cardTitle": "Import the profile",
+    "codeLabel": "Profile code",
+    "managerNote": "The manager opens «Profiles» with this code; you only confirm the import.",
+    "gameNote": "Without the manager: copy the code and paste it in the game — the mod window, «Profiles», «Add from code».",
+    "missingTitle": "The link has no profile code",
+    "missingDescription": "The link is cut off or outdated. Ask for a new one, or paste the code into the manager by hand: «Profiles» → «Import a code»."
   }
 }

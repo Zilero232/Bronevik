@@ -1,7 +1,7 @@
-"""Preview images for a submission, rendered from the catalog's preview (installer/assets/previews/*.svg).
+"""Preview images for a submission, rendered from the catalog's preview (catalog/previews/*.svg).
 
 The SVG goes through setupkit's resvg renderer (tools/build/setupkit/artwork) and is cover-cropped to each
-of PREVIEW_SIZES with Pillow, the way the installer's 640x360 previews are. Without resvg-py and Pillow
+of PREVIEW_SIZES with Pillow, the way the manager's 640x360 previews are. Without resvg-py and Pillow
 (`uv sync` in apps/game/modpack) the SVG is copied as is and the bundle carries a warning.
 """
 import io
@@ -54,7 +54,7 @@ def render_previews(source, out_dir, sizes=PREVIEW_SIZES):
 
 
 def screenshots(directory):
-    """Real client screenshots a person put in installer/assets/screenshots/<component id>/ (png/jpg)."""
+    """Real client screenshots a person put in catalog/screenshots/<component id>/ (png/jpg)."""
     if not os.path.isdir(directory):
         return []
     return sorted(os.path.join(directory, name) for name in os.listdir(directory) if name.lower().endswith(('.png', '.jpg', '.jpeg')))
@@ -63,11 +63,11 @@ def screenshots(directory):
 def check_previews(component_id, written, shots, video):
     findings = Findings()
     if not written:
-        findings.error(component_id, 'no preview image in installer/catalog/catalog.json', 'most_topic')
+        findings.error(component_id, 'no preview image in catalog/catalog.json', 'most_topic')
     elif not all(path.endswith('.png') for path in written):
         findings.warn(component_id, 'preview copied as SVG: install resvg-py and pillow (uv sync) to render PNGs', 'ours')
     if not shots:
-        message = 'no client screenshots: add up to %d to installer/assets/screenshots/%s/' % (MAX_SCREENSHOTS, component_id)
+        message = 'no client screenshots: add up to %d to catalog/screenshots/%s/' % (MAX_SCREENSHOTS, component_id)
         findings.warn(component_id, message, 'publication_rules')
     elif len(shots) > MAX_SCREENSHOTS:
         findings.error(component_id, '%d screenshots, the section allows %d' % (len(shots), MAX_SCREENSHOTS), 'publication_rules')

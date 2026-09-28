@@ -58,13 +58,13 @@ It writes `apps/game/modpack/dist/most/`:
 | `index.json`                           | Every component: version, client version, findings (errors and warnings), each with the URL of the rule behind it    |
 | `<id>/<package id>_<v>.mtmod`          | The release package, unchanged                                                                                        |
 | `<id>/meta.xml`                        | Its `meta.xml`, extracted for review                                                                                  |
-| `<id>/previews/preview-1280x720.png`   | Rendered from the catalog SVG (`installer/assets/previews/`) with setupkit's resvg renderer; 640×360 too             |
-| `<id>/screenshots/*`                   | Real client screenshots, copied from `installer/assets/screenshots/<id>/` (at most 3)                                |
-| `<id>/description.ru.md`, `.en.md`     | Page text: title in the forum format `[1.45.0.0] Три отметки — …`, description, fair play, data sent, dependencies, install, changes |
-| `<id>/changelog.md`                    | This version's entry from `apps/game/modpack/CHANGELOG.md` (`## <id> <version>` or a modpack-wide `## <version>`)    |
+| `<id>/previews/preview-1280x720.png`   | Rendered from the catalog SVG (`apps/game/modpack/catalog/previews/`) with setupkit's resvg renderer; 640×360 too             |
+| `<id>/screenshots/*`                   | Real client screenshots, copied from `apps/game/modpack/catalog/screenshots/<id>/` (at most 3)                                |
+| `<id>/description.ru.md`, `.en.md`     | Page text: title in the forum format `[1.45.0.0] Три отметки — …`, description, fair play, data sent, dependencies, install, changes (the Russian page takes the changelog's `### ru` text, the English one `### en`) |
+| `<id>/changelog.md`                    | This version's entry from `apps/game/modpack/CHANGELOG.md` (`## <id> <version>` or a modpack-wide `## <version>`, with its `### ru` and `### en` sections)    |
 | `<id>/submission.json`                 | Forum titles, dependency list with package ids and versions, sha256, size, preview and video links, findings           |
 
-The texts come from `installer/catalog/catalog.json`, so the installer, the site and МОСТ describe a component in the same words.
+The texts come from [apps/game/modpack/catalog/catalog.json](../../apps/game/modpack/catalog/README.md), so the manager, the site and МОСТ describe a component in the same words.
 
 Errors (exit code 1) are:
 
@@ -94,7 +94,7 @@ Warnings are:
 
 - [ ] Release build with bytecode: `python tools/build/build.py --require-pyc`, or the `release-build` job in `.github/workflows/modpack.yml`.
 - [ ] Live-client smoke on the exact client version (README «Live-client smoke checklist»).
-- [x] `apps/game/modpack/CHANGELOG.md` with an entry for every version being published (`## <id> <version>` per component plus the release's `## <version>`; `tools/most/texts/tests/test_most_changelog.py` fails on a missing one).
+- [x] `apps/game/modpack/CHANGELOG.md` with an entry for every version being published (`## <id> <version>` per component plus the release's `## <version>`, each with a Russian `### ru` and an English `### en` section; `tools/most/texts/tests/test_most_changelog.py` fails on a missing entry or language).
 - [ ] Preview videos: add `preview.video` (https) to each catalog entry once they are recorded.
 - [ ] `bun run most:bundle --game-version <client version>` with 0 errors, and review `dist/most/index.json`.
 - [ ] Decide the shape of the submission (see open questions): one МОСТ entry per component (the bundle as is), or one entry with the whole modpack (`build.py --single`, then bundle the companion only).
@@ -103,7 +103,7 @@ Warnings are:
 ### B. Only the account owner can do these
 
 - [ ] **Forum account** on [forum.tanki.su](https://forum.tanki.su) (Lesta ID), in good standing. Curators judge the author as well as the mod.
-- [ ] **Screenshots and video** from the live client: up to 3 per component, into `installer/assets/screenshots/<id>/`. Upload the video (VK Video / RuTube / YouTube) and send us the https link.
+- [ ] **Screenshots and video** from the live client: up to 3 per component, into `apps/game/modpack/catalog/screenshots/<id>/`. Upload the video (VK Video / RuTube / YouTube) and send us the https link.
 - [ ] **File hosting**: upload the `.mtmod` files to a direct-download host allowed by the rules (Яндекс.Диск, Google Drive, Mega). Paid or ad-gated hosts are forbidden.
 - [ ] **Forum publication** in «Модификации клиента» → a fitting subsection (likely «Игровой интерфейс» or «Другие модификации»). Follow the publication rules [5]:
   - title `[<client version>] Три отметки — …` (`forumTitle` in `submission.json`);
@@ -133,12 +133,12 @@ Warnings are:
 6. Network access: is HTTPS to our API (after an explicit binding code) acceptable, and do you need the source code?
 7. Configs: МОСТ's config clean-up deletes `mods/configs/otmetki` (the binding). The mod now mirrors it into `%APPDATA%\TriOtmetki` and restores it; is a mod writing there acceptable, or can a mod's config folder be exempted instead?
 
-## Conflicts with our own installer
+## Conflicts with our own manager
 
-МОСТ empties `mods/<version>/` and `res_mods/<version>/` on every install [1]. A player who uses МОСТ for anything loses packages installed by `otmetki-setup-<version>.exe`, and our installer's clean-up only knows our own `ownedPatterns`. Until the curators answer:
+МОСТ empties `mods/<version>/` and `res_mods/<version>/` on every install [1]. A player who uses МОСТ for anything loses packages installed by the modpack manager ([apps/game/manager](../../apps/game/manager/README.md)), and the manager's clean-up only knows our own `ownedPatterns`. Until the curators answer:
 
-- the site's install page recommends **one channel per player**: МОСТ, or our installer;
-- the installer README warns that МОСТ removes mods it did not install;
+- the site's /mod page offers **one channel per player**: the manager (primary), МОСТ once the entry is live, or the packages by hand;
+- after МОСТ has wiped them, the manager's «Изменить набор» wizard installs the packages again;
 - the mod's binding and settings survive МОСТ's config clean-up: every save is mirrored into `%APPDATA%\TriOtmetki`, and the next client start restores a missing or older `mods/configs/otmetki/` file from there (README «Durable settings»). Only a player who deletes that folder too binds again (the site's device list shows the old device, which can be revoked).
 
 ## Sources

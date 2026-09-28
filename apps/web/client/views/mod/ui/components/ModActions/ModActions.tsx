@@ -1,6 +1,6 @@
 'use client';
 
-import { Download, ExternalLink } from 'lucide-react';
+import { Download, ExternalLink, PackageOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Badge, buttonVariants } from '@/ui-kit';
@@ -12,17 +12,21 @@ import s from './ModActions.module.scss';
 
 export const ModActions = () => {
   const t = useTranslations('mod.hero');
-  const { downloadUrl, fileName, mostUrl } = useModPage();
+  const { distribution } = useModPage();
 
   return (
     <div className={s.root}>
       <div className={s.buttons}>
-        <a className={buttonVariants({ variant: 'primary', size: 'lg' })} download={fileName} href={downloadUrl}>
+        <a className={buttonVariants({ variant: 'primary', size: 'lg' })} download={distribution.managerFileName} href={distribution.managerUrl}>
           <Download aria-hidden size={MOD_PAGE.iconSize} />
           {t('download')}
         </a>
-        {mostUrl ? (
-          <a className={buttonVariants({ variant: 'secondary', size: 'lg' })} href={mostUrl} rel='noreferrer' target='_blank'>
+        <a className={buttonVariants({ variant: 'secondary', size: 'lg' })} download={distribution.packagesFileName} href={distribution.packagesUrl}>
+          <PackageOpen aria-hidden size={MOD_PAGE.iconSize} />
+          {t('manual')}
+        </a>
+        {distribution.mostUrl ? (
+          <a className={buttonVariants({ variant: 'ghost', size: 'lg' })} href={distribution.mostUrl} rel='noreferrer' target='_blank'>
             <ExternalLink aria-hidden size={MOD_PAGE.iconSize} />
             {t('most')}
           </a>
@@ -30,7 +34,8 @@ export const ModActions = () => {
           <Badge tone='steel'>{t('mostPending')}</Badge>
         )}
       </div>
-      <p className={s.file}>{t('file', { file: fileName })}</p>
+      <p className={s.file}>{t('file', { file: distribution.managerFileName })}</p>
+      <p className={s.file}>{t('manualFile', { file: distribution.packagesFileName })}</p>
     </div>
   );
 };

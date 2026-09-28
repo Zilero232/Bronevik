@@ -18,7 +18,7 @@ const windowStart = (prisma: ReturnType<typeof createService>['prisma']) =>
 
 beforeEach(() => {
   vi.useFakeTimers();
-  vi.setSystemTime(new Date(2026, 8, 26, 15, 30));
+  vi.setSystemTime(new Date('2026-09-26T12:30:00Z'));
 });
 
 afterEach(() => {
@@ -26,12 +26,12 @@ afterEach(() => {
 });
 
 describe('TankTrendService.trend', () => {
-  it('counts today as the last day of the window, starting at midnight', async () => {
+  it('counts today as the last day of the window, starting at Moscow midnight', async () => {
     const { service, prisma } = createService();
 
     await service.trend({ tankId: 1, query: { days: 7, mode: 'random' } });
 
-    expect(windowStart(prisma)).toEqual(new Date(2026, 8, 20));
+    expect(windowStart(prisma)).toEqual(new Date('2026-09-19T21:00:00Z'));
   });
 
   it('turns the daily rows into points', async () => {

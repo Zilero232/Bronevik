@@ -9,15 +9,17 @@ use serde::Serialize;
 pub use profile_ini::read_component_profile;
 
 use crate::catalog::Catalog;
-use crate::components::ClientContext;
+use crate::components::{is_owned, ClientContext};
+use crate::dependencies::remove_owned;
 use crate::detect::GameClient;
+use crate::durable::remove_durable_copies;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::{list_files, remove_path};
 use crate::patch::{apply_packages, ApplyInput, FetchedPackage};
 use crate::paths::{configs_dir, same_path};
 use crate::releases::verify_sha256;
-use crate::snapshots::{self, CreateInput, KEEP_SNAPSHOTS};
-use crate::state::{disabled_dir, Manifest, CLIENT_INI};
+use crate::snapshots::{self, CreateInput, RestoreInput, SnapshotKind};
+use crate::state::{disabled_dir, Manifest, CLIENT_INI, MANIFEST_INI};
 
 pub const DEFAULT_OWNED_PATTERNS: [&str; 4] = ["net.triotmetki.*.mtmod", "net.triotmetki.*.wotmod", "otmetki.*.mtmod", "otmetki.*.wotmod"];
 
@@ -52,10 +54,6 @@ fn entries(dir: &Path) -> Vec<(PathBuf, String, bool)> {
         .unwrap_or_default()
 }
 
-pub fn is_owned(catalog: &Catalog, name: &str) -> bool {
-    catalog.is_owned_file(name) || catalog.component_for_file(name).is_some()
-}
-
 pub fn other_mods(client: &GameClient, catalog: &Catalog) -> Vec<ForeignEntry> {
     let in_mods = entries(&client.mods_dir).into_iter().filter(|(_, name, _)| !is_owned(catalog, name)).map(|(path, name, is_dir)| ForeignEntry {
         path,
@@ -71,15 +69,22 @@ pub fn other_mods(client: &GameClient, catalog: &Catalog) -> Vec<ForeignEntry> {
     found
 }
 
-pub fn remove_other_mods(client: &GameClient, catalog: &Catalog, reviewed: &[PathBuf]) -> AppResult<Vec<PathBuf>> {
+pub fn ensure_reviewed(client: &GameClient, catalog: &Catalog, reviewed: &[PathBuf]) -> AppResult<()> {
     let current = other_mods(client, catalog);
-    let mut removed = Vec::new();
 
     for path in reviewed {
         if !current.iter().any(|entry| same_path(&entry.path, path)) {
             return Err(AppError::coded(ErrorCode::InvalidPath, format!("{} is not in the reviewed list", path.display())));
         }
     }
+
+    Ok(())
+}
+
+pub fn remove_other_mods(client: &GameClient, catalog: &Catalog, reviewed: &[PathBuf]) -> AppResult<Vec<PathBuf>> {
+    let mut removed = Vec::new();
+
+    ensure_reviewed(client, catalog, reviewed)?;
 
     for path in reviewed {
         remove_path(path)?;
@@ -93,7 +98,7 @@ pub fn remove_our_files(context: ClientContext) -> AppResult<Vec<PathBuf>> {
     let catalog = context.catalog;
     let manifest_files = Manifest::read(context.client_dir)?.map(|manifest| manifest.files).unwrap_or_default();
     let in_mods = list_files(&context.client.mods_dir);
-    let mut removed = Vec::new();
+    let mut removed = remove_owned(context)?;
 
     for path in manifest_files.iter().chain(in_mods.iter()) {
         let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
@@ -115,6 +120,21 @@ pub struct InstallInput<'a> {
     pub modpack_version: &'a str,
     pub remove_others: &'a [PathBuf],
     pub take_snapshot: bool,
+    pub parked: &'a BTreeSet<String>,
+    pub durable_dir: &'a Path,
+}
+
+pub fn restore_after_failure(context: ClientContext, durable_dir: &Path, snapshot: Option<&str>, error: AppError) -> AppError {
+    let Some(id) = snapshot.filter(|_| error.code() == ErrorCode::RollbackFailed) else {
+        return error;
+    };
+
+    match snapshots::restore(RestoreInput { context, durable_dir, id }) {
+        Ok(_) => log::warn!("the rollback failed, restored the snapshot {id}: {error}"),
+        Err(restore_error) => log::error!("the rollback and the snapshot {id} both failed: {error}; {restore_error}"),
+    }
+
+    error
 }
 
 pub fn install(input: InstallInput) -> AppResult<Vec<String>> {
@@ -125,21 +145,31 @@ pub fn install(input: InstallInput) -> AppResult<Vec<String>> {
         verify_sha256(&fetched.bytes, &fetched.package.sha256)?;
     }
 
-    if wants_snapshot && (context.client.mods_dir.is_dir() || configs_dir(&context.client.path).is_dir()) {
-        snapshots::create(CreateInput { client_dir: context.client_dir, client: context.client, now: chrono::Local::now() })?;
-        snapshots::prune(context.client_dir, KEEP_SNAPSHOTS)?;
-    }
+    ensure_reviewed(context.client, context.catalog, input.remove_others)?;
 
-    remove_our_files(context)?;
-    remove_other_mods(context.client, context.catalog, input.remove_others)?;
+    let snapshot = if wants_snapshot && (context.client.mods_dir.is_dir() || configs_dir(&context.client.path).is_dir()) {
+        let input = CreateInput { context, kind: SnapshotKind::Auto, removed: input.remove_others, now: chrono::Local::now() };
+
+        Some(snapshots::create_and_prune(input)?.id)
+    } else {
+        None
+    };
+
     fs::create_dir_all(&context.client.mods_dir)?;
 
-    if let Some(mut manifest) = Manifest::read(context.client_dir)? {
-        manifest.components.clear();
-        manifest.write(context.client_dir)?;
-    }
+    let disabled: BTreeSet<String> = input.packages.iter().map(|fetched| fetched.package.id.clone()).filter(|id| input.parked.contains(id)).collect();
+    let written = apply_packages(ApplyInput {
+        context,
+        modpack_version: input.modpack_version,
+        packages: input.packages,
+        disabled: &disabled,
+        replace_all: true,
+    })
+    .map_err(|error| restore_after_failure(context, input.durable_dir, snapshot.as_deref(), error))?;
 
-    apply_packages(ApplyInput { context, modpack_version: input.modpack_version, packages: input.packages, disabled: &BTreeSet::new() })
+    remove_other_mods(context.client, context.catalog, input.remove_others)?;
+
+    Ok(written)
 }
 
 pub fn selection(catalog: &Catalog, requested: &[String]) -> AppResult<BTreeSet<String>> {
@@ -156,17 +186,31 @@ pub struct UninstallInput<'a> {
     pub context: ClientContext<'a>,
     pub restore_snapshot: Option<&'a str>,
     pub remove_config: bool,
+    pub durable_dir: &'a Path,
+    pub shared_elsewhere: bool,
+}
+
+pub fn installed_elsewhere(clients_dir: &Path, client_dir: &Path) -> bool {
+    fs::read_dir(clients_dir)
+        .map(|entries| {
+            entries.filter_map(Result::ok).map(|entry| entry.path()).any(|dir| !same_path(&dir, client_dir) && dir.join(MANIFEST_INI).is_file())
+        })
+        .unwrap_or(false)
 }
 
 pub fn uninstall(input: UninstallInput) -> AppResult<()> {
     if let Some(id) = input.restore_snapshot {
-        snapshots::restore(input.context.client_dir, id)?;
+        snapshots::restore(RestoreInput { context: input.context, durable_dir: input.durable_dir, id })?;
     }
 
     remove_our_files(input.context)?;
 
     if input.remove_config {
         remove_path(&configs_dir(&input.context.client.path))?;
+
+        if !input.shared_elsewhere {
+            remove_durable_copies(input.durable_dir)?;
+        }
     }
 
     remove_path(input.context.client_dir)
@@ -210,6 +254,7 @@ pub fn owned_patterns_catalog(catalog: Option<Catalog>) -> Catalog {
         categories: Vec::new(),
         presets: Vec::new(),
         components: Vec::new(),
+        dependencies: Vec::new(),
         owned_patterns: Vec::new(),
     });
 

@@ -12,7 +12,7 @@ const NOW = new Date('2026-09-26T12:00:00.000Z');
 const LINKED_AT = new Date('2026-01-01T00:00:00.000Z');
 
 const link = (accountId: bigint, isPrimary: boolean): UserLestaAccount =>
-  mock<UserLestaAccount>({ userId: 'user', accountId, isPrimary, linkedAt: LINKED_AT, tokenExpiresAt: null });
+  mock<UserLestaAccount>({ userId: 'user', accountId, isPrimary, linkedAt: LINKED_AT, tokenExpiresAt: null, tokenStaleAt: null });
 
 type UserInput = { email?: string; telegramAccount?: TelegramAccount | null };
 
@@ -65,7 +65,11 @@ describe('LinkedAccountsService.get', () => {
     const accounts = await service.get('user');
 
     expect(accounts.email).toBe('player@example.com');
-    expect(accounts.lesta).toEqual([{ accountId: 7, nickname: 'Tanker', isPrimary: true, linkedAt: LINKED_AT.toISOString(), tokenExpiresAt: null }]);
+
+    expect(accounts.lesta).toEqual([
+      { accountId: 7, nickname: 'Tanker', isPrimary: true, linkedAt: LINKED_AT.toISOString(), tokenExpiresAt: null, isStale: false }
+    ]);
+
     expect(accounts.telegram).toEqual({ telegramId: '42', username: null });
   });
 });

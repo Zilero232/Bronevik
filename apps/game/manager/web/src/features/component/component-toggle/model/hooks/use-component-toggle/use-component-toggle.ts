@@ -10,7 +10,7 @@ import { useErrorToast } from '@/shared/lib';
 
 import type { UseComponentToggleInput } from './use-component-toggle.types';
 
-export const useComponentToggle = ({ clientPath, componentId, title }: UseComponentToggleInput) => {
+export const useComponentToggle = ({ clientPath, componentId, title, libraries }: UseComponentToggleInput) => {
   const t = useTranslations('components');
   const queryClient = useQueryClient();
   const showError = useErrorToast();
@@ -19,7 +19,12 @@ export const useComponentToggle = ({ clientPath, componentId, title }: UseCompon
     mutationFn: (enabled: boolean) => setComponentEnabled({ clientPath, componentId, enabled }),
     onSuccess: (installation: Installation, enabled) => {
       queryClient.setQueryData(QUERY_KEYS.installation(clientPath), installation);
-      toast.success(t(enabled ? 'enabledToast' : 'disabledToast', { title }));
+
+      toast.success(
+        enabled && libraries.length > 0
+          ? t('enabledWithLibrariesToast', { title, list: libraries.join(', ') })
+          : t(enabled ? 'enabledToast' : 'disabledToast', { title })
+      );
     },
     onError: showError
   });

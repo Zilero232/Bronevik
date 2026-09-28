@@ -5,6 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { PlayerCareerService } from '../../../players';
 import type { VehicleCatalogService } from '../../../reference';
 import type { MyModeSqlRow } from '../../modes.types';
 
@@ -45,12 +46,14 @@ const query = { days: 30 };
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
+  const career = mock<PlayerCareerService>();
 
   prisma.userLestaAccount.findFirst.mockResolvedValue(mock<UserLestaAccount>({ accountId: 42n }));
   prisma.$queryRaw.mockResolvedValue([]);
   catalog.summary.mockImplementation(async (tankId) => summary(tankId));
+  career.modes.mockResolvedValue({ accountId: 42, source: 'none', modes: [] });
 
-  return { service: new MyModeStatsService(prisma, catalog), prisma, catalog };
+  return { service: new MyModeStatsService(prisma, catalog, career), prisma, catalog, career };
 };
 
 describe('MyModeStatsService.stats', () => {
@@ -65,7 +68,7 @@ describe('MyModeStatsService.stats', () => {
   it('reports the account and window with no modes when nothing was played', async () => {
     const { service } = createService();
 
-    await expect(service.stats({ userId: 'u1', query })).resolves.toEqual({ accountId: 42, days: query.days, modes: [] });
+    await expect(service.stats({ userId: 'u1', query })).resolves.toEqual({ accountId: 42, days: query.days, modes: [], career: [] });
   });
 
   it('keeps special modes and drops random and unknown battle types', async () => {
@@ -106,5 +109,26 @@ describe('MyModeStatsService.stats', () => {
 
     expect(stats.modes).toHaveLength(2);
     expect(catalog.summary).toHaveBeenCalledTimes(1);
+  });
+
+  it('adds the stored Lesta career per mode without calling Lesta', async () => {
+    const { service, career } = createService();
+    const line = {
+      mode: 'frontline' as const,
+      battles: 120,
+      winRate: 52,
+      avgDamage: 2100,
+      avgXp: 900,
+      avgFrags: 1.1,
+      survivalRate: 30,
+      maxDamage: 7000,
+      updatedAt: null,
+      tanks: []
+    };
+
+    career.modes.mockResolvedValue({ accountId: 42, source: 'stored', modes: [line] });
+
+    await expect(service.stats({ userId: 'u1', query })).resolves.toMatchObject({ career: [line] });
+    expect(career.modes).toHaveBeenCalledWith({ accountId: 42n, allowLive: false });
   });
 });

@@ -9,6 +9,7 @@ use crate::catalog::{CatalogSource, LoadedCatalog, Localized};
 use crate::commands::AppInfo;
 use crate::components::{ComponentState, Installation, InstalledComponent};
 use crate::deep_link::DeepLink;
+use crate::dependencies::{DependencyState, DependencyStatus};
 use crate::detect::client::{Branch, ClientProblem};
 use crate::detect::{ClientSource, GameClient, GameVersion};
 use crate::error::{AppError, ErrorCode};
@@ -18,7 +19,7 @@ use crate::profiles::{ProfileSummary, ProfilesView, MAX_PROFILES};
 use crate::service::setup::{PackageSource, ReleaseSummary};
 use crate::service::{ClientsView, InstallPlan};
 use crate::settings::ManagerSettings;
-use crate::snapshots::{Snapshot, SnapshotPart};
+use crate::snapshots::{Snapshot, SnapshotKind, SnapshotPart};
 
 pub const UPDATE_ENV: &str = "OTMETKI_UPDATE_FIXTURES";
 pub const CLIENT_PATH: &str = r"D:\Игры\Мир танков";
@@ -86,7 +87,17 @@ fn samples() -> Vec<(&'static str, Value)> {
         report(PatchStatus::Offline { game_version: "1.46.0.0".into() }),
         report(PatchStatus::NotInstalled { game_version: "1.45.0.0".into() }),
         report(PatchStatus::NoClient),
-        report(PatchStatus::Failed { message: "network".into() }),
+        report(PatchStatus::MigrationReady { game_version: "1.46.0.0".into(), from: "1.45.0.0".into(), modpack_version: Some("0.1.0".into()) }),
+        report(PatchStatus::UpdateReady {
+            game_version: "1.46.0.0".into(),
+            from: "1.45.0.0".into(),
+            current: Some("0.1.0".into()),
+            latest: "0.2.0".into(),
+            notes: None,
+        }),
+        report(PatchStatus::Deferred { game_version: "1.46.0.0".into(), from: "1.45.0.0".into() }),
+        report(PatchStatus::Unsupported { game_version: "1.30.0.0".into() }),
+        report(PatchStatus::Failed { code: ErrorCode::FileLocked }),
     ];
 
     vec![
@@ -135,10 +146,11 @@ fn samples() -> Vec<(&'static str, Value)> {
             value(&vec![Snapshot {
                 id: "20260927-214705".into(),
                 date: "2026-09-27 21:47:05".into(),
+                kind: SnapshotKind::Manual,
                 size_bytes: 1_048_576,
                 parts: vec![
-                    SnapshotPart { name: "mods".into(), target: main.mods_dir.clone(), existed: true },
-                    SnapshotPart { name: "res_mods".into(), target: main.res_mods_dir.clone(), existed: false },
+                    SnapshotPart { name: "modpack".into(), target: main.mods_dir.clone(), existed: true },
+                    SnapshotPart { name: "configs".into(), target: main.path.join("mods").join("configs").join("otmetki"), existed: false },
                 ],
             }]),
         ),
@@ -151,7 +163,7 @@ fn samples() -> Vec<(&'static str, Value)> {
             }),
         ),
         ("patch-reports", value(&reports)),
-        ("error", value(&AppError::coded(ErrorCode::ClientRunning, "the game is running"))),
+        ("error", value(&AppError::coded(ErrorCode::Busy, "another operation is running"))),
         (
             "install-plan",
             value(&InstallPlan {
@@ -171,7 +183,17 @@ fn samples() -> Vec<(&'static str, Value)> {
                     },
                     ForeignEntry { path: main.res_mods_dir.join("gui"), name: "gui".into(), is_dir: true, location: ForeignLocation::ResMods },
                 ],
-                installed: false,
+                installed: true,
+                current_components: vec!["core".into(), "companion".into(), "hit_log".into()],
+                parked_components: vec!["hit_log".into()],
+                dependencies: vec![
+                    DependencyStatus {
+                        id: "openwg_gameface".into(),
+                        state: DependencyState::Ours,
+                        file: Some("net.openwg.gameface_1.2.2.mtmod".into()),
+                    },
+                    DependencyStatus { id: "guiflash".into(), state: DependencyState::User, file: Some("gambiter.guiflash_0.6.5.mtmod".into()) },
+                ],
             }),
         ),
         (

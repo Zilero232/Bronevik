@@ -107,6 +107,15 @@ describe('TrackingStoreService.upsertPlayer', () => {
     expect(Object.keys(prisma.player.upsert.mock.calls[0]?.[0].update ?? {}).sort()).toEqual(['clanId', 'createdAt', 'nickname', 'trackingTier']);
   });
 
+  it('stores when the player left the game and never clears a known logout', async () => {
+    const { prisma, store } = createStore();
+    const logoutAt = 1_700_000_500;
+
+    await store.upsertPlayer({ info: { ...info(null), logout_at: logoutAt }, previous: undefined, tier: 'population', promote: false, now: NOW });
+
+    expect(prisma.player.upsert.mock.calls[0]?.[0].update).toMatchObject({ logoutAt: fromUnixTime(logoutAt) });
+  });
+
   it('refreshes the nickname last-seen time on every poll', async () => {
     const { prisma, store } = createStore();
 

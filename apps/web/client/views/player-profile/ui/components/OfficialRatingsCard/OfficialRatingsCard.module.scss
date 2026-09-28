@@ -1,0 +1,55 @@
+@use '@/shared/styles/mixins' as *;
+
+.lead {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.periods {
+  display: grid;
+  gap: var(--gap-panel);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.period {
+  @include stack(var(--space-3));
+}
+
+.periodTitle {
+  @include label;
+
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  margin: 0;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cell {
+  @include stack(2px);
+}
+
+.label {
+  color: var(--color-text-dim);
+  font-size: var(--text-xs);
+}
+
+.value {
+  @include numeric;
+
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.rank {
+  display: inline-flex;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-2);
+}

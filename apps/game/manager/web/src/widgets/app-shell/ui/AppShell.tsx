@@ -1,6 +1,8 @@
 import { OtmetkiLogoIcon } from '@otmetki/icons';
 import { useTranslations } from 'use-intl';
 
+import { AutostartPrompt } from '@/features/settings/autostart-prompt';
+
 import type { AppShellProps } from './AppShell.types';
 
 import { useAppShell } from '../model/hooks';
@@ -39,6 +41,7 @@ export const AppShell = ({ children }: AppShellProps) => {
       <main className={s.main}>
         <div className={s.content}>{children}</div>
       </main>
+      <AutostartPrompt />
     </div>
   );
 };

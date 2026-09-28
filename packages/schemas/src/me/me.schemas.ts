@@ -69,7 +69,8 @@ export const linkedAccountsSchema = z.object({
       nickname: z.string(),
       isPrimary: z.boolean(),
       linkedAt: isoDateTimeSchema,
-      tokenExpiresAt: isoDateTimeSchema.nullable()
+      tokenExpiresAt: isoDateTimeSchema.nullable(),
+      isStale: z.boolean().describe('The Lesta ID token expired or was rejected and could not be renewed; the account has to be linked again')
     })
   ),
   telegram: z.object({ telegramId: z.string(), username: z.string().nullable() }).nullable()

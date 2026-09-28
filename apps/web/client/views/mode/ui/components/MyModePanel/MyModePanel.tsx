@@ -1,7 +1,7 @@
 'use client';
 
 import { Link2, LogIn } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
 import { useLoginHref } from '@/entities/auth/session';
@@ -21,7 +21,8 @@ import s from './MyModePanel.module.scss';
 export const MyModePanel = ({ mode }: MyModePanelProps) => {
   const loginHref = useLoginHref();
   const t = useTranslations('modes.mine');
-  const { status, line, tanks, days, isRetrying, onRetry } = useMyModeStats(mode);
+  const format = useFormatter();
+  const { status, line, career, tanks, days, isRetrying, onRetry } = useMyModeStats(mode);
 
   return (
     <Card className={s.root} padding='none'>
@@ -60,6 +61,15 @@ export const MyModePanel = ({ mode }: MyModePanelProps) => {
               .with('empty', () => <EmptyState isCompact description={t('emptyText', { days })} title={t('emptyTitle')} />)
               .with('ready', () => line && <MyModeLineView line={line} tanks={tanks} />)
               .exhaustive()}
+            {career && (
+              <p className={s.career}>
+                {t('career', {
+                  battles: career.battles,
+                  winRate: career.winRate === null ? '—' : format.number(career.winRate, { maximumFractionDigits: 1 }),
+                  damage: career.avgDamage === null ? '—' : format.number(career.avgDamage, { maximumFractionDigits: 0 })
+                })}
+              </p>
+            )}
           </PlusGate>
         )}
       </div>

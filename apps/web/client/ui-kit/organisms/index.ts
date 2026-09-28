@@ -18,5 +18,6 @@ export { PageHeader } from './PageHeader';
 export type { PageHeaderProps } from './PageHeader';
 export { PageHero } from './PageHero';
 export type { PageHeroArt, PageHeroProps } from './PageHero';
+export { PageHeroFallback } from './PageHeroFallback';
 export { QueryState } from './QueryState';
 export type { QueryStateProps, QueryStateSource } from './QueryState';

@@ -23,10 +23,10 @@ export const ACHIEVEMENTS_PARAMS = {
 };
 
 export const RARITY_TONE = {
-  legendary: 'premium',
-  epic: 'danger',
-  rare: 'accent',
-  uncommon: 'success',
+  legendary: 'gold',
+  epic: 'battle',
+  rare: 'sky',
+  uncommon: 'olive',
   common: 'neutral'
 } as const satisfies Record<RarityTier, BadgeTone>;
 

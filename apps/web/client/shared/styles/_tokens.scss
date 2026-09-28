@@ -43,6 +43,12 @@
   color-scheme: light;
 }
 
+:root,
+[data-theme='dark'],
+[data-theme='light'] {
+  --color-premium: var(--color-gold);
+}
+
 @each $palette in xvm, wotlife {
   :root[data-rating-palette='#{$palette}'] {
     @include tokens.rating-palette-properties($palette, dark);

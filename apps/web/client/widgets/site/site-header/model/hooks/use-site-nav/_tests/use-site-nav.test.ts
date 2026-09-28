@@ -11,7 +11,8 @@ const location = vi.hoisted(() => ({ pathname: '/' }));
 
 vi.mock('@/shared/i18n/navigation', () => ({ usePathname: () => location.pathname, useRouter: vi.fn(), Link: vi.fn() }));
 
-const [PLAYERS, VEHICLES] = SITE_NAV.groups;
+const PLAYERS = SITE_NAV.groups.find(({ key }) => key === 'players')!;
+const VEHICLES = SITE_NAV.groups.find(({ key }) => key === 'vehicles')!;
 
 const visit = (pathname: string) => {
   location.pathname = pathname;

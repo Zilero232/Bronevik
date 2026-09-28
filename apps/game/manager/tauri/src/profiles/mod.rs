@@ -18,7 +18,25 @@ pub const FILE_VERSION: u32 = 1;
 pub const MAX_PROFILES: usize = 12;
 pub const NAME_MAX_LENGTH: usize = 40;
 pub const ID_BYTES: usize = 6;
-pub const EXCLUDED_CONFIG_KEYS: [&str; 3] = ["server_url", "bind_code", "settings_action"];
+pub const EXCLUDED_CONFIG_KEYS: [&str; 8] = [
+    "server_url",
+    "bind_code",
+    "settings_action",
+    "settings_target",
+    "settings_anonymous_stats",
+    "share_settings",
+    "upload_replays",
+    "publish_replays",
+];
+pub const EXCLUDED_CONFIG_PREFIXES: [&str; 2] = ["send_", "settings_include_"];
+
+pub fn is_excluded(key: &str) -> bool {
+    EXCLUDED_CONFIG_KEYS.contains(&key) || EXCLUDED_CONFIG_PREFIXES.iter().any(|prefix| key.starts_with(prefix))
+}
+
+fn same_kind(left: &Value, right: &Value) -> bool {
+    std::mem::discriminant(left) == std::mem::discriminant(right)
+}
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct ProfileData {
@@ -46,6 +64,8 @@ pub struct ProfilesFile {
     pub version: u32,
     pub active: Option<String>,
     pub profiles: Vec<Profile>,
+    #[serde(skip)]
+    pub unreadable: Vec<Value>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -68,20 +88,36 @@ pub struct ProfilesView {
 
 impl Default for ProfilesFile {
     fn default() -> Self {
-        Self { version: FILE_VERSION, active: None, profiles: Vec::new() }
+        Self { version: FILE_VERSION, active: None, profiles: Vec::new(), unreadable: Vec::new() }
     }
 }
 
 impl ProfilesFile {
     pub fn from_value(value: &Value) -> Self {
-        let profiles: Vec<Profile> = value
-            .get("profiles")
-            .and_then(Value::as_array)
-            .map(|items| items.iter().filter_map(|item| serde_json::from_value(item.clone()).ok()).take(MAX_PROFILES).collect())
-            .unwrap_or_default();
+        let mut profiles: Vec<Profile> = Vec::new();
+        let mut unreadable: Vec<Value> = Vec::new();
+
+        for item in value.get("profiles").and_then(Value::as_array).into_iter().flatten() {
+            match serde_json::from_value::<Profile>(item.clone()) {
+                Ok(profile) if profiles.len() < MAX_PROFILES => profiles.push(profile),
+                Ok(_) => {}
+                Err(_) => unreadable.push(item.clone()),
+            }
+        }
+
         let active = value.get("active").and_then(Value::as_str).filter(|id| profiles.iter().any(|profile| profile.id == *id)).map(str::to_owned);
 
-        Self { version: FILE_VERSION, active, profiles }
+        Self { version: FILE_VERSION, active, profiles, unreadable }
+    }
+
+    pub fn to_value(&self) -> AppResult<Value> {
+        let mut value = serde_json::to_value(self)?;
+
+        if let Some(profiles) = value.get_mut("profiles").and_then(Value::as_array_mut) {
+            profiles.extend(self.unreadable.iter().cloned());
+        }
+
+        Ok(value)
     }
 
     pub fn get(&self, id: &str) -> AppResult<&Profile> {
@@ -161,7 +197,7 @@ impl ProfileStore {
     }
 
     fn persist(&self, file: &ProfilesFile) -> AppResult<()> {
-        self.file(FILE_NAME).write(file)
+        self.file(FILE_NAME).write(&file.to_value()?)
     }
 
     fn update<T>(&self, change: impl FnOnce(&mut ProfilesFile) -> AppResult<T>) -> AppResult<T> {
@@ -176,14 +212,12 @@ impl ProfileStore {
     pub fn take_snapshot(&self) -> ProfileData {
         let mut config = as_object(self.file(CONFIG_JSON).read());
 
-        for key in EXCLUDED_CONFIG_KEYS {
-            config.remove(key);
-        }
+        config.retain(|key, _| !is_excluded(key));
 
         ProfileData { config, components: as_object(self.file(COMPONENTS_JSON).read()) }
     }
 
-    fn add(file: &mut ProfilesFile, name: &str, data: ProfileData) -> AppResult<Profile> {
+    fn add(file: &mut ProfilesFile, name: &str, data: ProfileData, activate: bool) -> AppResult<Profile> {
         if file.profiles.len() >= MAX_PROFILES {
             return Err(AppError::coded(ErrorCode::ProfileLimit, format!("at most {MAX_PROFILES} profiles")));
         }
@@ -192,7 +226,10 @@ impl ProfileStore {
         let id = std::iter::repeat_with(new_id).find(|candidate| file.get(candidate).is_err()).unwrap_or_else(new_id);
         let profile = Profile { id, name: normalize_name(name)?, created: Some(now), updated: Some(now), data, extra: Map::new() };
 
-        file.active = Some(profile.id.clone());
+        if activate {
+            file.active = Some(profile.id.clone());
+        }
+
         file.profiles.push(profile.clone());
 
         Ok(profile)
@@ -201,7 +238,7 @@ impl ProfileStore {
     pub fn save_current(&self, name: &str) -> AppResult<Profile> {
         let data = self.take_snapshot();
 
-        self.update(|file| Self::add(file, name, data))
+        self.update(|file| Self::add(file, name, data, true))
     }
 
     pub fn rename(&self, id: &str, name: &str) -> AppResult<()> {
@@ -248,7 +285,9 @@ impl ProfileStore {
         let mut components = as_object(self.file(COMPONENTS_JSON).read());
 
         for (key, value) in &data.config {
-            if !EXCLUDED_CONFIG_KEYS.contains(&key.as_str()) {
+            let fits = config.get(key).is_none_or(|current| same_kind(current, value));
+
+            if !is_excluded(key) && fits {
                 config.insert(key.clone(), value.clone());
             }
         }
@@ -281,7 +320,7 @@ impl ProfileStore {
         let (decoded_name, data) = decode(code)?;
         let name = name.filter(|name| !name.trim().is_empty()).unwrap_or(&decoded_name).to_owned();
 
-        self.update(|file| Self::add(file, &name, data))
+        self.update(|file| Self::add(file, &name, data, false))
     }
 }
 

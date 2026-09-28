@@ -50,3 +50,9 @@ export type RebuildDaySessionInput = Pick<AccountStoreInput, 'expected' | 'tx'> 
   accountId: bigint;
   at: Date;
 };
+
+export type WithModeExtraInput<T> = {
+  base: readonly string[];
+  modes: readonly string[];
+  run: (extra: readonly string[]) => Promise<T>;
+};

@@ -38,3 +38,5 @@ export const battleStatsBlockSchema = z.looseObject({
   max_frags: z.number().optional(),
   max_frags_tank_id: z.number().nullish()
 });
+
+export const modeStatsBlockSchema = battleStatsBlockSchema.optional().catch(undefined);

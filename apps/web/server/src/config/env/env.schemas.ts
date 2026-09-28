@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
 import { LESTA_MOCK } from '../lesta-mock/lesta-mock.constants';
+import { LESTA } from '../lesta.constants';
+
+const ipAddress = z.union([z.ipv4(), z.ipv6()]);
 
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -19,6 +22,17 @@ export const envSchema = z.object({
 
   LESTA_APPLICATION_ID: z.string().default(''),
   LESTA_RPS: z.coerce.number().int().positive().default(20),
+  LESTA_EGRESS_IPS: z
+    .string()
+    .default('')
+    .transform((value) =>
+      value
+        .split(LESTA.egress.listSeparator)
+        .map((part) => part.trim())
+        .filter((part) => part.length > 0)
+    )
+    .pipe(z.array(ipAddress).max(LESTA.egress.maxIps)),
+  LESTA_EGRESS_IP: z.union([ipAddress, z.literal('')]).default(''),
   LESTA_MOCK: z.enum(LESTA_MOCK.modes).default('auto'),
 
   TELEGRAM_BOT_TOKEN: z.string().default(''),

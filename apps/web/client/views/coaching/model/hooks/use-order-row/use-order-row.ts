@@ -1,17 +1,22 @@
 'use client';
 
+import { useMutation } from '@tanstack/react-query';
+
 import type { CoachingOrder } from '@/entities/coaching/coach';
 
 import { useCommunityViewer } from '@/entities/auth/session';
-import { ROUTES } from '@/shared/constants';
+import { communityErrorKey } from '@/features/community/api-error';
+import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 
 import { acceptCoachingOrder, cancelCoachingOrder, completeCoachingOrder } from '../../../api';
 import { orderActions } from '../../../lib/order-actions';
-import { useOrderMutation } from '../use-order-mutation';
 
 export const useOrderRow = (order: CoachingOrder) => {
   const { userId } = useCommunityViewer();
-  const mutation = useOrderMutation();
+  const mutation = useMutation({
+    mutationFn: (action: () => Promise<CoachingOrder>) => action(),
+    meta: { successKey: 'coaching.orders.toast.updated', errorKey: communityErrorKey('coaching'), invalidates: [QUERY_KEYS.coaching.all] }
+  });
 
   const actions = orderActions({ order, viewerId: userId });
 

@@ -21,6 +21,7 @@ export const useSnapshotList = () => {
       return {
         id: snapshot.id,
         date: date ? format.dateTime(date, { dateStyle: 'medium', timeStyle: 'short' }) : snapshot.id,
+        kind: t(`kind.${snapshot.kind}`),
         size: format.number(snapshot.sizeBytes / SNAPSHOT_LIST.bytesPerMegabyte, { style: 'unit', unit: 'megabyte', maximumFractionDigits: 1 }),
         parts: snapshot.parts.map((part) => (part.existed ? t(`part.${part.name}`) : t('partMissing', { part: t(`part.${part.name}`) })))
       };

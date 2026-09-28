@@ -301,6 +301,10 @@
   }
 }
 
+.emptyPanel {
+  @include panel;
+}
+
 .cards {
   display: none;
   padding: 0;

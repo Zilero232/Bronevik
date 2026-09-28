@@ -14,7 +14,8 @@ export const release = ({ version, games }: Pick<ModpackRelease, 'games' | 'vers
       sha256: 'a'.repeat(64),
       size: 1_024
     }
-  ]
+  ],
+  signature: 'c2lnbmF0dXJl'
 });
 
 export const INDEX: ModpackReleaseIndex = {

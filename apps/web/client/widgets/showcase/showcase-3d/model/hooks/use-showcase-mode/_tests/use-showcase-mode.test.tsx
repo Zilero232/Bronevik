@@ -3,8 +3,6 @@ import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { REDUCED_MOTION_QUERY } from '@/shared/lib';
-
 import { useShowcaseMode } from '../use-showcase-mode';
 
 vi.hoisted(() => vi.resetModules());
@@ -22,7 +20,7 @@ beforeEach(() => {
   Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', { value: () => ({}), configurable: true });
 
   vi.spyOn(window, 'matchMedia').mockImplementation((query) => ({
-    matches: query === REDUCED_MOTION_QUERY && media.reducedMotion,
+    matches: query === '(prefers-reduced-motion: reduce)' && media.reducedMotion,
     media: query,
     onchange: null,
     addListener: vi.fn(),

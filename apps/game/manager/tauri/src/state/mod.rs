@@ -11,6 +11,54 @@ pub const MANIFEST_INI: &str = "manifest.ini";
 pub const CLIENT_INI: &str = "client.ini";
 pub const DISABLED_DIR: &str = "disabled";
 pub const KEY_LENGTH: usize = 16;
+pub const DEPENDENCIES_SECTION: &str = "dependencies";
+pub const RECORD_SEPARATOR: char = '|';
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DependencyOwner {
+    Ours,
+    User,
+}
+
+impl DependencyOwner {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Ours => "ours",
+            Self::User => "user",
+        }
+    }
+
+    pub fn parse(text: &str) -> Option<Self> {
+        match text.trim() {
+            "ours" => Some(Self::Ours),
+            "user" => Some(Self::User),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DependencyRecord {
+    pub id: String,
+    pub owner: DependencyOwner,
+    pub file: String,
+    pub sha256: String,
+}
+
+impl DependencyRecord {
+    pub fn parse(id: &str, value: &str) -> Option<Self> {
+        let mut parts = value.split(RECORD_SEPARATOR).map(str::trim);
+        let owner = DependencyOwner::parse(parts.next()?)?;
+        let file = parts.next().filter(|file| !file.is_empty())?.to_owned();
+        let sha256 = parts.next().unwrap_or_default().to_owned();
+
+        Some(Self { id: id.trim().to_owned(), owner, file, sha256 })
+    }
+
+    pub fn value(&self) -> String {
+        [self.owner.as_str(), &self.file, &self.sha256].join(&RECORD_SEPARATOR.to_string())
+    }
+}
 
 pub fn client_key(path: &Path) -> String {
     let text = path.to_string_lossy();
@@ -34,6 +82,7 @@ pub struct Manifest {
     pub files: Vec<PathBuf>,
     pub disabled: Vec<String>,
     pub manager: Option<String>,
+    pub dependencies: Vec<DependencyRecord>,
 }
 
 impl Manifest {
@@ -64,6 +113,10 @@ impl Manifest {
             files,
             disabled: split_csv(&text("manager", "disabled")),
             manager: ini_file::get(&ini, "manager", "version").filter(|version| !version.is_empty()).map(str::to_owned),
+            dependencies: ini
+                .section(Some(DEPENDENCIES_SECTION))
+                .map(|values| values.iter().filter_map(|(id, value)| DependencyRecord::parse(id, value)).collect())
+                .unwrap_or_default(),
         }))
     }
 
@@ -89,7 +142,25 @@ impl Manifest {
 
         ini.with_section(Some("manager")).set("version", self.manager.clone().unwrap_or_default()).set("disabled", self.disabled.join(","));
 
+        if !self.dependencies.is_empty() {
+            let mut section = ini.with_section(Some(DEPENDENCIES_SECTION));
+
+            for record in &self.dependencies {
+                section.set(record.id.as_str(), record.value());
+            }
+        }
+
         ini_file::write(&Self::path(client_dir), &ini)
+    }
+
+    pub fn dependency(&self, id: &str) -> Option<&DependencyRecord> {
+        self.dependencies.iter().find(|record| record.id == id)
+    }
+
+    pub fn set_dependency(&mut self, record: DependencyRecord) {
+        self.dependencies.retain(|known| known.id != record.id);
+        self.dependencies.push(record);
+        self.dependencies.sort_by(|left, right| left.id.cmp(&right.id));
     }
 
     pub fn component_ids(&self) -> Vec<String> {

@@ -36,7 +36,8 @@ export const PLUS_FEATURE_ICONS = {
   earlyAccess: FlaskConical,
   hangarExtras: Warehouse,
   privateCompetitions: LockKeyhole,
-  streamerAlerts: Radio
+  streamerAlerts: Radio,
+  supertest: FlaskConical
 } as const satisfies Record<PlusFeature, LucideIcon>;
 
 export const PLUS_GATE = {
@@ -61,7 +62,8 @@ export const PLUS_FEATURE_PREVIEW = {
   earlyAccess: 'cards',
   hangarExtras: 'cards',
   privateCompetitions: 'table',
-  streamerAlerts: 'cards'
+  streamerAlerts: 'cards',
+  supertest: 'table'
 } as const satisfies Record<PlusFeature, 'cards' | 'chart' | 'table'>;
 
 export const PLUS_PREVIEW_SAMPLE = {

@@ -7,26 +7,21 @@ import { unique } from 'remeda';
 
 import { useCommunityViewer } from '@/entities/auth/session';
 import { getCoach, getCoachingOrders } from '@/entities/coaching/coach';
-import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
-
-import { COACHING_ORDERS } from '../../../config';
 
 export const useCoachingOrders = () => {
   const { userId, isSignedIn } = useCommunityViewer();
   const query = useQuery({
     queryKey: QUERY_KEYS.coaching.orders,
     queryFn: getCoachingOrders,
-    enabled: isSignedIn,
-    retry: (failures, failure) => !isNotFoundError(failure) && failures < COACHING_ORDERS.retries
+    enabled: isSignedIn
   });
 
   const coachIds = unique((query.data ?? []).map(({ coachUserId }) => coachUserId).filter((id) => id !== userId));
   const coaches = useQueries({
     queries: coachIds.map((coachUserId) => ({
       queryKey: QUERY_KEYS.coaching.coach(coachUserId),
-      queryFn: ({ signal }: QueryFunctionContext) => getCoach({ userId: coachUserId, signal }),
-      retry: (failures: number, failure: Error) => !isNotFoundError(failure) && failures < COACHING_ORDERS.retries
+      queryFn: ({ signal }: QueryFunctionContext) => getCoach({ userId: coachUserId, signal })
     }))
   });
 

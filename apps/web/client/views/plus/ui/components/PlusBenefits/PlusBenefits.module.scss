@@ -24,9 +24,9 @@
   display: grid;
   aspect-ratio: 16 / 10;
   background:
-    radial-gradient(circle at 70% 40%, color-mix(in srgb, var(--color-accent) 18%, transparent), transparent 60%),
+    radial-gradient(circle at 70% 40%, color-mix(in srgb, var(--color-gold) 18%, transparent), transparent 60%),
     radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--color-steel) 14%, transparent), transparent 55%), var(--color-surface-sunken);
-  color: var(--color-accent);
+  color: var(--color-gold);
   place-items: center;
 }
 
@@ -45,8 +45,8 @@
   padding: var(--space-3) var(--space-4);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   margin: 0;
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
+  background: var(--gradient-premium);
+  color: var(--color-gold-contrast);
   transition: transform var(--duration-lift) var(--ease-out);
 
   .card:hover & {

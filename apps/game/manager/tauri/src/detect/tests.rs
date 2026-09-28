@@ -152,3 +152,21 @@ fn reads_lgc_path_dat_pointing_at_the_executable() {
 fn tolerates_broken_preferences() {
     assert_eq!(parse_preferences("<not xml"), LgcPreferences::default());
 }
+
+#[test]
+fn ignores_package_folders_that_leave_the_client() {
+    let root = tempfile::tempdir().unwrap();
+    let dir = root.path().join("Мир танков");
+
+    write_version_xml(&dir, "1.45.0.0", "RU");
+    fs::write(
+        dir.join("paths.xml"),
+        "<root><Paths><Path>../../res_mods</Path><Packages><Root>C:/Windows/mods</Root><Mask>*.mtmod</Mask></Packages></Paths></root>",
+    )
+    .unwrap();
+
+    let client = inspect(&dir, ClientSource::Manual).unwrap();
+
+    assert_eq!(client.mods_dir, dir.join("mods").join("1.45.0.0"));
+    assert_eq!(client.res_mods_dir, dir.join("res_mods").join("1.45.0.0"));
+}

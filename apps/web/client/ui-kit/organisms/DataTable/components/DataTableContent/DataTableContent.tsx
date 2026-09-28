@@ -40,7 +40,7 @@ export const DataTableContent = <T,>({
 }: DataTableProps<T>) => {
   'use no memo';
 
-  const { table, rows, scrollNode, setScrollNode, barMax, columnCount, isVirtual, isEmpty, hasCards } = useDataTable({
+  const { table, rows, scrollNode, setScrollNode, barMax, columnCount, isVirtual, isEmpty, hasCards, showTable, showCards } = useDataTable({
     data,
     columns,
     getRowId,
@@ -59,31 +59,41 @@ export const DataTableContent = <T,>({
       style={{ '--table-row-h': `${rowHeight}px` }}
     >
       {(summary || toolbar) && <DataTableToolbar summary={summary} toolbar={toolbar} />}
-      <div ref={setScrollNode} className={s.root} data-virtual={isVirtual}>
-        <table className={s.table}>
-          {caption && <caption className={s.caption}>{caption}</caption>}
-          <DataTableHead table={table} />
-          {isLoading && <DataTableSkeleton columnCount={columnCount} />}
-          {!isLoading && isVirtual && (
-            <DataTableVirtualRows
-              barMax={barMax}
-              columnCount={columnCount}
-              getRowClass={getRowClass}
-              getRowLink={getRowLink}
-              rowHeight={rowHeight}
-              rows={rows}
-              rowTint={rowTint}
-              scrollElement={() => scrollNode}
-              onRowClick={onRowClick}
-            />
-          )}
-          {!isLoading && !isVirtual && (
-            <DataTableRows barMax={barMax} getRowClass={getRowClass} getRowLink={getRowLink} rows={rows} rowTint={rowTint} onRowClick={onRowClick} />
-          )}
-        </table>
-        {isEmpty && emptyState}
-      </div>
-      {hasCards && renderCard && <DataTableCards renderCard={renderCard} rows={rows} />}
+      {showTable && !(hasCards && isEmpty) && (
+        <div ref={setScrollNode} className={s.root} data-virtual={isVirtual}>
+          <table className={s.table}>
+            {caption && <caption className={s.caption}>{caption}</caption>}
+            <DataTableHead table={table} />
+            {isLoading && <DataTableSkeleton columnCount={columnCount} />}
+            {!isLoading && isVirtual && (
+              <DataTableVirtualRows
+                barMax={barMax}
+                columnCount={columnCount}
+                getRowClass={getRowClass}
+                getRowLink={getRowLink}
+                rowHeight={rowHeight}
+                rows={rows}
+                rowTint={rowTint}
+                scrollElement={() => scrollNode}
+                onRowClick={onRowClick}
+              />
+            )}
+            {!isLoading && !isVirtual && (
+              <DataTableRows
+                barMax={barMax}
+                getRowClass={getRowClass}
+                getRowLink={getRowLink}
+                rows={rows}
+                rowTint={rowTint}
+                onRowClick={onRowClick}
+              />
+            )}
+          </table>
+          {isEmpty && emptyState}
+        </div>
+      )}
+      {hasCards && isEmpty && <div className={s.emptyPanel}>{emptyState}</div>}
+      {showCards && !isEmpty && renderCard && <DataTableCards isLoading={isLoading} renderCard={renderCard} rows={rows} />}
       {footer && <div className={s.footer}>{footer}</div>}
     </div>
   );

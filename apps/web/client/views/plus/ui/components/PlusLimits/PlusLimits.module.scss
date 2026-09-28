@@ -35,7 +35,11 @@
   }
 }
 
+.caption {
+  @include sr-only;
+}
+
 .plus {
-  color: var(--color-premium);
+  color: var(--color-gold);
   font-weight: 700;
 }

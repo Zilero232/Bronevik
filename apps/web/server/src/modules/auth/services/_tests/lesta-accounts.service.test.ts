@@ -49,6 +49,14 @@ describe('LestaAccountsService.link', () => {
 
     await expect(service.link(identity)).resolves.toBe(true);
   });
+
+  it('clears a stale token and queues a garage sync when the account is relinked', async () => {
+    const { service, prisma } = createService({ others: 0, isKnown: true });
+
+    await service.link(identity);
+
+    expect(prisma.userLestaAccount.upsert.mock.calls[0]?.[0].update).toMatchObject({ tokenStaleAt: null, garageSyncedAt: null });
+  });
 });
 
 describe('LestaAccountsService.primaryAccountId', () => {

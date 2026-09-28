@@ -81,7 +81,7 @@ describe('MasteryThresholdsSyncService.sync', () => {
 
     clients.bulk.tanks.mastery.mockResolvedValue({ 1: distribution });
 
-    expect(await service.sync()).toEqual({ vehicles: 1 });
+    expect(await service.sync()).toEqual({ vehicles: 1, damageVehicles: 1 });
 
     expect(clients.bulk.tanks.mastery).toHaveBeenCalledWith(
       expect.objectContaining({ tankIds: [1, 2], distribution: REFERENCE.masteryDistribution })
@@ -101,6 +101,22 @@ describe('MasteryThresholdsSyncService.sync', () => {
 
     expect(prisma.tankPercentile.createMany.mock.calls[0]?.[0]?.data).toEqual([
       expect.objectContaining({ tankId: 1, distribution: REFERENCE.masteryDistribution })
+    ]);
+  });
+
+  it('stores the damage distribution next to the xp one for the mark and threshold views', async () => {
+    const { clients, prisma, service } = createSync([1]);
+
+    clients.bulk.tanks.mastery.mockResolvedValue({ 1: distribution });
+
+    await service.sync();
+
+    expect(clients.bulk.tanks.mastery).toHaveBeenCalledWith(
+      expect.objectContaining({ distribution: REFERENCE.damageDistribution, percentiles: REFERENCE.masteryPercentiles })
+    );
+
+    expect(prisma.tankPercentile.createMany.mock.calls.map(([args]) => args?.data)).toContainEqual([
+      expect.objectContaining({ tankId: 1, distribution: REFERENCE.damageDistribution })
     ]);
   });
 });

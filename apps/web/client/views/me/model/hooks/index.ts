@@ -7,6 +7,5 @@ export { useGoalForm } from './use-goal-form';
 export { useGoalItem } from './use-goal-item';
 export { useGoalsCard } from './use-goals-card';
 export { useLestaLinkError } from './use-lesta-link-error';
-export { useMeMutation } from './use-me-mutation';
 export { useMeSection } from './use-me-section';
 export { useModBindCard } from './use-mod-bind-card';

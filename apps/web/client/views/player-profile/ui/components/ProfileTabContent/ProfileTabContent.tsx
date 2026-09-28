@@ -7,6 +7,7 @@ import { ChartsTab } from '../ChartsTab';
 import { HistoryTab } from '../HistoryTab';
 import { InsightsTab } from '../InsightsTab';
 import { MarksTab } from '../MarksTab';
+import { ModesTab } from '../ModesTab';
 import { OverviewTab } from '../OverviewTab';
 import { SessionsTab } from '../SessionsTab';
 import { TanksFilterProvider } from '../TanksFilterProvider';
@@ -23,6 +24,7 @@ export const ProfileTabContent = ({ tab }: ProfileTabContentProps) =>
     .with('sessions', () => <SessionsTab />)
     .with('marks', () => <MarksTab />)
     .with('achievements', () => <AchievementsTab />)
+    .with('modes', () => <ModesTab />)
     .with('charts', () => <ChartsTab />)
     .with('insights', () => <InsightsTab />)
     .with('history', () => <HistoryTab />)

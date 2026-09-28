@@ -34,6 +34,23 @@ export const catalogComponentSchema = z.object({
   size: z.number().nullable()
 });
 
+export const catalogDependencySchema = z.object({
+  id: z.string(),
+  kind: z.literal('dependency'),
+  packageId: z.string(),
+  version: z.string(),
+  file: z.string(),
+  title: localizedSchema,
+  description: localizedSchema,
+  author: z.object({ name: z.string(), url: z.string() }),
+  licence: z.object({ name: z.string(), url: z.string(), sha256: z.string() }),
+  sourceUrl: z.string(),
+  sha256: z.string(),
+  size: z.number(),
+  requiredBy: z.array(z.string()),
+  restartRequired: z.boolean()
+});
+
 export const catalogSchema = z.object({
   schemaVersion: z.number(),
   modpackVersion: z.string(),
@@ -42,6 +59,7 @@ export const catalogSchema = z.object({
   categories: z.array(catalogCategorySchema),
   presets: z.array(catalogPresetSchema),
   components: z.array(catalogComponentSchema),
+  dependencies: z.array(catalogDependencySchema),
   ownedPatterns: z.array(z.string()),
   source: z.enum(['downloaded', 'bundled']),
   previewsDir: z.string().nullable()

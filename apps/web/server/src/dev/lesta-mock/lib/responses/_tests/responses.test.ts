@@ -129,3 +129,79 @@ describe('Lesta mock endpoints', () => {
     });
   });
 });
+
+describe('Lesta mock private garage and mode blocks', () => {
+  const [player] = players;
+
+  it('reports the garage only to the owner of the token and sells some idle tanks', async () => {
+    if (!player) {
+      throw new Error('no players');
+    }
+
+    const token = mockAccessToken({ seed: fixtureWorld.seed, accountId: player.accountId });
+    const own = await lesta.tanks.stats({ accountId: player.accountId, accessToken: token, fields: ['tank_id', 'in_garage'] });
+    const anonymous = await lesta.tanks.stats({ accountId: player.accountId, fields: ['tank_id', 'in_garage'] });
+    const inGarage = await lesta.tanks.stats({ accountId: player.accountId, accessToken: token, inGarage: true, fields: ['tank_id'] });
+
+    expect(own.every((tank) => typeof tank.in_garage === 'boolean')).toBe(true);
+    expect(anonymous.every((tank) => tank.in_garage === null)).toBe(true);
+
+    expect(inGarage.map((tank) => tank.tank_id).sort()).toEqual(
+      own
+        .filter((tank) => tank.in_garage)
+        .map((tank) => tank.tank_id)
+        .sort()
+    );
+  });
+
+  it('splits the non-random battles into mode blocks that add up to the all block', async () => {
+    const extra = ['statistics.random', 'statistics.epic', 'statistics.ranked_battles'];
+    const infos = await lesta.account.info({ accountIds, extra });
+    const modeKeys = ['stronghold_skirmish', 'stronghold_defense', 'globalmap_absolute', 'epic', 'ranked_battles'] as const;
+
+    for (const accountId of accountIds.slice(0, 5)) {
+      const statistics = infos[String(accountId)]?.statistics;
+      const modes = modeKeys.reduce((sum, key) => sum + (statistics?.[key]?.battles ?? 0), 0);
+
+      expect((statistics?.random?.battles ?? 0) + modes).toBe(statistics?.all.battles);
+    }
+
+    const plain = await lesta.account.info({ accountIds: accountIds.slice(0, 1), extra: ['statistics.random'] });
+
+    expect(plain[String(accountIds[0])]?.statistics.epic).toBeUndefined();
+  });
+});
+
+describe('Lesta mock official ratings', () => {
+  it('ranks an ordinary player for a period on every field and refuses an unknown period', async () => {
+    const ranked = await lesta.ratings.accounts({ type: '28', accountIds });
+    const entries = Object.values(ranked).filter((entry) => entry !== null);
+
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries[0]?.wins_ratio?.value).toEqual(expect.any(Number));
+    expect(entries[0]?.battles_count?.value ?? 0).toBeGreaterThanOrEqual(100);
+    await expect(lesta.ratings.accounts({ type: '365', accountIds })).rejects.toMatchObject({ code: 'INVALID_TYPE' });
+  });
+
+  it('lists the offered periods and a typed top list', async () => {
+    const types = await lesta.ratings.typeList();
+    const top = await lesta.ratings.topList({ type: 'all', rankField: 'global_rating', limit: 5 });
+
+    expect(Object.keys(types)).toEqual(expect.arrayContaining(['7', '28', 'all']));
+    expect(top.map((entry) => entry.global_rating?.rank)).toEqual([1, 2, 3, 4, 5]);
+  });
+});
+
+describe('Lesta mock languages', () => {
+  it('names arenas, medals and crew skills in English when asked', async () => {
+    const [ru, en] = await Promise.all([lesta.encyclopedia.achievements(), lesta.encyclopedia.achievements({ language: 'en' })]);
+    const pick = (value: unknown) => z.record(z.string(), z.object({ name_i18n: z.string() })).parse(value);
+    const [name] = Object.keys(pick(ru));
+
+    if (!name) {
+      throw new Error('no achievements');
+    }
+
+    expect(pick(en)[name]?.name_i18n).not.toBe(pick(ru)[name]?.name_i18n);
+  });
+});

@@ -7,6 +7,7 @@ import { pickLocalized } from '@/shared/lib';
 
 export const usePatchStatus = () => {
   const t = useTranslations('patch');
+  const tErrors = useTranslations('errors');
   const format = useFormatter();
   const locale = useLocale();
   const { clientPath } = useSelectedClient();
@@ -15,8 +16,10 @@ export const usePatchStatus = () => {
   const status = reportQuery.data?.status ?? { kind: 'idle' as const };
   const view = statusView({ status, needsMigration: installation?.needsMigration ?? false });
   const checkedAt = reportQuery.data?.checkedAt ? new Date(reportQuery.data.checkedAt) : null;
-  const values = statusMessageValues({ status, modpackVersion: installation?.modpackVersion ?? null });
-  const notes = status.kind === 'update_available' && status.notes ? pickLocalized({ text: status.notes, locale }) : null;
+  const reason = status.kind === 'failed' ? tErrors(status.code) : '';
+  const values = { ...statusMessageValues({ status, modpackVersion: installation?.modpackVersion ?? null }), reason };
+  const releaseNotes = status.kind === 'update_available' || status.kind === 'update_ready' ? status.notes : null;
+  const notes = releaseNotes ? pickLocalized({ text: releaseNotes, locale }) : null;
 
   return {
     clientPath,

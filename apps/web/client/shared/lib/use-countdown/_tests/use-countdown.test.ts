@@ -19,10 +19,10 @@ afterEach(() => {
 });
 
 describe('useCountdown', () => {
-  it('splits the remaining time into clock parts', () => {
+  it('counts the remaining whole seconds', () => {
     const { result } = renderHook(() => useCountdown({ seconds: until(addSeconds(START, 2 * 86_400 + 3_723)) }));
 
-    expect(result.current).toEqual({ left: 2 * 86_400 + 3_723, hours: 49, minutes: 2, seconds: 3, isExpired: false });
+    expect(result.current).toEqual({ left: 2 * 86_400 + 3_723, isExpired: false });
   });
 
   it('reads no clock and reports no expiry while rendering on the server', () => {
@@ -81,5 +81,21 @@ describe('useCountdown', () => {
     renderHook(() => useCountdown({ seconds: until(START), onExpire }));
 
     expect(onExpire).not.toHaveBeenCalled();
+  });
+
+  it('ticks only once per update interval', () => {
+    const { result } = renderHook(() => useCountdown({ seconds: until(addSeconds(START, 600)), updateInterval: 60_000 }));
+
+    act(() => {
+      vi.advanceTimersByTime(59_000);
+    });
+
+    expect(result.current.left).toBe(600);
+
+    act(() => {
+      vi.advanceTimersByTime(1_000);
+    });
+
+    expect(result.current.left).toBe(540);
   });
 });

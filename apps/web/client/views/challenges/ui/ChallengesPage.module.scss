@@ -1,5 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
+.srOnly {
+  @include sr-only;
+}
+
 .root {
   @include stack(var(--space-5));
 }

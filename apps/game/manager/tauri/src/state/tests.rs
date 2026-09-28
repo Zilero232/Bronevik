@@ -35,6 +35,20 @@ fn round_trips_the_manifest_with_cyrillic_paths() {
         files: vec![PathBuf::from(r"D:\Игры\Мир танков\mods\1.45.0.0\net.triotmetki.core_0.1.0.mtmod")],
         disabled: vec!["marks_panel".into()],
         manager: Some("0.1.0".into()),
+        dependencies: vec![
+            DependencyRecord {
+                id: "guiflash".into(),
+                owner: DependencyOwner::User,
+                file: "gambiter.guiflash_0.6.5.mtmod".into(),
+                sha256: String::new(),
+            },
+            DependencyRecord {
+                id: "openwg_gameface".into(),
+                owner: DependencyOwner::Ours,
+                file: "net.openwg.gameface_1.2.2.mtmod".into(),
+                sha256: "ab".repeat(32),
+            },
+        ],
     };
 
     manifest.write(dir.path()).unwrap();
@@ -58,6 +72,14 @@ fn reads_an_installer_manifest_without_the_manager_section() {
     assert_eq!(manifest.files.len(), 1);
     assert!(manifest.disabled.is_empty());
     assert_eq!(manifest.manager, None);
+    assert!(manifest.dependencies.is_empty());
+}
+
+#[test]
+fn ignores_dependency_records_it_cannot_read() {
+    assert_eq!(DependencyRecord::parse("x", "theirs|a.mtmod|"), None);
+    assert_eq!(DependencyRecord::parse("x", "ours||ab"), None);
+    assert_eq!(DependencyRecord::parse("x", "user|a.mtmod").map(|record| record.owner), Some(DependencyOwner::User));
 }
 
 #[test]

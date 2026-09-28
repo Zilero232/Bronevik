@@ -13,7 +13,8 @@ const account = (accountId: number, isPrimary: boolean): LestaAccount => ({
   nickname: `Tanker_${accountId}`,
   isPrimary,
   linkedAt: LINKED_AT,
-  tokenExpiresAt: null
+  tokenExpiresAt: null,
+  isStale: false
 });
 
 const row = (tankId: number, moePercent: number | null, nextMarkPercent: number | null): PlayerMarkRow => ({

@@ -23,8 +23,12 @@ export const SocialShell = ({ section, figures, children }: SocialShellProps) =>
   return (
     <div className={s.root}>
       <PageHero
+        breadcrumbs={[
+          { label: t('home'), href: ROUTES.home },
+          { label: t('competitions'), href: ROUTES.social.leagues },
+          { label: t(`sections.${section}.title`) }
+        ]}
         art={{ kind: 'emblem', glyph: <current.icon size={SOCIAL_SHELL.emblemSize} strokeWidth={SOCIAL_SHELL.emblemStroke} /> }}
-        breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t('community') }, { label: t(`sections.${section}.title`) }]}
         figures={state.isSignedIn ? figures : undefined}
         lead={t(`sections.${section}.lead`)}
         title={t(`sections.${section}.title`)}

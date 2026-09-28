@@ -4,9 +4,11 @@ import { BillingCoreModule } from '../billing';
 import { PlayersController } from './players.controller';
 import {
   PlayerAchievementsService,
+  PlayerCareerService,
   PlayerHistoryService,
   PlayerInsightsService,
   PlayerMarksService,
+  PlayerOfficialRatingsService,
   PlayerPlaytimeService,
   PlayerResolverService,
   PlayerSessionsService,
@@ -28,8 +30,18 @@ import {
     PlayerMarksService,
     PlayerInsightsService,
     PlayerPlaytimeService,
-    PlayerViewsService
+    PlayerViewsService,
+    PlayerCareerService,
+    PlayerOfficialRatingsService
   ],
-  exports: [PlayerResolverService, PlayerSummaryService, PlayerTanksService, PlayerHistoryService, PlayerSessionsService, PlayerMarksService]
+  exports: [
+    PlayerResolverService,
+    PlayerSummaryService,
+    PlayerTanksService,
+    PlayerHistoryService,
+    PlayerSessionsService,
+    PlayerMarksService,
+    PlayerCareerService
+  ]
 })
 export class PlayersModule {}

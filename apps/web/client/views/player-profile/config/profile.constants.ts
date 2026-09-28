@@ -1,6 +1,6 @@
 import type { RatingPeriod } from '@otmetki/schemas';
 
-export const PROFILE_TABS = ['overview', 'tanks', 'sessions', 'marks', 'achievements', 'charts', 'insights', 'history'] as const;
+export const PROFILE_TABS = ['overview', 'tanks', 'sessions', 'marks', 'achievements', 'modes', 'charts', 'insights', 'history'] as const;
 
 export const PROFILE_TAB_PARAM = 'tab';
 

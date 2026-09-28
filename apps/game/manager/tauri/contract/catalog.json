@@ -195,6 +195,71 @@
       "version": "0.1.0"
     }
   ],
+  "dependencies": [
+    {
+      "author": {
+        "name": "OpenWG",
+        "url": "https://gitlab.com/openwg/wot.gameface"
+      },
+      "description": {
+        "en": "The modpack window and the Gameface HUD",
+        "ru": "Окно модпака и HUD на Gameface"
+      },
+      "file": "net.openwg.gameface_1.2.2.mtmod",
+      "id": "openwg_gameface",
+      "kind": "dependency",
+      "licence": {
+        "name": "MIT",
+        "sha256": "ae7fdf07fd99a0c2c616ace3d07b50d7063a33a3bc6a9173098aa75bc93833a9",
+        "url": "https://gitlab.com/openwg/wot.gameface/-/raw/v1.2.2/LICENSE"
+      },
+      "packageId": "net.openwg.gameface",
+      "requiredBy": [
+        "marks_panel",
+        "damage_log"
+      ],
+      "restartRequired": true,
+      "sha256": "2bb65f28663e3ab34b5a1102a1bbd1f6e17a65e1f6a898a8645c4ab732b50184",
+      "size": 48445,
+      "sourceUrl": "https://gitlab.com/-/project/68695173/uploads/43577d5bab856523c1b7a6dcada27f23/net.openwg.gameface_1.2.2.mtmod",
+      "title": {
+        "en": "OpenWG Gameface",
+        "ru": "OpenWG Gameface"
+      },
+      "version": "1.2.2"
+    },
+    {
+      "author": {
+        "name": "CH4MPi",
+        "url": "https://github.com/CH4MPi/GUIFlash"
+      },
+      "description": {
+        "en": "The fallback HUD",
+        "ru": "Запасной HUD"
+      },
+      "file": "gambiter.guiflash_0.6.6.mtmod",
+      "id": "guiflash",
+      "kind": "dependency",
+      "licence": {
+        "name": "MIT",
+        "sha256": "516fddc54dc15c2589d40017fc985adc59565ff7fbe8e7bc16851205126dd7fc",
+        "url": "https://raw.githubusercontent.com/CH4MPi/GUIFlash/v0.6.6/LICENSE"
+      },
+      "packageId": "gambiter.guiflash",
+      "requiredBy": [
+        "damage_log"
+      ],
+      "restartRequired": false,
+      "sha256": "a0b6dc2e75663008a4ced9e0c00449be84b3c3d5d932f8bbcaa2b334ae3d1cb5",
+      "size": 62862,
+      "sourceUrl": "https://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod",
+      "title": {
+        "en": "GUIFlash",
+        "ru": "GUIFlash"
+      },
+      "version": "0.6.6"
+    }
+  ],
   "extension": "mtmod",
   "modpackVersion": "0.1.0",
   "ownedPatterns": [

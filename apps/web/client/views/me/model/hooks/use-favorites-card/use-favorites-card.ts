@@ -1,13 +1,18 @@
 'use client';
 
-import { getFavorites, removeFavorite } from '@/features/player/toggle-favorite';
+import { useMutation } from '@tanstack/react-query';
 
-import { useMeMutation } from '../use-me-mutation';
+import { getFavorites, removeFavorite } from '@/features/player/toggle-favorite';
+import { QUERY_KEYS } from '@/shared/constants';
+
 import { useMeSection } from '../use-me-section';
 
 export const useFavoritesCard = () => {
   const { data: favorites, isPending, isError, isFetching, refetch } = useMeSection({ section: 'favorites', fetcher: getFavorites });
-  const remove = useMeMutation({ section: 'favorites', mutationFn: removeFavorite, successKey: 'favoriteRemoved' });
+  const remove = useMutation({
+    mutationFn: removeFavorite,
+    meta: { successKey: 'me.toast.favoriteRemoved', errorKey: 'me.toast.failed', invalidates: [QUERY_KEYS.me.section('favorites')] }
+  });
 
   return {
     favorites,

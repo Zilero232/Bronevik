@@ -39,15 +39,15 @@ Local builds need Rust stable (MSVC) and WebView2 (Windows 10/11 ship it). `taur
 
 ## What it does
 
-| Screen      | What                                                                                                                                                                                                                                                                                             |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Главная     | The update status (up to date / update available / moved / updated / waiting for a release / offline / failed) with its action, the selected client (version, branch, mods folder) and the install summary. Not installed: «Установить модпак».                                                  |
-| Установка   | The first-run wizard, and «Изменить набор» later: client → components (presets «Рекомендуемый / Минимальный (FPS) / Стример / Свой», category tree with dependencies, preview pane with description, fair-play note and video; an installer `.ini` profile can be loaded) → other mods → review. |
-| Компоненты  | The catalogue by category with search, previews and fair-play notes; a switch per component moves its `.mtmod` in or out of `mods\<version>` instantly. Switching on a component that was never installed downloads it from the current release (same version only).                             |
-| Профили     | The in-game settings profiles (`profiles.json`, shared with the Gameface window): save the current settings, apply, rename, delete, copy the `TM1.` code, import a code.                                                                                                                         |
-| Бэкапы      | Snapshots of `mods\<version>`, `res_mods\<version>` and `mods\configs\otmetki`, rollback, delete; removing the modpack from the client (optionally rolling back to the latest snapshot and deleting the mod settings).                                                                           |
-| Настройки   | Autostart with Windows (on by default), notifications, automatic update after a patch, check interval (15 min … 12 h), language, the game client (detected or a folder picked by hand).                                                                                                          |
-| О программе | Version and self-update, the logs zip (to the desktop), where the data lives, the unsigned-build note.                                                                                                                                                                                           |
+| Screen      | What                                                                                                                                                                                                                                                                                                                                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Главная     | The update status (up to date / update available / moved / updated / waiting for a release / offline / failed) with its action, the selected client (version, branch, mods folder) and the install summary. Not installed: «Установить модпак».                                                                                                                    |
+| Установка   | The first-run wizard, and «Изменить набор» later: client → components (presets «Рекомендуемый / Минимальный (FPS) / Стример / Свой», category tree with dependencies, preview pane with description, fair-play note and video, the required third-party libraries with their licence and author; an installer `.ini` profile can be loaded) → other mods → review. |
+| Компоненты  | The catalogue by category with search, previews and fair-play notes; a switch per component moves its `.mtmod` in or out of `mods\<version>` instantly. Switching on a component that was never installed downloads it from the current release (same version only).                                                                                               |
+| Профили     | The in-game settings profiles (`profiles.json`, shared with the Gameface window): save the current settings, apply, rename, delete, copy the `TM1.` code, import a code.                                                                                                                                                                                           |
+| Бэкапы      | Snapshots of our packages, the parked components, `mods\configs\otmetki` and any other mods an install removed (automatic ones before every update, manual ones kept apart), rollback, delete; removing the modpack from the client (optionally rolling back to the latest snapshot and deleting the mod settings together with the `%APPDATA%` copies).           |
+| Настройки   | Autostart with Windows (asked on the first run, pre-ticked), notifications, automatic update after a patch, check interval (15 min … 12 h), language, the game client (detected or a folder picked by hand).                                                                                                                                                       |
+| О программе | Version and self-update, the logs zip (to the desktop), where the data lives, the unsigned-build note.                                                                                                                                                                                                                                                             |
 
 Closing the window hides it to the tray (menu: open, check for updates, quit). Autostart launches the app with `--background`: tray only, no window.
 
@@ -59,26 +59,39 @@ Closing the window hides it to the tray (menu: open, check for updates, quit). A
 
 `%LOCALAPPDATA%\TriOtmetki\clients\<key>\` with `key` = the first 16 hex characters of SHA-256 over the UTF-16LE of the ASCII-lowercased client path (exactly the removed Inno installer's `OtmClientKey`), so installs it made are picked up as they are:
 
-| File                         | What                                                                                                                                                                                                                          |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `client.ini`                 | `[client] path, version, mods, res_mods` (UTF-16LE with BOM, like every state `.ini`)                                                                                                                                         |
-| `manifest.ini`               | `[install] client, version, mods, installer, modpack, date, components` (Inno names `category\id`), `[files] count, 0..n` (absolute paths of our packages in the mods folder); the manager adds `[manager] version, disabled` |
-| `disabled\`                  | switched-off packages, moved out of `mods\<version>` (moved back when switched on)                                                                                                                                            |
-| `backups\<yyyymmdd-hhnnss>\` | `snapshot.ini` (`mods`, `res_mods`, `configs` + `<part>_exists`) and a mirror of each part; the newest 3 are kept                                                                                                             |
+| File                         | What                                                                                                                                                                                                                                                       |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `client.ini`                 | `[client] path, version, mods, res_mods` (UTF-16LE with BOM, like every state `.ini`)                                                                                                                                                                      |
+| `manifest.ini`               | `[install] client, version, mods, installer, modpack, date, components` (Inno names `category\id`), `[files] count, 0..n` (absolute paths of our packages in the mods folder); the manager adds `[manager] version, disabled` and `[dependencies]` (below) |
+| `notices\<id>\LICENSE`       | the licence of each third-party dependency the manager installed into this client                                                                                                                                                                          |
+| `disabled\`                  | switched-off packages, moved out of `mods\<version>` (moved back when switched on)                                                                                                                                                                         |
+| `backups\<yyyymmdd-hhnnss>\` | `snapshot.ini` (`kind` auto/manual, `modpack_version`, parts `modpack`, `disabled`, `configs`, `removed` + `<part>_exists`; the installer's `mods` / `res_mods` parts are still restored) and a copy of each part; 3 automatic and 10 manual ones are kept |
 
-Our files are the manifest's files plus anything matching `ownedPatterns` of the catalogue (`net.triotmetki.*.mtmod`, `otmetki.*.mtmod`, …). Other mods are never touched unless the player ticks them on the wizard's «Другие моды» step and confirms; a snapshot is then always taken first, and only paths from the listed set can be removed. Install, rollback, toggles and profile writes refuse while the game runs from that folder.
+Our files are the manifest's files plus anything matching `ownedPatterns` of the catalogue (`net.triotmetki.*.mtmod`, `otmetki.*.mtmod`, …). Other mods are never touched unless the player ticks them on the wizard's «Другие моды» step and confirms; a snapshot is then always taken first, and only paths from the listed set can be removed. Install, update, migration, rollback, toggles and profile writes refuse while the game runs from that folder, and all of them (the background auto-update included) take one write lock: a second writer gets `busy` (the background check skips that tick). An install or update writes and verifies every package as `<file>.part` first, then retires the old files as `<file>.otm-old` and renames the new ones in; any failure puts the old files back, and if even that fails the snapshot taken for the operation is restored. A migration copies through `.part`, compares size and sha256, and removes what it copied when a later file fails. A rollback replaces only our packages, maps the parts onto the client's current folders and only adds back missing other mods, never deleting one; a restored `configs` is re-saved with fresh `saved_at.json` stamps in both folders so the `%APPDATA%` copy cannot revert it. Snapshots check free disk space first.
 
-Uninstalling the app (Windows «Приложения») runs `otmetki-manager.exe --uninstall-mods` from the NSIS hook when the player agrees: in every recorded client it removes our files (manifest + masks) and the state folder, keeps other mods and the mod settings. Silent uninstalls (updates) keep the modpack.
+### Runtime dependencies (`tauri/src/dependencies`)
+
+Third-party mods our packages need at run time — OpenWG Gameface (MIT; the in-game window and the Gameface HUD) and CH4MPi's GUIFlash 0.6.6 (MIT; the fallback HUD renderer) — come as `kind: "dependency"` entries of `components.json` (see «Components catalogue»). The wizard lists the ones the selected components need (`requiredBy`), ticked automatically, with the licence and an author link; the player may untick one. The install then, per dependency:
+
+- **finds a copy first**: any `<packageId>_*.mtmod|wotmod` (or `<packageId>.mtmod|wotmod`) up to 4 levels deep in `mods\<version>`. A copy the manager did not record as its own is the player's: it is used as is, recorded as `user`, never replaced, never removed. A file we installed whose sha256 no longer matches (the player put their own build over it) counts as theirs too;
+- **otherwise downloads the pinned release** from `sourceUrl` (size capped by `size`), checks `sha256`, downloads the licence from `licence.url` and checks `licence.sha256`, all before any file in the client changes; then writes it through `.part` like our packages (an older version we own is retired), saves the licence to `clients\<key>
+otices\<id>\LICENSE` and records it as ours.
+
+`manifest.ini` keeps one line per dependency under `[dependencies]`: `<id>=ours|<file>|<sha256>` (installed by the manager — «ours: dependency») or `<id>=user|<file>|` (the player's). Only `ours` entries whose file still has the recorded sha256 are ever touched: a migration or an update after a patch copies them into the new `mods\<version>`, and uninstalling removes them with their notices; an update (the automatic one after a patch, or «Обновить модпак») also replaces an `ours` dependency whose pinned file in the refreshed catalogue differs (`dependencies::updates`): the new release file and its licence are downloaded and checked with our packages, before any file changes, and installed after them (the older copy is retired; a failure at that step is logged and leaves the carried copy); `user` entries and unrecorded copies stay. Ours are left out of the wizard's «Другие моды» list. Switching a component on in «Компоненты» runs the wizard's pipeline for the dependencies it and the components it pulls in need (`dependencies::needed_to_enable`, no exclusions): under the write lock, with the game closed, every missing one is downloaded and checked before any file changes (a failure leaves the component off), then the component is enabled and the dependencies are installed or, for the player's copies, recorded as `user`. Its card lists them («Сторонние библиотеки»). Switching one off removes nothing. OpenWG Gameface registers our pages through `res_map` on the first start, which restarts the client once; the wizard says so when it installs Gameface (`restartRequired`).
+
+Dependency downloads use their own allowlist, compiled into the manager (`releases/sources.rs`), not the catalogue: https only, no port or credentials, exact host plus path prefix — `github.com/CH4MPi/GUIFlash/releases/download/`, `raw.githubusercontent.com/CH4MPi/GUIFlash/`, `gitlab.com/-/project/68695173/uploads/` (OpenWG Gameface's release files; its official releases are on GitLab, not GitHub) and `gitlab.com/openwg/wot.gameface/-/raw/`; redirects may also go to GitHub's release-asset storage (`release-assets.githubusercontent.com/github-production-release-asset/`, `objects.githubusercontent.com/github-production-release-asset-2e65be/`). Anything else is `untrusted_host`. A new dependency host means a new rule there.
+
+Uninstalling the app (Windows «Приложения») runs `otmetki-manager.exe --uninstall-mods` from the NSIS hook when the player agrees: in every recorded client it removes our files (manifest + masks, plus the dependencies recorded as ours) and the state folder, keeps other mods (the player's own copies of the dependencies included) and the mod settings. Silent uninstalls (updates) keep the modpack.
 
 ### Profiles and durable settings (`tauri/src/profiles`, `durable`)
 
-`mods\configs\otmetki\profiles.json` is the in-game UI's file (`{version: 1, active, profiles: [{id, name, created, updated, data: {config, components}}]}`, at most 12, names up to 40 characters, `server_url` / `bind_code` / `settings_action` never stored). Applying a profile merges `data.config` into `config.json` and each section of `data.components` into `components.json`. Codes are `TM1.` + base64url(zlib(JSON)), compatible with the mod.
+`mods\configs\otmetki\profiles.json` is the in-game UI's file (`{version: 1, active, profiles: [{id, name, created, updated, data: {config, components}}]}`, at most 12, names up to 40 characters, `server_url`, `bind_code`, `settings_action` and the privacy and network switches — `send_*`, `upload_replays`, `publish_replays`, `share_settings`, `settings_target`, `settings_anonymous_stats`, `settings_include_*` — are never stored or applied, the same list as the mod's `ui/profiles`). Applying a profile merges `data.config` into `config.json` (a value whose JSON type differs from the current one is skipped) and each section of `data.components` into `components.json`. An imported code is added inactive; it takes effect only when the player applies it. Codes are `TM1.` + base64url(zlib(JSON)), compatible with the mod.
 
-Every write follows the mod's durable-settings contract ([modpack README «Durable settings»](../modpack/README.md#durable-settings-appdatatriotmetki)): the whole file is written atomically to `mods\configs\otmetki\<name>` and to `%APPDATA%\TriOtmetki\<name>`, with the same unix time in each folder's `saved_at.json`. Reads take the newer copy and restore a missing or older game-folder copy.
+Every write follows the mod's durable-settings contract ([modpack README «Durable settings»](../modpack/README.md#durable-settings-appdatatriotmetki)): the whole file is written atomically to `mods\configs\otmetki\<name>` and to `%APPDATA%\TriOtmetki\<name>`, with the same unix time in each folder's `saved_at.json`. Reads take the newer copy, restore a missing or older game-folder copy and refresh a missing or older `%APPDATA%` copy; the file mtime is set to the stamp. «Удалить настройки мода и привязку к сайту» deletes the game-folder settings and, unless another client still has the modpack, the `%APPDATA%` copies (`credentials.json` included) and their `saved_at.json` entries.
 
 ### Components catalogue
 
-`components.json` from `tools/build/setupkit` over [apps/game/modpack/catalog](../modpack/catalog/README.md) (schema in its [README](../modpack/catalog/README.md#componentsjson)). The manager reads the newer of `%LOCALAPPDATA%\TriOtmetki\manager\components.json` (downloaded with a release, checked by sha256) and `resources\components.json` shipped with the app (CI copies the real one there; the committed file is an empty placeholder). Previews are read from `previews\` next to whichever catalogue won.
+`components.json` from `tools/build/setupkit` over [apps/game/modpack/catalog](../modpack/catalog/README.md) (schema in its [README](../modpack/catalog/README.md#componentsjson)). Entries with `kind: "dependency"` are third-party runtime dependencies, not our packages; the manager reads them into `dependencies` (the UI gets them there too) and drops one that claims our names, has no 64-hex `sha256` / `licence.sha256` or a file name that is not `<packageId>_….mtmod|wotmod`. Their fields: `id`, `kind`, `packageId`, `version`, `file`, `title`, `description`, `author {name, url}`, `licence {name, url, sha256}`, `sourceUrl`, `sha256`, `size`, `requiredBy` (our component ids), `restartRequired`. The entries live in the modpack's [catalog.json](../modpack/catalog/catalog.json) (background: [docs/specs/2026-09-28-manager-runtime-dependencies.md](../../../docs/specs/2026-09-28-manager-runtime-dependencies.md)). The manager reads the newer of `%LOCALAPPDATA%\TriOtmetki\manager\components.json` (downloaded with a release, checked by sha256) and `resources\components.json` shipped with the app (CI copies the real one there; the committed file is an empty placeholder). Previews are read from `previews\` next to whichever catalogue won.
 
 ### Patches and updates (`tauri/src/patch`, `service/check.rs`, `background`)
 
@@ -96,7 +109,8 @@ On start, every minute cheaply (has `version.xml` moved past the manifest's vers
     "games": ["1.46.*"],
     "notes": { "ru": "…", "en": "…" },
     "catalog": { "url": "https://…/components.json", "sha256": "…" },
-    "packages": [{ "id": "core", "file": "net.triotmetki.core_0.2.0.mtmod", "url": "https://…", "sha256": "…", "size": 389723 }]
+    "packages": [{ "id": "core", "file": "net.triotmetki.core_0.2.0.mtmod", "url": "https://…", "sha256": "…", "size": 389723 }],
+    "signature": "<contents of the .sig>"
   }
 }
 ```
@@ -111,14 +125,36 @@ On start, every minute cheaply (has `version.xml` moved past the manifest's vers
 | yes             | unreachable                       | offline, check again                                                                                                                  |
 | no              | compatible, newer                 | «Доступна версия» + «Обновить модпак» (game must be closed)                                                                           |
 
-With «Обновлять модпак после патча автоматически» off, a patch only reports «waiting» and the Home screen offers «Перенести в новую папку». Downloads are https only; a package whose sha256 differs is refused before any file in the client changes. Notifications (Windows toasts) announce migrated / updated / waiting / available / failed, once per change.
+With «Обновлять модпак после патча автоматически» off, a patch reports `migration_ready` («Перенести в новую папку») or `update_ready` («Обновить модпак» installs the compatible release). When the game is running the automatic action is `deferred` and runs as soon as the game exits. Every detected client with a manifest is checked, not only the selected one; unsupported clients (`problem` set) are reported as `unsupported` and every mutating command refuses them with `client_unsupported`. A failure is reported as `failed { code }` and shown translated, never as a raw OS error or path.
 
-The server side is `apps/web/server/src/modules/modpack-releases`: it reads the release index from `MODPACK_RELEASES_URL` (cached 5 minutes, the last good copy survives a failed refresh) or the committed `assets/releases.json` (empty until the first release), validated by `modpackReleaseIndexSchema` from `@otmetki/schemas`:
+Every release must carry `signature`: a minisign signature (the same key as the self-update, `tauri.conf.json` `plugins.updater.pubkey`, compiled in as `RELEASE_PUBLIC_KEY`) over this text, LF line ends, packages sorted by id:
+
+```text
+otmetki-modpack-release/1
+version 0.2.0
+games 1.46.*
+catalog <catalog sha256, lowercase, or ->
+package core net.triotmetki.core_0.2.0.mtmod 389723 <sha256, lowercase>
+```
+
+Sign it with `bunx tauri signer sign -k %USERPROFILE%\.tauri\otmetki-manager.key release-0.2.0.txt` and put the `.sig` contents (base64) into the release's `signature`. An unsigned or mis-signed release is refused (`signature_invalid`); a debug build accepts an unsigned one only with `OTMETKI_ALLOW_UNSIGNED` set. Downloads are https from `triotmetki.ru` or its subdomains only (redirects included, `untrusted_host` otherwise), capped by the listed `size`; a package whose sha256 differs is refused before any file in the client changes. Bundled packages are used only when the bundled catalogue has the same modpack version and a sha256 for each component. Notifications (Windows toasts) announce migrated / updated / ready / deferred / waiting / available / failed, once per change and per client.
+
+The server side is `apps/web/server/src/modules/modpack-releases`: it reads the release index from `MODPACK_RELEASES_URL` (cached 5 minutes; a stale copy is served at once while one shared refresh with a 5 s timeout runs in the background, and a failed refresh is retried after a minute, so the last good copy survives) or the committed `assets/releases.json` (empty until the first release), validated by `modpackReleaseIndexSchema` from `@otmetki/schemas`:
 
 ```json
 {
   "schemaVersion": 1,
-  "releases": [{ "version": "0.2.0", "publishedAt": "…", "games": ["1.46.*"], "notes": null, "catalog": null, "packages": ["…"] }],
+  "releases": [
+    {
+      "version": "0.2.0",
+      "publishedAt": "…",
+      "games": ["1.46.*"],
+      "notes": null,
+      "catalog": null,
+      "packages": ["…"],
+      "signature": "<contents of the .sig>"
+    }
+  ],
   "manager": {
     "version": "0.2.0",
     "publishedAt": "…",
@@ -161,7 +197,7 @@ Anything else is ignored. The site builds these links in `apps/web/client/featur
 ## Releases (manual for now)
 
 1. Build the modpack release (`modpack.yml`, manual run) and take the `modpack-catalog` artifact (`components.json` + `previews/`, the same as `bun run build:catalog` in apps/game/modpack); copy it into `tauri/resources/` for the manager build, or publish it and reference it as the release `catalog`.
-2. Upload the `.mtmod` packages to the CDN, add the release to the index (`MODPACK_RELEASES_URL` or `assets/releases.json`) with sha256 and sizes.
+2. Upload the `.mtmod` packages to the CDN (`*.triotmetki.ru`), add the release to the index (`MODPACK_RELEASES_URL` or `assets/releases.json`) with sha256, sizes and the `signature` over its payload (see «Patches and updates»).
 3. Run `manager.yml` manually: the `modpack-manager` artifact holds the NSIS installer and its `.sig`. Upload the installer, put its URL and the `.sig` contents into the index's `manager` block, and publish the same installer as `https://triotmetki.ru/downloads/otmetki-manager-setup.exe`: the site's /mod page links there (`MOD_DISTRIBUTION.managerUrl` in `apps/web/client/shared/config/site`).
 
 ## Not verified yet

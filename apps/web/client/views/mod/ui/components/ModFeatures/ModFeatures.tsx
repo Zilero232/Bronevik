@@ -13,9 +13,11 @@ export const ModFeatures = () => {
     <section className={s.root}>
       <SectionHeader title={t('title')} variant='display' />
       <ul className={s.grid}>
-        {MOD_FEATURES.map(({ key, icon: Icon }) => (
-          <li key={key} className={s.card}>
-            <Icon aria-hidden className={s.icon} size={MOD_PAGE.featureIconSize} />
+        {MOD_FEATURES.map(({ key, icon: Icon, tone }) => (
+          <li key={key} className={s.card} data-tone={tone}>
+            <span aria-hidden className={s.icon}>
+              <Icon size={MOD_PAGE.featureIconSize} />
+            </span>
             <h3 className={s.title}>{t(`items.${key}.title`)}</h3>
             <p className={s.text}>{t(`items.${key}.text`)}</p>
           </li>

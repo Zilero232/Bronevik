@@ -32,12 +32,14 @@ const provision = ({ provisionId, type, fits = true }: Pick<Provision, 'provisio
 const skill = (name: string): CrewSkill => ({
   skill: name,
   name,
+  nameEn: null,
   nameKey: null,
   descriptionKey: null,
   type: null,
   roles: [],
   isCommon: false,
   description: null,
+  descriptionEn: null,
   image: null,
   data: { name, params: [], roles: [], extras: {} },
   updatedAt: new Date()

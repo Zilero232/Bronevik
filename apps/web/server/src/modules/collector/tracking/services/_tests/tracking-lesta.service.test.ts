@@ -3,6 +3,7 @@ import { mockDeep } from 'vitest-mock-extended';
 
 import type { LestaClients } from '../../../../../core';
 
+import { LestaApiError } from '../../../../../lib/lesta';
 import { TRACKING } from '../../config';
 import { TrackingLestaService } from '../tracking-lesta.service';
 
@@ -54,5 +55,30 @@ describe('TrackingLestaService field selection', () => {
     clients.bulk.account.info.mockResolvedValue({ 1: null });
 
     expect(await service.port('bulk').accountInfo([1])).toEqual({ 1: null });
+  });
+});
+
+describe('TrackingLestaService mode extras', () => {
+  it('asks for the mode blocks and falls back to the base extras once Lesta rejects them', async () => {
+    const { clients, service } = createLesta();
+
+    clients.bulk.account.info.mockRejectedValueOnce(new LestaApiError({ code: 'INVALID_EXTRA', method: 'account/info', field: 'extra' }));
+    clients.bulk.account.info.mockResolvedValue({ 1: null });
+
+    await service.port('bulk').accountInfo([1]);
+    await service.port('bulk').accountInfo([2]);
+
+    const extras = clients.bulk.account.info.mock.calls.map(([input]) => input.extra);
+
+    expect(extras[0]).toEqual([...TRACKING.lesta.accountExtra, ...TRACKING.lesta.accountModeExtra]);
+    expect(extras.slice(1)).toEqual([TRACKING.lesta.accountExtra, TRACKING.lesta.accountExtra]);
+  });
+
+  it('rethrows any other failure', async () => {
+    const { clients, service } = createLesta();
+
+    clients.bulk.tanks.stats.mockRejectedValue(new LestaApiError({ code: 'SOURCE_NOT_AVAILABLE', method: 'tanks/stats' }));
+
+    await expect(service.port('bulk').tankStats({ accountId: 1, tankIds: [2] })).rejects.toThrow('SOURCE_NOT_AVAILABLE');
   });
 });

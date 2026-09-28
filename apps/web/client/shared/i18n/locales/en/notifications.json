@@ -57,7 +57,8 @@
     "streamer_live": "Followed streamer is live",
     "tank_level_up": "Tank level up",
     "tank_challenge_done": "Weekly challenge complete",
-    "plus_checkout_open": "Plus checkout is open"
+    "plus_checkout_open": "Plus checkout is open",
+    "lesta_relink_required": "Lesta account needs relinking"
   },
   "eventGroups": {
     "marks": "Marks and mastery",

@@ -1,6 +1,10 @@
 import type { z } from 'zod';
 
 import type {
+  careerModeLineSchema,
+  careerModeSchema,
+  careerModesSchema,
+  careerModeTankSchema,
   modeMetaQuerySchema,
   modeMetaSchema,
   modeRankSchema,
@@ -27,3 +31,8 @@ export type MyModeStatsQuery = z.infer<typeof myModeStatsQuerySchema>;
 export type MyModeTank = z.infer<typeof myModeTankSchema>;
 export type MyModeLine = z.infer<typeof myModeLineSchema>;
 export type MyModeStats = z.infer<typeof myModeStatsSchema>;
+
+export type CareerMode = z.infer<typeof careerModeSchema>;
+export type CareerModeTank = z.infer<typeof careerModeTankSchema>;
+export type CareerModeLine = z.infer<typeof careerModeLineSchema>;
+export type CareerModes = z.infer<typeof careerModesSchema>;

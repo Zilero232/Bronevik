@@ -5,11 +5,12 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use super::Manager;
-use crate::catalog::{Catalog, LoadedCatalog, Localized};
-use crate::components::{read_installation, Installation};
+use crate::catalog::{read_catalog, Catalog, LoadedCatalog, Localized};
+use crate::components::{read_installation, ClientContext, ComponentState, Installation};
+use crate::dependencies::{self, DependencyState, DependencyStatus, DownloadPlanInput, FetchedDependency, InstallDependenciesInput, ResolveInput};
 use crate::detect::GameClient;
 use crate::error::{AppError, AppResult, ErrorCode};
-use crate::install::{self, owned_patterns_catalog, ForeignEntry, InstallInput, UninstallInput};
+use crate::install::{self, installed_elsewhere, owned_patterns_catalog, ForeignEntry, InstallInput, UninstallInput};
 use crate::patch::{fetch_packages, FetchedPackage};
 use crate::process::ensure_closed;
 use crate::releases::{sha256_hex, Release, ReleasePackage, ReleaseStatus};
@@ -39,6 +40,9 @@ pub struct InstallPlan {
     pub source: PackageSource,
     pub other_mods: Vec<ForeignEntry>,
     pub installed: bool,
+    pub current_components: Vec<String>,
+    pub parked_components: Vec<String>,
+    pub dependencies: Vec<DependencyStatus>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -50,6 +54,8 @@ pub struct InstallRequest {
     pub remove_others: Vec<PathBuf>,
     #[serde(default = "take_snapshot_default")]
     pub take_snapshot: bool,
+    #[serde(default)]
+    pub excluded_dependencies: Vec<String>,
 }
 
 fn take_snapshot_default() -> bool {
@@ -66,14 +72,20 @@ pub struct UninstallRequest {
     pub remove_config: bool,
 }
 
-fn bundled_packages(dir: &Path, catalog: &Catalog, ids: &BTreeSet<String>) -> Option<Vec<FetchedPackage>> {
+pub struct BundledSet {
+    pub packages: Vec<FetchedPackage>,
+    pub version: String,
+}
+
+pub fn bundled_packages(dir: &Path, catalog: &Catalog, ids: &BTreeSet<String>) -> Option<Vec<FetchedPackage>> {
     ids.iter()
         .map(|id| {
             let component = catalog.component(id)?;
+            let expected = component.sha256.as_deref()?;
             let bytes = fs::read(dir.join(&component.file)).ok()?;
             let actual = sha256_hex(&bytes);
 
-            if component.sha256.as_deref().is_some_and(|expected| !expected.eq_ignore_ascii_case(&actual)) {
+            if !expected.eq_ignore_ascii_case(&actual) {
                 return None;
             }
 
@@ -91,6 +103,44 @@ fn bundled_packages(dir: &Path, catalog: &Catalog, ids: &BTreeSet<String>) -> Op
         .collect()
 }
 
+pub struct BundledInput<'a> {
+    pub catalog_file: Option<&'a Path>,
+    pub packages_dir: Option<&'a Path>,
+    pub in_use: &'a Catalog,
+    pub ids: &'a BTreeSet<String>,
+}
+
+pub fn bundled_set(input: BundledInput) -> Option<BundledSet> {
+    let bundled = read_catalog(input.catalog_file?)?;
+
+    if input.ids.is_empty() || bundled.modpack_version != input.in_use.modpack_version {
+        return None;
+    }
+
+    let packages = bundled_packages(input.packages_dir?, &bundled, input.ids)?;
+
+    Some(BundledSet { packages, version: bundled.modpack_version })
+}
+
+fn without_owned_dependencies(others: Vec<ForeignEntry>, statuses: &[DependencyStatus]) -> Vec<ForeignEntry> {
+    let owned: Vec<&str> = statuses
+        .iter()
+        .filter(|status| matches!(status.state, DependencyState::Ours | DependencyState::Outdated))
+        .filter_map(|status| status.file.as_deref())
+        .collect();
+
+    others.into_iter().filter(|entry| !owned.iter().any(|file| entry.name.eq_ignore_ascii_case(file))).collect()
+}
+
+fn components_in(installation: &Installation, state: Option<ComponentState>) -> Vec<String> {
+    installation
+        .components
+        .iter()
+        .filter(|component| component.state != ComponentState::Missing && state.is_none_or(|state| component.state == state))
+        .map(|component| component.id.clone())
+        .collect()
+}
+
 impl Manager {
     async fn compatible_release(&self, client: &GameClient) -> Option<Release> {
         let latest = self.releases.latest(&client.version.to_string()).await.ok()?;
@@ -98,10 +148,19 @@ impl Manager {
         latest.release.filter(|_| latest.status == ReleaseStatus::Compatible)
     }
 
-    fn bundled_available(&self, catalog: &Catalog) -> bool {
-        let ids: BTreeSet<String> = catalog.components.iter().map(|component| component.id.clone()).collect();
+    pub(super) async fn fetch_dependencies(&self, input: DownloadPlanInput<'_>) -> AppResult<Vec<FetchedDependency>> {
+        let downloads = dependencies::to_download(input)?;
 
-        !ids.is_empty() && self.bundled.packages.as_deref().is_some_and(|dir| bundled_packages(dir, catalog, &ids).is_some())
+        dependencies::fetch(&self.releases, &downloads).await
+    }
+
+    fn bundled_for(&self, catalog: &Catalog, ids: &BTreeSet<String>) -> Option<BundledSet> {
+        bundled_set(BundledInput {
+            catalog_file: self.bundled.catalog.as_deref(),
+            packages_dir: self.bundled.packages.as_deref(),
+            in_use: catalog,
+            ids,
+        })
     }
 
     pub async fn prepare_install(&self, client_path: Option<&Path>) -> AppResult<InstallPlan> {
@@ -109,24 +168,49 @@ impl Manager {
         let release = self.compatible_release(&client).await;
 
         if let Some(release) = &release {
-            if let Err(error) = self.refresh_catalog(release).await {
+            let refreshed = match self.try_write_guard() {
+                Ok(_guard) => self.refresh_catalog(release).await,
+                Err(error) => Err(error),
+            };
+
+            if let Err(error) = refreshed {
                 log::warn!("catalog refresh: {error}");
             }
         }
 
         let catalog = self.catalog();
-        let bundled = catalog.as_ref().is_some_and(|loaded| self.bundled_available(&loaded.catalog));
+        let bundled = catalog.as_ref().is_some_and(|loaded| {
+            let ids: BTreeSet<String> = loaded.catalog.components.iter().map(|component| component.id.clone()).collect();
+
+            self.bundled_for(&loaded.catalog, &ids).is_some()
+        });
         let source = match (bundled, &release) {
             (true, _) => PackageSource::Bundled,
             (false, Some(_)) => PackageSource::Release,
             (false, None) => PackageSource::Unavailable,
         };
         let owned = owned_patterns_catalog(catalog.as_ref().map(|loaded| loaded.catalog.clone()));
-        let installed = crate::state::Manifest::read(&self.layout.client_dir(&client.path))?.is_some();
+        let client_dir = self.layout.client_dir(&client.path);
+        let installed = crate::state::Manifest::read(&client_dir)?.is_some();
+        let installation = catalog
+            .as_ref()
+            .map(|loaded| read_installation(ClientContext { client_dir: &client_dir, client: &client, catalog: &loaded.catalog }))
+            .transpose()?;
+        let dependency_statuses = catalog
+            .as_ref()
+            .map(|loaded| dependencies::statuses(ClientContext { client_dir: &client_dir, client: &client, catalog: &loaded.catalog }))
+            .transpose()?
+            .unwrap_or_default();
 
         Ok(InstallPlan {
-            other_mods: install::other_mods(&client, &owned),
+            other_mods: without_owned_dependencies(install::other_mods(&client, &owned), &dependency_statuses),
+            dependencies: dependency_statuses,
             release: release.map(|release| ReleaseSummary { version: release.version, notes: release.notes }),
+            current_components: installation.as_ref().map(|installation| components_in(installation, None)).unwrap_or_default(),
+            parked_components: installation
+                .as_ref()
+                .map(|installation| components_in(installation, Some(ComponentState::Disabled)))
+                .unwrap_or_default(),
             client,
             catalog,
             source,
@@ -135,15 +219,15 @@ impl Manager {
     }
 
     pub async fn install_modpack(&self, request: InstallRequest) -> AppResult<Installation> {
-        let scope = self.scope(request.client_path.as_deref())?;
+        let _guard = self.write_guard().await?;
+        let scope = self.usable_scope(request.client_path.as_deref())?;
 
         ensure_closed(&scope.client.path)?;
 
         let catalog = &scope.catalog.catalog;
         let ids = install::selection(catalog, &request.components)?;
-        let bundled = self.bundled.packages.as_deref().and_then(|dir| bundled_packages(dir, catalog, &ids));
-        let (packages, version) = match bundled {
-            Some(packages) => (packages, catalog.modpack_version.clone()),
+        let (packages, version) = match self.bundled_for(catalog, &ids) {
+            Some(bundled) => (bundled.packages, bundled.version),
             None => {
                 let release = self
                     .compatible_release(&scope.client)
@@ -157,30 +241,39 @@ impl Manager {
                 (fetch_packages(&self.releases, &release, &ids).await?, release.version)
             }
         };
+        let wanted = dependencies::resolve(ResolveInput { catalog, components: &ids, excluded: &request.excluded_dependencies })?;
+        let fetched =
+            self.fetch_dependencies(DownloadPlanInput { context: scope.context(), wanted: &wanted, removing: &request.remove_others }).await?;
+        let parked: BTreeSet<String> = components_in(&read_installation(scope.context())?, Some(ComponentState::Disabled)).into_iter().collect();
 
+        ensure_closed(&scope.client.path)?;
         install::install(InstallInput {
             context: scope.context(),
             packages: &packages,
             modpack_version: &version,
             remove_others: &request.remove_others,
             take_snapshot: request.take_snapshot,
+            parked: &parked,
+            durable_dir: &self.layout.durable_dir(),
         })?;
+        dependencies::install(InstallDependenciesInput { context: scope.context(), wanted: &wanted, fetched: &fetched })?;
 
         read_installation(scope.context())
     }
 
-    pub fn uninstall_modpack(&self, request: &UninstallRequest) -> AppResult<()> {
-        let client = self.client(request.client_path.as_deref())?;
-        let client_dir = self.layout.client_dir(&client.path);
-        let catalog = owned_patterns_catalog(self.catalog().map(|loaded| loaded.catalog));
-        let latest = snapshots::list(&client_dir).into_iter().next().map(|snapshot| snapshot.id);
+    pub async fn uninstall_modpack(&self, request: &UninstallRequest) -> AppResult<()> {
+        let _guard = self.write_guard().await?;
+        let scope = self.owned_scope(request.client_path.as_deref())?;
+        let latest = snapshots::list(&scope.client_dir).into_iter().next().map(|snapshot| snapshot.id);
 
-        ensure_closed(&client.path)?;
+        ensure_closed(&scope.client.path)?;
 
         install::uninstall(UninstallInput {
-            context: crate::components::ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog },
+            context: scope.context(),
             restore_snapshot: latest.as_deref().filter(|_| request.restore_snapshot),
             remove_config: request.remove_config,
+            durable_dir: &self.layout.durable_dir(),
+            shared_elsewhere: installed_elsewhere(&self.layout.clients_dir(), &scope.client_dir),
         })
     }
 }

@@ -28,6 +28,7 @@ export const AnnouncementCard = ({ announcement: { title, url, summary, isOffici
           <a className={s.title} href={url} rel='noopener noreferrer' target='_blank'>
             {title}
             <ExternalLink aria-hidden size={14} />
+            <span className={s.srOnly}>{t('card.newTab')}</span>
           </a>
         }
       />

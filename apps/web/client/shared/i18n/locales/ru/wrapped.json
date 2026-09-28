@@ -53,7 +53,8 @@
       "title": "Любимые танки",
       "battles": "Боёв",
       "damage": "Урон",
-      "place": "№{place}"
+      "place": "№{place}",
+      "unknownTank": "№{place} · танк #{tankId} · боёв"
     },
     "marks": {
       "title": "Отметки и награды",

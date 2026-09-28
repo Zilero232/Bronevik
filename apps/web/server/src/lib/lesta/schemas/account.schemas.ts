@@ -1,8 +1,6 @@
 import { z } from 'zod';
 
-import { battleStatsBlockSchema } from './statistics.schemas';
-
-const optionalBlock = battleStatsBlockSchema.optional();
+import { battleStatsBlockSchema, modeStatsBlockSchema } from './statistics.schemas';
 
 export const accountListItemSchema = z.looseObject({
   account_id: z.number(),
@@ -13,19 +11,20 @@ export const accountListSchema = z.array(accountListItemSchema);
 
 export const accountStatisticsSchema = z.looseObject({
   all: battleStatsBlockSchema,
-  random: optionalBlock,
-  clan: optionalBlock,
-  company: optionalBlock,
-  historical: optionalBlock,
-  team: optionalBlock,
-  regular_team: optionalBlock,
-  stronghold_skirmish: optionalBlock,
-  stronghold_defense: optionalBlock,
-  globalmap_absolute: optionalBlock,
-  globalmap_champion: optionalBlock,
-  globalmap_middle: optionalBlock,
-  epic: optionalBlock,
-  fallout: optionalBlock,
+  random: battleStatsBlockSchema.optional(),
+  clan: modeStatsBlockSchema,
+  company: modeStatsBlockSchema,
+  historical: modeStatsBlockSchema,
+  team: modeStatsBlockSchema,
+  regular_team: modeStatsBlockSchema,
+  stronghold_skirmish: modeStatsBlockSchema,
+  stronghold_defense: modeStatsBlockSchema,
+  globalmap_absolute: modeStatsBlockSchema,
+  globalmap_champion: modeStatsBlockSchema,
+  globalmap_middle: modeStatsBlockSchema,
+  epic: modeStatsBlockSchema,
+  fallout: modeStatsBlockSchema,
+  ranked_battles: modeStatsBlockSchema,
   trees_cut: z.number().optional(),
   frags: z.record(z.string(), z.number()).nullish()
 });

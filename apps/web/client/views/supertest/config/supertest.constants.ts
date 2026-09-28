@@ -25,5 +25,6 @@ export const VERDICT_DELTA = {
 
 export const SUPERTEST = {
   staleMs: 15 * 60_000,
-  plusFeature: 'analytics'
+  plusFeature: 'supertest',
+  plusScope: 'mine'
 } as const;

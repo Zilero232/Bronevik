@@ -142,7 +142,12 @@ export const notificationSchema = z.discriminatedUnion('event', [
     tankName: z.string(),
     shells: z.number().int().nonnegative()
   }),
-  z.object({ event: z.literal('plusCheckoutOpen') })
+  z.object({ event: z.literal('plusCheckoutOpen') }),
+  z.object({
+    event: z.literal('lestaRelinkRequired'),
+    accountId,
+    nickname: z.string()
+  })
 ]);
 
 export const deliverPayloadSchema = z.object({

@@ -1,11 +1,12 @@
 'use client';
 
-import { Link2Off } from 'lucide-react';
+import { Download, Link2Off } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { OpenInManager } from '@/features/mod/open-in-manager';
 import { ROUTES } from '@/shared/constants';
-import { Card, CardHeader, CopyField, EmptyState, PageHeader, Skeleton } from '@/ui-kit';
+import { Link } from '@/shared/i18n/navigation';
+import { buttonVariants, Card, CardHeader, CopyField, EmptyState, PageHeader, Skeleton } from '@/ui-kit';
 
 import { MOD_PROFILE_PAGE } from '../config';
 import { useModProfilePage } from '../model/hooks';
@@ -25,7 +26,17 @@ export const ModProfilePage = () => {
       />
       {state.status === 'pending' && <Skeleton height={MOD_PROFILE_PAGE.skeletonHeight} shape='block' />}
       {state.status === 'missing' && (
-        <EmptyState description={t('missingDescription')} icon={<Link2Off size={MOD_PROFILE_PAGE.iconSize} />} title={t('missingTitle')} />
+        <EmptyState
+          action={
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.mod}>
+              <Download aria-hidden size={14} />
+              {t('missingAction')}
+            </Link>
+          }
+          description={t('missingDescription')}
+          icon={<Link2Off size={MOD_PROFILE_PAGE.iconSize} />}
+          title={t('missingTitle')}
+        />
       )}
       {state.status === 'ready' && (
         <Card className={s.card} padding='md' variant='panel'>

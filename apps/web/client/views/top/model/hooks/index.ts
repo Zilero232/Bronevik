@@ -1,3 +1,4 @@
+export { useHallOfFame } from './use-hall-of-fame';
 export { useTopBoard } from './use-top-board';
 export { useTopColumns } from './use-top-columns';
 export { useTopFilters } from './use-top-filters';

@@ -26,7 +26,8 @@ export const modpackReleaseSchema = z.object({
   games: z.array(z.string().regex(MODPACK_RELEASES.gamePattern)).min(1),
   notes: modpackLocalizedSchema.nullish(),
   catalog: z.object({ url: httpsUrlSchema, sha256: sha256Schema }).nullish(),
-  packages: z.array(modpackReleasePackageSchema).min(1)
+  packages: z.array(modpackReleasePackageSchema).min(1),
+  signature: z.string().min(1)
 });
 
 export const modpackManagerReleaseSchema = z.object({

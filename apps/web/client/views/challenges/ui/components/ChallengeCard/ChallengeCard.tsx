@@ -23,7 +23,7 @@ export const ChallengeCard = ({ row }: ChallengeCardProps) => {
         label={t('progressLabel', { value: row.value, target: row.target })}
         max={row.target}
         size={CHALLENGES_VIEW.ringSize}
-        tone={row.isCompleted ? 'good' : 'accent'}
+        tone={row.isCompleted ? 'good' : 'olive'}
         value={Math.min(row.value, row.target)}
       >
         {row.isCompleted ? <Check aria-hidden size={20} /> : format.number(row.share, 'share')}

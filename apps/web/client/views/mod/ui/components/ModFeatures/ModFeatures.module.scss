@@ -16,12 +16,20 @@
 .card {
   @include panel;
   @include stack(var(--space-2));
+  @include tone;
 
   padding: var(--space-4);
 }
 
 .icon {
-  color: var(--color-accent);
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background-color: color-mix(in srgb, var(--tone) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 40%, transparent);
+  color: var(--tone);
+  place-items: center;
 }
 
 .title {

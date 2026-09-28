@@ -34,8 +34,14 @@ export const UninstallModpackCard = ({ clientPath, hasSnapshots }: UninstallModp
       description={t('description')}
       title={t('title')}
     >
-      <Checkbox checked={restoreSnapshot} disabled={!hasSnapshots} label={t('restore')} onCheckedChange={setRestoreSnapshot} />
-      <Checkbox checked={removeConfig} label={t('removeConfig')} onCheckedChange={setRemoveConfig} />
+      <Checkbox
+        checked={restoreSnapshot}
+        description={t('restoreDescription')}
+        disabled={!hasSnapshots}
+        label={t('restore')}
+        onCheckedChange={setRestoreSnapshot}
+      />
+      <Checkbox checked={removeConfig} description={t('removeConfigDescription')} label={t('removeConfig')} onCheckedChange={setRemoveConfig} />
     </Card>
   );
 };

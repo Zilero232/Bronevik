@@ -1,0 +1,21 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  min-height: 220px;
+  background-color: var(--color-band);
+
+  @include rivet-rule(bottom);
+
+  @include below(lg) {
+    min-height: 160px;
+  }
+}
+
+.inner {
+  @include shell;
+  @include stack(var(--space-3));
+
+  min-height: inherit;
+  justify-content: flex-end;
+  padding-block: var(--space-8) var(--space-9);
+}

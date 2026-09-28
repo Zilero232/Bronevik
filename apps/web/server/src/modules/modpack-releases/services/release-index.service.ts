@@ -14,6 +14,8 @@ import { MODPACK_RELEASES_SOURCE } from '../config';
 export class ReleaseIndexService {
   private readonly logger = new Logger(ReleaseIndexService.name);
   private cached: CachedReleaseIndex | null = null;
+  private refreshing: Promise<ModpackReleaseIndex> | null = null;
+  private retryAt = 0;
 
   constructor(
     private readonly config: AppConfigService,
@@ -23,24 +25,39 @@ export class ReleaseIndexService {
   async load(): Promise<ModpackReleaseIndex> {
     const now = Date.now();
 
-    if (this.cached && now - this.cached.loadedAt < MODPACK_RELEASES_SOURCE.cacheTtlMs) {
-      return this.cached.index;
+    if (!this.cached) {
+      return this.refresh();
     }
 
+    const stale = now - this.cached.loadedAt >= MODPACK_RELEASES_SOURCE.cacheTtlMs;
+
+    if (stale && now >= this.retryAt) {
+      this.refresh().catch(() => undefined);
+    }
+
+    return this.cached.index;
+  }
+
+  private refresh(): Promise<ModpackReleaseIndex> {
+    this.refreshing ??= this.fetchIndex().finally(() => {
+      this.refreshing = null;
+    });
+
+    return this.refreshing;
+  }
+
+  private async fetchIndex(): Promise<ModpackReleaseIndex> {
     try {
       const index = modpackReleaseIndexSchema.parse(await this.read());
 
-      this.cached = { index, loadedAt: now };
+      this.cached = { index, loadedAt: Date.now() };
 
       return index;
     } catch (error) {
-      if (!this.cached) {
-        throw error;
-      }
+      this.retryAt = Date.now() + MODPACK_RELEASES_SOURCE.retryDelayMs;
+      this.logger.warn(`Release index refresh failed${this.cached ? ', serving the cached one' : ''}: ${String(error)}`);
 
-      this.logger.warn(`Release index refresh failed, serving the cached one: ${String(error)}`);
-
-      return this.cached.index;
+      throw error;
     }
   }
 

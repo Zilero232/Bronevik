@@ -41,6 +41,7 @@ describe('modpack releases API', () => {
     expect(response.body.status).toBe('compatible');
     expect(response.body.release.version).toBe('0.10.0');
     expect(response.body.release.packages[0].sha256).toMatch(/^[0-9a-f]{64}$/);
+    expect(response.body.release.signature).toBe('c2lnbmF0dXJl');
   });
 
   it('tells the manager to wait for a client no release supports', async () => {

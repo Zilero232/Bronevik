@@ -1,9 +1,13 @@
-use std::fs;
-use std::path::{Path, PathBuf};
+mod signature;
+mod sources;
+
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+
+pub use signature::verify_release;
+pub use sources::{is_dependency_redirect, is_dependency_source};
 
 use crate::catalog::Localized;
 use crate::error::{AppError, AppResult, ErrorCode};
@@ -13,7 +17,12 @@ pub const API_URL_ENV: &str = "OTMETKI_API_URL";
 pub const LATEST_PATH: &str = "/modpack/releases/latest";
 pub const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
 pub const DOWNLOAD_TIMEOUT: Duration = Duration::from_secs(300);
-pub const PART_SUFFIX: &str = ".part";
+pub const TRUSTED_DOMAIN: &str = "triotmetki.ru";
+pub const HTTPS: &str = "https";
+pub const MAX_REDIRECTS: usize = 5;
+pub const MAX_PACKAGE_BYTES: u64 = 256 * 1024 * 1024;
+pub const MAX_CATALOG_BYTES: u64 = 16 * 1024 * 1024;
+pub const MAX_NOTICE_BYTES: u64 = 256 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -50,6 +59,8 @@ pub struct Release {
     #[serde(default)]
     pub catalog: Option<ReleaseCatalog>,
     pub packages: Vec<ReleasePackage>,
+    #[serde(default)]
+    pub signature: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -99,38 +110,70 @@ pub fn safe_file_name(name: &str) -> AppResult<&str> {
     Ok(name)
 }
 
-pub fn write_verified(input: WriteVerifiedInput) -> AppResult<PathBuf> {
-    let name = safe_file_name(input.file_name)?;
-    let target = input.dir.join(name);
-    let part = input.dir.join(format!("{name}{PART_SUFFIX}"));
-
-    verify_sha256(input.bytes, input.sha256)?;
-    fs::create_dir_all(input.dir)?;
-    fs::write(&part, input.bytes)?;
-    fs::rename(&part, &target)?;
-
-    Ok(target)
-}
-
-pub struct WriteVerifiedInput<'a> {
-    pub dir: &'a Path,
-    pub file_name: &'a str,
-    pub bytes: &'a [u8],
-    pub sha256: &'a str,
-}
-
 #[derive(Clone)]
 pub struct ReleasesClient {
     base_url: String,
     http: reqwest::Client,
+    dependency_http: reqwest::Client,
+}
+
+pub fn is_trusted_host(host: &str) -> bool {
+    let host = host.trim_end_matches('.').to_ascii_lowercase();
+
+    host == TRUSTED_DOMAIN || host.ends_with(&format!(".{TRUSTED_DOMAIN}"))
+}
+
+pub fn is_trusted_url(url: &str, base_url: &str) -> bool {
+    let from_api = url.strip_prefix(base_url).is_some_and(|rest| rest.starts_with('/'));
+    let trusted = reqwest::Url::parse(url).is_ok_and(|parsed| parsed.scheme() == HTTPS && parsed.host_str().is_some_and(is_trusted_host));
+
+    trusted || from_api
+}
+
+fn untrusted(url: &str) -> AppError {
+    AppError::coded(ErrorCode::UntrustedHost, format!("refusing a download from {url}"))
+}
+
+fn too_large(url: &str) -> AppError {
+    AppError::coded(ErrorCode::ChecksumMismatch, format!("unexpected size of {url}"))
+}
+
+pub struct FetchLimits {
+    pub expected_size: Option<u64>,
+    pub max_bytes: u64,
 }
 
 impl ReleasesClient {
     pub fn new(base_url: impl Into<String>) -> AppResult<Self> {
-        let http =
-            reqwest::Client::builder().user_agent(concat!("Three Marks manager/", env!("CARGO_PKG_VERSION"))).timeout(DOWNLOAD_TIMEOUT).build()?;
+        let base_url: String = base_url.into();
+        let redirect_base = base_url.clone();
+        let redirects = reqwest::redirect::Policy::custom(move |attempt| {
+            if attempt.previous().len() >= MAX_REDIRECTS {
+                return attempt.error("too many redirects");
+            }
 
-        Ok(Self { base_url: base_url.into(), http })
+            if is_trusted_url(attempt.url().as_str(), &redirect_base) {
+                attempt.follow()
+            } else {
+                attempt.error("redirect to an untrusted host")
+            }
+        });
+        let dependency_redirects = reqwest::redirect::Policy::custom(|attempt| {
+            if attempt.previous().len() >= MAX_REDIRECTS {
+                return attempt.error("too many redirects");
+            }
+
+            if is_dependency_redirect(attempt.url()) {
+                attempt.follow()
+            } else {
+                attempt.error("redirect to an untrusted host")
+            }
+        });
+        let builder = || reqwest::Client::builder().user_agent(concat!("Three Marks manager/", env!("CARGO_PKG_VERSION"))).timeout(DOWNLOAD_TIMEOUT);
+        let http = builder().redirect(redirects).build()?;
+        let dependency_http = builder().redirect(dependency_redirects).build()?;
+
+        Ok(Self { base_url, http, dependency_http })
     }
 
     pub async fn latest(&self, game: &str) -> AppResult<LatestRelease> {
@@ -142,19 +185,55 @@ impl ReleasesClient {
             .send()
             .await?
             .error_for_status()?;
+        let latest: LatestRelease = response.json().await?;
 
-        Ok(response.json().await?)
-    }
-
-    pub async fn fetch(&self, url: &str) -> AppResult<Vec<u8>> {
-        if !url.starts_with("https://") && !url.starts_with(&self.base_url) {
-            return Err(AppError::coded(ErrorCode::ReleaseUnavailable, format!("refusing a non-https download {url}")));
+        if let Some(release) = &latest.release {
+            verify_release(release)?;
         }
 
-        let response = self.http.get(url).send().await?.error_for_status()?;
-
-        Ok(response.bytes().await?.to_vec())
+        Ok(latest)
     }
+
+    pub async fn fetch(&self, url: &str, limits: FetchLimits) -> AppResult<Vec<u8>> {
+        if !is_trusted_url(url, &self.base_url) {
+            return Err(untrusted(url));
+        }
+
+        download(&self.http, url, limits).await
+    }
+
+    pub async fn fetch_dependency(&self, url: &str, limits: FetchLimits) -> AppResult<Vec<u8>> {
+        if !is_dependency_source(url) {
+            return Err(untrusted(url));
+        }
+
+        download(&self.dependency_http, url, limits).await
+    }
+}
+
+async fn download(http: &reqwest::Client, url: &str, limits: FetchLimits) -> AppResult<Vec<u8>> {
+    let mut response = http.get(url).send().await?.error_for_status()?;
+    let max_bytes = limits.expected_size.map_or(limits.max_bytes, |size| size.min(limits.max_bytes));
+
+    if response.content_length().is_some_and(|length| length > max_bytes) {
+        return Err(too_large(url));
+    }
+
+    let mut bytes = Vec::new();
+
+    while let Some(chunk) = response.chunk().await? {
+        if bytes.len() as u64 + chunk.len() as u64 > max_bytes {
+            return Err(too_large(url));
+        }
+
+        bytes.extend_from_slice(&chunk);
+    }
+
+    if limits.expected_size.is_some_and(|size| size != bytes.len() as u64) {
+        return Err(too_large(url));
+    }
+
+    Ok(bytes)
 }
 
 #[cfg(test)]

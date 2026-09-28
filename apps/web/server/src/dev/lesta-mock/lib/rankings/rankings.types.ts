@@ -1,4 +1,4 @@
-import type { MockPlayer, MockPlayerState, MockWorld } from '../../lesta-mock.types';
+import type { MockPlayer, MockPlayerState, MockTotals, MockWorld } from '../../lesta-mock.types';
 import type { RANK_FIELDS } from './rankings.constants';
 
 export type RankField = (typeof RANK_FIELDS)[number];
@@ -42,4 +42,17 @@ export type EstimateInput = {
 export type EligibleInput = {
   world: MockWorld;
   at: number;
+};
+
+export type FieldValueInput = {
+  field: RankField;
+  random: MockTotals;
+  rating: number;
+};
+
+export type PeriodTotalsInput = {
+  world: MockWorld;
+  player: MockPlayer;
+  at: number;
+  days: number | null;
 };

@@ -40,7 +40,7 @@ export type SeriesRow = z.infer<typeof seriesRowSchema>;
 
 export type PlayerCollection = z.infer<typeof playerCollectionSchema>;
 
-export type CatalogRow = Pick<Achievement, 'description' | 'image' | 'name' | 'order' | 'section' | 'title'>;
+export type CatalogRow = Pick<Achievement, 'description' | 'descriptionEn' | 'image' | 'name' | 'order' | 'section' | 'title' | 'titleEn'>;
 
 export type CatalogEntry = {
   item: AchievementRarityItem;

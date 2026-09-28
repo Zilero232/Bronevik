@@ -1,4 +1,5 @@
-import type { LeagueMetric, LeagueScope } from '../../../api';
+import type { LeagueMetric, LeagueScope } from '@/entities/social/league';
+
 import type { LeagueWeekNav } from '../../../lib/league-table';
 
 export type LeagueToolbarProps = {

@@ -37,6 +37,12 @@ describe('activeSiteNav', () => {
     expect(activeSiteNav(ROUTES.streamers.forStreamers)).toEqual({ href: null, groupKey: null });
   });
 
+  it('maps every social tab to the competitions hub', () => {
+    [ROUTES.social.feed, ROUTES.social.leagues, ROUTES.social.challenges].forEach((pathname) =>
+      expect(activeSiteNav(pathname)).toEqual({ href: ROUTES.social.leagues, groupKey: 'community' })
+    );
+  });
+
   it('leaves account pages unmarked', () => {
     expect(activeSiteNav(ROUTES.account.billing)).toEqual({ href: null, groupKey: null });
   });
@@ -45,8 +51,12 @@ describe('activeSiteNav', () => {
 describe('SITE_NAV', () => {
   const menuHrefs = [...SITE_NAV.groups.flatMap((group) => group.items.map((item) => item.href)), SITE_NAV.tools.href, SITE_NAV.plus.href];
 
-  it('keeps at most five top-level entries', () => {
-    expect(SITE_NAV.groups.length + 1).toBeLessThanOrEqual(5);
+  it('keeps at most six top-level entries', () => {
+    expect(SITE_NAV.groups.length + 1).toBeLessThanOrEqual(6);
+  });
+
+  it('keeps every group at seven links or fewer', () => {
+    SITE_NAV.groups.forEach((group) => expect(group.items.length).toBeLessThanOrEqual(7));
   });
 
   it('lists every route exactly once', () => {

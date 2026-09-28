@@ -30,7 +30,7 @@ export const WrappedTanks = ({ topTanks }: WrappedTanksProps) => {
               vehicle={vehicle}
             />
           ) : (
-            <WrappedFact label={t('place', { place })} value={battles} />
+            <WrappedFact label={t('unknownTank', { place, tankId })} value={battles} />
           )}
         </li>
       ))}

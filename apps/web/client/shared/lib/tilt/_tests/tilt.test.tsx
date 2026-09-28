@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TILT_HANDLERS } from '..';
 
@@ -15,23 +15,6 @@ const renderCard = () => {
 };
 
 const degrees = (card: HTMLElement, name: '--tilt-x' | '--tilt-y') => Number.parseFloat(card.style.getPropertyValue(name));
-
-const setReducedMotion = (matches: boolean) => {
-  vi.spyOn(window, 'matchMedia').mockImplementation((query) => ({
-    matches,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn()
-  }));
-};
-
-beforeEach(() => {
-  setReducedMotion(false);
-});
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -66,15 +49,6 @@ describe('TILT_HANDLERS', () => {
     const card = renderCard();
 
     fireEvent.pointerMove(card, { pointerType: 'touch', clientX: RECT.left, clientY: RECT.top });
-
-    expect(card.style.getPropertyValue('--tilt-x')).toBe('');
-  });
-
-  it('stays flat for users who prefer reduced motion', () => {
-    setReducedMotion(true);
-    const card = renderCard();
-
-    fireEvent.pointerMove(card, { pointerType: 'mouse', clientX: RECT.left, clientY: RECT.top });
 
     expect(card.style.getPropertyValue('--tilt-x')).toBe('');
   });

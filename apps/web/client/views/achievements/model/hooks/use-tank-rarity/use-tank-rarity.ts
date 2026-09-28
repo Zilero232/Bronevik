@@ -22,6 +22,8 @@ export const useTankRarity = () => {
     tiers: tier === null ? [] : [tier],
     types: type === null ? [] : [type],
     order,
+    isFiltered: tier !== null || type !== null,
+    onReset: () => void setParams({ tier: null, type: null }),
     onTiersChange: (next: number[]) => void setParams({ tier: next.find((value) => value !== tier) ?? null }),
     onTypesChange: (next: TankClass[]) => void setParams({ type: next.find((value) => value !== type) ?? null }),
     onOrderChange: (next: typeof order) => void setParams({ order: next })

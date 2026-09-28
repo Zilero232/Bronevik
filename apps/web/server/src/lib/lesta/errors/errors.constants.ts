@@ -12,6 +12,11 @@ export const LESTA_ERROR_CODE = {
   invalidResponse: 'INVALID_RESPONSE'
 } as const;
 
+export const EXTRA_REJECTION = {
+  field: 'extra',
+  codePattern: /EXTRA/u
+} as const;
+
 export const RETRYABLE_LESTA_CODES: ReadonlySet<string> = new Set([LESTA_ERROR_CODE.requestLimitExceeded, LESTA_ERROR_CODE.sourceNotAvailable]);
 
 export const RETRYABLE_HTTP_STATUS = {

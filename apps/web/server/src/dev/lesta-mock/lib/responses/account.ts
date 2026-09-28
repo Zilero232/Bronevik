@@ -5,13 +5,16 @@ import type {
   MasteryOfInput,
   MockContext,
   MockRoute,
+  ModeBlocksInput,
   PlayerAtInput,
   RecordTankInput,
   StateOfInput
 } from './responses.types';
 
+import { MOCK_MODE_BLOCKS } from '../../config';
 import { accountAchievements } from '../achievements';
 import { selectFields } from '../fields';
+import { accountModeTotals } from '../mode-blocks';
 import { accountTotals, globalRating, logoutAt, privateData } from '../profile';
 import { masteryLevel, masteryThresholds, playerStateAt } from '../simulation';
 import { emptyTotals, mergeTotals, toStatsBlock } from '../stats';
@@ -64,6 +67,18 @@ const accountBlock = ({ tanks, mode }: AccountBlockInput) => {
 
 const zeroBlocks = (keys: readonly string[]) => Object.fromEntries(keys.map((key) => [key, toStatsBlock(emptyTotals())]));
 
+const modeBlocks = ({ context, player, tanks }: ModeBlocksInput) => {
+  const totals = accountModeTotals({ seed: context.world.seed, accountId: player.accountId, tanks });
+
+  return Object.fromEntries(
+    Object.entries(totals).flatMap(([key, block]) => {
+      const extra = MOCK_MODE_BLOCKS.extraOnly.account.find((name) => name === `statistics.${key}`);
+
+      return extra && !hasExtra({ context, extra }) ? [] : [[key, toStatsBlock(block)]];
+    })
+  );
+};
+
 const accountInfo = ({ context, player }: AccountInfoInput) => {
   const state = stateOf({ context, player });
   const tanks = [...state.tanks.values()];
@@ -85,7 +100,7 @@ const accountInfo = ({ context, player }: AccountInfoInput) => {
     statistics: {
       all: accountBlock({ tanks, mode: 'all' }),
       ...(hasExtra({ context, extra: 'statistics.random' }) ? { random: accountBlock({ tanks, mode: 'random' }) } : {}),
-      stronghold_skirmish: toStatsBlock(tanks.reduce((sum, tank) => mergeTotals({ target: sum, source: tank.other }), emptyTotals())),
+      ...modeBlocks({ context, player, tanks }),
       ...zeroBlocks(ZERO_BLOCK_KEYS.account),
       trees_cut: Math.round(all.battles * 2.4),
       frags: null
@@ -94,7 +109,7 @@ const accountInfo = ({ context, player }: AccountInfoInput) => {
   };
 };
 
-const tokenError = (context: MockContext) =>
+export const tokenError = (context: MockContext) =>
   context.hasToken && context.tokenAccountId === null
     ? fail({ code: 407, message: 'INVALID_ACCESS_TOKEN', field: 'access_token', value: context.params.access_token ?? null })
     : null;

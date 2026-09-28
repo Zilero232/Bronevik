@@ -41,6 +41,10 @@
       "cosmetics": {
         "title": "Profile cosmetics",
         "text": "A badge, frames and covers on the site."
+      },
+      "supertestMine": {
+        "title": "Supertest for your tanks",
+        "text": "The “My tanks” supertest tab: changes to the vehicles in your garage only."
       }
     }
   },
@@ -50,10 +54,14 @@
     "feature": "What",
     "free": "Free",
     "plus": "With Plus",
+    "caption": "Limits without a subscription and with Plus",
     "unlimited": "Unlimited",
     "rate": {
       "week": "{count} per week",
       "day": "{count} per day"
+    },
+    "units": {
+      "days": "{count, plural, one {# day} other {# days}}"
     },
     "rows": {
       "linkedAccounts": "Linked accounts",
@@ -63,7 +71,7 @@
       "overlays": "Stream overlays",
       "storedReplays": "Stored replays",
       "streamerFollows": "Streamer follows",
-      "historyDays": "Analytics history, days",
+      "historyDays": "Analytics history depth",
       "aiReviews": "AI coach reviews"
     }
   },
@@ -128,7 +136,7 @@
       },
       "cancel": {
         "question": "Can I cancel?",
-        "answer": "Yes, any time: turn auto-renew off in your account with one click. Plus keeps working until the end of the paid period. Support handles partial refunds."
+        "answer": "Yes, any time: turn auto-renew off in your account with one click, and Plus keeps working until the end of the paid period. We refund the unused days on request to support — see the <terms>refund terms</terms>."
       },
       "expiry": {
         "question": "What happens when Plus ends?",
@@ -242,6 +250,10 @@
     "streamerAlerts": {
       "title": "Stream alerts for a tank",
       "text": "Get notified when a streamer goes live on the tank you picked, and follow more streamers."
+    },
+    "supertest": {
+      "title": "My tanks on the supertest",
+      "text": "Supertest changes for your tanks only: what got buffed and nerfed in your garage, with the difference for every stat."
     }
   }
 }

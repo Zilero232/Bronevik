@@ -26,6 +26,15 @@ describe('buildCatalogRows', () => {
     expect(hitLog?.dependencies).toEqual([damageLog?.title]);
   });
 
+  it('lists the third-party libraries a component and the components it pulls in need', () => {
+    const libraries = new Map(rows.map((row) => [row.id, row.libraries]));
+
+    expect(libraries.get('marks_panel')).toEqual(['OpenWG Gameface']);
+    expect(libraries.get('damage_log')).toEqual(['OpenWG Gameface', 'GUIFlash']);
+    expect(libraries.get('hit_log')).toEqual(['OpenWG Gameface', 'GUIFlash']);
+    expect(libraries.get('core')).toEqual([]);
+  });
+
   it('treats a missing installation as nothing installed', () => {
     expect(buildCatalogRows({ catalog, installation: null, locale: 'ru' }).every((row) => row.state === 'missing')).toBe(true);
   });

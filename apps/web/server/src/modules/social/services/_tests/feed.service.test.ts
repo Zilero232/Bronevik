@@ -25,6 +25,7 @@ const player: Player = {
   lastViewedAt: null,
   isHidden: false,
   purgeAfter: null,
+  logoutAt: null,
   progressionProcessedUntil: null,
   updatedAt: at
 };

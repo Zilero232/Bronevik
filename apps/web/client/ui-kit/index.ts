@@ -185,6 +185,7 @@ export {
   PagedList,
   PageHeader,
   PageHero,
+  PageHeroFallback,
   QueryState
 } from './organisms';
 export type {

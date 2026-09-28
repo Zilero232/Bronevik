@@ -7,7 +7,9 @@ import { rarityTier } from '../../lib';
 export const toAchievementItem = ({ row, rarity }: AchievementItemInput): AchievementRarityItem => ({
   name: row.name,
   title: row.title,
+  titleEn: row.titleEn,
   description: row.description,
+  descriptionEn: row.descriptionEn,
   section: row.section,
   image: row.image,
   holders: rarity?.holders ?? 0,

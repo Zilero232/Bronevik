@@ -15,7 +15,3 @@ export const ARMOR_SHADING = {
   diffuse: 0.5,
   neverRicochets: 1000
 } as const;
-
-export const ARMOR_MODEL_QUERY = {
-  maxRetries: 2
-} as const;

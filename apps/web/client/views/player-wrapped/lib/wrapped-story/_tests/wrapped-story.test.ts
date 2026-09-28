@@ -28,12 +28,24 @@ describe('parseWrappedYear', () => {
 });
 
 describe('wrappedYears', () => {
-  it('lists every year from the current one down to the first', () => {
-    expect(wrappedYears({ now: new Date('2026-09-27T12:00:00Z'), year: 2025 })).toEqual([2026, 2025, 2024, 2023]);
+  const OPEN = { createdAt: null, lastBattleAt: null } as const;
+
+  it('lists finished years down to the first, without the running one', () => {
+    expect(wrappedYears({ ...OPEN, now: new Date('2026-09-27T12:00:00Z'), year: 2025 })).toEqual([2025, 2024, 2023]);
+  });
+
+  it('keeps the requested year even when it is still running', () => {
+    expect(wrappedYears({ ...OPEN, now: new Date('2026-09-27T12:00:00Z'), year: 2026 })).toEqual([2026, 2025, 2024, 2023]);
   });
 
   it('falls back to the requested year before the clock is known', () => {
-    expect(wrappedYears({ now: null, year: 2024 })).toEqual([2024, 2023]);
+    expect(wrappedYears({ ...OPEN, now: null, year: 2024 })).toEqual([2024, 2023]);
+  });
+
+  it('skips years before the account existed and after its last battle', () => {
+    expect(
+      wrappedYears({ now: new Date('2027-03-01T12:00:00Z'), year: 2025, createdAt: '2024-05-01T00:00:00Z', lastBattleAt: '2025-11-20T00:00:00Z' })
+    ).toEqual([2025, 2024]);
   });
 });
 

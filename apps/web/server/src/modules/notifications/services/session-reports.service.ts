@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { subHours, subMinutes } from 'date-fns';
 
+import { isSessionEnded } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { SESSION_REPORT } from '../config';
 import { NotificationService } from './notification.service';
@@ -13,18 +14,34 @@ export class SessionReportsService {
   ) {}
 
   async run(now = new Date()): Promise<number> {
-    const sessions = await this.prisma.playSession.findMany({
+    const idleSince = subMinutes(now, SESSION_REPORT.idleMinutes);
+
+    const candidates = await this.prisma.playSession.findMany({
       where: {
         source: 'mod',
         kind: 'live',
         reportSentAt: null,
         battles: { gt: 0 },
-        lastActivityAt: { lt: subMinutes(now, SESSION_REPORT.idleMinutes), gt: subHours(now, SESSION_REPORT.maxAgeHours) }
+        lastActivityAt: { gt: subHours(now, SESSION_REPORT.maxAgeHours) },
+        OR: [{ lastActivityAt: { lt: idleSince } }, { player: { logoutAt: { not: null } } }]
       },
       orderBy: { lastActivityAt: 'asc' },
       take: SESSION_REPORT.batchSize,
-      select: { id: true, accountId: true, battles: true, wins: true, damageDealt: true, wn8: true, player: { select: { nickname: true } } }
+      select: {
+        id: true,
+        accountId: true,
+        battles: true,
+        wins: true,
+        damageDealt: true,
+        wn8: true,
+        lastActivityAt: true,
+        player: { select: { nickname: true, logoutAt: true } }
+      }
     });
+
+    const sessions = candidates.filter((session) =>
+      isSessionEnded({ lastActivityAt: session.lastActivityAt, logoutAt: session.player.logoutAt, idleSince })
+    );
 
     let reported = 0;
 

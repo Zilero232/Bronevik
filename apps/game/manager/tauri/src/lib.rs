@@ -3,6 +3,7 @@ mod catalog;
 mod commands;
 mod components;
 mod deep_link;
+mod dependencies;
 mod detect;
 mod durable;
 mod error;
@@ -95,7 +96,7 @@ pub fn run() {
             let resource = |path: &str| -> Option<PathBuf> { app.path().resolve(path, BaseDirectory::Resource).ok() };
             let bundled = BundledResources { catalog: resource(BUNDLED_CATALOG), packages: resource(BUNDLED_PACKAGES).filter(|dir| dir.is_dir()) };
             let manager = Manager::new(layout, bundled, ReleasesClient::new(api_url())?);
-            let autostart = manager.settings().autostart;
+            let settings = manager.settings();
             let handle = app.handle().clone();
 
             app.manage(manager);
@@ -121,8 +122,10 @@ pub fn run() {
                 handle.state::<Manager>().set_pending_link(link);
             }
 
-            if let Err(error) = background::apply_autostart(&handle, autostart) {
-                log::warn!("autostart: {error}");
+            if settings.autostart_asked {
+                if let Err(error) = background::apply_autostart(&handle, settings.autostart) {
+                    log::warn!("autostart: {error}");
+                }
             }
 
             if !background::started_in_background() {

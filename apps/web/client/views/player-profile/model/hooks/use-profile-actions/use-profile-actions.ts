@@ -2,7 +2,7 @@
 
 import { useAuthSession } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
-import { useClientNow } from '@/shared/lib';
+import { latestWrappedYear, useClientNow } from '@/shared/lib';
 
 import { useProfileContext } from '../../context';
 import { useProfileShare } from '../use-profile-share';
@@ -18,7 +18,7 @@ export const useProfileActions = () => {
     copied,
     share,
     signatureHref: ROUTES.players.signature(nickname),
-    wrappedHref: now ? ROUTES.players.wrapped({ nickname, year: now.getFullYear() }) : null,
+    wrappedHref: now ? ROUTES.players.wrapped({ nickname, year: latestWrappedYear(now) }) : null,
     analyticsHref: session?.lestaAccountId === accountId ? ROUTES.account.analytics : null
   };
 };

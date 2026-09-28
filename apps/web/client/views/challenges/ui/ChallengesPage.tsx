@@ -10,13 +10,13 @@ import { SocialShell } from '@/widgets/social/social-shell';
 
 import { CHALLENGES_VIEW } from '../config';
 import { useWeeklyChallenges } from '../model/hooks';
-import { ChallengeCard } from './components';
+import { ChallengeCard, ChallengeTimeLeft } from './components';
 
 import s from './ChallengesPage.module.scss';
 
 export const ChallengesPage = () => {
   const t = useTranslations('social.challenges');
-  const { query, rows, summary, needsLesta, timeLeft } = useWeeklyChallenges();
+  const { query, rows, summary, needsLesta, endsAt } = useWeeklyChallenges();
 
   return (
     <SocialShell
@@ -24,7 +24,7 @@ export const ChallengesPage = () => {
         summary && (
           <>
             <KeyFigure label={t('figures.completed')} value={t('figures.completedOf', summary)} variant='compact' />
-            <KeyFigure label={t('figures.left')} value={timeLeft ? t('figures.timeLeft', timeLeft) : '—'} variant='compact' />
+            {endsAt && <ChallengeTimeLeft endsAt={endsAt} />}
           </>
         )
       }
@@ -59,6 +59,7 @@ export const ChallengesPage = () => {
           isEmpty={({ challenges }) => challenges.length === 0}
           query={query}
         >
+          <h2 className={s.srOnly}>{t('listTitle')}</h2>
           <ul className={s.grid}>
             {rows.map((row) => (
               <li key={row.code}>

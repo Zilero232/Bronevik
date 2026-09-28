@@ -5,7 +5,10 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
+import { PageHeroFallback } from '@/ui-kit';
 import { PlusPage } from '@/views/plus';
+import { plusPageState } from '@/views/plus/server';
 
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
@@ -22,9 +25,11 @@ export const generateMetadata = async () => {
   });
 };
 
-const Page = () => (
-  <Suspense>
-    <PlusPage />
+const Page = ({ searchParams }: PageProps<'/[locale]/plus'>) => (
+  <Suspense fallback={<PageHeroFallback />}>
+    <PrefetchBoundary state={searchParams.then(() => plusPageState())}>
+      <PlusPage />
+    </PrefetchBoundary>
   </Suspense>
 );
 

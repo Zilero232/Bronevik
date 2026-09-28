@@ -29,12 +29,12 @@
   cursor: pointer;
 
   &[data-recommended='true'] {
-    border-top-color: var(--color-accent);
+    border-top-color: var(--color-gold);
   }
 
   &:has(.radio:checked) {
     background: var(--color-surface-hover);
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-gold);
     outline-offset: -2px;
   }
 
@@ -50,7 +50,7 @@
 }
 
 .radio {
-  accent-color: var(--color-accent);
+  accent-color: var(--color-gold);
 }
 
 .name {
@@ -83,6 +83,6 @@
   @include numeric;
 
   &[data-saving='true'] {
-    color: var(--color-premium);
+    color: var(--color-gold);
   }
 }

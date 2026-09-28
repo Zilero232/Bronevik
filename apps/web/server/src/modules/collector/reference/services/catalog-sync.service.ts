@@ -1,10 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import type { LestaClients } from '../../../../core';
+import type { EnglishNamesResult } from '../reference.types';
 
 import { slugify, toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
-import { achievementSchema, arenaSchema, keyedEntries } from '../lib/encyclopedia';
+import { REFERENCE } from '../config';
+import { achievementSchema, arenaSchema, crewSkillSchema, keyedEntries } from '../lib/encyclopedia';
 
 @Injectable()
 export class CatalogSyncService {
@@ -62,5 +64,50 @@ export class CatalogSyncService {
     }
 
     return achievements.length;
+  }
+
+  async englishNames(): Promise<EnglishNamesResult> {
+    const language = REFERENCE.englishLanguage;
+
+    const [arenas, achievements, skills] = await Promise.all([
+      this.clients.bulk.encyclopedia.arenas({ language }),
+      this.clients.bulk.encyclopedia.achievements({ language }),
+      this.clients.bulk.encyclopedia.crewskills({ language })
+    ]);
+
+    const arenaUpdates = keyedEntries(arenas).flatMap(([arenaId, value]) => {
+      const parsed = arenaSchema.safeParse(value);
+      const name = parsed.success ? (parsed.data.name_i18n ?? parsed.data.name) : null;
+
+      return parsed.success && name
+        ? [this.prisma.arena.updateMany({ where: { arenaId }, data: { nameEn: name, descriptionEn: parsed.data.description ?? null } })]
+        : [];
+    });
+
+    const achievementUpdates = keyedEntries(achievements).flatMap(([, value]) => {
+      const parsed = achievementSchema.safeParse(value);
+      const title = parsed.success ? parsed.data.name_i18n : null;
+
+      return parsed.success && title
+        ? [
+            this.prisma.achievement.updateMany({
+              where: { name: parsed.data.name },
+              data: { titleEn: title, descriptionEn: parsed.data.description ?? null }
+            })
+          ]
+        : [];
+    });
+
+    const skillUpdates = keyedEntries(skills).flatMap(([skill, value]) => {
+      const parsed = crewSkillSchema.safeParse({ skill, ...(typeof value === 'object' ? value : {}) });
+
+      return parsed.success
+        ? [this.prisma.crewSkill.updateMany({ where: { skill }, data: { nameEn: parsed.data.name, descriptionEn: parsed.data.description ?? null } })]
+        : [];
+    });
+
+    await this.prisma.$transaction([...arenaUpdates, ...achievementUpdates, ...skillUpdates]);
+
+    return { arenas: arenaUpdates.length, achievements: achievementUpdates.length, crewSkills: skillUpdates.length };
   }
 }

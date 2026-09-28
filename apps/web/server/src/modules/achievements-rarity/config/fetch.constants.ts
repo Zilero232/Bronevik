@@ -2,6 +2,7 @@ import type { DeletionSource, DeletionStatus, TrackingTier } from '../../../../g
 
 export const ACHIEVEMENTS_FETCH = {
   batch: 1000,
+  fields: ['achievements', 'max_series'],
   refreshDays: 7,
   backfillRuns: 50,
   tiers: ['active', 'population'] satisfies TrackingTier[],

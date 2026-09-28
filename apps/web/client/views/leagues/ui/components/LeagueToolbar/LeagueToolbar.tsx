@@ -45,7 +45,7 @@ export const LeagueToolbar = ({
         )}
       </div>
       <div className={s.week}>
-        <IconButton aria-label={t('week.previous')} disabled={!nav} size='sm' variant='ghost' onClick={onPrevious}>
+        <IconButton aria-label={t('week.previous')} disabled={!nav?.previous} size='sm' variant='ghost' onClick={onPrevious}>
           <ChevronLeft size={16} />
         </IconButton>
         <span className={s.label}>

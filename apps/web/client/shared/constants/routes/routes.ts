@@ -79,7 +79,8 @@ export const ROUTES = {
   legal: {
     privacy: '/privacy',
     terms: '/terms',
-    contacts: '/contacts'
+    contacts: '/contacts',
+    refund: '/terms#refund'
   },
   mod: '/mod',
   modProfile: '/mod/profile',

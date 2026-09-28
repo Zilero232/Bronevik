@@ -1,5 +1,6 @@
 mod install;
 mod migrate;
+mod stage;
 
 use std::path::PathBuf;
 
@@ -7,9 +8,11 @@ use serde::Serialize;
 
 pub use install::{apply_packages, fetch_packages, install_targets, ApplyInput, FetchedPackage};
 pub use migrate::{migrate, MigrateInput};
+pub use stage::{stage, StagedFile};
 
 use crate::catalog::Localized;
 use crate::detect::GameVersion;
+use crate::error::ErrorCode;
 use crate::releases::{LatestRelease, Release, ReleaseStatus};
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -22,9 +25,13 @@ pub enum PatchStatus {
     UpdateAvailable { game_version: String, current: Option<String>, latest: String, notes: Option<Localized> },
     Migrated { from: String, to: String, modpack_version: Option<String> },
     Updated { game_version: String, from: Option<String>, to: String },
+    MigrationReady { game_version: String, from: String, modpack_version: Option<String> },
+    UpdateReady { game_version: String, from: String, current: Option<String>, latest: String, notes: Option<Localized> },
+    Deferred { game_version: String, from: String },
+    Unsupported { game_version: String },
     Waiting { game_version: String, from: String },
     Offline { game_version: String },
-    Failed { message: String },
+    Failed { code: ErrorCode },
 }
 
 impl PatchStatus {
@@ -37,6 +44,10 @@ impl PatchStatus {
             Self::UpdateAvailable { .. } => "update_available",
             Self::Migrated { .. } => "migrated",
             Self::Updated { .. } => "updated",
+            Self::MigrationReady { .. } => "migration_ready",
+            Self::UpdateReady { .. } => "update_ready",
+            Self::Deferred { .. } => "deferred",
+            Self::Unsupported { .. } => "unsupported",
             Self::Waiting { .. } => "waiting",
             Self::Offline { .. } => "offline",
             Self::Failed { .. } => "failed",

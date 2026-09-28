@@ -4,6 +4,7 @@ import type { AccountInfo, TankStats } from '../../schemas';
 
 import { accountInfoFixture, createFetchMock, ok, okWithMeta, tankStatsFixture } from '../../_tests/fixtures';
 import { createLestaClient } from '../../client';
+import { accountInfoSchema } from '../../schemas';
 import { parseLoginCallback } from '../auth';
 
 const APPLICATION_ID = 'test-app';
@@ -176,5 +177,58 @@ describe('passthrough groups', () => {
     expect(calls.map(({ method }) => method)).toEqual(['globalmap/fronts', 'stronghold/claninfo', 'ratings/accounts', 'clanratings/top']);
     expect(calls[1]?.params.clan_id).toBe('1,2');
     expect(calls[3]?.params.rank_field).toBe('efficiency');
+  });
+});
+
+describe('ratings methods', () => {
+  it('keeps the known rank fields of an account and drops a malformed one', async () => {
+    const { fetch } = createFetchMock(() =>
+      ok({
+        5: { account_id: 5, wins_ratio: { value: 55.1, rank: 12, rank_delta: -3 }, damage_avg: 'broken' },
+        6: null
+      })
+    );
+
+    const client = createLestaClient({ applicationId: APPLICATION_ID, fetch });
+    const result = await client.ratings.accounts({ type: '7', accountIds: [5, 6] });
+
+    expect(result['5']?.wins_ratio).toEqual({ value: 55.1, rank: 12, rank_delta: -3 });
+    expect(result['5']?.damage_avg).toBeNull();
+    expect(result['6']).toBeNull();
+  });
+
+  it('sends the rank field, type and page of a top list', async () => {
+    const { fetch, calls } = createFetchMock(() => ok([{ account_id: 1, global_rating: { value: 9000, rank: 1, rank_delta: 0 } }]));
+    const client = createLestaClient({ applicationId: APPLICATION_ID, fetch });
+
+    const top = await client.ratings.topList({ type: 'all', rankField: 'global_rating', limit: 50, pageNo: 2 });
+
+    expect(top[0]?.global_rating?.rank).toBe(1);
+    expect(calls[0]?.method).toBe('ratings/top');
+    expect(calls[0]?.params).toMatchObject({ type: 'all', rank_field: 'global_rating', limit: '50', page_no: '2' });
+  });
+
+  it('asks for the neighbours of one account', async () => {
+    const { fetch, calls } = createFetchMock(() => ok([]));
+    const client = createLestaClient({ applicationId: APPLICATION_ID, fetch });
+
+    await client.ratings.neighborList({ type: '28', rankField: 'wins_ratio', accountId: 9, limit: 5 });
+
+    expect(calls[0]?.method).toBe('ratings/neighbors');
+    expect(calls[0]?.params).toMatchObject({ account_id: '9', rank_field: 'wins_ratio', type: '28', limit: '5' });
+  });
+});
+
+describe('mode statistics blocks', () => {
+  it('drops a malformed mode block instead of failing the whole account', async () => {
+    const info = accountInfoFixture(3);
+    const { fetch } = createFetchMock(() => ok({ 3: { ...info, statistics: { ...info.statistics, ranked_battles: { battles: 'n/a' } } } }));
+    const client = createLestaClient({ applicationId: APPLICATION_ID, fetch });
+
+    const result = await client.account.info({ accountIds: [3] });
+    const parsed = accountInfoSchema.parse(result['3']);
+
+    expect(parsed.statistics.ranked_battles).toBeUndefined();
+    expect(parsed.statistics.stronghold_skirmish?.battles).toBe(info.statistics.stronghold_skirmish.battles);
   });
 });

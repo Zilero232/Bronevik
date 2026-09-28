@@ -53,8 +53,7 @@ export const modShotSchema = z.strictObject({
 });
 
 const platoonSchema = z.strictObject({
-  size: z.number().int().min(MOD_PLATOON.minSize).max(MOD_PLATOON.maxSize),
-  mates: z.array(accountId).max(MOD_PLATOON.maxSize - 1)
+  size: z.number().int().min(MOD_PLATOON.minSize).max(MOD_PLATOON.maxSize)
 });
 
 export const battleResultEventSchema = z.strictObject({
@@ -126,15 +125,6 @@ const moeSnapshotEventSchema = z.strictObject({
   battles: count.nullable()
 });
 
-const moeDistributionEventSchema = z.strictObject({
-  type: z.literal('moe_distribution'),
-  event_id: id,
-  occurred_at: unixTime,
-  tank_id: tankId,
-  battle_count: count,
-  damage_better_than_n_percent: z.array(z.number().int()).max(200)
-});
-
 const battleStartEventSchema = z.strictObject({
   type: z.literal('battle_start'),
   event_id: id,
@@ -155,7 +145,6 @@ const queueEventSchema = z.strictObject({
 export const ingestEventSchema = z.discriminatedUnion('type', [
   battleResultEventSchema,
   moeSnapshotEventSchema,
-  moeDistributionEventSchema,
   queueEventSchema,
   battleStartEventSchema
 ]);

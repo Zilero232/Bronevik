@@ -270,7 +270,9 @@ export const playerAchievementSchema = z.object({
   section: z.string().nullable(),
   name: z.string(),
   title: z.string(),
+  titleEn: z.string().nullable().describe('English title from the Lesta encyclopedia; null until it is synced'),
   description: z.string().nullable(),
+  descriptionEn: z.string().nullable(),
   image: z.string().nullable(),
   imageBig: z.string().nullable(),
   count: countSchema,
@@ -279,4 +281,30 @@ export const playerAchievementSchema = z.object({
 
 export const playerAchievementsSchema = z.object({
   items: z.array(playerAchievementSchema)
+});
+
+export const playerRecordSchema = z.object({
+  value: countSchema,
+  vehicle: vehicleSummarySchema.nullable(),
+  achievedAt: isoDateTimeSchema.nullable().describe('Earliest stored snapshot that already showed the record; null when it predates our history')
+});
+
+export const playerAssistSchema = z.object({
+  avgAssisted: z.number().nonnegative().nullable().describe("Average damage by the player's spotting and tracking per battle"),
+  avgRadio: z.number().nonnegative().nullable(),
+  avgTrack: z.number().nonnegative().nullable(),
+  avgStun: z.number().nonnegative().nullable()
+});
+
+export const playerCareerSchema = z.object({
+  accountId: accountIdSchema,
+  source: z.enum(['stored', 'live']).describe('stored: the latest collector snapshot; live: fetched from Lesta because we have no snapshot yet'),
+  records: z.object({
+    maxDamage: playerRecordSchema.nullable(),
+    maxXp: playerRecordSchema.nullable(),
+    maxFrags: playerRecordSchema.nullable()
+  }),
+  assist: playerAssistSchema.nullable().describe('Random-battle assist averages; the base for an assist-aware rating'),
+  lastBattleAt: isoDateTimeSchema.nullable(),
+  logoutAt: isoDateTimeSchema.nullable().describe('When the player last left the game client, as Lesta reports it')
 });

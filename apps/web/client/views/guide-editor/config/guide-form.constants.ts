@@ -13,7 +13,6 @@ export const GUIDE_FORM = {
   bodyMax: zCreateGuide.shape.body.maxLength ?? undefined,
   noMap: 'none',
   bodyRows: 20,
-  retries: 2,
   skeletonHeights: [56, 320]
 } as const;
 

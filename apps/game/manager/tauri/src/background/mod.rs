@@ -46,13 +46,17 @@ pub fn publish(app: &AppHandle, outcome: &CheckOutcome) {
         log::warn!("emit {EVENT_REPORT}: {error}");
     }
 
-    if !outcome.changed || !manager.settings().notifications {
+    if !manager.settings().notifications {
         return;
     }
 
-    if let Some(notice) = texts::notice(&outcome.report.status, locale(&manager)) {
-        if let Err(error) = app.notification().builder().title(notice.title).body(notice.body).show() {
-            log::warn!("notification: {error}");
+    let changed = outcome.changed.then_some(&outcome.report).into_iter().chain(outcome.others.iter());
+
+    for report in changed {
+        if let Some(notice) = texts::notice(&report.status, locale(&manager)) {
+            if let Err(error) = app.notification().builder().title(notice.title).body(notice.body).show() {
+                log::warn!("notification: {error}");
+            }
         }
     }
 }
@@ -109,9 +113,8 @@ pub fn spawn_scheduler(app: &AppHandle) {
             let manager = app.state::<Manager>();
             let interval = Duration::from_secs(u64::from(manager.settings().check_interval_minutes) * SECONDS_PER_MINUTE);
             let due = last_check.is_none_or(|at| at.elapsed() >= interval);
-            let patched = manager.has_patch_pending() && !matches!(manager.report().status.kind(), "waiting" | "offline" | "failed");
 
-            if due || patched {
+            if due || manager.needs_check() {
                 let outcome = manager.check().await;
 
                 publish(&app, &outcome);

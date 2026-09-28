@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslations } from 'use-intl';
 
-import { uninstallModpack } from '@/entities/setup';
 import { QUERY_KEYS } from '@/shared/config';
 import { useErrorToast } from '@/shared/lib';
+
+import { uninstallModpack } from '../../../api';
 
 export const useUninstallModpack = (clientPath: string | null) => {
   const t = useTranslations('uninstall');

@@ -9,13 +9,14 @@ const MAPS: MapSummary[] = [
   {
     arenaId: '05_prohorovka',
     slug: 'prohorovka',
+    nameEn: null,
     name: 'Прохоровка',
     image: null,
     sizeMeters: 1000,
     camouflage: 'summer',
     modes: ['ctf', 'assault']
   },
-  { arenaId: '02_malinovka', slug: 'malinovka', name: 'Малиновка', image: null, sizeMeters: 1000, camouflage: 'summer', modes: [] }
+  { arenaId: '02_malinovka', slug: 'malinovka', name: 'Малиновка', nameEn: null, image: null, sizeMeters: 1000, camouflage: 'summer', modes: [] }
 ];
 
 describe('boardSettingsSchema', () => {

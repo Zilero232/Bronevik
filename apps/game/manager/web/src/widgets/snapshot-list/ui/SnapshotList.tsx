@@ -23,7 +23,7 @@ export const SnapshotList = () => {
                   <div className={s.text}>
                     <span className={s.date}>{row.date}</span>
                     <span className={s.meta}>
-                      {row.size} · {row.parts.join(' · ')}
+                      {row.kind} · {row.size} · {row.parts.join(' · ')}
                     </span>
                   </div>
                   <SnapshotActions clientPath={clientPath} dateLabel={row.date} id={row.id} />

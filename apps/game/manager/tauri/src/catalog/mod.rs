@@ -4,7 +4,12 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::error::AppResult;
+use crate::error::{AppError, AppResult, ErrorCode};
+
+pub const OWNED_PREFIXES: [&str; 2] = ["net.triotmetki.", "otmetki."];
+pub const DEPENDENCY_KIND: &str = "dependency";
+pub const PACKAGE_EXTENSIONS: [&str; 2] = ["mtmod", "wotmod"];
+pub const SHA256_HEX_LENGTH: usize = 64;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Localized {
@@ -73,8 +78,103 @@ fn catalogued_default() -> bool {
     true
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DependencyKind {
+    #[default]
+    Dependency,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct Author {
+    pub name: String,
+    pub url: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Licence {
+    pub name: String,
+    pub url: String,
+    pub sha256: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DependencyComponent {
+    pub id: String,
+    #[serde(default)]
+    pub kind: DependencyKind,
+    pub package_id: String,
+    pub version: String,
+    pub file: String,
+    pub title: Localized,
+    #[serde(default)]
+    pub description: Localized,
+    pub author: Author,
+    pub licence: Licence,
+    pub source_url: String,
+    pub sha256: String,
+    pub size: u64,
+    #[serde(default)]
+    pub required_by: Vec<String>,
+    #[serde(default)]
+    pub restart_required: bool,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct RawCatalog {
+    schema_version: u32,
+    modpack_version: String,
+    #[serde(default)]
+    platform: String,
+    #[serde(default)]
+    extension: String,
+    #[serde(default)]
+    categories: Vec<Category>,
+    #[serde(default)]
+    presets: Vec<Preset>,
+    #[serde(default)]
+    components: Vec<serde_json::Value>,
+    #[serde(default)]
+    dependencies: Vec<DependencyComponent>,
+    #[serde(default)]
+    owned_patterns: Vec<String>,
+}
+
+impl TryFrom<RawCatalog> for Catalog {
+    type Error = serde_json::Error;
+
+    fn try_from(raw: RawCatalog) -> Result<Self, Self::Error> {
+        let mut components = Vec::new();
+        let mut dependencies = raw.dependencies;
+
+        for entry in raw.components {
+            if entry.get("kind").and_then(serde_json::Value::as_str) == Some(DEPENDENCY_KIND) {
+                dependencies.push(serde_json::from_value(entry)?);
+            } else {
+                components.push(serde_json::from_value(entry)?);
+            }
+        }
+
+        Ok(Self {
+            schema_version: raw.schema_version,
+            modpack_version: raw.modpack_version,
+            platform: raw.platform,
+            extension: raw.extension,
+            categories: raw.categories,
+            presets: raw.presets,
+            components,
+            dependencies,
+            owned_patterns: raw.owned_patterns,
+        })
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", try_from = "RawCatalog")]
 pub struct Catalog {
     pub schema_version: u32,
     pub modpack_version: String,
@@ -88,6 +188,8 @@ pub struct Catalog {
     pub presets: Vec<Preset>,
     #[serde(default)]
     pub components: Vec<CatalogComponent>,
+    #[serde(default)]
+    pub dependencies: Vec<DependencyComponent>,
     #[serde(default)]
     pub owned_patterns: Vec<String>,
 }
@@ -113,11 +215,50 @@ pub struct LoadInput<'a> {
     pub bundled: Option<&'a Path>,
 }
 
-pub fn parse(text: &str) -> AppResult<Catalog> {
-    Ok(serde_json::from_str(text.trim_start_matches('\u{feff}'))?)
+pub fn is_our_name(name: &str) -> bool {
+    let lowered = name.to_lowercase();
+
+    OWNED_PREFIXES.iter().any(|prefix| lowered.strip_prefix(prefix).is_some_and(|rest| !rest.is_empty()))
 }
 
-fn read_catalog(path: &Path) -> Option<Catalog> {
+pub fn parse(text: &str) -> AppResult<Catalog> {
+    let mut catalog: Catalog = serde_json::from_str(text.trim_start_matches('\u{feff}'))?;
+
+    if let Some(component) = catalog.components.iter().find(|component| !is_our_name(&component.package_id) || !is_our_name(&component.file)) {
+        return Err(AppError::coded(ErrorCode::InvalidPath, format!("the component {} is not a Three Marks package", component.id)));
+    }
+
+    catalog.owned_patterns.retain(|pattern| is_our_name(pattern));
+    catalog.dependencies.retain(|dependency| {
+        let valid = is_valid_dependency(dependency);
+
+        if !valid {
+            log::warn!("catalog: skipping the dependency {}", dependency.id);
+        }
+
+        valid
+    });
+
+    Ok(catalog)
+}
+
+pub fn is_valid_dependency(dependency: &DependencyComponent) -> bool {
+    let is_hex = |text: &str| text.len() == SHA256_HEX_LENGTH && text.chars().all(|c| c.is_ascii_hexdigit());
+    let extension = Path::new(&dependency.file).extension().map(|ext| ext.to_string_lossy().to_lowercase());
+    let file_prefix = format!("{}_", dependency.package_id.to_lowercase());
+
+    !dependency.package_id.is_empty()
+        && !is_our_name(&dependency.package_id)
+        && !is_our_name(&dependency.file)
+        && crate::releases::safe_file_name(&dependency.file).is_ok()
+        && dependency.file.to_lowercase().starts_with(&file_prefix)
+        && extension.is_some_and(|extension| PACKAGE_EXTENSIONS.contains(&extension.as_str()))
+        && is_hex(&dependency.sha256)
+        && is_hex(&dependency.licence.sha256)
+        && dependency.size > 0
+}
+
+pub fn read_catalog(path: &Path) -> Option<Catalog> {
     fs::read_to_string(path).ok().and_then(|text| parse(&text).ok())
 }
 
@@ -142,6 +283,10 @@ pub fn load(input: LoadInput) -> Option<LoadedCatalog> {
 }
 
 impl Catalog {
+    pub fn dependency(&self, id: &str) -> Option<&DependencyComponent> {
+        self.dependencies.iter().find(|dependency| dependency.id == id)
+    }
+
     pub fn component(&self, id: &str) -> Option<&CatalogComponent> {
         self.components.iter().find(|component| component.id == id)
     }

@@ -30,13 +30,13 @@ export const DivisionCard = ({ division }: DivisionCardProps) => {
         <KeyFigure
           icon={<ArrowUp aria-hidden className={s.up} size={16} />}
           label={t('promotion')}
-          value={division.promotesTo ? t('moves', { count: division.promotionSlots, tier: tTiers(division.promotesTo) }) : t('top')}
+          value={division.promotesTo ? t('promotionMoves', { count: division.promotionSlots, tier: tTiers(division.promotesTo) }) : t('top')}
           variant='compact'
         />
         <KeyFigure
           icon={<ArrowDown aria-hidden className={s.down} size={16} />}
           label={t('relegation')}
-          value={division.relegatesTo ? t('moves', { count: division.relegationSlots, tier: tTiers(division.relegatesTo) }) : t('bottom')}
+          value={division.relegatesTo ? t('relegationMoves', { count: division.relegationSlots, tier: tTiers(division.relegatesTo) }) : t('bottom')}
           variant='compact'
         />
       </KeyFigures>

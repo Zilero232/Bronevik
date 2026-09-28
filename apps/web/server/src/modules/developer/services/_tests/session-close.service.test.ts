@@ -6,7 +6,9 @@ import type { PrismaService, WebhookEmitter } from '../../../../core';
 
 import { SessionCloseService } from '../session-close.service';
 
-const session = (overrides: Partial<PlaySession> = {}) => ({
+type SessionFixture = Partial<PlaySession> & { player?: { clanId: bigint | null; nickname: string; logoutAt: Date | null } };
+
+const session = (overrides: SessionFixture = {}) => ({
   ...mock<PlaySession>(),
   id: 'session',
   accountId: 1n,
@@ -17,7 +19,7 @@ const session = (overrides: Partial<PlaySession> = {}) => ({
   wn8: 2_000,
   startedAt: new Date('2026-09-25T10:00:00Z'),
   lastActivityAt: new Date('2026-09-25T11:00:00Z'),
-  player: { clanId: 10n, nickname: 'Tanker' },
+  player: { clanId: 10n, nickname: 'Tanker', logoutAt: null },
   ...overrides
 });
 
@@ -31,6 +33,21 @@ const createService = () => {
 };
 
 describe('SessionCloseService.closeIdle', () => {
+  it('closes a session the player logged out of before the idle timeout', async () => {
+    const { service, prisma } = createService();
+    const lastActivityAt = new Date('2026-09-25T11:00:00Z');
+    const now = new Date('2026-09-25T11:05:00Z');
+
+    prisma.playSession.findMany.mockResolvedValue([
+      session({ id: 'left', lastActivityAt, player: { clanId: 10n, nickname: 'Tanker', logoutAt: new Date('2026-09-25T11:02:00Z') } }),
+      session({ id: 'playing', lastActivityAt, player: { clanId: 10n, nickname: 'Tanker', logoutAt: new Date('2026-09-25T09:00:00Z') } })
+    ]);
+
+    await expect(service.closeIdle(now)).resolves.toBe(1);
+    expect(prisma.playSession.updateMany).toHaveBeenCalledOnce();
+    expect(prisma.playSession.updateMany.mock.calls[0]?.[0]?.where).toMatchObject({ id: 'left' });
+  });
+
   it('closes an idle session and announces it to the player and the clan', async () => {
     const { service, prisma, webhooks } = createService();
 

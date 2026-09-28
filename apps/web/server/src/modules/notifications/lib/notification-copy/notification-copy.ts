@@ -137,6 +137,11 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       path: NOTIFICATION_LINKS.progress
     }))
     .with({ event: 'plusCheckoutOpen' }, () => ({ message: 'plus-checkout-open', values: {}, path: NOTIFICATION_LINKS.plus }))
+    .with({ event: 'lestaRelinkRequired' }, (event) => ({
+      message: 'lesta-relink-required',
+      values: { nickname: event.nickname },
+      path: NOTIFICATION_LINKS.linkedAccounts
+    }))
     .exhaustive();
 
 export const renderNotification = ({ notification, locale, webUrl }: RenderNotificationInput): RenderedNotification => {

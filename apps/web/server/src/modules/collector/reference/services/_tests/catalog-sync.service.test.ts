@@ -3,6 +3,7 @@ import { mockDeep } from 'vitest-mock-extended';
 
 import type { LestaClients, PrismaService } from '../../../../../core';
 
+import { REFERENCE } from '../../config';
 import { CatalogSyncService } from '../catalog-sync.service';
 
 const createSync = () => {
@@ -89,5 +90,46 @@ describe('CatalogSyncService.achievements', () => {
     await service.achievements();
 
     expect(prisma.achievement.upsert.mock.calls.map(([args]) => args.update.title)).toEqual(['Медаль', 'medalB']);
+  });
+});
+
+describe('CatalogSyncService.englishNames', () => {
+  it('asks Lesta for English and fills only the English columns of known rows', async () => {
+    const { prisma, clients, service } = createSync();
+
+    prisma.$transaction.mockResolvedValue([]);
+    clients.bulk.encyclopedia.arenas.mockResolvedValue({ '01_karelia': { name_i18n: 'Karelia', description: 'Rocky hills' } });
+    clients.bulk.encyclopedia.achievements.mockResolvedValue({ medalKay: { name: 'medalKay', name_i18n: "Kay's Medal" } });
+    clients.bulk.encyclopedia.crewskills.mockResolvedValue({ camouflage: { name: 'Camouflage', description: null } });
+
+    expect(await service.englishNames()).toEqual({ arenas: 1, achievements: 1, crewSkills: 1 });
+
+    expect(clients.bulk.encyclopedia.arenas).toHaveBeenCalledWith({ language: REFERENCE.englishLanguage });
+
+    expect(prisma.arena.updateMany).toHaveBeenCalledWith({
+      where: { arenaId: '01_karelia' },
+      data: { nameEn: 'Karelia', descriptionEn: 'Rocky hills' }
+    });
+
+    expect(prisma.achievement.updateMany).toHaveBeenCalledWith({
+      where: { name: 'medalKay' },
+      data: { titleEn: "Kay's Medal", descriptionEn: null }
+    });
+
+    expect(prisma.crewSkill.updateMany).toHaveBeenCalledWith({ where: { skill: 'camouflage' }, data: { nameEn: 'Camouflage', descriptionEn: null } });
+    expect(prisma.arena.upsert).not.toHaveBeenCalled();
+    expect(prisma.achievement.upsert).not.toHaveBeenCalled();
+  });
+
+  it('skips an achievement Lesta sent without a localised title', async () => {
+    const { prisma, clients, service } = createSync();
+
+    prisma.$transaction.mockResolvedValue([]);
+    clients.bulk.encyclopedia.arenas.mockResolvedValue({});
+    clients.bulk.encyclopedia.achievements.mockResolvedValue({ medalKay: { name: 'medalKay' } });
+    clients.bulk.encyclopedia.crewskills.mockResolvedValue({});
+
+    expect((await service.englishNames()).achievements).toBe(0);
+    expect(prisma.achievement.updateMany).not.toHaveBeenCalled();
   });
 });

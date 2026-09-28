@@ -1,7 +1,53 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "The main window: our own commands, events, the folder picker, links, self-update and restart.",
+  "description": "The main window: our own commands, events, the folder picker, links (ours, videos, the runtime dependencies' authors and licences), self-update and restart.",
   "windows": ["main"],
-  "permissions": ["core:default", "dialog:allow-open", "opener:allow-open-url", "updater:default", "process:allow-restart"]
+  "permissions": [
+    "core:default",
+    "dialog:allow-open",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "https://triotmetki.ru"
+        },
+        {
+          "url": "https://triotmetki.ru/*"
+        },
+        {
+          "url": "https://*.triotmetki.ru/*"
+        },
+        {
+          "url": "https://youtube.com/*"
+        },
+        {
+          "url": "https://www.youtube.com/*"
+        },
+        {
+          "url": "https://youtu.be/*"
+        },
+        {
+          "url": "https://rutube.ru/*"
+        },
+        {
+          "url": "https://vk.com/*"
+        },
+        {
+          "url": "https://vkvideo.ru/*"
+        },
+        {
+          "url": "https://github.com/CH4MPi/*"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/CH4MPi/*"
+        },
+        {
+          "url": "https://gitlab.com/openwg/*"
+        }
+      ]
+    },
+    "updater:default",
+    "process:allow-restart"
+  ]
 }

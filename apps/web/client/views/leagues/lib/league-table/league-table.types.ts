@@ -1,4 +1,4 @@
-import type { LeagueEntry, LeagueZone } from '../../api';
+import type { LeagueEntry, LeagueZone } from '@/entities/social/league';
 
 export type LeagueStatus = 'ranked' | 'unranked' | LeagueZone;
 
@@ -13,10 +13,14 @@ export type LeagueStanding = {
 export type LeagueWeekNavInput = {
   weekStart: string;
   currentWeek: string | null;
+  hasData: boolean;
 };
 
 export type LeagueWeekNav = {
-  previous: string;
+  previous: string | null;
   next: string | null;
   isCurrent: boolean;
+  isPast: boolean;
 };
+
+export type LeagueEmptyKind = 'friends' | 'past' | 'pending';

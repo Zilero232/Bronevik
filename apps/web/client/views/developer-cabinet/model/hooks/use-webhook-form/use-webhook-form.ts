@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { WEBHOOK } from '@otmetki/schemas';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
@@ -11,22 +12,17 @@ import type { UseWebhookFormInput } from './use-webhook-form.types';
 import { createWebhook, updateWebhook } from '../../../api';
 import { WEBHOOK_QUERIES } from '../../../config';
 import { isWebhookFormError, toWebhookFormValues, toWebhookInput, webhookFormSchema } from '../../../lib/webhook-form';
-import { useDeveloperMutation } from '../use-developer-mutation';
 
 export const useWebhookForm = ({ endpoint, onCreated, onSaved }: UseWebhookFormInput) => {
   const t = useTranslations('developer.webhookForm');
-  const create = useDeveloperMutation({
+  const create = useMutation({
     mutationFn: createWebhook,
-    invalidates: WEBHOOK_QUERIES.invalidates,
-    successKey: 'webhookCreated',
-    isErrorToasted: false
+    meta: { successKey: 'developer.toast.webhookCreated', invalidates: WEBHOOK_QUERIES.invalidates }
   });
 
-  const update = useDeveloperMutation({
+  const update = useMutation({
     mutationFn: updateWebhook,
-    invalidates: WEBHOOK_QUERIES.invalidates,
-    successKey: 'webhookUpdated',
-    isErrorToasted: false
+    meta: { successKey: 'developer.toast.webhookUpdated', invalidates: WEBHOOK_QUERIES.invalidates }
   });
 
   const {

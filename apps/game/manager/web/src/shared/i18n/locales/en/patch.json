@@ -10,6 +10,10 @@
     "update_available": "Modpack {latest} is available",
     "migrated": "The modpack moved to client {to}",
     "updated": "The modpack is updated to {to}",
+    "migration_ready": "The modpack can move to client {gameVersion}",
+    "update_ready": "Modpack {latest} is ready for client {gameVersion}",
+    "deferred": "The update waits for the game to close",
+    "unsupported": "This client is not supported",
     "waiting": "Waiting for a modpack update for {gameVersion}",
     "offline": "The update server is unreachable",
     "failed": "The update failed"
@@ -17,14 +21,18 @@
   "hint": {
     "idle": "The manager checks the client on start and on the schedule from the settings.",
     "no_client": "Choose a client on this page or in the settings.",
-    "not_installed": "Install the modpack with the Three Marks installer.",
+    "not_installed": "Install the modpack from the manager's Home screen.",
     "up_to_date": "Modpack {version} runs on client {gameVersion}.",
     "update_available": "Install it while the game is closed. The manager takes a snapshot first.",
     "migrated": "The client was updated from {from} — components and settings are in place.",
     "updated": "Client {gameVersion}: the new version was downloaded, checked against its sha256 and installed.",
-    "waiting": "The client was updated from {from}. The manager installs a compatible version as soon as it is out.",
+    "migration_ready": "The client was updated from {from}. The installed version {version} works with it — move it while the game is closed.",
+    "update_ready": "The client was updated from {from}. Automatic moving is off in the settings — install the new version with the button below.",
+    "deferred": "The client was updated from {from}, but the game is running. The manager updates the modpack as soon as the game exits.",
+    "unsupported": "Client {gameVersion} is not supported: choose Lesta's Мир танков in the settings.",
+    "waiting": "The client was updated from {from}. The manager installs a compatible version as soon as it is out (when automatic moving is on).",
     "offline": "We will try again on schedule. The components of client {gameVersion} are untouched.",
-    "failed": "{message}"
+    "failed": "{reason}. The details are in the log (About → Collect logs)."
   },
   "check": "Check now",
   "update": "Update the modpack",

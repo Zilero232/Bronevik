@@ -68,6 +68,12 @@
     --node: var(--color-text-dim);
   }
 
+  @each $tone, $token in (gold: gold, olive: armor, battle: battle, brass: brass, sky: steel-blue) {
+    &[data-tone='#{$tone}'] {
+      --node: var(--color-#{$token});
+    }
+  }
+
   @include below(md) {
     .root[data-dated='true'] & {
       grid-template-columns: 12px minmax(0, 1fr);

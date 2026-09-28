@@ -6,15 +6,24 @@ import { useLocale, useTranslations } from 'use-intl';
 
 import { previewSrc } from '@/entities/catalog';
 import { useSelectedClient } from '@/entities/client';
-import { installModpack, readInstallerProfile, useInstallPlan } from '@/entities/setup';
 import { QUERY_KEYS } from '@/shared/config';
 import { pickLocalized, useErrorToast, useNavigation } from '@/shared/lib';
 
 import type { Selection } from '../../../lib';
-import type { ToggleInput, UseInstallWizardStateInput } from './use-install-wizard-state.types';
+import type { ClientScoped, ToggleInput, UseInstallWizardStateInput } from './use-install-wizard-state.types';
 
+import { installModpack, readInstallerProfile } from '../../../api';
 import { INSTALL_WIZARD } from '../../../config';
-import { closeDependencies, matchingPreset, presetSelection, toggleSelection } from '../../../lib';
+import {
+  closeDependencies,
+  dependencyRows,
+  installedDependencies,
+  matchingPreset,
+  needsClientRestart,
+  presetSelection,
+  toggleSelection
+} from '../../../lib';
+import { useInstallPlan } from '../use-install-plan';
 
 export const useInstallWizardState = ({ initialPreset }: UseInstallWizardStateInput) => {
   const t = useTranslations('install');
@@ -25,17 +34,26 @@ export const useInstallWizardState = ({ initialPreset }: UseInstallWizardStateIn
   const { clientPath } = useSelectedClient();
   const planQuery = useInstallPlan(clientPath);
   const [stepIndex, setStepIndex] = useState(0);
-  const [chosen, setChosen] = useState<Selection | null>(null);
-  const [removeOthers, setRemoveOthers] = useState<Selection>(() => new Set());
+  const [chosenFor, setChosenFor] = useState<ClientScoped | null>(null);
+  const [removeOthersFor, setRemoveOthersFor] = useState<ClientScoped | null>(null);
+  const [excludedFor, setExcludedFor] = useState<ClientScoped | null>(null);
   const [snapshotWanted, setSnapshotWanted] = useState(true);
   const [focusedId, setFocusedId] = useState<string | null>(null);
 
+  const chosen = chosenFor?.clientPath === clientPath ? chosenFor.selection : null;
+  const removeOthers = removeOthersFor?.clientPath === clientPath ? removeOthersFor.selection : new Set<string>();
+  const excluded = excludedFor?.clientPath === clientPath ? excludedFor.selection : new Set<string>();
+  const setChosen = (selection: Selection) => setChosenFor({ clientPath, selection });
   const plan = planQuery.data ?? null;
   const catalog = plan?.catalog ?? null;
   const components = catalog?.components ?? [];
   const presets = catalog?.presets ?? [];
   const defaultPreset = presets.find((preset) => preset.id === initialPreset)?.id ?? presets[0]?.id ?? null;
-  const selection = chosen ?? presetSelection({ components, presetId: defaultPreset });
+  const isReinstall = plan?.installed === true && plan.currentComponents.length > 0;
+  const selection =
+    chosen ??
+    (isReinstall ? closeDependencies({ components, ids: plan.currentComponents }) : presetSelection({ components, presetId: defaultPreset }));
+
   const presetId = matchingPreset({ components, presets, selection });
   const text = (value: Parameters<typeof pickLocalized>[0]['text']) => pickLocalized({ text: value, locale });
   const groups = (catalog?.categories ?? [])
@@ -53,6 +71,22 @@ export const useInstallWizardState = ({ initialPreset }: UseInstallWizardStateIn
     }))
     .filter((group) => group.components.length > 0);
 
+  const rows = dependencyRows({ dependencies: catalog?.dependencies ?? [], statuses: plan?.dependencies ?? [], selection, excluded });
+  const dependencies = rows.map(({ dependency, state, file, checked, locked }) => ({
+    id: dependency.id,
+    title: text(dependency.title),
+    description: text(dependency.description),
+    version: dependency.version,
+    licence: dependency.licence.name,
+    licenceUrl: dependency.licence.url,
+    author: dependency.author.name,
+    authorUrl: dependency.author.url,
+    state,
+    file,
+    checked,
+    locked
+  }));
+
   const focused = components.find((component) => component.id === focusedId) ?? components[0] ?? null;
   const preview = focused && {
     title: text(focused.title),
@@ -64,10 +98,12 @@ export const useInstallWizardState = ({ initialPreset }: UseInstallWizardStateIn
 
   const step = INSTALL_WIZARD.steps[stepIndex] ?? INSTALL_WIZARD.steps[0];
   const takeSnapshot = snapshotWanted || removeOthers.size > 0;
-  const canInstall = clientPath !== null && catalog !== null && components.length > 0 && plan?.source !== 'unavailable';
+  const isClientSupported = plan !== null && plan.client.problem === null;
+  const canInstall = clientPath !== null && isClientSupported && catalog !== null && components.length > 0 && plan.source !== 'unavailable';
 
   const install = useMutation({
-    mutationFn: () => installModpack({ clientPath, components: [...selection], removeOthers: [...removeOthers], takeSnapshot }),
+    mutationFn: () =>
+      installModpack({ clientPath, components: [...selection], removeOthers: [...removeOthers], takeSnapshot, excludedDependencies: [...excluded] }),
     onSuccess: async (installation) => {
       queryClient.setQueryData(QUERY_KEYS.installation(clientPath), installation);
       await queryClient.invalidateQueries();
@@ -107,6 +143,12 @@ export const useInstallWizardState = ({ initialPreset }: UseInstallWizardStateIn
     selectedCount: selection.size,
     totalCount: components.length,
     removeOthers,
+    dependencies,
+    dependencyCount: installedDependencies(rows).length,
+    needsRestart: needsClientRestart(rows),
+    isReinstall,
+    isClientSupported,
+    parkedCount: plan?.parkedComponents.filter((id) => selection.has(id)).length ?? 0,
     takeSnapshot,
     isSnapshotForced: removeOthers.size > 0,
     canInstall,
@@ -119,7 +161,15 @@ export const useInstallWizardState = ({ initialPreset }: UseInstallWizardStateIn
     onToggle: ({ id, checked }: ToggleInput) => setChosen(toggleSelection({ components, selection, id, checked })),
     onFocus: setFocusedId,
     onToggleOther: ({ id, checked }: ToggleInput) =>
-      setRemoveOthers((current) => (checked ? new Set([...current, id]) : new Set([...current].filter((item) => item !== id)))),
+      setRemoveOthersFor({
+        clientPath,
+        selection: checked ? new Set([...removeOthers, id]) : new Set([...removeOthers].filter((item) => item !== id))
+      }),
+    onToggleDependency: ({ id, checked }: ToggleInput) =>
+      setExcludedFor({
+        clientPath,
+        selection: checked ? new Set([...excluded].filter((item) => item !== id)) : new Set([...excluded, id])
+      }),
     onSnapshotChange: setSnapshotWanted,
     onLoadProfile: () => loadProfile.mutate(),
     onInstall: () => install.mutate()

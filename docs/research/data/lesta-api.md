@@ -1,6 +1,8 @@
-# Lesta API — reference (verified 2026-09-24)
+# Lesta API — reference (verified 2026-09-24, methods re-probed 2026-09-28)
 
 Source: developers.lesta.ru (`/api/methods/`, guide, rules/agreement). Items marked **[unverified]** need a live key to confirm.
+
+Method existence was re-checked on 2026-09-28 with live calls using `application_id=demo`: an existing method answers `DEMO_APPLICATION_IS_BLOCKED` or `*_NOT_SPECIFIED`, a missing one `METHOD_NOT_FOUND`. Field lists cannot be checked that way.
 
 ## Basics
 - Base URL: `https://api.tanki.su/wot/<group>/<method>/`
@@ -30,6 +32,9 @@ Source: developers.lesta.ru (`/api/methods/`, guide, rules/agreement). Items mar
 - **stronghold**: claninfo, clanreserves, activateclanreserve
 - **ratings**: types, dates, accounts, neighbors, top
 - **clanratings**: types, dates, clans, neighbors, top
+- **wgn** (base `https://api.tanki.su/wgn/`): servers/info (online per cluster), account/*, clans/* — probed 2026-09-28; `servers/info` feeds the online counter in the site header
+
+Not on Lesta (`METHOD_NOT_FOUND`): `account/wtr`, `stronghold/accountstats`, `stronghold/buildings`, `globalmap/provincehistory`, `globalmap/clanprovincehistory`, and any separate method for ranked battles, Onslaught, Front Line or loot boxes.
 
 ### Key methods
 - **account/list**
@@ -62,10 +67,24 @@ Source: developers.lesta.ru (`/api/methods/`, guide, rules/agreement). Items mar
   - `page_no`, `limit` ≤ 100.
 - **auth/login** (OpenID via Lesta ID)
   - Params: `redirect_uri`, `expires_at` ≤ 2 weeks, `display`, `nofollow=1`.
-  - Tokens are refreshed with `auth/prolongate`.
+  - Tokens are refreshed with `auth/prolongate`: the `lesta-links` worker job renews every token that expires within 3 days (daily, 04:40 Moscow), for 13 days. A rejected or already expired token marks the link stale and sends the owner a «перепривяжите аккаунт» notification.
+- **tanks/stats with a token**
+  - `fields=tank_id,in_garage` + the owner's `access_token` returns `in_garage` for every tank of the account (`null` without a valid token); `in_garage=1` filters to the garage.
+  - The `lesta-links` worker writes it to `player_tank.in_garage` 5 minutes after a login or relink and once a day for every live token.
+- **ratings/***
+  - `ratings/types` lists the periods; the code asks for it and uses only the ones it offers (`1`, `7`, `28`, `all` expected) **[unverified: the set of types on Lesta]**.
+  - `ratings/accounts` (`type`, up to 100 `account_id`, optional `date`): per rank field `{value, rank, rank_delta}`; an account below the period threshold is `null`.
+  - `ratings/top` (`type`, `rank_field`, `limit`, `page_no`), `ratings/neighbors` (`account_id`, `type`, `rank_field`, `limit`), `ratings/dates` (`type`, `account_id`).
+  - Rank fields: global_rating, battles_count, wins_ratio, damage_avg, damage_dealt, frags_avg, frags_count, xp_avg, xp_amount, xp_max, spotted_avg, spotted_count, survived_ratio, hits_ratio, capture_points.
+- **Mode blocks**
+  - account/info: `statistics.stronghold_skirmish`, `stronghold_defense`, `globalmap_absolute|middle|champion` by default; `statistics.epic` (Front Line) and `statistics.ranked_battles` only through `extra` **[unverified on Lesta: `ranked_battles` as an extra name]**. The collector falls back to the base extras for the rest of the process if Lesta rejects them.
+  - tanks/stats: `stronghold_skirmish`, `stronghold_defense`, `globalmap`; `epic` and `ranked_battles` through `extra`.
+- **Language**
+  - `language=en` returns English `name_i18n` for `encyclopedia/achievements`, `arenas` and `crewskills`; the daily `english-names` reference job stores them in `title_en` / `name_en` next to the Russian ones.
 
 ## Limits
 - Server app: 20 rps per registered IP, up to 5 IPs per app, so about 100 rps max.
+  - Our limiter keeps one Redis bucket pair (priority + bulk) per egress IP: list the registered IPs in `LESTA_EGRESS_IPS` (at most 5) and give each process the IP it leaves through in `LESTA_EGRESS_IP`; `LESTA_RPS` is the budget of one IP. Without `LESTA_EGRESS_IP` every process shares the single default bucket, as before.
 - Standalone (client) app: 10 rps per IP.
 - Up to 10 apps per account.
 - Higher limits: ask support. They want to see rps, `fields` usage and your caching.
@@ -75,7 +94,9 @@ Source: developers.lesta.ru (`/api/methods/`, guide, rules/agreement). Items mar
 ## Differences vs Wargaming API
 Missing on Lesta:
 - `account/wtr`
-- `wgn/*`, including `servers/info` (no online counter)
+- `stronghold/accountstats`, `stronghold/buildings`
+
+`wgn/*` exists on Lesta, including `servers/info` (online per cluster).
 
 Other differences:
 - Single realm.

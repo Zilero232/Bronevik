@@ -19,7 +19,7 @@ import { createLestaClients } from './lesta.factory';
           applicationId: config.get('LESTA_APPLICATION_ID'),
           baseUrl: isLestaMock({ LESTA_MOCK: config.get('LESTA_MOCK') }) ? lestaMockBaseUrl(config.get('API_URL')) : undefined,
           redis,
-          budget: { requestsPerSecond: config.get('LESTA_RPS'), reserve: LESTA.tierAReserve },
+          budget: { requestsPerSecond: config.get('LESTA_RPS'), reserve: LESTA.tierAReserve, egress: config.get('LESTA_EGRESS_IP') || undefined },
           onOutcome: recorder ? (outcome) => recorder.recordLesta({ outcome }) : undefined
         })
     },

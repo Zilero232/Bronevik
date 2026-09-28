@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { RATING_TONES } from '@/shared/lib';
 
 import { EFFICIENCY_TONES } from '../../../config';
-import { durationClock, efficiencyTone } from '../battle-format';
+import { efficiencyTone } from '../battle-format';
 
 const rank = (tone: string | null) => RATING_TONES.findIndex((item) => item === tone);
 
@@ -21,15 +21,5 @@ describe('efficiencyTone', () => {
 
   it('gives each configured step its own tone at the boundary', () => {
     EFFICIENCY_TONES.filter((step) => Number.isFinite(step.from)).forEach((step) => expect(efficiencyTone(step.from)).toBe(step.tone));
-  });
-});
-
-describe('durationClock', () => {
-  it('pads seconds to two digits', () => {
-    expect(durationClock(65)).toBe('1:05');
-  });
-
-  it('shows a zero-length battle as 0:00', () => {
-    expect(durationClock(0)).toBe('0:00');
   });
 });

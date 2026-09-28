@@ -8,5 +8,6 @@ export const toLinkedLestaAccount = (link: UserLestaAccount & { player: Pick<Pla
   nickname: link.player.nickname,
   isPrimary: link.isPrimary,
   linkedAt: link.linkedAt.toISOString(),
-  tokenExpiresAt: toIso(link.tokenExpiresAt)
+  tokenExpiresAt: toIso(link.tokenExpiresAt),
+  isStale: link.tokenStaleAt !== null
 });

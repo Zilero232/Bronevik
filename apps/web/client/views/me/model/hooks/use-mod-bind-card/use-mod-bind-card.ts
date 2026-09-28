@@ -1,14 +1,24 @@
 'use client';
 
+import { useMutation } from '@tanstack/react-query';
+
+import { QUERY_KEYS } from '@/shared/constants';
+
 import { getModDevices, issueBindCode, revokeModDevice } from '../../../api';
 import { MOD_BIND } from '../../../config';
-import { useMeMutation } from '../use-me-mutation';
 import { useMeSection } from '../use-me-section';
 
 export const useModBindCard = () => {
   const { data: devices, isError, isFetching, refetch } = useMeSection({ section: 'devices', fetcher: getModDevices });
-  const issue = useMeMutation({ section: 'devices', mutationFn: () => issueBindCode() });
-  const revoke = useMeMutation({ section: 'devices', mutationFn: revokeModDevice, successKey: 'deviceRevoked' });
+  const issue = useMutation({
+    mutationFn: () => issueBindCode(),
+    meta: { errorKey: 'me.toast.failed', invalidates: [QUERY_KEYS.me.section('devices')] }
+  });
+
+  const revoke = useMutation({
+    mutationFn: revokeModDevice,
+    meta: { successKey: 'me.toast.deviceRevoked', errorKey: 'me.toast.failed', invalidates: [QUERY_KEYS.me.section('devices')] }
+  });
 
   return {
     code: issue.data,

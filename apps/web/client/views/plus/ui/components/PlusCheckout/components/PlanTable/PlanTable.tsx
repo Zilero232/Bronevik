@@ -27,7 +27,7 @@ export const PlanTable = () => {
             {pricing.map(({ plan, priceRub, perMonthRub, savingRub, savingPercent }) => (
               <label key={plan} className={s.plan} data-recommended={plan === recommended}>
                 {plan === recommended && (
-                  <Badge shape='corner' tone='accent'>
+                  <Badge shape='corner' tone='gold'>
                     {t('recommended')}
                   </Badge>
                 )}

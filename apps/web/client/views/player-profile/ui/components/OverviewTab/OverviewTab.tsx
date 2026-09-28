@@ -1,4 +1,4 @@
-import { ActivityPanel, FavoriteTanksPanel, HighlightStats, MarksPanel, PeriodRatingsPanel } from './components';
+import { ActivityPanel, CareerPanel, FavoriteTanksPanel, HighlightStats, MarksPanel, PeriodRatingsPanel } from './components';
 
 import s from './OverviewTab.module.scss';
 
@@ -7,6 +7,7 @@ export const OverviewTab = () => (
     <HighlightStats />
     <FavoriteTanksPanel />
     <MarksPanel />
+    <CareerPanel />
     <div className={s.grid}>
       <PeriodRatingsPanel />
       <ActivityPanel />

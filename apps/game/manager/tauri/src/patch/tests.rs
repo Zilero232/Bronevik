@@ -123,7 +123,7 @@ fn installs_a_release_keeping_parked_components_parked() {
         fetched("damage_log", "net.triotmetki.damage_log_0.2.0.mtmod"),
     ];
 
-    apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &packages, disabled: &disabled }).unwrap();
+    apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &packages, disabled: &disabled, replace_all: false }).unwrap();
 
     let installation = read_installation(context).unwrap();
 
@@ -147,7 +147,8 @@ fn a_tampered_package_leaves_the_install_untouched() {
 
     tampered.bytes = b"evil".to_vec();
 
-    let result = apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &[tampered], disabled: &BTreeSet::new() });
+    let result =
+        apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &[tampered], disabled: &BTreeSet::new(), replace_all: false });
 
     assert!(result.is_err());
     assert!(!client.mods_dir.join("net.triotmetki.core_0.2.0.mtmod").exists());
@@ -172,9 +173,121 @@ fn a_requested_component_is_enabled_with_its_dependencies() {
 }
 
 #[test]
+fn replaces_a_truncated_copy_left_by_an_earlier_migration() {
+    let root = tempfile::tempdir().unwrap();
+    let old = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+
+    fs::write(old.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "the whole core package").unwrap();
+
+    let patched = patch_client(&old.path, "1.46.0.0");
+
+    fs::write(patched.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "the whole").unwrap();
+
+    let context = ClientContext { client_dir: &client_dir, client: &patched, catalog: &catalog };
+    let copied = migrate(MigrateInput { context, from_mods_dir: &old.mods_dir }).unwrap();
+
+    assert_eq!(copied, vec!["net.triotmetki.core_0.1.0.mtmod"]);
+    assert_eq!(fs::read_to_string(patched.mods_dir.join("net.triotmetki.core_0.1.0.mtmod")).unwrap(), "the whole core package");
+    assert!(migrate(MigrateInput { context, from_mods_dir: &old.mods_dir }).unwrap().is_empty());
+}
+
+#[test]
+fn a_full_disk_during_migration_leaves_no_partial_package() {
+    let root = tempfile::tempdir().unwrap();
+    let old = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+
+    fs::write(old.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "core").unwrap();
+    fs::write(old.mods_dir.join("otmetki.companion_0.1.0.mtmod"), "companion").unwrap();
+
+    let patched = patch_client(&old.path, "1.46.0.0");
+    let context = ClientContext { client_dir: &client_dir, client: &patched, catalog: &catalog };
+
+    crate::fsx::faults::fail_after(2, std::io::ErrorKind::StorageFull);
+
+    let result = migrate(MigrateInput { context, from_mods_dir: &old.mods_dir });
+
+    crate::fsx::faults::clear();
+
+    assert_eq!(result.unwrap_err().code(), crate::error::ErrorCode::DiskFull);
+    assert!(crate::fsx::list_files(&patched.mods_dir).is_empty());
+    assert!(Manifest::read(&client_dir).unwrap().is_none());
+}
+
+#[cfg(windows)]
+#[test]
+fn a_locked_package_rolls_the_update_back() {
+    use std::os::windows::fs::OpenOptionsExt;
+
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.46.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let old_core = client.mods_dir.join("net.triotmetki.core_0.1.0.mtmod");
+    let old_companion = client.mods_dir.join("otmetki.companion_0.1.0.mtmod");
+
+    fs::write(&old_core, "old core").unwrap();
+    fs::write(&old_companion, "old companion").unwrap();
+
+    let lock = fs::OpenOptions::new().read(true).share_mode(0).open(&old_companion).unwrap();
+    let packages = [fetched("core", "net.triotmetki.core_0.2.0.mtmod"), fetched("companion", "otmetki.companion_0.2.0.mtmod")];
+    let result =
+        apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &packages, disabled: &BTreeSet::new(), replace_all: false });
+
+    drop(lock);
+
+    let mut names: Vec<String> =
+        crate::fsx::list_files(&client.mods_dir).iter().map(|path| path.file_name().unwrap().to_string_lossy().into_owned()).collect();
+
+    names.sort();
+
+    assert_eq!(result.unwrap_err().code(), crate::error::ErrorCode::FileLocked);
+    assert_eq!(names, vec!["net.triotmetki.core_0.1.0.mtmod", "otmetki.companion_0.1.0.mtmod"]);
+    assert_eq!(fs::read_to_string(&old_core).unwrap(), "old core");
+}
+
+#[test]
+fn a_failed_swap_restores_the_previous_files() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.46.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+
+    fs::write(client.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "old core").unwrap();
+    fs::write(client.mods_dir.join("otmetki.companion_0.1.0.mtmod"), "old companion").unwrap();
+
+    let packages = [fetched("core", "net.triotmetki.core_0.2.0.mtmod"), fetched("companion", "otmetki.companion_0.2.0.mtmod")];
+
+    crate::fsx::faults::fail_after(4, std::io::ErrorKind::PermissionDenied);
+
+    let result =
+        apply_packages(ApplyInput { context, modpack_version: "0.2.0", packages: &packages, disabled: &BTreeSet::new(), replace_all: false });
+
+    crate::fsx::faults::clear();
+
+    let mut names: Vec<String> =
+        crate::fsx::list_files(&client.mods_dir).iter().map(|path| path.file_name().unwrap().to_string_lossy().into_owned()).collect();
+
+    names.sort();
+
+    assert!(result.is_err());
+    assert_eq!(names, vec!["net.triotmetki.core_0.1.0.mtmod", "otmetki.companion_0.1.0.mtmod"]);
+    assert!(Manifest::read(&client_dir).unwrap().is_none());
+}
+
+#[test]
 fn serialises_the_status_for_the_ui() {
     let status = PatchStatus::Waiting { game_version: "1.46.0.0".into(), from: "1.45.0.0".into() };
 
     assert_eq!(serde_json::to_value(&status).unwrap(), serde_json::json!({ "kind": "waiting", "gameVersion": "1.46.0.0", "from": "1.45.0.0" }));
     assert_eq!(status.kind(), "waiting");
+    assert_eq!(
+        serde_json::to_value(PatchStatus::Failed { code: crate::error::ErrorCode::DiskFull }).unwrap(),
+        serde_json::json!({ "kind": "failed", "code": "disk_full" })
+    );
 }

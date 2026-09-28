@@ -24,5 +24,6 @@ export const NOTIFICATION_LINKS = {
   competitions: '/competitions',
   streamer: '/s',
   progress: '/me/progress',
-  plus: '/plus'
+  plus: '/plus',
+  linkedAccounts: '/me'
 } as const;

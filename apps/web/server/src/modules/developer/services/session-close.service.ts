@@ -3,7 +3,7 @@ import { subMinutes } from 'date-fns';
 
 import type { WebhookEmitter } from '../../../core';
 
-import { percentOf, ratio, toNumber } from '../../../common/lib';
+import { isSessionEnded, percentOf, ratio, toNumber } from '../../../common/lib';
 import { PrismaService, WEBHOOK_EMITTER } from '../../../core';
 import { SESSION_CLOSE } from '../config';
 
@@ -15,12 +15,18 @@ export class SessionCloseService {
   ) {}
 
   async closeIdle(now = new Date()): Promise<number> {
-    const sessions = await this.prisma.playSession.findMany({
-      where: { kind: 'live', status: 'open', lastActivityAt: { lt: subMinutes(now, SESSION_CLOSE.idleMinutes) } },
+    const idleSince = subMinutes(now, SESSION_CLOSE.idleMinutes);
+
+    const candidates = await this.prisma.playSession.findMany({
+      where: { kind: 'live', status: 'open', OR: [{ lastActivityAt: { lt: idleSince } }, { player: { logoutAt: { not: null } } }] },
       orderBy: { lastActivityAt: 'asc' },
       take: SESSION_CLOSE.batchSize,
-      include: { player: { select: { clanId: true, nickname: true } } }
+      include: { player: { select: { clanId: true, nickname: true, logoutAt: true } } }
     });
+
+    const sessions = candidates.filter((session) =>
+      isSessionEnded({ lastActivityAt: session.lastActivityAt, logoutAt: session.player.logoutAt, idleSince })
+    );
 
     let closed = 0;
 

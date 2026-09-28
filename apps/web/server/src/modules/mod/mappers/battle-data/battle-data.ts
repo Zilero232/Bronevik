@@ -46,7 +46,6 @@ export const toBattleData = ({ event, accountId, deviceId, sessionId, previousMo
     shots: event.shots && event.shots.length > 0 ? event.shots.map(toStoredShot) : undefined,
     moeMovingAvg: moe?.moving_avg_damage ?? null,
     platoonSize: platoonSizeOf(event.platoon),
-    platoonMates: event.platoon ? event.platoon.mates.map((mate) => BigInt(mate)) : [],
     moePercent: percent,
     moePercentDelta: percent !== null && previousMoePercent !== null ? percent - previousMoePercent : null,
     marksOnGun: moe?.marks_on_gun ?? null,

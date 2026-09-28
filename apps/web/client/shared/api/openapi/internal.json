@@ -669,6 +669,96 @@
         "tags": ["players"]
       }
     },
+    "/players/{id}/career": {
+      "get": {
+        "operationId": "PlayersController_career",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerCareerDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["players"]
+      }
+    },
+    "/players/{id}/modes": {
+      "get": {
+        "operationId": "PlayersController_modes",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerModesDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["players"]
+      }
+    },
+    "/players/{id}/official-ratings": {
+      "get": {
+        "operationId": "PlayersController_officialRatings",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerOfficialRatingsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["players"]
+      }
+    },
     "/players/{id}/nickname-history": {
       "get": {
         "operationId": "PlayersController_nicknames",
@@ -2446,6 +2536,196 @@
         "tags": ["leaderboards"]
       }
     },
+    "/leaderboards/official": {
+      "get": {
+        "operationId": "LeaderboardsController_officialTop",
+        "parameters": [
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "description": "Lesta rating period: 1d, 7d and 28d are the last day, week and four weeks; overall is the whole career",
+            "schema": {
+              "default": "overall",
+              "type": "string",
+              "enum": ["1d", "7d", "28d", "overall"]
+            }
+          },
+          {
+            "name": "field",
+            "required": false,
+            "in": "query",
+            "description": "Lesta rank field; winRate, survivalRate and accuracy are percents, the rest per-battle averages or totals",
+            "schema": {
+              "default": "globalRating",
+              "type": "string",
+              "enum": ["globalRating", "battles", "winRate", "avgDamage", "avgXp", "avgFrags", "avgSpotted", "survivalRate", "accuracy", "maxXp"]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficialTopDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["leaderboards"]
+      }
+    },
+    "/leaderboards/official/players/{id}/neighbors": {
+      "get": {
+        "operationId": "LeaderboardsController_officialNeighbors",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "description": "Lesta rating period: 1d, 7d and 28d are the last day, week and four weeks; overall is the whole career",
+            "schema": {
+              "default": "overall",
+              "type": "string",
+              "enum": ["1d", "7d", "28d", "overall"]
+            }
+          },
+          {
+            "name": "field",
+            "required": false,
+            "in": "query",
+            "description": "Lesta rank field; winRate, survivalRate and accuracy are percents, the rest per-battle averages or totals",
+            "schema": {
+              "default": "globalRating",
+              "type": "string",
+              "enum": ["globalRating", "battles", "winRate", "avgDamage", "avgXp", "avgFrags", "avgSpotted", "survivalRate", "accuracy", "maxXp"]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 20,
+              "default": 5,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficialNeighborsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["leaderboards"]
+      }
+    },
+    "/leaderboards/official/players/{id}/history": {
+      "get": {
+        "operationId": "LeaderboardsController_officialHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "description": "Lesta rating period: 1d, 7d and 28d are the last day, week and four weeks; overall is the whole career",
+            "schema": {
+              "default": "overall",
+              "type": "string",
+              "enum": ["1d", "7d", "28d", "overall"]
+            }
+          },
+          {
+            "name": "field",
+            "required": false,
+            "in": "query",
+            "description": "Lesta rank field; winRate, survivalRate and accuracy are percents, the rest per-battle averages or totals",
+            "schema": {
+              "default": "globalRating",
+              "type": "string",
+              "enum": ["globalRating", "battles", "winRate", "avgDamage", "avgXp", "avgFrags", "avgSpotted", "survivalRate", "accuracy", "maxXp"]
+            }
+          },
+          {
+            "name": "days",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 30,
+              "default": 14,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficialRankHistoryDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["leaderboards"]
+      }
+    },
     "/clans": {
       "get": {
         "operationId": "ClansController_list",
@@ -3923,6 +4203,145 @@
           }
         },
         "tags": ["mod"]
+      }
+    },
+    "/mod/me/overview": {
+      "post": {
+        "operationId": "ModRatingsController_overview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModRatingsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModOverviewDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      }
+    },
+    "/mod/me/tanks": {
+      "post": {
+        "operationId": "ModRatingsController_tanks",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModTankRatingsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModTankRatingsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["mod"]
+      }
+    },
+    "/modpack/releases/latest": {
+      "get": {
+        "operationId": "getLatestModpackRelease",
+        "parameters": [
+          {
+            "name": "game",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d+(?:\\.\\d+){1,3}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModpackLatestReleaseDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "summary": "The newest modpack release that supports a game client version",
+        "tags": ["modpack"]
+      }
+    },
+    "/modpack/manager/update": {
+      "get": {
+        "operationId": "getModpackManagerUpdate",
+        "parameters": [
+          {
+            "name": "target",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          {
+            "name": "arch",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          {
+            "name": "current",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[\\w.]+)?$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModpackManagerUpdateDto"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Tauri updater feed of the modpack manager; 204 when it is current",
+        "tags": ["modpack"]
       }
     },
     "/me/developer": {
@@ -17222,7 +17641,14 @@
                 "title": {
                   "type": "string"
                 },
+                "titleEn": {
+                  "description": "English title from the Lesta encyclopedia; null until it is synced",
+                  "type": ["string", "null"]
+                },
                 "description": {
+                  "type": ["string", "null"]
+                },
+                "descriptionEn": {
                   "type": ["string", "null"]
                 },
                 "image": {
@@ -17249,7 +17675,7 @@
                   ]
                 }
               },
-              "required": ["section", "name", "title", "description", "image", "imageBig", "count", "maxSeries"],
+              "required": ["section", "name", "title", "titleEn", "description", "descriptionEn", "image", "imageBig", "count", "maxSeries"],
               "additionalProperties": false
             }
           }
@@ -17323,6 +17749,804 @@
           }
         },
         "required": ["battles", "source", "cells"],
+        "additionalProperties": false
+      },
+      "PlayerCareerDto_Output": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "source": {
+            "type": "string",
+            "enum": ["stored", "live"],
+            "description": "stored: the latest collector snapshot; live: fetched from Lesta because we have no snapshot yet"
+          },
+          "records": {
+            "type": "object",
+            "properties": {
+              "maxDamage": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "vehicle": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "tankId": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "shortName": {
+                                "type": "string"
+                              },
+                              "slug": {
+                                "type": "string"
+                              },
+                              "nation": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 32
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                              },
+                              "tier": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 11
+                              },
+                              "isPremium": {
+                                "type": "boolean"
+                              },
+                              "isCollectible": {
+                                "type": "boolean"
+                              },
+                              "images": {
+                                "type": "object",
+                                "properties": {
+                                  "small": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "contour": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "big": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": ["small", "contour", "big"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "achievedAt": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "description": "Earliest stored snapshot that already showed the record; null when it predates our history"
+                      }
+                    },
+                    "required": ["value", "vehicle", "achievedAt"],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "maxXp": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "vehicle": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "tankId": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "shortName": {
+                                "type": "string"
+                              },
+                              "slug": {
+                                "type": "string"
+                              },
+                              "nation": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 32
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                              },
+                              "tier": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 11
+                              },
+                              "isPremium": {
+                                "type": "boolean"
+                              },
+                              "isCollectible": {
+                                "type": "boolean"
+                              },
+                              "images": {
+                                "type": "object",
+                                "properties": {
+                                  "small": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "contour": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "big": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": ["small", "contour", "big"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "achievedAt": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "description": "Earliest stored snapshot that already showed the record; null when it predates our history"
+                      }
+                    },
+                    "required": ["value", "vehicle", "achievedAt"],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "maxFrags": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "vehicle": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "tankId": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "shortName": {
+                                "type": "string"
+                              },
+                              "slug": {
+                                "type": "string"
+                              },
+                              "nation": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 32
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                              },
+                              "tier": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 11
+                              },
+                              "isPremium": {
+                                "type": "boolean"
+                              },
+                              "isCollectible": {
+                                "type": "boolean"
+                              },
+                              "images": {
+                                "type": "object",
+                                "properties": {
+                                  "small": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "contour": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "big": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "format": "uri"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": ["small", "contour", "big"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "achievedAt": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "description": "Earliest stored snapshot that already showed the record; null when it predates our history"
+                      }
+                    },
+                    "required": ["value", "vehicle", "achievedAt"],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": ["maxDamage", "maxXp", "maxFrags"],
+            "additionalProperties": false
+          },
+          "assist": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "avgAssisted": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Average damage by the player's spotting and tracking per battle"
+                  },
+                  "avgRadio": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "avgTrack": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "avgStun": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": ["avgAssisted", "avgRadio", "avgTrack", "avgStun"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Random-battle assist averages; the base for an assist-aware rating"
+          },
+          "lastBattleAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "logoutAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the player last left the game client, as Lesta reports it"
+          }
+        },
+        "required": ["accountId", "source", "records", "assist", "lastBattleAt", "logoutAt"],
+        "additionalProperties": false
+      },
+      "PlayerModesDto_Output": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "source": {
+            "type": "string",
+            "enum": ["stored", "live", "none"],
+            "description": "stored: from the collector (tank breakdown included); live: fetched from Lesta just now, account totals only; none: Lesta returned nothing"
+          },
+          "modes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": ["frontline", "ranked", "strongholdSkirmish", "strongholdDefense", "globalmap"],
+                  "description": "Lifetime blocks Lesta keeps per account: frontline (epic battles), ranked, strongholdSkirmish and strongholdDefense (Stronghold), globalmap (all Global Map fronts)"
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "winRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avgDamage": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avgXp": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avgFrags": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "survivalRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "maxDamage": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "updatedAt": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "tanks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "vehicle": {
+                        "type": "object",
+                        "properties": {
+                          "tankId": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "shortName": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "nation": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 32
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                          },
+                          "tier": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 11
+                          },
+                          "isPremium": {
+                            "type": "boolean"
+                          },
+                          "isCollectible": {
+                            "type": "boolean"
+                          },
+                          "images": {
+                            "type": "object",
+                            "properties": {
+                              "small": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "contour": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "big": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": ["small", "contour", "big"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                        "additionalProperties": false
+                      },
+                      "battles": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "winRate": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 100,
+                            "description": "Percent, 0–100"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "avgDamage": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["vehicle", "battles", "winRate", "avgDamage"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["mode", "battles", "winRate", "avgDamage", "avgXp", "avgFrags", "survivalRate", "maxDamage", "updatedAt", "tanks"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["accountId", "source", "modes"],
+        "additionalProperties": false
+      },
+      "PlayerOfficialRatingsDto_Output": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "fetchedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "periods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "period": {
+                  "type": "string",
+                  "enum": ["1d", "7d", "28d", "overall"],
+                  "description": "Lesta rating period: 1d, 7d and 28d are the last day, week and four weeks; overall is the whole career"
+                },
+                "fields": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "enum": [
+                      "globalRating",
+                      "battles",
+                      "winRate",
+                      "avgDamage",
+                      "avgXp",
+                      "avgFrags",
+                      "avgSpotted",
+                      "survivalRate",
+                      "accuracy",
+                      "maxXp"
+                    ],
+                    "description": "Lesta rank field; winRate, survivalRate and accuracy are percents, the rest per-battle averages or totals"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": ["number", "null"]
+                      },
+                      "rank": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "description": "Place on the server, 1 is the best"
+                      },
+                      "rankDelta": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "description": "Places gained since the previous day; positive means up"
+                      }
+                    },
+                    "required": ["value", "rank", "rankDelta"],
+                    "additionalProperties": false
+                  },
+                  "description": "Only the fields Lesta ranked the player on"
+                }
+              },
+              "required": ["period", "fields"],
+              "additionalProperties": false
+            },
+            "description": "Periods Lesta offers and ranks the player in; an unranked period is left out"
+          }
+        },
+        "required": ["accountId", "fetchedAt", "periods"],
         "additionalProperties": false
       },
       "NicknameHistoryDto_Output": {
@@ -22519,6 +23743,10 @@
                 "name": {
                   "type": "string"
                 },
+                "nameEn": {
+                  "description": "English name from the Lesta encyclopedia; null until it is synced",
+                  "type": ["string", "null"]
+                },
                 "roles": {
                   "type": "array",
                   "items": {
@@ -22551,7 +23779,7 @@
                   }
                 }
               },
-              "required": ["skill", "name", "roles", "isCommon", "image", "params"],
+              "required": ["skill", "name", "nameEn", "roles", "isCommon", "image", "params"],
               "additionalProperties": false
             }
           },
@@ -25825,6 +27053,10 @@
             "name": {
               "type": "string"
             },
+            "nameEn": {
+              "description": "English name from the Lesta encyclopedia; null until it is synced",
+              "type": ["string", "null"]
+            },
             "image": {
               "anyOf": [
                 {
@@ -25858,7 +27090,7 @@
               }
             }
           },
-          "required": ["arenaId", "slug", "name", "image", "sizeMeters", "camouflage", "modes"],
+          "required": ["arenaId", "slug", "name", "nameEn", "image", "sizeMeters", "camouflage", "modes"],
           "additionalProperties": false
         }
       },
@@ -25873,6 +27105,17 @@
           },
           "name": {
             "type": "string"
+          },
+          "nameEn": {
+            "description": "English name from the Lesta encyclopedia; null until it is synced",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "image": {
             "anyOf": [
@@ -25914,6 +27157,16 @@
             }
           },
           "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "descriptionEn": {
             "anyOf": [
               {
                 "type": "string"
@@ -26138,11 +27391,13 @@
           "arenaId",
           "slug",
           "name",
+          "nameEn",
           "image",
           "sizeMeters",
           "camouflage",
           "modes",
           "description",
+          "descriptionEn",
           "boundingBox",
           "maxPlayersInTeam",
           "roundLengthSec",
@@ -26259,6 +27514,197 @@
           }
         },
         "required": ["scope", "metric", "period", "total", "minBattles", "entries"],
+        "additionalProperties": false
+      },
+      "OfficialTopDto_Output": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": ["1d", "7d", "28d", "overall"],
+            "description": "Lesta rating period: 1d, 7d and 28d are the last day, week and four weeks; overall is the whole career"
+          },
+          "field": {
+            "type": "string",
+            "enum": ["globalRating", "battles", "winRate", "avgDamage", "avgXp", "avgFrags", "avgSpotted", "survivalRate", "accuracy", "maxXp"],
+            "description": "Lesta rank field; winRate, survivalRate and accuracy are percents, the rest per-battle averages or totals"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": ["number", "null"]
+                },
+                "rank": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Place on the server, 1 is the best"
+                },
+                "rankDelta": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Places gained since the previous day; positive means up"
+                },
+                "accountId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "nickname": {
+                  "type": ["string", "null"]
+                },
+                "clanTag": {
+                  "type": ["string", "null"]
+                }
+              },
+              "required": ["value", "rank", "rankDelta", "accountId", "nickname", "clanTag"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["period", "field", "items"],
+        "additionalProperties": false
+      },
+      "OfficialNeighborsDto_Output": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": ["1d", "7d", "28d", "overall"],
+            "description": "Lesta rating period: 1d, 7d and 28d are the last day, week and four weeks; overall is the whole career"
+          },
+          "field": {
+            "type": "string",
+            "enum": ["globalRating", "battles", "winRate", "avgDamage", "avgXp", "avgFrags", "avgSpotted", "survivalRate", "accuracy", "maxXp"],
+            "description": "Lesta rank field; winRate, survivalRate and accuracy are percents, the rest per-battle averages or totals"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": ["number", "null"]
+                },
+                "rank": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Place on the server, 1 is the best"
+                },
+                "rankDelta": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Places gained since the previous day; positive means up"
+                },
+                "accountId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "nickname": {
+                  "type": ["string", "null"]
+                },
+                "clanTag": {
+                  "type": ["string", "null"]
+                }
+              },
+              "required": ["value", "rank", "rankDelta", "accountId", "nickname", "clanTag"],
+              "additionalProperties": false
+            }
+          },
+          "accountId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": ["period", "field", "items", "accountId"],
+        "additionalProperties": false
+      },
+      "OfficialRankHistoryDto_Output": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "period": {
+            "type": "string",
+            "enum": ["1d", "7d", "28d", "overall"],
+            "description": "Lesta rating period: 1d, 7d and 28d are the last day, week and four weeks; overall is the whole career"
+          },
+          "field": {
+            "type": "string",
+            "enum": ["globalRating", "battles", "winRate", "avgDamage", "avgXp", "avgFrags", "avgSpotted", "survivalRate", "accuracy", "maxXp"],
+            "description": "Lesta rank field; winRate, survivalRate and accuracy are percents, the rest per-battle averages or totals"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                },
+                "value": {
+                  "type": ["number", "null"]
+                },
+                "rank": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": ["date", "value", "rank"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["accountId", "period", "field", "points"],
         "additionalProperties": false
       },
       "ClanListPageDto_Output": {
@@ -32722,7 +34168,8 @@
                 "streamer_live",
                 "tank_level_up",
                 "tank_challenge_done",
-                "plus_checkout_open"
+                "plus_checkout_open",
+                "lesta_relink_required"
               ],
               "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
             }
@@ -32797,7 +34244,8 @@
                 "streamer_live",
                 "tank_level_up",
                 "tank_challenge_done",
-                "plus_checkout_open"
+                "plus_checkout_open",
+                "lesta_relink_required"
               ],
               "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
             }
@@ -32870,7 +34318,8 @@
                 "streamer_live",
                 "tank_level_up",
                 "tank_challenge_done",
-                "plus_checkout_open"
+                "plus_checkout_open",
+                "lesta_relink_required"
               ],
               "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
             }
@@ -32957,9 +34406,13 @@
                       "type": "null"
                     }
                   ]
+                },
+                "isStale": {
+                  "type": "boolean",
+                  "description": "The Lesta ID token expired or was rejected and could not be renewed; the account has to be linked again"
                 }
               },
-              "required": ["accountId", "nickname", "isPrimary", "linkedAt", "tokenExpiresAt"],
+              "required": ["accountId", "nickname", "isPrimary", "linkedAt", "tokenExpiresAt", "isStale"],
               "additionalProperties": false
             }
           },
@@ -33696,6 +35149,558 @@
           "required": ["id", "accountId", "name", "modVersion", "gameVersion", "lastSeenAt", "revokedAt", "createdAt"],
           "additionalProperties": false
         }
+      },
+      "ModRatingsRequestDto": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\w-]+$"
+          },
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": ["device_id", "account_id"],
+        "description": "Signed body of POST /mod/me/overview: the bound device and its account, nothing else",
+        "additionalProperties": false
+      },
+      "ModOverviewDto_Output": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "nickname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "overall": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "battles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "win_rate": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "Percent, 0–100"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "avg_damage": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "wn8": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": ["number", "null"]
+                      },
+                      "tier": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": ["very_bad", "bad", "below_avg", "avg", "good", "very_good", "great", "unicum", "super_unicum"]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["value", "tier"],
+                    "additionalProperties": false
+                  },
+                  "eff": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": ["number", "null"]
+                      },
+                      "tier": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": ["very_bad", "bad", "below_avg", "avg", "good", "very_good", "great", "unicum", "super_unicum"]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["value", "tier"],
+                    "additionalProperties": false
+                  },
+                  "brone_index": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": ["number", "null"]
+                      },
+                      "tier": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": ["very_bad", "bad", "below_avg", "avg", "good", "very_good", "great", "unicum", "super_unicum"]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["value", "tier"],
+                    "additionalProperties": false
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  }
+                },
+                "required": ["battles", "win_rate", "avg_damage", "wn8", "eff", "brone_index", "updated_at"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Random-battle ratings over the whole career; null until the account is tracked"
+          },
+          "session": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["day", "live"]
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": ["api", "mod"]
+                  },
+                  "is_live": {
+                    "type": "boolean"
+                  },
+                  "started_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                  },
+                  "ended_at": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "battles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "win_rate": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "Percent, 0–100"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "avg_damage": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "wn8": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": ["number", "null"]
+                      },
+                      "tier": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": ["very_bad", "bad", "below_avg", "avg", "good", "very_good", "great", "unicum", "super_unicum"]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["value", "tier"],
+                    "additionalProperties": false
+                  },
+                  "brone_index": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": ["number", "null"]
+                      },
+                      "tier": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": ["very_bad", "bad", "below_avg", "avg", "good", "very_good", "great", "unicum", "super_unicum"]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["value", "tier"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["kind", "source", "is_live", "started_at", "ended_at", "battles", "win_rate", "avg_damage", "wn8", "brone_index"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The latest play session: the mod live session, else the latest API day"
+          }
+        },
+        "required": ["account_id", "nickname", "overall", "session"],
+        "description": "The bound account own ratings, as the mod hangar panel shows them",
+        "additionalProperties": false
+      },
+      "ModTankRatingsRequestDto": {
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\w-]+$"
+          },
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "tank_ids": {
+            "minItems": 1,
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "required": ["device_id", "account_id", "tank_ids"],
+        "description": "Signed body of POST /mod/me/tanks: the own vehicles to rate (Lesta tank_id, the client intCD)",
+        "additionalProperties": false
+      },
+      "ModTankRatingsDto_Output": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "tanks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tank_id": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "win_rate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avg_damage": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "wn8": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": ["number", "null"]
+                    },
+                    "tier": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": ["very_bad", "bad", "below_avg", "avg", "good", "very_good", "great", "unicum", "super_unicum"]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": ["value", "tier"],
+                  "additionalProperties": false
+                },
+                "moe_percent": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "marks_on_gun": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 3
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "mastery": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4
+                }
+              },
+              "required": ["tank_id", "battles", "win_rate", "avg_damage", "wn8", "moe_percent", "marks_on_gun", "mastery"],
+              "additionalProperties": false
+            },
+            "description": "One row per requested tank the account has data for, in request order"
+          }
+        },
+        "required": ["account_id", "tanks"],
+        "description": "Per-tank own ratings of the bound account",
+        "additionalProperties": false
+      },
+      "ModpackLatestReleaseDto_Output": {
+        "type": "object",
+        "properties": {
+          "game": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["compatible", "waiting"]
+          },
+          "release": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "string",
+                    "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[\\w.]+)?$"
+                  },
+                  "publishedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  },
+                  "games": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^\\d+(?:\\.(?:\\d+|\\*)){1,3}$"
+                    }
+                  },
+                  "notes": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "ru": {
+                            "type": "string"
+                          },
+                          "en": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["ru", "en"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "catalog": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "sha256": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{64}$"
+                          }
+                        },
+                        "required": ["url", "sha256"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "packages": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*$"
+                        },
+                        "file": {
+                          "type": "string",
+                          "pattern": "^[\\w.-]+\\.(?:mtmod|wotmod)$"
+                        },
+                        "url": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        },
+                        "size": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": ["id", "file", "url", "sha256", "size"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "signature": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["version", "publishedAt", "games", "packages", "signature"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["game", "status", "release"],
+        "additionalProperties": false
+      },
+      "ModpackManagerUpdateDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[\\w.]+)?$"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "pub_date": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "signature": {
+            "type": "string"
+          }
+        },
+        "required": ["version", "notes", "pub_date", "url", "signature"]
       },
       "DeveloperOverviewDto_Output": {
         "type": "object",
@@ -34674,7 +36679,8 @@
                   "earlyAccess",
                   "hangarExtras",
                   "privateCompetitions",
-                  "streamerAlerts"
+                  "streamerAlerts",
+                  "supertest"
                 ]
               },
               "limitKey": {
@@ -41852,7 +43858,8 @@
                     "streamer_live",
                     "tank_level_up",
                     "tank_challenge_done",
-                    "plus_checkout_open"
+                    "plus_checkout_open",
+                    "lesta_relink_required"
                   ],
                   "description": "Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list"
                 },
@@ -56203,9 +58210,233 @@
               "required": ["mode", "battles", "wins", "winRate", "avgDamage", "avgXp", "avgFrags", "survivalRate", "lastBattleAt", "tanks"],
               "additionalProperties": false
             }
+          },
+          "career": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": ["frontline", "ranked", "strongholdSkirmish", "strongholdDefense", "globalmap"],
+                  "description": "Lifetime blocks Lesta keeps per account: frontline (epic battles), ranked, strongholdSkirmish and strongholdDefense (Stronghold), globalmap (all Global Map fronts)"
+                },
+                "battles": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "winRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avgDamage": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avgXp": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "avgFrags": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "survivalRate": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percent, 0–100"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "maxDamage": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "updatedAt": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "tanks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "vehicle": {
+                        "type": "object",
+                        "properties": {
+                          "tankId": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "shortName": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "nation": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 32
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+                          },
+                          "tier": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 11
+                          },
+                          "isPremium": {
+                            "type": "boolean"
+                          },
+                          "isCollectible": {
+                            "type": "boolean"
+                          },
+                          "images": {
+                            "type": "object",
+                            "properties": {
+                              "small": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "contour": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "big": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uri"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": ["small", "contour", "big"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "images"],
+                        "additionalProperties": false
+                      },
+                      "battles": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "winRate": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 100,
+                            "description": "Percent, 0–100"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "avgDamage": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["vehicle", "battles", "winRate", "avgDamage"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["mode", "battles", "winRate", "avgDamage", "avgXp", "avgFrags", "survivalRate", "maxDamage", "updatedAt", "tanks"],
+              "additionalProperties": false
+            },
+            "description": "Lifetime per-mode totals from the Lesta API, for players without mod data"
           }
         },
-        "required": ["accountId", "days", "modes"],
+        "required": ["accountId", "days", "modes", "career"],
         "additionalProperties": false
       },
       "ModeMetaDto_Output": {
@@ -60798,7 +63029,13 @@
                   "title": {
                     "type": "string"
                   },
+                  "titleEn": {
+                    "type": ["string", "null"]
+                  },
                   "description": {
+                    "type": ["string", "null"]
+                  },
+                  "descriptionEn": {
                     "type": ["string", "null"]
                   },
                   "section": {
@@ -60849,7 +63086,7 @@
                     ]
                   }
                 },
-                "required": ["name", "title", "description", "section", "image", "holders", "share", "points", "tier"],
+                "required": ["name", "title", "titleEn", "description", "descriptionEn", "section", "image", "holders", "share", "points", "tier"],
                 "additionalProperties": false
               },
               {
@@ -60880,7 +63117,13 @@
                 "title": {
                   "type": "string"
                 },
+                "titleEn": {
+                  "type": ["string", "null"]
+                },
                 "description": {
+                  "type": ["string", "null"]
+                },
+                "descriptionEn": {
                   "type": ["string", "null"]
                 },
                 "section": {
@@ -60931,7 +63174,7 @@
                   ]
                 }
               },
-              "required": ["name", "title", "description", "section", "image", "holders", "share", "points", "tier"],
+              "required": ["name", "title", "titleEn", "description", "descriptionEn", "section", "image", "holders", "share", "points", "tier"],
               "additionalProperties": false
             }
           }
@@ -61218,7 +63461,13 @@
                 "title": {
                   "type": "string"
                 },
+                "titleEn": {
+                  "type": ["string", "null"]
+                },
                 "description": {
+                  "type": ["string", "null"]
+                },
+                "descriptionEn": {
                   "type": ["string", "null"]
                 },
                 "section": {
@@ -61274,7 +63523,20 @@
                   "maximum": 9007199254740991
                 }
               },
-              "required": ["name", "title", "description", "section", "image", "holders", "share", "points", "tier", "count"],
+              "required": [
+                "name",
+                "title",
+                "titleEn",
+                "description",
+                "descriptionEn",
+                "section",
+                "image",
+                "holders",
+                "share",
+                "points",
+                "tier",
+                "count"
+              ],
               "additionalProperties": false
             }
           },
@@ -61288,6 +63550,9 @@
                 },
                 "title": {
                   "type": "string"
+                },
+                "titleEn": {
+                  "type": ["string", "null"]
                 },
                 "image": {
                   "type": ["string", "null"]
@@ -61312,7 +63577,7 @@
                   "type": "boolean"
                 }
               },
-              "required": ["name", "title", "image", "best", "threshold", "progress", "achieved"],
+              "required": ["name", "title", "titleEn", "image", "best", "threshold", "progress", "achieved"],
               "additionalProperties": false
             }
           },
@@ -61329,7 +63594,13 @@
                     "title": {
                       "type": "string"
                     },
+                    "titleEn": {
+                      "type": ["string", "null"]
+                    },
                     "description": {
+                      "type": ["string", "null"]
+                    },
+                    "descriptionEn": {
                       "type": ["string", "null"]
                     },
                     "section": {
@@ -61385,7 +63656,20 @@
                       "maximum": 9007199254740991
                     }
                   },
-                  "required": ["name", "title", "description", "section", "image", "holders", "share", "points", "tier", "count"],
+                  "required": [
+                    "name",
+                    "title",
+                    "titleEn",
+                    "description",
+                    "descriptionEn",
+                    "section",
+                    "image",
+                    "holders",
+                    "share",
+                    "points",
+                    "tier",
+                    "count"
+                  ],
                   "additionalProperties": false
                 }
               },

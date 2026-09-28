@@ -194,12 +194,14 @@ model CrewSkill {
   skill String @id
 
   name           String
+  nameEn         String?  @map("name_en")
   nameKey        String?  @map("name_key")
   descriptionKey String?  @map("description_key")
   type           String?
   roles          String[]
   isCommon       Boolean  @default(false) @map("is_common")
   description    String?
+  descriptionEn  String?  @map("description_en")
   image          String?
   data           Json?
 
@@ -213,11 +215,13 @@ model Arena {
 
   numericId      Int?     @unique @map("numeric_id")
   name           String
+  nameEn         String?  @map("name_en")
   nameKey        String?  @map("name_key")
   descriptionKey String?  @map("description_key")
   slug           String   @unique
   camouflageType String?  @map("camouflage_type")
   description    String?
+  descriptionEn  String?  @map("description_en")
   image          String?
   sizeMeters     Int?     @map("size_meters")
   modes          String[]
@@ -232,14 +236,16 @@ model Arena {
 model Achievement {
   name String @id
 
-  section     String?
-  type        String?
-  title       String
-  description String?
-  condition   String?
-  image       String?
-  options     Json?
-  order       Int?
+  section       String?
+  type          String?
+  title         String
+  titleEn       String? @map("title_en")
+  description   String?
+  descriptionEn String? @map("description_en")
+  condition     String?
+  image         String?
+  options       Json?
+  order         Int?
 
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 

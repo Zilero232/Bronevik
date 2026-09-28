@@ -18,7 +18,8 @@ export const PLUS_FEATURES = [
   'earlyAccess',
   'hangarExtras',
   'privateCompetitions',
-  'streamerAlerts'
+  'streamerAlerts',
+  'supertest'
 ] as const;
 
 export const PLUS_LIMITS = {

@@ -1,12 +1,13 @@
 'use client';
 
-import { useWindowEvent } from '@siberiacancode/reactuse';
+import { target, useActiveElement, useHotkeys } from '@siberiacancode/reactuse';
 
 import { useAuthSession } from '@/entities/auth/session';
+import { isTypingTarget } from '@/shared/lib';
 
 import type { BoardWorkspaceInput } from './use-board-workspace-state.types';
 
-import { boardHotkey } from '../../../lib/board-hotkey';
+import { BOARD_HOTKEYS } from '../../../config';
 import { useBoardDocument } from '../use-board-document';
 import { useBoardEditor } from '../use-board-editor';
 
@@ -15,25 +16,16 @@ export const useBoardWorkspaceState = ({ board, urlToken }: BoardWorkspaceInput)
   const document = useBoardDocument({ board, urlToken, userName: session?.user.name ?? null });
   const editor = useBoardEditor({ document, role: board.role });
 
-  useWindowEvent('keydown', (event) => {
-    const hotkey = boardHotkey(event);
+  const { value: focused } = useActiveElement(target(() => window.document.body));
 
-    if (!hotkey) {
-      return;
-    }
+  const keys = target(() => window);
+  const options = { enabled: !isTypingTarget(focused) };
+  const onHistory = (step: 'redo' | 'undo') => () => editor.isEditable && document[step]();
 
-    if (hotkey !== 'escape') {
-      event.preventDefault();
-    }
-
-    if (hotkey === 'escape') {
-      editor.onEscape();
-    } else if (hotkey === 'delete') {
-      editor.onDeleteSelected();
-    } else if (editor.isEditable) {
-      document[hotkey]();
-    }
-  });
+  useHotkeys(keys, BOARD_HOTKEYS.undo, onHistory('undo'), options);
+  useHotkeys(keys, BOARD_HOTKEYS.redo, onHistory('redo'), options);
+  useHotkeys(keys, BOARD_HOTKEYS.delete, editor.onDeleteSelected, options);
+  useHotkeys(keys, BOARD_HOTKEYS.escape, editor.onEscape, options);
 
   return {
     ...editor,

@@ -13,8 +13,8 @@ export const RankCell = ({ row }: RankCellProps) => {
   return (
     <span className={s.root} data-ranked={row.value !== null} data-zone={row.zone ?? 'stay'}>
       <span className={s.rank}>{row.value === null ? '—' : row.rank}</span>
-      {row.zone === 'promotion' && <ArrowUp aria-label={t('promotion')} className={s.icon} size={14} />}
-      {row.zone === 'relegation' && <ArrowDown aria-label={t('relegation')} className={s.icon} size={14} />}
+      {row.zone === 'promotion' && <ArrowUp aria-label={t('promotion')} className={s.icon} role='img' size={14} />}
+      {row.zone === 'relegation' && <ArrowDown aria-label={t('relegation')} className={s.icon} role='img' size={14} />}
     </span>
   );
 };

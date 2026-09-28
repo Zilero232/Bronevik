@@ -1,3 +1,4 @@
+use crate::error::ErrorCode;
 use crate::patch::PatchStatus;
 use crate::settings::Locale;
 
@@ -36,12 +37,39 @@ pub fn notice(status: &PatchStatus, locale: Locale) -> Option<Notice> {
         (PatchStatus::Waiting { game_version, .. }, false) => format!("Waiting for a modpack update for {game_version}."),
         (PatchStatus::UpdateAvailable { latest, .. }, true) => format!("Доступна новая версия модпака {latest}."),
         (PatchStatus::UpdateAvailable { latest, .. }, false) => format!("Modpack {latest} is available."),
-        (PatchStatus::Failed { message }, true) => format!("Не удалось обновить модпак: {message}"),
-        (PatchStatus::Failed { message }, false) => format!("The modpack update failed: {message}"),
+        (PatchStatus::MigrationReady { game_version, .. }, true) => format!("Модпак можно перенести под клиент {game_version}."),
+        (PatchStatus::MigrationReady { game_version, .. }, false) => format!("The modpack can be moved to client {game_version}."),
+        (PatchStatus::UpdateReady { latest, game_version, .. }, true) => format!("Для клиента {game_version} готов модпак {latest}."),
+        (PatchStatus::UpdateReady { latest, game_version, .. }, false) => format!("Modpack {latest} is ready for client {game_version}."),
+        (PatchStatus::Deferred { game_version, .. }, true) => format!("Закройте игру — модпак обновится под {game_version} сразу после выхода."),
+        (PatchStatus::Deferred { game_version, .. }, false) => {
+            format!("Close the game: the modpack updates for {game_version} right after it exits.")
+        }
+        (PatchStatus::Failed { code }, true) => format!("Не удалось обновить модпак: {}", failure(*code, locale)),
+        (PatchStatus::Failed { code }, false) => format!("The modpack update failed: {}", failure(*code, locale)),
         _ => return None,
     };
 
     Some(Notice { title, body })
+}
+
+pub fn failure(code: ErrorCode, locale: Locale) -> &'static str {
+    let ru = locale == Locale::Ru;
+
+    match code {
+        ErrorCode::Http | ErrorCode::ReleaseUnavailable if ru => "нет связи с сервером.",
+        ErrorCode::Http | ErrorCode::ReleaseUnavailable => "the server is unreachable.",
+        ErrorCode::ChecksumMismatch | ErrorCode::SignatureInvalid | ErrorCode::UntrustedHost if ru => "загрузка не прошла проверку подлинности.",
+        ErrorCode::ChecksumMismatch | ErrorCode::SignatureInvalid | ErrorCode::UntrustedHost => "the download failed its authenticity check.",
+        ErrorCode::DiskFull | ErrorCode::NotEnoughSpace if ru => "на диске не хватает места.",
+        ErrorCode::DiskFull | ErrorCode::NotEnoughSpace => "the disk is full.",
+        ErrorCode::FileLocked | ErrorCode::ClientRunning if ru => "файлы модпака заняты игрой или антивирусом.",
+        ErrorCode::FileLocked | ErrorCode::ClientRunning => "the modpack files are in use by the game or an antivirus.",
+        ErrorCode::RollbackFailed if ru => "откат не удался, восстановите снимок на вкладке «Бэкапы».",
+        ErrorCode::RollbackFailed => "the rollback failed, restore a snapshot on the Backups page.",
+        _ if ru => "ошибка файловой системы, подробности в журнале.",
+        _ => "a file system error, see the log.",
+    }
 }
 
 #[cfg(test)]
@@ -55,5 +83,13 @@ mod tests {
 
         assert_eq!(notice(&waiting, Locale::Ru).unwrap().body, "Ждём обновления модпака под 1.46.0.0.");
         assert!(notice(&current, Locale::En).is_none());
+    }
+
+    #[test]
+    fn a_failure_never_shows_a_raw_error() {
+        let failed = PatchStatus::Failed { code: ErrorCode::FileLocked };
+
+        assert_eq!(notice(&failed, Locale::Ru).unwrap().body, "Не удалось обновить модпак: файлы модпака заняты игрой или антивирусом.");
+        assert!(!notice(&PatchStatus::Failed { code: ErrorCode::Io }, Locale::En).unwrap().body.contains("os error"));
     }
 }

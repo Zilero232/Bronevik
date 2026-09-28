@@ -10,6 +10,7 @@ import {
   Crown,
   Eye,
   Flag,
+  KeyRound,
   ListChecks,
   Medal,
   Radio,
@@ -49,5 +50,6 @@ export const INBOX_EVENT = {
   streamer_live: { icon: Radio, tone: 'accent' },
   tank_level_up: { icon: ChevronsUp, tone: 'success' },
   tank_challenge_done: { icon: ListChecks, tone: 'success' },
-  plus_checkout_open: { icon: Crown, tone: 'premium' }
+  plus_checkout_open: { icon: Crown, tone: 'premium' },
+  lesta_relink_required: { icon: KeyRound, tone: 'warning' }
 } as const satisfies Record<NotificationEvent, InboxEventLook>;

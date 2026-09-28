@@ -23,3 +23,9 @@ describe('toCsv', () => {
     expect(csv.split(DATA_FILE.csvNewline)[1]).toBe('"a,""b""","x\ny",,0');
   });
 });
+
+describe('toCsv booleans', () => {
+  it('writes booleans as words', () => {
+    expect(toCsv([{ isActive: true, isHidden: false }])).toBe(`isActive,isHidden${DATA_FILE.csvNewline}true,false${DATA_FILE.csvNewline}`);
+  });
+});

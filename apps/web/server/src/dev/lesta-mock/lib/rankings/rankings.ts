@@ -1,7 +1,17 @@
-import { sortBy } from 'remeda';
+import { mapValues, sortBy } from 'remeda';
 
-import type { MockPlayer } from '../../lesta-mock.types';
-import type { EligibleInput, EstimateInput, ExactValueInput, RankField, Ranking, RankingInput, RatioInput } from './rankings.types';
+import type { MockPlayer, MockTotals } from '../../lesta-mock.types';
+import type {
+  EligibleInput,
+  EstimateInput,
+  ExactValueInput,
+  FieldValueInput,
+  PeriodTotalsInput,
+  RankField,
+  Ranking,
+  RankingInput,
+  RatioInput
+} from './rankings.types';
 
 import { MOCK_TIME } from '../../config';
 import { accountTotals, globalRating } from '../profile';
@@ -17,12 +27,10 @@ export const isRankField = (value: string): value is RankField => RANK_FIELD_SET
 
 const ratio = ({ value, by, digits = 2 }: RatioInput): number => (by > 0 ? Number((value / by).toFixed(digits)) : 0);
 
-export const exactValue = ({ field, state }: ExactValueInput): number => {
-  const { random } = accountTotals(state);
-
+export const fieldValue = ({ field, random, rating }: FieldValueInput): number => {
   switch (field) {
     case 'global_rating':
-      return globalRating(state);
+      return rating;
     case 'battles_count':
       return random.battles;
     case 'wins_ratio':
@@ -52,6 +60,21 @@ export const exactValue = ({ field, state }: ExactValueInput): number => {
     case 'capture_points':
       return random.capturePoints;
   }
+};
+
+export const exactValue = ({ field, state }: ExactValueInput): number =>
+  fieldValue({ field, random: accountTotals(state).random, rating: globalRating(state) });
+
+export const periodTotals = ({ world, player, at, days }: PeriodTotalsInput): MockTotals => {
+  const now = accountTotals(playerStateAt({ world, player, at })).random;
+
+  if (days === null) {
+    return now;
+  }
+
+  const before = accountTotals(playerStateAt({ world, player, at: at - days * MOCK_TIME.daySec })).random;
+
+  return mapValues(now, (value, key) => (key.startsWith('max') ? value : value - before[key]));
 };
 
 const estimate = ({ field, player, at }: EstimateInput): number => {
@@ -105,8 +128,8 @@ export const ranking = ({ world, field, at, depth }: RankingInput): Ranking => {
   const entries = [...exact, ...estimated.slice(exact.length)];
   const created = { date, depth: exact.length, entries, rankOf: new Map(entries.map((entry, index) => [entry.player.accountId, index + 1])) };
 
-  for (const existing of cache.keys()) {
-    if (!existing.endsWith(`:${day}`)) {
+  for (const [existing, entry] of cache) {
+    if (Math.floor(entry.date / MOCK_TIME.daySec) < day - RANKINGS.cachedDays + 1) {
       cache.delete(existing);
     }
   }

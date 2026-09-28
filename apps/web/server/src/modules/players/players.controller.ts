@@ -13,9 +13,12 @@ import {
   InsightsQueryDto,
   NicknameHistoryDto,
   PlayerAchievementsDto,
+  PlayerCareerDto,
   PlayerInsightsDto,
   PlayerLookupParamsDto,
   PlayerMarksDto,
+  PlayerModesDto,
+  PlayerOfficialRatingsDto,
   PlayerParamsDto,
   PlayerProfileDto,
   PlayerTanksPageDto,
@@ -32,9 +35,11 @@ import {
 } from './dto';
 import {
   PlayerAchievementsService,
+  PlayerCareerService,
   PlayerHistoryService,
   PlayerInsightsService,
   PlayerMarksService,
+  PlayerOfficialRatingsService,
   PlayerPlaytimeService,
   PlayerResolverService,
   PlayerSessionsService,
@@ -58,7 +63,9 @@ export class PlayersController {
     private readonly insightsService: PlayerInsightsService,
     private readonly playtimeService: PlayerPlaytimeService,
     private readonly views: PlayerViewsService,
-    private readonly achievementsService: PlayerAchievementsService
+    private readonly achievementsService: PlayerAchievementsService,
+    private readonly careerService: PlayerCareerService,
+    private readonly official: PlayerOfficialRatingsService
   ) {}
 
   @Get('popular')
@@ -160,6 +167,33 @@ export class PlayersController {
     const accountId = await this.resolver.ensure(BigInt(id));
 
     return this.playtimeService.playtime(accountId);
+  }
+
+  @Get(':id/career')
+  @CacheTTL(CACHE_TTL.player)
+  @ZodResponse({ type: PlayerCareerDto })
+  async career(@Param() { id }: PlayerParamsDto) {
+    const accountId = await this.resolver.ensure(BigInt(id));
+
+    return this.careerService.career(accountId);
+  }
+
+  @Get(':id/modes')
+  @CacheTTL(CACHE_TTL.player)
+  @ZodResponse({ type: PlayerModesDto })
+  async modes(@Param() { id }: PlayerParamsDto) {
+    const accountId = await this.resolver.ensure(BigInt(id));
+
+    return this.careerService.modes({ accountId, allowLive: true });
+  }
+
+  @Get(':id/official-ratings')
+  @CacheTTL(CACHE_TTL.player)
+  @ZodResponse({ type: PlayerOfficialRatingsDto })
+  async officialRatings(@Param() { id }: PlayerParamsDto) {
+    const accountId = await this.resolver.ensure(BigInt(id));
+
+    return this.official.ratings(accountId);
   }
 
   @Get(':id/nickname-history')

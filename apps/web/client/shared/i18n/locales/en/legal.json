@@ -22,7 +22,7 @@
   "sections": {
     "operator": {
       "title": "Data controller",
-      "body": "The personal data controller is <todo>full name or company name</todo>, TIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>, address: <todo>address</todo>. Contact for data questions: <todo>email</todo>."
+      "body": "The personal data controller is <todo>full name or company name</todo>, TIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>, address: <todo>address</todo>. Contact for data questions: <mail>{email}</mail>."
     },
     "data": {
       "title": "What data we process",
@@ -46,7 +46,7 @@
     },
     "rights": {
       "title": "Your rights",
-      "body": "You can get a copy of your data, correct it, withdraw consent and delete your account under «My profile». Send requests the interface cannot handle to <todo>email</todo>; we reply within 10 business days."
+      "body": "You can get a copy of your data, correct it, withdraw consent and delete your account under «My profile». Send requests the interface cannot handle to <mail>{email}</mail>; we reply within 10 business days."
     },
     "cookies": {
       "title": "Cookies and local storage",
@@ -58,7 +58,7 @@
     },
     "parties": {
       "title": "Parties",
-      "body": "The provider is <todo>full name or company name</todo>, TIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>, address: <todo>address</todo>, email: <todo>email</todo>. The user is anyone who uses the Three Marks site or buys a subscription."
+      "body": "The provider is <todo>full name or company name</todo>, TIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>, address: <todo>address</todo>, email: <mail>{email}</mail>. The user is anyone who uses the Three Marks site or buys a subscription."
     },
     "subject": {
       "title": "Subject",
@@ -78,7 +78,7 @@
     },
     "refund": {
       "title": "Refunds",
-      "body": "You can cancel at any time; access stays until the end of the paid period. Refund terms and timing: <todo>refund terms</todo>. Send refund requests to <todo>email</todo>."
+      "body": "You can cancel at any time: turn auto-renew off under “Subscription”, and access stays until the end of the paid period. The paid period is not refunded automatically: we refund the unused days on your request — write to <mail>{email}</mail> or the <bot>bot</bot>. The money goes back the way you paid, within 10 days of the request."
     },
     "rules": {
       "title": "Acceptable use",
@@ -94,15 +94,15 @@
     },
     "requisites": {
       "title": "Company details",
-      "body": "<todo>full name or company name</todo>\nTIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>\nAddress: <todo>address</todo>\nEmail: <todo>email</todo>"
+      "body": "<todo>full name or company name</todo>\nTIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>\nAddress: <todo>address</todo>\nEmail: <mail>{email}</mail>"
     },
     "support": {
       "title": "Three Marks support",
-      "body": "Questions about the site, the mod, Plus and payments: <todo>email</todo> or our Telegram bot, <bot>@OtmetkiBot</bot>. We reply within 2 business days."
+      "body": "Questions about the site, the mod, Plus and payments: <mail>{email}</mail> or our Telegram bot, <bot>@OtmetkiBot</bot>. We reply within 2 business days."
     },
     "dataErrors": {
       "title": "Wrong data",
-      "body": "If statistics, tank characteristics or a build look wrong, write to <todo>email</todo> or the <bot>bot</bot> with a link to the page and what is off. We will check the calculation and fix it."
+      "body": "If statistics, tank characteristics or a build look wrong, write to <mail>{email}</mail> or the <bot>bot</bot> with a link to the page and what is off. We will check the calculation and fix it."
     },
     "game": {
       "title": "Game support (Lesta)",

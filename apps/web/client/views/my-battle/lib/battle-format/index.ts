@@ -1,1 +1,1 @@
-export { durationClock, efficiencyTone } from './battle-format';
+export { efficiencyTone } from './battle-format';

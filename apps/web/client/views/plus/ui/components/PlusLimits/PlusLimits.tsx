@@ -5,7 +5,7 @@ import { match, P } from 'ts-pattern';
 
 import { SectionHeader } from '@/ui-kit';
 
-import { PLUS_LIMIT_TIERS } from '../../../config';
+import { PLUS_LIMIT_TIERS, PLUS_LIMIT_UNITS } from '../../../config';
 
 import s from './PlusLimits.module.scss';
 
@@ -17,6 +17,7 @@ export const PlusLimits = () => {
     <section className={s.root}>
       <SectionHeader description={t('description')} title={t('title')} />
       <table className={s.table}>
+        <caption className={s.caption}>{t('caption')}</caption>
         <thead>
           <tr>
             <th scope='col'>{t('feature')}</th>
@@ -34,7 +35,7 @@ export const PlusLimits = () => {
                 <td key={tier} className={tier === 'plus' ? s.plus : undefined}>
                   {match(limit[tier])
                     .with(null, () => t('unlimited'))
-                    .with(P.number, (count) => format.number(count))
+                    .with(P.number, (count) => (PLUS_LIMIT_UNITS[key] ? t(`units.${PLUS_LIMIT_UNITS[key]}`, { count }) : format.number(count)))
                     .otherwise(({ per, count }) => t(`rate.${per}`, { count }))}
                 </td>
               ))}

@@ -4,6 +4,8 @@ import { useTranslations } from 'use-intl';
 import { useInstallWizard } from '@/features/setup/install-modpack';
 import { Badge, Button, Card, Checkbox, EmptyState, ExternalLink, FormField, Select } from '@/ui-kit';
 
+import { DependencyList } from './components';
+
 import s from './ComponentsStep.module.scss';
 
 export const ComponentsStep = () => {
@@ -49,9 +51,10 @@ export const ComponentsStep = () => {
               ))}
             </fieldset>
           ))}
+          <DependencyList />
         </div>
         {preview && (
-          <aside aria-live='polite' className={s.preview}>
+          <aside className={s.preview}>
             <div className={s.image}>{preview.src && <img alt='' src={preview.src} />}</div>
             <h3 className={s.previewTitle}>{preview.title}</h3>
             <p className={s.previewText}>{preview.description}</p>

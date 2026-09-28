@@ -9,3 +9,7 @@
 .path {
   @include mono-path;
 }
+
+.warning {
+  color: var(--color-danger);
+}

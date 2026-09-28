@@ -212,7 +212,29 @@ export const MOCK_SALT = {
   economy: 18,
   arena: 19,
   stronghold: 20,
-  extras: 21
+  extras: 21,
+  modes: 22,
+  ownership: 23
+} as const;
+
+export const MOCK_MODE_BLOCKS = {
+  tank: ['stronghold_skirmish', 'epic', 'ranked_battles', 'globalmap', 'stronghold_defense'],
+  weights: [0.35, 0.3, 0.15, 0.1, 0.1],
+  accountOf: {
+    stronghold_skirmish: 'stronghold_skirmish',
+    stronghold_defense: 'stronghold_defense',
+    globalmap: 'globalmap_absolute',
+    epic: 'epic',
+    ranked_battles: 'ranked_battles'
+  },
+  extraOnly: { tank: ['epic', 'ranked_battles'], account: ['statistics.epic', 'statistics.ranked_battles'] }
+} as const;
+
+export const MOCK_OWNERSHIP = {
+  keepDays: 30,
+  soldBase: 0.25,
+  soldPerDay: 1 / 400,
+  soldMax: 0.85
 } as const;
 
 export const MOCK_CLANS = {

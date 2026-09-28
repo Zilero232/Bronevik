@@ -3,12 +3,14 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
+import { getLeague } from '@/entities/social/league';
 import { QUERY_KEYS } from '@/shared/constants';
 import { useClientNow, weekKey } from '@/shared/lib';
 
-import { getLeague } from '../../../api';
+import type { LeagueEmptyKind } from '../../../lib/league-table';
+
 import { LEAGUE_VIEW } from '../../../config';
-import { leagueStanding, leagueWeekNav } from '../../../lib/league-table';
+import { leagueHasData, leagueStanding, leagueWeekNav } from '../../../lib/league-table';
 import { useLeagueParams } from '../use-league-params';
 
 export const useLeague = () => {
@@ -26,7 +28,8 @@ export const useLeague = () => {
 
   const { data: league } = query;
   const currentWeek = now ? weekKey({ date: now }) : null;
-  const nav = league ? leagueWeekNav({ weekStart: league.weekStart, currentWeek }) : null;
+  const nav = league ? leagueWeekNav({ weekStart: league.weekStart, currentWeek, hasData: leagueHasData(league) }) : null;
+  const emptyKind: LeagueEmptyKind = nav?.isPast ? 'past' : isFriends ? 'friends' : 'pending';
 
   return {
     query,
@@ -38,7 +41,10 @@ export const useLeague = () => {
     standing: league ? leagueStanding(league.entries) : null,
     weekStart: league?.weekStart ?? null,
     nav,
-    onPrevious: () => nav && params.onWeekChange(nav.previous),
+    emptyKind,
+    hasData: leagueHasData,
+    onPrevious: () => nav?.previous && params.onWeekChange(nav.previous),
+    onCurrent: () => params.onWeekChange(null),
     onNext: () => nav?.next && params.onWeekChange(nav.next === currentWeek ? null : nav.next)
   };
 };

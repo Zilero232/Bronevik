@@ -158,3 +158,63 @@ fn skips_malformed_profiles_and_keeps_unknown_fields() {
     assert_eq!(file.active, None);
     assert_eq!(file.profiles[0].extra["note"], "kept");
 }
+
+#[test]
+fn an_imported_profile_is_not_active_until_it_is_applied() {
+    let root = tempfile::tempdir().unwrap();
+    let store = store(root.path());
+    let code =
+        encode("Чужой", &ProfileData { config: json!({ "battle_damage_log": true }).as_object().unwrap().clone(), components: Map::new() }).unwrap();
+    let imported = store.import(&code, None).unwrap();
+    let file = store.load().unwrap();
+
+    assert_eq!(file.active, None);
+
+    store.activate(&imported.id).unwrap();
+
+    assert_eq!(store.load().unwrap().active.as_deref(), Some(imported.id.as_str()));
+    assert_eq!(store.file(CONFIG_JSON).read().unwrap()["battle_damage_log"], true);
+}
+
+#[test]
+fn a_profile_code_never_switches_privacy_or_network_flags() {
+    let root = tempfile::tempdir().unwrap();
+    let store = store(root.path());
+    let config = json!({
+        "publish_replays": true,
+        "upload_replays": true,
+        "send_shots": false,
+        "settings_target": "profile",
+        "settings_include_resolution": true,
+        "server_url": "https://evil.example",
+        "enabled": "yes",
+        "battle_damage_log": true
+    });
+    let code = encode("Стример", &ProfileData { config: config.as_object().unwrap().clone(), components: Map::new() }).unwrap();
+    let imported = store.import(&code, None).unwrap();
+
+    store.activate(&imported.id).unwrap();
+
+    let applied = store.file(CONFIG_JSON).read().unwrap();
+
+    for key in ["publish_replays", "upload_replays", "send_shots", "settings_target", "settings_include_resolution"] {
+        assert!(applied.get(key).is_none(), "{key}");
+    }
+
+    assert_eq!(applied["server_url"], "https://api.triotmetki.ru");
+    assert_eq!(applied["enabled"], true);
+    assert_eq!(applied["battle_damage_log"], true);
+}
+
+#[test]
+fn keeps_unreadable_profiles_when_saving() {
+    let root = tempfile::tempdir().unwrap();
+    let store = store(root.path());
+
+    store.file(FILE_NAME).write(&json!({ "version": 1, "profiles": [{ "id": "x", "name": "X", "data": { "config": null } }] })).unwrap();
+    store.save_current("Новый").unwrap();
+
+    let raw = store.file(FILE_NAME).read().unwrap();
+
+    assert_eq!(raw["profiles"].as_array().unwrap().len(), 2);
+}

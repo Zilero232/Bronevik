@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { LESTA_ERROR_CODE, RETRYABLE_HTTP_STATUS } from '../errors.constants';
-import { isRetryableLestaError, LestaApiError, LestaHttpError, LestaNetworkError, LestaQueueFullError } from '../lesta-api-error';
+import { isExtraRejected, isRetryableLestaError, LestaApiError, LestaHttpError, LestaNetworkError, LestaQueueFullError } from '../lesta-api-error';
 
 const METHOD = 'account/info';
 
@@ -48,5 +48,13 @@ describe('Lesta errors', () => {
 describe('isRetryableLestaError queue overflow', () => {
   it('retries a request the local limiter queue had no room for', () => {
     expect(isRetryableLestaError(new LestaQueueFullError({ key: 'global', cause: new Error('full') }))).toBe(true);
+  });
+});
+
+describe('isExtraRejected', () => {
+  it('recognises a rejected extra and nothing else', () => {
+    expect(isExtraRejected(new LestaApiError({ code: 'INVALID_EXTRA', method: METHOD, field: 'extra' }))).toBe(true);
+    expect(isExtraRejected(new LestaApiError({ code: LESTA_ERROR_CODE.sourceNotAvailable, method: METHOD }))).toBe(false);
+    expect(isExtraRejected(new Error('boom'))).toBe(false);
   });
 });

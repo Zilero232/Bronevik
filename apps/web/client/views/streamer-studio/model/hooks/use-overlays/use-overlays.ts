@@ -1,20 +1,33 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { SaveOverlayInput } from '../../studio.types';
 
 import { createOverlay, getOverlays, removeOverlay, updateOverlay } from '../../../api';
-import { useStudioMutation } from '../use-studio-mutation';
 
 const saveOverlay = ({ id, values }: SaveOverlayInput) => (id ? updateOverlay({ id, ...values }) : createOverlay(values));
 
 export const useOverlays = () => useQuery({ queryKey: QUERY_KEYS.me.streamer.overlays, queryFn: getOverlays });
 
 export const useSaveOverlay = () =>
-  useStudioMutation({ mutationFn: saveOverlay, queryKey: QUERY_KEYS.me.streamer.overlays, successKey: 'overlaySaved' });
+  useMutation({
+    mutationFn: saveOverlay,
+    meta: {
+      successKey: 'streamer.studio.toast.overlaySaved',
+      errorKey: 'streamer.studio.toast.failed',
+      invalidates: [QUERY_KEYS.me.streamer.overlays]
+    }
+  });
 
 export const useRemoveOverlay = () =>
-  useStudioMutation({ mutationFn: removeOverlay, queryKey: QUERY_KEYS.me.streamer.overlays, successKey: 'overlayRemoved' });
+  useMutation({
+    mutationFn: removeOverlay,
+    meta: {
+      successKey: 'streamer.studio.toast.overlayRemoved',
+      errorKey: 'streamer.studio.toast.failed',
+      invalidates: [QUERY_KEYS.me.streamer.overlays]
+    }
+  });

@@ -9,6 +9,13 @@ declare module 'next-intl' {
   }
 }
 
+declare module '@tanstack/react-query' {
+  // eslint-disable-next-line ts/consistent-type-definitions -- TanStack reads the mutation meta type through interface merging on Register
+  interface Register {
+    mutationMeta: import('@/shared/api/query-client').MutationFeedbackMeta;
+  }
+}
+
 declare module 'react' {
   // eslint-disable-next-line ts/consistent-type-definitions -- CSS custom properties are added to React's CSSProperties by interface merging
   interface CSSProperties {

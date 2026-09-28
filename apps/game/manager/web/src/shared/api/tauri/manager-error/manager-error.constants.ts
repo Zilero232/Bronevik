@@ -17,6 +17,14 @@ export const MANAGER_ERROR_CODES = [
   'release_unavailable',
   'invalid_path',
   'autostart',
+  'busy',
+  'client_unsupported',
+  'signature_invalid',
+  'untrusted_host',
+  'disk_full',
+  'file_locked',
+  'not_enough_space',
+  'rollback_failed',
   'contract',
   'unknown'
 ] as const;

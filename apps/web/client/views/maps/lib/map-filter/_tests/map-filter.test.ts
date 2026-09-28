@@ -9,6 +9,7 @@ import { filterMaps, normalizeMapName } from '../map-filter';
 const map = (arenaId: string, name: string, camouflage: string | null, modes: string[]): MapSummary => ({
   arenaId,
   slug: arenaId.replaceAll('_', '-'),
+  nameEn: null,
   name,
   image: null,
   sizeMeters: 1_000,

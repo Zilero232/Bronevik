@@ -1,16 +1,22 @@
 'use client';
 
+import { useMutation } from '@tanstack/react-query';
+
 import type { ReportMatchInput, Tournament } from '@/entities/tournament/tournament';
 
 import { useCommunityViewer } from '@/entities/auth/session';
+import { communityErrorKey } from '@/features/community/api-error';
+import { QUERY_KEYS } from '@/shared/constants';
 
 import { reportTournamentMatch } from '../../../api';
 import { bracketColumns, championOf } from '../../../lib/bracket-columns';
-import { useTournamentMutation } from '../use-tournament-mutation';
 
 export const useTournamentBracket = (tournament: Tournament) => {
   const { userId } = useCommunityViewer();
-  const report = useTournamentMutation({ mutationFn: (input: ReportMatchInput) => reportTournamentMatch(input), successKey: 'reported' });
+  const report = useMutation({
+    mutationFn: (input: ReportMatchInput) => reportTournamentMatch(input),
+    meta: { successKey: 'tournaments.toast.reported', errorKey: communityErrorKey('tournaments'), invalidates: [QUERY_KEYS.tournaments.all] }
+  });
 
   const { bracket, participants } = tournament;
 

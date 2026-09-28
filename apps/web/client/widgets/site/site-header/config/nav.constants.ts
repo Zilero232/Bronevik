@@ -1,4 +1,6 @@
-import { ROUTES } from '@/shared/constants';
+import { isIncludedIn } from 'remeda';
+
+import { ROUTES, SITE_FOOTER_GROUPS } from '@/shared/constants';
 
 export const NAV_ALIASES = [
   { prefix: '/p', href: ROUTES.players.list },
@@ -6,6 +8,8 @@ export const NAV_ALIASES = [
   { prefix: '/t', href: ROUTES.tanks.list },
   { prefix: '/s', href: ROUTES.streamers.list },
   { prefix: '/competitions', href: ROUTES.tournaments.list },
+  { prefix: ROUTES.social.feed, href: ROUTES.social.leagues },
+  { prefix: ROUTES.social.challenges, href: ROUTES.social.leagues },
   { prefix: '/play', href: ROUTES.tools }
 ] as const;
 
@@ -24,3 +28,10 @@ export const NAV_MENU = {
   eventDateFormat: { day: 'numeric', month: 'long' },
   featuredSkeletonHeight: 150
 } as const satisfies Record<string, number | string | Intl.DateTimeFormatOptions>;
+
+export const MOBILE_NAV = {
+  projectKey: 'project',
+  projectItems: SITE_FOOTER_GROUPS.flatMap(({ items }) => [...items]).filter(({ key }) =>
+    isIncludedIn(key, ['mod', 'forStreamers', 'developers', 'pulse'] as const)
+  )
+} as const;

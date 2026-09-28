@@ -28,15 +28,29 @@ export { isSignatureHeader, timingSafeEqual, verifySignatureHeader } from './hma
 export { isScheduleActive, registerJobSchedules } from './job-schedules';
 export type { JobSchedule, ScheduleEnvironment } from './job-schedules';
 export { parseJsonText, readNumber, readRecord, toJsonValue } from './json';
+export {
+  ACCOUNT_MODE_SOURCES,
+  CAREER_MODE_FROM_DB,
+  mergeBlocks,
+  MODE_STATS_MODES,
+  MODE_STATS_SQL,
+  modeBlockOf,
+  TANK_MODE_SOURCES
+} from './mode-blocks';
+export type { ModeBlockOfInput, ModeSources, ModeStatsMode } from './mode-blocks';
 export { moscowCalendarDate, moscowDay, moscowDayStart } from './moscow-time';
 export { formatNumber, formatNumberOr, formatPercent, formatPercentOr } from './number-format';
 export type { FormatNumberInput, FormatPercentInput } from './number-format';
+export { availablePeriods, OFFICIAL_FIELD_TO_LESTA, OFFICIAL_PERIOD_TO_LESTA, toOfficialFields, toOfficialRank } from './official-rating';
+export type { AvailablePeriodsInput, OfficialFields } from './official-rating';
 export { randomCode } from './random-code';
 export type { RandomCodeInput } from './random-code';
 export { emptyRating, ratingValue } from './rating';
 export { clampPercent, clampPercentDelta, percentOf, ratio } from './ratio';
 export type { RatioInput } from './ratio';
 export { fromUnixSeconds, isoDay, toIso, toIsoDate, toNumber } from './serialize';
+export { hasLoggedOutSince, isSessionEnded } from './session-end';
+export type { SessionEndedInput } from './session-end';
 export { slugify } from './slug';
 export { page, sortRows } from './sort';
 export { stableUuid } from './stable-uuid';

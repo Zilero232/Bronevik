@@ -1,0 +1,1 @@
+export { PageHeroFallback } from './PageHeroFallback';

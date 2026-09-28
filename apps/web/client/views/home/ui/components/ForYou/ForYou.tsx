@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, Eye, Trophy, UserRound } from 'lucide-react';
+import { Award, BarChart3, Eye, Target, Trophy, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
@@ -13,7 +13,7 @@ import s from './ForYou.module.scss';
 
 export const ForYou = () => {
   const t = useTranslations('home.forYou');
-  const { isVisible, nickname, firstWin } = useForYou();
+  const { isVisible, nickname, firstWin, leagueRank, challenges } = useForYou();
 
   if (!isVisible) {
     return null;
@@ -42,6 +42,18 @@ export const ForYou = () => {
             <Link className={s.link} href={`${ROUTES.players.profile(nickname)}?tab=marks`}>
               <Trophy aria-hidden size={16} />
               {t('marks')}
+            </Link>
+          )}
+          {nickname && (
+            <Link className={s.link} href={ROUTES.social.leagues}>
+              <Award aria-hidden size={16} />
+              {leagueRank === null ? t('league') : t('leagueRank', { rank: leagueRank })}
+            </Link>
+          )}
+          {nickname && (
+            <Link className={s.link} href={ROUTES.social.challenges}>
+              <Target aria-hidden size={16} />
+              {challenges ? t('challengesProgress', challenges) : t('challenges')}
             </Link>
           )}
           <Link className={s.link} href={ROUTES.account.analytics}>

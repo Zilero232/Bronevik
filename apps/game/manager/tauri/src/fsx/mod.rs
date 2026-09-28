@@ -1,13 +1,110 @@
+pub mod faults;
+
 use std::fs;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 
+use sha2::{Digest, Sha256};
 use walkdir::WalkDir;
 
 use crate::error::{AppError, AppResult, ErrorCode};
+use crate::paths::normalized;
 
 pub const STAGING_SUFFIX: &str = ".otm-new";
 pub const RETIRED_SUFFIX: &str = ".otm-old";
+pub const PART_SUFFIX: &str = ".part";
+pub const TEMP_SUFFIX: &str = ".otm-tmp";
 pub const MIN_SAFE_PATH_LENGTH: usize = 4;
+pub const HASH_BUFFER_BYTES: usize = 64 * 1024;
+
+pub fn write_file(path: &Path, bytes: &[u8]) -> AppResult<()> {
+    faults::check(path)?;
+    fs::write(path, bytes)?;
+
+    Ok(())
+}
+
+pub fn copy_file(from: &Path, to: &Path) -> AppResult<u64> {
+    faults::check(to)?;
+
+    Ok(fs::copy(from, to)?)
+}
+
+pub fn rename_file(from: &Path, to: &Path) -> AppResult<()> {
+    faults::check(to)?;
+    fs::rename(from, to)?;
+
+    Ok(())
+}
+
+pub fn write_atomic(path: &Path, bytes: &[u8]) -> AppResult<()> {
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    let temp = sibling(path, TEMP_SUFFIX);
+    let written = write_file(&temp, bytes).and_then(|()| rename_file(&temp, path));
+
+    if written.is_err() {
+        let _ = fs::remove_file(&temp);
+    }
+
+    written
+}
+
+pub fn file_sha256(path: &Path) -> AppResult<String> {
+    let mut file = fs::File::open(path)?;
+    let mut hasher = Sha256::new();
+    let mut buffer = vec![0; HASH_BUFFER_BYTES];
+
+    loop {
+        let read = file.read(&mut buffer)?;
+
+        if read == 0 {
+            break;
+        }
+
+        hasher.update(&buffer[..read]);
+    }
+
+    Ok(hex::encode(hasher.finalize()))
+}
+
+pub fn same_content(left: &Path, right: &Path) -> bool {
+    let size = |path: &Path| fs::metadata(path).ok().filter(fs::Metadata::is_file).map(|metadata| metadata.len());
+
+    size(left).is_some_and(|left_size| size(right) == Some(left_size))
+        && matches!((file_sha256(left), file_sha256(right)), (Ok(left), Ok(right)) if left == right)
+}
+
+pub fn copy_verified(from: &Path, to: &Path) -> AppResult<()> {
+    let part = sibling(to, PART_SUFFIX);
+    let copied = copy_file(from, &part).and_then(|_| {
+        if !same_content(from, &part) {
+            return Err(AppError::coded(ErrorCode::ChecksumMismatch, format!("the copy of {} differs", from.display())));
+        }
+
+        rename_file(&part, to)
+    });
+
+    if copied.is_err() {
+        let _ = fs::remove_file(&part);
+    }
+
+    copied
+}
+
+pub fn available_space(path: &Path) -> Option<u64> {
+    let target = normalized(path);
+    let disks = sysinfo::Disks::new_with_refreshed_list();
+
+    disks
+        .list()
+        .iter()
+        .filter(|disk| target.starts_with(&normalized(disk.mount_point())))
+        .max_by_key(|disk| disk.mount_point().as_os_str().len())
+        .map(sysinfo::Disk::available_space)
+}
 
 pub fn ensure_removable(path: &Path) -> AppResult<()> {
     if !path.is_absolute() || path.to_string_lossy().trim_end_matches(['\\', '/']).len() < MIN_SAFE_PATH_LENGTH {
@@ -59,14 +156,14 @@ pub fn copy_dir(from: &Path, to: &Path) -> AppResult<u64> {
         if entry.file_type().is_dir() {
             fs::create_dir_all(&target)?;
         } else if entry.file_type().is_file() {
-            bytes += fs::copy(entry.path(), &target)?;
+            bytes += copy_file(entry.path(), &target)?;
         }
     }
 
     Ok(bytes)
 }
 
-fn sibling(path: &Path, suffix: &str) -> PathBuf {
+pub fn sibling(path: &Path, suffix: &str) -> PathBuf {
     let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
 
     path.with_file_name(format!("{name}{suffix}"))

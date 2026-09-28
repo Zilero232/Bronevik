@@ -56,6 +56,7 @@ export class BuildOptionsService {
           {
             skill: row.skill,
             name: row.name,
+            nameEn: row.nameEn,
             roles: row.roles,
             isCommon: row.isCommon,
             image: row.image,

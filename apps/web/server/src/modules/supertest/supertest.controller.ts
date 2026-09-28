@@ -21,7 +21,7 @@ export class SupertestController {
   }
 
   @Get('mine')
-  @RequiresPlus('analytics')
+  @RequiresPlus('supertest')
   @ZodResponse({ type: SupertestMineDto })
   mine(@CurrentUserId() userId: string) {
     return this.supertest.mine(userId);

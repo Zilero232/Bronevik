@@ -3,6 +3,8 @@
 import { clanRoleSchema } from '@otmetki/schemas';
 import { sortBy } from 'remeda';
 
+import { useCommunityViewer } from '@/entities/auth/session';
+
 import type { UseWorkspaceRosterInput, WorkspaceRosterRow } from './use-workspace-roster.types';
 
 import { memberAttendance } from '../../../lib/attendance';
@@ -10,6 +12,7 @@ import { isOfficerRole } from '../../../lib/workspace-access';
 import { useWorkspaceEvents } from '../use-workspace-events';
 
 export const useWorkspaceRoster = ({ clanId, members }: UseWorkspaceRosterInput) => {
+  const viewer = useCommunityViewer();
   const { query, past } = useWorkspaceEvents({ clanId, isEnabled: true });
 
   const rates = memberAttendance({ events: past, accountIds: members.map(({ accountId }) => accountId) });
@@ -28,6 +31,11 @@ export const useWorkspaceRoster = ({ clanId, members }: UseWorkspaceRosterInput)
     query,
     rows,
     events: past.length,
-    officers: rows.filter((row) => row.isOfficer).length
+    officers: rows.filter((row) => row.isOfficer).length,
+    isLoading: query.isPending && query.fetchStatus !== 'idle',
+    isError: query.isError,
+    isRetrying: query.isRefetching,
+    onRetry: () => void query.refetch(),
+    rowTint: (row: WorkspaceRosterRow) => (viewer.ownsAccount(row.accountId) ? ('self' as const) : null)
   };
 };

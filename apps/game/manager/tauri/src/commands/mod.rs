@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use serde::Serialize;
 use tauri::{AppHandle, State};
@@ -11,13 +11,11 @@ use crate::error::{AppError, AppResult, ErrorCode};
 use crate::install::read_component_profile;
 use crate::logs::{self, CollectInput};
 use crate::patch::PatchReport;
-use crate::paths::configs_dir;
-use crate::process::ensure_closed;
-use crate::profiles::{ProfileStore, ProfilesView};
+use crate::profiles::ProfilesView;
 use crate::releases::api_url;
 use crate::service::{ClientsView, InstallPlan, InstallRequest, Manager, UninstallRequest};
 use crate::settings::ManagerSettings;
-use crate::snapshots::{self, CreateInput, Snapshot, KEEP_SNAPSHOTS};
+use crate::snapshots::Snapshot;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -29,11 +27,12 @@ pub struct AppInfo {
     pub api_url: String,
 }
 
-fn profile_store(manager: &Manager, client_path: Option<&Path>) -> AppResult<(ProfileStore, PathBuf)> {
-    let client = manager.client(client_path)?;
-    let store = ProfileStore::new(configs_dir(&client.path), manager.layout.durable_dir());
+async fn recheck(app: &AppHandle, manager: &Manager) -> PatchReport {
+    let outcome = manager.check().await;
 
-    Ok((store, client.path))
+    background::publish(app, &outcome);
+
+    outcome.report
 }
 
 #[tauri::command]
@@ -94,38 +93,27 @@ pub async fn set_component_enabled(
 
 #[tauri::command]
 pub async fn list_profiles(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<ProfilesView> {
-    let (store, _) = profile_store(&manager, client_path.as_deref())?;
-
-    Ok(store.load()?.view())
-}
-
-fn change_profiles(manager: &Manager, client_path: Option<&Path>, change: impl FnOnce(&ProfileStore) -> AppResult<()>) -> AppResult<ProfilesView> {
-    let (store, path) = profile_store(manager, client_path)?;
-
-    ensure_closed(&path)?;
-    change(&store)?;
-
-    Ok(store.load()?.view())
+    Ok(manager.profile_store(client_path.as_deref())?.load()?.view())
 }
 
 #[tauri::command]
 pub async fn save_profile(manager: State<'_, Manager>, client_path: Option<PathBuf>, name: String) -> AppResult<ProfilesView> {
-    change_profiles(&manager, client_path.as_deref(), |store| store.save_current(&name).map(drop))
+    manager.change_profiles(client_path.as_deref(), |store| store.save_current(&name).map(drop)).await
 }
 
 #[tauri::command]
 pub async fn activate_profile(manager: State<'_, Manager>, client_path: Option<PathBuf>, id: String) -> AppResult<ProfilesView> {
-    change_profiles(&manager, client_path.as_deref(), |store| store.activate(&id))
+    manager.change_profiles(client_path.as_deref(), |store| store.activate(&id)).await
 }
 
 #[tauri::command]
 pub async fn rename_profile(manager: State<'_, Manager>, client_path: Option<PathBuf>, id: String, name: String) -> AppResult<ProfilesView> {
-    change_profiles(&manager, client_path.as_deref(), |store| store.rename(&id, &name))
+    manager.change_profiles(client_path.as_deref(), |store| store.rename(&id, &name)).await
 }
 
 #[tauri::command]
 pub async fn delete_profile(manager: State<'_, Manager>, client_path: Option<PathBuf>, id: String) -> AppResult<ProfilesView> {
-    change_profiles(&manager, client_path.as_deref(), |store| store.delete(&id))
+    manager.change_profiles(client_path.as_deref(), |store| store.delete(&id)).await
 }
 
 #[tauri::command]
@@ -135,53 +123,32 @@ pub async fn import_profile(
     code: String,
     name: Option<String>,
 ) -> AppResult<ProfilesView> {
-    change_profiles(&manager, client_path.as_deref(), |store| store.import(&code, name.as_deref()).map(drop))
+    manager.change_profiles(client_path.as_deref(), |store| store.import(&code, name.as_deref()).map(drop)).await
 }
 
 #[tauri::command]
 pub async fn export_profile(manager: State<'_, Manager>, client_path: Option<PathBuf>, id: String) -> AppResult<String> {
-    let (store, _) = profile_store(&manager, client_path.as_deref())?;
-
-    store.export(&id)
+    manager.profile_store(client_path.as_deref())?.export(&id)
 }
 
 #[tauri::command]
 pub async fn list_snapshots(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<Vec<Snapshot>> {
-    let client = manager.client(client_path.as_deref())?;
-
-    Ok(snapshots::list(&manager.layout.client_dir(&client.path)))
+    manager.list_snapshots(client_path.as_deref())
 }
 
 #[tauri::command]
 pub async fn create_snapshot(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<Vec<Snapshot>> {
-    let client = manager.client(client_path.as_deref())?;
-    let client_dir = manager.layout.client_dir(&client.path);
-
-    snapshots::create(CreateInput { client_dir: &client_dir, client: &client, now: chrono::Local::now() })?;
-    snapshots::prune(&client_dir, KEEP_SNAPSHOTS)?;
-
-    Ok(snapshots::list(&client_dir))
+    manager.create_snapshot(client_path.as_deref()).await
 }
 
 #[tauri::command]
 pub async fn restore_snapshot(manager: State<'_, Manager>, client_path: Option<PathBuf>, id: String) -> AppResult<Vec<Snapshot>> {
-    let client = manager.client(client_path.as_deref())?;
-    let client_dir = manager.layout.client_dir(&client.path);
-
-    ensure_closed(&client.path)?;
-    snapshots::restore(&client_dir, &id)?;
-
-    Ok(snapshots::list(&client_dir))
+    manager.restore_snapshot(client_path.as_deref(), &id).await
 }
 
 #[tauri::command]
 pub async fn delete_snapshot(manager: State<'_, Manager>, client_path: Option<PathBuf>, id: String) -> AppResult<Vec<Snapshot>> {
-    let client = manager.client(client_path.as_deref())?;
-    let client_dir = manager.layout.client_dir(&client.path);
-
-    snapshots::delete(&client_dir, &id)?;
-
-    Ok(snapshots::list(&client_dir))
+    manager.delete_snapshot(client_path.as_deref(), &id).await
 }
 
 #[tauri::command]
@@ -193,7 +160,9 @@ pub async fn get_settings(manager: State<'_, Manager>) -> AppResult<ManagerSetti
 pub async fn update_settings(app: AppHandle, manager: State<'_, Manager>, settings: ManagerSettings) -> AppResult<ManagerSettings> {
     let saved = manager.save_settings(settings)?;
 
-    apply_autostart(&app, saved.autostart)?;
+    if saved.autostart_asked {
+        apply_autostart(&app, saved.autostart)?;
+    }
 
     Ok(saved)
 }
@@ -205,31 +174,21 @@ pub async fn get_patch_report(manager: State<'_, Manager>) -> AppResult<PatchRep
 
 #[tauri::command]
 pub async fn check_now(app: AppHandle, manager: State<'_, Manager>) -> AppResult<PatchReport> {
-    let outcome = manager.check().await;
-
-    background::publish(&app, &outcome);
-
-    Ok(outcome.report)
+    Ok(recheck(&app, &manager).await)
 }
 
 #[tauri::command]
 pub async fn update_modpack(app: AppHandle, manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<PatchReport> {
-    let report = manager.update_now(client_path.as_deref()).await?;
+    manager.update_now(client_path.as_deref()).await?;
 
-    background::publish(&app, &crate::service::CheckOutcome { report: report.clone(), changed: false });
-
-    Ok(report)
+    Ok(recheck(&app, &manager).await)
 }
 
 #[tauri::command]
 pub async fn migrate_modpack(app: AppHandle, manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<PatchReport> {
-    manager.migrate_now(client_path.as_deref())?;
+    manager.migrate_now(client_path.as_deref()).await?;
 
-    let outcome = manager.check().await;
-
-    background::publish(&app, &outcome);
-
-    Ok(outcome.report)
+    Ok(recheck(&app, &manager).await)
 }
 
 #[tauri::command]
@@ -252,22 +211,17 @@ pub async fn prepare_install(manager: State<'_, Manager>, client_path: Option<Pa
 #[tauri::command]
 pub async fn install_modpack(app: AppHandle, manager: State<'_, Manager>, request: InstallRequest) -> AppResult<Installation> {
     let installation = manager.install_modpack(request).await?;
-    let outcome = manager.check().await;
 
-    background::publish(&app, &outcome);
+    recheck(&app, &manager).await;
 
     Ok(installation)
 }
 
 #[tauri::command]
 pub async fn uninstall_modpack(app: AppHandle, manager: State<'_, Manager>, request: UninstallRequest) -> AppResult<PatchReport> {
-    manager.uninstall_modpack(&request)?;
+    manager.uninstall_modpack(&request).await?;
 
-    let outcome = manager.check().await;
-
-    background::publish(&app, &outcome);
-
-    Ok(outcome.report)
+    Ok(recheck(&app, &manager).await)
 }
 
 #[tauri::command]

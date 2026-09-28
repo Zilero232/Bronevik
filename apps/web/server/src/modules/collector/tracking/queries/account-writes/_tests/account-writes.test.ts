@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import { Prisma } from '../../../../../../../generated';
-import { markSyncedSql, upsertLatestTanksSql, upsertPlayerTanksSql } from '../account-writes';
+import { MODE_STATS_SQL } from '../../../../../../common/lib';
+import { markSyncedSql, upsertAccountModeStatsSql, upsertLatestTanksSql, upsertPlayerTanksSql, upsertTankModeStatsSql } from '../account-writes';
 import { TANK_SNAPSHOT_COLUMNS } from '../account-writes.constants';
 
 const jsonParam = (sql: Prisma.Sql): unknown[] => {
@@ -30,6 +31,10 @@ describe('upsertPlayerTanksSql', () => {
   it('never lets an older read lower the stored battle count', () => {
     expect(upsertPlayerTanksSql([]).sql).toContain('WHERE player_tank.battles <= EXCLUDED.battles');
   });
+
+  it('never clears a known garage flag, only raises it for a tank just played', () => {
+    expect(upsertPlayerTanksSql([]).sql).toContain('ELSE player_tank.in_garage END');
+  });
 });
 
 describe('upsertLatestTanksSql', () => {
@@ -47,5 +52,50 @@ describe('markSyncedSql', () => {
     ]);
 
     expect(jsonParam(sql)).toHaveLength(2);
+  });
+});
+
+describe('upsertAccountModeStatsSql', () => {
+  it('stores the database name of every mode and never lowers the battle count', () => {
+    const sql = upsertAccountModeStatsSql([
+      {
+        accountId: 1n,
+        mode: 'strongholdSkirmish',
+        battles: 5,
+        wins: 3,
+        losses: 2,
+        draws: 0,
+        damageDealt: 9000n,
+        damageReceived: 7000n,
+        frags: 4,
+        spotted: 3,
+        xp: 3000n,
+        survived: 2,
+        hits: 20,
+        shots: 25,
+        capturePoints: 0,
+        droppedCapturePoints: 0,
+        avgDamageBlocked: 100,
+        avgDamageAssisted: null,
+        maxDamage: null,
+        maxXp: null,
+        maxFrags: null
+      }
+    ]);
+
+    expect(jsonParam(sql)).toEqual([expect.objectContaining({ account_id: '1', mode: MODE_STATS_SQL.strongholdSkirmish, damage_dealt: '9000' })]);
+    expect(sql.sql).toContain('WHERE account_mode_stats.battles <= EXCLUDED.battles');
+  });
+});
+
+describe('upsertTankModeStatsSql', () => {
+  it('writes one record per tank and mode', () => {
+    const row = { accountId: 1n, tankId: 5, battles: 2, wins: 1, damageDealt: 3000, frags: 1, spotted: 0, xp: 900, survived: 1 };
+    const sql = upsertTankModeStatsSql([
+      { ...row, mode: 'epic' },
+      { ...row, mode: 'ranked' }
+    ]);
+
+    expect(jsonParam(sql).map((record) => z.object({ mode: z.string() }).parse(record).mode)).toEqual([MODE_STATS_SQL.epic, MODE_STATS_SQL.ranked]);
   });
 });

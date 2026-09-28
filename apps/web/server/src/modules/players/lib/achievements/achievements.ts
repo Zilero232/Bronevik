@@ -30,7 +30,9 @@ export const playerAchievements = ({ counts, maxSeries, catalog }: PlayerAchieve
           section: row?.section ?? null,
           name,
           title: row?.title ?? name,
+          titleEn: row?.titleEn ?? null,
           description: row?.description ?? null,
+          descriptionEn: row?.descriptionEn ?? null,
           ...achievementImages(row?.image ?? null),
           count,
           maxSeries: maxSeries?.[name] ?? null

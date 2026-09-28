@@ -87,7 +87,7 @@
   "switches": {
     "title": "What the mod sends",
     "lead": "Only your own account’s events, signed with the device key. Every feature can be switched off in the mod window.",
-    "on": "On",
+    "on": "On by default",
     "items": {
       "battleResults": {
         "title": "Battle results",
@@ -96,10 +96,6 @@
       "moeSnapshots": {
         "title": "Hangar marks",
         "text": "Percentage and moving average damage of the selected tank — only when they change."
-      },
-      "moeDistribution": {
-        "title": "Damage distribution",
-        "text": "The client’s answer on how many players you out-damage on the tank, at most once a day."
       },
       "queueTimes": {
         "title": "Queue time",
@@ -190,6 +186,7 @@
     "managerNote": "The manager opens «Profiles» with this code; you only confirm the import.",
     "gameNote": "Without the manager: copy the code and paste it in the game — the mod window, «Profiles», «Add from code».",
     "missingTitle": "The link has no profile code",
-    "missingDescription": "The link is cut off or outdated. Ask for a new one, or paste the code into the manager by hand: «Profiles» → «Import a code»."
+    "missingDescription": "The link is cut off or outdated. Ask for a new one, or paste the code into the manager by hand: «Profiles» → «Import a code».",
+    "missingAction": "Download the mod manager"
   }
 }

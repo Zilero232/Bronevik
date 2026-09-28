@@ -16,7 +16,7 @@
   "shell": {
     "label": "Community sections",
     "home": "Home",
-    "community": "Community",
+    "competitions": "Competitions",
     "signIn": "Sign in",
     "sections": {
       "feed": {
@@ -100,7 +100,8 @@
       "closed": "Week closed",
       "promotion": "Promotion",
       "relegation": "Relegation",
-      "moves": "{count, plural, =0 {nobody yet} one {# player} other {# players}} → {tier}",
+      "promotionMoves": "{count, plural, =0 {No promotion} one {# player → {tier}} other {# players → {tier}}}",
+      "relegationMoves": "{count, plural, =0 {No relegation} one {# player → {tier}} other {# players → {tier}}}",
       "top": "Top division",
       "bottom": "Nobody drops out of this division",
       "liveNote": "Zones update during the week. Results are locked on Monday at 00:05 Moscow time; a player short of the battle minimum drops a division.",
@@ -110,6 +111,11 @@
       "title": "You are not in a division yet",
       "description": "Every player with a linked Lesta account takes part. New accounts are placed into a group within an hour and start in Bronze.",
       "action": "Link account"
+    },
+    "past": {
+      "title": "You did not take part that week",
+      "description": "You have no league results for this week, so there is nothing further back.",
+      "action": "Back to this week"
     },
     "metric": "Ranking metric",
     "metrics": {
@@ -177,6 +183,7 @@
       "left": "Time left",
       "timeLeft": "{days, plural, =0 {} one {# day } other {# days }}{hours} h"
     },
+    "listTitle": "This week’s challenges",
     "lesta": {
       "title": "Link a Lesta account",
       "text": "Challenge progress is counted for linked accounts only.",

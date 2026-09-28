@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 
-import { EXTERNAL_LINKS, TELEGRAM_BOT } from '@/shared/config';
+import { EXTERNAL_LINKS, LEGAL, SUPPORT } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { PageHeader } from '@/ui-kit';
@@ -21,17 +21,25 @@ export const LegalPage = ({ doc }: LegalPageProps) => {
         description={t(`docs.${doc}.lead`)}
         title={t(`docs.${doc}.title`)}
       />
-      <p className={s.draft} role='note'>
-        {t('draft')}
-      </p>
+      {LEGAL.isDraft && (
+        <p className={s.draft} role='note'>
+          {t('draft')}
+        </p>
+      )}
       {LEGAL_SECTIONS[doc].map((section, index) => (
-        <section key={section} className={s.section}>
+        <section key={section} className={s.section} id={section}>
           <h2 className={s.heading}>{`${index + 1}. ${t(`sections.${section}.title`)}`}</h2>
           <p className={s.body}>
             {t.rich(`sections.${section}.body`, {
+              email: SUPPORT.email,
               todo: (chunks) => <mark className={s.todo}>{chunks}</mark>,
+              mail: (chunks) => (
+                <a className={s.link} href={`mailto:${SUPPORT.email}`}>
+                  {chunks}
+                </a>
+              ),
               bot: (chunks) => (
-                <a className={s.link} href={TELEGRAM_BOT.url} rel='noreferrer' target='_blank'>
+                <a className={s.link} href={SUPPORT.telegramUrl} rel='noreferrer' target='_blank'>
                   {chunks}
                 </a>
               ),

@@ -4,14 +4,17 @@ import installation from '@contract/installation.json';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { mockIPC } from '@tauri-apps/api/mocks';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { toast } from 'sonner';
 import { IntlProvider } from 'use-intl';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { useComponentToggle } from '@/features/component/component-toggle';
 import { COMMANDS, QUERY_KEYS } from '@/shared/config';
 import { MESSAGES } from '@/shared/i18n';
 
 const CLIENT = 'D:\\Игры\\Мир танков';
+const TITLE = 'Лог попаданий';
+const LIBRARIES = ['OpenWG Gameface', 'GUIFlash'];
 
 const setup = () => {
   const queryClient = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
@@ -27,6 +30,10 @@ const setup = () => {
 };
 
 describe('useComponentToggle', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('sends the switch to the Rust core and stores the installation it returns', async () => {
     const calls: unknown[] = [];
 
@@ -37,12 +44,44 @@ describe('useComponentToggle', () => {
     });
 
     const { queryClient, wrapper } = setup();
-    const { result } = renderHook(() => useComponentToggle({ clientPath: CLIENT, componentId: 'hit_log', title: 'Лог попаданий' }), { wrapper });
+    const { result } = renderHook(() => useComponentToggle({ clientPath: CLIENT, componentId: 'hit_log', title: TITLE, libraries: LIBRARIES }), {
+      wrapper
+    });
 
     act(() => result.current.onCheckedChange(false));
 
     await waitFor(() => expect(queryClient.getQueryData(QUERY_KEYS.installation(CLIENT))).toEqual(installation));
     expect(calls).toEqual([{ command: COMMANDS.setComponentEnabled, args: { clientPath: CLIENT, componentId: 'hit_log', enabled: false } }]);
+  });
+
+  it('says the libraries are in place after switching a component on', async () => {
+    const success = vi.spyOn(toast, 'success');
+
+    mockIPC(() => installation);
+
+    const { wrapper } = setup();
+    const { result } = renderHook(() => useComponentToggle({ clientPath: CLIENT, componentId: 'hit_log', title: TITLE, libraries: LIBRARIES }), {
+      wrapper
+    });
+
+    act(() => result.current.onCheckedChange(true));
+
+    await waitFor(() => expect(success).toHaveBeenCalledWith('Лог попаданий: включён, библиотеки на месте (OpenWG Gameface, GUIFlash)'));
+  });
+
+  it('keeps the plain message for a component without libraries', async () => {
+    const success = vi.spyOn(toast, 'success');
+
+    mockIPC(() => installation);
+
+    const { wrapper } = setup();
+    const { result } = renderHook(() => useComponentToggle({ clientPath: CLIENT, componentId: 'session_stats', title: TITLE, libraries: [] }), {
+      wrapper
+    });
+
+    act(() => result.current.onCheckedChange(true));
+
+    await waitFor(() => expect(success).toHaveBeenCalledWith('Лог попаданий: включён'));
   });
 
   it('leaves the cached installation alone when the game is running', async () => {
@@ -52,7 +91,9 @@ describe('useComponentToggle', () => {
     });
 
     const { queryClient, wrapper } = setup();
-    const { result } = renderHook(() => useComponentToggle({ clientPath: CLIENT, componentId: 'hit_log', title: 'Лог попаданий' }), { wrapper });
+    const { result } = renderHook(() => useComponentToggle({ clientPath: CLIENT, componentId: 'hit_log', title: TITLE, libraries: LIBRARIES }), {
+      wrapper
+    });
 
     act(() => result.current.onCheckedChange(true));
 

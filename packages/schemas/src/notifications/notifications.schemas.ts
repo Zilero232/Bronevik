@@ -29,7 +29,8 @@ export const notificationEventSchema = z
     'streamer_live',
     'tank_level_up',
     'tank_challenge_done',
-    'plus_checkout_open'
+    'plus_checkout_open',
+    'lesta_relink_required'
   ])
   .describe('Every notification kind: the settings toggles, the inbox items and the Telegram, e-mail and web-push messages use this one list');
 

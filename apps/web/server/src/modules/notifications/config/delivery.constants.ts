@@ -15,9 +15,14 @@ export const NOTIFICATION_ROUTING: Readonly<Record<'digestChannels' | 'eventChan
 
 export const NOTIFICATION_ALWAYS_IN_INBOX: readonly NotificationEvent[] = ['replayOverflow', 'tankLevelUp', 'tankChallengeDone'];
 
-export const NOTIFICATION_SELF_OPTED: readonly NotificationEvent[] = ['watchlistDigest', 'competitionFinished', 'streamerLive'];
+export const NOTIFICATION_SELF_OPTED: readonly NotificationEvent[] = [
+  'watchlistDigest',
+  'competitionFinished',
+  'streamerLive',
+  'lestaRelinkRequired'
+];
 
-export const NOTIFICATION_EMAIL_EVENTS: readonly NotificationEvent[] = ['watchlistDigest'];
+export const NOTIFICATION_EMAIL_EVENTS: readonly NotificationEvent[] = ['watchlistDigest', 'lestaRelinkRequired'];
 
 export const NOTIFICATION_DELIVERY = {
   concurrency: 8,

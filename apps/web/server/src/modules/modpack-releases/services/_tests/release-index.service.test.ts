@@ -57,6 +57,51 @@ describe('ReleaseIndexService', () => {
     expect(http.getJson).toHaveBeenCalledTimes(2);
   });
 
+  it('shares one request between concurrent first loads', async () => {
+    const { service, http } = createService(REMOTE);
+
+    http.getJson.mockResolvedValue(INDEX);
+
+    await Promise.all([service.load(), service.load(), service.load()]);
+
+    expect(http.getJson).toHaveBeenCalledTimes(1);
+  });
+
+  it('answers from the stale copy at once and refreshes it in the background', async () => {
+    vi.useFakeTimers();
+
+    const { service, http } = createService(REMOTE);
+
+    http.getJson.mockResolvedValueOnce(INDEX).mockReturnValueOnce(new Promise(() => undefined));
+    await service.load();
+    vi.advanceTimersByTime(MODPACK_RELEASES_SOURCE.cacheTtlMs + 1);
+
+    await expect(service.load()).resolves.toEqual(INDEX);
+    await expect(service.load()).resolves.toEqual(INDEX);
+    expect(http.getJson).toHaveBeenCalledTimes(2);
+  });
+
+  it('waits before retrying a failed refresh', async () => {
+    vi.useFakeTimers();
+
+    const { service, http } = createService(REMOTE);
+
+    http.getJson.mockResolvedValueOnce(INDEX).mockRejectedValue(new Error('offline'));
+    await service.load();
+    vi.advanceTimersByTime(MODPACK_RELEASES_SOURCE.cacheTtlMs + 1);
+    await service.load();
+    await vi.advanceTimersByTimeAsync(1);
+    await service.load();
+    await service.load();
+
+    expect(http.getJson).toHaveBeenCalledTimes(2);
+
+    vi.advanceTimersByTime(MODPACK_RELEASES_SOURCE.retryDelayMs);
+    await service.load();
+
+    expect(http.getJson).toHaveBeenCalledTimes(3);
+  });
+
   it('refuses a malformed index when nothing is cached', async () => {
     const { service, http } = createService(REMOTE);
 

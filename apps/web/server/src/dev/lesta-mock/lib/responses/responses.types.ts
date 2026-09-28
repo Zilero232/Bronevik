@@ -1,4 +1,5 @@
 import type { LestaMockEnvelope, LestaMockParams, MockClan, MockPlayer, MockTankState, MockVehicle, MockWorld } from '../../lesta-mock.types';
+import type { RankField, RANKINGS } from '../rankings';
 
 export type MockContext = {
   world: MockWorld;
@@ -136,4 +137,27 @@ export type TankStatsInput = {
   context: MockContext;
   accountId: number;
   tank: MockTankState;
+};
+
+export type ModeBlocksInput = {
+  context: MockContext;
+  player: MockPlayer;
+  tanks: readonly MockTankState[];
+};
+
+export type RatingTypeOfInput = {
+  type: (typeof RANKINGS.types)[number];
+};
+
+export type RatingAccountInput = RatingTypeOfInput & {
+  context: MockContext;
+  accountId: number;
+  at: number;
+};
+
+export type RankDeltaInput = {
+  context: MockContext;
+  field: RankField;
+  accountId: number;
+  at: number;
 };

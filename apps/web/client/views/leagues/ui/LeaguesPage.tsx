@@ -1,11 +1,12 @@
 'use client';
 
-import { Link2, UserPlus } from 'lucide-react';
+import { CalendarClock, Link2, UserPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { match } from 'ts-pattern';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, EmptyState, KeyFigure, QueryState, Skeleton } from '@/ui-kit';
+import { Button, buttonVariants, EmptyState, KeyFigure, QueryState, Skeleton } from '@/ui-kit';
 import { SocialShell } from '@/widgets/social/social-shell';
 
 import { LEAGUE_VIEW } from '../config';
@@ -44,8 +45,20 @@ export const LeaguesPage = () => {
           onScopeChange={league.params.onScopeChange}
         />
         <QueryState
-          empty={
-            league.isFriends ? (
+          empty={match(league.emptyKind)
+            .with('past', () => (
+              <EmptyState
+                action={
+                  <Button size='sm' variant='secondary' onClick={league.onCurrent}>
+                    <CalendarClock aria-hidden size={14} />
+                    {t('past.action')}
+                  </Button>
+                }
+                description={t('past.description')}
+                title={t('past.title')}
+              />
+            ))
+            .with('friends', () => (
               <EmptyState
                 action={
                   <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={ROUTES.players.list}>
@@ -56,7 +69,8 @@ export const LeaguesPage = () => {
                 description={t('empty.description')}
                 title={t('empty.title')}
               />
-            ) : (
+            ))
+            .with('pending', () => (
               <EmptyState
                 action={
                   <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.account.overview}>
@@ -67,11 +81,11 @@ export const LeaguesPage = () => {
                 description={t('pending.description')}
                 title={t('pending.title')}
               />
-            )
-          }
+            ))
+            .exhaustive()}
           errorDescription={t('error.description')}
           errorTitle={t('error.title')}
-          isEmpty={(data) => (data.scope === 'division' ? data.division === null : data.entries.length === 0)}
+          isEmpty={(data) => !league.hasData(data)}
           query={league.query}
           skeleton={<Skeleton height={LEAGUE_VIEW.skeletonHeight} shape='block' />}
         >

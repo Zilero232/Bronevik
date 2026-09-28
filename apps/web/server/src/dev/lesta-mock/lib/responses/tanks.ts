@@ -1,11 +1,14 @@
 import type { LestaMockEnvelope, MockTankState } from '../../lesta-mock.types';
 import type { MockContext, MockRoute, TanksOfInput, TankStatsInput } from './responses.types';
 
+import { MOCK_MODE_BLOCKS } from '../../config';
 import { tankAchievements } from '../achievements';
 import { selectFields } from '../fields';
+import { tankModeOf } from '../mode-blocks';
+import { isInGarage } from '../ownership';
 import { percentileOf, populationSample } from '../simulation';
 import { emptyTotals, mergeTotals, toStatsBlock } from '../stats';
-import { masteryOf, playerAt, stateOf } from './account';
+import { masteryOf, playerAt, stateOf, tokenError } from './account';
 import { fail, hasExtra, idList, listOf, ok } from './envelope';
 import { ZERO_BLOCK_KEYS } from './responses.constants';
 
@@ -23,15 +26,37 @@ const singleAccount = (context: MockContext): { accountId: number } | { error: L
   return { accountId: Number(raw) };
 };
 
+const ownsGarage = (context: MockContext, accountId: number): boolean => context.tokenAccountId === accountId;
+
 const tanksOf = ({ context, accountId }: TanksOfInput): MockTankState[] | null => {
   const player = playerAt({ context, accountId });
   const filter = new Set(listOf({ params: context.params, key: 'tank_id' }).map(Number));
+  const onlyInGarage = context.params.in_garage === '1' && ownsGarage(context, accountId);
 
   if (!player) {
     return null;
   }
 
-  return [...stateOf({ context, player }).tanks.values()].filter((tank) => filter.size === 0 || filter.has(tank.vehicle.tankId));
+  return [...stateOf({ context, player }).tanks.values()].filter(
+    (tank) =>
+      (filter.size === 0 || filter.has(tank.vehicle.tankId)) &&
+      (!onlyInGarage || isInGarage({ seed: context.world.seed, accountId, tank, at: context.now }))
+  );
+};
+
+const servedModeKeys = (context: MockContext): string[] =>
+  MOCK_MODE_BLOCKS.tank.filter((key) => {
+    const extraOnly = MOCK_MODE_BLOCKS.extraOnly.tank.find((name) => name === key);
+
+    return !extraOnly || hasExtra({ context, extra: extraOnly });
+  });
+
+const tankModeBlocks = ({ context, accountId, tank }: TankStatsInput) => {
+  const played = tankModeOf({ seed: context.world.seed, accountId, tank });
+
+  return Object.fromEntries(
+    [...servedModeKeys(context), ...ZERO_BLOCK_KEYS.tank].map((key) => [key, toStatsBlock(key === played ? tank.other : emptyTotals())])
+  );
 };
 
 const tankStats = ({ context, accountId, tank }: TankStatsInput) => {
@@ -43,20 +68,24 @@ const tankStats = ({ context, accountId, tank }: TankStatsInput) => {
     mark_of_mastery: masteryOf({ context, tank }),
     max_frags: all.maxFrags,
     max_xp: all.maxXp,
-    in_garage: context.tokenAccountId === accountId ? true : null,
+    in_garage: ownsGarage(context, accountId) ? isInGarage({ seed: context.world.seed, accountId, tank, at: context.now }) : null,
     frags: null,
     all: toStatsBlock(all),
-    stronghold_skirmish: toStatsBlock(tank.other),
-    ...Object.fromEntries(ZERO_BLOCK_KEYS.tank.map((key) => [key, toStatsBlock(emptyTotals())])),
+    ...tankModeBlocks({ context, accountId, tank }),
     ...(hasExtra({ context, extra: 'random' }) ? { random: toStatsBlock(tank.random) } : {})
   };
 };
 
 export const tanksStats: MockRoute = (context) => {
   const account = singleAccount(context);
+  const invalid = tokenError(context);
 
   if ('error' in account) {
     return account.error;
+  }
+
+  if (invalid) {
+    return invalid;
   }
 
   const tanks = tanksOf({ context, accountId: account.accountId });

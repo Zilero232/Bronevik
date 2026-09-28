@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { NotFoundError, UnauthorizedError } from '@/shared/api/source';
 
-import { apiErrorCode, communityErrorKind } from '../api-error';
+import { apiErrorCode, communityErrorKey, communityErrorKind } from '../api-error';
 
 const axiosFailure = (status: number, data: unknown) =>
   new AxiosError('Request failed', 'ERR_BAD_REQUEST', undefined, undefined, {
@@ -44,5 +44,12 @@ describe('communityErrorKind', () => {
 
   it('falls back to unknown for codes outside the community set', () => {
     expect(communityErrorKind(axiosFailure(500, { error: 'x', code: 'INTERNAL_ERROR' }))).toBe('unknown');
+  });
+});
+
+describe('communityErrorKey', () => {
+  it('builds the message key of the error kind inside the namespace', () => {
+    expect(communityErrorKey('tournaments')(axiosFailure(409, { error: 'x', code: 'CONFLICT' }))).toBe('tournaments.errors.conflict');
+    expect(communityErrorKey('coaching')(new Error('boom'))).toBe('coaching.errors.unknown');
   });
 });

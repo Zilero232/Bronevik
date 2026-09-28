@@ -59,7 +59,8 @@ const samples: ParsedNotification[] = [
   { event: 'competitionFinished', competitionSlug: 'cup-1', title: 'Cup', teamName: 'Alpha', rank: 2, teams: 8 },
   { event: 'tankLevelUp', tankId: 1, tankName: 'Об. 140', level: 5, shells: 20 },
   { event: 'tankChallengeDone', tankId: 1, tankName: 'Об. 140', shells: 15 },
-  { event: 'plusCheckoutOpen' }
+  { event: 'plusCheckoutOpen' },
+  { event: 'lestaRelinkRequired', accountId: 1, nickname: 'Tanker' }
 ];
 
 const messageIds = (locale: (typeof NOTIFICATION_COPY.locales)[number]) =>

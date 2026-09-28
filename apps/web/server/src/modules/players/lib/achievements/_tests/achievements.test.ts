@@ -11,7 +11,9 @@ const row = (name: string, order: number | null): AchievementCatalogRow => ({
   name,
   section: 'battle',
   title: name.toUpperCase(),
+  titleEn: null,
   description: null,
+  descriptionEn: null,
   image: BIG,
   order
 });
@@ -51,5 +53,17 @@ describe('playerAchievements', () => {
     const items = playerAchievements({ counts: { unknown: 1, a: 1 }, maxSeries: undefined, catalog: [row('a', 5)] });
 
     expect(items.at(-1)).toMatchObject({ name: 'unknown', title: 'unknown', section: null, image: null });
+  });
+});
+
+describe('playerAchievements English names', () => {
+  it('passes the English title along and leaves it null until it is synced', () => {
+    const items = playerAchievements({
+      counts: { warrior: 1, medalKay: 1 },
+      maxSeries: null,
+      catalog: [{ ...row('warrior', 1), titleEn: 'Top Gun' }, row('medalKay', 2)]
+    });
+
+    expect(items.map((item) => item.titleEn)).toEqual(['Top Gun', null]);
   });
 });

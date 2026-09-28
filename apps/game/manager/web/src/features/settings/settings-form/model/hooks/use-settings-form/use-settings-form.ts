@@ -37,6 +37,6 @@ export const useSettingsForm = (settings: ManagerSettings) => {
     languageOptions,
     isDirty: form.formState.isDirty,
     isPending: mutation.isPending,
-    onSubmit: form.handleSubmit((values) => mutation.mutate({ ...settings, ...values }))
+    onSubmit: form.handleSubmit((values) => mutation.mutate({ ...settings, ...values, autostartAsked: true }))
   };
 };

@@ -4,8 +4,10 @@ import { useTranslations } from 'next-intl';
 
 import type { ChartSeries } from '@/ui-kit';
 
+import { minutesClock } from '@/shared/lib';
+
 import { BATTLE_TIMELINE } from '../../../config';
-import { aliveSeries, formatClock, killEvents } from '../../../lib/battle-timeline';
+import { aliveSeries, killEvents } from '../../../lib/battle-timeline';
 import { recorderTeamOf } from '../../../lib/team-split';
 import { useReplay } from '../../context';
 
@@ -34,12 +36,12 @@ export const useBattleTimeline = () => {
 
   return {
     hasData: alive !== null,
-    labels: alive?.times.map(formatClock) ?? [],
+    labels: alive?.times.map(minutesClock) ?? [],
     series,
     yDomain,
     kills: killEvents({ players: replay.players, recorderTeam }).map((event) => ({
       id: `${event.victim.accountId}-${event.timeSec}`,
-      time: formatClock(event.timeSec),
+      time: minutesClock(event.timeSec),
       victim: event.victim.nickname,
       killer: event.killer?.nickname ?? null,
       isAllyLoss: event.isAllyLoss

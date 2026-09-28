@@ -1,4 +1,63 @@
+use base64::engine::general_purpose::STANDARD;
+use base64::Engine;
+use ring::signature::{Ed25519KeyPair, KeyPair};
+
+use super::signature::signed_payload;
 use super::{LatestRelease, Release, ReleasePackage, ReleaseStatus};
+
+pub const KEY_ID: [u8; 8] = [7, 1, 2, 3, 4, 5, 6, 8];
+pub const LEGACY_ALGORITHM: &[u8; 2] = b"Ed";
+
+pub struct TestSigner {
+    pair: Ed25519KeyPair,
+}
+
+impl TestSigner {
+    pub fn new(seed: u8) -> Self {
+        Self { pair: Ed25519KeyPair::from_seed_unchecked(&[seed; 32]).unwrap() }
+    }
+
+    pub fn public_key(&self) -> String {
+        let mut bin = LEGACY_ALGORITHM.to_vec();
+
+        bin.extend_from_slice(&KEY_ID);
+        bin.extend_from_slice(self.pair.public_key().as_ref());
+
+        STANDARD.encode(format!(
+            "untrusted comment: test key
+{}
+",
+            STANDARD.encode(bin)
+        ))
+    }
+
+    pub fn sign(&self, payload: &[u8]) -> String {
+        let trusted = "timestamp:0	file:release";
+        let signature = self.pair.sign(payload);
+        let mut bin = LEGACY_ALGORITHM.to_vec();
+
+        bin.extend_from_slice(&KEY_ID);
+        bin.extend_from_slice(signature.as_ref());
+
+        let global = self.pair.sign(&[signature.as_ref(), trusted.as_bytes()].concat());
+        let text = format!(
+            "untrusted comment: signature
+{}
+trusted comment: {trusted}
+{}
+",
+            STANDARD.encode(bin),
+            STANDARD.encode(global.as_ref())
+        );
+
+        STANDARD.encode(text)
+    }
+
+    pub fn signed(&self, mut release: Release) -> Release {
+        release.signature = Some(self.sign(signed_payload(&release).as_bytes()));
+        release
+    }
+}
 
 pub fn release(version: &str) -> Release {
     Release {
@@ -17,6 +76,7 @@ pub fn release(version: &str) -> Release {
                 size: 1,
             })
             .collect(),
+        signature: None,
     }
 }
 

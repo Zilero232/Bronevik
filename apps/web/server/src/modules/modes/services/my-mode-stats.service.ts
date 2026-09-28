@@ -11,6 +11,7 @@ import type { MyModeSqlRow, MyModeStatsInput } from '../modes.types';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { bonusTypesOfMode, gameModeOfBonusType } from '../../../common/lib';
 import { PrismaService } from '../../../core';
+import { PlayerCareerService } from '../../players';
 import { VehicleCatalogService } from '../../reference';
 import { foldModeStats } from '../lib/my-mode-stats';
 
@@ -18,7 +19,8 @@ import { foldModeStats } from '../lib/my-mode-stats';
 export class MyModeStatsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly catalog: VehicleCatalogService
+    private readonly catalog: VehicleCatalogService,
+    private readonly career: PlayerCareerService
   ) {}
 
   async stats({ userId, query }: MyModeStatsInput): Promise<MyModeStats> {
@@ -85,10 +87,13 @@ export class MyModeStatsService {
       await Promise.all(unique(modeRows.map((row) => row.tankId)).map(async (tankId) => [tankId, await this.catalog.summary(tankId)] as const))
     );
 
+    const career = await this.career.modes({ accountId, allowLive: false });
+
     return {
       accountId: Number(accountId),
       days: query.days,
-      modes: foldModeStats({ rows: modeRows, vehicles, tanksLimit: MODE_META.myTanks })
+      modes: foldModeStats({ rows: modeRows, vehicles, tanksLimit: MODE_META.myTanks }),
+      career: career.modes
     };
   }
 

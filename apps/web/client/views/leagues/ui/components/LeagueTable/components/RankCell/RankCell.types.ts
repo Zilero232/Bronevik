@@ -1,4 +1,4 @@
-import type { LeagueEntry } from '../../../../../api';
+import type { LeagueEntry } from '@/entities/social/league';
 
 export type RankCellProps = {
   row: LeagueEntry;

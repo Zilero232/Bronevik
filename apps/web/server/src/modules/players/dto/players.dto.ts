@@ -1,12 +1,15 @@
 import {
   activityQuerySchema,
   activitySchema,
+  careerModesSchema,
   insightsQuerySchema,
   nicknameHistorySchema,
   paginationQuerySchema,
   playerAchievementsSchema,
+  playerCareerSchema,
   playerInsightsSchema,
   playerMarksSchema,
+  playerOfficialRatingsSchema,
   playerProfileSchema,
   playerTanksPageSchema,
   playerTanksQuerySchema,
@@ -54,3 +57,7 @@ export class PopularPlayersQueryDto extends createZodDto(popularPlayersQuerySche
 export class PopularPlayersDto extends createZodDto(popularPlayersSchema) {}
 
 export class PlayerAchievementsDto extends createZodDto(playerAchievementsSchema) {}
+
+export class PlayerCareerDto extends createZodDto(playerCareerSchema) {}
+export class PlayerModesDto extends createZodDto(careerModesSchema) {}
+export class PlayerOfficialRatingsDto extends createZodDto(playerOfficialRatingsSchema) {}

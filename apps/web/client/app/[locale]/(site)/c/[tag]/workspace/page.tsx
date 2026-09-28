@@ -10,6 +10,7 @@ import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
+import { PageHeroFallback } from '@/ui-kit';
 import { ClanWorkspacePage } from '@/views/clan-workspace';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/c/[tag]/workspace'>): Promise<Metadata> => {
@@ -35,7 +36,7 @@ const WorkspaceRoute = async ({ params }: Pick<PageProps<'/[locale]/c/[tag]/work
 };
 
 const Page = ({ params }: PageProps<'/[locale]/c/[tag]/workspace'>) => (
-  <Suspense>
+  <Suspense fallback={<PageHeroFallback />}>
     <WorkspaceRoute params={params} />
   </Suspense>
 );

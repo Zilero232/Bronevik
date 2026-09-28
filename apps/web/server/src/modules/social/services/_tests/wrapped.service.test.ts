@@ -25,6 +25,7 @@ const player: Player = {
   lastViewedAt: null,
   isHidden: false,
   purgeAfter: null,
+  logoutAt: null,
   progressionProcessedUntil: null,
   updatedAt: at
 };
@@ -49,8 +50,15 @@ const snapshot = ({ battles, wins, damageDealt, frags }: Pick<AccountSnapshot, '
   droppedCapturePoints: 0,
   avgDamageBlocked: 0,
   avgDamageAssisted: null,
+  avgDamageAssistedRadio: null,
+  avgDamageAssistedTrack: null,
+  avgDamageAssistedStun: null,
   maxDamage: null,
   maxDamageTankId: null,
+  maxXp: null,
+  maxXpTankId: null,
+  maxFrags: null,
+  maxFragsTankId: null,
   globalRating: null
 });
 

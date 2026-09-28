@@ -3,6 +3,8 @@
 import { Download, LogIn, Trash2, TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/shared/constants';
+import { Link } from '@/shared/i18n/navigation';
 import { Button, ConfirmDialog, FormField, Input } from '@/ui-kit';
 
 import { DELETE_ACCOUNT } from '../../../config';
@@ -33,7 +35,15 @@ export const DeleteAccountCard = () => {
       <ul className={s.list}>
         <li>{t('removed')}</li>
         <li>{t('kept')}</li>
-        <li>{t('billing')}</li>
+        <li>
+          {t.rich('billing', {
+            terms: (chunks) => (
+              <Link className={s.link} href={ROUTES.legal.refund}>
+                {chunks}
+              </Link>
+            )
+          })}
+        </li>
       </ul>
       <div className={s.actions}>
         <Button disabled={isExporting} size='sm' variant='secondary' onClick={onExport}>

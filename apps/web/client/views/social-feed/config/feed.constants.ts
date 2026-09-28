@@ -17,12 +17,13 @@ export const FEED_PARSERS = {
 
 export const FEED_VIEW = {
   staleMs: 60_000,
-  skeletonHeight: 420
+  skeletonHeight: 420,
+  dayHeading: { day: 'numeric', month: 'long', weekday: 'long', timeZone: 'UTC' }
 } as const;
 
 export const FEED_KIND_TONES = {
   mark: 'accent',
-  mastery: 'premium',
-  record: 'success',
-  badge: 'steel'
+  mastery: 'gold',
+  record: 'battle',
+  badge: 'brass'
 } as const satisfies Record<SocialFeedKind, BadgeTone>;

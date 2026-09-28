@@ -10,7 +10,7 @@ import { ActionStrip, Card, DataSourceNote, PageHero, Tabs } from '@/ui-kit';
 
 import { TOP_SCOPES } from '../config';
 import { useTopParams } from '../model/hooks';
-import { TopFilters, TopPodium, TopTable } from './components';
+import { HallOfFame, TopFilters, TopPodium, TopTable } from './components';
 
 import s from './TopPage.module.scss';
 
@@ -44,6 +44,7 @@ export const TopPage = () => {
             <TopTable />
           </div>
         </Card>
+        <HallOfFame />
         <DataSourceNote />
       </div>
     </div>

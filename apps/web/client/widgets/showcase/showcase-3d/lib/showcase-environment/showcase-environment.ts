@@ -1,5 +1,3 @@
-import { REDUCED_MOTION_QUERY } from '@/shared/lib';
-
 import type { ShowcaseEnvironment } from '../showcase-mode';
 
 type NavigatorHints = Navigator & {
@@ -23,12 +21,11 @@ const detectWebgl = (): boolean => {
   return webglSupport;
 };
 
-export const readShowcaseEnvironment = (): ShowcaseEnvironment => {
+export const readShowcaseEnvironment = (): Omit<ShowcaseEnvironment, 'prefersReducedMotion'> => {
   const hints: NavigatorHints = navigator;
 
   return {
     hasWebgl: detectWebgl(),
-    prefersReducedMotion: window.matchMedia(REDUCED_MOTION_QUERY).matches,
     saveData: hints.connection?.saveData ?? false,
     isCoarsePointer: window.matchMedia('(pointer: coarse)').matches,
     cores: hints.hardwareConcurrency,

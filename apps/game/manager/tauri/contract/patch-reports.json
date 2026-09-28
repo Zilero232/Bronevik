@@ -85,8 +85,47 @@
     "checkedAt": "2026-09-28T10:00:00+03:00",
     "clientPath": "D:\\Игры\\Мир танков",
     "status": {
-      "kind": "failed",
-      "message": "network"
+      "from": "1.45.0.0",
+      "gameVersion": "1.46.0.0",
+      "kind": "migration_ready",
+      "modpackVersion": "0.1.0"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "current": "0.1.0",
+      "from": "1.45.0.0",
+      "gameVersion": "1.46.0.0",
+      "kind": "update_ready",
+      "latest": "0.2.0",
+      "notes": null
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "from": "1.45.0.0",
+      "gameVersion": "1.46.0.0",
+      "kind": "deferred"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "gameVersion": "1.30.0.0",
+      "kind": "unsupported"
+    }
+  },
+  {
+    "checkedAt": "2026-09-28T10:00:00+03:00",
+    "clientPath": "D:\\Игры\\Мир танков",
+    "status": {
+      "code": "file_locked",
+      "kind": "failed"
     }
   }
 ]

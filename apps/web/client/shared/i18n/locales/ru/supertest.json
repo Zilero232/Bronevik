@@ -18,6 +18,7 @@
   "card": {
     "unofficial": "Не с tanki.su",
     "new": "Новый танк",
+    "newTab": "(откроется в новой вкладке)",
     "verdicts": {
       "buff": "Ап",
       "nerf": "Нерф",

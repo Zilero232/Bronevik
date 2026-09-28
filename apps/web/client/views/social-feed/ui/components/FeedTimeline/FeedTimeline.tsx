@@ -6,7 +6,7 @@ import { Timeline } from '@/ui-kit';
 
 import type { FeedTimelineProps } from './FeedTimeline.types';
 
-import { FEED_KIND_TONES } from '../../../config';
+import { FEED_KIND_TONES, FEED_VIEW } from '../../../config';
 import { feedItemKey } from '../../../lib/feed-groups';
 import { FeedEntry } from './components';
 
@@ -20,7 +20,7 @@ export const FeedTimeline = ({ days, vehicles }: FeedTimelineProps) => {
     <div className={s.root}>
       {days.map(({ day, items }) => (
         <section key={day} className={s.day}>
-          <h2 className={s.heading}>{format.dateTime(new Date(day), { day: 'numeric', month: 'long', weekday: 'long' })}</h2>
+          <h2 className={s.heading}>{format.dateTime(new Date(day), FEED_VIEW.dayHeading)}</h2>
           <Timeline
             items={items.map((item) => ({
               id: feedItemKey(item),

@@ -29,10 +29,13 @@ export const useMyModeStats = (mode: PlayMode) => {
   });
 
   const line = stats?.modes.find((item) => item.mode === mode) ?? null;
+  const careerMode = MY_MODE.careerOf[mode];
+  const career = careerMode ? (stats?.career.find((item) => item.mode === careerMode) ?? null) : null;
 
   return {
     status: myModeStatus({ isSignedIn: Boolean(session), isSessionPending, isPending, error, line }),
     line,
+    career,
     tanks: line?.tanks.slice(0, MY_MODE.tanks) ?? [],
     days: stats?.days ?? MY_MODE.days,
     isRetrying: isFetching,

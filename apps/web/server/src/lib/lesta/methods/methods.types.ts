@@ -133,6 +133,27 @@ export type RatingAccountsInput = LestaGenericInput & {
   date?: number;
 };
 
+export type RatingListInput = LestaCallOptions & {
+  type: string;
+  rankField: string;
+  limit?: number;
+  pageNo?: number;
+  date?: number;
+};
+
+export type RatingNeighborsInput = LestaCallOptions & {
+  type: string;
+  rankField: string;
+  accountId: LestaId;
+  limit?: number;
+  date?: number;
+};
+
+export type RatingDatesInput = LestaCallOptions & {
+  type?: string;
+  accountId?: LestaId;
+};
+
 export type ClanRatingClansInput = LestaGenericInput & {
   clanIds: readonly LestaId[];
   date?: number;

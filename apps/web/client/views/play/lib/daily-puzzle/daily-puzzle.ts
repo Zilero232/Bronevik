@@ -6,6 +6,7 @@ import { dayKey, daysBetween, nextDayStart, seededRandom, shiftDay } from '@/sha
 import type { PickDailyTankInput } from './daily-puzzle.types';
 
 import { GUESS_TANK } from '../../config';
+import { legacyRandom } from '../legacy-random';
 
 export const puzzleDay = (now: Date) => dayKey({ date: now });
 
@@ -30,7 +31,8 @@ export const pickDailyTank = ({ vehicles, day }: PickDailyTankInput) => {
     return null;
   }
 
-  const random = seededRandom(Number(day.replaceAll('-', '')));
+  const seed = Number(day.replaceAll('-', ''));
+  const random = day < GUESS_TANK.generatorSwitchDay ? legacyRandom(seed) : seededRandom(seed);
 
   return pool[Math.floor(random() * pool.length)] ?? null;
 };

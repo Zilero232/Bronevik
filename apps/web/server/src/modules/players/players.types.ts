@@ -1,8 +1,10 @@
-import type { InsightsPeriod, PlayerTanksQuery, Playtime, PopularPlayersQuery, TimeSeriesQuery } from '@otmetki/schemas';
+import type { InsightsPeriod, OfficialRatingPeriod, PlayerTanksQuery, Playtime, PopularPlayersQuery, TimeSeriesQuery } from '@otmetki/schemas';
 
-import type { AccountRating, AccountSnapshot, Battle } from '../../../generated';
+import type { AccountRating, AccountSnapshot, Battle, TankModeStats } from '../../../generated';
+import type { ModeStatsMode } from '../../common/lib';
 import type { AccountInfo } from '../../lib/lesta';
 import type { HistoryWindowPolicy } from './lib';
+import type { CareerRecordKey, CareerRecordRef, CareerSource, CareerTotals } from './mappers';
 
 export type LestaPlayerInfo = AccountInfo;
 
@@ -100,4 +102,38 @@ export type PlaytimeWindowInput = {
 export type PopularRow = {
   accountId: bigint;
   views: number;
+};
+
+export type CareerModesInput = {
+  accountId: bigint;
+  allowLive: boolean;
+};
+
+export type StoredCareerLineInput = {
+  mode: ModeStatsMode;
+  totals: CareerTotals;
+  rows: TankModeStats[];
+};
+
+export type CareerRecordsInput = {
+  accountId: bigint;
+  source: CareerSource | null;
+  isStored: boolean;
+};
+
+export type CareerRecordInput = {
+  accountId: bigint;
+  ref: CareerRecordRef;
+  isStored: boolean;
+};
+
+export type RecordAchievedAtInput = {
+  accountId: bigint;
+  key: CareerRecordKey;
+  value: number;
+};
+
+export type OfficialPeriodInput = {
+  accountId: bigint;
+  period: OfficialRatingPeriod;
 };

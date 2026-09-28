@@ -5,7 +5,13 @@ import { match } from 'ts-pattern';
 import { WORKER_CONCURRENCY } from '../../config';
 import { encyclopediaPayloadSchema, JOB, QUEUE } from '../../contracts';
 import { MetricsService } from '../../metrics';
-import { EncyclopediaSyncService, ExpectedValuesSyncService, MasteryThresholdsSyncService, MoeThresholdsSyncService } from '../services';
+import {
+  CatalogSyncService,
+  EncyclopediaSyncService,
+  ExpectedValuesSyncService,
+  MasteryThresholdsSyncService,
+  MoeThresholdsSyncService
+} from '../services';
 
 @Processor(QUEUE.reference, { concurrency: WORKER_CONCURRENCY.reference })
 export class ReferenceProcessor extends WorkerHost {
@@ -14,6 +20,7 @@ export class ReferenceProcessor extends WorkerHost {
     private readonly expectedValues: ExpectedValuesSyncService,
     private readonly moe: MoeThresholdsSyncService,
     private readonly mastery: MasteryThresholdsSyncService,
+    private readonly catalog: CatalogSyncService,
     private readonly metrics: MetricsService
   ) {
     super();
@@ -29,6 +36,7 @@ export class ReferenceProcessor extends WorkerHost {
           .with(JOB.reference.wn8Expected, () => this.expectedValues.sync())
           .with(JOB.reference.moeThresholds, () => this.moe.sync())
           .with(JOB.reference.masteryThresholds, () => this.mastery.sync())
+          .with(JOB.reference.englishNames, () => this.catalog.englishNames())
           .otherwise(async () => ({ ignored: job.name }))
     });
   }

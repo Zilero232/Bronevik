@@ -224,7 +224,7 @@ export const toBattleEvent = ({ world, player, battle, platoonMates }: BattleEve
     queue_time_s: mockQueueSec(extras),
     session_id: battle.mode === 'random' ? `mock-${dayOf(battle.endedAt)}` : null,
     loadout,
-    platoon: platoonMates.length > 0 ? { size: platoonMates.length + 1, mates: [...platoonMates] } : { size: 1, mates: [] },
+    platoon: { size: platoonMates.length + 1 },
     shots: mockShots(extras),
     achievements: mockMedals(extras)
   };

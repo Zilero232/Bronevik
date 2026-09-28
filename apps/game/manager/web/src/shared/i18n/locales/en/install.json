@@ -34,9 +34,27 @@
   "snapshotForced": "A snapshot is required when other mods are removed",
   "reviewClient": "Client {version}",
   "reviewComponents": "Components: {count}",
+  "reviewDependencies": "Third-party libraries to download: {count}",
   "reviewRemove": "Other mods to remove: {count}",
+  "reviewReinstall": "The modpack is already installed: it is replaced with this selection, and disabled components ({count}) stay disabled",
   "confirmRemoveTitle": "Remove {count} other mods?",
   "confirmRemoveDescription": "Exactly the ticked files and folders are removed. The snapshot brings them back on the Backups page.",
   "installed": "The modpack is installed",
-  "noCatalog": "The component catalogue is not loaded: the server is unreachable and the manager ships none"
+  "noCatalog": "The component catalogue is not loaded: the server is unreachable and the manager ships none",
+  "clientUnsupported": "The modpack cannot be installed into this client — choose Lesta's Мир танков at a supported version",
+  "dependencies": {
+    "title": "Required libraries",
+    "description": "Free third-party mods the selected components need. They are downloaded from their authors' official releases and checked against a pinned sha256; the licence is kept with the install. A copy you installed yourself stays yours and is never replaced or removed.",
+    "state": {
+      "missing": "Will be installed",
+      "outdated": "Will be updated",
+      "ours": "Installed by the manager",
+      "user": "Yours"
+    },
+    "userCopy": "Your copy is used: {file}",
+    "version": "Version {version}",
+    "licence": "Licence:",
+    "author": "Author:",
+    "restart": "After the first start with OpenWG Gameface the game restarts itself once to register the modpack's pages."
+  }
 }

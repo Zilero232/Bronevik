@@ -18,9 +18,9 @@ export const ATTENDANCE_TONES = {
 
 export const EVENT_KIND_TONES = {
   clan_wars: 'accent',
-  stronghold: 'premium',
-  training: 'steel',
-  tournament: 'success',
+  stronghold: 'brass',
+  training: 'sky',
+  tournament: 'battle',
   other: 'neutral'
 } as const satisfies Record<WorkspaceEventKind, BadgeTone>;
 

@@ -1,10 +1,9 @@
 import type { PointerEvent } from 'react';
 
-import { REDUCED_MOTION_QUERY } from '../motion';
 import { TILT } from './tilt.constants';
 
 const onPointerMove = (event: PointerEvent<HTMLElement>) => {
-  if (event.pointerType !== 'mouse' || window.matchMedia(REDUCED_MOTION_QUERY).matches) {
+  if (event.pointerType !== 'mouse') {
     return;
   }
 

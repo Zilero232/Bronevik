@@ -16,6 +16,7 @@ import type {
 
 import { diffAccountTanks, hasNewBattles } from '../account-diff';
 import { assignCohort } from '../cohort';
+import { accountModeRows, tankModeRows } from '../mode-stats';
 import { accountSnapshotRow, buildTankDelta, modeBlocks, shouldWriteSnapshot, tankSnapshotRow } from '../snapshots';
 import { POLL_PIPELINE } from './poll-pipeline.constants';
 
@@ -83,8 +84,11 @@ const writeChanges = async ({ store, info, tanks, stats, marks, masteryOnlyTankI
       lastBattleAt: statsTankIds.has(tank.tank_id) ? lastBattleAt : undefined
     }));
 
-  if (accountSnapshots.length + tankSnapshots.length + baseline.length > 0) {
-    await store.writeAccountChanges({ accountId, accountSnapshots, tankSnapshots, deltas, baseline });
+  const modeStats = accountModeRows({ accountId: id, statistics: info.statistics });
+  const tankModeStats = tankModeRows({ accountId: id, stats });
+
+  if (accountSnapshots.length + tankSnapshots.length + baseline.length + modeStats.length + tankModeStats.length > 0) {
+    await store.writeAccountChanges({ accountId, accountSnapshots, tankSnapshots, deltas, baseline, modeStats, tankModeStats });
   }
 
   return { snapshots: accountSnapshots.length + tankSnapshots.length, deltas: deltas.length };

@@ -144,6 +144,12 @@ describe('collector poll pipeline against the Lesta mock', () => {
     expect(written[0]?.tankSnapshots.length).toBeGreaterThan(0);
     expect(written[0]?.baseline.length).toBeGreaterThan(0);
 
+    const random = written[0]?.accountSnapshots.find((row) => row.mode === 'random');
+
+    expect(random?.avgDamageAssistedRadio).toEqual(expect.any(Number));
+    expect(random?.maxDamage).toBeGreaterThan(0);
+    expect(random?.maxDamageTankId).toEqual(expect.any(Number));
+
     const second = await poll(SECOND);
     const deltas = written.slice(1).flatMap((changes) => changes.deltas);
 

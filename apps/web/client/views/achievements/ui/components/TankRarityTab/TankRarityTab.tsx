@@ -4,7 +4,7 @@ import { TANK_CLASSES, TIERS } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { DataSourceNote, DataTable, EmptyState, IconFilter, QueryState, SegmentedControl } from '@/ui-kit';
+import { DataSourceNote, DataTable, FilteredEmptyState, IconFilter, QueryState, SegmentedControl } from '@/ui-kit';
 
 import { TANK_RARITY_SORTS } from '../../../config';
 import { useTankRarity, useTankRarityColumns } from '../../../model/hooks';
@@ -14,7 +14,7 @@ import s from './TankRarityTab.module.scss';
 export const TankRarityTab = () => {
   const t = useTranslations('achievements.tanks');
   const columns = useTankRarityColumns();
-  const { query, tiers, types, order, onTiersChange, onTypesChange, onOrderChange } = useTankRarity();
+  const { query, tiers, types, order, isFiltered, onReset, onTiersChange, onTypesChange, onOrderChange } = useTankRarity();
 
   return (
     <div className={s.root}>
@@ -33,10 +33,12 @@ export const TankRarityTab = () => {
         {(rarity) => (
           <>
             <DataTable
+              emptyState={
+                <FilteredEmptyState isCompact description={t('emptyDescription')} isFiltered={isFiltered} title={t('empty')} onReset={onReset} />
+              }
               columns={columns}
               data={rarity.items}
               density='media'
-              emptyState={<EmptyState isCompact description={t('emptyDescription')} title={t('empty')} />}
               getRowId={(row) => String(row.vehicle.tankId)}
               getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
               summary={t('summary', { sample: rarity.sample })}

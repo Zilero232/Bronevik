@@ -4,6 +4,7 @@ import { SETTINGS } from '../../config';
 
 export const managerSettingsSchema = z.object({
   autostart: z.boolean(),
+  autostartAsked: z.boolean(),
   notifications: z.boolean(),
   autoMigrate: z.boolean(),
   checkIntervalMinutes: z.number().int(),

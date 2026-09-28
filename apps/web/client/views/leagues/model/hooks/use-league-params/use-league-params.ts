@@ -3,7 +3,7 @@
 import { LEAGUE_METRICS, LEAGUE_SCOPES } from '@otmetki/schemas';
 import { useQueryStates } from 'nuqs';
 
-import type { LeagueMetric, LeagueScope } from '../../../api';
+import type { LeagueMetric, LeagueScope } from '@/entities/social/league';
 
 import { LEAGUE_PARSERS } from '../../../config';
 

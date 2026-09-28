@@ -7,6 +7,7 @@ import type { LestaPlayerInfo } from '../players.types';
 import { AppNotFoundException } from '../../../common/exceptions';
 import { errorMessage, fromUnixSeconds } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
+import { accountInfoSchema, isExtraRejected } from '../../../lib/lesta';
 import { CollectorProducerService } from '../../collector';
 import { PLAYER_LOOKUP } from '../config';
 
@@ -70,10 +71,32 @@ export class PlayerResolverService {
   }
 
   async fetchInfo(accountId: bigint): Promise<LestaPlayerInfo | null> {
-    const response = await this.lesta.account.info({ accountIds: [Number(accountId)], extra: PLAYER_LOOKUP.infoExtra });
+    const response = await this.lesta.account.info({
+      accountIds: [Number(accountId)],
+      extra: PLAYER_LOOKUP.infoExtra,
+      fields: PLAYER_LOOKUP.infoFields
+    });
+
     const info = response[String(accountId)];
 
-    return info ?? null;
+    return info ? accountInfoSchema.parse(info) : null;
+  }
+
+  async fetchModeBlocks(accountId: bigint): Promise<Record<string, unknown> | null> {
+    const request = (extra: readonly string[]) =>
+      this.lesta.account.info({ accountIds: [Number(accountId)], extra, fields: PLAYER_LOOKUP.modeFields });
+
+    const response = await request(PLAYER_LOOKUP.modeExtra).catch(async (error: unknown) => {
+      if (!isExtraRejected(error)) {
+        throw error;
+      }
+
+      return request([]);
+    });
+
+    const statistics = response[String(accountId)]?.statistics;
+
+    return statistics ? { ...statistics } : null;
   }
 
   async upsertFromLesta(info: LestaPlayerInfo): Promise<void> {
@@ -82,7 +105,8 @@ export class PlayerResolverService {
       nickname: info.nickname,
       clanId: info.clan_id === null ? null : BigInt(info.clan_id),
       createdAt: fromUnixSeconds(info.created_at),
-      lastBattleAt: fromUnixSeconds(info.last_battle_time)
+      lastBattleAt: fromUnixSeconds(info.last_battle_time),
+      logoutAt: info.logout_at ? fromUnixSeconds(info.logout_at) : undefined
     } satisfies Prisma.PlayerUpdateInput;
 
     await this.prisma.player.upsert({

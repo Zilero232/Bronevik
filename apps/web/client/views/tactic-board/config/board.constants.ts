@@ -96,6 +96,5 @@ export const BOARD_STATUS_TONE = {
 } as const;
 
 export const BOARD_PAGE = {
-  tokenParam: 'token',
-  retries: 2
+  tokenParam: 'token'
 } as const;

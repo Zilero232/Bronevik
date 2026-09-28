@@ -2,11 +2,9 @@
 
 import { differenceInSeconds } from 'date-fns';
 
-import { useCountdown } from '@/shared/lib';
+import { durationParts, useCountdown } from '@/shared/lib';
 
 import type { UseEventCountdownInput } from './use-event-countdown.types';
-
-import { countdownParts } from '../../../lib/countdown-parts';
 
 export const useEventCountdown = ({ endsAt }: UseEventCountdownInput) => {
   const countdown = useCountdown({ seconds: (now) => (endsAt ? Math.max(0, differenceInSeconds(new Date(endsAt), now)) : 0) });
@@ -15,5 +13,5 @@ export const useEventCountdown = ({ endsAt }: UseEventCountdownInput) => {
     return null;
   }
 
-  return countdownParts(countdown.left);
+  return durationParts(countdown.left);
 };

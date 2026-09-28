@@ -1,7 +1,9 @@
 export { PlayerAchievementsService } from './player-achievements.service';
+export { PlayerCareerService } from './player-career.service';
 export { PlayerHistoryService } from './player-history.service';
 export { PlayerInsightsService } from './player-insights.service';
 export { PlayerMarksService } from './player-marks.service';
+export { PlayerOfficialRatingsService } from './player-official-ratings.service';
 export { PlayerPlaytimeService } from './player-playtime.service';
 export { PlayerResolverService } from './player-resolver.service';
 export { PlayerSessionsService } from './player-sessions.service';

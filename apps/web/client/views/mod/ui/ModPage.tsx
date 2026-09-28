@@ -33,9 +33,9 @@ export const ModPage = () => {
       <div className={s.section}>
         <ModInstall />
       </div>
-      <div className={s.section}>
+      <Band tone='deep'>
         <ModSwitches />
-      </div>
+      </Band>
       <div className={s.section}>
         <ModFaq />
       </div>

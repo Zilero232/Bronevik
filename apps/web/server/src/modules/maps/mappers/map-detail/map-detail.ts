@@ -23,6 +23,7 @@ export const toMapSummary = (arena: ArenaRow): MapSummary => ({
   arenaId: arena.arenaId,
   slug: arena.slug,
   name: arena.name,
+  nameEn: arena.nameEn,
   image: validUrl(arena.image),
   sizeMeters: arena.sizeMeters,
   camouflage: arena.camouflageType,
@@ -36,6 +37,7 @@ export const toMapDetail = ({ arena, stats }: ToMapDetailInput): MapDetail => {
   return {
     ...toMapSummary(arena),
     description: arena.description,
+    descriptionEn: arena.descriptionEn,
     boundingBox: data?.boundingBox ?? null,
     maxPlayersInTeam: data?.maxPlayersInTeam ?? null,
     roundLengthSec: data?.roundLength ?? null,

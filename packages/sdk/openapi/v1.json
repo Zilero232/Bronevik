@@ -2268,7 +2268,8 @@
                   "earlyAccess",
                   "hangarExtras",
                   "privateCompetitions",
-                  "streamerAlerts"
+                  "streamerAlerts",
+                  "supertest"
                 ]
               },
               "limitKey": {

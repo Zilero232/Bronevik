@@ -22,7 +22,9 @@ export const achievementsQuerySchema = z.object({
 export const achievementRarityItemSchema = z.object({
   name: z.string(),
   title: z.string(),
+  titleEn: z.string().nullable(),
   description: z.string().nullable(),
+  descriptionEn: z.string().nullable(),
   section: z.string().nullable(),
   image: z.string().nullable(),
   holders: countSchema,
@@ -87,6 +89,7 @@ export const heldAchievementSchema = achievementRarityItemSchema.extend({
 export const seriesRowSchema = z.object({
   name: z.string(),
   title: z.string(),
+  titleEn: z.string().nullable(),
   image: z.string().nullable(),
   best: countSchema,
   threshold: countSchema,

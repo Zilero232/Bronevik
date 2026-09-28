@@ -1,8 +1,6 @@
 import { z } from 'zod';
 
-import { battleStatsBlockSchema } from './statistics.schemas';
-
-const optionalBlock = battleStatsBlockSchema.optional();
+import { battleStatsBlockSchema, modeStatsBlockSchema } from './statistics.schemas';
 
 export const tankStatsSchema = z.looseObject({
   tank_id: z.number(),
@@ -13,15 +11,21 @@ export const tankStatsSchema = z.looseObject({
   in_garage: z.boolean().nullish(),
   frags: z.record(z.string(), z.number()).nullish(),
   all: battleStatsBlockSchema,
-  random: optionalBlock,
-  clan: optionalBlock,
-  company: optionalBlock,
-  team: optionalBlock,
-  regular_team: optionalBlock,
-  stronghold_skirmish: optionalBlock,
-  stronghold_defense: optionalBlock,
-  globalmap: optionalBlock,
-  epic: optionalBlock
+  random: battleStatsBlockSchema.optional(),
+  clan: modeStatsBlockSchema,
+  company: modeStatsBlockSchema,
+  team: modeStatsBlockSchema,
+  regular_team: modeStatsBlockSchema,
+  stronghold_skirmish: modeStatsBlockSchema,
+  stronghold_defense: modeStatsBlockSchema,
+  globalmap: modeStatsBlockSchema,
+  epic: modeStatsBlockSchema,
+  ranked_battles: modeStatsBlockSchema
+});
+
+export const tankGarageSchema = z.looseObject({
+  tank_id: z.number(),
+  in_garage: z.boolean().nullish()
 });
 
 export const tankAchievementsSchema = z.looseObject({

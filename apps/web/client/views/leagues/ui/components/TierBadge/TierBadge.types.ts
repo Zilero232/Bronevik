@@ -1,4 +1,4 @@
-import type { LeagueTier } from '../../../api';
+import type { LeagueTier } from '@/entities/social/league';
 
 export type TierBadgeProps = {
   tier: LeagueTier;

@@ -1,1 +1,1 @@
-export { expectedValuesDate, masteryThresholdRows, parsePoliroidMoe } from './community-data';
+export { expectedValuesDate, masteryPercentiles, masteryThresholdRows, parsePoliroidMoe } from './community-data';

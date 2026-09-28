@@ -8,4 +8,14 @@
   max-width: 100%;
   align-self: flex-start;
   overflow-x: auto;
+
+  @include below(sm) {
+    display: none;
+  }
+}
+
+.filterSelect {
+  @include from(sm) {
+    display: none;
+  }
 }

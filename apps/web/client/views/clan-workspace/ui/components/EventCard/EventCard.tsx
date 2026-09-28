@@ -50,6 +50,7 @@ export const EventCard = ({ clanId, event, isOfficer, members }: EventCardProps)
         {!hasStarted && (
           <div aria-label={t('events.rsvp')} className={s.rsvp} role='group'>
             <Button
+              aria-pressed={myStatus === 'confirmed'}
               disabled={isRsvpPending}
               size='sm'
               variant={myStatus === 'confirmed' ? 'primary' : 'secondary'}
@@ -58,7 +59,13 @@ export const EventCard = ({ clanId, event, isOfficer, members }: EventCardProps)
               <Check aria-hidden size={14} />
               {t('events.going')}
             </Button>
-            <Button disabled={isRsvpPending} size='sm' variant={myStatus === 'declined' ? 'primary' : 'ghost'} onClick={() => onRsvp('declined')}>
+            <Button
+              aria-pressed={myStatus === 'declined'}
+              disabled={isRsvpPending}
+              size='sm'
+              variant={myStatus === 'declined' ? 'secondary' : 'ghost'}
+              onClick={() => onRsvp('declined')}
+            >
               <X aria-hidden size={14} />
               {t('events.notGoing')}
             </Button>

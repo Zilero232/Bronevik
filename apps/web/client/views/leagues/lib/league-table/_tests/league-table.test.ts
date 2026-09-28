@@ -1,11 +1,11 @@
 import { LEAGUE_SCOPES, LEAGUE_TIERS } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
+import type { LeagueEntry } from '@/entities/social/league';
+
 import { LOCALES, messages } from '@/shared/i18n';
 
-import type { LeagueEntry } from '../../../api';
-
-import { leagueStanding, leagueWeekNav } from '../league-table';
+import { leagueHasData, leagueStanding, leagueWeekNav } from '../league-table';
 
 const entry = (accountId: number, value: number | null, isMe = false): LeagueEntry => ({
   rank: accountId,
@@ -50,19 +50,43 @@ describe('leagueStanding', () => {
 
 describe('leagueWeekNav', () => {
   it('moves one week back and forward', () => {
-    expect(leagueWeekNav({ weekStart: '2026-09-14', currentWeek: '2026-09-21' })).toEqual({
+    expect(leagueWeekNav({ weekStart: '2026-09-14', currentWeek: '2026-09-21', hasData: true })).toEqual({
       previous: '2026-09-07',
       next: '2026-09-21',
-      isCurrent: false
+      isCurrent: false,
+      isPast: true
     });
   });
 
   it('stops at the current week', () => {
-    expect(leagueWeekNav({ weekStart: '2026-09-21', currentWeek: '2026-09-21' })).toMatchObject({ next: null, isCurrent: true });
+    expect(leagueWeekNav({ weekStart: '2026-09-21', currentWeek: '2026-09-21', hasData: true })).toMatchObject({
+      next: null,
+      isCurrent: true,
+      isPast: false
+    });
   });
 
   it('allows no step forward before the clock is known', () => {
-    expect(leagueWeekNav({ weekStart: '2026-09-21', currentWeek: null }).isCurrent).toBe(false);
+    expect(leagueWeekNav({ weekStart: '2026-09-21', currentWeek: null, hasData: true })).toMatchObject({ isCurrent: false, isPast: false });
+  });
+
+  it('stops going back at a week the viewer did not take part in', () => {
+    expect(leagueWeekNav({ weekStart: '2026-09-07', currentWeek: '2026-09-21', hasData: false })).toMatchObject({
+      previous: null,
+      next: '2026-09-14',
+      isPast: true
+    });
+  });
+});
+
+describe('leagueHasData', () => {
+  it('needs a division in the division scope', () => {
+    expect(leagueHasData({ scope: 'division', division: null, entries: TEN })).toBe(false);
+  });
+
+  it('needs entries in the friends scope', () => {
+    expect(leagueHasData({ scope: 'friends', division: null, entries: [] })).toBe(false);
+    expect(leagueHasData({ scope: 'friends', division: null, entries: TEN })).toBe(true);
   });
 });
 

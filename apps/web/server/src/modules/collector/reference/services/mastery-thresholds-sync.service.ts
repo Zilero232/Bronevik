@@ -9,7 +9,7 @@ import { toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { masteryThresholdLevels } from '../../../reference';
 import { REFERENCE } from '../config';
-import { masteryThresholdRows } from '../lib/community-data';
+import { masteryPercentiles, masteryThresholdRows } from '../lib/community-data';
 
 @Injectable()
 export class MasteryThresholdsSyncService {
@@ -25,11 +25,16 @@ export class MasteryThresholdsSyncService {
       return { vehicles: 0 };
     }
 
-    const distribution = await this.clients.bulk.tanks.mastery({
-      tankIds: vehicles.map((vehicle) => vehicle.tankId),
-      distribution: REFERENCE.masteryDistribution,
-      percentiles: Object.values(MASTERY_PERCENTILES)
-    });
+    const tankIds = vehicles.map((vehicle) => vehicle.tankId);
+
+    const [distribution, damage] = await Promise.all([
+      this.clients.bulk.tanks.mastery({
+        tankIds,
+        distribution: REFERENCE.masteryDistribution,
+        percentiles: masteryPercentiles(Object.values(MASTERY_PERCENTILES))
+      }),
+      this.clients.bulk.tanks.mastery({ tankIds, distribution: REFERENCE.damageDistribution, percentiles: REFERENCE.masteryPercentiles })
+    ]);
 
     const rows = masteryThresholdRows(distribution);
 
@@ -58,9 +63,18 @@ export class MasteryThresholdsSyncService {
           distribution: REFERENCE.masteryDistribution,
           percentiles: toJsonValue(percentiles)
         }))
+      }),
+      this.prisma.tankPercentile.deleteMany({ where: { distribution: REFERENCE.damageDistribution, date } }),
+      this.prisma.tankPercentile.createMany({
+        data: Object.entries(damage).map(([tankId, percentiles]) => ({
+          tankId: Number(tankId),
+          date,
+          distribution: REFERENCE.damageDistribution,
+          percentiles: toJsonValue(percentiles)
+        }))
       })
     ]);
 
-    return { vehicles: rows.length };
+    return { vehicles: rows.length, damageVehicles: Object.keys(damage).length };
   }
 }

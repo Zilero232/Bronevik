@@ -21,5 +21,5 @@ export const DELIVERY_STATUS_TONE = {
 } as const satisfies Record<string, BadgeTone>;
 
 export const WEBHOOK_QUERIES = {
-  invalidates: [QUERY_KEYS.me.developer.webhooks]
+  invalidates: [QUERY_KEYS.me.developer.overview, QUERY_KEYS.me.developer.webhooks]
 } as const;

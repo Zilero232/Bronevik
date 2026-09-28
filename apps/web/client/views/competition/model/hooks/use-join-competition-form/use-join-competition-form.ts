@@ -3,19 +3,21 @@
 import type { Competition } from '@otmetki/schemas';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';
 import { useForm, useWatch } from 'react-hook-form';
 
 import type { JoinCompetitionInput } from '@/entities/competition/competition';
 
 import { useCommunityViewer } from '@/entities/auth/session';
+import { useCompetitionsCache } from '@/entities/competition/competition';
 
 import type { JoinFormOutput, JoinFormValues } from '../../../lib/join-form';
 
 import { joinCompetition, leaveCompetition } from '../../../api';
 import { JOIN_FORM, JOIN_FORM_DEFAULTS } from '../../../config';
 import { chosenAccount, joinFormSchema, joinState, openTeams, toJoinInput } from '../../../lib/join-form';
-import { useCompetitionMutation } from '../use-competition-mutation';
+import { competitionMutationMeta } from '../../../lib/mutation-meta';
 
 export const useJoinCompetitionForm = (competition: Competition) => {
   const [code] = useQueryState('code', parseAsString);
@@ -26,8 +28,19 @@ export const useJoinCompetitionForm = (competition: Competition) => {
   });
 
   const [accountValue, teamId] = useWatch({ control: form.control, name: ['accountId', 'teamId'] });
-  const join = useCompetitionMutation({ mutationFn: (input: JoinCompetitionInput) => joinCompetition(input), successKey: 'joined' });
-  const leave = useCompetitionMutation({ mutationFn: (id: string) => leaveCompetition(id), successKey: 'left' });
+  const { storeDetail } = useCompetitionsCache();
+
+  const join = useMutation({
+    mutationFn: (input: JoinCompetitionInput) => joinCompetition(input),
+    onSuccess: storeDetail,
+    meta: competitionMutationMeta('competitions.toast.joined')
+  });
+
+  const leave = useMutation({
+    mutationFn: (id: string) => leaveCompetition(id),
+    onSuccess: storeDetail,
+    meta: competitionMutationMeta('competitions.toast.left')
+  });
 
   const accountIds = accounts.map(({ accountId }) => accountId);
   const selectedAccount = chosenAccount({ value: accountValue, accountIds });

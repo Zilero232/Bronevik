@@ -99,10 +99,10 @@
     "stronghold": "Stronghold"
   },
   "community": {
-    "title": "For streamers and clans",
+    "title": "Streamers and clans",
     "streamers": {
-      "title": "Streamers",
-      "description": "Overlays and widgets for your stream"
+      "title": "Who is live",
+      "description": "Live «Мир танков» streamers and their settings"
     },
     "clans": {
       "title": "Clans",
@@ -119,6 +119,10 @@
     "marks": "My marks",
     "analytics": "Session and analytics",
     "watchlist": "Watchlist",
-    "link": "Link an account"
+    "link": "Link an account",
+    "league": "My league",
+    "leagueRank": "My league: #{rank}",
+    "challenges": "Weekly challenges",
+    "challengesProgress": "Weekly challenges: {completed}/{total}"
   }
 }

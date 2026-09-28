@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import { QUERY_KEYS } from '@/shared/constants';
@@ -11,14 +12,11 @@ import type { UseCreateKeyFormInput } from './use-create-key-form.types';
 import { createApiKey } from '../../../api';
 import { CREATE_KEY_FORM_DEFAULT_VALUES } from '../../../config';
 import { createKeyFormSchema, toCreateApiKeyInput } from '../../../lib/key-form';
-import { useDeveloperMutation } from '../use-developer-mutation';
 
 export const useCreateKeyForm = ({ onCreated }: UseCreateKeyFormInput) => {
-  const create = useDeveloperMutation({
+  const create = useMutation({
     mutationFn: createApiKey,
-    invalidates: [QUERY_KEYS.me.developer.keys],
-    successKey: 'keyCreated',
-    isErrorToasted: false
+    meta: { successKey: 'developer.toast.keyCreated', invalidates: [QUERY_KEYS.me.developer.overview, QUERY_KEYS.me.developer.keys] }
   });
 
   const {

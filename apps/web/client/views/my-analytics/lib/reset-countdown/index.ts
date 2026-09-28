@@ -1,1 +1,1 @@
-export { resetClock, secondsUntil } from './reset-countdown';
+export { secondsUntil } from './reset-countdown';

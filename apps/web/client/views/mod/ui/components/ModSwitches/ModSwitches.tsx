@@ -21,7 +21,7 @@ export const ModSwitches = () => {
             </dt>
             <dd className={s.description}>{t(`items.${id}.text`)}</dd>
             <dd className={s.value}>
-              <Badge tone='success'>{t('on')}</Badge>
+              <Badge tone='neutral'>{t('on')}</Badge>
             </dd>
           </div>
         ))}

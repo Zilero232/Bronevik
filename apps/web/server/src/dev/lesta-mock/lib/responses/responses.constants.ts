@@ -5,22 +5,13 @@ export const RESPONSES = {
   minClanSearchLength: 2,
   nicknamePattern: /^\w{1,24}$/,
   tokenTtlSec: 14 * 86_400,
-  loginPath: 'auth/login/'
+  loginPath: 'auth/login/',
+  englishLanguage: 'en'
 } as const;
 
 export const ZERO_BLOCK_KEYS = {
-  account: [
-    'clan',
-    'company',
-    'historical',
-    'team',
-    'regular_team',
-    'stronghold_defense',
-    'globalmap_absolute',
-    'globalmap_champion',
-    'globalmap_middle'
-  ],
-  tank: ['clan', 'company', 'team', 'regular_team', 'stronghold_defense', 'globalmap']
+  account: ['clan', 'company', 'historical', 'team', 'regular_team', 'globalmap_champion', 'globalmap_middle'],
+  tank: ['clan', 'company', 'team', 'regular_team']
 } as const;
 
 export const CLAN_ROLE_TITLES = {
@@ -84,3 +75,9 @@ export const GLOBALMAP_FRONTS = [
 ] as const;
 
 export const GLOBALMAP_PRIME_TIMES = ['18:00', '19:00', '20:00', '21:00', '22:00'] as const;
+
+export const RATINGS_MOCK = {
+  depth: 50,
+  maxTopLimit: 1000,
+  maxNeighbors: 50
+} as const;

@@ -33,7 +33,7 @@
 }
 
 .nav {
-  @include below(3xl) {
+  @include below(4xl) {
     display: none;
   }
 }
@@ -53,11 +53,17 @@
   @include below(xl) {
     display: none;
   }
+
+  @include from(4xl) {
+    display: none;
+  }
 }
 
 .searchIcon {
   @include from(xl) {
-    display: none;
+    @include below(4xl) {
+      display: none;
+    }
   }
 }
 
@@ -112,7 +118,7 @@
 }
 
 .burger {
-  @include from(3xl) {
+  @include from(4xl) {
     display: none;
   }
 }

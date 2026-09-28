@@ -1,6 +1,7 @@
 import type { Prisma, TrackingTier } from '../../../../../../generated';
 import type { AccountInfo, AccountTank, TankStats } from '../../../../../lib/lesta';
 import type { TankBaseline } from '../account-diff';
+import type { AccountModeRow, TankModeRow } from '../mode-stats';
 import type { SnapshotMode, TankSnapshotRow } from '../snapshots';
 
 type TankStatsRequest = {
@@ -48,6 +49,8 @@ export type AccountChanges = {
   tankSnapshots: TankSnapshotRow[];
   deltas: Prisma.TankBattleDeltaCreateManyInput[];
   baseline: Prisma.PlayerTankCreateManyInput[];
+  modeStats?: AccountModeRow[];
+  tankModeStats?: TankModeRow[];
 };
 
 export type AccountStorePort = {

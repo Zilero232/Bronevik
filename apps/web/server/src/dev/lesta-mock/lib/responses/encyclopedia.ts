@@ -1,8 +1,9 @@
 import type { MockCatalog, MockModule } from '../../lesta-mock.types';
-import type { AchievementImageInput, ByTypeInput, MockRoute, VehicleEntryInput } from './responses.types';
+import type { AchievementImageInput, ByTypeInput, MockContext, MockRoute, VehicleEntryInput } from './responses.types';
 
 import { vehicleImages } from '../../../../lib/lesta';
 import { ACHIEVEMENT_IMAGES, ACHIEVEMENT_SECTIONS, MOCK_ACHIEVEMENTS } from '../../config';
+import { englishName } from '../english';
 import { selectFields } from '../fields';
 import { fail, idList, intParam, listOf, ok } from './envelope';
 import { ENCYCLOPEDIA_LABELS, PROVISION_TYPE_TO_API, RESPONSES } from './responses.constants';
@@ -192,6 +193,8 @@ export const encyclopediaProvisions: MockRoute = (context) => {
   return ok({ data, meta: { count: Object.keys(data).length } });
 };
 
+const isEnglish = (context: MockContext): boolean => context.params.language === RESPONSES.englishLanguage;
+
 export const encyclopediaAchievements: MockRoute = (context) => {
   const data = Object.fromEntries(
     MOCK_ACHIEVEMENTS.map((achievement, order) => [
@@ -199,12 +202,12 @@ export const encyclopediaAchievements: MockRoute = (context) => {
       selectFields({
         value: {
           name: achievement.name,
-          name_i18n: achievement.title,
+          name_i18n: isEnglish(context) ? englishName(achievement.name) : achievement.title,
           section: achievement.section,
           section_order: ACHIEVEMENT_SECTIONS[achievement.section].order,
           type: achievement.type,
-          description: achievement.description,
-          condition: achievement.description,
+          description: isEnglish(context) ? null : achievement.description,
+          condition: isEnglish(context) ? null : achievement.description,
           image: achievementImage({ name: achievement.name }),
           image_big: achievementImage({ name: achievement.name, big: true }),
           order,
@@ -232,7 +235,12 @@ export const encyclopediaArenas: MockRoute = (context) =>
       context.world.catalog.arenas.map((arena) => [
         arena.arenaId,
         selectFields({
-          value: { arena_id: arena.arenaId, name_i18n: arena.name, camouflage_type: arena.camouflageType, description: arena.description },
+          value: {
+            arena_id: arena.arenaId,
+            name_i18n: isEnglish(context) ? englishName(arena.arenaId) : arena.name,
+            camouflage_type: arena.camouflageType,
+            description: isEnglish(context) ? null : arena.description
+          },
           fields: context.fields
         })
       ])
@@ -246,11 +254,11 @@ export const encyclopediaCrewSkills: MockRoute = (context) =>
         skill.skill,
         selectFields({
           value: {
-            name: skill.name,
+            name: isEnglish(context) ? englishName(skill.skill) : skill.name,
             type: skill.type,
             roles: skill.roles,
             is_common: skill.isCommon,
-            description: skill.description,
+            description: isEnglish(context) ? null : skill.description,
             image_url: { small_icon: null, big_icon: null }
           },
           fields: context.fields

@@ -1,3 +1,4 @@
+export { OfficialRatingsCard } from './OfficialRatingsCard';
 export { PlayerProfileFallback } from './PlayerProfileFallback';
 export { ProfileActionStrip } from './ProfileActionStrip';
 export { ProfileHeader } from './ProfileHeader';

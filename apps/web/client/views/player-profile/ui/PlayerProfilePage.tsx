@@ -9,7 +9,7 @@ import { ResourceGate } from '@/widgets/site/resource-missing';
 import type { PlayerProfilePageProps } from './PlayerProfilePage.types';
 
 import { useProfilePage } from '../model/hooks';
-import { ProfileActionStrip, ProfileHeader, ProfileProvider, ProfileSkeleton, ProfileTabs } from './components';
+import { OfficialRatingsCard, ProfileActionStrip, ProfileHeader, ProfileProvider, ProfileSkeleton, ProfileTabs } from './components';
 
 import s from './PlayerProfilePage.module.scss';
 
@@ -30,6 +30,7 @@ export const PlayerProfilePage = ({ nickname }: PlayerProfilePageProps) => {
         {(profile) => (
           <ProfileProvider profile={profile}>
             <ProfileHeader />
+            <OfficialRatingsCard />
             <ProfileActionStrip />
             <div className={s.body}>
               <ProfileTabs />

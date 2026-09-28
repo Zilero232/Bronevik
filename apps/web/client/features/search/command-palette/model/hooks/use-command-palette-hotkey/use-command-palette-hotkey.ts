@@ -2,7 +2,7 @@
 
 import { target, useHotkeys, useWindowEvent } from '@siberiacancode/reactuse';
 
-import { isTypingTarget } from '../../../lib/typing-target';
+import { isTypingTarget } from '@/shared/lib';
 
 const WINDOW = target(() => window);
 

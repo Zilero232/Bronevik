@@ -72,3 +72,32 @@ fn nothing_to_read_without_either_copy() {
 
     assert_eq!(MirroredFile::new("config.json", &game, &durable).read(), None);
 }
+
+#[test]
+fn a_newer_game_copy_refreshes_the_durable_one_and_sets_the_mtime() {
+    let (_root, game, durable) = dirs();
+    let file = MirroredFile::new("config.json", &game, &durable);
+
+    file.write(&json!({ "v": 1 })).unwrap();
+    fs::write(game.join(STAMPS_NAME), format!(r#"{{"version":1,"files":{{"config.json":{}}}}}"#, now_seconds() + 60.0)).unwrap();
+    fs::write(game.join("config.json"), r#"{"v":2}"#).unwrap();
+
+    assert_eq!(file.read(), Some(json!({ "v": 2 })));
+    assert_eq!(read_json(&durable.join("config.json")), Some(json!({ "v": 2 })));
+    assert!((mtime(&durable.join("config.json")).unwrap() - stamp_entry(&durable, "config.json").unwrap()).abs() < 1.0);
+}
+
+#[test]
+fn removes_only_the_mirrored_copies() {
+    let (_root, game, durable) = dirs();
+
+    MirroredFile::new("credentials.json", &game, &durable).write(&json!({ "secret": "s" })).unwrap();
+    fs::create_dir_all(durable.join("manager")).unwrap();
+    fs::write(durable.join("manager").join("settings.json"), "{}").unwrap();
+
+    let removed = remove_durable_copies(&durable).unwrap();
+
+    assert_eq!(removed, vec![durable.join("credentials.json")]);
+    assert!(durable.join("manager").join("settings.json").exists());
+    assert!(stamp_entry(&durable, "credentials.json").is_none());
+}

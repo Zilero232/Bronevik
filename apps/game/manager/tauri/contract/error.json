@@ -1,4 +1,4 @@
 {
-  "code": "client_running",
-  "message": "the game is running"
+  "code": "busy",
+  "message": "another operation is running"
 }

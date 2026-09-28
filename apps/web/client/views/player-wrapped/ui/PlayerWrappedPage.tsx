@@ -41,7 +41,13 @@ export const PlayerWrappedPage = ({ nickname: requested, year }: PlayerWrappedPa
                 value={wrapped.data.winRate}
                 variant='compact'
               />
-              <KeyFigure format={{ maximumFractionDigits: 0 }} label={t('figures.avgDamage')} value={wrapped.data.avgDamage} variant='compact' />
+              <KeyFigure
+                format={{ maximumFractionDigits: 0 }}
+                label={t('figures.avgDamage')}
+                tone='battle'
+                value={wrapped.data.avgDamage}
+                variant='compact'
+              />
             </>
           )
         }

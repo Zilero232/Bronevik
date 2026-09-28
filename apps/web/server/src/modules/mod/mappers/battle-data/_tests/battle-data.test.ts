@@ -43,18 +43,17 @@ describe('toBattleData', () => {
     expect(without.moePercentDelta).toBeNull();
   });
 
-  it('stores platoon mates as bigints, a solo battle as size one and an old mod as unknown', () => {
-    const platoon = { size: 2, mates: [42] };
+  it('stores the platoon size without any mate ids, a solo battle as size one and an old mod as unknown', () => {
+    const platoon = { size: 2 };
     const inPlatoon = toBattleData({ event: { ...battle, platoon }, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
     const solo = toBattleData({ event: { ...battle, platoon: null }, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
 
     expect(inPlatoon.platoonSize).toBe(platoon.size);
-    expect(inPlatoon.platoonMates).toEqual(platoon.mates.map((mate) => BigInt(mate)));
+    expect(inPlatoon).not.toHaveProperty('platoonMates');
     const { platoon: _platoon, ...legacy } = battle;
     const unknown = toBattleData({ event: legacy, accountId: 1n, deviceId: 'd', sessionId: null, previousMoePercent: null });
 
     expect(solo.platoonSize).toBe(BATTLE.soloPlatoonSize);
-    expect(solo.platoonMates).toEqual([]);
     expect(unknown.platoonSize).toBeNull();
   });
 

@@ -17,6 +17,14 @@
   "release_unavailable": "No suitable modpack version",
   "invalid_path": "This folder cannot be used",
   "autostart": "Could not change autostart",
+  "busy": "The manager is busy with another operation — wait a minute and try again",
+  "client_unsupported": "This client is not supported: it needs Lesta's Мир танков at a supported version",
+  "signature_invalid": "The modpack release failed its signature check — nothing was installed",
+  "untrusted_host": "A download from an unknown server was blocked",
+  "disk_full": "The disk is full — free some space and try again",
+  "file_locked": "The modpack files are in use by the game or an antivirus — close them and try again",
+  "not_enough_space": "Not enough disk space for a snapshot",
+  "rollback_failed": "The changes could not be rolled back — restore the latest snapshot on the Backups page",
   "contract": "The app returned an unexpected answer",
   "unknown": "Something went wrong"
 }

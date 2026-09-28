@@ -1,9 +1,13 @@
 import { utc } from '@date-fns/utc';
 import { masteryThresholds } from '@otmetki/ratings';
 import { startOfDay } from 'date-fns';
+import { unique } from 'remeda';
 import { z } from 'zod';
 
 import type { ExpectedValuesDateInput, MasteryThresholdRow, MoeThresholdRow } from './community-data.types';
+
+import { REFERENCE } from '../../config';
+import { LESTA_MASTERY } from './community-data.constants';
 
 const threshold = z.coerce.number().int().positive();
 
@@ -41,3 +45,8 @@ export const expectedValuesDate = ({ header, now }: ExpectedValuesDateInput): Da
 
   return match ? new Date(`${match[0]}T00:00:00Z`) : startOfDay(now, { in: utc });
 };
+
+export const masteryPercentiles = (required: readonly number[]): number[] =>
+  unique([...required, ...REFERENCE.masteryPercentiles])
+    .toSorted((left, right) => left - right)
+    .slice(0, LESTA_MASTERY.maxPercentiles);

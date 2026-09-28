@@ -17,6 +17,7 @@ export const mapSummarySchema = z.object({
   arenaId: z.string(),
   slug: z.string(),
   name: z.string(),
+  nameEn: z.string().nullable().describe('English name from the Lesta encyclopedia; null until it is synced'),
   image: z.url().nullable(),
   sizeMeters: countSchema.nullable(),
   camouflage: z.string().nullable(),
@@ -47,6 +48,7 @@ export const mapStatsSchema = z
 
 export const mapDetailSchema = mapSummarySchema.extend({
   description: z.string().nullable(),
+  descriptionEn: z.string().nullable(),
   boundingBox: z.object({ bottomLeft: pointSchema, upperRight: pointSchema }).nullable(),
   maxPlayersInTeam: countSchema.nullable(),
   roundLengthSec: countSchema.nullable(),

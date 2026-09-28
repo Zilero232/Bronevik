@@ -1,4 +1,5 @@
 export { useActivity } from './use-activity';
+export { useCareerPanel } from './use-career-panel';
 export { useChartsTab } from './use-charts-tab';
 export { useFavoriteTanks } from './use-favorite-tanks';
 export { useHighlightStats } from './use-highlight-stats';
@@ -7,6 +8,8 @@ export { useHistoryChart } from './use-history-chart';
 export { useHistoryTab } from './use-history-tab';
 export { useInsightsTab } from './use-insights-tab';
 export { useMarksTab } from './use-marks-tab';
+export { useModesTab } from './use-modes-tab';
+export { useOfficialRatings } from './use-official-ratings';
 export { useOverviewMarks } from './use-overview-marks';
 export { usePeriodRatings } from './use-period-ratings';
 export { usePlayerAchievements } from './use-player-achievements';

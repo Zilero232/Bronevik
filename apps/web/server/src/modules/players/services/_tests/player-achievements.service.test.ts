@@ -4,6 +4,7 @@ import { mockDeep } from 'vitest-mock-extended';
 import type { PrismaService } from '../../../../core';
 import type { LestaClient } from '../../../../lib/lesta';
 
+import { PLAYER_ACHIEVEMENTS } from '../../config';
 import { PlayerAchievementsService } from '../player-achievements.service';
 
 const createService = () => {
@@ -32,5 +33,17 @@ describe('PlayerAchievementsService.achievements', () => {
     const { items } = await service.achievements(42n);
 
     expect(items.map((item) => item.name)).toEqual(['medalKay']);
+  });
+});
+
+describe('PlayerAchievementsService request', () => {
+  it('asks Lesta only for the counts and series, not the medal progress', async () => {
+    const { service, lesta } = createService();
+
+    lesta.account.achievements.mockResolvedValue({});
+
+    await service.achievements(42n);
+
+    expect(lesta.account.achievements).toHaveBeenCalledWith({ accountIds: ['42'], fields: PLAYER_ACHIEVEMENTS.fields });
   });
 });

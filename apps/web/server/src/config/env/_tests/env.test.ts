@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { LESTA_MOCK } from '../../lesta-mock';
+import { LESTA } from '../../lesta.constants';
 import { isProduction, validateEnv } from '../env';
 
 const base = {
@@ -33,6 +34,19 @@ describe('validateEnv', () => {
     expect(validateEnv({ ...base, NODE_ENV: 'production', LESTA_MOCK: 'on' })).toMatchObject({ LESTA_MOCK: 'off', LESTA_APPLICATION_ID: '' });
     expect(validateEnv({ ...base, NODE_ENV: 'test' }).LESTA_MOCK).toBe('off');
     expect(validateEnv({ ...base, NODE_ENV: 'test', LESTA_MOCK: 'on' }).LESTA_MOCK).toBe('on');
+  });
+
+  it('splits the registered Lesta egress IPs and caps them at the Lesta limit', () => {
+    const ips = Array.from({ length: LESTA.egress.maxIps }, (_, index) => `10.0.0.${index + 1}`);
+
+    expect(validateEnv({ ...base, LESTA_EGRESS_IPS: ips.join(', ') }).LESTA_EGRESS_IPS).toEqual(ips);
+    expect(() => validateEnv({ ...base, LESTA_EGRESS_IPS: [...ips, '10.0.0.99'].join(',') })).toThrow(/LESTA_EGRESS_IPS/);
+    expect(validateEnv(base).LESTA_EGRESS_IPS).toEqual([]);
+  });
+
+  it('refuses an egress IP that is not one of the registered ones', () => {
+    expect(() => validateEnv({ ...base, LESTA_EGRESS_IPS: '10.0.0.1', LESTA_EGRESS_IP: '10.0.0.2' })).toThrow(/LESTA_EGRESS_IP/);
+    expect(validateEnv({ ...base, LESTA_EGRESS_IPS: '10.0.0.1', LESTA_EGRESS_IP: '10.0.0.1' }).LESTA_EGRESS_IP).toBe('10.0.0.1');
   });
 
   it('coerces numeric variables', () => {

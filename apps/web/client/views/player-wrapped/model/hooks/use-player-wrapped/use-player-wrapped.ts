@@ -33,7 +33,7 @@ export const usePlayerWrapped = ({ nickname: requested, year }: UsePlayerWrapped
     chapters: story ? wrappedChapters(story) : [],
     topTanks: (story?.topTanks ?? []).map((tank, index) => ({ ...tank, place: index + 1, vehicle: vehicles[tank.tankId] ?? null })),
     bestVehicle: story?.bestBattle ? (vehicles[story.bestBattle.tankId] ?? null) : null,
-    years: wrappedYears({ now, year }).map((option) => ({
+    years: wrappedYears({ now, year, createdAt: summary?.createdAt ?? null, lastBattleAt: summary?.lastBattleAt ?? null }).map((option) => ({
       year: option,
       href: ROUTES.players.wrapped({ nickname, year: option }),
       isCurrent: option === year

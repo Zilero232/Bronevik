@@ -21,5 +21,7 @@ export const RANKINGS = {
   exactCandidates: 1200,
   types: ['1', '7', '28', 'all'],
   thresholds: { '1': 5, '7': 25, '28': 100, all: 500 },
-  datesKept: 30
+  periodDays: { '1': 1, '7': 7, '28': 28, all: null },
+  datesKept: 30,
+  cachedDays: 2
 } as const;

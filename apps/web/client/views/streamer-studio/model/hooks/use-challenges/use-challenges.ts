@@ -1,19 +1,39 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { activateChallenge, cancelChallenge, createChallenge, getChallenges } from '../../../api';
-import { useStudioMutation } from '../use-studio-mutation';
 
 export const useChallenges = () => useQuery({ queryKey: QUERY_KEYS.me.streamer.challenges, queryFn: getChallenges });
 
 export const useCreateChallenge = () =>
-  useStudioMutation({ mutationFn: createChallenge, queryKey: QUERY_KEYS.me.streamer.challenges, successKey: 'challengeCreated' });
+  useMutation({
+    mutationFn: createChallenge,
+    meta: {
+      successKey: 'streamer.studio.toast.challengeCreated',
+      errorKey: 'streamer.studio.toast.failed',
+      invalidates: [QUERY_KEYS.me.streamer.challenges]
+    }
+  });
 
 export const useActivateChallenge = () =>
-  useStudioMutation({ mutationFn: activateChallenge, queryKey: QUERY_KEYS.me.streamer.challenges, successKey: 'challengeActivated' });
+  useMutation({
+    mutationFn: activateChallenge,
+    meta: {
+      successKey: 'streamer.studio.toast.challengeActivated',
+      errorKey: 'streamer.studio.toast.failed',
+      invalidates: [QUERY_KEYS.me.streamer.challenges]
+    }
+  });
 
 export const useCancelChallenge = () =>
-  useStudioMutation({ mutationFn: cancelChallenge, queryKey: QUERY_KEYS.me.streamer.challenges, successKey: 'challengeCancelled' });
+  useMutation({
+    mutationFn: cancelChallenge,
+    meta: {
+      successKey: 'streamer.studio.toast.challengeCancelled',
+      errorKey: 'streamer.studio.toast.failed',
+      invalidates: [QUERY_KEYS.me.streamer.challenges]
+    }
+  });

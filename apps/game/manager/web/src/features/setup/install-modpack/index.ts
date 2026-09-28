@@ -1,3 +1,5 @@
+export { foreignEntrySchema, installPlanSchema } from './api';
+export type { ForeignEntry, InstallPlan, InstallRequest } from './api';
 export { INSTALL_WIZARD } from './config';
 export { closeDependencies, matchingPreset, presetSelection, toggleSelection } from './lib';
 export type { Selection, SelectionComponents } from './lib';

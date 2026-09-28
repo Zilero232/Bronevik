@@ -1,18 +1,19 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
+
+import { QUERY_KEYS } from '@/shared/constants';
 
 import { getBotLinks, linkBotAccount, unlinkBotAccount } from '../../../api';
 import { botRows } from '../../../lib/bot-rows';
-import { useMeMutation } from '../use-me-mutation';
 import { useMeSection } from '../use-me-section';
 
 export const useBotsCard = () => {
-  const t = useTranslations('me.toast');
   const { data, isPending, isError, isFetching, refetch } = useMeSection({ section: 'bots', fetcher: getBotLinks });
-  const unlink = useMeMutation({ section: 'bots', mutationFn: unlinkBotAccount, successKey: 'botUnlinked' });
+  const unlink = useMutation({
+    mutationFn: unlinkBotAccount,
+    meta: { successKey: 'me.toast.botUnlinked', errorKey: 'me.toast.failed', invalidates: [QUERY_KEYS.me.section('bots')] }
+  });
 
   const link = useMutation({
     mutationFn: linkBotAccount,
@@ -21,7 +22,7 @@ export const useBotsCard = () => {
         window.location.assign(url);
       }
     },
-    onError: () => toast.error(t('failed'))
+    meta: { errorKey: 'me.toast.failed' }
   });
 
   return {

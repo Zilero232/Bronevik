@@ -14,3 +14,9 @@ export type WriteVehicleInput = {
   slug: string;
   prevTankIds: number[];
 };
+
+export type EnglishNamesResult = {
+  arenas: number;
+  achievements: number;
+  crewSkills: number;
+};

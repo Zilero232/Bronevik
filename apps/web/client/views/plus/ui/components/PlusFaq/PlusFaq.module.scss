@@ -44,6 +44,12 @@
   color: var(--color-text-muted);
 }
 
+.link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .answer {
   max-width: 70ch;
   padding: 0 var(--space-4) var(--space-3);

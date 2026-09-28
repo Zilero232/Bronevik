@@ -31,12 +31,14 @@ const provision = ({ id, type, data }: { id: number; type: Provision['type']; da
 const skill = ({ name, roles, isCommon }: { name: string; roles: string[]; isCommon: boolean }): CrewSkill => ({
   skill: name,
   name,
+  nameEn: null,
   nameKey: null,
   descriptionKey: null,
   type: null,
   roles,
   isCommon,
   description: null,
+  descriptionEn: null,
   image: null,
   data: { name, role: 'common', roles, isCommon, params: [], extras: {}, singleOnVehicle: false },
   updatedAt: new Date()

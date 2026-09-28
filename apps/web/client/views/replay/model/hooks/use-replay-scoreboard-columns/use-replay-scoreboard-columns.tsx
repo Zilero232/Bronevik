@@ -8,9 +8,9 @@ import type { TableColumn } from '@/ui-kit';
 
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
+import { minutesClock } from '@/shared/lib';
 
 import { REPLAY_SCOREBOARD } from '../../../config';
-import { formatClock } from '../../../lib/battle-timeline';
 import { hitRate } from '../../../lib/team-split';
 import { ScoreboardPlayerCell, ScoreboardTankCell } from '../../../ui/components/ReplayScoreboard/components';
 
@@ -70,7 +70,7 @@ export const useReplayScoreboardColumns = (): TableColumn<ReplayPlayer>[] => {
     column.accessor('lifeTimeSec', {
       header: t('columns.life'),
       enableSorting: false,
-      cell: ({ row: { original } }) => (original.survived === false && original.lifeTimeSec !== null ? formatClock(original.lifeTimeSec) : '—'),
+      cell: ({ row: { original } }) => (original.survived === false && original.lifeTimeSec !== null ? minutesClock(original.lifeTimeSec) : '—'),
       meta: { ...REPLAY_SCOREBOARD.numeric, hideBelow: 'xl' }
     })
   ];

@@ -7,6 +7,8 @@ export type WrappedChapter = (typeof WRAPPED_CHAPTERS)[number];
 export type WrappedYearsInput = {
   now: Date | null;
   year: number;
+  createdAt: string | null;
+  lastBattleAt: string | null;
 };
 
 export type WrappedStoryData = Pick<

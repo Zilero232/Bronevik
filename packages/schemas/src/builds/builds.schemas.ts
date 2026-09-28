@@ -81,6 +81,7 @@ export const provisionOptionSchema = z.object({
 export const crewSkillOptionSchema = z.object({
   skill: z.string(),
   name: z.string(),
+  nameEn: z.string().nullable().describe('English name from the Lesta encyclopedia; null until it is synced'),
   roles: z.array(z.string()),
   isCommon: z.boolean(),
   image: z.string().nullable(),

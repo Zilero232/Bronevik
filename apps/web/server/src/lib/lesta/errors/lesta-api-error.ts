@@ -1,7 +1,7 @@
 import type { LestaApiErrorInput, LestaHttpErrorInput, LestaNetworkErrorInput, LestaQueueFullErrorInput } from './errors.types';
 
 import { errorMessage } from '../../../common/lib';
-import { RETRYABLE_HTTP_STATUS, RETRYABLE_LESTA_CODES } from './errors.constants';
+import { EXTRA_REJECTION, RETRYABLE_HTTP_STATUS, RETRYABLE_LESTA_CODES } from './errors.constants';
 
 export class LestaApiError extends Error {
   readonly code: string;
@@ -66,3 +66,6 @@ export const isRetryableLestaError = (error: unknown): boolean => {
 
   return error instanceof LestaNetworkError || error instanceof LestaQueueFullError;
 };
+
+export const isExtraRejected = (error: unknown): boolean =>
+  error instanceof LestaApiError && (error.field === EXTRA_REJECTION.field || EXTRA_REJECTION.codePattern.test(error.code));

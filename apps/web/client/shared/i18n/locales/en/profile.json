@@ -34,6 +34,7 @@
     "sessions": "Sessions",
     "marks": "Marks",
     "achievements": "Achievements",
+    "modes": "Modes",
     "charts": "Charts",
     "insights": "Breakdown",
     "history": "History"
@@ -313,5 +314,64 @@
     },
     "notFound": "Player {nickname} not found",
     "errorTitle": "Could not load the player"
+  },
+  "official": {
+    "title": "Official Lesta rating",
+    "source": "Lesta data",
+    "lead": "We have no battle history for this player yet — here is what Lesta knows about the last weeks.",
+    "periods": {
+      "1d": "Last day",
+      "7d": "Last 7 days",
+      "28d": "Last 28 days",
+      "overall": "All time"
+    },
+    "fields": {
+      "globalRating": "Personal rating",
+      "battles": "Battles",
+      "winRate": "Wins",
+      "avgDamage": "Avg damage",
+      "avgXp": "Avg experience",
+      "avgFrags": "Kills per battle",
+      "avgSpotted": "Spotted per battle",
+      "survivalRate": "Survival",
+      "accuracy": "Accuracy",
+      "maxXp": "Max experience"
+    },
+    "rank": "#{rank, number} on the server"
+  },
+  "career": {
+    "title": "Personal records",
+    "empty": "No records yet",
+    "records": {
+      "maxDamage": "Max damage",
+      "maxXp": "Max experience",
+      "maxFrags": "Max kills"
+    },
+    "since": "since {date}",
+    "assist": {
+      "title": "Damage by spotting and tracking",
+      "avgRadio": "Spotting: {value}",
+      "avgTrack": "Tracking: {value}",
+      "avgStun": "Stun: {value}",
+      "note": "Random-battle averages from Lesta"
+    }
+  },
+  "modes": {
+    "emptyTitle": "No battles in other modes",
+    "emptyText": "Lesta knows of no Front Line, ranked, Stronghold or Global Map battles for this player.",
+    "liveNote": "Fetched from Lesta just now, no per-tank breakdown yet.",
+    "battles": "{count, plural, one {# battle} other {# battles}}",
+    "winRate": "Wins",
+    "avgDamage": "Avg damage",
+    "avgFrags": "Kills per battle",
+    "survivalRate": "Survival",
+    "maxDamage": "Max damage",
+    "names": {
+      "frontline": "Front Line",
+      "ranked": "Ranked battles",
+      "strongholdSkirmish": "Stronghold: skirmishes",
+      "strongholdDefense": "Stronghold: defense",
+      "globalmap": "Global Map"
+    }
   }
 }

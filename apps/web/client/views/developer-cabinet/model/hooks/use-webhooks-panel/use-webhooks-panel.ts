@@ -2,20 +2,24 @@
 
 import type { WebhookEndpoint } from '@otmetki/schemas';
 
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import type { WebhookEditorState } from './use-webhooks-panel.types';
 
 import { removeWebhook } from '../../../api';
 import { WEBHOOK_QUERIES } from '../../../config';
-import { useDeveloperMutation } from '../use-developer-mutation';
 import { useDeveloperOverview } from '../use-developer-overview';
 import { useWebhooks } from '../use-webhooks';
 
 export const useWebhooksPanel = () => {
   const { data: overview } = useDeveloperOverview();
   const query = useWebhooks();
-  const remove = useDeveloperMutation({ mutationFn: removeWebhook, invalidates: WEBHOOK_QUERIES.invalidates, successKey: 'webhookDeleted' });
+  const remove = useMutation({
+    mutationFn: removeWebhook,
+    meta: { successKey: 'developer.toast.webhookDeleted', errorKey: 'developer.toast.failed', invalidates: WEBHOOK_QUERIES.invalidates }
+  });
+
   const [editor, setEditor] = useState<WebhookEditorState>({ mode: 'closed' });
   const [removing, setRemoving] = useState<WebhookEndpoint | null>(null);
 

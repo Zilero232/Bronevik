@@ -53,7 +53,8 @@
       "title": "Favourite tanks",
       "battles": "Battles",
       "damage": "Damage",
-      "place": "#{place}"
+      "place": "#{place}",
+      "unknownTank": "#{place} · tank #{tankId} · battles"
     },
     "marks": {
       "title": "Marks and awards",

@@ -14,4 +14,4 @@ export type { StoredProfile } from './mappers';
 export { ReferenceCoreModule } from './reference-core.module';
 export { ReferenceModule } from './reference.module';
 export type { CatalogEntry, MasteryLevels, MasteryThresholdRecord, MoeLevels, MoeThresholdRecord, ThresholdSet } from './reference.types';
-export { BronyaReferencesService, ExpectedValuesService, ThresholdsService, VehicleCatalogService } from './services';
+export { BronyaReferencesService, ExpectedValuesService, OfficialRatingTypesService, ThresholdsService, VehicleCatalogService } from './services';

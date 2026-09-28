@@ -17,5 +17,5 @@ export const EVENT_GROUPS = {
   offers: ['bonus_code', 'premium_offer', 'tank_changed', 'tank_returned'],
   community: ['watchlist_digest', 'competition_finished', 'streamer_live'],
   streams: ['challenge_resolved'],
-  account: ['replay_overflow', 'plus_checkout_open']
+  account: ['replay_overflow', 'plus_checkout_open', 'lesta_relink_required']
 } as const satisfies Record<string, readonly NotificationEvent[]>;

@@ -23,6 +23,8 @@ const link: UserLestaAccount = {
   accountId: 1n,
   accessToken: null,
   tokenExpiresAt: null,
+  tokenStaleAt: null,
+  garageSyncedAt: null,
   isPrimary: true,
   linkedAt: now,
   updatedAt: now

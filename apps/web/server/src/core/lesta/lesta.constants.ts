@@ -6,5 +6,6 @@ export const LESTA_OUTCOME_RECORDER = Symbol('LESTA_OUTCOME_RECORDER');
 
 export const LESTA_BUCKET = {
   global: 'global',
-  bulk: 'bulk'
+  bulk: 'bulk',
+  separator: ':'
 } as const;

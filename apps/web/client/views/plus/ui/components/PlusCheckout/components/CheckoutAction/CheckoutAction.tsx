@@ -36,13 +36,13 @@ export const CheckoutAction = () => {
         .otherwise(() => (
           <>
             {trialAvailable && (
-              <Button disabled={isTrialPending} type='button' variant={isCheckoutAvailable ? 'secondary' : 'primary'} onClick={startTrial}>
+              <Button disabled={isTrialPending} type='button' variant={isCheckoutAvailable ? 'secondary' : 'premium'} onClick={startTrial}>
                 {isTrialPending ? t('checkout.action.trialPending') : t('checkout.action.trial', { days: trialDays })}
               </Button>
             )}
             {match({ isCheckoutAvailable, trialAvailable })
               .with({ isCheckoutAvailable: true }, () => (
-                <Button disabled={isRedirecting} type='submit'>
+                <Button disabled={isRedirecting} type='submit' variant='premium'>
                   {isRedirecting ? t('checkout.action.redirecting') : t('checkout.action.buy')}
                 </Button>
               ))
@@ -53,7 +53,7 @@ export const CheckoutAction = () => {
               ))
               .otherwise(() => (
                 <>
-                  <Link className={buttonVariants()} href={ROUTES.account.billing}>
+                  <Link className={buttonVariants({ variant: 'premium' })} href={ROUTES.account.billing}>
                     {t('teaser.promo')}
                   </Link>
                   <CheckoutNotify />

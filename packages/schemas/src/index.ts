@@ -664,8 +664,12 @@ export type {
   ModTankRatings,
   ModTankRatingsRequest
 } from './mod';
-export { MODE_META, MODE_RANKS, PLAY_MODES } from './modes';
+export { CAREER_MODE_SOURCES, CAREER_MODES, MODE_META, MODE_RANKS, PLAY_MODES } from './modes';
 export {
+  careerModeLineSchema,
+  careerModeSchema,
+  careerModesSchema,
+  careerModeTankSchema,
   modeMetaQuerySchema,
   modeMetaSchema,
   modeParamsSchema,
@@ -681,6 +685,10 @@ export {
   playModeSchema
 } from './modes';
 export type {
+  CareerMode,
+  CareerModeLine,
+  CareerModes,
+  CareerModeTank,
   ModeMeta,
   ModeMetaQuery,
   ModeRank,
@@ -751,6 +759,39 @@ export type {
   PushUnsubscribeInput,
   UpdateNotificationSettingsInput
 } from './notifications';
+export { OFFICIAL_RATING_FIELDS, OFFICIAL_RATING_PERIODS, OFFICIAL_RATINGS } from './official-ratings';
+export {
+  officialNeighborsQuerySchema,
+  officialNeighborsSchema,
+  officialRankHistoryQuerySchema,
+  officialRankHistorySchema,
+  officialRankPointSchema,
+  officialRankSchema,
+  officialRatingFieldSchema,
+  officialRatingPeriodSchema,
+  officialRatingQuerySchema,
+  officialRatingStatsSchema,
+  officialTopEntrySchema,
+  officialTopQuerySchema,
+  officialTopSchema,
+  playerOfficialRatingsSchema
+} from './official-ratings';
+export type {
+  OfficialNeighbors,
+  OfficialNeighborsQuery,
+  OfficialRank,
+  OfficialRankHistory,
+  OfficialRankHistoryQuery,
+  OfficialRankPoint,
+  OfficialRatingField,
+  OfficialRatingPeriod,
+  OfficialRatingQuery,
+  OfficialRatingStats,
+  OfficialTop,
+  OfficialTopEntry,
+  OfficialTopQuery,
+  PlayerOfficialRatings
+} from './official-ratings';
 export {
   activityDaySchema,
   activityQuerySchema,
@@ -765,12 +806,15 @@ export {
   PLAYER_TANKS,
   playerAchievementSchema,
   playerAchievementsSchema,
+  playerAssistSchema,
+  playerCareerSchema,
   playerClanSchema,
   playerHistoryEntrySchema,
   playerInsightsSchema,
   playerMarkRowSchema,
   playerMarksSchema,
   playerProfileSchema,
+  playerRecordSchema,
   playerSummarySchema,
   playerTankRowSchema,
   playerTankSortFieldSchema,
@@ -804,12 +848,15 @@ export type {
   PlayerAchievement,
   PlayerAchievements,
   PlayerActivity,
+  PlayerAssist,
+  PlayerCareer,
   PlayerClan,
   PlayerHistoryEntry,
   PlayerInsights,
   PlayerMarkRow,
   PlayerMarks,
   PlayerProfile,
+  PlayerRecord,
   PlayerSummary,
   PlayerTankRow,
   PlayerTankSortField,

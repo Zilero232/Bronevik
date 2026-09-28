@@ -56,6 +56,7 @@ const player = (accountId: bigint, nickname: string): Player => ({
   lastViewedAt: null,
   isHidden: false,
   purgeAfter: null,
+  logoutAt: null,
   progressionProcessedUntil: null,
   updatedAt: startedAt
 });
@@ -222,6 +223,8 @@ const link = (accountId: bigint): UserLestaAccount => ({
   accountId,
   accessToken: null,
   tokenExpiresAt: null,
+  tokenStaleAt: null,
+  garageSyncedAt: null,
   isPrimary: true,
   linkedAt: weekStart,
   updatedAt: weekStart

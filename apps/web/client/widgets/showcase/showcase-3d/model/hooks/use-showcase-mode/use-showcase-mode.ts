@@ -1,24 +1,17 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { usePreferredReducedMotion } from '@siberiacancode/reactuse';
 
-import { REDUCED_MOTION_QUERY } from '@/shared/lib';
+import { useHydrated } from '@/shared/lib';
 
 import type { ShowcaseMode } from '../../../lib/showcase-mode';
 
 import { readShowcaseEnvironment } from '../../../lib/showcase-environment';
 import { resolveShowcaseMode } from '../../../lib/showcase-mode';
 
-const subscribe = (onChange: () => void) => {
-  const query = window.matchMedia(REDUCED_MOTION_QUERY);
+export const useShowcaseMode = (): ShowcaseMode | null => {
+  const reducedMotion = usePreferredReducedMotion();
+  const isHydrated = useHydrated();
 
-  query.addEventListener('change', onChange);
-
-  return () => query.removeEventListener('change', onChange);
+  return isHydrated ? resolveShowcaseMode({ ...readShowcaseEnvironment(), prefersReducedMotion: reducedMotion === 'reduce' }) : null;
 };
-
-const snapshot = (): ShowcaseMode => resolveShowcaseMode(readShowcaseEnvironment());
-
-const serverSnapshot = (): ShowcaseMode | null => null;
-
-export const useShowcaseMode = (): ShowcaseMode | null => useSyncExternalStore(subscribe, snapshot, serverSnapshot);

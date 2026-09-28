@@ -47,5 +47,35 @@
     "title": "Top three",
     "place": "Place {rank}",
     "battles": "{count, plural, one {# battle} other {# battles}}"
+  },
+  "hall": {
+    "title": "Hall of fame",
+    "source": "official Lesta rating",
+    "periodLabel": "Period",
+    "fieldLabel": "Metric",
+    "periods": {
+      "1d": "Day",
+      "7d": "7 days",
+      "28d": "28 days",
+      "overall": "All time"
+    },
+    "fields": {
+      "globalRating": "Personal rating",
+      "battles": "Battles",
+      "winRate": "Wins",
+      "avgDamage": "Avg damage",
+      "avgXp": "Avg experience",
+      "avgFrags": "Kills per battle",
+      "avgSpotted": "Spotted per battle",
+      "survivalRate": "Survival",
+      "accuracy": "Accuracy",
+      "maxXp": "Max experience"
+    },
+    "empty": "Lesta has not published this rating yet",
+    "aroundTitle": "Around you",
+    "signInHint": "Sign in with Lesta ID to see your rating neighbours and place history.",
+    "notRanked": "You are not in this rating yet — not enough battles in the period.",
+    "trend": "Place over {days, plural, one {# day} other {# days}}: now #{rank, number}",
+    "trendLabel": "Rating place history"
   }
 }

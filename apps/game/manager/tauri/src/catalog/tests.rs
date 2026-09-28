@@ -1,3 +1,4 @@
+use serde_json::json;
 use std::fs;
 
 use super::fixtures::{catalog, catalog_json};
@@ -93,4 +94,78 @@ fn has_no_catalog_when_nothing_parses() {
     fs::write(&broken, "{").unwrap();
 
     assert!(load(LoadInput { cache: &broken, bundled: None }).is_none());
+}
+
+#[test]
+fn refuses_a_catalog_that_claims_foreign_packages() {
+    let mut foreign = catalog_json();
+
+    foreign["components"][0]["packageId"] = json!("izeberg");
+    foreign["components"][0]["file"] = json!("izeberg_1.0.mtmod");
+
+    let mut wide = catalog_json();
+
+    wide["ownedPatterns"] = json!(["*", "*.mtmod", "net.triotmetki.*.mtmod"]);
+
+    assert!(parse(&foreign.to_string()).is_err());
+    assert_eq!(parse(&wide.to_string()).unwrap().owned_patterns, vec!["net.triotmetki.*.mtmod"]);
+}
+
+#[test]
+fn splits_the_dependency_components_from_our_packages() {
+    let parsed = parse(&catalog_json().to_string()).unwrap();
+    let gameface = parsed.dependency("openwg_gameface").unwrap();
+
+    assert_eq!(parsed.dependencies.len(), 2);
+    assert!(parsed.component("openwg_gameface").is_none());
+    assert_eq!(gameface.kind, DependencyKind::Dependency);
+    assert_eq!(gameface.licence.name, "MIT");
+    assert_eq!(gameface.required_by, vec!["marks_panel", "damage_log"]);
+    assert!(!parsed.is_owned_file(&gameface.file));
+    assert!(parsed.component_for_file("gambiter.guiflash_0.6.6.mtmod").is_none());
+}
+
+#[test]
+fn round_trips_the_dependencies_through_the_ui_shape() {
+    let parsed = parse(&catalog_json().to_string()).unwrap();
+    let served = serde_json::to_value(&parsed).unwrap();
+
+    assert_eq!(served["dependencies"][0]["kind"], "dependency");
+    assert_eq!(serde_json::from_value::<Catalog>(served).unwrap(), parsed);
+}
+
+#[test]
+fn skips_a_dependency_that_claims_our_names_or_has_no_pinned_hash() {
+    let mut claimed = catalog_json();
+
+    claimed["components"][5]["packageId"] = json!("net.triotmetki.core");
+    claimed["components"][5]["file"] = json!("net.triotmetki.core_9.mtmod");
+    claimed["components"][6]["sha256"] = json!("abc");
+
+    let parsed = parse(&claimed.to_string()).unwrap();
+
+    assert!(parsed.dependencies.is_empty());
+    assert_eq!(parsed.components.len(), 5);
+}
+
+#[test]
+fn accepts_the_dependencies_the_modpack_catalogue_pins() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../modpack/catalog/catalog.json");
+    let raw: serde_json::Value = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
+    let dependencies: Vec<DependencyComponent> = raw["components"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|entry| entry["kind"] == DEPENDENCY_KIND)
+        .map(|entry| serde_json::from_value(entry.clone()).unwrap())
+        .collect();
+
+    assert_eq!(dependencies.iter().map(|dependency| dependency.id.as_str()).collect::<Vec<_>>(), vec!["openwg_gameface", "guiflash"]);
+
+    for dependency in &dependencies {
+        assert!(is_valid_dependency(dependency), "{}", dependency.id);
+        assert!(crate::releases::is_dependency_source(&dependency.source_url), "{}", dependency.source_url);
+        assert!(crate::releases::is_dependency_source(&dependency.licence.url), "{}", dependency.licence.url);
+        assert!(!dependency.required_by.is_empty());
+    }
 }

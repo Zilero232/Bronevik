@@ -25,11 +25,11 @@ export const PlusPage = () => {
         actions={
           <div className={s.actions}>
             {isPlus ? (
-              <Link className={buttonVariants({ size: 'lg' })} href={ROUTES.account.billing}>
+              <Link className={buttonVariants({ variant: 'premium', size: 'lg' })} href={ROUTES.account.billing}>
                 {t('manage')}
               </Link>
             ) : (
-              <a className={buttonVariants({ size: 'lg' })} href={`#${PLUS_CHECKOUT.anchor}`}>
+              <a className={buttonVariants({ variant: 'premium', size: 'lg' })} href={`#${PLUS_CHECKOUT.anchor}`}>
                 {isTrialOffered ? t('ctaTrial', { days: trialDays }) : t('cta')}
               </a>
             )}

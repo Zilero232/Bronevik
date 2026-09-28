@@ -158,7 +158,7 @@
     "remindOption": "{minutes, plural, =0 {В момент начала} =60 {За 1 час} =180 {За 3 часа} =1440 {За сутки} other {За # мин}}"
   },
   "roster": {
-    "meta": "{officers, plural, one {# офицер} few {# офицера} many {# офицеров} other {# офицера}} · посещаемость по {events, plural, one {# событию} other {# событиям}} за {days} дней",
+    "meta": "{officers, plural, one {# офицер} few {# офицера} many {# офицеров} other {# офицера}} · посещаемость по {events, plural, one {# событию} other {# событиям}} за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
     "title": "Состав",
     "caption": "Состав клана с ролями и посещаемостью",
     "columns": {
@@ -171,7 +171,9 @@
     "daysAgo": "{days, plural, =0 {сегодня} one {# день назад} few {# дня назад} many {# дней назад} other {# дня назад}}",
     "noEvents": "Нет отметок",
     "attendedOf": "Был на {attended} из {total}",
-    "attendedShort": "{attended}/{total}"
+    "attendedShort": "{attended}/{total}",
+    "error": "Посещаемость не загрузилась",
+    "errorDescription": "Состав показан без отметок о посещаемости. Попробуйте ещё раз."
   },
   "recruits": {
     "title": "Кандидаты",

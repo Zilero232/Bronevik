@@ -9,6 +9,12 @@
   overflow-x: auto;
 
   @include hide-scrollbar;
+
+  @supports (animation-timeline: scroll()) {
+    animation: segmented-edge-fade linear both;
+    animation-timeline: scroll(self inline);
+    mask-image: linear-gradient(to right, transparent, #000 var(--segmented-fade-start), #000 calc(100% - var(--segmented-fade-end)), transparent);
+  }
 }
 
 .option {
@@ -96,4 +102,36 @@
   left: 0;
   height: 2px;
   background-color: var(--color-accent);
+}
+
+@property --segmented-fade-start {
+  inherits: false;
+  initial-value: 0;
+  syntax: '<length>';
+}
+
+@property --segmented-fade-end {
+  inherits: false;
+  initial-value: 0;
+  syntax: '<length>';
+}
+
+@keyframes segmented-edge-fade {
+  0% {
+    --segmented-fade-start: 0;
+    --segmented-fade-end: 24px;
+  }
+
+  10% {
+    --segmented-fade-start: 24px;
+  }
+
+  90% {
+    --segmented-fade-end: 24px;
+  }
+
+  100% {
+    --segmented-fade-start: 24px;
+    --segmented-fade-end: 0;
+  }
 }

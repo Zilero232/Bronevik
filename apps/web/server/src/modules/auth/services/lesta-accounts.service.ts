@@ -68,7 +68,7 @@ export class LestaAccountsService implements LestaAccountStore {
         await tx.userLestaAccount.upsert({
           where: { accountId: id },
           create: { userId, accountId: id, accessToken, tokenExpiresAt: expiresAt, isPrimary: hasPrimary === 0 },
-          update: { userId, accessToken, tokenExpiresAt: expiresAt }
+          update: { userId, accessToken, tokenExpiresAt: expiresAt, tokenStaleAt: null, garageSyncedAt: null }
         });
 
         return true;

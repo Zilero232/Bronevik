@@ -22,7 +22,19 @@ pub enum ErrorCode {
     ReleaseUnavailable,
     InvalidPath,
     Autostart,
+    Busy,
+    ClientUnsupported,
+    SignatureInvalid,
+    UntrustedHost,
+    DiskFull,
+    FileLocked,
+    NotEnoughSpace,
+    RollbackFailed,
 }
+
+pub const SHARING_VIOLATION: i32 = 32;
+pub const LOCK_VIOLATION: i32 = 33;
+pub const DISK_FULL_OS: i32 = 112;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
@@ -43,11 +55,19 @@ impl AppError {
 
     pub fn code(&self) -> ErrorCode {
         match self {
-            Self::Io(_) => ErrorCode::Io,
+            Self::Io(error) => io_code(error),
             Self::Json(_) => ErrorCode::Json,
             Self::Http(_) => ErrorCode::Http,
             Self::Coded { code, .. } => *code,
         }
+    }
+}
+
+pub fn io_code(error: &std::io::Error) -> ErrorCode {
+    match (error.kind(), error.raw_os_error()) {
+        (std::io::ErrorKind::StorageFull, _) | (_, Some(DISK_FULL_OS)) => ErrorCode::DiskFull,
+        (_, Some(SHARING_VIOLATION | LOCK_VIOLATION)) => ErrorCode::FileLocked,
+        _ => ErrorCode::Io,
     }
 }
 

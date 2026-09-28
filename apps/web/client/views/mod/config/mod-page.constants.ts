@@ -8,10 +8,10 @@ export const MOD_PAGE = {
 } as const;
 
 export const MOD_FEATURES = [
-  { key: 'results', icon: ScrollText },
-  { key: 'marks', icon: Mark3Icon },
-  { key: 'panel', icon: Gauge },
-  { key: 'session', icon: History }
+  { key: 'results', icon: ScrollText, tone: 'sky' },
+  { key: 'marks', icon: Mark3Icon, tone: 'gold' },
+  { key: 'panel', icon: Gauge, tone: 'olive' },
+  { key: 'session', icon: History, tone: 'steel' }
 ] as const;
 
 export const MOD_FAIR_PLAY = {
@@ -24,7 +24,6 @@ export const MOD_INSTALL_STEPS = ['download', 'install', 'launch', 'bind'] as co
 export const MOD_SWITCHES = [
   { id: 'battleResults', setting: 'send_battle_results' },
   { id: 'moeSnapshots', setting: 'send_moe_snapshots' },
-  { id: 'moeDistribution', setting: 'send_moe_distribution' },
   { id: 'queueTimes', setting: 'send_queue_times' },
   { id: 'loadouts', setting: 'send_loadouts' },
   { id: 'shots', setting: 'send_shots' },

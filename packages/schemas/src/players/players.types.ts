@@ -12,12 +12,15 @@ import type {
   nicknameHistorySchema,
   playerAchievementSchema,
   playerAchievementsSchema,
+  playerAssistSchema,
+  playerCareerSchema,
   playerClanSchema,
   playerHistoryEntrySchema,
   playerInsightsSchema,
   playerMarkRowSchema,
   playerMarksSchema,
   playerProfileSchema,
+  playerRecordSchema,
   playerSummarySchema,
   playerTankRowSchema,
   playerTankSortFieldSchema,
@@ -75,3 +78,7 @@ export type TimeSeriesQuery = z.infer<typeof timeSeriesQuerySchema>;
 export type TimeSeries = z.infer<typeof timeSeriesSchema>;
 export type PlayerAchievement = z.infer<typeof playerAchievementSchema>;
 export type PlayerAchievements = z.infer<typeof playerAchievementsSchema>;
+
+export type PlayerRecord = z.infer<typeof playerRecordSchema>;
+export type PlayerAssist = z.infer<typeof playerAssistSchema>;
+export type PlayerCareer = z.infer<typeof playerCareerSchema>;

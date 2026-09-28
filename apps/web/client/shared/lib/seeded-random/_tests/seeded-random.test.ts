@@ -27,4 +27,10 @@ describe('seededRandom', () => {
   it('still produces a sequence for a zero seed', () => {
     expect(new Set(take(0)).size).toBeGreaterThan(1);
   });
+
+  it('spreads neighbouring seeds apart, so consecutive days draw different values', () => {
+    const firsts = Array.from({ length: 20 }, (_, index) => Math.floor(seededRandom(20_261_001 + index)() * 30));
+
+    expect(new Set(firsts).size).toBeGreaterThan(10);
+  });
 });

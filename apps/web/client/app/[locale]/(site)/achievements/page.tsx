@@ -5,7 +5,10 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
+import { PageHeroFallback } from '@/ui-kit';
 import { AchievementsPage } from '@/views/achievements';
+import { achievementsPageState } from '@/views/achievements/server';
 
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
@@ -14,9 +17,11 @@ export const generateMetadata = async () => {
   return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.achievements, locale, index: true, follow: true });
 };
 
-const Page = () => (
-  <Suspense>
-    <AchievementsPage />
+const Page = ({ searchParams }: PageProps<'/[locale]/achievements'>) => (
+  <Suspense fallback={<PageHeroFallback />}>
+    <PrefetchBoundary state={searchParams.then(achievementsPageState)}>
+      <AchievementsPage />
+    </PrefetchBoundary>
   </Suspense>
 );
 

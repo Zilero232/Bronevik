@@ -11,14 +11,20 @@ export type CatalogRow = {
   required: boolean;
   state: ComponentState;
   dependencies: string[];
+  libraries: string[];
   image: string | null;
   video: string | null;
 };
 
 export type BuildCatalogRowsInput = {
-  catalog: Pick<Catalog, 'components'>;
+  catalog: Pick<Catalog, 'components' | 'dependencies'>;
   installation: Pick<Installation, 'components'> | null;
   locale: Locale;
+};
+
+export type WithDependenciesInput = {
+  components: Catalog['components'];
+  id: string;
 };
 
 export type FilterCatalogRowsInput = {

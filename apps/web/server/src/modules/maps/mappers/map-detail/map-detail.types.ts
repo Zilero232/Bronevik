@@ -2,7 +2,10 @@ import type { MapStats } from '@otmetki/schemas';
 
 import type { Arena } from '../../../../../generated';
 
-export type ArenaRow = Pick<Arena, 'arenaId' | 'camouflageType' | 'data' | 'description' | 'image' | 'modes' | 'name' | 'sizeMeters' | 'slug'>;
+export type ArenaRow = Pick<
+  Arena,
+  'arenaId' | 'camouflageType' | 'data' | 'description' | 'descriptionEn' | 'image' | 'modes' | 'name' | 'nameEn' | 'sizeMeters' | 'slug'
+>;
 
 export type MinimapUrlInput = {
   image: string | null;

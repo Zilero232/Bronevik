@@ -3,7 +3,7 @@
 import { FlaskConical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { PlusGate } from '@/features/plus/plus-gate';
+import { PlusBadge, PlusGate } from '@/features/plus/plus-gate';
 import { ROUTES } from '@/shared/constants';
 import { ActionStrip, DataSourceNote, KeyFigure, PageHero, Tabs } from '@/ui-kit';
 
@@ -35,8 +35,18 @@ export const SupertestPage = () => {
         title={t('hero.title')}
       />
       <ActionStrip
+        start={
+          <Tabs
+            items={SUPERTEST_SCOPES.map((value) => ({
+              value,
+              label: t(`scopes.${value}`),
+              count: value === SUPERTEST.plusScope ? <PlusBadge /> : undefined
+            }))}
+            value={scope}
+            onValueChange={onScopeChange}
+          />
+        }
         align='bottom'
-        start={<Tabs items={SUPERTEST_SCOPES.map((value) => ({ value, label: t(`scopes.${value}`) }))} value={scope} onValueChange={onScopeChange} />}
       />
       <div className={s.content}>
         {scope === 'mine' ? (

@@ -6,6 +6,7 @@ export const GUESS_TANK = {
   storageKey: 'otmetki-guess-tank',
   streakKey: 'otmetki-guess-tank:streak',
   epoch: '2026-01-01',
+  generatorSwitchDay: '2026-09-29',
   detailStaleMs: hoursToMilliseconds(1)
 } as const;
 
@@ -38,4 +39,9 @@ export const GUESS_VIEW = {
   noValue: '—',
   maxBlur: 14,
   skeletonRows: 4
+} as const;
+
+export const LEGACY_RANDOM = {
+  increment: 1_831_565_813,
+  range: 4_294_967_296
 } as const;

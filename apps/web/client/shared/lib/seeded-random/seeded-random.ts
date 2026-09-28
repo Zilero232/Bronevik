@@ -1,14 +1,10 @@
+import { uniformFloat64 } from 'pure-rand/distribution/uniformFloat64';
+import { xoroshiro128plus } from 'pure-rand/generator/xoroshiro128plus';
+
 export const seededRandom = (seed: number) => {
-  let state = seed >>> 0 || 1;
+  const generator = xoroshiro128plus(seed | 0);
 
-  return () => {
-    state = (state + 1_831_565_813) >>> 0;
+  generator.jump();
 
-    let next = state;
-
-    next = Math.imul(next ^ (next >>> 15), next | 1);
-    next ^= next + Math.imul(next ^ (next >>> 7), next | 61);
-
-    return ((next ^ (next >>> 14)) >>> 0) / 4294967296;
-  };
+  return () => uniformFloat64(generator);
 };

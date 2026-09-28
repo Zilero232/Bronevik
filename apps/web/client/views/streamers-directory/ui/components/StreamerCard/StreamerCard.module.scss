@@ -8,7 +8,8 @@
   padding: var(--space-5);
 
   &[data-live='true'] {
-    border-color: var(--color-danger);
+    border-color: color-mix(in srgb, var(--color-enemy) 55%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-enemy) 25%, transparent);
   }
 }
 

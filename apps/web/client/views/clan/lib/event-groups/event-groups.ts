@@ -1,31 +1,21 @@
 import type { ClanMemberEvent } from '@otmetki/schemas';
 
+import { entries, groupBy, map, pipe, sortBy } from 'remeda';
+
 import { dayKey, shiftDay, weekKey } from '@/shared/lib';
 
 import type { EventDay, WeeklyMoves, WeeklyMovesInput } from './event-groups.types';
 
 import { CLAN_EVENTS } from '../../config';
 
-export const groupEventsByDay = (events: readonly ClanMemberEvent[]): EventDay[] => {
-  const days: EventDay[] = [];
-
-  [...events]
-    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
-    .forEach((event) => {
-      const day = dayKey({ date: event.occurredAt });
-      const last = days.at(-1);
-
-      if (last?.day === day) {
-        last.events.push(event);
-
-        return;
-      }
-
-      days.push({ day, events: [event] });
-    });
-
-  return days;
-};
+export const groupEventsByDay = (events: readonly ClanMemberEvent[]): EventDay[] =>
+  pipe(
+    events,
+    sortBy([({ occurredAt }) => occurredAt, 'desc']),
+    groupBy(({ occurredAt }) => dayKey({ date: occurredAt })),
+    entries(),
+    map(([day, dayEvents]) => ({ day, events: dayEvents }))
+  );
 
 export const weeklyMoves = ({ events, now, weeks }: WeeklyMovesInput): WeeklyMoves[] => {
   const today = dayKey({ date: now });

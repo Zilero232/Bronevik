@@ -219,6 +219,10 @@ pub fn sync_manifest(context: ClientContext) -> AppResult<Manifest> {
     Ok(manifest)
 }
 
+pub fn is_owned(catalog: &Catalog, name: &str) -> bool {
+    catalog.is_owned_file(name) || catalog.component_for_file(name).is_some()
+}
+
 pub fn now_text() -> String {
     chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string()
 }

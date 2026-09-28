@@ -4,6 +4,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::error::AppResult;
+use crate::fsx::write_atomic;
 
 pub const CHECK_INTERVAL_MINUTES: [u32; 5] = [15, 30, 60, 180, 720];
 pub const DEFAULT_CHECK_INTERVAL: u32 = 30;
@@ -38,6 +39,7 @@ impl Language {
 #[serde(rename_all = "camelCase", default)]
 pub struct ManagerSettings {
     pub autostart: bool,
+    pub autostart_asked: bool,
     pub notifications: bool,
     pub auto_migrate: bool,
     pub check_interval_minutes: u32,
@@ -50,6 +52,7 @@ impl Default for ManagerSettings {
     fn default() -> Self {
         Self {
             autostart: true,
+            autostart_asked: false,
             notifications: true,
             auto_migrate: true,
             check_interval_minutes: DEFAULT_CHECK_INTERVAL,
@@ -75,13 +78,7 @@ impl ManagerSettings {
     }
 
     pub fn save(&self, path: &Path) -> AppResult<()> {
-        if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent)?;
-        }
-
-        fs::write(path, serde_json::to_string_pretty(self)?)?;
-
-        Ok(())
+        write_atomic(path, serde_json::to_string_pretty(self)?.as_bytes())
     }
 }
 

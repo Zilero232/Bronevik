@@ -26,12 +26,13 @@ export const LinkedAccountsCard = () => {
       {isError && <SectionError isRetrying={isFetching} onRetry={() => void refetch()} />}
       {accounts && (
         <ul className={s.list}>
-          {accounts.lesta.map(({ accountId, nickname, isPrimary, tokenExpiresAt }) => (
+          {accounts.lesta.map(({ accountId, nickname, isPrimary, tokenExpiresAt, isStale }) => (
             <li key={accountId} className={s.row}>
               <span className={s.provider}>{t('lesta')}</span>
               <span className={s.name}>{nickname}</span>
               {isPrimary && <Badge tone='accent'>{t('primary')}</Badge>}
-              {tokenExpiresAt && (
+              {isStale && <Badge tone='warning'>{t('stale')}</Badge>}
+              {tokenExpiresAt && !isStale && (
                 <span className={s.meta}>
                   {t('tokenUntil', { date: format.dateTime(new Date(tokenExpiresAt), { day: 'numeric', month: 'short' }) })}
                 </span>

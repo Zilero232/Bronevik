@@ -37,3 +37,12 @@ fn bundles_the_diagnostics_but_never_the_credentials() {
     assert!(names.contains(&format!("clients/{key}/listing.txt")));
     assert!(names.iter().all(|name| !name.contains("credentials")));
 }
+
+#[test]
+fn hides_the_bind_code_in_the_bundled_config() {
+    let redacted: serde_json::Value = serde_json::from_slice(&redact_config(br#"{"bind_code":"ABCD-1234","enabled":true}"#)).unwrap();
+
+    assert_eq!(redacted["bind_code"], REDACTED);
+    assert_eq!(redacted["enabled"], true);
+    assert_eq!(redact_config(b"not json"), b"not json");
+}

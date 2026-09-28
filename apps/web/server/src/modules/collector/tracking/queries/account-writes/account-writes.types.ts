@@ -1,6 +1,8 @@
 import type { Prisma } from '../../../../../../generated';
 import type { TankMarks } from '../../lib/marks-gain';
 
+export type { AccountModeRow, TankModeRow } from '../../lib/mode-stats';
+
 export type PlayerTankUpsertRow = Pick<
   Prisma.PlayerTankCreateManyInput,
   'accountId' | 'battles' | 'lastBattleAt' | 'markOfMastery' | 'tankId' | 'wins'

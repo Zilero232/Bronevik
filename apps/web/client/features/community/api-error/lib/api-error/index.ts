@@ -1,2 +1,2 @@
-export { apiErrorCode, communityErrorKind } from './api-error';
-export type { CommunityErrorCodeMap, CommunityErrorKind } from './api-error.types';
+export { apiErrorCode, communityErrorKey, communityErrorKind } from './api-error';
+export type { CommunityErrorCodeMap, CommunityErrorKind, CommunityErrorNamespace } from './api-error.types';

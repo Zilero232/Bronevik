@@ -1,10 +1,10 @@
 'use client';
 
-import { useClientNow, useCountdown } from '@/shared/lib';
+import { minutesClock, useClientNow, useCountdown } from '@/shared/lib';
 
 import type { UseCodeCountdownInput } from './use-code-countdown.types';
 
-import { codeLifetime, formatCountdown } from '../../../lib/code-countdown';
+import { codeLifetime } from '../../../lib/code-countdown';
 
 export const useCodeCountdown = ({ expiresAt, issuedAt }: UseCodeCountdownInput) => {
   const now = useClientNow();
@@ -12,5 +12,5 @@ export const useCodeCountdown = ({ expiresAt, issuedAt }: UseCodeCountdownInput)
 
   const lifetime = now ? codeLifetime({ expiresAt, issuedAt, now: now.getTime() }) : null;
 
-  return { label: formatCountdown(left), ratio: lifetime ? left / lifetime.total : 0, isExpired };
+  return { label: minutesClock(left), ratio: lifetime ? left / lifetime.total : 0, isExpired };
 };

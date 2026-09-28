@@ -8,6 +8,8 @@ import type { CollectorProducerService } from '../../../collector';
 import type { LestaPlayerInfo } from '../../players.types';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
+import { LestaApiError } from '../../../../lib/lesta';
+import { PLAYER_LOOKUP } from '../../config';
 import { PlayerResolverService } from '../player-resolver.service';
 
 const NOW = new Date('2026-09-26T12:00:00.000Z');
@@ -170,5 +172,37 @@ describe('PlayerResolverService.upsertFromLesta', () => {
     expect(prisma.playerNickname.upsert).toHaveBeenCalledWith(
       expect.objectContaining({ where: { accountId_nickname: { accountId: 42n, nickname: 'Tanker' } } })
     );
+  });
+});
+
+describe('PlayerResolverService.fetchInfo', () => {
+  it('asks Lesta only for the fields a player page reads', async () => {
+    const { service, lesta } = createService();
+
+    lesta.account.info.mockResolvedValue({ '42': INFO });
+
+    await expect(service.fetchInfo(42n)).resolves.toMatchObject({ nickname: 'Tanker' });
+    expect(lesta.account.info).toHaveBeenCalledWith(expect.objectContaining({ fields: PLAYER_LOOKUP.infoFields }));
+  });
+});
+
+describe('PlayerResolverService.fetchModeBlocks', () => {
+  it('retries without the mode extras when Lesta rejects them', async () => {
+    const { service, lesta } = createService();
+
+    lesta.account.info
+      .mockRejectedValueOnce(new LestaApiError({ code: 'INVALID_EXTRA', method: 'account/info', field: 'extra' }))
+      .mockResolvedValue({ '42': { account_id: 42, statistics: { stronghold_skirmish: BLOCK } } });
+
+    await expect(service.fetchModeBlocks(42n)).resolves.toEqual({ stronghold_skirmish: BLOCK });
+    expect(lesta.account.info.mock.calls.map(([input]) => input.extra)).toEqual([PLAYER_LOOKUP.modeExtra, []]);
+  });
+
+  it('returns null for an account Lesta does not know', async () => {
+    const { service, lesta } = createService();
+
+    lesta.account.info.mockResolvedValue({ '42': null });
+
+    await expect(service.fetchModeBlocks(42n)).resolves.toBeNull();
   });
 });

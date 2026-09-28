@@ -1,16 +1,22 @@
 'use client';
 
+import { useMediaQuery } from '@siberiacancode/reactuse';
 import { getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 
 import type { UseDataTableInput } from './use-data-table.types';
 
 import { columnMax } from '../column-max';
+import { dataTableLayout } from '../data-table-layout';
 import { useDataTableState } from '../use-data-table-state';
+import { useHydrated } from '../use-hydrated';
+import { DATA_TABLE_LAYOUT } from './use-data-table.constants';
 
 export const useDataTable = <T>({ data, columns, getRowId, initialSorting, virtualizeAfter, isLoading, hasCards }: UseDataTableInput<T>) => {
   'use no memo';
 
   const { scrollNode, setScrollNode, sorting, setSorting } = useDataTableState({ initialSorting });
+  const isHydrated = useHydrated();
+  const isCompact = useMediaQuery(DATA_TABLE_LAYOUT.cardsQuery);
   const table = useReactTable({
     data,
     columns,
@@ -29,6 +35,9 @@ export const useDataTable = <T>({ data, columns, getRowId, initialSorting, virtu
     )
   );
 
+  const isEmpty = !isLoading && rows.length === 0;
+  const { showTable, showCards } = dataTableLayout({ hasCards, isHydrated, isCompact });
+
   return {
     table,
     rows,
@@ -37,7 +46,9 @@ export const useDataTable = <T>({ data, columns, getRowId, initialSorting, virtu
     barMax,
     columnCount: visibleColumns.length,
     isVirtual: rows.length > virtualizeAfter,
-    isEmpty: !isLoading && rows.length === 0,
-    hasCards: hasCards && !isLoading && rows.length > 0
+    isEmpty,
+    hasCards,
+    showTable,
+    showCards
   };
 };

@@ -21,11 +21,9 @@ import {
   Network,
   Newspaper,
   Palette,
-  Rss,
   Scale,
   ShoppingCart,
   Swords,
-  Target,
   Ticket,
   Trophy,
   UserPlus,
@@ -46,10 +44,19 @@ export const SITE_NAV = {
       items: [
         { key: 'players', href: ROUTES.players.list, icon: Users },
         { key: 'top', href: ROUTES.top, icon: Trophy },
-        { key: 'clans', href: ROUTES.clans.list, icon: StrongholdIcon },
         { key: 'bestBattles', href: ROUTES.bestBattles, icon: Flame },
         { key: 'achievements', href: ROUTES.achievements, icon: Medal },
         { key: 'comparePlayers', href: ROUTES.players.compare, icon: GitCompareArrows }
+      ]
+    },
+    {
+      key: 'clans',
+      featured: null,
+      items: [
+        { key: 'clans', href: ROUTES.clans.list, icon: StrongholdIcon },
+        { key: 'platoons', href: ROUTES.platoons, icon: UsersRound },
+        { key: 'recruiting', href: ROUTES.recruiting, icon: UserPlus },
+        { key: 'coaching', href: ROUTES.coaching.list, icon: GraduationCap }
       ]
     },
     {
@@ -82,16 +89,11 @@ export const SITE_NAV = {
       key: 'community',
       featured: 'liveStreamers',
       items: [
-        { key: 'feed', href: ROUTES.social.feed, icon: Rss },
-        { key: 'leagues', href: ROUTES.social.leagues, icon: Award },
-        { key: 'challenges', href: ROUTES.social.challenges, icon: Target },
+        { key: 'competitions', href: ROUTES.social.leagues, icon: Award },
         { key: 'streamers', href: ROUTES.streamers.list, icon: RadioIcon },
         { key: 'replays', href: ROUTES.replays.list, icon: Film },
         { key: 'guides', href: ROUTES.guides.list, icon: BookOpen },
         { key: 'tactics', href: ROUTES.tactics.list, icon: MapIcon },
-        { key: 'platoons', href: ROUTES.platoons, icon: UsersRound },
-        { key: 'recruiting', href: ROUTES.recruiting, icon: UserPlus },
-        { key: 'coaching', href: ROUTES.coaching.list, icon: GraduationCap },
         { key: 'tournaments', href: ROUTES.tournaments.list, icon: Swords }
       ]
     }

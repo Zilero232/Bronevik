@@ -91,6 +91,7 @@
     "noAccountText": "Link your account through Lesta ID in your account settings to see your mode stats.",
     "linkAction": "Link account",
     "emptyTitle": "No battles in this mode",
-    "emptyText": "We have not seen your battles in this mode over the last {days, plural, one {# day} other {# days}}."
+    "emptyText": "We have not seen your battles in this mode over the last {days, plural, one {# day} other {# days}}.",
+    "career": "All time, per Lesta: {battles, plural, one {# battle} other {# battles}}, {winRate}% wins, {damage} avg damage"
   }
 }

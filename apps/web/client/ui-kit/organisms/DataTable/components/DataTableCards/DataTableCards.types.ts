@@ -1,7 +1,8 @@
 import type { Row } from '@tanstack/react-table';
-import type { ReactNode } from 'react';
 
-export type DataTableCardsProps<T> = {
+import type { DataTableProps } from '../../DataTable.types';
+
+export type DataTableCardsProps<T> = Required<Pick<DataTableProps<T>, 'renderCard'>> & {
   rows: Row<T>[];
-  renderCard: (row: T) => ReactNode;
+  isLoading: boolean;
 };

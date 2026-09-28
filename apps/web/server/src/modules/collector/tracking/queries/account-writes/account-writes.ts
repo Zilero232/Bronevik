@@ -1,6 +1,7 @@
-import type { LatestTanksSqlInput, MarksRow, PlayerTankUpsertRow, SyncedRow } from './account-writes.types';
+import type { AccountModeRow, LatestTanksSqlInput, MarksRow, PlayerTankUpsertRow, SyncedRow, TankModeRow } from './account-writes.types';
 
 import { Prisma } from '../../../../../../generated';
+import { MODE_STATS_SQL } from '../../../../../common/lib';
 import { TANK_SNAPSHOT_COLUMNS } from './account-writes.constants';
 
 const toJson = (rows: readonly object[]): string =>
@@ -15,8 +16,15 @@ const updates = Prisma.raw(
 );
 
 export const upsertPlayerTanksSql = (rows: readonly PlayerTankUpsertRow[]): Prisma.Sql => Prisma.sql`
-  INSERT INTO player_tank (account_id, tank_id, battles, wins, mark_of_mastery, last_battle_at, updated_at)
-  SELECT r.account_id, r.tank_id, coalesce(r.battles, 0), coalesce(r.wins, 0), coalesce(r.mark_of_mastery, 0), r.last_battle_at, now()
+  INSERT INTO player_tank (account_id, tank_id, battles, wins, mark_of_mastery, last_battle_at, in_garage, updated_at)
+  SELECT
+    r.account_id, r.tank_id, coalesce(r.battles, 0), coalesce(r.wins, 0), coalesce(r.mark_of_mastery, 0), r.last_battle_at,
+    CASE
+      WHEN r.last_battle_at IS NOT NULL
+        AND EXISTS (SELECT 1 FROM player_tank g WHERE g.account_id = r.account_id AND g.in_garage IS NOT NULL)
+      THEN true
+    END,
+    now()
   FROM jsonb_to_recordset(${toJson(
     rows.map((row) => ({
       account_id: row.accountId,
@@ -33,6 +41,7 @@ export const upsertPlayerTanksSql = (rows: readonly PlayerTankUpsertRow[]): Pris
     wins = EXCLUDED.wins,
     mark_of_mastery = EXCLUDED.mark_of_mastery,
     last_battle_at = coalesce(EXCLUDED.last_battle_at, player_tank.last_battle_at),
+    in_garage = CASE WHEN EXCLUDED.in_garage IS TRUE THEN true ELSE player_tank.in_garage END,
     updated_at = now()
   WHERE player_tank.battles <= EXCLUDED.battles
 `;
@@ -66,4 +75,77 @@ export const markSyncedSql = (rows: readonly SyncedRow[]): Prisma.Sql => Prisma.
   )}::jsonb)
     AS r(account_id bigint, last_battle_at timestamptz, last_polled_at timestamptz, next_poll_at timestamptz)
   WHERE p.account_id = r.account_id
+`;
+
+export const upsertAccountModeStatsSql = (rows: readonly AccountModeRow[]): Prisma.Sql => Prisma.sql`
+  INSERT INTO account_mode_stats (
+    account_id, mode, battles, wins, losses, draws, damage_dealt, damage_received, frags, spotted, xp, survived_battles,
+    hits, shots, capture_points, dropped_capture_points, avg_damage_blocked, avg_damage_assisted, max_damage, max_xp, max_frags, updated_at
+  )
+  SELECT
+    r.account_id, r.mode::stats_mode, r.battles, r.wins, r.losses, r.draws, r.damage_dealt, r.damage_received, r.frags, r.spotted, r.xp,
+    r.survived_battles, r.hits, r.shots, r.capture_points, r.dropped_capture_points, r.avg_damage_blocked, r.avg_damage_assisted,
+    r.max_damage, r.max_xp, r.max_frags, now()
+  FROM jsonb_to_recordset(${toJson(
+    rows.map((row) => ({
+      account_id: row.accountId,
+      mode: MODE_STATS_SQL[row.mode],
+      battles: row.battles,
+      wins: row.wins,
+      losses: row.losses,
+      draws: row.draws,
+      damage_dealt: row.damageDealt,
+      damage_received: row.damageReceived,
+      frags: row.frags,
+      spotted: row.spotted,
+      xp: row.xp,
+      survived_battles: row.survived,
+      hits: row.hits,
+      shots: row.shots,
+      capture_points: row.capturePoints,
+      dropped_capture_points: row.droppedCapturePoints,
+      avg_damage_blocked: row.avgDamageBlocked,
+      avg_damage_assisted: row.avgDamageAssisted,
+      max_damage: row.maxDamage,
+      max_xp: row.maxXp,
+      max_frags: row.maxFrags
+    }))
+  )}::jsonb)
+    AS r(
+      account_id bigint, mode text, battles int, wins int, losses int, draws int, damage_dealt bigint, damage_received bigint, frags int,
+      spotted int, xp bigint, survived_battles int, hits int, shots int, capture_points int, dropped_capture_points int,
+      avg_damage_blocked float8, avg_damage_assisted float8, max_damage int, max_xp int, max_frags int
+    )
+  ON CONFLICT (account_id, mode) DO UPDATE SET
+    battles = EXCLUDED.battles, wins = EXCLUDED.wins, losses = EXCLUDED.losses, draws = EXCLUDED.draws,
+    damage_dealt = EXCLUDED.damage_dealt, damage_received = EXCLUDED.damage_received, frags = EXCLUDED.frags, spotted = EXCLUDED.spotted,
+    xp = EXCLUDED.xp, survived_battles = EXCLUDED.survived_battles, hits = EXCLUDED.hits, shots = EXCLUDED.shots,
+    capture_points = EXCLUDED.capture_points, dropped_capture_points = EXCLUDED.dropped_capture_points,
+    avg_damage_blocked = EXCLUDED.avg_damage_blocked, avg_damage_assisted = EXCLUDED.avg_damage_assisted,
+    max_damage = EXCLUDED.max_damage, max_xp = EXCLUDED.max_xp, max_frags = EXCLUDED.max_frags, updated_at = now()
+  WHERE account_mode_stats.battles <= EXCLUDED.battles
+`;
+
+export const upsertTankModeStatsSql = (rows: readonly TankModeRow[]): Prisma.Sql => Prisma.sql`
+  INSERT INTO tank_mode_stats (account_id, tank_id, mode, battles, wins, damage_dealt, frags, spotted, xp, survived_battles, updated_at)
+  SELECT r.account_id, r.tank_id, r.mode::stats_mode, r.battles, r.wins, r.damage_dealt, r.frags, r.spotted, r.xp, r.survived_battles, now()
+  FROM jsonb_to_recordset(${toJson(
+    rows.map((row) => ({
+      account_id: row.accountId,
+      tank_id: row.tankId,
+      mode: MODE_STATS_SQL[row.mode],
+      battles: row.battles,
+      wins: row.wins,
+      damage_dealt: row.damageDealt,
+      frags: row.frags,
+      spotted: row.spotted,
+      xp: row.xp,
+      survived_battles: row.survived
+    }))
+  )}::jsonb)
+    AS r(account_id bigint, tank_id int, mode text, battles int, wins int, damage_dealt int, frags int, spotted int, xp int, survived_battles int)
+  ON CONFLICT (account_id, tank_id, mode) DO UPDATE SET
+    battles = EXCLUDED.battles, wins = EXCLUDED.wins, damage_dealt = EXCLUDED.damage_dealt, frags = EXCLUDED.frags,
+    spotted = EXCLUDED.spotted, xp = EXCLUDED.xp, survived_battles = EXCLUDED.survived_battles, updated_at = now()
+  WHERE tank_mode_stats.battles <= EXCLUDED.battles
 `;

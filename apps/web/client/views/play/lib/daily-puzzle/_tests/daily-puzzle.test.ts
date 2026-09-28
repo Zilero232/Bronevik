@@ -3,8 +3,11 @@ import type { VehicleSummary } from '@otmetki/schemas';
 import { addSeconds, subSeconds } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
+import { seededRandom } from '@/shared/lib';
+
 import { GUESS_TANK } from '../../../config';
-import { nextPuzzleAt, pickDailyTank, previousDay, puzzleDay, puzzleNumber, secondsUntilNextPuzzle } from '../daily-puzzle';
+import { legacyRandom } from '../../legacy-random';
+import { dailyPool, nextPuzzleAt, pickDailyTank, previousDay, puzzleDay, puzzleNumber, secondsUntilNextPuzzle } from '../daily-puzzle';
 
 const vehicle = ({ tankId, tier, isPremium = false }: { tankId: number; tier: number; isPremium?: boolean }): VehicleSummary => ({
   tankId,
@@ -92,5 +95,22 @@ describe('pickDailyTank', () => {
 
   it('returns nothing for an empty catalog', () => {
     expect(pickDailyTank({ vehicles: [], day: '2026-09-24' })).toBeNull();
+  });
+
+  it('keeps the tank of every day before the generator switch', () => {
+    const pool = dailyPool(CATALOG);
+
+    ['2026-09-24', '2026-09-28'].forEach((day) => {
+      const seed = Number(day.replaceAll('-', ''));
+
+      expect(pickDailyTank({ vehicles: CATALOG, day })).toBe(pool[Math.floor(legacyRandom(seed)() * pool.length)]);
+    });
+  });
+
+  it('draws from the new generator from the switch day on', () => {
+    const pool = dailyPool(CATALOG);
+    const seed = Number(GUESS_TANK.generatorSwitchDay.replaceAll('-', ''));
+
+    expect(pickDailyTank({ vehicles: CATALOG, day: GUESS_TANK.generatorSwitchDay })).toBe(pool[Math.floor(seededRandom(seed)() * pool.length)]);
   });
 });

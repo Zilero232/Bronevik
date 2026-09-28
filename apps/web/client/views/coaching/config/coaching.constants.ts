@@ -14,6 +14,5 @@ export const COACHING_LIST = {
 export const COACHING_ORDERS = {
   scores: ['1', '2', '3', '4', '5'],
   defaultScore: '5',
-  reviewRows: 2,
-  retries: 3
+  reviewRows: 2
 } as const;

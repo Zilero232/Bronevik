@@ -37,6 +37,7 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
         )}
         <footer className={s.footer}>
           {row.dependencies.length > 0 && <span className={s.dependencies}>{t('dependencies', { list: row.dependencies.join(', ') })}</span>}
+          {row.libraries.length > 0 && <span className={s.dependencies}>{t('libraries', { list: row.libraries.join(', ') })}</span>}
           {row.video && (
             <ExternalLink href={row.video}>
               <PlayCircle aria-hidden />
@@ -51,6 +52,7 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
           clientPath={clientPath}
           componentId={row.id}
           disabled={!isInstalled || row.required}
+          libraries={row.libraries}
           title={row.title}
         />
       </div>

@@ -64,8 +64,14 @@ pub fn configs_dir(client_path: &Path) -> PathBuf {
     client_path.join("mods").join("configs").join("otmetki")
 }
 
-pub fn join_relative(root: &Path, relative: &str) -> PathBuf {
-    relative.split(['/', '\\']).filter(|part| !part.is_empty() && *part != ".").fold(root.to_path_buf(), |path, part| path.join(part))
+pub fn join_relative(root: &Path, relative: &str) -> Option<PathBuf> {
+    let parts: Vec<&str> = relative.split(['/', '\\']).filter(|part| !part.is_empty() && *part != ".").collect();
+
+    if parts.iter().any(|part| *part == ".." || part.contains(':')) {
+        return None;
+    }
+
+    Some(parts.into_iter().fold(root.to_path_buf(), |path, part| path.join(part)))
 }
 
 pub fn same_path(left: &Path, right: &Path) -> bool {

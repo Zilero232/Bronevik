@@ -1,3 +1,4 @@
+export { BOARD_HOTKEYS } from './board-hotkeys.constants';
 export { BOARD_TANK_KINDS, BOARD_TOOL_ICONS, BOARD_TOOLBAR_TOOLS } from './board-toolbar.constants';
 export {
   BOARD,

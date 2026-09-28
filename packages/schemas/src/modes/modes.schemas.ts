@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { accountIdSchema, countSchema, isoDateTimeSchema, percentSchema } from '../common/primitives/primitives.schemas';
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
-import { MODE_META, MODE_RANKS, PLAY_MODES } from './modes.constants';
+import { CAREER_MODE_SOURCES, CAREER_MODES, MODE_META, MODE_RANKS, PLAY_MODES } from './modes.constants';
 
 export const playModeSchema = z
   .enum(PLAY_MODES)
@@ -88,8 +88,45 @@ export const myModeLineSchema = z.object({
   tanks: z.array(myModeTankSchema)
 });
 
+export const careerModeSchema = z
+  .enum(CAREER_MODES)
+  .describe(
+    'Lifetime blocks Lesta keeps per account: frontline (epic battles), ranked, strongholdSkirmish and strongholdDefense (Stronghold), globalmap (all Global Map fronts)'
+  );
+
+export const careerModeTankSchema = z.object({
+  vehicle: vehicleSummarySchema,
+  battles: countSchema,
+  winRate: percentSchema.nullable(),
+  avgDamage: z.number().nonnegative().nullable()
+});
+
+export const careerModeLineSchema = z.object({
+  mode: careerModeSchema,
+  battles: countSchema,
+  winRate: percentSchema.nullable(),
+  avgDamage: z.number().nonnegative().nullable(),
+  avgXp: z.number().nonnegative().nullable(),
+  avgFrags: z.number().nonnegative().nullable(),
+  survivalRate: percentSchema.nullable(),
+  maxDamage: countSchema.nullable(),
+  updatedAt: isoDateTimeSchema.nullable(),
+  tanks: z.array(careerModeTankSchema)
+});
+
+export const careerModesSchema = z.object({
+  accountId: accountIdSchema,
+  source: z
+    .enum(CAREER_MODE_SOURCES)
+    .describe(
+      'stored: from the collector (tank breakdown included); live: fetched from Lesta just now, account totals only; none: Lesta returned nothing'
+    ),
+  modes: z.array(careerModeLineSchema)
+});
+
 export const myModeStatsSchema = z.object({
   accountId: accountIdSchema,
   days: countSchema,
-  modes: z.array(myModeLineSchema)
+  modes: z.array(myModeLineSchema),
+  career: z.array(careerModeLineSchema).describe('Lifetime per-mode totals from the Lesta API, for players without mod data')
 });

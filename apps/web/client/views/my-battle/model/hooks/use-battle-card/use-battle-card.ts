@@ -7,9 +7,9 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { useMapLabels } from '@/entities/map/map';
+import { minutesClock } from '@/shared/lib';
 
 import { BATTLE_FACTS } from '../../../config';
-import { durationClock } from '../../../lib/battle-format';
 
 export const useBattleCard = (battle: MyBattle) => {
   const t = useTranslations('analytics.battle');
@@ -46,8 +46,8 @@ export const useBattleCard = (battle: MyBattle) => {
 
   return {
     facts: BATTLE_FACTS.map((key) => ({ key, value: battle[key] })),
-    duration: battle.durationSec === null ? null : durationClock(battle.durationSec),
-    lifetime: battle.lifetimeSec === null ? null : durationClock(battle.lifetimeSec),
+    duration: battle.durationSec === null ? null : minutesClock(battle.durationSec),
+    lifetime: battle.lifetimeSec === null ? null : minutesClock(battle.lifetimeSec),
     map: labels.name(battle.mapName),
     startedAt: format.dateTime(new Date(battle.startedAt), 'dateTime'),
     onShare: () => void onShare()

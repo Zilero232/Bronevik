@@ -18,6 +18,12 @@ export type LestaOutcomeRecorder = {
 export type BudgetInput = {
   requestsPerSecond: number;
   reserve: number;
+  egress?: string;
+};
+
+export type BucketKeys = {
+  global: string;
+  bulk: string;
 };
 
 export type CreateLestaClientsInput = {

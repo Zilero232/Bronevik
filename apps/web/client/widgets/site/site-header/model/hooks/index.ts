@@ -1,5 +1,6 @@
 export { useAccountMenu } from './use-account-menu';
 export { useCurrentEvent } from './use-current-event';
+export { useDrawerAccountLinks } from './use-drawer-account-links';
 export { useGameStatus } from './use-game-status';
 export type { GameStatus } from './use-game-status';
 export { useHeaderCompact } from './use-header-compact';

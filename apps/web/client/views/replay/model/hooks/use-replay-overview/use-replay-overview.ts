@@ -5,9 +5,8 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { vehicleIndex } from '@/entities/tank/tank';
 import { useReplayModeLabel } from '@/features/community/replay-meta';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
-import { safeWebHref } from '@/shared/lib';
+import { minutesClock, safeWebHref } from '@/shared/lib';
 
-import { formatClock } from '../../../lib/battle-timeline';
 import { useReplay } from '../../context';
 
 export const useReplayOverview = () => {
@@ -27,7 +26,7 @@ export const useReplayOverview = () => {
     mode: replay.battleType,
     modeLabel: replay.battleType ? modeLabel(replay.battleType) : null,
     downloadHref: safeWebHref(replay.downloadUrl),
-    duration: replay.durationSec === null ? null : formatClock(replay.durationSec),
+    duration: replay.durationSec === null ? null : minutesClock(replay.durationSec),
     playedAt: replay.playedAt ? format.dateTime(new Date(replay.playedAt), { dateStyle: 'medium', timeStyle: 'short' }) : null,
     figures: {
       damageDealt: replay.damageDealt,

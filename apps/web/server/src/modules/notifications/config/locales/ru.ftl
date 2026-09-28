@@ -126,3 +126,6 @@ tank-challenge-done-body = { $tankName }: задание недели выпол
 
 plus-checkout-open-title = Подписка «Три отметки Плюс» открыта
 plus-checkout-open-body = Вы просили сообщить: оформить Плюс уже можно.
+
+lesta-relink-required-title = Перепривяжите аккаунт Лесты
+lesta-relink-required-body = { $nickname }: доступ Леста ID истёк и не продлился. Перепривяжите аккаунт, чтобы вернуть ангар, плейлист и первую победу дня.

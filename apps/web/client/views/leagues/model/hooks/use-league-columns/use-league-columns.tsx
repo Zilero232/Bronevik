@@ -3,12 +3,12 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
+import type { LeagueEntry } from '@/entities/social/league';
 import type { TableColumn } from '@/ui-kit';
 
 import { PlayerNameCell } from '@/entities/player/player';
 import { NumberCell } from '@/ui-kit';
 
-import type { LeagueEntry } from '../../../api';
 import type { UseLeagueColumnsInput } from './use-league-columns.types';
 
 import { RankCell, ValueCell } from '../../../ui/components/LeagueTable/components';

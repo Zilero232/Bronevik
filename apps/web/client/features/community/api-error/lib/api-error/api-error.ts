@@ -3,9 +3,11 @@ import type { ApiErrorCode } from '@otmetki/schemas';
 import { apiErrorSchema } from '@otmetki/schemas';
 import { isAxiosError } from 'axios';
 
+import type { MessageKey } from '@/shared/api/query-client';
+
 import { isNotFoundError, isUnauthorizedError } from '@/shared/api/source';
 
-import type { CommunityErrorCodeMap, CommunityErrorKind } from './api-error.types';
+import type { CommunityErrorCodeMap, CommunityErrorKind, CommunityErrorNamespace } from './api-error.types';
 
 import { COMMUNITY_ERROR_KIND } from '../../config';
 
@@ -34,3 +36,8 @@ export const communityErrorKind = (error: unknown): CommunityErrorKind => {
 
   return code === null ? 'unknown' : (kinds[code] ?? 'unknown');
 };
+
+export const communityErrorKey =
+  (namespace: CommunityErrorNamespace) =>
+  (error: Error): MessageKey =>
+    `${namespace}.errors.${communityErrorKind(error)}`;

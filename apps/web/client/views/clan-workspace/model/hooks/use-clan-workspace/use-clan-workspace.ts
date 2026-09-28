@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 
 import { useCommunityViewer, useLoginHref } from '@/entities/auth/session';
 import { communityErrorKind } from '@/features/community/api-error';
-import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { createWorkspace, workspaceQueries } from '../../../api';
@@ -21,7 +20,7 @@ export const useClanWorkspace = (tag: string) => {
   const viewer = useCommunityViewer();
   const loginHref = useLoginHref();
   const [tab, setTab] = useWorkspaceTab();
-  const clan = useQuery({ ...workspaceQueries.clan(tag), retry: (failures, error) => !isNotFoundError(error) && failures < 1 });
+  const clan = useQuery(workspaceQueries.clan(tag));
   const clanId = clan.data?.clan.clanId ?? 0;
   const clanRole = viewerClanRole({ members: clan.data?.members ?? [], accountIds: viewer.accounts.map(({ accountId }) => accountId) });
   const {

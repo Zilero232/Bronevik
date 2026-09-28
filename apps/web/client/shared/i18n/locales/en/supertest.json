@@ -18,6 +18,7 @@
   "card": {
     "unofficial": "Not from tanki.su",
     "new": "New tank",
+    "newTab": "(opens in a new tab)",
     "verdicts": {
       "buff": "Buff",
       "nerf": "Nerf",

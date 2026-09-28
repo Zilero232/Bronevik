@@ -8,5 +8,6 @@ export const HOME = {
   news: { limit: 6 },
   clans: { limit: 8 },
   recent: { limit: 6 },
+  league: { scope: 'division', metric: null, week: null },
   staleMs: 60_000
 } as const;

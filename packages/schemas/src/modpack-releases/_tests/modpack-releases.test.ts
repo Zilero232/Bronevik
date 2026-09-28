@@ -14,12 +14,17 @@ const release = {
       sha256: 'a'.repeat(64),
       size: 1_024
     }
-  ]
+  ],
+  signature: 'c2lnbmF0dXJl'
 };
 
 describe('modpackReleaseSchema', () => {
   it('accepts a release with https packages and their hashes', () => {
     expect(modpackReleaseSchema.safeParse(release).success).toBe(true);
+  });
+
+  it('refuses an unsigned release', () => {
+    expect(modpackReleaseSchema.safeParse({ ...release, signature: '' }).success).toBe(false);
   });
 
   it('refuses a package served over plain http', () => {

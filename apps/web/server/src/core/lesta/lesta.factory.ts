@@ -1,12 +1,17 @@
 import type { RateLimiter } from '../../lib/lesta';
-import type { BudgetInput, CreateLestaClientsInput, LestaClients } from './lesta.types';
+import type { BucketKeys, BudgetInput, CreateLestaClientsInput, LestaClients } from './lesta.types';
 
 import { LESTA } from '../../config';
 import { createLestaClient, createRedisRateLimiter } from '../../lib/lesta';
 import { LESTA_BUCKET } from './lesta.constants';
 
-export const bulkRequestsPerSecond = ({ requestsPerSecond, reserve }: BudgetInput): number =>
+export const bulkRequestsPerSecond = ({ requestsPerSecond, reserve }: Pick<BudgetInput, 'requestsPerSecond' | 'reserve'>): number =>
   Math.max(1, Math.floor(requestsPerSecond * (1 - reserve)));
+
+export const bucketKeys = (egress: string | undefined): BucketKeys =>
+  egress
+    ? { global: `${LESTA_BUCKET.global}${LESTA_BUCKET.separator}${egress}`, bulk: `${LESTA_BUCKET.bulk}${LESTA_BUCKET.separator}${egress}` }
+    : { global: LESTA_BUCKET.global, bulk: LESTA_BUCKET.bulk };
 
 const chain = (limiters: readonly RateLimiter[]): RateLimiter => ({
   acquire: async () => {
@@ -17,12 +22,14 @@ const chain = (limiters: readonly RateLimiter[]): RateLimiter => ({
 });
 
 export const createLestaClients = ({ applicationId, baseUrl, redis, budget, onOutcome }: CreateLestaClientsInput): LestaClients => {
+  const keys = bucketKeys(budget.egress);
+
   const globalLimiter = (maxQueueSize: number) =>
-    createRedisRateLimiter({ redis, key: LESTA_BUCKET.global, requestsPerSecond: budget.requestsPerSecond, maxQueueSize });
+    createRedisRateLimiter({ redis, key: keys.global, requestsPerSecond: budget.requestsPerSecond, maxQueueSize });
 
   const bulk = createRedisRateLimiter({
     redis,
-    key: LESTA_BUCKET.bulk,
+    key: keys.bulk,
     requestsPerSecond: bulkRequestsPerSecond(budget),
     maxQueueSize: LESTA.bulk.maxQueueSize
   });

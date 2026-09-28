@@ -29,6 +29,7 @@ enum NotificationEvent {
   tankLevelUp         @map("tank_level_up")
   tankChallengeDone   @map("tank_challenge_done")
   plusCheckoutOpen    @map("plus_checkout_open")
+  lestaRelinkRequired @map("lesta_relink_required")
 
   @@map("notification_event")
 }

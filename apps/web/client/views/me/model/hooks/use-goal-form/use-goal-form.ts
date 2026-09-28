@@ -1,20 +1,25 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import { useLinkedAccounts } from '@/entities/auth/session';
+import { QUERY_KEYS } from '@/shared/constants';
 
 import type { GoalFormOutput, GoalFormValues } from '../../../lib/goal-form';
 
 import { addGoal } from '../../../api';
 import { GOAL_FORM } from '../../../config';
 import { goalFormSchema, toGoalInput } from '../../../lib/goal-form';
-import { useMeMutation } from '../use-me-mutation';
 
 export const useGoalForm = () => {
   const { data: accounts } = useLinkedAccounts();
-  const add = useMeMutation({ section: 'goals', mutationFn: addGoal, successKey: 'goalAdded' });
+  const add = useMutation({
+    mutationFn: addGoal,
+    meta: { successKey: 'me.toast.goalAdded', errorKey: 'me.toast.failed', invalidates: [QUERY_KEYS.me.section('goals')] }
+  });
+
   const form = useForm<GoalFormValues, unknown, GoalFormOutput>({
     resolver: zodResolver(goalFormSchema),
     defaultValues: GOAL_FORM.defaultValues,

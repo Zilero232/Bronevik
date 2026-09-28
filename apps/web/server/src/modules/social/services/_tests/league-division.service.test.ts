@@ -34,6 +34,8 @@ const link = (accountId: bigint): UserLestaAccount => ({
   accountId,
   accessToken: null,
   tokenExpiresAt: null,
+  tokenStaleAt: null,
+  garageSyncedAt: null,
   isPrimary: true,
   linkedAt: lastWeek,
   updatedAt: lastWeek

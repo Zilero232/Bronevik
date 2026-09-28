@@ -7,6 +7,7 @@ import type { FetchCandidateRow } from '../queries';
 
 import { Prisma } from '../../../../generated';
 import { LESTA_CLIENTS, PrismaService } from '../../../core';
+import { accountAchievementsSchema } from '../../../lib/lesta';
 import { ACHIEVEMENTS_FETCH } from '../config';
 import { fetchCandidatesSql } from '../queries';
 
@@ -26,12 +27,15 @@ export class AchievementsFetchService {
       return { requested: 0, stored: 0 };
     }
 
-    const byAccount = await this.clients.bulk.account.achievements({ accountIds: candidates.map(({ accountId }) => String(accountId)) });
+    const byAccount = await this.clients.bulk.account.achievements({
+      accountIds: candidates.map(({ accountId }) => String(accountId)),
+      fields: ACHIEVEMENTS_FETCH.fields
+    });
 
     const rows = candidates.flatMap(({ accountId }) => {
-      const entry = byAccount[String(accountId)];
+      const entry = accountAchievementsSchema.safeParse(byAccount[String(accountId)]);
 
-      return entry ? [{ accountId, counts: entry.achievements, maxSeries: entry.max_series ?? Prisma.JsonNull }] : [];
+      return entry.success ? [{ accountId, counts: entry.data.achievements, maxSeries: entry.data.max_series ?? Prisma.JsonNull }] : [];
     });
 
     await this.prisma.$transaction(

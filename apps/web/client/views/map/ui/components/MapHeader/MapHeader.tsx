@@ -1,5 +1,6 @@
 'use client';
 
+import { secondsToMinutes } from 'date-fns';
 import { useTranslations } from 'next-intl';
 
 import { CAMOUFLAGE_TONE, isMapCamouflage, useMapLabels } from '@/entities/map/map';
@@ -8,7 +9,6 @@ import { Badge, KeyFigure, KeyFigures, PageHeader } from '@/ui-kit';
 
 import type { MapHeaderProps } from './MapHeader.types';
 
-import { splitDuration } from '../../../lib/battle-duration';
 import { mapModes } from '../../../lib/map-modes';
 
 export const MapHeader = ({ map }: MapHeaderProps) => {
@@ -32,7 +32,7 @@ export const MapHeader = ({ map }: MapHeaderProps) => {
         <KeyFigure
           label={t('map.roundLabel')}
           suffix={` ${t('map.minutes')}`}
-          value={roundLengthSec === null ? null : splitDuration(roundLengthSec).minutes}
+          value={roundLengthSec === null ? null : secondsToMinutes(roundLengthSec)}
         />
         <KeyFigure label={t('map.stats.battles')} value={stats?.battles ?? null} />
       </KeyFigures>

@@ -63,9 +63,8 @@ pub fn write(path: &Path, ini: &Ini) -> AppResult<()> {
     let mut bytes = UTF16_LE_BOM.to_vec();
 
     bytes.extend(text.encode_utf16().flat_map(u16::to_le_bytes));
-    fs::write(path, bytes)?;
 
-    Ok(())
+    crate::fsx::write_atomic(path, &bytes)
 }
 
 pub fn get<'a>(ini: &'a Ini, section: &str, key: &str) -> Option<&'a str> {

@@ -14,6 +14,7 @@ model Player {
 
   createdAt    DateTime? @map("created_at") @db.Timestamptz(3)
   lastBattleAt DateTime? @map("last_battle_at") @db.Timestamptz(3)
+  logoutAt     DateTime? @map("logout_at") @db.Timestamptz(3)
 
   trackingTier              TrackingTier @default(population) @map("tracking_tier")
   lastPolledAt              DateTime?    @map("last_polled_at") @db.Timestamptz(3)
@@ -40,6 +41,8 @@ model Player {
   achievementSet AccountAchievements?
   tankChallenges TankChallengeProgress[]
   latestTanks    TankSnapshotLatest[]
+  modeStats      AccountModeStats[]
+  tankModeStats  TankModeStats[]
 
   @@index([nickname(ops: raw("gin_trgm_ops"))], type: Gin, map: "player_nickname_trgm_idx")
   @@index([clanId])

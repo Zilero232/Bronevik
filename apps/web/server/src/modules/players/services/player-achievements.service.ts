@@ -5,6 +5,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { LestaClient } from '../../../lib/lesta';
 
 import { LESTA_CLIENT, PrismaService } from '../../../core';
+import { accountAchievementsSchema } from '../../../lib/lesta';
+import { PLAYER_ACHIEVEMENTS } from '../config';
 import { playerAchievements } from '../lib';
 
 @Injectable()
@@ -18,12 +20,14 @@ export class PlayerAchievementsService {
     const key = accountId.toString();
 
     const [byAccount, catalog] = await Promise.all([
-      this.lesta.account.achievements({ accountIds: [key] }),
-      this.prisma.achievement.findMany({ select: { name: true, section: true, title: true, description: true, image: true, order: true } })
+      this.lesta.account.achievements({ accountIds: [key], fields: PLAYER_ACHIEVEMENTS.fields }),
+      this.prisma.achievement.findMany({
+        select: { name: true, section: true, title: true, titleEn: true, description: true, descriptionEn: true, image: true, order: true }
+      })
     ]);
 
-    const entry = byAccount[key];
+    const entry = accountAchievementsSchema.safeParse(byAccount[key]);
 
-    return { items: entry ? playerAchievements({ counts: entry.achievements, maxSeries: entry.max_series, catalog }) : [] };
+    return { items: entry.success ? playerAchievements({ counts: entry.data.achievements, maxSeries: entry.data.max_series, catalog }) : [] };
   }
 }

@@ -16,6 +16,8 @@ export const DIRECTORY = {
   staleMs: 60_000,
   skeletons: [0, 1, 2, 3, 4, 5],
   skeletonHeight: 260,
+  emblemSize: 480,
+  emblemStroke: 1.25,
   favourites: 3,
   iconSize: 15,
   percentFormat: { minimumFractionDigits: 1, maximumFractionDigits: 1 }

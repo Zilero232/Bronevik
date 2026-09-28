@@ -1,11 +1,11 @@
 use std::collections::BTreeSet;
-use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::components::{sync_manifest, ClientContext};
+use super::stage::{stage, StagedFile};
+use crate::components::{is_owned, sync_manifest, ClientContext};
 use crate::error::AppResult;
 use crate::fsx::list_files;
-use crate::releases::{write_verified, Release, ReleasePackage, ReleasesClient, WriteVerifiedInput};
+use crate::releases::{FetchLimits, Release, ReleasePackage, ReleasesClient, MAX_PACKAGE_BYTES};
 use crate::state::{disabled_dir, save_client_state, Manifest};
 
 #[derive(Debug, Clone)]
@@ -43,7 +43,7 @@ pub async fn fetch_packages(client: &ReleasesClient, release: &Release, ids: &BT
     let mut fetched = Vec::new();
 
     for package in release.packages.iter().filter(|package| ids.contains(&package.id)) {
-        let bytes = client.fetch(&package.url).await?;
+        let bytes = client.fetch(&package.url, FetchLimits { expected_size: Some(package.size), max_bytes: MAX_PACKAGE_BYTES }).await?;
 
         crate::releases::verify_sha256(&bytes, &package.sha256)?;
         fetched.push(FetchedPackage { package: package.clone(), bytes });
@@ -57,6 +57,7 @@ pub struct ApplyInput<'a> {
     pub modpack_version: &'a str,
     pub packages: &'a [FetchedPackage],
     pub disabled: &'a BTreeSet<String>,
+    pub replace_all: bool,
 }
 
 fn stale_versions(dir: &Path, input: &ApplyInput, package: &ReleasePackage) -> Vec<PathBuf> {
@@ -70,22 +71,54 @@ fn stale_versions(dir: &Path, input: &ApplyInput, package: &ReleasePackage) -> V
         .collect()
 }
 
+pub fn our_files(context: ClientContext) -> AppResult<Vec<PathBuf>> {
+    let catalog = context.catalog;
+    let recorded = Manifest::read(context.client_dir)?.map(|manifest| manifest.files).unwrap_or_default();
+    let mut found: Vec<PathBuf> = Vec::new();
+    let candidates = recorded.into_iter().chain(list_files(&context.client.mods_dir)).chain(list_files(&disabled_dir(context.client_dir)));
+
+    for path in candidates {
+        let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
+
+        if path.is_file() && is_owned(catalog, &name) && !found.contains(&path) {
+            found.push(path);
+        }
+    }
+
+    Ok(found)
+}
+
 pub fn apply_packages(input: ApplyInput) -> AppResult<Vec<String>> {
     let mods_dir = input.context.client.mods_dir.clone();
     let parked_dir = disabled_dir(input.context.client_dir);
-    let mut written = Vec::new();
+    let files: Vec<StagedFile> = input
+        .packages
+        .iter()
+        .map(|fetched| StagedFile {
+            dir: if input.disabled.contains(&fetched.package.id) { &parked_dir } else { &mods_dir },
+            name: &fetched.package.file,
+            bytes: &fetched.bytes,
+            sha256: &fetched.package.sha256,
+        })
+        .collect();
+    let staging = stage(&files)?;
+    let retire: Vec<PathBuf> = if input.replace_all {
+        our_files(input.context)?
+    } else {
+        input
+            .packages
+            .iter()
+            .flat_map(|fetched| [&mods_dir, &parked_dir].into_iter().flat_map(|dir| stale_versions(dir, &input, &fetched.package)))
+            .collect()
+    };
 
-    for fetched in input.packages {
-        let package = &fetched.package;
-        let target = if input.disabled.contains(&package.id) { &parked_dir } else { &mods_dir };
+    staging.commit(&retire)?;
 
-        write_verified(WriteVerifiedInput { dir: target, file_name: &package.file, bytes: &fetched.bytes, sha256: &package.sha256 })?;
-
-        for stale in [&mods_dir, &parked_dir].into_iter().flat_map(|dir| stale_versions(dir, &input, package)) {
-            fs::remove_file(stale)?;
+    if input.replace_all {
+        if let Some(mut manifest) = Manifest::read(input.context.client_dir)? {
+            manifest.components.clear();
+            manifest.write(input.context.client_dir)?;
         }
-
-        written.push(package.id.clone());
     }
 
     let mut manifest = sync_manifest(input.context)?;
@@ -95,5 +128,5 @@ pub fn apply_packages(input: ApplyInput) -> AppResult<Vec<String>> {
     manifest.write(input.context.client_dir)?;
     save_client_state(input.context.client_dir, input.context.client)?;
 
-    Ok(written)
+    Ok(input.packages.iter().map(|fetched| fetched.package.id.clone()).collect())
 }

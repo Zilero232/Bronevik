@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { DataTable, EmptyState, QueryState, SectionHeader, SegmentedControl, Skeleton } from '@/ui-kit';
+import { DataTable, FilteredEmptyState, QueryState, SectionHeader, SegmentedControl, Select, Skeleton } from '@/ui-kit';
 
 import type { WorkspaceCandidatesProps } from './WorkspaceCandidates.types';
 
@@ -16,7 +16,7 @@ import s from './WorkspaceCandidates.module.scss';
 export const WorkspaceCandidates = ({ clanId }: WorkspaceCandidatesProps) => {
   const t = useTranslations('clanWorkspace');
   const columns = useCandidateColumns({ clanId });
-  const { query, filter, filters, candidates, onFilterChange } = useWorkspaceCandidates({ clanId, isEnabled: true });
+  const { query, filter, filterOptions, isFiltered, candidates, onFilterChange, onFilterReset } = useWorkspaceCandidates({ clanId, isEnabled: true });
 
   return (
     <div className={s.root}>
@@ -30,14 +30,20 @@ export const WorkspaceCandidates = ({ clanId }: WorkspaceCandidatesProps) => {
       <SegmentedControl
         aria-label={t('recruits.filter')}
         className={s.filter}
-        options={filters.map((value) => ({ value, label: value === 'all' ? t('recruits.all') : t(`candidates.${value}`) }))}
+        options={filterOptions}
         size='sm'
         value={filter}
         onChange={onFilterChange}
       />
+      <Select aria-label={t('recruits.filter')} className={s.filterSelect} items={filterOptions} value={filter} onValueChange={onFilterChange} />
       <QueryState
         empty={
-          <EmptyState description={t('recruits.emptyDescription')} title={filter === 'all' ? t('recruits.empty') : t('recruits.emptyFiltered')} />
+          <FilteredEmptyState
+            description={t('recruits.emptyDescription')}
+            isFiltered={isFiltered}
+            title={isFiltered ? t('recruits.emptyFiltered') : t('recruits.empty')}
+            onReset={onFilterReset}
+          />
         }
         errorTitle={t('recruits.error')}
         isEmpty={(rows) => rows.length === 0}

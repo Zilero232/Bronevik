@@ -53,6 +53,13 @@
   --badge-fg: var(--color-danger);
 }
 
+@each $tone, $token in (gold: gold, olive: armor, battle: battle, brass: brass, sky: steel-blue) {
+  .#{$tone} {
+    --badge-bg: color-mix(in srgb, var(--color-#{$token}) 14%, transparent);
+    --badge-fg: var(--color-#{$token});
+  }
+}
+
 .neutral.plate,
 .neutral.ribbon,
 .neutral.corner {

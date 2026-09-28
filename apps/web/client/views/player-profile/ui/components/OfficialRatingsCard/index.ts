@@ -1,0 +1,1 @@
+export { OfficialRatingsCard } from './OfficialRatingsCard';

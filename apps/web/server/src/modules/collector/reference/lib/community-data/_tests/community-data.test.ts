@@ -1,7 +1,8 @@
 import { MASTERY_PERCENTILES } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
-import { expectedValuesDate, masteryThresholdRows, parsePoliroidMoe } from '../community-data';
+import { expectedValuesDate, masteryPercentiles, masteryThresholdRows, parsePoliroidMoe } from '../community-data';
+import { LESTA_MASTERY } from '../community-data.constants';
 
 describe('parsePoliroidMoe', () => {
   it('reads the poliroid shape with string numbers', () => {
@@ -45,5 +46,16 @@ describe('expectedValuesDate', () => {
 
   it('falls back to today without a dated header', () => {
     expect(expectedValuesDate({ header: {}, now }).getTime()).toBeLessThanOrEqual(now.getTime());
+  });
+});
+
+describe('masteryPercentiles', () => {
+  it('keeps every percentile the mastery thresholds need and stays within the Lesta limit', () => {
+    const required = Object.values(MASTERY_PERCENTILES);
+    const percentiles = masteryPercentiles(required);
+
+    expect(percentiles.length).toBeLessThanOrEqual(LESTA_MASTERY.maxPercentiles);
+    expect(required.every((value) => percentiles.includes(value))).toBe(true);
+    expect(percentiles).toEqual(percentiles.toSorted((left, right) => left - right));
   });
 });

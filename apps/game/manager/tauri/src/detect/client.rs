@@ -70,15 +70,17 @@ pub fn inspect(path: &Path, source: ClientSource) -> Option<GameClient> {
         (true, false) => Some(ClientProblem::OldVersion),
         (true, true) => None,
     };
-    let fallback = |folder: &str| format!("{folder}/{version}");
+    let folder = |relative: Option<&str>, name: &str| {
+        relative.and_then(|relative| join_relative(path, relative)).unwrap_or_else(|| path.join(name).join(version.to_string()))
+    };
 
     Some(GameClient {
         path: path.to_path_buf(),
         version,
         branch: if is_common_test { Branch::CommonTest } else { Branch::Release },
         realm,
-        mods_dir: join_relative(path, paths.mods.as_deref().unwrap_or(&fallback("mods"))),
-        res_mods_dir: join_relative(path, paths.res_mods.as_deref().unwrap_or(&fallback("res_mods"))),
+        mods_dir: folder(paths.mods.as_deref(), "mods"),
+        res_mods_dir: folder(paths.res_mods.as_deref(), "res_mods"),
         package_mask: paths.mask.unwrap_or_else(|| DEFAULT_PACKAGE_MASK.to_owned()),
         problem,
         source,

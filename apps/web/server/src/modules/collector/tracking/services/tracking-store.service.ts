@@ -25,7 +25,14 @@ import { gainedMarks, snapshotMarks } from '../lib/marks-gain';
 import { nextPollAt } from '../lib/poll-schedule';
 import { isSnapshotMode, SNAPSHOT_MODES } from '../lib/snapshots';
 import { toStoredPlayer } from '../mappers';
-import { markSyncedSql, updateMarksSql, upsertLatestTanksSql, upsertPlayerTanksSql } from '../queries';
+import {
+  markSyncedSql,
+  updateMarksSql,
+  upsertAccountModeStatsSql,
+  upsertLatestTanksSql,
+  upsertPlayerTanksSql,
+  upsertTankModeStatsSql
+} from '../queries';
 import { TrackingAnnounceService } from './tracking-announce.service';
 
 @Injectable()
@@ -59,7 +66,8 @@ export class TrackingStoreService implements PollStorePort {
       nickname: info.nickname,
       clanId,
       createdAt: fromUnixTime(info.created_at),
-      trackingTier
+      trackingTier,
+      ...(info.logout_at ? { logoutAt: fromUnixTime(info.logout_at) } : {})
     } satisfies Prisma.PlayerUpdateInput;
 
     const clanChanged = previous ? previous.clanId !== info.clan_id : clanId !== null;
@@ -200,7 +208,9 @@ export class TrackingStoreService implements PollStorePort {
     accountSnapshots,
     tankSnapshots,
     deltas,
-    baseline
+    baseline,
+    modeStats = [],
+    tankModeStats = []
   }: WriteAccountChangesInput): Promise<void> {
     const id = BigInt(accountId);
     const marks = snapshotMarks(tankSnapshots);
@@ -228,6 +238,14 @@ export class TrackingStoreService implements PollStorePort {
 
     if (marks.length > 0) {
       await tx.$executeRaw(updateMarksSql(marks));
+    }
+
+    if (modeStats.length > 0) {
+      await tx.$executeRaw(upsertAccountModeStatsSql(modeStats));
+    }
+
+    if (tankModeStats.length > 0) {
+      await tx.$executeRaw(upsertTankModeStatsSql(tankModeStats));
     }
 
     const [delta] = deltas;

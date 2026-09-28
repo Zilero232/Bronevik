@@ -1,30 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import { CODE_COUNTDOWN } from '../../../config/code-countdown.constants';
-import { codeLifetime, formatCountdown } from '../code-countdown';
+import { codeLifetime } from '../code-countdown';
 
 const ISSUED_AT = Date.UTC(2026, 8, 25, 12, 0, 0);
 const TTL_MS = 15 * 60_000;
 const TTL_SECONDS = TTL_MS / CODE_COUNTDOWN.msInSecond;
 const EXPIRES_AT = new Date(ISSUED_AT + TTL_MS).toISOString();
-
-describe('formatCountdown', () => {
-  it('pads seconds to two digits', () => {
-    expect(formatCountdown(CODE_COUNTDOWN.secondsInMinute + 5)).toBe('1:05');
-  });
-
-  it('keeps minutes past an hour unwrapped', () => {
-    expect(formatCountdown(61 * CODE_COUNTDOWN.secondsInMinute)).toBe('61:00');
-  });
-
-  it('never shows a negative clock', () => {
-    expect(formatCountdown(-5)).toBe(formatCountdown(0));
-  });
-
-  it('drops fractions of a second', () => {
-    expect(formatCountdown(9.9)).toBe(formatCountdown(9));
-  });
-});
 
 describe('codeLifetime', () => {
   it('starts full at the moment of issue', () => {

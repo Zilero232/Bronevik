@@ -25,6 +25,7 @@ const TEXT = messages.en;
 const HIMMELSDORF: MapSummary = {
   arenaId: '04_himmelsdorf',
   slug: 'himmelsdorf',
+  nameEn: null,
   name: 'Himmelsdorf',
   image: null,
   sizeMeters: 700,

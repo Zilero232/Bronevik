@@ -26,7 +26,8 @@
   },
   "head": {
     "title": "Streamers",
-    "description": "Who is live now, what they play, their stats and settings."
+    "description": "Who is live now, what they play, their stats and settings.",
+    "home": "Home"
   },
   "filters": {
     "label": "Filters",

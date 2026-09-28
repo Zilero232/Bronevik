@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { ReplayPlayer } from '@/entities/replay/replay';
 
-import { aliveSeries, battleLength, formatClock, killEvents } from '../battle-timeline';
+import { aliveSeries, battleLength, killEvents } from '../battle-timeline';
 
 const player = (fields: Partial<ReplayPlayer>): ReplayPlayer => ({
   accountId: 1,
@@ -105,13 +105,5 @@ describe('killEvents', () => {
 
     expect(events).toHaveLength(1);
     expect(events[0]?.killer).toBeNull();
-  });
-});
-
-describe('formatClock', () => {
-  it('pads seconds and never goes negative', () => {
-    expect(formatClock(65)).toBe('1:05');
-    expect(formatClock(0)).toBe('0:00');
-    expect(formatClock(-3)).toBe('0:00');
   });
 });

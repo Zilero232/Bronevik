@@ -4,15 +4,12 @@ import { useBoolean } from '@siberiacancode/reactuse';
 import { History, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { QUERY_KEYS } from '@/shared/constants';
 import { Badge, Button, IconButton, Switch } from '@/ui-kit';
 
 import type { WebhookRowProps } from './WebhookRow.types';
 
-import { updateWebhook } from '../../../../../api';
 import { WEBHOOK_STATUS_TONE } from '../../../../../config';
-import { webhookStatus } from '../../../../../lib/webhook-status';
-import { useDeveloperMutation } from '../../../../../model/hooks';
+import { useWebhookRow } from '../../../../../model/hooks';
 import { DeliveriesLog } from '../../../DeliveriesLog';
 import { TimeAgo } from '../../../TimeAgo';
 
@@ -20,11 +17,10 @@ import s from './WebhookRow.module.scss';
 
 export const WebhookRow = ({ endpoint, onEdit, onDelete }: WebhookRowProps) => {
   const t = useTranslations('developer.webhooks');
-  const update = useDeveloperMutation({ mutationFn: updateWebhook, invalidates: [QUERY_KEYS.me.developer.webhooks], successKey: 'webhookUpdated' });
+  const { status, onActiveChange } = useWebhookRow(endpoint);
   const [isLogOpen, toggleLog] = useBoolean(false);
 
   const { id, url, events, filter, isActive, failureCount, disabledAt } = endpoint;
-  const status = webhookStatus(endpoint);
 
   return (
     <li className={s.root} data-status={status}>
@@ -49,7 +45,7 @@ export const WebhookRow = ({ endpoint, onEdit, onDelete }: WebhookRowProps) => {
         </div>
       </div>
       <div className={s.actions}>
-        <Switch checked={isActive} label={t('active')} onCheckedChange={(checked) => update.mutate({ id, isActive: checked })} />
+        <Switch checked={isActive} label={t('active')} onCheckedChange={onActiveChange} />
         <Button aria-expanded={isLogOpen} size='sm' variant='ghost' onClick={() => toggleLog()}>
           <History size={15} />
           {t('deliveries')}

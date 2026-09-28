@@ -1,12 +1,10 @@
 export type UseCountdownInput = {
   seconds: (now: Date) => number;
   onExpire?: () => void;
+  updateInterval?: number;
 };
 
 export type Countdown = {
   left: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
   isExpired: boolean;
 };

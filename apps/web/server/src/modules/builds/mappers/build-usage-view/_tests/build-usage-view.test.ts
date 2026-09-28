@@ -27,7 +27,7 @@ const options: BuildOptions = {
   consumables: [option(10)],
   directives: [],
   fieldModifications: [{ level: 2, kind: 'pair', options: [option(50, 'mod_left'), option(51, 'mod_right')] }],
-  crewSkills: [{ skill: 'repair', name: 'Repair', roles: [], isCommon: true, image: null, params: [] }],
+  crewSkills: [{ skill: 'repair', name: 'Repair', nameEn: null, roles: [], isCommon: true, image: null, params: [] }],
   slots: { optionalDevices: 3, consumables: 3, directives: 1 }
 };
 

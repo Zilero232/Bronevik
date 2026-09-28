@@ -1,8 +1,9 @@
 import { findLast } from 'remeda';
 
+import type { LeagueEntry, SocialLeague } from '@/entities/social/league';
+
 import { shiftDay } from '@/shared/lib';
 
-import type { LeagueEntry } from '../../api';
 import type { LeagueStanding, LeagueWeekNav, LeagueWeekNavInput } from './league-table.types';
 
 import { LEAGUE_VIEW } from '../../config';
@@ -24,12 +25,16 @@ export const leagueStanding = (entries: readonly LeagueEntry[]): LeagueStanding 
   };
 };
 
-export const leagueWeekNav = ({ weekStart, currentWeek }: LeagueWeekNavInput): LeagueWeekNav => {
+export const leagueHasData = ({ scope, division, entries }: Pick<SocialLeague, 'division' | 'entries' | 'scope'>): boolean =>
+  scope === 'division' ? division !== null : entries.length > 0;
+
+export const leagueWeekNav = ({ weekStart, currentWeek, hasData }: LeagueWeekNavInput): LeagueWeekNav => {
   const isCurrent = currentWeek !== null && weekStart >= currentWeek;
 
   return {
-    previous: shiftDay({ day: weekStart, amount: -LEAGUE_VIEW.daysPerWeek }),
+    previous: hasData ? shiftDay({ day: weekStart, amount: -LEAGUE_VIEW.daysPerWeek }) : null,
     next: isCurrent ? null : shiftDay({ day: weekStart, amount: LEAGUE_VIEW.daysPerWeek }),
-    isCurrent
+    isCurrent,
+    isPast: currentWeek !== null && weekStart < currentWeek
   };
 };

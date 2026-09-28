@@ -13,10 +13,12 @@
   "required": "Обязательный",
   "fairPlay": "Честная игра",
   "dependencies": "Требует: {list}",
+  "libraries": "Сторонние библиотеки: {list}. Если их нет, менеджер скачает их при включении",
   "video": "Видео",
   "noCatalog": "Каталог компонентов ещё не загружен",
-  "noCatalogHint": "Он приходит с установщиком и с обновлениями модпака.",
+  "noCatalogHint": "Он приходит с менеджером и с обновлениями модпака.",
   "noResults": "Ничего не найдено",
   "enabledToast": "{title}: включён",
+  "enabledWithLibrariesToast": "{title}: включён, библиотеки на месте ({list})",
   "disabledToast": "{title}: выключен"
 }

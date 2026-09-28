@@ -5,7 +5,10 @@ import { Suspense } from 'react';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
+import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
+import { PageHeroFallback } from '@/ui-kit';
 import { StreamersDirectoryPage } from '@/views/streamers-directory';
+import { streamersPageState } from '@/views/streamers-directory/server';
 
 export const generateMetadata = async () => {
   const locale = resolveLocale(await rootParams.locale());
@@ -14,9 +17,11 @@ export const generateMetadata = async () => {
   return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.streamers.list, locale, index: true, follow: true });
 };
 
-const Page = () => (
-  <Suspense>
-    <StreamersDirectoryPage />
+const Page = ({ searchParams }: PageProps<'/[locale]/streamers'>) => (
+  <Suspense fallback={<PageHeroFallback />}>
+    <PrefetchBoundary state={searchParams.then(streamersPageState)}>
+      <StreamersDirectoryPage />
+    </PrefetchBoundary>
   </Suspense>
 );
 

@@ -158,6 +158,8 @@ model UserLestaAccount {
 
   accessToken    String?   @map("access_token")
   tokenExpiresAt DateTime? @map("token_expires_at") @db.Timestamptz(3)
+  tokenStaleAt   DateTime? @map("token_stale_at") @db.Timestamptz(3)
+  garageSyncedAt DateTime? @map("garage_synced_at") @db.Timestamptz(3)
   isPrimary      Boolean   @default(false) @map("is_primary")
 
   linkedAt  DateTime @default(now()) @map("linked_at") @db.Timestamptz(3)
@@ -167,6 +169,7 @@ model UserLestaAccount {
   player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
 
   @@index([userId])
+  @@index([tokenExpiresAt])
   @@map("user_lesta_account")
 }
 

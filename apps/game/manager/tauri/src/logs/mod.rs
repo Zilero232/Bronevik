@@ -17,6 +17,25 @@ pub const STAMP_FORMAT: &str = "%Y%m%d-%H%M%S";
 pub const CLIENT_FILES: [&str; 3] = ["python.log", "version.xml", "paths.xml"];
 pub const CONFIG_FILES: [&str; 3] = ["config.json", "components.json", "profiles.json"];
 pub const MAX_LOG_BYTES: u64 = 16 * 1024 * 1024;
+pub const REDACTED_KEYS: [&str; 1] = ["bind_code"];
+pub const REDACTED: &str = "<redacted>";
+pub const UTF8_BOM: [u8; 3] = [0xEF, 0xBB, 0xBF];
+
+pub fn redact_config(bytes: &[u8]) -> Vec<u8> {
+    let Ok(mut value) = serde_json::from_slice::<serde_json::Value>(bytes.strip_prefix(&UTF8_BOM).unwrap_or(bytes)) else {
+        return bytes.to_vec();
+    };
+
+    if let Some(object) = value.as_object_mut() {
+        for key in REDACTED_KEYS {
+            if object.get(key).and_then(serde_json::Value::as_str).is_some_and(|text| !text.is_empty()) {
+                object.insert(key.to_owned(), serde_json::Value::from(REDACTED));
+            }
+        }
+    }
+
+    serde_json::to_vec_pretty(&value).unwrap_or_else(|_| bytes.to_vec())
+}
 
 pub struct CollectInput<'a> {
     pub layout: &'a Layout,
@@ -98,7 +117,12 @@ pub fn collect(input: CollectInput) -> AppResult<PathBuf> {
         }
 
         for name in CONFIG_FILES {
-            bundle.add_file(&format!("{prefix}/configs/{name}"), &configs_dir(&client.path).join(name))?;
+            let path = configs_dir(&client.path).join(name);
+            let small_enough = fs::metadata(&path).is_ok_and(|metadata| metadata.is_file() && metadata.len() <= MAX_LOG_BYTES);
+
+            if small_enough {
+                bundle.add_bytes(&format!("{prefix}/configs/{name}"), &redact_config(&fs::read(&path)?))?;
+            }
         }
 
         for name in [MANIFEST_INI, CLIENT_INI] {

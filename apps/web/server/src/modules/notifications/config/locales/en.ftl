@@ -119,3 +119,6 @@ tank-challenge-done-body = { $tankName }: this week's challenge is done. { $shel
 
 plus-checkout-open-title = Three Marks Plus is open
 plus-checkout-open-body = You asked us to let you know: Plus is now available to subscribe.
+
+lesta-relink-required-title = Relink your Lesta account
+lesta-relink-required-body = { $nickname }: the Lesta ID access expired and could not be renewed. Relink the account to bring back the garage, the playlist and the first win of the day.

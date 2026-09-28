@@ -61,6 +61,13 @@ export const SCHEDULES: readonly ScheduleDefinition[] = [
     repeat: { pattern: '30 6 * * *' },
     needsLesta: true
   },
+  {
+    id: 'english-names-daily',
+    queue: QUEUE.reference,
+    name: JOB.reference.englishNames,
+    repeat: { pattern: '50 6 * * *' },
+    needsLesta: true
+  },
   { id: 'server-stats-hourly', queue: QUEUE.aggregate, name: JOB.aggregate.serverStats, repeat: { pattern: '20 * * * *' } },
   { id: 'tank-percentiles-daily', queue: QUEUE.aggregate, name: JOB.aggregate.tankPercentiles, repeat: { pattern: '0 7 * * *' } },
   { id: 'tier-maintenance-daily', queue: QUEUE.aggregate, name: JOB.aggregate.tierMaintenance, repeat: { pattern: '0 1 * * *' } },

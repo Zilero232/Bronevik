@@ -13,6 +13,7 @@ import { DeveloperEventsModule, DeveloperWorkerModule } from './modules/develope
 import { DiscordWorkerModule } from './modules/discord';
 import { EventsWorkerModule } from './modules/events';
 import { HonestRngWorkerModule } from './modules/honest-rng';
+import { LestaLinksWorkerModule } from './modules/lesta-links';
 import { MapStatsWorkerModule } from './modules/map-stats';
 import { NotificationsWorkerModule } from './modules/notifications';
 import { ProgressionWorkerModule } from './modules/progression';
@@ -53,7 +54,8 @@ import { WatchlistWorkerModule } from './modules/watchlist';
     HonestRngWorkerModule,
     MapStatsWorkerModule,
     AchievementsRarityWorkerModule,
-    SupertestWorkerModule
+    SupertestWorkerModule,
+    LestaLinksWorkerModule
   ]
 })
 export class WorkerModule {}

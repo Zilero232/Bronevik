@@ -13,6 +13,7 @@ Design specs, one per initiative, dated.
 - [specs/2026-09-24-otmetki-design.md](specs/2026-09-24-otmetki-design.md) — the platform design (architecture, data flow, phases).
 - [specs/2026-09-26-plus-subscription.md](specs/2026-09-26-plus-subscription.md) — the Plus subscription.
 - [specs/2026-09-26-streamer-settings.md](specs/2026-09-26-streamer-settings.md) — the streamer directory and streamer settings.
+- [specs/2026-09-28-manager-runtime-dependencies.md](specs/2026-09-28-manager-runtime-dependencies.md) — the manager installs OpenWG Gameface and GUIFlash as pinned runtime dependencies; the catalogue entries requested from the modpack owner.
 
 ## Architecture
 

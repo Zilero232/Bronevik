@@ -1,6 +1,6 @@
 # Slice `ui/` and `ui-kit`
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 2. Slice `ui/` structure
 
@@ -20,9 +20,9 @@ allowed, and so are two components in one file.
 ```text
 features/app/switch-theme/ui/
   ThemeToggle.tsx                    ← the flat main component
-  ThemeToggle.types.ts               ← Props and local union types
-  ThemeToggle.module.scss
-  ThemeToggle.motion.ts              ← motion presets (when the component is animated)
+  [ThemeToggle.types.ts]             ← Props and local union types, when it has any
+  [ThemeToggle.module.scss]          ← styles, when it has any
+  [ThemeToggle.motion.ts]            ← motion presets, when it is animated
 
 views/clan-workspace/ui/
   ClanWorkspacePage.tsx              ← the flat main component
@@ -33,16 +33,17 @@ views/clan-workspace/ui/
     WorkspaceNotice/
 
 features/search/command-palette/ui/
-  CommandPalette/                    ← a second top-level component → every one gets a folder
+  CommandPalette/                    ← several top-level components → every one gets a folder
     CommandPalette.tsx
     CommandPalette.module.scss
     index.ts
-    components/
+  CommandPaletteProvider/
   CommandPaletteTrigger/
     CommandPaletteTrigger.tsx
     CommandPaletteTrigger.types.ts
     CommandPaletteTrigger.module.scss
     index.ts
+  components/                        ← subcomponents the palette parts share
 ```
 
 **A component folder holds only these files:**
@@ -93,8 +94,9 @@ next to `CandidateActions`), or into a slice of its own when others need it.
 **Subcomponents** (used only inside the parent) — each one in a `components/` folder:
 
 ```text
-features/search/command-palette/ui/CommandPalette/
-  CommandPalette.tsx
+features/search/command-palette/ui/
+  CommandPalette/
+    CommandPalette.tsx
   components/
     index.ts                   ← barrel: re-exports every subcomponent
     PaletteInput/
@@ -110,17 +112,17 @@ The parent imports through the barrel:
 
 ```ts
 // ✓ OK
-import { PaletteFooter, PaletteInput, PaletteNavigation, PaletteResults, PaletteStatus } from './components';
+import { PaletteFooter, PaletteInput, PaletteNavigation, PaletteResults, PaletteStatus } from '../components';
 
 // ✗ NOT OK
-import { PaletteInput } from './components/PaletteInput';
+import { PaletteInput } from '../components/PaletteInput';
 ```
 
 **File rules:**
 
 - `.types.ts` — created only when there are Props or local union types.
 - `.module.scss` — component styles (imported as `import s from './Foo.module.scss'`). Required everywhere: in `ui-kit` as much as in widgets/features/views. There is no CSS-in-JS in this project.
-- `.motion.ts` — animation presets for `motion`, next to the component (`ThemeToggle.motion.ts`, `BarChart.motion.ts`). Don't duplicate an animation with a CSS transition.
+- `.motion.ts` — animation presets for `motion`, next to the component (`Reveal.motion.ts`, `SiteNav.motion.ts`). Don't duplicate an animation with a CSS transition.
 - `ui-kit/` — the atomic layer (atoms/molecules/organisms). **No flat `button.tsx`** — every primitive lives in a PascalCase folder ([§2.1](slice-ui.md)). From outside — `@/ui-kit`.
 
 ### 2.1. `ui-kit` structure
@@ -156,7 +158,7 @@ ui-kit/
       DataTable.tsx
       DataTable.constants.ts
       DataTable.types.ts
-      components/             ← DataTableHead, DataTableRows, DataTableVirtualRows, DataTableSkeleton
+      components/             ← DataTableHead, DataTableRows, DataTableVirtualRows, DataTableSkeleton, …
       _tests/
       index.ts
     ChartKit/                 ← shared visx building blocks for AreaChart, BarChart, LineChart
@@ -173,7 +175,7 @@ ui-kit/
 - Styles are **`*.module.scss`**; shared utilities are imported as `@use '@/shared/styles/mixins' as *` (the `@/` alias comes from `sassOptions.loadPaths` + `turbopack.resolveAlias` in `next.config.ts`, so no `../../../`).
 - Headless + a11y — **`@base-ui/react`**; imported from the package subpath: `@base-ui/react/dialog`, `@base-ui/react/select`, `@base-ui/react/popover`, `@base-ui/react/tabs`. Rename the base primitive at the import (`Select as BaseSelect`) so our own export can carry the plain name.
 - Variant maps use **`class-variance-authority`** over the module classes, in `<Name>.variants.ts` (`Button.variants.ts` → `buttonVariants`). The map is exported, so a `Link` can wear a button's look: `className={buttonVariants({ variant: 'secondary' })}`.
-- Charts are **visx** (`@visx/scale`, `@visx/shape`, `@visx/axis`, …), assembled from `ChartKit` (`ChartFrame`, `ChartCanvas`, `useChartHover`). The command palette is **`cmdk`**; tables are **`@tanstack/react-table`** with **`@tanstack/react-virtual`** past `DATA_TABLE.virtualizeAfter` rows.
+- Charts are **visx** (`@visx/scale`, `@visx/shape`, `@visx/axis`, …), assembled from `ChartKit` (`ChartFrame`, `ChartCanvas`, `ChartAxes`, `ChartTooltip`) and `useChartHover` from `shared/lib`. The command palette is **`cmdk`**; tables are **`@tanstack/react-table`** with **`@tanstack/react-virtual`** past `DATA_TABLE.virtualizeAfter` rows.
 - React types are **named imports** (`ComponentProps`, `ReactNode`, …), not `import type * as React`.
 - Inside `ui-kit`, imports between layers are relative (`../../atoms`). From outside — only `@/ui-kit`.
 - The barrels at all levels (`atoms/index.ts`, `molecules/index.ts`, `organisms/index.ts` and the root `ui-kit/index.ts`) use **explicit named** re-exports, with values and types in separate blocks.
@@ -185,14 +187,13 @@ ui-kit/
 export { CommandPalette } from './ui/CommandPalette';
 export { CommandPaletteProvider } from './ui/CommandPaletteProvider';
 export { CommandPaletteTrigger } from './ui/CommandPaletteTrigger';
-export type { CommandPaletteTriggerProps } from './ui/CommandPaletteTrigger';
 ```
 
 ### Effect hooks instead of a pile of `useEffect` in the component
 
 A side effect with no markup is **its own hook in `model/hooks/`** — it returns nothing
 (or a single value) and encapsulates a single effect: the palette hotkey, the
-rating-patterns sync, the header's scroll state. The orchestrator is a value-building
+rating-patterns sync, the header's compact state. The orchestrator is a value-building
 hook (`use-<x>-state`) or the component that calls them:
 
 ```ts
@@ -225,7 +226,7 @@ and can be reasoned about on its own. The alternative — a pile of `useEffect` 
 `CommandPalette.tsx` — is forbidden (it blows past the 100-line limit, [section 4](component-size.md)).
 
 `useCommandPaletteHotkey` (`features/search/command-palette`), `useRatingPatternsSync`
-(`features/app/rating-patterns`) and `useIsScrolled` (`widgets/site/site-header`) each live
+(`features/app/rating-patterns`) and `useHeaderCompact` (`widgets/site/site-header`) each live
 in their slice's `model/hooks/`.
 
 ### Examples
@@ -236,6 +237,7 @@ in their slice's `model/hooks/`.
 export type CommandPaletteTriggerProps = {
   variant?: 'bar' | 'hero' | 'icon';
   className?: string;
+  onOpen?: () => void;
 };
 ```
 

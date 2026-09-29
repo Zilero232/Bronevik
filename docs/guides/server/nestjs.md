@@ -1,6 +1,6 @@
 # Server routes — NestJS
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 18. Server routes — NestJS
 

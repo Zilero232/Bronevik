@@ -1,139 +1,265 @@
 <p align="center">
-  <img src="apps/web/client/app/icon.svg" width="88" height="88" alt="Три отметки" />
+  <img src="apps/web/client/app/icon.svg" width="96" height="96" alt="Три отметки" />
 </p>
 
 <h1 align="center">Три отметки</h1>
 
 <p align="center">
-  <strong>The all-in-one companion platform for «Мир танков».</strong><br/>
-  Player stats · Marks of excellence · Tank analytics · Clans · Replays · Game mod · Developer API
+  <strong>The all-in-one companion for «Мир танков»: a site, a game modpack and its manager.</strong><br/>
+  Player stats · Marks of excellence · Tank analytics · Clans · Replays · Streamer tools · In-game HUD · Developer API
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/runtime-Bun-fbf0df?style=for-the-badge&logo=bun&logoColor=000" alt="Bun" />
-  <img src="https://img.shields.io/badge/web-Next.js%2016-000?style=for-the-badge&logo=nextdotjs&logoColor=fff" alt="Next.js" />
-  <img src="https://img.shields.io/badge/api-NestJS-e0234e?style=for-the-badge&logo=nestjs&logoColor=fff" alt="NestJS" />
-  <img src="https://img.shields.io/badge/db-TimescaleDB-fdb515?style=for-the-badge&logo=timescale&logoColor=000" alt="TimescaleDB" />
+  <a href="https://triotmetki.ru"><img src="https://img.shields.io/badge/site-triotmetki.ru-f97316?style=for-the-badge" alt="Site" /></a>
+  <a href="https://api.triotmetki.ru"><img src="https://img.shields.io/badge/api-api.triotmetki.ru-1f2937?style=for-the-badge" alt="API" /></a>
+  <img src="https://img.shields.io/badge/client-1.45-4b5563?style=for-the-badge" alt="Game client" />
   <img src="https://img.shields.io/badge/status-in%20development-f59e0b?style=for-the-badge" alt="Status" />
 </p>
 
-<br/>
+<p align="center">
+  <img src="https://img.shields.io/badge/Bun-fbf0df?style=flat-square&logo=bun&logoColor=000" alt="Bun" />
+  <img src="https://img.shields.io/badge/Next.js_16-000?style=flat-square&logo=nextdotjs&logoColor=fff" alt="Next.js" />
+  <img src="https://img.shields.io/badge/React_19-20232a?style=flat-square&logo=react&logoColor=61dafb" alt="React" />
+  <img src="https://img.shields.io/badge/NestJS_11-e0234e?style=flat-square&logo=nestjs&logoColor=fff" alt="NestJS" />
+  <img src="https://img.shields.io/badge/TimescaleDB-fdb515?style=flat-square&logo=timescale&logoColor=000" alt="TimescaleDB" />
+  <img src="https://img.shields.io/badge/Tauri_2-24c8db?style=flat-square&logo=tauri&logoColor=fff" alt="Tauri" />
+  <img src="https://img.shields.io/badge/Python_2.7_mods-3776ab?style=flat-square&logo=python&logoColor=fff" alt="Python" />
+</p>
 
-## What is Три отметки?
+<p align="center">
+  <a href="#whats-inside">What's inside</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#getting-started">Getting started</a> ·
+  <a href="#commands">Commands</a> ·
+  <a href="#ci-and-releases">CI and releases</a> ·
+  <a href="#docs">Docs</a>
+</p>
 
-A single site for everything a «Мир танков» (Lesta, RU realm) player looks up between battles: their own and anyone's statistics with WN8, EFF and our own Броня-Индекс, mark-of-excellence progress and projections, tank analytics and tier lists, clans, replays, streamer tools, and a public developer API. A companion game mod feeds the player's own battle results and MoE percentages straight from the client.
+---
 
-Три отметки is an independent fan project and is not affiliated with Lesta Games. Game data comes from the [Lesta API](https://developers.lesta.ru), under its terms: every page carries the attribution, game accounts are linked only through Lesta ID (sign-in also works with Telegram and the VK Mini App; Discord and VK ID can be linked), there are no ads, and the mod never reads anything beyond the player's own data.
+Три отметки is one place for everything a «Мир танков» (Lesta, RU realm) player looks up between battles, plus a modpack that shows the rest right in the game. It is an independent fan project, not affiliated with Lesta Games.
 
-Product scope: [docs/product/features.md](docs/product/features.md).
+> [!IMPORTANT]
+> Game data comes from the [Lesta API](https://developers.lesta.ru) under its terms, and they are hard rules here:
+>
+> - every page carries the attribution;
+> - game accounts link only through Lesta ID, never with a password;
+> - no ads;
+> - data retention and deletion are honoured.
+>
+> The mod is fair play: it shows only the player's own data and what the client already shows, never enemy positions, reloads or aim.
 
-## Stack
+## What's inside
 
-| Layer    | Tech                                                                                                                              |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Web      | Next.js 16, React 19, React Compiler, next-intl (ru/en), dark + light themes, TanStack Query & Table, visx, cmdk, Base UI, motion |
-| API      | NestJS 11 on Bun, better-auth (Lesta ID, Telegram, VK Mini App), Zod contracts, Swagger                                           |
-| Worker   | Second entrypoint of the server app: BullMQ jobs pulling the Lesta API, shared Redis rate limiter, cockatiel circuit breaker      |
-| Data     | PostgreSQL 17 + TimescaleDB, Prisma 7, Redis                                                                                      |
-| Game mod | Python 2.7 `.mtmod` packages, pure logic tested on Python 3; Tauri 2 manager (Rust + React) that installs them                    |
-| Tooling  | Bun workspaces + catalog, ESLint, Prettier, Stylelint, Vitest, Playwright, knip, jscpd, Husky                                     |
-| Infra    | One image per app (server and worker share one), Caddy, docker-compose — no production deploy yet                                 |
+<table>
+  <tr>
+    <td width="50%" valign="top">
 
-## Repository
+### 🌐 Site — [triotmetki.ru](https://triotmetki.ru)
+
+- **Players:** profiles with WN8, EFF and our Броня-Индекс, recent periods, sessions, activity calendar, compare, signatures.
+- **Tanks:** catalogue with server stats and tier lists, tank pages, 3D armor, tech tree, builds, supertest.
+- **Marks of excellence:** thresholds and their history, real mark curves from mod data, projections.
+- **Clans, replays, maps and tactics:** heatmaps, a tactic board, guides, platoons, tournaments.
+- **Streamers:** overlays, challenges, Twitch and VK Video Live commands, a Twitch panel.
+- **Blog, shop archive, events, bonus codes and mini-games.**
+- **Bots:** Telegram, Discord and VK, plus web push and email digests.
+- **Три отметки Plus:** metered free tier, trial, promo codes and referrals.
+- ru/en, dark and light themes, PWA, full SEO. No mocks: pages without data show honest empty states.
+
+</td>
+    <td width="50%" valign="top">
+
+### 🎮 Modpack — `.mtmod` for client 1.45
+
+- **41 components**, each with its own switch, as split packages or one union package.
+- **Battle HUD drawn with the client's own icons:**
+  - panels that replace the stock ones: team HP and score, damage log, sixth sense;
+  - hit log, marks with a projection, consumables, reload, equipment, clock;
+  - arty meter and platoon points.
+- **Hangar:** marks and ratings, hangar info, session stats and goals, personal bests, a tidier hangar.
+- **Replays:** a replay manager and upload to the site.
+- **Streamer mode and chat filter.**
+- Panels move with **Alt + mouse** and stay on screen at any resolution and interface scale.
+
+### 🧰 Manager — Tauri 2 desktop app
+
+- Finds the game by itself; installs a ready-made set in one click.
+- Components, sets, profiles, snapshots and rollback.
+- Conflict check against third-party mods.
+- Moves the modpack after a client patch; updates from our VPS.
+
+### 🔌 Developer API
+
+- Public `/v1` with keys and webhooks.
+- A typed TypeScript client: [`@otmetki/sdk`](packages/sdk/README.md).
+
+</td>
+  </tr>
+</table>
+
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph game["Player's PC"]
+    client["«Мир танков» 1.45"]
+    mod["Modpack<br/>Python 2.7 + Gameface UI"]
+    manager["Manager<br/>Tauri 2"]
+    client --- mod
+    manager -- installs --> mod
+  end
+
+  subgraph vps["VPS · docker compose"]
+    caddy["Caddy<br/>TLS · /downloads"]
+    web["Next.js 16<br/>triotmetki.ru"]
+    api["NestJS API<br/>api.triotmetki.ru"]
+    worker["Worker<br/>BullMQ collector"]
+    db[("PostgreSQL 17<br/>+ TimescaleDB")]
+    redis[("Redis")]
+  end
+
+  lesta["Lesta API"]
+
+  caddy --> web & api
+  web --> api
+  api --> db & redis
+  worker --> db & redis
+  worker -- rate-limited --> lesta
+  mod -- signed battle results --> api
+  manager -- releases --> caddy
+```
+
+- **One server image, two entrypoints:** `src/main.ts` serves the site API, the developer API, auth and mod ingest; `src/worker.ts` runs the collector that pulls the Lesta API into TimescaleDB.
+- **Everything is stored on the VPS:** replays and armor models on a volume, public downloads served by Caddy at `/downloads/`. There is no S3 and no CDN.
+
+### Stack
+
+| Layer    | Tech                                                                                                                                  |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Web      | Next.js 16, React 19 + React Compiler, next-intl, TanStack Query/Table/Virtual, visx, Base UI, cmdk, motion, Embla, SCSS modules, FSD |
+| API      | NestJS 11 on Bun, better-auth (Lesta ID, Telegram, VK Mini App), Zod contracts, OpenAPI                                               |
+| Worker   | BullMQ jobs, a shared Redis rate limiter, cockatiel circuit breaker                                                                   |
+| Data     | PostgreSQL 17 + TimescaleDB, Prisma 7, Redis                                                                                          |
+| Game mod | Python 2.7 `.mtmod` packages (logic tested on Python 3), Preact Gameface UI                                                           |
+| Manager  | Tauri 2: Rust core + React UI                                                                                                         |
+| Tooling  | Bun workspaces + catalog, ESLint, Prettier, Stylelint, Vitest, Playwright, knip, jscpd, madge, Husky, commitlint                      |
+
+### Repository
 
 ```text
 apps/
-  web/
-    client/          Next.js site (Feature-Sliced Design)
-    server/          NestJS server app, one image with two entrypoints:
-      src/main.ts      site API, developer API /v1, auth, mod ingest, bull-board
-      src/worker.ts    collector worker: BullMQ jobs pulling the Lesta API
-      prisma/          Prisma schema, Timescale SQL
-      src/lib/         Lesta API client, replay parser, HTTP client, auth
-  game/
-    modpack/         game-client modpack (Python 2.7)
-    manager/         modpack manager (Tauri 2: Rust core + React UI)
-packages/          only code shared between apps
-  ratings/         WN8, EFF, Броня-Индекс, MoE math
-  design-tokens/   SCSS design tokens shared by the site, the manager and the modpack's in-game window
-  schemas/         Zod contracts shared by client and server
-  gamedata/        loadout calculator and the game-data model
-  icons/           SVG icon set as React components
-  logger/          shared pino config
-  sdk/             public API client (@otmetki/sdk)
-e2e/               Playwright smoke tests
-scripts/           check-utf8.mjs (lint:encoding)
-infra/caddy/       Caddyfile for docker-compose.yml
-docs/              architecture/, guides/, ops/ (deploy checklist), product/ (features), research/, specs/
+  web/client/        Next.js site (Feature-Sliced Design)
+  web/server/        NestJS API + collector worker, Prisma schema, Lesta client, replay parser
+  game/modpack/      game-client modpack: core, companion, features, catalogue
+  game/manager/      modpack manager: tauri/ (Rust) + web/ (React)
+packages/            only code shared between apps
+  ratings/           WN8, EFF, Броня-Индекс, MoE math
+  schemas/           Zod contracts shared by client and server
+  gamedata/          loadout calculator and the game-data model
+  design-tokens/     SCSS tokens for the site, the manager and the in-game window
+  icons/             SVG icon set as React components
+  sdk/               @otmetki/sdk, the public API client
+  logger/            pino wrapper
+e2e/                 Playwright smoke tests
+infra/caddy/         Caddyfile for docker-compose.yml
+docs/                architecture, guides, ops, product, research, specs
 ```
 
 ## Getting started
 
-Requires [Bun](https://bun.sh) ≥ 1.3, Docker, and Python 3 for the mod's tests.
+You need [Bun](https://bun.sh) ≥ 1.3, Docker and Python 3 (for the modpack's tests). The manager also needs Rust.
 
 ```bash
 bun install
-cp .env.example .env     # LESTA_APPLICATION_ID empty: no Lesta, the worker runs degraded, pages show empty states
-                         # set INTERNAL_API_TOKEN (required, 32+ chars: openssl rand -base64 32)
-bun run dev:infra        # TimescaleDB on :5434, Redis on :6380, Mailpit on :1025/:8025
-bun run db:push
-bun run gamedata:import  # optional: vehicles, modules, equipment, maps from the public client-data repos (no Lesta key needed)
-bun run dev              # server :4000 + client :3000 (no worker)
-bun run dev:all          # + worker (collector jobs)
+cp .env.example .env     # set INTERNAL_API_TOKEN (32+ chars: openssl rand -base64 32)
+bun run dev:infra        # TimescaleDB :5434, Redis :6380, Mailpit :1025 (inbox :8025)
+bun run db:push          # extensions + prisma db push + the Timescale layer
+bun run gamedata:import  # optional: vehicles, modules, equipment and maps from the public client-data repos
+bun run dev              # server :4000 + client :3000
 ```
 
-The client has no mocks: it always talks to the API at `NEXT_PUBLIC_API_URL`. Without the server running, `bun run dev:client` still renders every page, with its empty or error states.
+`bun run dev:all` also starts the worker, and `bun run dev:manager` starts the manager.
 
-### Without a Lesta key
+> [!NOTE]
+> **No Lesta key? Everything still runs.** There is no mock and no generated data anywhere.
+>
+> - With `LESTA_APPLICATION_ID` empty, the server boots, the worker starts in degraded mode and every page shows its empty state.
+> - `LESTA_NOTICE=true` adds the site-wide «data not connected yet» banner. It is a runtime switch: restart the client, no rebuild needed.
+> - `bun run gamedata:import` still fills the tank catalogue, maps and missions.
 
-There is no mock and no generated data anywhere. With `LESTA_APPLICATION_ID` empty the server boots, the worker starts degraded (no tracking, clan or other Lesta jobs), Lesta ID sign-in answers `lesta_not_connected`, and every page shows its empty state. `LESTA_NOTICE=true` (required, `true` or `false`, server-only, read by the Next server per request) adds the site-wide «data not connected yet» notice and disables the Lesta ID button; changing it needs a client restart, not a rebuild. `bun run gamedata:import` still fills the vehicle catalog, maps and missions from the public client-data repositories.
+<details>
+<summary><strong>Dev server troubleshooting</strong></summary>
 
-### Dev server troubleshooting
+<br/>
 
-`bun run dev` / `dev:all` restart a crashed server or client by themselves (`concurrently --restart-tries`); Ctrl+C still stops everything.
+`bun run dev` and `dev:all` restart a crashed server or client by themselves (`concurrently --restart-tries`). Ctrl+C still stops everything.
 
-- **`next dev` slowly eats memory or stops answering.** Stop it, delete `apps/web/client/.next/dev`, start again. The dev-only settings live in [apps/web/client/config/dev-server.ts](apps/web/client/config/dev-server.ts) and are not used by `next build`:
-  - **Turbopack's disk cache stays on.** Turbopack can only drop in-memory data it can reload from that cache, so with the cache off memory never shrinks.
-  - **Memory eviction is `'full'`.**
-  - **The React Compiler runs through the Rust port**, not Babel in about 16 Node child processes.
-  - **Webpack loaders run in worker threads.**
-  - **`reactDebugChannel` is off.** Next 16.3 holds each HTML request's React debug stream until that page's HMR socket connects. curl, `fetch`, Playwright and closed tabs never connect, so that memory is never freed.
+- **`next dev` slowly eats memory or stops answering.** Stop it, delete `apps/web/client/.next/dev` and start again. The dev-only settings in [apps/web/client/config/dev-server.ts](apps/web/client/config/dev-server.ts) keep memory flat:
+  - Turbopack's disk cache stays on;
+  - memory eviction is `'full'`;
+  - the React Compiler runs through its Rust port;
+  - webpack loaders run in worker threads;
+  - `reactDebugChannel` is off. With it on, Next 16.3 holds every HTML request that never opens an HMR socket.
 
-  Measured with the same loop (20 routes + a locale/scss/ts edit every 2.5 s):
+  `dev:client` also caps the V8 heap at 6 GB, so Next restarts itself before the machine runs out of memory.
 
-  | Setup  | Memory                                                                                                                  |
-  | ------ | ----------------------------------------------------------------------------------------------------------------------- |
-  | Before | Grew about 5 MB/s: 6.3 GB in the main process plus 2–3 GB in loader children after 7 min, never shrinking               |
-  | After  | 22 min, 526 edits, 731 rounds: main process 3.2–4.0 GB from minute 5 on, loader workers under 0.7 GB, no failed request |
+- **The API disappears.** `dev:server` and `dev:worker` run under `nodemon` ([apps/web/server/nodemon.json](apps/web/server/nodemon.json)), which watches only the server's own sources, because Bun's `--watch` crashes on Windows. After a real crash, save any file or type `rs` + Enter.
+- **Need a second `next dev`?** Start it with `NEXT_DIST_DIR=.next/probe` and another `-p`.
+- **Disk:** the Turbopack cache can reach tens of GB. Deleting `.next/dev` while the dev server is stopped is always safe.
 
-  `MaxListenersExceededWarning … SyncWriteStream` at startup comes from the worker threads and is harmless.
-
-  As a backstop, `dev:client` caps the V8 heap at 6 GB (`NODE_OPTIONS=--max-old-space-size=6144`). Next restarts its own dev server when the heap passes 80 % of that cap. Without the cap, the limit is half of RAM (16 GB here), so the restart never came.
-
-- **The API disappears.** Bun 1.3's `--watch` on Windows watches the whole working directory, and the old script ran from the repo root. It crashed (`EBUSY: Watcher crashed` → `panic: integer overflow` / segfault) when `.next`, `target/` or other build output churned, typically when `next dev` restarted. The restarted process then sometimes hit `EADDRINUSE` and stayed down. `dev:server` / `dev:worker` now run under `nodemon` ([apps/web/server/nodemon.json](apps/web/server/nodemon.json)), which watches only the server's `src`, `generated` and the workspace packages it imports, and stops the old process before starting a new one. After a real crash, nodemon waits for the next file change, or type `rs` + Enter.
-- **Second `next dev` next to yours** (an agent checking something on another port): `.next/dev/lock` allows one dev server per dist dir, so start it with `NEXT_DIST_DIR=.next/probe` and a different `-p`.
-- **Disk:** a stale Turbopack cache can reach tens of GB (`.next/dev/cache/turbopack`). Deleting `.next/dev` while the dev server is stopped is always safe.
+</details>
 
 ## Commands
 
-| Command                                                                                | What                                                                                                        |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `bun run dev` / `dev:all` / `dev:client` / `dev:server` / `dev:worker` / `dev:manager` | Dev servers                                                                                                 |
-| `bun run dev:infra` / `dev:infra:down`                                                 | Local TimescaleDB + Redis + Mailpit                                                                         |
-| `bun run db:push` / `db:reset` / `db:studio`                                           | Schema sync (`prisma db push` + the Timescale layer, no migrations before production), a full reset, studio |
-| `bun run gamedata:import`                                                              | Import the game client's data into the database                                                             |
-| `bun run verify`                                                                       | typecheck + lint + lint:encoding + format:check + lint:css — what CI runs                                   |
-| `bun run fix`                                                                          | Auto-fix lint, formatting, styles and the Prisma schema                                                     |
-| `bun run test`                                                                         | Vitest across the monorepo (never `bun test`)                                                               |
-| `bun run test:e2e` / `e2e:screens`                                                     | Playwright smoke against the client / the screenshot suite (`playwright.screens.config.ts`)                 |
-| `bun run test:modpack`                                                                 | The game modpack's Python suites                                                                            |
-| `bun run lint:unused`                                                                  | knip — unused files, exports and dependencies                                                               |
-| `bun run lint:dupes`                                                                   | jscpd — duplicated code                                                                                     |
-| `bun run lint:encoding`                                                                | Fails on source files under `apps/` and `packages/` that are not valid UTF-8                                |
-| `docker compose up -d --build`                                                         | Production-like stack: caddy, client, server, worker, db, redis                                             |
+| Command                                                                                | What                                                                       |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `bun run dev` · `dev:all` · `dev:client` · `dev:server` · `dev:worker` · `dev:manager` | Dev servers                                                                |
+| `bun run dev:infra` · `dev:infra:down`                                                 | Local TimescaleDB, Redis and Mailpit                                       |
+| `bun run db:push` · `db:reset` · `db:studio`                                           | Schema sync (no migrations before production), full reset, Prisma Studio   |
+| `bun run gamedata:import`                                                              | Import the game client's data                                              |
+| `bun run verify`                                                                       | typecheck + lint + import cycles + UTF-8 + format + styles: what CI runs   |
+| `bun run fix`                                                                          | Auto-fix lint, formatting, styles and the Prisma schema                    |
+| `bun run test` · `test:changed`                                                        | Vitest across the monorepo · only the tests your uncommitted changes reach |
+| `bun run test:modpack`                                                                 | The modpack's Python suites                                                |
+| `bun run test:e2e` · `e2e:screens`                                                     | Playwright smoke · the screenshot suite                                    |
+| `bun run lint:unused` · `lint:dupes`                                                   | knip (unused files, exports, dependencies) · jscpd (copy-paste)            |
+| `docker compose up -d --build`                                                         | Production-like stack: Caddy, client, server, worker, db, redis            |
+
+Use `bun run test`, never `bun test`.
+
+## CI and releases
+
+| Workflow                                 | When                                        | What                                                                                                                                                        |
+| ---------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [deploy](.github/workflows/deploy.yml)   | manual                                      | verify, tests, modpack suites and the e2e smoke, then client and server images to ghcr and a rollout on the VPS. Code that already passed skips the checks. |
+| [release](.github/workflows/release.yml) | manual                                      | Builds the modpack and the manager for versions not yet on the VPS and publishes them there                                                                 |
+| [modpack](.github/workflows/modpack.yml) | PRs touching `apps/game/modpack`, or manual | pytest, ruff, vermin; a manual release build of the packages and the component catalogue                                                                    |
+| [manager](.github/workflows/manager.yml) | PRs touching the manager, or manual         | UI checks, `cargo fmt` / `clippy` / `test` on Windows; a manual NSIS installer build                                                                        |
+
+To release, bump `version` in [apps/game/modpack/package.json](apps/game/modpack/package.json) (its `otmetki.games` lists the supported clients) and in [apps/game/manager/package.json](apps/game/manager/package.json), commit, and run **release**. The first production deploy follows [docs/ops/deploy.md](docs/ops/deploy.md).
+
+## Docs
+
+| Start here                                                                         |                                            |
+| ---------------------------------------------------------------------------------- | ------------------------------------------ |
+| [docs/README.md](docs/README.md)                                                   | Index of every doc                         |
+| [docs/product/features.md](docs/product/features.md)                               | Product scope and what is done             |
+| [docs/specs/2026-09-24-otmetki-design.md](docs/specs/2026-09-24-otmetki-design.md) | Architecture                               |
+| [docs/guides/](docs/guides/README.md)                                              | Code style: client, server, shared         |
+| [docs/architecture/fsd.md](docs/architecture/fsd.md)                               | Feature-Sliced Design in the client        |
+| [docs/research/data/lesta-api.md](docs/research/data/lesta-api.md)                 | Lesta API reference and terms              |
+| [apps/game/modpack/README.md](apps/game/modpack/README.md)                         | The modpack and its components             |
+| [CLAUDE.md](CLAUDE.md)                                                             | Guidance for AI agents working in the repo |
 
 ## Contributing
 
-Conventional commits (enforced by commitlint). The pre-commit hook runs lint-staged and typechecks only the workspaces a commit touches. Code style: [docs/guides/](docs/guides/README.md); docs index: [docs/README.md](docs/README.md); architecture of the client: [docs/architecture/fsd.md](docs/architecture/fsd.md); agent guidance: [CLAUDE.md](CLAUDE.md).
+- **Commits:** conventional commits, enforced by commitlint.
+- **Pre-commit hook:** lint-staged, a typecheck of the touched workspaces, and the modpack suites when Python changes.
+- **Code:** every user-facing string goes through next-intl in ru and en. Shared contracts live in `@otmetki/schemas`. Ready-made packages are preferred over custom code.
 
-© Три отметки. «Мир танков» and all related game content are the property of Lesta Games.
+---
+
+<p align="center">
+  <sub>© Три отметки. «Мир танков» and all related game content are the property of Lesta Games.</sub>
+</p>

@@ -29,7 +29,8 @@ Rating colours: `ratingTone({ scale, value })` / `toneOfTier(tier)` from
 `data-tone={tone}`; its SCSS uses `@include tone`, which resolves to
 `--rating-<tone>`. Reuse that mapping rather than re-deriving one.
 
-Fonts: Tektur (`--font-display`, headings and numbers), Onest (`--font-sans`),
-IBM Plex Mono (`--font-mono`, HUD labels), self-hosted via `shared/config/fonts`.
+Fonts: Fira Sans Condensed (`--font-display`, headings and numbers), Fira Sans
+(`--font-sans`), JetBrains Mono (`--font-mono`, HUD labels), loaded through
+`next/font/google` in `shared/config/fonts`.
 Before re-declaring a look, check `shared/styles/_mixins.scss` — `panel`,
 `well`, `label`, `heading`, `numeric`, `popup-surface`, `tone`, `field-box`.

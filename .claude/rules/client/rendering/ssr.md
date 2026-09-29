@@ -13,8 +13,9 @@ paths:
 Every page is rendered on the server first. A component that touches `window`
 during render breaks the prerender, not just a test.
 
-- **Guard browser APIs with `isBrowser()`/`isServer()` from `@/shared/lib`**,
-  never a raw `typeof window` check, or read them inside `useEffect`.
+- **Guard browser APIs with `isBrowser()` from `@/shared/lib` (or `isServer()`
+  from `@/shared/lib/env`)**, never a raw `typeof window` check, or read them
+  inside `useEffect`.
 - **A provider that wraps every page never swaps `children` for a placeholder.**
   Returning a splash instead ships an empty `<body>` to crawlers, and drops the
   page segment from rendering altogether — which is what Next 16 reports as

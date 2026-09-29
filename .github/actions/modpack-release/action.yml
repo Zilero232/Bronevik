@@ -19,7 +19,7 @@ runs:
     - id: owg
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
       with:
-        path: ${{ runner.temp }}/owg-bin
+        path: ${{ runner.temp }}/owg/build
         key: owg-${{ runner.os }}-${{ env.OWG_COMPILER_VERSION }}
 
     # A C++23 tool without published binaries: build the pinned tag (GCC 14 ships on ubuntu-24.04).
@@ -32,13 +32,11 @@ runs:
         cmake -S "$RUNNER_TEMP/owg" -B "$RUNNER_TEMP/owg/build" -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
         cmake --build "$RUNNER_TEMP/owg/build" --parallel
-        mkdir -p "$RUNNER_TEMP/owg-bin"
-        cp "$RUNNER_TEMP/owg/build/owg_python_compiler" "$RUNNER_TEMP/owg-bin/"
 
     - name: Build the packages
       shell: bash
       run: |
-        owg="$RUNNER_TEMP/owg-bin/owg_python_compiler"
+        owg="$RUNNER_TEMP/owg/build/owg_python_compiler"
         "$owg" version
         python apps/game/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack
         python apps/game/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack --single

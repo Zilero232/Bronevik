@@ -26,8 +26,8 @@ paths:
   Lesta 1.45`), fair play and what was left out, a Python 2 quirk; plus tool directives
   (`# noqa`, `# novermin`, `# type:`). Docstrings only on core's public API and the app host
   interface (`companion/app/client`, `companion/settings_ui/client`). Tests have none
-  (the test name says it). `tools/build` and `installer` are Python 3 host tooling and keep
-  their docstrings.
+  (the test name says it). `tools/` is Python 3 host tooling and keeps
+  its docstrings.
 - Errors: never let an exception escape a game hook. Core wraps them: `hooks.subscribe`,
   `Subscriptions`, `BattleHooks` and `timer.Ticker` log a failing handler, `hooks.override`
   logs it and falls back to the original (an exception of the original itself propagates),

@@ -1,6 +1,6 @@
 # Blank lines
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 13. Blank lines between logical steps
 

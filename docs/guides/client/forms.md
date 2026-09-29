@@ -1,6 +1,6 @@
 # Forms
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 15. Forms — react-hook-form + zodResolver
 
@@ -12,7 +12,7 @@ views/me/model/hooks/use-goal-form/
   use-goal-form.ts          ← useForm + zodResolver, submit mutation, setError mapping
   use-goal-form.types.ts
   index.ts
-views/me/config/goal-form.constants.ts   ← GOAL_FORM_DEFAULT_VALUES
+views/me/config/goal-form.constants.ts   ← GOAL_FORM (defaultValues, durations)
 ```
 
 The component calls `useGoalForm()` and renders fields — no `useForm`, `useState` fields

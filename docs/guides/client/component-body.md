@@ -1,6 +1,6 @@
 # Component body order
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 13.5. A component body reads top to bottom
 

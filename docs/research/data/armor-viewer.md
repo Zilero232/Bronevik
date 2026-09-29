@@ -35,7 +35,7 @@ Research date: 2026-09-25, source audit 2026-09-27 (see section 7). Feature row 
 
 ### How the importer gets them (ordered by preference)
 
-1. **Mirror (default).** Fetch `vehicles.json` and `vehicles/<folder>/collision.json` from `raw.githubusercontent.com/unicum-gg/wot.models/<sha>`. Pin to a commit like `lib/source/github.ts` already does, and require `.version_name` to equal the `wot.src` version being imported. That is about 1 000 files and roughly 40–60 MB, cached on disk.
+1. **Mirror (default).** Fetch `vehicles.json` and `vehicles/<folder>/collision.json` from `raw.githubusercontent.com/unicum-gg/wot.models/<sha>`. Pin to a commit like `lib/source/github` already does, and require `.version_name` to equal the `wot.src` version being imported. That is about 1 000 files and roughly 40–60 MB, cached on disk.
 2. **Local install (`--client <dir>`).** Open `res/packages/vehicles_level_*.pkg` as ZIP, read `collision_client/*.havok`, and convert with a port of `wot.build/lib/havok.ts` + `collision.ts` (about 600 lines of TS). Only needed if the mirror dies. Ask the author before vendoring, because the repo has no licence.
 3. **CDN (no client).** Run `wot.build` itself (`npm run models -- --collision-only --host lstus-ru.lesta.ru --guid MT.RU.PRODUCTION`) as an out-of-band tool. A full build is heavy, about 3 h and 20 GB.
 

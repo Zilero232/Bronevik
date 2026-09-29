@@ -17,7 +17,7 @@ export default defineConfig({
     // resolve its `vitest` import to the runner's instance.
     server: { deps: { inline: ['vitest-mock-extended'] } },
     // Headroom for the first test of a file that pulls a large module graph while
-    // every project runs in parallel (the import-cycle test alone takes ~15s of CPU).
+    // every project runs in parallel.
     testTimeout: 15_000,
     hookTimeout: 15_000,
     include: ['src/**/_tests/**/*.test.ts'],

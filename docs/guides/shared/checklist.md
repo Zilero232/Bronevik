@@ -1,12 +1,12 @@
 # Checklist before a commit
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 20. Checklist before a commit
 
 ```bash
 bun run fix        # every autofixer: eslint --fix, prettier, stylelint --fix, prisma format
-bun run verify     # typecheck, eslint, the UTF-8 check, prettier --check, stylelint
+bun run verify     # typecheck, eslint, lint:cycles, the UTF-8 check, prettier --check, stylelint
 bun run test       # Vitest across every workspace
 ```
 

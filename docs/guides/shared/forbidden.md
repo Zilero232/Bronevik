@@ -1,6 +1,6 @@
 # Forbidden
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 19. Forbidden
 

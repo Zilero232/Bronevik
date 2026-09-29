@@ -13,4 +13,4 @@ paths:
 
 ## Environment
 
-- **client** — jsdom, `@testing-library/react`, setup in [apps/web/client/vitest.setup.ts](../../../../apps/web/client/vitest.setup.ts) (stubs `ResizeObserver`, `IntersectionObserver` and `matchMedia`, mocks `next/navigation` and `next/font/local`, cleans the DOM after each test). Client env is declared in the config — don't read `.env` from a test.
+- **client** — jsdom, pool `vmThreads`, `@testing-library/react`, setup in [apps/web/client/vitest.setup.ts](../../../../apps/web/client/vitest.setup.ts) (stubs `ResizeObserver`, `IntersectionObserver` and `matchMedia`, mocks `next/navigation`, `next/font/local` and `next/font/google`, cleans the DOM after each test). Client env is declared in the config — don't read `.env` from a test.

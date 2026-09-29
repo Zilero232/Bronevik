@@ -98,7 +98,7 @@ Warnings are:
 - [ ] Preview videos: add `preview.video` (https) to each catalog entry once they are recorded.
 - [ ] `bun run most:bundle --game-version <client version>` with 0 errors, and review `dist/most/index.json`.
 - [ ] Decide the shape of the submission (see open questions): one МОСТ entry per component (the bundle as is), or one entry with the whole modpack (`build.py --single`, then bundle the companion only).
-- [ ] The site's download page links to the МОСТ entry once it is live (docs/ops/deploy.md, «Publish the package»).
+- [ ] The site's download page links to the МОСТ entry once it is live ([docs/ops/deploy.md §4](deploy.md#4-game-mod-releases-on-the-vps)).
 
 ### B. Only the account owner can do these
 

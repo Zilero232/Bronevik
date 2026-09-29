@@ -1,6 +1,6 @@
 # `model/hooks` structure
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ### 2.2. `model/hooks` structure
 
@@ -24,12 +24,11 @@ A component calls **one** hook of its own (`use-<component>`), which composes qu
 state, effects and handlers and returns what the JSX needs. A hook's constants, when it has
 any, go to the slice's `config/`, not beside the hook.
 
-A hook's `index.ts` re-exports both the hook and its types:
+A hook's `index.ts` re-exports the hook, and its types only when another module imports
+them — barrels stay lean (`knip` flags an unused export):
 
 ```ts
 export { useLocale } from './use-locale';
-
-export type { UseLocale } from './use-locale.types';
 ```
 
 A hook's input type is named `Use<Name>Input` ([§5](../shared/naming.md)). When it merely repeats a

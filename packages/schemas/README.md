@@ -25,6 +25,7 @@ One folder per domain. The file suffix says what a file holds:
 - `query`: `listParam` for `a,b,c` query lists, `booleanParam`, `sortQuery`, and the pagination and cursor schemas.
 - `period`: recent, rating and server periods, stats modes and skill cohorts.
 - `rating`: `ratingValueSchema` and `statsBlockSchema`.
+- `brand` and `internal-request`: the product names (`BRAND`) and the internal-token and client-IP headers the client's server sends to the API (`INTERNAL_REQUEST`).
 
 ## Units
 

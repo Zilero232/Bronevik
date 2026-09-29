@@ -1,6 +1,6 @@
 # Drill cleanup
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 17. Drill cleanup
 

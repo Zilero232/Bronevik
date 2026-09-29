@@ -40,7 +40,7 @@ bun run db:reset       # drop everything, then the same as db:push
 bun run dev            # server :4000 + client :3000 (no worker)
 bun run dev:all        # + worker (collector jobs, schedules)
 bun run dev:manager    # modpack manager (Tauri)
-bun run verify         # typecheck + lint + UTF-8 check + format:check + lint:css
+bun run verify         # typecheck + lint + lint:cycles + UTF-8 check + format:check + lint:css
 bun run test           # vitest (never `bun test`)
 bun run test:changed   # only the tests the uncommitted changes reach
 bun run test:e2e       # playwright smoke (starts the client dev server itself)
@@ -49,7 +49,7 @@ bun run lint:unused    # knip — unused files, exports and dependencies
 bun run lint:dupes     # jscpd — copy-pasted code
 ```
 
-Deploy ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) runs manually (workflow_dispatch): `verify` + `test` + the modpack suite + the e2e smoke, then builds the client and server images to ghcr and rolls them out on the VPS (`db:deploy` — extensions, `prisma db push`, the Timescale layer — then `up -d` and health checks). First deploy: [docs/ops/deploy.md](docs/ops/deploy.md). The other workflows are [.github/workflows/modpack.yml](.github/workflows/modpack.yml) (the modpack checks on pull requests that touch `apps/game/modpack`, plus a manual release build of the packages and the component catalogue the manager ships) and [.github/workflows/manager.yml](.github/workflows/manager.yml) (the manager's UI and Rust checks on Windows, plus a manual `tauri build` of its NSIS installer). [.github/workflows/release.yml](.github/workflows/release.yml) (manual; to release bump `version` in `apps/game/modpack/package.json` (the supported clients are its `otmetki.games`), commit, run it) publishes a modpack release and the manager to the VPS: everything is stored there (replays and armor models on the `serverdata` volume, public downloads in `DEPLOY_PATH/downloads`, served by Caddy at `/downloads/`); there is no S3 and no CDN.
+Deploy ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) runs manually (workflow_dispatch): `verify` + `test` + the modpack suite + the e2e smoke (a gate job skips the checks a tree already passed), then builds the client and server images to ghcr and rolls them out on the VPS (`db:deploy` — extensions, `prisma db push`, the Timescale layer — then `up -d` and health checks). First deploy: [docs/ops/deploy.md](docs/ops/deploy.md). The other workflows are [.github/workflows/modpack.yml](.github/workflows/modpack.yml) (the modpack checks on pull requests that touch `apps/game/modpack`, plus a manual release build of the packages and the component catalogue the manager ships) and [.github/workflows/manager.yml](.github/workflows/manager.yml) (the manager's UI and Rust checks on Windows, plus a manual `tauri build` of its NSIS installer). [.github/workflows/release.yml](.github/workflows/release.yml) (manual; to release bump `version` in `apps/game/modpack/package.json` (the supported clients are its `otmetki.games`) or in `apps/game/manager/package.json`, commit, run it) publishes whichever of the modpack and the manager has a version not yet in the published index to the VPS: everything is stored there (replays and armor models on the `serverdata` volume, public downloads in `DEPLOY_PATH/downloads`, served by Caddy at `/downloads/`); there is no S3 and no CDN.
 
 ## Rules
 

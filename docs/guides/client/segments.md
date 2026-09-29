@@ -1,6 +1,6 @@
 # The `model/`, `lib/` and `api/` segments
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 11. The `model/`, `lib/` and `api/` segments
 
@@ -13,10 +13,12 @@ features/search/command-palette/model/
     use-command-palette-hotkey/   ← use-command-palette-hotkey.ts + index.ts
     use-search-results/           ← use-search-results.ts + .types.ts + index.ts + _tests/
   context/                        ← a subsystem is a folder
-    index.ts                      ← barrel: { CommandPaletteProvider, useCommandPalette }
-    CommandPaletteProvider.tsx
-    command-palette-context.ts
-    command-palette-context.types.ts
+    index.ts                      ← barrel: { CommandPaletteContext, useCommandPalette }
+    command-palette/              ← context object + useCommandPalette consumer
+      command-palette-context.ts
+      command-palette-context.types.ts
+      index.ts
+  (the Provider is a component: ui/CommandPaletteProvider/)
   (no model/index.ts — the barrel sits on the subfolders)
 ```
 
@@ -43,7 +45,7 @@ segment, not a separate top-level `hooks/` segment (which is forbidden — see b
 import { useSearchResults } from '../model/hooks';
 import { useCommandPalette } from '../model/context';
 // the slice index.ts
-export { CommandPaletteProvider, useCommandPalette } from './model/context';
+export { CommandPaletteProvider } from './ui/CommandPaletteProvider';
 
 // ✗ NOT OK
 import { useSearchResults } from '../model/hooks/use-search-results'; // deep, past the barrel
@@ -61,7 +63,7 @@ subfolders — needs no barrel at all; import by file.
 - The slice's public model types — the ones other slices reach through the barrel —
   go in a `model/<name>.types.ts` file (`entities/tank/tank/model/tank.types.ts`).
 - A subsystem folder with types of its own gets `model/<subsystem>/<name>.types.ts`
-  (`model/context/command-palette-context.types.ts`).
+  (`model/context/command-palette/command-palette-context.types.ts`).
 
 Do not create a separate `types/` or `hooks/` segment. That splits code by the
 shape of the file rather than by its nature, which is an FSD anti-pattern.
@@ -85,8 +87,8 @@ A helper used by one component still goes here, never into a `<Name>.helpers.ts`
 
 A function that returns JSX is a component: move it to `ui/`.
 
-**`config/`** — constants, one file per concern (`config/search.constants.ts`,
-`config/player-stats.constants.ts`), re-exported from `config/index.ts`. Every module-level
+**`config/`** — constants, one file per concern (`config/command-palette.constants.ts`,
+`config/palette-nav.constants.ts`), re-exported from `config/index.ts`. Every module-level
 `as const` object, `DEFAULT_VALUES`, icon map or skeleton row count a component or hook needs
 lives here, not at the top of the `.tsx`.
 
@@ -103,7 +105,7 @@ plus one barrel:
 ```text
 entities/tank/tank/api/
   tanks/          ← tanks.ts + tanks.types.ts + index.ts (+ _tests/)
-  route-meta/     ← tankRouteName, topTankSlugs for the app routes
+  route-meta/     ← tankRouteEntity, topTankSlugs for the app routes
   mappers/<name>/ ← API DTO → UI model converters
   index.ts
 ```
@@ -126,16 +128,19 @@ every layer is the one place they may all import.
 shared/api/
   http/           ← http.ts (the axios instance) + http.constants.ts, bearer-token/, client-config/, list-param/
   generated/      ← the OpenAPI client (hey-api), never edited by hand
+  openapi/        ← the internal OpenAPI spec it is generated from
   query-options/  ← re-exports of generated TanStack Query options
   source/         ← fromServer / fromSdk / fromAuth, NotFoundError / UnauthorizedError / PlusRequiredError
-  auth/           ← the better-auth client base (auth-client/, telegram-login-client/)
+  auth/           ← the better-auth client base (auth-client/, telegram-login-client/, vk-mini-app-client/)
   query-client/
+  prefetch-state/ ← server prefetch into a dehydrated query state
   index.ts
 ```
 
-HTTP goes through the shared axios instance from `shared/api/http`. A hand-rolled
-`fetch` is unnecessary. The response is parsed with the shared schema, so a drifted
-contract fails loudly at the boundary (`entities/search/search/api/search/search.ts`):
+HTTP goes through the shared axios instance from `shared/api/http`, which the generated
+hey-api SDK (`@/shared/api/generated`) also runs on. A hand-rolled `fetch` is unnecessary.
+A request calls the generated SDK function, typed from the same OpenAPI contract
+(`entities/search/search/api/search/search.ts`):
 
 ```ts
 export const search = async ({ query, signal }: SearchInput): Promise<SearchResponse> => {
@@ -145,9 +150,9 @@ export const search = async ({ query, signal }: SearchInput): Promise<SearchResp
     return { query: trimmed, correctedQuery: null, results: [] };
   }
 
-  const { data } = await api.get('/search', { params: { q: trimmed, limit: SEARCH_REQUEST.limit }, signal });
+  const { data } = await searchControllerSearch({ query: { q: trimmed, limit: SEARCH_REQUEST.limit }, signal });
 
-  return searchResponseSchema.parse(data);
+  return data;
 };
 ```
 

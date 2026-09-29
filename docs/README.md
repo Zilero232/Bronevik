@@ -16,6 +16,7 @@ Design specs, one per initiative, dated.
 - [specs/2026-09-28-plus-free-tiers.md](specs/2026-09-28-plus-free-tiers.md) — free tiers and monthly meters for Plus features (3D armor, battle analysis), the before/after feature matrix.
 - [specs/2026-09-28-manager-runtime-dependencies.md](specs/2026-09-28-manager-runtime-dependencies.md) — the manager installs OpenWG Gameface and GUIFlash as pinned runtime dependencies; the catalogue entries requested from the modpack owner.
 - [specs/2026-09-29-derived-data-rules.md](specs/2026-09-29-derived-data-rules.md) — the rules behind automatic replay tags, tank × map win rates and the fine mark curve, and where each hides thin data.
+- [specs/2026-09-29-hud-visual-redesign.md](specs/2026-09-29-hud-visual-redesign.md) — the modpack HUD look: client icons, panel placement, which stock elements each panel replaces.
 
 ## Architecture
 
@@ -33,6 +34,7 @@ The style guide, split by stack. Index and tooling: [guides/README.md](guides/RE
 
 ## Research
 
+- `research/client/` — [client 1.45 hooks and events](research/client/2026-09-29-client-1.45-hooks.md) the modpack uses, checked against the RU sources.
 - `research/data/` — [Lesta API reference and terms](research/data/lesta-api.md), [ЛБЗ in the client files](research/data/lbz.md), [3D armor viewer](research/data/armor-viewer.md).
 - `research/design/` — [visual language](research/design/visual-language.md), [design v2](research/design/design-v2.md), [v3](research/design/design-v3.md), [v4](research/design/design-v4.md).
 - `research/competitors/` — [market](research/competitors/market.md), [competitors v2](research/competitors/competitors-v2.md), [sites gap analysis](research/competitors/2026-09-29-sites-gap-analysis.md), [modpacks round 3](research/competitors/2026-09-29-modpacks-round3.md).

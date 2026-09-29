@@ -45,7 +45,7 @@ features/
 ├── app/           # pin-rows, rating-palette, rating-patterns, switch-locale, switch-theme
 ├── armor/         # armor-inspect
 ├── auth/          # lesta-link
-├── community/     # api-error, comments, contact-player, form-dialog, guide-meta, markdown, player-stats, replay-meta, report-content, stat-requirements, tactic-board-settings, tournament-status
+├── community/     # api-error, comments, contact-player, form-dialog, guide-meta, markdown, markdown-editor, player-stats, replay-meta, report-content, stat-requirements, tactic-board-settings, tournament-status
 ├── mod/           # open-in-manager
 ├── notifications/ # inbox-bell, notification-settings
 ├── player/        # toggle-favorite, watch-player
@@ -59,6 +59,7 @@ entities/
 ├── armor/        # armor-model
 ├── auth/         # session
 ├── battle/       # best-battle
+├── blog/         # post
 ├── clan/         # clan
 ├── coaching/     # coach
 ├── competition/  # competition
@@ -87,6 +88,7 @@ widgets/
 ├── armor/    # armor-viewer
 ├── map/      # map-rotation, map-samples
 ├── player/   # session-detail
+├── promo/    # promo-banners
 ├── showcase/ # showcase-3d
 ├── site/     # data-notice, resource-missing, site-footer, site-header
 ├── social/   # social-shell
@@ -94,7 +96,7 @@ widgets/
 └── tank/     # tank-best-battles, tank-math
 ```
 
-`views/` does not group by domain — the 90 route screens sit directly in it:
+`views/` does not group by domain — the 96 route screens sit directly in it:
 
 | Area | Views |
 |---|---|
@@ -106,6 +108,7 @@ widgets/
 | tanks | `tank`, `tank-armor`, `tanks`, `vehicle-catalog`, `compare-tanks`, `build`, `builds-catalog`, `marks`, `tree`, `supertest`, `tools`, `play-hub`, `play`, `guess-map` |
 | maps, modes, missions | `map`, `maps`, `modes`, `mode`, `missions`, `mission-operation`, `honest-rng`, `pulse`, `events` |
 | shop and news | `shop`, `codes`, `news` |
+| blog | `blog`, `blog-post`, `blog-editor`, `blog-post-editor` |
 | community | `social-feed`, `leagues`, `challenges`, `replays`, `replay`, `tactics`, `tactic-board`, `guides`, `guide`, `guide-editor`, `platoons`, `recruiting`, `coaching`, `coach`, `tournaments`, `tournament`, `competitions`, `competition` |
 | streamers | `streamers-directory`, `streamer`, `streamer-claim`, `streamer-settings`, `streamers-settings`, `streamers-settings-compare`, `streamer-studio`, `for-streamers`, `overlay`, `twitch-panel` |
 | developers | `developers`, `developer-cabinet` |
@@ -163,7 +166,7 @@ Layer rules still hold: an entity never imports another entity, so two entities 
 
 A file that has companions — `x.ts` with `x.types.ts`, `x.constants.ts`, `x.schemas.ts`, `_tests/` — lives in its own `x/` folder with an `index.ts`. Nothing lies flat next to another concern: a folder holds its own concern's files plus subfolders, and a second concern gets a second folder (`shared/api/http/` holds `http.ts` + `http.constants.ts` and the subfolders `bearer-token/`, `client-config/`, `list-param/`). The one flat exception is `config/`, which is one `<concern>.constants.ts` per concern until a concern grows a companion.
 
-`shared/lib/` is flat, one folder per concern, the same layout GnomeVPN and Chatovo use: pure helpers as `shared/lib/<concern>/`, hooks as `shared/lib/use-<x>/` (`use-hydrated`, `use-reveal-once`, `use-client-now`). The `use-` prefix is what separates the two; there is no `hooks/` or `utils/` grouping folder. `shared/constants/` is the same — `routes/`, `site-nav/`, `account-nav/`, `query-keys/`, `storage-keys/`, each with its `index.ts`.
+`shared/lib/` is flat, one folder per concern, the same layout GnomeVPN and Chatovo use: pure helpers as `shared/lib/<concern>/`, hooks as `shared/lib/use-<x>/` (`use-hydrated`, `use-reveal-once`, `use-client-now`). The `use-` prefix is what separates the two; there is no `hooks/` or `utils/` grouping folder. `shared/constants/` is the same — `routes/`, `site-nav/`, `account-nav/`, `periods/`, `query-keys/`, `storage-keys/`, each with its `index.ts`.
 
 `ROUTES` is nested by page family: `ROUTES.players.{list, profile(nick), session({ nickname, sessionId }), signature(nick), compare}`, `ROUTES.tanks.{list, detail, armor, compare}`, `ROUTES.guides.{list, detail, create, edit}`, `ROUTES.streamers.{list, profile, claim, overlay, forStreamers, settings.{table, compare, profile}}`, `ROUTES.auth.{login, loginNext, telegram}`, `ROUTES.missions.{hub, operation}`, `ROUTES.legal.{privacy, terms, contacts}`, `ROUTES.account.{overview, analytics, analyticsTank(id), battles, …}`, `ROUTES.api.{playerCard, siteCard}`, `ROUTES.sw`. Single pages stay flat (`ROUTES.top`, `ROUTES.tree`, `ROUTES.supertest`, `ROUTES.mod`, `ROUTES.modProfile`).
 
@@ -175,14 +178,15 @@ A component folder holds only `Name.tsx`, `Name.types.ts`, `Name.module.scss`, `
 ui-kit/
 ├── atoms/       # AnimatedNumber, Avatar, Badge, Band, Button, ClassIcon, DeltaValue, IconButton, Input, Kbd,
 │                # LiveLamp, NationBackdrop, NationLabel, ProgressBar, ProgressRing, RatingBadge, RelativeTime, Reveal,
-│                # Skeleton, Switch, TankImage, Textarea, TierNumeral, Tilt
+│                # Skeleton, Switch, TankImage, Textarea, TierNumeral
 ├── molecules/   # ActionStrip, Breadcrumbs, Card, CellBar, CodeBlock, ConfirmDialog, CopyField, DataSourceNote,
-│                # DeltaCell, Dialog, Drawer, EmptyState, ErrorState, FilteredEmptyState, FormField, GameVersionBadge,
-│                # IconFilter, KeyFigure, KeyFigures, Legend, MarksRing, MediaCard, NumberCell, NumberField, Podium,
-│                # PodiumCard, Popover, RangeSlider, RetryButton, SectionHeader, SegmentedControl, Select,
-│                # ServiceStatus, Sparkline, StatList, Tabs, TextCard, Timeline, ToggleChips, Tooltip
-├── organisms/   # AppToaster, AreaChart, BarChart, BattleBackdrop, CalendarHeatmap, ChartKit, DataTable, LineChart,
-│                # PageHeader, PageHero, PagedList, QueryState
+│                # DateTimeField, DeltaCell, Dialog, Drawer, EmptyState, ErrorState, FactGrid, FaqList, FilterField,
+│                # FilteredEmptyState, FormField, GameVersionBadge, IconFilter, KeyFigure, KeyFigures, Legend, MarksRing,
+│                # MediaCard, NumberCell, NumberField, Podium, PodiumCard, Popover, RangeField, RangeSlider, RetryButton,
+│                # SectionHeader, SegmentedControl, Select, ServiceStatus, Sparkline, StatList, StoryCard, Tabs,
+│                # TextCard, TierPicker, Timeline, ToggleChips, Tooltip
+├── organisms/   # AppToaster, AreaChart, BarChart, BattleBackdrop, CalendarHeatmap, ChartKit, DataTable, FilterBar,
+│                # LineChart, PageHeader, PageHero, PageHeroFallback, PagedList, QueryState
 └── index.ts     # the one barrel the rest of the app imports
 ```
 
@@ -202,11 +206,12 @@ app/
 │   ├── (site)/            # the public site: header + main + footer
 │   │   ├── page.tsx       # home
 │   │   ├── p/ c/ t/ s/    # player, clan, tank, streamer pages (each with opengraph-image.tsx where it has a card)
-│   │   ├── achievements/ best-battles/ builds/ clans/ coaching/ codes/ compare/ competitions/ contacts/
-│   │   ├── design/ developers/ events/ for-streamers/ guides/ honest-rng/ login/ maps/ marks/ me/ missions/
-│   │   ├── mod/ modes/ news/ platoons/ play/ players/ plus/ privacy/ pulse/ recruiting/ replays/ shop/
-│   │   ├── streamers/ supertest/ tactics/ tanks/ terms/ tools/ top/ tournaments/ tree/
+│   │   ├── achievements/ best-battles/ blog/ builds/ challenges/ clans/ coaching/ codes/ compare/ competitions/
+│   │   ├── contacts/ design/ developers/ events/ feed/ for-streamers/ guides/ honest-rng/ leagues/ login/ maps/
+│   │   ├── marks/ me/ missions/ mod/ modes/ news/ platoons/ play/ players/ plus/ privacy/ pulse/ ratings/
+│   │   ├── recruiting/ replays/ shop/ status/ streamers/ supertest/ tactics/ tanks/ terms/ tools/ top/ tournaments/ tree/
 │   │   ├── layout.tsx
+│   │   ├── error.tsx
 │   │   └── not-found.tsx
 │   ├── (overlay)/overlay/ # stream overlays, no site shell
 │   ├── (tma)/tg/ vk/      # Telegram and VK Mini Apps

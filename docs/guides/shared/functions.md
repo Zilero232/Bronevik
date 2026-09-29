@@ -1,6 +1,6 @@
 # Arrow functions and braces
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 9. Arrow functions: the body
 

@@ -4,7 +4,7 @@ A checklist for the first rollout of Три отметки to `https://triotmetk
 
 What runs where:
 
-- **CI and images.** [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) is started by hand (`workflow_dispatch`). It runs `verify`, `test`, the mod suite and the e2e smoke, builds `ghcr.io/<owner>/otmetki-client` and `otmetki-server`, and then deploys to the VPS.
+- **CI and images.** [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) is started by hand (`workflow_dispatch`). It runs `verify`, `test`, the mod suite and the e2e smoke (a `gate` job skips either for a git tree that already passed it), builds `ghcr.io/<owner>/otmetki-client` and `otmetki-server`, and then deploys to the VPS.
 - **The VPS** keeps no clone of the repo. Every run copies [docker-compose.yml](../../docker-compose.yml) and [infra/caddy/Caddyfile](../../infra/caddy/Caddyfile) into `DEPLOY_PATH`. The files keep their repository paths, because compose bind-mounts `./infra/caddy/Caddyfile`. The run then does `docker compose pull`, runs `bun run db:deploy` in a one-off `server` container, runs `docker compose up -d`, and waits for `otmetki-server` and `otmetki-client` to report healthy.
 - **The stack:** Caddy (80/443, Let's Encrypt), then client (Next standalone, :3000), then server (API, :4000).
   - Everything is stored on the VPS: no S3, no CDN, no GitHub Releases.
@@ -13,7 +13,7 @@ What runs where:
   - Postgres/TimescaleDB listens on loopback `127.0.0.1:5432` only.
   - Redis runs with AOF and `noeviction`.
   - `backup` dumps the database every night (§6).
-  - The server and the worker share the `serverdata` volume for uploaded replays and armor models (`.data/replays`, `.data/armor`; the only storage there is).
+  - The server and the worker share the `serverdata` volume for uploaded replays, armor models and blog images (`.data/replays`, `.data/armor`, `.data/blog`; the only storage there is).
   - Every container logs to json-file with rotation (10 MB × 5).
   - Caddy takes its hosts from `SITE_DOMAIN` and `API_DOMAIN`: with the defaults (`localhost`, `api.localhost`) it issues itself a local certificate, with real domains it gets one from Let's Encrypt over HTTP-01, so port 80 must stay reachable; HTTP/3 needs `443/udp` published.
   - Everything reads the root `.env`; compose overrides `DATABASE_URL`, `DIRECT_URL` and `REDIS_URL` with the service names. Locally: `docker compose build`, `docker compose up -d`, `docker compose logs -f`.
@@ -21,7 +21,7 @@ What runs where:
 
 ### CI workflows
 
-- **deploy.yml**: every check runs before any image is built, so an image is never pushed from a tree that would fail.
+- **deploy.yml**: every check runs before any image is built, so an image is never pushed from a tree that would fail. The `gate` job keys a cache marker on the git tree hash: a tree that already passed `checks` or `e2e` skips that job on the next run. Lint, tsc, the Next build and the Playwright browser are cached as well.
 - **modpack.yml**: on pull requests that touch the modpack, on Windows like the players: pytest + the stdlib runner, ruff, vermin (the Python 2.7 syntax guard). Manual runs add a test release build (`.github/actions/modpack-release`: OpenWG `owg_python_compiler` built from source, the packages with compiled `.pyc`, the component catalogue); publishing is `release.yml`, which runs the same action.
 - **manager.yml**: on pull requests that touch the manager or the packages its UI reads, on Windows: the UI typecheck and Vitest, `cargo fmt`, clippy and the Rust tests. The contract test fails when `tauri/contract/*.json` no longer matches the serialised commands; refresh it locally with `OTMETKI_UPDATE_FIXTURES=1` and commit. Manual runs add `tauri build` (NSIS, ru/en, per user, unsigned; the updater archive and its signature only when `TAURI_SIGNING_PRIVATE_KEY` is set), a build to look at.
 - **release.yml**: §4.
@@ -117,7 +117,7 @@ Start from [.env.example](../../.env.example). The server and worker containers 
 - [ ] `EMAIL_FROM` on our domain (for example `Три отметки <noreply@triotmetki.ru>`), with SPF and DKIM for the SMTP provider. `VAPID_SUBJECT=mailto:admin@triotmetki.ru`.
 - [ ] `BULL_BOARD_PASSWORD`: Caddy returns 404 for `/admin/queues` on the public host anyway. Reach bull-board through an SSH tunnel to the server container.
 - [ ] `SMTP_HOST` stays empty unless a real provider is set up. `.env.example` carries the Mailpit values for development.
-- [ ] Storage needs no variables: uploaded replays and armor models live in `.data` on the `serverdata` volume, which the server and the worker share.
+- [ ] Storage needs no variables: uploaded replays, armor models and blog images live in `.data` on the `serverdata` volume, which the server and the worker share.
 
 ### The VPS downloads folder
 
@@ -200,7 +200,7 @@ One minisign key signs the manager's self-update and each modpack release (the m
 
 ### The first release
 
-- [ ] The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HMAC over `v2\n<METHOD>\n<path>\n<timestamp>\n<nonce>\n<body>`, a 5-minute skew window and a one-time nonce), so a package built before v2 signing is rejected. Check that `DEFAULT_SERVER_URL` in `apps/game/modpack/packages/companion/config.py` is `https://api.triotmetki.ru`.
+- [ ] The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HMAC over `v2\n<METHOD>\n<path>\n<timestamp>\n<nonce>\n<body>`, a 5-minute skew window and a one-time nonce), so a package built before v2 signing is rejected. Check that `DEFAULT_SERVER_URL` in `apps/game/modpack/packages/companion/config/constants.py` is `https://api.triotmetki.ru`.
 - [ ] Bump `VERSION` in `apps/game/modpack/packages/companion/version.py` (and in `packages/core/version.py` and `features/<id>/__init__.py` for the packages that changed) with their CHANGELOG entries, and the release `version` in `apps/game/modpack/package.json` with its `## <version>` entry.
 - [ ] The downloads folder exists (§1), and a deploy ran with this Caddyfile and `docker-compose.yml` (they serve and mount it).
 - [ ] The secrets are set: deploy.yml's `NEXT_PUBLIC_SITE_URL` and `DEPLOY_*`, plus `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`).
@@ -265,7 +265,7 @@ cd /opt/otmetki
 docker compose run --rm server bun scripts/gamedata-import.ts --cache /tmp/otmetki-gamedata
 ```
 
-- The container's working directory is `/app/apps/web/server`; compose supplies `DATABASE_URL`. Add `--armor` to also import the armor models into the `serverdata` volume.
+- The container's working directory is `/app/apps/web/server`; compose supplies `DATABASE_URL`. Add `--armor` to also import the armor models into the `serverdata` volume (`.data/armor` under the server package, where the API reads them).
 - Set `GITHUB_TOKEN` (no scopes) in `.env` to lift GitHub's anonymous rate limit.
 - Without a key the encyclopedia version check is skipped (`no LESTA_APPLICATION_ID`).
 - `--dry-run` builds the import plan without writing.

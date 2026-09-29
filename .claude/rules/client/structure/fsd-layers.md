@@ -23,6 +23,13 @@ barrel — `@/ui-kit`; primitives live in `atoms/`, `molecules/`, `organisms/`.
 `model/` barrels live in subfolders (`model/hooks/index.ts`), never a slice-level
 `model/index.ts`.
 
+**Deep imports into `shared/` that are required.** Code `proxy.ts` reaches (`app/proxy`,
+`shared/api/{http,query-client,source}`) stays off the `@/shared/lib` and `@/shared/config`
+barrels — they reach `shared/seo` and `next/font`, which break the middleware bundle — and
+imports `@/shared/lib/env`, `@/shared/lib/route-param`, `@/shared/config/client-env` by
+path. `decodeRouteParam` (`@/shared/lib/route-param`), `isServer` (`@/shared/lib/env`) and
+`useBreadcrumbs` (`@/shared/lib/use-breadcrumbs`) are not in the barrel; import them by path.
+
 Inside a slice, relative imports go through the nearest barrel too: `../hooks`,
 `../../model/hooks`, `./components`, `../lib/<concern>` — not the file behind it
 (`../hooks/use-x`, `./components/X`, `../lib/x/x.types`). Two exceptions: sibling hooks

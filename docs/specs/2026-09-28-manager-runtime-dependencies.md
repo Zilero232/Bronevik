@@ -1,6 +1,6 @@
 # Manager: third-party runtime dependencies in the component catalogue
 
-Status: implemented. The manager side: `apps/game/manager/tauri/src/dependencies`, `releases/sources.rs`, the install wizard, the «Компоненты» toggle and the update after a patch. The catalogue side: both entries are in `apps/game/modpack/catalog/catalog.json`, setupkit checks them and passes them through, the МОСТ bundler lists them as third-party mods, and `requiredBy` is checked against the code (`tools/build/setupkit/manifest/tests/test_dependencies.py`), which adds `session_stats` (its hangar label) to the proposal below.
+Status: implemented. The manager side: `apps/game/manager/tauri/src/dependencies`, `releases/sources.rs`, the install wizard, the «Компоненты» toggle and the update after a patch. The catalogue side: both entries are in `apps/game/modpack/catalog/catalog.json`, setupkit checks them and passes them through, the МОСТ bundler lists them as third-party mods, and `requiredBy` is checked against the code (`apps/game/modpack/tools/build/setupkit/manifest/tests/test_dependencies.py`), which adds `session_stats` (its hangar label) to the proposal below.
 
 ## Why
 

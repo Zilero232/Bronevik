@@ -9,10 +9,11 @@ assets/
   assets.json                    the sets: feature, origin, author, licence, url, sources -> files, target
   THIRD_PARTY_NOTICES.md         generated
   otmetki/LICENSE.md             our artwork: (c) Три отметки, ships only inside the modpack
-  otmetki/crosshair/src|png      7 centre marks (SVG -> PNG 64, 128)
+  otmetki/crosshair/src|png      10 centre marks (SVG -> PNG 64, 128)
+  otmetki/crosshair_tinted/src|png  5 one-colour centre marks (SVG -> PNG 64, 128 per mark colour)
   otmetki/sixth_sense/src|png    4 sixth-sense icons (SVG -> PNG 64, 128 + dimmed pulse frames)
-  otmetki/damage_log/src|png     6 damage-kind glyphs (SVG -> PNG 32)
-  otmetki/sounds                 sixthSense.mp3, sixthSense_off.mp3 (CC0, synthesised by tools/assets/sound.py)
+  otmetki/damage_log/src|png     6 damage-kind and 5 vehicle-class glyphs (SVG -> PNG 32)
+  otmetki/sounds                 sixthSense.mp3, sixthSense_off.mp3, otmetki_record.mp3, otmetki_goal.mp3 (CC0, synthesised by tools/assets/sound.py)
   third_party/<set>/             a vendored set: its licence text, the untouched originals in src/, renditions in png/
 ```
 

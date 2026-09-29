@@ -28,7 +28,7 @@ bun run gamedata:import -- --local /path/to/wot.src-checkout
 | `--armor-only`             | Build armor models only; the catalog is left untouched                                                                          |
 | `--models-ref <sha>`       | Pin the models mirror to another branch or commit                                                                               |
 | `--local-models <dir>`     | Read a local checkout of the models mirror instead of GitHub                                                                    |
-| `--armor-dir <dir>`        | Armor storage folder, default `<repo>/.data/armor`                                                                              |
+| `--armor-dir <dir>`        | Armor storage folder, default `apps/web/server/.data/armor`                                                                     |
 | `--skip-missions`          | Do not import personal missions (ЛБЗ), see [docs/research/data/lbz.md](../../../../../../docs/research/data/lbz.md)             |
 | `--strict-armor`           | Exit 1 when any vehicle has no collision model in the models mirror (every one is printed with its reason either way)           |
 | `--allow-version-mismatch` | Import even when the client release line differs from the live Lesta `encyclopedia/info` version                                |
@@ -73,19 +73,20 @@ The target is 20 KB gzipped per tank: IS-7 is about 10 KB, but modern high-poly 
 
 ## Layout
 
-| Folder                       | Concern                                                                                                                                        |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `lib/xml`                    | `fast-xml-parser` wrapper and typed readers (`num`, `nums`, `price`, `mergeNodes`, `identifiedNodes`…)                                         |
-| `lib/ids`                    | Nations and compact descriptors                                                                                                                |
-| `lib/modifiers`              | Parsing modifier and factor blocks out of XML into the package's `Modifier` model                                                              |
-| `lib/parsers/*`              | Pure parsers: `vehicle-list`, `vehicle`, `optional-devices`, `equipment`, `crew`, `post-progression`, `arenas`, `vehicle-filter`, `collision`  |
-| `lib/armor`                  | Armor models: `collect` (mirror + version guard), `join`, `pack`, `storage`, `writer` (upload, rows, purge)                                    |
-| `lib/personal-missions`      | ЛБЗ: `buildPersonalMissions` (wot.src XML + client config, izeberg/wot-src .po) and `writePersonalMissions` (Mission* tables per game version) |
-| `lib/python-literal`         | Reader for the decompiled Python dict literals of the client config                                                                            |
-| `lib/source`                 | GitHub raw fetcher with disk cache, local-checkout and in-memory readers, `mt-client` guard                                                    |
-| `lib/game-data`              | `buildGameData({ reader })` reads and parses everything for one revision                                                                       |
-| `lib/importer`               | `createImportPlan` (pure rows + summaries), `diffSpecs`, `writeImportPlan` (Prisma upserts)                                                    |
-| `scripts/gamedata-import.ts` | The `gamedata:import` CLI (in `apps/web/server/scripts`)                                                                                       |
+| Folder                       | Concern                                                                                                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `lib/xml`                    | `fast-xml-parser` wrapper and typed readers (`num`, `nums`, `price`, `mergeNodes`, `identifiedNodes`…)                                                                   |
+| `lib/ids`                    | Nations and compact descriptors                                                                                                                                          |
+| `lib/modifiers`              | Parsing modifier and factor blocks out of XML into the package's `Modifier` model                                                                                        |
+| `lib/parsers/*`              | Pure parsers: `vehicle-list`, `vehicle`, `optional-devices`, `equipment`, `crew`, `post-progression`, `arenas`, `vehicle-filter`, `collision`, `personal-missions`, `po` |
+| `lib/armor`                  | Armor models: `collect` (mirror + version guard), `join`, `pack`, `storage`, `writer` (upload, rows, purge)                                                              |
+| `lib/personal-missions`      | ЛБЗ: `buildPersonalMissions` (wot.src XML + client config, izeberg/wot-src .po) and `writePersonalMissions` (Mission* tables per game version)                           |
+| `lib/localization`           | `.po` loading per key domain and the localized names (see Localization above)                                                                                            |
+| `lib/python-literal`         | Reader for the decompiled Python dict literals of the client config                                                                                                      |
+| `lib/source`                 | GitHub raw fetcher with disk cache, local-checkout and in-memory readers, `mt-client` guard                                                                              |
+| `lib/game-data`              | `buildGameData({ reader })` reads and parses everything for one revision                                                                                                 |
+| `lib/importer`               | `createImportPlan` (pure rows + summaries), `diffSpecs`, `writeImportPlan` (Prisma upserts)                                                                              |
+| `scripts/gamedata-import.ts` | The `gamedata:import` CLI (in `apps/web/server/scripts`)                                                                                                                 |
 
 ## Database mapping
 

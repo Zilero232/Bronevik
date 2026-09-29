@@ -1,6 +1,6 @@
 # Component size
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 4. Component size
 
@@ -27,4 +27,5 @@ slice of its own.
 **Context shared between the parts goes in its own module** next to the component, not
 inside it: otherwise `components/*` import the parent and the parent imports them. That
 is how `features/search/command-palette` is built — the context in
-`model/context/command-palette-context.ts`, the provider in a separate file alongside it.
+`model/context/command-palette/command-palette-context.ts`, the Provider a component of its
+own in `ui/CommandPaletteProvider/`.

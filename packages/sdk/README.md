@@ -41,11 +41,11 @@ createOtmetkiClient({ apiKey, retry: false });
 
 ### Limits
 
-| Plan    | Requests per second | Requests per day | Webhook endpoints |
-| ------- | ------------------- | ---------------- | ----------------- |
-| Free    | 5                   | 10 000           | 1                 |
-| Pro     | 25                  | 250 000          | 10                |
-| Partner | 100                 | 2 000 000        | 50                |
+| Plan      | Requests per second | Requests per day | Webhook endpoints |
+| --------- | ------------------- | ---------------- | ----------------- |
+| Free      | 5                   | 10 000           | 1                 |
+| Plus      | 10                  | 50 000           | 5                 |
+| Community | 100                 | 2 000 000        | 50                |
 
 Paginated lists take `limit` (1–100, default 25) and `offset` (0–10 000); a larger value is rejected with 400. Past the 10 000th row, narrow the query with filters instead of paging deeper.
 
@@ -79,7 +79,7 @@ from standardwebhooks import Webhook
 payload = Webhook(secret).verify(raw_body, headers)
 ```
 
-Verify the raw body exactly as received. Deliveries older than five minutes are rejected. A failed delivery is retried six times with exponential backoff; twenty failed deliveries in a row switch the endpoint off.
+Verify the raw body exactly as received. Deliveries older than five minutes are rejected. A failed delivery is tried up to six times in all, with exponential backoff; twenty failed deliveries in a row switch the endpoint off.
 
 ## Regenerating
 

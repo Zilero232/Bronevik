@@ -35,13 +35,13 @@ The table below already carries the resolved ids, so step 1 can be skipped for a
 | Time-series                   | TimescaleDB (pg17 image)             | `/timescale/timescaledb`             |
 | Redis client                  | `ioredis` ^5.8.0                     | `/redis/ioredis`                     |
 | Shared Lesta rate limit       | `rate-limiter-flexible` 11.2.1       | `/animir/node-rate-limiter-flexible` |
-| Collector monitoring server   | `hono` 4.13.9                        | `/websites/hono_dev`                 |
+| Collector queue board         | `@bull-board/express` 9.10.1         | resolve on demand                    |
 | Logging                       | `pino` ^10.3.1                       | `/pinojs/pino`                       |
 | Validation                    | `zod` ^4.6.5                         | `/colinhacks/zod`                    |
 | Data helpers                  | `remeda` ^2.50.0                     | `/remeda/remeda`                     |
 | Pattern matching              | `ts-pattern` ^5.9.0                  | `/gvergnaud/ts-pattern`              |
 | Dates                         | `date-fns` ^4.4.0                    | `/date-fns/date-fns`                 |
-| Unit tests                    | `vitest` ^5.0.1                      | `/vitest-dev/vitest`                 |
+| Unit tests                    | `vitest` ^5.0.2                      | `/vitest-dev/vitest`                 |
 | E2E tests                     | `@playwright/test` ^1.63.0           | `/microsoft/playwright`              |
 | Unused code                   | `knip` ^6.38.0                       | `/websites/knip_dev`                 |
 

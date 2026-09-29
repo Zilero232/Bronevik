@@ -4,8 +4,8 @@ Typed thin client for the Lesta «Мир танков» API (`api.tanki.su/wot/`
 
 - Every call is a form-encoded `POST`, validated with zod, and returned as `{ data, meta }` by `request` or as `data` by the typed methods.
 - Id lists are deduplicated and split into batches of `LESTA_API.batchSize` (100), then fetched in parallel and merged.
-- Retries use `p-retry` with `LESTA_RETRY` defaults. Only retryable failures are retried: `REQUEST_LIMIT_EXCEEDED`, `SOURCE_NOT_AVAILABLE`, HTTP 429 and 5xx, and network errors (`isRetryableLestaError`).
-- Every attempt takes a token from a `RateLimiter` first. `createRedisRateLimiter` shares one budget across processes, `createMemoryRateLimiter` keeps it in-process, and `noopRateLimiter` is the default.
+- Retries use `p-retry` with `LESTA_RETRY` defaults. Only retryable failures are retried: `REQUEST_LIMIT_EXCEEDED`, `SOURCE_NOT_AVAILABLE`, HTTP 429 and 5xx, network errors and a full limiter queue (`isRetryableLestaError`).
+- Every attempt takes a token from a `RateLimiter` first. `createRedisRateLimiter` shares one budget across processes (a full local queue throws `LestaQueueFullError`), and `noopRateLimiter` is the default. An empty `applicationId` throws `LestaNotConfiguredError` before any request.
 
 ```ts
 import { createLestaClient, createRedisRateLimiter } from '../lib/lesta';
@@ -36,13 +36,16 @@ Passing `fields` narrows the response type to a `DeepPartial` of the full shape 
 | `clanratings`  | `clans`                                                                | `types`, `dates`, `neighbors`, `top`                           |
 | `globalmap`    |                                                                        | every documented method                                        |
 | `stronghold`   |                                                                        | `claninfo`, `clanreserves`, `activateclanreserve`              |
+| `wgn`          | `servers`                                                              |                                                                |
 
 The other methods return `unknown` and take the generic `{ params, fields, extra, language, accessToken }` input. The ones keyed by an id (`modules`, `claninfo`, …) take `ids` and are batched the same way.
 
 ## Errors
 
-| Class               | When                                                                                              |
-| ------------------- | ------------------------------------------------------------------------------------------------- |
-| `LestaApiError`     | `status: "error"` in the envelope, or a response that fails its schema (`code: INVALID_RESPONSE`) |
-| `LestaHttpError`    | a non-2xx HTTP status                                                                             |
-| `LestaNetworkError` | `fetch` threw, including the `timeoutMs` abort                                                    |
+| Class                     | When                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------- |
+| `LestaApiError`           | `status: "error"` in the envelope, or a response that fails its schema (`code: INVALID_RESPONSE`) |
+| `LestaHttpError`          | a non-2xx HTTP status                                                                             |
+| `LestaNetworkError`       | `fetch` threw, including the `timeoutMs` abort                                                    |
+| `LestaNotConfiguredError` | the client has no application id                                                                  |
+| `LestaQueueFullError`     | the Redis rate limiter's local queue is full (retryable)                                          |

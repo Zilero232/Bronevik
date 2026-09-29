@@ -1,6 +1,6 @@
 # Shared schemas
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 14. Shared schemas — `@otmetki/schemas`
 
@@ -50,7 +50,8 @@ import { searchResponseSchema } from '@otmetki/schemas';
 type SearchResponse = { query: string; results: ... };
 ```
 
-`@/shared/api` exports the axios instance and the query client only; request wrappers are
+`@/shared/api` exports the query client only; the axios instance and the request sources
+are deep imports (`@/shared/api/http`, `@/shared/api/source`), and request wrappers are
 imported from the slice that owns them.
 
 **Generated schemas.** The hey-api client also generates a Zod schema per contract

@@ -1,6 +1,6 @@
 # Imports and barrels
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 6. Imports
 
@@ -74,6 +74,8 @@ import { Button } from '@/ui-kit';
 
 `ui-kit` has a single root barrel, `@/ui-kit` (the atomic layer sits under it), and may itself import `@/shared/*`. Inside a slice, relative imports are fine — through the nearest barrel (`../hooks`, `./components`), with sibling hooks and components importing each other by folder (`../use-x`).
 
+**Deep imports into `shared/` that are required.** `proxy.ts` (Next middleware) bundles everything it reaches, and the `@/shared/lib` and `@/shared/config` barrels reach `shared/seo` and `next/font`, which fail there ("'next/root-params' can only be used inside the App Directory"). So code `proxy.ts` reaches (`app/proxy`, `shared/api/http`, `shared/api/query-client`, `shared/api/source`) imports `@/shared/lib/env`, `@/shared/lib/route-param` and `@/shared/config/client-env` by path. `isServer` (`@/shared/lib/env`), `decodeRouteParam` (`@/shared/lib/route-param`) and `useBreadcrumbs` (`@/shared/lib/use-breadcrumbs`) are left out of the `@/shared/lib` barrel, so every caller imports them by path. Likewise, a barrel that client components import never re-exports a module using server-only APIs (`next/cache` `cacheLife`/`cacheTag`, `next/headers`, `next-intl/server`); `shared/seo/index.ts` takes `ROUTE_STATIC_PARAMS` from `route-meta/route-meta.constants`, not the `route-meta` barrel. Only `next build` catches this.
+
 **Tests** use the `@/` alias and the public API. The only deep import a test may make is the module it mocks or spies on, since `vi.mock` must name the module actually loaded:
 
 ```ts
@@ -92,14 +94,13 @@ ESLint does not check FSD boundaries — those are caught at review.
 
 ```ts
 // entities/player/player/index.ts
-export type { PlayerIdentityData, PlayerStats } from './model/player.types';
-export { PlayerCard } from './ui/PlayerCard';
-export type { PlayerCardProps } from './ui/PlayerCard.types';
+export { clanLabel } from './lib/clan-label';
+export type { PlayerIdentityData } from './model/player.types';
 export { PlayerIdentity } from './ui/PlayerIdentity';
-export type { PlayerIdentityProps } from './ui/PlayerIdentity.types';
+export { PlayerNameCell } from './ui/PlayerNameCell';
 ```
 
-Only what is needed from outside. Internal subcomponents are not exported.
+Only what is imported from outside — `knip` (`bun run lint:unused`) flags an export nobody uses. Internal subcomponents are not exported.
 
 **A component folder:**
 
@@ -109,13 +110,12 @@ export { PaletteInput } from './PaletteInput';
 export type { PaletteInputProps } from './PaletteInput.types';
 ```
 
-**A subsystem in `model/`:** when a hook is assembled from several files in a subfolder, the `index.ts` next to them exports only the public entry point — the Provider, the hook and the types the outside needs. Internal modules do not go out.
+**A subsystem in `model/`:** when a hook or context is assembled from several files in a subfolder, the `index.ts` next to them exports only the public entry point — the context, its hook and the types the outside needs. Internal modules do not go out.
 
 ```ts
-// features/search/command-palette/model/context/index.ts
-export { useCommandPalette } from './command-palette-context';
-export type { CommandPaletteContextValue, CommandPaletteProviderProps } from './command-palette-context.types';
-export { CommandPaletteProvider } from './CommandPaletteProvider';
+// features/search/command-palette/model/context/command-palette/index.ts
+export { CommandPaletteContext, useCommandPalette } from './command-palette-context';
+export type { CommandPaletteContextValue } from './command-palette-context.types';
 ```
 
 Wildcard exports (`export * from`) are forbidden. Explicit named exports only.

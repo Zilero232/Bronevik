@@ -17,16 +17,17 @@ const stats = calculateLoadout({
 });
 ```
 
-The root exports `calculateLoadout` with its input and output types (`LoadoutInput`, `FinalStats`, …), the crew and module helpers (`computeCrew`, `roleFactor`, `resolveModules`, `CREW`, `SKILL_EFFECT`, `VISION`), the model types (`VehicleSpec`, `OptionalDevice`, `Equipment`, `CrewSkill`, `FieldModification`, …) and the modifier model (`Modifier`, `applyModifier`, `matchesDeviceTags`, `STATIC_DEFAULTS`, `FACTOR_DEFAULTS`).
+The root exports `calculateLoadout` with its input and output types (`LoadoutInput`, `FinalStats`, …), the crew and module helpers (`computeCrew`, `roleFactor`, `resolveModules`, `CREW`, `SKILL_EFFECT`, `VISION`), the model types (`VehicleSpec`, `OptionalDevice`, `Equipment`, `CrewSkill`, `FieldModification`, …) the ballistics, dispersion and spotting math (`ballisticsCurve`, `aimTimeline`, `dispersionAfter`, `spottingDistance`, …) and the modifier model (`Modifier`, `applyModifier`, `matchesDeviceTags`, `STATIC_DEFAULTS`, `FACTOR_DEFAULTS`).
 
 | Folder          | Concern                                                                                                                                                              |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/model`     | The data shapes the importer produces and the calculator reads                                                                                                       |
 | `src/modifiers` | The structured modifier model and its application                                                                                                                    |
 | `src/loadout`   | `calculateLoadout` → final stats                                                                                                                                     |
+| `src/math`      | Ballistics, aiming and dispersion curves, handling scenarios and spotting (`ballisticsCurve`, `aimTimeline`, `spottingDuel`, …)                                      |
 | `src/armor`     | Penetration math (`calculateArmorHit`, `traceArmorRay`, `penetrationAtDistance`), armor flags and the binary geometry codec shared by the importer and the 3D viewer |
 
-The calculator is tested against real parsed vehicles in the server (`apps/web/server/src/modules/gamedata/lib/_tests/calculate-loadout.test.ts`), where the parsers and fixtures live.
+The calculator is tested in `src/loadout/_tests/loadout.test.ts` against fixtures of parsed vehicles and devices (`src/loadout/_tests/fixtures.ts`), run from the repo root with `bun run test`.
 
 ## Modifier model
 

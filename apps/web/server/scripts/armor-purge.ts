@@ -22,7 +22,7 @@ if (!values.yes) {
 
 const env = z.object({ DATABASE_URL: z.url() }).parse(process.env);
 
-const storageDir = values['armor-dir'] ?? resolve(fileURLToPath(new URL('../../../..', import.meta.url)), ARMOR_VIEWER.storageDir);
+const storageDir = values['armor-dir'] ?? resolve(fileURLToPath(new URL('..', import.meta.url)), ARMOR_VIEWER.storageDir);
 const prisma = createPrismaClient({ url: env.DATABASE_URL });
 
 try {

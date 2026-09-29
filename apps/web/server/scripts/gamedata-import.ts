@@ -242,9 +242,7 @@ try {
   }
 
   if (armor) {
-    const storage = createArmorStorage(
-      values['armor-dir'] ?? resolve(fileURLToPath(new URL('../../../..', import.meta.url)), ARMOR_VIEWER.storageDir)
-    );
+    const storage = createArmorStorage(values['armor-dir'] ?? resolve(fileURLToPath(new URL('..', import.meta.url)), ARMOR_VIEWER.storageDir));
 
     console.table(await writeArmorModels({ prisma, storage, collected: armor, onProgress: (message) => console.log(`  ${message}`) }));
   }

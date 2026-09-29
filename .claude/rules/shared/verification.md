@@ -11,11 +11,12 @@ paths:
 ## Verify before claiming anything works
 
 A change is verified with **typecheck, lint and the tests it touches**:
-`bun run verify` (typecheck, ESLint, Prettier, Stylelint, encoding) plus
-`bun run test` — or the targeted form, `bun run typecheck`, `eslint <path>` and
-`bunx vitest run --project <workspace>`. Bare `bun test` is Bun's own runner and
+`bun run verify` (typecheck, ESLint, the client's import-cycle check, Prettier,
+Stylelint, encoding) plus `bun run test` — or the targeted form, `bun run typecheck`,
+`eslint <path>`, `bun run test:changed` and `bunx vitest run --project <workspace>`. Bare `bun test` is Bun's own runner and
 fails the suite. There is no per-push CI: the manual deploy workflow
-(`.github/workflows/deploy.yml`, `checks` job) runs both before any image is built.
+(`.github/workflows/deploy.yml`, `checks` job) runs both before any image is built, and its `gate` job skips them for a tree that
+already passed.
 
 **No production build unless the owner asks for one.** `bun --filter @otmetki/client build`
 is slow and is not part of routine verification. It is still the only check that

@@ -1,6 +1,6 @@
 # Styles and SCSS
 
-Part of the [style guide](../../README.md).
+Part of the [style guide](../README.md).
 
 ## 3. Styles: SCSS modules only
 
@@ -44,9 +44,9 @@ The principle: the JSX reads, and `s.root`/`s.head` tell you the structure.
   token added to one theme block is added to the other in the same change. Components read
   tokens (`var(--color-surface)`), never a hard-coded colour, so they follow the theme with
   no theme-specific code.
-- **Fonts** are self-hosted through `next/font/local` in `shared/config/fonts`: **Tektur**
-  for display and numbers (`--font-display`), **Onest** for body text (`--font-sans`),
-  **IBM Plex Mono** for HUD labels (`--font-mono`).
+- **Fonts** are loaded through `next/font/google` in `shared/config/fonts`: **Fira Sans
+  Condensed** for display and numbers (`--font-display`), **Fira Sans** for body text
+  (`--font-sans`), **JetBrains Mono** for HUD labels (`--font-mono`).
 - **Rating colours** come from one mapping. `@otmetki/ratings` defines nine canonical tiers
   (`very_bad` … `super_unicum`); `shared/lib/rating-tone` folds them into six colour tones —
   `bad`, `below`, `average`, `good`, `great`, `unicum` — through `ratingTone({ scale, value })`

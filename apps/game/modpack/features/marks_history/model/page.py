@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_epoch, format_number
 from .constants import ACTION_CLEAR, MAX_DETAIL_LINES, SITE_PROGRESS_PATH, SOURCE_BATTLE
 from .history import percent
+from .report import marks_report
 
 
 def signed_percent(value):
@@ -58,6 +59,7 @@ def row_of(tank_id, vehicle, summary, translate):
         'badge': signed_percent(summary['last_delta']) or None,
         'link': None,
         'details': detail_rows(vehicle, translate),
+        'report': marks_report(int(tank_id), vehicle),
         'actions': [{'id': ACTION_CLEAR, 'label': translate('marks_history_clear'),
                      'confirm': translate('marks_history_clear_confirm', vehicle=summary['label'] or tank_id)}],
     }

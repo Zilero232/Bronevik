@@ -9,11 +9,12 @@ PALETTES = ('classic', 'graphite', 'contrast', 'colorblind')
 MAX_TEMPLATE = 600
 
 DEFAULTS = {
-    'x': 250,
-    'y': -260,
+    'x': 232,
+    'y': -6,
     'align_x': 'left',
     'align_y': 'bottom',
     'style': 'full',
+    'keep_stock': False,
     'palette': 'graphite',
     'kind_icons': True,
     'template': '{dealt} | {blocked} | {assisted} | {received}',
@@ -32,7 +33,7 @@ KIND_COLOR_KEYS = ('color_damage', 'color_assist', 'color_blocked', 'color_recei
 LAST_HIT_PANEL_ID = 'last_hit'
 LAST_HIT_DEFAULTS = {
     'x': 0,
-    'y': -120,
+    'y': -180,
     'align_x': 'center',
     'align_y': 'center',
     'font_size': 16,

@@ -39,4 +39,4 @@ MAX_SOUND_EVENT = 64
 MOVED_ALIGNS = (('alignX', 'align_x'), ('alignY', 'align_y'))
 
 # Renderer props only the Gameface HUD page draws; GUIFlash's Flash labels are never sent them.
-GAMEFACE_PROPS = ('scale', 'kind')
+GAMEFACE_PROPS = ('scale', 'kind', 'widget')

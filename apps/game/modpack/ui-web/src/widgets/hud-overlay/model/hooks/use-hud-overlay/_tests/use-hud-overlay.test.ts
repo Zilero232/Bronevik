@@ -109,6 +109,27 @@ describe(useHudOverlay, () => {
     expect(sent(mock)[1]).toEqual({ type: 'pressed', id: 'otmetki.hud.damage_log' });
   });
 
+  it('limits the mouse to the clickable panels, and to the whole screen only in edit mode', async () => {
+    const { mock } = await mount(withState({ edit: false }));
+
+    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 0, 0]);
+
+    const edited = await mount(sample);
+
+    expect(edited.mock.inputAreas().at(-1)).toEqual([0, 0, 1920, 1080]);
+  });
+
+  it('draws a known widget instead of the text and falls back to the text for an unknown one', async () => {
+    const widget = { kind: 'battle_clock', v: 1, data: { time: '21:47', date: '', timer: '', big_timer: false, icon: 'otmetki:clock' } };
+    const { hook } = await mount(withState({}, { widget }));
+
+    expect(hook.current().labels[0]?.widget?.entry.kind).toBe('battle_clock');
+
+    const unknown = await mount(withState({}, { widget: { kind: 'nope', v: 1, data: {} } }));
+
+    expect(unknown.hook.current().labels[0]?.widget).toBeNull();
+  });
+
   it('ignores a state that does not parse', async () => {
     const { hook } = await mount('{"v": 99}');
 

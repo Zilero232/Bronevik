@@ -35,6 +35,10 @@ class HudBackend(object):
     def draws_buttons(self):
         return False
 
+    def renders_widgets(self):
+        """Whether it draws the structured widget payloads now (only the Gameface page, once it answered)."""
+        return False
+
     def set_modifier(self, mode):
         """The key the player holds to move and resize panels (`core.hud.modifier` modes)."""
 
@@ -96,6 +100,10 @@ class BackendChain(HudBackend):
     def draws_buttons(self):
         active = self.active()
         return active is not None and active.draws_buttons()
+
+    def renders_widgets(self):
+        active = self.active()
+        return active is not None and active.renders_widgets()
 
     def set_modifier(self, mode):
         for backend in self.backends:

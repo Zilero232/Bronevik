@@ -1,4 +1,4 @@
-import type { ClientSize, GamefaceBridge, InvokeInput } from './gameface.types';
+import type { ClientSize, GamefaceBridge, InputArea, InvokeInput } from './gameface.types';
 
 import { isRecord } from '../../lib/is-record';
 import { GAMEFACE } from './gameface.constants';
@@ -39,9 +39,23 @@ export const createGamefaceBridge = (scope: object): GamefaceBridge => {
     callback();
   };
 
-  const buttonModel = (): Record<string, unknown> | null => {
+  const subViewModels = (): unknown[] => {
     const subViews = read(GAMEFACE.globals.subViews);
-    const candidates = [read(GAMEFACE.globals.model), ...(subViews ? Object.values(subViews) : [])];
+    const ids = invoke({ target: subViews, method: GAMEFACE.subViews.ids, args: [] });
+
+    if (!Array.isArray(ids)) {
+      return [];
+    }
+
+    return ids.map((id: unknown) => {
+      const view = invoke({ target: subViews, method: GAMEFACE.subViews.get, args: [id] });
+
+      return isRecord(view) ? view[GAMEFACE.model.nested] : null;
+    });
+  };
+
+  const buttonModel = (): Record<string, unknown> | null => {
+    const candidates = [read(GAMEFACE.globals.model), ...subViewModels()];
 
     for (const candidate of candidates) {
       const model = isRecord(candidate) && isRecord(candidate[GAMEFACE.model.nested]) ? candidate[GAMEFACE.model.nested] : candidate;
@@ -97,9 +111,32 @@ export const createGamefaceBridge = (scope: object): GamefaceBridge => {
     },
     onDataChanged: (callback) => {
       whenReady(() => {
-        invoke({ target: read(GAMEFACE.globals.engine), method: GAMEFACE.engine.on, args: [GAMEFACE.engine.dataChangedEvent, callback] });
+        let registered: unknown = null;
+
+        const onChanged = (_data: unknown, _indexes: unknown, callbackIds: unknown): void => {
+          if (registered === null || !Array.isArray(callbackIds) || callbackIds.includes(registered)) {
+            callback();
+          }
+        };
+
+        invoke({ target: read(GAMEFACE.globals.engine), method: GAMEFACE.engine.on, args: [GAMEFACE.engine.dataChangedEvent, onChanged] });
+
+        const { register, path, rootId, trackSubItems } = GAMEFACE.dataChanged;
+
+        registered = invoke({ target: read(GAMEFACE.globals.viewEnv), method: register, args: [path, rootId, trackSubItems] }) ?? null;
         callback();
       });
+    },
+    setInputArea: ({ left, top, width, height }: InputArea) => {
+      const viewEnv = read(GAMEFACE.globals.viewEnv);
+
+      if (typeof viewEnv?.[GAMEFACE.viewEnv.inputArea] !== 'function') {
+        return false;
+      }
+
+      invoke({ target: viewEnv, method: GAMEFACE.viewEnv.inputArea, args: [left, top, width, height] });
+
+      return true;
     },
     openWindow: () => {
       const model = buttonModel();

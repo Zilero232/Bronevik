@@ -59,7 +59,8 @@ describe(createGamefaceBridge, () => {
 
   it('opens the window through the marked model among the page sub views', () => {
     const model = buttonModel();
-    const bridge = createGamefaceBridge({ model: { other: 1 }, subViews: { a: { model: { open: vi.fn() } }, b: { model } } });
+    const views: Record<string, unknown> = { a: { model: { open: vi.fn() } }, b: { model } };
+    const bridge = createGamefaceBridge({ model: { other: 1 }, subViews: { ids: () => Object.keys(views), get: (id: string) => views[id] } });
 
     expect(bridge.openWindow()).toBe(true);
     expect(model[GAMEFACE.button.open]).toHaveBeenCalledOnce();
@@ -70,6 +71,32 @@ describe(createGamefaceBridge, () => {
 
     expect(createGamefaceBridge({ model }).openWindow()).toBe(true);
     expect(model[GAMEFACE.button.open]).toHaveBeenCalledOnce();
+  });
+
+  it('hears only the data changes of the callback it registered', async () => {
+    const listeners: ((data: unknown, indexes: unknown, ids: unknown) => void)[] = [];
+    const register = vi.fn(() => 4);
+    const seen = vi.fn();
+    const bridge = createGamefaceBridge({
+      engine: { whenReady: Promise.resolve(), on: (_event: string, listener: (typeof listeners)[number]) => listeners.push(listener) },
+      viewEnv: { addDataChangedCallback: register }
+    });
+
+    bridge.onDataChanged(seen);
+    await Promise.resolve();
+    listeners[0]?.({}, [], [9]);
+    listeners[0]?.({}, [], [4]);
+
+    expect(register).toHaveBeenCalledWith('model', 0, true);
+    expect(seen).toHaveBeenCalledTimes(2);
+  });
+
+  it('limits the input area of the view', () => {
+    const { mock, bridge } = mockBridge();
+
+    expect(bridge.setInputArea({ left: 1, top: 2, width: 3, height: 4 })).toBe(true);
+    expect(mock.inputAreas()).toEqual([[1, 2, 3, 4]]);
+    expect(createGamefaceBridge({}).setInputArea({ left: 0, top: 0, width: 0, height: 0 })).toBe(false);
   });
 
   it('ignores models without the marker or the command', () => {

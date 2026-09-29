@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import time
 
-from ....core.client.chat import battle_layout, channel_controller, is_own
+from ....core.client.chat import battle_layout, format_controllers, is_own, is_own_command
 from ....core.client.component import FeatureComponent
 from ....core.hooks import override
 from ....core.log import log
@@ -23,13 +23,14 @@ class ChatFilterFeature(FeatureComponent):
 
     def _install(self):
         layout = battle_layout()
-        controller = channel_controller()
-        if layout is None or controller is None:
+        controllers = format_controllers()
+        if layout is None or not controllers:
             log('chat filter: battle chat classes not found, feature off')
             return False
         override(layout, 'addMessage')(self._add_message)
         override(layout, 'addCommand')(self._add_command)
-        override(controller, '_formatMessage')(self._format_message)
+        for owner in controllers:
+            override(owner, '_formatMessage')(self._format_message)
         return True
 
     def _on_battle_ready(self, player):
@@ -52,7 +53,7 @@ class ChatFilterFeature(FeatureComponent):
 
     def _add_command(self, original, layout, command, *args, **kwargs):
         chat = self.filter
-        if chat is not None and not command.isSender() and not chat.allow_command(command.getSenderID(), time.time()):
+        if chat is not None and not is_own_command(command) and not chat.allow_command(command.getSenderID(), time.time()):
             return None
         return original(layout, command, *args, **kwargs)
 

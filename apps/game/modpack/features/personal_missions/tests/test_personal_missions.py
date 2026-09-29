@@ -45,6 +45,18 @@ class MissionsTest(unittest.TestCase):
         assert in_progress(missions(), 'SPG') == []
         assert counts(missions()) == {'active': 2, 'done': 1, 'honors': 1}
 
+    def test_in_progress_by_tier(self):
+        raw = [{'id': 1, 'name': u'Альфа', 'state': 'in_progress', 'levels': [8, 4]},
+               {'id': 2, 'name': u'Браво', 'state': 'in_progress', 'levels': (9, 10)},
+               {'id': 3, 'name': u'Чарли', 'state': 'in_progress', 'levels': [None, 10]}]
+        cleaned = clean_missions(raw)[0]
+        assert [mission['levels'] for mission in cleaned] == [[4, 8], [9, 10], None]
+        assert [mission['id'] for mission in in_progress(cleaned, None, 6)] == [1, 3]
+        assert [mission['id'] for mission in in_progress(cleaned, None, 10)] == [2, 3]
+        assert [mission['id'] for mission in in_progress(cleaned)] == [1, 2, 3]
+        assert u'Браво' in format_battle(cleaned, 'heavyTank', Settings({}, SCHEMA), translator(), 9)
+        assert u'Альфа' not in format_battle(cleaned, 'heavyTank', Settings({}, SCHEMA), translator(), 9)
+
 
 class FormatTest(unittest.TestCase):
 

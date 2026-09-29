@@ -318,8 +318,8 @@
         "en": "Damage log"
       },
       "description": {
-        "ru": "Нанесённый, заблокированный, ассистированный и полученный урон за бой и последние записи с типом снаряда. Источник полученного урона (пожар, таран, падение, боеукладка) и класс техники противника, цвета по виду урона и отдельная всплывающая строка «Последнее попадание».",
-        "en": "Damage dealt, blocked, assisted and received in the battle and the latest entries with the shell type. The source of received damage (fire, ram, a fall, the ammo rack) and the enemy vehicle class, colours by damage kind and a separate “Last hit” pop-up."
+        "ru": "Нанесённый, заблокированный, ассистированный и полученный урон за бой и последние записи с типом снаряда. Источник полученного урона (пожар, таран, падение, боеукладка) и класс техники противника, цвета по виду урона и отдельная всплывающая строка «Последнее попадание». Заменяет стандартную панель урона (можно оставить стандартную).",
+        "en": "Damage dealt, blocked, assisted and received in the battle and the latest entries with the shell type. The source of received damage (fire, ram, a fall, the ammo rack) and the enemy vehicle class, colours by damage kind and a separate “Last hit” pop-up. Replaces the stock damage log (the stock one can be kept)."
       },
       "fairPlay": {
         "ru": "Только события, которые игра уже показывает вам.",
@@ -360,8 +360,8 @@
         "en": "Team HP and score"
       },
       "description": {
-        "ru": "Суммарная прочность команд и счёт уничтоженных машин; вид «Полоска на каждый танк» показывает прочность каждой машины обеих команд.",
-        "en": "Total team hit points and the frag score; the “A bar per tank” style shows the hit points of every vehicle of both teams."
+        "ru": "Суммарная прочность команд и счёт уничтоженных машин; вид «Полоска на каждый танк» показывает прочность каждой машины обеих команд. Заменяет стандартную панель счёта (стиль «Только числа» — под ней).",
+        "en": "Total team hit points and the frag score; the “A bar per tank” style shows the hit points of every vehicle of both teams. Replaces the stock score strip (the «Numbers only» style sits under it)."
       },
       "fairPlay": {
         "ru": "Те же данные, что в списках команд («ушах») стандартного интерфейса.",
@@ -381,8 +381,8 @@
         "en": "Sixth sense lamp"
       },
       "description": {
-        "ru": "Крупная картинка и звук, когда срабатывает навык «Шестое чувство».",
-        "en": "A big image and a sound when the Sixth Sense skill fires."
+        "ru": "Крупная картинка и звук, когда срабатывает навык «Шестое чувство». Заменяет стандартную лампу.",
+        "en": "A big image and a sound when the Sixth Sense skill fires. Replaces the stock lamp."
       },
       "fairPlay": {
         "ru": "Срабатывает только от навыка экипажа, без поиска ближайшего врага.",
@@ -403,8 +403,8 @@
         "en": "Clock"
       },
       "description": {
-        "ru": "Текущее время в бою и в ангаре.",
-        "en": "The current time in battle and in the hangar."
+        "ru": "Текущее время в бою и в ангаре. По выбору заменяет стандартный таймер боя.",
+        "en": "The current time in battle and in the hangar. Optionally replaces the stock battle timer."
       },
       "fairPlay": {
         "ru": "Не читает данные боя.",
@@ -606,6 +606,48 @@
       }
     },
     {
+      "id": "arty_meter",
+      "category": "battle",
+      "presets": ["recommended"],
+      "title": {
+        "ru": "Артометр",
+        "en": "Artillery meter"
+      },
+      "description": {
+        "ru": "Сколько вас обстреляла арта: прямые попадания, накрытия, повреждённые модули, оглушения и урон — в бою «градусником» 0–10 с итогом за день, в ангаре — список последних боёв (карта, танк, сколько раз прилетело).",
+        "en": "How much artillery fire you took: direct hits, splash, damaged modules, stuns and damage — in battle as a 0–10 thermometer with the day total, in the hangar as a list of recent battles (map, tank, how many shells landed)."
+      },
+      "fairPlay": {
+        "ru": "Только огонь по вашей машине: свой лог полученного урона и эффекты попаданий по своему танку; класс стрелявшего — как в штатном логе. Позиции САУ, трассеры и засвет не читаются (запрещённый «артометр по трассерам» — другое).",
+        "en": "Only fire on your own vehicle: the own received-damage feedback and the hit effects on your own tank; the shooter's class as the stock log shows it. SPG positions, tracers and spotting are never read (the banned tracer-based meter is something else)."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/arty_meter.svg"
+      }
+    },
+    {
+      "id": "platoon_points",
+      "category": "battle",
+      "presets": [],
+      "title": {
+        "ru": "Очки взвода (турнир)",
+        "en": "Platoon points (tournament)"
+      },
+      "description": {
+        "ru": "Очки как в турнире взводов: за урон, помощь, фраги и выживание по вашим правилам, с полосками ХП взвода. Ваши очки считаются полностью, у союзников — фраги и выживание.",
+        "en": "Points like a platoon tournament: for damage, assist, frags and survival by your own rules, with the platoon's HP bars. Your own points count in full, the mates' from frags and survival."
+      },
+      "fairPlay": {
+        "ru": "Своё — полностью; у союзников по взводу только то, что игра показывает всем: фраги (лента и Tab), ХП (уши, маркеры). Урон союзников в бою не известен клиенту и не показывается; о противниках ничего.",
+        "en": "Your own results in full; for platoon mates only what the game shows everyone: frags (kill feed and Tab), HP (team panels, markers). The mates' damage is not known in battle and never shown; nothing about enemies."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/platoon_points.svg"
+      }
+    },
+    {
       "id": "battle_loadout",
       "category": "battle",
       "presets": ["streamer"],
@@ -656,8 +698,8 @@
         "en": "Crosshairs"
       },
       "description": {
-        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 17 центральных меток на выбор: 7 своих, 5 своих одноцветных в шести цветах и 5 из CC0-набора Kenney.",
-        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 17 centre marks to pick from: 7 of our own, 5 one-colour marks of ours in six colours and 5 from Kenney's CC0 pack."
+        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 20 центральных меток на выбор: 10 своих (среди них зелёные дуги, рамка с засечками и уголки поправки), 5 своих одноцветных в шести цветах и 5 из CC0-набора Kenney.",
+        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 20 centre marks to pick from: 10 of our own (green arcs, a box with ticks and stacked chevrons among them), 5 one-colour marks of ours in six colours and 5 from Kenney's CC0 pack."
       },
       "fairPlay": {
         "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
@@ -1150,6 +1192,8 @@
         "gun_arc",
         "received_hits",
         "death_card",
+        "arty_meter",
+        "platoon_points",
         "battle_loadout",
         "crosshair",
         "streamer_mode",
@@ -1206,6 +1250,8 @@
         "gun_arc",
         "received_hits",
         "death_card",
+        "arty_meter",
+        "platoon_points",
         "battle_loadout",
         "crosshair",
         "streamer_mode",

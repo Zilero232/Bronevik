@@ -6,6 +6,13 @@ import { HUD_PROTOCOL } from './hud-protocol.constants';
 const alignX = z.enum(PROTOCOL.alignX);
 const alignY = z.enum(PROTOCOL.alignY);
 
+// A panel's structured payload (core/hud/widget): the page checks `data` against the schema of `kind` when it draws it.
+export const hudWidgetSchema = z.object({ kind: z.string(), v: z.number(), data: z.unknown() });
+
+export const hudToneSchema = z.enum(HUD_PROTOCOL.tones);
+
+export const hudIconSchema = z.nullable(z.string());
+
 export const hudPanelSchema = z.object({
   id: z.string(),
   text: z.string(),
@@ -18,7 +25,8 @@ export const hudPanelSchema = z.object({
   border: z.boolean(),
   visible: z.boolean(),
   scale: z.number(),
-  kind: z.enum(HUD_PROTOCOL.kinds)
+  kind: z.enum(HUD_PROTOCOL.kinds),
+  widget: z.nullable(hudWidgetSchema)
 });
 
 export const hudStateSchema = z.object({

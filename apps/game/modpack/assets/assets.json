@@ -15,7 +15,7 @@
       "files": "otmetki/crosshair/png",
       "renditions": [{ "size": 64 }, { "size": 128 }],
       "target": "res/gui/maps/icons/otmetki/crosshair/otmetki",
-      "contents": "7 centre marks (dot, cross, ring, chevron, streamer, colorblind, triad): SVG sources, RGBA PNG 64 and 128 px",
+      "contents": "10 centre marks (dot, cross, ring, chevron, streamer, colorblind, triad, arcs, aim_box, stack): SVG sources, RGBA PNG 64 and 128 px",
       "fair_play": "A static image drawn at the client's own reticle centre; computes nothing."
     },
     {

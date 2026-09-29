@@ -20,13 +20,15 @@ class ReceivedHits(object):
         self.entries = []
         self.totals = dict((key, 0) for key in TOTAL_KEYS)
 
-    def add(self, outcome, attacker=None, vehicle_class=None, shell=None, damage=0, crits=0, at=None):
+    def add(self, outcome, attacker=None, vehicle_class=None, shell=None, damage=0, crits=0, at=None, source=None):
         if outcome not in OUTCOMES:
             return False
         damage = int(damage) if is_number(damage) and damage > 0 else 0
         crits = int(crits) if is_int(crits) and crits > 0 else 0
         attacker = to_text(attacker) if attacker else None
         if outcome == 'crit' and self._merge_crits(attacker, crits, at):
+            return True
+        if outcome == 'blocked' and self._join_ricochet(source, shell, damage, at):
             return True
         self.entries.append({
             'outcome': outcome,
@@ -36,6 +38,8 @@ class ReceivedHits(object):
             'damage': damage,
             'crits': crits,
             'at': at,
+            'source': source,
+            'pending': False,
         })
         del self.entries[:-MAX_ENTRIES]
         self.totals['hits'] += 1
@@ -45,6 +49,41 @@ class ReceivedHits(object):
         elif outcome in ('blocked', 'ricochet'):
             self.totals['blocked_damage'] += damage
         return True
+
+    def ricochet(self, source, attacker=None, vehicle_class=None, at=None):
+        """A ricochet the client drew on the own tank: it turns that attacker's blocked line from the own feedback
+        into a ricochet, or stands as its own line that the feedback's blocked damage joins when it comes later."""
+        if source is None:
+            return False
+        entry = self._recent(source, 'blocked', at)
+        if entry is not None:
+            entry['outcome'] = 'ricochet'
+            self.totals['blocked'] -= 1
+            self.totals['ricochet'] += 1
+            return True
+        self.add('ricochet', attacker, vehicle_class, None, 0, 0, at, source)
+        self.entries[-1]['pending'] = True
+        return True
+
+    def _join_ricochet(self, source, shell, damage, at):
+        entry = self._recent(source, 'ricochet', at, pending=True)
+        if entry is None:
+            return False
+        entry['pending'] = False
+        entry['shell'] = shell if shell in SHELL_CODES else None
+        entry['damage'] = damage
+        self.totals['blocked_damage'] += damage
+        return True
+
+    def _recent(self, source, outcome, at, pending=False):
+        if source is None or at is None:
+            return None
+        for entry in reversed(self.entries):
+            if entry['at'] is None or abs(at - entry['at']) > MERGE_WINDOW_S:
+                return None
+            if entry['source'] == source and entry['outcome'] == outcome and entry['pending'] == pending:
+                return entry
+        return None
 
     def _merge_crits(self, attacker, crits, at):
         for entry in reversed(self.entries):

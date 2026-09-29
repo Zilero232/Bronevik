@@ -79,6 +79,9 @@ class ReplayHeaderTest(unittest.TestCase):
     def test_names(self):
         assert is_replay_name('a.MTREPLAY') and is_replay_name('b.wotreplay')
         assert not is_replay_name('temp.mtreplay') and not is_replay_name('a.txt')
+        # BattleReplay.record (RU 1.45) falls back to temp1..temp99 while temp.mtreplay is taken.
+        assert not is_replay_name('temp1.mtreplay') and not is_replay_name('TEMP99.wotreplay')
+        assert is_replay_name('temp100.mtreplay') and is_replay_name('temple.mtreplay')
 
 
 if __name__ == '__main__':

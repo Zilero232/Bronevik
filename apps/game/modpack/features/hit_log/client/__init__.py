@@ -5,7 +5,7 @@ import time
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.battle_tally import MARKER_OUTCOMES
-from ....core.client.battle import call, controls_own_vehicle, feedback, is_enemy, player, vehicle_name
+from ....core.client.battle import call, controls_own_vehicle, feedback, is_enemy, player, vehicle_class, vehicle_info, vehicle_name
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel
 from ....core.log import safe
@@ -13,7 +13,8 @@ from ....core.shells import shell_code
 from ..i18n import STRINGS
 from ..model import HitLog, format_hit_log, own_shot_health
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import hit_log_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 
 try:
@@ -28,7 +29,7 @@ class HitLogPanel(BattlePanel):
         self.outcomes = values_by_name(FEEDBACK_EVENT_ID, MARKER_OUTCOMES)
         self.health_event = getattr(FEEDBACK_EVENT_ID, 'VEHICLE_HEALTH', None)
         self.log = None
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
 
     def start(self, player):
         self.log = HitLog()
@@ -50,7 +51,14 @@ class HitLogPanel(BattlePanel):
             return
         outcome = self.outcomes.get(event_id)
         if outcome is not None and is_enemy(vehicle_id) and self.log.add_result(vehicle_id, outcome, now, vehicle_name(vehicle_id)):
+            self._describe(vehicle_id)
             self.render()
+
+    # The class and max HP the enemy's marker and the player panels already show.
+    def _describe(self, vehicle_id):
+        if vehicle_id not in self.log.targets:
+            vehicle_type = getattr(vehicle_info(vehicle_id), 'vehicleType', None)
+            self.log.describe(vehicle_id, vehicle_class(vehicle_id), getattr(vehicle_type, 'maxHealth', None))
 
     def _on_player_feedback(self, events):
         if self.log is None or not controls_own_vehicle():
@@ -66,6 +74,7 @@ class HitLogPanel(BattlePanel):
             if kind == BATTLE_EVENT_TYPE.DAMAGE and call(extra, 'isShot', False):
                 shell = shell_code(call(extra, 'getShellType'))
                 changed = self.log.add_damage(target_id, call(extra, 'getDamage', 0), now, vehicle_name(target_id), shell) or changed
+                self._describe(target_id)
             elif kind == getattr(BATTLE_EVENT_TYPE, 'CRIT', None) and call(extra, 'isShot', False):
                 changed = self.log.add_crits(target_id, call(extra, 'getCritsCount', 0), now) or changed
         if changed:
@@ -74,4 +83,4 @@ class HitLogPanel(BattlePanel):
     @safe
     def render(self):
         if self.log is not None:
-            self.show(format_hit_log(self.log, self.settings, self.app.translate))
+            self.show(format_hit_log(self.log, self.settings, self.app.translate), hit_log_widget(self.log, self.settings))

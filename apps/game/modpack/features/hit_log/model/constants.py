@@ -13,6 +13,12 @@ PREVIEW_HITS = (
     (3, 'KV-1', 'pen', 280, 'heat', 360),
 )
 PREVIEW_SIZE = (300, 110)
+PREVIEW_CLASSES = {1: ('mediumTank', 900), 2: ('mediumTank', 1100), 3: ('heavyTank', 1500)}
+
+KIND = 'hit_log'
+# Colour roles of the outcomes (docs/specs/2026-09-29-hud-visual-redesign.md section 4.4).
+OUTCOME_TONES = {'pen': 'success', 'crit': 'warning', 'no_pen': 'blocked', 'ricochet': 'blocked', 'spaced': 'blocked', 'tracks': 'track',
+                 'missed_armor': 'muted'}
 
 # {c_outcome} per palette, in OUTCOMES order: pen, crit, no_pen, ricochet, spaced, tracks, missed_armor. graphite is
 # @otmetki/design-tokens, colorblind the Okabe-Ito set.

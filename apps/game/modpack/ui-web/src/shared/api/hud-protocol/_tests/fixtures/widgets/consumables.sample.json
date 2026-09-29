@@ -1,0 +1,53 @@
+{
+  "data": {
+    "shells": [
+      {
+        "current": true,
+        "icon": "img://gui/maps/icons/ammopanel/battle_ammo/ARMOR_PIERCING.png|otmetki:damage",
+        "quantity": 32
+      },
+      {
+        "current": false,
+        "icon": "img://gui/maps/icons/ammopanel/battle_ammo/ARMOR_PIERCING_CR_PREMIUM.png|otmetki:damage",
+        "quantity": 12
+      },
+      {
+        "current": false,
+        "icon": "img://gui/maps/icons/ammopanel/battle_ammo/HIGH_EXPLOSIVE.png|otmetki:damage",
+        "quantity": 6
+      }
+    ],
+    "slots": [
+      {
+        "icon": "img://gui/maps/icons/artefact/smallMedkit.png",
+        "quantity": 1,
+        "ready": true,
+        "remaining": 0.0,
+        "total": 90.0
+      },
+      {
+        "icon": "img://gui/maps/icons/artefact/smallRepairkit.png",
+        "quantity": 1,
+        "ready": false,
+        "remaining": 12.0,
+        "total": 90.0
+      },
+      {
+        "icon": "img://gui/maps/icons/artefact/handExtinguishers.png",
+        "quantity": 1,
+        "ready": true,
+        "remaining": 0.0,
+        "total": 60.0
+      }
+    ],
+    "stats": [
+      {
+        "current": true,
+        "icon": "img://gui/maps/icons/ammopanel/battle_ammo/ARMOR_PIERCING.png|otmetki:damage",
+        "text": "258 мм · урон 390 · 1 000 м/с"
+      }
+    ]
+  },
+  "kind": "consumables",
+  "v": 1
+}

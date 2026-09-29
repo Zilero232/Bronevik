@@ -7,7 +7,7 @@ MAX_TEMPLATE = 200
 
 DEFAULTS = {
     'x': 0,
-    'y': 70,
+    'y': 142,
     'align_x': 'center',
     'align_y': 'center',
     'show_bar': True,

@@ -14,10 +14,11 @@ from ...log import log
 from .constants import CONFIG_NAME
 from .gameface import GamefaceBackend
 from .guiflash import GuiFlashBackend
+from .stock import StockControl
 
 BACKENDS = (GamefaceBackend, GuiFlashBackend)
 
-_state = {'layer': None, 'config': None, 'backend': None}
+_state = {'layer': None, 'config': None, 'backend': None, 'stock': None}
 
 
 def build_backend(backends=BACKENDS, log_missing=True):
@@ -53,3 +54,11 @@ def hud_layer(app):
     if _state['layer'] is None:
         _state['layer'] = HudLayer(create_backend(), component_config(app))
     return _state['layer']
+
+
+def stock_control(app):
+    """The process-wide stock-element suppression of the battle page (created on first use)."""
+    if _state['stock'] is None:
+        _state['stock'] = StockControl(hud_layer(app))
+        _state['stock'].install()
+    return _state['stock']

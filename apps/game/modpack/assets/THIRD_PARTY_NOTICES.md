@@ -39,7 +39,7 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Copyright: Copyright (c) 2026 Три отметки
 - Licence: LicenseRef-TriOtmetki-Artwork (`assets/otmetki/LICENSE.md`)
 - Source: https://triotmetki.ru
-- Contents: 7 centre marks (dot, cross, ring, chevron, streamer, colorblind, triad): SVG sources, RGBA PNG 64 and 128 px
+- Contents: 10 centre marks (dot, cross, ring, chevron, streamer, colorblind, triad, arcs, aim_box, stack): SVG sources, RGBA PNG 64 and 128 px
 - Ships in: `res/gui/maps/icons/otmetki/crosshair/otmetki` (component `crosshair`)
 - Fair play: A static image drawn at the client's own reticle centre; computes nothing.
 

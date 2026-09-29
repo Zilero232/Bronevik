@@ -9,4 +9,5 @@ export type GamefaceMockInput = {
 export type GamefaceMock = {
   scope: Record<string, unknown>;
   sent: () => string[];
+  inputAreas: () => number[][];
 };

@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.client.game import main_window
 from ....core.log import safe
 from ...protocol import MESSAGE_ARG, RES_MAP_WINDOW, SEND_COMMAND, STATE_PROPERTY
 from .constants import WINDOW_LAYER
@@ -69,7 +70,7 @@ if AVAILABLE:
 
         def __init__(self, controller):
             super(SettingsWindow, self).__init__(wndFlags=WindowFlags.WINDOW | WindowFlags.WINDOW_FULLSCREEN, content=SettingsGameView(controller),
-                                                 layer=getattr(WindowLayer, WINDOW_LAYER))
+                                                 layer=getattr(WindowLayer, WINDOW_LAYER), parent=main_window())
 
 else:
     SettingsWindow = None

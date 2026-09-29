@@ -74,9 +74,12 @@ def vehicle_class(vehicle_id):
 
 
 def is_enemy(vehicle_id):
+    """True for a vehicle of an enemy team. RU 1.45 arena_dp.getVehicleInfo answers an unknown id with a blank
+    VehicleArenaInfoVO of team 0, which isEnemyTeam would call an enemy, so a vehicle without a team is not one."""
     provider = arena_dp()
     info = vehicle_info(vehicle_id)
-    return info is not None and provider is not None and bool(provider.isEnemyTeam(info.team))
+    team = getattr(info, 'team', None)
+    return bool(team) and provider is not None and bool(provider.isEnemyTeam(team))
 
 
 def call(target, name, default=None, *args):

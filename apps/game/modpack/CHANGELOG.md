@@ -4,6 +4,34 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.1.2
+
+### ru
+
+Новые боевые панели и сверка всех модов с исходниками клиента 1.45.
+
+- Боевые панели нарисованы иконками самого клиента: ХП команд и счёт (заменяет стандартную полосу, семь стилей), лог урона, лог попаданий, отметка, расходники, перезарядка, оборудование, шестое чувство и часы.
+- Новые компоненты: «Артометр» и «Очки взвода».
+- Сверка с исходниками клиента 1.45: лог урона после гибели больше не записывает попадания в боеукладку союзника, за которым следит камера; урон по машине, которой нет в данных боя, не считается уроном по противнику.
+- «Личный рекорд»: помощь оглушением считается в бою, как в досье (на арте побитый рекорд виден в бою), и учитываются все режимы, в которых игра обновляет рекорды машины, в том числе «Мапбокс».
+- Менеджер и загрузка реплеев: незаконченная запись второго клиента (temp1…temp99) больше не считается готовым реплеем.
+- Режим стримера и фильтр чата: свои быстрые команды больше не принимаются за чужие; горячие клавиши работают и с правыми Ctrl, Shift и Alt. В командном чате «Линии фронта» у сообщений тоже есть время.
+- Быстрые действия ангара и автопополнение действительно отправляют запрос клиенту.
+- Перезарядка не пишет ошибку в python.log в начале боя; попадания по вам различают рикошет; личные боевые задачи показывают класс, уровни и условия; модернизации полевой доработки подписаны названием, а не ключом.
+
+### en
+
+New battle panels and every mod checked against the 1.45 client source.
+
+- Battle panels are drawn with the client's own icons: team HP and score (replaces the stock bar, seven styles), damage log, hit log, marks, consumables, reload, equipment, sixth sense and clock.
+- New components: Arty meter and Platoon points.
+- Checked against the 1.45 client source: after death the damage log no longer records hits on the ammo rack of the ally the camera follows; damage to a vehicle missing from the battle data no longer counts as damage to an enemy.
+- Personal best: stun assist counts in battle as the dossier counts it (an artillery record shows as beaten in battle), and every mode in which the game updates the vehicle's records counts, Mapbox included.
+- Replay manager and upload: an unfinished recording of a second client (temp1…temp99) no longer passes for a finished replay.
+- Streamer mode and chat filter: your own quick commands are no longer taken for someone else's; hotkeys also work with the right Ctrl, Shift and Alt. The Frontline team chat gets timestamps too.
+- Hangar quick actions and auto-resupply really send their request to the client.
+- The reload timer no longer writes an error to python.log at the start of a battle; hits on you tell a ricochet apart; personal missions show the class, tiers and conditions; field modification upgrades are shown by name, not by key.
+
 ## 0.1.1
 
 ### ru
@@ -48,6 +76,26 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - The Gameface settings window with profiles and an on-screen HUD editor; ModsSettingsAPI stays the fallback.
 - Settings survive a wiped `mods/configs`: the binding, config.json, components.json, profiles.json and the app state are mirrored into `%APPDATA%\TriOtmetki` and restored on the next start.
 
+## arty_meter 0.1.0
+
+### ru
+
+- «Артометр»: прямые попадания, накрытия, повреждённые модули, оглушения и урон от арты по вашей машине в бою («градусник» 0–10) и за день; в ангаре — список последних боёв. Только огонь по своей машине, без позиций и трассеров.
+
+### en
+
+- Artillery meter: direct hits, splash, damaged modules, stuns and damage from artillery on your vehicle in battle (a 0-10 thermometer) and over the day; in the hangar, a list of recent battles. Only fire on your own vehicle, no positions or tracers.
+
+## platoon_points 0.1.0
+
+### ru
+
+- «Очки взвода»: очки как в турнире за урон, помощь, фраги и выживание по вашим правилам, с полосками ХП взвода. У союзников — только фраги и ХП, которые игра и так показывает.
+
+### en
+
+- Platoon points: tournament-style points for damage, assist, frags and survival by your own rules, with the platoon's HP bars. For mates only the frags and HP the game already shows.
+
 ## battle_hits 0.1.0
 
 ### ru
@@ -77,6 +125,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - A 15 m circle on the ground around your tank: always on or by a hotkey (Ctrl+Shift+B, Ctrl+Shift+C, F7, F8), four colours; gone when the tank is destroyed.
+
+## consumables 0.3.0
+
+### ru
+
+- Слоты с иконками клиента и круговой перезарядкой, снаряды иконками; по умолчанию только снаряды, чтобы не дублировать стандартную панель.
+
+### en
+
+- Slots with client icons and radial cooldowns, shells as icons; by default shells only, so the stock bar is not duplicated.
 
 ## consumables 0.2.0
 
@@ -117,6 +175,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - A card after your tank is destroyed: who fired the last shot (or whom the kill feed named), the shell or the cause (fire, ram), the damage, the damaged modules and crew and the side of the hull as the game's hit indicator showed it. Nothing is drawn while the tank is alive; no positions, no trajectories.
+
+## battle_loadout 0.2.0
+
+### ru
+
+- Оборудование и директивы иконками клиента со звездой бонуса, полоса слева от панели расходников.
+
+### en
+
+- Equipment and directives as client icons with the bonus star, a strip left of the consumables bar.
 
 ## battle_loadout 0.1.0
 
@@ -169,6 +237,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - A gentle hangar reminder to take a break: after a losing streak, after a long session and on a clear drop in the damage of the last battles; the thresholds are yours, each reminder comes once.
+
+## crosshair 0.3.0
+
+### ru
+
+- Три новые центральные метки: зелёные дуги, рамка с засечками, уголки поправки.
+
+### en
+
+- Three new centre marks: green arcs, a box with ticks, stacked chevrons.
 
 ## crosshair 0.2.0
 
@@ -238,6 +316,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - Your consumables with their cooldowns and the shells left of each type on one movable line; cooldowns count by game time.
 
+## reload_timer 0.2.0
+
+### ru
+
+- Полоса перезарядки с секундами и кассетой под прицелом.
+
+### en
+
+- A reload bar with seconds and the magazine under the reticle.
+
 ## reload_timer 0.1.0
 
 ### ru
@@ -247,6 +335,22 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - Your gun's reload countdown with a bar and the shells in the magazine; your own gun only. It counts by game time and keeps pace with the reticle.
+
+## core 0.4.0
+
+### ru
+
+- Протокол боевого интерфейса v3: у панели, кроме текста для GUIFlash, есть структурированные данные (`core/hud/widget`), по которым страница Gameface рисует иконки, числа и полосы.
+- Пути к иконкам клиента (`core/hud/icons`): классы техники, снаряды, расходники, отметки, флаги, уровни; отсутствующий в клиенте файл заменяется нашим значком.
+- Замена стандартных элементов боя (`core/hud/stock`): панель счёта, лог урона, лампа и таймер скрываются, только пока их рисует наша страница Gameface, и возвращаются, когда компонент выключен или рисует GUIFlash. Наши панели прячутся вместе со стандартным интерфейсом (V, Tab).
+- Окно HUD получает родителя — главное окно клиента, как у ModsList и Battle Observer.
+
+### en
+
+- HUD protocol v3: besides the GUIFlash text, a panel carries structured data (`core/hud/widget`) the Gameface page draws as icons, numbers and bars.
+- Client icon paths (`core/hud/icons`): vehicle classes, shells, consumables, marks, flags, tiers; a file missing in the client falls back to our glyph.
+- Replacing stock battle elements (`core/hud/stock`): the score strip, damage log, lamp and timer are hidden only while our Gameface page draws them, and come back when the component is off or GUIFlash draws. Our panels hide with the stock GUI (V, Tab).
+- The HUD window gets the client's main window as its parent, as ModsList and Battle Observer do.
 
 ## core 0.3.0
 
@@ -306,6 +410,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Durable settings: the files a player cannot recreate are mirrored into `%APPDATA%\TriOtmetki`, and a missing or older copy in `mods/configs/otmetki` is restored on load.
 - Pinned Python 2.7 libraries: six, blinker, attrs, enum34.
 
+## companion 0.4.0
+
+### ru
+
+- Переключатели «Артометра» и «Очков взвода».
+
+### en
+
+- Switches for the artillery meter and the platoon points.
+
 ## companion 0.3.0
 
 ### ru
@@ -354,6 +468,24 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
 
+## ui 0.2.0
+
+### ru
+
+- Боевой интерфейс рисуется панелями с иконками: подложка, шрифт Warhelios, иконки клиента и свои значки, круговые таймеры.
+- Клики в бою проходят в игру: страница ограничивает область ввода кнопкой «///», весь экран — только в режиме перемещения (Alt).
+- Страница подписывается на изменения модели так же, как клиент и OpenWG (`addDataChangedCallback`), и находит кнопку ангара среди вложенных вью через `subViews.ids()`.
+- Окно настроек открывается с родителем — главным окном клиента; SVG без rem.
+- «Расчёт отметок» в «Истории отметок»: танк, процент, шкала 0–100, карточки последнего и лучшего боя и динамики за 10 и 25 боёв, таблица боёв и график.
+
+### en
+
+- The battle HUD draws panels with icons: plates, the Warhelios font, client icons and our glyphs, radial timers.
+- Clicks in battle reach the game: the page limits its input area to the «///» button, and to the whole screen only in move mode (Alt).
+- The page subscribes to model changes the way the client and OpenWG do (`addDataChangedCallback`) and finds the hangar button among sub views through `subViews.ids()`.
+- The settings window opens with the client's main window as its parent; no rem inside SVG.
+- «MoE calculator» in the marks history: the tank, the percent, a 0-100 bar, cards for the last and best battle and the 10 and 25 battle trend, the battles table and a chart.
+
 ## ui 0.1.2
 
 ### ru
@@ -385,6 +517,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - The Gameface settings window (OpenWG Gameface): a card per installed component built from its own schema, list pages, profiles (save, load, rename, export and import as a code) and the on-screen HUD editor.
 - Entry points: the «///» button in the hangar, a ModsList entry and the hotkey Ctrl+Shift+T.
+
+## marks_panel 0.3.0
+
+### ru
+
+- Значок отметки, процент крупно, изменение со стрелкой, пороги 65/85/95 и прогноз боёв в одной плашке.
+
+### en
+
+- The marks icon, a big percent, the change with an arrow, the 65/85/95 thresholds and the battles forecast in one plate.
 
 ## marks_panel 0.2.0
 
@@ -466,6 +608,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - Opt-in, off by default: uploads the replays the game itself recorded of the player's own battles, matched by the replay header, private unless `publish_replays` is on. Never turns replay recording on; files above 50 MiB are refused.
 
+## damage_log 0.3.0
+
+### ru
+
+- Итоги иконками и числами, строки с иконкой снаряда (золотой подчёркнут), класса и источника урона, боеукладка.
+- Заменяет стандартный лог урона на его месте справа от панели повреждений (можно оставить стандартный); последнее попадание — карточка над прицелом.
+
+### en
+
+- Totals as icons and numbers, rows with the shell icon (gold underlined), the class and the damage source, the ammo rack.
+- Replaces the stock damage log at its spot right of the damage panel (the stock one can be kept); the last hit is a card above the reticle.
+
 ## damage_log 0.2.0
 
 ### ru
@@ -494,6 +648,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Palettes `classic`, `graphite`, `contrast`, `colorblind` (macros `{c_dealt}`, `{c_blocked}`, `{c_assisted}`, `{c_received}`) and our own damage-kind icons (`{icon}`).
 - Assist earned after death, while the camera follows an ally, still counts.
 
+## hit_log 0.2.0
+
+### ru
+
+- Иконки исхода попадания, класс цели, полоска и ХП после вашего выстрела; панель над мини-картой.
+
+### en
+
+- Hit outcome icons, the target class, a bar and the HP left after your shot; the panel sits above the minimap.
+
 ## hit_log 0.1.0
 
 ### ru
@@ -506,6 +670,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - In battle: each own hit on an enemy (penetration, critical, no penetration, ricochet and the rest) with damage, shell, crits and the target's HP after the hit, exactly as the enemy marker shows it; optionally grouped by target.
 - Outcome colour by palette (`{c_outcome}`: `classic`, `graphite`, `contrast`, `colorblind`); the target's HP is taken only from the player's own hit.
 
+## battle_clock 0.2.0
+
+### ru
+
+- Часы со значком под стандартным таймером; по выбору заменяют стандартный таймер боя.
+
+### en
+
+- The clock with an icon under the stock timer; optionally replaces the stock battle timer.
+
 ## battle_clock 0.1.0
 
 ### ru
@@ -515,6 +689,18 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - In battle: the local time, optionally the date, and the time left in the current arena period.
+
+## team_hp 0.3.0
+
+### ru
+
+- Пять стилей как в популярных сборках: две полосы и счёт, сегменты по танкам, иконки классов с полоской, компактные числа, минимум.
+- Заменяет стандартную панель счёта, пока её рисует Gameface; «Только числа» остаётся под стандартной.
+
+### en
+
+- Five styles like the popular packs: two bars and the score, a segment per tank, class icons with a bar, compact numbers, minimal.
+- Replaces the stock score strip while Gameface draws it; «Numbers only» stays under the stock one.
 
 ## team_hp 0.2.0
 
@@ -535,6 +721,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - In battle: each team's HP against its maximum as bars and/or numbers, the frag score and the HP difference, from the values the client already shows on markers and team panels.
+
+## sixth_sense 0.2.0
+
+### ru
+
+- Лампа с круговым таймером и пульсом на месте стандартной и заменяет её, пока её рисует Gameface.
+
+### en
+
+- A lamp with a radial timer and a pulse at the stock lamp's spot, replacing it while Gameface draws it.
 
 ## sixth_sense 0.1.0
 
@@ -703,6 +899,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 ### en
 
 - In the hangar: local time and date, the current server, the client's own ping to it and the online count.
+
+## marks_history 0.2.0
+
+### ru
+
+- «Расчёт отметок» по каждому танку: флаг, уровень, класс, процент, шкала 0–100, последний и лучший бой, динамика за 10 и 25 боёв, таблица боёв с Σ уроном и ±% и график процента.
+
+### en
+
+- «MoE calculator» per tank: flag, tier, class, percent, a 0-100 bar, the last and best battle, the 10 and 25 battle trend, a battles table with Σ damage and ±% and a chart of the percent.
 
 ## marks_history 0.1.0
 

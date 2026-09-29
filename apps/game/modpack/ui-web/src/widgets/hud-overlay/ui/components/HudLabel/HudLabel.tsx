@@ -8,14 +8,13 @@ import { HudRun } from '../HudRun';
 
 import s from './HudLabel.module.scss';
 
-// A button so the drag handle is a native control; a label lets the mouse through (pointer-events: none)
-// unless the player holds the edit modifier, and the settings button is always clickable.
 export const HudLabel = ({ label }: HudLabelProps) => (
   <button
     ref={label.measureRef}
     className={clsx(
       s.label,
       label.panel.border && s.border,
+      label.widget && s.widget,
       label.button && s.button,
       label.interactive && s.interactive,
       label.framed && s.framed,
@@ -32,6 +31,8 @@ export const HudLabel = ({ label }: HudLabelProps) => (
   >
     {label.button ? (
       <LogoMark size={HUD_OVERLAY.logoSize} />
+    ) : label.widget ? (
+      <label.widget.entry.Component data={label.widget.data} />
     ) : (
       label.lines.map((line, index) => (
         <span key={index} className={s.line}>

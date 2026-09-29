@@ -12,3 +12,5 @@ PREVIEW_SNAPSHOT = {'moving_avg_damage': 2540, 'damage_rating': 8612, 'marks_on_
 PREVIEW_THRESHOLDS = {'thresholds': {'65': 1900, '85': 2450, '95': 3050, '100': 3900}}
 PREVIEW_COMBINED = 3100
 PREVIEW_PACE = 3400
+
+KIND = 'marks_panel'

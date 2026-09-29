@@ -2,6 +2,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...hooks import subscribe, unsubscribe
 from ...log import safe
+from .constants import EITHER_SIDE
+
+
+def _held(big_world, keys, name):
+    """True while the modifier `name` is down on either side of the keyboard (Keys.KEY_LCONTROL or KEY_RCONTROL)."""
+    for side in (name, EITHER_SIDE.get(name)):
+        code = getattr(keys, side, None) if side else None
+        if code is not None and big_world.isKeyDown(code):
+            return True
+    return False
 
 
 def _repeated(event):
@@ -12,7 +22,7 @@ def _repeated(event):
 
 class Hotkey(object):
     """Calls `on_press()` when the key named `key` (a `Keys` name, KEY_T) goes down while every key of `modifiers`
-    is held, through the game's own InputHandler.onKeyDown (hangar and battle). A held key's auto-repeat does not press it
+    is held (a left-hand Ctrl, Shift or Alt also on the right), through the game's own InputHandler.onKeyDown (hangar and battle). A held key's auto-repeat does not press it
     again. `install()` / `remove()` are idempotent."""
 
     def __init__(self, key, modifiers, on_press):
@@ -41,5 +51,5 @@ class Hotkey(object):
         import Keys
         if not self.key or getattr(event, 'key', None) != getattr(Keys, self.key, None) or _repeated(event):
             return
-        if all(BigWorld.isKeyDown(getattr(Keys, name)) for name in self.modifiers):
+        if all(_held(BigWorld, Keys, name) for name in self.modifiers):
             self.on_press()

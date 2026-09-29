@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# Client settings (settings_constants.GAME.CAROUSEL_TYPE / DOUBLE_CAROUSEL_TYPE), UNVERIFIED on Lesta 1.45.
+# RU 1.45 client source: settings_constants.GAME.CAROUSEL_TYPE / DOUBLE_CAROUSEL_TYPE, stored as the index into
+# options.CarouselTypeSetting.CAROUSEL_TYPES ('single', 'double') and DoubleCarouselTypeSetting ('adaptive', 'small').
 CAROUSEL_TYPE = 'carouselType'
 DOUBLE_CAROUSEL_TYPE = 'doubleCarouselType'
 CAROUSEL_ROW_MODES = {'single': 0, 'double': 1}
@@ -13,7 +14,7 @@ ACTION_STYLE = 'remove_style'
 
 # RU 1.45 client source: settings_constants.GRAPHICS.INTERFACE_SCALE, written as the index into
 # settingsCore.interfaceScale.getScaleOptions() (graphics.getInterfaceScalesList of the screen: 0 = auto, then the
-# scales the screen allows); a scale the screen does not offer is left alone. UNVERIFIED on Lesta 1.45.
+# scales the screen allows; options.InterfaceScaleSetting._set/_save); a scale the screen does not offer is left alone.
 INTERFACE_SCALE = 'interfaceScale'
 INTERFACE_SCALES = {'auto': 0.0, 'x1': 1.0, 'x1_25': 1.25, 'x1_5': 1.5, 'x1_75': 1.75, 'x2': 2.0}
 SCALE_TOLERANCE = 1e-3

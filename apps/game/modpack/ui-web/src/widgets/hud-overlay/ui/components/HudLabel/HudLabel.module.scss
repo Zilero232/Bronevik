@@ -39,6 +39,11 @@
   }
 }
 
+.widget {
+  padding: 0;
+  white-space: nowrap;
+}
+
 .interactive {
   pointer-events: auto;
 }

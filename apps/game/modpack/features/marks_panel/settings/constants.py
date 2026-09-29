@@ -9,10 +9,10 @@ COLOR_MODES = ('delta', 'mark', 'off')
 MAX_TEMPLATE = 400
 
 DEFAULTS = {
-    'x': 0,
-    'y': 120,
-    'align_x': 'center',
-    'align_y': 'top',
+    'x': 490,
+    'y': -6,
+    'align_x': 'left',
+    'align_y': 'bottom',
     'style': 'extended',
     'template': '',
     'show_targets': True,

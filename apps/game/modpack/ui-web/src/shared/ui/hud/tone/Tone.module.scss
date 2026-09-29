@@ -1,0 +1,61 @@
+@use '../../../styles/gameface' as *;
+
+.text {
+  color: token(color-text);
+}
+
+.muted {
+  color: token(color-text-muted);
+}
+
+.ally {
+  color: token(color-ally);
+}
+
+.enemy {
+  color: token(color-enemy);
+}
+
+.gold {
+  color: token(color-gold);
+}
+
+.accent {
+  color: token(color-accent);
+}
+
+.radio {
+  color: token(color-steel-blue);
+}
+
+.track {
+  color: token(color-armor);
+}
+
+.stun {
+  color: token(class-spg);
+}
+
+.blocked {
+  color: token(color-steel);
+}
+
+.received {
+  color: token(color-danger);
+}
+
+.success {
+  color: token(color-success);
+}
+
+.warning {
+  color: token(color-warning);
+}
+
+.good {
+  color: token(rating-good);
+}
+
+.bad {
+  color: token(rating-bad);
+}

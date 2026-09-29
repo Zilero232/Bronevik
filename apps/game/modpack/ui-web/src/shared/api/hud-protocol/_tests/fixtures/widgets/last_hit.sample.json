@@ -1,0 +1,13 @@
+{
+  "data": {
+    "ammo_rack": null,
+    "amount": 310,
+    "cls": "img://gui/maps/icons/vehicleTypes/red/heavyTank.png|otmetki:class_heavy",
+    "name": "KV-1",
+    "shell": "img://gui/maps/icons/shell/small/HIGH_EXPLOSIVE_MODERN.png|otmetki:damage",
+    "source": null,
+    "timeout_s": 5
+  },
+  "kind": "last_hit",
+  "v": 1
+}

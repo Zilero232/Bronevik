@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-battle-loadout"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: the own tank's equipment, field modifications and directives on a battle panel."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

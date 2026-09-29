@@ -33,6 +33,8 @@ PREVIEW_ENTRIES = (
     ('received', 310, 'KV-1', 'he', 'shot', 'heavyTank'),
 )
 PREVIEW_SIZE = (300, 130)
+PREVIEW_SHELLS = {'ap': ('ARMOR_PIERCING', False), 'apcr': ('ARMOR_PIERCING_CR', True), 'heat': ('HOLLOW_CHARGE', False),
+                  'he': ('HE_MODERN', False)}
 PREVIEW_LAST_HIT = ('received', 310, 'KV-1', 'he', 'shot', 'heavyTank')
 PREVIEW_LAST_HIT_SIZE = (260, 30)
 
@@ -57,3 +59,18 @@ KIND_COLOR = {
 # The kind glyphs the package ships (assets/assets.json: otmetki_damage_log_icons).
 ICON_ROOT = 'gui/maps/icons/otmetki/damage_log/icons'
 ICON_RENDITION = 32
+
+KIND = 'damage_log'
+LAST_HIT_KIND = 'last_hit'
+# Totals of the widget: (key, efficiency icon or our glyph, colour role, shown when zero).
+TOTALS = (
+    ('dealt', 'damage', 'accent', True),
+    ('blocked', 'armor', 'blocked', True),
+    ('assisted', 'help', 'radio', True),
+    ('assist_stun', 'stun', 'stun', False),
+    ('received', None, 'received', False),
+)
+KIND_TONES = {'damage': 'accent', 'radio': 'radio', 'track': 'track', 'stun': 'stun', 'blocked': 'blocked', 'received': 'received'}
+KIND_GLYPHS = {'radio': 'radio', 'track': 'track', 'stun': 'stun', 'blocked': 'blocked', 'damage': 'damage', 'received': 'received'}
+SOURCE_ICONS = {'fire': ('efficiency', 'fire'), 'ram': ('efficiency', 'ram'), 'world': ('glyph', 'fall')}
+COMPACT_STYLES = ('compact', 'minimal')

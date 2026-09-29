@@ -43,6 +43,32 @@ export const figureSchema = z.object({
   marks: z.array(z.object({ x: z.number(), y: z.number(), tone: z.enum(PROTOCOL.figureTones) }))
 });
 
+const reportBattleSchema = z.object({
+  t: z.nullable(z.number()),
+  damage: z.nullable(z.number()),
+  percent: z.nullable(z.number()),
+  delta: z.nullable(z.number()),
+  result: z.optional(z.nullable(z.string()))
+});
+
+export const marksReportSchema = z.object({
+  name: text,
+  tier: z.nullable(z.number()),
+  tier_icon: z.nullable(z.string()),
+  flag: z.nullable(z.string()),
+  cls: z.nullable(z.string()),
+  percent: z.nullable(z.number()),
+  marks: z.number(),
+  mark: z.nullable(z.string()),
+  avg: z.nullable(z.number()),
+  last: z.nullable(reportBattleSchema),
+  best: z.nullable(reportBattleSchema),
+  record: z.nullable(z.number()),
+  trends: z.array(z.object({ window: z.number(), battles: z.number(), delta: z.nullable(z.number()) })),
+  battles: z.array(reportBattleSchema),
+  chart: z.array(z.number())
+});
+
 export const rowSchema = z.object({
   id: text,
   title: text,
@@ -52,6 +78,7 @@ export const rowSchema = z.object({
   link: optionalText,
   details: z.optional(z.array(detailSchema)),
   figure: z.optional(z.nullable(figureSchema)),
+  report: z.optional(z.nullable(marksReportSchema)),
   actions: z.array(actionSchema)
 });
 

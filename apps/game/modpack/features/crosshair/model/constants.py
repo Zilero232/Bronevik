@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# Client setting names (settings_constants.AIM / GAME in the WoT-era client), UNVERIFIED on Lesta 1.45.
+# Client setting names, RU 1.45 client source (settings_constants.AIM.ARCADE / SNIPER, GAME.ENABLE_SERVER_AIM;
+# SettingsCore options.AimSetting).
 # Each reticle is a dict of the parts the game's own "Reticle" settings tab shows: an opacity (0-100) or a
 # style index per part. A preset only sets those parts; the rest of the dict is kept as the player had it.
 ARCADE = 'arcade'
@@ -10,8 +11,9 @@ SERVER_RETICLE = 'useServerAim'
 RETICLE_PARTS = ('net', 'netType', 'centralTag', 'centralTagType', 'mixing', 'mixingType', 'gunTag', 'gunTagType', 'reloader',
                  'reloaderTimer', 'condition', 'cassette', 'zoomIndicator')
 OPACITY_PARTS = ('net', 'centralTag', 'mixing', 'gunTag', 'reloader', 'reloaderTimer', 'condition', 'cassette', 'zoomIndicator')
-STYLE_PARTS = ('netType', 'centralTagType', 'mixingType', 'gunTagType')
-STYLE_MAX = 15
+# The number of styles per part the settings window offers (options.AimSetting.VIRTUAL_OPTIONS, RU 1.45): index 0..count-1.
+STYLE_COUNTS = {'netType': 4, 'centralTagType': 14, 'mixingType': 4, 'gunTagType': 15}
+STYLE_PARTS = tuple(sorted(STYLE_COUNTS))
 
 PRESET_PARTS = {
     'classic': {'net': 100, 'netType': 0, 'centralTag': 100, 'centralTagType': 0, 'mixing': 100, 'mixingType': 0, 'gunTag': 100,
@@ -46,6 +48,9 @@ MARK_FILES = {
     'streamer': ('otmetki', 'streamer'),
     'colorblind': ('otmetki', 'colorblind'),
     'triad': ('otmetki', 'triad'),
+    'arcs': ('otmetki', 'arcs'),
+    'aim_box': ('otmetki', 'aim_box'),
+    'stack': ('otmetki', 'stack'),
     'tint_dot': ('tinted', 'tint_dot'),
     'tint_cross': ('tinted', 'tint_cross'),
     'tint_ring': ('tinted', 'tint_ring'),

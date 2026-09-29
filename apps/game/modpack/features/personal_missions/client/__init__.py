@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.battle import vehicle_class
+from ....core.client.battle import vehicle_class, vehicle_info
 from ....core.client.hud.panel import BattlePanel
 from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.log import safe
@@ -61,7 +61,9 @@ class PersonalMissionsPanel(BattlePanel):
     def start(self, player):
         if not self.settings.get('show_battle'):
             return
-        text = format_battle(self.missions, vehicle_class(getattr(player, 'playerVehicleID', None)), self.settings, self.app.translate)
+        vehicle_id = getattr(player, 'playerVehicleID', None)
+        level = getattr(getattr(vehicle_info(vehicle_id), 'vehicleType', None), 'level', None)
+        text = format_battle(self.missions, vehicle_class(vehicle_id), self.settings, self.app.translate, level)
         if text:
             self.show(text)
 

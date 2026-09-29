@@ -1,0 +1,55 @@
+@use '../../../../shared/styles/gameface' as *;
+
+.plate {
+  min-width: 220px;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  color: token(color-gold);
+}
+
+.total {
+  color: token(color-gold);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.row {
+  display: flex;
+  height: 26px;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.member {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin: 0 8px 0 4px;
+}
+
+.name {
+  @include ellipsis;
+
+  max-width: 110px;
+  color: token(color-text);
+  font-size: 13px;
+}
+
+.own {
+  color: token(color-gold);
+  font-weight: 700;
+}
+
+.points {
+  min-width: 28px;
+  color: token(color-text);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: right;
+}

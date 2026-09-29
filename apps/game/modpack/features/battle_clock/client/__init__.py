@@ -6,11 +6,13 @@ from ....core.client.battle import arena, server_time
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel
 from ....core.client.timer import Ticker
+from ....core.hud.stock import BATTLE_TIMER
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import clock_values, format_battle_clock, timer_seconds
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import clock_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import PERIOD_NAMES, TICK_S
 
@@ -39,10 +41,16 @@ class BattleClockPanel(BattlePanel):
     def preview_text(self):
         return preview_text(self.settings, self.app.translate, time.localtime())
 
+    def preview_widget(self):
+        return preview_widget(self.settings, time.localtime())
+
+    def stock_aliases(self):
+        return (BATTLE_TIMER,) if self.settings.get('replace_timer') and self.settings.get('show_timer') else ()
+
     @safe
     def render(self):
         current = arena()
         period = self.periods.get(getattr(current, 'period', None))
         seconds = timer_seconds(period, getattr(current, 'periodEndTime', None), server_time())
         values = clock_values(time.localtime(), self.settings, period, seconds)
-        self.show(format_battle_clock(values, self.settings, self.app.translate))
+        self.show(format_battle_clock(values, self.settings, self.app.translate), clock_widget(values, self.settings))

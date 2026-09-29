@@ -4,6 +4,7 @@ import { useT } from '../../../../../../../entities/window-state';
 import { Badge } from '../../../../../../../shared/ui/badge';
 import { DetailList } from '../../../../../../../shared/ui/detail-list';
 import { ListItem, ListItemActions, ListItemButton, ListItemInput, ListItemMain, ListItemNote } from '../../../../../../../shared/ui/list';
+import { MarksReport } from '../MarksReport';
 import { RowFigure } from '../RowFigure';
 
 export const ListPageRow = ({ item }: ListPageRowProps) => {
@@ -16,6 +17,7 @@ export const ListPageRow = ({ item }: ListPageRowProps) => {
         {row.subtitle && <ListItemNote>{row.subtitle}</ListItemNote>}
         {row.meta && <ListItemNote>{row.meta}</ListItemNote>}
         {item.detailsOpen && row.figure && <RowFigure figure={row.figure} />}
+        {item.detailsOpen && row.report && <MarksReport report={row.report} />}
         {item.detailsOpen && row.details && <DetailList items={row.details} />}
       </ListItemMain>
       {item.draftValue === null ? (

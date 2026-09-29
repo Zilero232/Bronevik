@@ -3,8 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.game import service
 from ....core.client.garage import is_locked
 
-# WoT-era gui_items names (Vehicle.optDevices.installed, OptionalDevice.isRemovable, Vehicle.crew), UNVERIFIED
-# on Lesta 1.45: anything missing reads as "nothing to do".
+# RU 1.45 client source (gui_items/Vehicle.py optDevices / crew / lastCrew, vehicle_equipment.installed,
+# artefacts.OptionalDevice.isRemovable, all properties; crew is [(slotIdx, tankman or None)]): anything missing
+# reads as "nothing to do".
 
 
 def _installed(vehicle):

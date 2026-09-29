@@ -66,7 +66,8 @@ class BattleEfficiencyPanel(BattlePanel):
             if key is None:
                 continue
             if key == 'def':
-                # UNVERIFIED on Lesta 1.45: the capture points reset arrive as the extra of BASE_CAPTURE_DROPPED.
+                # RU 1.45 client source: the extra of BASE_CAPTURE_DROPPED is the plain points count (feedback_events._unpackInteger),
+                # which the defence ribbon shows (ribbons_aggregator._BaseCaptureRibbon).
                 extra = event.getExtra()
                 changed = self.totals.add(key, extra if is_number(extra) else call(event, 'getCount', 0)) or changed
             elif is_enemy(event.getTargetID()):

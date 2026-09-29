@@ -5,10 +5,11 @@ import os
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.client.battle import arena, call, feedback, is_enemy
-from ....core.client.game import player_tank_id, values_by_name, vehicle_short_name
+from ....core.client.game import client_attr, player_tank_id, values_by_name, vehicle_short_name
 from ....core.client.hud.panel import BattlePanel
 from ....core.client.me import tank_ratings
 from ....core.client.sound import play_mp3
+from ....core.compat import is_number
 from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.hooks import subscribe
 from ....core.log import log_exception, safe
@@ -18,7 +19,21 @@ from ..model import LiveBattle, RecordBook, beaten, event_values, format_card, f
 from ..model.constants import KIND_BY_EVENT, PREVIEW_SIZE, RANDOM_BONUS_TYPE, SOUND, STORE_FILE
 from ..model.preview import preview_text
 from ..settings import PANEL_ID, SCHEMA, SWITCH
+from .constants import CAPS_CLASS, CAPS_MODULE, DOSSIER_CAP
 from .dossier import selected_records
+
+
+def counts_in_dossier(bonus_type):
+    """True for a battle whose results the dossier's max15x15 records take (random battles, Mapbox and the rest of the
+    DOSSIER_MAX15X15 types); only the random battle when the client's caps cannot be read."""
+    caps = client_attr(CAPS_MODULE, CAPS_CLASS)
+    cap = getattr(caps, DOSSIER_CAP, None)
+    if cap is None or bonus_type is None:
+        return bonus_type == RANDOM_BONUS_TYPE
+    try:
+        return bool(caps.checkAny(bonus_type, cap))
+    except Exception:
+        return bonus_type == RANDOM_BONUS_TYPE
 
 
 class PersonalBestPanel(BattlePanel):
@@ -87,7 +102,7 @@ class PersonalBestPanel(BattlePanel):
 
     def _on_battle_event(self, event, now):
         tank_id = (event.get('vehicle') or {}).get('tank_id')
-        if event.get('bonus_type') != RANDOM_BONUS_TYPE or not tank_id:
+        if not counts_in_dossier(event.get('bonus_type')) or not tank_id:
             return
         values = event_values(event)
         broken = beaten(self.book.get(tank_id), values)
@@ -100,7 +115,7 @@ class PersonalBestPanel(BattlePanel):
     def start(self, player):
         bonus_type = getattr(arena(), 'bonusType', RANDOM_BONUS_TYPE)
         record = self.book.get(player_tank_id(player))
-        if bonus_type != RANDOM_BONUS_TYPE or not record:
+        if not counts_in_dossier(bonus_type) or not record:
             return
         self.record = record
         self.live = LiveBattle()
@@ -128,8 +143,16 @@ class PersonalBestPanel(BattlePanel):
         if changed:
             self.render()
 
+    # BattleSummaryFeedbackEvent (feedback_events, RU 1.45): getTotalAssistDamage() is track + radio, stun comes apart.
     def _on_summary(self, event):
-        if self.live is not None and self.live.raise_to('damage', call(event, 'getTotalDamage')):
+        if self.live is None:
+            return
+        assist = call(event, 'getTotalAssistDamage')
+        stun = call(event, 'getTotalStunDamage')
+        if is_number(assist) and is_number(stun):
+            assist += stun
+        changed = self.live.raise_to('damage', call(event, 'getTotalDamage'))
+        if self.live.raise_to('assist', assist) or changed:
             self.render()
 
     @safe

@@ -20,6 +20,7 @@ from ..model import (ACTION_DELETE, ACTION_FOLDER, ACTION_REFRESH, ACTION_RENAME
 from ..model.constants import ANALYSIS_PATH, ANALYSIS_POLL_S, AUTO_NAME_CHECK_S, NOT_SERVED_STATUS
 from ..settings import SCHEMA, SWITCH
 
+
 class ReplayManager(FeatureComponent):
 
     def __init__(self, app):

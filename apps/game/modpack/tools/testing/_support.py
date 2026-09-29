@@ -134,3 +134,21 @@ class FakeTransport(object):
 
     def poll(self):
         return 0
+
+
+WIDGET_FIXTURES_DIR = os.path.join(MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol', '_tests', 'fixtures', 'widgets')
+
+
+def widget_fixture(kind, payload):
+    """Checks `payload` (a panel's widget, `core.hud.widget`) against the page's fixture of `kind`, which the ui-web
+    tests render; OTMETKI_UPDATE_FIXTURES=1 rewrites it. Returns whether they match."""
+    path = os.path.join(WIDGET_FIXTURES_DIR, '%s.sample.json' % kind)
+    text = json.dumps(payload, sort_keys=True, indent=2, ensure_ascii=False) + '\n'
+    if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
+        if not os.path.isdir(WIDGET_FIXTURES_DIR):
+            os.makedirs(WIDGET_FIXTURES_DIR)
+        with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
+            handle.write(text if isinstance(text, type(u'')) else text.decode('utf-8'))
+    if not os.path.isfile(path):
+        return False
+    return load_json(path) == json.loads(json.dumps(payload))

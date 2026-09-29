@@ -10,8 +10,8 @@ from otmetki.core.native_settings import merge_value
 from otmetki.core.settings import Settings
 from otmetki.features.crosshair.i18n import STRINGS
 from otmetki.features.crosshair.model import mark_html, mark_image, mark_offset, shows_in, to_native
-from otmetki.features.crosshair.model.constants import (MARK_COLORS, MARK_FILES, MARK_RENDITIONS, OPACITY_PARTS, PRESET_PARTS, RETICLE_PARTS, STYLE_MAX,
-                                                        STYLE_PARTS)
+from otmetki.features.crosshair.model.constants import (MARK_COLORS, MARK_FILES, MARK_RENDITIONS, OPACITY_PARTS, PRESET_PARTS, RETICLE_PARTS,
+                                                        STYLE_COUNTS, STYLE_PARTS)
 from otmetki.features.crosshair.model.preview import preview_text
 from otmetki.features.crosshair.settings import SCHEMA, SETTINGS
 from otmetki.features.crosshair.settings.constants import MARKS
@@ -48,7 +48,7 @@ class CrosshairTest(unittest.TestCase):
                 if part in OPACITY_PARTS:
                     assert 0 <= value <= 100, (name, part)
                 else:
-                    assert part in STYLE_PARTS and 0 <= value <= STYLE_MAX, (name, part)
+                    assert part in STYLE_PARTS and 0 <= value < STYLE_COUNTS[part], (name, part)
 
     def test_a_preset_keeps_the_players_other_parts(self):
         current = {'net': 50, 'netType': 2, 'centralTag': 100, 'custom': 7}

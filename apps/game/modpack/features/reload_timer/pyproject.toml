@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-reload-timer"
-version = "0.1.0"
+version = "0.2.0"
 description = "Feature: own gun reload countdown and magazine, in battle."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

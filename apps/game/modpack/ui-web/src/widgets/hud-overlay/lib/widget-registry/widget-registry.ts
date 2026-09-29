@@ -1,0 +1,32 @@
+import type { HudWidget } from '../../../../shared/api/hud-protocol';
+import type { ResolvedWidget } from './widget-registry.types';
+
+import { HUD_PROTOCOL } from '../../../../shared/api/hud-protocol';
+import { isRecord } from '../../../../shared/lib/is-record';
+import { WIDGET_ENTRIES } from './widget-entries';
+import { WIDGET_LINES } from './widget-registry.constants';
+
+const byKind = new Map(WIDGET_ENTRIES.map((entry) => [entry.kind, entry]));
+
+export const resolveWidget = (widget: HudWidget | null | undefined): ResolvedWidget | null => {
+  const entry = widget && widget.v === HUD_PROTOCOL.widgetVersion ? byKind.get(widget.kind) : undefined;
+  const data = entry && widget ? entry.parse(widget.data) : undefined;
+
+  return entry && data !== undefined ? { entry, data } : null;
+};
+
+const countRows = (value: unknown, depth: number): number => {
+  if (Array.isArray(value)) {
+    return value.length;
+  }
+
+  if (!isRecord(value) || depth <= 0) {
+    return 0;
+  }
+
+  return Object.values(value).reduce<number>((total, item) => total + countRows(item, depth - 1), 0);
+};
+
+export const widgetLines = ({ data }: ResolvedWidget): number => WIDGET_LINES.base + countRows(data, WIDGET_LINES.depth);
+
+export const widgetKinds = (): string[] => [...byKind.keys()];

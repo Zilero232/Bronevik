@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # The Gameface HUD page (ui-web `hud` entry, packages/ui/gameface/hud.html) and its view model: one string
 # property with the whole HUD as JSON, one command the page sends its messages through.
-HUD_PROTOCOL_VERSION = 2
+HUD_PROTOCOL_VERSION = 3
 HUD_STATE_PROPERTY = 'state'
 HUD_SEND_COMMAND = 'send'
 HUD_MESSAGE_ARG = 'message'
@@ -36,4 +36,5 @@ PANEL_KEYS = (
     ('visible', 'visible', True),
     ('scale', 'scale', 1.0),
     ('kind', 'kind', KIND_LABEL),
+    ('widget', 'widget', None),
 )

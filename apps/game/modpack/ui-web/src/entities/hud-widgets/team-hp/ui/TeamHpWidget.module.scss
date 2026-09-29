@@ -1,0 +1,59 @@
+@use '../../../../shared/styles/gameface' as *;
+
+.plate {
+  align-items: center;
+  padding: 4px 10px;
+}
+
+.compact {
+  padding: 2px 8px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.hp {
+  min-width: 52px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.left {
+  margin-right: 6px;
+  text-align: right;
+}
+
+.right {
+  margin-left: 6px;
+  text-align: left;
+}
+
+.score {
+  min-width: 56px;
+  margin: 0 8px;
+  color: token(color-text);
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.gap {
+  width: 40px;
+}
+
+.diff {
+  margin-top: 1px;
+  font-size: 11px;
+}
+
+.ahead {
+  color: token(color-ally);
+}
+
+.behind {
+  color: token(color-enemy);
+}

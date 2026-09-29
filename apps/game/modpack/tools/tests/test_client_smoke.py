@@ -19,7 +19,7 @@ REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
 STUBBED = ('gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2', 'constants', 'SoundGroups',
            'messenger', 'notification', 'account_helpers', 'helpers', 'skeletons', 'frameworks', 'openwg_gameface', 'items', 'WWISE', 'vehicle_outfit',
-           'Keys', 'Avatar', 'Vehicle', 'Math')
+           'Keys', 'Avatar', 'Vehicle', 'Math', 'arena_bonus_type_caps')
 
 
 class Event(object):
@@ -275,6 +275,9 @@ class Ammo(object):
 
     def getShells(self, int_cd):
         return self.shells[int_cd]
+
+    def getCurrentShells(self):
+        return self.shells[self.getCurrentShellCD()]
 
     def getGunReloadingState(self):
         return ReloadSnapshot(0.0, 7.8)
@@ -591,17 +594,18 @@ class ClientSmokeTest(unittest.TestCase):
             described.update({panel_id: (preview, width, enabled)})
 
         app.bus.emit('hud_describe', collect)
-        self.assertEqual(sorted(described), ['battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'crosshair', 'damage_log',
-                                             'death_card', 'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best',
-                                             'personal_missions', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense', 'team_hp'])
+        self.assertEqual(sorted(described), ['arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'crosshair',
+                                             'damage_log', 'death_card', 'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel',
+                                             'personal_best', 'personal_missions', 'platoon_points', 'received_hits', 'reload_timer', 'session_goals',
+                                             'sixth_sense', 'team_hp'])
         self.assertFalse(described['team_hp'][2])
         self.assertTrue(described['damage_log'][2])
         self.assertIn('390', described['damage_log'][0])
         app.bus.emit('hud_edit', True)
         panels = self.hud_components()
-        self.assertEqual(sorted(panels), ['battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'damage_log', 'death_card',
-                                          'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best', 'personal_missions',
-                                          'received_hits', 'reload_timer', 'session_goals', 'sixth_sense'])
+        self.assertEqual(sorted(panels), ['arty_meter', 'battle_clock', 'battle_efficiency', 'battle_loadout', 'consumables', 'damage_log',
+                                          'death_card', 'gun_arc', 'hangar_marks', 'hit_log', 'last_hit', 'main_gun', 'marks_panel', 'personal_best',
+                                          'personal_missions', 'platoon_points', 'received_hits', 'reload_timer', 'session_goals', 'sixth_sense'])
         self.assertTrue(all(props['lobby'] and not props['battle'] for props in panels.values()))
         self.assertIn('Pz. IV', panels['hit_log']['text'])
         app.bus.emit('hud_edit', False)
@@ -631,6 +635,13 @@ class ClientSmokeTest(unittest.TestCase):
         session.feedback.onPlayerFeedbackReceived([Feedback(kinds.RADIO_ASSIST, ENEMY_VEHICLE, Extra(640))])
         self.assertIn('640', self.hud_components()['damage_log']['text'])
         self.assertTrue(app.config.get('battle_damage_log'))
+        # RU 1.45 Avatar.showVehicleDamageInfo: after death DEVICES reports the ally the camera follows, not the own ammo rack.
+        damage_log = sys.modules['gui.mods.otmetki.core.registry'].registry().get('damage_log').log
+        session.vehicle_state.onVehicleStateUpdated(2, ('ammoBay', 'critical', 'critical'))
+        self.assertIsNone(damage_log.ammo_rack_at)
+        session.vehicle_state.getControllingVehicleID = lambda: OWN_VEHICLE
+        session.vehicle_state.onVehicleStateUpdated(2, ('ammoBay', 'critical', 'critical'))
+        self.assertIsNotNone(damage_log.ammo_rack_at)
 
     def install_client_class_stubs(self):
         test = self
@@ -651,6 +662,12 @@ class ClientSmokeTest(unittest.TestCase):
             def _formatMessage(self, message, doFormatting=True):
                 return False, message.text
 
+        class EpicTeamChannelController(ChannelController):
+            # RU 1.45 battle_controllers: the Frontline team chat builds its line with its own _formatMessage.
+
+            def _formatMessage(self, message, doFormatting=True):
+                return False, u'<epic>' + message.text
+
         class NotificationsModel(object):
 
             def addNotification(self, notification):
@@ -660,7 +677,8 @@ class ClientSmokeTest(unittest.TestCase):
                      'messenger.gui.Scaleform.channels.bw_chat2', 'messenger.ext', 'notification'):
             package(name, [])
         module('messenger.gui.Scaleform.channels.layout', BattleLayout=BattleLayout)
-        module('messenger.gui.Scaleform.channels.bw_chat2.battle_controllers', _ChannelController=ChannelController)
+        module('messenger.gui.Scaleform.channels.bw_chat2.battle_controllers', _ChannelController=ChannelController,
+               EpicTeamChannelController=EpicTeamChannelController)
         module('messenger.ext.player_helpers', isCurrentPlayer=lambda session_id: session_id == 'me')
         module('notification.NotificationsModel', NotificationsModel=NotificationsModel)
         module('notification.settings', NOTIFICATION_TYPE=type('NOTIFICATION_TYPE', (object,), {'MESSAGE': 1, 'NOTIFY_CENTER_POP_UP': 4,
@@ -698,6 +716,11 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertEqual(len(texts), 4)
         self.assertTrue(all(u'ALL TO BASE' in text and '[' in text for text in texts))
         self.assertEqual(len([text for text in self.chat if text.startswith('command:')]), 4)
+        del self.chat[:]
+        epic = sys.modules['messenger.gui.Scaleform.channels.bw_chat2.battle_controllers'].EpicTeamChannelController()
+        epic.addMessage(message('ally', u'hold A'))
+        self.assertEqual(len(self.chat), 1)
+        self.assertTrue(self.chat[0].endswith(u'<epic>hold A') and '[' in self.chat[0])
 
         self.events.onAvatarBecomeNonPlayer()
         del self.chat[:]
@@ -754,9 +777,10 @@ class ClientSmokeTest(unittest.TestCase):
     def test_battle_hud_extras_from_own_controllers(self):
         ids = self.install_hud_stubs()
         kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
-        self.load(list(ENTRY_MODULES))
+        app = self.load(list(ENTRY_MODULES))
         self.player = Player(ACCOUNT)
         self.events.onAccountShowGUI()
+        sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app).update_settings('consumables', {'show_consumables': True})
         session = self.enter_battle(1)
         panels = self.hud_components()
         self.assertIn(u'Аптечка', panels['consumables']['text'])
@@ -799,7 +823,7 @@ class ClientSmokeTest(unittest.TestCase):
         test = self
         self.key_down = Event()
         self.hit_directions = []
-        module('Keys', KEY_H=35, KEY_LCONTROL=29, KEY_LSHIFT=42)
+        module('Keys', KEY_H=35, KEY_LCONTROL=29, KEY_LSHIFT=42, KEY_RCONTROL=157, KEY_RSHIFT=54)
         sys.modules['gui'].InputHandler = type('InputHandler', (object,), {'g_instance': type('Input', (object,), {'onKeyDown': self.key_down})()})
         sys.modules['BigWorld'].isKeyDown = lambda key: True
 
@@ -861,6 +885,17 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertEqual(self.hud_components(), {})
         self.key_down(type('KeyEvent', (object,), {'key': 35})())
         self.assertIn(u'заблокировано 100', self.hud_components()['received_hits']['text'])
+        self.assertIn('death_card', self.hud_components())
+        # RU 1.45 client checks read Ctrl and Shift on either side (KEY_LCONTROL or KEY_RCONTROL).
+        big_world = sys.modules['BigWorld']
+        big_world.isKeyDown = lambda key: key == 157
+        self.key_down(type('KeyEvent', (object,), {'key': 35})())
+        self.assertIn('death_card', self.hud_components())
+        big_world.isKeyDown = lambda key: key in (157, 54)
+        self.key_down(type('KeyEvent', (object,), {'key': 35})())
+        self.assertEqual(self.hud_components(), {})
+        big_world.isKeyDown = lambda key: True
+        self.key_down(type('KeyEvent', (object,), {'key': 35})())
         self.assertIn('death_card', self.hud_components())
         self.events.onAvatarBecomeNonPlayer()
         self.assertEqual(self.hud_components(), {})
@@ -1001,6 +1036,23 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertEqual(instances['battle_hits'].ui_page()['rows'], [])
         self.assertNotIn('otmetki.battle_hits', self.components)
 
+    def test_received_hits_tell_a_ricochet_from_the_shot_drawn_on_the_own_tank(self):
+        self.install_hud_stubs()
+        vehicle = self.install_round_five_stubs()
+        kinds = sys.modules['BattleFeedbackCommon'].BATTLE_EVENT_TYPE
+        self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        session = self.enter_battle_with_gun(None)
+        ricochet = 2 | (1 << 8) | (120 << 16) | (130 << 40)
+        vehicle(False).showDamageFromShot(ALLY_VEHICLE, [ricochet], 0, 0.0, False)
+        self.own_vehicle.showDamageFromShot(ENEMY_VEHICLE, [ricochet], 0, 0.0, False)
+        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.TANKING, ENEMY_VEHICLE, Extra(240)),
+                                                   Feedback(kinds.TANKING, ALLY_VEHICLE, Extra(100))])
+        hits = self.hud_components()['received_hits']['text']
+        self.assertIn(u'рикошет, заблокировано 240', hits)
+        self.assertIn(u'не пробил, заблокировано 100', hits)
+
     def test_bush_circle_leaves_with_the_battle_it_was_drawn_in(self):
         self.install_hud_stubs()
         self.install_round_five_stubs()
@@ -1105,6 +1157,15 @@ class ClientSmokeTest(unittest.TestCase):
         self.assertIn(u'Урон 1 500 / ср. 1 20', panels['battle_efficiency']['text'])
         self.assertIn(u'Ср. урон 3 000: нужно', panels['session_goals']['text'])
         self.assertNotIn('otmetki.session_goals', self.components)
+        # RU 1.45 dossiers2 battle_results_processors: maxAssisted is track + radio + stun, so an artillery player's
+        # stun assist counts in battle; BattleSummaryFeedbackEvent keeps stun apart from getTotalAssistDamage().
+        sys.modules['gui.mods.otmetki.core.client.hud'].hud_layer(app).update_settings('personal_best', {'show_assist': True})
+        session.feedback.onPlayerFeedbackReceived([Feedback(kinds.STUN_ASSIST, ENEMY_VEHICLE, Extra(600))])
+        self.assertIn(u'осталось 4 520', self.hud_components()['personal_best']['text'])
+        summary = Summary()
+        summary.getTotalStunDamage = lambda: 5000
+        session.feedback.onPlayerSummaryFeedbackReceived(summary)
+        self.assertIn(u'Новый рекорд (помощь): 5 950 (+830)', self.hud_components()['personal_best']['text'])
         self.events.onAvatarBecomeNonPlayer()
 
         self.player = Player(ACCOUNT)
@@ -1125,6 +1186,68 @@ class ClientSmokeTest(unittest.TestCase):
         self.answer('goals', dict(goals, goals=[done]))
         self.assertTrue([text for text in self.messages if u'цель выполнена' in text], self.messages)
         self.assertEqual(self.sounds[-1], 'mp3:sixthSense:otmetki_goal.mp3')
+
+    def test_platoon_points_and_arty_meter_follow_only_the_own_vehicle(self):
+        self.install_hud_stubs()
+        sys.modules['gui.battle_control.battle_constants'].VEHICLE_VIEW_STATE.STUN = 65536
+        ArenaDP.isSquadMan = lambda provider, vehicle_id: vehicle_id == ALLY_VEHICLE
+        self.addCleanup(delattr, ArenaDP, 'isSquadMan')
+        self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        session = self.enter_battle(1)
+        instances = sys.modules['gui.mods.otmetki.core.registry'].registry().instances
+        platoon, arty = instances['platoon_points'].platoon, instances['arty_meter'].battle
+
+        # RU 1.45 Vehicle.updateStunInfo: STUN carries a StunInfo namedtuple, its end a StunInfo with duration 0.
+        def stun(end_time, duration):
+            return type('StunInfo', (object,), {'endTime': end_time, 'duration': duration})()
+
+        state = session.vehicle_state.onVehicleStateUpdated
+        for value in (stun(130.0, 12.0), stun(130.0, 11.0), stun(0.0, 0.0), stun(160.0, 10.0)):
+            state(65536, value)
+        state(4, 640)
+        summary = Summary()
+        summary.getTotalStunDamage = lambda: 5000
+        session.feedback.onPlayerSummaryFeedbackReceived(summary)
+        session.vehicle_state.getControllingVehicleID = lambda: ALLY_VEHICLE
+        state(65536, stun(190.0, 10.0))
+        state(4, 700)
+        self.assertEqual(arty.values()['stuns'], 2)
+        self.assertEqual((platoon.members[OWN_VEHICLE]['hp'], platoon.members[ALLY_VEHICLE]['hp']), (640, 700))
+        self.assertEqual(platoon.own_totals(), (2150, 5950))
+
+    def test_a_vehicle_without_a_team_is_not_an_enemy(self):
+        self.install_hud_stubs()
+        self.load(list(ENTRY_MODULES))
+        self.player = Player(ACCOUNT)
+        self.events.onAccountShowGUI()
+        session = self.enter_battle(1)
+        known = session.dp.getVehicleInfo
+        # RU 1.45 arena_dp.getVehicleInfo: an unknown id gets a blank VehicleArenaInfoVO of team 0.
+        session.dp.getVehicleInfo = lambda vehicle_id: known(vehicle_id) or VehicleInfo(vehicle_id, 0, '', 0)
+        battle = sys.modules['gui.mods.otmetki.core.client.battle']
+        self.assertEqual([battle.is_enemy(vehicle_id) for vehicle_id in (ENEMY_VEHICLE, ALLY_VEHICLE, 999, None)], [True, False, False, False])
+
+    def test_personal_best_counts_every_dossier_bonus_type(self):
+        self.install_hud_stubs()
+        self.load(list(ENTRY_MODULES))
+        counts = sys.modules['gui.mods.otmetki.features.personal_best.client'].counts_in_dossier
+        self.assertTrue(counts(1))
+        self.assertFalse(counts(29))
+
+        class Caps(object):
+            DOSSIER_MAX15X15 = str('DOSSIER_MAX15X15')
+
+            @staticmethod
+            def checkAny(bonus_type, *caps):
+                # RU 1.45 arena_bonus_type_caps.checkAny: a cap given by name must be a native str.
+                return bonus_type in (1, 29) and any(type(cap) is str and cap == 'DOSSIER_MAX15X15' for cap in caps)
+
+        module('arena_bonus_type_caps', ARENA_BONUS_TYPE_CAPS=Caps)
+        self.assertTrue(counts(29))
+        self.assertFalse(counts(22))
+        self.assertFalse(counts(None))
 
     def test_replay_analysis_notice_and_session_share(self):
         self.install_hud_stubs()
@@ -1176,9 +1299,12 @@ class ClientSmokeTest(unittest.TestCase):
             def __init__(self, vehicle, outfit_data):
                 self.vehicle, self.outfit_data = vehicle, outfit_data
 
-            def request(self, callback):
-                test.outfits.append(self.outfit_data)
-                callback(type('Result', (object,), {'success': True, 'userMsg': 'style removed'})())
+            # RU 1.45 Processor.request is @adisp_async: request() returns the caller that takes the callback.
+            def request(self):
+                def caller(callback):
+                    test.outfits.append(self.outfit_data)
+                    callback(type('Result', (object,), {'success': True, 'userMsg': 'style removed'})())
+                return caller
 
         module('gui.shared.gui_items.processors.common', OutfitApplier=OutfitApplier)
         package('items.components', [])
@@ -1294,8 +1420,9 @@ class ClientSmokeTest(unittest.TestCase):
             def __init__(self, vehicle, item, slotIdx, install=True):
                 self.vehicle, self.item, self.slot, self.install = vehicle, item, slotIdx, install
 
-            def request(self, callback):
-                test.processors.append((self, callback))
+            # RU 1.45 Processor.request is @adisp_async: request() returns the caller that takes the callback.
+            def request(self):
+                return lambda callback: test.processors.append((self, callback))
 
         class Items(object):
 

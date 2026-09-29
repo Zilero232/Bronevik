@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.hud import hex_color, max_length, panel_schema
-from .constants import DEFAULTS, MAX_TEMPLATE, PANEL_ID, STYLES, SWITCH
+from .constants import DEFAULTS, MAX_TEMPLATE, OVERLAY_STYLES, PANEL_ID, STYLES, SWITCH
 
 SETTINGS = (SWITCH,)
 
@@ -12,4 +12,4 @@ SCHEMA = panel_schema(
     normalizers={'ally_color': hex_color, 'enemy_color': hex_color, 'template': max_length(MAX_TEMPLATE)},
 )
 
-__all__ = ('PANEL_ID', 'SCHEMA', 'SETTINGS', 'SWITCH')
+__all__ = ('OVERLAY_STYLES', 'PANEL_ID', 'SCHEMA', 'SETTINGS', 'SWITCH')

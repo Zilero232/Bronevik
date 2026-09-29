@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-crosshair"
-version = "0.2.0"
+version = "0.3.0"
 description = "Feature: crosshair presets over the client own reticle settings (visual only) and the server reticle switch."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

@@ -1,5 +1,5 @@
 export { parseHudState, sendHud } from './hud-protocol';
 export { HUD_PROTOCOL } from './hud-protocol.constants';
-export { hudMessageSchema, hudPanelSchema, hudStateSchema } from './hud-protocol.schemas';
+export { hudIconSchema, hudMessageSchema, hudPanelSchema, hudStateSchema, hudToneSchema, hudWidgetSchema } from './hud-protocol.schemas';
 
-export type { HudMessage, HudMessageOf, HudPanel, HudState } from './hud-protocol.types';
+export type { HudMessage, HudMessageOf, HudPanel, HudState, HudToneValue, HudWidget } from './hud-protocol.types';

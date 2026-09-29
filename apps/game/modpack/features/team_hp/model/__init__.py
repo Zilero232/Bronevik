@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number
 from ....core.templates import render
 from ....core.teams import TeamHp  # noqa: F401
-from .constants import BAR_CHAR, STYLE_ICONS
+from .constants import BAR_CHAR, COMPACT_STYLES, STRIP_STYLES
 
 
 def bar(value, maximum, width, color):
@@ -31,7 +31,7 @@ def format_icons(teams, settings):
 
 
 def format_panel(teams, settings, translate):
-    if settings.get('style') == STYLE_ICONS and not settings.get('template'):
+    if settings.get('style') in STRIP_STYLES and not settings.get('template'):
         return format_icons(teams, settings)
     return format_team_hp(teams.values(), settings, translate)
 
@@ -39,7 +39,7 @@ def format_panel(teams, settings, translate):
 def format_team_hp(values, settings, translate):
     if settings.get('template'):
         return font(render(settings.get('template'), values), COLOR_NEUTRAL, settings.get('font_size'))
-    style = settings.get('style')
+    style = 'compact' if settings.get('style') in COMPACT_STYLES else settings.get('style')
     ally = settings.get('ally_color')
     enemy = settings.get('enemy_color')
     width = settings.get('bar_width')

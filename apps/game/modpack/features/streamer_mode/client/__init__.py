@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.battle import call
-from ....core.client.chat import battle_layout, is_own
+from ....core.client.chat import battle_layout, is_own, is_own_command
 from ....core.client.component import FeatureComponent
 from ....core.client.hotkey import Hotkey
 from ....core.client.hud import hud_layer
@@ -93,6 +92,6 @@ class StreamerMode(FeatureComponent):
         return original(layout, message, *args, **kwargs)
 
     def _add_command(self, original, layout, command, *args, **kwargs):
-        if self._hides_chat() and not call(command, 'isSender', True):
+        if self._hides_chat() and not is_own_command(command):
             return None
         return original(layout, command, *args, **kwargs)

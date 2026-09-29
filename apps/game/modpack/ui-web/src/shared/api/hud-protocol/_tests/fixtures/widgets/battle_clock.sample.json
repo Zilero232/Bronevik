@@ -1,0 +1,11 @@
+{
+  "data": {
+    "big_timer": false,
+    "date": "",
+    "icon": "otmetki:clock",
+    "time": "21:47",
+    "timer": "07:00"
+  },
+  "kind": "battle_clock",
+  "v": 1
+}

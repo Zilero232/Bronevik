@@ -9,7 +9,8 @@ from ....core.shells import shell_code
 from ..i18n import STRINGS
 from ..model import Loadout, format_panel, shot_speed
 from ..model.constants import PREVIEW_SIZE, TICK_S
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import consumables_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import PROJECTILE_SPEED_FACTOR, VEHICLES_CACHE, VEHICLES_MODULE
 
@@ -41,6 +42,12 @@ def item_name(item):
     return getattr(descriptor, 'shortUserString', None) or getattr(descriptor, 'userString', None)
 
 
+def descriptor_icon(descriptor):
+    """`descriptor.icon[0]`, the name the stock consumables panel builds its icon path from (RU 1.45 source)."""
+    icon = getattr(descriptor, 'icon', None)
+    return icon[0] if isinstance(icon, (tuple, list)) and icon else None
+
+
 class ConsumablesPanel(BattlePanel):
     """The own vehicle's consumables and shells from the client's own controllers (RU 1.45 source:
     guiSessionProvider.shared.equipments / .ammo, the ones the vanilla consumables panel listens to)."""
@@ -48,14 +55,14 @@ class ConsumablesPanel(BattlePanel):
     def __init__(self, app):
         self.loadout = None
         self.ticker = Ticker(TICK_S, self._on_tick)
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
 
     def start(self, player):
         self.loadout = Loadout()
         for int_cd, item in call(equipments(), 'getOrderedEquipmentsLayout', []) or []:
             self._set_item(int_cd, item)
         for int_cd, descriptor, quantity, _, gun_settings in call(ammo(), 'getOrderedShellsLayout', []) or []:
-            self.loadout.set_shell(int_cd, shell_code(getattr(descriptor, 'kind', None)), quantity)
+            self.loadout.set_shell(int_cd, shell_code(getattr(descriptor, 'kind', None)), quantity, descriptor_icon(descriptor))
             self.loadout.set_stats(int_cd, *shell_stats(descriptor, gun_settings, int_cd))
         self.loadout.set_current(call(ammo(), 'getCurrentShellCD'))
         self.hooks.add(equipments, 'onEquipmentAdded', self._on_equipment)
@@ -74,7 +81,8 @@ class ConsumablesPanel(BattlePanel):
         if item is None:
             return False
         return self.loadout.set_item(int_cd, item_name(item), call(item, 'getQuantity', 0), getattr(item, 'isReady', False),
-                                     call(item, 'getTimeRemaining', 0))
+                                     call(item, 'getTimeRemaining', 0), descriptor_icon(call(item, 'getDescriptor')),
+                                     call(item, 'getTotalTime', 0))
 
     def _on_equipment(self, int_cd, item):
         if self.loadout is not None and self._set_item(int_cd, item):
@@ -84,7 +92,7 @@ class ConsumablesPanel(BattlePanel):
     def _on_shells_added(self, int_cd, descriptor, quantity, *args):
         if self.loadout is None:
             return
-        changed = self.loadout.set_shell(int_cd, shell_code(getattr(descriptor, 'kind', None)), quantity)
+        changed = self.loadout.set_shell(int_cd, shell_code(getattr(descriptor, 'kind', None)), quantity, descriptor_icon(descriptor))
         gun_settings = args[1] if len(args) > 1 else call(ammo(), 'getGunSettings')
         if self.loadout.set_stats(int_cd, *shell_stats(descriptor, gun_settings, int_cd)) or changed:
             self.render()
@@ -112,6 +120,6 @@ class ConsumablesPanel(BattlePanel):
             return
         text = format_panel(self.loadout, self.settings, self.app.translate)
         if text:
-            self.show(text)
+            self.show(text, consumables_widget(self.loadout, self.settings, self.app.translate))
         else:
             self.hide()

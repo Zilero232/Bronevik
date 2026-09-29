@@ -4,8 +4,8 @@ from ....core.client.battle import call
 from ....core.log import log_exception
 
 # RU 1.45 client source (gui/prb_control): g_prbLoader.getDispatcher().getEntity() is the platoon the player is in;
-# UnitEntity.getPlayers() -> {dbID: PlayerUnitInfo} with `name`, `isReady` and isCurrentPlayer(), what the platoon
-# window lists. UNVERIFIED on Lesta 1.45: the entity and PlayerUnitInfo names of the reworked platoon.
+# UnitEntity.getPlayers() -> {dbID: PlayerUnitInfo} (entities/base/unit/entity.py:620) with `name`, the `isReady` slot and
+# isCurrentPlayer() (items/unit_items.py:17-93), what the platoon window lists; outside a unit the entity returns {}.
 
 
 def _flag(value):

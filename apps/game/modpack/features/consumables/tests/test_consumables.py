@@ -31,7 +31,7 @@ class LoadoutTest(unittest.TestCase):
         loadout = Loadout()
         assert loadout.set_shell(11, 'ap', 32)
         assert loadout.set_shell(12, 'plasma', -4)
-        assert loadout.shells[12] == {'code': None, 'quantity': 0}
+        assert loadout.shells[12] == {'code': None, 'quantity': 0, 'icon': None}
 
     def test_cooldowns_count_down(self):
         loadout = preview_loadout()
@@ -44,7 +44,7 @@ class LoadoutTest(unittest.TestCase):
 class FormatTest(unittest.TestCase):
 
     def test_panel(self):
-        text = format_panel(preview_loadout(), Settings({}, SCHEMA), translator())
+        text = format_panel(preview_loadout(), Settings({'show_consumables': True}, SCHEMA), translator())
         first, second = text.split('\n')
         assert u'Аптечка' in first and u'Ремкомплект 12 с' in first and u'✓' in first
         assert u'ББ 32' in second and u'БП 12' in second and u'ОФ 6' in second
@@ -52,20 +52,22 @@ class FormatTest(unittest.TestCase):
     def test_empty_slots_and_switches(self):
         loadout = preview_loadout()
         loadout.set_item(1, u'Аптечка', 0, False, 0)
-        assert u'<font color="%s" size="14">Аптечка ×0</font>' % COLOR_MUTED in format_panel(loadout, Settings({}, SCHEMA), translator())
+        shown = Settings({'show_consumables': True}, SCHEMA)
+        assert u'<font color="%s" size="14">Аптечка ×0</font>' % COLOR_MUTED in format_panel(loadout, shown, translator())
         shells_only = format_panel(loadout, Settings({'show_consumables': False}, SCHEMA), translator('en'))
         assert 'AP 32' in shells_only and '\n' not in shells_only
-        assert format_panel(Loadout(), Settings({}, SCHEMA), translator()) is None
+        assert format_panel(Loadout(), Settings({'show_consumables': True}, SCHEMA), translator()) is None
 
     def test_shell_stats_of_the_loaded_shell_or_every_type(self):
         loadout = preview_loadout()
-        assert u'258' not in format_panel(loadout, Settings({}, SCHEMA), translator())
-        current = format_panel(loadout, Settings({'show_shell_stats': True}, SCHEMA), translator()).split('\n')
+        assert u'258' not in format_panel(loadout, Settings({'show_consumables': True}, SCHEMA), translator())
+        current = format_panel(loadout, Settings({'show_consumables': True, 'show_shell_stats': True}, SCHEMA), translator()).split('\n')
         assert len(current) == 3 and u'ББ:' in current[2] and u'258 мм' in current[2] and u'урон 390' in current[2] and u'1 000 м/с' in current[2]
-        every = format_panel(loadout, Settings({'show_shell_stats': True, 'shell_stats': 'all'}, SCHEMA), translator('en')).split('\n')
+        every_type = Settings({'show_consumables': True, 'show_shell_stats': True, 'shell_stats': 'all'}, SCHEMA)
+        every = format_panel(loadout, every_type, translator('en')).split('\n')
         assert len(every) == 5 and u'330 mm' in every[3] and u'750 m/s' in every[4]
         assert loadout.set_current(12) and not loadout.set_current(12)
-        switched = format_panel(loadout, Settings({'show_shell_stats': True}, SCHEMA), translator()).split('\n')
+        switched = format_panel(loadout, Settings({'show_consumables': True, 'show_shell_stats': True}, SCHEMA), translator()).split('\n')
         assert u'БП:' in switched[2]
         assert loadout.set_current('x') and loadout.current is None and not loadout.set_current(None)
 
@@ -78,7 +80,7 @@ class FormatTest(unittest.TestCase):
         assert shot_speed(800.0, 0.8) == 1000 and shot_speed(None, 0.8) is None and shot_speed(800.0, 0) is None
 
     def test_preview_settings_and_strings(self):
-        assert u'ББ 32' in preview_text(Settings({}, SCHEMA), translator())
+        assert u'ББ 32' in preview_text(Settings({'show_consumables': True}, SCHEMA), translator())
         assert SETTINGS == ('battle_consumables',)
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
 

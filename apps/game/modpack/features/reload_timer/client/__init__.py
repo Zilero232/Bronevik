@@ -7,7 +7,8 @@ from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import GunState, format_panel
 from ..model.constants import PREVIEW_SIZE, TICK_S
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import reload_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 
 
@@ -21,13 +22,14 @@ def clip_size(gun_settings):
 
 class ReloadTimerPanel(BattlePanel):
     """The own gun's reload and magazine from the client's ammo controller (RU 1.45 source:
-    guiSessionProvider.shared.ammo, onGunReloadTimeSet(shellCD, snapshot, skipAutoLoader) with the snapshot's
+    guiSessionProvider.shared.ammo, getCurrentShells() (quantity, inClip) or SHELL_QUANTITY_UNKNOWN (-1) pairs
+    while no shell is current, onGunReloadTimeSet(shellCD, snapshot, skipAutoLoader) with the snapshot's
     getTimeLeft()/getBaseValue(), the gun settings' clip.size), what the vanilla reticle's reload indicator reads."""
 
     def __init__(self, app):
         self.gun = None
         self.ticker = Ticker(TICK_S, self._on_tick)
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
 
     def start(self, player):
         self.gun = GunState()
@@ -48,8 +50,7 @@ class ReloadTimerPanel(BattlePanel):
         self.gun = None
 
     def _read_current(self):
-        controller = ammo()
-        shells = call(controller, 'getShells', None, call(controller, 'getCurrentShellCD'))
+        shells = call(ammo(), 'getCurrentShells')
         return self.gun.set_in_clip(shells[1] if isinstance(shells, tuple) and len(shells) == 2 else None)
 
     def _on_reload(self, shell_cd, snapshot, *args):
@@ -85,6 +86,6 @@ class ReloadTimerPanel(BattlePanel):
             return
         text = format_panel(self.gun, self.settings, self.app.translate)
         if text:
-            self.show(text)
+            self.show(text, reload_widget(self.gun, self.settings))
         else:
             self.hide()

@@ -14,8 +14,11 @@ next sync. Any failure to open marks the backend broken, and the chain moves on 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hud import HudBackend
+from ....hud.icons import resolve
 from ....hud.surface import HUD_MESSAGE_ARG, HUD_RES_MAP_ID, HUD_SEND_COMMAND, HUD_STATE_PROPERTY, SPACE_LOBBY, HudSurface
 from ....log import log, log_exception, safe
+from ...game import main_window
+from ..icons import client_file_exists
 from ..modifier import ModifierWatch
 from ..space import current_space, cursor_events, gui_spaces
 from .constants import INVALID_RES_ID, READY_SPACES, WINDOW_LAYER
@@ -93,7 +96,7 @@ if IMPORT_ERROR is None:
 
         def __init__(self, layout, backend):
             super(HudWindow, self).__init__(wndFlags=WindowFlags.WINDOW, content=HudView(layout, backend),
-                                            layer=getattr(WindowLayer, WINDOW_LAYER))
+                                            layer=getattr(WindowLayer, WINDOW_LAYER), parent=main_window())
 
 else:
     HudWindow = None
@@ -114,6 +117,7 @@ class GamefaceBackend(HudBackend):
         self.modifier = ModifierWatch(self._on_modifier)
         self.loader, self.ready_spaces = None, ()
         self.waiting = False
+        self.answered = False
         self._listen_cursor()
         self._listen_spaces()
 
@@ -129,14 +133,23 @@ class GamefaceBackend(HudBackend):
         return self.usable() and not self.broken and layout_id() is not None
 
     def create(self, alias, props):
-        self.surface.create(alias, props, current_space())
+        self.surface.create(alias, self._checked(props), current_space())
         if self.sync():
             return True
         self.surface.delete(alias)
         return False
 
     def update(self, alias, props):
-        return self.surface.update(alias, props) and self.sync()
+        return self.surface.update(alias, self._checked(props)) and self.sync()
+
+    @staticmethod
+    def _checked(props):
+        if isinstance(props, dict) and isinstance(props.get('widget'), dict):
+            props = dict(props, widget=resolve(props['widget'], client_file_exists))
+        return props
+
+    def renders_widgets(self):
+        return self.answered and self.available()
 
     def delete(self, alias):
         return self.surface.delete(alias) and self.sync()
@@ -238,6 +251,7 @@ class GamefaceBackend(HudBackend):
             return
         command, fields = decoded
         if command == 'ready':
+            self.answered = True
             log('HUD: Gameface page ready (%d labels)' % len(self.surface.aliases(current_space())))
             self.push_state()
         elif command == 'pressed':

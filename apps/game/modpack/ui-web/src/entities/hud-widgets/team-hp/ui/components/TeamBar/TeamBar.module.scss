@@ -1,0 +1,33 @@
+.bar {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  background-color: rgb(255 255 255 / 8%);
+}
+
+.plain {
+  justify-content: space-between;
+  background-color: rgb(0 0 0 / 0%);
+}
+
+.mirrored {
+  justify-content: flex-end;
+}
+
+.segment {
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-right: 1px;
+  background-color: rgb(255 255 255 / 8%);
+}
+
+.dead {
+  background-color: rgb(255 255 255 / 4%);
+}
+
+.fill {
+  height: 100%;
+}

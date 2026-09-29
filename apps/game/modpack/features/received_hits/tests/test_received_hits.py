@@ -9,6 +9,7 @@ from otmetki.features.received_hits.i18n import STRINGS
 from otmetki.features.received_hits.model import ReceivedHits, format_panel
 from otmetki.features.received_hits.model.constants import MAX_ENTRIES
 from otmetki.features.received_hits.model.preview import preview_text
+from otmetki.features.received_hits.model.shot import hit_code, is_ricochet
 from otmetki.features.received_hits.settings import SCHEMA, SETTINGS
 
 
@@ -34,6 +35,39 @@ class ReceivedHitsTest(unittest.TestCase):
         assert len(hits.entries) == 1 and hits.entries[0]['crits'] == 2 and hits.totals['crit'] == 1
         hits.add('crit', 'Pz. IV', 'mediumTank', None, 0, 1, 5.0)
         assert len(hits.entries) == 2 and hits.entries[1]['outcome'] == 'crit'
+
+    def test_ricochet_turns_the_blocked_line(self):
+        hits = ReceivedHits()
+        hits.add('blocked', 'KV-1', 'heavyTank', 'ap', 240, 0, 5.0, 17)
+        assert hits.ricochet(17, 'KV-1', 'heavyTank', 5.3)
+        assert len(hits.entries) == 1 and hits.entries[0]['outcome'] == 'ricochet'
+        assert hits.totals['blocked'] == 0 and hits.totals['ricochet'] == 1 and hits.totals['blocked_damage'] == 240
+
+    def test_blocked_damage_joins_an_earlier_ricochet(self):
+        hits = ReceivedHits()
+        assert hits.ricochet(17, 'KV-1', 'heavyTank', 5.0)
+        assert hits.add('blocked', 'KV-1', 'heavyTank', 'ap', 240, 0, 5.2, 17)
+        assert len(hits.entries) == 1 and hits.entries[0]['damage'] == 240 and hits.entries[0]['shell'] == 'ap'
+        assert hits.totals == {'hits': 1, 'pen': 0, 'crit': 0, 'blocked': 0, 'ricochet': 1, 'damage': 0, 'blocked_damage': 240}
+        hits.add('blocked', 'KV-1', 'heavyTank', 'ap', 100, 0, 5.4, 17)
+        assert len(hits.entries) == 2 and hits.entries[1]['outcome'] == 'blocked'
+
+    def test_ricochet_only_matches_its_attacker_and_time(self):
+        hits = ReceivedHits()
+        hits.add('blocked', 'KV-1', 'heavyTank', 'ap', 240, 0, 5.0, 17)
+        hits.ricochet(18, 'T-34', 'mediumTank', 5.1)
+        hits.ricochet(17, 'KV-1', 'heavyTank', 9.0)
+        assert [entry['outcome'] for entry in hits.entries] == ['blocked', 'ricochet', 'ricochet']
+        assert not hits.ricochet(None)
+
+    def test_ricochet_from_the_last_point(self):
+        def segment(code, start=0x10, end=0x20):
+            return code | (1 << 8) | (start << 16) | (end << 40)
+        assert hit_code(segment(2)) == 2 and hit_code(segment(4, 0x10, 0x10)) is None and hit_code(-1) is None
+        assert is_ricochet([segment(4), segment(1)])
+        assert not is_ricochet([segment(1), segment(4)])
+        assert is_ricochet([segment(2), segment(4, 0x10, 0x10)])
+        assert not is_ricochet([]) and not is_ricochet(None)
 
     def test_is_capped(self):
         hits = ReceivedHits()

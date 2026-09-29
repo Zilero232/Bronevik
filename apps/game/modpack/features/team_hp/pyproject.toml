@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-team-hp"
-version = "0.2.0"
+version = "0.3.0"
 description = "Feature: team HP sums and bars with the frag score, from the vehicle HP the client already shows."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

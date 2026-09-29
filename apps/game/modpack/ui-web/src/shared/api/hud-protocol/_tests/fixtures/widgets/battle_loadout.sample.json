@@ -1,0 +1,40 @@
+{
+  "data": {
+    "compact": true,
+    "groups": [
+      {
+        "items": [
+          {
+            "bonus": true,
+            "icon": "img://gui/maps/icons/artefact/turbocharger.png",
+            "name": "Турбонагнетатель"
+          },
+          {
+            "bonus": false,
+            "icon": "img://gui/maps/icons/artefact/improvedVentilation.png",
+            "name": "Вентиляция"
+          },
+          {
+            "bonus": true,
+            "icon": "img://gui/maps/icons/artefact/rammer.png",
+            "name": "Досылатель"
+          }
+        ],
+        "kind": "devices"
+      },
+      {
+        "items": [
+          {
+            "bonus": false,
+            "icon": null,
+            "name": "Боевое братство"
+          }
+        ],
+        "kind": "directives"
+      }
+    ],
+    "size": 24
+  },
+  "kind": "battle_loadout",
+  "v": 1
+}

@@ -4,7 +4,7 @@ import os
 import time
 
 from ....core.client.component import FeatureComponent
-from ....core.client.game import selected_vehicle, vehicle_short_name
+from ....core.client.game import selected_vehicle, vehicle_class_tag, vehicle_short_name
 from ....core.hooks import subscribe
 from ....core.log import log_exception
 from ....core.storage import JsonFile
@@ -43,14 +43,14 @@ class MarksHistoryFeature(FeatureComponent):
         if self.history is None or not self.enabled():
             return
         tank_id = (event.get('vehicle') or {}).get('tank_id')
-        if self.history.record_battle(event, vehicle_short_name(tank_id)) is not None:
+        if self.history.record_battle(event, vehicle_short_name(tank_id), vehicle_class_tag(tank_id)) is not None:
             self.history.save()
 
     def _on_vehicle_moe(self, snapshot):
         if self.history is None or not self.enabled():
             return
         self.selected = snapshot.get('tank_id')
-        if self.history.record_snapshot(snapshot, time.time(), vehicle_short_name(self.selected)) is not None:
+        if self.history.record_snapshot(snapshot, time.time(), vehicle_short_name(self.selected), vehicle_class_tag(self.selected)) is not None:
             self.history.save()
         self.show()
 

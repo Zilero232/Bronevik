@@ -11,7 +11,10 @@ export type GamefaceBridge = {
   send: (message: string) => boolean;
   onDataChanged: (callback: () => void) => void;
   openWindow: () => boolean;
+  setInputArea: (area: InputArea) => boolean;
 };
+
+export type InputArea = { left: number; top: number; width: number; height: number };
 
 export type InvokeInput = {
   target: Record<string, unknown> | null;

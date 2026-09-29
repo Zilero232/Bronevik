@@ -6,10 +6,10 @@ GROUP = 'battle'
 
 DEFAULTS = {
     'x': 0,
-    'y': -150,
+    'y': -66,
     'align_x': 'center',
     'align_y': 'bottom',
-    'show_consumables': True,
+    'show_consumables': False,
     'show_shells': True,
     'show_shell_stats': False,
     'shell_stats': 'current',

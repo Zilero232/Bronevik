@@ -1,0 +1,40 @@
+{
+  "data": {
+    "battles": {
+      "count": 45,
+      "level": 95
+    },
+    "color": "#7CD35B",
+    "damage": 3100,
+    "delta": 0.18,
+    "has_curve": true,
+    "mark": "img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target",
+    "marks": 2,
+    "percent": 86.3,
+    "step": {
+      "need": 955,
+      "step": 0.5
+    },
+    "style": "extended",
+    "text": null,
+    "thresholds": [
+      {
+        "level": 65,
+        "need": 0,
+        "reached": true
+      },
+      {
+        "level": 85,
+        "need": 0,
+        "reached": true
+      },
+      {
+        "level": 95,
+        "need": 25195,
+        "reached": false
+      }
+    ]
+  },
+  "kind": "marks_panel",
+  "v": 1
+}

@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-consumables"
-version = "0.2.0"
+version = "0.3.0"
 description = "Feature: own consumables with their cooldowns and own shells left, in battle."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

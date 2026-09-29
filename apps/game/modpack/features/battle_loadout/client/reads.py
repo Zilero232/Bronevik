@@ -6,7 +6,9 @@ from ....core.log import log_exception
 # (OptDeviceSlotData.categories), OptionalDevice.descriptor.categories (a device in a slot of its own category gets
 # the slot's bonus, the green frame of the hangar), Vehicle.battleBoosters.installed, the items' userName and icon;
 # VehicleDescriptor.modifications with vehicles.g_cache.postProgression().modifications (the field modifications, as
-# the companion's loadout reads them). UNVERIFIED on Lesta 1.45: `locName` of a modification.
+# the companion's loadout reads them). A modification's `locName` is a resource key: its text is
+# backport.text(R.strings.artefacts.dyn(locName).name()), as gui/veh_post_progression/models/modifications.py
+# PostProgressionActionItem.getLocNameRes() and the post-progression dialogs read it.
 
 
 def _installed(layout):
@@ -41,11 +43,20 @@ def _directives(vehicle):
             for item in _installed(getattr(vehicle, 'battleBoosters', None)) if item is not None]
 
 
+def _modification_text(backport, strings, loc_name):
+    if not loc_name:
+        return None
+    resource = strings.artefacts.dyn(loc_name).dyn('name')
+    return backport.text(resource()) if resource.exists() else None
+
+
 def _modifications(vehicle):
     ids = getattr(getattr(vehicle, 'descriptor', None), 'modifications', None) or ()
     if not ids:
         return []
     try:
+        from gui.impl import backport
+        from gui.impl.gen import R
         from items import vehicles
         table = vehicles.g_cache.postProgression().modifications
     except Exception:
@@ -53,7 +64,7 @@ def _modifications(vehicle):
     names = []
     for modification_id in ids:
         modification = table.get(modification_id) if hasattr(table, 'get') else None
-        name = getattr(modification, 'locName', None) or getattr(modification, 'name', None)
+        name = _modification_text(backport, R.strings, getattr(modification, 'locName', None))
         if name:
             names.append(name)
     return names

@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import as_int, is_int, string_types, to_text
-from .constants import HISTORY_VERSION, ITEM_CODE, MAX_VEHICLES, SOURCE_BATTLE, SOURCE_HANGAR
+from .constants import CLASS_TAGS, HISTORY_VERSION, ITEM_CODE, MAX_VEHICLES, SOURCE_BATTLE, SOURCE_HANGAR
 
 
 def vehicle_label(name):
@@ -35,10 +35,12 @@ class MarksHistory(object):
     def vehicle(self, tank_id):
         return self.vehicles.get(str(tank_id))
 
-    def _record(self, tank_id, label, tier, entry):
+    def _record(self, tank_id, label, tier, entry, kind=None):
         vehicle = self.vehicles.setdefault(str(tank_id), {'label': label or u'', 'tier': tier, 'entries': [], 'reached': {}})
         if label:
             vehicle['label'] = label
+        if kind in CLASS_TAGS:
+            vehicle['class'] = kind
         if is_int(tier):
             vehicle['tier'] = tier
         entries = vehicle.setdefault('entries', [])
@@ -60,7 +62,7 @@ class MarksHistory(object):
             oldest = min(self.vehicles, key=lambda key: self.vehicles[key].get('updated') or 0)
             del self.vehicles[oldest]
 
-    def record_battle(self, event, label=None):
+    def record_battle(self, event, label=None, kind=None):
         moe = event.get('moe') or {}
         vehicle = event.get('vehicle') or {}
         tank_id = vehicle.get('tank_id')
@@ -76,9 +78,9 @@ class MarksHistory(object):
                                 as_int(stats.get('damage_assisted_stun')))
         entry = _entry(event.get('occurred_at') or 0, moe['damage_rating'], moe['moving_avg_damage'], moe.get('marks_on_gun'),
                        SOURCE_BATTLE, arena, damage, combined, event.get('result'))
-        return self._record(tank_id, label or vehicle_label(vehicle.get('name')), vehicle.get('tier'), entry)
+        return self._record(tank_id, label or vehicle_label(vehicle.get('name')), vehicle.get('tier'), entry, kind)
 
-    def record_snapshot(self, snapshot, now, label=None):
+    def record_snapshot(self, snapshot, now, label=None, kind=None):
         tank_id = snapshot.get('tank_id')
         if not is_int(tank_id) or not is_int(snapshot.get('damage_rating')) or not snapshot.get('moving_avg_damage'):
             return None
@@ -88,7 +90,7 @@ class MarksHistory(object):
         if last is not None and (last.get('rating'), last.get('avg'), last.get('marks')) == values:
             return None
         entry = _entry(now, values[0], values[1], values[2], SOURCE_HANGAR)
-        return self._record(tank_id, label or vehicle_label(snapshot.get('name')), snapshot.get('tier'), entry)
+        return self._record(tank_id, label or vehicle_label(snapshot.get('name')), snapshot.get('tier'), entry, kind)
 
     def clear(self, tank_id):
         return self.vehicles.pop(str(tank_id), None) is not None

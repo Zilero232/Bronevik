@@ -1,0 +1,73 @@
+@use '../../../../shared/styles/gameface' as *;
+
+.plate {
+  min-width: 150px;
+}
+
+.body {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.thermometer {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  margin-right: 8px;
+}
+
+.tube {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 5px;
+  background-color: rgb(255 255 255 / 8%);
+}
+
+.level {
+  width: 100%;
+  border-radius: 5px;
+  background-color: token(color-success);
+}
+
+.warning {
+  background-color: token(color-warning);
+}
+
+.received {
+  background-color: token(color-danger);
+}
+
+.scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 3px;
+  color: token(color-text-muted);
+  font-size: 9px;
+}
+
+.counters {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.title {
+  margin-bottom: 2px;
+  color: token(class-spg);
+}
+
+.day {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 4px;
+  color: token(color-text-muted);
+}
+
+.dayText {
+  margin-left: 4px;
+  font-size: 11px;
+}

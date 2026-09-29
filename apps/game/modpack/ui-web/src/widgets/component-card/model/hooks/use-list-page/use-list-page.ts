@@ -26,7 +26,7 @@ export const useListPage = ({ rows, onRun }: UseListPageInput) => {
 
   return rows.map((row) => ({
     row,
-    hasDetails: (row.details?.length ?? 0) > 0 || (row.figure?.marks.length ?? 0) > 0,
+    hasDetails: (row.details?.length ?? 0) > 0 || (row.figure?.marks.length ?? 0) > 0 || Boolean(row.report),
     detailsOpen: openRow === row.id,
     draftValue: draft?.row === row.id ? draft.value : null,
     actions: row.actions.map((action) => ({ id: action.id, label: action.label, onClick: () => choose({ row: row.id, action }) })),

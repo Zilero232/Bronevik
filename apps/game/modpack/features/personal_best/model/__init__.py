@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import is_int, is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_number
 from ....core.templates import render
-from .constants import LIVE_METRICS, MAX_TANKS, METRICS
+from .constants import ASSIST_STATS, LIVE_METRICS, MAX_TANKS, METRICS
 
 # Fair play: the player's own records only: own battle results, the own vehicle dossier and the site's copy of them.
 
@@ -71,7 +71,7 @@ class RecordBook(object):
 def event_values(event):
     stats = event.get('stats') or {}
     xp = stats.get('original_xp') if is_number(stats.get('original_xp')) else stats.get('xp')
-    assist = sum(stats.get(key) for key in ('damage_assisted_radio', 'damage_assisted_track') if is_number(stats.get(key)))
+    assist = sum(stats.get(key) for key in ASSIST_STATS if is_number(stats.get(key)))
     return clean_record({'damage': stats.get('damage_dealt'), 'assist': assist, 'frags': stats.get('frags'), 'xp': xp})
 
 

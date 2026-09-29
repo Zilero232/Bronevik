@@ -1,0 +1,50 @@
+{
+  "data": {
+    "grouped": false,
+    "header": {
+      "damage": 670,
+      "hits": 3,
+      "pens": 2
+    },
+    "rows": [
+      {
+        "cls": "img://gui/maps/icons/vehicleTypes/red/heavyTank.png|otmetki:class_heavy",
+        "crits": 0,
+        "damage": 280,
+        "hits": 1,
+        "hp": 360,
+        "icon": "otmetki:damage",
+        "max": 1500,
+        "name": "KV-1",
+        "outcome": "pen",
+        "tone": "success"
+      },
+      {
+        "cls": "img://gui/maps/icons/vehicleTypes/red/mediumTank.png|otmetki:class_medium",
+        "crits": 0,
+        "damage": null,
+        "hits": 1,
+        "hp": null,
+        "icon": "img://gui/maps/icons/library/critical_damage/hit_ricochet.png|otmetki:blocked",
+        "max": 1100,
+        "name": "T-34",
+        "outcome": "ricochet",
+        "tone": "blocked"
+      },
+      {
+        "cls": "img://gui/maps/icons/vehicleTypes/red/mediumTank.png|otmetki:class_medium",
+        "crits": 0,
+        "damage": 390,
+        "hits": 1,
+        "hp": 510,
+        "icon": "otmetki:damage",
+        "max": 900,
+        "name": "Pz. IV",
+        "outcome": "pen",
+        "tone": "success"
+      }
+    ]
+  },
+  "kind": "hit_log",
+  "v": 1
+}

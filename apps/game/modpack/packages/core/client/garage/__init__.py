@@ -40,8 +40,10 @@ def run_processor(make_processor, done, context):
         finally:
             done(bool(getattr(result, 'success', False)))
 
+    # RU 1.45 client source: Processor.request is @adisp_async (gui/shared/gui_items/processors/__init__.py:137,
+    # client_common/adisp.py:79-91): the call returns a caller that takes the callback, the way items_cache does it.
     try:
-        processor.request(finished)
+        processor.request()(finished)
     except Exception:
         log_exception('%s request' % context)
         done(False)

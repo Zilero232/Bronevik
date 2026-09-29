@@ -8,7 +8,7 @@ import _support
 from otmetki.core.settings import Settings
 from otmetki.features.personal_best.i18n import STRINGS
 from otmetki.features.personal_best.model import LiveBattle, RecordBook, beaten, event_values, format_card, format_line
-from otmetki.features.personal_best.model.constants import MAX_TANKS
+from otmetki.features.personal_best.model.constants import KIND_BY_EVENT, MAX_TANKS
 from otmetki.features.personal_best.model.preview import preview_text
 from otmetki.features.personal_best.settings import SCHEMA, SETTINGS, SWITCH
 
@@ -67,6 +67,12 @@ class BattleTest(unittest.TestCase):
         event = [item for item in events if item['type'] == 'battle_result'][0]
         values = event_values(event)
         assert values == {'damage': 2150, 'assist': 950, 'frags': 2, 'xp': 1150}
+
+    def test_assist_counts_stun_as_the_dossier_does(self):
+        # dossiers2 battle_results_processors (RU 1.45): maxAssisted = track + radio + stun.
+        event = {'stats': {'damage_dealt': 100, 'damage_assisted_radio': 300, 'damage_assisted_track': 200, 'damage_assisted_stun': 400}}
+        assert event_values(event)['assist'] == 900
+        assert ('STUN_ASSIST', 'assist') in KIND_BY_EVENT
 
     def test_beaten_needs_a_known_record(self):
         assert beaten({}, {'damage': 9000}) == []

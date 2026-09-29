@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
+        'sixth_sense_replace_stock': u'Заменять стандартную лампу',
         'sixth_sense_text': 'Вас засветили!',
         'sixth_sense_timer': '{seconds} с',
         'sixth_sense_icon_set': 'Значок',
@@ -19,6 +20,7 @@ STRINGS = {
         'sixth_sense_lamp_sound_otmetki': 'Сигнал «Три отметки»',
     },
     'en': {
+        'sixth_sense_replace_stock': u'Replace the stock lamp',
         'sixth_sense_text': 'You are spotted!',
         'sixth_sense_timer': '{seconds} s',
         'sixth_sense_icon_set': 'Icon',

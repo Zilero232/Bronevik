@@ -1,0 +1,66 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import re
+
+IMAGE_SCHEME = 'img://'
+# Our own glyph drawn by the page (ui-web shared/ui/hud/glyph); after `|` in an image string it is the fallback.
+GLYPH_SCHEME = 'otmetki:'
+FALLBACK_SEPARATOR = '|'
+
+# Client images, RU 1.45 (checked in gui-part1/2.pkg of the installed client).
+ICONS_ROOT = 'gui/maps/icons'
+CLASS_TINTS = ('white', 'green', 'red', 'gold')
+# vehicleTypes/green and /red spell the two artillery-like classes in lower case.
+LOWER_CASE_TINTS = ('green', 'red')
+CLASS_TAGS = ('lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG')
+CLASS_GLYPHS = {
+    'lightTank': 'class_light',
+    'mediumTank': 'class_medium',
+    'heavyTank': 'class_heavy',
+    'AT-SPG': 'class_td',
+    'SPG': 'class_spg',
+}
+
+# BATTLE_LOG_SHELL_TYPES name -> the shell/small file stem (ammopanel names); premium adds _PREMIUM where it exists.
+SHELL_FILES = {
+    'ARMOR_PIERCING': 'ARMOR_PIERCING',
+    'ARMOR_PIERCING_HE': 'ARMOR_PIERCING',
+    'ARMOR_PIERCING_DF': 'ARMOR_PIERCING_DF',
+    'ARMOR_PIERCING_HE_DF': 'ARMOR_PIERCING_DF',
+    'ARMOR_PIERCING_CR': 'ARMOR_PIERCING_CR',
+    'ARMOR_PIERCING_CR_DF': 'ARMOR_PIERCING_CR',
+    'ARMOR_PIERCING_FSDS': 'ARMOR_PIERCING_FSDS',
+    'HOLLOW_CHARGE': 'HOLLOW_CHARGE',
+    'HOLLOW_CHARGE_DF': 'HOLLOW_CHARGE_DF',
+    'HIGH_EXPLOSIVE': 'HIGH_EXPLOSIVE',
+    'HE_MODERN': 'HIGH_EXPLOSIVE_MODERN',
+    'HE_MODERN_DF': 'HIGH_EXPLOSIVE_MODERN_DF',
+    'HE_LEGACY_STUN': 'HIGH_EXPLOSIVE_SPG_STUN',
+    'HE_LEGACY_NO_STUN': 'HIGH_EXPLOSIVE',
+    'FLAME': 'FLAME',
+}
+PREMIUM_SHELLS = ('ARMOR_PIERCING', 'ARMOR_PIERCING_CR', 'ARMOR_PIERCING_FSDS', 'HOLLOW_CHARGE', 'HIGH_EXPLOSIVE', 'HIGH_EXPLOSIVE_MODERN')
+PREMIUM_SUFFIX = '_PREMIUM'
+# The stem of a shell descriptor icon (`descriptor.icon[0]`, e.g. ARMOR_PIERCING_CR_PREMIUM.png), the ammopanel file name.
+SHELL_STEM = re.compile(r'^[A-Z0-9_]{2,60}(\.png)?$')
+SHELL_CODE_FILES = {'ap': 'ARMOR_PIERCING', 'apcr': 'ARMOR_PIERCING_CR', 'heat': 'HOLLOW_CHARGE', 'he': 'HIGH_EXPLOSIVE', 'flame': 'FLAME'}
+
+# Efficiency kinds of the post-battle screen, 48x48 (library/efficiency).
+EFFICIENCY = ('damage', 'armor', 'help', 'stun', 'detection', 'destruction', 'fire', 'ram', 'module', 'immobilized', 'capture', 'defence')
+
+# Hit outcomes (hit_log, received hits) -> library/critical_damage files; a plain penetration has none (our glyph).
+OUTCOME_FILES = {
+    'crit': 'hit_critical',
+    'no_pen': 'hit_blocked',
+    'ricochet': 'hit_ricochet',
+    'spaced': 'hit_spaced_armor_blocked',
+    'tracks': 'hit_track_blocked',
+    'missed_armor': 'hit_miss_armor',
+}
+OUTCOME_GLYPHS = {'pen': 'damage', 'crit': 'damage', 'no_pen': 'blocked', 'ricochet': 'blocked', 'spaced': 'blocked', 'tracks': 'track',
+                  'missed_armor': 'blocked'}
+
+NATIONS = ('ussr', 'germany', 'usa', 'china', 'france', 'uk', 'japan', 'czech', 'sweden', 'poland', 'italy', 'intunion')
+MAX_TIER = 11
+MAX_MARKS = 3
+ICON_NAME_LIMIT = 80

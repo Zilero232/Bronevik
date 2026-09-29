@@ -1,0 +1,50 @@
+@use '../../../../shared/styles/gameface' as *;
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.column {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.divided {
+  padding-left: 6px;
+  border-left: 1px solid rgb(255 255 255 / 12%);
+  margin-left: 6px;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.name {
+  margin-left: 3px;
+  color: token(color-text);
+  font-size: 12px;
+}
+
+.bonus {
+  color: token(color-gold);
+}
+
+.star {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  color: token(color-gold);
+  font-size: 10px;
+}

@@ -169,7 +169,7 @@ def gameface_stubs(test):
 
     class WindowImpl(object):
 
-        def __init__(self, wndFlags=None, content=None, layer=None):
+        def __init__(self, wndFlags=None, content=None, layer=None, parent=None):
             self.content = content
             self.flags = wndFlags
             self.layer = layer

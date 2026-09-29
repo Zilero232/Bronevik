@@ -4,12 +4,16 @@ from ....core.format import COLOR_DOWN, COLOR_UP
 
 SWITCH = 'battle_team_hp'
 PANEL_ID = 'team_hp'
-STYLES = ('full', 'numbers', 'bars', 'compact', 'icons')
+# full: bar pair with the score between; segments: a segment per tank; icons: class icons with a bar each; compact and
+# minimal: numbers and score in one line; numbers and bars: the older one-part styles.
+STYLES = ('full', 'segments', 'icons', 'compact', 'minimal', 'numbers', 'bars')
+# Styles drawn under the stock score strip instead of in its place.
+OVERLAY_STYLES = ('numbers',)
 MAX_TEMPLATE = 400
 
 DEFAULTS = {
     'x': 0,
-    'y': 58,
+    'y': 4,
     'align_x': 'center',
     'align_y': 'top',
     'style': 'full',
@@ -20,4 +24,5 @@ DEFAULTS = {
     'ally_color': COLOR_UP,
     'enemy_color': COLOR_DOWN,
     'template': '',
+    'replace_stock': True,
 }

@@ -2,7 +2,7 @@
 
 [project]
 name = "otmetki-feature-marks-panel"
-version = "0.2.0"
+version = "0.3.0"
 description = "Feature: in-battle marks-of-excellence panel with the projected percentage and the damage still needed."
 requires-python = ">=3.10"
 license = { text = "UNLICENSED" }

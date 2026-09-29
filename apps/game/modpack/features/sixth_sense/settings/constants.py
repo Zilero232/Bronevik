@@ -17,10 +17,10 @@ ICON_SETS = ('custom', 'lamp', 'eye', 'badge', 'marks')
 LAMP_SOUNDS = (NATIVE, 'lightbulb', 'lightbulb_02', 'otmetki')
 
 DEFAULTS = {
-    'x': 0,
-    'y': 170,
+    'x': -66,
+    'y': -182,
     'align_x': 'center',
-    'align_y': 'top',
+    'align_y': 'center',
     'font_size': 22,
     'text': '',
     'color': COLOR_WARN,
@@ -32,6 +32,7 @@ DEFAULTS = {
     'sound_event': '',
     'show_timer': True,
     'hide_after_s': 0,
+    'replace_stock': True,
 }
 
 CHOICES = {'icon_set': ICON_SETS, 'lamp_sound': LAMP_SOUNDS}

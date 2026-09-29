@@ -1,0 +1,95 @@
+{
+  "data": {
+    "rows": [
+      {
+        "ammo_rack": "otmetki:ammo_rack",
+        "amount": 310,
+        "cls": "img://gui/maps/icons/vehicleTypes/white/heavyTank.png|otmetki:class_heavy",
+        "gold": false,
+        "icon": "img://gui/maps/icons/shell/small/HIGH_EXPLOSIVE_MODERN.png|otmetki:damage",
+        "kind": "received",
+        "name": "KV-1",
+        "received": true,
+        "source": null,
+        "tone": "received"
+      },
+      {
+        "ammo_rack": null,
+        "amount": 240,
+        "cls": "img://gui/maps/icons/vehicleTypes/white/heavyTank.png|otmetki:class_heavy",
+        "gold": false,
+        "icon": "img://gui/maps/icons/shell/small/HOLLOW_CHARGE.png|otmetki:damage",
+        "kind": "blocked",
+        "name": "IS",
+        "received": false,
+        "source": null,
+        "tone": "blocked"
+      },
+      {
+        "ammo_rack": null,
+        "amount": 320,
+        "cls": "img://gui/maps/icons/vehicleTypes/white/mediumTank.png|otmetki:class_medium",
+        "gold": true,
+        "icon": "img://gui/maps/icons/shell/small/ARMOR_PIERCING_CR_PREMIUM.png|otmetki:damage",
+        "kind": "damage",
+        "name": "T-34",
+        "received": false,
+        "source": null,
+        "tone": "accent"
+      },
+      {
+        "ammo_rack": null,
+        "amount": 480,
+        "cls": null,
+        "gold": false,
+        "icon": "otmetki:radio",
+        "kind": "radio",
+        "name": "",
+        "received": false,
+        "source": null,
+        "tone": "radio"
+      },
+      {
+        "ammo_rack": null,
+        "amount": 390,
+        "cls": "img://gui/maps/icons/vehicleTypes/white/mediumTank.png|otmetki:class_medium",
+        "gold": false,
+        "icon": "img://gui/maps/icons/shell/small/ARMOR_PIERCING.png|otmetki:damage",
+        "kind": "damage",
+        "name": "Pz. IV",
+        "received": false,
+        "source": null,
+        "tone": "accent"
+      }
+    ],
+    "style": "full",
+    "totals": [
+      {
+        "icon": "img://gui/maps/icons/library/efficiency/48x48/damage.png|otmetki:damage",
+        "key": "dealt",
+        "tone": "accent",
+        "value": 710
+      },
+      {
+        "icon": "img://gui/maps/icons/library/efficiency/48x48/armor.png|otmetki:damage",
+        "key": "blocked",
+        "tone": "blocked",
+        "value": 240
+      },
+      {
+        "icon": "img://gui/maps/icons/library/efficiency/48x48/help.png|otmetki:damage",
+        "key": "assisted",
+        "tone": "radio",
+        "value": 480
+      },
+      {
+        "icon": "otmetki:received",
+        "key": "received",
+        "tone": "received",
+        "value": 310
+      }
+    ]
+  },
+  "kind": "damage_log",
+  "v": 1
+}

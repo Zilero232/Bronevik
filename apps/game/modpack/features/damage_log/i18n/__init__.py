@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
+        'damage_log_keep_stock': u'Оставить стандартный лог урона',
         'dlog_template_full': u'<font color="{c_dealt}">Урон {dealt}</font>   <font color="{c_blocked}">Блок {blocked}</font>   <font color="{c_assisted}">Помощь {assisted}</font>   <font color="{c_received}">Получено {received}</font>',
         'dlog_template_compact': u'{dealt} / {blocked} / {assisted} / {received}',
         'dlog_template_minimal': u'Урон {dealt}   Помощь {assisted}',
@@ -45,6 +46,7 @@ STRINGS = {
         'dlog_shell_flame': u'Огонь',
     },
     'en': {
+        'damage_log_keep_stock': u'Keep the stock damage log',
         'dlog_template_full': u'<font color="{c_dealt}">Damage {dealt}</font>   <font color="{c_blocked}">Blocked {blocked}</font>   <font color="{c_assisted}">Assist {assisted}</font>   <font color="{c_received}">Received {received}</font>',
         'dlog_template_compact': u'{dealt} / {blocked} / {assisted} / {received}',
         'dlog_template_minimal': u'Damage {dealt}   Assist {assisted}',

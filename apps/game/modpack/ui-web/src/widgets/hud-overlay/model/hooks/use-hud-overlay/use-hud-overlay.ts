@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/ho
 
 import type { ClientSize } from '../../../../../shared/api/gameface';
 import type { HudState } from '../../../../../shared/api/hud-protocol';
+import type { Rect } from '../../../../../shared/lib/hud-geometry';
 import type { Measured } from '../../../lib/panel-size';
 import type { HudLabelModel, LivePanel, OverlayDrag, Overrides, PanelPress, PanelWheel, Scales, Sizes } from './use-hud-overlay.types';
 
@@ -12,7 +13,9 @@ import { designScreen, rootScale } from '../../../../../shared/lib/hud-screen';
 import { parseRichText } from '../../../../../shared/lib/rich-text';
 import { HUD_OVERLAY } from '../../../config';
 import { placeRect, rectStyle } from '../../../lib/anchor';
+import { inputAreaKey, inputAreaOf } from '../../../lib/input-area';
 import { sameSize, stickySize, wheelScale } from '../../../lib/panel-size';
+import { resolveWidget, widgetLines } from '../../../lib/widget-registry';
 
 const readScreen = (): ClientSize => {
   const scale = rootScale();
@@ -46,6 +49,7 @@ export const useHudOverlay = () => {
   const [live, setLive] = useState<LivePanel | null>(null);
   const [screen, setScreen] = useState<ClientSize>(readScreen);
   const dragRef = useRef<OverlayDrag | null>(null);
+  const areaRef = useRef(inputAreaOf({ edit: false, screen, rects: [] }));
   const lastRef = useRef<PanelPress | null>(null);
   const elementsRef = useRef(new Map<string, HTMLElement>());
   const measureRefsRef = useRef(new Map<string, (element: HTMLElement | null) => void>());
@@ -154,6 +158,7 @@ export const useHudOverlay = () => {
 
   const panels = useMemo(() => (state?.panels ?? []).filter((panel) => panel.visible), [state]);
   const lines = useMemo(() => new Map(panels.map((panel) => [panel.id, parseRichText(panel.text)])), [panels]);
+  const widgets = useMemo(() => new Map(panels.map((panel) => [panel.id, resolveWidget(panel.widget)])), [panels]);
 
   useLayoutEffect(() => {
     const scale = rootScale();
@@ -161,7 +166,9 @@ export const useHudOverlay = () => {
     let changed = false;
 
     elementsRef.current.forEach((element, id) => {
-      const next: Measured = { lines: lines.get(id)?.length ?? 0, width: element.offsetWidth / scale, height: element.offsetHeight / scale };
+      const resolved = widgets.get(id);
+      const count = resolved ? widgetLines(resolved) : (lines.get(id)?.length ?? 0);
+      const next: Measured = { lines: count, width: element.offsetWidth / scale, height: element.offsetHeight / scale };
       const size = stickySize({ previous: sizes[id], next });
 
       measured[id] = size;
@@ -172,7 +179,7 @@ export const useHudOverlay = () => {
       // eslint-disable-next-line react/set-state-in-effect -- the labels' sizes are only known after layout; it settles once nothing grows
       setSizes(measured);
     }
-  }, [lines, sizes]);
+  }, [lines, widgets, sizes]);
 
   const measureRef = (id: string) => {
     const known = measureRefsRef.current.get(id);
@@ -194,6 +201,8 @@ export const useHudOverlay = () => {
     return callback;
   };
 
+  const clickable: Rect[] = [];
+
   const labels = panels.map((panel): HudLabelModel => {
     const scale = scales[panel.id] ?? panel.scale;
     const measured = sizes[panel.id];
@@ -202,9 +211,14 @@ export const useHudOverlay = () => {
     const button = panel.kind === 'button';
     const movable = edit && panel.drag;
 
+    if (button) {
+      clickable.push({ ...rect, ...size });
+    }
+
     return {
       panel,
       lines: lines.get(panel.id) ?? [],
+      widget: widgets.get(panel.id) ?? null,
       style: {
         ...rectStyle({ rect }),
         opacity: measured ? panel.alpha : HUD_OVERLAY.hidden,
@@ -244,6 +258,14 @@ export const useHudOverlay = () => {
       }
     };
   });
+
+  areaRef.current = inputAreaOf({ edit, screen, rects: clickable });
+
+  const areaKey = inputAreaKey(areaRef.current);
+
+  useEffect(() => {
+    gameface.setInputArea(areaRef.current);
+  }, [areaKey]);
 
   return {
     labels,

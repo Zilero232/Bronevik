@@ -7,13 +7,13 @@ import struct
 import time
 
 from ..compat import is_int, string_types, to_text
-from .constants import (AVATAR_KEY, DATE_TIME, EXTENSIONS, HEAD_FORMAT, MAGIC, MAX_BLOCKS, MAX_HEADER_BLOCK_BYTES, RECORDING_NAMES, RESULT_DRAW,
+from .constants import (AVATAR_KEY, DATE_TIME, EXTENSIONS, HEAD_FORMAT, MAGIC, MAX_BLOCKS, MAX_HEADER_BLOCK_BYTES, RECORDING_NAME, RESULT_DRAW,
                         RESULT_LOSS, RESULT_WIN, SIZE_FORMAT)
 
 
 def is_replay_name(name):
     lower = to_text(name).lower()
-    return lower.endswith(EXTENSIONS) and os.path.basename(lower) not in RECORDING_NAMES
+    return lower.endswith(EXTENSIONS) and RECORDING_NAME.match(os.path.basename(lower)) is None
 
 
 def _read_exact(handle, size):

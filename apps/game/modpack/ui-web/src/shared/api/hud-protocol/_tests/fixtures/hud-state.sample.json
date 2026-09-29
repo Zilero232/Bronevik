@@ -13,9 +13,10 @@
       "scale": 1.0,
       "text": "<font color=\"#F2EAD3\">урон 1 200</font>",
       "visible": true,
+      "widget": null,
       "x": 20,
       "y": -140
     }
   ],
-  "v": 2
+  "v": 3
 }

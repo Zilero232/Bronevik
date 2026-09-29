@@ -3,6 +3,7 @@ import type { Placement, Rect } from '../../../../../shared/lib/hud-geometry';
 import type { RichLine } from '../../../../../shared/lib/rich-text';
 import type { AnchorStyle } from '../../../lib/anchor';
 import type { Measured } from '../../../lib/panel-size';
+import type { ResolvedWidget } from '../../../lib/widget-registry';
 
 export type OverlayDrag = { id: string; mouseX: number; mouseY: number; scale: number; rect: Rect; moved: boolean; button: boolean };
 
@@ -23,6 +24,7 @@ export type LabelStyle = AnchorStyle & { opacity: number; transform?: string; tr
 export type HudLabelModel = {
   panel: HudPanel;
   lines: RichLine[];
+  widget: ResolvedWidget | null;
   style: LabelStyle;
   button: boolean;
   interactive: boolean;

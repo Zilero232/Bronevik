@@ -1,0 +1,48 @@
+@use '../../../styles/gameface' as *;
+
+.track {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  background-color: rgb(255 255 255 / 8%);
+}
+
+.fill {
+  background-color: token(color-text);
+}
+
+.ally {
+  background-color: token(color-ally);
+}
+
+.enemy {
+  background-color: token(color-enemy);
+}
+
+.accent {
+  background-color: token(color-accent);
+}
+
+.gold {
+  background-color: token(color-gold);
+}
+
+.success {
+  background-color: token(color-success);
+}
+
+.muted {
+  background-color: token(color-text-muted);
+}
+
+.received {
+  background-color: token(color-danger);
+}
+
+.warning {
+  background-color: token(color-warning);
+}
+
+.stun {
+  background-color: token(class-spg);
+}

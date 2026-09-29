@@ -8,11 +8,13 @@ from ....core.client.native import apply_changed
 from ....core.client.sound import play_sound
 from ....core.client.timer import Ticker
 from ....core.events import EVENT_COMPONENT_SETTINGS
+from ....core.hud.stock import SIXTH_SENSE
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import SixthSense, format_sixth_sense, to_native
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import sixth_sense_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import TICK_S
 
@@ -29,7 +31,7 @@ class SixthSenseAlert(BattlePanel):
         self.switching_state = getattr(VEHICLE_VIEW_STATE, 'SWITCHING', None)
         self.lamp = None
         self.ticker = Ticker(TICK_S, self._tick)
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
         app.bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
 
     def _on_settings(self, component_id, changed):
@@ -45,6 +47,9 @@ class SixthSenseAlert(BattlePanel):
     def stop(self):
         self.lamp = None
         self.ticker.stop()
+
+    def stock_aliases(self):
+        return (SIXTH_SENSE,) if self.settings.get('replace_stock') else ()
 
     def _on_vehicle_state(self, state, value):
         lamp = self.lamp
@@ -77,4 +82,6 @@ class SixthSenseAlert(BattlePanel):
     @safe
     def render(self):
         if self.lamp is not None and self.lamp.lit:
-            self.show(format_sixth_sense(self.lamp, self.settings, self.app.translate, time.time()))
+            now = time.time()
+            self.show(format_sixth_sense(self.lamp, self.settings, self.app.translate, now),
+                      sixth_sense_widget(self.lamp, self.settings, self.app.translate, now))

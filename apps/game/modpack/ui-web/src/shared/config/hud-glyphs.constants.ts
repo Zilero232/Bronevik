@@ -1,0 +1,51 @@
+export const HUD_GLYPHS = {
+  viewBox: 32,
+  outline: '#0E0E10',
+  outlineWidth: 1.5,
+  shapes: {
+    fire: ['M16 3c2 5 8 8 8 15a8 8 0 0 1-16 0c0-4 2-6 4-8 0 3 1 5 3 5-1-4 0-8 1-12z'],
+    fall: ['M14 4h4v12h5l-7 8-7-8h5z', 'M5 26h22v3H5z'],
+    ammo_rack: [
+      'M9 22v-8a2 2 0 0 1 4 0v8z',
+      'M14 22v-8a2 2 0 0 1 4 0v8z',
+      'M19 22v-8a2 2 0 0 1 4 0v8z',
+      'M6 23h20v5H6z',
+      'M16 3l2 4 4-1-2 4H12l-2-4 4 1z'
+    ],
+    record: ['M9 5h14v5a7 7 0 0 1-14 0z', 'M5 6h4v3a4 4 0 0 1-4-3z', 'M23 6h4a4 4 0 0 1-4 3z', 'M14 17h4v5h-4z', 'M10 23h12v4H10z'],
+    target: ['M8 4h3v24H8z', 'M11 5h14l-4 5 4 5H11z'],
+    wn8: ['M16 3l3 10 10 3-10 3-3 10-3-10-10-3 10-3z'],
+    session: ['M5 20h6v8H5z', 'M13 13h6v15h-6z', 'M21 6h6v22h-6z'],
+    traverse: ['M4 22a12 12 0 0 1 24 0h-4a8 8 0 0 0-16 0z', 'M2 21h6v4H2z', 'M24 21h6v4h-6z', 'M15 7h2v11h-2z'],
+    bush: ['M16 5a6 6 0 0 1 6 5 5 5 0 0 1 3 9H7a5 5 0 0 1 3-9 6 6 0 0 1 6-5z', 'M15 19h2v8h-2z'],
+    mission: ['M8 6h16v22H8z', 'M12 3h8v5h-8z'],
+    damage: ['M16 3c4 4 5 8 5 12v12H11V15c0-4 1-8 5-12z'],
+    blocked: ['M16 3l11 4v8c0 7-5 11-11 14C10 26 5 22 5 15V7z'],
+    radio: ['M15 12h2v16h-2z', 'M16 4a10 10 0 0 1 10 10h-3a7 7 0 0 0-14 0H6A10 10 0 0 1 16 4z'],
+    track: ['M6 11h20a5 5 0 0 1 0 10H6a5 5 0 0 1 0-10z'],
+    stun: ['M18 3L7 18h7l-2 11 11-15h-7z'],
+    received: ['M16 29l-9-9h6V4h6v16h6z'],
+    class_light: ['M16 5l9 11-9 11-9-11z'],
+    class_medium: ['M16 4l10 12-10 12L6 16z', 'M12 15h8v3h-8z'],
+    class_heavy: ['M16 4l10 12-10 12L6 16z', 'M12 12h8v3h-8z', 'M12 17h8v3h-8z'],
+    class_td: ['M6 8h20L16 26z'],
+    class_spg: ['M7 7h18v18H7z'],
+    clock: ['M16 4a12 12 0 1 1 0 24 12 12 0 0 1 0-24z'],
+    lamp: ['M16 3a9 9 0 0 1 5 16v3H11v-3a9 9 0 0 1 5-16z', 'M12 24h8v2h-8z', 'M13 27h6v2h-6z'],
+    arty: ['M22 3l7 7-11 11-7-7z', 'M4 28l5-9 3 4 4-1-4 6z'],
+    platoon: [
+      'M9 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z',
+      'M23 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z',
+      'M16 12a4 4 0 1 1 0 8 4 4 0 0 1 0-8z',
+      'M8 28a8 7 0 0 1 16 0z'
+    ],
+    points: ['M16 3l4 8 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z'],
+    module: ['M16 3l3 4h5v5l4 4-4 4v5h-5l-3 4-3-4H8v-5l-4-4 4-4V7h5z']
+  },
+  details: {
+    mission: ['M11 13h10v2H11z', 'M11 18h10v2H11z', 'M11 23h6v2h-6z'],
+    clock: ['M15 9h2v8h-2z', 'M16 15h6v2h-6z'],
+    track: ['M9 14a2 2 0 1 1 0 4 2 2 0 0 1 0-4z', 'M16 14a2 2 0 1 1 0 4 2 2 0 0 1 0-4z', 'M23 14a2 2 0 1 1 0 4 2 2 0 0 1 0-4z'],
+    module: ['M16 12a4 4 0 1 1 0 8 4 4 0 0 1 0-8z']
+  }
+} as const;

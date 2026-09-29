@@ -16,11 +16,13 @@ BONUS_MARK = u'★'
 SEPARATOR = u' · '
 
 PREVIEW_SIZE = (360, 70)
+
+KIND = 'battle_loadout'
 PREVIEW_LOADOUT = {
     'devices': [
-        {'name': u'Турбонагнетатель', 'icon': None, 'bonus': True},
-        {'name': u'Вентиляция', 'icon': None, 'bonus': False},
-        {'name': u'Досылатель', 'icon': None, 'bonus': True},
+        {'name': u'Турбонагнетатель', 'icon': '../maps/icons/artefact/turbocharger.png', 'bonus': True},
+        {'name': u'Вентиляция', 'icon': '../maps/icons/artefact/improvedVentilation.png', 'bonus': False},
+        {'name': u'Досылатель', 'icon': '../maps/icons/artefact/rammer.png', 'bonus': True},
     ],
     'modifications': [u'Скорость сведения', u'Обзор'],
     'directives': [{'name': u'Боевое братство', 'icon': None}],

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import string_types, to_text
+from ....core.compat import is_int, string_types, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, single_spaces, strip_tags
 from .constants import DONE_MARK, HONORS_MARK, MAX_MISSIONS, MAX_TEXT, STATES, TITLE_SIZE_STEP
 
@@ -23,7 +23,19 @@ def clean_mission(item):
         return None
     classes = [to_text(tag) for tag in (item.get('classes') or []) if isinstance(tag, string_types)]
     return {'id': item.get('id'), 'name': name, 'main': clean_text(item.get('main')), 'extra': clean_text(item.get('extra')),
-            'state': item['state'], 'classes': classes}
+            'state': item['state'], 'classes': classes, 'levels': clean_levels(item.get('levels'))}
+
+
+def clean_levels(value):
+    """[min, max] vehicle tier of a mission, or None when the client did not give both."""
+    if not isinstance(value, (list, tuple)) or len(value) != 2 or not all(is_int(level) and level > 0 for level in value):
+        return None
+    return [min(value), max(value)]
+
+
+def fits_level(mission, vehicle_level):
+    levels = mission.get('levels')
+    return vehicle_level is None or levels is None or levels[0] <= vehicle_level <= levels[1]
 
 
 def by_state(missions):
@@ -37,10 +49,10 @@ def clean_missions(items):
     return missions[:MAX_MISSIONS], counts(missions)
 
 
-def in_progress(missions, vehicle_class=None):
-    """The missions in progress, those of `vehicle_class` (or of every class) when it is given."""
+def in_progress(missions, vehicle_class=None, vehicle_level=None):
+    """The missions in progress, those of `vehicle_class` and `vehicle_level` (or of every class and tier) when given."""
     return [mission for mission in missions if mission['state'] == 'in_progress'
-            and (vehicle_class is None or not mission['classes'] or vehicle_class in mission['classes'])]
+            and (vehicle_class is None or not mission['classes'] or vehicle_class in mission['classes']) and fits_level(mission, vehicle_level)]
 
 
 def counts(missions):
@@ -78,8 +90,8 @@ def format_hangar(missions, settings, translate, totals=None):
     return u'\n'.join(lines)
 
 
-def format_battle(missions, vehicle_class, settings, translate):
-    shown = in_progress(missions, vehicle_class)[:settings.get('max_missions')]
+def format_battle(missions, vehicle_class, settings, translate, vehicle_level=None):
+    shown = in_progress(missions, vehicle_class, vehicle_level)[:settings.get('max_missions')]
     if not shown:
         return None
     size = settings.get('font_size')

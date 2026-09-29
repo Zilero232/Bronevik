@@ -1,0 +1,56 @@
+@use '../../../../shared/styles/gameface' as *;
+
+.plate {
+  min-width: 260px;
+}
+
+.header {
+  display: flex;
+  height: 20px;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.row {
+  display: flex;
+  height: 20px;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.icon {
+  margin-right: 4px;
+}
+
+.damage {
+  min-width: 36px;
+  margin-right: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.hits {
+  min-width: 20px;
+  color: token(color-text-muted);
+  font-size: 11px;
+}
+
+.name {
+  @include ellipsis;
+
+  max-width: 96px;
+  margin-right: 6px;
+  color: token(color-text);
+  font-size: 13px;
+}
+
+.hp {
+  min-width: 34px;
+  margin-left: 4px;
+  color: token(color-text-muted);
+  font-size: 12px;
+  text-align: right;
+}

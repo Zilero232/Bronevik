@@ -23,8 +23,9 @@ def _return(vehicle):
 
 
 def _style_remover(vehicle):
-    # The customization window's own way to take a style off (styled_mode._sellItem, RU 1.45): an empty outfit for
-    # every season through OutfitApplier; the style goes back to the depot.
+    # The customization window's own way to take a style off (styled_mode._sellItem, RU 1.45 :317-323): an empty outfit
+    # for every season through OutfitApplier puts the style back in the depot. The CustomizationsSeller that follows it
+    # there sells the style for credits, so it is left out on purpose.
     from gui.shared.gui_items.processors.common import OutfitApplier
     from items.components.c11n_constants import SeasonType
     from items.customizations import CustomizationOutfit

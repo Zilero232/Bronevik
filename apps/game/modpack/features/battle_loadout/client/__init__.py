@@ -8,7 +8,8 @@ from ....core.log import log_exception, safe
 from ..i18n import STRINGS
 from ..model import LoadoutBook, format_panel
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text
+from ..model.preview import preview_text, preview_widget
+from ..model.widget import loadout_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .reads import selected_loadout
 
@@ -20,7 +21,7 @@ class BattleLoadoutPanel(BattlePanel):
     def __init__(self, app):
         self.book = LoadoutBook()
         self.loadout = None
-        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text)
+        BattlePanel.__init__(self, app, PANEL_ID, SCHEMA, SWITCH, STRINGS, PREVIEW_SIZE, preview_text, preview_widget)
         app.bus.on('hangar', self._on_vehicle_changed)
         app.bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings)
         try:
@@ -53,6 +54,6 @@ class BattleLoadoutPanel(BattlePanel):
             return
         text = format_panel(self.loadout, self.settings, self.app.translate)
         if text:
-            self.show(text)
+            self.show(text, loadout_widget(self.loadout, self.settings))
         else:
             self.hide()

@@ -3,6 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import importlib  # novermin
 
+from ...compat import is_int, string_types
+
 
 def client_version():
     try:
@@ -64,13 +66,36 @@ def player_tank_id(player):
     return getattr(vehicle_type, 'compactDescr', None)
 
 
-def vehicle_info(tank_id):
+def type_compact_descr(tank_id):
+    """`tank_id` as the int items.vehicles.getVehicleType decodes, or None. RU 1.45 source: only an int or a long is read
+    as a type id (isVehicleTypeCompactDescr); any other value is parsed as a packed vehicle descriptor, so a digit string
+    would name another vehicle."""
+    if is_int(tank_id):
+        value = tank_id
+    elif isinstance(tank_id, string_types) and tank_id.isdigit():
+        value = int(tank_id)
+    else:
+        return None
+    return value if value > 0 else None
+
+
+def vehicle_type(tank_id):
+    """The client's VehicleType of a type id (items.vehicles.getVehicleType, RU 1.45), or None."""
+    type_cd = type_compact_descr(tank_id)
+    if type_cd is None:
+        return None
     try:
         from items import vehicles
-        vehicle_type = vehicles.getVehicleType(tank_id)
-        return vehicle_type.name, vehicle_type.level
+        return vehicles.getVehicleType(type_cd)
     except Exception:
+        return None
+
+
+def vehicle_info(tank_id):
+    found = vehicle_type(tank_id)
+    if found is None:
         return None, None
+    return getattr(found, 'name', None), getattr(found, 'level', None)
 
 
 def map_name(arena_type_id):
@@ -83,11 +108,25 @@ def map_name(arena_type_id):
 
 def vehicle_short_name(tank_id):
     """The localized short vehicle name the carousel shows, or None."""
+    return getattr(vehicle_type(tank_id), 'shortUserString', None)
+
+
+def main_window():
+    """The client's main wulf window, the parent mods give their windows (IGuiLoader.windowsManager.getMainWindow(), as
+    ModsList and Battle Observer do), or None before the GUI loader exists."""
     try:
-        from items import vehicles
-        return vehicles.getVehicleType(tank_id).shortUserString
+        from helpers import dependency
+        from skeletons.gui.impl import IGuiLoader
+        loader = dependency.instance(IGuiLoader)
+        manager = getattr(loader, 'windowsManager', None)
+        return manager.getMainWindow() if manager is not None else None
     except Exception:
         return None
+
+
+def vehicle_class_tag(tank_id):
+    """The class tag (lightTank, ..., SPG) of a vehicle type (items.vehicles VehicleType.classTag, RU 1.45), or None."""
+    return getattr(vehicle_type(tank_id), 'classTag', None)
 
 
 def map_label(arena_type_id):

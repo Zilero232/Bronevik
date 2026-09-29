@@ -53,6 +53,8 @@ dependencies = [
   "otmetki-feature-battle-hits",
   "otmetki-feature-gun-arc",
   "otmetki-feature-bush-circle",
+  "otmetki-feature-arty-meter",
+  "otmetki-feature-platoon-points",
 ]
 
 [project.urls]
@@ -123,6 +125,8 @@ otmetki-feature-tilt-guard = { workspace = true }
 otmetki-feature-battle-hits = { workspace = true }
 otmetki-feature-gun-arc = { workspace = true }
 otmetki-feature-bush-circle = { workspace = true }
+otmetki-feature-arty-meter = { workspace = true }
+otmetki-feature-platoon-points = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["packages", "features", "tools"]

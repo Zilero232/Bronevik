@@ -7,8 +7,8 @@ MAX_TEMPLATE = 600
 PALETTES = ('classic', 'graphite', 'contrast', 'colorblind')
 
 DEFAULTS = {
-    'x': -250,
-    'y': -260,
+    'x': -8,
+    'y': -320,
     'align_x': 'right',
     'align_y': 'bottom',
     'show_header': True,

@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_number, to_text
+from ....core.compat import is_number, string_types, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font
 from ....core.shells import SHELL_CODES
 from ....core.templates import render
@@ -17,7 +17,7 @@ class DamageLog(object):
         self.entries = []
         self.ammo_rack_at = None
 
-    def add(self, kind, amount, vehicle=None, shell=None, source=None, vehicle_class=None, at=None):
+    def add(self, kind, amount, vehicle=None, shell=None, source=None, vehicle_class=None, at=None, shell_name=None, gold=False):
         if kind not in KINDS or not is_number(amount) or amount <= 0:
             return False
         amount = int(amount)
@@ -32,6 +32,8 @@ class DamageLog(object):
             'class': vehicle_class if vehicle_class in CLASS_GLYPHS else None,
             'ammo_rack': False,
             'at': at,
+            'shell_name': shell_name if isinstance(shell_name, string_types) else None,
+            'gold': bool(gold),
         }
         if kind == 'received' and self._near(self.ammo_rack_at, at):
             entry['ammo_rack'] = True

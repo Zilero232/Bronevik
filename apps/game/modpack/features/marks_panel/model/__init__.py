@@ -11,8 +11,7 @@ __all__ = ('BattleTotals', 'format_panel', 'panel_state')
 
 
 class BattleTotals(object):
-    """The player's own damage and assist of this battle, raised to the client's end-of-life summary
-    (which also counts what arrived while the camera followed an ally)."""
+    """The player's own damage and assist of this battle, raised to the client's summary of the server's totals."""
 
     def __init__(self):
         self.values = dict((kind, 0) for kind in KINDS)

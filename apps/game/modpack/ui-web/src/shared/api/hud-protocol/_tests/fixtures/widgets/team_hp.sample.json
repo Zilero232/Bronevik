@@ -1,0 +1,69 @@
+{
+  "data": {
+    "allies": {
+      "alive": 2,
+      "count": 3,
+      "frags": 2,
+      "hp": 3200,
+      "max": 5300
+    },
+    "colors": {
+      "ally": "#7CD35B",
+      "enemy": "#E3564A"
+    },
+    "diff": 2300,
+    "enemies": {
+      "alive": 1,
+      "count": 3,
+      "frags": 1,
+      "hp": 900,
+      "max": 5200
+    },
+    "show_score": true,
+    "style": "icons",
+    "vehicles": {
+      "allies": [
+        {
+          "alive": true,
+          "hp": 1200,
+          "icon": "img://gui/maps/icons/vehicleTypes/green/mediumTank.png|otmetki:class_medium",
+          "max": 1800
+        },
+        {
+          "alive": false,
+          "hp": 0,
+          "icon": "img://gui/maps/icons/vehicleTypes/green/lightTank.png|otmetki:class_light",
+          "max": 1500
+        },
+        {
+          "alive": true,
+          "hp": 2000,
+          "icon": "img://gui/maps/icons/vehicleTypes/green/heavyTank.png|otmetki:class_heavy",
+          "max": 2000
+        }
+      ],
+      "enemies": [
+        {
+          "alive": true,
+          "hp": 900,
+          "icon": "img://gui/maps/icons/vehicleTypes/red/at-spg.png|otmetki:class_td",
+          "max": 1700
+        },
+        {
+          "alive": false,
+          "hp": 0,
+          "icon": "img://gui/maps/icons/vehicleTypes/red/mediumTank.png|otmetki:class_medium",
+          "max": 1600
+        },
+        {
+          "alive": false,
+          "hp": 0,
+          "icon": "img://gui/maps/icons/vehicleTypes/red/spg.png|otmetki:class_spg",
+          "max": 1900
+        }
+      ]
+    }
+  },
+  "kind": "team_hp",
+  "v": 1
+}

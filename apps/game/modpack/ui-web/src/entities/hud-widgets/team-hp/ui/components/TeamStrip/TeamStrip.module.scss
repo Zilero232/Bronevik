@@ -1,0 +1,31 @@
+.strip {
+  display: flex;
+  width: 190px;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-top: 2px;
+}
+
+.mirrored {
+  justify-content: flex-end;
+}
+
+.vehicle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 1px;
+}
+
+.track {
+  display: flex;
+  width: 16px;
+  height: 3px;
+  flex-direction: row;
+  margin-top: 1px;
+  background-color: rgb(255 255 255 / 8%);
+}
+
+.fill {
+  height: 3px;
+}

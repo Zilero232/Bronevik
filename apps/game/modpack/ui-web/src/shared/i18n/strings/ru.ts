@@ -49,5 +49,10 @@ export const RU = {
   hudDisabled: 'выключена',
   invalidState: 'Мод прислал данные, которые окно не понимает. Обновите мод и окно.',
   loading: 'Загрузка…',
-  premium: 'Плюс'
+  premium: 'Плюс',
+  reportLast: 'Последний бой',
+  reportBest: 'Лучший бой',
+  reportTrend: 'Динамика',
+  reportBattle: 'Бой',
+  reportDamage: 'Σ урон'
 } as const;

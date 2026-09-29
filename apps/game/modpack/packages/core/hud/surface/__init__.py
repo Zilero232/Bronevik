@@ -3,7 +3,8 @@
 `HudSurface` keeps every label the layer created (GUIFlash props) with the GUI space it was created in, so
 a hangar label never shows in battle and the other way round, as GUIFlash does. `encode(space, cursor, edit)`
 is the view model's `state` property: `{v, cursor, edit, panels: [{id, text, x, y, align_x, align_y, alpha,
-drag, border, visible, scale, kind}]}`. `edit` is true while the player holds the edit modifier (Alt by
+drag, border, visible, scale, kind, widget}]}`; `widget` is a panel's structured payload (`core.hud.widget`)
+or None, drawn instead of `text` when the page knows its kind. `edit` is true while the player holds the edit modifier (Alt by
 default) and a cursor is shown: only then does a panel take the mouse, show its frame and move. The page
 sends `{type: 'ready'}` once it can draw, `{type: 'moved', id, x, y, align_x, align_y}` after a drag,
 `{type: 'resized', id, scale}` after the modifier + wheel, and `{type: 'pressed', id}` when the player
@@ -119,6 +120,8 @@ class HudSurface(object):
         panel['scale'] = _scale(panel['scale']) or 1.0
         if panel['kind'] not in KINDS:
             panel['kind'] = KIND_LABEL
+        if not isinstance(panel['widget'], dict):
+            panel['widget'] = None
         return panel
 
     def state(self, space, cursor, edit=False):

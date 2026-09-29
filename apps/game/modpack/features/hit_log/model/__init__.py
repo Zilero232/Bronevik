@@ -22,6 +22,14 @@ class HitLog(object):
         self.counts = dict((outcome, 0) for outcome in OUTCOMES)
         self.damage = 0
         self.crits = 0
+        self.targets = {}
+
+    def describe(self, target_id, vehicle_class=None, max_hp=None):
+        """The class and max HP of a target as its marker and the player panels show them."""
+        if not is_int(target_id):
+            return False
+        self.targets[target_id] = {'class': vehicle_class, 'max': int(max_hp) if is_number(max_hp) and max_hp > 0 else None}
+        return True
 
     def _latest(self, target_id, now, accepts=None):
         for entry in reversed(self.entries):

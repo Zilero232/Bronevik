@@ -5,6 +5,7 @@ import math
 
 from ....core.compat import is_int, is_number, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_number
+from ....core.hud.icons import item_name
 from ....core.shells import SHELL_CODES
 from .constants import READY_MARK, SEPARATOR
 
@@ -37,14 +38,17 @@ class Loadout(object):
         self.stats = {}
         self.current = None
 
-    def set_item(self, int_cd, name, quantity, ready, remaining):
+    def set_item(self, int_cd, name, quantity, ready, remaining, icon=None, total=None):
         if not is_int(int_cd) or not int_cd:
             return False
+        remaining = float(remaining) if is_number(remaining) and remaining > 0 else 0.0
         item = {
             'name': to_text(name) if name else u'?',
             'quantity': int(quantity) if is_int(quantity) and quantity >= 0 else 0,
             'ready': bool(ready),
-            'remaining': float(remaining) if is_number(remaining) and remaining > 0 else 0.0,
+            'remaining': remaining,
+            'icon': item_name(icon),
+            'total': max(float(total), remaining) if is_number(total) and total > 0 else remaining,
         }
         if int_cd not in self.items:
             self.item_order.append(int_cd)
@@ -52,10 +56,12 @@ class Loadout(object):
         self.items[int_cd] = item
         return changed
 
-    def set_shell(self, int_cd, code, quantity):
+    def set_shell(self, int_cd, code, quantity, icon=None):
         if not is_int(int_cd) or not int_cd:
             return False
-        shell = {'code': code if code in SHELL_CODES else None, 'quantity': int(quantity) if is_int(quantity) and quantity >= 0 else 0}
+        known = self.shells.get(int_cd) or {}
+        shell = {'code': code if code in SHELL_CODES else None, 'quantity': int(quantity) if is_int(quantity) and quantity >= 0 else 0,
+                 'icon': item_name(icon) or known.get('icon')}
         if int_cd not in self.shells:
             self.shell_order.append(int_cd)
         changed = self.shells.get(int_cd) != shell
@@ -102,8 +108,7 @@ def shell_text(shell, translate, size):
     return font(u'%s %s' % (label, format_number(shell['quantity'])), color, size)
 
 
-def stats_text(shell, stats, translate, size, current):
-    label = translate('cons_shell_' + shell['code']) if shell['code'] else u'?'
+def stats_values(stats, translate):
     values = []
     if stats.get('penetration'):
         values.append(translate('cons_penetration', value=format_number(stats['penetration'])))
@@ -111,16 +116,25 @@ def stats_text(shell, stats, translate, size, current):
         values.append(translate('cons_damage', value=format_number(stats['damage'])))
     if stats.get('speed'):
         values.append(translate('cons_speed', value=format_number(stats['speed'])))
+    return values
+
+
+def stats_text(shell, stats, translate, size, current):
+    label = translate('cons_shell_' + shell['code']) if shell['code'] else u'?'
+    values = stats_values(stats, translate)
     if not values:
         return None
     return u'%s %s' % (font(label + u':', COLOR_NEUTRAL if current else COLOR_MUTED, size), font(SEPARATOR.join(values), COLOR_MUTED, size))
 
 
-def stats_lines(loadout, settings, translate, size):
+def stats_ids(loadout, settings):
     if settings.get('shell_stats') == 'all':
-        ids = [int_cd for int_cd in loadout.shell_order if int_cd in loadout.stats]
-    else:
-        ids = [loadout.current] if loadout.current in loadout.stats and loadout.current in loadout.shells else []
+        return [int_cd for int_cd in loadout.shell_order if int_cd in loadout.stats]
+    return [loadout.current] if loadout.current in loadout.stats and loadout.current in loadout.shells else []
+
+
+def stats_lines(loadout, settings, translate, size):
+    ids = stats_ids(loadout, settings)
     lines = [stats_text(loadout.shells[int_cd], loadout.stats[int_cd], translate, size, int_cd == loadout.current) for int_cd in ids]
     return [line for line in lines if line]
 

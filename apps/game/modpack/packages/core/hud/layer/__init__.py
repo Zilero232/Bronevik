@@ -4,8 +4,12 @@ When the backend reports a drag or a resize (`on_moved`), the new x/y (and the a
 one) or scale are saved into the panel's section of components.json, so the panel comes back where the player left it.
 An unchanged text is not sent again (a Flash or Gameface re-layout per call is the cost).
 
-`set_muted(True)` (the streamer hotkey) and `set_blocked(panel_ids)` (the streamer's private panels) take panels off
-the screen without the features knowing: their texts are held and come back when the panel is allowed again.
+`set_muted(True)` (the streamer hotkey), `set_blocked(panel_ids)` (the streamer's private panels) and `set_gui_hidden(True)`
+(the stock battle GUI hidden: V, full stats) take panels off the screen without the features knowing: their texts are
+held and come back when the panel is allowed again.
+
+`show(panel_id, text, widget)` also carries the panel's structured payload (`core.hud.widget`) for the Gameface page;
+`renders_widgets()` says whether the renderer draws it (a feature replaces a stock element only then).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -23,8 +27,10 @@ class HudLayer(object):
         self.schemas = {}
         self.shown = set()
         self.texts = {}
+        self.widgets = {}
         self.places = {}
         self.muted = False
+        self.gui_hidden = False
         self.blocked = frozenset()
         self.held = {}
         self.backend.listen(self.on_moved)
@@ -50,15 +56,19 @@ class HudLayer(object):
     def is_registered(self, panel_id):
         return panel_id in self.panels
 
-    def props(self, panel_id, text):
+    def props(self, panel_id, text, widget=None):
         props = layout_props(self.panels[panel_id])
-        props.update({'text': text, 'visible': True})
+        props.update({'text': text, 'visible': True, 'widget': widget})
         return props
 
     def suppressed(self, panel_id):
-        return self.muted or panel_id in self.blocked
+        return self.muted or self.gui_hidden or panel_id in self.blocked
 
-    def show(self, panel_id, text):
+    def renders_widgets(self):
+        """Whether the renderer in use draws the widget payloads (the Gameface page, once it answered)."""
+        return bool(self.backend.renders_widgets())
+
+    def show(self, panel_id, text, widget=None):
         """Show or update the panel; False when it is unknown or no renderer is installed. A muted or blocked panel
         keeps its text for later and counts as shown."""
         if not self.is_registered(panel_id) or not self.has_panels:
@@ -66,18 +76,20 @@ class HudLayer(object):
             return False
         if self.suppressed(panel_id):
             self._take_off(panel_id)
-            self.held[panel_id] = text
+            self.held[panel_id] = (text, widget)
             return True
         alias = alias_of(panel_id)
         if alias in self.shown:
-            if self.texts.get(alias) != text:
-                self.backend.update(alias, {'text': text, 'visible': True})
+            if self.texts.get(alias) != text or self.widgets.get(alias) != widget:
+                self.backend.update(alias, {'text': text, 'visible': True, 'widget': widget})
                 self.texts[alias] = text
+                self.widgets[alias] = widget
             return True
-        if not self.backend.create(alias, self.props(panel_id, text)):
+        if not self.backend.create(alias, self.props(panel_id, text, widget)):
             return False
         self.shown.add(alias)
         self.texts[alias] = text
+        self.widgets[alias] = widget
         return True
 
     def place(self, panel_id, x, y):
@@ -99,6 +111,7 @@ class HudLayer(object):
     def _take_off(self, panel_id):
         alias = alias_of(panel_id)
         self.texts.pop(alias, None)
+        self.widgets.pop(alias, None)
         self.places.pop(alias, None)
         if alias in self.shown:
             self.shown.discard(alias)
@@ -117,17 +130,24 @@ class HudLayer(object):
         self.blocked = frozenset(panel_ids or ())
         self._apply()
 
+    def set_gui_hidden(self, hidden):
+        """Follow the stock battle GUI: hidden with V or behind the full stats (True), shown again (False)."""
+        hidden = bool(hidden)
+        if hidden != self.gui_hidden:
+            self.gui_hidden = hidden
+            self._apply()
+
     def _apply(self):
         for alias in list(self.shown):
             panel_id = panel_of(alias)
             if panel_id is not None and self.suppressed(panel_id):
-                self.held[panel_id] = self.texts.get(alias)
+                self.held[panel_id] = (self.texts.get(alias), self.widgets.get(alias))
                 self._take_off(panel_id)
-        for panel_id, text in list(self.held.items()):
+        for panel_id, (text, widget) in list(self.held.items()):
             if not self.suppressed(panel_id):
                 del self.held[panel_id]
                 if text is not None:
-                    self.show(panel_id, text)
+                    self.show(panel_id, text, widget)
 
     def update_settings(self, panel_id, values):
         """Apply new settings (a settings window, a preset); a shown panel is moved or restyled at once."""

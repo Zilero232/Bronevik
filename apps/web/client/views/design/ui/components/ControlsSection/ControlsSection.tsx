@@ -33,6 +33,23 @@ export const ControlsSection = () => {
           {t('large')}
         </Button>
       </DesignRow>
+      <DesignRow label={t('gameButtons')}>
+        <Button shine size='lg'>
+          {t('primary')}
+        </Button>
+        <Button shine size='lg' variant='premium'>
+          {t('premium')}
+        </Button>
+        <Button size='lg' variant='secondary'>
+          {t('secondary')}
+        </Button>
+        <Button size='lg' variant='ghost'>
+          {t('ghost')}
+        </Button>
+        <Button disabled shine size='lg'>
+          {t('disabled')}
+        </Button>
+      </DesignRow>
       <DesignRow label={t('iconButtons')}>
         <IconButton aria-label={t('search')}>
           <Search size={18} />

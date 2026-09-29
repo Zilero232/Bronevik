@@ -79,6 +79,8 @@
   "controls": {
     "title": "Controls",
     "buttons": "Buttons",
+    "gameButtons": "Buttons with shine",
+    "premium": "Plus",
     "primary": "Battle!",
     "secondary": "Compare",
     "ghost": "Cancel",

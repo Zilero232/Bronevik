@@ -55,6 +55,8 @@ export const httpStatusOf = (error: unknown): number | null => {
 
 export const isNotFoundError = (error: unknown): boolean => httpStatusOf(error) === HTTP_STATUS.notFound;
 
+export const isConflictError = (error: unknown): boolean => httpStatusOf(error) === HTTP_STATUS.conflict;
+
 export const isUnauthorizedError = (error: unknown): error is UnauthorizedError => error instanceof UnauthorizedError;
 
 export const isPlusRequiredError = (error: unknown): error is PlusRequiredError => error instanceof PlusRequiredError;

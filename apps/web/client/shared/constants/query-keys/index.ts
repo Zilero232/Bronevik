@@ -1,5 +1,7 @@
 export { QUERY_KEYS } from './query-keys';
 export type {
+  BlogEditorPostKeyInput,
+  BlogViewerKeyInput,
   ClanWorkspaceKeyInput,
   GuideDetailKeyInput,
   GuideListKeyInput,

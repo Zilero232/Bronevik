@@ -1,0 +1,122 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+
+  &[data-variant='hero'] {
+    right: var(--space-7);
+    bottom: var(--space-6);
+
+    @include below(lg) {
+      right: var(--space-5);
+      bottom: var(--space-4);
+    }
+  }
+
+  &[data-variant='tile'] {
+    top: var(--space-3);
+    right: var(--space-3);
+    gap: var(--space-2);
+  }
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+}
+
+.dot {
+  @include reset-button;
+
+  display: inline-grid;
+  width: 22px;
+  height: 28px;
+  place-items: center;
+
+  &:focus-visible {
+    @include focus-ring;
+
+    outline-offset: -2px;
+  }
+
+  @include coarse {
+    width: 26px;
+    height: 40px;
+  }
+
+  .root[data-variant='tile'] & {
+    width: 14px;
+    height: 24px;
+  }
+}
+
+.pip {
+  width: 12px;
+  height: 4px;
+  background-color: color-mix(in srgb, var(--color-text) 30%, transparent);
+  clip-path: polygon(2px 0, 100% 0, calc(100% - 2px) 100%, 0 100%);
+  transition:
+    width var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) ease;
+
+  .dot:hover & {
+    background-color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  }
+
+  .dot[aria-current='true'] & {
+    width: 20px;
+    background-color: var(--color-accent);
+  }
+
+  .root[data-variant='tile'] & {
+    width: 8px;
+  }
+
+  .root[data-variant='tile'] .dot[aria-current='true'] & {
+    width: 12px;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.button {
+  @include reset-button;
+  @include touch-target;
+
+  display: inline-grid;
+  width: var(--control-h);
+  height: var(--control-h);
+  border: 1px solid color-mix(in srgb, var(--color-text) 22%, transparent);
+  border-radius: var(--radius-control);
+  background-color: color-mix(in srgb, var(--color-bg-deep) 70%, transparent);
+  color: var(--color-text);
+  place-items: center;
+  transition:
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
+
+  @include hover {
+    border-color: var(--color-accent);
+    background-color: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  .root[data-variant='tile'] & {
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+  }
+}

@@ -1,0 +1,87 @@
+@use '@/shared/styles/mixins' as *;
+
+.totals {
+  display: grid;
+  padding: 0;
+  margin: 0 0 0.9em;
+  gap: 0.4em;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+}
+
+.total {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em 0.6em;
+  border-top: 2px solid var(--kind);
+  background-color: color-mix(in srgb, var(--kind) 10%, transparent);
+  gap: 0.2em;
+
+  --kind: var(--color-accent);
+
+  &[data-kind='blocked'] {
+    --kind: var(--color-steel);
+  }
+
+  &[data-kind='assisted'] {
+    --kind: var(--color-steel-blue);
+  }
+}
+
+.totalValue {
+  @include numeric;
+
+  font-size: 1.5em;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.totalLabel {
+  color: var(--color-text-dim);
+  font-size: 0.7em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.entries {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  gap: 0.3em;
+  list-style: none;
+}
+
+.entry {
+  display: grid;
+  align-items: center;
+  padding: 0.35em 0.5em;
+  background-color: color-mix(in srgb, var(--color-on-media) 4%, transparent);
+  gap: 0.6em;
+  grid-template-columns: 1.3em 1.1em minmax(0, 1fr) 3em;
+}
+
+.shell {
+  width: 1.3em;
+  height: 1.3em;
+  color: var(--color-gold);
+}
+
+.class {
+  width: 1.1em;
+  height: 1.1em;
+  color: var(--color-text-muted);
+}
+
+.bar {
+  height: 0.35em;
+  background: linear-gradient(90deg, var(--color-accent) calc(var(--value) / 5 * 1%), color-mix(in srgb, var(--color-on-media) 8%, transparent) 0);
+}
+
+.damage {
+  @include numeric;
+
+  color: var(--color-accent);
+  font-weight: 700;
+  text-align: right;
+}

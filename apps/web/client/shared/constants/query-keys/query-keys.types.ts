@@ -24,3 +24,11 @@ export type ClanWorkspaceKeyInput = {
   clanId: number;
   params: object;
 };
+
+export type BlogViewerKeyInput = {
+  viewerId: string | null;
+};
+
+export type BlogEditorPostKeyInput = BlogViewerKeyInput & {
+  id: string;
+};

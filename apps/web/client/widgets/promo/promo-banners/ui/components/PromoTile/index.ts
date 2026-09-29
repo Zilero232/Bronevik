@@ -1,0 +1,1 @@
+export { PromoTile } from './PromoTile';

@@ -1,0 +1,1 @@
+export { PromoSocial } from './PromoSocial';

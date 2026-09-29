@@ -1,0 +1,1 @@
+export { MockTeamHp } from './MockTeamHp';

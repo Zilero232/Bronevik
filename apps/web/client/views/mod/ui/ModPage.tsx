@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Band, PageHero } from '@/ui-kit';
+import { PromoShowcase } from '@/widgets/promo/promo-banners';
 
 import { MOD_PAGE } from '../config';
 import { ModActions, ModFairPlay, ModFaq, ModFeatures, ModInstall, ModSwitches } from './components';
@@ -24,6 +25,9 @@ export const ModPage = () => {
         lead={t('lead')}
         title={t('title')}
       />
+      <div className={s.section}>
+        <PromoShowcase />
+      </div>
       <div className={s.section}>
         <ModFeatures />
       </div>

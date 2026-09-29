@@ -21,6 +21,7 @@ import { AnalyticsModule } from './modules/analytics';
 import { AuthModule } from './modules/auth';
 import { BestBattlesModule } from './modules/best-battles';
 import { BillingModule } from './modules/billing';
+import { BlogModule } from './modules/blog';
 import { BuildsModule } from './modules/builds';
 import { ClanWorkspaceModule } from './modules/clan-workspace';
 import { ClansModule } from './modules/clans';
@@ -138,6 +139,7 @@ import { WatchlistModule } from './modules/watchlist';
     ReplaysModule,
     CommunityBuildsModule,
     GuidesModule,
+    BlogModule,
     PlatoonsModule,
     RecruitingModule,
     CoachingModule,

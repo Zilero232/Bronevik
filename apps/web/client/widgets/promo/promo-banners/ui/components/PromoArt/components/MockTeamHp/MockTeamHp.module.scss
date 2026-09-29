@@ -1,0 +1,159 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  width: 28em;
+  flex-direction: column;
+  filter: drop-shadow(0 1em 1.6em color-mix(in srgb, var(--color-shade) 55%, transparent));
+  gap: 1.2em;
+}
+
+.panel {
+  display: grid;
+  align-items: end;
+  padding: 0.9em 1em;
+  border: 1px solid color-mix(in srgb, var(--color-on-media) 14%, transparent);
+  border-radius: 0.3em;
+  background: color-mix(in srgb, var(--color-bg-deep) 82%, transparent);
+  gap: 0.8em;
+  grid-template-areas: 'allies score enemies';
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+
+  --side: var(--color-success);
+
+  &[data-side='allies'] {
+    grid-area: allies;
+  }
+
+  &[data-side='enemies'] {
+    --side: var(--color-battle);
+
+    align-items: flex-end;
+    grid-area: enemies;
+  }
+}
+
+.label {
+  color: var(--color-text-dim);
+  font-family: var(--font-display);
+  font-size: 0.7em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bar {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 1.5em;
+  background-color: color-mix(in srgb, var(--side) 14%, transparent);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.5em) 100%, 0 100%);
+
+  .side[data-side='enemies'] & {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0.5em 100%);
+  }
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--value);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--side) 85%, var(--color-on-media)), var(--side));
+
+  .side[data-side='enemies'] & {
+    right: 0;
+    left: auto;
+  }
+}
+
+.hp {
+  @include numeric;
+
+  position: relative;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  color: var(--color-on-media);
+  font-size: 0.85em;
+  font-weight: 700;
+  padding-inline: 0.5em;
+  text-shadow: 0 1px 2px var(--color-shade);
+
+  .side[data-side='enemies'] & {
+    justify-content: flex-end;
+  }
+}
+
+.score {
+  @include numeric;
+
+  display: flex;
+  align-items: baseline;
+  font-size: 2em;
+  font-weight: 700;
+  gap: 0.15em;
+  grid-area: score;
+  line-height: 1;
+
+  [data-side='allies'] {
+    color: var(--color-success);
+  }
+
+  [data-side='enemies'] {
+    color: var(--color-battle);
+  }
+}
+
+.colon {
+  color: var(--color-text-dim);
+}
+
+.tanks {
+  display: grid;
+  gap: 1.2em;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.row {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: 0.25em;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  list-style: none;
+
+  --side: var(--color-success);
+
+  &[data-side='enemies'] {
+    --side: var(--color-battle);
+  }
+}
+
+.tank {
+  position: relative;
+  height: 0.55em;
+  background-color: color-mix(in srgb, var(--side) 16%, transparent);
+
+  &:after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: calc(var(--value) * 100%);
+    background-color: var(--side);
+    content: '';
+  }
+
+  &[data-dead] {
+    background-color: color-mix(in srgb, var(--color-on-media) 8%, transparent);
+  }
+}

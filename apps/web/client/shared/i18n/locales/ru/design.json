@@ -79,6 +79,8 @@
   "controls": {
     "title": "Элементы управления",
     "buttons": "Кнопки",
+    "gameButtons": "Кнопки с отблеском",
+    "premium": "Плюс",
     "primary": "В бой",
     "secondary": "Сравнить",
     "ghost": "Отмена",

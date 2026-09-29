@@ -1,0 +1,1 @@
+export { PromoKicker } from './PromoKicker';

@@ -1,0 +1,162 @@
+{
+  "meta": {
+    "title": "Blog",
+    "description": "The Tri Otmetki team blog: project news, patch breakdowns, meta analysis and announcements."
+  },
+  "detailMeta": {
+    "title": "Blog post",
+    "description": "A post from the Tri Otmetki team blog about Mir Tankov."
+  },
+  "editorMeta": {
+    "listTitle": "Blog editor",
+    "newTitle": "New post",
+    "editTitle": "Edit post",
+    "description": "Drafts and published posts of the Tri Otmetki blog."
+  },
+  "head": {
+    "title": "Blog",
+    "description": "Project news, patch breakdowns and analysis from the Tri Otmetki team. Player-written guides live in Guides.",
+    "rss": "RSS",
+    "editor": "Editor"
+  },
+  "categories": {
+    "announcements": "Announcements",
+    "updates": "Site updates",
+    "analysis": "Analysis",
+    "patches": "Patch breakdowns",
+    "community": "Community",
+    "esports": "Tournaments"
+  },
+  "filters": {
+    "label": "Category",
+    "all": "All",
+    "tags": "Tags",
+    "reset": "Reset filters"
+  },
+  "readingMinutes": "{minutes} min",
+  "more": "Show more ({shown} of {total})",
+  "empty": {
+    "title": "No posts yet",
+    "description": "The team's first posts will appear here. Subscribe to the RSS feed so you don't miss them."
+  },
+  "emptyFiltered": {
+    "title": "Nothing found",
+    "description": "There are no posts in this category or with this tag yet."
+  },
+  "error": {
+    "title": "Could not load the blog",
+    "description": "The server did not respond. Please try again."
+  },
+  "article": {
+    "breadcrumb": "Blog",
+    "team": "Tri Otmetki team",
+    "published": "Published {date}",
+    "readingTime": "{minutes, plural, one {# minute} other {# minutes}} read",
+    "edit": "Edit",
+    "toc": "Contents",
+    "tags": "Tags",
+    "share": "Share",
+    "shareTargets": {
+      "telegram": "Telegram",
+      "vk": "VK"
+    },
+    "copyLink": "Copy link",
+    "copied": "Link copied",
+    "copyFailed": "Could not copy the link",
+    "related": "Read next",
+    "errorTitle": "Could not load the post",
+    "errorDescription": "The server did not respond. Please try again."
+  },
+  "editor": {
+    "gate": {
+      "signIn": "Sign in",
+      "signInTitle": "Sign in required",
+      "signInDescription": "The blog editor is for the project team only.",
+      "forbiddenTitle": "No access",
+      "forbiddenDescription": "Only project moderators and administrators can write blog posts."
+    },
+    "list": {
+      "breadcrumb": "Blog",
+      "title": "Editor",
+      "description": "Drafts and published blog posts.",
+      "create": "New post",
+      "emptyTitle": "No posts yet",
+      "emptyDescription": "Write the first post — it stays a draft until you publish it.",
+      "errorTitle": "Could not load the posts",
+      "errorDescription": "The server did not respond. Please try again.",
+      "statuses": {
+        "draft": "Draft",
+        "published": "Published"
+      },
+      "featured": "Pinned",
+      "updated": "Updated {date}",
+      "view": "Open",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "deleteTitle": "Delete this post?",
+      "deleteDescription": "The post and its uploaded cover will be deleted for good.",
+      "deleted": "Post deleted",
+      "deleteFailed": "Could not delete the post"
+    },
+    "form": {
+      "breadcrumbBlog": "Blog",
+      "breadcrumbEditor": "Editor",
+      "newTitle": "New post",
+      "editTitle": "Edit post",
+      "description": "Write in the visual editor; the text is saved as Markdown.",
+      "title": "Title",
+      "titlePlaceholder": "For example: what patch 1.45 changed",
+      "excerpt": "Summary",
+      "excerptPlaceholder": "Two or three sentences for the card and search engines",
+      "body": "Post text",
+      "bodyPlaceholder": "Start writing…",
+      "bodyHint": "Second and third level headings go into the table of contents.",
+      "counter": "{length} / {max}",
+      "category": "Category",
+      "locale": "Post language",
+      "locales": {
+        "ru": "Русский",
+        "en": "English"
+      },
+      "tags": "Tags",
+      "tagsPlaceholder": "patch, balance, is-7",
+      "tagsHint": "Comma separated, up to 8 tags.",
+      "featured": "Pin in the blog",
+      "featuredHint": "Show the post first in the list.",
+      "cover": "Cover",
+      "coverEmpty": "No cover",
+      "coverUpload": "Upload",
+      "coverUploading": "Uploading…",
+      "coverRemove": "Remove",
+      "coverFailed": "Could not upload the image",
+      "coverUrl": "Or an image link",
+      "coverUrlHint": "https only.",
+      "slug": "Post address",
+      "slugPlaceholder": "patch-1-45",
+      "slugHint": "Latin letters, digits and dashes. Leave empty to build it from the title.",
+      "seoTitle": "SEO title",
+      "seoDescription": "SEO description",
+      "saveDraft": "Save draft",
+      "unpublish": "Unpublish",
+      "publish": "Publish",
+      "update": "Update",
+      "saved": "Draft saved",
+      "published": "Post published",
+      "failed": "Could not save the post",
+      "slugTaken": "This address is already taken",
+      "loadErrorTitle": "Could not load the post",
+      "loadErrorDescription": "The server did not respond. Please try again.",
+      "errors": {
+        "title": "Title: {min} to {max} characters",
+        "excerpt": "Summary: {min} to {max} characters",
+        "body": "Text: at least 50 characters",
+        "tags": "Up to 8 tags, each 2 to 32 letters, digits or dashes",
+        "slug": "Latin letters, digits and dashes only, at least 3 characters",
+        "coverUrl": "An https link is required",
+        "seoTitle": "Up to 70 characters",
+        "seoDescription": "Up to 170 characters"
+      }
+    }
+  }
+}

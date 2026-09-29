@@ -1,0 +1,36 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include panel;
+  @include stack(var(--space-2));
+
+  padding: var(--space-4);
+}
+
+.title {
+  @include label;
+
+  margin: 0;
+}
+
+.list {
+  @include stack(var(--space-1));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item[data-depth='3'] {
+  padding-left: var(--space-4);
+}
+
+.link {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}

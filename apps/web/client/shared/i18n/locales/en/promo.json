@@ -1,0 +1,174 @@
+{
+  "board": {
+    "title": "Three Marks services and modpack",
+    "hero": "Featured on the site",
+    "tile": "Services, block {index}"
+  },
+  "showcase": {
+    "title": "Mods inside",
+    "lead": "Modpack panels that work only with your own data and what the client already shows."
+  },
+  "carousel": {
+    "role": "carousel",
+    "slideRole": "slide",
+    "slide": "{index} of {count}",
+    "goTo": "Show slide {index} of {count}",
+    "prev": "Previous slide",
+    "next": "Next slide",
+    "pause": "Pause rotation",
+    "play": "Resume rotation"
+  },
+  "soon": "Soon: {kicker}",
+  "soonMod": "Coming to the modpack",
+  "soonCta": "Learn more",
+  "items": {
+    "modpack": {
+      "kicker": "Modpack",
+      "title": "Three Marks modpack and manager",
+      "lead": "Fair-play mods in one click: <hl>marks, battle results and your session</hl> right in the game. The manager moves everything after a patch.",
+      "cta": "Download"
+    },
+    "marksPanel": {
+      "kicker": "Mod",
+      "title": "“MoE panel in battle”",
+      "lead": "Your MoE percent at the start of the battle and projected after it, <hl>damage to 65, 85 and 95%</hl> and battles to the next mark.",
+      "cta": "About the mod"
+    },
+    "teamHp": {
+      "kicker": "Mod",
+      "title": "“Team HP and score”",
+      "lead": "Total team hit points, the frag score and <hl>a bar per tank</hl> for both teams.",
+      "cta": "About the mod"
+    },
+    "damageLog": {
+      "kicker": "Mod",
+      "title": "“Damage log”",
+      "lead": "Damage dealt, blocked and assisted in the battle and <hl>the latest entries with the shell type</hl>.",
+      "cta": "About the mod"
+    },
+    "crosshair": {
+      "kicker": "Mod",
+      "title": "“Crosshairs”",
+      "lead": "Presets for the game's own reticle in arcade and sniper modes and <hl>17 centre marks</hl> to pick from.",
+      "cta": "About the mod"
+    },
+    "gear": {
+      "kicker": "Mod",
+      "title": "“Consumables and reload”",
+      "lead": "Your consumables with cooldowns, shells left and <hl>your own gun's reload timer</hl> in one place.",
+      "cta": "About the mod"
+    },
+    "hits": {
+      "kicker": "Mod",
+      "title": "“Hits on you”",
+      "lead": "Who fired, with which shell and how it ended: <hl>penetration, critical, no pen or ricochet</hl>.",
+      "cta": "About the mod"
+    },
+    "plus": {
+      "kicker": "Subscription",
+      "title": "Plus — more analytics",
+      "lead": "One subscription on top of the free site: <hl>faster stat updates</hl>, deeper analytics and more overlays.",
+      "cta": "About Plus"
+    },
+    "armor": {
+      "kicker": "Services",
+      "title": "3D armor and comparison",
+      "lead": "3D armor models with thickness and angles and <hl>a side-by-side comparison</hl> of vehicles.",
+      "cta": "View armor"
+    },
+    "builds": {
+      "kicker": "Services",
+      "title": "How to build a tank",
+      "lead": "Equipment, crew and consumables <hl>with win rates from real battles</hl>.",
+      "cta": "To builds"
+    },
+    "marks": {
+      "kicker": "Marks",
+      "title": "Damage for 65, 85 and 95%",
+      "lead": "The damage each mark needs <hl>for every vehicle in the game</hl> and a forecast in battles.",
+      "cta": "Marks table"
+    },
+    "ratings": {
+      "kicker": "Methodology",
+      "title": "How we rate players",
+      "lead": "How we calculate WN8, EFF and the Bronya Index and <hl>where the data comes from</hl>.",
+      "cta": "Open methodology"
+    },
+    "play": {
+      "kicker": "Mini-games",
+      "title": "Guess the tank and the map",
+      "lead": "Daily «Мир танков» puzzles: <hl>a new tank and a new map</hl> every day.",
+      "cta": "Play"
+    },
+    "tournaments": {
+      "kicker": "Tournaments",
+      "title": "Brackets and sign-ups",
+      "lead": "Tournaments run by players: <hl>sign-ups, the bracket and results</hl> on one page.",
+      "cta": "To tournaments"
+    },
+    "streamers": {
+      "kicker": "Streamers",
+      "title": "Overlays for OBS",
+      "lead": "A streamer profile, <hl>OBS overlays</hl> and game settings for viewers.",
+      "cta": "For streamers"
+    }
+  },
+  "mock": {
+    "manager": {
+      "title": "Modpack manager",
+      "profile": "Profile: main",
+      "migrate": "Moving after a patch",
+      "items": {
+        "marksPanel": "MoE panel",
+        "teamHp": "Team HP",
+        "damageLog": "Damage log",
+        "crosshair": "Crosshairs"
+      }
+    },
+    "marks": {
+      "title": "MoE panel",
+      "battles": "Battles to the mark"
+    },
+    "teamHp": {
+      "allies": "Allies",
+      "enemies": "Enemies"
+    },
+    "damageLog": {
+      "title": "Damage log",
+      "totals": {
+        "dealt": "Dealt",
+        "blocked": "Blocked",
+        "assisted": "Assist"
+      }
+    },
+    "crosshair": {
+      "damage": "damage",
+      "penetration": "pen",
+      "distance": "metres"
+    },
+    "gear": {
+      "reload": "Reload",
+      "seconds": "{value} s"
+    },
+    "hits": {
+      "title": "Hits on you",
+      "blocked": "Blocked",
+      "outcomes": {
+        "pen": "Pen",
+        "ricochet": "Ricochet",
+        "noPen": "No pen",
+        "crit": "Critical"
+      }
+    }
+  },
+  "social": {
+    "label": "Stay in touch",
+    "telegram": {
+      "title": "Telegram bot",
+      "hint": "@{bot}: notifications and sessions"
+    },
+    "plus": "Plus subscription",
+    "manager": "Download the manager",
+    "modpack": "Modpack"
+  }
+}

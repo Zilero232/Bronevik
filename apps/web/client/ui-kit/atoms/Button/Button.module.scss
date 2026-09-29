@@ -1,24 +1,40 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  --bevel-top: color-mix(in srgb, var(--color-on-media) 34%, transparent);
+  --bevel-bottom: color-mix(in srgb, var(--color-shade) 30%, transparent);
+  --drop: 0 1px 0 color-mix(in srgb, var(--color-shade) 30%, transparent);
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-control);
   appearance: none;
   cursor: pointer;
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   gap: var(--space-2);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-decoration: none;
   text-transform: uppercase;
   transition:
     color var(--duration-fast) ease,
     background-color var(--duration-fast) ease,
-    border-color var(--duration-fast) ease;
+    border-color var(--duration-fast) ease,
+    box-shadow var(--duration-base) ease,
+    transform var(--duration-fast) ease;
   user-select: none;
   white-space: nowrap;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
 
   &:disabled {
     cursor: not-allowed;
@@ -28,6 +44,13 @@
   :global(svg) {
     width: 14px;
     height: 14px;
+    flex-shrink: 0;
+  }
+
+  @include reduced-motion {
+    &:active:not(:disabled) {
+      transform: none;
+    }
   }
 }
 
@@ -48,40 +71,107 @@
 }
 
 .lg {
-  height: 40px;
-  padding: 0 18px;
+  height: var(--control-h-lg);
+  padding: 0 20px;
   font-size: var(--text-md);
+
+  :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .block {
   width: 100%;
 }
 
+.shine {
+  @include shine;
+}
+
 .primary {
-  background-color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent-pressed) 70%, var(--color-shade));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-accent) 84%, var(--color-on-media)) 0%,
+    var(--color-accent) 46%,
+    var(--color-accent-pressed) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 var(--bevel-top),
+    inset 0 -2px 0 var(--bevel-bottom),
+    var(--drop);
   color: var(--color-accent-contrast);
 
-  &:hover:not(:disabled) {
-    background-color: var(--color-accent-hover);
+  @include hover {
+    &:not(:disabled) {
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-accent-hover) 80%, var(--color-on-media)) 0%,
+        var(--color-accent-hover) 46%,
+        var(--color-accent) 100%
+      );
+      box-shadow:
+        inset 0 1px 0 var(--bevel-top),
+        inset 0 -2px 0 var(--bevel-bottom),
+        0 0 16px color-mix(in srgb, var(--color-accent) 45%, transparent);
+    }
+  }
+
+  &:active:not(:disabled) {
+    background: linear-gradient(180deg, var(--color-accent-pressed) 0%, var(--color-accent) 100%);
+    box-shadow: inset 0 2px 3px var(--bevel-bottom);
   }
 }
 
 .premium {
   @include premium-surface;
 
-  &:hover:not(:disabled) {
-    background: var(--gradient-premium-hover);
+  box-shadow:
+    inset 0 1px 0 var(--bevel-top),
+    inset 0 -2px 0 var(--bevel-bottom),
+    var(--drop);
+
+  @include hover {
+    &:not(:disabled) {
+      background: var(--gradient-premium-hover);
+      box-shadow:
+        inset 0 1px 0 var(--bevel-top),
+        inset 0 -2px 0 var(--bevel-bottom),
+        0 0 16px color-mix(in srgb, var(--color-gold) 45%, transparent);
+    }
+  }
+
+  &:active:not(:disabled) {
+    box-shadow: inset 0 2px 3px var(--bevel-bottom);
   }
 }
 
 .secondary {
-  border-color: var(--color-border-strong);
-  background-color: var(--color-surface-raised);
+  --bevel-top: color-mix(in srgb, var(--color-on-media) 9%, transparent);
+  --bevel-bottom: color-mix(in srgb, var(--color-shade) 22%, transparent);
+
+  border-color: color-mix(in srgb, var(--color-text) 26%, var(--color-border-strong));
+  background: linear-gradient(180deg, var(--color-surface-overlay) 0%, var(--color-surface-raised) 50%, var(--color-surface-sunken) 100%);
+  box-shadow:
+    inset 0 1px 0 var(--bevel-top),
+    inset 0 -2px 0 var(--bevel-bottom),
+    var(--drop);
   color: var(--color-text);
 
-  &:hover:not(:disabled) {
-    border-color: var(--color-text-dim);
-    background-color: var(--color-surface-hover);
+  @include hover {
+    &:not(:disabled) {
+      border-color: color-mix(in srgb, var(--color-text) 55%, var(--color-border-strong));
+      box-shadow:
+        inset 0 1px 0 var(--bevel-top),
+        inset 0 -2px 0 var(--bevel-bottom),
+        0 0 14px color-mix(in srgb, var(--color-steel) 30%, transparent);
+    }
+  }
+
+  &:active:not(:disabled) {
+    background: linear-gradient(180deg, var(--color-surface-sunken) 0%, var(--color-surface-raised) 100%);
+    box-shadow: inset 0 2px 3px var(--bevel-bottom);
   }
 }
 
@@ -89,17 +179,43 @@
   background-color: transparent;
   color: var(--color-text-muted);
 
-  &:hover:not(:disabled) {
-    background-color: var(--color-surface-hover);
-    color: var(--color-text);
+  @include hover {
+    &:not(:disabled) {
+      border-color: var(--color-border-strong);
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--color-surface-sunken);
   }
 }
 
 .danger {
-  background-color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 70%, var(--color-shade));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-danger) 86%, var(--color-on-media)) 0%,
+    var(--color-danger) 50%,
+    color-mix(in srgb, var(--color-danger) 80%, var(--color-shade)) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 var(--bevel-top),
+    inset 0 -2px 0 var(--bevel-bottom),
+    var(--drop);
   color: var(--color-on-solid);
 
-  &:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--color-danger) 85%, var(--color-text));
+  @include hover {
+    &:not(:disabled) {
+      box-shadow:
+        inset 0 1px 0 var(--bevel-top),
+        inset 0 -2px 0 var(--bevel-bottom),
+        0 0 14px color-mix(in srgb, var(--color-danger) 40%, transparent);
+    }
+  }
+
+  &:active:not(:disabled) {
+    box-shadow: inset 0 2px 3px var(--bevel-bottom);
   }
 }

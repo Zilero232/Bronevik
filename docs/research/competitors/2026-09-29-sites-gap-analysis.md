@@ -240,6 +240,67 @@
 - Самое дешёвое с наибольшим эффектом — P0-1, P0-4 и P0-5: данные уже есть, нужен UI.
 - Всё, что опирается на Lesta API (P0-2, P0-6, P1-2, P1-5…P1-7, P2-6, P2-8, P2-10, P2-11), до получения ключа делаем с пустыми состояниями и проверяем на живых данных после подключения ключа.
 
+---
+
+## 7. lebwa.tv и nearyou.team (повторный обход 2026-09-29)
+
+Повод: у Левши появился блог. Разделы, уже разобранные в [competitors-v2 §1.1–1.2](competitors-v2.md), здесь не повторяются — только то, что изменилось, и сверка с нашим кодом на сегодня.
+
+### 7.1 Блог Левши ([/blog](https://lebwa.tv/blog))
+
+- **Кто пишет.** Не редакция, а **любой зарегистрированный пользователь** (Плюс не нужен): кнопка «Написать пост» → `/blog/post/create`, модерация упомянута, но не описана ([приветственный пост](https://lebwa.tv/blog/post/dobro-pozalovat-v-blog-levsi-zdes-vazno-vase-mnenie-39)). Зовут: видео, нарезки, влоги, свои турниры, набор в клан, арт, мнения об игре.
+- **Рубрики** (11): «Видео: Левша горит», «Мысли про игру», «Мир кланов», «Клан ведёт набор!», «Посетил невероятное место», «Я сделал это сам!», «Мероприятия Мир танков», «Что я хочу видеть в игре?», «Киберспорт и турниры», «Видео и нарезки», «Уведомления» (`/blog/category/<slug>`).
+- **Список:** блок избранного + сетка карточек (обложка, заголовок, бейдж рубрики, «Просмотреть»), нумерованная пагинация `?page=N`. Тегов, поиска, автора и даты на карточке нет.
+- **Статья:** `/blog/post/<slug>-<id>`, хлебные крошки «LeBwa.tv › Блог › Рубрика › Пост». Не видно: автора, даты, времени чтения, содержания, реакций, комментариев, «читайте также», кнопок «поделиться».
+- Основной контент сейчас — выпуски «Левша горит #29…#36» (видео) и одна заметка о балансе.
+
+**У нас после этого круга:** `/blog` — редакционный блог команды (отдельно от пользовательских `/guides`): рубрики и теги, закреплённая статья + сетка `StoryCard`, обложка (загрузка на `serverdata` или https-ссылка), автор, дата, время чтения, содержание по H2/H3, «читайте также», «поделиться» (Telegram, VK, ссылка), JSON-LD `BlogPosting` + крошки, RSS `api…/blog/rss.xml`, sitemap, редакция `/blog/editor` для ролей admin/moderator (MDXEditor, Markdown). По подаче статьи мы **сильнее**. **Слабее** в одном: у Левши пишут пользователи и есть видео-рубрики.
+
+### 7.2 Остальные разделы lebwa.tv — сверка
+
+| Раздел Левши | URL | У нас | Где / что не так |
+|---|---|---|---|
+| Модпак: ~23 бесплатных мода + 5 только в Плюсе, установщик `.exe`, версия от 23.09.2026, FAQ | [/hub/modpack-lebwa](https://lebwa.tv/hub/modpack-lebwa) | есть | `/mod`, менеджер. «ХП команд» и «Артометр» не делаем (fair play) |
+| «Собрать танк» / «…для Натиска» | [/hub/tank-builder](https://lebwa.tv/hub/tank-builder), [/hub/tank-builder-onslaught](https://lebwa.tv/hub/tank-builder-onslaught) | есть | `/builds`, `/builds/[tank]`; режимные агрегаты в `builds` |
+| «Как фармит танк» (ремонт, снаряды, расходники, чистая прибыль; ПА, резерв +50%, клан +30%) | [/hub/tank-economic](https://lebwa.tv/hub/tank-economic) | есть | секция экономики на `/t/[slug]` и столбцы `/tanks` |
+| Отметки 65/85/95/100 | [/hub/marks-of-excellence](https://lebwa.tv/hub/marks-of-excellence) | есть | `/marks` (+ индекс потливости, история) |
+| Мастера | [/hub/mastery-badge](https://lebwa.tv/hub/mastery-badge) | есть | `/marks` |
+| Танки для ЛБЗ (3 кампании) | [/hub/personal-missions](https://lebwa.tv/hub/personal-missions) | есть | `/missions` |
+| **«Очки как в Чаке»**: взвод ТТ+СТ+ПТ, 1 урон = 1 очко, фраг = 300, победа = 3000; свои бои после привязки аккаунта | [/hub/chuck-battles](https://lebwa.tv/hub/chuck-battles), [правила](https://lebwa.tv/landing/chuck-norris-tournament-2024?page=2) | **нет** | Считается из своих боёв мода и API-сессий — см. L-P0-2 |
+| Турниры: архив ~60 событий в 6 категориях (турниры, «Турнир Чака», спецсобытия, челленджи, стримерские, киберспорт), лендинги с правилами и призовыми | [/events](https://lebwa.tv/events) | слабее | `/tournaments` сильнее по механике (регистрация, сетки), но нет категорий, архива и лендинга с правилами/призами |
+| «Онлайн»: стримеры с Плюсом в эфире, зрители Twitch + VK Live по отдельности и суммой | [/online](https://lebwa.tv/online) | есть | `/streamers` (эфир Twitch/VK/YouTube). Суммы зрителей по площадкам в одной карточке — проверить |
+| «Сообщество»: каталог публичных профилей (аватар, био) | [/users](https://lebwa.tv/users) | слабее | Есть поиск игроков, стримеров и лента; нет каталога **профилей сайта** (bio, ссылки) |
+| Подписка «Левша Плюс» 299 ₽/мес: Tribute (Telegram), Boosty, карта, **промокоды за активность**; эксклюзивные видео, закрытый чат | [/subscribe](https://lebwa.tv/subscribe) | слабее | Плюс есть (YooKassa, промокоды, рефералы). Нет оплаты через Telegram (Tribute/Stars) и промокодов, заработанных активностью |
+| Поддержка: FAQ (8 вопросов) + Telegram/VK | [/faq](https://lebwa.tv/faq) | слабее | Есть `/contacts` и `FaqList` на `/plus`; единой страницы FAQ нет |
+| Полоса соцсетей (12 каналов, в т. ч. MAX, Rutube, TikTok) в шапке и подвале | [главная](https://lebwa.tv/) | слабее | В `shared/config/site` только Telegram-бот; каналов проекта в подвале нет |
+| Баннер cookie (принять / отклонить необязательные) | [главная](https://lebwa.tv/) | нет | Нужен, только если появятся необязательные cookie (аналитика); сейчас не нужен |
+| BetBoom | [/betboom](https://lebwa.tv/betboom) | **не делаем** | Ставки и реклама — против правил проекта |
+
+### 7.3 nearyou.team и страница модпака Левши
+
+| Что | URL | У нас | Где / что не так |
+|---|---|---|---|
+| Сборки по танкам: фильтры нация / класс / уровень I–XI, **рейтинг S+…F**, **сложность** (лёгкая…хардкор), **статус** (прем/наградной, коллекционный, исследуемый); 15/30/45/60 на странице | [/setups](https://nearyou.team/setups) | слабее | `/builds` без рейтинга и сложности; фильтр статуса — P0-1 выше |
+| «Планки»: 4 порога отметок + те же рейтинг и сложность | [/requirements](https://nearyou.team/requirements) | слабее | `/marks` без рейтинга/сложности |
+| Тир-листы, «наши проекты» | [главная](https://nearyou.team/) | (в разработке у них) | Tier list есть в `tanks` |
+| Модпак: фирменный ангар, серверный прицел, зум x16–x25, калькулятор пробития | [/modpack](https://nearyou.team/modpack) | см. [modpacks-round3](2026-09-29-modpacks-round3.md) | — |
+| Модпак Левши — только Плюс: «Отметки с историей», «Статистика в Натиске», взводный «Турнир Чака» | [/hub/modpack-lebwa](https://lebwa.tv/hub/modpack-lebwa) | частично | Отметки с историей — на сайте, в моде — проверить; «Статистика в Натиске» и взводный счёт — L-P1-3 |
+
+### 7.4 Бэклог lebwa / nearyou (не сделано в этом круге)
+
+| # | Что | Данные | ToS | Размер |
+|---|---|---|---|---|
+| L-P0-1 | **Пользовательские посты в блоге** «по-левшински»: «Написать пост» для зарегистрированных, премодерация через `moderation` (как гайды), рубрики «Клан набирает», «Сделал сам», «Видео и нарезки» с вставкой YouTube/VK/Rutube | USER | ✔ модерация, без рекламы | M |
+| L-P0-2 | **«Очки как в Чаке»**: калькулятор и лидерборд взводов (урон + 300 × фраг + 3000 × победа) по своим боям мода и сессиям; режим для `/tournaments` и `/competitions` как тип скоринга | MOD + DB | ✔ только свои бои и бои взвода, который сам зарегистрировался | S |
+| L-P0-3 | **Страница `/faq`** + поддержка в Telegram/VK на ней, ссылки из `/mod`, `/plus` и подвала | — | ✔ | S |
+| L-P0-4 | **Соцсети проекта в подвале** (Telegram, VK, MAX, YouTube, Rutube) через `shared/config/site` | — | ✔ | S |
+| L-P1-1 | **Рейтинг S+…F и сложность освоения** танка как столбцы и фильтры в `/builds` и `/marks` (из нашей статистики: WR/урон по когорте и кривая обучения `learning-curve`) | DB | ✔ | S–M |
+| L-P1-2 | **Архив турниров**: категории, лендинг с правилами, форматом (1×1…15×15) и призовым, «прошедшие» с победителями | USER + DB | ✔ | S |
+| L-P1-3 | **Взводный счёт и статистика Натиска в моде**: свои очки «как в Чаке» и свои итоги Натиска в ангаре | MOD | ✔ только свои данные | M |
+| L-P1-4 | **Оплата Плюса через Telegram** (Stars или Tribute) и **промокоды за активность** (связать с «Гильзами») | — | ✔ | M |
+| L-P1-5 | **Каталог профилей сайта** `/community`: публичные профили с bio и ссылками, фильтр «стримеры» | USER | ✔ opt-in | S |
+| L-P1-6 | **«Онлайн»**: суммарные зрители по площадкам в карточке стримера и общий счётчик «сейчас смотрят» на `/streamers` | Twitch/VK API | ✔ | S |
+
 ## Источники
 
 - tomato.gg: [главная](https://tomato.gg/), [meta-insights](https://tomato.gg/meta-insights/EU), [tank-performance](https://tomato.gg/tank-performance/recent/EU/30), [maps](https://tomato.gg/maps/EU), [tanks](https://tomato.gg/tanks), [IS-7](https://tomato.gg/tanks/7169/is-7/EU), [wnx](https://tomato.gg/wnx), [games](https://tomato.gg/games), [lootbox-calculator](https://tomato.gg/lootbox-calculator), [patreon](https://tomato.gg/patreon), [профиль](https://tomato.gg/stats/tomato_user-502213433/EU), [V2](https://tomato.gg/blog/posts/tomato-gg-v2)
@@ -249,4 +310,5 @@
 - RU: [kttc.ru](https://kttc.ru/wot/ru/), [kttc streamers](https://kttc.ru/wot/ru/top/streamers/), [poliroid gunmarks](https://poliroid.me/gunmarks/), [protanki marks](https://protanki.tv/ru/stats/marks), [tankist stat](https://tankist.net/services/stat), [wotskill](https://wotskill.ru/players/), [wot-news nstat](https://wot-news.com/stat/nstat/ru/en/), [shotnik.pro](https://shotnik.pro/equipment), [tanki.su tankopedia collections](https://tanki.su/ru/tankopedia/collections/), [wot-angar](https://wot-angar.ru/clans)
 - Реплеи: [mtreplays](https://mtreplays.ru/replays), [lesta-replays](https://lesta-replays.ru/), [replays.wotinspector](https://replays.wotinspector.com/en/), [mtreplay-analyzer](https://github.com/uwuny/mtreplay-analyzer)
 - Броня: [tanks.gg compare](https://tanks.gg/compare), [armor.wotinspector](https://armor.wotinspector.com/en/)
+- Левша и Near_You: [lebwa.tv](https://lebwa.tv/), [blog](https://lebwa.tv/blog), [hub](https://lebwa.tv/hub), [subscribe](https://lebwa.tv/subscribe), [events](https://lebwa.tv/events), [online](https://lebwa.tv/online), [users](https://lebwa.tv/users), [faq](https://lebwa.tv/faq), [chuck-battles](https://lebwa.tv/hub/chuck-battles), [nearyou.team](https://nearyou.team/), [setups](https://nearyou.team/setups), [requirements](https://nearyou.team/requirements)
 - Каналы: [@wot_stat_bot](https://botostore.com/c/wot_stat_bot/), [Vote to Play](https://github.com/guanzo/vote-to-play), [wotstat widgets](https://wotstat.info/widgets/efficiency/comp7)

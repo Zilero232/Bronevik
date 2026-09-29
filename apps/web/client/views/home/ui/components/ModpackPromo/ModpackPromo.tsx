@@ -35,7 +35,7 @@ export const ModpackPromo = () => {
             ))}
           </ul>
           <div className={s.actions}>
-            <Link className={buttonVariants({ variant: 'primary', size: 'lg' })} href={HOME_MODPACK.href}>
+            <Link className={buttonVariants({ variant: 'primary', size: 'lg', shine: true })} href={HOME_MODPACK.href}>
               <Download aria-hidden size={HOME_ICON.modpack} />
               {t('download')}
             </Link>

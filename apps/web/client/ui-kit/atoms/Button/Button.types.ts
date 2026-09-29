@@ -9,4 +9,5 @@ export type ButtonProps = ComponentProps<'button'> & {
   variant?: NonNullable<ButtonVariantProps['variant']>;
   size?: NonNullable<ButtonVariantProps['size']>;
   block?: boolean;
+  shine?: boolean;
 };

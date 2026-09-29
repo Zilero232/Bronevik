@@ -1,4 +1,5 @@
 import { Band } from '@/ui-kit';
+import { PromoBoard } from '@/widgets/promo/promo-banners';
 
 import {
   ClanActivity,
@@ -22,6 +23,7 @@ export const HomePage = () => (
       <HomeHero />
       <HomeActions />
     </div>
+    <PromoBoard />
     <ForYou />
     <Band as='div' isDark={false} tone='raised' width='full'>
       <StrongTanks />

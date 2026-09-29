@@ -4,6 +4,7 @@ import armor from './armor.json';
 import auth from './auth.json';
 import bestBattles from './bestBattles.json';
 import billing from './billing.json';
+import blog from './blog.json';
 import brand from './brand.json';
 import builds from './builds.json';
 import buildsCatalog from './buildsCatalog.json';
@@ -49,6 +50,7 @@ import players from './players.json';
 import plus from './plus.json';
 import profile from './profile.json';
 import progression from './progression.json';
+import promo from './promo.json';
 import pulse from './pulse.json';
 import rating from './rating.json';
 import recruiting from './recruiting.json';
@@ -88,6 +90,7 @@ export const en = {
   armor,
   auth,
   billing,
+  blog,
   brand,
   builds,
   buildsCatalog,
@@ -129,6 +132,7 @@ export const en = {
   players,
   plus,
   profile,
+  promo,
   progression,
   pulse,
   rating,

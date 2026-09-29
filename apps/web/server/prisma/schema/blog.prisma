@@ -1,0 +1,49 @@
+enum BlogCategory {
+  announcements
+  updates
+  analysis
+  patches
+  community
+  esports
+
+  @@map("blog_category")
+}
+
+enum BlogPostStatus {
+  draft
+  published
+
+  @@map("blog_post_status")
+}
+
+model BlogPost {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  slug           String         @unique
+  locale         String         @default("ru")
+  title          String
+  excerpt        String
+  body           String
+  category       BlogCategory
+  tags           String[]       @default([])
+  coverKey       String?        @map("cover_key")
+  coverUrl       String?        @map("cover_url")
+  seoTitle       String?        @map("seo_title")
+  seoDescription String?        @map("seo_description")
+  isFeatured     Boolean        @default(false) @map("is_featured")
+  readingMinutes Int            @default(1) @map("reading_minutes")
+  status         BlogPostStatus @default(draft)
+  authorUserId   String?        @map("author_user_id")
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  author User? @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([category, status, publishedAt(sort: Desc)])
+  @@index([tags], type: Gin)
+  @@index([authorUserId])
+  @@map("blog_post")
+}

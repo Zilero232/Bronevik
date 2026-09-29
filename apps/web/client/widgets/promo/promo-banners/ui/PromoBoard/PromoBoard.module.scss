@@ -1,0 +1,63 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include shell;
+  @include stack(var(--space-4));
+}
+
+.srTitle {
+  @include sr-only;
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-auto-rows: minmax(214px, auto);
+  grid-template-areas:
+    'hero hero hero tile1 tile1'
+    'hero hero hero tile2 tile3';
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+
+  @include below(3xl) {
+    grid-template-areas:
+      'hero hero hero'
+      'tile1 tile2 tile3';
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include below(xl) {
+    grid-auto-rows: minmax(208px, auto);
+    grid-template-areas:
+      'hero hero'
+      'tile1 tile1'
+      'tile2 tile3';
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include below(md) {
+    grid-template-areas:
+      'hero'
+      'tile1'
+      'tile2'
+      'tile3';
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.hero {
+  grid-area: hero;
+}
+
+.tile {
+  &:nth-child(2) {
+    grid-area: tile1;
+  }
+
+  &:nth-child(3) {
+    grid-area: tile2;
+  }
+
+  &:nth-child(4) {
+    grid-area: tile3;
+  }
+}

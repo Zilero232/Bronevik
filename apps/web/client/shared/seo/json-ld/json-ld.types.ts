@@ -23,3 +23,14 @@ export type ItemListJsonLdInput = {
   items: readonly Required<JsonLdCrumb>[];
   locale: Locale;
 };
+
+export type ArticleJsonLdInput = {
+  headline: string;
+  description: string;
+  path: string;
+  locale: Locale;
+  image?: string | null;
+  datePublished?: string | null;
+  dateModified: string;
+  authorName?: string | null;
+};

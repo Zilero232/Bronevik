@@ -99,6 +99,15 @@ export const ROUTES = {
     list: '/tactics',
     board: (id: string) => `/tactics/${encodeURIComponent(id)}`
   },
+  blog: {
+    list: '/blog',
+    detail: (slug: string) => `/blog/${encodeURIComponent(slug)}`,
+    editor: {
+      list: '/blog/editor',
+      create: '/blog/editor/new',
+      edit: (id: string) => `/blog/editor/${encodeURIComponent(id)}`
+    }
+  },
   guides: {
     list: '/guides',
     detail: (slug: string) => `/guides/${encodeURIComponent(slug)}`,

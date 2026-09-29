@@ -1,0 +1,23 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include well;
+
+  overflow: hidden;
+
+  &[data-invalid='true'] {
+    border-color: var(--color-danger);
+  }
+}
+
+.editor {
+  font-family: var(--font-sans);
+}
+
+.content {
+  min-height: 420px;
+  padding: var(--space-4);
+  color: var(--color-text);
+  font-size: var(--text-md);
+  line-height: var(--leading-body);
+}

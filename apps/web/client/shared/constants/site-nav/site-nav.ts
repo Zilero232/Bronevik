@@ -23,6 +23,7 @@ import {
   Medal,
   Network,
   Newspaper,
+  NotebookPen,
   Palette,
   Scale,
   ShoppingCart,
@@ -62,6 +63,7 @@ export const SITE_NAV = {
         { key: 'clans', href: ROUTES.clans.list, icon: StrongholdIcon },
         { key: 'platoons', href: ROUTES.platoons, icon: UsersRound },
         { key: 'recruiting', href: ROUTES.recruiting, icon: UserPlus },
+        { key: 'tactics', href: ROUTES.tactics.list, icon: MapIcon },
         { key: 'coaching', href: ROUTES.coaching.list, icon: GraduationCap }
       ]
     },
@@ -99,7 +101,7 @@ export const SITE_NAV = {
         { key: 'streamers', href: ROUTES.streamers.list, icon: RadioIcon },
         { key: 'replays', href: ROUTES.replays.list, icon: Film },
         { key: 'guides', href: ROUTES.guides.list, icon: BookOpen },
-        { key: 'tactics', href: ROUTES.tactics.list, icon: MapIcon },
+        { key: 'blog', href: ROUTES.blog.list, icon: NotebookPen },
         { key: 'tournaments', href: ROUTES.tournaments.list, icon: Swords },
         { key: 'play', href: ROUTES.play.hub, icon: Gamepad2 }
       ]

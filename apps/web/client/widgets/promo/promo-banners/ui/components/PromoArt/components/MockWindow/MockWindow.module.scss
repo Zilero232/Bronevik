@@ -1,0 +1,56 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  overflow: hidden;
+  width: 27em;
+  border: 1px solid color-mix(in srgb, var(--color-on-media) 16%, transparent);
+  border-radius: 0.3em;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-on-media) 6%, transparent), transparent 3em),
+    color-mix(in srgb, var(--color-surface-sunken) 92%, transparent);
+  box-shadow:
+    0 1.6em 3.2em color-mix(in srgb, var(--color-shade) 60%, transparent),
+    0 0 0 0.35em color-mix(in srgb, var(--color-on-media) 4%, transparent);
+  color: var(--color-text);
+  transform: perspective(60em) rotateY(-9deg) rotateX(3deg);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  padding: 0.6em 0.9em;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-on-media) 10%, transparent);
+  gap: 0.6em;
+}
+
+.logo {
+  width: 1.1em;
+  height: 1.1em;
+  color: var(--color-accent);
+}
+
+.title {
+  flex: 1;
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lights {
+  display: flex;
+  gap: 0.35em;
+
+  span {
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background-color: color-mix(in srgb, var(--color-on-media) 18%, transparent);
+  }
+}
+
+.body {
+  padding: 1em;
+}

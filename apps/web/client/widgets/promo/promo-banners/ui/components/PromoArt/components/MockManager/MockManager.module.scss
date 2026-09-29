@@ -1,0 +1,125 @@
+@use '@/shared/styles/mixins' as *;
+
+.layout {
+  display: grid;
+  gap: 1em;
+  grid-template-columns: 2.4em minmax(0, 1fr);
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  gap: 0.5em;
+  list-style: none;
+}
+
+.sideItem {
+  display: grid;
+  width: 2.4em;
+  height: 2.4em;
+  border-radius: 0.25em;
+  color: var(--color-text-dim);
+  place-items: center;
+
+  &[data-active] {
+    background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
+    box-shadow: inset 2px 0 0 var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  :global(svg) {
+    width: 1.15em;
+    height: 1.15em;
+  }
+}
+
+.main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.8em;
+}
+
+.profile {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: 0.8em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.toggles {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  gap: 0.35em;
+  list-style: none;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55em 0.7em;
+  border: 1px solid color-mix(in srgb, var(--color-on-media) 8%, transparent);
+  border-radius: 0.2em;
+  background-color: color-mix(in srgb, var(--color-on-media) 3%, transparent);
+  font-size: 0.9em;
+}
+
+.switch {
+  position: relative;
+  width: 2.2em;
+  height: 1.2em;
+  border-radius: 1em;
+  background-color: color-mix(in srgb, var(--color-on-media) 16%, transparent);
+
+  &:after {
+    position: absolute;
+    top: 0.15em;
+    left: 0.15em;
+    width: 0.9em;
+    height: 0.9em;
+    border-radius: 50%;
+    background-color: var(--color-text-dim);
+    content: '';
+  }
+
+  &[data-on] {
+    background-color: var(--color-accent);
+
+    &:after {
+      left: 1.15em;
+      background-color: var(--color-accent-contrast);
+    }
+  }
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+}
+
+.progressLabel {
+  color: var(--color-text-dim);
+  font-size: 0.75em;
+}
+
+.track {
+  overflow: hidden;
+  height: 0.4em;
+  border-radius: 0.2em;
+  background-color: color-mix(in srgb, var(--color-on-media) 10%, transparent);
+}
+
+.fill {
+  display: block;
+  width: var(--value);
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent-pressed), var(--color-accent));
+}

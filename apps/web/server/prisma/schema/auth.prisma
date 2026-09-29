@@ -66,6 +66,7 @@ model User {
 
   builds          Build[]
   guides          Guide[]
+  blogPosts       BlogPost[]
   reactions       Reaction[]
   comments        Comment[]
   platoonPosts    PlatoonPost[]

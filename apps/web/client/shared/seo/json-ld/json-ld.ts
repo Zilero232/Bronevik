@@ -6,7 +6,7 @@ import { SITE } from '@/shared/config/site';
 import { ROUTES } from '@/shared/constants';
 import { localePath } from '@/shared/i18n';
 
-import type { BreadcrumbJsonLdInput, EntityJsonLdInput, ItemListJsonLdInput } from './json-ld.types';
+import type { ArticleJsonLdInput, BreadcrumbJsonLdInput, EntityJsonLdInput, ItemListJsonLdInput } from './json-ld.types';
 
 import { absoluteUrl } from '../site-metadata';
 import { JSON_LD } from './json-ld.constants';
@@ -84,4 +84,19 @@ export const itemListJsonLd = ({ name, path, items, locale }: ItemListJsonLdInpu
     name: item.name,
     url: localeUrl({ path: item.path, locale })
   }))
+});
+
+export const articleJsonLd = ({ headline, description, path, locale, image, datePublished, dateModified, authorName }: ArticleJsonLdInput) => ({
+  '@context': JSON_LD.context,
+  '@type': 'BlogPosting',
+  headline,
+  description,
+  url: localeUrl({ path, locale }),
+  mainEntityOfPage: { '@type': 'WebPage', '@id': localeUrl({ path, locale }) },
+  inLanguage: locale,
+  dateModified,
+  ...(datePublished ? { datePublished } : {}),
+  ...(image ? { image: [image] } : {}),
+  author: authorName ? { '@type': 'Person', name: authorName } : { '@id': `${SITE.url}/#organization` },
+  publisher: organizationJsonLd()
 });

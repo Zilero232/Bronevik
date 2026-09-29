@@ -7,7 +7,7 @@ export const SITEMAP = {
   limit: PAGINATION.maxLimit,
   path: '/sitemap.xml',
   allow: ['/', '/api/og/'],
-  disallow: ['/me', '/api/', '/overlay/', '/serwist/', ROUTES.miniApp, ROUTES.vkMiniApp, ROUTES.auth.login, ROUTES.design]
+  disallow: ['/me', '/api/', '/overlay/', '/serwist/', ROUTES.miniApp, ROUTES.vkMiniApp, ROUTES.auth.login, ROUTES.design, ROUTES.blog.editor.list]
 } as const;
 
 export const SITEMAP_STATIC_PATHS = [
@@ -32,6 +32,7 @@ export const SITEMAP_STATIC_PATHS = [
   ROUTES.codes,
   ROUTES.shop,
   ROUTES.news,
+  ROUTES.blog.list,
   ROUTES.pulse,
   ROUTES.honestRng,
   ROUTES.play.hub,

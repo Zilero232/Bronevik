@@ -1,4 +1,6 @@
 import type {
+  BlogEditorPostKeyInput,
+  BlogViewerKeyInput,
   ClanWorkspaceKeyInput,
   GuideDetailKeyInput,
   GuideListKeyInput,
@@ -192,6 +194,17 @@ export const QUERY_KEYS = {
     mine: ({ viewerId }: GuideViewerKeyInput) => ['guides', 'mine', viewerId] as const,
     authors: ['guides', 'authors'] as const,
     detail: ({ viewerId, slug }: GuideDetailKeyInput) => ['guides', 'detail', slug, viewerId] as const
+  },
+  blog: {
+    all: ['blog'] as const,
+    list: (params: object) => ['blog', 'list', params] as const,
+    article: (slug: string) => ['blog', 'article', slug] as const,
+    tags: ['blog', 'tags'] as const,
+    access: ({ viewerId }: BlogViewerKeyInput) => ['blog', 'access', viewerId] as const,
+    editor: {
+      list: ({ viewerId }: BlogViewerKeyInput) => ['blog', 'editor', 'list', viewerId] as const,
+      post: ({ viewerId, id }: BlogEditorPostKeyInput) => ['blog', 'editor', 'post', id, viewerId] as const
+    }
   },
   comments: (params: object) => ['comments', params] as const,
   platoons: {

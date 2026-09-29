@@ -1,0 +1,39 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include page(var(--gap-panel));
+}
+
+.skeleton {
+  @include stack(var(--gap-panel));
+}
+
+.layout {
+  display: grid;
+  align-items: start;
+  gap: var(--gap-panel);
+  grid-template-columns: minmax(0, 1fr) 18rem;
+
+  @include below(2xl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.body {
+  @include stack(var(--space-6));
+
+  min-width: 0;
+  max-width: 820px;
+}
+
+.aside {
+  @include stack(var(--gap-panel));
+
+  position: sticky;
+  top: calc(var(--header-offset) + var(--space-4));
+
+  @include below(2xl) {
+    position: static;
+    order: -1;
+  }
+}

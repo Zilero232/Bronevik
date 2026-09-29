@@ -1,0 +1,1 @@
+export { PromoBoard } from './PromoBoard';

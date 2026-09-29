@@ -19,7 +19,7 @@ export const ModActions = () => {
       <div className={s.buttons}>
         {downloads.manager ? (
           <a
-            className={buttonVariants({ variant: 'primary', size: 'lg' })}
+            className={buttonVariants({ variant: 'primary', size: 'lg', shine: true })}
             download={distribution.managerFileName}
             href={distribution.managerUrl}
             rel='noreferrer'

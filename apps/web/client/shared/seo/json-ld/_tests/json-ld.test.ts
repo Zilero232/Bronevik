@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { SITE } from '@/shared/config/site';
 
-import { breadcrumbJsonLd, clanJsonLd, itemListJsonLd, jsonLdText, organizationJsonLd, personJsonLd, siteJsonLd } from '../json-ld';
+import { articleJsonLd, breadcrumbJsonLd, clanJsonLd, itemListJsonLd, jsonLdText, organizationJsonLd, personJsonLd, siteJsonLd } from '../json-ld';
 
 describe('jsonLdText', () => {
   it('escapes a closing script tag', () => {
@@ -89,5 +89,35 @@ describe('itemListJsonLd', () => {
       numberOfItems: 0,
       itemListElement: []
     });
+  });
+});
+
+describe('articleJsonLd', () => {
+  const ARTICLE = {
+    headline: 'Разбор патча',
+    description: 'Что поменялось',
+    path: '/blog/patch',
+    locale: 'en',
+    dateModified: '2026-09-21T10:00:00.000Z'
+  } as const;
+
+  it('describes a blog post at its locale url published by the site', () => {
+    const data = articleJsonLd({ ...ARTICLE, datePublished: '2026-09-20T10:00:00.000Z', image: 'https://cdn.test/c.png', authorName: 'Editor' });
+
+    expect(data).toMatchObject({
+      '@type': 'BlogPosting',
+      url: `${SITE.url}/en/blog/patch`,
+      image: ['https://cdn.test/c.png'],
+      author: { '@type': 'Person', name: 'Editor' },
+      publisher: organizationJsonLd()
+    });
+  });
+
+  it('credits the organisation and leaves optional fields out when they are unknown', () => {
+    const data = articleJsonLd(ARTICLE);
+
+    expect(data.author).toEqual({ '@id': `${SITE.url}/#organization` });
+    expect(data).not.toHaveProperty('image');
+    expect(data).not.toHaveProperty('datePublished');
   });
 });

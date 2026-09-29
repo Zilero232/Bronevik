@@ -1,3 +1,3 @@
 export { Markdown } from './ui/Markdown';
 
-export type { MarkdownProps } from './ui/Markdown.types';
+export type { MarkdownProps, MarkdownVariant } from './ui/Markdown.types';

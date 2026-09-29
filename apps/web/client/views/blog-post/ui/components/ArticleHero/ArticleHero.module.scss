@@ -1,0 +1,113 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include tone;
+
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  min-height: 320px;
+  align-items: flex-end;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--tone) 32%, transparent), transparent 60%), var(--color-bg-deep);
+  box-shadow: var(--elev-1);
+
+  &:before {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--tone);
+    content: '';
+  }
+
+  &[data-cover='true'] {
+    min-height: 420px;
+    color: var(--color-on-media);
+
+    @include below(md) {
+      min-height: 360px;
+    }
+  }
+}
+
+.cover {
+  object-fit: cover;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+
+  .root[data-cover='true'] & {
+    background: linear-gradient(180deg, transparent 10%, color-mix(in srgb, var(--color-shade) 88%, transparent) 85%);
+  }
+}
+
+.inner {
+  @include stack(var(--space-3));
+
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 900px;
+  padding: var(--space-7) var(--space-6) var(--space-6);
+
+  @include below(md) {
+    padding: var(--space-6) var(--space-4) var(--space-4);
+  }
+}
+
+.crumbs {
+  .root[data-cover='true'] & {
+    color: var(--color-on-media);
+  }
+}
+
+.chip {
+  @include label;
+
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--tone) 22%, transparent);
+  color: inherit;
+}
+
+.title {
+  @include display(clamp(1.75rem, 4vw, var(--display-lg)));
+
+  margin: 0;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 70ch;
+  margin: 0;
+  font-size: var(--text-lg);
+  opacity: 0.88;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: var(--text-sm);
+  gap: var(--space-2) var(--space-5);
+}
+
+.author {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  gap: var(--space-2);
+}
+
+.reading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}

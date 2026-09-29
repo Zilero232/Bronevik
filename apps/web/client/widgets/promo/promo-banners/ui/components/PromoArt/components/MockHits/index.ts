@@ -1,0 +1,1 @@
+export { MockHits } from './MockHits';

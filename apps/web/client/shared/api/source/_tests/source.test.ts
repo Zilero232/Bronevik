@@ -2,7 +2,7 @@ import { AxiosError, AxiosHeaders } from 'axios';
 import { describe, expect, it } from 'vitest';
 
 import { NotFoundError, UnauthorizedError } from '../errors';
-import { fromServer, httpStatusOf, isNotFoundError, isPlusRequiredError, isUnauthorizedError } from '../source';
+import { fromServer, httpStatusOf, isConflictError, isNotFoundError, isPlusRequiredError, isUnauthorizedError } from '../source';
 
 const httpError = (status: number, data: unknown = null) =>
   new AxiosError('failed', String(status), undefined, undefined, {
@@ -77,5 +77,15 @@ describe('isNotFoundError', () => {
 
   it('does not take another status for a missing resource', () => {
     expect(isNotFoundError(httpError(503))).toBe(false);
+  });
+});
+
+describe('isConflictError', () => {
+  it('recognises a 409 such as a taken slug', () => {
+    expect(isConflictError(httpError(409))).toBe(true);
+  });
+
+  it('does not take a validation error for a conflict', () => {
+    expect(isConflictError(httpError(400))).toBe(false);
   });
 });

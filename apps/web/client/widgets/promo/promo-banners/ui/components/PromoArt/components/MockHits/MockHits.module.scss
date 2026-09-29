@@ -1,0 +1,73 @@
+@use '@/shared/styles/mixins' as *;
+
+.entries {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  gap: 0.35em;
+  list-style: none;
+}
+
+.entry {
+  display: grid;
+  align-items: center;
+  padding: 0.5em 0.6em;
+  border-left: 3px solid var(--outcome);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--outcome) 16%, transparent), transparent 70%);
+  gap: 0.7em;
+  grid-template-columns: 1.2em minmax(0, 1fr) auto;
+
+  --outcome: var(--color-battle);
+
+  &[data-outcome='ricochet'] {
+    --outcome: var(--color-steel);
+  }
+
+  &[data-outcome='noPen'] {
+    --outcome: var(--color-success);
+  }
+
+  &[data-outcome='crit'] {
+    --outcome: var(--color-gold);
+  }
+}
+
+.class {
+  width: 1.2em;
+  height: 1.2em;
+  color: var(--color-text-muted);
+}
+
+.outcome {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 0.9em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.damage {
+  @include numeric;
+
+  color: var(--outcome);
+  font-weight: 700;
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.7em;
+  border-top: 1px solid color-mix(in srgb, var(--color-on-media) 10%, transparent);
+  margin: 0.8em 0 0;
+  color: var(--color-text-dim);
+  font-size: 0.8em;
+}
+
+.footValue {
+  @include numeric;
+
+  color: var(--color-steel);
+  font-weight: 700;
+}

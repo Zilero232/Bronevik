@@ -1,0 +1,51 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.label {
+  @include label;
+
+  margin: 0;
+}
+
+.preview {
+  @include well;
+
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  place-items: center;
+}
+
+.image {
+  object-fit: cover;
+}
+
+.placeholder {
+  @include source-line;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.upload {
+  @include chip;
+
+  cursor: pointer;
+
+  &[data-busy='true'] {
+    cursor: progress;
+    opacity: 0.7;
+  }
+}
+
+.file {
+  @include sr-only;
+}

@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 
 import { PLAY_MODES } from '@otmetki/schemas';
 
+import { blogSitemapItems } from '@/entities/blog/post/server';
 import { topClanTags } from '@/entities/clan/clan/server';
 import { coachIds } from '@/entities/coaching/coach/server';
 import { guideSitemapItems } from '@/entities/guide/guide/server';
@@ -16,7 +17,7 @@ import { ROUTES } from '@/shared/constants';
 import { SITEMAP, SITEMAP_STATIC_PATHS, sitemapContentEntries, sitemapEntries } from '@/shared/seo';
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  const [tanks, clans, maps, streamers, players, replays, guides, tournaments, coaches] = await Promise.all([
+  const [tanks, clans, maps, streamers, players, replays, guides, tournaments, coaches, blogPosts] = await Promise.all([
     topTankSlugs({ limit: SITEMAP.limit }),
     topClanTags({ limit: SITEMAP.limit }),
     mapSlugs({}),
@@ -25,7 +26,8 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     publicReplayIds({ limit: SITEMAP.limit }),
     guideSitemapItems({ limit: SITEMAP.limit }),
     tournamentSlugs({ limit: SITEMAP.limit }),
-    coachIds({ limit: SITEMAP.limit })
+    coachIds({ limit: SITEMAP.limit }),
+    blogSitemapItems({ limit: SITEMAP.limit })
   ]);
 
   return [
@@ -42,7 +44,8 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       ...tournaments.map((slug) => ROUTES.tournaments.detail(slug)),
       ...coaches.map((id) => ROUTES.coaching.coach(id))
     ]),
-    ...sitemapContentEntries(guides.map(({ slug, locale }) => ({ path: ROUTES.guides.detail(slug), locale })))
+    ...sitemapContentEntries(guides.map(({ slug, locale }) => ({ path: ROUTES.guides.detail(slug), locale }))),
+    ...sitemapContentEntries(blogPosts.map(({ slug, locale }) => ({ path: ROUTES.blog.detail(slug), locale })))
   ];
 };
 

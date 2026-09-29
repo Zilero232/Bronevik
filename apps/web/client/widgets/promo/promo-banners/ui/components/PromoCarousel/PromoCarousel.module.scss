@@ -1,0 +1,38 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  height: 100%;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  isolation: isolate;
+
+  &[data-variant='hero'] {
+    overflow: hidden;
+    background-color: var(--color-bg-deep);
+    box-shadow:
+      0 0 0 1px var(--color-border-strong),
+      var(--elev-2);
+  }
+}
+
+.viewport {
+  overflow: hidden;
+  min-width: 0;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.track {
+  display: flex;
+  height: 100%;
+  touch-action: pan-y pinch-zoom;
+}
+
+.slide {
+  min-width: 0;
+  height: 100%;
+  flex: 0 0 100%;
+}

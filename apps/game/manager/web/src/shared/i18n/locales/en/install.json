@@ -18,7 +18,7 @@
   "selectedCount": "{count} of {total} selected",
   "required": "Required",
   "source": {
-    "release": "Version {version} is downloaded from the server; every package is checked against its sha256",
+    "release": "Version {version} is downloaded from the server; every package is checked against its checksum",
     "offline": "No connection — the modpack cannot be installed right now, try again later",
     "unavailable": "No modpack release supports this client version yet"
   },
@@ -41,10 +41,10 @@
   "confirmRemoveDescription": "Exactly the ticked files and folders are removed. The snapshot brings them back on the Backups page.",
   "installed": "The modpack is installed",
   "noCatalog": "The component catalogue has not been downloaded from the server yet",
-  "clientUnsupported": "The modpack cannot be installed into this client — choose Lesta's Мир танков at a supported version",
+  "clientUnsupported": "The modpack cannot be installed into this client — choose Lesta's Mir Tankov at a supported version",
   "dependencies": {
     "title": "Required libraries",
-    "description": "Free third-party mods the selected components need. They are downloaded from their authors' official releases and checked against a pinned sha256; the licence is kept with the install. A copy you installed yourself stays yours and is never replaced or removed.",
+    "description": "Free third-party mods the selected components need. They are downloaded from their authors' official releases and checked against a pinned checksum; the licence is kept with the install. A copy you installed yourself stays yours and is never replaced or removed.",
     "state": {
       "missing": "Will be installed",
       "outdated": "Will be updated",

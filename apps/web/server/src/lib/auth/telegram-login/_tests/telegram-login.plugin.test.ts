@@ -83,7 +83,8 @@ describe('telegramLogin /telegram/widget', () => {
     const disabled = await createAuth({ botToken: '' }).auth.handler(new Request(`${API_URL}/auth/telegram/widget`));
 
     expect(await enabled.json()).toEqual({ botUsername: 'otmetki_bot', enabled: true });
-    expect(await disabled.json()).toMatchObject({ enabled: false });
+    expect(disabled.status).toBe(200);
+    expect(await disabled.json()).toEqual({ botUsername: 'otmetki_bot', enabled: false });
   });
 });
 
@@ -128,10 +129,13 @@ describe('telegramLogin /telegram/callback', () => {
     expect((await post('/telegram/callback', stale)).status).toBe(401);
   });
 
-  it('rejects every payload when no bot token is configured', async () => {
-    const { post } = createAuth({ botToken: '' });
+  it('answers integration-unavailable to every payload when no bot token is configured', async () => {
+    const { post, db } = createAuth({ botToken: '' });
+    const response = await post('/telegram/callback', widget());
 
-    expect((await post('/telegram/callback', widget())).status).toBe(401);
+    expect(response.status).toBe(404);
+    expect(await response.json()).toMatchObject({ code: 'INTEGRATION_UNAVAILABLE' });
+    expect(db.user).toHaveLength(0);
   });
 
   it('signs a known Telegram user into the owning user without adding another sign-in method', async () => {
@@ -181,6 +185,15 @@ describe('telegramLogin /telegram/webapp', () => {
     const { post } = createAuth();
 
     expect((await post('/telegram/webapp', { initData: initData(subSeconds(NOW, WEBAPP_AUTH.maxAgeSeconds + 1)) })).status).toBe(401);
+  });
+
+  it('answers integration-unavailable when no bot token is configured', async () => {
+    const { post, db } = createAuth({ botToken: '' });
+    const response = await post('/telegram/webapp', { initData: initData() });
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toMatchObject({ code: 'INTEGRATION_UNAVAILABLE' });
+    expect(db.user).toHaveLength(0);
   });
 
   it('rejects init data longer than the limit before verifying it', async () => {

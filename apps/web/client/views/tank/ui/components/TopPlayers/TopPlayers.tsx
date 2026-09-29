@@ -19,7 +19,7 @@ export const TopPlayers = () => {
   const { metric, onMetricChange, isStale, query } = useTankTopPlayers();
 
   return (
-    <section aria-labelledby={`${TANK_SECTIONS.players}-title`} className={s.root} data-theme='dark' id={TANK_SECTIONS.players}>
+    <section aria-labelledby={`${TANK_SECTIONS.players}-title`} className={s.root} id={TANK_SECTIONS.players}>
       <div className={s.inner}>
         <header className={s.header}>
           <h2 className={s.title} id={`${TANK_SECTIONS.players}-title`}>

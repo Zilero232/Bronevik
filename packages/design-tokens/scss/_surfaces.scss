@@ -14,7 +14,8 @@ $dark: (
   'elev-3': '0 12px 32px rgb(0 0 0 / 55%)',
   'shadow-popover': '0 8px 24px rgb(0 0 0 / 55%)',
   'contour-filter': none,
-  'flag-opacity': 0.26
+  'flag-opacity': 0.26,
+  'nation-glow': 35%
 );
 $light: (
   'panel-highlight': 'inset 0 1px 0 rgb(255 255 255 / 70%)',
@@ -29,5 +30,6 @@ $light: (
   'elev-3': '0 12px 32px rgb(20 20 30 / 18%)',
   'shadow-popover': '0 8px 24px rgb(20 20 30 / 18%)',
   'contour-filter': brightness(0) opacity(0.72),
-  'flag-opacity': 0.34
+  'flag-opacity': 0.22,
+  'nation-glow': 18%
 );

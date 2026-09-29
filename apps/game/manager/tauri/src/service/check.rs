@@ -10,6 +10,7 @@ use crate::fsx::write_atomic;
 use crate::install::restore_after_failure;
 use crate::patch::{self, ApplyInput, MigrateInput, PatchAction, PatchReport, PatchStatus, PlanInput};
 use crate::paths::same_path;
+use crate::previews::{self, DownloadInput, PendingInput};
 use crate::process::{ensure_closed, is_client_running};
 use crate::releases::{verify_sha256, FetchLimits, Release, ReleaseStatus, MAX_CATALOG_BYTES};
 use crate::settings::ManagerSettings;
@@ -175,8 +176,26 @@ impl Manager {
         let bytes = self.releases.fetch(&catalog.url, FetchLimits { expected_size: None, max_bytes: MAX_CATALOG_BYTES }).await?;
 
         verify_sha256(&bytes, &catalog.sha256)?;
-        crate::catalog::parse(&String::from_utf8_lossy(&bytes))?;
-        write_atomic(&self.layout.catalog_cache(), &bytes)?;
+
+        let parsed = crate::catalog::parse(&String::from_utf8_lossy(&bytes))?;
+        let cache = self.layout.catalog_cache();
+        let changed = std::fs::read(&cache).ok().is_none_or(|previous| previous != bytes);
+
+        write_atomic(&cache, &bytes)?;
+
+        let root = self.layout.manager_dir();
+        let files = previews::pending(PendingInput { root: &root, files: previews::files(&parsed), refresh: changed });
+
+        if !files.is_empty() {
+            let client = self.releases.clone();
+            let catalog_url = catalog.url.clone();
+
+            tauri::async_runtime::spawn(async move {
+                let written = previews::download(DownloadInput { client: &client, root: &root, catalog_url: &catalog_url, files: &files }).await;
+
+                log::info!("previews: {written} of {} downloaded", files.len());
+            });
+        }
 
         Ok(())
     }

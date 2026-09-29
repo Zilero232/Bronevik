@@ -27,6 +27,10 @@ export class CheckoutService {
       throw new AppForbiddenException('CHECKOUT_UNAVAILABLE', 'Paid checkout is not open yet');
     }
 
+    if (!this.yookassa.isConfigured) {
+      throw new AppForbiddenException('CHECKOUT_UNAVAILABLE', 'Payments are not configured on this server');
+    }
+
     const promo = promoCode ? await this.promos.usable({ userId, code: promoCode }) : null;
 
     if (promo && !promo.discountPercent) {

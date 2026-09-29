@@ -292,7 +292,7 @@ pub fn read_catalog(path: &Path) -> Option<Catalog> {
 
 pub fn load(cache: &Path) -> Option<LoadedCatalog> {
     let catalog = read_catalog(cache)?;
-    let previews_dir = cache.parent().map(Path::to_path_buf).filter(|dir| dir.join("previews").is_dir());
+    let previews_dir = cache.parent().map(Path::to_path_buf);
 
     Some(LoadedCatalog { catalog, previews_dir })
 }

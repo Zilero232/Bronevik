@@ -1,1 +1,1 @@
-export { PERF } from './catalog.constants';
+export { PERF, PREVIEW } from './catalog.constants';

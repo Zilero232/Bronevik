@@ -7,7 +7,7 @@ import { match } from 'ts-pattern';
 import type { StreamerProvider } from '../../../../generated';
 import type { ConnectUrl, OAuthCodeInput, OAuthStateInput, ProviderCallbackInput } from '../streamers.types';
 
-import { AppBadRequestException } from '../../../common/exceptions';
+import { AppBadRequestException, AppNotFoundException } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { DONATION_ALERTS, INTEGRATIONS, NO_SCOPES, OAUTH_STATE, TWITCH } from '../config';
@@ -29,10 +29,14 @@ export class IntegrationsService {
   ) {}
 
   async connectUrl({ userId, provider }: OAuthStateInput): Promise<ConnectUrl> {
-    const { clientId, authorizeUrl, scopes } = this.app(provider);
+    const { clientId, clientSecret, authorizeUrl, scopes } = this.app(provider);
 
-    if (!clientId) {
-      throw new AppBadRequestException('VALIDATION_FAILED', `${provider} is not configured on this server`);
+    if (!authorizeUrl) {
+      throw new AppBadRequestException('VALIDATION_FAILED', `${provider} cannot be connected`);
+    }
+
+    if (!clientId || !clientSecret) {
+      throw new AppNotFoundException('INTEGRATION_UNAVAILABLE', `${provider} is not configured on this server`);
     }
 
     const { state, binding } = await this.states.create({ provider, userId });
@@ -125,11 +129,17 @@ export class IntegrationsService {
     return match(provider)
       .with('donationAlerts', () => ({
         clientId: this.config.get('DONATIONALERTS_CLIENT_ID'),
+        clientSecret: this.config.get('DONATIONALERTS_CLIENT_SECRET'),
         authorizeUrl: DONATION_ALERTS.authorizeUrl,
         scopes: DONATION_ALERTS.scopes
       }))
-      .with('twitch', () => ({ clientId: this.config.get('TWITCH_CLIENT_ID'), authorizeUrl: TWITCH.authorizeUrl, scopes: TWITCH.scopes }))
-      .otherwise(() => ({ clientId: '', authorizeUrl: '', scopes: NO_SCOPES }));
+      .with('twitch', () => ({
+        clientId: this.config.get('TWITCH_CLIENT_ID'),
+        clientSecret: this.config.get('TWITCH_CLIENT_SECRET'),
+        authorizeUrl: TWITCH.authorizeUrl,
+        scopes: TWITCH.scopes
+      }))
+      .otherwise(() => ({ clientId: '', clientSecret: '', authorizeUrl: '', scopes: NO_SCOPES }));
   }
 
   private redirectUri(provider: StreamerProvider): string {

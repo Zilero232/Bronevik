@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
 
 import { AppNotFoundException } from '../../../../../common/exceptions';
-import { LestaNetworkError } from '../../../../../lib/lesta';
+import { LestaNetworkError, LestaNotConfiguredError } from '../../../../../lib/lesta';
 import { errorStatus } from '../error-status';
 
 describe('errorStatus', () => {
@@ -17,6 +17,13 @@ describe('errorStatus', () => {
     expect(errorStatus(new LestaNetworkError({ method: 'account/info', cause: new Error('down') }))).toEqual({
       status: HttpStatus.SERVICE_UNAVAILABLE,
       code: 'LESTA_UNAVAILABLE'
+    });
+  });
+
+  it('reports a missing Lesta application id the way the exception filter answers it', () => {
+    expect(errorStatus(new LestaNotConfiguredError({ method: 'account/info' }))).toEqual({
+      status: HttpStatus.NOT_FOUND,
+      code: 'INTEGRATION_UNAVAILABLE'
     });
   });
 

@@ -1,7 +1,7 @@
 import { FileInput, Gauge, PlayCircle, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { PERF } from '@/entities/catalog';
+import { ComponentPreview, PERF, PreviewAudio } from '@/entities/catalog';
 import { useInstallWizard } from '@/features/setup/install-modpack';
 import { Badge, Button, Card, Checkbox, EmptyState, ExternalLink, FormField, Select } from '@/ui-kit';
 
@@ -68,7 +68,7 @@ export const ComponentsStep = () => {
         </div>
         {preview && (
           <aside className={s.preview}>
-            <div className={s.image}>{preview.src && <img alt='' src={preview.src} />}</div>
+            <ComponentPreview category={preview.category} src={preview.src} />
             <h3 className={s.previewTitle}>{preview.title}</h3>
             {preview.perf && (
               <Badge icon={<Gauge aria-hidden />} tone={PERF.tones[preview.perf]}>
@@ -88,11 +88,7 @@ export const ComponentsStep = () => {
                 {t('components.video')}
               </ExternalLink>
             )}
-            {preview.audioSrc && (
-              <audio controls aria-label={t('components.listen', { title: preview.title })} className={s.audio} preload='none' src={preview.audioSrc}>
-                <track kind='captions' />
-              </audio>
-            )}
+            <PreviewAudio className={s.audio} label={t('components.listen', { title: preview.title })} src={preview.audioSrc} />
           </aside>
         )}
       </div>

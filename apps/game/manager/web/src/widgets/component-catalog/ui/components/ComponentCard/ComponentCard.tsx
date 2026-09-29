@@ -1,7 +1,7 @@
 import { Gauge, Lock, PlayCircle, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
-import { PERF } from '@/entities/catalog';
+import { ComponentPreview, PERF, PreviewAudio } from '@/entities/catalog';
 import { ComponentToggle } from '@/features/component/component-toggle';
 import { Badge, ExternalLink } from '@/ui-kit';
 
@@ -16,7 +16,7 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
 
   return (
     <article className={s.root} data-state={row.state}>
-      <div className={s.preview}>{row.previewSrc && <img alt='' className={s.image} src={row.previewSrc} />}</div>
+      <ComponentPreview category={row.category} src={row.previewSrc} />
       <div className={s.body}>
         <header className={s.header}>
           <h3 className={s.title}>{row.title}</h3>
@@ -50,11 +50,7 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
               {t('video')}
             </ExternalLink>
           )}
-          {row.audioSrc && (
-            <audio controls aria-label={t('listen', { title: row.title })} className={s.audio} preload='none' src={row.audioSrc}>
-              <track kind='captions' />
-            </audio>
-          )}
+          <PreviewAudio className={s.audio} label={t('listen', { title: row.title })} src={row.audioSrc} />
         </footer>
       </div>
       <div className={s.toggle}>
@@ -62,7 +58,8 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
           checked={row.state === 'enabled'}
           clientPath={clientPath}
           componentId={row.id}
-          disabled={!isInstalled || row.required}
+          disabled={!isInstalled}
+          isLocked={row.required}
           libraries={row.libraries}
           title={row.title}
         />

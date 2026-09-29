@@ -33,7 +33,7 @@ export const AUTH_RATE_LIMIT = {
   callback: { window: 60, max: 60 },
   callbackPaths: ['/lesta/callback', '/callback/*'],
   signIn: { window: 60, max: 30 },
-  signInPaths: ['/lesta/*', '/telegram/*', '/vk/*', '/sign-in/*', '/magic-link/*', '/link-social']
+  signInPaths: ['/lesta/*', '/telegram/callback', '/telegram/webapp', '/vk/*', '/sign-in/*', '/magic-link/*', '/link-social']
 } as const;
 
 export const VK_MINI_APP_AUTH = {

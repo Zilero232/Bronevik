@@ -16,6 +16,12 @@ export const STATUS_TO_CODE: Partial<Record<number, ApiErrorCode>> = {
   [HttpStatus.SERVICE_UNAVAILABLE]: 'LESTA_UNAVAILABLE'
 };
 
+export const LESTA_NOT_CONNECTED = {
+  status: HttpStatus.NOT_FOUND,
+  code: 'INTEGRATION_UNAVAILABLE',
+  error: 'Lesta API is not connected'
+} as const satisfies { status: number; code: ApiErrorCode; error: string };
+
 export const MOD_REPLY = {
   pathPrefixes: ['/mod/', '/replays/mod'],
   serverTimeHeader: 'x-otmetki-server-time'

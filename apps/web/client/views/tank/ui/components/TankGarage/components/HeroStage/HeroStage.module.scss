@@ -17,7 +17,7 @@
 .glow {
   position: absolute;
   z-index: -2;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--nation) 35%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--nation) var(--nation-glow), transparent), transparent);
   inset: 0 10%;
 }
 

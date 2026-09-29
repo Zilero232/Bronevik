@@ -15,6 +15,7 @@ import { CheckoutService } from '../checkout.service';
 type ServiceOptions = {
   isRecurring?: boolean;
   isCheckout?: boolean;
+  isConfigured?: boolean;
 };
 
 const webUrl = 'https://otmetki.test';
@@ -27,10 +28,10 @@ const created = (confirmation: YooKassaPayment['confirmation'] = { confirmation_
   confirmation
 });
 
-const createService = ({ isRecurring = true, isCheckout = true }: ServiceOptions = {}) => {
+const createService = ({ isRecurring = true, isCheckout = true, isConfigured = true }: ServiceOptions = {}) => {
   const prisma = mockDeep<PrismaService>();
   const config = mock<AppConfigService>();
-  const yookassa = mock<YooKassaClient>();
+  const yookassa = mock<YooKassaClient>({ isConfigured });
   const promos = mock<PromoService>();
   const subscriptions = mock<SubscriptionService>({ isRecurringEnabled: isRecurring, isCheckoutEnabled: isCheckout });
 
@@ -45,6 +46,17 @@ describe('CheckoutService.createCheckout', () => {
     const { service, yookassa } = createService({ isCheckout: false });
 
     await expect(service.createCheckout({ userId: 'u1', plan: 'monthly' })).rejects.toMatchObject({ response: { code: 'CHECKOUT_UNAVAILABLE' } });
+    expect(yookassa.createPayment).not.toHaveBeenCalled();
+  });
+
+  it('refuses while YooKassa is not configured, even with checkout open', async () => {
+    const { service, yookassa } = createService({ isConfigured: false });
+
+    await expect(service.createCheckout({ userId: 'u1', plan: 'monthly' })).rejects.toMatchObject({
+      status: 403,
+      response: { code: 'CHECKOUT_UNAVAILABLE' }
+    });
+
     expect(yookassa.createPayment).not.toHaveBeenCalled();
   });
 

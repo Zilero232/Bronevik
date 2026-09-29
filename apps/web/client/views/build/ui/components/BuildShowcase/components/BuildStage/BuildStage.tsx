@@ -22,7 +22,7 @@ export const BuildStage = ({ toggle, left, right, stats, compare, notice, action
   const tank = vehicleIdentity(vehicle);
 
   return (
-    <section className={s.root} data-theme='dark'>
+    <section className={s.root}>
       <div className={s.toggle}>{toggle}</div>
       <div className={s.left}>{left}</div>
       <div className={s.center}>

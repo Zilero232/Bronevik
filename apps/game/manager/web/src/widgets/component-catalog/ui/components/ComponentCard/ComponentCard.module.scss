@@ -15,20 +15,6 @@
   }
 }
 
-.preview {
-  overflow: hidden;
-  border-radius: var(--radius-sm);
-  aspect-ratio: 16 / 9;
-  background: var(--color-surface-sunken);
-}
-
-.image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .body {
   @include stack(var(--space-3));
 

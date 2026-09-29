@@ -3,6 +3,7 @@ export type SwitchProps = {
   label: string;
   description?: string;
   disabled?: boolean;
+  isLocked?: boolean;
   isPending?: boolean;
   hideLabel?: boolean;
   onCheckedChange: (checked: boolean) => void;

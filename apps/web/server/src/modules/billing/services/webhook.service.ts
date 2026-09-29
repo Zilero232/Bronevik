@@ -4,6 +4,7 @@ import type { RevokeRefundInput } from '../billing.types';
 import type { YooKassaWebhook } from '../lib';
 
 import { Prisma } from '../../../../generated';
+import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS } from '../config';
 import { describeCard, isPlusPlan, revokePeriod, YooKassaClient } from '../lib';
@@ -26,6 +27,10 @@ export class WebhookService {
   ) {}
 
   async handle(event: YooKassaWebhook): Promise<void> {
+    if (!this.yookassa.isConfigured) {
+      throw new AppNotFoundException('INTEGRATION_UNAVAILABLE', 'Payments are not configured on this server');
+    }
+
     if (event.event.startsWith('refund.')) {
       if (event.object.payment_id) {
         await this.refund({ paymentId: event.object.payment_id, now: new Date() });

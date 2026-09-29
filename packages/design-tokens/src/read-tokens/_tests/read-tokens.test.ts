@@ -16,7 +16,7 @@ describe('readDesignTokens', () => {
     const { themes } = await readDesignTokens();
 
     expect(themes.dark['color-accent']).toBe('#ff7a1a');
-    expect(themes.light['color-accent']).toBe('#ab4800');
+    expect(themes.light['color-accent']).toBe('#9e4300');
     expect(themes.dark['elev-2']).toBe('0 1px 0 rgb(255 255 255 / 5%) inset, 0 6px 16px rgb(0 0 0 / 45%)');
     expect(Object.keys(themes.light).sort()).toEqual(Object.keys(themes.dark).sort());
   });

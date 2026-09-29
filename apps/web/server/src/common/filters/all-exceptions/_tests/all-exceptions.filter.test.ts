@@ -112,11 +112,11 @@ describe('AllExceptionsFilter on the API', () => {
     expect(body).toMatchObject({ code: 'LESTA_UNAVAILABLE' });
   });
 
-  it('answers not found, not unavailable, while no Lesta application id is set', () => {
+  it('answers integration-unavailable with a not-found status while no Lesta application id is set', () => {
     const { status, body } = reply(new LestaNotConfiguredError({ method: 'account/list' }));
 
     expect(status).toBe(HttpStatus.NOT_FOUND);
-    expect(body).toEqual({ error: 'Lesta API is not connected', code: 'NOT_FOUND' });
+    expect(body).toEqual({ error: 'Lesta API is not connected', code: 'INTEGRATION_UNAVAILABLE' });
   });
 
   it('keeps the client error status set by a middleware', () => {

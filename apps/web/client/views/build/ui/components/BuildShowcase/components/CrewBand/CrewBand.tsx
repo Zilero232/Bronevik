@@ -20,7 +20,7 @@ export const CrewBand = () => {
   }
 
   return (
-    <section aria-label={t('title')} className={s.root} data-theme='dark'>
+    <section aria-label={t('title')} className={s.root}>
       <div className={s.columns}>
         {columns.map(({ role, skills }) => {
           const Icon = isCrewRole(role) ? CREW_ROLE_ICONS[role] : null;

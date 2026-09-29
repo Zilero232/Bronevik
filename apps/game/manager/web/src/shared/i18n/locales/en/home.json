@@ -2,7 +2,7 @@
   "title": "Home",
   "installTitle": "Modpack",
   "notInstalled": "The modpack is not installed in this client yet",
-  "notInstalledHint": "Press «Install the modpack» — the manager finds the client and offers a set of components.",
+  "notInstalledHint": "Press “Install the modpack” — the manager finds the client and offers a set of components.",
   "modpackVersion": "Modpack {version}",
   "enabledCount": "Components on: {enabled} of {total}",
   "installedAt": "Installed {date}",

@@ -1,6 +1,6 @@
 {
   "title": "Sets",
-  "description": "Your own named component sets, like the «Сборки» tab of МОСТ. Applying one opens the install wizard with it. Sets live in %APPDATA%\\TriOtmetki and move by code or file; syncing through the site comes later.",
+  "description": "Your own named component sets, like the “Сборки” tab of МОСТ. Applying one opens the install wizard with it. Sets live in %APPDATA%\\TriOtmetki and move by code or file; syncing through the site comes later.",
   "listTitle": "My sets",
   "count": "{count} of {max}",
   "components": "{count, plural, one {# component} other {# components}}",
@@ -32,7 +32,7 @@
   "renameTitle": "Rename the set",
   "duplicateTitle": "Copy of the set",
   "copyName": "{name} (copy)",
-  "deleteTitle": "Delete the set «{name}»?",
+  "deleteTitle": "Delete the set “{name}”?",
   "deleteDescription": "The installed components do not change.",
   "saved": "The set is saved",
   "renamed": "The set is renamed",

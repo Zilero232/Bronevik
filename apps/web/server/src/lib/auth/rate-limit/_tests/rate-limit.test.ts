@@ -57,5 +57,11 @@ describe('authRateLimitRules', () => {
   it('keeps the sign-in starts on the sign-in rule', () => {
     expect(ruleFor('/lesta/start')).toEqual(AUTH_RATE_LIMIT.signIn);
     expect(ruleFor('/link-social')).toEqual(AUTH_RATE_LIMIT.signIn);
+    expect(ruleFor('/telegram/callback')).toEqual(AUTH_RATE_LIMIT.signIn);
+    expect(ruleFor('/telegram/webapp')).toEqual(AUTH_RATE_LIMIT.signIn);
+  });
+
+  it('leaves the Telegram widget config read out of the sign-in bucket', () => {
+    expect(ruleFor('/telegram/widget')).toBeUndefined();
   });
 });

@@ -7,6 +7,7 @@ import { z } from 'zod';
 import type { SignInVkInput, VkMiniAppOptions } from './vk-mini-app.types';
 
 import { AUTH_PROVIDER, VK_MINI_APP_AUTH } from '../auth.constants';
+import { integrationUnavailable } from '../integration-unavailable';
 import { placeholderEmail } from '../placeholder-email';
 import { verifyVkLaunchParams } from './launch-params';
 
@@ -54,6 +55,10 @@ export const vkMiniApp = ({ appId, appSecret }: VkMiniAppOptions) =>
           body: z.object({ launchParams: z.string().min(1).max(VK_MINI_APP_AUTH.launchParamsMaxLength) })
         },
         async (ctx) => {
+          if (!appSecret) {
+            throw integrationUnavailable('The VK Mini App is not configured on this server');
+          }
+
           const identity = verifyVkLaunchParams({ launchParams: ctx.body.launchParams, appId, appSecret });
 
           if (!identity) {

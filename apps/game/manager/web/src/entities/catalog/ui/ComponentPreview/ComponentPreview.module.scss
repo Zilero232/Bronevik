@@ -1,0 +1,54 @@
+.root {
+  --preview-tone: var(--color-steel);
+
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--preview-tone) 30%, var(--color-border));
+  border-radius: var(--radius-sm);
+  aspect-ratio: 16 / 9;
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--preview-tone) 28%, transparent), transparent 65%),
+    linear-gradient(160deg, color-mix(in srgb, var(--preview-tone) 12%, var(--color-bg-deep)), var(--color-bg-deep));
+  place-items: center;
+
+  &[data-tone='accent'] {
+    --preview-tone: var(--color-accent);
+  }
+
+  &[data-tone='battle'] {
+    --preview-tone: var(--color-battle);
+  }
+
+  &[data-tone='hangar'] {
+    --preview-tone: var(--color-steel-blue);
+  }
+
+  &[data-tone='data'] {
+    --preview-tone: var(--color-gold);
+  }
+}
+
+.icon {
+  width: 34%;
+  max-width: 48px;
+  height: auto;
+  color: color-mix(in srgb, var(--preview-tone) 75%, var(--color-text));
+  opacity: 0.85;
+  stroke-width: 1.5;
+}
+
+.image {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--duration-fast) ease;
+
+  .root[data-loaded] & {
+    opacity: 1;
+  }
+}

@@ -12,3 +12,5 @@ export type { Catalog, CatalogCategory, CatalogComponent, CatalogConflict, Catal
 export { PERF } from './config';
 export { previewPath, previewSrc } from './lib';
 export { useCatalog } from './model/hooks';
+export { ComponentPreview, PreviewAudio } from './ui';
+export type { ComponentPreviewProps, PreviewAudioProps } from './ui';

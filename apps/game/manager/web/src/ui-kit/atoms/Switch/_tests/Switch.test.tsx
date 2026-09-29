@@ -23,4 +23,14 @@ describe('Switch', () => {
     expect(screen.getByRole('switch', { name: 'Ядро' })).toHaveAttribute('aria-disabled', 'true');
     expect(onCheckedChange).not.toHaveBeenCalled();
   });
+
+  it('keeps a locked switch on and read-only', async () => {
+    const onCheckedChange = vi.fn();
+
+    render(<Switch checked isLocked label='Ядро' onCheckedChange={onCheckedChange} />);
+    await userEvent.click(screen.getByRole('switch', { name: 'Ядро' }));
+
+    expect(screen.getByRole('switch', { name: 'Ядро' })).toHaveAttribute('aria-checked', 'true');
+    expect(onCheckedChange).not.toHaveBeenCalled();
+  });
 });

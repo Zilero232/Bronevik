@@ -15,6 +15,7 @@ mod install;
 mod logs;
 mod patch;
 mod paths;
+mod previews;
 mod process;
 mod profiles;
 mod releases;
@@ -93,6 +94,10 @@ pub fn run() {
             let manager = Manager::new(layout, ReleasesClient::new(api_url())?);
             let settings = manager.settings();
             let handle = app.handle().clone();
+
+            if let Err(error) = app.asset_protocol_scope().allow_directory(manager.layout.manager_dir().join(previews::DIR), true) {
+                log::warn!("previews scope: {error}");
+            }
 
             app.manage(manager);
             background::init_tray(&handle)?;

@@ -65,10 +65,18 @@ const doneUrl = new URL(INTEGRATIONS.doneRedirectPath, WEB_URL).href;
 const failedUrl = new URL(INTEGRATIONS.failedRedirectPath, WEB_URL).href;
 
 describe('IntegrationsService.connectUrl', () => {
-  it('refuses a provider whose client id is not configured', async () => {
-    const { service } = createService({ ...ENV, TWITCH_CLIENT_ID: '' });
+  it.each([
+    { provider: 'twitch', missing: 'TWITCH_CLIENT_ID' },
+    { provider: 'twitch', missing: 'TWITCH_CLIENT_SECRET' },
+    { provider: 'donationAlerts', missing: 'DONATIONALERTS_CLIENT_ID' },
+    { provider: 'donationAlerts', missing: 'DONATIONALERTS_CLIENT_SECRET' }
+  ] as const)('answers integration-unavailable for $provider without $missing', async ({ provider, missing }) => {
+    const { service } = createService({ ...ENV, [missing]: '' });
 
-    await expect(service.connectUrl({ userId: 'u1', provider: 'twitch' })).rejects.toBeInstanceOf(AppBadRequestException);
+    await expect(service.connectUrl({ userId: 'u1', provider })).rejects.toMatchObject({
+      status: 404,
+      response: { code: 'INTEGRATION_UNAVAILABLE' }
+    });
   });
 
   it('refuses a provider without an OAuth app', async () => {

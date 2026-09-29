@@ -126,3 +126,12 @@
   font-size: var(--text-xs);
   overflow-wrap: anywhere;
 }
+
+@mixin thin-scrollbar {
+  scrollbar-color: var(--color-border-strong) transparent;
+  scrollbar-width: thin;
+
+  &:hover {
+    scrollbar-color: var(--color-text-dim) transparent;
+  }
+}

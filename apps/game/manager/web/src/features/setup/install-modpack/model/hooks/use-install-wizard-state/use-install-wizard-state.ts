@@ -92,6 +92,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents }: UseI
 
   const focused = components.find((component) => component.id === focusedId) ?? components[0] ?? null;
   const preview = focused && {
+    category: focused.category,
     title: text(focused.title),
     description: text(focused.description),
     fairPlay: text(focused.fairPlay),

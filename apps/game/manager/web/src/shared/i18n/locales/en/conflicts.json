@@ -15,8 +15,8 @@
   },
   "restore": "Restore the set ({count})",
   "restoreTitle": "Restore {count, plural, one {# file} other {# files}} from the latest snapshot?",
-  "restoreDescription": "The manager brings the missing and replaced modpack packages back from a snapshot in «Backups». Settings and other mods do not change.",
+  "restoreDescription": "The manager brings the missing and replaced modpack packages back from a snapshot in “Backups”. Settings and other mods do not change.",
   "restoreConfirm": "Restore",
   "restored": "The set is restored",
-  "noSnapshot": "No snapshot has them: reinstall the modpack with «Change the set» on the home page."
+  "noSnapshot": "No snapshot has them: reinstall the modpack with “Change the selection” on the home page."
 }

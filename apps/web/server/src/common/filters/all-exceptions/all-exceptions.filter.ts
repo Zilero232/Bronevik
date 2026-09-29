@@ -11,7 +11,7 @@ import type { ReplyInput } from './all-exceptions.types';
 import { isPrismaRequestError } from '../../../core';
 import { LestaNotConfiguredError } from '../../../lib/lesta';
 import { errorMessage } from '../../lib';
-import { MOD_CONTRACT_PATHS, MOD_REPLY, PRISMA_TO_HTTP } from './all-exceptions.constants';
+import { LESTA_NOT_CONNECTED, MOD_CONTRACT_PATHS, MOD_REPLY, PRISMA_TO_HTTP } from './all-exceptions.constants';
 import { bodyWithField, codeForStatus, isLestaError, middlewareStatus, modErrorForStatus, retryAfterSeconds, zodIssues } from './lib';
 
 @Catch()
@@ -76,7 +76,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     if (exception instanceof LestaNotConfiguredError) {
-      response.status(HttpStatus.NOT_FOUND).json({ error: 'Lesta API is not connected', code: 'NOT_FOUND' });
+      response.status(LESTA_NOT_CONNECTED.status).json({ error: LESTA_NOT_CONNECTED.error, code: LESTA_NOT_CONNECTED.code });
 
       return;
     }

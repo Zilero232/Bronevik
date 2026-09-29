@@ -20,7 +20,7 @@ export const TankGarage = () => {
 
   return (
     <section aria-labelledby={titleId} className={s.root} id={TANK_SECTIONS.overview}>
-      <div className={s.hero} data-class={identity.type} data-theme='dark'>
+      <div className={s.hero} data-class={identity.type}>
         <div className={s.inner}>
           <HeroStage />
           <div className={s.info}>

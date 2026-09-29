@@ -42,9 +42,9 @@ const remote = (status: YooKassaPayment['status'], saved = false): YooKassaPayme
   payment_method: { id: 'card-1', saved, card: { last4: '4242', card_type: 'Visa' } }
 });
 
-const createService = () => {
+const createService = ({ isConfigured = true }: { isConfigured?: boolean } = {}) => {
   const prisma = mockDeep<PrismaService>();
-  const yookassa = mock<YooKassaClient>();
+  const yookassa = mock<YooKassaClient>({ isConfigured });
   const subscriptions = mock<SubscriptionService>();
   const entitlements = mock<EntitlementsService>();
   const promos = mock<PromoService>();
@@ -222,6 +222,17 @@ describe('WebhookService.settle', () => {
 });
 
 describe('WebhookService.handle', () => {
+  it('answers integration-unavailable and touches nothing while YooKassa is not configured', async () => {
+    const { service, prisma } = createService({ isConfigured: false });
+
+    await expect(service.handle({ type: 'notification', event: 'payment.succeeded', object: { id: 'p1' } })).rejects.toMatchObject({
+      status: 404,
+      response: { code: 'INTEGRATION_UNAVAILABLE' }
+    });
+
+    expect(prisma.payment.findUnique).not.toHaveBeenCalled();
+  });
+
   it('refunds through the payment row without settling anything', async () => {
     const { service, prisma, yookassa } = createService();
 

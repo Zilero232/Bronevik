@@ -29,7 +29,7 @@
   position: relative;
   display: grid;
   margin-left: -32px;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--nation) 35%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--nation) var(--nation-glow), transparent), transparent);
   place-items: center;
 
   &:nth-child(odd) .render {

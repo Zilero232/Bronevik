@@ -7,3 +7,5 @@ export type { NotificationLocale, RenderedNotification } from './notification-co
 export { quietDelayMs } from './quiet-hours';
 export { sessionReportKey } from './session-report-key';
 export { thresholdDrops } from './threshold-drops';
+export { vapidDetails } from './web-push-config';
+export type { VapidDetails, WebPushEnv } from './web-push-config';

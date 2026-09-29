@@ -5,4 +5,5 @@ export type ComponentToggleProps = {
   libraries: readonly string[];
   checked: boolean;
   disabled: boolean;
+  isLocked?: boolean;
 };

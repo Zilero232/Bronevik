@@ -19,7 +19,7 @@
   "rename": "Rename",
   "export": "Copy code",
   "renameTitle": "Rename the profile",
-  "deleteTitle": "Delete profile «{name}»?",
+  "deleteTitle": "Delete profile “{name}”?",
   "deleteDescription": "The current in-game settings stay as they are.",
   "saved": "Profile saved",
   "activated": "Profile applied",

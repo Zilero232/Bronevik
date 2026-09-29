@@ -7,6 +7,7 @@ import { z } from 'zod';
 import type { SignInTelegramInput, TelegramLoginOptions } from './telegram-login.types';
 
 import { AUTH_PROVIDER } from '../auth.constants';
+import { integrationUnavailable } from '../integration-unavailable';
 import { placeholderEmail } from '../placeholder-email';
 import { verifyWebAppInitData } from './webapp-auth';
 import { WEBAPP_AUTH } from './webapp-auth/webapp-auth.constants';
@@ -66,6 +67,10 @@ export const telegramLogin = ({ botToken, botUsername, store }: TelegramLoginOpt
           body: z.record(z.string(), z.union([z.string(), z.number()]).transform(String))
         },
         async (ctx) => {
+          if (!botToken) {
+            throw integrationUnavailable('Telegram sign-in is not configured on this server');
+          }
+
           const payload = ctx.body;
           const identity = widgetIdentity(payload);
 
@@ -84,6 +89,10 @@ export const telegramLogin = ({ botToken, botUsername, store }: TelegramLoginOpt
           body: z.object({ initData: z.string().min(1).max(WEBAPP_AUTH.initDataMaxLength) })
         },
         async (ctx) => {
+          if (!botToken) {
+            throw integrationUnavailable('The Telegram Mini App is not configured on this server');
+          }
+
           const identity = verifyWebAppInitData({ initData: ctx.body.initData, botToken });
 
           if (!identity) {

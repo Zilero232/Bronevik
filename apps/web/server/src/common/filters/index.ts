@@ -1,1 +1,1 @@
-export { AllExceptionsFilter, isLestaError } from './all-exceptions';
+export { AllExceptionsFilter, isLestaError, LESTA_NOT_CONNECTED } from './all-exceptions';

@@ -55,7 +55,7 @@ features/
 ├── streamer/      # apply-settings, claim-profile, follow-streamer
 └── tank/          # filter-vehicles, pick-tank
 entities/
-├── app/          # locale
+├── app/          # lesta-notice, locale
 ├── armor/        # armor-model
 ├── auth/         # session
 ├── battle/       # best-battle

@@ -36,10 +36,6 @@ export const LEGAL = {
   isDraft: true
 } as const;
 
-export const LESTA_NOTICE = {
-  isEnabled: env.NEXT_PUBLIC_LESTA_NOTICE
-} as const;
-
 export const SUPPORT = {
   email: 'support@triotmetki.ru',
   telegramUrl: TELEGRAM_BOT.url

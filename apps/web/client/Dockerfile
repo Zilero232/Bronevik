@@ -62,10 +62,6 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-# true or false, no default: renders the «Lesta data is not connected yet»
-# notice on every site page. Build time, so changing it needs a new image.
-ARG NEXT_PUBLIC_LESTA_NOTICE
-ENV NEXT_PUBLIC_LESTA_NOTICE=${NEXT_PUBLIC_LESTA_NOTICE}
 
 # Salts the service-worker precache revision of the manifest and PWA icons, so
 # a deploy refreshes them even when the package version stays the same.

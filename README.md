@@ -86,7 +86,7 @@ The client has no mocks: it always talks to the API at `NEXT_PUBLIC_API_URL`. Wi
 
 ### Without a Lesta key
 
-There is no mock and no generated data anywhere. With `LESTA_APPLICATION_ID` empty the server boots, the worker starts degraded (no tracking, clan or other Lesta jobs), Lesta ID sign-in answers `lesta_not_connected`, and every page shows its empty state. `NEXT_PUBLIC_LESTA_NOTICE=true` (required, `true` or `false`, build time) adds the site-wide «data not connected yet» notice and disables the Lesta ID button. `bun run gamedata:import` still fills the vehicle catalog, maps and missions from the public client-data repositories.
+There is no mock and no generated data anywhere. With `LESTA_APPLICATION_ID` empty the server boots, the worker starts degraded (no tracking, clan or other Lesta jobs), Lesta ID sign-in answers `lesta_not_connected`, and every page shows its empty state. `LESTA_NOTICE=true` (required, `true` or `false`, server-only, read by the Next server per request) adds the site-wide «data not connected yet» notice and disables the Lesta ID button; changing it needs a client restart, not a rebuild. `bun run gamedata:import` still fills the vehicle catalog, maps and missions from the public client-data repositories.
 
 ### Dev server troubleshooting
 

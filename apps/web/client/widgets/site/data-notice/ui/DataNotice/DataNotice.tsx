@@ -1,10 +1,19 @@
+'use client';
+
 import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+import { useLestaNotice } from '@/entities/app/lesta-notice';
 
 import s from './DataNotice.module.scss';
 
 export const DataNotice = () => {
   const t = useTranslations('common.dataNotice');
+  const isShown = useLestaNotice();
+
+  if (!isShown) {
+    return null;
+  }
 
   return (
     <aside className={s.root} role='note'>

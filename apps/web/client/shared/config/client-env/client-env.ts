@@ -5,7 +5,6 @@ const schema = z.object({
   NEXT_PUBLIC_API_URL: z.url(),
   NEXT_PUBLIC_SITE_URL: z.url(),
   NEXT_PUBLIC_APP_VERSION: z.string().min(1).default('0.0.0'),
-  NEXT_PUBLIC_LESTA_NOTICE: z.enum(['true', 'false']).transform((value) => value === 'true'),
   GIT_COMMIT_SHA: z.string().min(1).optional()
 });
 
@@ -14,6 +13,5 @@ export const env = schema.parse({
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
-  NEXT_PUBLIC_LESTA_NOTICE: process.env.NEXT_PUBLIC_LESTA_NOTICE,
   GIT_COMMIT_SHA: process.env.GIT_COMMIT_SHA
 });

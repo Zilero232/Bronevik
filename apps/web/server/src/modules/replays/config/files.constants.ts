@@ -1,3 +1,3 @@
-export const REPLAY_STORAGE = {
+export const REPLAY_FILES = {
   root: '.data/replays'
 } as const;

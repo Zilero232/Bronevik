@@ -30,13 +30,13 @@ This is the status of every area at the last audit. **Ready** means the piece is
 | Caddy: TLS for both hosts, HSTS, security headers, zstd/gzip, SSE excluded, bull-board 404 | Ready | DNS (below) |
 | Client CSP, sitemap, robots, service worker revision (`GIT_COMMIT_SHA`) | Ready | The `NEXT_PUBLIC_SITE_URL` secret |
 | Nightly `pg_dump` with rotation | Ready | An off-host copy (§6) |
-| Launch without the Lesta key: empty states, degraded worker, `NEXT_PUBLIC_LESTA_NOTICE` | Ready | — |
+| Launch without the Lesta key: empty states, degraded worker, the runtime `LESTA_NOTICE` switch | Ready | — |
 | Health: `/health` (database, Redis, worker heartbeat, Lesta breaker, last job successes, queue backlog, API version; contract `healthSchema`), shown on the site's `/status` | Ready | An external uptime monitor on `https://api.triotmetki.ru/health` and `https://triotmetki.ru/` (UptimeRobot, Healthchecks.io or similar) |
 | **Lesta application**: `LESTA_APPLICATION_ID`, the VPS IP allow-listed, the OpenID redirect | Blocked | Register at developers.lesta.ru (§1) |
 | **DNS**: `A`/`AAAA` for `triotmetki.ru` and `api.triotmetki.ru`; ports 80, 443/tcp and 443/udp open | Blocked | The registrar and the VPS firewall |
-| **GitHub secrets and variables**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PASSWORD`, `DEPLOY_PATH`, `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`); variable `NEXT_PUBLIC_LESTA_NOTICE` | Blocked | Settings → Secrets and variables (§1) |
+| **GitHub secrets**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PASSWORD`, `DEPLOY_PATH`, `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`) | Blocked | Settings → Secrets and variables (§1) |
 | **VPS downloads folder** `DEPLOY_PATH/downloads` | Blocked | `mkdir -p` once before the first deploy (§1) |
-| **VPS `.env` secrets**: `BETTER_AUTH_SECRET`, `MOD_INGEST_SECRET`, `INTERNAL_API_TOKEN`, `POSTGRES_PASSWORD`, `BULL_BOARD_PASSWORD` | Blocked | Generate them on the VPS (§1) |
+| **VPS `.env` secrets and switches**: `BETTER_AUTH_SECRET`, `MOD_INGEST_SECRET`, `INTERNAL_API_TOKEN`, `POSTGRES_PASSWORD`, `BULL_BOARD_PASSWORD`, `LESTA_NOTICE` | Blocked | Generate them on the VPS (§1) |
 | ghcr access from the VPS | Blocked | Make the packages public, or run `docker login ghcr.io` with a read-only token |
 | **YooKassa**: `YOOKASSA_*`, the webhook | Blocked, not needed for launch | Checkout stays off (`PLUS.checkoutEnabled`) until Lesta confirms the model (§5) |
 | **Bots and streamer integrations**: Telegram, Discord, VK, Twitch, DonationAlerts, VK Video Live, YouTube | Blocked, optional | Each one is off while its token is empty |
@@ -84,12 +84,6 @@ Set these under Settings → Secrets and variables → Actions, in the `producti
 | `TAURI_SIGNING_PRIVATE_KEY` | the minisign private key (the whole key file, base64 text) that signs the manager's updates and the modpack releases; `release.yml` only (§4) |
 | `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | its password; leave it empty for a key without one |
 
-One repository **variable** (Settings → Secrets and variables → Actions → Variables, not a secret):
-
-| Variable | Value |
-|---|---|
-| `NEXT_PUBLIC_LESTA_NOTICE` | `true` or `false`, required. `true` shows the site-wide «Данные «Мира танков» пока не подключены» notice and disables the Lesta ID button; set `false` once `LESTA_APPLICATION_ID` is live. It is baked into the client image at build time, so a change takes effect only with the next deploy. A missing or other value fails the client build. |
-
 The workflow passes `GIT_COMMIT_SHA=${{ github.sha }}` to the client image by itself. With `NEXT_PUBLIC_APP_VERSION` (the root `package.json` version), it forms the service worker's precache revision. A client built without it (for example a local `docker compose build`) keeps the same revision across builds, so returning visitors keep stale precached files. When you build by hand, export `GIT_COMMIT_SHA=$(git rev-parse HEAD)` first. The server image takes no build arguments.
 
 The VPS must be able to pull from ghcr. Make the packages public, or run `docker login ghcr.io` once on the VPS with a read-only token.
@@ -108,12 +102,13 @@ Start from [.env.example](../../.env.example). The server and worker containers 
 - [ ] `TRUSTED_PROXIES`: leave it empty for the stock stack. The only hop is Caddy, which sends a single-entry `X-Forwarded-For`, and the default trusts one hop. Once a CDN or load balancer sits in front of Caddy, list its IPs or CIDRs (comma-separated). If you skip that, rate limits and the better-auth IP checks see the proxy's IP as every client's.
 - [ ] `DATABASE_POOL_MAX`: leave it unset at first. The API then keeps 10 connections and the worker sizes its pool from its queue concurrency (`WORKER_DATABASE.poolMax`). Set it only when Postgres `max_connections` is tight. The variable applies per process, so the API and the worker each take that many.
 - [ ] `POSTGRES_USER`, `POSTGRES_PASSWORD` (strong: use `openssl rand -hex 24`, because the password goes into a connection URL and base64's `/` and `+` break it), `POSTGRES_DB`, `SITE_DOMAIN=triotmetki.ru`, `API_DOMAIN=api.triotmetki.ru`. Compose reads them for Postgres and Caddy.
-- [ ] `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_LESTA_NOTICE` (`true` or `false`, the same value as the repository variable). Compose interpolates the client's build arguments on every command, so `docker compose` refuses to run while any of them is missing.
-- [ ] `LESTA_APPLICATION_ID`, `LESTA_RPS`. An empty key is a supported state (§7). `COMPOSE_FILE` must be absent: the stack is `docker-compose.yml` alone.
+- [ ] `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_SITE_URL`. Compose interpolates the client's build arguments on every command, so `docker compose` refuses to run while either is missing.
+- [ ] `LESTA_NOTICE`: `true` or `false`, required, no default. Server-only (never `NEXT_PUBLIC_`): compose passes it to the client container at runtime, and the Next server reads it per request. `true` shows the site-wide «Данные «Мира танков» пока не подключены» notice and disables the Lesta ID button; set `false` once `LESTA_APPLICATION_ID` is live. A change needs no rebuild: edit `.env`, then `docker compose up -d client`. `docker compose` refuses to run while it is missing, and the client rejects any other value.
+- [ ] `LESTA_APPLICATION_ID`, `LESTA_RPS`. An empty key is a supported state (§7).
 - [ ] `EMAIL_FROM` on our domain (for example `Три отметки <noreply@triotmetki.ru>`), with SPF and DKIM for the SMTP provider. `VAPID_SUBJECT=mailto:admin@triotmetki.ru`.
 - [ ] `BULL_BOARD_PASSWORD`: Caddy returns 404 for `/admin/queues` on the public host anyway. Reach bull-board through an SSH tunnel to the server container.
 - [ ] `SMTP_HOST` stays empty unless a real provider is set up. `.env.example` carries the Mailpit values for development.
-- [ ] Storage needs no variables: uploaded replays and armor models live in `.data` on the `serverdata` volume, which the server and the worker share. A `.env` copied from an older template may still carry `REPLAY_STORAGE`, `REPLAY_STORAGE_DIR`, `S3_*` or `MODPACK_RELEASES_URL`: delete those lines, nothing reads them.
+- [ ] Storage needs no variables: uploaded replays and armor models live in `.data` on the `serverdata` volume, which the server and the worker share.
 
 ### The VPS downloads folder
 
@@ -238,7 +233,7 @@ Until the Lesta application exists, production runs the normal stack on an empty
 
 - **The server** boots with `LESTA_APPLICATION_ID` empty. Every endpoint answers with empty data, and every page shows its designed empty state (what is missing and why), never an error or a spinner. `/auth/lesta/start` sends the visitor back with `lesta_not_connected` instead of opening Lesta ID.
 - **The worker** starts degraded: it logs `LESTA_APPLICATION_ID is empty: running degraded…`, loads no tracking or clan processors and registers no Lesta schedule. Aggregates, news, purge and the other key-less jobs still run. `/health` stays up and reports the worker's state.
-- **The client** is built with the repository variable `NEXT_PUBLIC_LESTA_NOTICE=true` (§1): every site page shows the informational «Данные «Мира танков» пока не подключены» notice and the Lesta ID button is disabled with the same explanation. The site stays indexable.
+- **The client** runs with `LESTA_NOTICE=true` in the VPS `.env` (§1): every site page shows the informational «Данные «Мира танков» пока не подключены» notice and the Lesta ID button is disabled with the same explanation. The site stays indexable.
 
 ### Каталог техники (optional, no key needed)
 
@@ -257,5 +252,5 @@ docker compose run --rm server bun scripts/gamedata-import.ts --cache /tmp/otmet
 ### When the key arrives
 
 1. Put `LESTA_APPLICATION_ID` (and `LESTA_RPS`) in the VPS `.env`, allow-list the VPS IP and the OpenID redirect (§1).
-2. Set the repository variable `NEXT_PUBLIC_LESTA_NOTICE=false`.
-3. Run the deploy workflow: the notice disappears, Lesta ID sign-in opens, and the restarted worker registers the Lesta schedules. Then do §3.
+2. Set `LESTA_NOTICE=false` in the same `.env`.
+3. Restart the stack with the new values: `docker compose up -d` (or run the deploy workflow). The client picks up `LESTA_NOTICE` without a rebuild, so the notice disappears and Lesta ID sign-in opens; the restarted worker registers the Lesta schedules. Then do §3.

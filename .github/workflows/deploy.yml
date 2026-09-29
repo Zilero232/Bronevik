@@ -18,15 +18,12 @@ name: deploy
 #   DEPLOY_SSH_PORT           optional, defaults to 22
 #   DEPLOY_PATH               where docker-compose.yml lives, e.g. /opt/otmetki
 #
-# Repository variable — Settings → Secrets and variables → Actions → Variables:
-#   NEXT_PUBLIC_LESTA_NOTICE  true or false, required: the site-wide «Lesta data is
-#                             not connected yet» notice. Baked into the web image, so
-#                             changing it takes effect with the next deploy.
-#
-# Runtime secrets live in the VPS .env, not here (docs/ops/deploy.md §1). The
-# stack refuses to start without INTERNAL_API_TOKEN: the server validates it and
-# docker-compose.yml passes it to the client, so the first `docker compose config`
-# below already fails when it is missing.
+# Runtime secrets and switches live in the VPS .env, not here (docs/ops/deploy.md §1).
+# The stack refuses to start without INTERNAL_API_TOKEN or LESTA_NOTICE: docker-compose.yml
+# passes both to the client (the server validates the token too), so the first
+# `docker compose` command below already fails when either is missing. LESTA_NOTICE
+# (true or false, the site-wide «Lesta data is not connected yet» notice) is read at
+# request time: change it in the VPS .env and run `docker compose up -d client`.
 
 on:
   workflow_dispatch:
@@ -96,7 +93,6 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://api.invalid
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
-          NEXT_PUBLIC_LESTA_NOTICE: 'false'
         run: bun --filter @otmetki/client build
 
       - name: Serve the client
@@ -107,6 +103,7 @@ jobs:
           HOSTNAME: 0.0.0.0
           # No API runs here; the Next server still signs its (failing) API calls.
           INTERNAL_API_TOKEN: e2e-internal-token-no-api-behind-it-000
+          LESTA_NOTICE: 'false'
         run: |
           cp -r apps/web/client/.next/static apps/web/client/.next/standalone/apps/web/client/.next/static
           cp -r apps/web/client/public apps/web/client/.next/standalone/apps/web/client/public 2>/dev/null || true
@@ -152,7 +149,6 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}
-            NEXT_PUBLIC_LESTA_NOTICE=${{ vars.NEXT_PUBLIC_LESTA_NOTICE }}
             GIT_COMMIT_SHA=${{ github.sha }}
 
   server:
@@ -218,16 +214,6 @@ jobs:
           script: |
             set -euo pipefail
             cd "$DEPLOY_PATH"
-
-            # The keyless demo is gone: a VPS whose .env still selects its override
-            # (COMPOSE_FILE) would keep serving generated data from the old files.
-            # Read the list first: `grep -q` exits on the first match, compose then
-            # dies of SIGPIPE, and pipefail would turn that into a false answer.
-            services=$(docker compose config --services)
-            if grep -qx demo-seed <<<"$services"; then
-              echo "the VPS still runs the keyless demo: remove COMPOSE_FILE and DEMO_SEED_ARGS from $DEPLOY_PATH/.env" >&2
-              exit 1
-            fi
 
             docker compose pull client server worker
 

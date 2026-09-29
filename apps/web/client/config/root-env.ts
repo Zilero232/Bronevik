@@ -3,9 +3,9 @@ import path from 'node:path';
 
 import { REPO_ROOT } from './paths';
 
-// The browser build reads NEXT_PUBLIC_*; the Next server also reads INTERNAL_API_TOKEN at runtime
-// (shared/config/server-env). It is never NEXT_PUBLIC_, so it stays out of the browser bundle.
-const ROOT_VARIABLE = /^(NEXT_PUBLIC_[A-Z0-9_]*|INTERNAL_API_TOKEN)=(.*)$/;
+// The browser build reads NEXT_PUBLIC_*; the Next server also reads INTERNAL_API_TOKEN and LESTA_NOTICE
+// at runtime (shared/config/server-env). They are never NEXT_PUBLIC_, so they stay out of the browser bundle.
+const ROOT_VARIABLE = /^(NEXT_PUBLIC_[A-Z0-9_]*|INTERNAL_API_TOKEN|LESTA_NOTICE)=(.*)$/;
 
 export const loadRootEnv = () => {
   const rootEnv = path.resolve(REPO_ROOT, '.env');

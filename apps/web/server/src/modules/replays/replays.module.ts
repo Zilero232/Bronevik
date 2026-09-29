@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { ObjectStorageModule } from '../../core';
 import { BillingCoreModule } from '../billing';
 import { ModModule } from '../mod';
-import { REPLAY_STORAGE, REPLAYS_QUEUE } from './config';
+import { REPLAY_FILES, REPLAYS_QUEUE } from './config';
 import { ModReplaysController } from './mod-replays.controller';
 import { ReplaysController } from './replays.controller';
 import { HeatmapService, ReplayOwnerService, ReplayQueryService, ReplayStatusService, ReplayUploadService } from './services';
@@ -13,7 +13,7 @@ import { HeatmapService, ReplayOwnerService, ReplayQueryService, ReplayStatusSer
   imports: [
     BillingCoreModule,
     ModModule,
-    ObjectStorageModule.register({ root: REPLAY_STORAGE.root }),
+    ObjectStorageModule.register({ root: REPLAY_FILES.root }),
     BullModule.registerQueue({ name: REPLAYS_QUEUE.name })
   ],
   controllers: [ReplaysController, ModReplaysController],

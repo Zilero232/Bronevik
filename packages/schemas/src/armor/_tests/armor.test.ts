@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { armorModelSchema } from '../armor.schemas';
+import { armorAttackerSchema, armorModelSchema } from '../armor.schemas';
 
 const VEHICLE = {
   tankId: 7169,
@@ -68,5 +68,21 @@ describe('armorModelSchema', () => {
     const plates = [{ name: 'armor_1', thickness: -1, flags: 0.5 }];
 
     expect(armorModelSchema.safeParse({ ...MODEL, modules: { ...MODEL.modules, hull: { piece: 'Hull', plates } } }).success).toBe(false);
+  });
+});
+
+describe('armorAttackerSchema', () => {
+  it('strips the collision piece and plates from an attacking gun', () => {
+    const [gun] = MODEL.modules.turrets[0].guns;
+    const parsed = armorAttackerSchema.parse({ vehicle: VEHICLE, guns: [gun] });
+
+    expect(parsed.guns[0]).toEqual({ name: gun.name, displayName: gun.displayName, shells: gun.shells });
+  });
+
+  it('rejects a shell with negative penetration', () => {
+    const [gun] = MODEL.modules.turrets[0].guns;
+    const shells = [{ ...gun.shells[0], penetration: { at100m: -1, at500m: 0 } }];
+
+    expect(armorAttackerSchema.safeParse({ vehicle: VEHICLE, guns: [{ ...gun, shells }] }).success).toBe(false);
   });
 });

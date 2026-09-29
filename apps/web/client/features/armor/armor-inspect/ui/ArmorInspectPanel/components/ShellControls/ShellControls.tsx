@@ -3,24 +3,32 @@
 import { toShellKind } from '@otmetki/gamedata';
 import { useTranslations } from 'next-intl';
 
-import { RangeSlider, SegmentedControl } from '@/ui-kit';
+import { RangeSlider, SegmentedControl, Select } from '@/ui-kit';
 
-import type { RandomnessKey } from './ShellControls.types';
+import type { RandomnessKey } from '../../../../model/context';
 
 import { ARMOR_INSPECT, SHELL_KIND_KEYS } from '../../../../config';
-import { useArmorInspect } from '../../../../model/context';
+import { useArmorAttack } from '../../../../model/context';
 
 import s from './ShellControls.module.scss';
 
 export const ShellControls = () => {
   const t = useTranslations('armor');
-  const { gun, shellOption, shellState, distance, randomness, setShell, setDistance, setRandomness } = useArmorInspect();
+  const { guns, gun, shellOption, shellState, distance, randomnessKey, isAttackerLoading, setGun, setShell, setDistance, setRandomness } =
+    useArmorAttack();
 
   const shells = gun?.shells ?? [];
-  const randomnessKey: RandomnessKey = randomness === ARMOR_INSPECT.randomness.client ? 'client' : 'lesta';
 
   return (
-    <div className={s.root}>
+    <div aria-busy={isAttackerLoading} className={s.root}>
+      {guns.length > 1 && gun && (
+        <Select
+          items={guns.map(({ name, displayName }) => ({ value: name, label: displayName }))}
+          label={t('attack.gun')}
+          value={gun.name}
+          onValueChange={setGun}
+        />
+      )}
       <div className={s.field}>
         <span className={s.label}>{t('controls.shell')}</span>
         {shellOption ? (
@@ -37,7 +45,7 @@ export const ShellControls = () => {
             onChange={setShell}
           />
         ) : (
-          <p className={s.empty}>{t('controls.noShells')}</p>
+          <p className={s.empty}>{t(isAttackerLoading ? 'attack.loading' : 'controls.noShells')}</p>
         )}
       </div>
       <RangeSlider
@@ -59,7 +67,7 @@ export const ShellControls = () => {
           aria-label={t('controls.randomness')}
           size='sm'
           value={randomnessKey}
-          onChange={(key) => setRandomness(ARMOR_INSPECT.randomness[key])}
+          onChange={setRandomness}
         />
       </div>
     </div>

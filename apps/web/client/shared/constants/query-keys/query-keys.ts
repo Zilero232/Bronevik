@@ -44,6 +44,7 @@ export const QUERY_KEYS = {
     patches: (tankId: number) => ['tanks', tankId, 'patches'] as const,
     maps: (tankId: number) => ['tanks', tankId, 'maps'] as const,
     armor: (idOrSlug: string) => ['tanks', 'armor', idOrSlug] as const,
+    armorGuns: (idOrSlug: string) => ['tanks', 'armor-guns', idOrSlug] as const,
     economy: (params: object) => ['tanks', 'economy', params] as const,
     tankEconomy: (tankId: number) => ['tanks', tankId, 'economy'] as const,
     myEconomy: (days: number) => ['me', 'tanks', 'economy', days] as const,

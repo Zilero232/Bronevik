@@ -35,9 +35,11 @@ The style guide, split by stack. Index and tooling: [guides/README.md](guides/RE
 
 - `research/data/` — [Lesta API reference and terms](research/data/lesta-api.md), [ЛБЗ in the client files](research/data/lbz.md), [3D armor viewer](research/data/armor-viewer.md).
 - `research/design/` — [visual language](research/design/visual-language.md), [design v2](research/design/design-v2.md), [v3](research/design/design-v3.md), [v4](research/design/design-v4.md).
-- `research/competitors/` — [market](research/competitors/market.md), [competitors v2](research/competitors/competitors-v2.md).
+- `research/competitors/` — [market](research/competitors/market.md), [competitors v2](research/competitors/competitors-v2.md), [sites gap analysis](research/competitors/2026-09-29-sites-gap-analysis.md), [modpacks round 3](research/competitors/2026-09-29-modpacks-round3.md).
 - `research/tooling/` — [ready-made packages](research/tooling/packages.md).
 
 ## Ops
 
-- [ops/deploy.md](ops/deploy.md) — the first production deploy checklist.
+- [ops/deploy.md](ops/deploy.md) — the first production deploy checklist, modpack and manager releases on the VPS.
+- [ops/most-publishing.md](ops/most-publishing.md) — publishing the modpack in МОСТ.
+- [ops/mod-authors-outreach.md](ops/mod-authors-outreach.md) — asking mod authors for permission to ship their assets.

@@ -71,6 +71,18 @@ export type ArmorTrace = {
   total: number;
   remaining: number;
   verdict: ArmorVerdict;
+  chance: number;
+};
+
+export type RollChanceInput = {
+  threshold: number;
+  randomness: number;
+};
+
+export type PenetrationChanceInput = {
+  penetration: number;
+  effective: number;
+  randomness: number;
 };
 
 export type TraceRunInput = {
@@ -78,6 +90,14 @@ export type TraceRunInput = {
   shell: ArmorShell;
 };
 
-export type TraceRun = Omit<ArmorTrace, 'verdict'> & {
+export type PenetratesAtInput = TraceRunInput & {
+  factor: number;
+};
+
+export type ThresholdFactorInput = TraceRunInput & {
+  randomness: number;
+};
+
+export type TraceRun = Omit<ArmorTrace, 'chance' | 'verdict'> & {
   outcome: 'hollow' | 'noPen' | 'pen' | 'ricochet';
 };

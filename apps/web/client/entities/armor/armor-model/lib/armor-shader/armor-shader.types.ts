@@ -2,6 +2,7 @@ import type { ArmorShellState } from '../../model/armor-model.types';
 
 export type ArmorShaderInput = ArmorShellState & {
   hideSpaced: boolean;
+  heatmap: boolean;
 };
 
 export type ArmorShaderValues = {
@@ -18,4 +19,7 @@ export type ArmorShaderValues = {
   uAmbient: number;
   uDiffuse: number;
   uHideSpaced: number;
+  uHeatmap: number;
+  uSigmaShare: number;
+  uErf: number[];
 };

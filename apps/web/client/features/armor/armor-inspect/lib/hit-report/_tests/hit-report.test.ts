@@ -40,3 +40,17 @@ describe('describeHit', () => {
     expect(report?.first.ricochet).toBe(true);
   });
 });
+
+describe('describeHit chance', () => {
+  it('carries a certain, partial or zero chance that agrees with the verdict', () => {
+    const sure = describeHit({ layers: [{ ...SIDE, thickness: 50 }], shell: AP, randomness: 0.25 });
+    const partial = describeHit({ layers: [{ ...SIDE, thickness: AP.penetration }], shell: AP, randomness: 0.25 });
+    const none = describeHit({ layers: [{ ...SIDE, thickness: AP.penetration * 2 }], shell: AP, randomness: 0.25 });
+
+    expect(sure?.chance).toBe(1);
+    expect(partial?.verdict).toBe('chance');
+    expect(partial?.chance).toBeGreaterThan(0);
+    expect(partial?.chance).toBeLessThan(1);
+    expect(none?.chance).toBe(0);
+  });
+});

@@ -6,8 +6,6 @@ import { PROMO_CODE } from './billing.constants';
 
 export const plusPlanSchema = z.enum(['monthly', 'quarterly', 'yearly']);
 
-export const subscriptionPlanSchema = plusPlanSchema;
-
 export const subscriptionStatusSchema = z.enum(['trialing', 'active', 'pastDue', 'canceled', 'expired']);
 
 export const paymentStatusSchema = z.enum(['pending', 'waitingForCapture', 'succeeded', 'canceled', 'refunded']);
@@ -32,7 +30,7 @@ export const checkoutResultSchema = z.object({
 
 export const billingStatusSchema = z.object({
   isPlus: z.boolean(),
-  plan: subscriptionPlanSchema.nullable(),
+  plan: plusPlanSchema.nullable(),
   status: subscriptionStatusSchema.nullable(),
   currentPeriodEnd: isoDateTimeSchema.nullable(),
   cancelAtPeriodEnd: z.boolean(),
@@ -48,7 +46,7 @@ export const paymentHistoryItemSchema = z.object({
   amount: z.number(),
   currency: z.string(),
   status: paymentStatusSchema,
-  plan: subscriptionPlanSchema.nullable(),
+  plan: plusPlanSchema.nullable(),
   isAutoCharge: z.boolean(),
   promoCode: z.string().nullable(),
   createdAt: isoDateTimeSchema,

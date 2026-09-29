@@ -3,11 +3,13 @@ export {
   isHollowPlate,
   isShieldPlate,
   penetrationAtDistance,
+  penetrationChance,
   penetrationVerdict,
+  rollChance,
   toShellKind,
   traceArmorRay
 } from './penetration';
-export { PENETRATION, SHELL_KINDS, SHELL_RULES } from './penetration.constants';
+export { ERF_APPROXIMATION, PENETRATION, SHELL_KINDS, SHELL_RULES } from './penetration.constants';
 export type {
   ArmorHit,
   ArmorLayer,
@@ -17,6 +19,8 @@ export type {
   ArmorVerdict,
   CalculateArmorHitInput,
   PenetrationAtDistanceInput,
+  PenetrationChanceInput,
+  RollChanceInput,
   ShellKind,
   TraceArmorRayInput
 } from './penetration.types';

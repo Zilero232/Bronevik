@@ -7,13 +7,13 @@ import { ToggleChips } from '@/ui-kit';
 import type { ArmorLayerKey } from '../../../../model/context';
 
 import { ARMOR_LAYERS } from '../../../../config';
-import { useArmorInspect } from '../../../../model/context';
+import { useArmorAttack } from '../../../../model/context';
 
 import s from './LayerToggles.module.scss';
 
 export const LayerToggles = () => {
   const t = useTranslations('armor');
-  const { layers, setLayers } = useArmorInspect();
+  const { layers, setLayers } = useArmorAttack();
 
   return (
     <div className={s.root}>

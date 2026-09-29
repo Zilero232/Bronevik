@@ -35,7 +35,8 @@ Respond to the user in Russian. Code, comments, docs and commits are in English.
 ```bash
 bun install
 bun run dev:infra      # TimescaleDB :5434, Redis :6380, Mailpit SMTP :1025 (inbox :8025)
-bun run db:push        # prisma db push + the Timescale layer (no migrations before production)
+bun run db:push        # extensions + prisma db push + generate + the Timescale layer (no migrations before production)
+bun run db:reset       # drop everything, then the same as db:push
 bun run dev            # server :4000 + client :3000 (no worker)
 bun run dev:all        # + worker (collector jobs, schedules)
 bun run dev:manager    # modpack manager (Tauri)
@@ -47,7 +48,7 @@ bun run lint:unused    # knip — unused files, exports and dependencies
 bun run lint:dupes     # jscpd — copy-pasted code
 ```
 
-Deploy ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) runs manually (workflow_dispatch): `verify` + `test` + the modpack suite + the e2e smoke, then builds the client and server images to ghcr and rolls them out on the VPS (`db:deploy` — extensions, `prisma db push`, the Timescale layer — then `up -d` and health checks). First deploy: [docs/ops/deploy.md](docs/ops/deploy.md). The other workflows are [.github/workflows/modpack.yml](.github/workflows/modpack.yml) (the modpack checks on pull requests that touch `apps/game/modpack`, plus a manual release build of the packages and the component catalogue the manager ships) and [.github/workflows/manager.yml](.github/workflows/manager.yml) (the manager's UI and Rust checks on Windows, plus a manual `tauri build` of its NSIS installer). [.github/workflows/release.yml](.github/workflows/release.yml) (manual, input `version`) publishes a modpack release and the manager to the VPS: everything is stored there (replays and armor models on the `serverdata` volume, public downloads in `DEPLOY_PATH/downloads`, served by Caddy at `/downloads/`); there is no S3 and no CDN.
+Deploy ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) runs manually (workflow_dispatch): `verify` + `test` + the modpack suite + the e2e smoke, then builds the client and server images to ghcr and rolls them out on the VPS (`db:deploy` — extensions, `prisma db push`, the Timescale layer — then `up -d` and health checks). First deploy: [docs/ops/deploy.md](docs/ops/deploy.md). The other workflows are [.github/workflows/modpack.yml](.github/workflows/modpack.yml) (the modpack checks on pull requests that touch `apps/game/modpack`, plus a manual release build of the packages and the component catalogue the manager ships) and [.github/workflows/manager.yml](.github/workflows/manager.yml) (the manager's UI and Rust checks on Windows, plus a manual `tauri build` of its NSIS installer). [.github/workflows/release.yml](.github/workflows/release.yml) (manual, inputs `version` and `games`) publishes a modpack release and the manager to the VPS: everything is stored there (replays and armor models on the `serverdata` volume, public downloads in `DEPLOY_PATH/downloads`, served by Caddy at `/downloads/`); there is no S3 and no CDN.
 
 ## Rules
 

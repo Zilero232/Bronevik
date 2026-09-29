@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { Select } from '@/ui-kit';
 
-import { useArmorInspect } from '../../../../model/context';
+import { useArmorInspect } from '../../model/context';
 
 import s from './ModulePicker.module.scss';
 

@@ -3,6 +3,7 @@ export {
   AccountEconomyQueryDto,
   MyTankLearningDto,
   TankArmorDto,
+  TankArmorGunsDto,
   TankDetailDto,
   TankDetailQueryDto,
   TankEconomyDto,

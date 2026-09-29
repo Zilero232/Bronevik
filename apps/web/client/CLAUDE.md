@@ -11,14 +11,14 @@ Architecture is **Feature-Sliced Design** with two local tweaks: `pages` → `vi
 ```text
 app/          # Next.js routes — [locale]/{(site),(overlay),(tma)}, api/og, opengraph-image.tsx per entity route,
               #   sitemap.ts, robots.ts, manifest.ts, sw.ts + serwist/[path] (service worker), twitch-panel/ (route
-              #   handler for the Twitch extension), providers, global-error
-views/        # one screen per route (87), e.g. home, player-profile, tank, tanks, marks, my-analytics, missions,
+              #   handler for the Twitch extension), providers, proxy/ (proxy.ts helpers), global-error, global-not-found
+views/        # one screen per route (90), e.g. home, player-profile, tank, tanks, marks, my-analytics, missions,
               #   mission-operation, best-battles, achievements, supertest, honest-rng, mod, mod-profile, legal, plus, streamer-studio
               #   — the full grouped list is in docs/architecture/fsd.md §2
-widgets/      # account/account-shell, armor/armor-viewer, map/map-rotation, player/session-detail,
-              #   showcase/showcase-3d, site/{resource-missing,site-footer,site-header}, social/social-shell, streamer/streamers-hub,
+widgets/      # account/account-shell, armor/armor-viewer, map/{map-rotation,map-samples}, player/session-detail,
+              #   showcase/showcase-3d, site/{data-notice,resource-missing,site-footer,site-header}, social/social-shell, streamer/streamers-hub,
               #   tank/{tank-best-battles,tank-math}
-features/     # app/{rating-palette,rating-patterns,switch-locale,switch-theme}, armor/armor-inspect, auth/lesta-link,
+features/     # app/{pin-rows,rating-palette,rating-patterns,switch-locale,switch-theme}, armor/armor-inspect, auth/lesta-link,
               #   community/{api-error,comments,contact-player,form-dialog,guide-meta,markdown,player-stats,replay-meta,
               #   report-content,stat-requirements,tactic-board-settings,tournament-status}, mod/open-in-manager,
               #   notifications/{inbox-bell,notification-settings}, player/{toggle-favorite,watch-player}, plus/plus-gate,
@@ -27,19 +27,20 @@ features/     # app/{rating-palette,rating-patterns,switch-locale,switch-theme},
 entities/     # app/locale, armor/armor-model, auth/session, battle/best-battle, clan/clan, coaching/coach,
               #   competition/competition, developer/developer, event/calendar, guide/guide, map/map, mission/mission,
               #   mode/mode, notification/inbox, player/{analytics,cosmetics,leaderboard,marks,player,profile,recent-players,stats},
-              #   plus/subscription, pulse/pulse, reference/game-status, replay/replay, search/search, social/challenge,
+              #   plus/{subscription,usage}, pulse/pulse, reference/{game-status,service-health}, replay/replay, search/search,
+              #   social/{challenge,league},
               #   streamer/{channel,overlay,preferences,settings,streamer}, tactic/board, tank/{build,tank,tree}, tournament/tournament
 shared/       # project-agnostic: api/ (infrastructure only: http, generated, openapi, query-options, query-client, prefetch-state,
               #   source, auth client) config/ constants/ i18n/ lib/ seo/ (route-meta, require-route-entity, prefetch-boundary,
               #   site-metadata, sitemap, json-ld, og, request-time, route-guard) styles/
 ui-kit/       # the design system: atoms/ molecules/ organisms/ (ChartKit + charts, DataTable, QueryState, PagedList,
               #   PageHeader, PageHero, toaster)
-config/       # build-time helpers for next.config.ts (security headers / CSP, redirects, root env, panel script) — not imported by the app
+config/       # build-time helpers for next.config.ts (security headers / CSP, redirects, root env, dev-server settings, panel script) — not imported by the app
 ```
 
 Inside a slice: `index.ts`, `ui/`, `model/hooks/`, `model/context/<name>/` (context + `useX` consumer; the Provider is a `ui/` component fed by `model/hooks/use-<x>-state/`), `api/<resource>/` (+ `api/mappers/<name>/`), `lib/<concern>/`, `config/`. No runtime import cycles — `_tests/import-cycles.test.ts` (madge) guards it; rules in [client/structure/fsd-layers.md](../../../.claude/rules/client/structure/fsd-layers.md).
 
-**Every thing is a folder.** A file with companions (`x.ts` + `x.types.ts` / `x.constants.ts` / `_tests/`) lives in its own `x/` with an `index.ts`; nothing lies flat next to another concern. `shared/lib` is flat, one folder per concern — helpers `shared/lib/<concern>/`, hooks `shared/lib/use-<x>/` — and `shared/constants` is `routes/`, `site-nav/`, `account-nav/`, `query-keys/`, `storage-keys/`. `ROUTES` is nested per page family (`ROUTES.tanks.detail(slug)`, `ROUTES.players.session({ nickname, sessionId })`, `ROUTES.account.overview`). Details: [fsd.md §4](../../../docs/architecture/fsd.md).
+**Every thing is a folder.** A file with companions (`x.ts` + `x.types.ts` / `x.constants.ts` / `_tests/`) lives in its own `x/` with an `index.ts`; nothing lies flat next to another concern. `shared/lib` is flat, one folder per concern — helpers `shared/lib/<concern>/`, hooks `shared/lib/use-<x>/` — and `shared/constants` is `routes/`, `site-nav/`, `account-nav/`, `periods/`, `query-keys/`, `storage-keys/`. `ROUTES` is nested per page family (`ROUTES.tanks.detail(slug)`, `ROUTES.players.session({ nickname, sessionId })`, `ROUTES.account.overview`). Details: [fsd.md §4](../../../docs/architecture/fsd.md).
 
 Imports go downward only: `app → views → widgets → features → entities → shared`. `ui-kit` sits beside `shared`: every layer may import it, and it may import `@/shared/*`. Alias `@/*` → `apps/web/client/*`.
 
@@ -100,6 +101,7 @@ Every page renders `SiteFooter`, which carries the Lesta copyright, the data-sou
 ```bash
 bun run dev:client                      # next dev on :3000
 bun --filter @otmetki/client build     # production build (standalone)
+bun --filter @otmetki/client api:generate  # re-export the internal OpenAPI spec from the server and regenerate shared/api/generated
 bun run test                            # vitest — client project runs in jsdom
 bun run test:e2e                        # playwright smoke, root e2e/
 ```

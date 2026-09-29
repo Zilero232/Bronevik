@@ -1,0 +1,64 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.summary {
+  cursor: pointer;
+
+  @include label;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.scroll {
+  margin-top: var(--space-3);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  thead th {
+    color: var(--color-text-dim);
+    font-weight: 500;
+  }
+
+  td {
+    @include numeric;
+  }
+
+  tr[data-verdict='pen'] .verdict {
+    color: var(--color-success);
+  }
+
+  tr[data-verdict='chance'] .verdict {
+    color: var(--color-warning);
+  }
+
+  tr[data-verdict='noPen'] .verdict,
+  tr[data-verdict='ricochet'] .verdict {
+    color: var(--color-danger);
+  }
+}
+
+.caption {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  text-align: start;
+}

@@ -3,7 +3,8 @@ import type { ArmorGunModuleData, ArmorShellOptionData } from '@otmetki/schemas'
 import { penetrationAtDistance } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
-import { pickShell, resolveShell } from '../shell-options';
+import { ARMOR_INSPECT } from '../../../config';
+import { clampDistance, pickGun, pickShell, resolveShell } from '../shell-options';
 
 const shell = (name: string, kind: string): ArmorShellOptionData => ({
   name,
@@ -55,5 +56,33 @@ describe('resolveShell', () => {
 
   it('maps a legacy kind onto a kind the math knows', () => {
     expect(resolveShell({ option: GUN.shells[2], distance: 0 }).kind).toBe('ARMOR_PIERCING');
+  });
+});
+
+describe('pickGun', () => {
+  const guns = [
+    { name: 'stock', displayName: 'Stock', shells: GUN.shells },
+    { name: 'top', displayName: 'Top', shells: GUN.shells }
+  ];
+
+  it('keeps the chosen gun', () => {
+    expect(pickGun({ guns, gunName: 'stock' })?.name).toBe('stock');
+  });
+
+  it('falls back to the suggested gun, then to the last (top) one', () => {
+    expect(pickGun({ guns, gunName: 'gone', fallbackName: 'stock' })?.name).toBe('stock');
+    expect(pickGun({ guns, gunName: null })?.name).toBe('top');
+  });
+
+  it('returns nothing for a vehicle without guns', () => {
+    expect(pickGun({ guns: [] })).toBeUndefined();
+  });
+});
+
+describe('clampDistance', () => {
+  it('keeps a distance from the URL inside the slider range', () => {
+    expect(clampDistance(ARMOR_INSPECT.distance.max + 100)).toBe(ARMOR_INSPECT.distance.max);
+    expect(clampDistance(ARMOR_INSPECT.distance.min - 1)).toBe(ARMOR_INSPECT.distance.min);
+    expect(clampDistance(ARMOR_INSPECT.distance.initial)).toBe(ARMOR_INSPECT.distance.initial);
   });
 });

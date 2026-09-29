@@ -9,7 +9,7 @@ const shellOf = (kind: (typeof SHELL_KINDS)[number]) => ({ kind, caliber: 100, p
 describe('armorShaderValues', () => {
   it('passes each shell kind its own normalisation and ricochet angle', () => {
     for (const kind of SHELL_KINDS) {
-      const values = armorShaderValues({ shell: shellOf(kind), randomness: 0.25, hideSpaced: false });
+      const values = armorShaderValues({ shell: shellOf(kind), randomness: 0.25, hideSpaced: false, heatmap: false });
 
       expect(values.uNormalization).toBe(SHELL_RULES[kind].normalization);
       expect(values.uCaliberRules).toBe(SHELL_RULES[kind].caliberRules ? 1 : 0);
@@ -17,16 +17,16 @@ describe('armorShaderValues', () => {
   });
 
   it('pushes the ricochet angle out of reach for HE and flags it as HE', () => {
-    const values = armorShaderValues({ shell: shellOf('HIGH_EXPLOSIVE'), randomness: 0.25, hideSpaced: false });
+    const values = armorShaderValues({ shell: shellOf('HIGH_EXPLOSIVE'), randomness: 0.25, hideSpaced: false, heatmap: false });
 
     expect(values.uRicochet).toBeGreaterThan(90);
     expect(values.uHighExplosive).toBe(1);
   });
 
   it('declares every uniform the fragment shader reads', () => {
-    const declared = [...ARMOR_SHADER.fragment.matchAll(/uniform float (\w+);/g)].map(([, name]) => name);
+    const declared = [...ARMOR_SHADER.fragment.matchAll(/uniform float (\w+)(?:\[\d+\])?;/g)].map(([, name]) => name);
 
-    const provided = Object.keys(armorShaderValues({ shell: shellOf('ARMOR_PIERCING'), randomness: 0, hideSpaced: false }));
+    const provided = Object.keys(armorShaderValues({ shell: shellOf('ARMOR_PIERCING'), randomness: 0, hideSpaced: false, heatmap: false }));
 
     expect(new Set(declared)).toEqual(new Set(provided));
   });
@@ -34,12 +34,27 @@ describe('armorShaderValues', () => {
   it('switches spaced plates off only when asked', () => {
     const shell = shellOf('ARMOR_PIERCING');
 
-    expect(armorShaderValues({ shell, randomness: 0, hideSpaced: true }).uHideSpaced).toBe(1);
-    expect(armorShaderValues({ shell, randomness: 0, hideSpaced: false }).uHideSpaced).toBe(0);
+    expect(armorShaderValues({ shell, randomness: 0, hideSpaced: true, heatmap: false }).uHideSpaced).toBe(1);
+    expect(armorShaderValues({ shell, randomness: 0, hideSpaced: false, heatmap: false }).uHideSpaced).toBe(0);
   });
 
   it('feeds the per-face attributes the fragment shader colours by', () => {
     expect(ARMOR_SHADER.vertex).toContain('attribute float aThickness');
     expect(ARMOR_SHADER.vertex).toContain('attribute float aFlags');
+  });
+});
+
+describe('armorShaderValues heatmap', () => {
+  const shell = shellOf('ARMOR_PIERCING');
+
+  it('switches the probability colouring on only when asked', () => {
+    expect(armorShaderValues({ shell, randomness: 0.25, hideSpaced: false, heatmap: true }).uHeatmap).toBe(1);
+    expect(armorShaderValues({ shell, randomness: 0.25, hideSpaced: false, heatmap: false }).uHeatmap).toBe(0);
+  });
+
+  it('hands the shader exactly as many erf coefficients as it declares', () => {
+    const [, size] = /uniform float uErf\[(\d+)\];/.exec(ARMOR_SHADER.fragment) ?? [];
+
+    expect(armorShaderValues({ shell, randomness: 0.25, hideSpaced: false, heatmap: true }).uErf).toHaveLength(Number(size));
   });
 });

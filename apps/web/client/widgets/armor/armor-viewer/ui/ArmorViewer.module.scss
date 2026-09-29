@@ -34,3 +34,25 @@
     min-height: calc(100dvh - var(--space-8));
   }
 }
+
+.panes {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+
+  @include from(2xl) {
+    flex-direction: row;
+
+    [data-compare='true'] & > * + * {
+      border-left: 1px solid var(--color-border-strong);
+    }
+  }
+}
+
+.secondary {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}

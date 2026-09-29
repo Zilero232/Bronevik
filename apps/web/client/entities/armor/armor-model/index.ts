@@ -1,5 +1,5 @@
-export { getArmorModel } from './api';
-export type { ArmorModelInput } from './api';
+export { getArmorGuns, getArmorModel } from './api';
+export type { ArmorGunsInput, ArmorModelInput } from './api';
 export { ARMOR_FACE_CLASSES, ARMOR_PALETTE } from './config';
 export { ARMOR_SHADER, armorShaderValues } from './lib/armor-shader';
 export type { ArmorShaderInput, ArmorShaderValues } from './lib/armor-shader';
@@ -8,5 +8,5 @@ export type { PieceBuffers } from './lib/build-buffers';
 export { classifyFace } from './lib/classify-face';
 export { decodeArmorModel } from './lib/decode-model';
 export type { ArmorFaceClass, ArmorModelData, ArmorShellState } from './model/armor-model.types';
-export { useArmorModel } from './model/hooks';
-export type { UseArmorModelInput } from './model/hooks';
+export { useArmorGuns, useArmorModel } from './model/hooks';
+export type { UseArmorGunsInput, UseArmorModelInput } from './model/hooks';

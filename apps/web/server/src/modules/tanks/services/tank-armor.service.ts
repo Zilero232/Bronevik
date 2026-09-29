@@ -1,7 +1,7 @@
-import type { ArmorModelResponse } from '@otmetki/schemas';
+import type { ArmorAttackerData, ArmorModelResponse } from '@otmetki/schemas';
 
 import { Inject, Injectable } from '@nestjs/common';
-import { bytesToBase64 } from '@otmetki/gamedata';
+import { bytesToBase64, listArmorGuns } from '@otmetki/gamedata';
 import { armorModulesSchema } from '@otmetki/schemas';
 import { LRUCache } from 'lru-cache';
 
@@ -42,6 +42,20 @@ export class TankArmorService {
     await this.usage.consume({ meter: ARMOR_VIEWER.meter, actor, subject: String(tankId) });
 
     return model;
+  }
+
+  async guns(idOrSlug: string): Promise<ArmorAttackerData> {
+    const tankId = await this.details.resolve(idOrSlug);
+    const [entry, row] = await Promise.all([
+      this.catalog.find(tankId),
+      this.prisma.vehicleArmorModel.findUnique({ where: { tankId }, select: { modules: true } })
+    ]);
+
+    if (!entry || !row) {
+      throw new AppNotFoundException('ARMOR_MODEL_NOT_FOUND', `No armor model for tank ${tankId}`);
+    }
+
+    return { vehicle: entry.summary, guns: listArmorGuns(armorModulesSchema.parse(row.modules)) };
   }
 
   async armor(tankId: number): Promise<ArmorModelResponse> {

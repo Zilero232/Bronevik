@@ -1,24 +1,23 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignoreBinaries": ["uv"],
-  "ignoreDependencies": ["pino-pretty", "@prisma/client-runtime-utils", "stylelint-order", "lint-staged"],
+  "ignoreDependencies": ["pino-pretty", "@prisma/client-runtime-utils", "stylelint-order"],
   "ignoreUnresolved": ["^.$"],
   "rules": {
     "exports": "warn",
     "types": "warn"
   },
   "workspaces": {
+    ".": {
+      "entry": ["e2e/screens.{setup,teardown}.ts"]
+    },
     "apps/web/client": {
-      "entry": [
-        "shared/i18n/request/request.ts",
-        "app/sw.ts",
-        "config/panel-script/build-panel-script.ts",
-        "views/twitch-panel/lib/panel-script/panel-entry.ts"
-      ],
-      "project": ["**/*.{ts,tsx,scss}"]
+      "entry": ["shared/i18n/request/request.ts", "app/sw.ts", "views/twitch-panel/lib/panel-script/panel-entry.ts"],
+      "project": ["**/*.{ts,tsx,scss}"],
+      "ignoreDependencies": ["@otmetki/design-tokens"]
     },
     "apps/game/modpack": {
-      "entry": ["ui-web/src/button/main.tsx", "ui-web/stylelint.config.mjs"],
+      "entry": ["ui-web/src/app/button/main.tsx", "ui-web/src/app/hud/main.tsx", "ui-web/src/app/dev/main.ts", "ui-web/stylelint.config.mjs"],
       "project": ["ui-web/**/*.{ts,tsx,scss}"]
     },
     "apps/game/manager": {
@@ -29,8 +28,7 @@
       "project": ["src/**/*.ts", "scripts/**/*.ts", "prisma/**/*.prisma"]
     },
     "packages/design-tokens": {
-      "entry": ["_index.scss"],
-      "project": ["src/**/*.ts", "scss/**/*.{ts,scss}", "_index.scss"]
+      "project": ["src/**/*.ts", "scss/**/*.{ts,scss}"]
     },
     "packages/*": {
       "project": ["src/**/*.{ts,tsx}"]

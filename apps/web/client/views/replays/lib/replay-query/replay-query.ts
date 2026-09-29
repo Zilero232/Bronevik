@@ -19,7 +19,7 @@ const clanOrUndefined = (clan: string): string | undefined => {
   return REPLAY_LIST.clanPattern.test(trimmed) ? trimmed : undefined;
 };
 
-export const playerQuery = (player: string): string | undefined => {
+const playerQuery = (player: string): string | undefined => {
   const parsed = nicknameSchema.safeParse(player);
 
   return parsed.success ? parsed.data : undefined;

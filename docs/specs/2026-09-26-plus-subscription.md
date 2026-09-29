@@ -219,7 +219,7 @@ Code changes that follow:
 - `billing/index.ts`: stop exporting `YooKassaClient`. After §5.3 only billing uses it.
 - `packages/schemas/src/billing/billing.schemas.ts`:
   - `plusPlanSchema` = `['monthly', 'quarterly', 'yearly']`;
-  - `subscriptionPlanSchema` = the same values;
+  - `subscriptionPlanSchema` = the same values (later merged into `plusPlanSchema`, which the subscription reuses);
   - add the `plusStateSchema` fields to `billingStatusSchema`.
 
 ### 5.2 Developer API: free for everyone, Plus = higher personal limits

@@ -35,7 +35,7 @@ Product scope: [docs/product/features.md](docs/product/features.md).
 | API      | NestJS 11 on Bun, better-auth (Lesta ID, Telegram, VK Mini App), Zod contracts, Swagger                                           |
 | Worker   | Second entrypoint of the server app: BullMQ jobs pulling the Lesta API, shared Redis rate limiter, cockatiel circuit breaker      |
 | Data     | PostgreSQL 17 + TimescaleDB, Prisma 7, Redis                                                                                      |
-| Game mod | Python 2.7 `.wotmod`, pure logic tested on Python 3                                                                               |
+| Game mod | Python 2.7 `.mtmod` packages, pure logic tested on Python 3; Tauri 2 manager (Rust + React) that installs them                    |
 | Tooling  | Bun workspaces + catalog, ESLint, Prettier, Stylelint, Vitest, Playwright, knip, jscpd, Husky                                     |
 | Infra    | One image per app (server and worker share one), Caddy, docker-compose — no production deploy yet                                 |
 
@@ -52,16 +52,19 @@ apps/
       src/lib/         Lesta API client, replay parser, HTTP client, auth
   game/
     modpack/         game-client modpack (Python 2.7)
+    manager/         modpack manager (Tauri 2: Rust core + React UI)
 packages/          only code shared between apps
   ratings/         WN8, EFF, Броня-Индекс, MoE math
+  design-tokens/   SCSS design tokens shared by the site, the manager and the modpack's in-game window
   schemas/         Zod contracts shared by client and server
   gamedata/        loadout calculator and the game-data model
   icons/           SVG icon set as React components
   logger/          shared pino config
   sdk/             public API client (@otmetki/sdk)
 e2e/               Playwright smoke tests
+scripts/           check-utf8.mjs (lint:encoding)
 infra/caddy/       Caddyfile for docker-compose.yml
-docs/              architecture/, guides/, ops/ (deploy checklist), research/, references.md
+docs/              architecture/, guides/, ops/ (deploy checklist), product/ (features), research/, specs/
 ```
 
 ## Getting started
@@ -71,6 +74,7 @@ Requires [Bun](https://bun.sh) ≥ 1.3, Docker, and Python 3 for the mod's tests
 ```bash
 bun install
 cp .env.example .env     # LESTA_APPLICATION_ID empty: no Lesta, the worker runs degraded, pages show empty states
+                         # set INTERNAL_API_TOKEN (required, 32+ chars: openssl rand -base64 32)
 bun run dev:infra        # TimescaleDB on :5434, Redis on :6380, Mailpit on :1025/:8025
 bun run db:push
 bun run gamedata:import  # optional: vehicles, modules, equipment, maps from the public client-data repos (no Lesta key needed)
@@ -112,20 +116,21 @@ There is no mock and no generated data anywhere. With `LESTA_APPLICATION_ID` emp
 
 ## Commands
 
-| Command                                                                                | What                                                                                            |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `bun run dev` / `dev:all` / `dev:client` / `dev:server` / `dev:worker` / `dev:manager` | Dev servers                                                                                     |
-| `bun run dev:infra` / `dev:infra:down`                                                 | Local TimescaleDB + Redis + Mailpit                                                             |
-| `bun run db:push` / `db:studio` / `db:timescale`                                       | Schema sync (`prisma db push`, no migrations before production), studio and the Timescale layer |
-| `bun run gamedata:import`                                                              | Import the game client's data into the database                                                 |
-| `bun run verify`                                                                       | typecheck + lint + format:check + lint:css — what CI runs                                       |
-| `bun run fix`                                                                          | Auto-fix lint, formatting, styles and the Prisma schema                                         |
-| `bun run test`                                                                         | Vitest across the monorepo (never `bun test`)                                                   |
-| `bun run test:e2e`                                                                     | Playwright smoke against the client                                                             |
-| `bun run test:modpack`                                                                 | The game modpack's Python suites                                                                |
-| `bun run lint:unused`                                                                  | knip — unused files, exports and dependencies                                                   |
-| `bun run lint:dupes`                                                                   | jscpd — duplicated code                                                                         |
-| `docker compose up -d --build`                                                         | Production-like stack: caddy, client, server, worker, db, redis                                 |
+| Command                                                                                | What                                                                                                        |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `bun run dev` / `dev:all` / `dev:client` / `dev:server` / `dev:worker` / `dev:manager` | Dev servers                                                                                                 |
+| `bun run dev:infra` / `dev:infra:down`                                                 | Local TimescaleDB + Redis + Mailpit                                                                         |
+| `bun run db:push` / `db:reset` / `db:studio`                                           | Schema sync (`prisma db push` + the Timescale layer, no migrations before production), a full reset, studio |
+| `bun run gamedata:import`                                                              | Import the game client's data into the database                                                             |
+| `bun run verify`                                                                       | typecheck + lint + lint:encoding + format:check + lint:css — what CI runs                                   |
+| `bun run fix`                                                                          | Auto-fix lint, formatting, styles and the Prisma schema                                                     |
+| `bun run test`                                                                         | Vitest across the monorepo (never `bun test`)                                                               |
+| `bun run test:e2e` / `e2e:screens`                                                     | Playwright smoke against the client / the screenshot suite (`playwright.screens.config.ts`)                 |
+| `bun run test:modpack`                                                                 | The game modpack's Python suites                                                                            |
+| `bun run lint:unused`                                                                  | knip — unused files, exports and dependencies                                                               |
+| `bun run lint:dupes`                                                                   | jscpd — duplicated code                                                                                     |
+| `bun run lint:encoding`                                                                | Fails on source files under `apps/` and `packages/` that are not valid UTF-8                                |
+| `docker compose up -d --build`                                                         | Production-like stack: caddy, client, server, worker, db, redis                                             |
 
 ## Contributing
 

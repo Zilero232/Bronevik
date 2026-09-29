@@ -1,4 +1,4 @@
-import type { ArmorFlag, ArmorPieceKind, HasArmorFlagInput } from './armor-model.types';
+import type { ArmorFlag, ArmorGunOption, ArmorPieceKind, HasArmorFlagInput, ListArmorGunsInput } from './armor-model.types';
 
 import { ARMOR_FLAGS } from './armor-model.constants';
 
@@ -15,3 +15,15 @@ const PIECE_PREFIXES: readonly [string, ArmorPieceKind][] = [
 
 export const armorPieceKind = (piece: string): ArmorPieceKind | undefined =>
   PIECE_PREFIXES.find(([prefix]) => piece.toLowerCase().startsWith(prefix))?.[1];
+
+export const listArmorGuns = ({ turrets }: ListArmorGunsInput): ArmorGunOption[] => {
+  const guns = new Map<string, ArmorGunOption>();
+
+  for (const { name, displayName, shells } of turrets.flatMap((turret) => turret.guns)) {
+    if (!guns.has(name)) {
+      guns.set(name, { name, displayName, shells });
+    }
+  }
+
+  return [...guns.values()];
+};

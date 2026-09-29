@@ -1,0 +1,37 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  margin: 0;
+
+  @include stack(var(--space-2));
+}
+
+.caption {
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+}
+
+.bar {
+  display: block;
+  height: 10px;
+  background: linear-gradient(90deg, var(--heat-low), var(--heat-mid), var(--heat-high));
+  box-shadow: inset 0 0 0 1px var(--shade-30);
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  list-style: none;
+
+  @include numeric;
+}
+
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}

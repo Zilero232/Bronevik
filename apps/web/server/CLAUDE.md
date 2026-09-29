@@ -14,12 +14,12 @@ src/
 ├── main.ts, app.module.ts        # the API
 ├── worker.ts, worker.module.ts   # the collector worker
 ├── config/      # env/ (env.schemas.ts: secrets, addresses, ports only; env.ts: validateEnv) + app-config/ (AppConfigModule, AppConfigService) + *.constants.ts (every tunable; time.constants.ts: TIME.zone), cors/ (per-path CORS), proxy/ (TRUSTED_PROXIES → trust proxy)
-├── core/        # prisma (factory, timescale, error guards, lib/advisory-lock: lockedTransaction), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (local-disk object storage under `.data`), scrape (PageCrawlerService over lib/scrape), http (HttpClientService over lib/http), webhooks, battle-events
+├── core/        # prisma (factory, timescale, error guards, lib/advisory-lock: lockedTransaction), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (local-disk object storage under `.data`), scrape (PageCrawlerService over lib/scrape), http (HttpClientService over lib/http), webhooks, battle-events, session-events (`SESSION_EVENTS` sink token)
 ├── common/      # exceptions, filters, guards (origin), middleware (api-helmet), decorators, interceptors (viewer-cache), cache (TTL constants), schedules (createJobSchedules factory), shared pure helpers in lib/
 ├── lib/         # lesta (Lesta API client), replay (.mtreplay parser, NOTICE), http (ky), auth (better-auth), scrape (robots-aware cheerio crawl, tanki.su listings)
 └── modules/
 prisma/          # base.prisma, schema/*.prisma, sql/timescale/ (no migrations before production — see Prisma)
-scripts/         # timescale.ts (db:timescale, --extensions before db push), gamedata-import.ts, openapi-export.ts, streamers-seed.ts, armor-purge.ts
+scripts/         # timescale.ts (db:timescale, --extensions before db push), gamedata-import.ts, openapi-export.ts, streamers-seed.ts, armor-purge.ts, modpack-release.ts (release.yml: release packages → releases.json)
 generated/       # Prisma client (gitignored)
 ```
 
@@ -59,6 +59,7 @@ A `*-worker.module.ts` next to a module is its half loaded by `WorkerModule` (pr
 | `marks`                 | Marks of excellence tables, thresholds history, projections, sweat index (and `/v1/moe`)                                                                                                                                                                                                                                                                |
 | `me`                    | The signed-in user: favourites, goals, linked accounts, own marks, notification settings, data export (`/me/export`)                                                                                                                                                                                                                                    |
 | `missions`              | Personal missions (ЛБЗ): campaigns, operations, branch board, suitable tanks, own progress and plan (`/missions`, `/me/missions`)                                                                                                                                                                                                                       |
+| `modpack-releases`      | `GET /modpack/releases/latest` and `GET /modpack/manager/update` (the Tauri updater): read `downloads/releases.json` (the `DEPLOY_PATH/downloads` folder [release.yml](../../../.github/workflows/release.yml) fills, mounted read-only); its `lib/` builds that index for `scripts/modpack-release.ts`                                                 |
 | `mod`                   | Game mod ingest: device binding, signed (v2) event batches, event ledger; the bound account's own ratings for the hangar (`/mod/me/overview`, `/mod/me/tanks` with records and WN8 expected values); `/mod/me/goals` lives in `me`, `/mod/me/replays` in `replays`                                                                                      |
 | `moderation`            | Content reports and their resolution                                                                                                                                                                                                                                                                                                                    |
 | `modes`                 | Game modes (ranked, Onslaught, Frontline…): mode meta tanks and own per-mode stats                                                                                                                                                                                                                                                                      |
@@ -129,7 +130,7 @@ There is no Lesta mock and no generated data, in development either. An empty `L
 
 ## Prisma
 
-130 models and one view (`TankDailyStats`) across `prisma/schema/*.prisma`, one file per domain (plus `base.prisma` for the generator and datasource). Several concerns share one table with a discriminator instead of a table each — keep it that way when adding a variant:
+131 models and one view (`TankDailyStats`) across `prisma/schema/*.prisma`, one file per domain (plus `base.prisma` for the generator and datasource). Several concerns share one table with a discriminator instead of a table each — keep it that way when adding a variant:
 
 - `follow` (`kind`: player / clan / tank) holds follows, favourites, own accounts and the watchlist; `watchlist.prisma` holds only its enum.
 - `play_session` (`source`: api / mod, `kind`: day / live) holds the API day rollups and the mod's live sessions.

@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import { ARMOR_FLAGS } from '../../armor-model/armor-model.constants';
-import { calculateArmorHit, penetrationAtDistance, penetrationVerdict, toShellKind, traceArmorRay } from '../penetration';
+import {
+  calculateArmorHit,
+  penetrationAtDistance,
+  penetrationChance,
+  penetrationVerdict,
+  rollChance,
+  toShellKind,
+  traceArmorRay
+} from '../penetration';
 import { PENETRATION, SHELL_KINDS, SHELL_RULES } from '../penetration.constants';
 
 const RADIANS = Math.PI / 180;
@@ -252,5 +260,86 @@ describe('traceArmorRay', () => {
     });
 
     expect(trace.remaining).toBeCloseTo((HE.penetration - 10) / PENETRATION.heShieldReduction);
+  });
+});
+
+describe('rollChance', () => {
+  const randomness = PENETRATION.randomness;
+
+  it('is certain below the lowest roll and impossible above the highest', () => {
+    expect(rollChance({ threshold: 1 - randomness, randomness })).toBe(1);
+    expect(rollChance({ threshold: 1 + randomness + 0.001, randomness })).toBe(0);
+  });
+
+  it('is a coin flip when the armor equals the nominal penetration', () => {
+    expect(rollChance({ threshold: 1, randomness })).toBeCloseTo(0.5, 6);
+  });
+
+  it('falls as the armor needs a higher roll', () => {
+    const steps = [0.8, 0.9, 1, 1.1, 1.2].map((threshold) => rollChance({ threshold, randomness }));
+
+    for (const [index, chance] of steps.slice(1).entries()) {
+      expect(chance).toBeLessThan(steps[index]);
+    }
+  });
+
+  it('is symmetric around the nominal penetration', () => {
+    expect(rollChance({ threshold: 1.1, randomness }) + rollChance({ threshold: 0.9, randomness })).toBeCloseTo(1, 6);
+  });
+
+  it('weights the middle of the band more than a flat roll would', () => {
+    const flat = (randomness - 0.1) / (2 * randomness);
+
+    expect(rollChance({ threshold: 1.1, randomness })).toBeLessThan(flat);
+  });
+
+  it('turns into a hard threshold without randomness', () => {
+    expect(rollChance({ threshold: 1, randomness: 0 })).toBe(1);
+    expect(rollChance({ threshold: 1.0001, randomness: 0 })).toBe(0);
+  });
+});
+
+describe('penetrationChance', () => {
+  const randomness = PENETRATION.randomness;
+
+  it('agrees with the verdict band at both edges', () => {
+    expect(penetrationChance({ penetration: 200, effective: 200 * (1 - randomness), randomness })).toBe(1);
+    expect(penetrationChance({ penetration: 200, effective: 200 * (1 + randomness) + 1, randomness })).toBe(0);
+  });
+
+  it('always goes through missing armor and never with zero penetration', () => {
+    expect(penetrationChance({ penetration: 0, effective: 0, randomness })).toBe(1);
+    expect(penetrationChance({ penetration: 0, effective: 10, randomness })).toBe(0);
+  });
+});
+
+describe('traceArmorRay chance', () => {
+  const plate = (thickness: number) => [{ thickness, angle: 0, flags: 0, gap: 0 }];
+
+  it('matches the single-plate chance for one flat plate', () => {
+    const trace = traceArmorRay({ layers: plate(AP.penetration * 1.1), shell: AP });
+
+    expect(trace.verdict).toBe('chance');
+
+    expect(trace.chance).toBeCloseTo(
+      penetrationChance({ penetration: AP.penetration, effective: AP.penetration * 1.1, randomness: PENETRATION.randomness }),
+      4
+    );
+  });
+
+  it('is 1 for a sure pen, 0 for no pen and 0 for a ricochet', () => {
+    expect(traceArmorRay({ layers: plate(50), shell: AP }).chance).toBe(1);
+    expect(traceArmorRay({ layers: plate(AP.penetration * 2), shell: AP }).chance).toBe(0);
+    expect(traceArmorRay({ layers: [{ thickness: 60, angle: 80, flags: 0, gap: 0 }], shell: AP }).chance).toBe(0);
+  });
+
+  it('drops when a spaced plate sits in front of the same main plate', () => {
+    const bare = traceArmorRay({ layers: plate(AP.penetration), shell: AP });
+    const shielded = traceArmorRay({
+      layers: [{ thickness: 20, angle: 0, flags: ARMOR_FLAGS.spaced, gap: 0 }, ...plate(AP.penetration).map((layer) => ({ ...layer, gap: 0.5 }))],
+      shell: AP
+    });
+
+    expect(shielded.chance).toBeLessThan(bare.chance);
   });
 });

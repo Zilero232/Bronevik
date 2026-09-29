@@ -1,8 +1,14 @@
-import type { ArmorGunModuleData, ArmorShellOptionData } from '@otmetki/schemas';
+import type { ArmorAttackerGunData, ArmorShellOptionData } from '@otmetki/schemas';
+
+export type PickGunInput = {
+  guns: readonly ArmorAttackerGunData[];
+  gunName?: string | null;
+  fallbackName?: string;
+};
 
 export type PickShellInput = {
-  gun: ArmorGunModuleData | undefined;
-  shellName?: string;
+  gun: Pick<ArmorAttackerGunData, 'shells'> | undefined;
+  shellName?: string | null;
 };
 
 export type ResolveShellInput = {

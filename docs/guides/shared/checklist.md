@@ -6,7 +6,7 @@ Part of the [style guide](../../README.md).
 
 ```bash
 bun run fix        # every autofixer: eslint --fix, prettier, stylelint --fix, prisma format
-bun run verify     # typecheck, eslint, prettier --check, stylelint
+bun run verify     # typecheck, eslint, the UTF-8 check, prettier --check, stylelint
 bun run test       # Vitest across every workspace
 ```
 

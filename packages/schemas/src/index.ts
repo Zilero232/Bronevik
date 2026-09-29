@@ -94,6 +94,8 @@ export type {
   WeekdayStat
 } from './analytics';
 export {
+  armorAttackerGunSchema,
+  armorAttackerSchema,
   armorChassisModuleSchema,
   armorGunModuleSchema,
   armorModelSchema,
@@ -105,6 +107,8 @@ export {
   armorTurretModuleSchema
 } from './armor';
 export type {
+  ArmorAttackerData,
+  ArmorAttackerGunData,
   ArmorChassisModuleData,
   ArmorGunModuleData,
   ArmorModelResponse,
@@ -127,7 +131,6 @@ export {
   promoRedeemSchema,
   REFERRAL,
   referralSchema,
-  subscriptionPlanSchema,
   subscriptionStatusSchema
 } from './billing';
 export type {
@@ -142,7 +145,6 @@ export type {
   PlusPlan,
   PromoRedeemInput,
   ReferralInput,
-  SubscriptionPlan,
   SubscriptionStatus
 } from './billing';
 export { discordStatusSchema, vkStatusSchema } from './bots';

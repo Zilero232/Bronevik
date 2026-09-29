@@ -1571,6 +1571,36 @@
         "tags": ["tanks"]
       }
     },
+    "/tanks/{idOrSlug}/armor/guns": {
+      "get": {
+        "operationId": "TankArmorController_guns",
+        "parameters": [
+          {
+            "name": "idOrSlug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 128,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankArmorGunsDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["tanks"]
+      }
+    },
     "/tanks/economy/me": {
       "get": {
         "operationId": "MyTanksController_economy",
@@ -23435,6 +23465,173 @@
           }
         },
         "required": ["vehicle", "gameVersion", "hash", "geometry", "modules", "source"],
+        "additionalProperties": false
+      },
+      "TankArmorGunsDto_Output": {
+        "type": "object",
+        "properties": {
+          "vehicle": {
+            "type": "object",
+            "properties": {
+              "tankId": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "name": {
+                "type": "string"
+              },
+              "shortName": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "nation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32
+              },
+              "type": {
+                "type": "string",
+                "enum": ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+              },
+              "tier": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 11
+              },
+              "isPremium": {
+                "type": "boolean"
+              },
+              "isCollectible": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["researchable", "premium", "collector", "reward", "removed"],
+                "description": "How the vehicle is obtained: researched in the tech tree, sold for gold, a collector vehicle, a reward, or no longer obtainable"
+              },
+              "images": {
+                "type": "object",
+                "properties": {
+                  "small": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "contour": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "big": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "large": {
+                    "description": "600×450 render from the Lesta client assets for large displays; fall back to `big` when it is missing or fails to load",
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": ["small", "contour", "big"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images"],
+            "additionalProperties": false
+          },
+          "guns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "displayName": {
+                  "type": "string"
+                },
+                "shells": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "displayName": {
+                        "type": "string"
+                      },
+                      "kind": {
+                        "type": "string"
+                      },
+                      "caliber": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "damage": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "penetration": {
+                        "type": "object",
+                        "properties": {
+                          "at100m": {
+                            "type": "number",
+                            "minimum": 0
+                          },
+                          "at500m": {
+                            "type": "number",
+                            "minimum": 0
+                          }
+                        },
+                        "required": ["at100m", "at500m"],
+                        "additionalProperties": false
+                      },
+                      "isPremium": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": ["name", "displayName", "kind", "caliber", "damage", "penetration", "isPremium"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["name", "displayName", "shells"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["vehicle", "guns"],
+        "description": "Every gun a vehicle can mount, with its shells, for firing at another vehicle in the armor viewer",
         "additionalProperties": false
       },
       "AccountEconomyDto_Output": {

@@ -2,18 +2,21 @@
 
 import { useThree } from '@react-three/fiber';
 import { animate } from 'motion/react';
-import { useEffect, useImperativeHandle } from 'react';
+import { useEffect, useImperativeHandle, useRef } from 'react';
 import { Vector3 } from 'three';
 
+import type { CameraPose } from '../../../lib/camera-sync';
 import type { UseCameraBridgeInput } from './use-camera-bridge.types';
 
 import { ARMOR_CAMERA } from '../../../config';
 import { orbitStep, presetPosition } from '../../../lib/camera-presets';
+import { poseOf, positionOf } from '../../../lib/camera-sync';
 
-export const useCameraBridge = ({ bounds, command, reducedMotion, controlsRef, handles }: UseCameraBridgeInput) => {
+export const useCameraBridge = ({ bounds, command, reducedMotion, controlsRef, handles, sync, syncId, isLeader }: UseCameraBridgeInput) => {
   'use no memo';
 
   const get = useThree((state) => state.get);
+  const seenNonceRef = useRef(command.nonce);
   const { center, radius } = bounds;
 
   useImperativeHandle(
@@ -66,7 +69,54 @@ export const useCameraBridge = ({ bounds, command, reducedMotion, controlsRef, h
   useEffect(() => {
     const controls = controlsRef.current;
 
-    if (command.nonce === 0 || !controls) {
+    if (!controls) {
+      return;
+    }
+
+    let applying = false;
+
+    const apply = (pose: CameraPose) => {
+      const { camera, invalidate } = get();
+
+      applying = true;
+      camera.position.set(...positionOf({ pose, target: controls.target.toArray(), radius }));
+      controls.update();
+      applying = false;
+      invalidate();
+    };
+
+    const publish = () => {
+      if (!applying) {
+        sync.publish({ source: syncId, pose: poseOf({ position: get().camera.position.toArray(), target: controls.target.toArray(), radius }) });
+      }
+    };
+
+    const initial = sync.last();
+
+    if (initial) {
+      apply(initial);
+    }
+
+    const unsubscribe = sync.subscribe({ id: syncId, listener: apply });
+
+    controls.addEventListener('change', publish);
+
+    return () => {
+      unsubscribe();
+      controls.removeEventListener('change', publish);
+    };
+  }, [controlsRef, get, radius, sync, syncId]);
+
+  useEffect(() => {
+    const controls = controlsRef.current;
+
+    if (command.nonce === seenNonceRef.current) {
+      return;
+    }
+
+    seenNonceRef.current = command.nonce;
+
+    if (!isLeader || !controls) {
       return;
     }
 
@@ -92,5 +142,5 @@ export const useCameraBridge = ({ bounds, command, reducedMotion, controlsRef, h
     const animation = animate(0, 1, { duration: ARMOR_CAMERA.transitionSeconds, ease: 'easeInOut', onUpdate: apply });
 
     return () => animation.stop();
-  }, [command, center, radius, reducedMotion, controlsRef, get]);
+  }, [command, center, radius, reducedMotion, controlsRef, get, isLeader]);
 };

@@ -8,19 +8,21 @@ import { HitReadout } from '@/features/armor/armor-inspect';
 
 import type { ArmorCanvasProps } from './ArmorCanvas.types';
 
-import { ARMOR_CAMERA, ARMOR_CANVAS } from '../../../config';
+import { ARMOR_CAMERA } from '../../../config';
 import { useArmorCanvas } from '../../../model/hooks';
 import { ArmorScene, CameraBridge } from './components';
 
 import s from './ArmorCanvas.module.scss';
 
-export const ArmorCanvas = ({ geometry, command, handles, onPreset }: ArmorCanvasProps) => {
+export const ArmorCanvas = ({ geometry, command, handles, sync, syncId, isLeader, onPreset }: ArmorCanvasProps) => {
   const t = useTranslations('armor.controls');
-  const { hover, onHover, onLeave, controlsRef, bounds, parts, shader, initialPosition, reducedMotion, onKeyDown } = useArmorCanvas({
-    geometry,
-    handles,
-    onPreset
-  });
+  const { hover, onHover, onLeave, controlsRef, bounds, parts, shader, initialPosition, reducedMotion, dpr, isLowDetail, onKeyDown } = useArmorCanvas(
+    {
+      geometry,
+      handles,
+      onPreset
+    }
+  );
 
   return (
     <div className={s.root}>
@@ -28,8 +30,9 @@ export const ArmorCanvas = ({ geometry, command, handles, onPreset }: ArmorCanva
         aria-label={t('canvas')}
         camera={{ fov: ARMOR_CAMERA.fov, near: ARMOR_CAMERA.near, far: ARMOR_CAMERA.far, position: initialPosition }}
         className={s.canvas}
-        dpr={[...ARMOR_CANVAS.dpr]}
+        dpr={dpr}
         frameloop='demand'
+        gl={{ antialias: !isLowDetail, powerPreference: isLowDetail ? 'low-power' : 'high-performance' }}
         role='application'
         tabIndex={0}
         onKeyDown={onKeyDown}
@@ -44,7 +47,16 @@ export const ArmorCanvas = ({ geometry, command, handles, onPreset }: ArmorCanva
           maxDistance={bounds.radius * ARMOR_CAMERA.maxRadiusFactor}
           minDistance={ARMOR_CAMERA.minRadius}
         />
-        <CameraBridge bounds={bounds} command={command} controlsRef={controlsRef} handles={handles} reducedMotion={reducedMotion} />
+        <CameraBridge
+          bounds={bounds}
+          command={command}
+          controlsRef={controlsRef}
+          handles={handles}
+          isLeader={isLeader}
+          reducedMotion={reducedMotion}
+          sync={sync}
+          syncId={syncId}
+        />
       </Canvas>
       {hover && (
         <div className={s.tooltip} data-flip={hover.flip} style={{ '--x': `${hover.x}px`, '--y': `${hover.y}px` }}>

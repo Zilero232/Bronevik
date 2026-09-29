@@ -8,13 +8,13 @@ import { EmptyState, QueryState } from '@/ui-kit';
 import { ArmorViewer } from '@/widgets/armor/armor-viewer';
 
 import { useTankArmorPage } from '../model/hooks';
-import { ArmorAttribution, ArmorHeader, ArmorIntro, ArmorLimit, ArmorLoading, ArmorQuota } from './components';
+import { ArmorAttribution, ArmorCompareBar, ArmorHeader, ArmorIntro, ArmorLimit, ArmorLoading, ArmorQuota, CompareFallback } from './components';
 
 import s from './TankArmorPage.module.scss';
 
 export const TankArmorPage = () => {
   const t = useTranslations('armor.states');
-  const { slug, query, isCrawler, isLimited, isLimitShown, quota } = useTankArmorPage();
+  const { slug, query, compare, isCrawler, isLimited, isLimitShown, quota } = useTankArmorPage();
 
   return (
     <div className={s.root}>
@@ -39,7 +39,24 @@ export const TankArmorPage = () => {
           query={query}
           skeleton={<ArmorLoading />}
         >
-          {(model) => <ArmorViewer model={model} slug={slug} />}
+          {(model) => (
+            <>
+              <ArmorCompareBar excludeIds={compare.excludeIds} vehicle={compare.vehicle} onClear={compare.onClear} onPick={compare.onPick} />
+              <ArmorViewer
+                compare={
+                  compare.slug
+                    ? {
+                        name: compare.name,
+                        model: compare.model,
+                        fallback: <CompareFallback quota={quota} status={compare.status} onRetry={compare.retry} />
+                      }
+                    : undefined
+                }
+                model={model}
+                slug={slug}
+              />
+            </>
+          )}
         </QueryState>
       )}
       <ArmorAttribution commit={query.data?.response.source.commit} />

@@ -1,6 +1,8 @@
 import type { z } from 'zod';
 
 import type {
+  armorAttackerGunSchema,
+  armorAttackerSchema,
   armorChassisModuleSchema,
   armorGunModuleSchema,
   armorModelSchema,
@@ -17,3 +19,5 @@ export type ArmorTurretModuleData = z.infer<typeof armorTurretModuleSchema>;
 export type ArmorChassisModuleData = z.infer<typeof armorChassisModuleSchema>;
 export type ArmorModulesData = z.infer<typeof armorModulesSchema>;
 export type ArmorModelResponse = z.infer<typeof armorModelSchema>;
+export type ArmorAttackerGunData = z.infer<typeof armorAttackerGunSchema>;
+export type ArmorAttackerData = z.infer<typeof armorAttackerSchema>;

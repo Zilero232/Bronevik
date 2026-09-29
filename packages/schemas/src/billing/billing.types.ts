@@ -12,12 +12,10 @@ import type {
   plusPlanSchema,
   promoRedeemSchema,
   referralSchema,
-  subscriptionPlanSchema,
   subscriptionStatusSchema
 } from './billing.schemas';
 
 export type PlusPlan = z.infer<typeof plusPlanSchema>;
-export type SubscriptionPlan = z.infer<typeof subscriptionPlanSchema>;
 export type SubscriptionStatus = z.infer<typeof subscriptionStatusSchema>;
 export type PaymentStatus = z.infer<typeof paymentStatusSchema>;
 export type PlanOffer = z.infer<typeof planOfferSchema>;

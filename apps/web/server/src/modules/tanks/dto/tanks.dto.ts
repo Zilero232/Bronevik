@@ -1,6 +1,7 @@
 import {
   accountEconomyQuerySchema,
   accountEconomySchema,
+  armorAttackerSchema,
   armorModelSchema,
   myTankLearningSchema,
   tankDetailQuerySchema,
@@ -40,6 +41,7 @@ export class TankPatchesDto extends createZodDto(tankPatchesSchema) {}
 export class VehicleFilterDto extends createZodDto(vehicleFilterSchema) {}
 export class VehicleCatalogDto extends createZodDto(vehicleCatalogSchema) {}
 export class TankArmorDto extends createZodDto(armorModelSchema) {}
+export class TankArmorGunsDto extends createZodDto(armorAttackerSchema) {}
 export class TankEconomyQueryDto extends createZodDto(tankEconomyQuerySchema) {}
 export class TankEconomyPageDto extends createZodDto(tankEconomyPageSchema) {}
 export class TankEconomyDto extends createZodDto(tankEconomySchema) {}

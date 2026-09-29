@@ -1,3 +1,5 @@
+import { parseAsString } from 'nuqs/server';
+
 export const ARMOR_SOURCE = {
   repo: 'unicum-gg/wot.models',
   url: 'https://github.com/unicum-gg/wot.models/tree/Lesta',
@@ -7,4 +9,8 @@ export const ARMOR_SOURCE = {
 export const ARMOR_QUOTA = {
   meter: 'armor3d',
   resetFormat: { day: 'numeric', month: 'long' } satisfies Intl.DateTimeFormatOptions
+} as const;
+
+export const TANK_ARMOR_URL_PARSERS = {
+  vs: parseAsString
 } as const;

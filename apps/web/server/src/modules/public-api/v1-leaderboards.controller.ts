@@ -6,7 +6,7 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { LeaderboardService } from '../leaderboards';
-import { PublicApi } from './decorators/public-api/public-api.decorator';
+import { PublicApi } from './decorators';
 import { V1LeaderboardDto, V1LeaderboardQueryDto } from './dto';
 
 @UseInterceptors(ViewerCacheInterceptor)

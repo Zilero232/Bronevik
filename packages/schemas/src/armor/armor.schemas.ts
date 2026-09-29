@@ -60,3 +60,12 @@ export const armorModelSchema = z.object({
   modules: armorModulesSchema,
   source: armorModelSourceSchema
 });
+
+export const armorAttackerGunSchema = armorGunModuleSchema.pick({ name: true, displayName: true, shells: true });
+
+export const armorAttackerSchema = z
+  .object({
+    vehicle: vehicleSummarySchema,
+    guns: z.array(armorAttackerGunSchema)
+  })
+  .describe('Every gun a vehicle can mount, with its shells, for firing at another vehicle in the armor viewer');

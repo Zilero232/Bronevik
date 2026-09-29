@@ -25,6 +25,8 @@ export const ARMOR_CAMERA = {
 
 export const ARMOR_CANVAS = {
   dpr: [1, 2],
+  lowDetailDpr: [1, 1.25],
+  lowDetailQuery: '(pointer: coarse), (width < 640px)',
   screenshotName: 'armor',
   homeKey: 'Home',
   tooltipFlipMargin: 260
@@ -55,4 +57,23 @@ export const ORBIT_KEYS: Readonly<Record<string, OrbitKeyStep>> = {
 export const NO_SHELL = {
   shell: { kind: 'ARMOR_PIERCING', caliber: 0, penetration: 0 },
   randomness: 0
+} as const;
+
+export const ARMOR_PANES = ['primary', 'secondary'] as const;
+
+export const ARMOR_COMPARE = {
+  compactQuery: '(width < 900px)'
+} as const;
+
+export const IDLE_COMMAND = { preset: 'initial', nonce: 0 } as const;
+
+export const ARMOR_ZONES = {
+  layers: ['hull', 'turret'],
+  sides: {
+    front: [0, 0, 1],
+    side: [1, 0, 0],
+    rear: [0, 0, -1]
+  },
+  sideOrder: ['front', 'side', 'rear'],
+  originFactor: 4
 } as const;

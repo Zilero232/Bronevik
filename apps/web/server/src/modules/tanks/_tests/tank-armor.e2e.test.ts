@@ -157,3 +157,52 @@ describe('GET /tanks/:idOrSlug/armor', () => {
     }
   });
 });
+
+describe('GET /tanks/:idOrSlug/armor/guns', () => {
+  it('lists each gun of the attacker once, with its shells and without collision data', async () => {
+    const shell = {
+      name: 'ap',
+      displayName: 'AP',
+      kind: 'ARMOR_PIERCING',
+      caliber: 122,
+      damage: 390,
+      penetration: { at100m: 225, at500m: 220 },
+      isPremium: false
+    };
+
+    const gun = { name: 'D-25T', displayName: '122 mm D-25T', piece: 'Gun_01', plates: [], shells: [shell] };
+
+    prisma.vehicleArmorModel.findUnique.mockResolvedValueOnce({
+      ...ROW,
+      modules: {
+        hull: { piece: 'Hull', plates: [] },
+        chassis: [],
+        turrets: [
+          { name: 't1', displayName: 'T1', piece: 'Turret_01', plates: [], guns: [gun] },
+          { name: 't2', displayName: 'T2', piece: 'Turret_02', plates: [], guns: [gun] }
+        ]
+      }
+    });
+
+    const response = await request(app.getHttpServer()).get('/tanks/tank-1/armor/guns');
+
+    expect(response.status).toBe(200);
+    expect(response.body.guns).toEqual([{ name: gun.name, displayName: gun.displayName, shells: [shell] }]);
+  });
+
+  it('never spends an armor view, however many attackers are browsed', async () => {
+    const agent = request.agent(app.getHttpServer());
+
+    for (const tank of range(0, ANONYMOUS_LIMIT + 2)) {
+      expect((await agent.get(`/tanks/tank-${tank}/armor/guns`)).status).toBe(200);
+    }
+
+    expect((await agent.get('/tanks/tank-0/armor')).status).toBe(200);
+  });
+
+  it('answers 404 when the attacker has no armor model', async () => {
+    prisma.vehicleArmorModel.findUnique.mockResolvedValueOnce(null);
+
+    expect((await request(app.getHttpServer()).get('/tanks/tank-1/armor/guns')).status).toBe(404);
+  });
+});

@@ -7,7 +7,7 @@ import type { UsageActor } from '../usage';
 
 import { ARMOR_VIEWER } from '../../config';
 import { CurrentUsageActor, MeteredUsage } from '../usage';
-import { TankArmorDto, TankLookupParamsDto } from './dto';
+import { TankArmorDto, TankArmorGunsDto, TankLookupParamsDto } from './dto';
 import { TankArmorService } from './services';
 
 @ApiTags('tanks')
@@ -22,5 +22,12 @@ export class TankArmorController {
   @ZodResponse({ type: TankArmorDto })
   armor(@Param() { idOrSlug }: TankLookupParamsDto, @CurrentUsageActor() actor: UsageActor) {
     return this.armorModels.open({ idOrSlug, actor });
+  }
+
+  @Get(':idOrSlug/armor/guns')
+  @Header('Cache-Control', ARMOR_VIEWER.gunsCacheControl)
+  @ZodResponse({ type: TankArmorGunsDto })
+  guns(@Param() { idOrSlug }: TankLookupParamsDto) {
+    return this.armorModels.guns(idOrSlug);
   }
 }

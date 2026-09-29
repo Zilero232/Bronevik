@@ -124,6 +124,11 @@ Formulas:
 - Pen at distance d: `P(d) = P100 + (P500 − P100) · clamp((d − 100) / 400, 0, 1)`. Beyond 500 m this is shown as constant, which is also how tanks.gg does it.
 - After a ricochet, the shell loses 25 % pen (Lesta wiki). This matters only for a "trace" mode.
 
+Penetration chance (heatmap, hover readout, key-zone table; `rollChance` / `penetrationChance` in `@otmetki/gamedata`, mirrored in the fragment shader):
+- The rolled penetration is `P · (1 + X)`, with `X` a normal distribution cut off at `±r` (the RNG band, 25 % Lesta or 15 % client). Community sources agree on "Gaussian, bounded at ±25 %" ([13DISCIPLE: penetration mechanics](https://www.13disciple.stream/penetration-mechanics.html), which also notes that tanks.gg uses a flat roll instead). None gives σ, so we take **σ = r / 2** (the bounds sit at ±2σ; `PENETRATION.sigmaShare`). Treat it as an assumption and retune the constant if Lesta publishes the value.
+- A single plate pens with `P(X ≥ T_eff / P − 1)`. Along a ray with spaced armor (hover and the zone table), the pen threshold is found by bisecting the penetration factor over `[1 − r, 1 + r]` with the same trace (`traceArmorRay(...).chance`); ricochets and misses are 0.
+- The heatmap colours each fragment from its own face only (angle to the camera, normalisation, overmatch, ricochet), not the layers behind it. That keeps it free on the GPU while the camera moves; the full trace is in the hover readout.
+
 Spaced armor, tracks and modules:
 - **Spaced plates** (`vehicleDamageFactor 0`, `collision.json.spaced`): no damage on pen. For HEAT, jet loss starts at the first spaced plate, so the colour for "HEAT through spaced" depends on the gap. The viewer computes this per hover ray (sum along the ray) and colours spaced plates with a fixed hue in the shader.
 - **Tracks** (`leftTrack` / `rightTrack` thickness from chassis armor): act as spaced armor. The shell cannot ricochet off tracks, gun or optics.
@@ -204,7 +209,7 @@ Implement this as pure TS in `packages/gamedata` (`calculateArmorHit({ thickness
 
 - Models missing for a tank (new vehicle, mirror lag) → show a 2D fallback: the primary armor table (`primaryArmor` hull/turret front/side/rear from `VehicleSpec`), plus a "3D-модель появится после обновления" state.
 - Mirror dead → run the `--local-models` path: either a checkout produced by running `wot.build --collision-only` ourselves, or (after the author agrees) a vendored Havok reader over a local client's `vehicles_level_*.pkg`.
-- Dev/e2e and Storybook-like design page → a committed **demo model**: a hand-built box tank (hull, turret and gun boxes with named groups `armor_1..n`, one spaced skirt, tracks) at `apps/web/client/shared/fixtures/armor-demo.json`. It is generated, not extracted, so it is legally clean and lets the e2e smoke test run without stored models or the mirror.
+- Dev/e2e and Storybook-like design page → a committed **demo model**: a hand-built box tank (hull, turret and gun boxes with named groups `armor_1..n`, one spaced skirt, tracks) at `apps/web/client/shared/fixtures/armor-demo.json`. It is generated, not extracted, so it is legally clean and lets the e2e smoke test run without stored models or the mirror. *(Dropped with the other mocks: there is no demo model. Without a stored model the page shows its «no 3D armor model yet» state, and `e2e/armor.spec.ts` accepts the canvas, that state or the error state.)*
 
 **Order of work**
 

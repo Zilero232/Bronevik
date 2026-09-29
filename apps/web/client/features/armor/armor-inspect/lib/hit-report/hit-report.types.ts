@@ -31,6 +31,7 @@ export type HitReport = {
   main: HitPlateReport | undefined;
   total: number;
   penetration: number;
+  chance: number;
   layerCount: number;
   verdict: ArmorVerdict;
 };

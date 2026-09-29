@@ -5,16 +5,20 @@ import type {
   ArmorVerdict,
   CalculateArmorHitInput,
   HollowPlateInput,
+  PenetratesAtInput,
   PenetrationAtDistanceInput,
+  PenetrationChanceInput,
   PenetrationVerdictInput,
+  RollChanceInput,
   ShellKind,
+  ThresholdFactorInput,
   TraceArmorRayInput,
   TraceRun,
   TraceRunInput
 } from './penetration.types';
 
 import { ARMOR_FLAGS } from '../armor-model/armor-model.constants';
-import { PENETRATION, SHELL_KIND_ALIASES, SHELL_KINDS, SHELL_RULES } from './penetration.constants';
+import { ERF_APPROXIMATION, PENETRATION, SHELL_KIND_ALIASES, SHELL_KINDS, SHELL_RULES } from './penetration.constants';
 
 const RADIANS = Math.PI / 180;
 
@@ -23,6 +27,43 @@ const SHIELD_MASK = ARMOR_FLAGS.spaced | ARMOR_FLAGS.track | ARMOR_FLAGS.module;
 const NO_RICOCHET_MASK = ARMOR_FLAGS.track | ARMOR_FLAGS.module;
 
 const clampUnit = (value: number): number => Math.min(1, Math.max(0, value));
+
+const erf = (value: number): number => {
+  const { p, a1, a2, a3, a4, a5 } = ERF_APPROXIMATION;
+  const x = Math.abs(value);
+  const t = 1 / (1 + p * x);
+  const result = 1 - ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+  return value < 0 ? -result : result;
+};
+
+const normalCdf = (z: number): number => 0.5 * (1 + erf(z / Math.SQRT2));
+
+export const rollChance = ({ threshold, randomness }: RollChanceInput): number => {
+  const needed = threshold - 1;
+
+  if (needed <= -randomness) {
+    return 1;
+  }
+
+  if (needed > randomness) {
+    return 0;
+  }
+
+  const sigma = randomness * PENETRATION.sigmaShare;
+  const low = normalCdf(-randomness / sigma);
+  const high = normalCdf(randomness / sigma);
+
+  return clampUnit((high - normalCdf(needed / sigma)) / (high - low));
+};
+
+export const penetrationChance = ({ penetration, effective, randomness }: PenetrationChanceInput): number => {
+  if (effective <= 0) {
+    return 1;
+  }
+
+  return penetration > 0 ? rollChance({ threshold: effective / penetration, randomness }) : 0;
+};
 
 const KNOWN_KINDS: ReadonlySet<string> = new Set(SHELL_KINDS);
 
@@ -139,18 +180,40 @@ const runTrace = ({ layers, shell }: TraceRunInput): TraceRun => {
   return { layers: traced, mainIndex: -1, total, remaining, outcome: 'hollow' };
 };
 
+const penetratesAt = ({ layers, shell, factor }: PenetratesAtInput): boolean =>
+  runTrace({ layers, shell: { ...shell, penetration: shell.penetration * factor } }).outcome === 'pen';
+
+const thresholdFactor = ({ layers, shell, randomness }: ThresholdFactorInput): number => {
+  let low = 1 - randomness;
+  let high = 1 + randomness;
+
+  for (let step = 0; step < PENETRATION.chanceIterations; step += 1) {
+    const middle = (low + high) / 2;
+
+    if (penetratesAt({ layers, shell, factor: middle })) {
+      high = middle;
+    } else {
+      low = middle;
+    }
+  }
+
+  return high;
+};
+
 export const traceArmorRay = ({ layers, shell, randomness = PENETRATION.randomness }: TraceArmorRayInput): ArmorTrace => {
   const { outcome, ...trace } = runTrace({ layers, shell });
 
   if (outcome === 'ricochet' || outcome === 'hollow') {
-    return { ...trace, verdict: outcome };
+    return { ...trace, verdict: outcome, chance: 0 };
   }
 
-  if (runTrace({ layers, shell: { ...shell, penetration: shell.penetration * (1 - randomness) } }).outcome === 'pen') {
-    return { ...trace, verdict: 'pen' };
+  if (penetratesAt({ layers, shell, factor: 1 - randomness })) {
+    return { ...trace, verdict: 'pen', chance: 1 };
   }
 
-  const high = runTrace({ layers, shell: { ...shell, penetration: shell.penetration * (1 + randomness) } });
+  if (!penetratesAt({ layers, shell, factor: 1 + randomness })) {
+    return { ...trace, verdict: 'noPen', chance: 0 };
+  }
 
-  return { ...trace, verdict: high.outcome === 'pen' ? 'chance' : 'noPen' };
+  return { ...trace, verdict: 'chance', chance: rollChance({ threshold: thresholdFactor({ layers, shell, randomness }), randomness }) };
 };

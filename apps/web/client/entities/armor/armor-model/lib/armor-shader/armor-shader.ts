@@ -1,11 +1,12 @@
-import { PENETRATION, SHELL_RULES } from '@otmetki/gamedata';
+import { ERF_APPROXIMATION, PENETRATION, SHELL_RULES } from '@otmetki/gamedata';
 
 import type { ArmorShaderInput, ArmorShaderValues } from './armor-shader.types';
 
 import { ARMOR_SHADING } from '../../config';
 
-export const armorShaderValues = ({ shell, randomness, hideSpaced }: ArmorShaderInput): ArmorShaderValues => {
+export const armorShaderValues = ({ shell, randomness, hideSpaced, heatmap }: ArmorShaderInput): ArmorShaderValues => {
   const rules = SHELL_RULES[shell.kind];
+  const { p, a1, a2, a3, a4, a5 } = ERF_APPROXIMATION;
 
   return {
     uPenetration: shell.penetration,
@@ -20,6 +21,9 @@ export const armorShaderValues = ({ shell, randomness, hideSpaced }: ArmorShader
     uOvermatchRatio: PENETRATION.overmatchRatio,
     uAmbient: ARMOR_SHADING.ambient,
     uDiffuse: ARMOR_SHADING.diffuse,
-    uHideSpaced: hideSpaced ? 1 : 0
+    uHideSpaced: hideSpaced ? 1 : 0,
+    uHeatmap: heatmap ? 1 : 0,
+    uSigmaShare: PENETRATION.sigmaShare,
+    uErf: [p, a1, a2, a3, a4, a5]
   };
 };

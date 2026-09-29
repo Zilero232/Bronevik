@@ -13,7 +13,7 @@ Tools:
 **Why ESLint + Prettier:** the `@siberiacancode/*` configs already carry a rule set for
 React/TS/SCSS, and `perfectionist` plus `padding-line-between-statements` autofix exactly
 the things that would otherwise have to be kept by hand. It all runs under one
-command — `bun run verify` (typecheck + ESLint + Prettier + Stylelint).
+command — `bun run verify` (typecheck + ESLint + the UTF-8 check + Prettier + Stylelint).
 
 ## Sections
 

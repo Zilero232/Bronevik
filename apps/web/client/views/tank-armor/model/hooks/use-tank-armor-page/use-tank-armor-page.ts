@@ -9,13 +9,18 @@ import { isPlusRequiredError } from '@/shared/api/source';
 import { useIsCrawler, useRouteParam } from '@/shared/lib';
 
 import { ARMOR_QUOTA } from '../../../config';
+import { useArmorCompare } from '../use-armor-compare';
 
 export const useTankArmorPage = () => {
   const format = useFormatter();
   const slug = useRouteParam('slug');
   const isCrawler = useIsCrawler();
   const query = useArmorModel({ idOrSlug: slug, enabled: isCrawler === false });
-  const quota = useUsageMeter({ meter: ARMOR_QUOTA.meter, enabled: isCrawler === false && query.fetchStatus === 'idle' });
+  const compare = useArmorCompare({ slug, enabled: isCrawler === false && query.isSuccess });
+  const quota = useUsageMeter({
+    meter: ARMOR_QUOTA.meter,
+    enabled: isCrawler === false && query.fetchStatus === 'idle' && compare.fetchStatus === 'idle'
+  });
 
   const isLimited = isPlusRequiredError(query.error);
   const audience = quota.audience ?? 'anonymous';
@@ -23,6 +28,7 @@ export const useTankArmorPage = () => {
   return {
     slug,
     query,
+    compare,
     isCrawler: isCrawler === true,
     isLimited,
     isLimitShown: isLimited && !quota.isPending,

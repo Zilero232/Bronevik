@@ -42,7 +42,7 @@ A layer never imports from itself across slices. Two features that need the same
 
 ```text
 features/
-├── app/           # rating-palette, rating-patterns, switch-locale, switch-theme
+├── app/           # pin-rows, rating-palette, rating-patterns, switch-locale, switch-theme
 ├── armor/         # armor-inspect
 ├── auth/          # lesta-link
 ├── community/     # api-error, comments, contact-player, form-dialog, guide-meta, markdown, player-stats, replay-meta, report-content, stat-requirements, tactic-board-settings, tournament-status
@@ -70,11 +70,12 @@ entities/
 ├── mode/         # mode
 ├── notification/ # inbox
 ├── player/       # analytics, cosmetics, leaderboard, marks, player, profile, recent-players, stats
-├── plus/         # subscription
+├── plus/         # subscription, usage
 ├── pulse/        # pulse
-├── reference/    # game-status
+├── reference/    # game-status, service-health
 ├── replay/       # replay
 ├── search/       # search
+├── social/       # challenge, league
 ├── streamer/     # channel, overlay, preferences, settings, streamer
 ├── tactic/       # board
 ├── tank/         # build, tank, tree
@@ -82,25 +83,25 @@ entities/
 widgets/
 ├── account/  # account-shell
 ├── armor/    # armor-viewer
-├── map/      # map-rotation
+├── map/      # map-rotation, map-samples
 ├── player/   # session-detail
 ├── showcase/ # showcase-3d
-├── site/     # resource-missing, site-footer, site-header
+├── site/     # data-notice, resource-missing, site-footer, site-header
 ├── social/   # social-shell
 ├── streamer/ # streamers-hub
 └── tank/     # tank-best-battles, tank-math
 ```
 
-`views/` does not group by domain — the 87 route screens sit directly in it:
+`views/` does not group by domain — the 90 route screens sit directly in it:
 
 | Area | Views |
 |---|---|
-| site shell | `home`, `design`, `error`, `not-found`, `legal` |
+| site shell | `home`, `design`, `error`, `not-found`, `legal`, `status`, `ratings` |
 | OG images | `entity-og`, `player-og` |
 | account | `login`, `telegram-login`, `telegram-link`, `me`, `billing`, `plus`, `notifications`, `watchlist`, `my-analytics`, `my-battle`, `progression`, `cosmetics` |
 | players | `players`, `player-profile`, `player-session`, `player-signature`, `player-wrapped`, `compare-players`, `top`, `best-battles`, `achievements` |
 | clans | `clan`, `clans`, `clan-workspace` |
-| tanks | `tank`, `tank-armor`, `tanks`, `compare-tanks`, `build`, `builds-catalog`, `marks`, `tree`, `supertest`, `tools`, `play` |
+| tanks | `tank`, `tank-armor`, `tanks`, `vehicle-catalog`, `compare-tanks`, `build`, `builds-catalog`, `marks`, `tree`, `supertest`, `tools`, `play` |
 | maps, modes, missions | `map`, `maps`, `modes`, `mode`, `missions`, `mission-operation`, `honest-rng`, `pulse`, `events` |
 | shop and news | `shop`, `codes`, `news` |
 | community | `social-feed`, `leagues`, `challenges`, `replays`, `replay`, `tactics`, `tactic-board`, `guides`, `guide`, `guide-editor`, `platoons`, `recruiting`, `coaching`, `coach`, `tournaments`, `tournament`, `competitions`, `competition` |

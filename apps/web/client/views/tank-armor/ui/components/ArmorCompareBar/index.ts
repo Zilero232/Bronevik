@@ -1,0 +1,1 @@
+export { ArmorCompareBar } from './ArmorCompareBar';

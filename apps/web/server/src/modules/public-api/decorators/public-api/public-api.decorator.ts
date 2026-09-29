@@ -13,8 +13,8 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { OPENAPI } from '../../../../openapi';
 import { PUBLIC_API } from '../../config';
 import { V1ApiErrorDto } from '../../dto';
-import { ApiKeyGuard } from '../../guards/api-key/api-key.guard';
-import { ApiUsageInterceptor } from '../../interceptors/api-usage/api-usage.interceptor';
+import { ApiKeyGuard } from '../../guards';
+import { ApiUsageInterceptor } from '../../interceptors';
 
 export const PublicApi = (tag: string) =>
   applyDecorators(

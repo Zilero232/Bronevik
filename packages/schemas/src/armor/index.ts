@@ -1,4 +1,6 @@
 export {
+  armorAttackerGunSchema,
+  armorAttackerSchema,
   armorChassisModuleSchema,
   armorGunModuleSchema,
   armorModelSchema,
@@ -10,6 +12,8 @@ export {
   armorTurretModuleSchema
 } from './armor.schemas';
 export type {
+  ArmorAttackerData,
+  ArmorAttackerGunData,
   ArmorChassisModuleData,
   ArmorGunModuleData,
   ArmorModelResponse,

@@ -31,7 +31,7 @@ This is the status of every area at the last audit. **Ready** means the piece is
 | Client CSP, sitemap, robots, service worker revision (`GIT_COMMIT_SHA`) | Ready | The `NEXT_PUBLIC_SITE_URL` secret |
 | Nightly `pg_dump` with rotation | Ready | An off-host copy (§6) |
 | Launch without the Lesta key: empty states, degraded worker, `NEXT_PUBLIC_LESTA_NOTICE` | Ready | — |
-| Health: `/health` (database, Redis, worker heartbeat, Lesta breaker) | Ready | An external uptime monitor on `https://api.triotmetki.ru/health` and `https://triotmetki.ru/` (UptimeRobot, Healthchecks.io or similar) |
+| Health: `/health` (database, Redis, worker heartbeat, Lesta breaker, last job successes, queue backlog, API version; contract `healthSchema`), shown on the site's `/status` | Ready | An external uptime monitor on `https://api.triotmetki.ru/health` and `https://triotmetki.ru/` (UptimeRobot, Healthchecks.io or similar) |
 | **Lesta application**: `LESTA_APPLICATION_ID`, the VPS IP allow-listed, the OpenID redirect | Blocked | Register at developers.lesta.ru (§1) |
 | **DNS**: `A`/`AAAA` for `triotmetki.ru` and `api.triotmetki.ru`; ports 80, 443/tcp and 443/udp open | Blocked | The registrar and the VPS firewall |
 | **GitHub secrets and variables**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PASSWORD`, `DEPLOY_PATH`, `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`); variable `NEXT_PUBLIC_LESTA_NOTICE` | Blocked | Settings → Secrets and variables (§1) |
@@ -112,6 +112,7 @@ Start from [.env.example](../../.env.example). The server and worker containers 
 - [ ] `LESTA_APPLICATION_ID`, `LESTA_RPS`. An empty key is a supported state (§7). `COMPOSE_FILE` must be absent: the stack is `docker-compose.yml` alone.
 - [ ] `EMAIL_FROM` on our domain (for example `Три отметки <noreply@triotmetki.ru>`), with SPF and DKIM for the SMTP provider. `VAPID_SUBJECT=mailto:admin@triotmetki.ru`.
 - [ ] `BULL_BOARD_PASSWORD`: Caddy returns 404 for `/admin/queues` on the public host anyway. Reach bull-board through an SSH tunnel to the server container.
+- [ ] `SMTP_HOST` stays empty unless a real provider is set up. `.env.example` carries the Mailpit values for development.
 - [ ] Storage needs no variables: uploaded replays and armor models live in `.data` on the `serverdata` volume, which the server and the worker share. A `.env` copied from an older template may still carry `REPLAY_STORAGE`, `REPLAY_STORAGE_DIR`, `S3_*` or `MODPACK_RELEASES_URL`: delete those lines, nothing reads them.
 
 ### The VPS downloads folder
@@ -123,7 +124,6 @@ mkdir -p /opt/otmetki/downloads   # DEPLOY_PATH/downloads
 ```
 
 Caddy and the server mount it read-only. Only [release.yml](../../.github/workflows/release.yml) writes to it, over SSH as `DEPLOY_SSH_USER`, so that user must own it. Its uploads go first to `DEPLOY_PATH/.downloads-staging/`, which must be on the same disk. Until the first release the folder is empty: `/downloads/*` answers 404, and the API answers `waiting` to every manager.
-- [ ] `SMTP_HOST` stays empty unless a real provider is set up. `.env.example` carries the Mailpit values for development.
 
 ## 2. Database: `db:deploy` and its order
 
@@ -141,7 +141,7 @@ On the first run, or after an edit to `003_continuous_aggregates.sql`, the full 
 
 - [ ] `https://api.triotmetki.ru/health` is green: database, Redis, worker heartbeat, and the Lesta breaker closed. The worker log says `registered N of M … job schedulers`, and no "degraded" warning appears.
 - [ ] **Game data.** The API catalog fills from Lesta through the nightly encyclopedia sync. Builds, armor, personal missions and patch diffs need the client files import (`apps/web/server/scripts/gamedata-import.ts`), which needs no Lesta key. Run it once inside the server image and again after every game patch — see §7 «Каталог техники».
-- [ ] Optional: `bun --filter @otmetki/server streamers:seed` loads the invited streamer list.
+- [ ] Optional: `docker compose run --rm server bun scripts/streamers-seed.ts` loads the invited streamer list (`bun --filter @otmetki/server streamers:seed` in development).
 - [ ] Sign in with Lesta ID and with Telegram on the live site. Check that the footer shows the Lesta attribution on every page.
 - [ ] Check `https://triotmetki.ru/sitemap.xml` and `/robots.txt`. The sitemap reads the API at build or request time, so it fills once the collector has data.
 

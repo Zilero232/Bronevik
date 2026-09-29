@@ -11,7 +11,6 @@ export {
   plusPlanSchema,
   promoRedeemSchema,
   referralSchema,
-  subscriptionPlanSchema,
   subscriptionStatusSchema
 } from './billing.schemas';
 export type {
@@ -26,6 +25,5 @@ export type {
   PlusPlan,
   PromoRedeemInput,
   ReferralInput,
-  SubscriptionPlan,
   SubscriptionStatus
 } from './billing.types';

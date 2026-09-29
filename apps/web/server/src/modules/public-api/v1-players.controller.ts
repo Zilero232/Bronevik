@@ -14,7 +14,7 @@ import {
   PlayerSummaryService,
   PlayerTanksService
 } from '../players';
-import { PublicApi } from './decorators/public-api/public-api.decorator';
+import { PublicApi } from './decorators';
 import {
   V1PlayerLookupDto,
   V1PlayerMarksDto,

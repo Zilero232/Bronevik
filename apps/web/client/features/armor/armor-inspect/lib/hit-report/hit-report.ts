@@ -30,6 +30,7 @@ export const describeHit = ({ layers, shell, randomness }: DescribeHitInput): Hi
     main: trace.mainIndex >= 0 ? plateAt(trace.mainIndex) : undefined,
     total: trace.total,
     penetration: shell.penetration,
+    chance: trace.chance,
     layerCount: trace.layers.filter(({ verdict }) => verdict !== 'hollow').length,
     verdict: trace.verdict
   };

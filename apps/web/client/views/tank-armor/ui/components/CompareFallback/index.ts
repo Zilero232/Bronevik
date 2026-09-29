@@ -1,0 +1,1 @@
+export { CompareFallback } from './CompareFallback';

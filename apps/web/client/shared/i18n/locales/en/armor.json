@@ -96,7 +96,8 @@
       "noPen": "Won't penetrate",
       "ricochet": "Ricochet",
       "hollow": "No armor"
-    }
+    },
+    "chanceLabel": "Penetration chance"
   },
   "pieces": {
     "hull": "Hull",
@@ -113,5 +114,38 @@
     "title": "This month's free 3D views are used up",
     "anonymous": "Without signing in you can open {limit, plural, one {# vehicle} other {# vehicles}} in 3D. Sign in with Lesta ID to get {free} views a month, or go unlimited with Plus. Vehicle files and armor thickness as text stay free.",
     "free": "You have opened {limit, plural, one {# vehicle} other {# vehicles}} in 3D this month, which is the free allowance. It renews on {date}, and vehicles you opened in the last day can still be viewed again. Plus makes 3D armor unlimited."
+  },
+  "attack": {
+    "attacker": "Attacking vehicle",
+    "ownGun": "Own gun — pick another vehicle",
+    "ownNote": "This vehicle’s own gun is firing now. Pick any vehicle to test the armor with its shells.",
+    "foreignNote": "Shells and penetration come from the chosen vehicle’s game data. No 3D view is spent.",
+    "useOwn": "Back to own gun",
+    "error": "Could not load the attacker’s guns. Try picking it again.",
+    "gun": "Attacker’s gun",
+    "loading": "Loading the attacker’s shells…"
+  },
+  "heatmap": {
+    "toggle": "Weak-spot heatmap",
+    "description": "Colours the armor by penetration chance for the chosen shell from the current view and range.",
+    "legend": "Penetration chance from the current view",
+    "note": "Penetration spread is treated as a normal distribution cut off at ±the spread. Only the plate the ray meets is counted; spaced armor and layers behind it are in the hover readout."
+  },
+  "compare": {
+    "pick": "Compare with",
+    "placeholder": "Pick a second vehicle",
+    "clear": "Remove comparison",
+    "note": "The second vehicle opens as a regular 3D view and counts toward the monthly limit. Camera and firing settings are shared by both.",
+    "switch": "Which vehicle to show"
+  },
+  "zones": {
+    "title": "Key zone armor — table",
+    "caption": "A shot straight from the front, side and rear at the centre of the hull and turret, with the chosen shell at the chosen range.",
+    "captionNoShell": "The chosen gun has no shells: only nominal armor and angle are shown.",
+    "zoneColumn": "Zone",
+    "verdictColumn": "Result",
+    "zone": "{piece}, {side}",
+    "none": "—",
+    "miss": "Miss"
   }
 }

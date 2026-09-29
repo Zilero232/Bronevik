@@ -1,0 +1,26 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  padding: var(--space-3) var(--space-4) 0;
+  gap: var(--space-3) var(--space-5);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.name {
+  margin: 0;
+
+  @include heading(var(--text-md));
+}

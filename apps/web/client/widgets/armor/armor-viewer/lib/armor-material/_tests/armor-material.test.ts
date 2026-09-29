@@ -9,7 +9,7 @@ const shell = { kind: 'ARMOR_PIERCING', caliber: 100, penetration: 200 } as cons
 
 describe('createArmorMaterial', () => {
   it('declares a uniform for every shader value and every palette colour', () => {
-    const values = armorShaderValues({ shell, randomness: 0, hideSpaced: false });
+    const values = armorShaderValues({ shell, randomness: 0, hideSpaced: false, heatmap: false });
     const material = createArmorMaterial(values);
 
     for (const name of [...Object.keys(values), ...Object.keys(ARMOR_COLOR_UNIFORMS)]) {
@@ -22,8 +22,8 @@ describe('createArmorMaterial', () => {
 
 describe('applyShaderValues', () => {
   it('overwrites the live uniforms with the new values', () => {
-    const material = createArmorMaterial(armorShaderValues({ shell, randomness: 0, hideSpaced: false }));
-    const next = armorShaderValues({ shell: { ...shell, penetration: shell.penetration * 2 }, randomness: 0, hideSpaced: true });
+    const material = createArmorMaterial(armorShaderValues({ shell, randomness: 0, hideSpaced: false, heatmap: false }));
+    const next = armorShaderValues({ shell: { ...shell, penetration: shell.penetration * 2 }, randomness: 0, hideSpaced: true, heatmap: false });
 
     applyShaderValues({ material, values: next });
 

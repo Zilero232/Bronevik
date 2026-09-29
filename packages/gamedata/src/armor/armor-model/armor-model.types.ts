@@ -80,3 +80,9 @@ export type HasArmorFlagInput = {
   flags: number;
   flag: ArmorFlag;
 };
+
+export type ArmorGunOption = Pick<ArmorGunModule, 'displayName' | 'name' | 'shells'>;
+
+export type ListArmorGunsInput = {
+  turrets: readonly Pick<ArmorTurretModule, 'guns'>[];
+};

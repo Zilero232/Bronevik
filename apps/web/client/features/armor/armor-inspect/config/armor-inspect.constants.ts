@@ -5,6 +5,8 @@ export const ARMOR_INSPECT = {
   randomness: { lesta: PENETRATION.randomness, client: PENETRATION.clientRandomness }
 } as const;
 
+export const RANDOMNESS_KEYS = ['lesta', 'client'] as const;
+
 export const ARMOR_LAYERS = ['hull', 'turret', 'gun', 'chassis', 'spaced'] as const;
 
 export const SHELL_KIND_KEYS = {

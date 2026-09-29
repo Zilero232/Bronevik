@@ -4,13 +4,11 @@ import path from 'node:path';
 import { build, mergeConfig } from 'vite';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { buttonConfig } from '../button';
 import { hudConfig } from '../hud';
 import { settingsConfig } from '../settings';
 import { UI_BUILD } from '../vite.constants';
 
-const BUNDLE_FILES = ['button.css', 'button.html', 'button.js', 'hud.html', 'icon.png', 'index.html'];
-const IIFE_START = /^\(function\(\)\{/;
+const BUNDLE_FILES = ['hud.html', 'icon.png', 'index.html'];
 const CLASSIC_SCRIPT_AT_BODY_END = /<script>\(function\(\)\{[\s\S]*\}\)\(\);<\/script>\s*<\/body>\s*<\/html>\s*$/;
 const POLYFILLED_ELEMENTS = /[\w$]\([`'"](?:ul|ol|li|dl|dt|dd|select|option)[`'"][,)]/;
 
@@ -22,7 +20,7 @@ beforeAll(async () => {
   outDir = await mkdtemp(path.join(tmpdir(), 'otmetki-ui-'));
   vi.stubEnv('NODE_ENV', 'production');
 
-  for (const config of [settingsConfig(), buttonConfig(), hudConfig()]) {
+  for (const config of [settingsConfig(), hudConfig()]) {
     await build(mergeConfig(config, { configFile: false, logLevel: 'silent', build: { outDir } }));
   }
 }, 60_000);
@@ -54,15 +52,8 @@ describe('committed Gameface bundle', () => {
     expect(page).toMatch(CLASSIC_SCRIPT_AT_BODY_END);
   });
 
-  it('builds the hangar button as a self-contained IIFE', async () => {
-    const script = await read(outDir, 'button.js');
-
-    expect(script).toMatch(IIFE_START);
-    expect(script).not.toMatch(/\bimport\s*[({'"`]|\bexport\s/);
-  });
-
   it('renders no list or select elements, which Gameface only supports through a polyfill', async () => {
-    const files = await Promise.all(['index.html', 'button.js', 'hud.html'].map((file) => read(outDir, file)));
+    const files = await Promise.all(['index.html', 'hud.html'].map((file) => read(outDir, file)));
 
     files.forEach((source) => expect(source).not.toMatch(POLYFILLED_ELEMENTS));
   });

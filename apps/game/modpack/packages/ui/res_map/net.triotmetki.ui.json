@@ -18,15 +18,5 @@
       "entrance": "OtmetkiHud",
       "impl": "gameface"
     }
-  },
-  {
-    "itemID": "otmetki/ui/button",
-    "type": "Layout",
-    "path": "coui://gui/gameface/mods/triotmetki/ui/button.html",
-    "parameters": {
-      "extension": "",
-      "entrance": "OtmetkiButton",
-      "impl": "gameface"
-    }
   }
 ]

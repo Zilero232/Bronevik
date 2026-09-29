@@ -80,7 +80,7 @@ class LayoutTest(unittest.TestCase):
         ui = self.paths('ui')
         self.assertIn(MODS + 'mod_otmetki_ui.py', ui)
         self.assertIn(MODS + 'otmetki/ui/bridge/bridge.py', ui)
-        for name in ('index.html', 'button.html', 'button.js', 'button.css', 'icon.png'):
+        for name in ('index.html', 'hud.html', 'icon.png'):
             self.assertIn(UI_ASSETS + name, ui)
         self.assertIn(layout.RES_MAP_ROOT + '/net.triotmetki.ui.json', ui)
         every = [path for package in self.packages for _, path in package.files]

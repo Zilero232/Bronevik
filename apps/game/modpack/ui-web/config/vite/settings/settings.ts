@@ -11,8 +11,7 @@ import { UI_BUILD } from '../vite.constants';
 
 // The settings window ships as one self-contained index.html: styles inlined in the head and the
 // script inlined as a classic IIFE at the end of the body, the way the client's own Gameface pages
-// load theirs (no ES module loader). button.html, the empty layout of the hangar button view, is a
-// static file in public/, so the page is the only input and builds into a single chunk.
+// load theirs (no ES module loader).
 export const settingsConfig = (): UserConfig =>
   mergeConfig(sharedConfig(), {
     base: './',

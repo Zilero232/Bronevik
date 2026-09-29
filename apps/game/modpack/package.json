@@ -24,7 +24,7 @@
     "test": "python tools/run_tests.py",
     "test:pytest": "uv run pytest",
     "typecheck": "tsc -p ui-web --noEmit",
-    "ui:build": "vite build -c ui-web/vite.config.ts --configLoader runner && vite build -c ui-web/vite.config.ts --configLoader runner --mode button && vite build -c ui-web/vite.config.ts --configLoader runner --mode hud",
+    "ui:build": "vite build -c ui-web/vite.config.ts --configLoader runner && vite build -c ui-web/vite.config.ts --configLoader runner --mode hud",
     "ui:dev": "vite -c ui-web/vite.config.ts --configLoader runner",
     "ui:test": "vitest run"
   },

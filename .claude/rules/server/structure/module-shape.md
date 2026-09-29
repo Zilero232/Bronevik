@@ -40,7 +40,7 @@ the module `exports` only what other modules legitimately call.
   `aggregates`, `news`, `purge`, `metrics`, `producer`, `queues`,
   `schedules`, `board`, `monitoring`); each follows this shape, and a
   sub-module with a single service keeps it at its root
-  (`metrics/metrics.service.ts`, `producer/collector-producer.service.ts`).
+  (`producer/collector-producer.service.ts`).
 
 ## DTO schemas
 

@@ -16,7 +16,45 @@ env:
   DIRECT_URL: postgresql://placeholder
 
 jobs:
+  # A tree that already passed checks or e2e skips them on the next deploy.
+  gate:
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    outputs:
+      tree: ${{ steps.tree.outputs.tree }}
+      checks: ${{ steps.checks.outputs.cache-hit }}
+      e2e: ${{ steps.e2e.outputs.cache-hit }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - id: tree
+        run: echo "tree=$(git rev-parse 'HEAD^{tree}')" >> "$GITHUB_OUTPUT"
+
+      - id: checks
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: .ci/passed
+          key: checks-passed-${{ steps.tree.outputs.tree }}
+          lookup-only: true
+
+      - id: e2e
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: .ci/passed
+          key: e2e-passed-${{ steps.tree.outputs.tree }}
+          lookup-only: true
+
   checks:
+    needs: gate
+    if: needs.gate.outputs.checks != 'true'
+
     permissions:
       contents: read
 
@@ -30,6 +68,15 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: Cache lint and typecheck state
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: |
+            node_modules/.cache
+            apps/*/*/node_modules/.cache/tsc
+          key: checks-cache-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
+          restore-keys: checks-cache-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
+
       - run: bun run verify
 
       - run: bun run test
@@ -40,8 +87,18 @@ jobs:
 
       - run: bun run test:modpack
 
+      - run: mkdir -p .ci && touch .ci/passed
+
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: .ci/passed
+          key: checks-passed-${{ needs.gate.outputs.tree }}
+
   # No API here: every page must render its shell or its error state.
   e2e:
+    needs: gate
+    if: needs.gate.outputs.e2e != 'true'
+
     permissions:
       contents: read
 
@@ -55,8 +112,21 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: Cache the browser
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
       - name: Install the browser
         run: bunx playwright install --with-deps chromium
+
+      - name: Cache the Next build
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: apps/web/client/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
+          restore-keys: next-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
 
       - name: Build the client
         env:
@@ -93,8 +163,16 @@ jobs:
           path: e2e/.results/
           retention-days: 7
 
+      - run: mkdir -p .ci && touch .ci/passed
+
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: .ci/passed
+          key: e2e-passed-${{ needs.gate.outputs.tree }}
+
   client:
     needs: [checks, e2e]
+    if: ${{ !failure() && !cancelled() }}
 
     permissions:
       contents: read
@@ -120,6 +198,7 @@ jobs:
 
   server:
     needs: [checks, e2e]
+    if: ${{ !failure() && !cancelled() }}
 
     permissions:
       contents: read
@@ -141,6 +220,7 @@ jobs:
 
   vps:
     needs: [client, server]
+    if: ${{ !failure() && !cancelled() }}
 
     permissions:
       contents: read

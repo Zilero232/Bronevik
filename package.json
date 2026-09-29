@@ -85,16 +85,17 @@
     "format": "prettier --write . --cache",
     "format:check": "prettier --check . --cache",
     "gamedata:import": "bun --filter @otmetki/server gamedata:import",
-    "lint": "eslint . --cache --cache-location node_modules/.cache/.eslintcache",
-    "lint:css": "stylelint \"{apps/web/client,apps/game/modpack/ui-web,apps/game/manager/web,packages/design-tokens}/**/*.scss\" --cache --cache-location node_modules/.cache/.stylelintcache",
-    "lint:css:fix": "stylelint \"{apps/web/client,apps/game/modpack/ui-web,apps/game/manager/web,packages/design-tokens}/**/*.scss\" --fix --cache --cache-location node_modules/.cache/.stylelintcache",
+    "lint": "eslint . --cache --cache-strategy content --cache-location node_modules/.cache/.eslintcache",
+    "lint:css": "stylelint \"{apps/web/client,apps/game/modpack/ui-web,apps/game/manager/web,packages/design-tokens}/**/*.scss\" --cache --cache-strategy content --cache-location node_modules/.cache/.stylelintcache",
+    "lint:css:fix": "stylelint \"{apps/web/client,apps/game/modpack/ui-web,apps/game/manager/web,packages/design-tokens}/**/*.scss\" --fix --cache --cache-strategy content --cache-location node_modules/.cache/.stylelintcache",
     "lint:cycles": "bun --filter @otmetki/client lint:cycles",
     "lint:dupes": "jscpd",
     "lint:encoding": "node scripts/check-utf8.mjs",
-    "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:fix": "eslint . --fix --cache --cache-strategy content --cache-location node_modules/.cache/.eslintcache",
     "lint:unused": "knip",
     "prepare": "husky",
     "test": "vitest run",
+    "test:changed": "vitest run --changed",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -104,7 +105,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
-      "eslint --fix --cache --cache-location node_modules/.cache/.eslintcache",
+      "eslint --fix --cache --cache-strategy content --cache-location node_modules/.cache/.eslintcache",
       "prettier --write"
     ],
     "**/package.json": [

@@ -42,6 +42,7 @@ bun run dev:all        # + worker (collector jobs, schedules)
 bun run dev:manager    # modpack manager (Tauri)
 bun run verify         # typecheck + lint + UTF-8 check + format:check + lint:css
 bun run test           # vitest (never `bun test`)
+bun run test:changed   # only the tests the uncommitted changes reach
 bun run test:e2e       # playwright smoke (starts the client dev server itself)
 bun run test:modpack   # python suites of the game modpack
 bun run lint:unused    # knip — unused files, exports and dependencies

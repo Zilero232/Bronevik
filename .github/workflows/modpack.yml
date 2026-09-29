@@ -39,12 +39,14 @@ jobs:
 
       - run: python -m pip install uv
 
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/AppData/Local/uv/cache
+          key: uv-${{ runner.os }}-${{ hashFiles('apps/game/modpack/uv.lock') }}
+
       - run: uv sync --locked
 
       - run: uv run --locked pytest
-
-      # The stdlib runner the pre-commit hook uses.
-      - run: python tools/run_tests.py
 
       - run: uv run --locked ruff check .
 

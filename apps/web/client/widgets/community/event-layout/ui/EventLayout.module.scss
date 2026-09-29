@@ -1,0 +1,14 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include grid-columns(minmax(0, 1fr) 340px, $below-2xl: 1fr);
+
+  align-items: start;
+}
+
+.main,
+.side {
+  @include stack(var(--space-4));
+
+  min-width: 0;
+}

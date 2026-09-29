@@ -6,11 +6,10 @@
 }
 
 .list {
+  @include list-reset;
+
   display: flex;
   align-items: stretch;
-  padding: 0;
-  margin: 0;
-  list-style: none;
 
   > li {
     display: flex;

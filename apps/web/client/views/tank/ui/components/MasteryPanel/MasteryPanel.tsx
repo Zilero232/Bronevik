@@ -4,10 +4,11 @@ import { MasteryIcon } from '@otmetki/icons';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { SweatBadge } from '@/entities/tank/tank';
-import { Card, CardHeader, EmptyState } from '@/ui-kit';
+import { EmptyState } from '@/ui-kit';
 
 import { MASTERY_LEVELS, TANK_SECTIONS } from '../../../config';
 import { useTank } from '../../../model/context';
+import { TankSection } from '../TankSection';
 
 import s from './MasteryPanel.module.scss';
 
@@ -17,12 +18,11 @@ export const MasteryPanel = () => {
   const { detail } = useTank();
 
   return (
-    <Card className={s.root} id={TANK_SECTIONS.mastery} padding='none'>
-      <CardHeader
-        action={detail.sweat.masteryLevel ? <SweatBadge kind='mastery' level={detail.sweat.masteryLevel} ratio={detail.sweat.mastery} /> : null}
-        className={s.header}
-        title={t('title')}
-      />
+    <TankSection
+      action={detail.sweat.masteryLevel ? <SweatBadge kind='mastery' level={detail.sweat.masteryLevel} ratio={detail.sweat.mastery} /> : null}
+      id={TANK_SECTIONS.mastery}
+      title={t('title')}
+    >
       {detail.mastery ? (
         <ul className={s.list}>
           {MASTERY_LEVELS.map(({ key, level }) => (
@@ -40,6 +40,6 @@ export const MasteryPanel = () => {
         <EmptyState title={t('empty')} />
       )}
       <p className={s.note}>{t('note')}</p>
-    </Card>
+    </TankSection>
   );
 };

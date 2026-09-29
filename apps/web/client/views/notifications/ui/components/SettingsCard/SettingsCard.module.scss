@@ -1,11 +1,10 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include surface-box;
+
   position: relative;
   padding: var(--space-5);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
 
   @include stack(var(--space-4));
 

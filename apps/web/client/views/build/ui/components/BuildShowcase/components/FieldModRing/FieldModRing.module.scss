@@ -1,13 +1,12 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include list-reset;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0;
-  margin: 0;
   gap: var(--space-6);
-  list-style: none;
 
   @include below(3xl) {
     flex-direction: row;

@@ -1,11 +1,11 @@
 import type { RngBucket } from '@otmetki/schemas';
 
+import { round } from 'remeda';
+
 import { HONEST_RNG_VIEW, RNG_SHELLS } from '../../config';
 
 export const bucketMidpoints = (buckets: readonly Pick<RngBucket, 'from' | 'to'>[]): number[] =>
-  buckets.map(
-    ({ from, to }) => Math.round(((from + to) / 2) * HONEST_RNG_VIEW.percentScale * HONEST_RNG_VIEW.labelPrecision) / HONEST_RNG_VIEW.labelPrecision
-  );
+  buckets.map(({ from, to }) => round(((from + to) / 2) * HONEST_RNG_VIEW.percentScale, HONEST_RNG_VIEW.labelDigits));
 
 export const bucketShares = (buckets: readonly Pick<RngBucket, 'share'>[]): number[] => buckets.map((bucket) => bucket.share ?? 0);
 

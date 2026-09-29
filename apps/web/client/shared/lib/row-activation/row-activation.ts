@@ -3,8 +3,9 @@ import type { HTMLAttributes } from 'react';
 import type { RowActivationInput } from './row-activation.types';
 
 import { isInteractiveTarget } from '../interactive-target';
+import { ROW_ACTIVATION } from './row-activation.constants';
 
-const ACTIVATION_KEYS = new Set(['Enter', ' ']);
+const ACTIVATION_KEYS = new Set<string>(ROW_ACTIVATION.keys);
 
 export const rowActivation = ({ onActivate, isLinked }: RowActivationInput): HTMLAttributes<HTMLTableRowElement> =>
   onActivate

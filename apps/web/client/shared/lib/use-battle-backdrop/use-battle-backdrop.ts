@@ -1,5 +1,6 @@
 'use client';
 
+import { millisecondsInSecond } from 'date-fns/constants';
 import { useReducedMotion } from 'motion/react';
 import { useEffect, useRef } from 'react';
 
@@ -26,14 +27,14 @@ export const useBattleBackdrop = ({ seed, density }: UseBattleBackdropInput) => 
     }
 
     const { dust, smoke, cols, rows } = BATTLE_BACKDROP.density[density];
-    const { tracer: tracerConfig } = BATTLE_BACKDROP;
+    const { tracer: tracerConfig, tracerSeed } = BATTLE_BACKDROP;
     const segments = contourSegments({ seed, cols, rows, levels: BATTLE_BACKDROP.levels });
     const motes = createMotes({ seed, dust, smoke });
-    const random = seededRandom(seed * 7919 + 17);
+    const random = seededRandom(seed * tracerSeed.multiplier + tracerSeed.offset);
     const state = { width: 0, height: 0, color: '', tracerColor: '', frame: 0, last: 0, isRunning: false, isVisible: false, nextTracer: 0 };
     let tracers: Tracer[] = [];
 
-    const seconds = () => performance.now() / 1000;
+    const seconds = () => performance.now() / millisecondsInSecond;
     const drawMotion = () =>
       paintMotion({
         context: layer,
@@ -68,13 +69,13 @@ export const useBattleBackdrop = ({ seed, density }: UseBattleBackdropInput) => 
     const tick = (time: number) => {
       state.frame = window.requestAnimationFrame(tick);
 
-      if (time - state.last < 1000 / BATTLE_BACKDROP.fps) {
+      if (time - state.last < millisecondsInSecond / BATTLE_BACKDROP.fps) {
         return;
       }
 
-      const now = time / 1000;
+      const now = time / millisecondsInSecond;
 
-      stepMotes({ motes, seconds: Math.min((time - state.last) / 1000, 0.1) });
+      stepMotes({ motes, seconds: Math.min((time - state.last) / millisecondsInSecond, BATTLE_BACKDROP.maxStepSeconds) });
       state.last = time;
 
       if (now >= state.nextTracer) {

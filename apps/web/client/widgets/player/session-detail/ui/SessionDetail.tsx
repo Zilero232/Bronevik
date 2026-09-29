@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { StatsTiles } from '@/entities/player/stats';
 import { isNotFoundError } from '@/shared/api/source';
-import { EmptyState, QueryState, RetryButton, Skeleton } from '@/ui-kit';
+import { EmptyState, QueryState, RetryButton, SkeletonStack } from '@/ui-kit';
 
 import type { SessionDetailProps } from './SessionDetail.types';
 
@@ -29,14 +29,8 @@ export const SessionDetail = ({ accountId, sessionId, nickname, withShare = true
           title={t('errorTitle')}
         />
       }
-      skeleton={
-        <div aria-busy className={clsx(s.root, className)}>
-          {SESSION_DETAIL.skeletonHeights.map((height) => (
-            <Skeleton key={height} height={height} shape='block' />
-          ))}
-        </div>
-      }
       query={query}
+      skeleton={<SkeletonStack className={clsx(s.root, className)} heights={SESSION_DETAIL.skeletonHeights} />}
     >
       {(session) => (
         <article className={clsx(s.root, className)}>

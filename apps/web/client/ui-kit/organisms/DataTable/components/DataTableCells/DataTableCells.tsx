@@ -1,22 +1,18 @@
 import { flexRender } from '@tanstack/react-table';
 
 import { Link } from '@/shared/i18n/navigation';
+import { dataTableCell } from '@/shared/lib';
 
 import type { DataTableCellsProps } from './DataTableCells.types';
 
 import { CellBar } from '../../../../molecules/CellBar';
-import { DATA_TABLE } from '../../DataTable.constants';
 
 import s from '../../DataTable.module.scss';
 
 export const DataTableCells = <T,>({ row, barMax, link = null }: DataTableCellsProps<T>) =>
   row.getVisibleCells().map((cell, index) => {
-    const { align = 'start', isNumeric, isMedia, isSticky, isRank, bar, hideBelow } = cell.column.columnDef.meta ?? {};
+    const { align, isNumeric, isMedia, isSticky, isRank, hideBelow, isSorted, medal, bar } = dataTableCell({ cell, barMax });
     const content = flexRender(cell.column.columnDef.cell, cell.getContext());
-    const raw = cell.getValue();
-    const rank = isRank && typeof raw === 'number' ? raw : null;
-    const barValue = bar && typeof raw === 'number' ? raw : null;
-    const medal = rank === null ? undefined : DATA_TABLE.medals[rank - 1];
 
     return (
       <td
@@ -28,7 +24,7 @@ export const DataTableCells = <T,>({ row, barMax, link = null }: DataTableCellsP
         data-media={isMedia}
         data-numeric={isNumeric}
         data-rank={isRank}
-        data-sorted={cell.column.getIsSorted() ? true : undefined}
+        data-sorted={isSorted || undefined}
         data-sticky={isSticky}
       >
         {index === 0 && link && (
@@ -40,8 +36,8 @@ export const DataTableCells = <T,>({ row, barMax, link = null }: DataTableCellsP
             tabIndex={link.hasCellLink ? -1 : undefined}
           />
         )}
-        {bar && barValue !== null ? (
-          <CellBar max={bar.max ?? barMax[cell.column.id] ?? 0} tone={bar.tone} value={barValue}>
+        {bar ? (
+          <CellBar max={bar.max} tone={bar.tone} value={bar.value}>
             {content}
           </CellBar>
         ) : medal ? (

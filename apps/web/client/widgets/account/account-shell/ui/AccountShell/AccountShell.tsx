@@ -6,7 +6,7 @@ import { match } from 'ts-pattern';
 
 import { useLoginHref } from '@/entities/auth/session';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
+import { buttonVariants, EmptyState, ErrorState, SkeletonStack } from '@/ui-kit';
 
 import type { AccountShellProps } from './AccountShell.types';
 
@@ -24,13 +24,7 @@ export const AccountShell = ({ children }: AccountShellProps) => {
   return (
     <div className={s.root}>
       {match(state)
-        .with({ isPending: true }, () => (
-          <div aria-busy className={s.skeleton}>
-            {ACCOUNT_SHELL.skeletonHeights.map((height) => (
-              <Skeleton key={height} height={height} shape='block' />
-            ))}
-          </div>
-        ))
+        .with({ isPending: true }, () => <SkeletonStack className={s.skeleton} heights={ACCOUNT_SHELL.skeletonHeights} />)
         .with({ isFailed: true }, () => <ErrorState isRetrying={isRetrying} onRetry={retry} />)
         .with({ isSignedIn: false }, () => (
           <EmptyState

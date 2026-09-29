@@ -22,16 +22,8 @@
 }
 
 .grid {
-  display: grid;
-  padding: 0;
-  margin: 0;
-  gap: var(--space-3);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  list-style: none;
-
-  @include below(xl) {
-    grid-template-columns: 1fr;
-  }
+  @include grid-columns(2, $gap: var(--space-3), $below-xl: 1fr);
+  @include list-reset;
 }
 
 .sources {

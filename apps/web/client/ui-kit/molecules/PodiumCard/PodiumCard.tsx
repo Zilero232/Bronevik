@@ -1,10 +1,9 @@
 import { clsx } from 'clsx';
 
 import { Link } from '@/shared/i18n/navigation';
+import { rankMedal } from '@/shared/lib';
 
 import type { PodiumCardProps } from './PodiumCard.types';
-
-import { PODIUM_CARD } from './PodiumCard.constants';
 
 import s from './PodiumCard.module.scss';
 
@@ -32,7 +31,7 @@ export const PodiumCard = ({ rank, rankLabel, name, metricLabel, value, tone, me
   );
 
   return (
-    <li className={clsx(s.root, className)} data-medal={PODIUM_CARD.medals[rank - 1]} data-rank={rank}>
+    <li className={clsx(s.root, className)} data-medal={rankMedal(rank)} data-rank={rank}>
       {href ? (
         <Link className={s.card} data-tone={tone ?? undefined} href={href}>
           {body}

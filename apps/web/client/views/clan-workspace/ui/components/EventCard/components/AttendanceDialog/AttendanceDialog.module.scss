@@ -6,23 +6,16 @@
 
 .list {
   @include stack(var(--space-2));
+  @include list-reset;
 
   max-height: min(60vh, 520px);
-  padding: 0;
-  margin: 0;
-  list-style: none;
   overflow-y: auto;
 }
 
 .row {
-  display: grid;
-  align-items: center;
-  gap: var(--space-3);
-  grid-template-columns: minmax(0, 1fr) 180px;
+  @include grid-columns(minmax(0, 1fr) 180px, $gap: var(--space-3), $below-sm: 1);
 
-  @include below(sm) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: center;
 }
 
 .name {

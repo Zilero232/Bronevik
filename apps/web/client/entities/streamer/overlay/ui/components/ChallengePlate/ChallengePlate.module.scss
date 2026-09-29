@@ -5,10 +5,7 @@
 }
 
 .head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.6em;
+  @include split-row(0.6em);
 }
 
 .code {

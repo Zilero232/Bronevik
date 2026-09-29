@@ -1,13 +1,11 @@
 import type { MethodSectionProps } from './MethodSection.types';
 
+import { MethodBlock } from '../MethodBlock';
+
 import s from './MethodSection.module.scss';
 
 export const MethodSection = ({ section: { id, title, lead, lines, notes } }: MethodSectionProps) => (
-  <section aria-labelledby={`${id}-title`} className={s.root} id={id}>
-    <h2 className={s.title} id={`${id}-title`}>
-      {title}
-    </h2>
-    <p className={s.lead}>{lead}</p>
+  <MethodBlock id={id} lead={lead} title={title}>
     <ol className={s.lines}>
       {lines.map((line) => (
         <li key={line}>
@@ -20,5 +18,5 @@ export const MethodSection = ({ section: { id, title, lead, lines, notes } }: Me
         <li key={note}>{note}</li>
       ))}
     </ul>
-  </section>
+  </MethodBlock>
 );

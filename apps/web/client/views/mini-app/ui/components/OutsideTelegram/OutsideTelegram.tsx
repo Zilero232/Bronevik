@@ -8,15 +8,15 @@ import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants } from '@/ui-kit';
 
+import { OutsideNotice } from '../OutsideNotice';
+
 import s from './OutsideTelegram.module.scss';
 
 export const OutsideTelegram = () => {
   const t = useTranslations('tg.outside');
 
   return (
-    <section className={s.root}>
-      <h1 className={s.title}>{t('title')}</h1>
-      <p className={s.description}>{t('description', { bot: `@${TELEGRAM_BOT.username}` })}</p>
+    <OutsideNotice description={t('description', { bot: `@${TELEGRAM_BOT.username}` })} title={t('title')}>
       <div className={s.actions}>
         <a className={buttonVariants({ block: true })} href={TELEGRAM_BOT.url} rel='noreferrer' target='_blank'>
           {t('open')}
@@ -26,6 +26,6 @@ export const OutsideTelegram = () => {
           {t('site')}
         </Link>
       </div>
-    </section>
+    </OutsideNotice>
   );
 };

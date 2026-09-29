@@ -90,22 +90,7 @@
 }
 
 .title {
-  @include label;
-
-  display: inline-flex;
-  align-items: center;
-  color: var(--color-text);
-  font-size: var(--text-xs);
-  gap: var(--space-2);
-
-  &:before {
-    width: 3px;
-    height: 10px;
-    flex-shrink: 0;
-    background: linear-gradient(180deg, var(--color-accent) 0 60%, var(--color-gold) 60% 100%);
-    content: '';
-    transform: skewX(-18deg);
-  }
+  @include marked-label;
 }
 
 .meta {

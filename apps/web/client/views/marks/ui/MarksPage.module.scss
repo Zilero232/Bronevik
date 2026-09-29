@@ -7,14 +7,9 @@
 }
 
 .bandInner {
-  display: grid;
-  align-items: start;
-  gap: var(--space-6);
-  grid-template-columns: minmax(0, 1fr) 320px;
+  @include grid-columns(minmax(0, 1fr) 320px, $gap: var(--space-6), $below-3xl: 1);
 
-  @include below(3xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: start;
 }
 
 .rail {

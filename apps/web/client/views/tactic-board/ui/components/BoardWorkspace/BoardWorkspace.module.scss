@@ -5,14 +5,9 @@
 }
 
 .body {
-  display: grid;
-  align-items: start;
-  gap: var(--space-4);
-  grid-template-columns: minmax(0, 1fr) 280px;
+  @include grid-columns(minmax(0, 1fr) 280px, $below-2xl: 1);
 
-  @include below(2xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: start;
 }
 
 .side {

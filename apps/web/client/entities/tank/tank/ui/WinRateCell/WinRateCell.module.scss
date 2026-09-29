@@ -1,11 +1,8 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include numeric;
-  @include tone;
+  @include tone-value;
 
-  color: var(--tone);
-  font-weight: 600;
   white-space: nowrap;
 
   &:not([data-tone]) {

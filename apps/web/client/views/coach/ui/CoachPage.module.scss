@@ -11,14 +11,9 @@
 }
 
 .grid {
-  display: grid;
-  align-items: start;
-  gap: var(--space-4);
-  grid-template-columns: minmax(0, 1fr) 360px;
+  @include grid-columns(minmax(0, 1fr) 360px, $below-2xl: 1fr);
 
-  @include below(2xl) {
-    grid-template-columns: 1fr;
-  }
+  align-items: start;
 }
 
 .main,

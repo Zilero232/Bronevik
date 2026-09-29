@@ -8,6 +8,7 @@ import type { BallisticsSectionProps } from './BallisticsSection.types';
 
 import { TANK_MATH } from '../../../../config';
 import { useBallisticsSection } from '../../../../model/hooks';
+import { MathSection } from '../MathSection';
 
 import s from './BallisticsSection.module.scss';
 
@@ -16,11 +17,7 @@ export const BallisticsSection = ({ config }: BallisticsSectionProps) => {
   const { labels, penetration, flightTime, rows, distances, flightDistance, formatMillimeters, formatSeconds } = useBallisticsSection({ config });
 
   return (
-    <section className={s.root}>
-      <header className={s.head}>
-        <h3 className={s.title}>{t('title')}</h3>
-        <p className={s.description}>{t('description')}</p>
-      </header>
+    <MathSection description={t('description')} title={t('title')}>
       <div className={s.charts}>
         <figure className={s.figure}>
           <figcaption className={s.caption}>{t('penetrationChart')}</figcaption>
@@ -77,6 +74,6 @@ export const BallisticsSection = ({ config }: BallisticsSectionProps) => {
           </tbody>
         </table>
       </div>
-    </section>
+    </MathSection>
   );
 };

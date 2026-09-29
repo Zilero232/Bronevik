@@ -1,13 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .grid {
-  display: grid;
-  gap: var(--space-6);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  @include below(3xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  @include grid-columns(2, $gap: var(--space-6), $below-3xl: 1);
 }
 
 .figure {

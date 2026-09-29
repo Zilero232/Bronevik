@@ -1,22 +1,15 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  display: grid;
-  gap: var(--gap-panel);
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-
-  @include below(2xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  @include grid-columns(minmax(0, 2fr) minmax(0, 1fr), $gap: var(--gap-panel), $below-2xl: 1);
 }
 
 .records {
+  @include list-reset;
+
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: var(--space-3);
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  list-style: none;
 }
 
 .record,
@@ -43,9 +36,8 @@
 }
 
 .parts {
-  padding: 0;
-  margin: 0;
+  @include list-reset;
+
   color: var(--color-text-muted);
   font-size: var(--text-sm);
-  list-style: none;
 }

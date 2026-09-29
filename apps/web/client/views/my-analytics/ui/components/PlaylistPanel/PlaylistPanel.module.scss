@@ -12,10 +12,7 @@
 
 .list {
   @include stack(1px);
-
-  padding: 0;
-  margin: 0;
-  list-style: none;
+  @include list-reset;
 }
 
 .hint {

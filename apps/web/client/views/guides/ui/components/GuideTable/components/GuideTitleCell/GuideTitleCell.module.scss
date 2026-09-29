@@ -8,17 +8,13 @@
 }
 
 .title {
+  @include text-link;
+
   overflow: hidden;
   max-width: 420px;
-  color: var(--color-text);
   font-weight: 600;
-  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  &:hover {
-    color: var(--color-accent);
-  }
 }
 
 .locale {

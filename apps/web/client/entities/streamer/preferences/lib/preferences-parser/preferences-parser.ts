@@ -1,5 +1,5 @@
 import { settingsValuesSchema } from '@otmetki/schemas';
-import { isIncludedIn, mergeDeep } from 'remeda';
+import { isIncludedIn, mergeDeep, round } from 'remeda';
 
 import type { AddValueInput, PreferencesField, PreferencesImport, ReadTagInput } from './preferences-parser.types';
 
@@ -45,7 +45,7 @@ const toValue = (field: PreferencesField, text: string): unknown => {
     }
 
     case 'decimal': {
-      return number === null ? null : Math.round(number * 100) / 100;
+      return number === null ? null : round(number, PREFERENCES_VALUES.decimalDigits);
     }
 
     case 'index': {

@@ -20,15 +20,11 @@
 }
 
 .name {
-  color: var(--color-text);
+  @include text-link;
+
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: 700;
-  text-decoration: none;
-
-  &:hover {
-    color: var(--color-accent);
-  }
 }
 
 .headline {

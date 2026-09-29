@@ -1,14 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  display: grid;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
-  grid-template-columns: minmax(0, 1fr) auto 180px 120px;
+  @include grid-columns(minmax(0, 1fr) auto 180px 120px, $gap: var(--space-2) var(--space-4), $below-xl: minmax(0, 1fr) auto);
 
-  @include below(xl) {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
+  align-items: center;
 }
 
 .main {
@@ -18,14 +13,10 @@
 }
 
 .title {
-  color: var(--color-text);
+  @include text-link;
+
   font-family: var(--font-display);
   font-weight: 700;
-  text-decoration: none;
-
-  &:hover {
-    color: var(--color-accent);
-  }
 }
 
 .date,

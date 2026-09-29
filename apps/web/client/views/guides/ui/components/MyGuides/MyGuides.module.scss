@@ -22,17 +22,13 @@
 }
 
 .title {
+  @include text-link;
+
   overflow: hidden;
-  color: var(--color-text);
   font-size: var(--text-sm);
   font-weight: 600;
-  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  &:hover {
-    color: var(--color-accent);
-  }
 }
 
 .meta {

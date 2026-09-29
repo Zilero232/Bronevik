@@ -9,18 +9,6 @@
 }
 
 .grid {
-  display: grid;
-  padding: 0;
-  margin: 0;
-  gap: var(--space-4);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  list-style: none;
-
-  @include below(3xl) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @include below(lg) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  @include grid-columns(3, $below-3xl: 2, $below-lg: 1);
+  @include list-reset;
 }

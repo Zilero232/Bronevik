@@ -3,11 +3,12 @@
 import { RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button, Card, CardHeader, CopyField } from '@/ui-kit';
+import { Button, CopyField } from '@/ui-kit';
 
 import type { CodeProofProps } from './CodeProof.types';
 
 import { CLAIM_PROFILE } from '../../../config';
+import { ProofCard } from '../ProofCard';
 
 import s from './CodeProof.module.scss';
 
@@ -15,9 +16,7 @@ export const CodeProof = ({ code, isStarting, isVerifying, onStart, onVerify }: 
   const t = useTranslations('streamersDirectory.claim.code');
 
   return (
-    <Card className={s.root} padding='md'>
-      <CardHeader title={t('title')} />
-      <p className={s.description}>{t('description')}</p>
+    <ProofCard description={t('description')} title={t('title')}>
       {code ? (
         <>
           <CopyField label={t('code')} tone='accent' value={code} />
@@ -35,6 +34,6 @@ export const CodeProof = ({ code, isStarting, isVerifying, onStart, onVerify }: 
           </Button>
         </div>
       )}
-    </Card>
+    </ProofCard>
   );
 };

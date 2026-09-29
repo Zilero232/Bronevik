@@ -2,7 +2,7 @@ import type { StatsBlock } from '@otmetki/schemas';
 
 import type { KeyFigureProps } from '@/ui-kit';
 
-export type StatsTrendKey = 'avgDamage' | 'winRate' | 'wn8';
+import type { StatsTrendKey } from '../../../lib/stats-view';
 
 export type UseStatsTilesInput = {
   stats: StatsBlock;

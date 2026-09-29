@@ -1,14 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  display: grid;
-  align-items: center;
-  gap: var(--space-6);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  @include grid-columns(minmax(0, 1fr) minmax(0, 420px), $gap: var(--space-6), $below-3xl: 1);
 
-  @include below(3xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: center;
 }
 
 .copy {

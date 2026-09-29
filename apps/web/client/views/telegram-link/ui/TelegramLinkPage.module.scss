@@ -5,12 +5,7 @@
 }
 
 .grid {
-  display: grid;
-  align-items: start;
-  gap: var(--gap-panel);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  @include grid-columns(minmax(0, 1fr) minmax(0, 320px), $gap: var(--gap-panel), $below-2xl: 1);
 
-  @include below(2xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: start;
 }

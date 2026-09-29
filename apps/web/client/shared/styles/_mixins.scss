@@ -1,6 +1,10 @@
 @forward 'design-tokens' show reduced-motion, texture;
 @forward '@/shared/styles/animations';
 @forward '@/shared/styles/breakpoints';
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:meta';
 @use '@/shared/styles/breakpoints' as *;
 
 $accent-tones: (
@@ -10,10 +14,27 @@ $accent-tones: (
   'brass': 'brass',
   'sky': 'steel-blue'
 );
+$heat-level-mix: (
+  1: 22%,
+  2: 45%,
+  3: 72%
+);
+$status-tones: (
+  'ok': 'success',
+  'degraded': 'warning',
+  'down': 'danger'
+);
 
 @mixin stack($gap: var(--space-4)) {
   display: flex;
   flex-direction: column;
+  gap: $gap;
+}
+
+@mixin split-row($gap: var(--space-3), $align: baseline) {
+  display: flex;
+  align-items: $align;
+  justify-content: space-between;
   gap: $gap;
 }
 
@@ -244,6 +265,24 @@ $accent-tones: (
   }
 }
 
+@mixin tone-value {
+  @include numeric;
+  @include tone;
+
+  color: var(--tone);
+  font-weight: 600;
+}
+
+@mixin status-tone($var: --status) {
+  #{$var}: var(--color-text-dim);
+
+  @each $status, $token in $status-tones {
+    &[data-status='#{$status}'] {
+      #{$var}: var(--color-#{$token});
+    }
+  }
+}
+
 @mixin cosmetic-tone($var: --cosmetic, $attr: data-cosmetic) {
   #{$var}: var(--color-border-strong);
 
@@ -413,6 +452,84 @@ $accent-tones: (
   background: linear-gradient(135deg, color-mix(in srgb, var(#{$var}) 70%, #000) 0%, var(--tile-floor) 85%);
 }
 
+@mixin edge-stripe($color, $width: 3px) {
+  &:before {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: $width;
+    background: $color;
+    content: '';
+  }
+}
+
+@mixin corner-accent {
+  &:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 96px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent) 0 70%, var(--color-gold) 70% 100%);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+    content: '';
+  }
+}
+
+@mixin title-marker($width: 6px, $height: 0.8em, $split: 55%) {
+  &:before {
+    width: $width;
+    height: $height;
+    background: linear-gradient(180deg, var(--color-accent) 0 $split, var(--color-gold) $split 100%);
+    content: '';
+    transform: skewX(-18deg);
+
+    @content;
+  }
+}
+
+@mixin marked-label {
+  @include label;
+
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  gap: var(--space-2);
+
+  @include title-marker(3px, 10px, 60%) {
+    flex-shrink: 0;
+  }
+}
+
+@mixin heat-levels {
+  @each $level, $share in $heat-level-mix {
+    &[data-level='#{$level}'] {
+      background-color: color-mix(in srgb, var(--color-accent) $share, var(--color-surface-sunken));
+    }
+  }
+
+  &[data-level='4'] {
+    background-color: var(--color-accent);
+  }
+}
+
+@mixin hero-scrim {
+  position: absolute;
+  background:
+    linear-gradient(180deg, transparent calc(100% - 48px), var(--color-bg) 100%),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 0%,
+      color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 45%,
+      color-mix(in srgb, var(--color-bg-deep) 20%, transparent) 100%
+    );
+  inset: 0;
+  pointer-events: none;
+}
+
 @mixin band($tone: deep) {
   color: var(--color-text);
   padding-block: var(--band-padding);
@@ -531,4 +648,156 @@ $accent-tones: (
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: $lines;
+}
+
+@function grid-track($columns) {
+  @if meta.type-of($columns) != 'number' or not math.is-unitless($columns) {
+    @return $columns;
+  }
+
+  @if $columns == 1 {
+    @return minmax(0, 1fr);
+  }
+
+  @return repeat($columns, minmax(0, 1fr));
+}
+
+@mixin grid-columns($columns, $gap: var(--space-4), $steps...) {
+  $collapse: meta.keywords($steps);
+  $names: map.keys($breakpoints);
+  $known: ();
+
+  @each $name in $names {
+    $known: list.append($known, 'below-#{$name}');
+  }
+
+  @each $key in map.keys($collapse) {
+    @if not list.index($known, $key) {
+      @error "Unknown step `$#{$key}`. Use `$below-<breakpoint>` with one of: #{$names}.";
+    }
+  }
+
+  display: grid;
+  gap: $gap;
+  grid-template-columns: grid-track($columns);
+
+  @for $index from list.length($names) through 1 {
+    $name: list.nth($names, $index);
+
+    @if map.has-key($collapse, 'below-#{$name}') {
+      @include below($name) {
+        grid-template-columns: grid-track(map.get($collapse, 'below-#{$name}'));
+      }
+    }
+  }
+}
+
+@mixin list-reset {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+@mixin auto-grid($min: 19rem, $gap: var(--space-4)) {
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, $min), 1fr));
+}
+
+@mixin card-grid($min: 19rem, $gap: var(--space-4)) {
+  @include list-reset;
+  @include auto-grid($min, $gap);
+}
+
+@mixin data-table($align: right) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    text-align: $align;
+    white-space: nowrap;
+  }
+}
+
+@mixin stat-table {
+  @include numeric;
+  @include data-table;
+
+  th:first-child {
+    text-align: left;
+  }
+
+  thead th {
+    @include label;
+
+    color: var(--color-text-dim);
+  }
+
+  tbody th {
+    color: var(--color-text);
+    font-weight: 400;
+  }
+
+  td {
+    color: var(--color-text-muted);
+  }
+}
+
+@mixin text-link($color: var(--color-text)) {
+  color: $color;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+@mixin premium-notice {
+  @include well;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+  gap: var(--space-3);
+}
+
+@mixin premium-link {
+  color: var(--color-premium);
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+@mixin surface-box {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+@mixin rank-medal-color($root: '.root') {
+  @each $rank, $medal in (1: gold, 2: silver, 3: bronze) {
+    #{$root}[data-rank='#{$rank}'] & {
+      color: var(--color-mastery-#{$medal});
+    }
+  }
+}
+
+@mixin spacious-page($gap: var(--space-7)) {
+  @include shell;
+  @include stack($gap);
+
+  padding-block: var(--space-9);
+
+  @include below(xl) {
+    padding-top: var(--space-7);
+  }
 }

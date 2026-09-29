@@ -1,12 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-
-  @include below(3xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  @include grid-columns(3, $gap: null, $below-3xl: 1);
 }
 
 .chart {

@@ -10,7 +10,7 @@ export const ANALYTICS_VIEW = {
   seedMax: 1_000_000,
   retryAttempts: 1,
   percentScale: 100,
-  labelPrecision: 10,
+  labelDigits: 1,
   weekdayAnchor: Date.UTC(1970, 0, 4),
   weekdayOrder: [1, 2, 3, 4, 5, 6, 0],
   breakdownDimensions: ['byTier', 'byClass', 'byNation']

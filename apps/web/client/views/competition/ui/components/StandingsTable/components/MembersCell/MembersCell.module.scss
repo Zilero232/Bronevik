@@ -2,10 +2,7 @@
 
 .root {
   @include stack(var(--space-1));
-
-  padding: 0;
-  margin: 0;
-  list-style: none;
+  @include list-reset;
 }
 
 .member {
@@ -17,12 +14,7 @@
 }
 
 .link {
-  color: var(--color-text);
-  text-decoration: none;
-
-  &:hover {
-    color: var(--color-accent);
-  }
+  @include text-link;
 }
 
 .stats {

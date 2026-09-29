@@ -6,7 +6,7 @@ import { match } from 'ts-pattern';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, EmptyState, ErrorState, PageHero, Skeleton } from '@/ui-kit';
+import { buttonVariants, EmptyState, ErrorState, PageHero, SkeletonStack } from '@/ui-kit';
 
 import type { SocialShellProps } from './SocialShell.types';
 
@@ -32,13 +32,7 @@ export const SocialShell = ({ section, figures, children }: SocialShellProps) =>
       <div className={s.body}>
         <SocialNav section={section} />
         {match(state)
-          .with({ isPending: true }, () => (
-            <div aria-busy className={s.skeleton}>
-              {SOCIAL_SHELL.skeletonHeights.map((height) => (
-                <Skeleton key={height} height={height} shape='block' />
-              ))}
-            </div>
-          ))
+          .with({ isPending: true }, () => <SkeletonStack className={s.skeleton} heights={SOCIAL_SHELL.skeletonHeights} />)
           .with({ isFailed: true }, () => <ErrorState isRetrying={isRetrying} onRetry={retry} />)
           .with({ isSignedIn: false }, () => (
             <EmptyState

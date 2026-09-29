@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { CompetitionStatusBadge } from '@/entities/competition/competition';
 import { ROUTES } from '@/shared/constants';
 import { Badge, PageHeader, Skeleton, TextCard } from '@/ui-kit';
+import { EventLayout } from '@/widgets/community/event-layout';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { CompetitionPageProps } from './CompetitionPage.types';
@@ -44,16 +45,20 @@ export const CompetitionPage = ({ slug }: CompetitionPageProps) => {
             />
             <CompetitionSummary competition={competition} />
             <OwnerPanel competition={competition} />
-            <div className={s.grid}>
-              <div className={s.main}>
-                {competition.description && <TextCard title={t('page.about')}>{competition.description}</TextCard>}
-                <StandingsTable competition={competition} />
-              </div>
-              <aside className={s.side}>
-                <JoinPanel competition={competition} />
-                <ScoringRules competition={competition} />
-              </aside>
-            </div>
+            <EventLayout
+              aside={
+                <>
+                  <JoinPanel competition={competition} />
+                  <ScoringRules competition={competition} />
+                </>
+              }
+              main={
+                <>
+                  {competition.description && <TextCard title={t('page.about')}>{competition.description}</TextCard>}
+                  <StandingsTable competition={competition} />
+                </>
+              }
+            />
           </>
         )}
       </ResourceGate>

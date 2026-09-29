@@ -19,10 +19,7 @@
 
 .results {
   @include panel;
-
-  padding: 0;
-  margin: 0;
-  list-style: none;
+  @include list-reset;
 }
 
 .item {

@@ -24,17 +24,7 @@
   font-weight: 700;
   text-align: end;
 
-  .root[data-rank='1'] & {
-    color: var(--color-mastery-gold);
-  }
-
-  .root[data-rank='2'] & {
-    color: var(--color-mastery-silver);
-  }
-
-  .root[data-rank='3'] & {
-    color: var(--color-mastery-bronze);
-  }
+  @include rank-medal-color;
 }
 
 .who {

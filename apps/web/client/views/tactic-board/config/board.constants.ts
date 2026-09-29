@@ -6,7 +6,7 @@ export const BOARD = {
   gridRows: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K'],
   minPointDistance: 3,
   minShapeSize: 6,
-  precision: 10,
+  precisionDigits: 1,
   textBaseSize: 14,
   textWidthFactor: 2,
   iconSize: 30,

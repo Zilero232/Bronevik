@@ -1,3 +1,5 @@
+import { sortBy } from 'remeda';
+
 import { chosenAccountId } from '@/entities/auth/session';
 import { zonedInputToIso } from '@/shared/lib';
 
@@ -12,7 +14,7 @@ export const toCreatePlatoon = (values: PlatoonFormOutput): CreatePlatoon => {
 
   return {
     ...(accountId === undefined ? {} : { accountId }),
-    tiers: values.tiers.map(Number).sort((left, right) => left - right),
+    tiers: sortBy(values.tiers.map(Number), (tier) => tier),
     modes: values.modes,
     tankIds: values.tankIds,
     hasVoice: values.hasVoice,

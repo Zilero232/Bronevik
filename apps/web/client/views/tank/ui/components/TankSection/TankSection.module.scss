@@ -1,0 +1,8 @@
+.root {
+  min-width: 0;
+  scroll-margin-top: calc(var(--header-offset) + var(--space-4));
+}
+
+.header {
+  padding: 0 var(--space-4);
+}

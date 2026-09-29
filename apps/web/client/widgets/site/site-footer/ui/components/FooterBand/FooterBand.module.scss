@@ -17,17 +17,7 @@
   isolation: isolate;
 
   @include rivet-rule(bottom);
-
-  &:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 96px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--color-accent) 0 70%, var(--color-gold) 70% 100%);
-    clip-path: polygon(0 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
-    content: '';
-  }
+  @include corner-accent;
 
   @include below(3xl) {
     grid-template-columns: minmax(0, 1fr);
@@ -117,13 +107,12 @@
 }
 
 .actions {
+  @include list-reset;
+
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  padding: 0;
-  margin: 0;
   gap: var(--space-3);
-  list-style: none;
 
   @include below(md) {
     display: grid;

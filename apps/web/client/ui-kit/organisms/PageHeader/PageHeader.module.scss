@@ -17,17 +17,7 @@
   isolation: isolate;
 
   @include rivet-rule(bottom);
-
-  &:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 96px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--color-accent) 0 70%, var(--color-gold) 70% 100%);
-    clip-path: polygon(0 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
-    content: '';
-  }
+  @include corner-accent;
 
   @include below(xl) {
     grid-template-columns: minmax(0, 1fr);
@@ -92,14 +82,9 @@
 
   overflow-wrap: anywhere;
 
-  &:before {
+  @include title-marker(6px, 0.78em) {
     display: inline-block;
-    width: 6px;
-    height: 0.78em;
     margin-right: 0.42em;
-    background: linear-gradient(180deg, var(--color-accent) 0 55%, var(--color-gold) 55% 100%);
-    content: '';
-    transform: skewX(-18deg);
   }
 
   @include below(md) {

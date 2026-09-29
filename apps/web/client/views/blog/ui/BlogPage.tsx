@@ -6,7 +6,8 @@ import { useTranslations } from 'next-intl';
 import { BlogPostCard } from '@/entities/blog/post';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Button, buttonVariants, Card, FilteredEmptyState, PageHeader, QueryState, SegmentedControl, Skeleton, ToggleChips } from '@/ui-kit';
+import { Button, buttonVariants, Card, FilteredEmptyState, PageHeader, QueryState, SegmentedControl, ToggleChips } from '@/ui-kit';
+import { LeadFeed, LeadFeedSkeleton } from '@/widgets/content/lead-feed';
 
 import { BLOG_PAGE } from '../config';
 import { useBlogFeed } from '../model/hooks';
@@ -63,28 +64,18 @@ export const BlogPage = () => {
             />
           </Card>
         }
-        skeleton={
-          <div className={s.grid}>
-            <Skeleton count={BLOG_PAGE.skeletons} height={BLOG_PAGE.skeletonHeight} shape='block' />
-          </div>
-        }
         errorDescription={t('error.description')}
         errorTitle={t('error.title')}
         isEmpty={() => feed.posts.length === 0}
         query={feed.query}
+        skeleton={<LeadFeedSkeleton count={BLOG_PAGE.skeletons} height={BLOG_PAGE.skeletonHeight} />}
       >
-        <div className={s.feed}>
-          {feed.lead && <BlogPostCard isPriority post={feed.lead} variant='lead' />}
-          {feed.rest.length > 0 && (
-            <ul className={s.grid}>
-              {feed.rest.map((post) => (
-                <li key={post.id} className={s.cell}>
-                  <BlogPostCard post={post} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <LeadFeed
+          itemKey={(post) => post.id}
+          items={feed.rest}
+          lead={feed.lead && <BlogPostCard isPriority post={feed.lead} variant='lead' />}
+          renderItem={(post) => <BlogPostCard post={post} />}
+        />
       </QueryState>
       {feed.query.hasNextPage && (
         <Button className={s.more} disabled={feed.query.isFetchingNextPage} variant='secondary' onClick={feed.loadMore}>

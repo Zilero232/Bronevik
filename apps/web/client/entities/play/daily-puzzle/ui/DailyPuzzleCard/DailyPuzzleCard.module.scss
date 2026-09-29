@@ -15,16 +15,7 @@
   isolation: isolate;
   text-decoration: none;
 
-  &:before {
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 3px;
-    background: var(--status);
-    content: '';
-  }
+  @include edge-stripe(var(--status));
 
   &:focus-visible {
     @include focus-ring;

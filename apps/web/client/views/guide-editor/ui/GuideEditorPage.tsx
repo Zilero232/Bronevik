@@ -8,7 +8,7 @@ import { match } from 'ts-pattern';
 import { useLoginHref } from '@/entities/auth/session';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, EmptyState, ErrorState, PageHeader, Skeleton } from '@/ui-kit';
+import { buttonVariants, EmptyState, ErrorState, PageHeader, SkeletonStack } from '@/ui-kit';
 
 import type { GuideEditorPageProps } from './GuideEditorPage.types';
 
@@ -34,13 +34,7 @@ export const GuideEditorPage = ({ slug }: GuideEditorPageProps) => {
         title={isEdit ? t('editTitle') : t('newTitle')}
       />
       {match({ isSessionPending, isSignedIn, isNotFound, isError, isGuidePending, isForeign })
-        .with({ isSessionPending: true }, () => (
-          <div aria-busy className={s.skeleton}>
-            {GUIDE_FORM.skeletonHeights.map((height) => (
-              <Skeleton key={height} height={height} shape='block' />
-            ))}
-          </div>
-        ))
+        .with({ isSessionPending: true }, () => <SkeletonStack className={s.skeleton} heights={GUIDE_FORM.skeletonHeights} />)
         .with({ isSignedIn: false }, () => (
           <EmptyState
             action={
@@ -57,13 +51,7 @@ export const GuideEditorPage = ({ slug }: GuideEditorPageProps) => {
         .with({ isError: true }, () => (
           <ErrorState description={t('loadErrorDescription')} isRetrying={isRetrying} title={t('loadErrorTitle')} onRetry={retry} />
         ))
-        .with({ isGuidePending: true }, () => (
-          <div aria-busy className={s.skeleton}>
-            {GUIDE_FORM.skeletonHeights.map((height) => (
-              <Skeleton key={height} height={height} shape='block' />
-            ))}
-          </div>
-        ))
+        .with({ isGuidePending: true }, () => <SkeletonStack className={s.skeleton} heights={GUIDE_FORM.skeletonHeights} />)
         .with({ isForeign: true }, () => <EmptyState description={t('foreignDescription')} title={t('foreignTitle')} />)
         .otherwise(() => (
           <GuideEditorForm key={guide?.id ?? 'new'} guide={guide} />

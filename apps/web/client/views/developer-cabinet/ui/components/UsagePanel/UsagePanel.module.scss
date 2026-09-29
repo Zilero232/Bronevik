@@ -21,14 +21,9 @@
 }
 
 .split {
-  display: grid;
-  align-items: start;
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  @include grid-columns(minmax(0, 0.8fr) minmax(0, 1.2fr), $gap: var(--space-5), $below-3xl: 1);
 
-  @include below(3xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: start;
 }
 
 .body[data-stale='true'] {

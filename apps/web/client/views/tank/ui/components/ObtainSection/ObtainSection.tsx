@@ -3,10 +3,10 @@
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { TankLink, TankStatusBadge } from '@/entities/tank/tank';
-import { Card, CardHeader } from '@/ui-kit';
 
 import { TANK_PAGE, TANK_SECTIONS } from '../../../config';
 import { useObtainSection } from '../../../model/hooks';
+import { TankSection } from '../TankSection';
 import { ObtainEditorial, ObtainLinks, ObtainList, ObtainMissions, ReturnAlert } from './components';
 
 import s from './ObtainSection.module.scss';
@@ -18,8 +18,7 @@ export const ObtainSection = () => {
   const { obtain, offers, news, missions, editorial } = useObtainSection();
 
   return (
-    <Card className={s.root} id={TANK_SECTIONS.obtain} padding='none'>
-      <CardHeader action={<TankStatusBadge status={obtain.status} />} className={s.header} title={t('title')} />
+    <TankSection action={<TankStatusBadge status={obtain.status} />} id={TANK_SECTIONS.obtain} title={t('title')}>
       <div className={s.body}>
         {obtain.sources.length > 0 ? (
           <ul className={s.sources}>
@@ -54,6 +53,6 @@ export const ObtainSection = () => {
         {news.length > 0 && <ObtainLinks items={news} title={t('news')} />}
       </div>
       <p className={s.note}>{t('note')}</p>
-    </Card>
+    </TankSection>
   );
 };

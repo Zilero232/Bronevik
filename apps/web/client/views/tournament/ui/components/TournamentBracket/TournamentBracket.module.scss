@@ -6,11 +6,10 @@
 }
 
 .columns {
+  @include list-reset;
+
   display: flex;
-  padding: 0;
-  margin: 0;
   gap: var(--space-5);
-  list-style: none;
 }
 
 .column {
@@ -26,14 +25,13 @@
 }
 
 .matches {
+  @include list-reset;
+
   display: flex;
   flex: 1;
   flex-direction: column;
   justify-content: space-around;
-  padding: 0;
-  margin: 0;
   gap: var(--space-3);
-  list-style: none;
 }
 
 .slot {

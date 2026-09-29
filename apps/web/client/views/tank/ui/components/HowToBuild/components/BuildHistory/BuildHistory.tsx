@@ -2,13 +2,13 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { GameIcon, gameLabel } from '@/entities/tank/build';
-import { EmptyState, QueryState, Skeleton, Tooltip } from '@/ui-kit';
+import { EmptyState, QueryState, Skeleton } from '@/ui-kit';
 
 import type { BuildHistoryProps } from './BuildHistory.types';
 
 import { HOW_TO_BUILD } from '../../../../../config';
 import { useBuildHistory } from '../../../../../model/hooks';
+import { PickIcons } from './components';
 
 import s from './BuildHistory.module.scss';
 
@@ -45,26 +45,10 @@ export const BuildHistory = ({ mode, cohort }: BuildHistoryProps) => {
                   <td className={s.version}>{gameVersion}</td>
                   <td className={s.numeric}>{format.number(battles)}</td>
                   <td>
-                    <span className={s.icons}>
-                      {equipment.map(({ option }) => (
-                        <Tooltip key={option.id} content={gameLabel(option.name)}>
-                          <span aria-label={gameLabel(option.name)}>
-                            <GameIcon kind={option.kind} size={HOW_TO_BUILD.iconSize} src={option.image} />
-                          </span>
-                        </Tooltip>
-                      ))}
-                    </span>
+                    <PickIcons picks={equipment} />
                   </td>
                   <td>
-                    <span className={s.icons}>
-                      {consumables.map(({ option }) => (
-                        <Tooltip key={option.id} content={gameLabel(option.name)}>
-                          <span aria-label={gameLabel(option.name)}>
-                            <GameIcon kind={option.kind} size={HOW_TO_BUILD.iconSize} src={option.image} />
-                          </span>
-                        </Tooltip>
-                      ))}
-                    </span>
+                    <PickIcons picks={consumables} />
                   </td>
                 </tr>
               ))}

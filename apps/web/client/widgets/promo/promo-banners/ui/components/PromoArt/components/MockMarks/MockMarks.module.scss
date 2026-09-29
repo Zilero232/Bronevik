@@ -39,12 +39,11 @@
 }
 
 .thresholds {
+  @include list-reset;
+
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: 0.4em;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  list-style: none;
 }
 
 .threshold {

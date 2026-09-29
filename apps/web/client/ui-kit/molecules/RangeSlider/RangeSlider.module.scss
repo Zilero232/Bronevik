@@ -7,10 +7,7 @@
 }
 
 .head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
+  @include split-row;
 }
 
 .label {

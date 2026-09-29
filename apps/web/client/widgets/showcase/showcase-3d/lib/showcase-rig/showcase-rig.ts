@@ -1,5 +1,7 @@
 import type { Vec3 } from '@otmetki/gamedata';
 
+import { Box3, Vector3 } from 'three';
+
 import type { PartsOfInput, ShowcasePart, ShowcaseRig, ShowcaseRigInput, TranslateInput } from './showcase-rig.types';
 
 import { SHOWCASE_RIG } from '../../config';
@@ -37,31 +39,23 @@ export const showcaseRig = ({ geometry, modules }: ShowcaseRigInput): ShowcaseRi
   });
 
   const world = [...body, ...turretParts.map((part) => ({ ...part, position: translate({ point: part.position, offset: turretAt }) }))];
-  const min: Vec3 = [Infinity, Infinity, Infinity];
-  const max: Vec3 = [-Infinity, -Infinity, -Infinity];
-
-  for (const { piece, position } of world) {
-    for (let index = 0; index < piece.positions.length; index += 1) {
-      const axis = index % 3;
-      const value = piece.positions[index] + position[axis];
-
-      min[axis] = Math.min(min[axis], value);
-      max[axis] = Math.max(max[axis], value);
-    }
-  }
+  const box = world.reduce(
+    (bounds, { piece, position }) => bounds.union(new Box3().setFromArray(piece.positions).translate(new Vector3(...position))),
+    new Box3()
+  );
 
   const turret = turretParts.length > 0 ? { position: turretAt, parts: turretParts } : null;
 
-  if (!Number.isFinite(min[0])) {
+  if (box.isEmpty()) {
     return { body, turret, center: SHOWCASE_RIG.origin, radius: 1, floor: 0, height: 1 };
   }
 
   return {
     body,
     turret,
-    center: [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, (min[2] + max[2]) / 2],
-    radius: Math.max(Math.hypot(max[0] - min[0], max[1] - min[1], max[2] - min[2]) / 2, Number.EPSILON),
-    floor: min[1],
-    height: Math.max(max[1] - min[1], Number.EPSILON)
+    center: box.getCenter(new Vector3()).toArray(),
+    radius: Math.max(box.getSize(new Vector3()).length() / 2, Number.EPSILON),
+    floor: box.min.y,
+    height: Math.max(box.max.y - box.min.y, Number.EPSILON)
   };
 };

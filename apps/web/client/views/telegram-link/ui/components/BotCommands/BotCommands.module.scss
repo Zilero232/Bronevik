@@ -1,19 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  display: grid;
-  gap: var(--gap-panel);
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-
-  @include below(xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  @include grid-columns(minmax(0, 1.4fr) minmax(0, 1fr), $gap: var(--gap-panel), $below-xl: 1);
 }
 
 .commands {
-  padding: 0;
-  margin: 0;
-  list-style: none;
+  @include list-reset;
 }
 
 .command {

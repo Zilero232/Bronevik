@@ -48,19 +48,5 @@
   background-color: var(--color-surface-sunken);
   box-shadow: inset 0 0 0 1px var(--color-border);
 
-  &[data-level='1'] {
-    background-color: color-mix(in srgb, var(--color-accent) 22%, var(--color-surface-sunken));
-  }
-
-  &[data-level='2'] {
-    background-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-surface-sunken));
-  }
-
-  &[data-level='3'] {
-    background-color: color-mix(in srgb, var(--color-accent) 72%, var(--color-surface-sunken));
-  }
-
-  &[data-level='4'] {
-    background-color: var(--color-accent);
-  }
+  @include heat-levels;
 }

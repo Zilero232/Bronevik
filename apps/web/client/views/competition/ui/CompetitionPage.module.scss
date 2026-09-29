@@ -3,21 +3,3 @@
 .root {
   @include page(var(--space-4));
 }
-
-.grid {
-  display: grid;
-  align-items: start;
-  gap: var(--space-4);
-  grid-template-columns: minmax(0, 1fr) 340px;
-
-  @include below(2xl) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.main,
-.side {
-  @include stack(var(--space-4));
-
-  min-width: 0;
-}

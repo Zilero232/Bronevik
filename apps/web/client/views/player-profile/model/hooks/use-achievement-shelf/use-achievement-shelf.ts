@@ -1,5 +1,7 @@
 'use client';
 
+import { sumBy } from 'remeda';
+
 import { OVERVIEW } from '../../../config';
 import { usePlayerAchievements } from '../use-player-achievements';
 import { useProfileTab } from '../use-profile-tab';
@@ -14,7 +16,7 @@ export const useAchievementShelf = () => {
   return {
     query,
     items,
-    total: sections.reduce((sum, { items: medals }) => sum + medals.length, 0),
+    total: sumBy(sections, ({ items: medals }) => medals.length),
     openAll: () => setTab('achievements')
   };
 };

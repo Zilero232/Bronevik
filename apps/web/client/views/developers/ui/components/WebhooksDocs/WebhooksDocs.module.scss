@@ -8,13 +8,8 @@
 }
 
 .layout {
-  display: grid;
+  @include grid-columns(minmax(0, 1fr) minmax(0, 1fr), $gap: var(--space-7), $below-3xl: 1);
+
   align-items: start;
   margin-top: var(--space-4);
-  gap: var(--space-7);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-
-  @include below(3xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }

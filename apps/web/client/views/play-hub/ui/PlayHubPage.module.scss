@@ -14,11 +14,5 @@
 }
 
 .grid {
-  display: grid;
-  gap: var(--space-4);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  @include below(4xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  @include grid-columns(2, $below-4xl: 1);
 }

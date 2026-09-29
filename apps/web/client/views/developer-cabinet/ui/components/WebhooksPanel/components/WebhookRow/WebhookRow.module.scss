@@ -1,13 +1,12 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include surface-box;
+
   position: relative;
   display: grid;
   align-items: center;
   padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
   gap: var(--space-4);
   grid-template-columns: minmax(0, 1fr) auto;
 

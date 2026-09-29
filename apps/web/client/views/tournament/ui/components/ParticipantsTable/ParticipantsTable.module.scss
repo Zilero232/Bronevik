@@ -32,13 +32,9 @@
 }
 
 .link {
-  color: var(--color-text);
-  font-weight: 600;
-  text-decoration: none;
+  @include text-link;
 
-  &:hover {
-    color: var(--color-accent);
-  }
+  font-weight: 600;
 }
 
 .team {

@@ -27,18 +27,14 @@
 }
 
 .name {
+  @include text-link;
+
   overflow: hidden;
-  color: var(--color-text);
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: 700;
-  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  &:hover {
-    color: var(--color-accent);
-  }
 
   &:focus-visible {
     @include focus-ring;
@@ -51,12 +47,11 @@
 }
 
 .channels {
+  @include list-reset;
+
   display: flex;
   flex-wrap: wrap;
-  padding: 0;
-  margin: 0;
   gap: var(--space-2);
-  list-style: none;
 }
 
 .settings {

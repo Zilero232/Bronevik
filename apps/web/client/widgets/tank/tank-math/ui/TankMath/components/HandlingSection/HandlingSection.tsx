@@ -8,6 +8,7 @@ import type { HandlingSectionProps } from './HandlingSection.types';
 
 import { TANK_MATH } from '../../../../config';
 import { useHandlingSection } from '../../../../model/hooks';
+import { MathSection } from '../MathSection';
 
 import s from './HandlingSection.module.scss';
 
@@ -16,11 +17,7 @@ export const HandlingSection = ({ config, other, otherLabel }: HandlingSectionPr
   const { labels, series, items, score, formatDispersion } = useHandlingSection({ config, other });
 
   return (
-    <section className={s.root}>
-      <header className={s.head}>
-        <h3 className={s.title}>{t('title')}</h3>
-        <p className={s.description}>{t('description')}</p>
-      </header>
+    <MathSection description={t('description')} title={t('title')}>
       <div className={s.grid}>
         <div className={s.side}>
           {score && (
@@ -41,6 +38,6 @@ export const HandlingSection = ({ config, other, otherLabel }: HandlingSectionPr
           <LineChart ariaLabel={t('chart')} formatValue={formatDispersion} height={TANK_MATH.chartHeight} labels={labels} series={series} />
         </figure>
       </div>
-    </section>
+    </MathSection>
   );
 };

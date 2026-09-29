@@ -1,14 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  display: grid;
-  align-items: end;
-  gap: var(--space-3);
-  grid-template-columns: minmax(0, 1fr) auto;
+  @include grid-columns(minmax(0, 1fr) auto, $gap: var(--space-3), $below-sm: 1);
 
-  @include below(sm) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: end;
 }
 
 .picker {

@@ -3,11 +3,12 @@
 import { MapIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Card, CardHeader, EmptyState, QueryState, Skeleton } from '@/ui-kit';
+import { EmptyState, QueryState, Skeleton } from '@/ui-kit';
 import { MapSamplesTable } from '@/widgets/map/map-samples';
 
 import { TANK_PAGE, TANK_SECTIONS } from '../../../config';
 import { useTankMaps } from '../../../model/hooks';
+import { TankSection } from '../TankSection';
 
 import s from './TankMaps.module.scss';
 
@@ -16,8 +17,7 @@ export const TankMaps = () => {
   const { query } = useTankMaps();
 
   return (
-    <Card className={s.root} id={TANK_SECTIONS.maps} padding='none'>
-      <CardHeader className={s.header} meta={t('meta')} title={t('title')} />
+    <TankSection id={TANK_SECTIONS.maps} meta={t('meta')} title={t('title')}>
       <div className={s.body}>
         <QueryState
           empty={
@@ -35,6 +35,6 @@ export const TankMaps = () => {
           {({ rows, windowDays, minBattles }) => <MapSamplesTable minBattles={minBattles} nameLabel={t('map')} rows={rows} windowDays={windowDays} />}
         </QueryState>
       </div>
-    </Card>
+    </TankSection>
   );
 };

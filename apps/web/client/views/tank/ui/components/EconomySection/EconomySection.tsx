@@ -4,10 +4,11 @@ import type { EconomyAccount } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 
-import { Card, CardHeader, EmptyState, KeyFigure, KeyFigures, SegmentedControl, Switch } from '@/ui-kit';
+import { EmptyState, KeyFigure, KeyFigures, SegmentedControl, Switch } from '@/ui-kit';
 
 import { TANK_SECTIONS } from '../../../config';
 import { useEconomySection } from '../../../model/hooks';
+import { TankSection } from '../TankSection';
 
 import s from './EconomySection.module.scss';
 
@@ -16,23 +17,22 @@ export const EconomySection = () => {
   const { account, setAccount, withReserve, onReserveChange, view, hasData, windowDays } = useEconomySection();
 
   return (
-    <Card className={s.root} id={TANK_SECTIONS.economy} padding='none'>
-      <CardHeader
-        action={
-          <SegmentedControl<EconomyAccount>
-            options={[
-              { value: 'premium', label: t('premium') },
-              { value: 'standard', label: t('standard') }
-            ]}
-            aria-label={t('account')}
-            size='sm'
-            value={account}
-            onChange={setAccount}
-          />
-        }
-        className={s.header}
-        title={t('title')}
-      />
+    <TankSection
+      action={
+        <SegmentedControl<EconomyAccount>
+          options={[
+            { value: 'premium', label: t('premium') },
+            { value: 'standard', label: t('standard') }
+          ]}
+          aria-label={t('account')}
+          size='sm'
+          value={account}
+          onChange={setAccount}
+        />
+      }
+      id={TANK_SECTIONS.economy}
+      title={t('title')}
+    >
       {!hasData && <EmptyState description={t('emptyDescription')} title={t('emptyTitle')} />}
       {hasData && !view && <EmptyState isCompact title={t('noAccountData')} />}
       {view && (
@@ -50,6 +50,6 @@ export const EconomySection = () => {
         </>
       )}
       <p className={s.note}>{view ? t('note', { battles: view.battles, players: view.players, days: windowDays }) : t('noteEmpty')}</p>
-    </Card>
+    </TankSection>
   );
 };

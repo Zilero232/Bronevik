@@ -2,26 +2,13 @@
 
 .root {
   @include well;
+  @include status-tone;
 
   display: grid;
   align-items: start;
   padding: var(--space-4);
   gap: var(--space-3);
   grid-template-columns: auto minmax(0, 1fr);
-
-  --status: var(--color-text-dim);
-
-  &[data-status='ok'] {
-    --status: var(--color-success);
-  }
-
-  &[data-status='degraded'] {
-    --status: var(--color-warning);
-  }
-
-  &[data-status='down'] {
-    --status: var(--color-danger);
-  }
 }
 
 .dot {

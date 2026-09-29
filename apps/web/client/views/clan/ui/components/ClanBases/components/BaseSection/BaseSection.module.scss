@@ -13,10 +13,9 @@
 }
 
 .list {
-  padding: 0;
+  @include list-reset;
+
   border-top: 1px solid var(--color-border);
-  margin: 0;
-  list-style: none;
 }
 
 .note {

@@ -5,10 +5,11 @@ import { useTranslations } from 'next-intl';
 
 import { PlusBadge, PlusGate, PlusTeaser } from '@/features/plus/plus-gate';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, Card, CardHeader, EmptyState, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { buttonVariants, EmptyState, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import { HOW_TO_BUILD, TANK_SECTIONS } from '../../../config';
 import { useHowToBuild } from '../../../model/hooks';
+import { TankSection } from '../TankSection';
 import { BuildHistory, UsageBody } from './components';
 
 import s from './HowToBuild.module.scss';
@@ -18,18 +19,17 @@ export const HowToBuild = () => {
   const { mode, cohort, setMode, setCohort, modes, cohorts, plusCohorts, isLocked, usage, crew, hasLoadout, href, query } = useHowToBuild();
 
   return (
-    <Card className={s.root} id={TANK_SECTIONS.builds} padding='none'>
-      <CardHeader
-        action={
-          hasLoadout ? (
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={href}>
-              {t('open')}
-            </Link>
-          ) : undefined
-        }
-        className={s.header}
-        title={t('title')}
-      />
+    <TankSection
+      action={
+        hasLoadout ? (
+          <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={href}>
+            {t('open')}
+          </Link>
+        ) : undefined
+      }
+      id={TANK_SECTIONS.builds}
+      title={t('title')}
+    >
       <div className={s.controls}>
         <SegmentedControl
           aria-label={t('modeLabel')}
@@ -75,6 +75,6 @@ export const HowToBuild = () => {
         <BuildHistory cohort={cohort} mode={mode} />
       </PlusGate>
       <p className={s.note}>{t('note')}</p>
-    </Card>
+    </TankSection>
   );
 };

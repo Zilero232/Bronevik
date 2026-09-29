@@ -1,9 +1,8 @@
 'use client';
 
-import { NumberField } from '@base-ui/react/number-field';
 import { Popover } from '@base-ui/react/popover';
 import { clsx } from 'clsx';
-import { CalendarClock, Minus, Plus, X } from 'lucide-react';
+import { CalendarClock, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DayPicker } from 'react-day-picker';
 
@@ -13,6 +12,7 @@ import { useDateTimeField, useFormControl } from '@/shared/lib';
 import type { DateTimeFieldProps } from './DateTimeField.types';
 
 import { Button } from '../../atoms';
+import { TimeSpin } from './components';
 import { DATE_TIME_FIELD_VIEW } from './DateTimeField.constants';
 
 import s from './DateTimeField.module.scss';
@@ -104,42 +104,28 @@ export const DateTimeField = ({
             />
             <div className={s.time}>
               <span className={s.timeLabel}>{t('time')}</span>
-              <NumberField.Root
-                className={s.spin}
-                format={DATE_TIME_FIELD_VIEW.twoDigits}
+              <TimeSpin
+                decrementLabel={t('hoursDown')}
+                incrementLabel={t('hoursUp')}
+                label={t('hours')}
                 max={DATE_TIME_FIELD_VIEW.hours.max}
                 min={DATE_TIME_FIELD_VIEW.hours.min}
                 value={hours}
                 onValueChange={onHoursChange}
-              >
-                <NumberField.Decrement aria-label={t('hoursDown')} className={s.step}>
-                  <Minus size={12} />
-                </NumberField.Decrement>
-                <NumberField.Input aria-label={t('hours')} className={s.spinInput} placeholder='--' />
-                <NumberField.Increment aria-label={t('hoursUp')} className={s.step}>
-                  <Plus size={12} />
-                </NumberField.Increment>
-              </NumberField.Root>
+              />
               <span aria-hidden className={s.colon}>
                 :
               </span>
-              <NumberField.Root
-                className={s.spin}
-                format={DATE_TIME_FIELD_VIEW.twoDigits}
+              <TimeSpin
+                decrementLabel={t('minutesDown')}
+                incrementLabel={t('minutesUp')}
+                label={t('minutes')}
                 max={DATE_TIME_FIELD_VIEW.minutes.max}
                 min={DATE_TIME_FIELD_VIEW.minutes.min}
                 step={stepMinutes}
                 value={minutes}
                 onValueChange={onMinutesChange}
-              >
-                <NumberField.Decrement aria-label={t('minutesDown')} className={s.step}>
-                  <Minus size={12} />
-                </NumberField.Decrement>
-                <NumberField.Input aria-label={t('minutes')} className={s.spinInput} placeholder='--' />
-                <NumberField.Increment aria-label={t('minutesUp')} className={s.step}>
-                  <Plus size={12} />
-                </NumberField.Increment>
-              </NumberField.Root>
+              />
             </div>
             <p className={s.zoneNote}>{t('zoneHint')}</p>
             <div className={s.actions}>

@@ -41,7 +41,7 @@ export const paintMotion = ({ context, width, height, motes, tracers, now, color
       context.fillStyle = color;
     } else {
       context.beginPath();
-      context.arc(x, y, Math.max(radius, 0.6), 0, Math.PI * 2);
+      context.arc(x, y, Math.max(radius, BATTLE_BACKDROP.mote.minRadiusPx), 0, Math.PI * 2);
       context.fill();
     }
   }

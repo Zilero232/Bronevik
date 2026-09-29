@@ -1,14 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  display: grid;
-  align-items: start;
-  gap: var(--space-3);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  @include grid-columns(minmax(0, 1fr) minmax(0, 1.15fr), $gap: var(--space-3), $below-3xl: 1);
 
-  @include below(3xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: start;
 }
 
 .controls {

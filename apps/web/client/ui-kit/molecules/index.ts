@@ -45,6 +45,7 @@ export { Select } from './Select';
 export type { SelectItem } from './Select';
 export { ServiceStatus } from './ServiceStatus';
 export type { ServiceStatusValue } from './ServiceStatus';
+export { SkeletonStack } from './SkeletonStack';
 export { Sparkline } from './Sparkline';
 export { StatList } from './StatList';
 export type { StatListItem } from './StatList';

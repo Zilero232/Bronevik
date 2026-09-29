@@ -35,30 +35,17 @@
 }
 
 .title {
-  @include label;
+  @include marked-label;
 
-  display: inline-flex;
   flex-shrink: 0;
-  align-items: center;
-  color: var(--color-text);
-  font-size: var(--text-xs);
-  gap: var(--space-2);
-
-  &:before {
-    width: 3px;
-    height: 10px;
-    flex-shrink: 0;
-    background: linear-gradient(180deg, var(--color-accent) 0 60%, var(--color-gold) 60% 100%);
-    content: '';
-    transform: skewX(-18deg);
-  }
 
   @include below(lg) {
     display: none;
   }
 }
 
-.count {
+.count,
+.badge {
   @include numeric;
 
   display: inline-grid;
@@ -71,6 +58,9 @@
   font-size: 11px;
   font-weight: 700;
   place-items: center;
+}
+
+.count {
   transition:
     background-color var(--duration-fast) ease,
     color var(--duration-fast) ease;
@@ -89,21 +79,6 @@
   @include below(lg) {
     display: inline-flex;
   }
-}
-
-.badge {
-  @include numeric;
-
-  display: inline-grid;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-accent);
-  color: var(--color-accent-contrast);
-  font-size: 11px;
-  font-weight: 700;
-  place-items: center;
 }
 
 .tools {

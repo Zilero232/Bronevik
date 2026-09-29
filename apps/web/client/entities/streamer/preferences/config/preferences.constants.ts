@@ -61,5 +61,6 @@ export const PREFERENCES_VALUES = {
   number: /^-?\d{1,6}(\.\d{1,8})?$/u,
   truthy: ['true', '1'],
   falsy: ['false', '0'],
-  maxTextLength: 32
+  maxTextLength: 32,
+  decimalDigits: 2
 } as const;

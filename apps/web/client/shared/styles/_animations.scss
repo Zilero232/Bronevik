@@ -1,40 +1,45 @@
+@use 'sass:list';
 @use 'design-tokens' as tokens;
+
+$emitted-keyframes: ();
+
+@mixin keyframes-once($name) {
+  @if not list.index($emitted-keyframes, $name) {
+    $emitted-keyframes: list.append($emitted-keyframes, $name) !global;
+
+    @at-root (without: all) {
+      @keyframes #{$name} {
+        @content;
+      }
+    }
+  }
+}
 
 @mixin spin($duration: 0.7s) {
   animation: otmetki-spin $duration linear infinite;
+
+  @include keyframes-once(otmetki-spin) {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }
 
 @mixin pulse($duration: 1.2s) {
   animation: otmetki-pulse $duration ease-in-out infinite alternate;
 
+  @include keyframes-once(otmetki-pulse) {
+    from {
+      opacity: 0.6;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
   @include tokens.reduced-motion {
     animation: none;
-  }
-}
-
-@keyframes otmetki-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes otmetki-pulse {
-  from {
-    opacity: 0.6;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes otmetki-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
   }
 }
 
@@ -72,15 +77,15 @@
       animation: none;
     }
   }
-}
 
-@keyframes otmetki-shine {
-  0% {
-    transform: translateX(-140%) skewX(-22deg);
-  }
+  @include keyframes-once(otmetki-shine) {
+    0% {
+      transform: translateX(-140%) skewX(-22deg);
+    }
 
-  26%,
-  100% {
-    transform: translateX(300%) skewX(-22deg);
+    26%,
+    100% {
+      transform: translateX(300%) skewX(-22deg);
+    }
   }
 }

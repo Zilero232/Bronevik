@@ -1,16 +1,3 @@
-@use '@/shared/styles/mixins' as *;
-
-.root {
-  @include stack(var(--space-3));
-
-  height: 100%;
-}
-
-.description {
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-}
-
 .actions {
   display: flex;
   flex-wrap: wrap;

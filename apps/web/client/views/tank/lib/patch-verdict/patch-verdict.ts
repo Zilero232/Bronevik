@@ -1,6 +1,6 @@
 import type { TankPatch, TankPatchChange } from '@otmetki/schemas';
 
-import { isNumber } from 'remeda';
+import { isNumber, sortBy } from 'remeda';
 
 import type { SpecVerdict } from '@/entities/tank/tank';
 
@@ -20,6 +20,10 @@ export const patchChangeRow = ({ key, before, after, effect }: TankPatchChange):
 });
 
 export const patchEntries = (patches: readonly TankPatch[]): PatchEntry[] =>
-  [...patches]
-    .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
-    .map(({ version, title, date, verdict, changes }) => ({ version, title, date, verdict, changes: changes.map(patchChangeRow) }));
+  sortBy(patches, [({ date }) => date ?? '', 'desc']).map(({ version, title, date, verdict, changes }) => ({
+    version,
+    title,
+    date,
+    verdict,
+    changes: changes.map(patchChangeRow)
+  }));

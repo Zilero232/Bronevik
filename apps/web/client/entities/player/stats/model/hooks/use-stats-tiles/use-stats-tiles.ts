@@ -1,26 +1,19 @@
 'use client';
 
-import type { StatsBlock } from '@otmetki/schemas';
-
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { StatsTile, StatsTrendKey, UseStatsTilesInput } from './use-stats-tiles.types';
+import type { StatsTrendKey } from '../../../lib/stats-view';
+import type { StatsTile, UseStatsTilesInput } from './use-stats-tiles.types';
 
 import { STATS_TILES } from '../../../config';
-import { ratingValueTone, statsDelta, winRateTone } from '../../../lib/stats-view';
-
-const READ = {
-  winRate: (block: StatsBlock) => block.winRate,
-  avgDamage: (block: StatsBlock) => block.avgDamage,
-  wn8: (block: StatsBlock) => block.wn8.value
-} as const satisfies Record<StatsTrendKey, (block: StatsBlock) => number | null>;
+import { ratingValueTone, trendDelta, winRateTone } from '../../../lib/stats-view';
 
 export const useStatsTiles = ({ stats, reference, trends }: UseStatsTilesInput): StatsTile[] => {
   const t = useTranslations('profile.stats');
   const format = useFormatter();
 
   const change = (key: StatsTrendKey) => {
-    const delta = reference ? statsDelta({ current: READ[key](stats), reference: READ[key](reference) }) : undefined;
+    const delta = trendDelta({ key, stats, reference });
     const digits = STATS_TILES.deltaDigits[key];
 
     return {

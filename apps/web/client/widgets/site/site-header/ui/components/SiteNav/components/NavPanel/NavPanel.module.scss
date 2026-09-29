@@ -30,12 +30,11 @@
 }
 
 .links {
+  @include list-reset;
+
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: var(--space-1) var(--space-3);
   grid-template-columns: repeat(2, minmax(232px, 1fr));
-  list-style: none;
 }
 
 .featured {

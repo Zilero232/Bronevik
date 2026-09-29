@@ -5,10 +5,12 @@ import { useTranslations } from 'next-intl';
 import { TournamentStatusBadge } from '@/features/community/tournament-status';
 import { ROUTES } from '@/shared/constants';
 import { PageHeader, Skeleton, TextCard } from '@/ui-kit';
+import { EventLayout } from '@/widgets/community/event-layout';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { TournamentPageProps } from './TournamentPage.types';
 
+import { TOURNAMENT_PAGE } from '../config';
 import { useTournament } from '../model/hooks';
 import { OrganizerPanel, ParticipantsTable, RegistrationPanel, TournamentBracket, TournamentSummary } from './components';
 
@@ -21,12 +23,9 @@ export const TournamentPage = ({ slug }: TournamentPageProps) => {
   return (
     <div className={s.root}>
       <ResourceGate
-        skeleton={
-          <>
-            <Skeleton height={72} />
-            <Skeleton height={240} />
-          </>
-        }
+        skeleton={TOURNAMENT_PAGE.skeletonHeights.map((height) => (
+          <Skeleton key={height} height={height} />
+        ))}
         back={{ href: ROUTES.tournaments.list, label: t('page.back') }}
         error={{ title: t('page.errorTitle'), description: t('page.errorDescription') }}
         notFound={{ title: t('page.notFoundTitle'), description: t('page.notFoundDescription') }}
@@ -41,16 +40,20 @@ export const TournamentPage = ({ slug }: TournamentPageProps) => {
             />
             <TournamentSummary tournament={tournament} />
             <OrganizerPanel tournament={tournament} />
-            <div className={s.grid}>
-              <div className={s.main}>
-                {tournament.description && <TextCard title={t('page.about')}>{tournament.description}</TextCard>}
-                <TournamentBracket tournament={tournament} />
-              </div>
-              <aside className={s.side}>
-                <RegistrationPanel tournament={tournament} />
-                <ParticipantsTable tournament={tournament} />
-              </aside>
-            </div>
+            <EventLayout
+              aside={
+                <>
+                  <RegistrationPanel tournament={tournament} />
+                  <ParticipantsTable tournament={tournament} />
+                </>
+              }
+              main={
+                <>
+                  {tournament.description && <TextCard title={t('page.about')}>{tournament.description}</TextCard>}
+                  <TournamentBracket tournament={tournament} />
+                </>
+              }
+            />
           </>
         )}
       </ResourceGate>

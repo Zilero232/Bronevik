@@ -7,7 +7,7 @@ export const RNG_PERIOD_PARSER = parseAsStringLiteral(RNG_PERIODS).withDefault('
 export const HONEST_RNG_VIEW = {
   chartHeight: 260,
   percentScale: 100,
-  labelPrecision: 10,
+  labelDigits: 1,
   staleMs: 5 * 60_000
 } as const;
 

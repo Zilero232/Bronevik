@@ -23,16 +23,7 @@
     box-shadow var(--duration-lift) var(--ease-out),
     border-color var(--duration-fast) ease;
 
-  &:before {
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 3px;
-    background-color: var(--class);
-    content: '';
-  }
+  @include edge-stripe(var(--class));
 
   @include hover {
     border-color: color-mix(in srgb, var(--nation) 60%, var(--color-accent));

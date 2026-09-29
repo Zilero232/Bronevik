@@ -1,5 +1,7 @@
 import type { MapDetail } from '@otmetki/schemas';
 
+import { sortBy } from 'remeda';
+
 import { MAP_MODE_KINDS, mapModeKind } from '@/entities/map/map';
 
 import type { MapModeView } from './map-modes.types';
@@ -13,5 +15,5 @@ const rank = (mode: string) => {
 export const mapModes = (map: Pick<MapDetail, 'gameModes' | 'modes'>): MapModeView[] => {
   const modes: MapModeView[] = map.gameModes.length > 0 ? map.gameModes : map.modes.map((mode) => ({ mode, minimap: null }));
 
-  return [...modes].sort((a, b) => rank(a.mode) - rank(b.mode));
+  return sortBy(modes, ({ mode }) => rank(mode));
 };

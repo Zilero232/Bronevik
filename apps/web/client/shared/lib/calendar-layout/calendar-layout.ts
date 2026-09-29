@@ -1,5 +1,5 @@
 import { daysInWeek } from 'date-fns/constants';
-import { clamp } from 'remeda';
+import { chunk, clamp } from 'remeda';
 
 import type { CalendarCell, CalendarDay, CalendarLayout, CalendarStepInput, CalendarWeek, HeatLevelInput } from './calendar-layout.types';
 
@@ -29,13 +29,10 @@ export const calendarLayout = (days: CalendarDay[]): CalendarLayout => {
   const offset = mondayIndex(days[0].date);
   const pad = (length: number): CalendarCell[] => Array.from({ length }, (_, slot) => ({ key: `pad-${offset}-${slot}-${length}`, day: null }));
   const cells: CalendarCell[] = [...pad(offset), ...days.map((day) => ({ key: day.date, day }))];
-  const weeks: CalendarWeek[] = [];
-
-  for (let start = 0; start < cells.length; start += daysInWeek) {
-    const week = cells.slice(start, start + daysInWeek);
-
-    weeks.push([...week, ...pad(daysInWeek - week.length).map((cell) => ({ ...cell, key: `tail-${cell.key}` }))]);
-  }
+  const weeks: CalendarWeek[] = chunk(cells, daysInWeek).map((week) => [
+    ...week,
+    ...pad(daysInWeek - week.length).map((cell) => ({ ...cell, key: `tail-${cell.key}` }))
+  ]);
 
   const months = weeks.flatMap((week, index) => {
     const firstOfMonth = week.find(({ day }) => day && isMonthStart(day.date))?.day;

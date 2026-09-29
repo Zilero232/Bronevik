@@ -7,24 +7,18 @@
 .title {
   @include heading(var(--text-2xl));
 
-  &:before {
+  @include title-marker {
     display: inline-block;
-    width: 6px;
-    height: 0.8em;
     margin-right: 0.4em;
-    background: linear-gradient(180deg, var(--color-accent) 0 55%, var(--color-gold) 55% 100%);
-    content: '';
-    transform: skewX(-18deg);
   }
 }
 
 .grid {
+  @include list-reset;
+
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: var(--space-4);
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  list-style: none;
 
   @include from(lg) {
     grid-template-columns: repeat(3, minmax(0, 1fr));

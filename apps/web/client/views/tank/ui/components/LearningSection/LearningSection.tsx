@@ -4,10 +4,11 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { LearningBadge } from '@/entities/tank/tank';
 import { PlusGate } from '@/features/plus/plus-gate';
-import { BarChart, Card, CardHeader, EmptyState } from '@/ui-kit';
+import { BarChart, EmptyState } from '@/ui-kit';
 
 import { TANK_PAGE, TANK_SECTIONS } from '../../../config';
 import { useLearningChart } from '../../../model/hooks';
+import { TankSection } from '../TankSection';
 import { MyPlace } from './components';
 
 import s from './LearningSection.module.scss';
@@ -18,8 +19,7 @@ export const LearningSection = () => {
   const { hasData, difficulty, gain, windowDays, labels, series, battles } = useLearningChart();
 
   return (
-    <Card className={s.root} id={TANK_SECTIONS.learning} padding='none'>
-      <CardHeader action={difficulty ? <LearningBadge difficulty={difficulty} /> : null} className={s.header} title={t('title')} />
+    <TankSection action={difficulty ? <LearningBadge difficulty={difficulty} /> : null} id={TANK_SECTIONS.learning} title={t('title')}>
       {hasData ? (
         <div className={s.body}>
           <BarChart
@@ -38,6 +38,6 @@ export const LearningSection = () => {
         <EmptyState description={t('emptyDescription')} title={t('emptyTitle')} />
       )}
       <p className={s.note}>{t('note', { battles, days: windowDays })}</p>
-    </Card>
+    </TankSection>
   );
 };

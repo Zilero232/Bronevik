@@ -13,14 +13,6 @@
 }
 
 .grid {
-  display: grid;
-  padding: 0;
-  margin: 0;
-  gap: var(--space-1);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  list-style: none;
-
-  @include below(md) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  @include grid-columns(2, $gap: var(--space-1), $below-md: 1);
+  @include list-reset;
 }

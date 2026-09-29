@@ -1,4 +1,4 @@
-import { clamp } from 'remeda';
+import { clamp, round } from 'remeda';
 
 import type { TacticStroke } from '@/entities/tactic/board';
 
@@ -6,9 +6,7 @@ import type { BoardBox, BoardCircle, BoardPoint, FitScaleInput, PointsWithPoint,
 
 import { BOARD, BOARD_LIMITS } from '../../config';
 
-const round = (value: number) => Math.round(value * BOARD.precision) / BOARD.precision;
-
-const onBoard = (value: number) => round(clamp(value, { min: 0, max: BOARD.size }));
+const onBoard = (value: number) => round(clamp(value, { min: 0, max: BOARD.size }), BOARD.precisionDigits);
 
 export const fitScale = ({ width, size }: FitScaleInput): number => (width > 0 && size > 0 ? width / size : 0);
 
@@ -45,7 +43,7 @@ export const rectBox = (points: readonly number[]): BoardBox => {
 export const circleOf = (points: readonly number[]): BoardCircle => {
   const [x = 0, y = 0, ex = x, ey = y] = points;
 
-  return { x, y, radius: round(Math.hypot(ex - x, ey - y)) };
+  return { x, y, radius: round(Math.hypot(ex - x, ey - y), BOARD.precisionDigits) };
 };
 
 export const isDrawnStroke = ({ tool, points, text }: TacticStroke): boolean => {

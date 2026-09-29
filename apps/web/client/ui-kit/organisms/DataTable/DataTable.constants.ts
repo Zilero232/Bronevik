@@ -6,6 +6,5 @@ export const DATA_TABLE = {
   skeletonRows: 6,
   skeletonCardHeight: 96,
   sortGlyph: { asc: '▲', desc: '▼' },
-  ariaSort: { asc: 'ascending', desc: 'descending' },
-  medals: ['gold', 'silver', 'bronze']
+  ariaSort: { asc: 'ascending', desc: 'descending' }
 } as const;

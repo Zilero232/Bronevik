@@ -1,14 +1,13 @@
 @use '@/shared/styles/mixins' as *;
 
 .grid {
+  @include list-reset;
+
   --medal: 72px;
 
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: var(--space-4) var(--space-3);
   grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
-  list-style: none;
 
   &[data-featured] {
     --medal: 96px;

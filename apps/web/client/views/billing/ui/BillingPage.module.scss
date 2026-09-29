@@ -5,12 +5,7 @@
 }
 
 .grid {
-  display: grid;
-  align-items: start;
-  gap: var(--space-3);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  @include grid-columns(2, $gap: var(--space-3), $below-2xl: 1);
 
-  @include below(2xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: start;
 }

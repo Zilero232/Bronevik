@@ -14,13 +14,7 @@
 }
 
 .pair {
-  display: grid;
-  gap: var(--space-5);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  @include below(xl) {
-    grid-template-columns: 1fr;
-  }
+  @include grid-columns(2, $gap: var(--space-5), $below-xl: 1fr);
 }
 
 .method {

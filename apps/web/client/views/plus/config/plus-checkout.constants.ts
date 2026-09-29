@@ -7,5 +7,6 @@ export const PLUS_CHECKOUT = {
 } as const;
 
 export const CHECKOUT_NOTIFY = {
-  event: 'plus_checkout_open'
-} as const satisfies { event: NotificationEvent };
+  event: 'plus_checkout_open',
+  skeleton: { width: 260, height: 40 }
+} as const satisfies { event: NotificationEvent; skeleton: { width: number; height: number } };

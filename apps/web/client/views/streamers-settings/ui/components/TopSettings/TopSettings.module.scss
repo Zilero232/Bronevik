@@ -5,10 +5,9 @@
 }
 
 .grid {
-  display: grid;
+  @include auto-grid(300px);
+
   align-items: start;
-  gap: var(--space-4);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
 }
 
 .note {

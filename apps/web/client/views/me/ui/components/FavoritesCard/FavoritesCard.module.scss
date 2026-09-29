@@ -1,20 +1,12 @@
 @use '@/shared/styles/mixins' as *;
+@use '../../../config/account-list' as *;
 
 .list {
-  @include stack(var(--space-1));
-
-  padding: 0;
-  margin: 0;
-  list-style: none;
+  @include account-list;
 }
 
 .row {
-  display: flex;
-  align-items: center;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-surface-sunken);
-  gap: var(--space-3);
+  @include account-row;
 }
 
 .kind {

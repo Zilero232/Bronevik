@@ -4,7 +4,8 @@ import { Newspaper } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { TankPicker } from '@/features/tank/pick-tank';
-import { Button, Card, DataSourceNote, FilteredEmptyState, PageHeader, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { Button, Card, DataSourceNote, FilteredEmptyState, PageHeader, QueryState, SegmentedControl } from '@/ui-kit';
+import { LeadFeed, LeadFeedSkeleton } from '@/widgets/content/lead-feed';
 
 import { NEWS } from '../config';
 import { useNewsFeed } from '../model/hooks';
@@ -48,28 +49,18 @@ export const NewsPage = () => {
             />
           </Card>
         }
-        skeleton={
-          <div className={s.grid}>
-            <Skeleton count={NEWS.skeletons} height={320} shape='block' />
-          </div>
-        }
         errorDescription={t('error.description')}
         errorTitle={t('error.title')}
         isEmpty={() => feed.entries.length === 0}
         query={feed.query}
+        skeleton={<LeadFeedSkeleton count={NEWS.skeletons} height={NEWS.skeletonHeight} />}
       >
-        <div className={s.feed}>
-          {feed.lead && <NewsCard isPriority entry={feed.lead} variant='lead' />}
-          {feed.rest.length > 0 && (
-            <ul className={s.grid}>
-              {feed.rest.map((entry) => (
-                <li key={entry.item.id} className={s.cell}>
-                  <NewsCard entry={entry} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <LeadFeed
+          itemKey={(entry) => entry.item.id}
+          items={feed.rest}
+          lead={feed.lead && <NewsCard isPriority entry={feed.lead} variant='lead' />}
+          renderItem={(entry) => <NewsCard entry={entry} />}
+        />
       </QueryState>
       {feed.query.hasNextPage && (
         <Button className={s.more} disabled={feed.query.isFetchingNextPage} variant='secondary' onClick={feed.loadMore}>

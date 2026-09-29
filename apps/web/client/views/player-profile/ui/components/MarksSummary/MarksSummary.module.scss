@@ -1,14 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  display: grid;
-  margin: 0;
-  gap: var(--gap-panel);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  @include grid-columns(4, $gap: var(--gap-panel), $below-md: 2);
 
-  @include below(md) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  margin: 0;
 }
 
 .item {

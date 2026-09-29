@@ -73,6 +73,7 @@ export {
   SegmentedControl,
   Select,
   ServiceStatus,
+  SkeletonStack,
   Sparkline,
   StatList,
   StoryCard,

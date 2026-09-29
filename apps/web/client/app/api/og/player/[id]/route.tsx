@@ -1,14 +1,10 @@
 import type { NextRequest } from 'next/server';
 
-import { ImageResponse } from 'next/og';
-
 import { getPlayer } from '@/entities/player/profile';
 import { isNotFoundError } from '@/shared/api/source';
-import { SITE } from '@/shared/config/site';
-import { OG_SIZE } from '@/shared/seo/og';
-import { OG_CACHE, OG_REQUEST, ogNotFound, parseOgPlayerRequest } from '@/shared/seo/og-request';
-import { loadOgFonts } from '@/shared/seo/og/server';
-import { FallbackOgCard, ogLabels, PlayerOgCard } from '@/views/player-og';
+import { OG_REQUEST, ogNotFound, parseOgPlayerRequest } from '@/shared/seo/og-request';
+import { PlayerOgCard } from '@/views/player-og';
+import { ogImage } from '@/views/player-og/server';
 
 export const GET = async (request: NextRequest, { params }: RouteContext<'/api/og/player/[id]'>) => {
   const { id } = await params;
@@ -19,23 +15,12 @@ export const GET = async (request: NextRequest, { params }: RouteContext<'/api/o
   }
 
   const { accountId, locale } = parsed;
-  const labels = ogLabels(locale);
-  const host = new URL(SITE.url).host;
-  const fonts = await loadOgFonts();
 
-  try {
-    const profile = await getPlayer({ idOrNick: String(accountId) });
-
-    return new ImageResponse(<PlayerOgCard host={host} labels={labels} locale={locale} profile={profile} />, {
-      ...OG_SIZE,
-      fonts,
-      headers: { 'Cache-Control': OG_CACHE.image }
-    });
-  } catch (error) {
-    if (isNotFoundError(error)) {
-      return ogNotFound();
-    }
-
-    return new ImageResponse(<FallbackOgCard host={host} labels={labels} />, { ...OG_SIZE, fonts, headers: { 'Cache-Control': OG_CACHE.missing } });
-  }
+  return ogImage({
+    locale,
+    card: async ({ host, labels }) => (
+      <PlayerOgCard host={host} labels={labels} locale={locale} profile={await getPlayer({ idOrNick: String(accountId) })} />
+    ),
+    onError: (error) => (isNotFoundError(error) ? ogNotFound() : null)
+  });
 };

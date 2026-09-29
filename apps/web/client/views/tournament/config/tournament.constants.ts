@@ -4,6 +4,7 @@ import type { RegistrationFormValues } from '../lib/registration-form';
 
 export const TOURNAMENT_PAGE = {
   minParticipants: 2,
+  skeletonHeights: [72, 240],
   nowTickMs: 30_000,
   dateFormat: { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }
 } as const;

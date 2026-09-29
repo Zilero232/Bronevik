@@ -2,10 +2,11 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Card, CardHeader, EmptyState, QueryState, Skeleton, Timeline } from '@/ui-kit';
+import { EmptyState, QueryState, Skeleton, Timeline } from '@/ui-kit';
 
 import { TANK_PAGE, TANK_SECTIONS, VERDICT_TONES } from '../../../config';
 import { useTankPatches } from '../../../model/hooks';
+import { TankSection } from '../TankSection';
 import { PatchEntry } from './components';
 
 import s from './PatchHistory.module.scss';
@@ -15,8 +16,7 @@ export const PatchHistory = () => {
   const query = useTankPatches();
 
   return (
-    <Card className={s.root} id={TANK_SECTIONS.patches} padding='none'>
-      <CardHeader className={s.header} title={t('title')} />
+    <TankSection id={TANK_SECTIONS.patches} title={t('title')}>
       <QueryState
         empty={<EmptyState description={t('emptyDescription')} title={t('emptyTitle')} />}
         query={query}
@@ -29,6 +29,6 @@ export const PatchHistory = () => {
           />
         )}
       </QueryState>
-    </Card>
+    </TankSection>
   );
 };

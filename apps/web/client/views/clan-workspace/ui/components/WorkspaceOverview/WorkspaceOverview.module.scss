@@ -5,14 +5,9 @@
 }
 
 .grid {
-  display: grid;
-  align-items: start;
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 1fr) 320px;
+  @include grid-columns(minmax(0, 1fr) 320px, $gap: var(--space-5), $below-2xl: 1);
 
-  @include below(2xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: start;
 }
 
 .section {
@@ -23,8 +18,5 @@
 
 .list {
   @include stack(var(--space-3));
-
-  padding: 0;
-  margin: 0;
-  list-style: none;
+  @include list-reset;
 }

@@ -26,24 +26,6 @@
   @include hide-scrollbar;
 }
 
-.feed {
-  @include stack(var(--space-5));
-}
-
-.grid {
-  display: grid;
-  padding: 0;
-  margin: 0;
-  gap: var(--space-4);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
-  list-style: none;
-}
-
-.cell {
-  display: flex;
-  min-width: 0;
-}
-
 .more {
   align-self: center;
 }

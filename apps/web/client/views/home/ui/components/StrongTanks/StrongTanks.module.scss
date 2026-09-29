@@ -6,12 +6,11 @@
 }
 
 .grid {
+  @include list-reset;
+
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: var(--space-3);
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  list-style: none;
 
   @include from(xl) {
     gap: var(--space-5);

@@ -10,15 +10,13 @@ import type {
 } from './battle-backdrop.types';
 
 import { seededRandom } from '../seeded-random';
+import { BATTLE_BACKDROP } from './battle-backdrop.constants';
 
 const smooth = (value: number) => value * value * (3 - 2 * value);
 
 const valueField = ({ seed, cols, rows }: Pick<ContourInput, 'cols' | 'rows' | 'seed'>) => {
   const random = seededRandom(seed);
-  const octaves = [
-    { step: 8, weight: 0.65 },
-    { step: 3, weight: 0.35 }
-  ].map(({ step, weight }) => {
+  const octaves = BATTLE_BACKDROP.octaves.map(({ step, weight }) => {
     const width = Math.ceil(cols / step) + 2;
     const lattice = Array.from({ length: width * (Math.ceil(rows / step) + 2) }, random);
 
@@ -89,14 +87,16 @@ export const createMotes = ({ seed, dust, smoke }: CreateMotesInput): Mote[] => 
 
   return Array.from({ length: dust + smoke }, (_, index) => {
     const isSmoke = index >= dust;
+    const { radius, vx, vy, alpha } = isSmoke ? BATTLE_BACKDROP.mote.smoke : BATTLE_BACKDROP.mote.dust;
+    const between = ([base, spread]: readonly [number, number]) => base + random() * spread;
 
     return {
       x: random(),
       y: random(),
-      radius: isSmoke ? 0.12 + random() * 0.14 : 0.0008 + random() * 0.0016,
-      vx: (isSmoke ? 0.004 : 0.008) + random() * (isSmoke ? 0.004 : 0.012),
-      vy: -(0.002 + random() * (isSmoke ? 0.002 : 0.008)),
-      alpha: isSmoke ? 0.025 + random() * 0.03 : 0.08 + random() * 0.16,
+      radius: between(radius),
+      vx: between(vx),
+      vy: -between(vy),
+      alpha: between(alpha),
       isSmoke
     };
   });
@@ -124,16 +124,19 @@ export const stepMotes = ({ motes, seconds }: StepMotesInput) => {
 };
 
 export const createTracer = ({ random, now, life }: CreateTracerInput): Tracer => {
-  const fromLeft = random() < 0.5;
-  const startY = 0.15 + random() * 0.7;
-  const endY = startY + (random() - 0.5) * 0.35;
+  const { leftChance, startY: startRange, drift, overshoot, tail } = BATTLE_BACKDROP.tracer;
+  const fromLeft = random() < leftChance;
+  const startY = startRange[0] + random() * startRange[1];
+  const endY = startY + (random() - 0.5) * drift;
+  const near = -overshoot;
+  const far = 1 + overshoot;
 
   return {
-    from: fromLeft ? [-0.05, startY] : [1.05, startY],
-    to: fromLeft ? [1.05, endY] : [-0.05, endY],
+    from: fromLeft ? [near, startY] : [far, startY],
+    to: fromLeft ? [far, endY] : [near, endY],
     born: now,
     life,
-    tail: 0.08 + random() * 0.06
+    tail: tail[0] + random() * tail[1]
   };
 };
 

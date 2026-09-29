@@ -5,18 +5,9 @@
 }
 
 .summary {
-  display: grid;
+  @include grid-columns(5, $gap: var(--space-3), $below-xl: 3, $below-sm: 2);
+
   margin: 0;
-  gap: var(--space-3);
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-
-  @include below(xl) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  @include below(sm) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 .stat {
@@ -44,10 +35,9 @@
 }
 
 .markers {
+  @include list-reset;
+
   display: flex;
   flex-wrap: wrap;
-  padding: 0;
-  margin: 0;
   gap: var(--space-2);
-  list-style: none;
 }

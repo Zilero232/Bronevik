@@ -7,12 +7,11 @@
 }
 
 .side {
+  @include list-reset;
+
   display: flex;
   flex-direction: column;
-  padding: 0;
-  margin: 0;
   gap: 0.5em;
-  list-style: none;
 }
 
 .sideItem {
@@ -52,12 +51,11 @@
 }
 
 .toggles {
+  @include list-reset;
+
   display: flex;
   flex-direction: column;
-  padding: 0;
-  margin: 0;
   gap: 0.35em;
-  list-style: none;
 }
 
 .toggle {

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { CommentsThread } from '@/features/community/comments';
 import { Markdown } from '@/features/community/markdown';
-import { Card, Skeleton } from '@/ui-kit';
+import { Card, SkeletonStack } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { GuidePageProps } from './GuidePage.types';
@@ -22,15 +22,9 @@ export const GuidePage = ({ slug }: GuidePageProps) => {
   return (
     <div className={s.root}>
       <ResourceGate
-        skeleton={
-          <div aria-busy className={s.skeleton}>
-            {GUIDE_PAGE.skeletonHeights.map((height) => (
-              <Skeleton key={height} height={height} shape='block' />
-            ))}
-          </div>
-        }
         error={{ title: t('errorTitle'), description: t('errorDescription') }}
         query={query}
+        skeleton={<SkeletonStack className={s.skeleton} heights={GUIDE_PAGE.skeletonHeights} />}
       >
         {(guide) => (
           <GuideProvider guide={guide}>

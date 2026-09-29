@@ -1,7 +1,7 @@
 import { ratingTier } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
-import { periodStats, scaledRating, winRateTone } from '..';
+import { periodStats, scaledRating, trendDelta, winRateTone } from '..';
 
 const BLOCK = {
   battles: 100,
@@ -55,5 +55,20 @@ describe('scaledRating', () => {
 
   it('gives a zero rating a tier instead of treating it as empty', () => {
     expect(scaledRating({ scale: 'wn8', value: 0 }).tier).not.toBeNull();
+  });
+});
+
+describe('trendDelta', () => {
+  it('is undefined without a reference', () => {
+    expect(trendDelta({ key: 'winRate', stats: BLOCK, reference: null })).toBeUndefined();
+  });
+
+  it('subtracts the reference value of the chosen metric', () => {
+    expect(trendDelta({ key: 'wn8', stats: BLOCK, reference: { ...BLOCK, wn8: { value: 1_500, tier: null } } })).toBe(500);
+    expect(trendDelta({ key: 'avgDamage', stats: BLOCK, reference: { ...BLOCK, avgDamage: 2_500 } })).toBe(-500);
+  });
+
+  it('is undefined when either side has no value', () => {
+    expect(trendDelta({ key: 'wn8', stats: BLOCK, reference: { ...BLOCK, wn8: { value: null, tier: null } } })).toBeUndefined();
   });
 });

@@ -1,3 +1,5 @@
+import type { ParsedHref } from './safe-href.types';
+
 import { SAFE_HREF } from './safe-href.constants';
 
 const PROTOCOLS: readonly string[] = SAFE_HREF.protocols;
@@ -25,26 +27,20 @@ export const isExternalHref = (href: string | null | undefined): boolean => {
   return scheme !== null && PROTOCOLS.includes(scheme);
 };
 
-export const safeHref = (href: string | null | undefined): string | undefined => {
+const parseHref = (href: string | null | undefined): ParsedHref | null => {
   const trimmed = href?.trim();
 
-  if (!trimmed) {
-    return undefined;
-  }
+  return trimmed ? { href: trimmed, scheme: schemeOf(trimmed) } : null;
+};
 
-  const scheme = schemeOf(trimmed);
+export const safeHref = (href: string | null | undefined): string | undefined => {
+  const parsed = parseHref(href);
 
-  return scheme === null || PROTOCOLS.includes(scheme) ? trimmed : undefined;
+  return parsed && (parsed.scheme === null || PROTOCOLS.includes(parsed.scheme)) ? parsed.href : undefined;
 };
 
 export const safeWebHref = (href: string | null | undefined): string | undefined => {
-  const trimmed = href?.trim();
+  const parsed = parseHref(href);
 
-  if (!trimmed) {
-    return undefined;
-  }
-
-  const scheme = schemeOf(trimmed);
-
-  return scheme !== null && WEB_PROTOCOLS.includes(scheme) ? trimmed : undefined;
+  return parsed?.scheme && WEB_PROTOCOLS.includes(parsed.scheme) ? parsed.href : undefined;
 };

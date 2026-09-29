@@ -6,14 +6,9 @@
 }
 
 .inner {
-  display: grid;
-  align-items: start;
-  gap: var(--space-6) var(--space-8);
-  grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
+  @include grid-columns(minmax(260px, 1fr) minmax(0, 2fr), $gap: var(--space-6) var(--space-8), $below-xl: 1);
 
-  @include below(xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: start;
 }
 
 .summary {
@@ -57,14 +52,6 @@
 }
 
 .grid {
-  display: grid;
-  padding: 0;
-  margin: 0;
-  gap: var(--space-4);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  list-style: none;
-
-  @include below(md) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  @include grid-columns(2, $below-md: 1);
+  @include list-reset;
 }

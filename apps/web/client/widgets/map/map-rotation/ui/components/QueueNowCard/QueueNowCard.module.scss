@@ -16,14 +16,9 @@
 }
 
 .body {
-  display: grid;
-  padding: var(--space-4);
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  @include grid-columns(minmax(0, 1.3fr) minmax(0, 1fr), $gap: var(--space-5), $below-xl: 1);
 
-  @include below(xl) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  padding: var(--space-4);
 }
 
 .summary {
@@ -31,12 +26,11 @@
 }
 
 .tiers {
+  @include list-reset;
+
   display: flex;
   flex-wrap: wrap;
-  padding: 0;
-  margin: 0;
   gap: var(--space-2);
-  list-style: none;
 }
 
 .tier {
@@ -61,11 +55,10 @@
 }
 
 .mapList {
+  @include list-reset;
+
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: var(--space-1);
-  list-style: none;
 }
 
 .map {
@@ -76,13 +69,9 @@
 }
 
 .mapLink {
-  color: var(--color-text);
-  font-weight: 600;
-  text-decoration: none;
+  @include text-link;
 
-  &:hover {
-    color: var(--color-accent);
-  }
+  font-weight: 600;
 }
 
 .share {

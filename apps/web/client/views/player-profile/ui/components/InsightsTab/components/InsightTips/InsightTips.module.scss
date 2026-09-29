@@ -1,12 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include list-reset;
+
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: var(--gap-panel);
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  list-style: none;
 }
 
 .tip {

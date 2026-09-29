@@ -39,7 +39,7 @@ export const RatingsPage = () => {
               </li>
             ))}
             <li>
-              <a className={s.tocLink} href='#scale'>
+              <a className={s.tocLink} href={`#${RATINGS_PAGE.scaleAnchor}`}>
                 {t('scale')}
               </a>
             </li>

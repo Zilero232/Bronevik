@@ -2,28 +2,20 @@
 
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
-import { Link } from '@/shared/i18n/navigation';
-import { Skeleton, Switch } from '@/ui-kit';
+import { EventAlert } from '@/widgets/notifications/event-alert';
 
-import { useCheckoutNotify } from '../../../../../model/hooks';
-
-import s from './CheckoutNotify.module.scss';
+import { CHECKOUT_NOTIFY } from '../../../../../config';
 
 export const CheckoutNotify = () => {
   const t = useTranslations('plus.checkout.notify');
-  const { isOn, isPending, onToggle } = useCheckoutNotify();
-
-  if (isPending) {
-    return <Skeleton height={40} shape='block' width={260} />;
-  }
 
   return (
-    <div className={s.root}>
-      <Switch checked={isOn} label={t('label')} onCheckedChange={onToggle} />
-      <Link className={s.hint} href={ROUTES.account.notifications}>
-        {t('channels')}
-      </Link>
-    </div>
+    <EventAlert
+      channels={t('channels')}
+      event={CHECKOUT_NOTIFY.event}
+      label={t('label')}
+      messages={{ enabled: t('enabled'), disabled: t('disabled'), failed: t('failed') }}
+      skeleton={CHECKOUT_NOTIFY.skeleton}
+    />
   );
 };

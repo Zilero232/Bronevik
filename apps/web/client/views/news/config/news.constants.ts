@@ -5,6 +5,7 @@ export const NEWS = {
   pageSize: 20,
   staleMs: 5 * 60_000,
   skeletons: 6,
+  skeletonHeight: 320,
   freshMs: 48 * 60 * 60_000,
   kindTone: { news: 'sky', patch_notes: 'accent', dev_blog: 'gold' },
   kindIcon: { news: Newspaper, patch_notes: ScrollText, dev_blog: Hammer }

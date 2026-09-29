@@ -1,0 +1,1 @@
+export { OutsideNotice } from './OutsideNotice';

@@ -10,6 +10,7 @@ import type { SpottingSectionProps } from './SpottingSection.types';
 
 import { TANK_MATH } from '../../../../config';
 import { useSpottingSection } from '../../../../model/hooks';
+import { MathSection } from '../MathSection';
 import { SpottingResult, SpottingSideFields } from './components';
 
 import s from './SpottingSection.module.scss';
@@ -19,11 +20,7 @@ export const SpottingSection = ({ data, preset }: SpottingSectionProps) => {
   const { form, vehicle, targetVehicle, onTargetChange, foliage, meters, percent, query } = useSpottingSection({ data, preset });
 
   return (
-    <section className={s.root}>
-      <header className={s.head}>
-        <h3 className={s.title}>{t('title')}</h3>
-        <p className={s.description}>{t('description')}</p>
-      </header>
+    <MathSection description={t('description')} title={t('title')}>
       <form className={s.sides} onSubmit={(event) => event.preventDefault()}>
         <SpottingSideFields control={form.control} foliage={foliage} side='me' title={t('me')}>
           {vehicle && <TankCell image='contour' vehicle={vehicle} />}
@@ -35,6 +32,6 @@ export const SpottingSection = ({ data, preset }: SpottingSectionProps) => {
       <QueryState query={query} skeleton={<Skeleton height={TANK_MATH.chartHeight} shape='block' width='100%' />}>
         {({ view, tone }) => <SpottingResult meters={meters} percent={percent} tone={tone} view={view} />}
       </QueryState>
-    </section>
+    </MathSection>
   );
 };

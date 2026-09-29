@@ -5,13 +5,12 @@
 }
 
 .steps {
+  @include list-reset;
+
   position: relative;
   display: grid;
-  padding: 0;
-  margin: 0;
   gap: var(--space-7);
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  list-style: none;
 
   &:before {
     position: absolute;

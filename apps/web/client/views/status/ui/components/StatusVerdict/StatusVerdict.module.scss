@@ -2,26 +2,13 @@
 
 .root {
   @include panel;
+  @include status-tone;
 
   display: grid;
   align-items: start;
   padding: var(--space-5);
   gap: var(--space-4);
   grid-template-columns: auto minmax(0, 1fr) auto;
-
-  --status: var(--color-text-dim);
-
-  &[data-status='ok'] {
-    --status: var(--color-success);
-  }
-
-  &[data-status='degraded'] {
-    --status: var(--color-warning);
-  }
-
-  &[data-status='down'] {
-    --status: var(--color-danger);
-  }
 
   @include below(md) {
     grid-template-columns: auto minmax(0, 1fr);

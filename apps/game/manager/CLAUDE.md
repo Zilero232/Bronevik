@@ -30,4 +30,4 @@ cd apps/game/manager && bun run cargo:test          # Rust tests; OTMETKI_UPDATE
 cd apps/game/manager && bun run cargo:clippy
 ```
 
-CI: [.github/workflows/manager.yml](../../../.github/workflows/manager.yml) — checks on pull requests (Windows: UI typecheck + tests, cargo fmt/clippy/test), and a manual `tauri build` that uploads the unsigned NSIS installer.
+CI: [.github/workflows/manager.yml](../../../.github/workflows/manager.yml) — checks on pull requests (Windows: UI typecheck + tests, cargo fmt/clippy/test), and a manual `tauri build` that uploads the unsigned NSIS installer. Publishing a release (modpack packages, catalogue, installer, signed `releases.json`) to the VPS is [.github/workflows/release.yml](../../../.github/workflows/release.yml) (README «Releases»).

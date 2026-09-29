@@ -10,7 +10,7 @@ export const release = ({ version, games }: Pick<ModpackRelease, 'games' | 'vers
     {
       id: 'core',
       file: `net.triotmetki.core_${version}.mtmod`,
-      url: `https://cdn.triotmetki.ru/modpack/${version}/net.triotmetki.core_${version}.mtmod`,
+      url: `https://triotmetki.ru/downloads/modpack/${version}/net.triotmetki.core_${version}.mtmod`,
       sha256: 'a'.repeat(64),
       size: 1_024
     }
@@ -30,7 +30,7 @@ export const INDEX: ModpackReleaseIndex = {
     publishedAt: '2026-09-27T12:00:00.000Z',
     notes: 'Fixes',
     platforms: {
-      'windows-x86_64': { url: 'https://cdn.triotmetki.ru/manager/0.2.0/setup.exe', signature: 'c2lnbmF0dXJl' }
+      'windows-x86_64': { url: 'https://triotmetki.ru/downloads/manager/0.2.0/otmetki-manager_0.2.0_x64-setup.exe', signature: 'c2lnbmF0dXJl' }
     }
   }
 };

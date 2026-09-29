@@ -1,6 +1,8 @@
+import { MODPACK_RELEASES } from '@otmetki/schemas';
+
 export const MODPACK_RELEASES_SOURCE = {
-  asset: '../assets/releases.json',
-  cacheTtlMs: 5 * 60_000,
-  retryDelayMs: 60_000,
-  fetchTimeoutMs: 5_000
+  indexPath: 'downloads/releases.json',
+  emptyIndex: { schemaVersion: MODPACK_RELEASES.indexSchemaVersion, releases: [] },
+  cacheTtlMs: 60_000,
+  retryDelayMs: 60_000
 } as const;

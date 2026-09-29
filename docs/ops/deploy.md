@@ -7,11 +7,13 @@ What runs where:
 - **CI and images.** [.github/workflows/deploy.yml](../../.github/workflows/deploy.yml) is started by hand (`workflow_dispatch`). It runs `verify`, `test`, the mod suite and the e2e smoke, builds `ghcr.io/<owner>/otmetki-client` and `otmetki-server`, and then deploys to the VPS.
 - **The VPS** keeps no clone of the repo. Every run copies [docker-compose.yml](../../docker-compose.yml) and [infra/caddy/Caddyfile](../../infra/caddy/Caddyfile) into `DEPLOY_PATH`. The files keep their repository paths, because compose bind-mounts `./infra/caddy/Caddyfile`. The run then does `docker compose pull`, runs `bun run db:deploy` in a one-off `server` container, runs `docker compose up -d`, and waits for `otmetki-server` and `otmetki-client` to report healthy.
 - **The stack:** Caddy (80/443, Let's Encrypt), then client (Next standalone, :3000), then server (API, :4000).
+  - Everything is stored on the VPS: no S3, no CDN, no GitHub Releases.
+  - Caddy serves the host folder `DEPLOY_PATH/downloads` (read-only) at `https://triotmetki.ru/downloads/`: the modpack releases, the manager installer and `releases.json`. The server reads the release index from the same folder. [.github/workflows/release.yml](../../.github/workflows/release.yml) fills it (§4).
   - The worker runs from the same server image.
   - Postgres/TimescaleDB listens on loopback `127.0.0.1:5432` only.
   - Redis runs with AOF and `noeviction`.
   - `backup` dumps the database every night (§6).
-  - The server and the worker share the `serverdata` volume for local replays and armor models.
+  - The server and the worker share the `serverdata` volume for uploaded replays and armor models (`.data/replays`, `.data/armor`; the only storage there is).
   - Every container logs to json-file with rotation (10 MB × 5).
 - **Before the Lesta key:** the same stack runs on an empty database with no mock and no generated data; every page shows its empty state. See [§7 «Запуск без ключа Лесты»](#7-запуск-без-ключа-лесты-before-the-lesta-key).
 
@@ -32,18 +34,18 @@ This is the status of every area at the last audit. **Ready** means the piece is
 | Health: `/health` (database, Redis, worker heartbeat, Lesta breaker) | Ready | An external uptime monitor on `https://api.triotmetki.ru/health` and `https://triotmetki.ru/` (UptimeRobot, Healthchecks.io or similar) |
 | **Lesta application**: `LESTA_APPLICATION_ID`, the VPS IP allow-listed, the OpenID redirect | Blocked | Register at developers.lesta.ru (§1) |
 | **DNS**: `A`/`AAAA` for `triotmetki.ru` and `api.triotmetki.ru`; ports 80, 443/tcp and 443/udp open | Blocked | The registrar and the VPS firewall |
-| **GitHub secrets and variables**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PASSWORD`, `DEPLOY_PATH`; variable `NEXT_PUBLIC_LESTA_NOTICE` | Blocked | Settings → Secrets and variables (§1) |
+| **GitHub secrets and variables**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PASSWORD`, `DEPLOY_PATH`, `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`); variable `NEXT_PUBLIC_LESTA_NOTICE` | Blocked | Settings → Secrets and variables (§1) |
+| **VPS downloads folder** `DEPLOY_PATH/downloads` | Blocked | `mkdir -p` once before the first deploy (§1) |
 | **VPS `.env` secrets**: `BETTER_AUTH_SECRET`, `MOD_INGEST_SECRET`, `INTERNAL_API_TOKEN`, `POSTGRES_PASSWORD`, `BULL_BOARD_PASSWORD` | Blocked | Generate them on the VPS (§1) |
 | ghcr access from the VPS | Blocked | Make the packages public, or run `docker login ghcr.io` with a read-only token |
 | **YooKassa**: `YOOKASSA_*`, the webhook | Blocked, not needed for launch | Checkout stays off (`PLUS.checkoutEnabled`) until Lesta confirms the model (§5) |
 | **Bots and streamer integrations**: Telegram, Discord, VK, Twitch, DonationAlerts, VK Video Live, YouTube | Blocked, optional | Each one is off while its token is empty |
 | **SMTP**: `SMTP_*`, `EMAIL_FROM`, SPF/DKIM | Blocked, optional | Email is off while `SMTP_HOST` is empty. Leave it empty rather than copying the Mailpit values from `.env.example` |
 | Web push (`VAPID_*`) | Optional | `bunx web-push generate-vapid-keys` |
-| Replays in S3 (`REPLAY_STORAGE=s3`, `S3_*`) | Optional | Local storage on the `serverdata` volume works. S3 also takes replays off the single disk |
 | **Legal pages**: operator name, ИНН, ОГРН/ОГРНИП, address, dates, hosting, payments, retention, cookies | Blocked | 13 `<todo>` per language (§5) |
-| **Manager updater signing**: `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Blocked | Without the key, `manager.yml` still builds the installer but skips the updater archive and its `.sig`, so installed managers cannot update themselves. The key's public half must match `plugins.updater.pubkey` in `tauri.conf.json` |
+| **Release signing**: `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Blocked | One minisign key signs both the manager's self-update and every modpack release the manager installs. `release.yml` refuses to run without it; `manager.yml` then only skips the updater `.sig`. Its public half must match `plugins.updater.pubkey` in `tauri.conf.json` (§4) |
 | Windows code signing of the manager installer | Not set up | The NSIS installer ships unsigned, and SmartScreen warns on the first run |
-| Modpack release (`modpack.yml`) | Ready | It needs no secrets. The v2 rebuild and publishing are in §4 |
+| Modpack and manager release (`release.yml`) | Ready | Needs the secrets above and the downloads folder; the first release is in §4 |
 
 ## 1. Before the first run
 
@@ -63,8 +65,7 @@ This is the status of every area at the last audit. **Ready** means the piece is
   - DonationAlerts (`/streamers/integrations/donation-alerts/callback`);
   - VK Video Live and YouTube keys;
   - SMTP;
-  - VAPID keys (`bunx web-push generate-vapid-keys`);
-  - S3 bucket for replays (`REPLAY_STORAGE=s3`).
+  - VAPID keys (`bunx web-push generate-vapid-keys`).
 
   Social sign-in callbacks follow better-auth: `https://api.triotmetki.ru/auth/callback/<provider>`.
 - [ ] **YooKassa:** only when checkout opens (see §5). Its webhook goes to `https://api.triotmetki.ru/billing/webhook`.
@@ -80,6 +81,8 @@ Set these under Settings → Secrets and variables → Actions, in the `producti
 | `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PORT` (optional, default 22) | the VPS |
 | `DEPLOY_SSH_PASSWORD` | SSH password of that user (`PasswordAuthentication yes` in the VPS `sshd_config`) |
 | `DEPLOY_PATH` | directory with the compose file, for example `/opt/otmetki` |
+| `TAURI_SIGNING_PRIVATE_KEY` | the minisign private key (the whole key file, base64 text) that signs the manager's updates and the modpack releases; `release.yml` only (§4) |
+| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | its password; leave it empty for a key without one |
 
 One repository **variable** (Settings → Secrets and variables → Actions → Variables, not a secret):
 
@@ -109,7 +112,17 @@ Start from [.env.example](../../.env.example). The server and worker containers 
 - [ ] `LESTA_APPLICATION_ID`, `LESTA_RPS`. An empty key is a supported state (§7). `COMPOSE_FILE` must be absent: the stack is `docker-compose.yml` alone.
 - [ ] `EMAIL_FROM` on our domain (for example `Три отметки <noreply@triotmetki.ru>`), with SPF and DKIM for the SMTP provider. `VAPID_SUBJECT=mailto:admin@triotmetki.ru`.
 - [ ] `BULL_BOARD_PASSWORD`: Caddy returns 404 for `/admin/queues` on the public host anyway. Reach bull-board through an SSH tunnel to the server container.
-- [ ] `REPLAY_STORAGE=s3` and the `S3_*` values, or keep `local`. Local storage lives in `.data` on the `serverdata` volume, which the server and the worker share.
+- [ ] Storage needs no variables: uploaded replays and armor models live in `.data` on the `serverdata` volume, which the server and the worker share. A `.env` copied from an older template may still carry `REPLAY_STORAGE`, `REPLAY_STORAGE_DIR`, `S3_*` or `MODPACK_RELEASES_URL`: delete those lines, nothing reads them.
+
+### The VPS downloads folder
+
+Create it once, next to `docker-compose.yml`, before the first deploy (Docker would otherwise create it owned by root on the first `up`):
+
+```sh
+mkdir -p /opt/otmetki/downloads   # DEPLOY_PATH/downloads
+```
+
+Caddy and the server mount it read-only. Only [release.yml](../../.github/workflows/release.yml) writes to it, over SSH as `DEPLOY_SSH_USER`, so that user must own it. Its uploads go first to `DEPLOY_PATH/.downloads-staging/`, which must be on the same disk. Until the first release the folder is empty: `/downloads/*` answers 404, and the API answers `waiting` to every manager.
 - [ ] `SMTP_HOST` stays empty unless a real provider is set up. `.env.example` carries the Mailpit values for development.
 
 ## 2. Database: `db:deploy` and its order
@@ -132,16 +145,55 @@ On the first run, or after an edit to `003_continuous_aggregates.sql`, the full 
 - [ ] Sign in with Lesta ID and with Telegram on the live site. Check that the footer shows the Lesta attribution on every page.
 - [ ] Check `https://triotmetki.ru/sitemap.xml` and `/robots.txt`. The sitemap reads the API at build or request time, so it fills once the collector has data.
 
-## 4. Game mod: rebuild for v2 signing
+## 4. Game mod: releases on the VPS
 
-The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HMAC over `v2\n<METHOD>\n<path>\n<timestamp>\n<nonce>\n<body>`, a 5-minute skew window and a one-time nonce). A mod package built before v2 signing is rejected, so every published package must be rebuilt:
+Modpack releases and the manager are published by [.github/workflows/release.yml](../../.github/workflows/release.yml) (manual run, inputs `version` and `games`) into `DEPLOY_PATH/downloads`, which Caddy serves at `https://triotmetki.ru/downloads/`:
 
-- [ ] Check that `DEFAULT_SERVER_URL` in `apps/game/modpack/packages/companion/config.py` is `https://api.triotmetki.ru`.
-- [ ] Bump `VERSION` in `apps/game/modpack/packages/companion/version.py` (and in `packages/core/version.py` and `features/<id>/__init__.py` for the packages that changed).
-- [ ] Run `python apps/game/modpack/tools/build/build.py --single --require-pyc` (a release build: one `otmetki.<version>.mtmod`; it needs `owg_python_compiler` or Python 2.7, see [apps/game/modpack/README.md](../../apps/game/modpack/README.md#build)).
-- [ ] Publish the package on the site as `https://triotmetki.ru/downloads/otmetki.mtmod` (`MOD_DISTRIBUTION.packagesUrl` in `apps/web/client/shared/config/site`, the /mod page's «скачать пакеты вручную») and through МОСТ ([most-publishing.md](most-publishing.md)); set `MOD_DISTRIBUTION.mostUrl` once the МОСТ entry is live. See [apps/game/modpack/README.md](../../apps/game/modpack/README.md).
-- [ ] Build the component catalogue (`modpack.yml` manual run, `modpack-catalog` artifact) and the manager (`manager.yml` manual run), add the release to the index, and publish the manager installer as `https://triotmetki.ru/downloads/otmetki-manager-setup.exe` (`MOD_DISTRIBUTION.managerUrl`, the /mod page's primary download). Steps: [apps/game/manager/README.md «Releases»](../../apps/game/manager/README.md#releases-manual-for-now).
+| Path under `/downloads/` | What | Cache |
+|---|---|---|
+| `modpack/<version>/` | the split packages, `otmetki.<version>.mtmod`, `catalog/components.json` + `previews/` | a year, immutable |
+| `manager/<version>/otmetki-manager_<v>_x64-setup.exe` (+ `.sig`) | the installer the manager's self-update downloads | a year, immutable |
+| `otmetki-manager-setup.exe` | the /mod page's primary download (`MOD_DISTRIBUTION.managerUrl` in `apps/web/client/shared/config/site`) | revalidated |
+| `otmetki.mtmod` | the /mod page's «скачать пакеты вручную» (`MOD_DISTRIBUTION.packagesUrl`) | revalidated |
+| `releases.json` | the release index; the API answers `GET /modpack/releases/latest` and the updater feed from it | revalidated |
+
+There is no directory listing. The run fails before building anything when a secret is missing or an input is malformed, and again when `version` differs from the built catalogue.
+
+### The signing key
+
+One minisign key signs the manager's self-update and each modpack release (the manager checks `signature` over a text payload before it installs anything; [apps/game/manager/README.md «Patches and updates»](../../apps/game/manager/README.md#patches-and-updates-taurisrcpatch-servicecheckrs-background)). Its public half is compiled into the manager twice: `plugins.updater.pubkey` in `apps/game/manager/tauri/tauri.conf.json` and `RELEASE_PUBLIC_KEY` in `tauri/src/releases/signature.rs` (a test keeps them equal).
+
+- The key already exists: `%USERPROFILE%\.tauri\otmetki-manager.key` on the owner's machine, no password. Store the file's contents as the secrets:
+
+  ```sh
+  gh secret set TAURI_SIGNING_PRIVATE_KEY --env production < ~/.tauri/otmetki-manager.key
+  gh secret set TAURI_SIGNING_PRIVATE_KEY_PASSWORD --env production --body ""
+  ```
+
+  Or paste them under Settings → Environments → production (PowerShell: `Get-Content $env:USERPROFILE\.tauri\otmetki-manager.key -Raw | Set-Clipboard`).
+- Only if it is lost, and only before any manager is installed: generate a new pair and put the public half in both places above.
+
+  ```sh
+  cd apps/game/manager
+  bunx tauri signer generate -w ~/.tauri/otmetki-manager.key            # asks for a password; Enter for none
+  cat ~/.tauri/otmetki-manager.key.pub                                  # -> plugins.updater.pubkey and RELEASE_PUBLIC_KEY
+  cargo test --manifest-path tauri/Cargo.toml the_release_key_is_the_updater_key
+  ```
+
+  Installed managers trust only the key they were built with: after a key change they neither update themselves nor accept a new release.
+
+### The first release
+
+- [ ] The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HMAC over `v2\n<METHOD>\n<path>\n<timestamp>\n<nonce>\n<body>`, a 5-minute skew window and a one-time nonce), so a package built before v2 signing is rejected. Check that `DEFAULT_SERVER_URL` in `apps/game/modpack/packages/companion/config.py` is `https://api.triotmetki.ru`.
+- [ ] Bump `VERSION` in `apps/game/modpack/packages/companion/version.py` (and in `packages/core/version.py` and `features/<id>/__init__.py` for the packages that changed) with their CHANGELOG entries. The companion's version is the release version.
+- [ ] The downloads folder exists (§1), and a deploy ran with this Caddyfile and `docker-compose.yml` (they serve and mount it).
+- [ ] The secrets are set: deploy.yml's `NEXT_PUBLIC_SITE_URL` and `DEPLOY_*`, plus `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`).
+- [ ] Run **release** (Actions → release → Run workflow) with `version` (for example `0.2.0`) and `games` (for example `1.46.*`, comma-separated for several).
+- [ ] Check `https://triotmetki.ru/downloads/releases.json`, `https://api.triotmetki.ru/modpack/releases/latest?game=1.46.0.0` (`compatible`) and the /mod page's two downloads.
+- [ ] Publish through МОСТ as well ([most-publishing.md](most-publishing.md)) and set `MOD_DISTRIBUTION.mostUrl` once the entry is live.
 - [ ] Users bind their devices again with a code from `/me`. Devices bound in development do not exist in production.
+
+Later releases: bump the versions and run the workflow again. A re-run of the same `version` replaces its files and its index entry; older releases stay in the index, so clients still on an older game version keep their compatible release. The manager block always points at the installer of the run; bump `version` in `apps/game/manager/package.json` for a manager change, because the self-update only offers a newer version.
 
 ## 5. Legal pages and Plus: fill before checkout opens
 

@@ -221,17 +221,6 @@ if (!url) {
 const prisma = createPrismaClient({ url });
 const mode = values.snapshot || source.isTest ? 'snapshot' : 'full';
 
-const storageEnv = z
-  .object({
-    REPLAY_STORAGE: z.enum(['local', 's3']).default('local'),
-    S3_ENDPOINT: z.string().default(''),
-    S3_REGION: z.string().default('us-east-1'),
-    S3_BUCKET: z.string().default(''),
-    S3_ACCESS_KEY_ID: z.string().default(''),
-    S3_SECRET_ACCESS_KEY: z.string().default('')
-  })
-  .parse(process.env);
-
 try {
   if (!values['armor-only']) {
     const counts = await writeImportPlan({
@@ -251,10 +240,9 @@ try {
   }
 
   if (armor) {
-    const storage = createArmorStorage({
-      ...storageEnv,
-      ARMOR_STORAGE_DIR: values['armor-dir'] ?? resolve(fileURLToPath(new URL('../../../..', import.meta.url)), ARMOR_VIEWER.storageDir)
-    });
+    const storage = createArmorStorage(
+      values['armor-dir'] ?? resolve(fileURLToPath(new URL('../../../..', import.meta.url)), ARMOR_VIEWER.storageDir)
+    );
 
     console.table(await writeArmorModels({ prisma, storage, collected: armor, onProgress: (message) => console.log(`  ${message}`) }));
   }

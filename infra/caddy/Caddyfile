@@ -40,6 +40,54 @@
 	}
 }
 
+# Public downloads: the host folder DEPLOY_PATH/downloads, mounted read-only
+# at /srv/downloads (docker-compose.yml) and filled by
+# .github/workflows/release.yml. Without `browse` a folder answers 404, so
+# nothing is listed. The content types are set here, before file_server,
+# which only fills a missing one. Versioned folders (modpack/<version>/,
+# manager/<version>/) never change under the same name; the stable names and
+# the release index are revalidated on every request (ETag, Last-Modified).
+(downloads) {
+	root * /srv
+	file_server
+
+	@exe path *.exe
+	header @exe {
+		Content-Type application/vnd.microsoft.portable-executable
+		Content-Disposition attachment
+	}
+
+	@mtmod path *.mtmod
+	header @mtmod {
+		Content-Type application/zip
+		Content-Disposition attachment
+	}
+
+	@json path *.json
+	header @json Content-Type "application/json; charset=utf-8"
+
+	@sig path *.sig
+	header @sig Content-Type "text/plain; charset=utf-8"
+
+	@png path *.png
+	header @png Content-Type image/png
+
+	@webp path *.webp
+	header @webp Content-Type image/webp
+
+	@mp3 path *.mp3
+	header @mp3 Content-Type audio/mpeg
+
+	@mp4 path *.mp4
+	header @mp4 Content-Type video/mp4
+
+	@versioned path /downloads/modpack/* /downloads/manager/*
+	header @versioned Cache-Control "public, max-age=31536000, immutable"
+
+	@current path /downloads/releases.json /downloads/otmetki-manager-setup.exe /downloads/otmetki.mtmod
+	header @current Cache-Control no-cache
+}
+
 {$API_DOMAIN} {
 	# Overlay feeds are Server-Sent Events: compressing them would buffer the
 	# stream, so they bypass the encoder. WebSockets (/tactics/ws) are never encoded.
@@ -64,7 +112,13 @@
 {$SITE_DOMAIN} {
 	encode zstd gzip
 
-	reverse_proxy client:3000
+	handle /downloads/* {
+		import downloads
+	}
+
+	handle {
+		reverse_proxy client:3000
+	}
 
 	# Hashed assets never change under the same name.
 	@immutable path /_next/static/*

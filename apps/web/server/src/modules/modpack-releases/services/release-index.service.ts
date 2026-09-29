@@ -1,14 +1,12 @@
 import type { ModpackReleaseIndex } from '@otmetki/schemas';
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { modpackReleaseIndexSchema } from '@otmetki/schemas';
 import { readFile } from 'node:fs/promises';
 
 import type { CachedReleaseIndex } from './release-index.types';
 
-import { AppConfigService } from '../../../config';
-import { HttpClientService } from '../../../core';
-import { MODPACK_RELEASES_SOURCE } from '../config';
+import { MODPACK_RELEASES_SOURCE, MODPACK_RELEASES_TOKENS } from '../config';
 
 @Injectable()
 export class ReleaseIndexService {
@@ -17,10 +15,7 @@ export class ReleaseIndexService {
   private refreshing: Promise<ModpackReleaseIndex> | null = null;
   private retryAt = 0;
 
-  constructor(
-    private readonly config: AppConfigService,
-    private readonly http: HttpClientService
-  ) {}
+  constructor(@Inject(MODPACK_RELEASES_TOKENS.indexPath) private readonly indexPath: string) {}
 
   async load(): Promise<ModpackReleaseIndex> {
     const now = Date.now();
@@ -39,14 +34,14 @@ export class ReleaseIndexService {
   }
 
   private refresh(): Promise<ModpackReleaseIndex> {
-    this.refreshing ??= this.fetchIndex().finally(() => {
+    this.refreshing ??= this.readIndex().finally(() => {
       this.refreshing = null;
     });
 
     return this.refreshing;
   }
 
-  private async fetchIndex(): Promise<ModpackReleaseIndex> {
+  private async readIndex(): Promise<ModpackReleaseIndex> {
     try {
       const index = modpackReleaseIndexSchema.parse(await this.read());
 
@@ -62,12 +57,14 @@ export class ReleaseIndexService {
   }
 
   private async read(): Promise<unknown> {
-    const url = this.config.get('MODPACK_RELEASES_URL');
+    const text = await readFile(this.indexPath, 'utf8').catch((error: unknown) => {
+      if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+        return '';
+      }
 
-    if (url) {
-      return this.http.getJson({ url, options: { timeout: MODPACK_RELEASES_SOURCE.fetchTimeoutMs } });
-    }
+      throw error;
+    });
 
-    return JSON.parse(await readFile(new URL(MODPACK_RELEASES_SOURCE.asset, import.meta.url), 'utf8'));
+    return text.trim() === '' ? MODPACK_RELEASES_SOURCE.emptyIndex : JSON.parse(text);
   }
 }

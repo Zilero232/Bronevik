@@ -180,9 +180,9 @@ catalog <catalog sha256, lowercase, or ->
 package core net.triotmetki.core_0.2.0.mtmod 389723 <sha256, lowercase>
 ```
 
-Sign it with `bunx tauri signer sign -k %USERPROFILE%\.tauri\otmetki-manager.key release-0.2.0.txt` and put the `.sig` contents (base64) into the release's `signature`. An unsigned or mis-signed release is refused (`signature_invalid`); a debug build accepts an unsigned one only with `OTMETKI_ALLOW_UNSIGNED` set. Downloads are https from `triotmetki.ru` or its subdomains only (redirects included, `untrusted_host` otherwise), capped by the listed `size`; a package whose sha256 differs is refused before any file in the client changes. Bundled packages are used only when the bundled catalogue has the same modpack version and a sha256 for each component. Notifications (Windows toasts) announce migrated / updated / ready / deferred / waiting / available / failed, once per change and per client.
+`release.yml` writes this payload (`apps/web/server/scripts/modpack-release.ts prepare`, `releasePayload` in the server's `modpack-releases/lib/release-build`, tested against the same layout) and signs it with `TAURI_SIGNING_PRIVATE_KEY`; by hand it is `bunx tauri signer sign -f %USERPROFILE%\.tauri\otmetki-manager.key release.txt`, and the `.sig` contents (base64) go into the release's `signature`. An unsigned or mis-signed release is refused (`signature_invalid`); a debug build accepts an unsigned one only with `OTMETKI_ALLOW_UNSIGNED` set. Downloads are https from `triotmetki.ru` or its subdomains only (redirects included, `untrusted_host` otherwise), capped by the listed `size`; a package whose sha256 differs is refused before any file in the client changes. Bundled packages are used only when the bundled catalogue has the same modpack version and a sha256 for each component. Notifications (Windows toasts) announce migrated / updated / ready / deferred / waiting / available / failed, once per change and per client.
 
-The server side is `apps/web/server/src/modules/modpack-releases`: it reads the release index from `MODPACK_RELEASES_URL` (cached 5 minutes; a stale copy is served at once while one shared refresh with a 5 s timeout runs in the background, and a failed refresh is retried after a minute, so the last good copy survives) or the committed `assets/releases.json` (empty until the first release), validated by `modpackReleaseIndexSchema` from `@otmetki/schemas`:
+The server side is `apps/web/server/src/modules/modpack-releases`: it reads the release index from `downloads/releases.json` under its working directory (`MODPACK_RELEASES_SOURCE.indexPath`; in production the VPS folder `DEPLOY_PATH/downloads`, mounted read-only by docker-compose.yml, the same folder Caddy serves at `https://triotmetki.ru/downloads/`). It is cached for a minute; a stale copy is served at once while one shared re-read runs in the background, and a failed re-read is retried after a minute, so the last good copy survives. A missing or empty file is an empty index (every client gets `waiting`, the updater 204). The index is validated by `modpackReleaseIndexSchema` from `@otmetki/schemas`:
 
 ```json
 {
@@ -237,11 +237,24 @@ Anything else is ignored. The site builds these links in `apps/web/client/featur
 - Every command goes through `shared/api/tauri/invokeCommand({ command, schema, args })`: the response is parsed with the entity's zod schema, a rejection becomes a `ManagerError` with the Rust `ErrorCode` (translated in `errors.json`). Events (`patch-report`, `deep-link`) go through `listenEvent`.
 - The Rust side is the source of truth for shapes: `cargo test` writes nothing but compares `tauri/contract/*.json` with the serialised command outputs, and each entity's `api/**/_tests` parses the same file with its schema, so a drift fails one side or the other.
 
-## Releases (manual for now)
+## Releases
 
-1. Build the modpack release (`modpack.yml`, manual run) and take the `modpack-catalog` artifact (`components.json` + `previews/`, the same as `bun run build:catalog` in apps/game/modpack); copy it into `tauri/resources/` for the manager build, or publish it and reference it as the release `catalog`.
-2. Upload the `.mtmod` packages to the CDN (`*.triotmetki.ru`), add the release to the index (`MODPACK_RELEASES_URL` or `assets/releases.json`) with sha256, sizes and the `signature` over its payload (see «Patches and updates»).
-3. Run `manager.yml` manually: the `modpack-manager` artifact holds the NSIS installer and its `.sig`. Upload the installer, put its URL and the `.sig` contents into the index's `manager` block, and publish the same installer as `https://triotmetki.ru/downloads/otmetki-manager-setup.exe`: the site's /mod page links there (`MOD_DISTRIBUTION.managerUrl` in `apps/web/client/shared/config/site`).
+Everything is published to the VPS by [.github/workflows/release.yml](../../../.github/workflows/release.yml) (manual run, inputs `version` and `games`); there is no S3, CDN or GitHub Release. First-time setup (the VPS folder, the secrets, the key) is in [docs/ops/deploy.md §4](../../../docs/ops/deploy.md#4-game-mod-releases-on-the-vps).
+
+1. Bump `VERSION` in `apps/game/modpack/packages/companion/version.py` (and the packages that changed), add the CHANGELOG entries; bump `version` in this `package.json` when the manager changed (the updater offers only a newer version).
+2. Run `release.yml` with `version` = the companion version and `games` = the client versions it supports (`1.46.*`). It builds the packages and the catalogue (`.github/actions/modpack-release`, the same as `modpack.yml`), builds this installer with the catalogue in `tauri/resources/` and `TAURI_SIGNING_PRIVATE_KEY`, signs the release payload (`bunx tauri signer sign`, the payload from `apps/web/server/scripts/modpack-release.ts prepare`), merges the release into the published `releases.json` (`… index`: the same version is replaced, older ones stay, the `manager` block points at this installer and its `.sig`) and moves it all into `DEPLOY_PATH/downloads` over SSH, `releases.json` last.
+3. The result, under `https://triotmetki.ru/downloads/`:
+
+   | Path                                                             | What                                                                          | Cache             |
+   | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------- |
+   | `modpack/<version>/*.mtmod`                                      | the split packages the manager installs, plus `otmetki.<version>.mtmod`       | a year, immutable |
+   | `modpack/<version>/catalog/components.json`                      | the release `catalog` (+ `previews/`)                                         | a year, immutable |
+   | `manager/<version>/otmetki-manager_<v>_x64-setup.exe` (+ `.sig`) | the updater target of the index's `manager` block                             | a year, immutable |
+   | `otmetki-manager-setup.exe`                                      | the same installer, the site's /mod download (`MOD_DISTRIBUTION.managerUrl`)  | revalidated       |
+   | `otmetki.mtmod`                                                  | the single package, «скачать пакеты вручную» (`MOD_DISTRIBUTION.packagesUrl`) | revalidated       |
+   | `releases.json`                                                  | the index the API reads                                                       | revalidated       |
+
+   Package and catalogue URLs are `https://triotmetki.ru/downloads/modpack/<version>/<file>`: the trusted host (`releases::is_trusted_host`), https, no port. A published version is cached for a year: change its contents only by publishing a new version.
 
 ## Not verified yet
 

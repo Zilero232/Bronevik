@@ -17,6 +17,14 @@
 # Everything reads the root .env. The URLs in it point at localhost for dev;
 # inside compose the services reach each other by name, so the overrides below
 # win for DATABASE_URL, DIRECT_URL and REDIS_URL.
+#
+# Everything is stored on this host: uploaded replays and armor models on the
+# `serverdata` volume, the public downloads (modpack releases, the manager
+# installer, releases.json) in ./downloads next to this file. The release
+# workflow (.github/workflows/release.yml) fills ./downloads over SSH; Caddy
+# serves it at https://<SITE_DOMAIN>/downloads/ and the server reads the
+# release index from it. Both mount it read-only. Create it once:
+#   mkdir -p downloads
 
 x-healthcheck: &healthcheck
   interval: 30s
@@ -59,6 +67,7 @@ services:
       - '443:443/udp'
     volumes:
       - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./downloads:/srv/downloads:ro
       - caddy_data:/data
       - caddy_config:/config
     networks:
@@ -109,9 +118,12 @@ services:
     expose:
       - '4000'
     volumes:
-      # Local replay storage (REPLAY_STORAGE=local) and the armor models live
-      # under .data; without a volume they vanish with the container.
+      # Uploaded replays and the armor models live under .data; without a
+      # volume they vanish with the container.
       - serverdata:/app/apps/web/server/.data
+      # The modpack release index (downloads/releases.json, relative to the
+      # working directory) that GET /modpack/releases/latest answers from.
+      - ./downloads:/app/apps/web/server/downloads:ro
     networks:
       - otmetki
 

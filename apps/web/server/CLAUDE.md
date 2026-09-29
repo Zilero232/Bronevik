@@ -14,7 +14,7 @@ src/
 ├── main.ts, app.module.ts        # the API
 ├── worker.ts, worker.module.ts   # the collector worker
 ├── config/      # env/ (env.schemas.ts: secrets, addresses, ports only; env.ts: validateEnv) + app-config/ (AppConfigModule, AppConfigService) + *.constants.ts (every tunable; time.constants.ts: TIME.zone), cors/ (per-path CORS), proxy/ (TRUSTED_PROXIES → trust proxy)
-├── core/        # prisma (factory, timescale, error guards, lib/advisory-lock: lockedTransaction), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (S3 / local-disk object storage), scrape (PageCrawlerService over lib/scrape), http (HttpClientService over lib/http), webhooks, battle-events
+├── core/        # prisma (factory, timescale, error guards, lib/advisory-lock: lockedTransaction), redis, logger (nestjs-pino), queues (BullMQ connection), lesta (priority + bulk clients), storage (local-disk object storage under `.data`), scrape (PageCrawlerService over lib/scrape), http (HttpClientService over lib/http), webhooks, battle-events
 ├── common/      # exceptions, filters, guards (origin), middleware (api-helmet), decorators, interceptors (viewer-cache), cache (TTL constants), schedules (createJobSchedules factory), shared pure helpers in lib/
 ├── lib/         # lesta (Lesta API client), replay (.mtreplay parser, NOTICE), http (ky), auth (better-auth), scrape (robots-aware cheerio crawl, tanki.su listings)
 └── modules/

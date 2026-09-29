@@ -679,11 +679,15 @@ Each package is a stored (uncompressed) zip with explicit directory entries, `me
 
 - **`owg`**, tried first: OpenWG [owg_python_compiler](https://gitlab.com/openwg/owg-python-compiler).
   - A C++ tool that writes CPython 2.7 bytecode without Python 2.7, reproducibly (fixed header timestamp, stable `co_filename`).
-  - It has no binary releases: build the tag with CMake, as the `release-build` job in [.github/workflows/modpack.yml](../../../.github/workflows/modpack.yml) does. Pass `--owg-compiler PATH` or set `$OWG_PYTHON_COMPILER`.
+  - It has no binary releases: build the tag with CMake, as [.github/actions/modpack-release](../../../.github/actions/modpack-release/action.yml) does for `modpack.yml` and `release.yml`. Pass `--owg-compiler PATH` or set `$OWG_PYTHON_COMPILER`.
   - **Unverified:** that `--filename-root scripts` gives `co_filename` `scripts/client/gui/mods/...`. Check a traceback in `python.log` after the first owg-built release.
 - **`py27`**: a Python 2.7 interpreter running `py_compile`, with `dfile` set to the in-package path. Looked up as `--python27`, `$OTMETKI_PY27`, `$PYTHON27`, `py -2.7`, `python2.7`, `python2`, `C:\Python27\python.exe`.
 
 Without either, the packages carry `.py` sources and the build prints a warning. They load in development clients only.
+
+### Publishing a release
+
+Releases live on our VPS only (no S3, CDN or GitHub Releases), under `https://triotmetki.ru/downloads/`. Bump `VERSION` (the companion's is the release version) and the CHANGELOG, then run [.github/workflows/release.yml](../../../.github/workflows/release.yml) with that `version` and the supported client versions in `games` (`1.46.*`). It builds the release packages and the catalogue with the steps above, the manager installer around that catalogue, signs the release for the manager and publishes `modpack/<version>/` (the split packages, `otmetki.<version>.mtmod`, `catalog/`), `otmetki.mtmod` (the single package behind the /mod page's manual download), the installer and `releases.json`. The manager installs from that index ([manager README «Releases»](../manager/README.md#releases)); first-time setup is [docs/ops/deploy.md §4](../../../docs/ops/deploy.md#4-game-mod-releases-on-the-vps).
 
 ## Tests
 

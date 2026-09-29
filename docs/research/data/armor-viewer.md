@@ -68,7 +68,7 @@ Current versions (npm, 2026-09-25). They match `docs/research/tooling/packages.m
 | `@gltf-transform/core` / `functions` / `extensions` | 4.5.0 | optional server-side packing to GLB |
 | `meshoptimizer` | 1.2.0 | `EXT_meshopt_compression` encoder/decoder, if we ship GLB |
 
-**Format decision.** Collision meshes are tiny: the IS-7 has 1 000 vertices in total across all pieces, 38 KB of JSON, about 8 KB gzipped. So ship **our own compact JSON** (or a typed-array binary) straight from the API or S3 and build `BufferGeometry` directly. glTF, Draco and meshopt add a decoder (Draco WASM is about 300 KB) for no gain. Keep `gltf-transform` + meshopt only if we later draw visual models. Draco is not recommended: `draco3dgltf` has been unmaintained since 2024, and meshopt decodes faster.
+**Format decision.** Collision meshes are tiny: the IS-7 has 1 000 vertices in total across all pieces, 38 KB of JSON, about 8 KB gzipped. So ship **our own compact JSON** (or a typed-array binary) straight from the API and build `BufferGeometry` directly. glTF, Draco and meshopt add a decoder (Draco WASM is about 300 KB) for no gain. Keep `gltf-transform` + meshopt only if we later draw visual models. Draco is not recommended: `draco3dgltf` has been unmaintained since 2024, and meshopt decodes faster.
 
 **Per-face armor.**
 - Build one non-indexed `BufferGeometry` per piece, one draw call per piece.
@@ -149,7 +149,7 @@ Implement this as pure TS in `packages/gamedata` (`calculateArmorHit({ thickness
 2. **Do not scrape or show PT/CT (`Lesta_PT`) vehicles** before release. That is closer to the NDA/leak clause.
 3. Put in the UI and API response: "Геометрия брони и характеристики: © Леста Игры. Все права защищены. Источник данных: Леста Игры", plus a link to the official site. Credit `unicum-gg/wot.models`.
 4. No affiliation claims, no Lesta branding in the viewer.
-5. Keep a kill switch: a feature flag, plus a script that deletes the S3 prefix if Lesta asks.
+5. Keep a kill switch: a feature flag, plus a script that deletes the stored models if Lesta asks (`armor:purge`).
 6. Don't redistribute the raw mirror as a download. Serve only our processed per-vehicle payload.
 7. Tell the `wot.models` author we consume it. Ask before vendoring any `wot.build` code (the repo has no licence).
 
@@ -171,13 +171,13 @@ Implement this as pure TS in `packages/gamedata` (`calculateArmorHit({ thickness
    - Per vehicle, write a compact binary: header JSON, then Float32 positions (quantised to Int16 over the bounding box), Uint16 indices and a plate table. Or write gzipped JSON. Target under 20 KB.
    - Emit only what changed (hash compare, like `diffSpecs`).
 5. **Storage.**
-   - Upload to S3 via the existing `@aws-sdk/client-s3` (pattern in `modules/replays/storage/s3.storage.ts`): key `armor/<gameVersion>/<tankId>.bin`, immutable, long `Cache-Control`.
+   - Store it on the VPS disk through the object storage abstraction (`core/storage`, `LocalDiskStorage` on the `serverdata` volume; there is no S3): key `armor/<tankId>/<hash>.bin`, immutable, long `Cache-Control`.
    - Add a DB row `VehicleArmorModel { tankId, gameVersion, key, hash, pieces }`, or a `GameDataEntry` kind `armorModel`.
-   - Without S3 in dev, fall back to `apps/web/server/.cache/armor/…` served by Nest `StaticFiles`.
+   - Dev uses the same local storage under `.data/armor`.
 6. **API.**
    - `GET /tanks/:slug/armor?turret=&gun=&chassis=` → `{ gameVersion, modelUrl, pieces→module map, plates: { piece: { plate: { thickness, spaced, kind } } }, mounts, shells: [{ id, kind, caliber, pen100, pen500, damage, piercingPowerLossFactorByDistance }] }`.
    - Put the zod contract in `packages/schemas`.
-   - The geometry itself is fetched from `modelUrl` (CDN or S3).
+   - The geometry itself is fetched from `modelUrl` (the API).
    - Also expose `/v1` later, subject to legal §5.
 
 **Client (FSD)**
@@ -204,13 +204,13 @@ Implement this as pure TS in `packages/gamedata` (`calculateArmorHit({ thickness
 
 - Models missing for a tank (new vehicle, mirror lag) → show a 2D fallback: the primary armor table (`primaryArmor` hull/turret front/side/rear from `VehicleSpec`), plus a "3D-модель появится после обновления" state.
 - Mirror dead → run the `--local-models` path: either a checkout produced by running `wot.build --collision-only` ourselves, or (after the author agrees) a vendored Havok reader over a local client's `vehicles_level_*.pkg`.
-- Dev/e2e and Storybook-like design page → a committed **demo model**: a hand-built box tank (hull, turret and gun boxes with named groups `armor_1..n`, one spaced skirt, tracks) at `apps/web/client/shared/fixtures/armor-demo.json`. It is generated, not extracted, so it is legally clean and lets the e2e smoke test run without S3 or the mirror.
+- Dev/e2e and Storybook-like design page → a committed **demo model**: a hand-built box tank (hull, turret and gun boxes with named groups `armor_1..n`, one spaced skirt, tracks) at `apps/web/client/shared/fixtures/armor-demo.json`. It is generated, not extracted, so it is legally clean and lets the e2e smoke test run without stored models or the mirror.
 
 **Order of work**
 
 1. Penetration math + tests in `packages/gamedata`.
 2. Mirror source + parser + join + pack in the importer (`--dry-run` prints plate/thickness mismatches vs the mirror's `armor` block).
-3. S3 upload + API + schema.
+3. Storage + API + schema.
 4. Client viewer with the demo model.
 5. Shader + hover.
 6. Shell and distance pickers, module switching.

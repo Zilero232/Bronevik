@@ -74,7 +74,9 @@ WORKDIR /app/apps/web/server
 RUN DIRECT_URL="postgresql://placeholder" DATABASE_URL="postgresql://placeholder" bunx prisma generate
 
 # The processes run as the unprivileged `bun` user of the base image; the
-# local-disk replay store (used without S3) is the only path it writes to.
+# local-disk store under .data (replays, armor models) is the only path it
+# writes to. docker-compose.yml mounts the host downloads folder read-only at
+# ./downloads for the modpack release index.
 RUN mkdir -p .data && chown bun:bun .data
 
 USER bun

@@ -2,7 +2,7 @@ name: manager
 
 # The modpack manager (apps/game/manager): a Tauri 2 desktop app, Rust core in tauri/, React UI in web/.
 # It is how players install the modpack (the Inno Setup installer it replaced is gone); its catalogue
-# (components.json + previews) comes from the `modpack-catalog` artifact of modpack.yml.
+# (components.json + previews) comes from .github/actions/modpack-release (modpack.yml, release.yml).
 #
 # checks  pull requests that touch the manager, the packages its UI reads, or this file; manual runs.
 #         Windows, like the players: the UI typecheck and its Vitest project, then cargo fmt, clippy and
@@ -11,7 +11,8 @@ name: manager
 # bundle  manual runs only, after checks. `tauri build`: the NSIS installer (ru/en, per user, unsigned),
 #         plus the updater archive and its minisign signature when the TAURI_SIGNING_PRIVATE_KEY secret
 #         is set (without it the updater artifacts are skipped, the installer is still built). Uploaded as
-#         the `modpack-manager` artifact; publishing a release feed is a manual step (README «Releases»).
+#         the `modpack-manager` artifact, a build to look at. Publishing to the VPS is release.yml
+#         (README «Releases»), which builds the installer with the release catalogue itself.
 
 on:
   pull_request:

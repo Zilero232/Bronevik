@@ -1,2 +1,2 @@
 export { createArmorStorage } from './storage';
-export type { ArmorStorage, ArmorStorageEnv } from './storage.types';
+export type { ArmorStorage } from './storage.types';

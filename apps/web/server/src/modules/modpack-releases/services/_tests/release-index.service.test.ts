@@ -1,112 +1,98 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { mock } from 'vitest-mock-extended';
-
-import type { AppConfigService } from '../../../../config';
-import type { HttpClientService } from '../../../../core';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MODPACK_RELEASES_SOURCE } from '../../config';
 import { INDEX } from '../../lib/select-release/_tests/fixtures';
 import { ReleaseIndexService } from '../release-index.service';
 
-const REMOTE = 'https://cdn.triotmetki.ru/modpack/releases.json';
+const EMPTY = { schemaVersion: 1, releases: [] };
+const MALFORMED = '{"schemaVersion": 1, "releases": [{"version": "latest"}]}';
 
-const createService = (url: string) => {
-  const config = mock<AppConfigService>();
-  const http = mock<HttpClientService>();
-
-  config.get.calledWith('MODPACK_RELEASES_URL').mockReturnValue(url);
-
-  return { service: new ReleaseIndexService(config, http), http };
-};
+const later = (ms: number) => vi.setSystemTime(Date.now() + ms + 1);
+const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
 
 describe('ReleaseIndexService', () => {
-  afterEach(() => {
+  let dir = '';
+  let path = '';
+
+  beforeEach(async () => {
+    dir = await mkdtemp(join(tmpdir(), 'otmetki-releases-'));
+    path = join(dir, 'releases.json');
+  });
+
+  afterEach(async () => {
     vi.useRealTimers();
+    await rm(dir, { recursive: true, force: true });
   });
 
-  it('reads and validates the committed index without a remote url', async () => {
-    const { service, http } = createService('');
-    const index = await service.load();
-
-    expect(index.schemaVersion).toBe(1);
-    expect(http.getJson).not.toHaveBeenCalled();
+  it('answers with an empty index before the first release is published', async () => {
+    await expect(new ReleaseIndexService(path).load()).resolves.toEqual(EMPTY);
   });
 
-  it('reads the remote index when one is configured and caches it', async () => {
-    const { service, http } = createService(REMOTE);
+  it('treats an empty file as an empty index', async () => {
+    await writeFile(path, '  \n');
 
-    http.getJson.mockResolvedValue(INDEX);
-
-    await service.load();
-    await service.load();
-
-    expect(http.getJson).toHaveBeenCalledTimes(1);
-    expect(http.getJson.mock.calls[0]?.[0].url).toBe(REMOTE);
+    await expect(new ReleaseIndexService(path).load()).resolves.toEqual(EMPTY);
   });
 
-  it('serves the cached index when a refresh fails', async () => {
-    vi.useFakeTimers();
+  it('reads and validates the published index', async () => {
+    await writeFile(path, JSON.stringify(INDEX));
 
-    const { service, http } = createService(REMOTE);
+    await expect(new ReleaseIndexService(path).load()).resolves.toEqual(INDEX);
+  });
 
-    http.getJson.mockResolvedValueOnce(INDEX).mockRejectedValueOnce(new Error('offline'));
+  it('keeps serving the cached index until it goes stale', async () => {
+    await writeFile(path, JSON.stringify(INDEX));
+
+    const service = new ReleaseIndexService(path);
+
     await service.load();
-    vi.advanceTimersByTime(MODPACK_RELEASES_SOURCE.cacheTtlMs + 1);
+    await writeFile(path, JSON.stringify(EMPTY));
 
     await expect(service.load()).resolves.toEqual(INDEX);
-    expect(http.getJson).toHaveBeenCalledTimes(2);
   });
 
-  it('shares one request between concurrent first loads', async () => {
-    const { service, http } = createService(REMOTE);
+  it('answers from the stale copy at once and picks up the new file in the background', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    await writeFile(path, JSON.stringify(INDEX));
 
-    http.getJson.mockResolvedValue(INDEX);
+    const service = new ReleaseIndexService(path);
 
-    await Promise.all([service.load(), service.load(), service.load()]);
-
-    expect(http.getJson).toHaveBeenCalledTimes(1);
-  });
-
-  it('answers from the stale copy at once and refreshes it in the background', async () => {
-    vi.useFakeTimers();
-
-    const { service, http } = createService(REMOTE);
-
-    http.getJson.mockResolvedValueOnce(INDEX).mockReturnValueOnce(new Promise(() => undefined));
     await service.load();
-    vi.advanceTimersByTime(MODPACK_RELEASES_SOURCE.cacheTtlMs + 1);
+    await writeFile(path, JSON.stringify(EMPTY));
+    later(MODPACK_RELEASES_SOURCE.cacheTtlMs);
 
     await expect(service.load()).resolves.toEqual(INDEX);
-    await expect(service.load()).resolves.toEqual(INDEX);
-    expect(http.getJson).toHaveBeenCalledTimes(2);
+    await vi.waitFor(async () => expect(await service.load()).toEqual(EMPTY));
   });
 
-  it('waits before retrying a failed refresh', async () => {
-    vi.useFakeTimers();
+  it('keeps the last good index through a malformed file and retries only after the delay', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    await writeFile(path, JSON.stringify(INDEX));
 
-    const { service, http } = createService(REMOTE);
+    const service = new ReleaseIndexService(path);
 
-    http.getJson.mockResolvedValueOnce(INDEX).mockRejectedValue(new Error('offline'));
     await service.load();
-    vi.advanceTimersByTime(MODPACK_RELEASES_SOURCE.cacheTtlMs + 1);
+    await writeFile(path, MALFORMED);
+    later(MODPACK_RELEASES_SOURCE.cacheTtlMs);
     await service.load();
-    await vi.advanceTimersByTimeAsync(1);
+    await settle();
+    await writeFile(path, JSON.stringify(EMPTY));
     await service.load();
-    await service.load();
+    await settle();
 
-    expect(http.getJson).toHaveBeenCalledTimes(2);
+    await expect(service.load()).resolves.toEqual(INDEX);
 
-    vi.advanceTimersByTime(MODPACK_RELEASES_SOURCE.retryDelayMs);
-    await service.load();
+    later(MODPACK_RELEASES_SOURCE.retryDelayMs);
 
-    expect(http.getJson).toHaveBeenCalledTimes(3);
+    await vi.waitFor(async () => expect(await service.load()).toEqual(EMPTY));
   });
 
   it('refuses a malformed index when nothing is cached', async () => {
-    const { service, http } = createService(REMOTE);
+    await writeFile(path, MALFORMED);
 
-    http.getJson.mockResolvedValue({ schemaVersion: 1, releases: [{ version: 'latest' }] });
-
-    await expect(service.load()).rejects.toThrow();
+    await expect(new ReleaseIndexService(path).load()).rejects.toThrow();
   });
 });

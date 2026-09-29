@@ -4,15 +4,17 @@ name: modpack
 #
 # checks         pull requests that touch the modpack, and manual runs. Windows, like the players:
 #                pytest + the stdlib runner, ruff, vermin (the py2.7 syntax guard is a test).
-# release-build  manual runs only. Builds OpenWG owg_python_compiler from source (no Python 2.7
-#                needed) and the release packages with compiled .pyc, uploaded as an artifact, then the
-#                component catalogue around them (components.json with sha256 + previews) for the manager
-#                (apps/game/manager), uploaded as `modpack-catalog`. Players install through the manager.
+# release-build  manual runs only. .github/actions/modpack-release builds OpenWG owg_python_compiler
+#                from source (no Python 2.7 needed), the release packages with compiled .pyc (artifact
+#                `modpack`) and the component catalogue around them (components.json with sha256 +
+#                previews, artifact `modpack-catalog`) for the manager (apps/game/manager). A build to
+#                look at; publishing to the VPS is release.yml, which runs the same action.
 
 on:
   pull_request:
     paths:
       - 'apps/game/modpack/**'
+      - '.github/actions/modpack-release/**'
       - .github/workflows/modpack.yml
   workflow_dispatch:
 
@@ -21,9 +23,6 @@ concurrency:
   cancel-in-progress: true
 
 permissions: {}
-
-env:
-  OWG_COMPILER_VERSION: v1.2.1
 
 jobs:
   checks:
@@ -73,40 +72,13 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
-        with:
-          python-version: '3.12'
-
-      # A C++23 tool without published binaries: build the pinned tag (GCC 14 ships on the runner).
-      - name: Build owg_python_compiler
-        run: |
-          git clone --depth 1 --branch "$OWG_COMPILER_VERSION" --recurse-submodules --shallow-submodules \
-            https://gitlab.com/openwg/owg-python-compiler.git "$RUNNER_TEMP/owg"
-          cmake -S "$RUNNER_TEMP/owg" -B "$RUNNER_TEMP/owg/build" -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
-          cmake --build "$RUNNER_TEMP/owg/build" --parallel
-          "$RUNNER_TEMP/owg/build/owg_python_compiler" version
-
-      - name: Build the packages
-        run: |
-          owg="$RUNNER_TEMP/owg/build/owg_python_compiler"
-          python apps/game/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack
-          python apps/game/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack --single
+      - uses: ./.github/actions/modpack-release
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: modpack
           path: dist/modpack/
           retention-days: 14
-
-      - run: python -m pip install uv
-
-      # --strict: every package needs its catalog/catalog.json entry for a release.
-      - name: Build the component catalogue
-        working-directory: apps/game/modpack
-        run: |
-          uv sync --locked
-          uv run --locked python tools/build/setupkit --strict --packages ../../../dist/modpack --out ../../../dist/catalog
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

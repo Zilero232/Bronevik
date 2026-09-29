@@ -11,7 +11,7 @@ describe('selectManagerUpdate', () => {
       version: '0.2.0',
       notes: 'Fixes',
       pub_date: '2026-09-27T12:00:00.000Z',
-      url: 'https://cdn.triotmetki.ru/manager/0.2.0/setup.exe',
+      url: 'https://triotmetki.ru/downloads/manager/0.2.0/otmetki-manager_0.2.0_x64-setup.exe',
       signature: 'c2lnbmF0dXJl'
     });
   });

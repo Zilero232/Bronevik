@@ -77,15 +77,6 @@ export const envSchema = z.object({
   YOUTUBE_API_KEY: z.string().default(''),
 
   MOD_INGEST_SECRET: z.string().min(8),
-  MODPACK_RELEASES_URL: z.union([z.url(), z.literal('')]).default(''),
-
-  REPLAY_STORAGE: z.enum(['local', 's3']).default('local'),
-  REPLAY_STORAGE_DIR: z.string().default('.data/replays'),
-  S3_ENDPOINT: z.union([z.url(), z.literal('')]).default(''),
-  S3_REGION: z.string().default('us-east-1'),
-  S3_BUCKET: z.string().default(''),
-  S3_ACCESS_KEY_ID: z.string().default(''),
-  S3_SECRET_ACCESS_KEY: z.string().default(''),
 
   BULL_BOARD_PASSWORD: z.string().default('')
 });

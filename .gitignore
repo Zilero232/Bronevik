@@ -43,5 +43,7 @@ playwright-report/
 .stylelintcache
 .visit-probe.mjs
 
-# Local replay storage (REPLAY_STORAGE=local)
+# Local state: replays and armor models (.data), a dev copy of the VPS downloads folder
 .data/
+apps/web/server/downloads/
+/downloads/

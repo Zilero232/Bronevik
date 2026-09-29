@@ -12,6 +12,7 @@
 **/coverage
 **/.cache
 **/.data
+apps/web/server/downloads
 **/*.tsbuildinfo
 **/__pycache__
 **/*.pyc

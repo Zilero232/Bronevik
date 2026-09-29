@@ -20,27 +20,15 @@ if (!values.yes) {
   process.exit(1);
 }
 
-const env = z
-  .object({
-    DATABASE_URL: z.url(),
-    REPLAY_STORAGE: z.enum(['local', 's3']).default('local'),
-    S3_ENDPOINT: z.string().default(''),
-    S3_REGION: z.string().default('us-east-1'),
-    S3_BUCKET: z.string().default(''),
-    S3_ACCESS_KEY_ID: z.string().default(''),
-    S3_SECRET_ACCESS_KEY: z.string().default('')
-  })
-  .parse(process.env);
+const env = z.object({ DATABASE_URL: z.url() }).parse(process.env);
 
 const storageDir = values['armor-dir'] ?? resolve(fileURLToPath(new URL('../../../..', import.meta.url)), ARMOR_VIEWER.storageDir);
 const prisma = createPrismaClient({ url: env.DATABASE_URL });
 
 try {
-  const removed = await purgeArmorModels({ prisma, storage: createArmorStorage({ ...env, ARMOR_STORAGE_DIR: storageDir }) });
+  const removed = await purgeArmorModels({ prisma, storage: createArmorStorage(storageDir) });
 
-  if (env.REPLAY_STORAGE === 'local') {
-    await rm(storageDir, { recursive: true, force: true });
-  }
+  await rm(storageDir, { recursive: true, force: true });
 
   console.log(`✓ purged ${removed} armor models`);
 } finally {

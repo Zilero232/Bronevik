@@ -4,6 +4,8 @@ import type { Prisma } from '../../../../../generated';
 import type { ReplaySearchQuery } from '../../replays.types';
 import type { SearchWhereInput } from './replay-search.types';
 
+import { insensitiveEquals } from '../../../../common/lib';
+
 export const publicReplayWhere = { visibility: 'public', status: 'parsed' } as const satisfies Prisma.ReplayWhereInput;
 
 const atLeast = (value: number | undefined) => (value === undefined ? undefined : { gte: value });
@@ -25,7 +27,7 @@ export const searchWhere = ({ query, playerAccountId, tankIds }: SearchWhereInpu
     ...(query.arenaId === undefined ? {} : { arenaId: query.arenaId }),
     ...(query.mode === undefined ? {} : { gameplayMode: query.mode }),
     ...(query.result === undefined ? {} : { result: query.result }),
-    ...(query.clan === undefined ? {} : { clanTag: { equals: query.clan, mode: 'insensitive' } }),
+    ...(query.clan === undefined ? {} : { clanTag: insensitiveEquals(query.clan) }),
     ...(query.version === undefined ? {} : { gameVersion: query.version }),
     ...(query.mastery === undefined ? {} : { markOfMastery: query.mastery }),
     ...(query.tags?.length ? { tags: { hasEvery: query.tags } } : {}),

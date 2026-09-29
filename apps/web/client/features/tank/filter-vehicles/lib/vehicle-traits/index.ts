@@ -1,1 +1,2 @@
-export { rolesForTypes } from './vehicle-traits';
+export { rolesForTypes, rolesWithinTypes } from './vehicle-traits';
+export type { RolesWithinTypesInput } from './vehicle-traits.types';

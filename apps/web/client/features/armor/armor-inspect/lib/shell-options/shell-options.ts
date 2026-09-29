@@ -7,8 +7,8 @@ import type { PickGunInput, PickShellInput, ResolveShellInput } from './shell-op
 
 import { ARMOR_INSPECT } from '../../config';
 
-export const pickGun = ({ guns, gunName, fallbackName }: PickGunInput): ArmorAttackerGunData | undefined =>
-  guns.find(({ name }) => name === gunName) ?? guns.find(({ name }) => name === fallbackName) ?? guns.at(-1);
+export const pickGun = ({ guns, gunName }: PickGunInput): ArmorAttackerGunData | undefined =>
+  guns.find(({ name }) => name === gunName) ?? guns.at(-1);
 
 export const pickShell = ({ gun, shellName }: PickShellInput): ArmorShellOptionData | undefined =>
   gun?.shells.find(({ name }) => name === shellName) ?? gun?.shells[0];

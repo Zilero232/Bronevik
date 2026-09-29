@@ -3,7 +3,7 @@ import type { MoeThreshold } from '@otmetki/schemas';
 import { MOE_CURVE } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
-import { curveEntries, defaultCurvePercent } from '../moe-curve';
+import { curveEntries, defaultCurvePercent, selectedCurvePercent } from '../moe-curve';
 
 const THRESHOLDS: MoeThreshold = { tankId: 1, date: '2026-09-28', source: 'poliroid', p65: 2_000, p85: 2_600, p95: 3_100, p100: null };
 
@@ -39,5 +39,18 @@ describe('defaultCurvePercent', () => {
   it('falls back to the highest reported percent, and to nothing without data', () => {
     expect(defaultCurvePercent(curveEntries({ thresholds: null, points: [point(50, 1_500), point(60, 1_800)] }))).toBe(60);
     expect(defaultCurvePercent([])).toBeNull();
+  });
+});
+
+describe('selectedCurvePercent', () => {
+  const entries = curveEntries({ thresholds: THRESHOLDS, points: [point(70, 2_200)] });
+
+  it('keeps the percent the player chose while this tank has it', () => {
+    expect(selectedCurvePercent({ entries, chosen: 70 })).toBe(70);
+  });
+
+  it('falls back to the default when the chosen percent is not on this tank, as after switching tanks', () => {
+    expect(selectedCurvePercent({ entries, chosen: 75 })).toBe(defaultCurvePercent(entries));
+    expect(selectedCurvePercent({ entries, chosen: null })).toBe(defaultCurvePercent(entries));
   });
 });

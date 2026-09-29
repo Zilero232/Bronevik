@@ -10,13 +10,13 @@ import type { ArmorCompareBarProps } from './ArmorCompareBar.types';
 
 import s from './ArmorCompareBar.module.scss';
 
-export const ArmorCompareBar = ({ vehicle, excludeIds, onPick, onClear }: ArmorCompareBarProps) => {
+export const ArmorCompareBar = ({ vehicle, excludeIds, isActive, onPick, onClear }: ArmorCompareBarProps) => {
   const t = useTranslations('armor.compare');
 
   return (
     <div className={s.root} data-testid='armor-compare'>
       <TankPicker className={s.picker} excludeIds={excludeIds} label={t('pick')} placeholder={t('placeholder')} value={vehicle} onChange={onPick} />
-      {vehicle && (
+      {isActive && (
         <Button size='sm' variant='ghost' onClick={onClear}>
           <X aria-hidden size={14} />
           {t('clear')}

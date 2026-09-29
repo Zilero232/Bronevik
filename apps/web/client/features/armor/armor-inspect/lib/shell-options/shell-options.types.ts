@@ -3,7 +3,6 @@ import type { ArmorAttackerGunData, ArmorShellOptionData } from '@otmetki/schema
 export type PickGunInput = {
   guns: readonly ArmorAttackerGunData[];
   gunName?: string | null;
-  fallbackName?: string;
 };
 
 export type PickShellInput = {

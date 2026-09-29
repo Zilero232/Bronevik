@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { percentText } from '@/shared/lib';
 
 import { moeCurveQuery } from '../../../api';
-import { curveEntries, defaultCurvePercent } from '../../../lib/moe-curve';
+import { curveEntries, selectedCurvePercent } from '../../../lib/moe-curve';
 
 export const useMoeCurve = (tankId: number) => {
   const t = useTranslations('marks.drawer.curve');
@@ -16,7 +16,7 @@ export const useMoeCurve = (tankId: number) => {
   const [chosen, setChosen] = useState<number | null>(null);
 
   const entries = query.data?.entries ?? [];
-  const percent = chosen ?? defaultCurvePercent(entries);
+  const percent = selectedCurvePercent({ entries, chosen });
   const selected = entries.find((entry) => entry.percent === percent) ?? null;
   const hasModPoints = entries.some((entry) => entry.source === 'mod');
 

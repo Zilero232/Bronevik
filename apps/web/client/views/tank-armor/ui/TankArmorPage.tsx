@@ -41,7 +41,13 @@ export const TankArmorPage = () => {
         >
           {(model) => (
             <>
-              <ArmorCompareBar excludeIds={compare.excludeIds} vehicle={compare.vehicle} onClear={compare.onClear} onPick={compare.onPick} />
+              <ArmorCompareBar
+                excludeIds={compare.excludeIds}
+                isActive={compare.slug !== null}
+                vehicle={compare.vehicle}
+                onClear={compare.onClear}
+                onPick={compare.onPick}
+              />
               <ArmorViewer
                 compare={
                   compare.slug

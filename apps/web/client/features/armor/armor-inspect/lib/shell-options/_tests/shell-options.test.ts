@@ -69,8 +69,8 @@ describe('pickGun', () => {
     expect(pickGun({ guns, gunName: 'stock' })?.name).toBe('stock');
   });
 
-  it('falls back to the suggested gun, then to the last (top) one', () => {
-    expect(pickGun({ guns, gunName: 'gone', fallbackName: 'stock' })?.name).toBe('stock');
+  it('falls back to the last (top) gun when the chosen one is gone or unset', () => {
+    expect(pickGun({ guns, gunName: 'gone' })?.name).toBe('top');
     expect(pickGun({ guns, gunName: null })?.name).toBe('top');
   });
 

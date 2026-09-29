@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { insensitiveEquals } from '../../../../../common/lib';
 import { replaySearchQuerySchema } from '../../../dto/replays.schemas';
 import { publicReplayWhere, searchOrder, searchWhere } from '../replay-search';
 
@@ -28,7 +29,7 @@ describe('searchWhere', () => {
     });
 
     expect(where).toMatchObject({
-      clanTag: { equals: 'ABC', mode: 'insensitive' },
+      clanTag: insensitiveEquals('ABC'),
       damageAssisted: { gte: 1000 },
       damageBlocked: { gte: 2000 },
       frags: { gte: 3 },
@@ -45,6 +46,13 @@ describe('searchWhere', () => {
   it('keeps an explicit tank only when it is among the matched tanks', () => {
     expect(searchWhere({ query: query({ tankId: '2' }), playerAccountId: null, tankIds: [1, 2] }).tankId).toEqual({ in: [2] });
     expect(searchWhere({ query: query({ tankId: '3' }), playerAccountId: null, tankIds: [1, 2] }).tankId).toEqual({ in: [] });
+  });
+
+  it('matches the clan tag literally, so an underscore is not a LIKE wildcard', () => {
+    expect(searchWhere({ query: query({ clan: 'A_B' }), playerAccountId: null, tankIds: null }).clanTag).toEqual({
+      equals: String.raw`A\_B`,
+      mode: 'insensitive'
+    });
   });
 
   it('refuses an unknown tag', () => {

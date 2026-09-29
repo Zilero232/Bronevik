@@ -9,3 +9,8 @@ export type CurveEntry = {
 };
 
 export type CurveEntriesInput = Pick<MoeCurve, 'points' | 'thresholds'>;
+
+export type SelectedCurvePercentInput = {
+  entries: readonly CurveEntry[];
+  chosen: number | null;
+};

@@ -20,7 +20,8 @@ import s from './VehicleFilters.module.scss';
 export const VehicleFilters = ({ withStatuses = true, withRoles = true, className }: VehicleFiltersProps) => {
   const t = useTranslations('tanks.filters');
   const tTraits = useTranslations('tankTraits');
-  const { filters, isActive, statusOptions, roleItems, role, setFilters, reset, onStatusesChange, onRoleChange } = useVehicleFiltersView();
+  const { filters, isActive, statusOptions, roleItems, role, setFilters, reset, onTypesChange, onStatusesChange, onRoleChange } =
+    useVehicleFiltersView();
 
   return (
     <div className={clsx(s.root, className)}>
@@ -32,14 +33,7 @@ export const VehicleFilters = ({ withStatuses = true, withRoles = true, classNam
         value={filters.tiers}
         onChange={(tiers) => setFilters({ tiers })}
       />
-      <IconFilter
-        aria-label={t('type')}
-        kind='class'
-        options={TANK_CLASSES}
-        size='sm'
-        value={filters.types}
-        onChange={(types) => setFilters({ types })}
-      />
+      <IconFilter aria-label={t('type')} kind='class' options={TANK_CLASSES} size='sm' value={filters.types} onChange={onTypesChange} />
       <IconFilter
         aria-label={t('nation')}
         kind='nation'

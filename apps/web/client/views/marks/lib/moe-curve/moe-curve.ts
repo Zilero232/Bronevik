@@ -1,6 +1,6 @@
 import { firstBy, sortBy } from 'remeda';
 
-import type { CurveEntriesInput, CurveEntry } from './moe-curve.types';
+import type { CurveEntriesInput, CurveEntry, SelectedCurvePercentInput } from './moe-curve.types';
 
 import { CURVE_THRESHOLDS } from '../../config';
 
@@ -22,3 +22,6 @@ export const defaultCurvePercent = (entries: readonly CurveEntry[]): number | nu
   entries.find((entry) => entry.percent === CURVE_THRESHOLDS[2].percent)?.percent ??
   firstBy(entries, [(entry) => entry.percent, 'desc'])?.percent ??
   null;
+
+export const selectedCurvePercent = ({ entries, chosen }: SelectedCurvePercentInput): number | null =>
+  entries.some((entry) => entry.percent === chosen) ? chosen : defaultCurvePercent(entries);

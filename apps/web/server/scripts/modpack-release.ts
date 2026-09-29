@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parseArgs } from 'node:util';
 
-import { isMissingFileError } from '../src/common/lib';
+import { isMissingFileError } from '../src/common/lib/errors';
 import {
   buildRelease,
   catalogPackages,

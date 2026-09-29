@@ -3,6 +3,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { VehicleCatalogService } from '../../../reference';
 
+import { VEHICLE_STATUS } from '../../../reference';
 import { VehicleListService } from '../vehicle-list.service';
 import { catalogEntry, vehicle } from './tanks.fixtures';
 
@@ -39,6 +40,19 @@ describe('VehicleListService', () => {
     const list = await service.list({});
 
     expect(list.map((vehicle) => vehicle.role)).toEqual(['MT_sniper', null]);
+  });
+
+  it('flags preferential matchmaking from the stored client tags', async () => {
+    const { service, catalog } = createService();
+
+    catalog.filter.mockResolvedValue([
+      catalogEntry(vehicle({ tankId: 1, name: 'A' }), { tags: ['heavyTank', VEHICLE_STATUS.preferentialTag], role: null, notInShop: true }),
+      catalogEntry(vehicle({ tankId: 2, name: 'B' }))
+    ]);
+
+    const list = await service.list({});
+
+    expect(list.map((vehicle) => vehicle.isPreferential)).toEqual([true, false]);
   });
 
   it('passes the filter, statuses and roles included, to the catalog', async () => {

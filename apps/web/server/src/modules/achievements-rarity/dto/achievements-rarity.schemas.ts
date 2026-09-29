@@ -3,6 +3,7 @@ import {
   countSchema,
   isoDateTimeSchema,
   paginatedSchema,
+  paginationQuerySchema,
   percentSchema,
   tierSchema,
   vehicleSummarySchema,
@@ -63,7 +64,7 @@ export const tankRaritySchema = z.object({
 
 export const collectorsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(ACHIEVEMENTS_VIEW.leaderboardMaxLimit).default(ACHIEVEMENTS_VIEW.leaderboardDefaultLimit),
-  offset: z.coerce.number().int().min(0).default(0)
+  offset: paginationQuerySchema.shape.offset
 });
 
 export const collectorRowSchema = z.object({

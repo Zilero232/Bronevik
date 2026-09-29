@@ -9,6 +9,7 @@ import type { TableColumn } from '@/ui-kit';
 
 import { useMapLabels } from '@/entities/map/map';
 import { PinToggle } from '@/features/app/pin-rows';
+import { isPinnedCell } from '@/shared/lib';
 
 import { MAPS_TABLE } from '../../../config';
 import { CamouflageCell, MapNameCell } from '../../../ui/components/MapsTable/components';
@@ -24,7 +25,7 @@ export const useMapsColumns = (): TableColumn<MapSummary>[] => {
     column.display({
       id: 'pin',
       header: tPin('column'),
-      cell: ({ row: { original } }) => <PinToggle id={original.arenaId} name={original.name} scope='maps' />,
+      cell: ({ row, table }) => <PinToggle id={row.id} isOn={isPinnedCell({ row, table })} name={row.original.name} scope='maps' />,
       meta: { width: MAPS_TABLE.pinWidth }
     }),
     column.accessor('name', {

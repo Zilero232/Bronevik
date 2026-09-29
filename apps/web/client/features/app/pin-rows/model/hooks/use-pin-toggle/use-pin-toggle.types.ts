@@ -4,4 +4,5 @@ export type UsePinToggleInput = {
   scope: PinScope;
   id: string;
   name: string;
+  isOn: boolean;
 };

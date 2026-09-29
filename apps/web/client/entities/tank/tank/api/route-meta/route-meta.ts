@@ -3,7 +3,10 @@ import type { RouteStaticParamsInput } from '@/shared/seo';
 import { ROUTE_STATIC_PARAMS } from '@/shared/seo';
 import { lookupRouteEntity, routeEntity, routeSlugs } from '@/shared/seo/server';
 
-import { getTank, listTankStats } from '../tanks';
+import type { TankCollectionSlug } from '../../lib/tank-collections';
+
+import { collectionVehicles } from '../../lib/tank-collections';
+import { getTank, listTankStats, listVehicles } from '../tanks';
 
 const lookupTank = async (idOrSlug: string) => {
   'use cache';
@@ -20,4 +23,14 @@ export const topTankSlugs = async ({ fallback, limit = ROUTE_STATIC_PARAMS.limit
     fallback,
     load: async () => (await listTankStats({ limit })).items.map(({ vehicle }) => vehicle.slug)
   });
+};
+
+export const tankCollectionItems = async (slug: TankCollectionSlug) => {
+  'use cache';
+
+  try {
+    return collectionVehicles({ catalog: await listVehicles({}), slug }).map(({ name, slug: vehicleSlug }) => ({ name, slug: vehicleSlug }));
+  } catch {
+    return null;
+  }
 };

@@ -4,13 +4,10 @@ import { useTranslations } from 'next-intl';
 
 import type { UsePinToggleInput } from './use-pin-toggle.types';
 
-import { usePinnedRows } from '../use-pinned-rows';
+import { togglePinned } from '../../../lib/pinned-store';
 
-export const usePinToggle = ({ scope, id, name }: UsePinToggleInput) => {
+export const usePinToggle = ({ scope, id, name, isOn }: UsePinToggleInput) => {
   const t = useTranslations('common.pin');
-  const { isPinned, onToggle } = usePinnedRows(scope);
 
-  const isOn = isPinned(id);
-
-  return { isOn, label: isOn ? t('unpin', { name }) : t('pin', { name }), onToggle: () => onToggle(id) };
+  return { label: isOn ? t('unpin', { name }) : t('pin', { name }), onToggle: () => togglePinned({ scope, id }) };
 };

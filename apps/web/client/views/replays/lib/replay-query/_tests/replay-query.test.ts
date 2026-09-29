@@ -1,3 +1,4 @@
+import { PAGINATION } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import type { ReplayFilters } from '../replay-query.types';
@@ -61,6 +62,10 @@ describe('toSearchQuery', () => {
 
     expect(query.offset).toBe(0);
     expect(query.tankId).toBeUndefined();
+  });
+
+  it('clamps an offset from the URL to the deepest one the API accepts', () => {
+    expect(toSearchQuery({ filters: { ...EMPTY, offset: PAGINATION.maxOffset * 3 }, limit: 25 }).offset).toBe(PAGINATION.maxOffset);
   });
 });
 

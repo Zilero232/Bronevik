@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import type { ClassifyVehicleInput } from '../vehicle-status.types';
 
 import { VEHICLE_STATUS } from '../../../config';
-import { classifyVehicle, readSpecTraits, toTankRole } from '../vehicle-status';
+import { classifyVehicle, isPreferentialVehicle, readSpecTraits, toTankRole } from '../vehicle-status';
 
 const PREMIUM: ClassifyVehicleInput = {
   summary: { tier: 8, isPremium: true, isCollectible: false },
@@ -66,5 +66,15 @@ describe('classifyVehicle', () => {
     expect(classifyVehicle({ ...PREMIUM, spec: { ...PREMIUM.spec, tags: ['clanWarsBattles'] } })).toBe('reward');
     expect(classifyVehicle({ ...PREMIUM, summary: { ...PREMIUM.summary, tier: VEHICLE_STATUS.rewardMinTier } })).toBe('reward');
     expect(classifyVehicle(PREMIUM)).toBe('premium');
+  });
+});
+
+describe('isPreferentialVehicle', () => {
+  it('reads preferential matchmaking from the client tag', () => {
+    expect(isPreferentialVehicle({ tags: ['heavyTank', VEHICLE_STATUS.preferentialTag] })).toBe(true);
+  });
+
+  it('treats a vehicle without the tag as regular matchmaking', () => {
+    expect(isPreferentialVehicle({ tags: ['heavyTank', 'premiumIGR'] })).toBe(false);
   });
 });

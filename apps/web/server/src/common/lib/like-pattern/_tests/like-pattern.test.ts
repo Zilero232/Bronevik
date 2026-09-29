@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { escapeLike, insensitiveEquals } from '../like-pattern';
+import { escapeLike, insensitiveContains, insensitiveEquals } from '../like-pattern';
 
 describe('escapeLike', () => {
   it('escapes every LIKE wildcard and the escape character itself', () => {
@@ -15,5 +15,11 @@ describe('escapeLike', () => {
 describe('insensitiveEquals', () => {
   it('matches the value literally, so an underscore in a nickname is not a wildcard', () => {
     expect(insensitiveEquals('Vasya_Pupkin')).toEqual({ equals: 'Vasya\\_Pupkin', mode: 'insensitive' });
+  });
+});
+
+describe('insensitiveContains', () => {
+  it('searches for the wildcards literally, so "%" does not match every row', () => {
+    expect(insensitiveContains('100%_x')).toEqual({ contains: '100\\%\\_x', mode: 'insensitive' });
   });
 });

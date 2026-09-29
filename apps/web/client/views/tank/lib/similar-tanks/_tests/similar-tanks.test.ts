@@ -17,6 +17,7 @@ const tank = (tankId: number, overrides: Partial<VehicleCatalogItem> = {}): Vehi
   status: 'researchable',
   images: { small: null, contour: null, big: null },
   role: null,
+  isPreferential: false,
   ...overrides
 });
 

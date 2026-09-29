@@ -11,7 +11,8 @@
       "match": "Direct hit",
       "close": "Close",
       "miss": "Miss"
-    }
+    },
+    "otherGame": "Guess the map"
   },
   "status": {
     "puzzle": "Puzzle",
@@ -93,5 +94,73 @@
     "loading": "Preparing today's puzzle",
     "errorTitle": "Couldn't load the vehicle catalog",
     "errorDescription": "The puzzle needs the catalog. Refresh the page a bit later."
+  },
+  "map": {
+    "meta": {
+      "title": "Guess the map",
+      "description": "A daily Mir Tankov puzzle: guess the map from a minimap fragment in six tries."
+    },
+    "head": {
+      "title": "Guess the map",
+      "description": "A fragment of a minimap from the game client that widens with every try. Six tries, a new map at 00:00 Moscow time.",
+      "otherGame": "Guess the tank"
+    },
+    "status": {
+      "puzzle": "Puzzle",
+      "guesses": "Tries left",
+      "guessesTotal": "of {total}",
+      "streak": "Streak"
+    },
+    "fragment": {
+      "alt": "Minimap fragment of the mystery map",
+      "classified": "Map not identified",
+      "zoom": "Zoom ×{zoom, number}",
+      "status": {
+        "playing": "Map not identified",
+        "won": "Map identified",
+        "lost": "Out of tries"
+      }
+    },
+    "choices": {
+      "label": "Try {attempt} of {total}",
+      "search": "Search maps",
+      "placeholder": "Map name",
+      "empty": "No such map among the ones left",
+      "guess": "Is it {name}?"
+    },
+    "guesses": {
+      "title": "Tries",
+      "empty": "Pick a map from the list; hints appear after a miss.",
+      "correct": "Correct",
+      "camouflage": {
+        "match": "Same camouflage",
+        "miss": "Other camouflage",
+        "unknown": "Camouflage unknown"
+      },
+      "size": {
+        "match": "Same size",
+        "larger": "Mystery map is larger",
+        "smaller": "Mystery map is smaller",
+        "unknown": "Size unknown"
+      }
+    },
+    "result": {
+      "wonTitle": "{count, plural, one {Identified on the first try!} other {Map identified in # tries}}",
+      "lostTitle": "Out of tries",
+      "wonText": "It is indeed {name}.",
+      "lostText": "The map today was {name}. A new puzzle tomorrow at 00:00 Moscow time.",
+      "share": "Share the result",
+      "shareTitle": "Tri otmetki · Guess the map",
+      "copied": "Result copied",
+      "copiedHint": "Paste it into your platoon or clan chat.",
+      "openMap": "Map page"
+    },
+    "states": {
+      "loading": "Preparing the puzzle of the day",
+      "errorTitle": "Could not load the maps",
+      "errorDescription": "The puzzle needs the map list. Refresh the page a bit later.",
+      "unavailableTitle": "Maps are not loaded yet",
+      "unavailableDescription": "The puzzle needs minimaps from the game client data. They appear after the game data import."
+    }
   }
 }

@@ -34,6 +34,8 @@ export const toTankRole = (role: string | null): TankRole | null => {
   return isIncludedIn(name, TANK_ROLES) ? name : null;
 };
 
+export const isPreferentialVehicle = (spec: Pick<SpecTraits, 'tags'>): boolean => spec.tags.includes(VEHICLE_STATUS.preferentialTag);
+
 const hasRewardTag = (tags: readonly string[]): boolean =>
   tags.some((tag) => isIncludedIn(tag, VEHICLE_STATUS.rewardTags) || SOURCE_TAGS.includes(tag));
 

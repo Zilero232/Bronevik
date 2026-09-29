@@ -20,6 +20,11 @@ describe('paginationQuerySchema', () => {
   it('rejects a negative offset', () => {
     expect(paginationQuerySchema.safeParse({ offset: -1 }).success).toBe(false);
   });
+
+  it('accepts the deepest offset and rejects one past it', () => {
+    expect(paginationQuerySchema.safeParse({ offset: PAGINATION.maxOffset }).success).toBe(true);
+    expect(paginationQuerySchema.safeParse({ offset: PAGINATION.maxOffset + 1 }).success).toBe(false);
+  });
 });
 
 describe('listParam', () => {

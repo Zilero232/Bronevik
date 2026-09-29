@@ -31,6 +31,18 @@ const createService = () => {
 };
 
 describe('MapsService', () => {
+  it('searches map names for the typed text literally, wildcards included', async () => {
+    const { service, prisma } = createService();
+
+    prisma.arena.findMany.mockResolvedValue([]);
+
+    await service.list({ search: '50%_' });
+
+    expect(prisma.arena.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ name: { contains: '50\\%\\_', mode: 'insensitive' } }) })
+    );
+  });
+
   it('answers 404 for an unknown map', async () => {
     const { service, prisma } = createService();
 

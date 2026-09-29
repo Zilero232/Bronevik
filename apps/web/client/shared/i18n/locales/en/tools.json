@@ -17,7 +17,8 @@
   },
   "games": {
     "label": "Mini-games",
-    "guessTank": "Guess the tank"
+    "guessTank": "Guess the tank",
+    "guessMap": "Guess the map"
   },
   "research": {
     "title": "XP and credits to a tank",

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { accountIdSchema, countSchema, isoDateTimeSchema, percentSchema, tankIdSchema, uuidSchema } from '../common/primitives/primitives.schemas';
+import { paginationQuerySchema } from '../common/query/query.schemas';
 import { vehicleSummarySchema, vehicleTypeSchema } from '../vehicles/vehicles.schemas';
 import { ANALYTICS_BATTLES_QUERY, ANALYTICS_GRANULARITIES, ANALYTICS_PERIODS, BATTLE_MISTAKES, PLAYLIST_REASONS } from './analytics.constants';
 
@@ -35,7 +36,7 @@ export const analyticsBattleParamsSchema = z.object({
 export const analyticsBattlesQuerySchema = analyticsAccountQuerySchema.extend({
   tankId: tankIdSchema.optional(),
   limit: z.coerce.number().int().min(1).max(ANALYTICS_BATTLES_QUERY.maxLimit).default(ANALYTICS_BATTLES_QUERY.defaultLimit),
-  offset: z.coerce.number().int().min(0).default(0)
+  offset: paginationQuerySchema.shape.offset
 });
 
 export const playlistQuerySchema = analyticsAccountQuerySchema.extend({

@@ -35,6 +35,7 @@ export const SITEMAP_STATIC_PATHS = [
   ROUTES.pulse,
   ROUTES.honestRng,
   ROUTES.play.guessTank,
+  ROUTES.play.guessMap,
   ROUTES.streamers.list,
   ROUTES.streamers.forStreamers,
   ROUTES.streamers.settings.table,

@@ -8,7 +8,9 @@ export const IMAGES: NextConfig['images'] = {
   remotePatterns: [
     { protocol: 'https', hostname: 'api.tanki.su', pathname: '/static/**' },
     // Lesta client GUI assets (vehicle renders) mirrored by unicum-gg/wot.assets.
-    { protocol: 'https', hostname: 'raw.githubusercontent.com', pathname: '/unicum-gg/wot.assets/**' }
+    { protocol: 'https', hostname: 'raw.githubusercontent.com', pathname: '/unicum-gg/wot.assets/**' },
+    // Minimaps from the Lesta client, re-encoded to webp by unicum-gg/wot.maps (the arena `image`).
+    { protocol: 'https', hostname: 'raw.githubusercontent.com', pathname: '/unicum-gg/wot.maps/**' }
   ]
 };
 

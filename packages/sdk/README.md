@@ -47,6 +47,8 @@ createOtmetkiClient({ apiKey, retry: false });
 | Pro     | 25                  | 250 000          | 10                |
 | Partner | 100                 | 2 000 000        | 50                |
 
+Paginated lists take `limit` (1–100, default 25) and `offset` (0–10 000); a larger value is rejected with 400. Past the 10 000th row, narrow the query with filters instead of paging deeper.
+
 Every response carries `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Daily-Limit` and `X-RateLimit-Daily-Remaining`. Over the limit the API answers 429 with `RATE_LIMITED` (per second) or `PLAN_LIMIT_REACHED` (per day) and a `Retry-After` header.
 
 ### Webhooks

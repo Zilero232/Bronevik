@@ -134,7 +134,7 @@ Player, clan and tank pages with basic stats and recent periods; marks tables, t
 | Cookies refused / cleared | The server issues a signed `otmetki_device` cookie (httpOnly, SameSite=Lax, 400 days, HMAC with `BETTER_AUTH_SECRET`); without it the visitor is still counted by a hashed IP with 3× the device allowance. A forged cookie fails the HMAC and is replaced. |
 | Crawlers | Never metered and never shown a limit screen: the page's metadata, heading, intro and attribution are SSR; the client skips the 3D fetch when `isbot(navigator.userAgent)` matches. A UA spoofing a bot gains nothing: the server meters every request by identity, not by UA. |
 | Redis down | Fails open (logs a warning, lets the open through), like the public API rate limiter. |
-| Shared caches | The armor response is `Cache-Control: private, max-age=3600` (was `public`), and the API-side `CacheInterceptor` no longer wraps it (it would have skipped the meter); the geometry is kept in a small in-process LRU instead. |
+| Shared caches | The armor response is `Cache-Control: private, no-store` (was `public`, then `private, max-age=3600`, which let a second account in the same browser reuse the first one's metered response), and the API-side `CacheInterceptor` no longer wraps it (it would have skipped the meter); the geometry is kept in a small in-process LRU instead. |
 | Privacy | IPs are stored only as an HMAC prefix inside Redis keys that expire; the device id is random. `/privacy` now mentions the technical device cookie. No new database table, so no retention rule is needed. |
 
 ## 6. What is implemented

@@ -5,6 +5,7 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 
 import { listClans } from '@/entities/clan/clan';
 import { QUERY_KEYS } from '@/shared/constants';
+import { nextPageOffset } from '@/shared/lib';
 
 import { CLAN_RATING, CLAN_SORTS } from '../../../config';
 
@@ -18,7 +19,7 @@ export const useClanRating = () => {
     queryKey: QUERY_KEYS.clans.feed({ sort, limit: CLAN_RATING.pageSize }),
     queryFn: ({ signal, pageParam }) => listClans({ sort, limit: CLAN_RATING.pageSize, offset: pageParam, signal }),
     initialPageParam: 0,
-    getNextPageParam: ({ offset, limit, total }) => (offset + limit < total ? offset + limit : undefined),
+    getNextPageParam: nextPageOffset,
     placeholderData: keepPreviousData
   });
 

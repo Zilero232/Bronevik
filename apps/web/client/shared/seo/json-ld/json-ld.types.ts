@@ -16,3 +16,10 @@ export type EntityJsonLdInput = {
   locale: Locale;
   image?: string | null;
 };
+
+export type ItemListJsonLdInput = {
+  name: string;
+  path: string;
+  items: readonly Required<JsonLdCrumb>[];
+  locale: Locale;
+};

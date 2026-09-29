@@ -10,7 +10,7 @@ import { useGuessGame } from '../../context';
 
 export const useGameResult = () => {
   const t = useTranslations('play.result');
-  const { number, target, guesses, status } = useGuessGame();
+  const { number, target, guesses, status, streak, currentStreak, refreshDay } = useGuessGame();
   const { copy } = useCopy();
 
   const isWon = status === 'won';
@@ -30,5 +30,5 @@ export const useGameResult = () => {
     toast.success(t('copied'), { description: t('copiedHint') });
   };
 
-  return { target, guessCount: guesses.length, status, isWon, onShare };
+  return { target, guessCount: guesses.length, isWon, streak, currentStreak, refreshDay, onShare };
 };

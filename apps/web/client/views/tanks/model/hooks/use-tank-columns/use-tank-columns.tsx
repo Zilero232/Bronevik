@@ -9,7 +9,7 @@ import type { TableColumn } from '@/ui-kit';
 
 import { TankCell, TierCell, WinRateCell } from '@/entities/tank/tank';
 import { PinToggle } from '@/features/app/pin-rows';
-import { percentText } from '@/shared/lib';
+import { isPinnedCell, percentText } from '@/shared/lib';
 import { DeltaValue } from '@/ui-kit';
 
 import type { UseTankColumnsInput } from './use-tank-columns.types';
@@ -30,7 +30,7 @@ export const useTankColumns = ({ hidden }: UseTankColumnsInput): TableColumn<Tan
     column.display({
       id: 'pin',
       header: tPin('column'),
-      cell: ({ row: { original } }) => <PinToggle id={String(original.vehicle.tankId)} name={original.vehicle.name} scope='tanks' />,
+      cell: ({ row, table }) => <PinToggle id={row.id} isOn={isPinnedCell({ row, table })} name={row.original.vehicle.name} scope='tanks' />,
       meta: { width: TANKS_TABLE.pinWidth }
     }),
     column.accessor((row) => row.popularityRank ?? undefined, {

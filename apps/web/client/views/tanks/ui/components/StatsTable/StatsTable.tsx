@@ -12,7 +12,7 @@ import { TableTools } from './components';
 
 export const StatsTable = () => {
   const t = useTranslations('tanks.table');
-  const { columns, query, rows, pinnedIds, visibleColumns, isFiltered, onReset, onColumnsChange, onExport } = useStatsTable();
+  const { columns, query, rows, pinnedIds, isPinPending, visibleColumns, isFiltered, onReset, onColumnsChange, onExport } = useStatsTable();
 
   return (
     <QueryState
@@ -30,6 +30,7 @@ export const StatsTable = () => {
           getRowId={(row) => String(row.vehicle.tankId)}
           getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
           initialSorting={[{ id: 'battles', desc: true }]}
+          isLoading={isPinPending}
           pinnedRowIds={pinnedIds}
           renderCard={(row) => <TankCard row={row} />}
           rowHeight={TANKS_VIEW.rowHeight}

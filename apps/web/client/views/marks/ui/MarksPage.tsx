@@ -12,7 +12,7 @@ import s from './MarksPage.module.scss';
 export const MarksPage = () => {
   const t = useTranslations('marks.table');
   const tCommon = useTranslations('common');
-  const { rows, pinnedIds, total, updatedAt, isUntracked, query, selected, isDrawerOpen, onSelect, onDrawerChange } = useMarksPage();
+  const { rows, pinnedIds, isPinPending, total, updatedAt, isUntracked, query, selected, isDrawerOpen, onSelect, onDrawerChange } = useMarksPage();
 
   return (
     <div className={s.root}>
@@ -32,7 +32,7 @@ export const MarksPage = () => {
           query={query}
           skeleton={<MarksTable isLoading rows={rows} onSelect={onSelect} />}
         >
-          <MarksTable isStale={query.isPlaceholderData} pinnedRowIds={pinnedIds} rows={rows} onSelect={onSelect} />
+          <MarksTable isLoading={isPinPending} isStale={query.isPlaceholderData} pinnedRowIds={pinnedIds} rows={rows} onSelect={onSelect} />
         </QueryState>
         <p className={s.source}>{tCommon('dataSource')}</p>
       </section>

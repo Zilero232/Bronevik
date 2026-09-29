@@ -28,11 +28,22 @@ export type {
 } from './api';
 export { economyView } from './api';
 export type { EconomyView } from './api';
-export { DIFFICULTY_TONE, ECONOMY_VIEW, STATUS_TONE, SWEAT_TONE, TANK_SPEC_GROUPS, TANK_SPEC_KEYS, TANK_SPECS } from './config';
+export {
+  DIFFICULTY_TONE,
+  ECONOMY_VIEW,
+  STATUS_TONE,
+  SWEAT_TONE,
+  TANK_COLLECTION_SLUGS,
+  TANK_SPEC_GROUPS,
+  TANK_SPEC_KEYS,
+  TANK_SPECS
+} from './config';
 export type { TankSpecKey } from './config';
 export { pickVehicles, vehicleIndex } from './lib/pick-vehicles';
 export { isLowerBetter, specBest, specDelta } from './lib/spec-rank';
 export type { SpecVerdict } from './lib/spec-rank';
+export { collectionVehicles, isTankCollection } from './lib/tank-collections';
+export type { TankCollectionSlug } from './lib/tank-collections';
 export { vehicleIdentity } from './lib/vehicle-identity';
 export { specKeyOfPath, specPath, specsOfFlat, specsOfStats } from './lib/vehicle-specs';
 export { useSpecFormat } from './model/hooks';

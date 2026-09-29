@@ -14,7 +14,7 @@ import { useMarksUrlState } from '../use-marks-url-state';
 export const useMoeRows = () => {
   const filters = useVehicleFilters();
   const [{ sort, order, q, pinned }] = useMarksUrlState();
-  const { pinnedIds } = usePinnedRows('tanks');
+  const { isPending, filterIds, rowIds } = usePinnedRows({ scope: 'tanks', isPinnedOnly: pinned });
 
   const query = useInfiniteQuery({ ...marksQueries.feed(moeFeedParams({ vehicle: filters.query, sort, order })), placeholderData: keepPreviousData });
 
@@ -26,8 +26,9 @@ export const useMoeRows = () => {
   const named = filterByName({ rows: all, query: q });
 
   return {
-    rows: pinned ? named.filter(({ vehicle }) => pinnedIds.includes(String(vehicle.tankId))) : named,
-    pinnedIds,
+    rows: filterIds === null ? named : named.filter(({ vehicle }) => filterIds.includes(String(vehicle.tankId))),
+    pinnedIds: rowIds,
+    isPinPending: isPending,
     total,
     isUntracked: total === 0 && !filters.isActive && q.trim() === '',
     updatedAt: latestUpdate(all),

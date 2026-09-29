@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import type { BattleSideRow, WinnerRow } from '../lib';
 
 import { AppNotFoundException } from '../../../common/exceptions';
+import { insensitiveContains } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { statsFromBattles, statsFromReplays } from '../lib';
 import { toMapDetail, toMapSummary } from '../mappers';
@@ -18,7 +19,7 @@ export class MapsService {
       where: {
         isActive: true,
         ...(query.mode ? { modes: { has: query.mode } } : {}),
-        ...(query.search ? { name: { contains: query.search, mode: 'insensitive' } } : {})
+        ...(query.search ? { name: insensitiveContains(query.search) } : {})
       },
       orderBy: { name: 'asc' }
     });

@@ -1,8 +1,9 @@
 import type { TankDetail, VehicleSummary } from '@otmetki/schemas';
 
+import type { GuessStreak } from '@/entities/play/daily-puzzle';
+
 import type { GuessFeedback, GuessSubject } from '../../../lib/compare-guess';
 import type { GameStatus } from '../../../lib/game-status';
-import type { GuessStreak } from '../../../lib/streak';
 
 export type GuessEntry = {
   subject: GuessSubject;

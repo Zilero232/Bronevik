@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { SITE } from '@/shared/config/site';
 
-import { breadcrumbJsonLd, clanJsonLd, jsonLdText, organizationJsonLd, personJsonLd, siteJsonLd } from '../json-ld';
+import { breadcrumbJsonLd, clanJsonLd, itemListJsonLd, jsonLdText, organizationJsonLd, personJsonLd, siteJsonLd } from '../json-ld';
 
 describe('jsonLdText', () => {
   it('escapes a closing script tag', () => {
@@ -73,5 +73,21 @@ describe('breadcrumbJsonLd', () => {
 describe('siteJsonLd', () => {
   it('keeps the search placeholder unescaped', () => {
     expect(jsonLdText(siteJsonLd('ru'))).toContain('/p/{search_term_string}');
+  });
+});
+
+describe('itemListJsonLd', () => {
+  it('numbers the items from one and links each to its absolute locale URL', () => {
+    const data = itemListJsonLd({ name: 'Scouts', path: '/t/collections/scouts', items: [{ name: 'T-100 LT', path: '/t/t-100-lt' }], locale: 'en' });
+
+    expect(data.numberOfItems).toBe(1);
+    expect(data.itemListElement[0]).toMatchObject({ position: 1, name: 'T-100 LT', url: `${SITE.url}/en/t/t-100-lt` });
+  });
+
+  it('describes an empty collection as a list of zero items', () => {
+    expect(itemListJsonLd({ name: 'Empty', path: '/t/collections/x', items: [], locale: 'ru' })).toMatchObject({
+      numberOfItems: 0,
+      itemListElement: []
+    });
   });
 });

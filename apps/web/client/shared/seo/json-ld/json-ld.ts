@@ -6,7 +6,7 @@ import { SITE } from '@/shared/config/site';
 import { ROUTES } from '@/shared/constants';
 import { localePath } from '@/shared/i18n';
 
-import type { BreadcrumbJsonLdInput, EntityJsonLdInput } from './json-ld.types';
+import type { BreadcrumbJsonLdInput, EntityJsonLdInput, ItemListJsonLdInput } from './json-ld.types';
 
 import { absoluteUrl } from '../site-metadata';
 import { JSON_LD } from './json-ld.constants';
@@ -70,4 +70,18 @@ export const clanJsonLd = ({ name, path, locale, image }: EntityJsonLdInput) => 
   name,
   url: localeUrl({ path, locale }),
   ...(image ? { logo: image } : {})
+});
+
+export const itemListJsonLd = ({ name, path, items, locale }: ItemListJsonLdInput) => ({
+  '@context': JSON_LD.context,
+  '@type': 'ItemList',
+  name,
+  url: localeUrl({ path, locale }),
+  numberOfItems: items.length,
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    url: localeUrl({ path: item.path, locale })
+  }))
 });

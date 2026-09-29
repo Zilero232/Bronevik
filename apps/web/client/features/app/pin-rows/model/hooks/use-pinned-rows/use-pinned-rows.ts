@@ -1,23 +1,19 @@
 'use client';
 
-import { useLocalStorage } from '@siberiacancode/reactuse';
+import { useSyncExternalStore } from 'react';
 
-import { useHydrated } from '@/shared/lib';
+import type { PinnedView } from '../../../lib/pinned-view';
+import type { UsePinnedRowsInput } from './use-pinned-rows.types';
 
-import type { PinScope } from '../../../lib/pinned-ids';
+import { readPinned, subscribePinned } from '../../../lib/pinned-store';
+import { pinnedView } from '../../../lib/pinned-view';
 
-import { PIN_ROWS, PIN_SCOPES } from '../../../config';
-import { readPinnedIds, togglePinnedId } from '../../../lib/pinned-ids';
+export const usePinnedRows = ({ scope, isPinnedOnly }: UsePinnedRowsInput): PinnedView => {
+  const pinnedIds = useSyncExternalStore(
+    subscribePinned,
+    () => readPinned(scope),
+    () => null
+  );
 
-export const usePinnedRows = (scope: PinScope) => {
-  const isHydrated = useHydrated();
-  const { value, set } = useLocalStorage<unknown>(PIN_SCOPES[scope]);
-
-  const pinnedIds = isHydrated ? readPinnedIds(value) : [];
-
-  return {
-    pinnedIds,
-    isPinned: (id: string) => pinnedIds.includes(id),
-    onToggle: (id: string) => set(togglePinnedId({ ids: pinnedIds, id, limit: PIN_ROWS.limit }))
-  };
+  return pinnedView({ isPinnedOnly, pinnedIds });
 };

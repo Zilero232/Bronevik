@@ -1,2 +1,2 @@
-export { escapeLike, insensitiveEquals } from './like-pattern';
-export type { InsensitiveEquals } from './like-pattern.types';
+export { escapeLike, insensitiveContains, insensitiveEquals } from './like-pattern';
+export type { InsensitiveContains, InsensitiveEquals } from './like-pattern.types';

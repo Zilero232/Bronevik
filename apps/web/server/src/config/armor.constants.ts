@@ -1,6 +1,6 @@
 export const ARMOR_VIEWER = {
   storageDir: '.data/armor',
-  cacheControl: 'private, max-age=3600',
+  cacheControl: 'private, no-store',
   gunsCacheControl: 'public, max-age=3600',
   sourceRepo: 'unicum-gg/wot.models',
   meter: 'armor3d',

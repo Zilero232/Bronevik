@@ -28,7 +28,7 @@ export { nextPageOffset } from './page-offset';
 export type { OffsetPage } from './page-offset';
 export { PERCENT_TEXT, percentText } from './percent';
 export type { PercentFormatter, PercentTextInput } from './percent';
-export { pinnedFirst } from './pinned-first';
+export { isPinnedCell, pinnedFirst } from './pinned-first';
 export type { PinnedFirstInput } from './pinned-first';
 export { activePresets, presetsPatch } from './quick-presets';
 export type { ActivePresetsInput, PresetsPatch, PresetsPatchInput, QuickPreset } from './quick-presets';

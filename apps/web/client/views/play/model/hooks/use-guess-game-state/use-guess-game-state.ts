@@ -2,24 +2,26 @@
 
 import type { VehicleSummary } from '@otmetki/schemas';
 
+import { activeStreak, puzzleNumber, recordResult, useDailyStorage, usePuzzleDay } from '@/entities/play/daily-puzzle';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 
 import type { GuessGameState } from '../../context';
 
 import { GUESS_CLUES, GUESS_TANK } from '../../../config';
 import { compareGuess } from '../../../lib/compare-guess';
-import { pickDailyTank, puzzleNumber } from '../../../lib/daily-puzzle';
+import { pickDailyTank } from '../../../lib/daily-puzzle';
 import { gameStatus, revealedClues } from '../../../lib/game-status';
 import { guessSubject } from '../../../lib/guess-subject';
-import { activeStreak, recordResult } from '../../../lib/streak';
-import { useGuessStorage } from '../use-guess-storage';
-import { usePuzzleDay } from '../use-puzzle-day';
 import { useTankIntel } from '../use-tank-intel';
 
 export const useGuessGameState = (): GuessGameState => {
   const { data: vehicles = [], isLoading, isError, isFetching, refetch } = useVehicleCatalog();
   const { day, refreshDay } = usePuzzleDay();
-  const { guessIds, streak, setBoard, setStreak } = useGuessStorage(day);
+  const { guessIds, streak, setBoard, setStreak } = useDailyStorage<number>({
+    day,
+    storageKey: GUESS_TANK.storageKey,
+    streakKey: GUESS_TANK.streakKey
+  });
 
   const target = day === null ? null : pickDailyTank({ vehicles, day });
   const byId = new Map(vehicles.map((vehicle) => [vehicle.tankId, vehicle]));
@@ -67,7 +69,7 @@ export const useGuessGameState = (): GuessGameState => {
     kind: 'ready',
     game: {
       day,
-      number: puzzleNumber(day),
+      number: puzzleNumber({ epoch: GUESS_TANK.epoch, day }),
       target,
       targetDetail: intel.get(target.tankId),
       guesses,

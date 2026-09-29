@@ -1,0 +1,39 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+}
+
+.frame {
+  @include well;
+
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.zoom {
+  position: absolute;
+  inset: 0;
+}
+
+.image {
+  object-fit: cover;
+  user-select: none;
+}
+
+.caption {
+  @include stack(var(--space-1));
+}
+
+.title {
+  @include heading(var(--text-lg));
+
+  margin: 0;
+  color: var(--color-text);
+}
+
+.hint {
+  @include label;
+}

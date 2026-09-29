@@ -12,7 +12,7 @@ Architecture is **Feature-Sliced Design** with two local tweaks: `pages` → `vi
 app/          # Next.js routes — [locale]/{(site),(overlay),(tma)}, api/og, opengraph-image.tsx per entity route,
               #   sitemap.ts, robots.ts, manifest.ts, sw.ts + serwist/[path] (service worker), twitch-panel/ (route
               #   handler for the Twitch extension), providers, proxy/ (proxy.ts helpers), global-error, global-not-found
-views/        # one screen per route (90), e.g. home, player-profile, tank, tanks, marks, my-analytics, missions,
+views/        # one screen per route (91), e.g. home, player-profile, tank, tanks, marks, my-analytics, missions,
               #   mission-operation, best-battles, achievements, supertest, honest-rng, mod, mod-profile, legal, plus, streamer-studio
               #   — the full grouped list is in docs/architecture/fsd.md §2
 widgets/      # account/account-shell, armor/armor-viewer, map/{map-rotation,map-samples}, player/session-detail,
@@ -26,7 +26,7 @@ features/     # app/{pin-rows,rating-palette,rating-patterns,switch-locale,switc
               #   tank/{filter-vehicles,pick-tank}
 entities/     # app/locale, armor/armor-model, auth/session, battle/best-battle, clan/clan, coaching/coach,
               #   competition/competition, developer/developer, event/calendar, guide/guide, map/map, mission/mission,
-              #   mode/mode, notification/inbox, player/{analytics,cosmetics,leaderboard,marks,player,profile,recent-players,stats},
+              #   mode/mode, notification/inbox, play/daily-puzzle, player/{analytics,cosmetics,leaderboard,marks,player,profile,recent-players,stats},
               #   plus/{subscription,usage}, pulse/pulse, reference/{game-status,service-health}, replay/replay, search/search,
               #   social/{challenge,league},
               #   streamer/{channel,overlay,preferences,settings,streamer}, tactic/board, tank/{build,tank,tree}, tournament/tournament

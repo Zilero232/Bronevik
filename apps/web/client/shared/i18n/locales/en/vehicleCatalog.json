@@ -24,5 +24,52 @@
   "error": {
     "title": "Could not load the catalog",
     "description": "The server did not respond. Try again."
+  },
+  "collections": {
+    "heading": "Collections",
+    "label": "Themed vehicle collections",
+    "count": "{count, plural, one {# vehicle} other {# vehicles}} in the collection",
+    "criteriaLabel": "How the collection is built",
+    "empty": {
+      "title": "The collection is empty for now",
+      "description": "The vehicle catalog has not been loaded yet, or no vehicle matches the collection."
+    },
+    "items": {
+      "preferential": {
+        "title": "Tanks with preferential matchmaking",
+        "short": "Preferential matchmaking",
+        "description": "Every Mir Tankov tank with preferential matchmaking, by tier, with specs, stats and builds.",
+        "intro": "A tank with preferential matchmaking meets vehicles at most one tier above its own. It never ends up at the bottom of a list against tanks two tiers higher, which makes these tanks steady earners and comfortable to play.",
+        "criteria": "The collection lists the vehicles the game client tags with preferential matchmaking. It follows the client data after every patch."
+      },
+      "armored": {
+        "title": "Tanks with strong armor",
+        "short": "Strong armor",
+        "description": "Armored Mir Tankov tanks and tank destroyers: assault and breakthrough heavies and assault tank destroyers, by tier, with specs and stats.",
+        "intro": "Armored vehicles lead the push: they break a flank, tank shots with their front and turret and draw the enemy's fire.",
+        "criteria": "The collection lists the vehicles the game client gives the assault heavy tank, breakthrough heavy tank or assault tank destroyer role, the roles meant for heavily armored vehicles."
+      },
+      "scouts": {
+        "title": "Scouts: every light tank",
+        "short": "Scouts",
+        "description": "Every Mir Tankov light tank, scouts and wheeled vehicles included, by tier, with specs, stats and builds.",
+        "intro": "Light tanks spot: they find the enemy, light them up for the team and survive on speed and camouflage. Wheeled vehicles add raw speed and agility.",
+        "criteria": "The collection lists every light tank in the catalog, wheeled vehicles included."
+      },
+      "premium-farm": {
+        "title": "Tier VIII premium tanks for credits",
+        "short": "Premium tanks for credits",
+        "description": "Tier VIII Mir Tankov premium tanks you can get now, with specs and stats, to pick a credit earner.",
+        "intro": "Premium tanks earn more credits per battle, and tier VIII pays best. These are the tanks players take to earn credits and train crews.",
+        "criteria": "The collection lists tier VIII premium tanks with the Premium status, the ones on sale or available now. Reward and retired vehicles are left out."
+      },
+      "collector": {
+        "title": "Collector vehicles",
+        "short": "Collector",
+        "description": "Every Mir Tankov collector vehicle from lines removed from the tech tree, by tier, with specs and stats.",
+        "intro": "Collector vehicles come from lines removed from the tech tree. They need no research and keep the specs of their line's last version.",
+        "criteria": "The collection lists the vehicles the game client marks as collector vehicles."
+      }
+    }
   }
 }

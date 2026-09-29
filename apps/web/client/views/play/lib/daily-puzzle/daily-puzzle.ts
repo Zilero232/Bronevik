@@ -1,22 +1,12 @@
-import { differenceInSeconds } from 'date-fns';
 import { sortBy } from 'remeda';
 
-import { dayKey, daysBetween, nextDayStart, seededRandom, shiftDay } from '@/shared/lib';
+import { daySeed } from '@/entities/play/daily-puzzle';
+import { seededRandom } from '@/shared/lib';
 
 import type { PickDailyTankInput } from './daily-puzzle.types';
 
 import { GUESS_TANK } from '../../config';
 import { legacyRandom } from '../legacy-random';
-
-export const puzzleDay = (now: Date) => dayKey({ date: now });
-
-export const previousDay = (day: string) => shiftDay({ day, amount: -1 });
-
-export const puzzleNumber = (day: string) => daysBetween({ from: GUESS_TANK.epoch, to: day }) + 1;
-
-export const nextPuzzleAt = (now: Date) => nextDayStart({ date: now });
-
-export const secondsUntilNextPuzzle = (now: Date) => differenceInSeconds(nextPuzzleAt(now), now, { roundingMethod: 'ceil' });
 
 export const dailyPool = (vehicles: PickDailyTankInput['vehicles']) => {
   const preferred = vehicles.filter(({ tier, isPremium }) => tier >= GUESS_TANK.minTier && !isPremium);
@@ -31,7 +21,7 @@ export const pickDailyTank = ({ vehicles, day }: PickDailyTankInput) => {
     return null;
   }
 
-  const seed = Number(day.replaceAll('-', ''));
+  const seed = daySeed(day);
   const random = day < GUESS_TANK.generatorSwitchDay ? legacyRandom(seed) : seededRandom(seed);
 
   return pool[Math.floor(random() * pool.length)] ?? null;

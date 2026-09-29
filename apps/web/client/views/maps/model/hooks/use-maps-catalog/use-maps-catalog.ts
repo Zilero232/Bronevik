@@ -17,7 +17,7 @@ export const useMapsCatalog = () => {
     onReset
   } = useMapFilters();
 
-  const { pinnedIds } = usePinnedRows('maps');
+  const { isPending, filterIds, rowIds } = usePinnedRows({ scope: 'maps', isPinnedOnly: pinned });
 
   const query = useQuery({
     ...mapQueries.list(),
@@ -28,11 +28,11 @@ export const useMapsCatalog = () => {
         modes,
         camouflages: camo,
         sizes: size,
-        pinnedIds: pinned ? pinnedIds : null
+        pinnedIds: filterIds
       }),
       total: catalog.length
     })
   });
 
-  return { query, pinnedIds, isFiltered, onReset };
+  return { query, pinnedIds: rowIds, isPinPending: isPending, isFiltered, onReset };
 };

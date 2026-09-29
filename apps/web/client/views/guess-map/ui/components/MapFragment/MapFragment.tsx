@@ -1,0 +1,36 @@
+'use client';
+
+import { motion } from 'motion/react';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+
+import { Card } from '@/ui-kit';
+
+import { GUESS_MAP } from '../../../config';
+import { useMapFragment } from '../../../model/hooks';
+import { FRAGMENT_ZOOM } from './MapFragment.motion';
+
+import s from './MapFragment.module.scss';
+
+export const MapFragment = () => {
+  const t = useTranslations('play.map.fragment');
+  const { image, name, zoom, status, isOver, origin } = useMapFragment();
+
+  return (
+    <Card className={s.root} data-status={status} variant='panel'>
+      <div className={s.frame}>
+        {image && (
+          <motion.div animate={{ scale: zoom }} className={s.zoom} initial={false} style={{ transformOrigin: origin }} transition={FRAGMENT_ZOOM}>
+            <Image fill alt={isOver ? name : t('alt')} className={s.image} draggable={false} sizes={GUESS_MAP.imageSizes} src={image} />
+          </motion.div>
+        )}
+      </div>
+      <div className={s.caption}>
+        <span className={s.title}>{isOver ? name : t('classified')}</span>
+        <span className={s.hint} role='status'>
+          {isOver ? t(`status.${status}`) : t('zoom', { zoom })}
+        </span>
+      </div>
+    </Card>
+  );
+};

@@ -17,6 +17,7 @@ const vehicle = (overrides: Partial<VehicleCatalogItem> & Pick<VehicleCatalogIte
   status: 'researchable',
   images: { small: null, contour: null, big: null },
   role: null,
+  isPreferential: false,
   ...overrides
 });
 

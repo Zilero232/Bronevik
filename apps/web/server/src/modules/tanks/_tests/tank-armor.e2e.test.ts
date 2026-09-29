@@ -112,12 +112,13 @@ afterAll(async () => {
 });
 
 describe('GET /tanks/:idOrSlug/armor', () => {
-  it('hands an anonymous visitor a signed device cookie and keeps the response out of shared caches', async () => {
+  it('hands an anonymous visitor a signed device cookie and keeps the response out of every HTTP cache', async () => {
     const response = await armorOf(1);
 
     expect(response.status).toBe(200);
     expect(String(response.headers['set-cookie'])).toContain(`${USAGE_DEVICE.cookie}=`);
     expect(response.headers['cache-control']).toContain('private');
+    expect(response.headers['cache-control']).toContain('no-store');
   });
 
   it('meters an anonymous visitor through the device cookie and then asks for Plus', async () => {

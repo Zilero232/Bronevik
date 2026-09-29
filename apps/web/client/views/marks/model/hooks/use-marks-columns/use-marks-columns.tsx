@@ -9,6 +9,7 @@ import type { TableColumn } from '@/ui-kit';
 
 import { TierCell } from '@/entities/tank/tank';
 import { PinToggle } from '@/features/app/pin-rows';
+import { isPinnedCell } from '@/shared/lib';
 import { DeltaCell } from '@/ui-kit';
 
 import { DRAWER_THRESHOLDS, MOE_LIST, NUMERIC_COLUMN } from '../../../config';
@@ -24,7 +25,7 @@ export const useMarksColumns = (onSelect: (row: MoeRow) => void): TableColumn<Mo
     column.display({
       id: 'pin',
       header: tPin('column'),
-      cell: ({ row: { original } }) => <PinToggle id={String(original.vehicle.tankId)} name={original.vehicle.name} scope='tanks' />,
+      cell: ({ row, table }) => <PinToggle id={row.id} isOn={isPinnedCell({ row, table })} name={row.original.vehicle.name} scope='tanks' />,
       meta: { width: MOE_LIST.pinWidth }
     }),
     column.accessor((row) => row.vehicle.name, {

@@ -4,7 +4,9 @@ import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
 import { CatalogPending } from '@/entities/tank/tank';
-import { DataSourceNote, ErrorState, Legend, PageHeader } from '@/ui-kit';
+import { ROUTES } from '@/shared/constants';
+import { Link } from '@/shared/i18n/navigation';
+import { buttonVariants, DataSourceNote, ErrorState, Legend, PageHeader } from '@/ui-kit';
 
 import { GUESS_LEGEND } from '../config';
 import { GuessGameContext } from '../model/context';
@@ -19,7 +21,15 @@ export const GuessTankPage = () => {
 
   return (
     <div className={s.root}>
-      <PageHeader description={t('head.description')} title={t('head.title')}>
+      <PageHeader
+        actions={
+          <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.play.guessMap}>
+            {t('head.otherGame')}
+          </Link>
+        }
+        description={t('head.description')}
+        title={t('head.title')}
+      >
         <Legend
           aria-label={t('head.legendLabel')}
           items={GUESS_LEGEND.map(({ verdict, tone }) => ({ key: verdict, tone, label: t(`head.legend.${verdict}`) }))}

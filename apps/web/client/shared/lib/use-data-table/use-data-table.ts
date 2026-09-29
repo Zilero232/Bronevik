@@ -31,6 +31,7 @@ export const useDataTable = <T>({
     data,
     columns,
     state: { sorting },
+    meta: { pinnedRowIds },
     getRowId,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),

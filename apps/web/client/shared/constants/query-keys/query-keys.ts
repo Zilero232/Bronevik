@@ -96,7 +96,7 @@ export const QUERY_KEYS = {
     detail: (id: string) => ['maps', 'detail', id] as const,
     tanks: (id: string) => ['maps', 'tanks', id] as const
   },
-  userScoped: [['me'], ['replays', 'mine'], ['tactics', 'board'], ['coaching', 'orders'], ['streamers', 'claim']] as const,
+  userScoped: [['me'], ['tanks', 'armor'], ['replays', 'mine'], ['tactics', 'board'], ['coaching', 'orders'], ['streamers', 'claim']] as const,
   auth: {
     session: ['auth', 'session'] as const,
     telegramWidget: ['auth', 'telegram-widget'] as const

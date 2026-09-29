@@ -19,14 +19,14 @@ export const useStatsTable = () => {
   const query = useTankStats();
   const [{ difficulties, top, pinned }, setState] = useTanksState();
   const { reset, isActive } = useVehicleFilters();
-  const { pinnedIds } = usePinnedRows('tanks');
+  const { isPending, filterIds, rowIds } = usePinnedRows({ scope: 'tanks', isPinnedOnly: pinned });
   const isHydrated = useHydrated();
   const { value: stored, set: setHidden } = useLocalStorage<readonly string[]>(STORAGE_KEYS.tanksColumns, TANKS_TABLE.hiddenByDefault);
   const hidden = (isHydrated ? stored : undefined) ?? TANKS_TABLE.hiddenByDefault;
   const columns = useTankColumns({ hidden });
 
   const items = query.data?.items ?? [];
-  const rows = pinned ? items.filter(({ vehicle }) => pinnedIds.includes(String(vehicle.tankId))) : items;
+  const rows = filterIds === null ? items : items.filter(({ vehicle }) => filterIds.includes(String(vehicle.tankId)));
 
   const onReset = () => {
     void reset();
@@ -37,7 +37,8 @@ export const useStatsTable = () => {
     columns,
     query,
     rows,
-    pinnedIds,
+    pinnedIds: rowIds,
+    isPinPending: isPending,
     visibleColumns: TANKS_TABLE.optionalColumns.filter((id) => !hidden.includes(id)),
     isFiltered: isActive || difficulties.length > 0 || top || pinned,
     onReset,

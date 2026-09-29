@@ -37,7 +37,7 @@ export const sortQuery = <T extends z.ZodEnum>(field: T) =>
 
 export const paginationQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(PAGINATION.maxLimit).default(PAGINATION.defaultLimit),
-  offset: z.coerce.number().int().min(0).default(0)
+  offset: z.coerce.number().int().min(0).max(PAGINATION.maxOffset).default(0)
 });
 
 export const cursorQuerySchema = z.object({

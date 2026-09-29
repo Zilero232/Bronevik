@@ -26,6 +26,7 @@ export const ROUTES = {
     catalog: '/t',
     detail: (slug: string) => `/t/${slug}`,
     armor: (slug: string) => `/t/${slug}/armor`,
+    collection: (slug: string) => `/t/collections/${slug}`,
     compare: '/tanks/compare'
   },
   builds: {
@@ -46,7 +47,8 @@ export const ROUTES = {
     detail: (id: string) => `/maps/${encodeURIComponent(id)}`
   },
   play: {
-    guessTank: '/play/guess-tank'
+    guessTank: '/play/guess-tank',
+    guessMap: '/play/guess-map'
   },
   missions: {
     hub: '/missions',

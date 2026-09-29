@@ -9,6 +9,7 @@ import { mapSlugs } from '@/entities/map/map/server';
 import { popularNicknames } from '@/entities/player/profile/server';
 import { publicReplayIds } from '@/entities/replay/replay/server';
 import { streamerSlugs } from '@/entities/streamer/streamer/server';
+import { TANK_COLLECTION_SLUGS } from '@/entities/tank/tank';
 import { topTankSlugs } from '@/entities/tank/tank/server';
 import { tournamentSlugs } from '@/entities/tournament/tournament/server';
 import { ROUTES } from '@/shared/constants';
@@ -31,6 +32,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     ...sitemapEntries([
       ...SITEMAP_STATIC_PATHS,
       ...PLAY_MODES.map((mode) => ROUTES.modes.detail(mode)),
+      ...TANK_COLLECTION_SLUGS.map((slug) => ROUTES.tanks.collection(slug)),
       ...tanks.flatMap((slug) => [ROUTES.tanks.detail(slug), ROUTES.tanks.armor(slug), ROUTES.builds.detail(slug)]),
       ...clans.map((tag) => ROUTES.clans.detail(tag)),
       ...maps.map((id) => ROUTES.maps.detail(id)),

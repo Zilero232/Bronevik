@@ -52,7 +52,8 @@ export const vehicleFilterSchema = z.object({
 });
 
 export const vehicleCatalogItemSchema = vehicleSummarySchema.extend({
-  role: tankRoleSchema.nullable().describe('Battle role from the game client, null when the vehicle has none')
+  role: tankRoleSchema.nullable().describe('Battle role from the game client, null when the vehicle has none'),
+  isPreferential: z.boolean().describe('Preferential matchmaking: the game client tags the vehicle to meet at most one tier higher')
 });
 
 export const vehicleCatalogSchema = z.array(vehicleCatalogItemSchema);

@@ -17,7 +17,8 @@ const vehicle = (tankId: number, isPremium: boolean, withImages = true): Vehicle
   isCollectible: false,
   status: 'researchable',
   images: withImages ? { small: 's.png', contour: 'c.png', big: 'b.png' } : { small: null, contour: null, big: null },
-  role: null
+  role: null,
+  isPreferential: false
 });
 
 describe('renderSamples', () => {

@@ -1,5 +1,5 @@
-import { nicknameSchema, REPLAY_MASTERY_LEVELS } from '@otmetki/schemas';
-import { isIncludedIn } from 'remeda';
+import { nicknameSchema, PAGINATION, REPLAY_MASTERY_LEVELS } from '@otmetki/schemas';
+import { clamp, isIncludedIn } from 'remeda';
 
 import type { ReplaySearchQuery } from '@/entities/replay/replay';
 
@@ -28,7 +28,7 @@ const playerQuery = (player: string): string | undefined => {
 export const toSearchQuery = ({ filters, limit }: ToSearchQueryInput): ReplaySearchQuery => ({
   sort: filters.sort,
   limit,
-  offset: Math.max(0, filters.offset),
+  offset: clamp(filters.offset, { min: 0, max: PAGINATION.maxOffset }),
   tankId: filters.tank !== null && filters.tank > 0 ? filters.tank : undefined,
   arenaId: slugOrUndefined(filters.map),
   mode: slugOrUndefined(filters.mode),
@@ -62,7 +62,7 @@ export const pageWindow = ({ offset, limit, total }: PageWindowInput): PageWindo
     page,
     pages,
     prevOffset: offset > 0 ? Math.max(0, offset - limit) : null,
-    nextOffset: offset + limit < total ? offset + limit : null
+    nextOffset: offset + limit < total && offset + limit <= PAGINATION.maxOffset ? offset + limit : null
   };
 };
 

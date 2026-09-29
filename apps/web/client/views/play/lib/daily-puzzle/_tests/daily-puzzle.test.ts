@@ -1,13 +1,12 @@
 import type { VehicleSummary } from '@otmetki/schemas';
 
-import { addSeconds, subSeconds } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
 import { seededRandom } from '@/shared/lib';
 
 import { GUESS_TANK } from '../../../config';
 import { legacyRandom } from '../../legacy-random';
-import { dailyPool, nextPuzzleAt, pickDailyTank, previousDay, puzzleDay, puzzleNumber, secondsUntilNextPuzzle } from '../daily-puzzle';
+import { dailyPool, pickDailyTank } from '../daily-puzzle';
 
 const vehicle = ({ tankId, tier, isPremium = false }: { tankId: number; tier: number; isPremium?: boolean }): VehicleSummary => ({
   tankId,
@@ -31,42 +30,6 @@ const CATALOG = [
 ];
 
 const DAYS = Array.from({ length: 20 }, (_, index) => `2026-10-${String(index + 1).padStart(2, '0')}`);
-
-describe('puzzleDay', () => {
-  it('rolls over at midnight Moscow time, not UTC', () => {
-    const beforeMidnight = new Date(Date.UTC(2026, 8, 24, 20, 59));
-    const afterMidnight = new Date(Date.UTC(2026, 8, 24, 21, 1));
-
-    expect(puzzleDay(beforeMidnight)).not.toBe(puzzleDay(afterMidnight));
-    expect(previousDay(puzzleDay(afterMidnight))).toBe(puzzleDay(beforeMidnight));
-  });
-});
-
-describe('puzzleNumber', () => {
-  it('counts the epoch day as the first puzzle and grows by one each day', () => {
-    expect(puzzleNumber(GUESS_TANK.epoch)).toBe(1);
-    expect(puzzleNumber('2026-10-02') - puzzleNumber('2026-10-01')).toBe(1);
-  });
-});
-
-describe('nextPuzzleAt', () => {
-  it('lands exactly on the next puzzle day', () => {
-    const now = new Date(Date.UTC(2026, 8, 24, 12, 34, 56));
-    const next = nextPuzzleAt(now);
-
-    expect(previousDay(puzzleDay(next))).toBe(puzzleDay(now));
-    expect(puzzleDay(subSeconds(next, 1))).toBe(puzzleDay(now));
-  });
-});
-
-describe('secondsUntilNextPuzzle', () => {
-  it('counts whole seconds up to Moscow midnight', () => {
-    const now = new Date(Date.UTC(2026, 8, 24, 20, 59, 30));
-
-    expect(secondsUntilNextPuzzle(now)).toBe(30);
-    expect(puzzleDay(addSeconds(now, secondsUntilNextPuzzle(now)))).not.toBe(puzzleDay(now));
-  });
-});
 
 describe('pickDailyTank', () => {
   it('gives every player the same tank on the same day, whatever the catalog order', () => {

@@ -340,7 +340,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -522,7 +522,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -984,7 +984,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -1266,7 +1266,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -1970,7 +1970,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -2780,7 +2780,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -3101,7 +3101,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -3293,7 +3293,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -3669,7 +3669,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -5390,7 +5390,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -5699,7 +5699,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -6003,7 +6003,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -6460,7 +6460,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -6791,7 +6791,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -7091,7 +7091,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -7179,7 +7179,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -9238,7 +9238,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -9547,7 +9547,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -9815,7 +9815,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -10081,7 +10081,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -10467,7 +10467,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -10618,7 +10618,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -10729,7 +10729,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -11085,7 +11085,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -11749,7 +11749,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -11897,7 +11897,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -12343,7 +12343,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -14012,7 +14012,7 @@
             "in": "query",
             "schema": {
               "minimum": 0,
-              "maximum": 9007199254740991,
+              "maximum": 10000,
               "default": 0,
               "type": "integer"
             }
@@ -24040,9 +24040,27 @@
                 }
               ],
               "description": "Battle role from the game client, null when the vehicle has none"
+            },
+            "isPreferential": {
+              "type": "boolean",
+              "description": "Preferential matchmaking: the game client tags the vehicle to meet at most one tier higher"
             }
           },
-          "required": ["tankId", "name", "shortName", "slug", "nation", "type", "tier", "isPremium", "isCollectible", "status", "images", "role"],
+          "required": [
+            "tankId",
+            "name",
+            "shortName",
+            "slug",
+            "nation",
+            "type",
+            "tier",
+            "isPremium",
+            "isCollectible",
+            "status",
+            "images",
+            "role",
+            "isPreferential"
+          ],
           "additionalProperties": false
         }
       },

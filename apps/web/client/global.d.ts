@@ -36,6 +36,11 @@ declare module '@tanstack/react-table' {
     width?: number | string;
   }
 
+  // eslint-disable-next-line ts/consistent-type-definitions -- table meta is typed by interface merging and must keep the library's generics
+  interface TableMeta<TData extends RowData> {
+    pinnedRowIds?: readonly string[];
+  }
+
   type ColumnBarMeta = {
     max?: number;
     tone?: import('@/ui-kit/atoms/ProgressBar/ProgressBar.types').ProgressTone;

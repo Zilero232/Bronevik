@@ -1,3 +1,5 @@
+import type { CellContext } from '@tanstack/react-table';
+
 import { partition } from 'remeda';
 
 import type { PinnedFirstInput } from './pinned-first.types';
@@ -11,3 +13,6 @@ export const pinnedFirst = <R extends { id: string }>({ rows, pinnedIds }: Pinne
 
   return [...pinned, ...rest];
 };
+
+export const isPinnedCell = <T>({ table, row }: Pick<CellContext<T, unknown>, 'row' | 'table'>): boolean =>
+  table.options.meta?.pinnedRowIds?.includes(row.id) ?? false;

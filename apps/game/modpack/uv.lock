@@ -10,6 +10,7 @@ resolution-markers = [
 members = [
     "otmetki-companion",
     "otmetki-core",
+    "otmetki-feature-arty-meter",
     "otmetki-feature-auto-resupply",
     "otmetki-feature-battle-clock",
     "otmetki-feature-battle-efficiency",
@@ -39,6 +40,7 @@ members = [
     "otmetki-feature-personal-best",
     "otmetki-feature-personal-missions",
     "otmetki-feature-platoon-helper",
+    "otmetki-feature-platoon-points",
     "otmetki-feature-received-hits",
     "otmetki-feature-reload-timer",
     "otmetki-feature-replay-manager",
@@ -137,6 +139,21 @@ version = "0.1.0"
 source = { virtual = "packages/core" }
 
 [[package]]
+name = "otmetki-feature-arty-meter"
+version = "0.1.0"
+source = { virtual = "features/arty_meter" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-auto-resupply"
 version = "0.1.0"
 source = { virtual = "features/auto_resupply" }
@@ -153,7 +170,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-battle-clock"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/battle_clock" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -198,7 +215,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-battle-loadout"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/battle_loadout" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -288,7 +305,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-consumables"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "features/consumables" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -303,7 +320,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-crosshair"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "features/crosshair" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -318,7 +335,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-damage-log"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "features/damage_log" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -438,7 +455,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-hit-log"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/hit_log" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -468,7 +485,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-marks-history"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/marks_history" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -483,7 +500,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-marks-panel"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "features/marks_panel" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -572,6 +589,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "otmetki-feature-platoon-points"
+version = "0.1.0"
+source = { virtual = "features/platoon_points" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
 name = "otmetki-feature-received-hits"
 version = "0.1.0"
 source = { virtual = "features/received_hits" }
@@ -588,7 +620,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-reload-timer"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/reload_timer" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -663,7 +695,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-sixth-sense"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "features/sixth_sense" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -693,7 +725,7 @@ requires-dist = [
 
 [[package]]
 name = "otmetki-feature-team-hp"
-version = "0.2.0"
+version = "0.3.0"
 source = { virtual = "features/team_hp" }
 dependencies = [
     { name = "otmetki-companion" },
@@ -728,6 +760,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "otmetki-companion" },
     { name = "otmetki-core" },
+    { name = "otmetki-feature-arty-meter" },
     { name = "otmetki-feature-auto-resupply" },
     { name = "otmetki-feature-battle-clock" },
     { name = "otmetki-feature-battle-efficiency" },
@@ -757,6 +790,7 @@ dependencies = [
     { name = "otmetki-feature-personal-best" },
     { name = "otmetki-feature-personal-missions" },
     { name = "otmetki-feature-platoon-helper" },
+    { name = "otmetki-feature-platoon-points" },
     { name = "otmetki-feature-received-hits" },
     { name = "otmetki-feature-reload-timer" },
     { name = "otmetki-feature-replay-manager" },
@@ -784,6 +818,7 @@ dev = [
 requires-dist = [
     { name = "otmetki-companion", virtual = "packages/companion" },
     { name = "otmetki-core", virtual = "packages/core" },
+    { name = "otmetki-feature-arty-meter", virtual = "features/arty_meter" },
     { name = "otmetki-feature-auto-resupply", virtual = "features/auto_resupply" },
     { name = "otmetki-feature-battle-clock", virtual = "features/battle_clock" },
     { name = "otmetki-feature-battle-efficiency", virtual = "features/battle_efficiency" },
@@ -813,6 +848,7 @@ requires-dist = [
     { name = "otmetki-feature-personal-best", virtual = "features/personal_best" },
     { name = "otmetki-feature-personal-missions", virtual = "features/personal_missions" },
     { name = "otmetki-feature-platoon-helper", virtual = "features/platoon_helper" },
+    { name = "otmetki-feature-platoon-points", virtual = "features/platoon_points" },
     { name = "otmetki-feature-received-hits", virtual = "features/received_hits" },
     { name = "otmetki-feature-reload-timer", virtual = "features/reload_timer" },
     { name = "otmetki-feature-replay-manager", virtual = "features/replay_manager" },
